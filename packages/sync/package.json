@@ -1,0 +1,20 @@
+{
+  "name": "@baseplate/sync",
+  "version": "0.0.1",
+  "description": "Library for syncing Baseplate descriptions",
+  "main": "lib/index.js",
+  "repository": "https://github.com/kingston/baseplate/tree/master/packages/sync",
+  "author": "Kingston Tam",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@baseplate/tools": "^0.0.1",
+    "typescript": "^3.7.5"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "yarn build",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
+  }
+}
