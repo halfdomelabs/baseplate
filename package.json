@@ -3,5 +3,12 @@
   "private": true,
   "devDependencies": {
     "lerna": "^3.20.2"
-  }
+  },
+  "scripts": {
+    "watch": "lerna run watch --parallel",
+    "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx ./"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
