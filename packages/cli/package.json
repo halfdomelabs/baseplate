@@ -1,0 +1,21 @@
+{
+  "name": "@baseplate/cli",
+  "version": "0.0.1",
+  "description": "Command line tool for syncing Baseplate descriptions",
+  "main": "dist/index.js",
+  "repository": "https://github.com/kingston/baseplate/tree/master/packages/cli",
+  "author": "Kingston Tam",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@baseplate/tools": "^0.0.1",
+    "typescript": "^3.7.5"
+  },
+  "scripts": {
+    "start": "tsc && node dist/index.js",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "prepare": "yarn build",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
+  }
+}
