@@ -9,12 +9,15 @@
   "private": true,
   "devDependencies": {
     "@baseplate/tools": "^0.0.1",
+    "@types/jest": "^25.1.2",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.0",
     "typescript": "^3.7.5"
   },
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "prepare": "yarn build",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "test": "jest"
   }
 }
