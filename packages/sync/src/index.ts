@@ -1,1 +1,1 @@
-export const hello = 'Hello :)';
+export * from './SyncService';
