@@ -18,6 +18,12 @@ const typescriptRules = {
   ],
 };
 
+const typescriptSettings = {
+  'import/resolver': {
+    typescript: {}, // this loads <rootdir>/tsconfig.json to eslint
+  },
+};
+
 module.exports = function createEslintConfig(options) {
   const typescript = options.typescript || false;
   return {
@@ -39,5 +45,6 @@ module.exports = function createEslintConfig(options) {
       browser: false,
       jest: true,
     },
+    settings: typescript ? typescriptSettings : {},
   };
 };
