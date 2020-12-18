@@ -39,6 +39,7 @@ module.exports = function createEslintConfig(options) {
     rules: {
       ...(typescript ? typescriptRules : {}),
       'import/prefer-default-export': 'off',
+      'class-methods-use-this': 'off',
     },
     env: {
       node: true,

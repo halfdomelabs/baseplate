@@ -1,0 +1,28 @@
+{
+  "name": "@baseplate/core-generators",
+  "version": "0.0.1",
+  "description": "Core generators for Baseplate",
+  "main": "lib/index.js",
+  "repository": "https://github.com/kingston/baseplate/tree/master/packages/core-generators",
+  "author": "Kingston Tam",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@baseplate/tools": "^0.0.1",
+    "@types/ramda": "^0.27.34",
+    "@types/yup": "^0.26.31",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "typescript": "^3.7.5"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "watch": "gulp watch",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src"
+  },
+  "dependencies": {
+    "@baseplate/sync": "^0.0.1",
+    "ramda": "^0.27.1",
+    "yup": "^0.28.1"
+  }
+}

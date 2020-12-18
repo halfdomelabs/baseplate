@@ -1,1 +1,2 @@
-export * from './SyncService';
+export * from './core';
+export * from './actions';
