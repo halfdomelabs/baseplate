@@ -1,26 +1,35 @@
 const gulp = require('gulp');
-const ts = require('gulp-typescript');
+const del = require('del');
 
-const tsProject = ts.createProject('tsconfig.json');
+const TEMPLATE_GLOBS = [
+  'src/generators/*/templates/**',
+  'src/generators/*/templates/**/.*',
+];
 
-function buildTypescript() {
-  return gulp.src('src/**/*.ts').pipe(tsProject()).pipe(gulp.dest('lib/'));
+function cleanTemplates() {
+  return del(
+    TEMPLATE_GLOBS.map((glob) =>
+      glob.replace('src/generators', 'lib/generators')
+    )
+  );
 }
 
 function buildTemplates() {
-  return gulp
-    .src('src/generators/*/templates/**/*')
-    .pipe(gulp.dest('lib/generators/'));
+  return gulp.src(TEMPLATE_GLOBS).pipe(gulp.dest('lib/generators/'));
 }
 
-const build = gulp.parallel(buildTypescript, buildTemplates);
-exports.build = build;
+exports.cleanTemplates = cleanTemplates;
 
-function watch() {
-  gulp.watch('src/**/*.ts', buildTypescript);
-  gulp.watch('src/generators/*/templates/**/*', buildTemplates);
+exports.buildTemplates = gulp.series(cleanTemplates, buildTemplates);
+
+function watchTemplates() {
+  gulp.watch(TEMPLATE_GLOBS, buildTemplates);
 }
 
-exports.watch = watch;
+exports.watchTemplates = gulp.series(
+  cleanTemplates,
+  buildTemplates,
+  watchTemplates
+);
 
-exports.default = build;
+exports.default = buildTemplates;

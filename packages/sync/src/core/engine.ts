@@ -75,23 +75,33 @@ export class GeneratorEngine {
 
     const childEntryPromises = childGeneratorConfigKeys.map((key) => {
       const childGeneratorConfig = childGeneratorConfigs[key];
-      const childDescriptor =
-        childGeneratorDescriptors[key] ||
-        (childGeneratorConfig.defaultGenerator && {
-          generator: childGeneratorConfig.defaultGenerator,
-        }) ||
-        [];
+      const childDescriptorRaw = childGeneratorDescriptors[key];
+      let childDescriptors = Array.isArray(childDescriptorRaw)
+        ? childDescriptorRaw || []
+        : [childDescriptorRaw];
 
-      const childDescriptorArr = Array.isArray(childDescriptor)
-        ? childDescriptor
-        : [childDescriptor];
+      // handle single default generator
+      const defaults = {
+        generator: childGeneratorConfig.defaultGenerator || '',
+      };
+      if (
+        childDescriptors.length === 0 &&
+        childGeneratorConfig.defaultGenerator
+      ) {
+        childDescriptors.push({
+          ...defaults,
+        });
+      }
+
+      // handle missing generators
+      childDescriptors = childDescriptors.map((d) => R.mergeRight(defaults, d));
 
       if (!childGeneratorConfig.multiple) {
-        if (childDescriptorArr.length === 0) {
+        if (childDescriptors.length === 0) {
           throw new Error(`Child descriptor for ${key} is required in ${id}`);
         }
 
-        if (childDescriptorArr.length > 1) {
+        if (childDescriptors.length > 1) {
           throw new Error(
             `Only one child descriptor allowed for ${key} in ${id}`
           );
@@ -102,7 +112,7 @@ export class GeneratorEngine {
       const { provider } = childGeneratorConfig;
       if (
         provider &&
-        childDescriptorArr.every((d) =>
+        childDescriptors.every((d) =>
           this.generators[d.generator].provides?.includes(provider)
         )
       ) {
@@ -111,7 +121,7 @@ export class GeneratorEngine {
         );
       }
 
-      return childDescriptorArr.map((descriptor, i) =>
+      return childDescriptors.map((descriptor, i) =>
         this.getGeneratorEntry(
           descriptor,
           `${id}/${key}-${i}`,

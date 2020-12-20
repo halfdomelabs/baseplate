@@ -11,17 +11,22 @@
     "@baseplate/tools": "^0.0.1",
     "@types/ramda": "^0.27.34",
     "@types/yup": "^0.26.31",
-    "gulp": "^4.0.2",
-    "gulp-typescript": "^6.0.0-alpha.1",
+    "concurrently": "^5.3.0",
+    "del": "^6.0.0",
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "build": "gulp build",
-    "watch": "gulp watch",
+    "build": "concurrently yarn:build:*",
+    "build:tsc": "tsc",
+    "build:templates": "gulp buildTemplates",
+    "watch": "concurrently yarn:watch:*",
+    "watch:tsc": "tsc -w",
+    "watch:templates": "gulp watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src"
   },
   "dependencies": {
     "@baseplate/sync": "^0.0.1",
+    "gulp": "^4.0.2",
     "ramda": "^0.27.1",
     "yup": "^0.28.1"
   }

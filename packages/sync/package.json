@@ -9,6 +9,7 @@
   "private": true,
   "devDependencies": {
     "@baseplate/tools": "^0.0.1",
+    "@types/ejs": "^3.0.5",
     "@types/jest": "^25.1.2",
     "@types/toposort": "^2.0.3",
     "jest": "^25.1.0",
