@@ -1,4 +1,8 @@
-import { GeneratorConfig, GeneratorDescriptor } from '@baseplate/sync';
+import {
+  GeneratorConfig,
+  GeneratorDescriptor,
+  createProviderType,
+} from '@baseplate/sync';
 import * as yup from 'yup';
 import R from 'ramda';
 import { writePackageJson } from './actions/writePackageJson';
@@ -13,10 +17,12 @@ const descriptorSchema = {
   description: yup.string(),
 };
 
-export interface NodeProvider {
+interface NodeProvider {
   addPackage(name: string, version: string): void;
   addDevPackage(name: string, version: string): void;
 }
+
+export const NodeProviderType = createProviderType<NodeProvider>('node');
 
 interface ProviderMap {
   node: NodeProvider;

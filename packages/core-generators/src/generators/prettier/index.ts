@@ -5,7 +5,7 @@ import {
   FormatterProvider,
 } from '@baseplate/sync';
 import * as yup from 'yup';
-import { NodeProvider } from '../node';
+import { NodeProviderType } from '../node';
 
 interface Descriptor extends GeneratorDescriptor {
   singleQuote: boolean;
@@ -21,7 +21,7 @@ type ProviderMap = {
 
 const PrettierGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
   descriptorSchema,
-  requires: ['node'],
+  requires: [NodeProviderType.name],
   provides: ['formatter'],
   createGenerator(descriptor) {
     return {
@@ -36,7 +36,7 @@ const PrettierGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
         };
       },
       build: (context) => {
-        const node = context.getProvider<NodeProvider>('node');
+        const node = context.getProvider(NodeProviderType);
         node.addDevPackage('prettier', '^2.2.1');
 
         context.addAction(

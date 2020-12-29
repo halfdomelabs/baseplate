@@ -10,6 +10,7 @@ import { GeneratorConfig, Generator, ChildGenerator } from './generator';
 import { Action, ActionContext, PostActionCallback } from './action';
 import { GeneratorBuildContext, GeneratorProviderContext } from './context';
 import { FormatterProvider } from '../providers/formatter';
+import { ProviderType } from './provider';
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -304,8 +305,9 @@ export class GeneratorEngine {
 
     const getProviderByEntryIdAndName = (
       entryId: string,
-      name: string
+      provider: string | ProviderType
     ): any => {
+      const name = typeof provider === 'string' ? provider : provider.name;
       const providerId = dependencyMaps[entryId][name];
       if (!providerId) {
         throw new Error(
@@ -317,8 +319,9 @@ export class GeneratorEngine {
 
     const getOptionalProviderByEntryIdAndName = (
       entryId: string,
-      name: string
+      provider: string | ProviderType
     ): any => {
+      const name = typeof provider === 'string' ? provider : provider.name;
       const providerId = dependencyMaps[entryId][name];
       if (!providerId) {
         return null;

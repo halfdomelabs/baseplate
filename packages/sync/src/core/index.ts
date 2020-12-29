@@ -9,3 +9,4 @@ export { GeneratorBuildContext, GeneratorProviderContext } from './context';
 export { GeneratorEngine } from './engine';
 export { GeneratorDescriptor, baseDescriptorSchema } from './descriptor';
 export { loadGenerators } from './loader';
+export * from './provider';
