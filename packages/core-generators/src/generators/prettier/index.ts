@@ -1,9 +1,11 @@
 import {
-  Generator,
+  GeneratorConfig,
   GeneratorDescriptor,
   writeTemplateAction,
+  FormatterProvider,
 } from '@baseplate/sync';
 import * as yup from 'yup';
+import { NodeProvider } from '../node';
 
 interface Descriptor extends GeneratorDescriptor {
   singleQuote: boolean;
@@ -13,19 +15,42 @@ const descriptorSchema = {
   singleQuote: yup.boolean().default(true),
 };
 
-const NodeGenerator: Generator<Descriptor> = {
+type ProviderMap = {
+  formatter: FormatterProvider;
+};
+
+const PrettierGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
   descriptorSchema,
-  build: (descriptor, context) => {
-    context.addAction(
-      writeTemplateAction({
-        destination: '.prettierrc.js',
-        template: '.prettierrc.js.ejs',
-        data: {
-          singleQuote: descriptor.singleQuote,
-        },
-      })
-    );
+  requires: ['node'],
+  provides: ['formatter'],
+  createGenerator(descriptor) {
+    return {
+      getProviders: () => {
+        return {
+          formatter: {
+            format: (input: string) => {
+              console.log(input);
+              return input;
+            },
+          },
+        };
+      },
+      build: (context) => {
+        const node = context.getProvider<NodeProvider>('node');
+        node.addDevPackage('prettier', '^2.2.1');
+
+        context.addAction(
+          writeTemplateAction({
+            destination: '.prettierrc.js',
+            template: '.prettierrc.js.ejs',
+            data: {
+              singleQuote: descriptor.singleQuote,
+            },
+          })
+        );
+      },
+    };
   },
 };
 
-export default NodeGenerator;
+export default PrettierGenerator;

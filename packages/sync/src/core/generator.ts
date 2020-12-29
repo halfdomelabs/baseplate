@@ -1,5 +1,5 @@
 import { Schema } from 'yup';
-import { GeneratorContext } from './context';
+import { GeneratorProviderContext, GeneratorBuildContext } from './context';
 import { GeneratorDescriptor } from './descriptor';
 
 export type DescriptorSchema<T> = {
@@ -8,25 +8,25 @@ export type DescriptorSchema<T> = {
   >;
 };
 
-export interface ChildGenerator {
-  provider?: string;
-  defaultGenerator?: string;
-  multiple?: boolean;
-  subdirectory?: string;
+export interface Generator<ProviderTypeMap extends {} = {}> {
+  getProviders?: (context: GeneratorProviderContext) => ProviderTypeMap;
+  build: (context: GeneratorBuildContext) => Promise<void> | void;
 }
 
-export interface Generator<
+export interface ChildGenerator<Descriptor extends GeneratorDescriptor = any> {
+  provider?: string;
+  defaultDescriptor?: Descriptor;
+  multiple?: boolean;
+}
+
+export interface GeneratorConfig<
   Descriptor extends GeneratorDescriptor,
-  Provider = null
+  ProviderTypeMap extends {} = {}
 > {
   descriptorSchema?: DescriptorSchema<Descriptor>;
   childGenerators?: { [key: string]: ChildGenerator };
   provides?: string[];
   requires?: string[];
-  getProvider?: (descriptor: Descriptor, context: GeneratorContext) => Provider;
-  build: (
-    descriptor: Descriptor,
-    context: GeneratorContext
-  ) => Promise<void> | void;
   baseDirectory?: string;
+  createGenerator: (descriptor: Descriptor) => Generator<ProviderTypeMap>;
 }

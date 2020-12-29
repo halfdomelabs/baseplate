@@ -7,19 +7,25 @@ interface Options {
   destination: string;
   template: string;
   data: Record<string, any>;
+  noFormat?: boolean;
 }
 
 export const writeTemplateAction = createActionCreator<Options>(
-  'write-file',
+  'write-template',
   async (options, context) => {
-    const { currentDirectory, generatorDirectory } = context;
-    const { destination, template, data } = options;
+    const { currentDirectory, generatorDirectory, formatter } = context;
+    const { destination, template, data, noFormat } = options;
 
     const templatePath = path.join(generatorDirectory, 'templates', template);
 
     const templateContents = await fs.readFile(templatePath, 'utf8');
 
-    const contents = ejs.render(templateContents, data);
+    let contents = ejs.render(templateContents, data);
+
+    if (formatter && !noFormat) {
+      const extension = path.extname(destination);
+      contents = await formatter.format(contents, extension);
+    }
 
     await fs.writeFile(path.join(currentDirectory, destination), contents, {
       encoding: 'utf-8',

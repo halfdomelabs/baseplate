@@ -1,21 +1,29 @@
-import { Generator, GeneratorDescriptor } from '@baseplate/sync';
+import { GeneratorConfig, GeneratorDescriptor } from '@baseplate/sync';
 
 type Descriptor = GeneratorDescriptor;
 
 const descriptorSchema = {};
 
-const NodeGenerator: Generator<Descriptor> = {
+export interface ReactProvider {
+  // react provider
+}
+
+interface ProviderMap {
+  react: ReactProvider;
+}
+
+const ReactGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
   descriptorSchema,
-  childGenerators: {
-    node: {
-      provider: 'node',
-      defaultGenerator: '@baseplate/core/node',
-    },
-    prettier: {
-      defaultGenerator: '@baseplate/core/prettier',
-    },
+  createGenerator(descriptor) {
+    return {
+      getProviders: () => {
+        return { react: {} };
+      },
+      build: (context) => {
+        //
+      },
+    };
   },
-  build: (descriptor, context) => {},
 };
 
-export default NodeGenerator;
+export default ReactGenerator;

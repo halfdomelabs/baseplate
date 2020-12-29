@@ -1,7 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { FormatterProvider } from '../providers/formatter';
+
+export type PostActionCallback = () => Promise<void>;
+
 export interface ActionContext {
   currentDirectory: string;
   generatorDirectory: string;
+  formatter?: FormatterProvider | null;
+  addPostActionCallback(callback: PostActionCallback): void;
 }
 
 export interface Action<Options = any> {

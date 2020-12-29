@@ -5,12 +5,12 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import R from 'ramda';
-import { Generator } from './generator';
+import { GeneratorConfig } from './generator';
 
 export async function loadGenerators(
   module: string
 ): Promise<{
-  [name: string]: Generator<any>;
+  [name: string]: GeneratorConfig<any>;
 }> {
   const modulePath = require.resolve(module);
   const GENERATOR_DIR = path.join(modulePath, '../generators');
@@ -21,15 +21,15 @@ export async function loadGenerators(
 
   const generators = generatorFolders.map((folder) => {
     const generatorFolder = path.join(GENERATOR_DIR, folder);
-    const generator = require(generatorFolder)?.default as Generator<any>;
+    const generator = require(generatorFolder)?.default as GeneratorConfig<any>;
     if (!generator) {
       throw new Error(
         `Generator folder has no default export: ${generatorFolder}`
       );
     }
-    if (!generator.build) {
+    if (!generator.createGenerator) {
       throw new Error(
-        `Generator function lacks a build function: ${generatorFolder}`
+        `Generator function lacks a createGenerator function: ${generatorFolder}`
       );
     }
     const name = `${module.replace('-generators', '')}/${folder}`;
