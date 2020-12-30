@@ -46,6 +46,10 @@ const NodeGenerator = createGeneratorConfig({
         peerProvider: true,
       },
     },
+    typescript: {
+      provider: 'typescript',
+      optional: true,
+    },
   },
   exports: {
     node: nodeProvider,

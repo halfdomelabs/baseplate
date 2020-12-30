@@ -19,6 +19,7 @@ export interface ChildGenerator<Descriptor extends GeneratorDescriptor = any> {
   provider?: ProviderType | string;
   defaultDescriptor?: Descriptor;
   multiple?: boolean;
+  optional?: boolean;
 }
 
 export type ProviderExportMap<T> = {

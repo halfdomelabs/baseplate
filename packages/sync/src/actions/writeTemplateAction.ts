@@ -6,6 +6,7 @@ import { createActionCreator } from '../core/action';
 interface Options {
   destination: string;
   template: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>;
   noFormat?: boolean;
 }
@@ -22,9 +23,9 @@ export const writeTemplateAction = createActionCreator<Options>(
 
     let contents = ejs.render(templateContents, data);
 
+    const fullPath = path.join(currentDirectory, destination);
     if (formatter && !noFormat) {
-      const extension = path.extname(destination);
-      contents = await formatter.format(contents, extension);
+      contents = await formatter.format(contents, fullPath);
     }
 
     await fs.writeFile(path.join(currentDirectory, destination), contents, {

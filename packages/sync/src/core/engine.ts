@@ -84,7 +84,7 @@ export class GeneratorEngine {
     childKey: string,
     entryId: string
   ): GeneratorDescriptor[] {
-    const { defaultDescriptor, multiple, provider } = config;
+    const { defaultDescriptor, multiple, provider, optional } = config;
 
     const descriptors = (() => {
       if (!descriptor) {
@@ -102,6 +102,10 @@ export class GeneratorEngine {
       throw new Error(
         `${childKey} in ${entryId} can only contain one generator`
       );
+    }
+
+    if (!multiple && !optional && descriptors.length === 0) {
+      throw new Error(`${childKey} in ${entryId} must have a generator`);
     }
 
     // verify names are on all multiple entries
@@ -408,10 +412,11 @@ export class GeneratorEngine {
     directory: string
   ): Promise<void> {
     const postActionCallbacks: PostActionCallback[] = [];
+    const resolvedDirectory = path.resolve(directory);
     for (const contexutalizedAction of contextualizedActions) {
       const { actions, generatorDirectory, formatter } = contexutalizedAction;
       const context: ActionContext = {
-        currentDirectory: directory,
+        currentDirectory: resolvedDirectory,
         generatorDirectory,
         formatter,
         addPostActionCallback: (callback) => {
