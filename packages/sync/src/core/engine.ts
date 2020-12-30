@@ -8,9 +8,9 @@ import toposort from 'toposort';
 import { baseDescriptorSchema, GeneratorDescriptor } from './descriptor';
 import { GeneratorConfig, Generator, ChildGenerator } from './generator';
 import { Action, ActionContext, PostActionCallback } from './action';
-import { GeneratorBuildContext, GeneratorProviderContext } from './context';
+import { GeneratorBuildContext } from './context';
 import { FormatterProvider } from '../providers/formatter';
-import { ProviderType } from './provider';
+import { ProviderDependency, ProviderType } from './provider';
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -26,6 +26,15 @@ export interface ActionsWithContext {
   actions: Action[];
   generatorDirectory: string;
   formatter?: FormatterProvider | null;
+}
+
+function providerMapToNames(map?: {
+  [key: string]: ProviderType | ProviderDependency;
+}): string[] {
+  if (!map) {
+    return [];
+  }
+  return Object.values(map).map((d) => d.name);
 }
 
 export class GeneratorEngine {
@@ -106,7 +115,9 @@ export class GeneratorEngine {
     if (
       provider &&
       !descriptors.every((d) =>
-        this.generators[d.generator].provides?.includes(provider)
+        providerMapToNames(this.generators[d.generator].exports).includes(
+          typeof provider === 'string' ? provider : provider.name
+        )
       )
     ) {
       throw new Error(
@@ -205,7 +216,9 @@ export class GeneratorEngine {
     parentProviders: Record<string, string>
   ): Record<string, Record<string, string>> {
     // build entry dependency map from parent providers
-    const requiredProviders = entry.generatorConfig.requires || [];
+    const requiredProviders = providerMapToNames(
+      entry.generatorConfig.dependsOn
+    );
 
     const entryDependencyMap = R.zipObj(
       requiredProviders,
@@ -219,7 +232,10 @@ export class GeneratorEngine {
 
     // force formatter to be optionally added since it's used by most actions
     const { formatter } = parentProviders;
-    if (formatter && !entry.generatorConfig.provides?.includes('formatter')) {
+    if (
+      formatter &&
+      !providerMapToNames(entry.generatorConfig.exports).includes('formatter')
+    ) {
       entryDependencyMap.formatter = formatter;
     }
 
@@ -227,13 +243,13 @@ export class GeneratorEngine {
     const childProviders = entry.childGenerators
       .filter((g) => g.descriptor.peerProvider)
       .map((g) =>
-        (g.generatorConfig.provides || []).map((name) => ({
+        providerMapToNames(g.generatorConfig.exports).map((name) => ({
           [name]: g.id,
         }))
       );
 
     const selfProviders = R.mergeAll(
-      (entry.generatorConfig.provides || []).map((name) => ({
+      providerMapToNames(entry.generatorConfig.exports).map((name) => ({
         [name]: entry.id,
       }))
     );
@@ -295,69 +311,63 @@ export class GeneratorEngine {
     const generatorsById: Record<string, Generator<any>> = {};
     const providerMap: Record<string, Record<string, any>> = {};
 
-    // initialize generators
-    for (const entryId of sortedEntryIds) {
-      const entry = entriesById[entryId];
-      generatorsById[entryId] = entry.generatorConfig.createGenerator(
-        entry.descriptor
-      );
-    }
-
-    const getProviderByEntryIdAndName = (
-      entryId: string,
-      provider: string | ProviderType
-    ): any => {
-      const name = typeof provider === 'string' ? provider : provider.name;
-      const providerId = dependencyMaps[entryId][name];
-      if (!providerId) {
-        throw new Error(
-          `Provider ${name} must be required before requested in entry ${entryId}`
-        );
-      }
-      return providerMap[providerId][name];
-    };
-
-    const getOptionalProviderByEntryIdAndName = (
-      entryId: string,
-      provider: string | ProviderType
-    ): any => {
-      const name = typeof provider === 'string' ? provider : provider.name;
-      const providerId = dependencyMaps[entryId][name];
-      if (!providerId) {
-        return null;
-      }
-      return providerMap[providerId][name] || null;
-    };
-
     // initialize providers (beginning at the bottom of dependency tree)
     for (const entryId of sortedEntryIds) {
       const entry = entriesById[entryId];
-      const generator = generatorsById[entryId];
-      if (generator.getProviders) {
-        const context: GeneratorProviderContext = {
-          getProvider: (name) => getProviderByEntryIdAndName(entryId, name),
-        };
-        const publishedProviders = generator.getProviders(context);
-        providerMap[entryId] = publishedProviders;
+      // resolve dependencies and format into entry
+      const resolveDependency = (
+        providerDependency: ProviderType<any> | ProviderDependency<any>
+      ): any => {
+        const dependency: ProviderDependency<any> =
+          // eslint-disable-next-line no-underscore-dangle
+          providerDependency._type === 'type'
+            ? providerDependency.dependency()
+            : providerDependency;
+        const {
+          name,
+          options: { optional },
+        } = dependency;
+        const providerId = dependencyMaps[entryId][name];
+        if (!providerId) {
+          if (optional) {
+            return undefined;
+          }
+          // shouldn't happen if we do checks correctly
+          throw new Error(
+            `Required provider ${name} not present for entry ${entryId}`
+          );
+        }
+        return providerMap[providerId][name];
+      };
+      const dependencies = R.mapObjIndexed(
+        resolveDependency,
+        entry.generatorConfig.dependsOn || {}
+      );
 
-        // make sure providers match config
-        const configProviders = entry.generatorConfig.provides || [];
-        const publishedNames = Object.keys(publishedProviders);
-        const missingProviders = R.difference(configProviders, publishedNames);
-        if (missingProviders.length) {
-          throw new Error(
-            `${entry.id} (${entry.descriptor.generator}) must provide additional providers: ${missingProviders}`
-          );
-        }
-        const additionalProviders = R.difference(
-          publishedNames,
-          configProviders
+      const generator = entry.generatorConfig.createGenerator(
+        entry.descriptor,
+        dependencies
+      );
+      generatorsById[entryId] = generator;
+
+      if (generator.getProviders) {
+        const exportedProviders = generator.getProviders({});
+
+        // map exported providers to their provider name
+        const configExports = entry.generatorConfig.exports || {};
+        const configExportKeys = Object.keys(configExports);
+        providerMap[entryId] = R.fromPairs(
+          configExportKeys.map((key) => {
+            const { name } = configExports[key];
+            const provider = exportedProviders[key];
+            if (!provider) {
+              throw new Error(
+                `${entry.descriptor.generator} must provide the ${name} provider`
+              );
+            }
+            return [name, provider];
+          })
         );
-        if (additionalProviders.length) {
-          throw new Error(
-            `${entry.id} must specify additional providers in config: ${additionalProviders}`
-          );
-        }
       }
     }
 
@@ -370,9 +380,6 @@ export class GeneratorEngine {
       const actions: Action[] = [];
       const context: GeneratorBuildContext = {
         actions,
-        getProvider: (name) => getProviderByEntryIdAndName(entryId, name),
-        getOptionalProvider: (name) =>
-          getOptionalProviderByEntryIdAndName(entryId, name),
         addAction(action) {
           actions.push(action);
         },
@@ -384,10 +391,13 @@ export class GeneratorEngine {
       }
 
       await Promise.resolve(generator.build(context));
+      const formatterId = dependencyMaps[entryId].formatter;
+      const formatter = formatterId && providerMap[formatterId].formatter;
+
       buildActions.push({
         actions,
         generatorDirectory: entry.generatorConfig.baseDirectory,
-        formatter: context.getOptionalProvider('formatter'),
+        formatter,
       });
     }
     return buildActions;

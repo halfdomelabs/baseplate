@@ -8,14 +8,18 @@ import { promisify } from 'util';
 
 const exec = promisify(childProcess.exec);
 
+// not going to type it
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PackageJson = any;
+
 interface Options {
   baseDirectory?: string;
-  contents: any;
+  contents: PackageJson;
 }
 
 async function compareContents(
   packagePath: string,
-  contents: any
+  contents: PackageJson
 ): Promise<boolean> {
   try {
     await fs.access(packagePath);

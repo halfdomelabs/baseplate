@@ -1,7 +1,8 @@
 import {
-  GeneratorConfig,
   GeneratorDescriptor,
   createProviderType,
+  createGeneratorConfig,
+  createGeneratorDescriptor,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import R from 'ramda';
@@ -17,41 +18,40 @@ const descriptorSchema = {
   description: yup.string(),
 };
 
-interface NodeProvider {
+export interface NodeProvider {
   addPackage(name: string, version: string): void;
   addDevPackage(name: string, version: string): void;
 }
 
-export const NodeProviderType = createProviderType<NodeProvider>('node');
+export const nodeProvider = createProviderType<NodeProvider>('node');
 
-interface ProviderMap {
-  node: NodeProvider;
-}
+type NodeDependencyType = 'normal' | 'dev';
 
-type DependencyTypes = 'normal' | 'dev';
-
-interface DependencyEntry {
+interface NodeDependencyEntry {
   name: string;
   version: string;
-  type: DependencyTypes;
+  type: NodeDependencyType;
 }
 
-const NodeGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
-  descriptorSchema,
+const NodeGenerator = createGeneratorConfig({
+  descriptorSchema: createGeneratorDescriptor<Descriptor>(descriptorSchema),
   childGenerators: {
     projects: {
       multiple: true,
     },
     prettier: {
+      provider: 'formatter',
       defaultDescriptor: {
         generator: '@baseplate/core/prettier',
         peerProvider: true,
       },
     },
   },
-  provides: ['node'],
+  exports: {
+    node: nodeProvider,
+  },
   createGenerator: (descriptor) => {
-    const dependencies: Record<string, DependencyEntry> = {};
+    const dependencies: Record<string, NodeDependencyEntry> = {};
     return {
       getProviders: () => {
         return {
@@ -73,7 +73,7 @@ const NodeGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
       },
       build: (context) => {
         const extractDependencies = (
-          type: DependencyTypes
+          type: NodeDependencyType
         ): Record<string, string> => {
           return R.mergeAll(
             Object.values(dependencies)
@@ -95,6 +95,6 @@ const NodeGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
       },
     };
   },
-};
+});
 
 export default NodeGenerator;

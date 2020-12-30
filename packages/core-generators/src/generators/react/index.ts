@@ -1,19 +1,17 @@
-import { GeneratorConfig, GeneratorDescriptor } from '@baseplate/sync';
+import {
+  createGeneratorConfig,
+  createGeneratorDescriptor,
+  GeneratorDescriptor,
+} from '@baseplate/sync';
 
 type Descriptor = GeneratorDescriptor;
 
 const descriptorSchema = {};
 
-export interface ReactProvider {
-  // react provider
-}
+export type ReactProvider = {};
 
-interface ProviderMap {
-  react: ReactProvider;
-}
-
-const ReactGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
-  descriptorSchema,
+const ReactGenerator = createGeneratorConfig({
+  descriptorSchema: createGeneratorDescriptor<Descriptor>(descriptorSchema),
   createGenerator(descriptor) {
     return {
       getProviders: () => {
@@ -24,6 +22,6 @@ const ReactGenerator: GeneratorConfig<Descriptor, ProviderMap> = {
       },
     };
   },
-};
+});
 
 export default ReactGenerator;
