@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import ejs from 'ejs';
 import { createActionCreator } from '../core/action';
@@ -27,8 +27,11 @@ export const writeTemplateAction = createActionCreator<Options>(
     if (formatter && !noFormat) {
       contents = await formatter.format(contents, fullPath);
     }
+    const destinationPath = path.join(currentDirectory, destination);
 
-    await fs.writeFile(path.join(currentDirectory, destination), contents, {
+    await fs.ensureDir(path.dirname(destinationPath));
+
+    await fs.writeFile(destinationPath, contents, {
       encoding: 'utf-8',
     });
   }

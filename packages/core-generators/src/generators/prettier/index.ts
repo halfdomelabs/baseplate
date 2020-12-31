@@ -70,6 +70,7 @@ const PrettierGenerator = createGeneratorConfig({
                   console.log(
                     'Could not find prettier library. Run again once dependencies have been installed.'
                   );
+                  prettierLib = false;
                   return input;
                 }
                 prettierLib = module.require(prettierLibPath);

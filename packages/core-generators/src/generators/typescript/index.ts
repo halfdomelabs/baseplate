@@ -56,7 +56,6 @@ const TypescriptGenerator = createGeneratorConfig({
   },
   createGenerator(descriptor, { node }) {
     const config = createNonOverwriteableMap(DEFAULT_CONFIG, 'typescript');
-    config.merge({ version: '1.1' });
     return {
       getProviders: () => {
         return {
@@ -77,9 +76,8 @@ const TypescriptGenerator = createGeneratorConfig({
         };
       },
       build: (context) => {
-        node.addDevPackage('typescript', '^4.0.3');
-
-        const { compilerOptions, include, exclude } = config.value();
+        const { compilerOptions, include, exclude, version } = config.value();
+        node.addDevPackage('typescript', version);
 
         context.addAction(
           writeJsonAction({

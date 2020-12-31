@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import { createActionCreator } from '../core/action';
 
@@ -12,7 +12,10 @@ export const writeFileAction = createActionCreator<Options>(
   async (options, context) => {
     const { currentDirectory } = context;
     const { destination, contents } = options;
-    await fs.writeFile(path.join(currentDirectory, destination), contents, {
+    const destinationPath = path.join(currentDirectory, destination);
+
+    await fs.ensureDir(path.dirname(destinationPath));
+    await fs.writeFile(destinationPath, contents, {
       encoding: 'utf-8',
     });
   }

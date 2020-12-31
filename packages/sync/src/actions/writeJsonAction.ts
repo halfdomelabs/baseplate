@@ -1,4 +1,4 @@
-import { promises as fs } from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import { createActionCreator } from '../core/action';
 
@@ -20,6 +20,7 @@ export const writeJsonAction = createActionCreator<Options>(
     if (formatter && !noFormat) {
       text = await formatter.format(text, fullPath);
     }
+    await fs.ensureDir(path.dirname(fullPath));
     await fs.writeFile(fullPath, text, {
       encoding: 'utf-8',
     });

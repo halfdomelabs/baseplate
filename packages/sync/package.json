@@ -10,6 +10,7 @@
   "devDependencies": {
     "@baseplate/tools": "^0.0.1",
     "@types/ejs": "^3.0.5",
+    "@types/fs-extra": "^9.0.6",
     "@types/jest": "^25.1.2",
     "@types/toposort": "^2.0.3",
     "jest": "^25.1.0",
@@ -28,6 +29,7 @@
     "@types/ramda": "^0.27.34",
     "@types/yup": "^0.26.31",
     "ejs": "^3.1.5",
+    "fs-extra": "^9.0.1",
     "ramda": "^0.27.1",
     "toposort": "^2.0.2",
     "yup": "^0.28.1"
