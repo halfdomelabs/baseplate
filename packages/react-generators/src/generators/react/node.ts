@@ -1,4 +1,4 @@
-import { NodeProvider } from '../node';
+import { NodeProvider } from '../../../../core-generators/src/generators/node';
 
 export function setupReactNode(node: NodeProvider): void {
   node.addPackages({

@@ -1,4 +1,4 @@
-import { TypescriptProvider } from '../typescript';
+import { TypescriptProvider } from '../../../../core-generators/src/generators/typescript';
 
 export function setupReactTypescript(typescript: TypescriptProvider): void {
   typescript.setTypescriptVersion('4.0.3');

@@ -6,8 +6,8 @@ import {
   writeTemplateAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
-import { nodeProvider } from '../node';
-import { typescriptProvider } from '../typescript';
+import { nodeProvider, typescriptProvider } from '@baseplate/core-generators';
+
 import { setupReactNode } from './node';
 import { setupReactTypescript } from './typescript';
 

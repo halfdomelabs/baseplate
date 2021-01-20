@@ -4,7 +4,10 @@ import { GeneratorEngine, loadGenerators } from '@baseplate/sync';
 import { program } from 'commander';
 import R from 'ramda';
 
-const GENERATOR_MODULES = ['@baseplate/core-generators'];
+const GENERATOR_MODULES = [
+  '@baseplate/core-generators',
+  '@baseplate/react-generators',
+];
 
 async function generateForDirectory(directory: string): Promise<void> {
   const generators = await Promise.all(GENERATOR_MODULES.map(loadGenerators));
