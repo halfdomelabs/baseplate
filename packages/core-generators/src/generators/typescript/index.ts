@@ -6,18 +6,24 @@ import {
   writeJsonAction,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
+import { CodeBlockWriter, CompilerOptions, ts } from 'ts-morph';
 import { nodeProvider } from '../node';
+import { prettierProvider } from '../prettier';
 
 type Descriptor = GeneratorDescriptor;
 
 const descriptorSchema = {};
 
+// can use CompilerOptions from Typescript but it requires awkwardly serializing
+// CompilerOptions which would have to be done manually
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TypescriptCompilerOptions = any;
+export type TypescriptCompilerOptions = any;
 
 export interface TypescriptProvider {
   setTypescriptVersion(version: string): void;
-  setTypescriptCompilerOptions(options: TypescriptCompilerOptions): void;
+  setTypescriptCompilerOptions(json: TypescriptCompilerOptions): void;
+  getCompilerOptions(): CompilerOptions;
+  buildWriter(): CodeBlockWriter;
   addInclude(path: string): void;
   addExclude(path: string): void;
 }
@@ -26,7 +32,14 @@ export const typescriptProvider = createProviderType<TypescriptProvider>(
   'typescript'
 );
 
-const DEFAULT_CONFIG = {
+interface TypescriptConfig {
+  version: string;
+  compilerOptions: TypescriptCompilerOptions;
+  include: string[];
+  exclude: string[];
+}
+
+const DEFAULT_CONFIG: TypescriptConfig = {
   version: '^4.1.3',
   compilerOptions: {
     outDir: 'dist',
@@ -50,12 +63,16 @@ const TypescriptGenerator = createGeneratorConfig({
   descriptorSchema: createGeneratorDescriptor<Descriptor>(descriptorSchema),
   dependsOn: {
     node: nodeProvider,
+    prettier: prettierProvider,
   },
   exports: {
     typescript: typescriptProvider,
   },
-  createGenerator(descriptor, { node }) {
-    const config = createNonOverwriteableMap(DEFAULT_CONFIG, 'typescript');
+  createGenerator(descriptor, { node, prettier }) {
+    const config = createNonOverwriteableMap<TypescriptConfig>(
+      DEFAULT_CONFIG,
+      'typescript'
+    );
     return {
       getProviders: () => {
         return {
@@ -66,11 +83,32 @@ const TypescriptGenerator = createGeneratorConfig({
             setTypescriptCompilerOptions(options) {
               config.merge({ compilerOptions: options });
             },
+            getCompilerOptions() {
+              const result = ts.convertCompilerOptionsFromJson(
+                config.get('compilerOptions'),
+                '.'
+              );
+              if (result.errors.length) {
+                throw new Error(
+                  `Unable to extract compiler options: ${JSON.stringify(
+                    result.errors
+                  )}`
+                );
+              }
+              return result.options;
+            },
             addInclude(path) {
               config.mergeUnique({ include: [path] });
             },
             addExclude(path) {
               config.mergeUnique({ exclude: [path] });
+            },
+            buildWriter(): CodeBlockWriter {
+              const prettierConfig = prettier.getConfig();
+              return new CodeBlockWriter({
+                indentNumberOfSpaces: prettierConfig.tabWidth,
+                useSingleQuote: prettierConfig.singleQuote,
+              });
             },
           },
         };

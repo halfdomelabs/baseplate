@@ -3,3 +3,4 @@ export {
   typescriptProvider,
   TypescriptProvider,
 } from './generators/typescript';
+export * from './writers';

@@ -5,6 +5,7 @@ export interface NonOverwriteableMap<T extends object> {
   // merges in additional values and only keeps in unique ones
   mergeUnique(value: Partial<T>): void;
   value(): T;
+  get<K extends keyof T>(key: K): T[K] | undefined;
 }
 
 /**
@@ -36,6 +37,9 @@ export function createNonOverwriteableMap<T extends object>(
     },
     value() {
       return R.mergeLeft(values, defaults) as T;
+    },
+    get<K extends keyof T>(key: K): T[K] | undefined {
+      return values[key];
     },
   };
 }

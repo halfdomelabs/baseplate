@@ -4,6 +4,7 @@ import {
   createGeneratorConfig,
   createGeneratorDescriptor,
   writeJsonAction,
+  createProviderType,
 } from '@baseplate/sync';
 import path from 'path';
 import * as yup from 'yup';
@@ -11,12 +12,27 @@ import requireResolve from 'resolve';
 import { nodeProvider } from '../node';
 
 interface Descriptor extends GeneratorDescriptor {
+  tabWidth: number;
   singleQuote: boolean;
 }
 
 const descriptorSchema = {
+  tabWidth: yup.number().default(2),
   singleQuote: yup.boolean().default(true),
 };
+
+interface PrettierConfig {
+  tabWidth: number;
+  singleQuote: boolean;
+}
+
+export interface PrettierProvider {
+  getConfig(): PrettierConfig;
+}
+
+export const prettierProvider = createProviderType<PrettierProvider>(
+  'prettier'
+);
 
 const PARSEABLE_EXTENSIONS = ['.json', '.js', '.ts', '.jsx', '.tsx'];
 
@@ -42,6 +58,7 @@ const PrettierGenerator = createGeneratorConfig({
   dependsOn: { node: nodeProvider },
   exports: {
     formatter: formatterProvider,
+    prettier: prettierProvider,
   },
   createGenerator(descriptor, { node }) {
     const prettierConfig = {
@@ -79,6 +96,14 @@ const PrettierGenerator = createGeneratorConfig({
                 ...prettierConfig,
                 filepath: fullPath,
               });
+            },
+          },
+          prettier: {
+            getConfig: () => {
+              return {
+                tabWidth: descriptor.tabWidth,
+                singleQuote: descriptor.singleQuote,
+              };
             },
           },
         };

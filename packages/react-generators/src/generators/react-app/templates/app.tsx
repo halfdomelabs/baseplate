@@ -1,7 +1,10 @@
+// @ts-nocheck
 import React from 'react';
 
 const App: React.FC = () => {
-  return <div>Hello World for <%= title %>!</div>
+  COMPONENT_CODE;
+
+  return RENDER_WRAPPERS(RENDER_ROOT);
 };
 
 export default App;
