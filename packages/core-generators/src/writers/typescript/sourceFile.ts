@@ -164,6 +164,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     const entries = R.flatten([
       Object.values(this.codeBlocks),
       Object.values(this.codeWrappers),
+      Object.values(this.codeExpressions),
     ]);
     const importStrings = R.flatten(
       entries.map((e) => e.importText).filter(notEmpty)
