@@ -68,6 +68,10 @@ const NodeGenerator = createGeneratorConfig({
         peerProvider: true,
       },
     },
+    eslint: {
+      provider: 'eslint',
+      optional: true,
+    },
   },
   exports: {
     node: nodeProvider,
@@ -119,13 +123,12 @@ const NodeGenerator = createGeneratorConfig({
       build: (context) => {
         const extractDependencies = (
           type: NodeDependencyType
-        ): Record<string, string> => {
-          return R.mergeAll(
+        ): Record<string, string> =>
+          R.mergeAll(
             Object.values(dependencies)
               .filter((d) => d.type === type)
               .map((d) => ({ [d.name]: d.version }))
           );
-        };
         const packageJson = {
           name: descriptor.name,
           description: descriptor.description,
