@@ -24,6 +24,7 @@
   "dependencies": {
     "@baseplate/core-generators": "^0.0.1",
     "@baseplate/react-generators": "^0.0.1",
+    "@baseplate/express-generators": "^0.0.1",
     "@baseplate/sync": "^0.0.1",
     "commander": "^6.2.1",
     "ramda": "^0.27.1"

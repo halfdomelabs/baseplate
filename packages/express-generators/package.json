@@ -1,0 +1,37 @@
+{
+  "name": "@baseplate/express-generators",
+  "version": "0.0.1",
+  "description": "Express Apollo Generators for Baseplate",
+  "main": "lib/index.js",
+  "repository": "https://github.com/kingston/baseplate/tree/master/packages/express-generators",
+  "author": "Kingston Tam",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@baseplate/tools": "^0.0.1",
+    "@types/ramda": "^0.27.34",
+    "@types/yup": "^0.26.31",
+    "concurrently": "^5.3.0",
+    "del": "^6.0.0",
+    "typescript": "^4.1.5"
+  },
+  "scripts": {
+    "build": "concurrently yarn:build:*",
+    "build:tsc": "tsc",
+    "build:templates": "gulp buildTemplates",
+    "watch": "concurrently yarn:watch:*",
+    "watch:tsc": "tsc -w",
+    "watch:templates": "gulp watchTemplates",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src"
+  },
+  "dependencies": {
+    "@baseplate/core-generators": "^0.0.1",
+    "@baseplate/sync": "^0.0.1",
+    "@types/ramda": "^0.27.34",
+    "@types/resolve": "^1.17.1",
+    "gulp": "^4.0.2",
+    "ramda": "^0.27.1",
+    "resolve": "^1.19.0",
+    "yup": "^0.28.1"
+  }
+}

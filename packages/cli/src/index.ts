@@ -7,6 +7,7 @@ import R from 'ramda';
 const GENERATOR_MODULES = [
   '@baseplate/core-generators',
   '@baseplate/react-generators',
+  '@baseplate/express-generators',
 ];
 
 async function generateForDirectory(directory: string): Promise<void> {
