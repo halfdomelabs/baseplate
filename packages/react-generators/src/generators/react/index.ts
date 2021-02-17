@@ -10,6 +10,7 @@ import {
 import * as yup from 'yup';
 import {
   createTypescriptTemplateConfig,
+  nodeGitIgnoreProvider,
   nodeProvider,
   typescriptProvider,
   TypescriptSourceFile,
@@ -42,6 +43,7 @@ const ReactGenerator = createGeneratorConfig({
   dependsOn: {
     node: nodeProvider,
     typescript: typescriptProvider,
+    nodeGitIgnore: nodeGitIgnoreProvider,
   },
   exports: {
     react: reactProvider,
@@ -69,10 +71,23 @@ const ReactGenerator = createGeneratorConfig({
       },
     },
   },
-  createGenerator(descriptor, { node, typescript }) {
+  createGenerator(descriptor, { node, typescript, nodeGitIgnore }) {
     const indexFile = new TypescriptSourceFile(INDEX_FILE_CONFIG);
     setupReactNode(node);
     setupReactTypescript(typescript);
+
+    nodeGitIgnore.addExclusions([
+      '# production',
+      '/build',
+      '',
+      '# misc',
+      '.DS_Store',
+      '.env.local',
+      '.env.development.local',
+      '.env.test.local',
+      '.env.production.local',
+      '.env',
+    ]);
 
     return {
       getProviders: () => {
@@ -97,6 +112,7 @@ const ReactGenerator = createGeneratorConfig({
           'src/react-app-env.d.ts',
           'src/reportWebVitals.ts',
           'src/setupTests.ts',
+          'README.md',
         ];
 
         staticFiles.forEach((file) =>

@@ -61,6 +61,13 @@ const NodeGenerator = createGeneratorConfig({
       provider: 'typescript',
       optional: true,
     },
+    gitIgnore: {
+      provider: 'node-git-ignore',
+      defaultDescriptor: {
+        generator: '@baseplate/core/node-git-ignore',
+        peerProvider: true,
+      },
+    },
   },
   exports: {
     node: nodeProvider,
