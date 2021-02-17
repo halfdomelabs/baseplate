@@ -167,7 +167,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       Object.values(this.codeExpressions),
     ]);
     const importStrings = R.flatten(
-      entries.map((e) => e.importText).filter(notEmpty)
+      entries.map((e) => e?.importText).filter(notEmpty)
     ).join('\n');
 
     file.insertText(0, importStrings);
@@ -177,7 +177,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     // collate all entry import declarations and write it out
     const allImports = [
       ...fileImports,
-      ...R.flatten(entries.map((e) => e.imports).filter(notEmpty)),
+      ...R.flatten(entries.map((e) => e?.imports).filter(notEmpty)),
     ];
 
     file.getImportDeclarations().forEach((i) => i.remove());
