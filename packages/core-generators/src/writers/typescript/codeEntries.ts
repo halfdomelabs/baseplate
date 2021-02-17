@@ -98,4 +98,17 @@ export const TypescriptCodeUtils = {
       importText: entry.importText,
     };
   },
+  mergeExpressionsAsObject(
+    obj: Record<string, TypescriptCodeExpression>
+  ): TypescriptCodeExpression {
+    const keys = Object.keys(obj);
+    const expressions = Object.values(obj);
+    const mergedExpression = keys
+      .map((key) => `${key}: ${obj[key].expression},`)
+      .join('\n');
+    return {
+      expression: `{\n${mergedExpression}\n}`,
+      ...mergeCodeEntries(expressions),
+    };
+  },
 };

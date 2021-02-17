@@ -43,6 +43,15 @@ const ExpressGenerator = createGeneratorConfig({
   exports: {
     express: expressProvider,
   },
+  childGenerators: {
+    config: {
+      provider: 'express-config',
+      defaultDescriptor: {
+        generator: '@baseplate/express/config',
+        peerProvider: true,
+      },
+    },
+  },
   createGenerator(descriptor, { node }) {
     const serverFile = new TypescriptSourceFile(SERVER_FILE_CONFIG);
 

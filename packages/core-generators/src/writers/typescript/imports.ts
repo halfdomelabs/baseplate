@@ -24,11 +24,11 @@ interface ImportEntry {
 
 function resolveModule(moduleSpecifier: string, directory: string): string {
   // if not relative import, just return directly
-  if (!moduleSpecifier.startsWith('@')) {
+  if (!moduleSpecifier.startsWith('@/')) {
     return moduleSpecifier;
   }
   // figure out relative directory
-  return path.relative(directory, moduleSpecifier.substring(1));
+  return `./${path.relative(directory, moduleSpecifier.substring(2))}`;
 }
 
 function importDeclarationToImportEntry(
