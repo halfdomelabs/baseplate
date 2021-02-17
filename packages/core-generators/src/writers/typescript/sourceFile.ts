@@ -6,10 +6,12 @@ import {
   Project,
   SyntaxKind,
 } from 'ts-morph';
+import path from 'path';
+import { Action, writeFormattedAction } from '@baseplate/sync';
 import { notEmpty } from '../../utils/array';
 import {
-  mergeTypescriptCodeBlocks,
-  mergeTypescriptCodeWrappers,
+  renderTypescriptCodeBlocks,
+  renderTypescriptCodeWrappers,
   TypescriptCodeBlock,
   TypescriptCodeWrapper,
   TypescriptCodeWrapperRenderer,
@@ -123,22 +125,32 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
 
   render(
     template: string,
-    fileDirectory: string,
+    destination: string,
     identifierReplacements?: Record<string, string>
   ): string {
     const project = new Project();
 
     // stripe any ts-nocheck from header
     const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
-    const file = project.createSourceFile('temp.ts', strippedTemplate);
+    const file = project.createSourceFile(
+      path.basename(destination),
+      strippedTemplate
+    );
 
-    const fileImports = getImportDeclarationEntries(file);
-
-    // collate all entry import declarations and write it out
+    // insert manual imports
     const entries = R.flatten([
       Object.values(this.codeBlocks),
       Object.values(this.codeWrappers),
     ]);
+    const importStrings = R.flatten(
+      entries.map((e) => e.importText).filter(notEmpty)
+    ).join('\n');
+
+    file.insertText(0, importStrings);
+
+    const fileImports = getImportDeclarationEntries(file);
+
+    // collate all entry import declarations and write it out
     const allImports = [
       ...fileImports,
       ...R.flatten(entries.map((e) => e.imports).filter(notEmpty)),
@@ -147,7 +159,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     file.getImportDeclarations().forEach((i) => i.remove());
 
     file.insertText(0, (writer) => {
-      writeImportDeclarations(writer, allImports, fileDirectory);
+      writeImportDeclarations(writer, allImports, path.dirname(destination));
       writer.writeLine('');
     });
 
@@ -171,7 +183,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
             const mergedBlock =
               configEntry.default && !blocks.length
                 ? configEntry.default
-                : mergeTypescriptCodeBlocks(this.codeBlocks[identifier]);
+                : renderTypescriptCodeBlocks(this.codeBlocks[identifier]);
             blockReplacements.push({
               identifier: node as Identifier,
               contents: mergedBlock,
@@ -199,13 +211,12 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       if (node.getKind() === SyntaxKind.CallExpression) {
         const callExpression = node as CallExpression;
         const name = callExpression.getExpression().getText();
-        console.log(name);
         if (name && this.config[name]) {
           const configEntry = this.config[name];
           if (configEntry.type === 'code-wrapper') {
             wrapperReplacements.push({
               callExpression,
-              render: mergeTypescriptCodeWrappers(this.codeWrappers[name]),
+              render: renderTypescriptCodeWrappers(this.codeWrappers[name]),
             });
           }
         }
@@ -218,5 +229,16 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     });
 
     return file.getFullText();
+  }
+
+  renderToAction(
+    template: string,
+    destination: string,
+    identifierReplacements?: Record<string, string>
+  ): Action {
+    return writeFormattedAction({
+      destination,
+      contents: this.render(template, destination, identifierReplacements),
+    });
   }
 }

@@ -29,7 +29,7 @@
 			"}",
 			"",
 			"const descriptorSchema = {",
-			"  placeholder: yup.string();",
+			"  placeholder: yup.string()",
 			"};",
 			"",
 			"export type ${1}Provider = {};",

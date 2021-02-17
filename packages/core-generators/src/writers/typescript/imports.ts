@@ -95,6 +95,7 @@ export function writeImportDeclaration(
   if (hasNamedImports) {
     writer.conditionalWrite(!!defaultImport, ',');
     // sort named imports
+    writer.write(' ');
     writer.inlineBlock(() => {
       namedImports.forEach((namedImport, i) => {
         writer.conditionalWrite(i !== 0, ',');

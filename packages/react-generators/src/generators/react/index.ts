@@ -5,9 +5,15 @@ import {
   copyFileAction,
   writeTemplateAction,
   createProviderType,
+  readTemplate,
 } from '@baseplate/sync';
 import * as yup from 'yup';
-import { nodeProvider, typescriptProvider } from '@baseplate/core-generators';
+import {
+  createTypescriptTemplateConfig,
+  nodeProvider,
+  typescriptProvider,
+  TypescriptSourceFile,
+} from '@baseplate/core-generators';
 
 import { setupReactNode } from './node';
 import { setupReactTypescript } from './typescript';
@@ -20,8 +26,13 @@ const descriptorSchema = {
   title: yup.string().default('React App'),
 };
 
+const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
+  HEADER: { type: 'code-block' },
+});
+
 export type ReactProvider = {
   getSrcFolder(): string;
+  getIndexFile(): TypescriptSourceFile<typeof INDEX_FILE_CONFIG>;
 };
 
 export const reactProvider = createProviderType<ReactProvider>('react');
@@ -43,8 +54,23 @@ const ReactGenerator = createGeneratorConfig({
         peerProvider: true,
       },
     },
+    router: {
+      provider: 'react-router',
+      defaultDescriptor: {
+        generator: '@baseplate/react/react-router',
+        peerProvider: true,
+      },
+    },
+    components: {
+      provider: 'react-components',
+      defaultDescriptor: {
+        generator: '@baseplate/react/react-components',
+        peerProvider: true,
+      },
+    },
   },
   createGenerator(descriptor, { node, typescript }) {
+    const indexFile = new TypescriptSourceFile(INDEX_FILE_CONFIG);
     setupReactNode(node);
     setupReactTypescript(typescript);
 
@@ -55,18 +81,19 @@ const ReactGenerator = createGeneratorConfig({
             getSrcFolder() {
               return 'src';
             },
+            getIndexFile() {
+              return indexFile;
+            },
           },
         };
       },
-      build: (context) => {
+      build: async (context) => {
         const staticFiles = [
           'public/favicon.ico',
           'public/logo192.png',
           'public/logo512.png',
           'public/manifest.json',
           'public/robots.txt',
-          'src/index.css',
-          'src/index.tsx',
           'src/react-app-env.d.ts',
           'src/reportWebVitals.ts',
           'src/setupTests.ts',
@@ -80,6 +107,9 @@ const ReactGenerator = createGeneratorConfig({
             })
           )
         );
+
+        const template = await readTemplate(__dirname, 'src/index.tsx');
+        context.addAction(indexFile.renderToAction(template, 'src/index.tsx'));
 
         context.addAction(
           writeTemplateAction({

@@ -59,15 +59,14 @@ const ReactAppGenerator = createGeneratorConfig({
       },
       build: async (context) => {
         const srcFolder = react.getSrcFolder();
-        const appFolder = `${srcFolder}/app`;
-        const destination = `${appFolder}/App.tsx`;
+        const destination = `${srcFolder}/app/App.tsx`;
 
         const template = await readTemplate(__dirname, 'app.tsx');
 
         context.addAction(
           writeFileAction({
             destination,
-            contents: appFile.render(template, appFolder),
+            contents: appFile.render(template, destination),
           })
         );
       },
