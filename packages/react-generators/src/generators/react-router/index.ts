@@ -1,8 +1,7 @@
 import {
-  mergeTypescriptCodeBlocks,
   nodeProvider,
-  TypescriptCodeBlock,
-  wrapTypescriptCodeBlock,
+  TypescriptCodeExpression,
+  TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import {
   createGeneratorConfig,
@@ -23,8 +22,8 @@ const descriptorSchema = {
 };
 
 export interface ReactRouterProvider {
-  setNotFoundPageComponent(component: TypescriptCodeBlock): void;
-  addRoute(block: TypescriptCodeBlock): void;
+  setNotFoundPageComponent(component: TypescriptCodeExpression): void;
+  addRoute(block: TypescriptCodeExpression): void;
   setHomePage(homepage: string): void;
 }
 
@@ -46,64 +45,53 @@ const ReactRouterGenerator = createGeneratorConfig({
   createGenerator(descriptor, { node, reactApp }) {
     node.addPackage('react-router-dom', '^5.2.0');
     node.addDevPackage('@types/react-router-dom', '^5.1.6');
-    const routes: TypescriptCodeBlock[] = [];
+    const routes: TypescriptCodeExpression[] = [];
     const config = createNonOverwriteableMap<{
-      notFoundPageComponent?: TypescriptCodeBlock;
+      notFoundPageComponent?: TypescriptCodeExpression;
       homepage?: string;
     }>({}, 'react-router');
     return {
-      getProviders: () => {
-        return {
-          reactRouter: {
-            setNotFoundPageComponent(component) {
-              config.merge({ notFoundPageComponent: component });
-            },
-            addRoute(block) {
-              routes.push(block);
-            },
-            setHomePage(homepage) {
-              config.merge({ homepage });
-            },
+      getProviders: () => ({
+        reactRouter: {
+          setNotFoundPageComponent(component) {
+            config.merge({ notFoundPageComponent: component });
           },
-        };
-      },
+          addRoute(block) {
+            routes.push(block);
+          },
+          setHomePage(homepage) {
+            config.merge({ homepage });
+          },
+        },
+      }),
       build: () => {
-        const codeBlocks = [...routes];
+        const renderedRoutes = [...routes];
         const { homepage, notFoundPageComponent } = config.value();
         if (homepage) {
-          codeBlocks.push({
-            code: `<Redirect path="/" exact to="${homepage}" />`,
+          renderedRoutes.push({
+            expression: `<Redirect path="/" exact to="${homepage}" />`,
             importText: ["import {Redirect} from 'react-router-dom'"],
           });
         }
 
         if (notFoundPageComponent) {
-          codeBlocks.push(
-            wrapTypescriptCodeBlock(
-              {
-                render: (contents) => `<Route component={${contents}} />`,
-                importText: ["import {Route} from 'react-router-dom'"],
-              },
-              notFoundPageComponent
-            )
+          renderedRoutes.push(
+            TypescriptCodeUtils.wrapExpression(notFoundPageComponent, {
+              wrap: (contents) => `<Route component={${contents}} />`,
+              importText: ["import {Route} from 'react-router-dom'"],
+            })
           );
         }
 
-        const codeBlock: TypescriptCodeBlock = mergeTypescriptCodeBlocks(
-          codeBlocks
-        );
-        reactApp.getSourceFile().addCodeBlock(
+        const expression = TypescriptCodeUtils.mergeExpressions(renderedRoutes);
+        reactApp.getSourceFile().addCodeExpression(
           'RENDER_ROOT',
-          wrapTypescriptCodeBlock(
-            {
-              render: (contents) =>
-                `<Router><Switch>${contents}</Switch></Router>`,
-              importText: [
-                "import {BrowserRouter as Router,Switch} from 'react-router-dom'",
-              ],
-            },
-            codeBlock
-          )
+          TypescriptCodeUtils.wrapExpression(expression, {
+            wrap: (contents) => `<Router><Switch>${contents}</Switch></Router>`,
+            importText: [
+              "import {BrowserRouter as Router,Switch} from 'react-router-dom'",
+            ],
+          })
         );
       },
     };

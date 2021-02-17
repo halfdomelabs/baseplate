@@ -50,11 +50,9 @@ const ReactComponentsGenerator = createGeneratorConfig({
       '@types/classnames': '^2.2.11',
     });
     return {
-      getProviders: () => {
-        return {
-          reactComponents: {},
-        };
-      },
+      getProviders: () => ({
+        reactComponents: {},
+      }),
       build: (context) => {
         context.addAction(
           copyFileAction({
@@ -78,7 +76,7 @@ const ReactComponentsGenerator = createGeneratorConfig({
           code: "import './index.scss'",
         });
         reactRouter.setNotFoundPageComponent({
-          code: 'NotFoundPage',
+          expression: 'NotFoundPage',
           importText: ["import NotFoundPage from 'components/NotFoundPage'"],
         });
       },

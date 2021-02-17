@@ -1,41 +1,39 @@
-import R, { T } from 'ramda';
-import {
-  CallExpression,
-  FunctionDeclaration,
-  Identifier,
-  Project,
-  SyntaxKind,
-} from 'ts-morph';
+import R from 'ramda';
+import { CallExpression, Identifier, Project, SyntaxKind } from 'ts-morph';
 import path from 'path';
 import { Action, writeFormattedAction } from '@baseplate/sync';
 import { notEmpty } from '../../utils/array';
 import {
-  renderTypescriptCodeBlocks,
-  renderTypescriptCodeWrappers,
+  TypescriptCodeUtils,
   TypescriptCodeBlock,
+  TypescriptCodeExpression,
   TypescriptCodeWrapper,
-  TypescriptCodeWrapperRenderer,
+  TypescriptCodeWrapperFunction,
 } from './codeEntries';
 import {
   getImportDeclarationEntries,
   writeImportDeclarations,
 } from './imports';
 
-type TypescriptCodeIdentifierConfig = {};
-
-interface TypescriptCodeBlockConfig extends TypescriptCodeIdentifierConfig {
+interface TypescriptCodeBlockConfig {
   type: 'code-block';
   default?: string;
   single?: boolean;
 }
 
-interface TypescriptCodeWrapperConfig extends TypescriptCodeIdentifierConfig {
+interface TypescriptCodeExpressionConfig {
+  type: 'code-expression';
+  default?: string;
+}
+
+interface TypescriptCodeWrapperConfig {
   type: 'code-wrapper';
 }
 
 type TypescriptCodeConfig =
   | TypescriptCodeBlockConfig
-  | TypescriptCodeWrapperConfig;
+  | TypescriptCodeWrapperConfig
+  | TypescriptCodeExpressionConfig;
 
 type TypescriptTemplateConfig<T = any> = {
   [K in keyof T]: TypescriptCodeConfig;
@@ -68,6 +66,8 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
 
   protected codeWrappers: Record<string, TypescriptCodeWrapper[]>;
 
+  protected codeExpressions: Record<string, TypescriptCodeExpression | null>;
+
   constructor(config: T) {
     this.config = config;
     const keys = Object.keys(config);
@@ -80,6 +80,11 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       keys
         .filter((k) => config[k].type === 'code-wrapper')
         .map((k) => [k, [] as TypescriptCodeWrapper[]])
+    );
+    this.codeExpressions = R.fromPairs(
+      keys
+        .filter((k) => config[k].type === 'code-expression')
+        .map((k) => [k, null])
     );
   }
 
@@ -107,6 +112,19 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     this.codeWrappers[name].push(entry);
   }
 
+  addCodeExpression<K extends keyof T & string>(
+    name: K,
+    entry: T[K] extends TypescriptCodeExpressionConfig
+      ? TypescriptCodeExpression
+      : never
+  ): void {
+    this.checkNotGenerated();
+    if (this.codeExpressions[name]) {
+      throw new Error(`Cannot overwrite code expression ${name}`);
+    }
+    this.codeExpressions[name] = entry;
+  }
+
   addCodeEntries(entries: Partial<InferCodeEntries<T>>): void {
     this.checkNotGenerated();
     Object.keys(entries).forEach((key) => {
@@ -116,6 +134,9 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
           break;
         case 'code-wrapper':
           this.addCodeWrapper(key, (entries[key] as unknown) as any);
+          break;
+        case 'code-expression':
+          this.addCodeExpression(key, (entries[key] as unknown) as any);
           break;
         default:
           throw new Error(`Unknown config type ${this.config[key].type}`);
@@ -128,6 +149,8 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     destination: string,
     identifierReplacements?: Record<string, string>
   ): string {
+    this.hasCodeGenerated = true;
+
     const project = new Project();
 
     // stripe any ts-nocheck from header
@@ -168,6 +191,10 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       identifier: Identifier;
       contents: string;
     }[] = [];
+    const expressionReplacements: {
+      identifier: Identifier;
+      contents: string;
+    }[] = [];
     file.forEachDescendant((node) => {
       if (node.getKind() === SyntaxKind.Identifier) {
         const identifier = node.getText();
@@ -183,10 +210,23 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
             const mergedBlock =
               configEntry.default && !blocks.length
                 ? configEntry.default
-                : renderTypescriptCodeBlocks(this.codeBlocks[identifier]);
+                : TypescriptCodeUtils.mergeBlocks(
+                    this.codeBlocks[identifier],
+                    '\n\n'
+                  ).code;
             blockReplacements.push({
               identifier: node as Identifier,
               contents: mergedBlock,
+            });
+          } else if (configEntry.type === 'code-expression') {
+            const providedExpression = this.codeExpressions[identifier];
+            const expression =
+              !providedExpression && configEntry.default
+                ? configEntry.default
+                : providedExpression?.expression;
+            expressionReplacements.push({
+              identifier: node as Identifier,
+              contents: expression || '',
             });
           }
         }
@@ -194,17 +234,18 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     });
 
     blockReplacements.forEach(({ identifier, contents }) => {
-      if (identifier.getParentIfKind(SyntaxKind.ExpressionStatement)) {
-        // if simple block, replace whole line
-        identifier.getParent().replaceWithText(contents);
-      } else {
-        identifier.replaceWithText(contents);
-      }
+      identifier
+        .getParentIfKindOrThrow(SyntaxKind.ExpressionStatement)
+        .replaceWithText(contents);
+    });
+
+    expressionReplacements.forEach(({ identifier, contents }) => {
+      identifier.replaceWithText(contents);
     });
 
     const wrapperReplacements: {
       callExpression: CallExpression;
-      render: TypescriptCodeWrapperRenderer;
+      wrap: TypescriptCodeWrapperFunction;
     }[] = [];
 
     file.forEachDescendant((node) => {
@@ -216,15 +257,16 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
           if (configEntry.type === 'code-wrapper') {
             wrapperReplacements.push({
               callExpression,
-              render: renderTypescriptCodeWrappers(this.codeWrappers[name]),
+              wrap: TypescriptCodeUtils.mergeWrappers(this.codeWrappers[name])
+                .wrap,
             });
           }
         }
       }
     });
-    wrapperReplacements.forEach(({ callExpression, render }) => {
+    wrapperReplacements.forEach(({ callExpression, wrap }) => {
       callExpression.replaceWithText(
-        render(callExpression.getArguments()[0].getFullText() || '')
+        wrap(callExpression.getArguments()[0].getFullText() || '')
       );
     });
 

@@ -25,7 +25,7 @@ const descriptorSchema = {
 const APP_FILE_CONFIG = createTypescriptTemplateConfig({
   COMPONENT_CODE: { type: 'code-block' },
   RENDER_WRAPPERS: { type: 'code-wrapper' },
-  RENDER_ROOT: { type: 'code-block', single: true, default: 'null' },
+  RENDER_ROOT: { type: 'code-expression', default: 'null' },
 });
 
 export type ReactAppProvider = {
@@ -47,16 +47,14 @@ const ReactAppGenerator = createGeneratorConfig({
   exports: {
     reactApp: reactAppProvider,
   },
-  createGenerator(descriptor, { typescript, react }) {
+  createGenerator(descriptor, { react }) {
     const appFile = new TypescriptSourceFile(APP_FILE_CONFIG);
     return {
-      getProviders: () => {
-        return {
-          reactApp: {
-            getSourceFile: () => appFile,
-          },
-        };
-      },
+      getProviders: () => ({
+        reactApp: {
+          getSourceFile: () => appFile,
+        },
+      }),
       build: async (context) => {
         const srcFolder = react.getSrcFolder();
         const destination = `${srcFolder}/app/App.tsx`;
