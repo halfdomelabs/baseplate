@@ -63,6 +63,9 @@ const ExpressGenerator = createGeneratorConfig({
     node.addDevPackages({
       'ts-node-dev': '^1.0.0',
       'tsconfig-paths': '^3.9.0',
+      '@types/node': '^14.14.11',
+      '@types/cors': '^2.8.8',
+      '@types/express': '^4.17.11',
     });
     node.addScripts({
       build: 'tsc',
