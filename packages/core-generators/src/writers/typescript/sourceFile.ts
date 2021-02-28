@@ -1,5 +1,11 @@
 import R from 'ramda';
-import { CallExpression, Identifier, Project, SyntaxKind } from 'ts-morph';
+import {
+  CallExpression,
+  ExportDeclaration,
+  Identifier,
+  Project,
+  SyntaxKind,
+} from 'ts-morph';
 import path from 'path';
 import { Action, writeFormattedAction } from '@baseplate/sync';
 import { notEmpty } from '../../utils/array';
@@ -12,6 +18,7 @@ import {
 } from './codeEntries';
 import {
   getImportDeclarationEntries,
+  resolveModule,
   writeImportDeclarations,
 } from './imports';
 
@@ -279,6 +286,22 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       callExpression.replaceWithText(
         wrap(callExpression.getArguments()[0].getFullText() || '')
       );
+    });
+
+    // process all export from declartions
+    file.forEachDescendant((node) => {
+      if (node.getKind() === SyntaxKind.ExportDeclaration) {
+        const exportDeclaration = node as ExportDeclaration;
+        const moduleSpecifier = exportDeclaration.getModuleSpecifier();
+        if (moduleSpecifier) {
+          exportDeclaration.setModuleSpecifier(
+            resolveModule(
+              moduleSpecifier.getLiteralValue(),
+              path.dirname(destination)
+            )
+          );
+        }
+      }
     });
 
     return file.getFullText();

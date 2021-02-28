@@ -69,6 +69,9 @@ const ExpressGenerator = createGeneratorConfig({
       provider: 'express-feature',
       multiple: true,
     },
+    providers: {
+      multiple: true,
+    },
   },
   createGenerator(descriptor, { node }) {
     const serverFile = new TypescriptSourceFile(SERVER_FILE_CONFIG);

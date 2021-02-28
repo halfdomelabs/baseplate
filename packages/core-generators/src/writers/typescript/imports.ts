@@ -22,13 +22,18 @@ interface ImportEntry {
   moduleSpecifier: string;
 }
 
-function resolveModule(moduleSpecifier: string, directory: string): string {
+export function resolveModule(
+  moduleSpecifier: string,
+  directory: string
+): string {
   // if not relative import, just return directly
   if (!moduleSpecifier.startsWith('@/')) {
     return moduleSpecifier;
   }
   // figure out relative directory
-  return `./${path.relative(directory, moduleSpecifier.substring(2))}`;
+  const relativePath = path.relative(directory, moduleSpecifier.substring(2));
+
+  return relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
 }
 
 function importDeclarationToImportEntry(

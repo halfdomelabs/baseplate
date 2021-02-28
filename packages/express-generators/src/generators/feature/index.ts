@@ -53,7 +53,7 @@ const ExpressFeatureGenerator = createGeneratorConfig({
 
     app.getFeatureFile().addCodeExpression('APP_FEATURES', {
       expression: featureVariable,
-      importText: [`import {${featureVariable}} from './${featureFolderName}'`],
+      importText: [`import ${featureVariable} from './${featureFolderName}'`],
     });
 
     const featureEntries: Record<string, TypescriptCodeExpression[]> = {};

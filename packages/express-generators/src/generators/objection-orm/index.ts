@@ -1,0 +1,97 @@
+import {
+  nodeGitIgnoreProvider,
+  nodeProvider,
+  TypescriptSourceFile,
+} from '@baseplate/core-generators';
+import {
+  createGeneratorConfig,
+  createGeneratorDescriptor,
+  GeneratorDescriptor,
+  createProviderType,
+  copyDirectoryAction,
+} from '@baseplate/sync';
+import * as yup from 'yup';
+import { expressProvider } from '../express';
+
+interface ObjectionOrmDescriptor extends GeneratorDescriptor {
+  placeholder: string;
+}
+
+const descriptorSchema = {
+  placeholder: yup.string(),
+};
+
+export type ObjectionOrmProvider = {
+  addModelFile(file: string): void;
+};
+
+export const objectionOrmProvider = createProviderType<ObjectionOrmProvider>(
+  'objection-orm'
+);
+
+const ObjectionOrmGenerator = createGeneratorConfig({
+  descriptorSchema: createGeneratorDescriptor<ObjectionOrmDescriptor>(
+    descriptorSchema
+  ),
+  dependsOn: {
+    node: nodeProvider,
+    nodeGitIgnore: nodeGitIgnoreProvider,
+    express: expressProvider,
+  },
+  exports: {
+    objectionOrm: objectionOrmProvider,
+  },
+  createGenerator(descriptor, { node, nodeGitIgnore, express }) {
+    const modelFiles: string[] = [];
+
+    node.addPackages({
+      knex: '^0.21.15',
+      objection: '^2.2.4',
+      ramda: '^0.27.1',
+      sqlite3: '^5.0.0',
+    });
+    nodeGitIgnore.addExclusions(['/db']);
+
+    express.getServerFile().addCodeBlock('SERVER_MIDDLEWARE', {
+      code: 'initializeObjection();',
+      importText: [
+        "import {initializeObjection} from '@/src/services/db/objection'",
+      ],
+    });
+
+    return {
+      getProviders: () => ({
+        objectionOrm: {
+          addModelFile(file) {
+            modelFiles.push(file);
+          },
+        },
+      }),
+      build: (context) => {
+        const modelsFile = new TypescriptSourceFile({});
+        const modelsFileContents = modelFiles
+          .map((file) => `export * from '@/${file}'`)
+          .join('\n');
+        context.addAction(
+          modelsFile.renderToAction(modelsFileContents, 'src/models.ts')
+        );
+
+        context.addAction(
+          copyDirectoryAction({
+            source: 'services',
+            destination: 'src/services',
+          })
+        );
+
+        context.addAction(
+          copyDirectoryAction({
+            source: 'migrations',
+            destination: 'migrations',
+          })
+        );
+      },
+    };
+  },
+});
+
+export default ObjectionOrmGenerator;

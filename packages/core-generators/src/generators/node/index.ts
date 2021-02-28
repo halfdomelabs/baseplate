@@ -7,6 +7,8 @@ import {
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import R from 'ramda';
+import semver from 'semver';
+import { NewLineKind } from 'ts-morph';
 import { writePackageJson } from './actions/writePackageJson';
 
 interface Descriptor extends GeneratorDescriptor {
@@ -80,19 +82,46 @@ const NodeGenerator = createGeneratorConfig({
     const dependencies: Record<string, NodeDependencyEntry> = {};
     const extraProperties = createNonOverwriteableMap({}, 'node');
     const scripts = createNonOverwriteableMap({}, 'node-scripts');
+
+    function mergeDependency(
+      name: string,
+      version: string,
+      type: 'normal' | 'dev'
+    ): void {
+      const existingDependency = dependencies[name];
+
+      if (!existingDependency) {
+        dependencies[name] = { name, version, type };
+      } else {
+        const oldVersion = existingDependency.version;
+        let newVersion: string | null = null;
+        if (semver.subset(oldVersion, version)) {
+          newVersion = oldVersion;
+        } else if (semver.subset(version, oldVersion)) {
+          newVersion = version;
+        } else {
+          throw new Error(
+            `Could not add different versions for dependency: ${name} (${oldVersion}, ${version})`
+          );
+        }
+        dependencies[name] = {
+          name,
+          version: newVersion,
+          type:
+            existingDependency.type === 'normal' || type === 'normal'
+              ? 'normal'
+              : 'dev',
+        };
+      }
+    }
+
     return {
       getProviders: () => {
         function addPackage(name: string, version: string): void {
-          if (dependencies[name]) {
-            throw new Error(`cannot re-add package ${name}`);
-          }
-          dependencies[name] = { name, version, type: 'normal' };
+          mergeDependency(name, version, 'normal');
         }
         function addDevPackage(name: string, version: string): void {
-          if (dependencies[name]) {
-            throw new Error(`cannot re-add package ${name}`);
-          }
-          dependencies[name] = { name, version, type: 'dev' };
+          mergeDependency(name, version, 'dev');
         }
         return {
           node: {
