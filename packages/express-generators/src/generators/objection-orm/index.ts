@@ -49,6 +49,7 @@ const ObjectionOrmGenerator = createGeneratorConfig({
       objection: '^2.2.4',
       ramda: '^0.27.1',
       sqlite3: '^5.0.0',
+      pg: '^8.5.1',
     });
     nodeGitIgnore.addExclusions(['/db']);
 

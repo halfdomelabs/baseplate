@@ -10,7 +10,6 @@ import {
   GeneratorDescriptor,
   createProviderType,
   readTemplate,
-  copyFileAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 
@@ -24,7 +23,12 @@ const descriptorSchema = {
 
 const SERVER_FILE_CONFIG = createTypescriptTemplateConfig({
   SERVER_MIDDLEWARE: { type: 'code-block' },
-  PORT: { type: 'code-expression', default: 'process.env.PORT || 3000' },
+  PORT: { type: 'code-expression', default: 'process.env.PORT || 4000' },
+  START_MESSAGE: {
+    type: 'code-expression',
+    default: '`Server listening and ready at http://localhost:${port}`',
+  },
+  POST_START: { type: 'code-block' },
 });
 
 const FEATURE_FILE_CONFIG = createTypescriptTemplateConfig({

@@ -8,7 +8,7 @@ function startServer(): void {
   const app = express();
 
   app.use(cors());
-  app.use(helmet());
+  app.use(helmet({ contentSecurityPolicy: { reportOnly: true } }));
 
   SERVER_MIDDLEWARE;
 
@@ -16,8 +16,11 @@ function startServer(): void {
     res.sendStatus(404);
   });
 
-  app.listen(PORT, () => {
-    console.log(`Server listening and ready at http://localhost:${PORT}!`);
+  const port = PORT;
+
+  app.listen(port, () => {
+    console.log(START_MESSAGE);
+    POST_START;
   });
 }
 

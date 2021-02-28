@@ -41,6 +41,7 @@ module.exports = function createEslintConfig(options) {
       'import/prefer-default-export': 'off',
       'class-methods-use-this': 'off',
       'no-console': 'off',
+      'no-template-curly-in-string': 'off',
     },
     env: {
       node: true,
