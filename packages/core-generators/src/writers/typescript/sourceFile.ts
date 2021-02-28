@@ -247,6 +247,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       const ALLOWED_PARENTS = [
         SyntaxKind.ExpressionStatement,
         SyntaxKind.PropertySignature,
+        SyntaxKind.PropertyDeclaration,
       ];
       const parent = identifier.getParent();
       if (!ALLOWED_PARENTS.includes(parent.getKind())) {

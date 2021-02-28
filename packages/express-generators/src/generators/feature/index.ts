@@ -14,6 +14,7 @@ import {
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
 import R from 'ramda';
+import path from 'path';
 import { expressProvider } from '../express';
 
 interface ExpressFeatureDescriptor extends GeneratorDescriptor {
@@ -30,6 +31,7 @@ const FEATURE_FILE_CONFIG = createTypescriptTemplateConfig({
 
 export interface ExpressFeatureProvider {
   addFeatureEntry: (name: string, expression: TypescriptCodeExpression) => void;
+  getFeatureFolder(): string;
 }
 
 export const expressFeatureProvider = createProviderType<ExpressFeatureProvider>(
@@ -45,6 +47,10 @@ const ExpressFeatureGenerator = createGeneratorConfig({
   },
   exports: {
     expressFeature: expressFeatureProvider,
+  },
+  childGenerators: {
+    parts: { multiple: true },
+    providers: { multiple: true },
   },
   createGenerator(descriptor, { app }) {
     const { name } = descriptor;
@@ -67,6 +73,9 @@ const ExpressFeatureGenerator = createGeneratorConfig({
               featureEntries[entryName] = [];
             }
             featureEntries[entryName].push(expression);
+          },
+          getFeatureFolder() {
+            return path.join(app.getFeaturesFolder(), featureFolderName);
           },
         },
       }),
