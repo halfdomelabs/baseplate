@@ -98,6 +98,15 @@ export const TypescriptCodeUtils = {
       importText: entry.importText,
     };
   },
+  mergeExpressionsAsArray(
+    entries: TypescriptCodeExpression[]
+  ): TypescriptCodeExpression {
+    const mergedExpression = mergeExpressions(entries, ', ');
+    return {
+      ...mergedExpression,
+      expression: `[${mergedExpression.expression}]`,
+    };
+  },
   mergeExpressionsAsObject(
     obj: Record<string, TypescriptCodeExpression>
   ): TypescriptCodeExpression {

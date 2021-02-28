@@ -29,6 +29,7 @@
     "@baseplate/sync": "^0.0.1",
     "@types/ramda": "^0.27.34",
     "@types/resolve": "^1.17.1",
+    "change-case": "^4.1.2",
     "gulp": "^4.0.2",
     "ramda": "^0.27.1",
     "resolve": "^1.19.0",

@@ -10,6 +10,7 @@ import {
   GeneratorDescriptor,
   createProviderType,
   readTemplate,
+  copyFileAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 
@@ -26,8 +27,21 @@ const SERVER_FILE_CONFIG = createTypescriptTemplateConfig({
   PORT: { type: 'code-expression', default: 'process.env.PORT || 3000' },
 });
 
+const FEATURE_FILE_CONFIG = createTypescriptTemplateConfig({
+  APP_FEATURES: { type: 'code-expression', multiple: { separator: ', ' } },
+});
+
+const TYPES_FILE_CONFIG = createTypescriptTemplateConfig({
+  APP_FEATURE_TYPE: { type: 'code-block' },
+  TYPES: { type: 'code-block' },
+});
+
 export interface ExpressProvider {
+  getSrcFolder(): string;
+  getFeaturesFolder(): string;
   getServerFile(): TypescriptSourceFile<typeof SERVER_FILE_CONFIG>;
+  getFeatureFile(): TypescriptSourceFile<typeof FEATURE_FILE_CONFIG>;
+  getTypesFile(): TypescriptSourceFile<typeof TYPES_FILE_CONFIG>;
 }
 
 export const expressProvider = createProviderType<ExpressProvider>('express');
@@ -51,14 +65,21 @@ const ExpressGenerator = createGeneratorConfig({
         peerProvider: true,
       },
     },
+    features: {
+      provider: 'express-feature',
+      multiple: true,
+    },
   },
   createGenerator(descriptor, { node }) {
     const serverFile = new TypescriptSourceFile(SERVER_FILE_CONFIG);
+    const featuresFile = new TypescriptSourceFile(FEATURE_FILE_CONFIG);
+    const typesFile = new TypescriptSourceFile(TYPES_FILE_CONFIG);
 
     node.addPackages({
       express: '^4.17.1',
       cors: '^2.8.5',
       helmet: '^4.3.1',
+      ramda: '^0.27.1',
     });
     node.addDevPackages({
       'ts-node-dev': '^1.0.0',
@@ -66,6 +87,7 @@ const ExpressGenerator = createGeneratorConfig({
       '@types/node': '^14.14.11',
       '@types/cors': '^2.8.8',
       '@types/express': '^4.17.11',
+      '@types/ramda': '^0.27.32',
     });
     node.addScripts({
       build: 'tsc',
@@ -75,12 +97,31 @@ const ExpressGenerator = createGeneratorConfig({
     return {
       getProviders: () => ({
         express: {
+          getSrcFolder: () => 'src',
+          getFeaturesFolder: () => 'src/features',
           getServerFile: () => serverFile,
+          getFeatureFile: () => featuresFile,
+          getTypesFile: () => typesFile,
         },
       }),
       build: async (context) => {
-        const template = await readTemplate(__dirname, 'src/index.ts');
-        context.addAction(serverFile.renderToAction(template, 'src/index.ts'));
+        const indexTemplate = await readTemplate(__dirname, 'src/index.ts');
+        context.addAction(
+          serverFile.renderToAction(indexTemplate, 'src/index.ts')
+        );
+
+        const typesTemplate = await readTemplate(__dirname, 'src/types.ts');
+        context.addAction(
+          typesFile.renderToAction(typesTemplate, 'src/types.ts')
+        );
+
+        const featuresTemplate = await readTemplate(
+          __dirname,
+          'src/features/index.ts'
+        );
+        context.addAction(
+          featuresFile.renderToAction(featuresTemplate, 'src/features/index.ts')
+        );
       },
     };
   },

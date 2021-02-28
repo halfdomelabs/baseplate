@@ -24,6 +24,9 @@ interface TypescriptCodeBlockConfig {
 interface TypescriptCodeExpressionConfig {
   type: 'code-expression';
   default?: string;
+  multiple?: {
+    separator: string;
+  };
 }
 
 interface TypescriptCodeWrapperConfig {
@@ -66,25 +69,21 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
 
   protected codeWrappers: Record<string, TypescriptCodeWrapper[]>;
 
-  protected codeExpressions: Record<string, TypescriptCodeExpression | null>;
+  protected codeExpressions: Record<string, TypescriptCodeExpression[]>;
 
   constructor(config: T) {
     this.config = config;
     const keys = Object.keys(config);
     this.codeBlocks = R.fromPairs(
-      keys
-        .filter((k) => config[k].type === 'code-block')
-        .map((k) => [k, [] as TypescriptCodeBlock[]])
+      keys.filter((k) => config[k].type === 'code-block').map((k) => [k, []])
     );
     this.codeWrappers = R.fromPairs(
-      keys
-        .filter((k) => config[k].type === 'code-wrapper')
-        .map((k) => [k, [] as TypescriptCodeWrapper[]])
+      keys.filter((k) => config[k].type === 'code-wrapper').map((k) => [k, []])
     );
     this.codeExpressions = R.fromPairs(
       keys
         .filter((k) => config[k].type === 'code-expression')
-        .map((k) => [k, null])
+        .map((k) => [k, []])
     );
   }
 
@@ -119,10 +118,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       : never
   ): void {
     this.checkNotGenerated();
-    if (this.codeExpressions[name]) {
-      throw new Error(`Cannot overwrite code expression ${name}`);
-    }
-    this.codeExpressions[name] = entry;
+    this.codeExpressions[name].push(entry);
   }
 
   addCodeEntries(entries: Partial<InferCodeEntries<T>>): void {
@@ -220,11 +216,17 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
               contents: mergedBlock,
             });
           } else if (configEntry.type === 'code-expression') {
-            const providedExpression = this.codeExpressions[identifier];
+            const providedExpressions = this.codeExpressions[identifier];
+            if (!configEntry.multiple && providedExpressions.length > 1) {
+              throw new Error(`Only expected a single entry for ${identifier}`);
+            }
             const expression =
-              !providedExpression && configEntry.default
+              !providedExpressions.length && configEntry.default
                 ? configEntry.default
-                : providedExpression?.expression;
+                : TypescriptCodeUtils.mergeExpressions(
+                    providedExpressions,
+                    configEntry.multiple?.separator || ''
+                  ).expression;
             expressionReplacements.push({
               identifier: node as Identifier,
               contents: expression || '',
@@ -235,9 +237,17 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     });
 
     blockReplacements.forEach(({ identifier, contents }) => {
-      identifier
-        .getParentIfKindOrThrow(SyntaxKind.ExpressionStatement)
-        .replaceWithText(contents);
+      const ALLOWED_PARENTS = [
+        SyntaxKind.ExpressionStatement,
+        SyntaxKind.PropertySignature,
+      ];
+      const parent = identifier.getParent();
+      if (!ALLOWED_PARENTS.includes(parent.getKind())) {
+        throw new Error(
+          'The parent was not of a syntax kind of Expression/Property'
+        );
+      }
+      parent.replaceWithText(contents);
     });
 
     expressionReplacements.forEach(({ identifier, contents }) => {
