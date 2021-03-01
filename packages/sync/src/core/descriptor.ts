@@ -1,6 +1,7 @@
 import * as yup from 'yup';
 
 export interface GeneratorDescriptor {
+  key?: string;
   name?: string;
   generator: string;
   peerProvider?: boolean;
@@ -8,6 +9,7 @@ export interface GeneratorDescriptor {
 }
 
 export const baseDescriptorSchema = {
+  key: yup.string(),
   name: yup.string(),
   generator: yup.string().required(),
   peerProvider: yup.bool(),

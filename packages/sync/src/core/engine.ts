@@ -125,7 +125,7 @@ export class GeneratorEngine {
       )
     ) {
       throw new Error(
-        `Each child descriptor in ${childKey} for ${entryId} must implement ${provider}`
+        `Each child descriptor in ${childKey} for ${entryId} must implement ${provider.toString()}`
       );
     }
 
@@ -186,9 +186,15 @@ export class GeneratorEngine {
 
       return childDescriptors.map((descriptor) => {
         if (childGeneratorConfig.multiple) {
+          const generatorKey = descriptor.key || descriptor.name;
+          if (!generatorKey) {
+            throw new Error(
+              `All multiple child generator children must have a key or name in ${id}/${key}`
+            );
+          }
           return this.buildGeneratorEntry(
             descriptor,
-            `${id}/${key}/${descriptor.name}`
+            `${id}/${key}/${generatorKey}`
           );
         }
         // sanity check

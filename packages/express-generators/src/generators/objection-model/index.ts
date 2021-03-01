@@ -13,7 +13,6 @@ import {
 } from '@baseplate/sync';
 import { paramCase, pascalCase, snakeCase } from 'change-case';
 import * as yup from 'yup';
-import { expressFeatureProvider } from '../feature';
 import { objectionFeatureProvider } from '../objection-feature';
 
 interface ObjectionModelDescriptor extends GeneratorDescriptor {

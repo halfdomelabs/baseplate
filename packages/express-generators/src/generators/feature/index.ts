@@ -81,7 +81,7 @@ const ExpressFeatureGenerator = createGeneratorConfig({
       }),
       build: async (context) => {
         const mergedEntries = R.mapObjIndexed(
-          (entries) => TypescriptCodeUtils.mergeExpressions(entries, ','),
+          (entries) => TypescriptCodeUtils.mergeExpressionsAsArray(entries),
           featureEntries
         );
         featureFile.addCodeExpression(

@@ -63,7 +63,6 @@ const ObjectionFieldGenerator = createGeneratorConfig({
         fieldType.jsType
       }`,
     });
-    //
     return {
       getProviders: () => ({
         objectionField: {},
