@@ -66,12 +66,7 @@ const ExpressGenerator = createGeneratorConfig({
       provider: 'express-config',
       defaultDescriptor: {
         generator: '@baseplate/express/config',
-        peerProvider: true,
       },
-    },
-    features: {
-      provider: 'express-feature',
-      multiple: true,
     },
     providers: {
       multiple: true,

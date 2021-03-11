@@ -23,7 +23,7 @@ export type ObjectionFeatureProvider = {
 };
 
 export const objectionFeatureProvider = createProviderType<ObjectionFeatureProvider>(
-  'objectionFeature'
+  'objection-feature'
 );
 
 const ObjectionFeatureGenerator = createGeneratorConfig({

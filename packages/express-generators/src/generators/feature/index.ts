@@ -49,7 +49,6 @@ const ExpressFeatureGenerator = createGeneratorConfig({
     expressFeature: expressFeatureProvider,
   },
   childGenerators: {
-    parts: { multiple: true },
     providers: { multiple: true },
   },
   createGenerator(descriptor, { app }) {

@@ -53,21 +53,18 @@ const ReactGenerator = createGeneratorConfig({
       provider: 'react-app',
       defaultDescriptor: {
         generator: '@baseplate/react/react-app',
-        peerProvider: true,
       },
     },
     router: {
       provider: 'react-router',
       defaultDescriptor: {
         generator: '@baseplate/react/react-router',
-        peerProvider: true,
       },
     },
     components: {
       provider: 'react-components',
       defaultDescriptor: {
         generator: '@baseplate/react/react-components',
-        peerProvider: true,
       },
     },
   },
@@ -90,18 +87,16 @@ const ReactGenerator = createGeneratorConfig({
     ]);
 
     return {
-      getProviders: () => {
-        return {
-          react: {
-            getSrcFolder() {
-              return 'src';
-            },
-            getIndexFile() {
-              return indexFile;
-            },
+      getProviders: () => ({
+        react: {
+          getSrcFolder() {
+            return 'src';
           },
-        };
-      },
+          getIndexFile() {
+            return indexFile;
+          },
+        },
+      }),
       build: async (context) => {
         const staticFiles = [
           'public/favicon.ico',

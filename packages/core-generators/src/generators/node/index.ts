@@ -8,7 +8,6 @@ import {
 import * as yup from 'yup';
 import R from 'ramda';
 import semver from 'semver';
-import { NewLineKind } from 'ts-morph';
 import { writePackageJson } from './actions/writePackageJson';
 
 interface Descriptor extends GeneratorDescriptor {
@@ -56,23 +55,19 @@ const NodeGenerator = createGeneratorConfig({
       provider: 'formatter',
       defaultDescriptor: {
         generator: '@baseplate/core/prettier',
-        peerProvider: true,
       },
     },
     typescript: {
       provider: 'typescript',
-      optional: true,
     },
     gitIgnore: {
       provider: 'node-git-ignore',
       defaultDescriptor: {
         generator: '@baseplate/core/node-git-ignore',
-        peerProvider: true,
       },
     },
     eslint: {
       provider: 'eslint',
-      optional: true,
     },
   },
   exports: {

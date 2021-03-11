@@ -5,7 +5,11 @@ import * as yup from 'yup';
 import path from 'path';
 import R from 'ramda';
 import toposort from 'toposort';
-import { baseDescriptorSchema, GeneratorDescriptor } from './descriptor';
+import {
+  baseDescriptorSchema,
+  ChildDescriptorsOrReferences,
+  GeneratorDescriptor,
+} from './descriptor';
 import { GeneratorConfig, Generator, ChildGenerator } from './generator';
 import { Action, ActionContext, PostActionCallback } from './action';
 import { GeneratorBuildContext } from './context';
@@ -19,7 +23,8 @@ interface GeneratorEntry {
   id: string;
   generatorConfig: GeneratorConfig<any>;
   descriptor: GeneratorDescriptor;
-  childGenerators: GeneratorEntry[];
+  children: GeneratorEntry[];
+  peerProvider: boolean;
 }
 
 export interface ActionsWithContext {
@@ -37,6 +42,155 @@ function providerMapToNames(map?: {
   return Object.values(map).map((d) => d.name);
 }
 
+function normalizeToArray<T>(objOrArr?: T | T[]): T[] {
+  if (!objOrArr) {
+    return [];
+  }
+  return Array.isArray(objOrArr) ? objOrArr : [objOrArr];
+}
+
+async function validateDescriptor(
+  descriptor: GeneratorDescriptor,
+  generatorConfig: GeneratorConfig<any>,
+  id: string
+): Promise<GeneratorDescriptor> {
+  const cleanedDescriptor = R.pickBy(
+    (value, key) => !key.startsWith('$'),
+    descriptor
+  );
+  const validatedDescriptor = await yup
+    .object<GeneratorDescriptor>({
+      ...baseDescriptorSchema,
+      ...generatorConfig.descriptorSchema,
+    })
+    .noUnknown(true)
+    .required()
+    .strict(true)
+    .validate(cleanedDescriptor);
+
+  // validate children
+  const childConfigs = generatorConfig.childGenerators || {};
+  const childConfigKeys = Object.keys(childConfigs);
+
+  const primaryChildrenKeys = Object.keys(
+    validatedDescriptor.children || {}
+  ).filter((key) => !key.startsWith('$'));
+
+  // ensure all primary children are keyed in generator config
+  const extraChildrenKeys = R.difference(primaryChildrenKeys, childConfigKeys);
+  if (extraChildrenKeys.length) {
+    throw new Error(
+      `Extra primary child generator descriptor not in config found in ${id}: ${extraChildrenKeys.join(
+        ', '
+      )}`
+    );
+  }
+
+  // validate child configs match
+  Object.entries(childConfigs).forEach(([key, childConfig]) => {
+    const descriptorChildOrChildren =
+      descriptor.children && descriptor.children[key];
+
+    if (
+      descriptorChildOrChildren &&
+      Array.isArray(descriptorChildOrChildren) &&
+      !childConfig.multiple
+    ) {
+      throw new Error(
+        `${id} must have a single (non-array) child with the key ${key}`
+      );
+    }
+
+    if (
+      descriptorChildOrChildren &&
+      !Array.isArray(descriptorChildOrChildren) &&
+      childConfig.multiple
+    ) {
+      throw new Error(`${id} must have an array child with the key ${key}`);
+    }
+
+    const descriptorChildren = normalizeToArray(descriptorChildOrChildren);
+    if (
+      !descriptorChildren.length &&
+      childConfig.required &&
+      !childConfig.defaultDescriptor
+    ) {
+      throw new Error(`${id} must have a child with the key ${key}`);
+    }
+  });
+
+  return validatedDescriptor;
+}
+
+async function loadGeneratorFromFile(
+  filePath: string
+): Promise<GeneratorDescriptor> {
+  const data = JSON.parse(
+    await fs.readFile(`${filePath}.json`, 'utf8')
+  ) as GeneratorDescriptor;
+  if (!data) {
+    throw new Error(`Descriptor in ${filePath} is invalid!`);
+  }
+
+  return data;
+}
+
+function appendToId(baseId: string, suffix: string): string {
+  return baseId.includes(':') ? `${baseId}.${suffix}` : `${baseId}:${suffix}`;
+}
+
+async function resolveDescriptorOrRef(
+  descriptorOrRef: GeneratorDescriptor | string,
+  baseId: string,
+  isMultiple: boolean,
+  baseDirectory: string
+): Promise<{ id: string; descriptor: GeneratorDescriptor }> {
+  if (typeof descriptorOrRef === 'string') {
+    const filePath = path.join(baseDirectory, descriptorOrRef);
+    const descriptor = await loadGeneratorFromFile(filePath);
+    return {
+      id: descriptorOrRef,
+      descriptor,
+    };
+  }
+
+  if (isMultiple) {
+    if (!descriptorOrRef.name) {
+      throw new Error(`Name is required for all children of ${baseId}`);
+    }
+    return {
+      id: appendToId(baseId, descriptorOrRef.name),
+      descriptor: descriptorOrRef,
+    };
+  }
+  return { id: baseId, descriptor: descriptorOrRef };
+}
+
+/**
+ * Checks for duplicate IDs in generator entry and descendants
+ *
+ * @param rootEntry Root generator entry
+ */
+function checkDuplicateIds(rootEntry: GeneratorEntry): void {
+  function extractIds(entry: GeneratorEntry): string[] {
+    return [
+      entry.id,
+      ...R.flatten(entry.children.map((child) => extractIds(child))),
+    ];
+  }
+
+  const ids = extractIds(rootEntry);
+  const idCounts = R.countBy(R.identity, ids);
+  const duplicatedIds = Object.entries(idCounts)
+    .filter(([, count]) => count > 1)
+    .map(([key]) => key);
+  if (duplicatedIds.length) {
+    throw new Error(
+      `Duplicate IDs found in generator: ${duplicatedIds.join(', ')}`
+    );
+  }
+}
+
 export class GeneratorEngine {
   generators: Record<string, GeneratorConfig<any>>;
 
@@ -50,8 +204,10 @@ export class GeneratorEngine {
    * @param directory Directory of project to load
    */
   async loadProject(directory: string): Promise<GeneratorEntry> {
-    const projectPath = path.join(directory, 'baseplate/project.json');
-    return this.loadProjectFile(projectPath);
+    const projectPath = path.join(directory, 'baseplate');
+    const rootEntry = await this.loadProjectFile(projectPath, 'project');
+    checkDuplicateIds(rootEntry);
+    return rootEntry;
   }
 
   /**
@@ -59,77 +215,76 @@ export class GeneratorEngine {
    *
    * @param file Path to project file
    */
-  private async loadProjectFile(file: string): Promise<GeneratorEntry> {
-    const data = JSON.parse(
-      await fs.readFile(file, 'utf8')
-    ) as GeneratorDescriptor;
-    if (!data) {
-      throw new Error(`Descriptor in ${file} is invalid!`);
-    }
+  private async loadProjectFile(
+    baseDirectory: string,
+    file: string
+  ): Promise<GeneratorEntry> {
+    const data = await loadGeneratorFromFile(path.join(baseDirectory, file));
 
-    return this.buildGeneratorEntry(data, 'root');
+    const entry = this.buildGeneratorEntry(data, file, baseDirectory, true);
+    return entry;
   }
 
-  /**
-   * Validates and normalizees child generator descriptors into array
-   *
-   * @param config Child generator config
-   * @param descriptor Descriptor for child generator(s)
-   * @param childKey Key of child generator (for better error messages)
-   * @param entryId ID of parent entry (for better error messages)
-   */
-  private validateChildGeneratorDescriptors(
-    config: ChildGenerator,
-    descriptor: GeneratorDescriptor | GeneratorDescriptor[],
-    childKey: string,
-    entryId: string
-  ): GeneratorDescriptor[] {
-    const { defaultDescriptor, multiple, provider, optional } = config;
+  private async resolveChildGenerators(
+    childDescriptorsOrRefs: ChildDescriptorsOrReferences,
+    baseId: string,
+    baseDirectory: string,
+    childConfig?: ChildGenerator
+  ): Promise<GeneratorEntry[]> {
+    const normalizedDescriptorsOrRefs = normalizeToArray(
+      childDescriptorsOrRefs
+    );
 
-    const descriptors = (() => {
-      if (!descriptor) {
-        return [];
-      }
-      return Array.isArray(descriptor) ? descriptor : [descriptor];
-    })();
-
-    // create placeholder default descriptor if no descriptor exist
-    if (!descriptors.length && defaultDescriptor) {
-      descriptors.push(defaultDescriptor);
-    }
-
-    if (!multiple && descriptors.length > 1) {
-      throw new Error(
-        `${childKey} in ${entryId} can only contain one generator`
-      );
-    }
-
-    if (!multiple && !optional && descriptors.length === 0) {
-      throw new Error(`${childKey} in ${entryId} must have a generator`);
-    }
-
-    // verify names are on all multiple entries
-    if (multiple && descriptors.some((d) => !d.name)) {
-      throw new Error(
-        `Each child descriptor in ${childKey} for ${entryId} must have a name`
-      );
-    }
-
-    // verify provides
     if (
-      provider &&
-      !descriptors.every((d) =>
-        providerMapToNames(this.generators[d.generator].exports).includes(
-          typeof provider === 'string' ? provider : provider.name
-        )
-      )
+      normalizedDescriptorsOrRefs.length === 0 &&
+      childConfig?.defaultDescriptor
     ) {
-      throw new Error(
-        `Each child descriptor in ${childKey} for ${entryId} must implement ${provider.toString()}`
-      );
+      normalizedDescriptorsOrRefs.push(childConfig?.defaultDescriptor);
     }
 
-    return descriptors;
+    const isMultiple = Array.isArray(childDescriptorsOrRefs);
+    const requiredProvider = childConfig?.provider;
+    const requiredProviderName =
+      typeof requiredProvider === 'string'
+        ? requiredProvider
+        : requiredProvider?.name;
+
+    const buildChildGeneratorEntry = async (
+      descriptorOrRef: GeneratorDescriptor | string
+    ): Promise<GeneratorEntry> => {
+      const { id, descriptor } = await resolveDescriptorOrRef(
+        descriptorOrRef,
+        baseId,
+        isMultiple,
+        baseDirectory
+      );
+
+      // built child
+      const builtChild = await this.buildGeneratorEntry(
+        descriptor,
+        id,
+        baseDirectory,
+        !isMultiple
+      );
+
+      // check generator implements necessary provider
+      const childExports = Object.values(
+        builtChild.generatorConfig.exports || {}
+      ).map((e) => e.name);
+      if (
+        requiredProviderName &&
+        !childExports.includes(requiredProviderName)
+      ) {
+        throw new Error(
+          `Each child descriptor for ${baseId} must implement ${requiredProviderName}: ${id} does not`
+        );
+      }
+      return builtChild;
+    };
+
+    return Promise.all(
+      normalizedDescriptorsOrRefs.map(buildChildGeneratorEntry)
+    );
   }
 
   /**
@@ -140,78 +295,56 @@ export class GeneratorEngine {
    * @param currentDirectory Relative current directory to build the generator entry in
    */
   private async buildGeneratorEntry(
-    data: GeneratorDescriptor,
-    id: string
+    descriptor: GeneratorDescriptor,
+    id: string,
+    baseDirectory: string,
+    peerProvider: boolean
   ): Promise<GeneratorEntry> {
-    const generatorConfig = this.generators[data.generator];
+    const generatorConfig = this.generators[descriptor.generator];
     if (!generatorConfig) {
       throw new Error(
-        `Descriptor at ${id} has an invalid generator "${data.generator}"!`
+        `Descriptor at ${id} has an unknown generator "${descriptor.generator}"!`
       );
     }
 
-    // validate descriptor
-    const validatedDescriptor = await yup
-      .object<GeneratorDescriptor>({
-        ...baseDescriptorSchema,
-        ...generatorConfig.descriptorSchema,
-      })
-      .validate(data);
+    // validate descriptor and strip out any $ metadata
+    const validatedDescriptor = await validateDescriptor(
+      descriptor,
+      generatorConfig,
+      id
+    );
 
-    const childGeneratorDescriptors = validatedDescriptor.children || {};
-    const childGeneratorConfigs = generatorConfig.childGenerators || {};
+    // generate children
+    const children = { ...descriptor.children };
 
-    const childGeneratorConfigKeys = Object.keys(childGeneratorConfigs);
-
-    // check descriptor doesn't have extra children generators that aren't defined in the generator config
-    const extraChildGeneratorDescriptors = Object.keys(
-      childGeneratorDescriptors
-    ).filter((d) => !childGeneratorConfigKeys.includes(d));
-    if (extraChildGeneratorDescriptors.length) {
-      throw new Error(
-        `Extra child generator descriptor not in config found in ${id}: ${extraChildGeneratorDescriptors}`
-      );
-    }
-
-    const childEntryPromises = childGeneratorConfigKeys.map((key) => {
-      const childGeneratorConfig = childGeneratorConfigs[key];
-      const childDescriptorRaw = childGeneratorDescriptors[key];
-
-      const childDescriptors = this.validateChildGeneratorDescriptors(
-        childGeneratorConfig,
-        childDescriptorRaw,
-        key,
-        id
-      );
-
-      return childDescriptors.map((descriptor) => {
-        if (childGeneratorConfig.multiple) {
-          const generatorKey = descriptor.key || descriptor.name;
-          if (!generatorKey) {
-            throw new Error(
-              `All multiple child generator children must have a key or name in ${id}/${key}`
-            );
-          }
-          return this.buildGeneratorEntry(
-            descriptor,
-            `${id}/${key}/${generatorKey}`
-          );
+    Object.entries(generatorConfig.childGenerators || {}).forEach(
+      ([key, config]) => {
+        if (children[key] === undefined && config.defaultDescriptor) {
+          children[key] = config.defaultDescriptor;
         }
-        // sanity check
-        if (childDescriptors.length > 1) {
-          throw new Error('Invalid State: This should not happen');
-        }
-        return this.buildGeneratorEntry(descriptor, `${id}/${key}`);
-      });
-    });
+      }
+    );
 
-    const childGenerators = await Promise.all(R.flatten(childEntryPromises));
+    const childrenEntries = Object.entries(children || {});
+
+    const childGenerators = await Promise.all(
+      childrenEntries.map(async ([key, childDescriptorOrRef]) =>
+        this.resolveChildGenerators(
+          childDescriptorOrRef,
+          appendToId(id, key),
+          baseDirectory,
+          generatorConfig.childGenerators &&
+            generatorConfig.childGenerators[key]
+        )
+      )
+    );
 
     return {
       id,
       generatorConfig,
       descriptor: validatedDescriptor,
-      childGenerators,
+      children: R.flatten(childGenerators),
+      peerProvider,
     };
   }
 
@@ -250,8 +383,8 @@ export class GeneratorEngine {
     }
 
     // get all the peer providers from the children and self provider
-    const childProviders = entry.childGenerators
-      .filter((g) => g.descriptor.peerProvider)
+    const childProviders = entry.children
+      .filter((g) => g.peerProvider)
       .map((g) =>
         providerMapToNames(g.generatorConfig.exports).map((name) => ({
           [name]: g.id,
@@ -280,9 +413,7 @@ export class GeneratorEngine {
     };
 
     const childDependencyMaps = R.mergeAll(
-      entry.childGenerators.map((e) =>
-        this.buildEntriesDependencyMap(e, providerMap)
-      )
+      entry.children.map((e) => this.buildEntriesDependencyMap(e, providerMap))
     );
 
     return {
@@ -293,17 +424,16 @@ export class GeneratorEngine {
 
   async build(rootEntry: GeneratorEntry): Promise<ActionsWithContext[]> {
     function flattenEntries(entry: GeneratorEntry): GeneratorEntry[] {
-      const childGenerators = entry.childGenerators.map(flattenEntries);
+      const childGenerators = entry.children.map(flattenEntries);
       return R.flatten([entry, ...childGenerators]);
     }
+    const entries = flattenEntries(rootEntry);
+    const entriesById = R.indexBy(R.prop('id'), entries);
 
     // resolve dependencies
     const dependencyMaps = this.buildEntriesDependencyMap(rootEntry, {});
 
     // figure out dependency tree
-    const entries = flattenEntries(rootEntry);
-    const entriesById = R.indexBy(R.prop('id'), entries);
-
     const dependencyGraph = R.unnest(
       entries.map((entry) =>
         Object.values(dependencyMaps[entry.id]).map((dependentId): [

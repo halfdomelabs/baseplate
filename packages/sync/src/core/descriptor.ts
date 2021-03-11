@@ -1,17 +1,20 @@
 import * as yup from 'yup';
 
+export type ChildDescriptorsOrReferences =
+  | GeneratorDescriptor
+  | string
+  | (GeneratorDescriptor | string)[];
+
 export interface GeneratorDescriptor {
-  key?: string;
   name?: string;
   generator: string;
-  peerProvider?: boolean;
-  children?: { [key: string]: GeneratorDescriptor | GeneratorDescriptor[] };
+  children?: {
+    [key: string]: ChildDescriptorsOrReferences;
+  };
 }
 
 export const baseDescriptorSchema = {
-  key: yup.string(),
   name: yup.string(),
   generator: yup.string().required(),
-  peerProvider: yup.bool(),
   children: yup.mixed(),
 };
