@@ -15,6 +15,7 @@ import { Action, ActionContext, PostActionCallback } from './action';
 import { GeneratorBuildContext } from './context';
 import { FormatterProvider } from '../providers/formatter';
 import { ProviderDependency, ProviderType } from './provider';
+import { notEmpty } from '../utils/arrays';
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -356,18 +357,54 @@ export class GeneratorEngine {
    */
   private buildEntriesDependencyMap(
     entry: GeneratorEntry,
-    parentProviders: Record<string, string>
-  ): Record<string, Record<string, string>> {
+    parentProviders: Record<string, string>,
+    globalGeneratorMap: Record<string, GeneratorEntry>
+  ): Record<string, Record<string, string | null>> {
     // build entry dependency map from parent providers
-    const requiredProviders = providerMapToNames(
-      entry.generatorConfig.dependsOn
-    );
+    const dependencies = Object.entries(entry.generatorConfig.dependsOn || {});
+    const references = entry.descriptor.references || {};
 
     const entryDependencyMap = R.zipObj(
-      requiredProviders,
-      requiredProviders.map((provider) => {
+      dependencies.map(([key]) => key),
+      dependencies.map(([key, dep]) => {
+        const provider = dep.name;
+        const isOptional = dep.type === 'dependency' && dep.options.optional;
+        const isReference = dep.type === 'dependency' && dep.options.reference;
+        if (isReference) {
+          const reference = references[key];
+          if (!reference) {
+            if (!isOptional) {
+              throw new Error(
+                `Must provide dependency reference for ${key} at ${entry.id}`
+              );
+            }
+            return null;
+          }
+          const referencedGenerator = globalGeneratorMap[reference];
+          if (!referencedGenerator) {
+            throw new Error(
+              `Could not find referenced generator ${reference} in ${entry.id}`
+            );
+          }
+          // check provider matches type
+          const generatorProviders = providerMapToNames(
+            referencedGenerator.generatorConfig.exports
+          );
+          if (!generatorProviders.includes(provider)) {
+            throw new Error(
+              `Referenced generator ${reference} does not implement ${provider} in ${entry.id}`
+            );
+          }
+          return referencedGenerator.id;
+        }
+
         if (!parentProviders[provider]) {
-          throw new Error(`Could not find provider ${provider} at ${entry.id}`);
+          if (!isOptional) {
+            throw new Error(
+              `Could not find required provider ${provider} at ${entry.id}`
+            );
+          }
+          return null;
         }
         return parentProviders[provider];
       })
@@ -413,7 +450,9 @@ export class GeneratorEngine {
     };
 
     const childDependencyMaps = R.mergeAll(
-      entry.children.map((e) => this.buildEntriesDependencyMap(e, providerMap))
+      entry.children.map((e) =>
+        this.buildEntriesDependencyMap(e, providerMap, globalGeneratorMap)
+      )
     );
 
     return {
@@ -429,17 +468,21 @@ export class GeneratorEngine {
     }
     const entries = flattenEntries(rootEntry);
     const entriesById = R.indexBy(R.prop('id'), entries);
+    console.log(entries.map((e) => e.id));
 
     // resolve dependencies
-    const dependencyMaps = this.buildEntriesDependencyMap(rootEntry, {});
+    const dependencyMaps = this.buildEntriesDependencyMap(
+      rootEntry,
+      {},
+      entriesById
+    );
 
     // figure out dependency tree
     const dependencyGraph = R.unnest(
       entries.map((entry) =>
-        Object.values(dependencyMaps[entry.id]).map((dependentId): [
-          string,
-          string
-        ] => [dependentId, entry.id])
+        Object.values(dependencyMaps[entry.id])
+          .filter(notEmpty)
+          .map((dependentId): [string, string] => [dependentId, entry.id])
       )
     );
 
@@ -456,18 +499,19 @@ export class GeneratorEngine {
       const entry = entriesById[entryId];
       // resolve dependencies and format into entry
       const resolveDependency = (
-        providerDependency: ProviderType<any> | ProviderDependency<any>
+        providerDependency: ProviderType<any> | ProviderDependency<any>,
+        key: string
       ): any => {
         const dependency: ProviderDependency<any> =
           // eslint-disable-next-line no-underscore-dangle
-          providerDependency._type === 'type'
+          providerDependency.type === 'type'
             ? providerDependency.dependency()
             : providerDependency;
         const {
           name,
           options: { optional },
         } = dependency;
-        const providerId = dependencyMaps[entryId][name];
+        const providerId = dependencyMaps[entryId][key];
         if (!providerId) {
           if (optional) {
             return undefined;
