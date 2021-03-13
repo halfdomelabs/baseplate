@@ -27,7 +27,7 @@ async function compareContents(
     return false;
   }
   const existingJson = await fs.readFile(packagePath, 'utf-8');
-  return JSON.stringify(contents) === existingJson;
+  return JSON.stringify(contents) === JSON.stringify(JSON.parse(existingJson));
 }
 
 export const writePackageJson = createActionCreator<Options>(

@@ -468,7 +468,6 @@ export class GeneratorEngine {
     }
     const entries = flattenEntries(rootEntry);
     const entriesById = R.indexBy(R.prop('id'), entries);
-    console.log(entries.map((e) => e.id));
 
     // resolve dependencies
     const dependencyMaps = this.buildEntriesDependencyMap(
