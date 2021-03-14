@@ -28,6 +28,7 @@ const descriptorSchema = {
 
 export type ObjectionFieldProvider = {
   getType(): FieldType;
+  getName(): string;
   isRequired(): boolean;
   isIdField(): boolean;
 };
@@ -61,6 +62,7 @@ const ObjectionFieldGenerator = createGeneratorConfig({
       getProviders: () => ({
         objectionField: {
           getType: () => fieldType,
+          getName: () => fieldName,
           isRequired: () => descriptor.required,
           isIdField: () => descriptor.id,
         },

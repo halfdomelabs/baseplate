@@ -22,6 +22,7 @@ const descriptorSchema = {
 
 export type NexusObjectionTypeProvider = {
   addField(field: TypescriptCodeBlock): void;
+  getTypeName(): string;
 };
 
 export const nexusObjectionTypeProvider = createProviderType<NexusObjectionTypeProvider>(
@@ -50,6 +51,7 @@ const NexusObjectionTypeGenerator = createGeneratorConfig({
           addField(field) {
             fields.push(field);
           },
+          getTypeName: () => descriptor.name,
         },
       }),
       build: (context) => {

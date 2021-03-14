@@ -2,11 +2,12 @@
 
 import { Config } from 'knex';
 import config from '../../config';
+import path from 'path';
 
 const SQLITE_CONFIG: Config = {
   client: 'sqlite3',
   connection: {
-    filename: './db/db.sqlite3',
+    filename: path.join(__dirname, '../../../db/db.sqlite3'),
   },
   useNullAsDefault: true,
 };

@@ -9,8 +9,10 @@ import {
   GeneratorDescriptor,
   createProviderType,
   copyDirectoryAction,
+  copyFileAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
+import { expressConfigProvider } from '../config';
 import { expressProvider } from '../express';
 
 interface ObjectionOrmDescriptor extends GeneratorDescriptor {
@@ -37,11 +39,12 @@ const ObjectionOrmGenerator = createGeneratorConfig({
     node: nodeProvider,
     nodeGitIgnore: nodeGitIgnoreProvider,
     express: expressProvider,
+    config: expressConfigProvider,
   },
   exports: {
     objectionOrm: objectionOrmProvider,
   },
-  createGenerator(descriptor, { node, nodeGitIgnore, express }) {
+  createGenerator(descriptor, { node, nodeGitIgnore, express, config }) {
     const modelFiles: string[] = [];
 
     node.addPackages({
@@ -58,6 +61,10 @@ const ObjectionOrmGenerator = createGeneratorConfig({
       importText: [
         "import {initializeObjection} from '@/src/services/db/objection'",
       ],
+    });
+
+    config.addConfigEntries({
+      DB_CONNECTION_STRING: { expression: 'yup.string().required()' },
     });
 
     return {
@@ -88,6 +95,13 @@ const ObjectionOrmGenerator = createGeneratorConfig({
           copyDirectoryAction({
             source: 'migrations',
             destination: 'migrations',
+          })
+        );
+
+        context.addAction(
+          copyFileAction({
+            source: 'knexfile.ts',
+            destination: 'knexfile.ts',
           })
         );
       },

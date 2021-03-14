@@ -610,7 +610,12 @@ export class GeneratorEngine {
             const pathParts = fullPath.split('.');
             const provider = providerMap[providerId][providerName];
 
-            return R.set(R.lensPath(pathParts), provider, prev);
+            // TODO: Awkward replace for now to get R.set to work with arrays
+            const numerizedPathParts = pathParts.map((part) =>
+              /^\d+$/.test(part) ? parseInt(part, 10) : part
+            );
+
+            return R.set(R.lensPath(numerizedPathParts), provider, prev);
           }
           return prev;
         },

@@ -1,6 +1,7 @@
 import {
   createTypescriptTemplateConfig,
   TypescriptCodeBlock,
+  TypescriptCodeExpression,
   TypescriptCodeUtils,
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
@@ -24,7 +25,9 @@ const descriptorSchema = {
 };
 
 export type ObjectionModelProvider = {
-  addField: (field: TypescriptCodeBlock) => void;
+  getName(): string;
+  addField(field: TypescriptCodeBlock): void;
+  getClassExpression(): TypescriptCodeExpression;
 };
 
 export const objectionModelProvider = createProviderType<ObjectionModelProvider>(
@@ -61,8 +64,17 @@ const ObjectionModelGenerator = createGeneratorConfig({
     return {
       getProviders: () => ({
         objectionModel: {
+          getName() {
+            return pascalCase(descriptor.name);
+          },
           addField(field: TypescriptCodeBlock) {
             fields.push(field);
+          },
+          getClassExpression() {
+            return {
+              expression: className,
+              importText: [`import {${className}} from '@/${modelPath}'`],
+            };
           },
         },
       }),

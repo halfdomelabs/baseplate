@@ -5,6 +5,7 @@ import {
   createProviderType,
 } from '@baseplate/sync';
 import * as yup from 'yup';
+import { fieldToDefinition } from '../../utils/nexus-objection';
 import { nexusObjectionTypeProvider } from '../nexus-objection-type';
 import {
   ObjectionFieldProvider,
@@ -41,15 +42,7 @@ const NexusObjectionTypeFieldGenerator = createGeneratorConfig({
     nexusObjectionTypeField: nexusObjectionTypeFieldProvider,
   },
   createGenerator(descriptor, { nexusObjectionType }) {
-    // special-case id fields
-    const objectionField = descriptor.field;
-    const nonNull = objectionField.isRequired() ? '.nonNull' : '';
-    const type = objectionField.isIdField()
-      ? 'id'
-      : objectionField.getType().nexusType;
-    nexusObjectionType.addField({
-      code: `t${nonNull}.${type}('${descriptor.name}')`,
-    });
+    nexusObjectionType.addField(fieldToDefinition(descriptor.field));
     return {
       getProviders: () => ({
         nexusObjectionTypeField: {},
