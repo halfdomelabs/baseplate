@@ -192,6 +192,63 @@ function checkDuplicateIds(rootEntry: GeneratorEntry): void {
   }
 }
 
+interface ValueWithPath {
+  value: string;
+  path: string;
+}
+
+/**
+ * Recursively looks up values in an object specified in a path
+ *
+ * @param obj Object to look up values within
+ * @param parts Parts of path to item with wildcards allowed, e.g. [models, fields, *, authorization]
+ * @param origin The origin of the path
+ */
+function lookupValuesByParts(
+  obj: any,
+  parts: string[],
+  origin: string
+): ValueWithPath[] {
+  if (!obj) {
+    return [];
+  }
+  if (!parts.length) {
+    if (typeof obj !== 'string') {
+      return [];
+    }
+    return [
+      {
+        path: origin,
+        value: obj,
+      },
+    ];
+  }
+  const dottedOrigin = origin === '' ? '' : `${origin}.`;
+  if (parts[0] === '*') {
+    if (Array.isArray(obj)) {
+      return R.flatten(
+        obj.map((val, idx) =>
+          lookupValuesByParts(val, parts.slice(1), `${dottedOrigin}${idx}`)
+        )
+      );
+    }
+    return R.flatten(
+      Object.entries(obj).map(([key, val]) =>
+        lookupValuesByParts(val, parts.slice(1), `${dottedOrigin}${key}`)
+      )
+    );
+  }
+  return lookupValuesByParts(
+    obj[parts[0]],
+    parts.slice(1),
+    `${dottedOrigin}${parts[0]}`
+  );
+}
+
+function lookupValuesByPath(obj: any, stringPath: string): ValueWithPath[] {
+  return lookupValuesByParts(obj, stringPath.split('.'), '');
+}
+
 export class GeneratorEngine {
   generators: Record<string, GeneratorConfig<any>>;
 
@@ -361,42 +418,15 @@ export class GeneratorEngine {
     globalGeneratorMap: Record<string, GeneratorEntry>
   ): Record<string, Record<string, string | null>> {
     // build entry dependency map from parent providers
-    const dependencies = Object.entries(entry.generatorConfig.dependsOn || {});
-    const references = entry.descriptor.references || {};
+    const generatorDependencies = Object.entries(
+      entry.generatorConfig.dependsOn || {}
+    );
 
-    const entryDependencyMap = R.zipObj(
-      dependencies.map(([key]) => key),
-      dependencies.map(([key, dep]) => {
+    const generatorDependencyMap = R.zipObj(
+      generatorDependencies.map(([key]) => key),
+      generatorDependencies.map(([key, dep]) => {
         const provider = dep.name;
         const isOptional = dep.type === 'dependency' && dep.options.optional;
-        const isReference = dep.type === 'dependency' && dep.options.reference;
-        if (isReference) {
-          const reference = references[key];
-          if (!reference) {
-            if (!isOptional) {
-              throw new Error(
-                `Must provide dependency reference for ${key} at ${entry.id}`
-              );
-            }
-            return null;
-          }
-          const referencedGenerator = globalGeneratorMap[reference];
-          if (!referencedGenerator) {
-            throw new Error(
-              `Could not find referenced generator ${reference} in ${entry.id}`
-            );
-          }
-          // check provider matches type
-          const generatorProviders = providerMapToNames(
-            referencedGenerator.generatorConfig.exports
-          );
-          if (!generatorProviders.includes(provider)) {
-            throw new Error(
-              `Referenced generator ${reference} does not implement ${provider} in ${entry.id}`
-            );
-          }
-          return referencedGenerator.id;
-        }
 
         if (!parentProviders[provider]) {
           if (!isOptional) {
@@ -408,6 +438,51 @@ export class GeneratorEngine {
         }
         return parentProviders[provider];
       })
+    );
+
+    const referenceDependencies = Object.entries(
+      entry.generatorConfig.descriptorReferences || {}
+    );
+    const { descriptor } = entry;
+    const referenceDependencyMap = R.fromPairs(
+      R.unnest(
+        referenceDependencies.map(([key, dep]): [string, string][] => {
+          const provider = dep.name;
+          const isOptional = dep.type === 'dependency' && dep.options.optional;
+          const references = lookupValuesByPath(descriptor, key);
+          if (!references.length) {
+            if (!isOptional) {
+              throw new Error(
+                `Must provide dependency reference for ${key} at ${entry.id}`
+              );
+            }
+            return [];
+          }
+          return references.map((ref) => {
+            const referencedGenerator = globalGeneratorMap[ref.value];
+            if (!referencedGenerator) {
+              throw new Error(
+                `Could not find referenced generator ${ref.value} in ${entry.id}`
+              );
+            }
+            // check provider matches type
+            const generatorProviders = providerMapToNames(
+              referencedGenerator.generatorConfig.exports
+            );
+            if (!generatorProviders.includes(provider)) {
+              throw new Error(
+                `Referenced generator ${ref.value} does not implement ${provider} in ${entry.id}`
+              );
+            }
+            return [`ref:${ref.path}:${provider}`, referencedGenerator.id];
+          });
+        })
+      )
+    );
+
+    const entryDependencyMap = R.mergeRight(
+      referenceDependencyMap,
+      generatorDependencyMap
     );
 
     // force formatter to be optionally added since it's used by most actions
@@ -527,8 +602,23 @@ export class GeneratorEngine {
         entry.generatorConfig.dependsOn || {}
       );
 
+      // fill in reference providers into descriptor
+      const resolvedDescriptor = Object.entries(dependencyMaps[entryId]).reduce(
+        (prev, [key, providerId]) => {
+          if (key.startsWith('ref:') && providerId) {
+            const [, fullPath, providerName] = key.split(':');
+            const pathParts = fullPath.split('.');
+            const provider = providerMap[providerId][providerName];
+
+            return R.set(R.lensPath(pathParts), provider, prev);
+          }
+          return prev;
+        },
+        entry.descriptor
+      );
+
       const generator = entry.generatorConfig.createGenerator(
-        entry.descriptor,
+        resolvedDescriptor,
         dependencies
       );
       generatorsById[entryId] = generator;

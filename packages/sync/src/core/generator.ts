@@ -43,6 +43,7 @@ export interface GeneratorConfig<
   DependencyMap extends ProviderDependencyMap<any> = ProviderDependencyMap<any>
 > {
   descriptorSchema?: DescriptorSchema<Descriptor>;
+  descriptorReferences?: DependencyMap;
   childGenerators?: { [key: string]: ChildGenerator };
   exports?: ExportMap;
   dependsOn?: DependencyMap;

@@ -8,9 +8,6 @@ export type ChildDescriptorsOrReferences =
 export interface GeneratorDescriptor {
   name?: string;
   generator: string;
-  references?: {
-    [key: string]: string;
-  };
   children?: {
     [key: string]: ChildDescriptorsOrReferences;
   };
@@ -19,6 +16,5 @@ export interface GeneratorDescriptor {
 export const baseDescriptorSchema = {
   name: yup.string(),
   generator: yup.string().required(),
-  references: yup.mixed(),
   children: yup.mixed(),
 };
