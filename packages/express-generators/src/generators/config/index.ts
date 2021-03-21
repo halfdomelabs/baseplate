@@ -12,9 +12,12 @@ import {
   createProviderType,
   readTemplate,
   createNonOverwriteableMap,
+  writeFileAction,
 } from '@baseplate/sync';
+import * as R from 'ramda';
 import * as yup from 'yup';
 import { expressProvider } from '../express';
+import { writeEnvFile } from './actions/writeEnvFile';
 
 interface ExpressConfigDescriptor extends GeneratorDescriptor {
   placeholder: string;
@@ -30,9 +33,16 @@ const CONFIG_FILE_CONFIG = createTypescriptTemplateConfig({
   CONFIG_SCHEMA_OBJECT: { type: 'code-expression' },
 });
 
+interface ConfigEntry {
+  default?: string;
+  description: string;
+  excludeFromEnvFile?: boolean;
+  validation: TypescriptCodeExpression;
+}
+
 export interface ExpressConfigProvider {
   getConfigFile(): TypescriptSourceFile<typeof CONFIG_FILE_CONFIG>;
-  addConfigEntries(entries: Record<string, TypescriptCodeExpression>): void;
+  addConfigEntries(entries: Record<string, ConfigEntry>): void;
 }
 
 export const expressConfigProvider = createProviderType<ExpressConfigProvider>(
@@ -52,7 +62,7 @@ const ExpressConfigGenerator = createGeneratorConfig({
   },
   createGenerator(descriptor, { node, express }) {
     const configEntries = createNonOverwriteableMap<
-      Record<string, TypescriptCodeExpression>
+      Record<string, ConfigEntry>
     >({}, 'express-config');
     const configFile = new TypescriptSourceFile(CONFIG_FILE_CONFIG);
     node.addPackages({
@@ -65,7 +75,11 @@ const ExpressConfigGenerator = createGeneratorConfig({
       code: 'const DEFAULT_PORT=4000;',
     });
     configEntries.merge({
-      PORT: { expression: 'yup.number().default(DEFAULT_PORT)' },
+      PORT: {
+        excludeFromEnvFile: true,
+        description: 'Port to listen on',
+        validation: { expression: 'yup.number().default(DEFAULT_PORT)' },
+      },
     });
     express.getServerFile().addCodeExpression('PORT', {
       expression: 'config.PORT',
@@ -83,12 +97,41 @@ const ExpressConfigGenerator = createGeneratorConfig({
       build: async (context) => {
         configFile.addCodeExpression(
           'CONFIG_SCHEMA_OBJECT',
-          TypescriptCodeUtils.mergeExpressionsAsObject(configEntries.value())
+          TypescriptCodeUtils.mergeExpressionsAsObject(
+            R.mapObjIndexed((value) => value.validation, configEntries.value())
+          )
         );
 
         const configTemplate = await readTemplate(__dirname, 'config.ts');
         context.addAction(
           configFile.renderToAction(configTemplate, 'src/config.ts')
+        );
+
+        const envEntries = Object.entries(configEntries.value()).filter(
+          ([, value]) => !value.excludeFromEnvFile
+        );
+
+        // write .env.example file
+        context.addAction(
+          writeFileAction({
+            contents: envEntries
+              .map(([key, value]) => `${key}=${value.description}`)
+              .join('\n'),
+            destination: '.env.example',
+          })
+        );
+
+        // merge in new defaults to .env file
+        context.addAction(
+          writeEnvFile({
+            defaults: R.fromPairs(
+              envEntries.map(([key, value]) => [
+                key,
+                value.default || value.description,
+              ])
+            ),
+            envFilePath: '.env',
+          })
         );
       },
     };

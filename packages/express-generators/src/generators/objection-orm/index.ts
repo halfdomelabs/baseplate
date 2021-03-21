@@ -69,7 +69,11 @@ const ObjectionOrmGenerator = createGeneratorConfig({
     });
 
     config.addConfigEntries({
-      DB_CONNECTION_STRING: { expression: 'yup.string().required()' },
+      DB_CONNECTION_STRING: {
+        default: 'sqlite',
+        description: 'Connection string for Knex ("sqlite" to use SQLite)',
+        validation: { expression: 'yup.string().required()' },
+      },
     });
 
     return {
