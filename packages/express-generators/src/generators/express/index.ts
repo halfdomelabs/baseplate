@@ -41,6 +41,7 @@ const TYPES_FILE_CONFIG = createTypescriptTemplateConfig({
 });
 
 export interface ExpressProvider {
+  getRootFolder(): string;
   getSrcFolder(): string;
   getFeaturesFolder(): string;
   getServerFile(): TypescriptSourceFile<typeof SERVER_FILE_CONFIG>;
@@ -99,6 +100,7 @@ const ExpressGenerator = createGeneratorConfig({
     return {
       getProviders: () => ({
         express: {
+          getRootFolder: () => '.',
           getSrcFolder: () => 'src',
           getFeaturesFolder: () => 'src/features',
           getServerFile: () => serverFile,

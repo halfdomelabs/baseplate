@@ -44,6 +44,11 @@ const ObjectionOrmGenerator = createGeneratorConfig({
   exports: {
     objectionOrm: objectionOrmProvider,
   },
+  childGenerators: {
+    migrations: {
+      multiple: true,
+    },
+  },
   createGenerator(descriptor, { node, nodeGitIgnore, express, config }) {
     const modelFiles: string[] = [];
 
