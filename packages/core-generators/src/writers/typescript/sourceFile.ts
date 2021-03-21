@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
 
 import R from 'ramda';
@@ -47,7 +48,7 @@ type TypescriptCodeConfig =
   | TypescriptCodeWrapperConfig
   | TypescriptCodeExpressionConfig;
 
-type TypescriptTemplateConfig<T = any> = {
+type TypescriptTemplateConfig<T = Record<string, unknown>> = {
   [K in keyof T]: TypescriptCodeConfig;
 };
 
@@ -64,12 +65,14 @@ type InferCodeEntries<T extends TypescriptTemplateConfig> = {
 };
 
 export function createTypescriptTemplateConfig<
-  T extends TypescriptTemplateConfig<any>
+  T extends TypescriptTemplateConfig<Record<string, unknown>>
 >(config: T): T {
   return config;
 }
 
-export class TypescriptSourceBlock<T extends TypescriptTemplateConfig<any>> {
+export class TypescriptSourceBlock<
+  T extends TypescriptTemplateConfig<Record<string, unknown>>
+> {
   protected config: T;
 
   protected hasCodeGenerated = false;

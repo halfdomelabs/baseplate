@@ -14,7 +14,7 @@ import {
 import { camelCase, pascalCase } from 'change-case';
 import { pluralize } from 'inflected';
 import * as yup from 'yup';
-import R, { update } from 'ramda';
+import R from 'ramda';
 import { fieldToDefinition } from '../../utils/nexus-objection';
 import {
   nexusObjectionTypeProvider,
@@ -91,7 +91,7 @@ const NexusObjectionCrudGenerator = createGeneratorConfig({
     nexusObjectionCrud: nexusObjectionCrudProvider,
   },
   createGenerator(
-    { name, objectType, model, idField, insertFields, updateFields },
+    { objectType, model, idField, insertFields, updateFields },
     { nexusSchema }
   ) {
     const crudFile = new TypescriptSourceBlock(crudFileConfig);
@@ -137,7 +137,7 @@ const NexusObjectionCrudGenerator = createGeneratorConfig({
           getCrudFile: () => crudFile,
         },
       }),
-      build: async (context) => {
+      build: async () => {
         const template = await readTemplate(__dirname, 'crud.ts');
         const code = crudFile.render(template, {
           LIST_QUERY_VAR: `${pluralize(camelCaseName)}Query`,

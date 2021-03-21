@@ -6,7 +6,7 @@ import {
   writeJsonAction,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import { CodeBlockWriter, CompilerOptions, ts } from 'ts-morph';
+import { CompilerOptions, ts } from 'ts-morph';
 import { nodeProvider } from '../node';
 
 type Descriptor = GeneratorDescriptor;
@@ -15,8 +15,7 @@ const descriptorSchema = {};
 
 // can use CompilerOptions from Typescript but it requires awkwardly serializing
 // CompilerOptions which would have to be done manually
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type TypescriptCompilerOptions = any;
+export type TypescriptCompilerOptions = Record<string, unknown>;
 
 export interface TypescriptProvider {
   setTypescriptVersion(version: string): void;

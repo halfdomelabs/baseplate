@@ -19,7 +19,7 @@ const descriptorSchema = {
   placeholder: yup.string(),
 };
 
-export type ReactComponentsProvider = {};
+export type ReactComponentsProvider = unknown;
 
 export const reactComponentsProvider = createProviderType<ReactComponentsProvider>(
   'react-components'

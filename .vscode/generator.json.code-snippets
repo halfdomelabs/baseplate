@@ -32,7 +32,7 @@
 			"  placeholder: yup.string()",
 			"};",
 			"",
-			"export type ${1}Provider = {};",
+			"export type ${1}Provider = unknown;",
 			"",
 			"export const ${2:generatorName}Provider = createProviderType<${1}Provider>('${3:generator-name}');",
 			"",

@@ -5,7 +5,7 @@ import { createActionCreator } from '../core/action';
 interface Options {
   destination: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  contents: any;
+  contents: Record<string, unknown>;
   noFormat?: boolean;
 }
 

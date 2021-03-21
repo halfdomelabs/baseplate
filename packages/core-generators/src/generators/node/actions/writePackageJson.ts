@@ -8,9 +8,10 @@ import { promisify } from 'util';
 
 const exec = promisify(childProcess.exec);
 
-// not going to type it
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type PackageJson = any;
+interface PackageJson extends Record<string, unknown> {
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
+}
 
 interface Options {
   baseDirectory?: string;

@@ -19,7 +19,7 @@ const descriptorSchema = {
   placeholder: yup.string(),
 };
 
-export type EslintProvider = {};
+export type EslintProvider = unknown;
 
 export const eslintProvider = createProviderType<EslintProvider>('eslint');
 

@@ -36,14 +36,17 @@ export const prettierProvider = createProviderType<PrettierProvider>(
 
 const PARSEABLE_EXTENSIONS = ['.json', '.js', '.ts', '.jsx', '.tsx'];
 
+interface ResolveError extends Error {
+  code?: string;
+}
+
 function resolveModule(name: string, fullPath: string): Promise<string | null> {
   const basedir = path.dirname(fullPath);
   return new Promise((resolve, reject) => {
     requireResolve(name, { basedir }, (err, resolved): void => {
       if (err) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const anyError: any = err;
-        if (anyError.code === 'MODULE_NOT_FOUND') {
+        const resolveError: ResolveError = err as ResolveError;
+        if (resolveError.code === 'MODULE_NOT_FOUND') {
           return resolve(null);
         }
         return reject(err);
@@ -51,6 +54,10 @@ function resolveModule(name: string, fullPath: string): Promise<string | null> {
       return resolve(resolved || null);
     });
   });
+}
+
+interface PrettierModule {
+  format(input: string, config: Record<string, unknown>): string;
 }
 
 const PrettierGenerator = createGeneratorConfig({
@@ -67,7 +74,8 @@ const PrettierGenerator = createGeneratorConfig({
     return {
       getProviders: () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let prettierLib: any;
+        let prettierLib: PrettierModule;
+        let prettierLibNotFound = false;
         return {
           formatter: {
             format: async (input: string, fullPath: string) => {
@@ -75,7 +83,7 @@ const PrettierGenerator = createGeneratorConfig({
                 return input;
               }
               // no prettier lib found
-              if (prettierLib === false) {
+              if (prettierLibNotFound) {
                 return input;
               }
               if (!prettierLib) {
@@ -87,10 +95,10 @@ const PrettierGenerator = createGeneratorConfig({
                   console.log(
                     'Could not find prettier library. Run again once dependencies have been installed.'
                   );
-                  prettierLib = false;
+                  prettierLibNotFound = true;
                   return input;
                 }
-                prettierLib = module.require(prettierLibPath);
+                prettierLib = module.require(prettierLibPath) as PrettierModule;
               }
               return prettierLib.format(input, {
                 ...prettierConfig,
@@ -99,12 +107,10 @@ const PrettierGenerator = createGeneratorConfig({
             },
           },
           prettier: {
-            getConfig: () => {
-              return {
-                tabWidth: descriptor.tabWidth,
-                singleQuote: descriptor.singleQuote,
-              };
-            },
+            getConfig: () => ({
+              tabWidth: descriptor.tabWidth,
+              singleQuote: descriptor.singleQuote,
+            }),
           },
         };
       },

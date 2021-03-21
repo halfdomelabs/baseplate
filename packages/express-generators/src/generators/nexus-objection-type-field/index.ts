@@ -22,7 +22,7 @@ const descriptorSchema = {
   field: yup.string().required(),
 };
 
-export type NexusObjectionTypeFieldProvider = {};
+export type NexusObjectionTypeFieldProvider = unknown;
 
 export const nexusObjectionTypeFieldProvider = createProviderType<NexusObjectionTypeFieldProvider>(
   'nexus-objection-type-field'
@@ -47,7 +47,7 @@ const NexusObjectionTypeFieldGenerator = createGeneratorConfig({
       getProviders: () => ({
         nexusObjectionTypeField: {},
       }),
-      build: (context) => {
+      build: () => {
         //
       },
     };

@@ -21,6 +21,7 @@ export async function loadGenerators(
 
   const generators = generatorFolders.map((folder) => {
     const generatorFolder = path.join(GENERATOR_DIR, folder);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access
     const generator = require(generatorFolder)?.default as GeneratorConfig<any>;
     if (!generator) {
       throw new Error(

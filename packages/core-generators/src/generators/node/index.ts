@@ -13,6 +13,7 @@ import { writePackageJson } from './actions/writePackageJson';
 interface Descriptor extends GeneratorDescriptor {
   name: string;
   description: string;
+  license: string;
   version: string;
   private: boolean;
 }
@@ -20,6 +21,7 @@ interface Descriptor extends GeneratorDescriptor {
 const descriptorSchema = {
   name: yup.string().required(),
   description: yup.string(),
+  license: yup.string().default('UNLICENSED'),
   version: yup.string().default('0.1.0'),
   private: yup.bool().default(true),
 };
@@ -156,6 +158,7 @@ const NodeGenerator = createGeneratorConfig({
         const packageJson = {
           name: descriptor.name,
           description: descriptor.description,
+          license: descriptor.license,
           version: descriptor.version,
           private: descriptor.private,
           ...extraProperties.value(),

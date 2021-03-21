@@ -14,7 +14,7 @@ import { GeneratorConfig, Generator, ChildGenerator } from './generator';
 import { Action, ActionContext, PostActionCallback } from './action';
 import { GeneratorBuildContext } from './context';
 import { FormatterProvider } from '../providers/formatter';
-import { ProviderDependency, ProviderType } from './provider';
+import { Provider, ProviderDependency, ProviderType } from './provider';
 import { notEmpty } from '../utils/arrays';
 
 /* eslint-disable class-methods-use-this */
@@ -66,7 +66,6 @@ async function validateDescriptor(
     })
     .noUnknown(true)
     .required()
-    .strict(true)
     .validate(cleanedDescriptor);
 
   // validate children
@@ -239,6 +238,7 @@ function lookupValuesByParts(
     );
   }
   return lookupValuesByParts(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     obj[parts[0]],
     parts.slice(1),
     `${dottedOrigin}${parts[0]}`
@@ -424,7 +424,7 @@ export class GeneratorEngine {
 
     const generatorDependencyMap = R.zipObj(
       generatorDependencies.map(([key]) => key),
-      generatorDependencies.map(([key, dep]) => {
+      generatorDependencies.map(([, dep]) => {
         const provider = dep.name;
         const isOptional = dep.type === 'dependency' && dep.options.optional;
 
@@ -566,14 +566,16 @@ export class GeneratorEngine {
     );
 
     const generatorsById: Record<string, Generator<any>> = {};
-    const providerMap: Record<string, Record<string, any>> = {};
+    const providerMap: Record<string, Record<string, Provider>> = {};
 
     // initialize providers (beginning at the bottom of dependency tree)
     for (const entryId of sortedEntryIds) {
       const entry = entriesById[entryId];
       // resolve dependencies and format into entry
       const resolveDependency = (
-        providerDependency: ProviderType<any> | ProviderDependency<any>,
+        providerDependency:
+          | ProviderType<Provider>
+          | ProviderDependency<Provider>,
         key: string
       ): any => {
         const dependency: ProviderDependency<any> =
@@ -629,7 +631,7 @@ export class GeneratorEngine {
       generatorsById[entryId] = generator;
 
       if (generator.getProviders) {
-        const exportedProviders = generator.getProviders({});
+        const exportedProviders = generator.getProviders();
 
         // map exported providers to their provider name
         const configExports = entry.generatorConfig.exports || {};
@@ -670,7 +672,9 @@ export class GeneratorEngine {
 
       await Promise.resolve(generator.build(context));
       const formatterId = dependencyMaps[entryId].formatter;
-      const formatter = formatterId && providerMap[formatterId].formatter;
+      const formatter = formatterId
+        ? ((providerMap[formatterId].formatter as unknown) as FormatterProvider)
+        : null;
 
       buildActions.push({
         actions,

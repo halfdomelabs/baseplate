@@ -29,6 +29,7 @@ module.exports = function createEslintConfig(options) {
   return {
     root: true,
     parserOptions: typescript ? typescriptParserOptions : {},
+    ignorePatterns: ['.eslintrc.js'],
     extends: [
       ...(typescript ? typescriptConfigs : baseConfigs),
       'plugin:jest/recommended',

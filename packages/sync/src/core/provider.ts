@@ -1,19 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import R from 'ramda';
 
-export interface ProviderType<Provider = any> {
+export type Provider = Record<string, (...args: any[]) => any>;
+
+export interface ProviderType<P = Provider> {
   readonly type: 'type';
   readonly name: string;
-  dependency(): ProviderDependency<Provider>;
+  dependency(): ProviderDependency<P>;
 }
 
-export interface ProviderDependency<Provider = any> {
+export interface ProviderDependency<P = Provider> {
   readonly type: 'dependency';
   readonly name: string;
   readonly options: {
     optional?: boolean;
   };
-  optional(): ProviderDependency<Provider | undefined>;
+  optional(): ProviderDependency<P | undefined>;
 }
 
 export function createProviderType<T>(name: string): ProviderType<T> {

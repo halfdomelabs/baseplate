@@ -45,16 +45,14 @@ const NodeGitIgnoreGenerator = createGeneratorConfig({
       'yarn-error.log*',
     ];
     return {
-      getProviders: () => {
-        return {
-          nodeGitIgnore: {
-            addExclusions(exclusions: string[]) {
-              exclusionLines.push('');
-              exclusionLines.push(...exclusions);
-            },
+      getProviders: () => ({
+        nodeGitIgnore: {
+          addExclusions(exclusions: string[]) {
+            exclusionLines.push('');
+            exclusionLines.push(...exclusions);
           },
-        };
-      },
+        },
+      }),
       build: (context) => {
         if (descriptor.additionalExclusions) {
           exclusionLines.push(...descriptor.additionalExclusions);

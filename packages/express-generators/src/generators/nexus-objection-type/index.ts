@@ -54,7 +54,7 @@ const NexusObjectionTypeGenerator = createGeneratorConfig({
           getTypeName: () => descriptor.name,
         },
       }),
-      build: (context) => {
+      build: () => {
         const fieldWrapper: TypescriptCodeWrapper = {
           wrap: (code: string) =>
             `

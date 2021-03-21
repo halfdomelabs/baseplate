@@ -67,7 +67,7 @@ const ObjectionFieldGenerator = createGeneratorConfig({
           isIdField: () => descriptor.id,
         },
       }),
-      build: (context) => {},
+      build: () => {},
     };
   },
 });
