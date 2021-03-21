@@ -16,6 +16,7 @@ interface Descriptor extends GeneratorDescriptor {
   license: string;
   version: string;
   private: boolean;
+  path: string;
 }
 
 const descriptorSchema = {
@@ -24,6 +25,7 @@ const descriptorSchema = {
   license: yup.string().default('UNLICENSED'),
   version: yup.string().default('0.1.0'),
   private: yup.bool().default(true),
+  path: yup.string().default(''),
 };
 
 export interface NodeProvider {
