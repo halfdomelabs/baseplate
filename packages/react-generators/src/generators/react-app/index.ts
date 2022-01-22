@@ -9,7 +9,6 @@ import {
   GeneratorDescriptor,
   createProviderType,
   readTemplate,
-  writeFileAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { reactProvider } from '../react';
@@ -61,12 +60,7 @@ const ReactAppGenerator = createGeneratorConfig({
 
         const template = await readTemplate(__dirname, 'app.tsx');
 
-        context.addAction(
-          writeFileAction({
-            destination,
-            contents: appFile.render(template, destination),
-          })
-        );
+        context.addAction(appFile.renderToAction(template, destination));
       },
     };
   },

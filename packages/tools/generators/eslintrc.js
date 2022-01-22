@@ -1,10 +1,13 @@
-const baseConfigs = ['airbnb-base'];
+const baseConfigs = ['airbnb-base', 'plugin:import/recommended'];
 
 const typescriptConfigs = [
+  'airbnb-base',
   'airbnb-typescript/base',
   'plugin:@typescript-eslint/eslint-recommended',
   'plugin:@typescript-eslint/recommended',
   'plugin:@typescript-eslint/recommended-requiring-type-checking',
+  'plugin:import/recommended',
+  'plugin:import/typescript',
 ];
 
 const typescriptParserOptions = {
@@ -35,7 +38,6 @@ module.exports = function createEslintConfig(options) {
       'plugin:jest/recommended',
       'plugin:jest/style',
       'prettier',
-      ...(typescript ? ['prettier/@typescript-eslint'] : []),
     ],
     rules: {
       ...(typescript ? typescriptRules : {}),
@@ -43,6 +45,19 @@ module.exports = function createEslintConfig(options) {
       'class-methods-use-this': 'off',
       'no-console': 'off',
       'no-template-curly-in-string': 'off',
+      'import/order': [
+        'error',
+        {
+          pathGroups: [
+            { pattern: '@src/**', group: 'external', position: 'after' },
+          ],
+          alphabetize: { order: 'asc' },
+        },
+      ],
+      'import/no-extraneous-dependencies': [
+        'error',
+        { devDependencies: ['**/*.test.ts', 'src/tests/**/*.ts'] },
+      ],
     },
     env: {
       node: true,

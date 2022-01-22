@@ -1,21 +1,21 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import { promises as fs } from 'fs';
-import * as yup from 'yup';
 import path from 'path';
 import R from 'ramda';
 import toposort from 'toposort';
+import * as yup from 'yup';
+import { FormatterProvider } from '../providers/formatter';
+import { notEmpty } from '../utils/arrays';
+import { Action, ActionContext, PostActionCallback } from './action';
+import { GeneratorBuildContext } from './context';
 import {
   baseDescriptorSchema,
   ChildDescriptorsOrReferences,
   GeneratorDescriptor,
 } from './descriptor';
 import { GeneratorConfig, Generator, ChildGenerator } from './generator';
-import { Action, ActionContext, PostActionCallback } from './action';
-import { GeneratorBuildContext } from './context';
-import { FormatterProvider } from '../providers/formatter';
 import { Provider, ProviderDependency, ProviderType } from './provider';
-import { notEmpty } from '../utils/arrays';
 
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -673,7 +673,7 @@ export class GeneratorEngine {
       await Promise.resolve(generator.build(context));
       const formatterId = dependencyMaps[entryId].formatter;
       const formatter = formatterId
-        ? ((providerMap[formatterId].formatter as unknown) as FormatterProvider)
+        ? (providerMap[formatterId].formatter as unknown as FormatterProvider)
         : null;
 
       buildActions.push({

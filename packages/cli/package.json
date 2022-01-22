@@ -9,24 +9,23 @@
   "private": true,
   "devDependencies": {
     "@baseplate/tools": "^0.0.1",
-    "@types/ramda": "^0.27.34",
-    "ts-node-dev": "^1.1.1",
-    "typescript": "^4.1.5"
+    "@types/ramda": "^0.27.64",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.5.4"
   },
   "scripts": {
     "start": "tsc && node dist/index.js",
     "dev": "ts-node-dev --respawn src",
     "build": "tsc",
     "watch": "tsc --watch",
-    "prepare": "yarn build",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
   },
   "dependencies": {
     "@baseplate/core-generators": "^0.0.1",
-    "@baseplate/react-generators": "^0.0.1",
     "@baseplate/express-generators": "^0.0.1",
+    "@baseplate/react-generators": "^0.0.1",
     "@baseplate/sync": "^0.0.1",
-    "commander": "^6.2.1",
-    "ramda": "^0.27.1"
+    "commander": "^8.3.0",
+    "ramda": "^0.28.0"
   }
 }

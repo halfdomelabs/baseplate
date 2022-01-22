@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Schema } from 'yup';
+import { BaseSchema } from 'yup';
 import { GeneratorBuildContext } from './context';
 import { GeneratorDescriptor } from './descriptor';
 import { Provider, ProviderDependency, ProviderType } from './provider';
 
 export type DescriptorSchema<T> = {
-  [K in keyof Exclude<T, GeneratorDescriptor>]: Schema<
+  [K in keyof Exclude<T, GeneratorDescriptor>]: BaseSchema<
     Exclude<T, GeneratorDescriptor>[K]
   >;
 };
