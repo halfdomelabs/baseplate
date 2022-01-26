@@ -56,7 +56,13 @@ module.exports = function createEslintConfig(options) {
       ],
       'import/no-extraneous-dependencies': [
         'error',
-        { devDependencies: ['**/*.test.ts', 'src/tests/**/*.ts'] },
+        {
+          devDependencies: [
+            '**/*.test.ts',
+            'src/tests/**/*.ts',
+            '**/__mocks__/*.ts',
+          ],
+        },
       ],
     },
     env: {

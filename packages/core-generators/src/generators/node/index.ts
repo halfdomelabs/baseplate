@@ -5,9 +5,9 @@ import {
   createGeneratorDescriptor,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
 import R from 'ramda';
 import semver from 'semver';
+import * as yup from 'yup';
 import { writePackageJson } from './actions/writePackageJson';
 
 interface Descriptor extends GeneratorDescriptor {
