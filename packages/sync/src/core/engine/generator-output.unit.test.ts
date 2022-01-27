@@ -48,6 +48,17 @@ describe('writeGeneratorOutput', () => {
     expect(formatFunction).toHaveBeenCalledWith('hello', '/root/formatted.txt');
   });
 
+  it('should write binary file', async () => {
+    await writeGeneratorOutput(
+      {
+        files: { 'file.txt': { contents: Buffer.from('hi', 'utf8') } },
+        postWriteCommands: [],
+      },
+      '/root'
+    );
+    expect(vol.toJSON()).toEqual({ '/root/file.txt': 'hi' });
+  });
+
   it('should run post-write commands', async () => {
     await writeGeneratorOutput(
       {
@@ -96,5 +107,28 @@ describe('writeGeneratorOutput', () => {
     });
 
     expect(mockedChildProcess.exec.mock.calls[0][0]).toBe('custom');
+  });
+
+  it('should run post-write commands only on modified binary files', async () => {
+    vol.fromJSON({
+      '/root/file.txt': 'binary-data',
+    });
+
+    await writeGeneratorOutput(
+      {
+        files: {
+          'file.txt': { contents: Buffer.from('binary-data', 'utf8') },
+        },
+        postWriteCommands: [
+          { command: 'yarn install', options: { onlyIfChanged: ['file.txt'] } },
+        ],
+      },
+      '/root'
+    );
+    expect(vol.toJSON()).toEqual({
+      '/root/file.txt': 'binary-data',
+    });
+
+    expect(mockedChildProcess.exec).toHaveBeenCalledTimes(0);
   });
 });

@@ -6,18 +6,34 @@ import { FileData, GeneratorOutput } from './generator-runner';
 
 const exec = promisify(childProcess.exec);
 
+async function contentEquals(
+  contents: string | Buffer,
+  filePath: string
+): Promise<boolean> {
+  const pathExists = await fs.pathExists(filePath);
+  if (!pathExists) {
+    return false;
+  }
+  if (contents instanceof Buffer) {
+    const fileContents = await fs.readFile(filePath);
+    return contents.equals(fileContents);
+  }
+  const fileString = await fs.readFile(filePath, 'utf8');
+  return contents === fileString;
+}
+
 async function writeFile(filePath: string, data: FileData): Promise<boolean> {
   let formattedContents = data.contents;
   if (data.formatter) {
+    if (data.contents instanceof Buffer) {
+      throw new Error(`Cannot format Buffer contents for ${filePath}`);
+    }
     formattedContents = await data.formatter.format(data.contents, filePath);
   }
   // check if file matches contents already
-  const pathExists = await fs.pathExists(filePath);
-  const existingContents = pathExists
-    ? await fs.readFile(filePath, 'utf8')
-    : null;
+  const isContentSame = await contentEquals(formattedContents, filePath);
 
-  if (formattedContents === existingContents) {
+  if (isContentSame) {
     return false;
   }
   await fs.ensureDir(path.dirname(filePath));

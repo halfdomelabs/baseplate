@@ -1,22 +1,29 @@
-import fs from 'fs-extra';
 import path from 'path';
-import { createActionCreator } from '../core/action';
+import fs from 'fs-extra';
+import { makeBuilderActionCreator } from '../core';
 
 interface Options {
   destination: string;
   source: string;
+  shouldFormat: boolean;
 }
 
-export const copyFileAction = createActionCreator<Options>(
-  'copy-file',
-  async (options, context) => {
-    const { currentDirectory, generatorDirectory } = context;
-    const { destination, source } = options;
+export const copyFileAction = makeBuilderActionCreator(
+  (options: Options) => async (builder) => {
+    const { destination, source, shouldFormat } = options;
 
-    const templatePath = path.join(generatorDirectory, 'templates', source);
-    const destinationPath = path.join(currentDirectory, destination);
+    const templatePath = path.join(
+      builder.generatorBaseDirectory,
+      'templates',
+      source
+    );
 
-    await fs.ensureDir(path.dirname(destinationPath));
-    await fs.copyFile(templatePath, destinationPath);
+    if (shouldFormat) {
+      const fileContents = await fs.readFile(templatePath, 'utf8');
+      builder.writeFile(destination, fileContents, { shouldFormat: true });
+    } else {
+      const fileContents = await fs.readFile(templatePath);
+      builder.writeFile(destination, fileContents);
+    }
   }
 );

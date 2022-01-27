@@ -1,38 +1,29 @@
-import fs from 'fs-extra';
 import path from 'path';
 import ejs from 'ejs';
-import { createActionCreator } from '../core/action';
+import fs from 'fs-extra';
+import { makeBuilderActionCreator } from '../core';
 
 interface Options {
   destination: string;
   template: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   noFormat?: boolean;
 }
 
-export const writeTemplateAction = createActionCreator<Options>(
-  'write-template',
-  async (options, context) => {
-    const { currentDirectory, generatorDirectory, formatter } = context;
+export const writeTemplateAction = makeBuilderActionCreator(
+  (options: Options) => async (builder) => {
     const { destination, template, data, noFormat } = options;
 
-    const templatePath = path.join(generatorDirectory, 'templates', template);
+    const templatePath = path.join(
+      builder.generatorBaseDirectory,
+      'templates',
+      template
+    );
 
     const templateContents = await fs.readFile(templatePath, 'utf8');
 
-    let contents = ejs.render(templateContents, data);
+    const contents = ejs.render(templateContents, data);
 
-    const fullPath = path.join(currentDirectory, destination);
-    if (formatter && !noFormat) {
-      contents = await formatter.format(contents, fullPath);
-    }
-    const destinationPath = path.join(currentDirectory, destination);
-
-    await fs.ensureDir(path.dirname(destinationPath));
-
-    await fs.writeFile(destinationPath, contents, {
-      encoding: 'utf-8',
-    });
+    builder.writeFile(destination, contents, { shouldFormat: !noFormat });
   }
 );

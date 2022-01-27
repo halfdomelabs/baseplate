@@ -1,7 +1,8 @@
-import R, { F } from 'ramda';
+import R from 'ramda';
 import { FormatterProvider } from '@src/providers';
 import { GeneratorInstance } from '../generator';
 import {
+  BuilderAction,
   GeneratorOutputBuilder,
   PostWriteCommandOptions,
   WriteFileOptions,
@@ -18,7 +19,7 @@ import { flattenGeneratorEntries } from './utils';
 /* eslint-disable no-restricted-syntax */
 
 export interface FileData {
-  contents: string;
+  contents: string | Buffer;
   formatter?: FormatterProvider;
 }
 
@@ -47,11 +48,15 @@ class OutputBuilder implements GeneratorOutputBuilder {
 
   writeFile(
     filename: string,
-    contents: string,
+    contents: string | Buffer,
     options?: WriteFileOptions
   ): void {
     if (this.output.files[filename]) {
       throw new Error(`Cannot overwrite file ${filename}`);
+    }
+
+    if (contents instanceof Buffer && options?.shouldFormat) {
+      throw new Error(`Cannot format Buffer contents for ${filename}`);
     }
     const formatter =
       this.formatter && options?.shouldFormat ? this.formatter : undefined;
@@ -63,6 +68,10 @@ class OutputBuilder implements GeneratorOutputBuilder {
     options?: PostWriteCommandOptions
   ): void {
     this.output.postWriteCommands.push({ command, options });
+  }
+
+  async apply(action: BuilderAction): Promise<void> {
+    await action.execute(this);
   }
 }
 

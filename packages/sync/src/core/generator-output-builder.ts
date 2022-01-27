@@ -26,8 +26,25 @@ export interface GeneratorOutputBuilder {
   generatorBaseDirectory: string;
   writeFile(
     filename: string,
-    content: string,
+    content: string | Buffer,
     options?: WriteFileOptions
   ): void;
   addPostWriteCommand(command: string, options?: PostWriteCommandOptions): void;
+  apply(action: BuilderAction): Promise<void>;
+}
+
+export interface BuilderAction {
+  execute(builder: GeneratorOutputBuilder): void | Promise<void>;
+}
+
+export type BuilderActionCreator<T extends unknown[]> = (
+  ...args: T
+) => BuilderAction;
+
+export function makeBuilderActionCreator<T extends unknown[]>(
+  creator: (...args: T) => BuilderAction['execute']
+): BuilderActionCreator<T> {
+  return (...args) => ({
+    execute: (builder) => creator(...args)(builder),
+  });
 }
