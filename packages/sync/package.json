@@ -23,7 +23,7 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "rm -rf ./lib && tsc && tsc-alias",
     "watch": "tsc --watch & tsc-alias --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "test": "jest"
