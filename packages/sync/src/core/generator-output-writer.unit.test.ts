@@ -1,7 +1,7 @@
 import childProcess from 'child_process';
 import { vol } from 'memfs';
 import { FormatterProvider } from '@src/providers';
-import { writeGeneratorOutput } from './generator-output';
+import { writeGeneratorOutput } from './generator-output-writer';
 
 jest.mock('fs');
 

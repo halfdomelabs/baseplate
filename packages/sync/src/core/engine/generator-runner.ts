@@ -1,12 +1,7 @@
 import R from 'ramda';
 import { FormatterProvider } from '@src/providers';
 import { GeneratorInstance } from '../generator';
-import {
-  BuilderAction,
-  GeneratorOutputBuilder,
-  PostWriteCommandOptions,
-  WriteFileOptions,
-} from '../generator-output-builder';
+import { GeneratorOutput, OutputBuilder } from '../generator-output';
 import { Provider } from '../provider';
 import { buildEntryDependencyMapRecursive } from './dependency-map';
 import { getSortedEntryIds } from './dependency-sort';
@@ -17,63 +12,6 @@ import { flattenGeneratorEntries } from './utils';
 
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-
-export interface FileData {
-  contents: string | Buffer;
-  formatter?: FormatterProvider;
-}
-
-interface PostWriteCommand {
-  command: string;
-  options?: PostWriteCommandOptions;
-}
-
-export interface GeneratorOutput {
-  files: Record<string, FileData>;
-  postWriteCommands: PostWriteCommand[];
-}
-
-class OutputBuilder implements GeneratorOutputBuilder {
-  output: GeneratorOutput;
-
-  generatorBaseDirectory: string;
-
-  formatter: FormatterProvider | undefined;
-
-  constructor(generatorBaseDirectory: string, formatter?: FormatterProvider) {
-    this.output = { files: {}, postWriteCommands: [] };
-    this.generatorBaseDirectory = generatorBaseDirectory;
-    this.formatter = formatter;
-  }
-
-  writeFile(
-    filename: string,
-    contents: string | Buffer,
-    options?: WriteFileOptions
-  ): void {
-    if (this.output.files[filename]) {
-      throw new Error(`Cannot overwrite file ${filename}`);
-    }
-
-    if (contents instanceof Buffer && options?.shouldFormat) {
-      throw new Error(`Cannot format Buffer contents for ${filename}`);
-    }
-    const formatter =
-      this.formatter && options?.shouldFormat ? this.formatter : undefined;
-    this.output.files[filename] = { contents, formatter };
-  }
-
-  addPostWriteCommand(
-    command: string,
-    options?: PostWriteCommandOptions
-  ): void {
-    this.output.postWriteCommands.push({ command, options });
-  }
-
-  async apply(action: BuilderAction): Promise<void> {
-    await action.execute(this);
-  }
-}
 
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry

@@ -1,6 +1,6 @@
 import { formatterProvider } from '@src/providers';
 import { ProviderDependencyMap, ProviderExportMap } from '../generator';
-import { GeneratorOutputBuilder } from '../generator-output-builder';
+import { GeneratorOutputBuilder } from '../generator-output';
 import { Provider, createProviderType } from '../provider';
 import { GeneratorEntry } from './generator-builder';
 import { executeGeneratorEntry } from './generator-runner';

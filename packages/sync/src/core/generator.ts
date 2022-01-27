@@ -1,5 +1,5 @@
 import { BaseGeneratorDescriptor } from './descriptor';
-import { GeneratorOutputBuilder } from './generator-output-builder';
+import { GeneratorOutputBuilder } from './generator-output';
 import { Provider, ProviderDependency, ProviderType } from './provider';
 
 /**

@@ -2,7 +2,7 @@ import childProcess from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
 import fs from 'fs-extra';
-import { FileData, GeneratorOutput } from './generator-runner';
+import { FileData, GeneratorOutput } from './generator-output';
 
 const exec = promisify(childProcess.exec);
 

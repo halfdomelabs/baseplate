@@ -1,9 +1,10 @@
 import path from 'path';
+import { GeneratorOutput } from '../generator-output';
+import { writeGeneratorOutput } from '../generator-output-writer';
 import { GeneratorConfigMap } from '../loader';
 import { loadDescriptorFromFile } from './descriptor-loader';
 import { buildGeneratorEntry, GeneratorEntry } from './generator-builder';
-import { writeGeneratorOutput } from './generator-output';
-import { executeGeneratorEntry, GeneratorOutput } from './generator-runner';
+import { executeGeneratorEntry } from './generator-runner';
 
 export class GeneratorEngine {
   generators: GeneratorConfigMap = {};

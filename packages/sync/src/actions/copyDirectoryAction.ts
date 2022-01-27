@@ -6,7 +6,7 @@ import { makeBuilderActionCreator } from '../core';
 interface Options {
   destination: string;
   source: string;
-  shouldFormat: boolean;
+  shouldFormat?: boolean;
 }
 
 export const copyDirectoryAction = makeBuilderActionCreator(
