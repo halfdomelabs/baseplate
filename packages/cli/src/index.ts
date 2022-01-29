@@ -6,8 +6,8 @@ import R from 'ramda';
 
 const GENERATOR_MODULES = [
   '@baseplate/core-generators',
-  '@baseplate/react-generators',
-  '@baseplate/express-generators',
+  // '@baseplate/react-generators',
+  // '@baseplate/express-generators',
 ];
 
 async function generateForDirectory(directory: string): Promise<void> {
@@ -19,6 +19,7 @@ async function generateForDirectory(directory: string): Promise<void> {
   const engine = new GeneratorEngine(generatorMap);
   const project = await engine.loadProject(directory);
   const output = await engine.build(project);
+  console.log('Project built! Writing output....');
   await engine.writeOutput(output, directory);
   console.log('Project successfully generated!');
 }

@@ -54,8 +54,8 @@ describe('buildGeneratorEntry', () => {
     simple: {
       parseDescriptor: () => ({
         dependencies: simpleDependencies,
-        exports: simpleExports,
       }),
+      exports: simpleExports,
       createGenerator: jest.fn(),
       configBaseDirectory: '/simple',
     },
@@ -84,6 +84,13 @@ describe('buildGeneratorEntry', () => {
       createGenerator: jest.fn(),
       configBaseDirectory: '/simple',
     },
+    validatedDescriptor: {
+      parseDescriptor: () => ({
+        validatedDescriptor: { name: 'hi', generator: 'foo' },
+      }),
+      createGenerator: jest.fn(),
+      configBaseDirectory: '/simple',
+    },
   };
 
   const generatorContext = {
@@ -104,6 +111,18 @@ describe('buildGeneratorEntry', () => {
       dependencies: simpleDependencies,
       children: [],
       exports: simpleExports,
+    });
+  });
+
+  it('should build a validated descriptor', async () => {
+    const entry = await buildGeneratorEntry(
+      { generator: 'validatedDescriptor' },
+      'project',
+      generatorContext
+    );
+    expect(entry.descriptor).toMatchObject({
+      name: 'hi',
+      generator: 'foo',
     });
   });
 

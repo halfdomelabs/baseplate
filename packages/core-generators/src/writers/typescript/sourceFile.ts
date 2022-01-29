@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
 
+import path from 'path';
+import { BuilderAction, writeFormattedAction } from '@baseplate/sync';
 import R from 'ramda';
 import {
   CallExpression,
@@ -9,8 +11,6 @@ import {
   Project,
   SyntaxKind,
 } from 'ts-morph';
-import path from 'path';
-import { Action, writeFormattedAction } from '@baseplate/sync';
 import { notEmpty } from '../../utils/array';
 import {
   TypescriptCodeUtils,
@@ -52,13 +52,12 @@ type TypescriptTemplateConfig<T = Record<string, unknown>> = {
   [K in keyof T]: TypescriptCodeConfig;
 };
 
-type InferCodeEntry<
-  T extends TypescriptCodeConfig
-> = T extends TypescriptCodeBlockConfig
-  ? TypescriptCodeBlock
-  : T extends TypescriptCodeWrapperConfig
-  ? TypescriptCodeWrapper
-  : never;
+type InferCodeEntry<T extends TypescriptCodeConfig> =
+  T extends TypescriptCodeBlockConfig
+    ? TypescriptCodeBlock
+    : T extends TypescriptCodeWrapperConfig
+    ? TypescriptCodeWrapper
+    : never;
 
 type InferCodeEntries<T extends TypescriptTemplateConfig> = {
   [K in keyof T]: InferCodeEntry<T[K]>;
@@ -138,13 +137,17 @@ export class TypescriptSourceBlock<
     Object.keys(entries).forEach((key) => {
       switch (this.config[key].type) {
         case 'code-block':
-          this.addCodeBlock(key, (entries[key] as unknown) as any);
+          // TODO: Fix typings
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          this.addCodeBlock(key, entries[key] as unknown as any);
           break;
         case 'code-wrapper':
-          this.addCodeWrapper(key, (entries[key] as unknown) as any);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          this.addCodeWrapper(key, entries[key] as unknown as any);
           break;
         case 'code-expression':
-          this.addCodeExpression(key, (entries[key] as unknown) as any);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          this.addCodeExpression(key, entries[key] as unknown as any);
           break;
         default:
           throw new Error(`Unknown config type ${this.config[key].type}`);
@@ -358,13 +361,17 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     Object.keys(entries).forEach((key) => {
       switch (this.config[key].type) {
         case 'code-block':
-          this.addCodeBlock(key, (entries[key] as unknown) as any);
+          // TODO: Fix typings
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          this.addCodeBlock(key, entries[key] as unknown as any);
           break;
         case 'code-wrapper':
-          this.addCodeWrapper(key, (entries[key] as unknown) as any);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          this.addCodeWrapper(key, entries[key] as unknown as any);
           break;
         case 'code-expression':
-          this.addCodeExpression(key, (entries[key] as unknown) as any);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          this.addCodeExpression(key, entries[key] as unknown as any);
           break;
         default:
           throw new Error(`Unknown config type ${this.config[key].type}`);
@@ -537,7 +544,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     template: string,
     destination: string,
     identifierReplacements?: Record<string, string>
-  ): Action {
+  ): BuilderAction {
     return writeFormattedAction({
       destination,
       contents: this.render(template, destination, identifierReplacements),

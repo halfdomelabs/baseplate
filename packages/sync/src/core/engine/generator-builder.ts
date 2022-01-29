@@ -1,4 +1,5 @@
 import path from 'path';
+import { notEmpty } from '@src/utils/arrays';
 import { BaseGeneratorDescriptor } from '../descriptor';
 import { ProviderDependencyMap, ProviderExportMap } from '../generator';
 import { GeneratorConfigMap, GeneratorConfigWithLocation } from '../loader';
@@ -82,8 +83,12 @@ export async function buildGeneratorEntry(
   const {
     dependencies = {},
     children = {},
-    exports = {},
-  } = generatorConfig.parseDescriptor(descriptor);
+    validatedDescriptor,
+  } = generatorConfig.parseDescriptor(descriptor, {
+    generatorMap: context.generatorMap,
+    id,
+  });
+  const { exports = {} } = generatorConfig;
 
   // recursively build children generator entries
   const childGeneratorEntryArrays = await Promise.all(
@@ -92,15 +97,22 @@ export async function buildGeneratorEntry(
       const childDescriptorOrReferences = isMultiple ? value : [value];
 
       return Promise.all(
-        childDescriptorOrReferences.map(async (descriptorOrRef) => {
-          const childDescriptor = await resolveDescriptorOrReference(
-            descriptorOrRef,
-            context.baseDirectory
-          );
-          const childId = getGeneratorId(descriptorOrRef, id, key, isMultiple);
+        childDescriptorOrReferences
+          .filter(notEmpty)
+          .map(async (descriptorOrRef) => {
+            const childDescriptor = await resolveDescriptorOrReference(
+              descriptorOrRef,
+              context.baseDirectory
+            );
+            const childId = getGeneratorId(
+              descriptorOrRef,
+              id,
+              key,
+              isMultiple
+            );
 
-          return buildGeneratorEntry(childDescriptor, childId, context);
-        })
+            return buildGeneratorEntry(childDescriptor, childId, context);
+          })
       );
     })
   );
@@ -109,7 +121,7 @@ export async function buildGeneratorEntry(
   return {
     id,
     generatorConfig,
-    descriptor,
+    descriptor: validatedDescriptor || descriptor,
     dependencies,
     children: childGenerators,
     exports,

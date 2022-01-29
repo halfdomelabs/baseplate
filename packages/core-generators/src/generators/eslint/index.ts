@@ -1,33 +1,18 @@
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
-  GeneratorDescriptor,
   createProviderType,
   writeFormattedAction,
-  writeFileAction,
+  createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
 import { nodeProvider } from '../node';
 import { typescriptProvider } from '../typescript';
 import { generateConfig } from './generateConfig';
-
-interface EslintDescriptor extends GeneratorDescriptor {
-  placeholder: string;
-}
-
-const descriptorSchema = {
-  placeholder: yup.string(),
-};
 
 export type EslintProvider = unknown;
 
 export const eslintProvider = createProviderType<EslintProvider>('eslint');
 
-const EslintGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<EslintDescriptor>(
-    descriptorSchema
-  ),
-  dependsOn: {
+const EslintGenerator = createGeneratorWithChildren({
+  dependencies: {
     node: nodeProvider,
     typescript: typescriptProvider,
   },
@@ -58,10 +43,10 @@ const EslintGenerator = createGeneratorConfig({
       getProviders: () => ({
         eslint: {},
       }),
-      build: (context) => {
+      build: async (builder) => {
         // build eslint configuration
         const config = generateConfig({});
-        context.addAction(
+        await builder.apply(
           writeFormattedAction({
             destination: '.eslintrc.js',
             contents: `module.exports = ${JSON.stringify(config, null, 2)}`,
@@ -69,12 +54,7 @@ const EslintGenerator = createGeneratorConfig({
         );
 
         // generate ignore file
-        context.addAction(
-          writeFileAction({
-            destination: '.eslintrcignore',
-            contents: ignores.join('\n'),
-          })
-        );
+        builder.writeFile('.eslintrcignore', `${ignores.join('\n')}\n`);
       },
     };
   },

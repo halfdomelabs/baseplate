@@ -46,7 +46,7 @@ export type BuilderActionCreator<T extends unknown[]> = (
   ...args: T
 ) => BuilderAction;
 
-export function makeBuilderActionCreator<T extends unknown[]>(
+export function createBuilderActionCreator<T extends unknown[]>(
   creator: (...args: T) => BuilderAction['execute']
 ): BuilderActionCreator<T> {
   return (...args) => ({

@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import recursive from 'recursive-readdir';
-import { makeBuilderActionCreator } from '../core';
+import { createBuilderActionCreator } from '../core';
 
 interface Options {
   destination: string;
@@ -9,7 +9,7 @@ interface Options {
   shouldFormat?: boolean;
 }
 
-export const copyDirectoryAction = makeBuilderActionCreator(
+export const copyDirectoryAction = createBuilderActionCreator(
   (options: Options) => async (builder) => {
     const { destination, source, shouldFormat } = options;
 

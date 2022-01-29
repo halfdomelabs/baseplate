@@ -1,4 +1,4 @@
-import { makeBuilderActionCreator } from '../core';
+import { createBuilderActionCreator } from '../core';
 
 interface Options {
   destination: string;
@@ -6,7 +6,7 @@ interface Options {
   noFormat?: boolean;
 }
 
-export const writeJsonAction = makeBuilderActionCreator(
+export const writeJsonAction = createBuilderActionCreator(
   (options: Options) => (builder) => {
     const { destination, contents, noFormat } = options;
 

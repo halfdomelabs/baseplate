@@ -1,32 +1,21 @@
 import {
-  GeneratorDescriptor,
   createProviderType,
-  createGeneratorConfig,
-  createGeneratorDescriptor,
+  createGeneratorWithChildren,
   createNonOverwriteableMap,
+  writeJsonAction,
 } from '@baseplate/sync';
 import R from 'ramda';
 import semver from 'semver';
 import * as yup from 'yup';
-import { writePackageJson } from './actions/writePackageJson';
 
-interface Descriptor extends GeneratorDescriptor {
-  name: string;
-  description: string;
-  license: string;
-  version: string;
-  private: boolean;
-  path: string;
-}
-
-const descriptorSchema = {
+const descriptorSchema = yup.object({
   name: yup.string().required(),
   description: yup.string(),
   license: yup.string().default('UNLICENSED'),
   version: yup.string().default('0.1.0'),
   private: yup.bool().default(true),
   path: yup.string().default(''),
-};
+});
 
 export interface NodeProvider {
   addPackage(name: string, version: string): void;
@@ -49,31 +38,41 @@ interface NodeDependencyEntry {
   type: NodeDependencyType;
 }
 
-const NodeGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<Descriptor>(descriptorSchema),
-  childGenerators: {
+const NodeGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  getDefaultChildGenerators: () => ({
     projects: {
-      multiple: true,
+      isMultiple: true,
     },
     prettier: {
       provider: 'formatter',
       defaultDescriptor: {
         generator: '@baseplate/core/prettier',
+        peerProvider: true,
       },
     },
     typescript: {
       provider: 'typescript',
+      defaultDescriptor: {
+        generator: '@baseplate/core/typescript',
+        peerProvider: true,
+      },
     },
     gitIgnore: {
       provider: 'node-git-ignore',
       defaultDescriptor: {
         generator: '@baseplate/core/node-git-ignore',
+        peerProvider: true,
       },
     },
     eslint: {
       provider: 'eslint',
+      defaultDescriptor: {
+        generator: '@baseplate/core/eslint',
+        peerProvider: true,
+      },
     },
-  },
+  }),
   exports: {
     node: nodeProvider,
   },
@@ -148,7 +147,7 @@ const NodeGenerator = createGeneratorConfig({
           },
         };
       },
-      build: (context) => {
+      build: async (builder) => {
         const extractDependencies = (
           type: NodeDependencyType
         ): Record<string, string> =>
@@ -168,11 +167,29 @@ const NodeGenerator = createGeneratorConfig({
           dependencies: extractDependencies('normal'),
           devDependencies: extractDependencies('dev'),
         };
-        context.addAction(
-          writePackageJson({
+
+        await builder.apply(
+          writeJsonAction({
+            destination: 'package.json',
             contents: packageJson,
           })
         );
+
+        builder.addPostWriteCommand('yarn install', {
+          workingDirectory: '/',
+          onlyIfChanged: ['package.json'],
+        });
+
+        const allDependencies = R.mergeRight(
+          packageJson.dependencies,
+          packageJson.devDependencies
+        );
+        if (Object.keys(allDependencies).includes('prettier')) {
+          builder.addPostWriteCommand('yarn prettier --write package.json', {
+            workingDirectory: '/',
+            onlyIfChanged: ['package.json'],
+          });
+        }
       },
     };
   },

@@ -13,11 +13,11 @@ export interface GeneratorInstance<
   build: (builder: GeneratorOutputBuilder) => Promise<void> | void;
 }
 
-export type ProviderExportMap<T = Record<string, unknown>> = {
+export type ProviderExportMap<T = Record<string, Provider>> = {
   [key in keyof T]: ProviderType<T[key]>;
 };
 
-export type ProviderDependencyMap<T = Record<string, unknown>> = {
+export type ProviderDependencyMap<T = Record<string, Provider>> = {
   [key in keyof T]: ProviderType<T[key]> | ProviderDependency<T[key]>;
 };
 
@@ -30,27 +30,42 @@ type InferDependencyProviderMap<T> = T extends ProviderDependencyMap<infer P>
 
 export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
 
+export interface ParseDescriptorContext {
+  generatorMap: Record<string, GeneratorConfig>;
+  id: string;
+}
+
 /**
  * Configuration of a generator
  */
 export interface GeneratorConfig<
   Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor,
-  ExportMap extends ProviderExportMap<
-    Record<string, unknown>
-  > = ProviderExportMap<Record<string, Provider>>,
-  DependencyMap extends ProviderDependencyMap<
-    Record<string, unknown>
-  > = ProviderDependencyMap<Record<string, Provider>>
+  ExportMap extends ProviderExportMap = ProviderExportMap<
+    Record<string, Provider>
+  >,
+  DependencyMap extends ProviderDependencyMap = ProviderDependencyMap<
+    Record<string, Provider>
+  >
 > {
+  /**
+   * A map of the providers the generator exports
+   */
+  exports?: ExportMap;
   /**
    * Parses descriptors and extracts out the structure of the generator
    */
-  parseDescriptor: (descriptor: Descriptor) => {
+  parseDescriptor: (
+    descriptor: Descriptor,
+    context: ParseDescriptorContext
+  ) => {
     dependencies?: DependencyMap;
+    validatedDescriptor?: Descriptor;
     children?: {
-      [key: string]: ChildDescriptorOrReference | ChildDescriptorOrReference[];
+      [key: string]:
+        | ChildDescriptorOrReference
+        | ChildDescriptorOrReference[]
+        | null;
     };
-    exports?: ExportMap;
   };
   /**
    * Creates an instance of the generator with a given descriptor and

@@ -1,7 +1,7 @@
 import path from 'path';
 import ejs from 'ejs';
 import fs from 'fs-extra';
-import { makeBuilderActionCreator } from '../core';
+import { createBuilderActionCreator } from '../core';
 
 interface Options {
   destination: string;
@@ -10,7 +10,7 @@ interface Options {
   noFormat?: boolean;
 }
 
-export const writeTemplateAction = makeBuilderActionCreator(
+export const writeTemplateAction = createBuilderActionCreator(
   (options: Options) => async (builder) => {
     const { destination, template, data, noFormat } = options;
 
