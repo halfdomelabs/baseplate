@@ -1,5 +1,6 @@
 import {
   mergeCodeImports,
+  nodeGitIgnoreProvider,
   nodeProvider,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
@@ -39,12 +40,13 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     node: nodeProvider,
+    nodeGitIgnore: nodeGitIgnoreProvider,
     fastify: fastifyProvider,
   },
   exports: {
     configService: configServiceProvider,
   },
-  createGenerator(descriptor, { node, fastify }) {
+  createGenerator(descriptor, { node, nodeGitIgnore, fastify }) {
     const configEntries = createNonOverwriteableMap<
       Record<string, ConfigEntry>
     >({}, { name: 'config-service-config-entries' });
@@ -57,6 +59,8 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
     node.addDevPackages({
       dotenv: '^10.0.0',
     });
+
+    nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
 
     fastify.getConfig().appendUnique('devLoaders', ['dotenv/config']);
 
@@ -120,15 +124,13 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
           configFile.renderToAction('config.ts', 'src/services/config.ts')
         );
 
-        builder.writeFile(
-          '.env.example',
-          `${Object.entries(configEntriesObj)
-            .filter(([key, { exampleValue }]) => exampleValue)
-            .map(
-              ([key, { exampleValue }]) => `${key}=${exampleValue as string}`
-            )
-            .join('\n')}\n`
-        );
+        const envFile = `${Object.entries(configEntriesObj)
+          .filter(([, { exampleValue }]) => exampleValue)
+          .map(([key, { exampleValue }]) => `${key}=${exampleValue as string}`)
+          .join('\n')}\n`;
+
+        builder.writeFile('.env.example', envFile);
+        builder.writeFile('.env', envFile);
       },
     };
   },

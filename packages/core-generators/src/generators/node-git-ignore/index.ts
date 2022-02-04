@@ -51,7 +51,7 @@ const NodeGitIgnoreGenerator = createGeneratorWithChildren({
         await builder.apply(
           writeFormattedAction({
             destination: '.gitignore',
-            contents: exclusionLines.join('\n'),
+            contents: `${exclusionLines.join('\n')}\n`,
           })
         );
       },

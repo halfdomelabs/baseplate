@@ -57,7 +57,7 @@ export function createNonOverwriteableMap<T extends object>(
 
   let overrideValues: Partial<T> = {};
 
-  const nonOverwriteableMerge = R.mergeWithKey((key, a, b) => {
+  const nonOverwriteableMerge = R.mergeWithKey((key) => {
     throw new Error(`Field ${key} already has value in ${name}`);
   });
 
