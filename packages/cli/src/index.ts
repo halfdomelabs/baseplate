@@ -6,6 +6,7 @@ import R from 'ramda';
 
 const GENERATOR_MODULES = [
   '@baseplate/core-generators',
+  '@baseplate/fastify-generators',
   // '@baseplate/react-generators',
   // '@baseplate/express-generators',
 ];

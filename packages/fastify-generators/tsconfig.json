@@ -1,0 +1,9 @@
+{
+  "extends": "@baseplate/tools/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "declaration": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/generators/*/templates/**"]
+}

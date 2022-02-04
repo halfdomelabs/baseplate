@@ -78,8 +78,8 @@ const NodeGenerator = createGeneratorWithChildren({
   },
   createGenerator: (descriptor) => {
     const dependencies: Record<string, NodeDependencyEntry> = {};
-    const extraProperties = createNonOverwriteableMap({}, 'node');
-    const scripts = createNonOverwriteableMap({}, 'node-scripts');
+    const extraProperties = createNonOverwriteableMap({}, { name: 'node' });
+    const scripts = createNonOverwriteableMap({}, { name: 'node-scripts' });
 
     function mergeDependency(
       name: string,
@@ -152,9 +152,10 @@ const NodeGenerator = createGeneratorWithChildren({
           type: NodeDependencyType
         ): Record<string, string> =>
           R.mergeAll(
-            Object.values(dependencies)
-              .filter((d) => d.type === type)
-              .map((d) => ({ [d.name]: d.version }))
+            R.sortBy(
+              R.prop('name'),
+              Object.values(dependencies).filter((d) => d.type === type)
+            ).map((d) => ({ [d.name]: d.version }))
           );
         const packageJson = {
           name: descriptor.name,

@@ -289,6 +289,7 @@ export class TypescriptSourceBlock<
     });
 
     return {
+      type: 'code-block',
       imports: allImports,
       code: file.getFullText(),
     };
@@ -541,13 +542,25 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
   }
 
   renderToAction(
-    template: string,
+    templateFile: string,
     destination: string,
     identifierReplacements?: Record<string, string>
   ): BuilderAction {
-    return writeFormattedAction({
-      destination,
-      contents: this.render(template, destination, identifierReplacements),
-    });
+    return {
+      execute: async (builder) => {
+        const template = await builder.readTemplate(templateFile);
+        const contents = this.render(
+          template,
+          destination,
+          identifierReplacements
+        );
+        await builder.apply(
+          writeFormattedAction({
+            destination,
+            contents,
+          })
+        );
+      },
+    };
   }
 }

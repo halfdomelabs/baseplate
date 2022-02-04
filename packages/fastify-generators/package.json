@@ -1,9 +1,9 @@
 {
-  "name": "@baseplate/core-generators",
+  "name": "@baseplate/fastify-generators",
   "version": "0.0.1",
-  "description": "Core generators for Baseplate",
+  "description": "Fastify generators for Baseplate",
   "main": "lib/index.js",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/core-generators",
+  "repository": "https://github.com/kingston/baseplate/tree/master/packages/fastify-generators",
   "author": "Kingston Tam",
   "license": "UNLICENSED",
   "private": true,
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@baseplate/sync": "^0.0.1",
+    "@baseplate/core-generators": "^0.0.1",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.1",
     "gulp": "^4.0.2",

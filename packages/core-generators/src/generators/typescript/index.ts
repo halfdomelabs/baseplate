@@ -60,10 +60,9 @@ const TypescriptGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   createGenerator(descriptor, { node }) {
-    const config = createNonOverwriteableMap<TypescriptConfig>(
-      DEFAULT_CONFIG,
-      'typescript'
-    );
+    const config = createNonOverwriteableMap<TypescriptConfig>(DEFAULT_CONFIG, {
+      name: 'typescript',
+    });
     return {
       getProviders: () => ({
         typescript: {
@@ -88,10 +87,10 @@ const TypescriptGenerator = createGeneratorWithChildren({
             return result.options;
           },
           addInclude(path) {
-            config.mergeUnique({ include: [path] });
+            config.appendUnique('include', [path]);
           },
           addExclude(path) {
-            config.mergeUnique({ exclude: [path] });
+            config.appendUnique('exclude', [path]);
           },
         },
       }),

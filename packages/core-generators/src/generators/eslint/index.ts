@@ -29,14 +29,15 @@ const EslintGenerator = createGeneratorWithChildren({
     ];
 
     node.addDevPackages({
-      '@typescript-eslint/eslint-plugin': '^4.4.1',
-      '@typescript-eslint/parser': '^4.9.1',
-      eslint: '^7.15.0',
-      'eslint-config-airbnb-typescript': '^12.0.0',
-      'eslint-config-prettier': '^7.0.0',
-      'eslint-import-resolver-typescript': '^2.3.0',
-      'eslint-plugin-import': '^2.22.0',
-      'eslint-plugin-jest': '^24.1.3',
+      '@typescript-eslint/eslint-plugin': '^5.9.0',
+      '@typescript-eslint/parser': '^5.9.0',
+      eslint: '^8.6.0',
+      'eslint-config-airbnb-base': '^15.0.0',
+      'eslint-config-airbnb-typescript': '^16.1.0',
+      'eslint-config-prettier': '^8.3.0',
+      'eslint-import-resolver-typescript': '^2.5.0',
+      'eslint-plugin-import': '^2.25.4',
+      'eslint-plugin-jest': '^25.3.4',
     });
     node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx');
     return {
