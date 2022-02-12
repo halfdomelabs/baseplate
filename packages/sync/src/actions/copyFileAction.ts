@@ -6,11 +6,12 @@ interface Options {
   destination: string;
   source: string;
   shouldFormat: boolean;
+  neverOverwrite: boolean;
 }
 
 export const copyFileAction = createBuilderActionCreator(
   (options: Options) => async (builder) => {
-    const { destination, source, shouldFormat } = options;
+    const { destination, source, shouldFormat, neverOverwrite } = options;
 
     const templatePath = path.join(
       builder.generatorBaseDirectory,
@@ -20,10 +21,13 @@ export const copyFileAction = createBuilderActionCreator(
 
     if (shouldFormat) {
       const fileContents = await fs.readFile(templatePath, 'utf8');
-      builder.writeFile(destination, fileContents, { shouldFormat: true });
+      builder.writeFile(destination, fileContents, {
+        shouldFormat: true,
+        neverOverwrite,
+      });
     } else {
       const fileContents = await fs.readFile(templatePath);
-      builder.writeFile(destination, fileContents);
+      builder.writeFile(destination, fileContents, { neverOverwrite });
     }
   }
 );
