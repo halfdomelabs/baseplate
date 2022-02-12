@@ -1,22 +1,42 @@
-import fs from 'fs-extra';
 import path from 'path';
-import { createActionCreator } from '../core/action';
+import fs from 'fs-extra';
+import recursive from 'recursive-readdir';
+import { createBuilderActionCreator } from '../core';
 
 interface Options {
   destination: string;
   source: string;
+  shouldFormat?: boolean;
 }
 
-export const copyDirectoryAction = createActionCreator<Options>(
-  'copy-directory',
-  async (options, context) => {
-    const { currentDirectory, generatorDirectory } = context;
-    const { destination, source } = options;
+export const copyDirectoryAction = createBuilderActionCreator(
+  (options: Options) => async (builder) => {
+    const { destination, source, shouldFormat } = options;
 
-    const templatePath = path.join(generatorDirectory, 'templates', source);
-    const destinationPath = path.join(currentDirectory, destination);
+    const templatePath = path.join(
+      builder.generatorBaseDirectory,
+      'templates',
+      source
+    );
 
-    await fs.ensureDir(path.dirname(destinationPath));
-    await fs.copy(templatePath, destinationPath);
+    // read all files in directory
+    const files = await recursive(templatePath);
+
+    await Promise.all(
+      files.map(async (file) => {
+        const relativePath = path.relative(templatePath, file);
+        const destinationPath = path.join(destination, relativePath);
+
+        if (shouldFormat) {
+          const fileContents = await fs.readFile(file, 'utf8');
+          builder.writeFile(destinationPath, fileContents, {
+            shouldFormat: true,
+          });
+        } else {
+          const fileContents = await fs.readFile(file);
+          builder.writeFile(destinationPath, fileContents);
+        }
+      })
+    );
   }
 );

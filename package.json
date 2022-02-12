@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "lerna": "^3.20.2"
+    "lerna": "^4.0.0"
   },
   "scripts": {
     "watch": "lerna run watch --parallel",
@@ -10,5 +10,9 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "volta": {
+    "node": "14.18.3",
+    "yarn": "1.22.17"
+  }
 }

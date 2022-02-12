@@ -1,48 +1,112 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import R from 'ramda';
 
 export interface NonOverwriteableMap<T extends object> {
-  merge(value: Partial<T>): void;
-  // merges in additional values and only keeps in unique ones
-  mergeUnique(value: Partial<T>): void;
-  value(): T;
+  /**
+   * Set a value in the map
+   *
+   * @param key Key of value in map
+   * @param value Value to set
+   */
+  set<Key extends keyof T>(key: Key, value: T[Key]): void;
+  /**
+   * Appends a value to an array uniquely in the map
+   *
+   * @param key Key of value in map
+   * @param value Array of values to append
+   */
+  appendUnique<Key extends keyof T>(key: Key, value: T[Key]): void;
+  /**
+   * Gets a value from the map
+   *
+   * @param key The key of the value to get
+   */
   get<K extends keyof T>(key: K): T[K] | undefined;
+  /**
+   * Merges an object into the map, setting each one of the values in the object
+   *
+   * @param value Partial map of data to merge in
+   */
+  merge(value: Partial<T>): void;
+  /**
+   * The fully constructed map
+   */
+  value(): T;
+}
+
+interface NonOverwriteableMapConfig {
+  /**
+   * Keys that contain arrays will be merged together uniquely with defaults
+   */
+  mergeArraysUniquely?: boolean;
+  /**
+   * The name of the map to display in errors
+   */
+  name?: string;
 }
 
 /**
- * Map that doesn't let users overwrite content (that isn't default)
+ * Creates map that has an initial default, but whose keys cannot be overwritten
+ * once written.
  */
 export function createNonOverwriteableMap<T extends object>(
   defaults: T,
-  owner: string
+  options: NonOverwriteableMapConfig = {}
 ): NonOverwriteableMap<T> {
-  let values: Partial<T> = {};
-  const merge = R.mergeWithKey((key, a, b) => {
-    if (Array.isArray(a) && Array.isArray(b)) {
-      return a.concat(b);
-    }
-    throw new Error(`Field ${key} already has value in ${owner}`);
+  const { name = 'non-overwriteable map', mergeArraysUniquely } = options;
+
+  let overrideValues: Partial<T> = {};
+
+  const nonOverwriteableMerge = R.mergeWithKey((key) => {
+    throw new Error(`Field ${key} already has value in ${name}`);
   });
-  const mergeUnique = R.mergeWithKey((key, a, b) => {
-    if (Array.isArray(a) && Array.isArray(b)) {
+
+  // performs the final merge of overrideValues and defaults
+  const finalMerge = R.mergeWithKey((key, a, b) => {
+    if (mergeArraysUniquely && Array.isArray(a) && Array.isArray(b)) {
       return R.uniq(a.concat(b));
     }
-    throw new Error(`Field ${key} already has value in ${owner}`);
+    return b;
   });
+
   return {
-    merge(value) {
-      values = merge(values, value);
+    set(key, value) {
+      overrideValues = nonOverwriteableMerge(overrideValues, {
+        [key]: value,
+      }) as Partial<T>;
     },
-    mergeUnique(value) {
-      values = mergeUnique(values, value);
+    appendUnique(key, value) {
+      if (!Array.isArray(value)) {
+        throw new Error('appendUnique only works on arrays');
+      }
+      const existingValue = overrideValues[key];
+      if (existingValue) {
+        if (!Array.isArray(existingValue)) {
+          throw new Error(
+            `Field ${key.toString()} is not array and cannot be appended to in ${name}`
+          );
+        }
+        overrideValues = {
+          ...overrideValues,
+          [key]: R.uniq([...existingValue, ...value]),
+        };
+      }
+      overrideValues = {
+        ...overrideValues,
+        [key]: value,
+      };
+    },
+    merge(value) {
+      overrideValues = nonOverwriteableMerge(
+        overrideValues,
+        value
+      ) as Partial<T>;
     },
     value() {
-      return R.mergeLeft(values, defaults) as T;
+      return finalMerge(defaults, overrideValues) as T;
     },
-    get<K extends keyof T>(key: K): T[K] | undefined {
-      return values[key];
+    get(key) {
+      return overrideValues[key] || defaults[key];
     },
   };
 }

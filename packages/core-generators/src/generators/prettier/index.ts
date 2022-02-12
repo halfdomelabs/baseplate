@@ -1,40 +1,39 @@
+// because we manually require
+/* eslint-disable import/no-import-module-exports */
+
+import path from 'path';
 import {
-  GeneratorDescriptor,
   formatterProvider,
-  createGeneratorConfig,
-  createGeneratorDescriptor,
+  createGeneratorWithChildren,
   writeJsonAction,
   createProviderType,
 } from '@baseplate/sync';
-import path from 'path';
-import * as yup from 'yup';
 import requireResolve from 'resolve';
+import * as yup from 'yup';
 import { nodeProvider } from '../node';
 
-interface Descriptor extends GeneratorDescriptor {
-  tabWidth: number;
-  singleQuote: boolean;
-}
-
-const descriptorSchema = {
+const descriptorSchema = yup.object({
   tabWidth: yup.number().default(2),
   singleQuote: yup.boolean().default(true),
-};
+  trailingComma: yup.string().default('es5'),
+});
 
 interface PrettierConfig {
   tabWidth: number;
   singleQuote: boolean;
+  trailingComma: string;
 }
 
 export interface PrettierProvider {
   getConfig(): PrettierConfig;
 }
 
-export const prettierProvider = createProviderType<PrettierProvider>(
-  'prettier'
-);
+export const prettierProvider =
+  createProviderType<PrettierProvider>('prettier');
 
 const PARSEABLE_EXTENSIONS = ['.json', '.js', '.ts', '.jsx', '.tsx'];
+
+const PRETTIER_VERSION = '^2.5.1';
 
 interface ResolveError extends Error {
   code?: string;
@@ -60,16 +59,18 @@ interface PrettierModule {
   format(input: string, config: Record<string, unknown>): string;
 }
 
-const PrettierGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<Descriptor>(descriptorSchema),
-  dependsOn: { node: nodeProvider },
+const PrettierGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  dependencies: { node: nodeProvider },
   exports: {
     formatter: formatterProvider,
     prettier: prettierProvider,
   },
   createGenerator(descriptor, { node }) {
     const prettierConfig = {
+      tabWidth: descriptor.tabWidth,
       singleQuote: descriptor.singleQuote,
+      trailingComma: descriptor.trailingComma,
     };
     return {
       getProviders: () => {
@@ -107,17 +108,14 @@ const PrettierGenerator = createGeneratorConfig({
             },
           },
           prettier: {
-            getConfig: () => ({
-              tabWidth: descriptor.tabWidth,
-              singleQuote: descriptor.singleQuote,
-            }),
+            getConfig: () => prettierConfig,
           },
         };
       },
-      build: (context) => {
-        node.addDevPackage('prettier', '^2.2.1');
+      build: async (builder) => {
+        node.addDevPackage('prettier', PRETTIER_VERSION);
 
-        context.addAction(
+        await builder.apply(
           writeJsonAction({
             destination: '.prettierrc',
             contents: prettierConfig,

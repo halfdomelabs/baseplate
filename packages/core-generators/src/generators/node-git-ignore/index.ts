@@ -1,33 +1,24 @@
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
-  GeneratorDescriptor,
+  createGeneratorWithChildren,
   createProviderType,
-  writeFileAction,
+  writeFormattedAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 
-interface NodeGitIgnoreDescriptor extends GeneratorDescriptor {
-  additionalExclusions: string[];
-}
-
-const descriptorSchema = {
-  additionalExclusions: yup.array(yup.string()),
-};
+const descriptorSchema = yup.object({
+  additionalExclusions: yup.array(yup.string().required()),
+});
 
 export type NodeGitIgnoreProvider = {
   addExclusions(exclusions: string[]): void;
 };
 
-export const nodeGitIgnoreProvider = createProviderType<NodeGitIgnoreProvider>(
-  'node-git-ignore'
-);
+export const nodeGitIgnoreProvider =
+  createProviderType<NodeGitIgnoreProvider>('node-git-ignore');
 
-const NodeGitIgnoreGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<NodeGitIgnoreDescriptor>(
-    descriptorSchema
-  ),
-  dependsOn: {},
+const NodeGitIgnoreGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  dependencies: {},
   exports: {
     nodeGitIgnore: nodeGitIgnoreProvider,
   },
@@ -53,14 +44,14 @@ const NodeGitIgnoreGenerator = createGeneratorConfig({
           },
         },
       }),
-      build: (context) => {
+      build: async (builder) => {
         if (descriptor.additionalExclusions) {
           exclusionLines.push(...descriptor.additionalExclusions);
         }
-        context.addAction(
-          writeFileAction({
+        await builder.apply(
+          writeFormattedAction({
             destination: '.gitignore',
-            contents: exclusionLines.join('\n'),
+            contents: `${exclusionLines.join('\n')}\n`,
           })
         );
       },

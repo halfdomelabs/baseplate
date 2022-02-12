@@ -1,33 +1,18 @@
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
-  GeneratorDescriptor,
   createProviderType,
   writeFormattedAction,
-  writeFileAction,
+  createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
 import { nodeProvider } from '../node';
 import { typescriptProvider } from '../typescript';
 import { generateConfig } from './generateConfig';
-
-interface EslintDescriptor extends GeneratorDescriptor {
-  placeholder: string;
-}
-
-const descriptorSchema = {
-  placeholder: yup.string(),
-};
 
 export type EslintProvider = unknown;
 
 export const eslintProvider = createProviderType<EslintProvider>('eslint');
 
-const EslintGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<EslintDescriptor>(
-    descriptorSchema
-  ),
-  dependsOn: {
+const EslintGenerator = createGeneratorWithChildren({
+  dependencies: {
     node: nodeProvider,
     typescript: typescriptProvider,
   },
@@ -44,24 +29,25 @@ const EslintGenerator = createGeneratorConfig({
     ];
 
     node.addDevPackages({
-      '@typescript-eslint/eslint-plugin': '^4.4.1',
-      '@typescript-eslint/parser': '^4.9.1',
-      eslint: '^7.15.0',
-      'eslint-config-airbnb-typescript': '^12.0.0',
-      'eslint-config-prettier': '^7.0.0',
-      'eslint-import-resolver-typescript': '^2.3.0',
-      'eslint-plugin-import': '^2.22.0',
-      'eslint-plugin-jest': '^24.1.3',
+      '@typescript-eslint/eslint-plugin': '^5.9.0',
+      '@typescript-eslint/parser': '^5.9.0',
+      eslint: '^8.6.0',
+      'eslint-config-airbnb-base': '^15.0.0',
+      'eslint-config-airbnb-typescript': '^16.1.0',
+      'eslint-config-prettier': '^8.3.0',
+      'eslint-import-resolver-typescript': '^2.5.0',
+      'eslint-plugin-import': '^2.25.4',
+      'eslint-plugin-jest': '^25.3.4',
     });
     node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx');
     return {
       getProviders: () => ({
         eslint: {},
       }),
-      build: (context) => {
+      build: async (builder) => {
         // build eslint configuration
         const config = generateConfig({});
-        context.addAction(
+        await builder.apply(
           writeFormattedAction({
             destination: '.eslintrc.js',
             contents: `module.exports = ${JSON.stringify(config, null, 2)}`,
@@ -69,12 +55,7 @@ const EslintGenerator = createGeneratorConfig({
         );
 
         // generate ignore file
-        context.addAction(
-          writeFileAction({
-            destination: '.eslintrcignore',
-            contents: ignores.join('\n'),
-          })
-        );
+        builder.writeFile('.eslintrcignore', `${ignores.join('\n')}\n`);
       },
     };
   },

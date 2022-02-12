@@ -1,17 +1,11 @@
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
   createProviderType,
-  GeneratorDescriptor,
+  createGeneratorWithChildren,
   writeJsonAction,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { CompilerOptions, ts } from 'ts-morph';
 import { nodeProvider } from '../node';
-
-type Descriptor = GeneratorDescriptor;
-
-const descriptorSchema = {};
 
 // can use CompilerOptions from Typescript but it requires awkwardly serializing
 // CompilerOptions which would have to be done manually
@@ -25,9 +19,8 @@ export interface TypescriptProvider {
   addExclude(path: string): void;
 }
 
-export const typescriptProvider = createProviderType<TypescriptProvider>(
-  'typescript'
-);
+export const typescriptProvider =
+  createProviderType<TypescriptProvider>('typescript');
 
 interface TypescriptConfig {
   version: string;
@@ -36,13 +29,16 @@ interface TypescriptConfig {
   exclude: string[];
 }
 
+const TYPESCRIPT_VERSION = '^4.5.4';
+
 const DEFAULT_CONFIG: TypescriptConfig = {
-  version: '^4.1.3',
+  version: TYPESCRIPT_VERSION,
   compilerOptions: {
     outDir: 'dist',
     declaration: true,
-    target: 'es2018',
-    lib: ['ES2018'],
+    baseUrl: './src',
+    target: 'ES2020',
+    lib: ['ES2020'],
     esModuleInterop: true,
     module: 'commonjs',
     moduleResolution: 'node',
@@ -53,22 +49,20 @@ const DEFAULT_CONFIG: TypescriptConfig = {
     sourceMap: true,
   },
   include: ['src'],
-  exclude: ['**/node_modules', '**/dist', '**/lib', '**/*.test.ts'],
+  exclude: ['**/node_modules', '**/dist', '**/lib'],
 };
 
-const TypescriptGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<Descriptor>(descriptorSchema),
-  dependsOn: {
+const TypescriptGenerator = createGeneratorWithChildren({
+  dependencies: {
     node: nodeProvider,
   },
   exports: {
     typescript: typescriptProvider,
   },
   createGenerator(descriptor, { node }) {
-    const config = createNonOverwriteableMap<TypescriptConfig>(
-      DEFAULT_CONFIG,
-      'typescript'
-    );
+    const config = createNonOverwriteableMap<TypescriptConfig>(DEFAULT_CONFIG, {
+      name: 'typescript',
+    });
     return {
       getProviders: () => ({
         typescript: {
@@ -93,18 +87,18 @@ const TypescriptGenerator = createGeneratorConfig({
             return result.options;
           },
           addInclude(path) {
-            config.mergeUnique({ include: [path] });
+            config.appendUnique('include', [path]);
           },
           addExclude(path) {
-            config.mergeUnique({ exclude: [path] });
+            config.appendUnique('exclude', [path]);
           },
         },
       }),
-      build: (context) => {
+      build: async (builder) => {
         const { compilerOptions, include, exclude, version } = config.value();
         node.addDevPackage('typescript', version);
 
-        context.addAction(
+        await builder.apply(
           writeJsonAction({
             destination: 'tsconfig.json',
             contents: { compilerOptions, include, exclude },
