@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { buildServer } from './server';
 
 async function startServer(): Promise<void> {

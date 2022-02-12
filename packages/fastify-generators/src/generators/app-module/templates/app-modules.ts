@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
 export type NexusType = unknown;

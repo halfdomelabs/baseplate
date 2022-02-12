@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fp from 'fastify-plugin';
 
 const TIMEOUT = 10000; // time out if shutdown takes longer than 10 seconds

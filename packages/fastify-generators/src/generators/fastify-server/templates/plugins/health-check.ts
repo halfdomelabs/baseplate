@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { FastifyPluginAsync } from 'fastify';
 
 export const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {

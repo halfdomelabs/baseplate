@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
 import { nanoid } from 'nanoid';
 
