@@ -30,6 +30,13 @@ async function writeFile(filePath: string, data: FileData): Promise<boolean> {
     }
     formattedContents = await data.formatter.format(data.contents, filePath);
   }
+  // if file exists and we never overwrite, return false
+  if (data.options?.neverOverwrite) {
+    const fileExists = await fs.pathExists(filePath);
+    if (fileExists) {
+      return false;
+    }
+  }
   // check if file matches contents already
   const isContentSame = await contentEquals(formattedContents, filePath);
 

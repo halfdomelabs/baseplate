@@ -6,7 +6,11 @@ export interface WriteFileOptions {
   /**
    * Whether or not we should format the file using the default formatter
    */
-  shouldFormat: boolean;
+  shouldFormat?: boolean;
+  /**
+   * Whether we should never overwrite the file (e.g. for placeholder images)
+   */
+  neverOverwrite?: boolean;
 }
 
 export interface PostWriteCommandOptions {
@@ -57,6 +61,7 @@ export function createBuilderActionCreator<T extends unknown[]>(
 export interface FileData {
   contents: string | Buffer;
   formatter?: FormatterProvider;
+  options?: WriteFileOptions;
 }
 
 interface PostWriteCommand {
@@ -105,7 +110,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
     }
     const formatter =
       this.formatter && options?.shouldFormat ? this.formatter : undefined;
-    this.output.files[filename] = { contents, formatter };
+    this.output.files[filename] = { contents, formatter, options };
   }
 
   addPostWriteCommand(

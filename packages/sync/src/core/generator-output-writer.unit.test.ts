@@ -48,6 +48,21 @@ describe('writeGeneratorOutput', () => {
     expect(formatFunction).toHaveBeenCalledWith('hello', '/root/formatted.txt');
   });
 
+  it('should never overwrite files with neverOverwrite set', async () => {
+    vol.fromJSON({ '/root/file.txt': 'hi' });
+
+    await writeGeneratorOutput(
+      {
+        files: {
+          'file.txt': { contents: 'hi2', options: { neverOverwrite: true } },
+        },
+        postWriteCommands: [],
+      },
+      '/root'
+    );
+    expect(vol.toJSON()).toEqual({ '/root/file.txt': 'hi' });
+  });
+
   it('should write binary file', async () => {
     await writeGeneratorOutput(
       {
