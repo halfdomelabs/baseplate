@@ -5,8 +5,8 @@ import { createBuilderActionCreator } from '../core';
 interface Options {
   destination: string;
   source: string;
-  shouldFormat: boolean;
-  neverOverwrite: boolean;
+  shouldFormat?: boolean;
+  neverOverwrite?: boolean;
 }
 
 export const copyFileAction = createBuilderActionCreator(
