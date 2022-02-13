@@ -8,4 +8,5 @@ export {
   TypescriptProvider,
 } from './generators/typescript';
 export { eslintProvider, EslintProvider } from './generators/eslint';
+export * from './actions';
 export * from './writers';

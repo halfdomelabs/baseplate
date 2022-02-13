@@ -163,7 +163,7 @@ export class TypescriptSourceBlock<
 
     const project = new Project();
 
-    // stripe any ts-nocheck from header
+    // strip any ts-nocheck from header
     const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
     const file = project.createSourceFile('/', strippedTemplate);
 
@@ -393,7 +393,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
 
     const project = new Project();
 
-    // stripe any ts-nocheck from header
+    // strip any ts-nocheck from header
     const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
     const file = project.createSourceFile(
       path.basename(destination),

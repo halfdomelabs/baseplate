@@ -46,6 +46,13 @@ const FastifyGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    errorHandler: {
+      provider: 'error-handler-service',
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/error-handler-service',
+        peerProvider: true,
+      },
+    },
     config: {
       provider: 'config-service',
       defaultDescriptor: {

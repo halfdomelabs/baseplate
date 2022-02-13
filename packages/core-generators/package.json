@@ -34,6 +34,7 @@
     "@baseplate/sync": "^0.0.1",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.1",
+    "fs-extra": "^10.0.0",
     "gulp": "^4.0.2",
     "is-core-module": "^2.8.1",
     "ramda": "^0.28.0",
