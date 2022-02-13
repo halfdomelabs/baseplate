@@ -1,7 +1,0 @@
-/coverage
-/dist
-/lib
-/node_modules
-jest.config.js
-gulpfile.js
-templates/
