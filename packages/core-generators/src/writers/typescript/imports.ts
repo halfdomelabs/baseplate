@@ -1,6 +1,7 @@
 import path from 'path';
 import R from 'ramda';
 import { CodeBlockWriter, SourceFile } from 'ts-morph';
+import { sortByImportOrder } from './importOrder';
 
 export interface NamedImportEntry {
   name: string;
@@ -203,9 +204,11 @@ export function writeImportDeclarations(
   // merge all imports together
   const importsByModule = R.groupBy((i) => i.moduleSpecifier, resolvedImports);
   const modules = Object.keys(importsByModule);
-  modules.sort();
 
-  modules.forEach((moduleSpecifier) => {
+  // follow https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
+  const sortedModules = sortByImportOrder(modules, {});
+
+  sortedModules.forEach((moduleSpecifier) => {
     const importEntries = importsByModule[moduleSpecifier];
     writeImportDeclarationsForModule(writer, importEntries, moduleSpecifier);
   });

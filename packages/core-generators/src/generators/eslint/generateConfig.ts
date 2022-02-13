@@ -3,16 +3,20 @@ import type { Linter } from 'eslint';
 interface EslintConfig {
   extraTsconfigProjects?: string[];
   extraRules?: Linter.RulesRecord;
+  react?: boolean;
 }
 
 export function generateConfig({
   extraTsconfigProjects = [],
   extraRules = {},
+  react,
 }: EslintConfig): Linter.Config {
+  const baseExtends = react
+    ? ['airbnb', 'airbnb-typescript', 'airbnb/hooks']
+    : ['airbnb-base', 'airbnb-typescript/base'];
   return {
     extends: [
-      'airbnb-base',
-      'airbnb-typescript/base',
+      ...baseExtends,
       'plugin:@typescript-eslint/eslint-recommended',
       'plugin:@typescript-eslint/recommended',
       'plugin:@typescript-eslint/recommended-requiring-type-checking',

@@ -1,18 +1,15 @@
 import { NodeProvider } from '@baseplate/core-generators';
 
 export function setupReactNode(node: NodeProvider): void {
+  const nodeVersion = node.getNodeVersion().split('.')[0];
   node.addPackages({
-    '@testing-library/jest-dom': '^5.11.4',
-    '@testing-library/react': '^11.1.0',
-    '@testing-library/user-event': '^12.1.10',
-    '@types/jest': '^26.0.15',
-    '@types/node': '^12.0.0',
-    '@types/react': '^16.9.53',
-    '@types/react-dom': '^16.9.8',
-    react: '^17.0.1',
-    'react-dom': '^17.0.1',
-    'react-scripts': '4.0.0',
-    'web-vitals': '^0.2.4',
+    '@types/node': `^${nodeVersion}.0.0`,
+    '@types/react': '^17.0.20',
+    '@types/react-dom': '^17.0.9',
+    react: '^17.0.2',
+    'react-dom': '^17.0.2',
+    'react-scripts': '5.0.0',
+    'web-vitals': '^2.1.0',
   });
   node.addScripts({
     start: 'react-scripts start',
@@ -21,9 +18,6 @@ export function setupReactNode(node: NodeProvider): void {
     eject: 'react-scripts eject',
   });
   node.mergeExtraProperties({
-    eslintConfig: {
-      extends: ['react-app', 'react-app/jest'],
-    },
     browserslist: {
       production: ['>0.2%', 'not dead', 'not op_mini all'],
       development: [

@@ -1,7 +1,5 @@
 // @ts-nocheck
-import React from 'react';
-
-const App: React.FC = () => {
+const App = (): JSX.Element => {
   COMPONENT_CODE;
 
   return RENDER_WRAPPERS(RENDER_ROOT);

@@ -357,6 +357,10 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     this.codeExpressions[name].push(entry);
   }
 
+  getCodeBlocks<K extends keyof T & string>(name: K): TypescriptCodeBlock[] {
+    return this.codeBlocks[name] || [];
+  }
+
   addCodeEntries(entries: Partial<InferCodeEntries<T>>): void {
     this.checkNotGenerated();
     Object.keys(entries).forEach((key) => {
@@ -492,7 +496,15 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     });
 
     expressionReplacements.forEach(({ identifier, contents }) => {
-      identifier.replaceWithText(contents);
+      // Check if expression is in self-enclosing element <IDENTIFIER /> and
+      // replace whole element if so
+      if (
+        identifier.getParent().getKind() === SyntaxKind.JsxSelfClosingElement
+      ) {
+        identifier.getParent().replaceWithText(contents);
+      } else {
+        identifier.replaceWithText(contents);
+      }
     });
 
     const wrapperReplacements: {

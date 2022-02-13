@@ -7,4 +7,5 @@ export {
   typescriptProvider,
   TypescriptProvider,
 } from './generators/typescript';
+export { eslintProvider, EslintProvider } from './generators/eslint';
 export * from './writers';

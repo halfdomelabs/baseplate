@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@baseplate/core-generators": "^0.0.1",
-    "@baseplate/express-generators": "^0.0.1",
+    "@baseplate/fastify-generators": "^0.0.1",
     "@baseplate/react-generators": "^0.0.1",
     "@baseplate/sync": "^0.0.1",
     "commander": "^8.3.0",

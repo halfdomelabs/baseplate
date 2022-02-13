@@ -1,7 +1,7 @@
 import { TypescriptProvider } from '@baseplate/core-generators';
 
 export function setupReactTypescript(typescript: TypescriptProvider): void {
-  typescript.setTypescriptVersion('4.0.3');
+  typescript.setTypescriptVersion('4.5.4');
   typescript.setTypescriptCompilerOptions({
     target: 'es5',
     lib: ['dom', 'dom.iterable', 'esnext'],
@@ -17,8 +17,11 @@ export function setupReactTypescript(typescript: TypescriptProvider): void {
     resolveJsonModule: true,
     isolatedModules: true,
     noEmit: true,
-    jsx: 'react',
-    baseUrl: 'src',
+    jsx: 'react-jsx',
+    baseUrl: './src',
+    paths: {
+      '@src/*': ['./*'],
+    },
   });
   typescript.addInclude('src');
 }

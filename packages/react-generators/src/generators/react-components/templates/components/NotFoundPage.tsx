@@ -7,14 +7,12 @@ const Wrapper = styled.div`
   margin: 4rem auto 2rem;
 `;
 
-const NotFoundPage: React.FC = () => {
-  return (
-    <Wrapper>
-      <Message type="error" header="Not Found">
-        Sorry, we could not find the page you are looking for
-      </Message>
-    </Wrapper>
-  );
-};
+const NotFoundPage = (): JSX.Element => (
+  <Wrapper>
+    <Message type="error" header="Not Found">
+      Sorry, we could not find the page you are looking for
+    </Message>
+  </Wrapper>
+);
 
 export default NotFoundPage;

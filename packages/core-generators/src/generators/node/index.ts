@@ -15,6 +15,8 @@ const descriptorSchema = yup.object({
   version: yup.string().default('0.1.0'),
   private: yup.bool().default(true),
   path: yup.string().default(''),
+  nodeVersion: yup.string().default('14.19.0'),
+  yarnVersion: yup.string().default('1.22.17'),
 });
 
 export interface NodeProvider {
@@ -26,6 +28,7 @@ export interface NodeProvider {
   addScripts(scripts: Record<string, string>): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mergeExtraProperties(props: Record<string, any>): void;
+  getNodeVersion(): string;
 }
 
 export const nodeProvider = createProviderType<NodeProvider>('node');
@@ -144,6 +147,9 @@ const NodeGenerator = createGeneratorWithChildren({
             addScripts(value) {
               scripts.merge(value);
             },
+            getNodeVersion() {
+              return descriptor.nodeVersion;
+            },
           },
         };
       },
@@ -167,6 +173,14 @@ const NodeGenerator = createGeneratorWithChildren({
           scripts: scripts.value(),
           dependencies: extractDependencies('normal'),
           devDependencies: extractDependencies('dev'),
+          engines: {
+            node: `^${descriptor.nodeVersion}`,
+            yarn: `^${descriptor.yarnVersion}`,
+          },
+          volta: {
+            node: descriptor.nodeVersion,
+            yarn: descriptor.yarnVersion,
+          },
         };
 
         await builder.apply(

@@ -1,13 +1,13 @@
+// @ts-nocheck
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app/App';
 import reportWebVitals from './reportWebVitals';
 
 HEADER;
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <APP />
   </React.StrictMode>,
   document.getElementById('root')
 );

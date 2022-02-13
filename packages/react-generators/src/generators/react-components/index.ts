@@ -1,8 +1,6 @@
-import { nodeProvider } from '@baseplate/core-generators';
+import { nodeProvider, TypescriptCodeUtils } from '@baseplate/core-generators';
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
-  GeneratorDescriptor,
+  createGeneratorWithChildren,
   createProviderType,
   copyFileAction,
   copyDirectoryAction,
@@ -11,25 +9,18 @@ import * as yup from 'yup';
 import { reactProvider } from '../react';
 import { reactRouterProvider } from '../react-router';
 
-interface ReactComponentsDescriptor extends GeneratorDescriptor {
-  placeholder: string;
-}
-
-const descriptorSchema = {
+const descriptorSchema = yup.object({
   placeholder: yup.string(),
-};
+});
 
 export type ReactComponentsProvider = unknown;
 
-export const reactComponentsProvider = createProviderType<ReactComponentsProvider>(
-  'react-components'
-);
+export const reactComponentsProvider =
+  createProviderType<ReactComponentsProvider>('react-components');
 
-const ReactComponentsGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<ReactComponentsDescriptor>(
-    descriptorSchema
-  ),
-  dependsOn: {
+const ReactComponentsGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  dependencies: {
     react: reactProvider,
     node: nodeProvider,
     reactRouter: reactRouterProvider,
@@ -38,6 +29,7 @@ const ReactComponentsGenerator = createGeneratorConfig({
     reactComponents: reactComponentsProvider,
   },
   createGenerator(descriptor, { react, node, reactRouter }) {
+    const srcFolder = react.getSrcFolder();
     node.addPackages({
       bulma: '^0.9.1',
       'styled-components': '^5.2.1',
@@ -53,32 +45,37 @@ const ReactComponentsGenerator = createGeneratorConfig({
       getProviders: () => ({
         reactComponents: {},
       }),
-      build: (context) => {
-        context.addAction(
+      build: async (builder) => {
+        await builder.apply(
           copyFileAction({
             source: 'index.scss',
             destination: 'src/index.scss',
           })
         );
-        context.addAction(
+        await builder.apply(
           copyDirectoryAction({
             source: 'components',
             destination: 'src/components',
           })
         );
-        context.addAction(
+        await builder.apply(
           copyDirectoryAction({
             source: 'hooks',
             destination: 'src/hooks',
           })
         );
-        react.getIndexFile().addCodeBlock('HEADER', {
-          code: "import './index.scss'",
-        });
-        reactRouter.setNotFoundPageComponent({
-          expression: 'NotFoundPage',
-          importText: ["import NotFoundPage from 'components/NotFoundPage'"],
-        });
+        react
+          .getIndexFile()
+          .addCodeBlock(
+            'HEADER',
+            TypescriptCodeUtils.createBlock("import './index.scss'")
+          );
+        reactRouter.setNotFoundPageComponent(
+          TypescriptCodeUtils.createExpression(
+            'NotFoundPage',
+            `import NotFoundPage from '@/${srcFolder}/components/NotFoundPage'`
+          )
+        );
       },
     };
   },

@@ -9,13 +9,13 @@ interface Props {
   className?: string;
 }
 
-export const Button: React.FC<Props> = ({
+export const Button = ({
   onClick,
   type,
   children,
   className,
   color,
-}) => {
+}: Props): JSX.Element => {
   return (
     <button
       type={type}

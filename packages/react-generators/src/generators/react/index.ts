@@ -1,34 +1,30 @@
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
-  GeneratorDescriptor,
-  copyFileAction,
-  writeTemplateAction,
-  createProviderType,
-  readTemplate,
-} from '@baseplate/sync';
-import * as yup from 'yup';
-import {
   createTypescriptTemplateConfig,
+  eslintProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
   typescriptProvider,
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
+import {
+  createGeneratorWithChildren,
+  copyFileAction,
+  writeTemplateAction,
+  createProviderType,
+} from '@baseplate/sync';
+import * as yup from 'yup';
 
 import { setupReactNode } from './node';
 import { setupReactTypescript } from './typescript';
 
-interface Descriptor extends GeneratorDescriptor {
-  title: string;
-}
-
-const descriptorSchema = {
+const descriptorSchema = yup.object({
   title: yup.string().default('React App'),
-};
+  description: yup.string().default('A React app'),
+});
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   HEADER: { type: 'code-block' },
+  APP: { type: 'code-expression' },
 });
 
 export type ReactProvider = {
@@ -38,37 +34,41 @@ export type ReactProvider = {
 
 export const reactProvider = createProviderType<ReactProvider>('react');
 
-const ReactGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<Descriptor>(descriptorSchema),
-  dependsOn: {
+const ReactGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  dependencies: {
     node: nodeProvider,
     typescript: typescriptProvider,
     nodeGitIgnore: nodeGitIgnoreProvider,
+    eslint: eslintProvider,
   },
   exports: {
     react: reactProvider,
   },
-  childGenerators: {
+  getDefaultChildGenerators: () => ({
     app: {
       provider: 'react-app',
       defaultDescriptor: {
         generator: '@baseplate/react/react-app',
+        peerProvider: true,
       },
     },
     router: {
       provider: 'react-router',
       defaultDescriptor: {
         generator: '@baseplate/react/react-router',
+        peerProvider: true,
       },
     },
     components: {
       provider: 'react-components',
       defaultDescriptor: {
         generator: '@baseplate/react/react-components',
+        peerProvider: true,
       },
     },
-  },
-  createGenerator(descriptor, { node, typescript, nodeGitIgnore }) {
+  }),
+  createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
     const indexFile = new TypescriptSourceFile(INDEX_FILE_CONFIG);
     setupReactNode(node);
     setupReactTypescript(typescript);
@@ -83,8 +83,9 @@ const ReactGenerator = createGeneratorConfig({
       '.env.development.local',
       '.env.test.local',
       '.env.production.local',
-      '.env',
     ]);
+
+    eslint.getConfig().set('react', true);
 
     return {
       getProviders: () => ({
@@ -97,35 +98,60 @@ const ReactGenerator = createGeneratorConfig({
           },
         },
       }),
-      build: async (context) => {
-        const staticFiles = [
+      build: async (builder) => {
+        const initialFiles = [
           'public/favicon.ico',
           'public/logo192.png',
           'public/logo512.png',
-          'public/manifest.json',
-          'public/robots.txt',
-          'src/react-app-env.d.ts',
-          'src/reportWebVitals.ts',
-          'src/setupTests.ts',
           'README.md',
         ];
 
-        staticFiles.forEach((file) =>
-          context.addAction(
+        await Promise.all(
+          initialFiles.map((file) =>
             copyFileAction({
               source: file,
               destination: file,
+              neverOverwrite: true,
             })
           )
         );
 
-        const template = await readTemplate(__dirname, 'src/index.tsx');
-        context.addAction(indexFile.renderToAction(template, 'src/index.tsx'));
+        const staticFiles = [
+          'src/reportWebVitals.ts',
+          'src/react-app-env.d.ts',
+        ];
 
-        context.addAction(
+        await Promise.all(
+          staticFiles.map((file) =>
+            builder.apply(
+              copyFileAction({
+                source: file,
+                destination: file,
+                shouldFormat: true,
+              })
+            )
+          )
+        );
+
+        await builder.apply(
+          indexFile.renderToAction('src/index.tsx', 'src/index.tsx')
+        );
+
+        await builder.apply(
           writeTemplateAction({
             template: 'public/index.html.ejs',
             destination: 'public/index.html',
+            data: {
+              title: descriptor.title,
+              description: descriptor.description,
+            },
+          })
+        );
+
+        await builder.apply(
+          writeTemplateAction({
+            template: 'public/manifest.json.ejs',
+            destination: 'public/manifest.json',
             data: { title: descriptor.title },
           })
         );

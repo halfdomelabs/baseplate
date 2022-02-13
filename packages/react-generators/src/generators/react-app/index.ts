@@ -1,25 +1,18 @@
 import {
-  typescriptProvider,
   TypescriptSourceFile,
   createTypescriptTemplateConfig,
+  TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
-  GeneratorDescriptor,
+  createGeneratorWithChildren,
   createProviderType,
-  readTemplate,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { reactProvider } from '../react';
 
-interface ReactAppDescriptor extends GeneratorDescriptor {
-  placeholder: string;
-}
-
-const descriptorSchema = {
+const descriptorSchema = yup.object({
   placeholder: yup.string(),
-};
+});
 
 const APP_FILE_CONFIG = createTypescriptTemplateConfig({
   COMPONENT_CODE: { type: 'code-block' },
@@ -28,19 +21,15 @@ const APP_FILE_CONFIG = createTypescriptTemplateConfig({
 });
 
 export type ReactAppProvider = {
-  getSourceFile(): TypescriptSourceFile<typeof APP_FILE_CONFIG>;
+  getAppFile(): TypescriptSourceFile<typeof APP_FILE_CONFIG>;
 };
 
-export const reactAppProvider = createProviderType<ReactAppProvider>(
-  'react-app'
-);
+export const reactAppProvider =
+  createProviderType<ReactAppProvider>('react-app');
 
-const ReactAppGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<ReactAppDescriptor>(
-    descriptorSchema
-  ),
-  dependsOn: {
-    typescript: typescriptProvider,
+const ReactAppGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  dependencies: {
     react: reactProvider,
   },
   exports: {
@@ -48,19 +37,33 @@ const ReactAppGenerator = createGeneratorConfig({
   },
   createGenerator(descriptor, { react }) {
     const appFile = new TypescriptSourceFile(APP_FILE_CONFIG);
+    const srcFolder = react.getSrcFolder();
+
+    react
+      .getIndexFile()
+      .addCodeExpression(
+        'APP',
+        TypescriptCodeUtils.createExpression(
+          '<App />',
+          `import App from '@/${srcFolder}/app/App';`
+        )
+      );
     return {
       getProviders: () => ({
         reactApp: {
-          getSourceFile: () => appFile,
+          getAppFile: () => appFile,
         },
       }),
-      build: async (context) => {
-        const srcFolder = react.getSrcFolder();
+      build: async (builder) => {
         const destination = `${srcFolder}/app/App.tsx`;
 
-        const template = await readTemplate(__dirname, 'app.tsx');
-
-        context.addAction(appFile.renderToAction(template, destination));
+        if (appFile.getCodeBlocks('COMPONENT_CODE').length === 0) {
+          await builder.apply(
+            appFile.renderToAction('App.NoComponentCode.tsx', destination)
+          );
+        } else {
+          await builder.apply(appFile.renderToAction('App.tsx', destination));
+        }
       },
     };
   },

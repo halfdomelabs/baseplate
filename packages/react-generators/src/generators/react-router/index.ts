@@ -4,22 +4,16 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import {
-  createGeneratorConfig,
-  createGeneratorDescriptor,
-  GeneratorDescriptor,
+  createGeneratorWithChildren,
   createProviderType,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { reactAppProvider } from '../react-app';
 
-interface ReactRouterDescriptor extends GeneratorDescriptor {
-  placeholder: string;
-}
-
-const descriptorSchema = {
+const descriptorSchema = yup.object({
   placeholder: yup.string(),
-};
+});
 
 export interface ReactRouterProvider {
   setNotFoundPageComponent(component: TypescriptCodeExpression): void;
@@ -27,15 +21,12 @@ export interface ReactRouterProvider {
   setHomePage(homepage: string): void;
 }
 
-export const reactRouterProvider = createProviderType<ReactRouterProvider>(
-  'react-router'
-);
+export const reactRouterProvider =
+  createProviderType<ReactRouterProvider>('react-router');
 
-const ReactRouterGenerator = createGeneratorConfig({
-  descriptorSchema: createGeneratorDescriptor<ReactRouterDescriptor>(
-    descriptorSchema
-  ),
-  dependsOn: {
+const ReactRouterGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  dependencies: {
     node: nodeProvider,
     reactApp: reactAppProvider,
   },
@@ -49,7 +40,7 @@ const ReactRouterGenerator = createGeneratorConfig({
     const config = createNonOverwriteableMap<{
       notFoundPageComponent?: TypescriptCodeExpression;
       homepage?: string;
-    }>({}, 'react-router');
+    }>({}, { name: 'react-router' });
     return {
       getProviders: () => ({
         reactRouter: {
@@ -68,30 +59,36 @@ const ReactRouterGenerator = createGeneratorConfig({
         const renderedRoutes = [...routes];
         const { homepage, notFoundPageComponent } = config.value();
         if (homepage) {
-          renderedRoutes.push({
-            expression: `<Redirect path="/" exact to="${homepage}" />`,
-            importText: ["import {Redirect} from 'react-router-dom'"],
-          });
+          renderedRoutes.push(
+            TypescriptCodeUtils.createExpression(
+              `<Redirect path="/" exact to="${homepage}" />`,
+              "import {Redirect} from 'react-router-dom'"
+            )
+          );
         }
 
         if (notFoundPageComponent) {
           renderedRoutes.push(
-            TypescriptCodeUtils.wrapExpression(notFoundPageComponent, {
-              wrap: (contents) => `<Route component={${contents}} />`,
-              importText: ["import {Route} from 'react-router-dom'"],
-            })
+            TypescriptCodeUtils.wrapExpression(
+              notFoundPageComponent,
+              TypescriptCodeUtils.createWrapper(
+                (contents) => `<Route component={${contents}} />`,
+                "import {Route} from 'react-router-dom'"
+              )
+            )
           );
         }
 
         const expression = TypescriptCodeUtils.mergeExpressions(renderedRoutes);
-        reactApp.getSourceFile().addCodeExpression(
+        reactApp.getAppFile().addCodeExpression(
           'RENDER_ROOT',
-          TypescriptCodeUtils.wrapExpression(expression, {
-            wrap: (contents) => `<Router><Switch>${contents}</Switch></Router>`,
-            importText: [
-              "import {BrowserRouter as Router,Switch} from 'react-router-dom'",
-            ],
-          })
+          TypescriptCodeUtils.wrapExpression(
+            expression,
+            TypescriptCodeUtils.createWrapper(
+              (contents) => `<Router><Switch>${contents}</Switch></Router>`,
+              "import {BrowserRouter as Router,Switch} from 'react-router-dom'"
+            )
+          )
         );
       },
     };
