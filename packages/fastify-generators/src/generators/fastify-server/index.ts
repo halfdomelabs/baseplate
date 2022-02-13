@@ -4,17 +4,18 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   TypescriptSourceFile,
+  copyTypescriptFileAction,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
   NonOverwriteableMap,
   createNonOverwriteableMap,
-  copyFileAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { appModuleProvider } from '../app-module';
 import { configServiceProvider } from '../config-service';
+import { errorHandlerServiceProvider } from '../error-handler-service';
 import { loggerServiceProvider } from '../logger-service';
 
 const descriptorSchema = yup.object({
@@ -47,13 +48,14 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     loggerService: loggerServiceProvider,
     configService: configServiceProvider,
     appModule: appModuleProvider,
+    errorHandlerService: errorHandlerServiceProvider,
   },
   exports: {
     fastifyServer: fastifyServerProvider,
   },
   createGenerator(
     descriptor,
-    { loggerService, configService, node, appModule }
+    { loggerService, configService, node, appModule, errorHandlerService }
   ) {
     const config = createNonOverwriteableMap(
       {},
@@ -76,7 +78,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       ),
       options: TypescriptCodeUtils.createExpression(
         `{
-          codeSecurityPolicy: false, // disable to enable Altair to function (alright since we're a backend service)
+          contentSecurityPolicy: false, // disable to enable Altair to function (alright since we're a backend service)
         }`
       ),
     });
@@ -119,11 +121,21 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         const indexFile = new TypescriptSourceFile({
-          LOGGER: { type: 'code-expression' },
+          LOG_ERROR: { type: 'code-expression' },
+          SERVER_OPTIONS: { type: 'code-expression' },
           SERVER_PORT: { type: 'code-expression' },
           SERVER_HOST: { type: 'code-expression' },
         });
-        indexFile.addCodeExpression('LOGGER', loggerService.getLogger());
+        indexFile.addCodeExpression(
+          'LOG_ERROR',
+          errorHandlerService.getErrorFunction()
+        );
+        indexFile.addCodeExpression(
+          'SERVER_OPTIONS',
+          TypescriptCodeUtils.mergeExpressionsAsObject({
+            logger: loggerService.getLogger(),
+          })
+        );
         const configExpression = configService.getConfigExpression();
         indexFile.addCodeExpression(
           'SERVER_PORT',
@@ -169,10 +181,9 @@ const FastifyServerGenerator = createGeneratorWithChildren({
           serverFile.renderToAction('server.ts', 'src/server.ts')
         );
         await builder.apply(
-          copyFileAction({
+          copyTypescriptFileAction({
             source: 'plugins/health-check.ts',
             destination: 'src/plugins/health-check.ts',
-            shouldFormat: true,
           })
         );
       },

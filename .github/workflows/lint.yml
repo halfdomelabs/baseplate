@@ -2,7 +2,7 @@ name: Lint
 
 on:
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   lint:
@@ -17,4 +17,5 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
       - run: yarn install --frozen-lockfile
+      - run: yarn build
       - run: yarn lint

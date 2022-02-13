@@ -2,11 +2,7 @@ name: Test
 
 on:
   pull_request:
-    branches: [main]
-
-defaults:
-  run:
-    working-directory: packages/backend
+    branches: [master]
 
 jobs:
   test:

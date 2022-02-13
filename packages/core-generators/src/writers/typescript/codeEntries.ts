@@ -74,6 +74,24 @@ function mergeWrappers(
   };
 }
 
+function normalizeWrappers(
+  wrappers:
+    | TypescriptCodeWrapper
+    | TypescriptCodeWrapper[]
+    | TypescriptCodeWrapperFunction
+): TypescriptCodeWrapper {
+  if (Array.isArray(wrappers)) {
+    return mergeWrappers(wrappers);
+  }
+  if (typeof wrappers === 'function') {
+    return {
+      type: 'code-wrapper',
+      wrap: wrappers,
+    };
+  }
+  return wrappers;
+}
+
 export const TypescriptCodeUtils = {
   createBlock(
     code: string,
@@ -110,11 +128,12 @@ export const TypescriptCodeUtils = {
   mergeWrappers,
   wrapExpression(
     entry: TypescriptCodeExpression,
-    wrappers: TypescriptCodeWrapper | TypescriptCodeWrapper[]
+    wrappers:
+      | TypescriptCodeWrapper
+      | TypescriptCodeWrapper[]
+      | TypescriptCodeWrapperFunction
   ): TypescriptCodeExpression {
-    const wrapper = Array.isArray(wrappers)
-      ? mergeWrappers(wrappers)
-      : wrappers;
+    const wrapper = normalizeWrappers(wrappers);
     return {
       type: 'code-expression',
       expression: wrapper.wrap(entry.expression),
@@ -123,11 +142,12 @@ export const TypescriptCodeUtils = {
   },
   wrapBlock(
     entry: TypescriptCodeBlock,
-    wrappers: TypescriptCodeWrapper | TypescriptCodeWrapper[]
+    wrappers:
+      | TypescriptCodeWrapper
+      | TypescriptCodeWrapper[]
+      | TypescriptCodeWrapperFunction
   ): TypescriptCodeBlock {
-    const wrapper = Array.isArray(wrappers)
-      ? mergeWrappers(wrappers)
-      : wrappers;
+    const wrapper = normalizeWrappers(wrappers);
     return {
       type: 'code-block',
       code: wrapper.wrap(entry.code),
@@ -161,7 +181,12 @@ export const TypescriptCodeUtils = {
     const keys = Object.keys(obj);
     const expressions = Object.values(obj);
     const mergedExpression = keys
-      .map((key) => `${key}: ${obj[key].expression},`)
+      .map((key) => {
+        if (key === obj[key].expression) {
+          return `${key},`;
+        }
+        return `${key}: ${obj[key].expression},`;
+      })
       .join('\n');
     return {
       type: 'code-expression',
