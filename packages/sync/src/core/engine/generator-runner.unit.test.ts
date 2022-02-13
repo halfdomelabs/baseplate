@@ -110,10 +110,12 @@ describe('executeGeneratorEntry', () => {
         '/simple/file.txt': {
           contents: 'simple',
           formatter: undefined,
+          options: undefined,
         },
         '/nested/file.txt': {
           contents: 'nested',
           formatter,
+          options: { shouldFormat: true },
         },
       },
       postWriteCommands: [

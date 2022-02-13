@@ -57,7 +57,11 @@ describe('copyDirectoryAction', () => {
     }).execute(builder);
 
     expect(builder.output.files).toEqual({
-      '/dest/test1.txt': { contents: 'hi', formatter },
+      '/dest/test1.txt': {
+        contents: 'hi',
+        formatter,
+        options: { shouldFormat: true },
+      },
     });
     expect(builder.output.postWriteCommands).toHaveLength(0);
   });

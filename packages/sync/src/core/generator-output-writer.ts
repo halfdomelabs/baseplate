@@ -3,6 +3,7 @@ import path from 'path';
 import { promisify } from 'util';
 import fs from 'fs-extra';
 import R from 'ramda';
+import { logToConsole } from '@src/utils/logger';
 import { FileData, GeneratorOutput } from './generator-output';
 
 const exec = promisify(childProcess.exec);
@@ -60,6 +61,9 @@ async function writeFile(filePath: string, data: FileData): Promise<boolean> {
 /* eslint-disable no-restricted-syntax */
 
 function getNodePrefix(): string {
+  if (process.env.NODE_ENV === 'test') {
+    return '';
+  }
   if (process.env.VOLTA_HOME) {
     return 'volta run ';
   }
@@ -107,7 +111,7 @@ export async function writeGeneratorOutput(
       )
         ? `${nodePrefix}${command.command}`
         : command.command;
-      console.log(`Running ${commandString}...`);
+      logToConsole(`Running ${commandString}...`);
       await exec(commandString, {
         cwd: path.join(outputDirectory, workingDirectory),
       });
