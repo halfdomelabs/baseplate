@@ -2,6 +2,7 @@ import childProcess from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
 import fs from 'fs-extra';
+import R from 'ramda';
 import { FileData, GeneratorOutput } from './generator-output';
 
 const exec = promisify(childProcess.exec);
@@ -19,6 +20,11 @@ async function contentEquals(
     return contents.equals(fileContents);
   }
   const fileString = await fs.readFile(filePath, 'utf8');
+  // HACK: Can create an option for this in the future
+  // Necessary because package.json files are not formatted using a provided formatter
+  if (filePath.endsWith('/package.json')) {
+    return R.equals(JSON.parse(contents), JSON.parse(fileString));
+  }
   return contents === fileString;
 }
 
@@ -53,6 +59,13 @@ async function writeFile(filePath: string, data: FileData): Promise<boolean> {
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 
+function getNodePrefix(): string {
+  if (process.env.VOLTA_HOME) {
+    return 'volta run ';
+  }
+  return '';
+}
+
 export async function writeGeneratorOutput(
   output: GeneratorOutput,
   outputDirectory: string
@@ -73,6 +86,12 @@ export async function writeGeneratorOutput(
   }
 
   // run post write commands
+
+  // Volta and Yarn prepend their own PATHs to Node which can
+  // bugger up node resolution. This forces it to run normally again
+  const nodePrefix = getNodePrefix();
+  const NODE_COMMANDS = ['node', 'yarn', 'npm'];
+
   for (const command of output.postWriteCommands) {
     const { onlyIfChanged = [], workingDirectory = '' } = command.options || {};
     const changedList = Array.isArray(onlyIfChanged)
@@ -83,7 +102,13 @@ export async function writeGeneratorOutput(
       !changedList.length ||
       changedList.some((file) => modifiedFiles.includes(file))
     ) {
-      await exec(command.command, {
+      const commandString = NODE_COMMANDS.includes(
+        command.command.split(' ')[0]
+      )
+        ? `${nodePrefix}${command.command}`
+        : command.command;
+      console.log(`Running ${commandString}...`);
+      await exec(commandString, {
         cwd: path.join(outputDirectory, workingDirectory),
       });
     }
