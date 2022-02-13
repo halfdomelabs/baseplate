@@ -6,7 +6,9 @@
   },
   "scripts": {
     "watch": "lerna run watch --parallel",
-    "lint": "lerna run lint --no-bail"
+    "lint": "lerna run lint --no-bail",
+    "build": "lerna run build",
+    "test": "lerna run test --no-bail --parallel"
   },
   "workspaces": [
     "packages/*"
