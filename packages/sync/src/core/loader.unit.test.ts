@@ -1,38 +1,31 @@
-import { promises as fs, Dirent } from 'fs';
+import { vol } from 'memfs';
 import * as requireUtils from '../utils/require';
 import { GeneratorConfig } from './generator';
 import { loadGeneratorsForModule } from './loader';
 
-jest.mock('fs', () => ({
-  promises: {
-    readdir: jest.fn(),
-  },
-}));
+jest.mock('fs');
 jest.mock('../utils/require');
 
-const mockedFs = jest.mocked(fs);
 const mockedRequireUtils = jest.mocked(requireUtils);
 
-function createMockDirEntry(options: {
-  isDirectory: boolean;
-  name: string;
-}): Dirent {
-  return {
-    isDirectory: () => options.isDirectory,
-    name: options.name,
-  } as unknown as Dirent;
-}
+beforeEach(() => {
+  vol.reset();
+});
 
 describe('loadGeneratorsForModule', () => {
   it('loads a set of generators from a folder', async () => {
     mockedRequireUtils.resolveModule.mockReturnValueOnce(
-      '/modules/test-generators/lib'
+      '/modules/test-generators/package.json'
     );
-    mockedFs.readdir.mockResolvedValueOnce([
-      createMockDirEntry({ isDirectory: true, name: 'generatorOne' }),
-      createMockDirEntry({ isDirectory: true, name: 'generatorTwo' }),
-      createMockDirEntry({ isDirectory: false, name: 'foo.yml' }),
-    ]);
+    vol.fromJSON(
+      {
+        '/modules/test-generators/lib/generators/generatorOne/index.ts': 'a();',
+        '/modules/test-generators/lib/generators/generatorTwo/index.ts': 'a();',
+        '/modules/test-generators/lib/generators/index.ts': 'a();',
+        '/modules/test-generators/lib/random/foo.yml': 'test',
+      },
+      '/modules/test-generators'
+    );
     const mockGeneratorOne: GeneratorConfig = {
       parseDescriptor: jest.fn(),
       createGenerator: jest.fn(),
@@ -51,26 +44,83 @@ describe('loadGeneratorsForModule', () => {
     expect(generator).toEqual({
       '@baseplate/test/generatorOne': {
         ...mockGeneratorOne,
-        configBaseDirectory: '/modules/test-generators/generators/generatorOne',
+        configBaseDirectory:
+          '/modules/test-generators/lib/generators/generatorOne',
       },
       '@baseplate/test/generatorTwo': {
         ...mockGeneratorTwo,
-        configBaseDirectory: '/modules/test-generators/generators/generatorTwo',
+        configBaseDirectory:
+          '/modules/test-generators/lib/generators/generatorTwo',
       },
     });
 
     expect(mockedRequireUtils.resolveModule).toHaveBeenCalledWith(
+      '@baseplate/test-generators/package.json'
+    );
+    expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
+      '/modules/test-generators/lib/generators/generatorOne'
+    );
+    expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
+      '/modules/test-generators/lib/generators/generatorTwo'
+    );
+  });
+
+  it('loads a set of generators with right glob patterns and different base', async () => {
+    mockedRequireUtils.resolveModule.mockReturnValueOnce(
+      '/modules/test-generators/package.json'
+    );
+    vol.fromJSON(
+      {
+        '/modules/test-generators/dist/generators/one/generatorOne/index.ts':
+          'a();',
+        '/modules/test-generators/dist/generators/two/generatorTwo/index.ts':
+          'a();',
+        '/modules/test-generators/dist/generators/index.ts': 'a();',
+        '/modules/test-generators/dist/generators/one/index.yml': 'test',
+        '/modules/test-generators/generator.json': JSON.stringify({
+          generatorBaseDirectory: 'dist/generators',
+          generatorPatterns: ['*/*'],
+        }),
+        '/modules/test-generators/dist/random/foo.yml': 'test',
+      },
+      '/modules/test-generators'
+    );
+    const mockGeneratorOne: GeneratorConfig = {
+      parseDescriptor: jest.fn(),
+      createGenerator: jest.fn(),
+    };
+    const mockGeneratorTwo: GeneratorConfig = {
+      parseDescriptor: jest.fn(),
+      createGenerator: jest.fn(),
+    };
+    mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorOne);
+    mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorTwo);
+
+    const generator = await loadGeneratorsForModule(
       '@baseplate/test-generators'
     );
-    expect(mockedFs.readdir).toHaveBeenCalledWith(
-      '/modules/test-generators/generators',
-      { withFileTypes: true }
+
+    expect(generator).toEqual({
+      '@baseplate/test/one/generatorOne': {
+        ...mockGeneratorOne,
+        configBaseDirectory:
+          '/modules/test-generators/dist/generators/one/generatorOne',
+      },
+      '@baseplate/test/two/generatorTwo': {
+        ...mockGeneratorTwo,
+        configBaseDirectory:
+          '/modules/test-generators/dist/generators/two/generatorTwo',
+      },
+    });
+
+    expect(mockedRequireUtils.resolveModule).toHaveBeenCalledWith(
+      '@baseplate/test-generators/package.json'
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/generators/generatorOne'
+      '/modules/test-generators/dist/generators/one/generatorOne'
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/generators/generatorTwo'
+      '/modules/test-generators/dist/generators/two/generatorTwo'
     );
   });
 });

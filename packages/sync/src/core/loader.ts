@@ -1,6 +1,8 @@
-import { promises as fs } from 'fs';
 import path from 'path';
+import fs from 'fs-extra';
+import globby from 'globby';
 import R from 'ramda';
+import * as yup from 'yup';
 import { getModuleDefault, resolveModule } from '../utils/require';
 import { GeneratorConfig } from './generator';
 
@@ -13,18 +15,42 @@ export interface GeneratorConfigWithLocation extends GeneratorConfig {
 
 export type GeneratorConfigMap = Record<string, GeneratorConfigWithLocation>;
 
+// Generator modules have the ability to add a generator.json to the root to specify
+// where the loader should look for generators
+const GENERATOR_LOADER_CONFIG_SCHEMA = yup.object({
+  // the base directory to look for generators, defaults to the lib/generators folder
+  generatorBaseDirectory: yup.string().default('lib/generators'),
+  // glob patterns to match generators
+  generatorPatterns: yup.array(yup.string().required()).default(['*']),
+});
+
 export async function loadGeneratorsForModule(
   module: string
 ): Promise<GeneratorConfigMap> {
-  const modulePath = resolveModule(module);
-  const generatorsDirectory = path.join(modulePath, '../generators');
+  const modulePath = path.dirname(resolveModule(`${module}/package.json`));
 
-  const dirs = await fs.readdir(generatorsDirectory, { withFileTypes: true });
-  const generatorFolders = dirs
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name);
+  // look for a generator.json in the root of the module
+  const moduleConfigPath = path.join(modulePath, 'generator.json');
+  const moduleConfigExists = await fs.pathExists(moduleConfigPath);
+  const generatorLoaderConfig = moduleConfigExists
+    ? ((await fs.readJSON(moduleConfigPath)) as unknown)
+    : {};
 
-  const generators = generatorFolders.map((folder) => {
+  const validatedConfig = await GENERATOR_LOADER_CONFIG_SCHEMA.validate(
+    generatorLoaderConfig
+  );
+
+  const generatorsDirectory = path.join(
+    modulePath,
+    validatedConfig.generatorBaseDirectory
+  );
+
+  const matchedGenerators = await globby(validatedConfig.generatorPatterns, {
+    cwd: generatorsDirectory,
+    onlyDirectories: true,
+  });
+
+  const generators = matchedGenerators.map((folder) => {
     const generatorFolder = path.join(generatorsDirectory, folder);
     const generator = getModuleDefault<GeneratorConfig>(generatorFolder);
     if (!generator) {
