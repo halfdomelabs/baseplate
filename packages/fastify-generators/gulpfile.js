@@ -2,8 +2,8 @@ const gulp = require('gulp');
 const del = require('del');
 
 const TEMPLATE_GLOBS = [
-  'src/generators/*/templates/**',
-  'src/generators/*/templates/**/.*',
+  'src/generators/*/*/templates/**',
+  'src/generators/*/*/templates/**/.*',
 ];
 
 function cleanTemplates() {

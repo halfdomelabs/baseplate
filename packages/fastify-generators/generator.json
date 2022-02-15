@@ -1,0 +1,4 @@
+{
+  "generatorBaseDirectory": "lib/generators",
+  "generatorPatterns": ["*/*"]
+}

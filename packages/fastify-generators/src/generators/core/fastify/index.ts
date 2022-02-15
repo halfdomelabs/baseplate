@@ -35,35 +35,35 @@ const FastifyGenerator = createGeneratorWithChildren({
     logger: {
       provider: 'logger-service',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/logger-service',
+        generator: '@baseplate/fastify/core/logger-service',
         peerProvider: true,
       },
     },
     appModule: {
       provider: 'app-module',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/app-module',
+        generator: '@baseplate/fastify/core/app-module',
         peerProvider: true,
       },
     },
     errorHandler: {
       provider: 'error-handler-service',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/error-handler-service',
+        generator: '@baseplate/fastify/core/error-handler-service',
         peerProvider: true,
       },
     },
     config: {
       provider: 'config-service',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/config-service',
+        generator: '@baseplate/fastify/core/config-service',
         peerProvider: true,
       },
     },
     server: {
       provider: 'fastify-server',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/fastify-server',
+        generator: '@baseplate/fastify/core/fastify-server',
         peerProvider: true,
       },
     },
