@@ -70,7 +70,7 @@
 			"}",
 			"",
 			"export interface ${1}Provider {",
-			"  getConfig(): NonOverwriteableMap<${1}Config>;",
+			"  getConfig(): NonOverwriteableMap<${1}GeneratorConfig>;",
 			"}",
 			"",
 			"export const ${1/(^[A-Z])/${1:/downcase}/}Provider = createProviderType<${1}Provider>('${1/(^[A-Z][a-z]*|[a-z])([A-Z])?/${1:/downcase}${2:+-}${2:/downcase}/g}');",
