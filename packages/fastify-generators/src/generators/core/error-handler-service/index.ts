@@ -1,4 +1,5 @@
 import {
+  copyTypescriptFileAction,
   createTypescriptTemplateConfig,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -10,6 +11,7 @@ import {
   copyFileAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
+import { fastifyServerProvider } from '../fastify-server';
 import { loggerServiceProvider } from '../logger-service';
 
 const descriptorSchema = yup.object({});
@@ -31,21 +33,34 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     loggerService: loggerServiceProvider,
+    fastifyServer: fastifyServerProvider,
   },
   exports: {
     errorHandlerService: errorHandlerServiceProvider,
   },
-  createGenerator(descriptor, { loggerService }) {
+  createGenerator(descriptor, { loggerService, fastifyServer }) {
     const errorLoggerFile = new TypescriptSourceFile(errorHandlerFileConfig);
+
+    fastifyServer.registerPlugin({
+      name: 'errorHandlerPlugin',
+      plugin: TypescriptCodeUtils.createExpression(
+        'errorHandlerPlugin',
+        "import { errorHandlerPlugin } from '@/src/plugins/error-handler.ts'"
+      ),
+    });
+
+    const errorFunction = TypescriptCodeUtils.createExpression(
+      'logError',
+      "import { logError } from '@/src/services/error-logger'"
+    );
+
+    fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
+
     return {
       getProviders: () => ({
         errorHandlerService: {
           getHandlerFile: () => errorLoggerFile,
-          getErrorFunction: () =>
-            TypescriptCodeUtils.createExpression(
-              'logError',
-              "import { logError } from '@/src/services/error-logger'"
-            ),
+          getErrorFunction: () => errorFunction,
         },
       }),
       build: async (builder) => {
@@ -57,6 +72,13 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
               (code) => `${code}.error(error);`
             )
           )
+        );
+
+        await builder.apply(
+          copyTypescriptFileAction({
+            source: 'plugins/error-handler.ts',
+            destination: 'src/plugins/error-handler.ts',
+          })
         );
 
         await builder.apply(

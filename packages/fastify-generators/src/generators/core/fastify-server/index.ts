@@ -15,7 +15,6 @@ import {
 import * as yup from 'yup';
 import { appModuleProvider } from '../app-module';
 import { configServiceProvider } from '../config-service';
-import { errorHandlerServiceProvider } from '../error-handler-service';
 import { loggerServiceProvider } from '../logger-service';
 
 const descriptorSchema = yup.object({
@@ -23,7 +22,7 @@ const descriptorSchema = yup.object({
 });
 
 interface FastifyServerConfig {
-  setting?: string;
+  errorHandlerFunction: TypescriptCodeExpression;
 }
 
 interface FastifyServerPlugin {
@@ -48,18 +47,20 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     loggerService: loggerServiceProvider,
     configService: configServiceProvider,
     appModule: appModuleProvider,
-    errorHandlerService: errorHandlerServiceProvider,
   },
   exports: {
     fastifyServer: fastifyServerProvider,
   },
   createGenerator(
     descriptor,
-    { loggerService, configService, node, appModule, errorHandlerService }
+    { loggerService, configService, node, appModule }
   ) {
-    const config = createNonOverwriteableMap(
-      {},
-      { name: 'fastify-server-config' }
+    const configMap = createNonOverwriteableMap<FastifyServerConfig>(
+      {
+        errorHandlerFunction:
+          TypescriptCodeUtils.createExpression('console.error'),
+      },
+      { name: 'fastify-server-config', defaultsOverrideable: true }
     );
     const plugins: FastifyServerPlugin[] = [];
 
@@ -115,21 +116,19 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         fastifyServer: {
-          getConfig: () => config,
+          getConfig: () => configMap,
           registerPlugin: (plugin) => plugins.push(plugin),
         },
       }),
       build: async (builder) => {
+        const config = configMap.value();
         const indexFile = new TypescriptSourceFile({
           LOG_ERROR: { type: 'code-expression' },
           SERVER_OPTIONS: { type: 'code-expression' },
           SERVER_PORT: { type: 'code-expression' },
           SERVER_HOST: { type: 'code-expression' },
         });
-        indexFile.addCodeExpression(
-          'LOG_ERROR',
-          errorHandlerService.getErrorFunction()
-        );
+        indexFile.addCodeExpression('LOG_ERROR', config.errorHandlerFunction);
         indexFile.addCodeExpression(
           'SERVER_OPTIONS',
           TypescriptCodeUtils.mergeExpressionsAsObject({
