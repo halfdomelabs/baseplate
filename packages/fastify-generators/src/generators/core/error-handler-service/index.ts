@@ -17,11 +17,13 @@ import { loggerServiceProvider } from '../logger-service';
 const descriptorSchema = yup.object({});
 
 const errorHandlerFileConfig = createTypescriptTemplateConfig({
+  HEADER: { type: 'code-block' },
   LOGGER_ACTIONS: { type: 'code-block' },
 });
 
 export interface ErrorHandlerServiceProvider {
   getHandlerFile(): TypescriptSourceFile<typeof errorHandlerFileConfig>;
+  getHttpErrorsImport(): string;
   getErrorFunction(): TypescriptCodeExpression;
 }
 
@@ -61,6 +63,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
         errorHandlerService: {
           getHandlerFile: () => errorLoggerFile,
           getErrorFunction: () => errorFunction,
+          getHttpErrorsImport: () => '@/src/utils/http-errors',
         },
       }),
       build: async (builder) => {

@@ -1,6 +1,7 @@
 import {
   copyTypescriptFileAction,
   nodeProvider,
+  TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import {
@@ -20,6 +21,7 @@ export interface RequestContextGeneratorConfig {
 
 export interface RequestContextProvider {
   getConfig(): NonOverwriteableMap<RequestContextGeneratorConfig>;
+  getRequestInfoType(): TypescriptCodeExpression;
 }
 
 export const requestContextProvider =
@@ -52,6 +54,11 @@ const RequestContextGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         requestContext: {
           getConfig: () => config,
+          getRequestInfoType: () =>
+            TypescriptCodeUtils.createExpression(
+              'RequestInfo',
+              "import type {RequestInfo} from '@/src/plugins/request-context'"
+            ),
         },
       }),
       build: async (builder) => {

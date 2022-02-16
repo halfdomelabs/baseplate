@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+HEADER;
+
 /**
  * Logs error to the appropriate receivers.
  *
