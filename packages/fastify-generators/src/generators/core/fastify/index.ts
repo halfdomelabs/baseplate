@@ -67,6 +67,13 @@ const FastifyGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    requestContext: {
+      provider: 'request-context',
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/core/request-context',
+        peerProvider: true,
+      },
+    },
   }),
   dependencies: { node: nodeProvider, typescript: typescriptProvider },
   exports: {

@@ -43,6 +43,10 @@ interface NonOverwriteableMapConfig {
    * The name of the map to display in errors
    */
   name?: string;
+  /**
+   * Whether the defaults can be overriden or not
+   */
+  defaultsOverrideable?: boolean;
 }
 
 /**
@@ -53,9 +57,13 @@ export function createNonOverwriteableMap<T extends object>(
   defaults: T,
   options: NonOverwriteableMapConfig = {}
 ): NonOverwriteableMap<T> {
-  const { name = 'non-overwriteable map', mergeArraysUniquely } = options;
+  const {
+    name = 'non-overwriteable map',
+    mergeArraysUniquely,
+    defaultsOverrideable,
+  } = options;
 
-  let overrideValues: Partial<T> = {};
+  let overrideValues: Partial<T> = defaultsOverrideable ? {} : defaults;
 
   const nonOverwriteableMerge = R.mergeWithKey((key) => {
     throw new Error(`Field ${key} already has value in ${name}`);
