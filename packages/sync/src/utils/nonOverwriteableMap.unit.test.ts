@@ -8,10 +8,8 @@ describe('createNonOverwriteableMap', () => {
 
   it('generates simple map that can be overwritten', () => {
     const map = createNonOverwriteableMap({
-      fieldOne: 'valueOne',
-      fieldTwo: 'valueTwo',
       fieldThree: 'valueThree',
-    });
+    } as { fieldOne?: string; fieldTwo?: string; fieldThree: string });
     map.set('fieldOne', 'valueOneOverride');
     map.merge({ fieldTwo: 'valueTwoOverride' });
     expect(map.value()).toEqual({
@@ -24,12 +22,30 @@ describe('createNonOverwriteableMap', () => {
   it('throws when overwriting a field', () => {
     const map = createNonOverwriteableMap(
       { fieldOne: 'valueOne', fieldTwo: 'valueTwo' },
-      { name: 'cool map' }
+      { name: 'cool map', defaultsOverwriteable: true }
     );
     map.set('fieldOne', 'valueOneOverride');
     expect(() => map.set('fieldOne', 'valueOneOverride2')).toThrow(
       'Field fieldOne already has value in cool map'
     );
+  });
+
+  it('allows overwriting of defaults with defaultsOverwriteable', () => {
+    const map = createNonOverwriteableMap(
+      {
+        fieldOne: 'valueOne',
+        fieldTwo: 'valueTwo',
+        fieldThree: 'valueThree',
+      },
+      { defaultsOverwriteable: true }
+    );
+    map.set('fieldOne', 'valueOneOverride');
+    map.merge({ fieldTwo: 'valueTwoOverride' });
+    expect(map.value()).toEqual({
+      fieldOne: 'valueOneOverride',
+      fieldTwo: 'valueTwoOverride',
+      fieldThree: 'valueThree',
+    });
   });
 
   it('merges array fields', () => {

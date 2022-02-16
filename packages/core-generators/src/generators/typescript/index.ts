@@ -62,7 +62,7 @@ const TypescriptGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node }) {
     const config = createNonOverwriteableMap<TypescriptConfig>(DEFAULT_CONFIG, {
       name: 'typescript',
-      defaultsOverrideable: true,
+      defaultsOverwriteable: true,
     });
     return {
       getProviders: () => ({
