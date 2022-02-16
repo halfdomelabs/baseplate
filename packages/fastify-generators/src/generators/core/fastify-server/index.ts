@@ -60,7 +60,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
         errorHandlerFunction:
           TypescriptCodeUtils.createExpression('console.error'),
       },
-      { name: 'fastify-server-config', defaultsOverrideable: true }
+      { name: 'fastify-server-config', defaultsOverwriteable: true }
     );
     const plugins: FastifyServerPlugin[] = [];
 
