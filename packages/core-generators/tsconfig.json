@@ -5,5 +5,5 @@
     "declaration": true
   },
   "include": ["src/**/*"],
-  "exclude": ["**/generators/*/templates/**"]
+  "exclude": ["**/generators/*/*/templates/**"]
 }
