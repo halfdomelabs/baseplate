@@ -7,6 +7,7 @@ import {
 import R from 'ramda';
 import semver from 'semver';
 import * as yup from 'yup';
+import { projectProvider } from '../../../providers';
 
 const descriptorSchema = yup.object({
   name: yup.string().required(),
@@ -78,6 +79,7 @@ const NodeGenerator = createGeneratorWithChildren({
   }),
   exports: {
     node: nodeProvider,
+    project: projectProvider,
   },
   createGenerator: (descriptor) => {
     const dependencies: Record<string, NodeDependencyEntry> = {};
@@ -150,6 +152,9 @@ const NodeGenerator = createGeneratorWithChildren({
             getNodeVersion() {
               return descriptor.nodeVersion;
             },
+          },
+          project: {
+            getProjectName: () => descriptor.name,
           },
         };
       },
