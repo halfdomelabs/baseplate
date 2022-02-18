@@ -130,7 +130,9 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
           .join('\n')}\n`;
 
         builder.writeFile('.env.example', envFile);
-        builder.writeFile('.env', envFile);
+        builder.writeFile('.env', envFile, {
+          neverOverwrite: true,
+        });
       },
     };
   },

@@ -13,9 +13,9 @@ import {
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import * as yup from 'yup';
-import { appModuleProvider } from '../app-module';
 import { configServiceProvider } from '../config-service';
 import { loggerServiceProvider } from '../logger-service';
+import { rootModuleProvider } from '../root-module';
 
 const descriptorSchema = yup.object({
   defaultPort: yup.number().default(7001),
@@ -46,14 +46,14 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     node: nodeProvider,
     loggerService: loggerServiceProvider,
     configService: configServiceProvider,
-    appModule: appModuleProvider,
+    rootModule: rootModuleProvider,
   },
   exports: {
     fastifyServer: fastifyServerProvider,
   },
   createGenerator(
     descriptor,
-    { loggerService, configService, node, appModule }
+    { loggerService, configService, node, rootModule }
   ) {
     const configMap = createNonOverwriteableMap<FastifyServerConfig>(
       {
@@ -105,7 +105,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       },
     });
 
-    appModule.addModuleField(
+    rootModule.addModuleField(
       'plugins',
       TypescriptCodeUtils.createExpression(
         '(FastifyPluginCallback | FastifyPluginAsync)',
@@ -174,7 +174,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
             })
           )
         );
-        serverFile.addCodeExpression('ROOT_MODULE', appModule.getRootModule());
+        serverFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
 
         await builder.apply(
           serverFile.renderToAction('server.ts', 'src/server.ts')

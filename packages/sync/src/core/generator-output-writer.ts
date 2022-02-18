@@ -35,7 +35,11 @@ async function writeFile(filePath: string, data: FileData): Promise<boolean> {
     if (data.contents instanceof Buffer) {
       throw new Error(`Cannot format Buffer contents for ${filePath}`);
     }
-    formattedContents = await data.formatter.format(data.contents, filePath);
+    try {
+      formattedContents = await data.formatter.format(data.contents, filePath);
+    } catch (err) {
+      console.error(`Error formatting ${filePath}\n`, err);
+    }
   }
   // if file exists and we never overwrite, return false
   if (data.options?.neverOverwrite) {

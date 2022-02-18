@@ -39,10 +39,10 @@ const FastifyGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
-    appModule: {
-      provider: 'app-module',
+    rootModule: {
+      provider: 'root-module',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/app-module',
+        generator: '@baseplate/fastify/core/root-module',
         peerProvider: true,
       },
     },
