@@ -24,8 +24,8 @@ function buildGeneratorEntry(
     build = () => {},
     children = [],
     exports = {},
-    dependencyMap,
-    exportMap,
+    dependencyMap = {},
+    exportMap = {},
   } = options;
   return buildTestGeneratorEntry({
     id,
