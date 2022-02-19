@@ -4,7 +4,7 @@ import { GeneratorEntry } from './generator-builder';
 import { providerMapToNames } from './utils';
 
 /**
- * Builds a map of the entry's required providers to entry IDs of resolved providers
+ * Builds a map of the entry's dependencies to entry IDs of resolved providers
  *
  * @param entry Generator entry
  * @param parentProviders
