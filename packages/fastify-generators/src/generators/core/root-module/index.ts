@@ -41,8 +41,7 @@ const RootModuleGenerator = createGeneratorWithChildren({
   dependencies: {},
   exports: {
     rootModule: rootModuleProvider,
-    appModule: appModuleProvider,
-    // TODO: Make appModule depend on rootModule being completed
+    appModule: appModuleProvider.export().dependsOn(rootModuleProvider),
   },
   createGenerator() {
     const moduleFieldMap = createNonOverwriteableMap<
