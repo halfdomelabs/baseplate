@@ -10,6 +10,7 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
+import { formatSchema } from '@prisma/sdk';
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import {
@@ -17,23 +18,19 @@ import {
   createPrismaSchemaGeneratorBlock,
   PrismaModelBlock,
   PrismaSchemaFile,
-} from '@src/writers/prisma-schema';
+} from '@src/writers/prisma-schema/schema';
 
 const descriptorSchema = yup.object({
   defaultPort: yup.string().default('5432'),
   defaultDatabaseUrl: yup.string(),
 });
 
-export interface PrismaGeneratorConfig {
-  setting?: string;
-}
-
-export interface PrismaProvider {
-  getConfig(): NonOverwriteableMap<PrismaGeneratorConfig>;
+export interface PrismaSchemaProvider {
   addPrismaModel(model: PrismaModelBlock): void;
 }
 
-export const prismaProvider = createProviderType<PrismaProvider>('prisma');
+export const prismaSchemaProvider =
+  createProviderType<PrismaSchemaProvider>('prisma-schema');
 
 const PrismaGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -44,10 +41,9 @@ const PrismaGenerator = createGeneratorWithChildren({
     project: projectProvider,
   },
   exports: {
-    prisma: prismaProvider,
+    prismaSchema: prismaSchemaProvider,
   },
   createGenerator(descriptor, { node, configService, project }) {
-    const config = createNonOverwriteableMap({}, { name: 'prisma-config' });
     const prismaModelMap: NonOverwriteableMap<
       Record<string, PrismaModelBlock>
     > = createNonOverwriteableMap({}, { name: 'prisma-models' });
@@ -91,8 +87,7 @@ const PrismaGenerator = createGeneratorWithChildren({
 
     return {
       getProviders: () => ({
-        prisma: {
-          getConfig: () => config,
+        prismaSchema: {
           addPrismaModel: (model) => {
             prismaModelMap.set(model.name, model);
           },
@@ -102,7 +97,11 @@ const PrismaGenerator = createGeneratorWithChildren({
         const models = Object.values(prismaModelMap.value());
         models.forEach((model) => schemaFile.addModelBlock(model));
 
-        builder.writeFile('prisma/schema.prisma', schemaFile.toText());
+        const schemaText = schemaFile.toText();
+        const formattedSchemaText = (await formatSchema({
+          schema: schemaText,
+        })) as string;
+        builder.writeFile('prisma/schema.prisma', formattedSchemaText);
 
         builder.addPostWriteCommand('yarn prisma generate', {
           onlyIfChanged: ['prisma/schema.prisma'],

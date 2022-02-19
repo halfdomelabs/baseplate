@@ -550,7 +550,10 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
       }
     });
 
-    return file.getFullText();
+    const text = file.getFullText();
+
+    // get rid of any leading whitespace and add newline to the end
+    return `${text.trim()}\n`;
   }
 
   renderToAction(
