@@ -44,21 +44,19 @@ export interface ProviderDependency<P = Provider> {
 
 export interface ProviderExportOptions {
   /**
-   * Whether the export is an output provider. When another generator
-   * depends on an output provider, it will depend on all generators
-   * that are dependent on the provider. Effectively, this means
-   * that it will access the provider once the generator has been built.
-   *
-   * TODO: Need implementation
+   * A provider export may depend on another provider export being set up
+   * before it can be used. Practically this means that all generators
+   * that depend on this export will depend on the generators that depend
+   * on the specified export.
    */
-  output?: boolean;
+  dependencies?: ProviderType[];
 }
 
 export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
   readonly options: ProviderExportOptions;
-  output(): ProviderExport<P>;
+  dependsOn(deps: ProviderType | ProviderType[]): ProviderExport<P>;
 }
 
 export function createProviderType<T>(name: string): ProviderType<T> {
@@ -86,8 +84,18 @@ export function createProviderType<T>(name: string): ProviderType<T> {
         ...this,
         type: 'export',
         options: {},
-        output() {
-          return R.mergeDeepLeft({ options: { output: true } }, this);
+        dependsOn(deps) {
+          const dependencies = Array.isArray(deps) ? deps : [deps];
+          return {
+            ...this,
+            options: {
+              ...this.options,
+              dependencies: [
+                ...(this.options.dependencies || []),
+                ...dependencies,
+              ],
+            },
+          };
         },
       };
     },

@@ -1,12 +1,12 @@
 import R from 'ramda';
-import { ProviderType, ProviderDependency } from '../provider';
+import { ProviderType, ProviderDependency, ProviderExport } from '../provider';
 import { GeneratorEntry } from './generator-builder';
 
 /**
  * Converts a provider map to a list of provider names
  */
 export function providerMapToNames(map?: {
-  [key: string]: ProviderType | ProviderDependency;
+  [key: string]: ProviderType | ProviderDependency | ProviderExport;
 }): string[] {
   if (!map) {
     return [];

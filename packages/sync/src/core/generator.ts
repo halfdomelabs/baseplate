@@ -1,6 +1,11 @@
 import { BaseGeneratorDescriptor } from './descriptor';
 import { GeneratorOutputBuilder } from './generator-output';
-import { Provider, ProviderDependency, ProviderType } from './provider';
+import {
+  Provider,
+  ProviderDependency,
+  ProviderType,
+  ProviderExport,
+} from './provider';
 
 /**
  * An instance of a generator that has providers for other
@@ -14,7 +19,7 @@ export interface GeneratorInstance<
 }
 
 export type ProviderExportMap<T = Record<string, Provider>> = {
-  [key in keyof T]: ProviderType<T[key]>;
+  [key in keyof T]: ProviderType<T[key]> | ProviderExport<T[key]>;
 };
 
 export type ProviderDependencyMap<T = Record<string, Provider>> = {
