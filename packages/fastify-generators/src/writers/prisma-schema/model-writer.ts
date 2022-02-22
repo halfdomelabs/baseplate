@@ -71,9 +71,7 @@ export class PrismaModelBlockWriter {
     }
 
     const fieldsString = this.fields.map(formatModel).join('\n');
-    const modelAttributeString = this.attributes
-      .map(formatAttribute)
-      .join('\n');
+    const modelAttributeString = attributes.map(formatAttribute).join('\n');
 
     return {
       name: this.options.name,

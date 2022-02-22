@@ -52,7 +52,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
       Record<string, TypescriptCodeExpression>
     >({}, { name: 'logger-service-mixins' });
 
-    fastify.getConfig().set('devOutputFormatter', 'pino-pretty');
+    fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
 
     node.addPackages({
       pino: '^7.6.2',

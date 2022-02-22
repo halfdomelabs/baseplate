@@ -77,7 +77,7 @@ const PrismaGenerator = createGeneratorWithChildren({
       descriptor.defaultDatabaseUrl ||
       `postgres://postgres:${project.getProjectName()}-password@localhost:${
         descriptor.defaultPort
-      }.postgres?schema=public`;
+      }/postgres?schema=public`;
 
     configService.getConfigEntries().set('DATABASE_URL', {
       comment: 'Connection URL of the database',

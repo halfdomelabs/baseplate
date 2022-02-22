@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "tsc && node dist/index.js",
-    "dev": "ts-node-dev --respawn src",
+    "dev": "ts-node-dev --rs --respawn src",
     "build": "tsc",
     "watch": "tsc --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"

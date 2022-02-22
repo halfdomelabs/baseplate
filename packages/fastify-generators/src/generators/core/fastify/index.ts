@@ -99,7 +99,7 @@ const FastifyGenerator = createGeneratorWithChildren({
         const devRegister = (devLoaders || [])
           .map((loader) => `-r ${loader}`)
           .join(' ');
-        const devCommand = `ts-node-dev --transpile-only --respawn ${devRegister} src${
+        const devCommand = `ts-node-dev --rs --transpile-only --respawn ${devRegister} src${
           devOutputFormatter ? ` | ${devOutputFormatter}` : ''
         }`;
         node.addScripts({
