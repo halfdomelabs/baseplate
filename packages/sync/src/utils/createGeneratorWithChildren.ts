@@ -38,6 +38,12 @@ export interface SimpleGeneratorConfig<
   ): Record<string, ChildGeneratorConfig>;
   exports?: ExportMap;
   dependencies?: DependencyMap;
+  // we need a separate function because we can't infer the type of the
+  // dependency map from a generator function that takes in a generic descriptor
+  populateDependencies?: (
+    dependencyMap: DependencyMap,
+    descriptor: yup.InferType<DescriptorSchema>
+  ) => ProviderDependencyMap;
   createGenerator: GeneratorConfig<
     DescriptorWithChildren & yup.InferType<DescriptorSchema>,
     ExportMap,
@@ -68,6 +74,8 @@ export function createGeneratorWithChildren<
 > {
   return {
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
+      const validatedDescriptor =
+        config.descriptorSchema?.validateSync(descriptor);
       const { id, generatorMap } = context;
       const childGeneratorConfigs =
         config.getDefaultChildGenerators?.(descriptor) || {};
@@ -108,16 +116,16 @@ export function createGeneratorWithChildren<
           descriptorChild || {}
         );
 
-        const validatedDescriptor = yup
+        const validatedChildDescriptor = yup
           .object(baseDescriptorSchema)
           .validateSync(mergedDescriptor);
 
         if (provider) {
           const childGeneratorConfig =
-            generatorMap[validatedDescriptor.generator];
+            generatorMap[validatedChildDescriptor.generator];
           if (!childGeneratorConfig) {
             throw new Error(
-              `Child generator in ${id} has invalid generator ${validatedDescriptor.generator}`
+              `Child generator in ${id} has invalid generator ${validatedChildDescriptor.generator}`
             );
           }
           const exportKeys = Object.keys(childGeneratorConfig.exports || {});
@@ -127,11 +135,11 @@ export function createGeneratorWithChildren<
             )
           ) {
             throw new Error(
-              `Child generator ${validatedDescriptor.generator} in ${id} does not provide ${provider}`
+              `Child generator ${validatedChildDescriptor.generator} in ${id} does not provide ${provider}`
             );
           }
         }
-        return validatedDescriptor;
+        return validatedChildDescriptor;
       }
 
       const children = R.mapObjIndexed((value, key) => {
@@ -163,10 +171,18 @@ export function createGeneratorWithChildren<
       const customChildren: Record<string, BaseGeneratorDescriptor | string> =
         R.pickBy((_, key) => key.startsWith('$'), descriptorChildren);
 
+      const dependencies =
+        config.populateDependencies && config.dependencies
+          ? (config.populateDependencies(
+              config.dependencies,
+              validatedDescriptor
+            ) as DependencyMap)
+          : config.dependencies;
+
       return {
         children: R.mergeRight(children, customChildren),
-        dependencies: config.dependencies,
-        validatedDescriptor: config.descriptorSchema?.validateSync(descriptor),
+        dependencies,
+        validatedDescriptor,
       };
     },
     exports: config.exports,

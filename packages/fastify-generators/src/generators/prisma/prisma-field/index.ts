@@ -13,7 +13,7 @@ interface PrismaFieldTypeConfig<
   name: string;
   prismaType: string;
   optionsSchema?: Schema;
-  getAttributes?: (config: {
+  getAttributes?: (config?: {
     [Key in keyof Schema]: yup.InferType<Schema[Key]>;
   }) => PrismaModelAttribute[];
 }
@@ -28,6 +28,10 @@ function createConfig<Schema extends Record<string, yup.AnySchema>>(
 export const validTypes: PrismaFieldTypeConfig<any>[] = [
   { name: 'string', prismaType: 'String' },
   { name: 'int', prismaType: 'Int' },
+  { name: 'float', prismaType: 'Float' },
+  { name: 'decimal', prismaType: 'Decimal' },
+  { name: 'boolean', prismaType: 'Boolean' },
+  { name: 'json', prismaType: 'JSON' },
   createConfig({
     name: 'uuid',
     prismaType: 'String',
@@ -36,7 +40,7 @@ export const validTypes: PrismaFieldTypeConfig<any>[] = [
     },
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [{ name: '@db.Uuid' }];
-      if (config.autoGenerate) {
+      if (config?.autoGenerate) {
         attributes.push({
           name: '@default',
           args: 'dbgenerated("gen_random_uuid()")',
@@ -53,9 +57,9 @@ export const validTypes: PrismaFieldTypeConfig<any>[] = [
     },
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [
-        { name: '@db.Timestamptz(3)' },
+        { name: '@db.Timestamptz', args: '3' },
       ];
-      if (config.defaultToNow) {
+      if (config?.defaultToNow) {
         attributes.push({
           name: '@default',
           args: 'now()',
@@ -80,6 +84,7 @@ const descriptorSchema = yup.object({
     ),
   id: yup.boolean(),
   unique: yup.boolean(),
+  optional: yup.boolean(),
 });
 
 export type PrismaFieldProvider = unknown;
@@ -98,7 +103,7 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { prismaModel }) {
     const attributes: PrismaModelAttribute[] = [];
-    const { id, unique, name, options } = descriptor;
+    const { id, unique, name, options, optional } = descriptor;
 
     const type = validTypes.find((t) => t.name === descriptor.type);
 
@@ -124,7 +129,7 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
 
     prismaModel.addField({
       name,
-      type: type.prismaType,
+      type: `${type.prismaType}${optional ? '?' : ''}`,
       attributes,
     });
     return {

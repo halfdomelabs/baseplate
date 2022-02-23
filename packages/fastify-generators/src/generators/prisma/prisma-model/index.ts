@@ -24,6 +24,7 @@ export interface PrismaModelGeneratorConfig {
 
 export interface PrismaModelProvider {
   getConfig(): NonOverwriteableMap<PrismaModelGeneratorConfig>;
+  getName(): string;
   addField(field: PrismaModelField): void;
   addModelAttribute(attribute: PrismaModelAttribute): void;
 }
@@ -35,11 +36,25 @@ const PrismaModelGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({
     fields: {
-      provider: 'prisma-field',
       isMultiple: true,
       defaultDescriptor: {
         generator: '@baseplate/fastify/prisma/prisma-field',
       },
+    },
+    relations: {
+      isMultiple: true,
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/prisma/prisma-relation-field',
+      },
+    },
+    indicies: {
+      isMultiple: true,
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/prisma/prisma-model-index',
+      },
+    },
+    generatedFields: {
+      isMultiple: true,
     },
   }),
   dependencies: {
@@ -62,6 +77,7 @@ const PrismaModelGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaModel: {
           getConfig: () => config,
+          getName: () => name,
           addField: (field) => prismaModel.addField(field),
           addModelAttribute: (attribute) => prismaModel.addAttribute(attribute),
         },

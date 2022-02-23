@@ -18,7 +18,11 @@ export async function executeGeneratorEntry(
 ): Promise<GeneratorOutput> {
   const entries = flattenGeneratorEntries(rootEntry);
   const entriesById = R.indexBy(R.prop('id'), entries);
-  const dependencyMap = buildEntryDependencyMapRecursive(rootEntry, {}, {});
+  const dependencyMap = buildEntryDependencyMapRecursive(
+    rootEntry,
+    {},
+    entriesById
+  );
   const sortedEntryIds = getSortedEntryIds(entries, dependencyMap);
 
   // Phase 1: Initialize providers (beginning at the bottom of dependency tree)
