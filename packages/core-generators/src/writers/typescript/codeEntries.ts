@@ -5,7 +5,7 @@ import R from 'ramda';
 import { notEmpty } from '../../utils/array';
 import { ImportDeclarationEntry } from './imports';
 
-interface TypescriptCodeEntryOptions {
+export interface TypescriptCodeEntryOptions {
   imports?: ImportDeclarationEntry[];
   importText?: string[];
   headerBlocks?: TypescriptCodeBlock[];

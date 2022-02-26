@@ -75,7 +75,7 @@ const AppModuleGenerator = createGeneratorWithChildren({
         const moduleFolderIndex = path.join(moduleFolder, 'index.ts');
         builder.writeFile(
           moduleFolderIndex,
-          indexFile.render(
+          indexFile.renderToText(
             `export const ${moduleName} = MODULE_CONTENTS`,
             moduleFolderIndex
           )
