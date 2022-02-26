@@ -82,6 +82,8 @@ export class TypescriptSourceBlock<
 
   protected codeExpressions: Record<string, TypescriptCodeExpression[]>;
 
+  protected headerBlocks: TypescriptCodeBlock[] = [];
+
   constructor(config: T) {
     this.config = config;
     const keys = Object.keys(config);
@@ -155,6 +157,11 @@ export class TypescriptSourceBlock<
     });
   }
 
+  addHeaderBlock(entry: TypescriptCodeBlock): void {
+    this.checkNotGenerated();
+    this.headerBlocks.push(entry);
+  }
+
   render(
     template: string,
     identifierReplacements?: Record<string, string>
@@ -168,13 +175,20 @@ export class TypescriptSourceBlock<
     const file = project.createSourceFile('/', strippedTemplate);
 
     // insert manual imports
-    const entries = R.flatten([
+    const providedEntries = R.flatten([
       Object.values(this.codeBlocks),
       Object.values(this.codeWrappers),
       Object.values(this.codeExpressions),
     ]);
+
+    const headerBlocks = providedEntries.flatMap(
+      (e) => e?.options?.headerBlocks || []
+    );
+
+    const entries = [...providedEntries, ...headerBlocks];
+
     const importStrings = R.flatten(
-      entries.map((e) => e?.importText).filter(notEmpty)
+      entries.map((e) => e?.options?.importText).filter(notEmpty)
     ).join('\n');
 
     file.insertText(0, importStrings);
@@ -184,7 +198,7 @@ export class TypescriptSourceBlock<
     // collate all entry import declarations and write it out
     const allImports = [
       ...fileImports,
-      ...R.flatten(entries.map((e) => e?.imports).filter(notEmpty)),
+      ...R.flatten(entries.map((e) => e?.options?.imports).filter(notEmpty)),
     ];
 
     file.getImportDeclarations().forEach((i) => i.remove());
@@ -216,7 +230,7 @@ export class TypescriptSourceBlock<
                 : TypescriptCodeUtils.mergeBlocks(
                     this.codeBlocks[identifier],
                     '\n\n'
-                  ).code;
+                  ).content;
             blockReplacements.push({
               identifier: node as Identifier,
               contents: mergedBlock,
@@ -232,7 +246,7 @@ export class TypescriptSourceBlock<
                 : TypescriptCodeUtils.mergeExpressions(
                     providedExpressions,
                     configEntry.multiple?.separator || ''
-                  ).expression;
+                  ).content;
             expressionReplacements.push({
               identifier: node as Identifier,
               contents: expression || '',
@@ -288,11 +302,10 @@ export class TypescriptSourceBlock<
       );
     });
 
-    return {
-      type: 'code-block',
+    return new TypescriptCodeBlock(file.getFullText(), null, {
       imports: allImports,
-      code: file.getFullText(),
-    };
+      headerBlocks,
+    });
   }
 }
 
@@ -401,13 +414,20 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     );
 
     // insert manual imports
-    const entries = R.flatten([
+    const providedEntries = R.flatten([
       Object.values(this.codeBlocks),
       Object.values(this.codeWrappers),
       Object.values(this.codeExpressions),
     ]);
+
+    const headerBlocks = providedEntries.flatMap(
+      (e) => e?.options?.headerBlocks || []
+    );
+
+    const entries = [...providedEntries, ...headerBlocks];
+
     const importStrings = R.flatten(
-      entries.map((e) => e?.importText).filter(notEmpty)
+      entries.map((e) => e?.options?.importText).filter(notEmpty)
     ).join('\n');
 
     file.insertText(0, importStrings);
@@ -417,10 +437,17 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
     // collate all entry import declarations and write it out
     const allImports = [
       ...fileImports,
-      ...R.flatten(entries.map((e) => e?.imports).filter(notEmpty)),
+      ...R.flatten(entries.map((e) => e?.options?.imports).filter(notEmpty)),
     ];
 
     file.getImportDeclarations().forEach((i) => i.remove());
+
+    if (headerBlocks.length) {
+      file.insertText(0, (writer) => {
+        writer.writeLine(TypescriptCodeUtils.mergeBlocks(headerBlocks).content);
+        writer.writeLine('');
+      });
+    }
 
     file.insertText(0, (writer) => {
       writeImportDeclarations(writer, allImports, path.dirname(destination));
@@ -454,7 +481,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
                 : TypescriptCodeUtils.mergeBlocks(
                     this.codeBlocks[identifier],
                     '\n\n'
-                  ).code;
+                  ).content;
             blockReplacements.push({
               identifier: node as Identifier,
               contents: mergedBlock,
@@ -470,7 +497,7 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
                 : TypescriptCodeUtils.mergeExpressions(
                     providedExpressions,
                     configEntry.multiple?.separator || ''
-                  ).expression;
+                  ).content;
             expressionReplacements.push({
               identifier: node as Identifier,
               contents: expression || '',

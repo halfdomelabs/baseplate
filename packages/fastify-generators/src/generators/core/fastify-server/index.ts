@@ -1,10 +1,11 @@
 import {
-  mergeCodeImports,
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   TypescriptSourceFile,
   copyTypescriptFileAction,
+  mergeCodeEntryOptions,
+  TypescriptCodeBlock,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -163,14 +164,14 @@ const FastifyServerGenerator = createGeneratorWithChildren({
           'PLUGINS',
           TypescriptCodeUtils.mergeBlocks(
             plugins.map((plugin) => {
-              const options = plugin.options?.expression;
-              return {
-                type: 'code-block',
-                code: `await fastify.register(${plugin.plugin.expression}${
+              const options = plugin.options?.content;
+              return new TypescriptCodeBlock(
+                `await fastify.register(${plugin.plugin.content}${
                   options ? `, ${options}` : ''
                 });`,
-                ...mergeCodeImports([plugin.plugin, plugin.options || {}]),
-              };
+                null,
+                mergeCodeEntryOptions([plugin.plugin, plugin.options])
+              );
             })
           )
         );

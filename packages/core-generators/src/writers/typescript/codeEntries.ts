@@ -1,52 +1,137 @@
+/* eslint-disable max-classes-per-file */
 // specifies a block of code
 
 import R from 'ramda';
 import { notEmpty } from '../../utils/array';
 import { ImportDeclarationEntry } from './imports';
 
-export interface TypescriptCodeEntry {
-  type: string;
+interface TypescriptCodeEntryOptions {
   imports?: ImportDeclarationEntry[];
   importText?: string[];
+  headerBlocks?: TypescriptCodeBlock[];
 }
 
-export interface TypescriptCodeBlock extends TypescriptCodeEntry {
-  type: 'code-block';
-  code: string;
+export abstract class TypescriptCodeEntry {
+  type: string;
+
+  options: TypescriptCodeEntryOptions;
+
+  constructor(
+    type: string,
+    importText?: string | string[] | null,
+    options?: TypescriptCodeEntryOptions
+  ) {
+    if (
+      options?.headerBlocks?.some(
+        (block) => block?.options.headerBlocks?.length
+      )
+    ) {
+      throw new Error('Header blocks cannot contain header blocks');
+    }
+
+    this.type = type;
+    this.options = {
+      ...options,
+      importText: [options?.importText, importText].filter(notEmpty).flat(),
+    };
+  }
 }
 
-export interface TypescriptCodeExpression extends TypescriptCodeEntry {
-  type: 'code-expression';
-  expression: string;
+export function mergeCodeEntryOptions(
+  entriesOrOptions: (
+    | TypescriptCodeEntry
+    | undefined
+    | TypescriptCodeEntryOptions
+  )[]
+): TypescriptCodeEntryOptions {
+  const options = entriesOrOptions
+    .filter(notEmpty)
+    .map((e) => (e instanceof TypescriptCodeEntry ? e.options : e));
+  return {
+    imports: R.flatten(options.map((e) => e.imports).filter(notEmpty)),
+    importText: R.flatten(options.map((e) => e.importText).filter(notEmpty)),
+    headerBlocks: R.flatten(
+      options.map((e) => e.headerBlocks).filter(notEmpty)
+    ),
+  };
+}
+
+export abstract class TypescriptCodeContents extends TypescriptCodeEntry {
+  content: string;
+
+  constructor(
+    type: string,
+    content: string,
+    importText?: string | string[] | null,
+    options?: TypescriptCodeEntryOptions
+  ) {
+    super(type, importText, options);
+    this.content = content;
+  }
+}
+
+export class TypescriptCodeBlock extends TypescriptCodeContents {
+  type: 'code-block' = 'code-block';
+
+  constructor(
+    content: string,
+    importText?: string | string[] | null,
+    options?: TypescriptCodeEntryOptions
+  ) {
+    super('code-block', content, importText, options);
+  }
+}
+
+export class TypescriptCodeExpression extends TypescriptCodeContents {
+  type: 'code-expression' = 'code-expression';
+
+  constructor(
+    content: string,
+    importText?: string | string[] | null,
+    options?: TypescriptCodeEntryOptions
+  ) {
+    super('code-expression', content, importText, options);
+  }
+
+  toBlock(): TypescriptCodeBlock {
+    return new TypescriptCodeBlock(this.content, null, this.options);
+  }
+
+  wrap(wrapper: (contents: string) => string): TypescriptCodeExpression {
+    return new TypescriptCodeExpression(
+      wrapper(this.content),
+      null,
+      this.options
+    );
+  }
 }
 
 export type TypescriptCodeWrapperFunction = (contents: string) => string;
 
-export interface TypescriptCodeWrapper extends TypescriptCodeEntry {
-  type: 'code-wrapper';
+export class TypescriptCodeWrapper extends TypescriptCodeEntry {
+  type: 'code-wrapper' = 'code-wrapper';
+
   wrap: TypescriptCodeWrapperFunction;
-}
 
-type CodeEntryImports = Pick<TypescriptCodeEntry, 'imports' | 'importText'>;
-
-export function mergeCodeImports(
-  entries: CodeEntryImports[]
-): CodeEntryImports {
-  return {
-    imports: R.flatten(entries.map((e) => e.imports).filter(notEmpty)),
-    importText: R.flatten(entries.map((e) => e.importText).filter(notEmpty)),
-  };
+  constructor(
+    wrapper: TypescriptCodeWrapperFunction,
+    importText?: string | string[] | null,
+    options?: TypescriptCodeEntryOptions
+  ) {
+    super('code-wrapper', importText, options);
+    this.wrap = wrapper;
+  }
 }
 
 function mergeBlocks(
   entries: TypescriptCodeBlock[],
   separator = '\n'
 ): TypescriptCodeBlock {
-  return {
-    type: 'code-block',
-    code: entries.map((e) => e.code).join(separator),
-    ...mergeCodeImports(entries),
-  };
+  return new TypescriptCodeBlock(
+    entries.map((e) => e.content).join(separator),
+    null,
+    mergeCodeEntryOptions(entries)
+  );
 }
 
 /**
@@ -56,22 +141,22 @@ function mergeExpressions(
   entries: TypescriptCodeExpression[],
   separator = '\n'
 ): TypescriptCodeExpression {
-  return {
-    type: 'code-expression',
-    expression: entries.map((e) => e.expression).join(separator),
-    ...mergeCodeImports(entries),
-  };
+  return new TypescriptCodeExpression(
+    entries.map((e) => e.content).join(separator),
+    null,
+    mergeCodeEntryOptions(entries)
+  );
 }
 
 function mergeWrappers(
   entries: TypescriptCodeWrapper[]
 ): TypescriptCodeWrapper {
-  return {
-    type: 'code-wrapper',
-    wrap: (contents) =>
+  return new TypescriptCodeWrapper(
+    (contents) =>
       entries.reverse().reduce((prev, cur) => cur.wrap(prev), contents),
-    ...mergeCodeImports(entries),
-  };
+    null,
+    mergeCodeEntryOptions(entries)
+  );
 }
 
 function normalizeWrappers(
@@ -84,44 +169,65 @@ function normalizeWrappers(
     return mergeWrappers(wrappers);
   }
   if (typeof wrappers === 'function') {
-    return {
-      type: 'code-wrapper',
-      wrap: wrappers,
-    };
+    return new TypescriptCodeWrapper(wrappers);
   }
   return wrappers;
+}
+
+function formatStringWithContent(
+  str: string,
+  args: Record<string, TypescriptCodeContents | string>
+): string {
+  if (Object.keys(args).some((key) => !/^[A-Za-z_-]+$/.test(key))) {
+    throw new Error('All arguments for format must follow [A-Z_-]');
+  }
+  const regex = new RegExp(`(${Object.keys(args).join('|')})`, 'g');
+  return str.replace(regex, (key) => {
+    const entry = args[key];
+    if (!entry) {
+      throw new Error(`Could not find entry for ${key}`);
+    }
+    return typeof entry === 'string' ? entry : entry.content;
+  });
+}
+
+function isTypescriptCodeEntry(value: unknown): value is TypescriptCodeEntry {
+  return value instanceof TypescriptCodeEntry;
 }
 
 export const TypescriptCodeUtils = {
   createBlock(
     code: string,
-    importText: string | string[] = []
+    importText: string | string[] = [],
+    options?: TypescriptCodeEntryOptions
   ): TypescriptCodeBlock {
-    return {
-      type: 'code-block',
+    return new TypescriptCodeBlock(
       code,
-      importText: Array.isArray(importText) ? importText : [importText],
-    };
+      Array.isArray(importText) ? importText : [importText],
+      options
+    );
   },
   createExpression(
     expression: string,
-    importText: string | string[] = []
+    importText: string | string[] = [],
+    options?: TypescriptCodeEntryOptions
   ): TypescriptCodeExpression {
-    return {
-      type: 'code-expression',
+    return new TypescriptCodeExpression(
       expression,
-      importText: Array.isArray(importText) ? importText : [importText],
-    };
+      Array.isArray(importText) ? importText : [importText],
+      options
+    );
   },
   createWrapper(
     wrap: TypescriptCodeWrapperFunction,
-    importText: string | string[] = []
+    importText: string | string[] = [],
+    options?: TypescriptCodeEntryOptions
   ): TypescriptCodeWrapper {
-    return {
-      type: 'code-wrapper',
+    return new TypescriptCodeWrapper(
       wrap,
-      importText: Array.isArray(importText) ? importText : [importText],
-    };
+      Array.isArray(importText) ? importText : [importText],
+      options
+    );
   },
   mergeBlocks,
   mergeExpressions,
@@ -134,11 +240,11 @@ export const TypescriptCodeUtils = {
       | TypescriptCodeWrapperFunction
   ): TypescriptCodeExpression {
     const wrapper = normalizeWrappers(wrappers);
-    return {
-      type: 'code-expression',
-      expression: wrapper.wrap(entry.expression),
-      ...mergeCodeImports([wrapper, entry]),
-    };
+    return new TypescriptCodeExpression(
+      wrapper.wrap(entry.content),
+      null,
+      mergeCodeEntryOptions([entry, wrapper])
+    );
   },
   wrapBlock(
     entry: TypescriptCodeBlock,
@@ -148,28 +254,24 @@ export const TypescriptCodeUtils = {
       | TypescriptCodeWrapperFunction
   ): TypescriptCodeBlock {
     const wrapper = normalizeWrappers(wrappers);
-    return {
-      type: 'code-block',
-      code: wrapper.wrap(entry.code),
-      ...mergeCodeImports([wrapper, entry]),
-    };
+    return new TypescriptCodeBlock(
+      wrapper.wrap(entry.content),
+      null,
+      mergeCodeEntryOptions([entry, wrapper])
+    );
   },
   toBlock(entry: TypescriptCodeExpression): TypescriptCodeBlock {
-    return {
-      type: 'code-block',
-      code: entry.expression,
-      imports: entry.imports,
-      importText: entry.importText,
-    };
+    return entry.toBlock();
   },
   mergeExpressionsAsArray(
     entries: TypescriptCodeExpression[]
   ): TypescriptCodeExpression {
     const mergedExpression = mergeExpressions(entries, ', ');
-    return {
-      ...mergedExpression,
-      expression: `[${mergedExpression.expression}]`,
-    };
+    return new TypescriptCodeExpression(
+      `[${mergedExpression.content}]`,
+      null,
+      mergedExpression.options
+    );
   },
   mergeExpressionsAsObject(
     obj: Record<string, TypescriptCodeExpression>,
@@ -182,19 +284,19 @@ export const TypescriptCodeUtils = {
     const expressions = Object.values(obj);
     const mergedExpression = keys
       .map((key) => {
-        if (key === obj[key].expression) {
+        if (key === obj[key].content) {
           return `${key},`;
         }
-        return `${key}: ${obj[key].expression},`;
+        return `${key}: ${obj[key].content},`;
       })
       .join('\n');
-    return {
-      type: 'code-expression',
-      expression: wrapWithParenthesis
+    return new TypescriptCodeExpression(
+      wrapWithParenthesis
         ? `({\n${mergedExpression}\n})`
         : `{\n${mergedExpression}\n}`,
-      ...mergeCodeImports(expressions),
-    };
+      null,
+      mergeCodeEntryOptions(expressions)
+    );
   },
   formatAsComment(text: string): string {
     return text
@@ -206,9 +308,42 @@ export const TypescriptCodeUtils = {
     expression: TypescriptCodeExpression,
     text: string
   ): TypescriptCodeExpression {
-    return {
-      ...expression,
-      expression: `${expression.expression}${text}`,
-    };
+    return new TypescriptCodeExpression(
+      `${expression.content}${text}`,
+      null,
+      expression.options
+    );
+  },
+  formatBlock(
+    formatString: string,
+    args: Record<string, TypescriptCodeContents | string>,
+    options?: TypescriptCodeEntryOptions
+  ): TypescriptCodeBlock {
+    return new TypescriptCodeBlock(
+      formatStringWithContent(formatString, args),
+      null,
+      mergeCodeEntryOptions([
+        ...(Object.values(args).filter(
+          isTypescriptCodeEntry
+        ) as TypescriptCodeEntry[]),
+        options,
+      ])
+    );
+  },
+  formatExpression(
+    formatString: string,
+    args: Record<string, TypescriptCodeContents | string>,
+    options?: TypescriptCodeEntryOptions
+  ): TypescriptCodeExpression {
+    return new TypescriptCodeExpression(
+      formatStringWithContent(formatString, args),
+      null,
+      mergeCodeEntryOptions([
+        ...(Object.values(args).filter(
+          isTypescriptCodeEntry
+        ) as TypescriptCodeEntry[]),
+        options,
+      ])
+    );
   },
 };

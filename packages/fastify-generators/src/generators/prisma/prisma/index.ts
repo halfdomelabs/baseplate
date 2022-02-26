@@ -2,6 +2,7 @@ import {
   copyTypescriptFileAction,
   nodeProvider,
   projectProvider,
+  TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import {
@@ -32,6 +33,14 @@ export interface PrismaSchemaProvider {
 export const prismaSchemaProvider =
   createProviderType<PrismaSchemaProvider>('prisma-schema');
 
+export interface PrismaOutputProvider {
+  getPrismaClient(): TypescriptCodeExpression;
+  getPrismaModel(model: string): TypescriptCodeExpression;
+}
+
+export const prismaOutputProvider =
+  createProviderType<PrismaOutputProvider>('prisma-output');
+
 const PrismaGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
@@ -42,6 +51,7 @@ const PrismaGenerator = createGeneratorWithChildren({
   },
   exports: {
     prismaSchema: prismaSchemaProvider,
+    prismaOutput: prismaOutputProvider.export().dependsOn(prismaSchemaProvider),
   },
   createGenerator(descriptor, { node, configService, project }) {
     const prismaModelMap: NonOverwriteableMap<
@@ -90,6 +100,21 @@ const PrismaGenerator = createGeneratorWithChildren({
         prismaSchema: {
           addPrismaModel: (model) => {
             prismaModelMap.set(model.name, model);
+          },
+        },
+        prismaOutput: {
+          getPrismaClient: () =>
+            TypescriptCodeUtils.createExpression(
+              'prisma',
+              "import { prisma } from '@/src/services/prisma'"
+            ),
+          getPrismaModel: (modelName: string) => {
+            const modelExport =
+              modelName.charAt(0).toLocaleLowerCase() + modelName.slice(1);
+            return TypescriptCodeUtils.createExpression(
+              `prisma.${modelExport}`,
+              "import { prisma } from '@/src/services/prisma'"
+            );
           },
         },
       }),

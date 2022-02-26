@@ -1,5 +1,5 @@
 import {
-  mergeCodeImports,
+  mergeCodeEntryOptions,
   nodeGitIgnoreProvider,
   nodeProvider,
   TypescriptCodeBlock,
@@ -103,17 +103,20 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
             const { comment, value } = configEntriesObj[key];
             return `${
               comment ? `${TypescriptCodeUtils.formatAsComment(comment)}\n` : ''
-            }${key}: ${value.expression},`;
+            }${key}: ${value.content},`;
           })
           .join('\n');
 
-        configFile.addCodeExpression('CONFIG_OBJECT', {
-          type: 'code-expression',
-          expression: `{\n${mergedExpression}\n}`,
-          ...mergeCodeImports(
-            Object.values(configEntriesObj).map((e) => e.value)
-          ),
-        });
+        configFile.addCodeExpression(
+          'CONFIG_OBJECT',
+          new TypescriptCodeExpression(
+            `{\n${mergedExpression}\n}`,
+            null,
+            mergeCodeEntryOptions(
+              Object.values(configEntriesObj).map((e) => e.value)
+            )
+          )
+        );
 
         configFile.addCodeBlock(
           'ADDITIONAL_VERIFICATIONS',
