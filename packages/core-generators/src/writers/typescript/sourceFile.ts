@@ -444,7 +444,9 @@ export class TypescriptSourceFile<T extends TypescriptTemplateConfig<any>> {
 
     if (headerBlocks.length) {
       file.insertText(0, (writer) => {
-        writer.writeLine(TypescriptCodeUtils.mergeBlocks(headerBlocks).content);
+        writer.writeLine(
+          TypescriptCodeUtils.mergeBlocks(headerBlocks, '\n\n').content
+        );
         writer.writeLine('');
       });
     }
