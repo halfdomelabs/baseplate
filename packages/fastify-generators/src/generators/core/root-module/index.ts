@@ -1,7 +1,7 @@
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  TypescriptSourceFile,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -38,12 +38,12 @@ export const appModuleProvider =
 const RootModuleGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {},
+  dependencies: { typescript: typescriptProvider },
   exports: {
     rootModule: rootModuleProvider,
     appModule: appModuleProvider.export().dependsOn(rootModuleProvider),
   },
-  createGenerator() {
+  createGenerator(descriptor, { typescript }) {
     const moduleFieldMap = createNonOverwriteableMap<
       Record<string, TypescriptCodeExpression>
     >({}, { name: 'root-module-fields' });
@@ -78,7 +78,7 @@ const RootModuleGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
-        const rootModule = new TypescriptSourceFile({
+        const rootModule = typescript.createTemplate({
           ROOT_MODULE_CONTENTS: { type: 'code-expression' },
         });
 
@@ -96,7 +96,7 @@ const RootModuleGenerator = createGeneratorWithChildren({
           rootModule.renderToAction('index.ts', 'src/modules/index.ts')
         );
 
-        const moduleHelper = new TypescriptSourceFile({
+        const moduleHelper = typescript.createTemplate({
           MODULE_FIELDS: { type: 'code-block' },
           MODULE_MERGER: { type: 'code-expression' },
         });

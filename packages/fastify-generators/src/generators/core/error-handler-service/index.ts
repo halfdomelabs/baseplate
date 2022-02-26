@@ -3,6 +3,7 @@ import {
   createTypescriptTemplateConfig,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
+  typescriptProvider,
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
 import {
@@ -36,12 +37,13 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
   dependencies: {
     loggerService: loggerServiceProvider,
     fastifyServer: fastifyServerProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     errorHandlerService: errorHandlerServiceProvider,
   },
-  createGenerator(descriptor, { loggerService, fastifyServer }) {
-    const errorLoggerFile = new TypescriptSourceFile(errorHandlerFileConfig);
+  createGenerator(descriptor, { loggerService, fastifyServer, typescript }) {
+    const errorLoggerFile = typescript.createTemplate(errorHandlerFileConfig);
 
     fastifyServer.registerPlugin({
       name: 'errorHandlerPlugin',

@@ -6,7 +6,6 @@ import {
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { nodeProvider } from '../node';
-import { typescriptProvider } from '../typescript';
 import { generateConfig } from './generateConfig';
 
 interface EslintConfig {
@@ -23,7 +22,6 @@ export const eslintProvider = createProviderType<EslintProvider>('eslint');
 const EslintGenerator = createGeneratorWithChildren({
   dependencies: {
     node: nodeProvider,
-    typescript: typescriptProvider,
   },
   exports: {
     eslint: eslintProvider,

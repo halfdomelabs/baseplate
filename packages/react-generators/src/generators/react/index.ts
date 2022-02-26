@@ -3,7 +3,7 @@ import {
   eslintProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
-  typescriptProvider,
+  typescriptConfigProvider,
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
 import {
@@ -38,7 +38,7 @@ const ReactGenerator = createGeneratorWithChildren({
   descriptorSchema,
   dependencies: {
     node: nodeProvider,
-    typescript: typescriptProvider,
+    typescriptConfig: typescriptConfigProvider,
     nodeGitIgnore: nodeGitIgnoreProvider,
     eslint: eslintProvider,
   },
@@ -68,10 +68,13 @@ const ReactGenerator = createGeneratorWithChildren({
       },
     },
   }),
-  createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
+  createGenerator(
+    descriptor,
+    { node, typescriptConfig, nodeGitIgnore, eslint }
+  ) {
     const indexFile = new TypescriptSourceFile(INDEX_FILE_CONFIG);
     setupReactNode(node);
-    setupReactTypescript(typescript);
+    setupReactTypescript(typescriptConfig);
 
     nodeGitIgnore.addExclusions([
       '# production',

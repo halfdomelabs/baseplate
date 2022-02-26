@@ -2,7 +2,7 @@ import {
   copyTypescriptFileAction,
   nodeProvider,
   TypescriptCodeUtils,
-  TypescriptSourceFile,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -38,20 +38,28 @@ const FastifySentryGenerator = createGeneratorWithChildren({
     configService: configServiceProvider,
     fastifyServer: fastifyServerProvider,
     errorHandlerService: errorHandlerServiceProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     fastifySentry: fastifySentryProvider,
   },
   createGenerator(
     descriptor,
-    { node, requestContext, configService, fastifyServer, errorHandlerService }
+    {
+      node,
+      requestContext,
+      configService,
+      fastifyServer,
+      errorHandlerService,
+      typescript,
+    }
   ) {
     const config = createNonOverwriteableMap(
       {},
       { name: 'fastify-sentry-config' }
     );
 
-    const sentryServiceFile = new TypescriptSourceFile({
+    const sentryServiceFile = typescript.createTemplate({
       CONFIG: { type: 'code-expression' },
       REQUEST_INFO_TYPE: { type: 'code-expression' },
     });

@@ -2,7 +2,7 @@ import path from 'path';
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  TypescriptSourceFile,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -56,11 +56,12 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
   }),
   dependencies: {
     appModule: appModuleProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     prismaCrudService: prismaCrudServiceProvider,
   },
-  createGenerator(descriptor, { appModule }) {
+  createGenerator(descriptor, { appModule, typescript }) {
     const methodMap = createNonOverwriteableMap(
       {},
       { name: 'prisma-crud-service-method-map' }
@@ -70,7 +71,7 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
       servicesFolder,
       `${paramCase(descriptor.name)}.ts`
     );
-    const servicesFile = new TypescriptSourceFile({
+    const servicesFile = typescript.createTemplate({
       METHODS: { type: 'code-expression' },
     });
 

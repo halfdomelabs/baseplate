@@ -3,5 +3,10 @@ export {
   nodeGitIgnoreProvider,
   NodeGitIgnoreProvider,
 } from './node-git-ignore';
-export { typescriptProvider, TypescriptProvider } from './typescript';
+export {
+  typescriptProvider,
+  TypescriptProvider,
+  typescriptConfigProvider,
+  TypescriptConfigProvider,
+} from './typescript';
 export { eslintProvider, EslintProvider } from './eslint';

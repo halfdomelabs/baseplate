@@ -26,6 +26,7 @@ import {
   getImportDeclarationEntries,
   resolveModule,
   writeImportDeclarations,
+  PathMapEntry,
 } from './imports';
 
 interface TypescriptCodeBlockConfig {
@@ -51,7 +52,7 @@ type TypescriptCodeConfig =
   | TypescriptCodeWrapperConfig
   | TypescriptCodeExpressionConfig;
 
-type TypescriptTemplateConfig<T = Record<string, unknown>> = {
+export type TypescriptTemplateConfig<T = Record<string, unknown>> = {
   [K in keyof T]: TypescriptCodeConfig;
 };
 
@@ -72,7 +73,7 @@ export function createTypescriptTemplateConfig<
   return config;
 }
 
-export class TypescriptSourceBlock<
+export abstract class TypescriptSourceContent<
   T extends TypescriptTemplateConfig<Record<string, unknown>>
 > {
   protected config: T;
@@ -85,9 +86,7 @@ export class TypescriptSourceBlock<
 
   protected codeExpressions: Record<string, TypescriptCodeExpression[]>;
 
-  protected blockOptions: TypescriptCodeEntryOptions;
-
-  constructor(config: T, options: TypescriptCodeEntryOptions = {}) {
+  constructor(config: T) {
     this.config = config;
     const keys = Object.keys(config);
     this.codeBlocks = R.fromPairs(
@@ -101,7 +100,6 @@ export class TypescriptSourceBlock<
         .filter((k) => config[k].type === 'code-expression')
         .map((k) => [k, []])
     );
-    this.blockOptions = options;
   }
 
   protected checkNotGenerated(): void {
@@ -279,6 +277,17 @@ export class TypescriptSourceBlock<
 
     return file;
   }
+}
+
+export class TypescriptSourceBlock<
+  T extends TypescriptTemplateConfig<any>
+> extends TypescriptSourceContent<T> {
+  protected blockOptions: TypescriptCodeEntryOptions;
+
+  constructor(config: T, options: TypescriptCodeEntryOptions = {}) {
+    super(config);
+    this.blockOptions = options;
+  }
 
   renderToBlock(
     template: string,
@@ -307,9 +316,20 @@ export class TypescriptSourceBlock<
   }
 }
 
+interface TypescriptSourceFileOptions {
+  pathMappings?: PathMapEntry[];
+}
+
 export class TypescriptSourceFile<
   T extends TypescriptTemplateConfig<any>
-> extends TypescriptSourceBlock<T> {
+> extends TypescriptSourceContent<T> {
+  protected sourceFileOptions: TypescriptSourceFileOptions;
+
+  constructor(config: T, options: TypescriptSourceFileOptions = {}) {
+    super(config);
+    this.sourceFileOptions = options;
+  }
+
   renderToText(
     template: string,
     destination: string,
@@ -365,7 +385,9 @@ export class TypescriptSourceFile<
     }
 
     file.insertText(0, (writer) => {
-      writeImportDeclarations(writer, allImports, path.dirname(destination));
+      writeImportDeclarations(writer, allImports, path.dirname(destination), {
+        pathMapEntries: this.sourceFileOptions.pathMappings,
+      });
       writer.writeLine('');
     });
 
@@ -381,7 +403,8 @@ export class TypescriptSourceFile<
           exportDeclaration.setModuleSpecifier(
             resolveModule(
               moduleSpecifier.getLiteralValue(),
-              path.dirname(destination)
+              path.dirname(destination),
+              { pathMapEntries: this.sourceFileOptions.pathMappings }
             )
           );
         }

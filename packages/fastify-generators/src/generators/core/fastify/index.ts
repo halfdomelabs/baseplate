@@ -1,4 +1,7 @@
-import { nodeProvider, typescriptProvider } from '@baseplate/core-generators';
+import {
+  nodeProvider,
+  typescriptConfigProvider,
+} from '@baseplate/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
@@ -75,17 +78,20 @@ const FastifyGenerator = createGeneratorWithChildren({
       },
     },
   }),
-  dependencies: { node: nodeProvider, typescript: typescriptProvider },
+  dependencies: {
+    node: nodeProvider,
+    typescriptConfig: typescriptConfigProvider,
+  },
   exports: {
     fastify: fastifyProvider,
   },
-  createGenerator(descriptor, { node, typescript }) {
+  createGenerator(descriptor, { node, typescriptConfig }) {
     const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
       { devLoaders: ['tsconfig-paths/register'] },
       { name: 'fastify-config', mergeArraysUniquely: true }
     );
 
-    setupFastifyTypescript(node, typescript);
+    setupFastifyTypescript(node, typescriptConfig);
 
     return {
       getProviders: () => ({

@@ -2,7 +2,7 @@ import path from 'path';
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  TypescriptSourceFile,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
@@ -23,11 +23,12 @@ const AppModuleGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     appModule: appModuleProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     appModule: appModuleProvider,
   },
-  createGenerator(descriptor, { appModule }) {
+  createGenerator(descriptor, { appModule, typescript }) {
     const folderName = descriptor.folderName || paramCase(descriptor.name);
     const moduleName = `${descriptor.name}Module`;
     const moduleFolder = `${appModule.getModuleFolder()}/${folderName}`;
@@ -58,7 +59,7 @@ const AppModuleGenerator = createGeneratorWithChildren({
         },
       }),
       build: (builder) => {
-        const indexFile = new TypescriptSourceFile({
+        const indexFile = typescript.createTemplate({
           MODULE_CONTENTS: { type: 'code-expression' },
         });
 

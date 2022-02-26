@@ -1,11 +1,14 @@
-import { NodeProvider, TypescriptProvider } from '@baseplate/core-generators';
+import {
+  NodeProvider,
+  TypescriptConfigProvider,
+} from '@baseplate/core-generators';
 
 export function setupFastifyTypescript(
   node: NodeProvider,
-  typescript: TypescriptProvider
+  typescriptConfig: TypescriptConfigProvider
 ): void {
-  typescript.setTypescriptVersion('^4.5.4');
-  typescript.setTypescriptCompilerOptions({
+  typescriptConfig.setTypescriptVersion('^4.5.4');
+  typescriptConfig.setTypescriptCompilerOptions({
     outDir: 'dist',
     declaration: true,
     baseUrl: './src',

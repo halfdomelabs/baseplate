@@ -2,6 +2,7 @@ import {
   TypescriptSourceFile,
   createTypescriptTemplateConfig,
   TypescriptCodeUtils,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
@@ -31,12 +32,13 @@ const ReactAppGenerator = createGeneratorWithChildren({
   descriptorSchema,
   dependencies: {
     react: reactProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     reactApp: reactAppProvider,
   },
-  createGenerator(descriptor, { react }) {
-    const appFile = new TypescriptSourceFile(APP_FILE_CONFIG);
+  createGenerator(descriptor, { react, typescript }) {
+    const appFile = typescript.createTemplate(APP_FILE_CONFIG);
     const srcFolder = react.getSrcFolder();
 
     react

@@ -3,7 +3,7 @@ import {
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  TypescriptSourceFile,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -43,11 +43,12 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
   dependencies: {
     node: nodeProvider,
     fastify: fastifyProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     loggerService: loggerServiceProvider,
   },
-  createGenerator(descriptor, { node, fastify }) {
+  createGenerator(descriptor, { node, fastify, typescript }) {
     const mixins = createNonOverwriteableMap<
       Record<string, TypescriptCodeExpression>
     >({}, { name: 'logger-service-mixins' });
@@ -81,7 +82,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
           pino: '^7.6.2',
         });
 
-        const loggerFile = new TypescriptSourceFile(loggerServiceFileConfig);
+        const loggerFile = typescript.createTemplate(loggerServiceFileConfig);
 
         const loggerOptions = Object.keys(mixins.value()).length
           ? TypescriptCodeUtils.wrapExpression(

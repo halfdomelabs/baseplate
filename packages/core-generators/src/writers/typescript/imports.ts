@@ -23,28 +23,64 @@ interface ImportEntry {
   moduleSpecifier: string;
 }
 
+// Map for paths support
+// so { "baseUrl": "./src", "paths": { "@src/*": ["./*"] } }
+// would be { from: "src", to: "@src" }
+export interface PathMapEntry {
+  from: string; // e.g. src/app
+  to: string; // e.g. app
+}
+
+interface ResolveModuleOptions {
+  pathMapEntries?: PathMapEntry[];
+}
+
 export function resolveModule(
   moduleSpecifier: string,
-  directory: string
+  directory: string,
+  { pathMapEntries }: ResolveModuleOptions = {}
 ): string {
   // if not relative import, just return directly
   if (!moduleSpecifier.startsWith('@/')) {
     return moduleSpecifier;
   }
   // figure out relative directory
-  const relativePath = path.relative(directory, moduleSpecifier.substring(2));
+  const absolutePath = moduleSpecifier.substring(2);
+  const relativePathImport = (() => {
+    const relativePath = path.relative(directory, absolutePath);
 
-  return relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
+    return relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
+  })();
+
+  const typescriptPathImport = (() => {
+    const pathEntry = pathMapEntries?.find((map) =>
+      absolutePath.startsWith(map.from)
+    );
+    if (!pathEntry) {
+      return null;
+    }
+    return pathEntry.to + absolutePath.substring(pathEntry.from.length);
+  })();
+
+  return typescriptPathImport &&
+    typescriptPathImport.length < relativePathImport.length
+    ? typescriptPathImport
+    : relativePathImport;
 }
 
 function importDeclarationToImportEntry(
   declaration: ImportDeclarationEntry,
-  directory: string
+  directory: string,
+  options?: ResolveModuleOptions
 ): ImportEntry[] {
   const importEntries: ImportEntry[] = [];
   const entryDefaults = {
     isTypeOnly: declaration.isTypeOnly,
-    moduleSpecifier: resolveModule(declaration.moduleSpecifier, directory),
+    moduleSpecifier: resolveModule(
+      declaration.moduleSpecifier,
+      directory,
+      options
+    ),
   };
 
   if (declaration.defaultImport) {
@@ -196,10 +232,13 @@ function writeImportDeclarationsForModule(
 export function writeImportDeclarations(
   writer: CodeBlockWriter,
   imports: ImportDeclarationEntry[],
-  fileDirectory: string
+  fileDirectory: string,
+  options?: ResolveModuleOptions
 ): void {
   const resolvedImports = R.flatten(
-    imports.map((i) => importDeclarationToImportEntry(i, fileDirectory))
+    imports.map((i) =>
+      importDeclarationToImportEntry(i, fileDirectory, options)
+    )
   );
   // merge all imports together
   const importsByModule = R.groupBy((i) => i.moduleSpecifier, resolvedImports);

@@ -2,10 +2,10 @@ import {
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  TypescriptSourceFile,
   copyTypescriptFileAction,
   mergeCodeEntryOptions,
   TypescriptCodeBlock,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -48,13 +48,14 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     loggerService: loggerServiceProvider,
     configService: configServiceProvider,
     rootModule: rootModuleProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     fastifyServer: fastifyServerProvider,
   },
   createGenerator(
     descriptor,
-    { loggerService, configService, node, rootModule }
+    { loggerService, configService, node, rootModule, typescript }
   ) {
     const configMap = createNonOverwriteableMap<FastifyServerConfig>(
       {
@@ -123,7 +124,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         const config = configMap.value();
-        const indexFile = new TypescriptSourceFile({
+        const indexFile = typescript.createTemplate({
           LOG_ERROR: { type: 'code-expression' },
           SERVER_OPTIONS: { type: 'code-expression' },
           SERVER_PORT: { type: 'code-expression' },
@@ -156,7 +157,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
           indexFile.renderToAction('index.ts', 'src/index.ts')
         );
 
-        const serverFile = new TypescriptSourceFile({
+        const serverFile = typescript.createTemplate({
           PLUGINS: { type: 'code-block' },
           ROOT_MODULE: { type: 'code-expression' },
         });

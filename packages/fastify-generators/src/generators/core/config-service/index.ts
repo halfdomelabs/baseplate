@@ -5,7 +5,7 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  TypescriptSourceFile,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -42,11 +42,12 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
     node: nodeProvider,
     nodeGitIgnore: nodeGitIgnoreProvider,
     fastify: fastifyProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     configService: configServiceProvider,
   },
-  createGenerator(descriptor, { node, nodeGitIgnore, fastify }) {
+  createGenerator(descriptor, { node, nodeGitIgnore, fastify, typescript }) {
     const configEntries = createNonOverwriteableMap<
       Record<string, ConfigEntry>
     >({}, { name: 'config-service-config-entries' });
@@ -91,7 +92,7 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
-        const configFile = new TypescriptSourceFile({
+        const configFile = typescript.createTemplate({
           CONFIG_OBJECT: { type: 'code-expression' },
           ADDITIONAL_VERIFICATIONS: { type: 'code-block' },
         });

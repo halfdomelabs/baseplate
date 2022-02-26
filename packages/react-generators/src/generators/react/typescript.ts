@@ -1,8 +1,10 @@
-import { TypescriptProvider } from '@baseplate/core-generators';
+import { TypescriptConfigProvider } from '@baseplate/core-generators';
 
-export function setupReactTypescript(typescript: TypescriptProvider): void {
-  typescript.setTypescriptVersion('4.5.4');
-  typescript.setTypescriptCompilerOptions({
+export function setupReactTypescript(
+  typescriptConfig: TypescriptConfigProvider
+): void {
+  typescriptConfig.setTypescriptVersion('4.5.4');
+  typescriptConfig.setTypescriptCompilerOptions({
     target: 'es5',
     lib: ['dom', 'dom.iterable', 'esnext'],
     allowJs: true,
@@ -23,5 +25,5 @@ export function setupReactTypescript(typescript: TypescriptProvider): void {
       '@src/*': ['./*'],
     },
   });
-  typescript.addInclude('src');
+  typescriptConfig.addInclude('src');
 }
