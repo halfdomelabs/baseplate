@@ -14,6 +14,7 @@ import {
 import { formatSchema } from '@prisma/sdk';
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
+import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check';
 import {
   createPrismaSchemaDatasourceBlock,
   createPrismaSchemaGeneratorBlock,
@@ -48,12 +49,16 @@ const PrismaGenerator = createGeneratorWithChildren({
     node: nodeProvider,
     configService: configServiceProvider,
     project: projectProvider,
+    fastifyHealthCheck: fastifyHealthCheckProvider,
   },
   exports: {
     prismaSchema: prismaSchemaProvider,
     prismaOutput: prismaOutputProvider.export().dependsOn(prismaSchemaProvider),
   },
-  createGenerator(descriptor, { node, configService, project }) {
+  createGenerator(
+    descriptor,
+    { node, configService, project, fastifyHealthCheck }
+  ) {
     const prismaModelMap: NonOverwriteableMap<
       Record<string, PrismaModelBlock>
     > = createNonOverwriteableMap({}, { name: 'prisma-models' });
@@ -94,6 +99,13 @@ const PrismaGenerator = createGeneratorWithChildren({
       value: TypescriptCodeUtils.createExpression('yup.string().required()'),
       exampleValue: defaultDatabaseUrl,
     });
+
+    fastifyHealthCheck.addCheck(
+      TypescriptCodeUtils.createBlock(
+        '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
+        "import { prisma } from '@/src/services/prisma'"
+      )
+    );
 
     return {
       getProviders: () => ({

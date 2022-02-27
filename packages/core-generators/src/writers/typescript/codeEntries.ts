@@ -1,3 +1,6 @@
+// have to deal with circular dependencies
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 /* eslint-disable max-classes-per-file */
 // specifies a block of code
 
@@ -79,6 +82,16 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
     options?: TypescriptCodeEntryOptions
   ) {
     super('code-block', content, importText, options);
+  }
+
+  wrapAsExpression(
+    wrapper: (contents: string) => string
+  ): TypescriptCodeExpression {
+    return new TypescriptCodeExpression(
+      wrapper(this.content),
+      null,
+      this.options
+    );
   }
 }
 

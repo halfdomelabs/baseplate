@@ -70,6 +70,13 @@ const FastifyGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    healthCheck: {
+      provider: 'fastify-health-check',
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/core/fastify-health-check',
+        peerProvider: true,
+      },
+    },
     requestContext: {
       provider: 'request-context',
       defaultDescriptor: {

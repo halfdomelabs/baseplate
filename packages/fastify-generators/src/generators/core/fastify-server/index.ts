@@ -2,7 +2,6 @@ import {
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  copyTypescriptFileAction,
   mergeCodeEntryOptions,
   TypescriptCodeBlock,
   typescriptProvider,
@@ -83,14 +82,6 @@ const FastifyServerGenerator = createGeneratorWithChildren({
         `{
           contentSecurityPolicy: false, // disable to enable Altair to function (alright since we're a backend service)
         }`
-      ),
-    });
-
-    plugins.push({
-      name: 'healthCheckPlugin',
-      plugin: TypescriptCodeUtils.createExpression(
-        'healthCheckPlugin',
-        "import { healthCheckPlugin } from '@/src/plugins/health-check'"
       ),
     });
 
@@ -180,12 +171,6 @@ const FastifyServerGenerator = createGeneratorWithChildren({
 
         await builder.apply(
           serverFile.renderToAction('server.ts', 'src/server.ts')
-        );
-        await builder.apply(
-          copyTypescriptFileAction({
-            source: 'plugins/health-check.ts',
-            destination: 'src/plugins/health-check.ts',
-          })
         );
       },
     };
