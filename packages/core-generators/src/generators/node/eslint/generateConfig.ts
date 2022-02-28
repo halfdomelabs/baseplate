@@ -40,7 +40,7 @@ export function generateConfig({
         'error',
         {
           pathGroups: [
-            { pattern: '@app/**', group: 'external', position: 'after' },
+            { pattern: '@src/**', group: 'external', position: 'after' },
           ],
           alphabetize: { order: 'asc' },
         },

@@ -311,6 +311,20 @@ export const TypescriptCodeUtils = {
       mergeCodeEntryOptions(expressions)
     );
   },
+  mergeBlocksAsInterfaceContent(
+    obj: Record<string, TypescriptCodeExpression>
+  ): TypescriptCodeBlock {
+    const keys = Object.keys(obj);
+    const expressions = Object.values(obj);
+    const mergedBlock = keys
+      .map((key) => `${key}: ${obj[key].content};`)
+      .join('\n');
+    return new TypescriptCodeBlock(
+      mergedBlock,
+      null,
+      mergeCodeEntryOptions(expressions)
+    );
+  },
   formatAsComment(text: string): string {
     return text
       .split('\n')

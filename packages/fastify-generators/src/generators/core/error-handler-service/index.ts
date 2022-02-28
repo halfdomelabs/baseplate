@@ -49,7 +49,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
       name: 'errorHandlerPlugin',
       plugin: TypescriptCodeUtils.createExpression(
         'errorHandlerPlugin',
-        "import { errorHandlerPlugin } from '@/src/plugins/error-handler.ts'"
+        "import { errorHandlerPlugin } from '@/src/plugins/error-handler'"
       ),
     });
 

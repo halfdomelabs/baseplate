@@ -85,6 +85,10 @@ function getImportType(name: string, settings: ImportSettings): string {
   if (isInternalRegexMatch(name, settings)) {
     return 'internal';
   }
+  // TODO: Make more flexible
+  if (name.startsWith('@src')) {
+    return 'internal';
+  }
   if (isAbsolute(name)) {
     return 'absolute';
   }

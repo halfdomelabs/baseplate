@@ -1,8 +1,6 @@
 // @ts-nocheck
 import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
 
-export type NexusType = unknown;
-
 export interface AppModule {
   children?: AppModule[];
   MODULE_FIELDS;
