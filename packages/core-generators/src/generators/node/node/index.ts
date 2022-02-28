@@ -76,6 +76,13 @@ const NodeGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    tsUtils: {
+      provider: 'ts-utils',
+      defaultDescriptor: {
+        generator: '@baseplate/core/node/ts-utils',
+        peerProvider: true,
+      },
+    },
   }),
   exports: {
     node: nodeProvider,

@@ -1,9 +1,9 @@
 import {
   nodeProvider,
-  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
+  tsUtilsProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -46,6 +46,7 @@ const NexusGenerator = createGeneratorWithChildren({
     configService: configServiceProvider,
     requestContext: requestContextProvider,
     fastifyServer: fastifyServerProvider,
+    tsUtils: tsUtilsProvider,
   },
   exports: {
     nexus: nexusProvider,
@@ -59,6 +60,7 @@ const NexusGenerator = createGeneratorWithChildren({
       configService,
       requestContext,
       fastifyServer,
+      tsUtils,
     }
   ) {
     const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
@@ -91,11 +93,10 @@ const NexusGenerator = createGeneratorWithChildren({
 
     rootModule.addModuleField(
       'types',
-      new TypescriptCodeExpression('NexusType', null, {
-        headerBlocks: [
-          new TypescriptCodeBlock('export type NexusType = unknown;'),
-        ],
-      })
+      new TypescriptCodeExpression(
+        'NexusType',
+        "import {NexusType} from '@/src/utils/nexus'"
+      )
     );
 
     const contextFile = typescript.createTemplate({
@@ -128,6 +129,17 @@ const NexusGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
+        const utilsFile = typescript.createTemplate({
+          CAPITALIZE_STRING: { type: 'code-expression' },
+        });
+        utilsFile.addCodeExpression(
+          'CAPITALIZE_STRING',
+          tsUtils.getUtilExpression('capitalizeString')
+        );
+        await builder.apply(
+          utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts')
+        );
+
         const contextFields = contextFieldsMap.value();
 
         contextFile.addCodeBlock(

@@ -10,3 +10,4 @@ export {
   TypescriptConfigProvider,
 } from './typescript';
 export { eslintProvider, EslintProvider } from './eslint';
+export { tsUtilsProvider, TsUtilsProvider } from './ts-utils';
