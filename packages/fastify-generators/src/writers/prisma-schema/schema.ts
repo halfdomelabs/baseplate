@@ -1,17 +1,12 @@
 /* eslint-disable max-classes-per-file */
 import indentString from 'indent-string';
-
-type PrismaSchemaBlockType = 'datasource' | 'generator' | 'model';
-
-export interface PrismaSchemaBlock {
-  name: string;
-  type: PrismaSchemaBlockType;
-  contents: string;
-}
-
-export type PrismaGeneratorBlock = PrismaSchemaBlock & { type: 'generator' };
-export type PrismaDatasourceBlock = PrismaSchemaBlock & { type: 'datasource' };
-export type PrismaModelBlock = PrismaSchemaBlock & { type: 'model' };
+import { PrismaOutputModel } from '@src/types/prismaOutput';
+import { PrismaModelBlockWriter } from './model-writer';
+import {
+  PrismaDatasourceBlock,
+  PrismaGeneratorBlock,
+  PrismaSchemaBlock,
+} from './types';
 
 function formatBlock(block: PrismaSchemaBlock): string {
   return `
@@ -74,7 +69,7 @@ export class PrismaSchemaFile {
 
   datasourceBlock: PrismaDatasourceBlock | null = null;
 
-  modelBlocks: PrismaModelBlock[] = [];
+  modelBlockWriters: PrismaModelBlockWriter[] = [];
 
   addGeneratorBlock(block: PrismaGeneratorBlock): void {
     this.generatorBlocks.push(block);
@@ -84,8 +79,17 @@ export class PrismaSchemaFile {
     this.datasourceBlock = block;
   }
 
-  addModelBlock(block: PrismaModelBlock): void {
-    this.modelBlocks.push(block);
+  addModelWriter(block: PrismaModelBlockWriter): void {
+    if (this.modelBlockWriters.some((b) => b.name === block.name)) {
+      throw new Error(`Duplicate model name: ${block.name}`);
+    }
+    this.modelBlockWriters.push(block);
+  }
+
+  getModelBlock(name: string): PrismaOutputModel | undefined {
+    return this.modelBlockWriters
+      .find((block) => block.name === name)
+      ?.toOutputModel();
   }
 
   toText(): string {
@@ -95,7 +99,7 @@ export class PrismaSchemaFile {
     return `${[
       ...this.generatorBlocks.map(formatBlock),
       formatBlock(this.datasourceBlock),
-      ...this.modelBlocks.map(formatBlock),
+      ...this.modelBlockWriters.map((writer) => formatBlock(writer.toBlock())),
     ].join('\n\n')}\n`;
   }
 }

@@ -117,6 +117,14 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
       this.options
     );
   }
+
+  append(text: string): TypescriptCodeExpression {
+    return new TypescriptCodeExpression(
+      `${this.content}${text}`,
+      null,
+      this.options
+    );
+  }
 }
 
 export type TypescriptCodeWrapperFunction = (contents: string) => string;
@@ -335,11 +343,7 @@ export const TypescriptCodeUtils = {
     expression: TypescriptCodeExpression,
     text: string
   ): TypescriptCodeExpression {
-    return new TypescriptCodeExpression(
-      `${expression.content}${text}`,
-      null,
-      expression.options
-    );
+    return expression.append(text);
   },
   formatBlock(
     formatString: string,

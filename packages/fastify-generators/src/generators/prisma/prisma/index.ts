@@ -8,17 +8,16 @@ import {
 import {
   createProviderType,
   createGeneratorWithChildren,
-  NonOverwriteableMap,
-  createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { formatSchema } from '@prisma/sdk';
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check';
+import { PrismaOutputModel } from '@src/types/prismaOutput';
+import { PrismaModelBlockWriter } from '@src/writers/prisma-schema';
 import {
   createPrismaSchemaDatasourceBlock,
   createPrismaSchemaGeneratorBlock,
-  PrismaModelBlock,
   PrismaSchemaFile,
 } from '@src/writers/prisma-schema/schema';
 
@@ -28,7 +27,7 @@ const descriptorSchema = yup.object({
 });
 
 export interface PrismaSchemaProvider {
-  addPrismaModel(model: PrismaModelBlock): void;
+  addPrismaModel(model: PrismaModelBlockWriter): void;
 }
 
 export const prismaSchemaProvider =
@@ -36,7 +35,8 @@ export const prismaSchemaProvider =
 
 export interface PrismaOutputProvider {
   getPrismaClient(): TypescriptCodeExpression;
-  getPrismaModel(model: string): TypescriptCodeExpression;
+  getPrismaModel(model: string): PrismaOutputModel;
+  getPrismaModelExpression(model: string): TypescriptCodeExpression;
 }
 
 export const prismaOutputProvider =
@@ -59,10 +59,6 @@ const PrismaGenerator = createGeneratorWithChildren({
     descriptor,
     { node, configService, project, fastifyHealthCheck }
   ) {
-    const prismaModelMap: NonOverwriteableMap<
-      Record<string, PrismaModelBlock>
-    > = createNonOverwriteableMap({}, { name: 'prisma-models' });
-
     node.addDevPackages({
       prisma: '^3.9.2',
     });
@@ -111,7 +107,7 @@ const PrismaGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaSchema: {
           addPrismaModel: (model) => {
-            prismaModelMap.set(model.name, model);
+            schemaFile.addModelWriter(model);
           },
         },
         prismaOutput: {
@@ -120,7 +116,14 @@ const PrismaGenerator = createGeneratorWithChildren({
               'prisma',
               "import { prisma } from '@/src/services/prisma'"
             ),
-          getPrismaModel: (modelName: string) => {
+          getPrismaModel: (modelName) => {
+            const modelBlock = schemaFile.getModelBlock(modelName);
+            if (!modelBlock) {
+              throw new Error(`Model ${modelName} not found`);
+            }
+            return modelBlock;
+          },
+          getPrismaModelExpression: (modelName) => {
             const modelExport =
               modelName.charAt(0).toLocaleLowerCase() + modelName.slice(1);
             return TypescriptCodeUtils.createExpression(
@@ -131,9 +134,6 @@ const PrismaGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
-        const models = Object.values(prismaModelMap.value());
-        models.forEach((model) => schemaFile.addModelBlock(model));
-
         const schemaText = schemaFile.toText();
         const formattedSchemaText = (await formatSchema({
           schema: schemaText,

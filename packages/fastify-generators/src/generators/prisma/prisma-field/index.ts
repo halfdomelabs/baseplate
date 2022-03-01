@@ -4,13 +4,14 @@ import {
 } from '@baseplate/sync';
 import { snakeCase } from 'change-case';
 import * as yup from 'yup';
+import { ScalarFieldType } from '@src/types/fieldTypes';
 import { PrismaModelAttribute } from '@src/writers/prisma-schema';
 import { prismaModelProvider } from '../prisma-model';
 
 interface PrismaFieldTypeConfig<
   Schema extends Record<string, yup.AnySchema> = Record<string, yup.BaseSchema>
 > {
-  name: string;
+  name: ScalarFieldType;
   prismaType: string;
   optionsSchema?: Schema;
   getAttributes?: (config?: {
@@ -74,7 +75,7 @@ const descriptorSchema = yup.object({
   name: yup.string().required(),
   dbName: yup.string(),
   type: yup
-    .string()
+    .mixed<ScalarFieldType>()
     .oneOf(validTypes.map((t) => t.name))
     .required(),
   options: yup
@@ -131,6 +132,8 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
       name,
       type: `${type.prismaType}${optional ? '?' : ''}`,
       attributes,
+      fieldType: 'scalar',
+      scalarType: descriptor.type,
     });
     return {
       getProviders: () => ({

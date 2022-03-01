@@ -7,12 +7,12 @@ import {
 import {
   createProviderType,
   createGeneratorWithChildren,
-  NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { paramCase } from 'change-case';
 import * as yup from 'yup';
 import { appModuleProvider } from '@src/generators/core/root-module';
+import { ServiceOutputMethod } from '@src/types/serviceOutput';
 
 const descriptorSchema = yup.object({
   name: yup.string().required(),
@@ -20,11 +20,25 @@ const descriptorSchema = yup.object({
 });
 
 export interface PrismaCrudServiceProvider {
-  getMethodMap(): NonOverwriteableMap<Record<string, TypescriptCodeExpression>>;
+  getServiceExpression: () => TypescriptCodeExpression;
+  registerMethod(
+    key: string,
+    expression: TypescriptCodeExpression,
+    outputMethod: ServiceOutputMethod
+  ): void;
 }
 
 export const prismaCrudServiceProvider =
   createProviderType<PrismaCrudServiceProvider>('prisma-crud-service');
+
+export interface PrismaCrudServiceOutputProvider {
+  getServiceMethod(key: string): ServiceOutputMethod;
+}
+
+export const prismaCrudServiceOutputProvider =
+  createProviderType<PrismaCrudServiceOutputProvider>(
+    'prisma-crud-service-utput'
+  );
 
 const PrismaCrudServiceGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -60,12 +74,17 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
   },
   exports: {
     prismaCrudService: prismaCrudServiceProvider,
+    prismaCrudServiceOutput: prismaCrudServiceOutputProvider
+      .export()
+      .dependsOn(prismaCrudServiceProvider),
   },
   createGenerator(descriptor, { appModule, typescript }) {
-    const methodMap = createNonOverwriteableMap(
-      {},
-      { name: 'prisma-crud-service-method-map' }
-    );
+    const methodMap = createNonOverwriteableMap<
+      Record<string, TypescriptCodeExpression>
+    >({}, { name: 'prisma-crud-service-method-map' });
+    const outputMap = createNonOverwriteableMap<
+      Record<string, ServiceOutputMethod>
+    >({}, { name: 'prisma-crud-service-output-map' });
     const servicesFolder = path.join(appModule.getModuleFolder(), 'services');
     const servicesPath = path.join(
       servicesFolder,
@@ -74,11 +93,30 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
     const servicesFile = typescript.createTemplate({
       METHODS: { type: 'code-expression' },
     });
+    const serviceName = descriptor.name;
 
     return {
       getProviders: () => ({
         prismaCrudService: {
-          getMethodMap: () => methodMap,
+          getServiceExpression() {
+            return new TypescriptCodeExpression(
+              serviceName,
+              `import { ${serviceName} } from '${servicesPath}';`
+            );
+          },
+          registerMethod(key, expression, outputMethod) {
+            methodMap.set(key, expression);
+            outputMap.set(key, outputMethod);
+          },
+        },
+        prismaCrudServiceOutput: {
+          getServiceMethod(key) {
+            const output = outputMap.get(key);
+            if (!output) {
+              throw new Error(`No output method found for key ${key}`);
+            }
+            return output;
+          },
         },
       }),
       build: async (builder) => {
@@ -91,7 +129,7 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
         );
         await builder.apply(
           servicesFile.renderToAction('service.ts', servicesPath, {
-            SERVICE_NAME: descriptor.name,
+            SERVICE_NAME: serviceName,
           })
         );
       },

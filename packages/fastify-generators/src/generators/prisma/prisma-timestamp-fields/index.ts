@@ -23,6 +23,8 @@ const PrismaTimestampFieldsGenerator = createGeneratorWithChildren({
           { name: '@db.Timestamptz', args: '3' },
           { name: '@default', args: `now()` },
         ],
+        fieldType: 'scalar',
+        scalarType: 'dateTime',
       });
     }
     if (updatedAt) {
@@ -35,6 +37,8 @@ const PrismaTimestampFieldsGenerator = createGeneratorWithChildren({
           { name: '@db.Timestamptz', args: '3' },
           { name: '@updatedAt' },
         ],
+        fieldType: 'scalar',
+        scalarType: 'dateTime',
       });
     }
     return {

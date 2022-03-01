@@ -1,4 +1,6 @@
-import { PrismaModelBlock } from './schema';
+import { ScalarFieldType } from '@src/types/fieldTypes';
+import { PrismaOutputModel } from '@src/types/prismaOutput';
+import { PrismaModelBlock } from './types';
 
 interface ModelBlockOptions {
   name: string;
@@ -14,6 +16,8 @@ export interface PrismaModelField {
   name: string;
   type: string;
   attributes?: PrismaModelAttribute[];
+  fieldType: 'scalar' | 'relation';
+  scalarType?: ScalarFieldType;
 }
 
 function formatAttributeArgument(argument: string | string[]): string {
@@ -45,11 +49,15 @@ function formatModel({ name, type, attributes }: PrismaModelField): string {
 }
 
 export class PrismaModelBlockWriter {
+  name: string;
+
   fields: PrismaModelField[] = [];
 
   attributes: PrismaModelAttribute[] = [];
 
-  constructor(private readonly options: ModelBlockOptions) {}
+  constructor(private readonly options: ModelBlockOptions) {
+    this.name = options.name;
+  }
 
   addField(field: PrismaModelField): this {
     this.fields.push(field);
@@ -59,6 +67,37 @@ export class PrismaModelBlockWriter {
   addAttribute(attribute: PrismaModelAttribute): this {
     this.attributes.push(attribute);
     return this;
+  }
+
+  toOutputModel(): PrismaOutputModel {
+    return {
+      name: this.options.name,
+      fields: this.fields.map((field) => {
+        const sharedFields = {
+          name: field.name,
+          id: field.attributes?.some((attr) => attr.name === '@id') || false,
+          isOptional: field.type.endsWith('?'),
+          isList: /\[\]\??$/.test(field.type),
+          hasDefault:
+            field.attributes?.some((attr) => attr.name === '@default') || false,
+        };
+        if (field.fieldType === 'relation') {
+          return {
+            type: 'relation',
+            modelType: field.type.replace(/[[\]?]+$/g, ''),
+            ...sharedFields,
+          };
+        }
+        if (!field.scalarType) {
+          throw new Error('Scalar type not set for scalar field');
+        }
+        return {
+          type: 'scalar',
+          scalarType: field.scalarType,
+          ...sharedFields,
+        };
+      }),
+    };
   }
 
   toBlock(): PrismaModelBlock {

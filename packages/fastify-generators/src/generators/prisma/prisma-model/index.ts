@@ -73,6 +73,8 @@ const PrismaModelGenerator = createGeneratorWithChildren({
       {},
       { name: 'prisma-model-config' }
     );
+    // TODO: (IMPORTANT) Use post provider hooks
+    prisma.addPrismaModel(prismaModel);
     return {
       getProviders: () => ({
         prismaModel: {
@@ -82,9 +84,7 @@ const PrismaModelGenerator = createGeneratorWithChildren({
           addModelAttribute: (attribute) => prismaModel.addAttribute(attribute),
         },
       }),
-      build: () => {
-        prisma.addPrismaModel(prismaModel.toBlock());
-      },
+      build: () => {},
     };
   },
 });

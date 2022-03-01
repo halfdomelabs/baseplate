@@ -56,6 +56,7 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
     prismaModel.addField({
       name,
       type: `${modelName}${optional ? '?' : ''}`,
+      fieldType: 'relation',
       attributes: [
         {
           name: '@relation',
@@ -76,6 +77,7 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
       foreignModel.addField({
         name: foreignFieldName,
         type: `${prismaModel.getName()}${isManyToOne ? '[]' : '?'}`,
+        fieldType: 'relation',
         attributes: relationshipName
           ? [{ name: '@relation', args: [relationshipName] }]
           : [],
