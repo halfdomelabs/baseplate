@@ -32,6 +32,13 @@ export interface FastifyProvider {
 
 export const fastifyProvider = createProviderType<FastifyProvider>('fastify');
 
+export interface FastifyOutputProvider {
+  getDevLoaderString(): string;
+}
+
+export const fastifyOutputProvider =
+  createProviderType<FastifyOutputProvider>('fastify-output');
+
 const FastifyGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({
@@ -91,6 +98,9 @@ const FastifyGenerator = createGeneratorWithChildren({
   },
   exports: {
     fastify: fastifyProvider,
+    fastifyOutputProvider: fastifyOutputProvider
+      .export()
+      .dependsOn(fastifyProvider),
   },
   createGenerator(descriptor, { node, typescriptConfig }) {
     const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
@@ -100,18 +110,23 @@ const FastifyGenerator = createGeneratorWithChildren({
 
     setupFastifyTypescript(node, typescriptConfig);
 
+    const formatDevLoaders = (loaders: string[]): string =>
+      (loaders || []).map((loader) => `-r ${loader}`).join(' ');
+
     return {
       getProviders: () => ({
         fastify: {
           getConfig: () => config,
         },
+        fastifyOutputProvider: {
+          getDevLoaderString: () =>
+            formatDevLoaders(config.get('devLoaders') || []),
+        },
       }),
       build: () => {
         // add scripts
         const { devOutputFormatter, devLoaders } = config.value();
-        const devRegister = (devLoaders || [])
-          .map((loader) => `-r ${loader}`)
-          .join(' ');
+        const devRegister = formatDevLoaders(devLoaders || []);
         const devCommand = `ts-node-dev --rs --transpile-only --respawn ${devRegister} src${
           devOutputFormatter ? ` | ${devOutputFormatter}` : ''
         }`;

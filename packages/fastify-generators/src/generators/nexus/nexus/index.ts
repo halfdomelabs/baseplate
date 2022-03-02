@@ -4,6 +4,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   tsUtilsProvider,
+  eslintProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -14,9 +15,15 @@ import {
 import R from 'ramda';
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
+import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { requestContextProvider } from '@src/generators/core/request-context';
 import { rootModuleProvider } from '@src/generators/core/root-module';
+import { ScalarFieldType } from '@src/types/fieldTypes';
+import {
+  DEFAULT_NEXUS_SCALAR_CONFIG,
+  NexusScalarConfig,
+} from '@src/writers/nexus-definition/scalars';
 
 const descriptorSchema = yup.object({});
 
@@ -29,9 +36,25 @@ export interface NexusGeneratorConfig {
   nexusPlugins: TypescriptCodeExpression[];
 }
 
+export interface NexusSetupProvider {
+  addScalarField(config: NexusScalarConfig): void;
+  addContextField(name: string, field: ContextField): void;
+  registerSchemaFile(file: string): void;
+}
+
+export const nexusSetupProvider =
+  createProviderType<NexusSetupProvider>('nexus-setup');
+
+export interface NexusSchemaProvider {
+  getScalarConfig(scalar: ScalarFieldType): NexusScalarConfig;
+  registerSchemaFile(file: string): void;
+}
+
+export const nexusSchemaProvider =
+  createProviderType<NexusSchemaProvider>('nexus-schema');
+
 export interface NexusProvider {
   getConfig(): NonOverwriteableMap<NexusGeneratorConfig>;
-  getContextFields(): NonOverwriteableMap<Record<string, ContextField>>;
 }
 
 export const nexusProvider = createProviderType<NexusProvider>('nexus');
@@ -47,9 +70,13 @@ const NexusGenerator = createGeneratorWithChildren({
     requestContext: requestContextProvider,
     fastifyServer: fastifyServerProvider,
     tsUtils: tsUtilsProvider,
+    fastifyOutput: fastifyOutputProvider,
+    eslint: eslintProvider,
   },
   exports: {
-    nexus: nexusProvider,
+    nexusSetup: nexusSetupProvider,
+    nexusSchema: nexusSchemaProvider.export().dependsOn(nexusSetupProvider),
+    nexus: nexusProvider.export().dependsOn(nexusSchemaProvider),
   },
   createGenerator(
     descriptor,
@@ -61,6 +88,8 @@ const NexusGenerator = createGeneratorWithChildren({
       requestContext,
       fastifyServer,
       tsUtils,
+      fastifyOutput,
+      eslint,
     }
   ) {
     const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
@@ -74,6 +103,13 @@ const NexusGenerator = createGeneratorWithChildren({
         "import { connectionPlugin } from 'nexus'"
       ),
     ]);
+
+    const scalarMap = createNonOverwriteableMap<
+      Record<ScalarFieldType, NexusScalarConfig>
+    >(DEFAULT_NEXUS_SCALAR_CONFIG, {
+      defaultsOverwriteable: true,
+      name: 'nexus-scalars',
+    });
 
     const contextFieldsMap = createNonOverwriteableMap<
       Record<string, ContextField>
@@ -92,7 +128,7 @@ const NexusGenerator = createGeneratorWithChildren({
     });
 
     rootModule.addModuleField(
-      'types',
+      'schemaTypes',
       new TypescriptCodeExpression(
         'NexusType',
         "import {NexusType} from '@/src/utils/nexus'"
@@ -121,8 +157,38 @@ const NexusGenerator = createGeneratorWithChildren({
       ),
     });
 
+    // add script to generate types
+    node.addScript(
+      'nexusgen',
+      `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
+    );
+
+    // ignore nexus typegen file
+    eslint.getConfig().appendUnique('eslintIgnore', ['src/nexus-typegen.ts']);
+
+    const schemaFiles: string[] = [];
+
     return {
       getProviders: () => ({
+        nexusSetup: {
+          addScalarField: (config) => {
+            scalarMap.set(config.scalar, config);
+          },
+          addContextField: (name, config) => {
+            contextFieldsMap.set(name, config);
+          },
+          registerSchemaFile: (file) => schemaFiles.push(file),
+        },
+        nexusSchema: {
+          getScalarConfig(scalar) {
+            const config = scalarMap.get(scalar);
+            if (!config) {
+              throw new Error(`No config found for scalar ${scalar}`);
+            }
+            return config;
+          },
+          registerSchemaFile: (file) => schemaFiles.push(file),
+        },
         nexus: {
           getConfig: () => configMap,
           getContextFields: () => contextFieldsMap,
@@ -175,6 +241,10 @@ const NexusGenerator = createGeneratorWithChildren({
             'src/plugins/graphql/index.ts'
           )
         );
+
+        builder.addPostWriteCommand('yarn nexusgen', {
+          onlyIfChanged: schemaFiles,
+        });
       },
     };
   },

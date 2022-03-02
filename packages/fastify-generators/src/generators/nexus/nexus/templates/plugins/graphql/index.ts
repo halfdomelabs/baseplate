@@ -11,7 +11,7 @@ import { createContext } from './context';
 const IS_DEVELOPMENT = CONFIG.APP_ENVIRONMENT === 'development';
 
 const schema = makeSchema({
-  types: ROOT_MODULE.types,
+  types: ROOT_MODULE.schemaTypes,
   outputs: {
     typegen: join(__dirname, '../..', 'nexus-typegen.ts'),
     schema: join(__dirname, '../..', 'schema.graphql'),
@@ -21,6 +21,7 @@ const schema = makeSchema({
     module: path.join(__dirname, 'context.ts'),
     export: 'GraphQLContext',
   },
+  shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
 });
 
 export const graphqlPlugin = fp(async (fastify) => {

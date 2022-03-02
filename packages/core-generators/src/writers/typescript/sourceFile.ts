@@ -110,10 +110,14 @@ export abstract class TypescriptSourceContent<
 
   addCodeBlock<K extends keyof T & string>(
     name: K,
-    entry: T[K] extends TypescriptCodeBlockConfig ? TypescriptCodeBlock : never
+    entry: T[K] extends TypescriptCodeBlockConfig
+      ? TypescriptCodeBlock | string
+      : never
   ): void {
     this.checkNotGenerated();
-    this.codeBlocks[name].push(entry);
+    this.codeBlocks[name].push(
+      typeof entry === 'string' ? new TypescriptCodeBlock(entry) : entry
+    );
   }
 
   addCodeWrapper<K extends keyof T & string>(
@@ -129,11 +133,13 @@ export abstract class TypescriptSourceContent<
   addCodeExpression<K extends keyof T & string>(
     name: K,
     entry: T[K] extends TypescriptCodeExpressionConfig
-      ? TypescriptCodeExpression
+      ? TypescriptCodeExpression | string
       : never
   ): void {
     this.checkNotGenerated();
-    this.codeExpressions[name].push(entry);
+    this.codeExpressions[name].push(
+      typeof entry === 'string' ? new TypescriptCodeExpression(entry) : entry
+    );
   }
 
   addCodeEntries(entries: Partial<InferCodeEntries<T>>): void {
@@ -415,6 +421,28 @@ export class TypescriptSourceFile<
 
     // get rid of any leading whitespace and add newline to the end
     return `${text.trim()}\n`;
+  }
+
+  renderToActionFromText(
+    template: string,
+    destination: string,
+    identifierReplacements?: Record<string, string>
+  ): BuilderAction {
+    return {
+      execute: async (builder) => {
+        const contents = this.renderToText(
+          template,
+          destination,
+          identifierReplacements
+        );
+        await builder.apply(
+          writeFormattedAction({
+            destination,
+            contents,
+          })
+        );
+      },
+    };
   }
 
   renderToAction(

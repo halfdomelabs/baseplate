@@ -53,10 +53,10 @@ describe('createNonOverwriteableMap', () => {
       { fieldOne: ['a', 'b'], fieldTwo: 'valueTwo' },
       { mergeArraysUniquely: true }
     );
-    map.appendUnique('fieldOne', ['b', 'c']);
-    map.appendUnique('fieldOne', ['c', 'd']);
+    map.appendUnique('fieldOne', ['b', 'c', 'd']);
+    map.appendUnique('fieldOne', ['d', 'e', 'f']);
     expect(map.value()).toEqual({
-      fieldOne: ['a', 'b', 'c', 'd'],
+      fieldOne: ['a', 'b', 'c', 'd', 'e', 'f'],
       fieldTwo: 'valueTwo',
     });
   });

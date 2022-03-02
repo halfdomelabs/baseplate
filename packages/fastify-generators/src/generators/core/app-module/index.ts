@@ -58,7 +58,7 @@ const AppModuleGenerator = createGeneratorWithChildren({
           },
         },
       }),
-      build: (builder) => {
+      build: async (builder) => {
         const indexFile = typescript.createTemplate({
           MODULE_CONTENTS: { type: 'code-expression' },
         });
@@ -74,9 +74,8 @@ const AppModuleGenerator = createGeneratorWithChildren({
         );
 
         const moduleFolderIndex = path.join(moduleFolder, 'index.ts');
-        builder.writeFile(
-          moduleFolderIndex,
-          indexFile.renderToText(
+        await builder.apply(
+          indexFile.renderToActionFromText(
             `export const ${moduleName} = MODULE_CONTENTS`,
             moduleFolderIndex
           )

@@ -37,7 +37,7 @@ const EslintGenerator = createGeneratorWithChildren({
           '.eslintrc.js',
         ],
       },
-      { name: 'eslint-config' }
+      { name: 'eslint-config', mergeArraysUniquely: true }
     );
     return {
       getProviders: () => ({

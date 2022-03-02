@@ -98,11 +98,12 @@ export function createNonOverwriteableMap<T extends object>(
           ...overrideValues,
           [key]: R.uniq([...existingValue, ...value]),
         };
+      } else {
+        overrideValues = {
+          ...overrideValues,
+          [key]: value,
+        };
       }
-      overrideValues = {
-        ...overrideValues,
-        [key]: value,
-      };
     },
     merge(value) {
       overrideValues = nonOverwriteableMerge(
@@ -114,7 +115,18 @@ export function createNonOverwriteableMap<T extends object>(
       return finalMerge(defaults, overrideValues) as T;
     },
     get(key) {
-      return overrideValues[key] || defaults[key];
+      const override = overrideValues[key];
+      const def = defaults[key];
+      if (
+        mergeArraysUniquely &&
+        Array.isArray(override) &&
+        Array.isArray(def)
+      ) {
+        // TODO: Fix typing
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return R.uniq(def.concat(override)) as any;
+      }
+      return override || def;
     },
   };
 }
