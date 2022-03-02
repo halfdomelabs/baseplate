@@ -38,17 +38,42 @@ function getExportInterdependencies(
   const nodes: string[] = [];
   const edges = entries.flatMap((entry) => {
     const normalizedExports = normalizeExportMap(entry.exports);
-    const dependentExports = normalizedExports.filter(
+    const exportsWithDependencies = normalizedExports.filter(
       (e) => e.options.dependencies
     );
-    return dependentExports.flatMap((e) => {
-      const { dependencies } = e.options;
 
-      if (!dependencies) {
-        return [];
-      }
+    const exportsThatAreDependencies = R.uniq(
+      exportsWithDependencies.flatMap(
+        (exportWithDependency) =>
+          exportWithDependency.options.dependencies?.map((dependency) => {
+            const foundExport = normalizedExports.find(
+              (e) => e.name === dependency.name
+            );
+            if (!foundExport) {
+              throw new Error(
+                `Could not find export dependency ${exportWithDependency.name} in ${entry.id}`
+              );
+            }
+            return foundExport;
+          }) || []
+      )
+    );
+
+    const exportsInvolvingDependencies = R.uniq([
+      ...exportsWithDependencies,
+      ...exportsThatAreDependencies,
+    ]);
+
+    return exportsInvolvingDependencies.flatMap((e) => {
+      const { dependencies = [] } = e.options;
 
       const dependentExportKey = `${entry.id}#${e.name}`;
+
+      // create links from this export to the export that it depends on
+      const exportToDependentExports = dependencies.map((dependency) => {
+        const dependencyExportKey = `${entry.id}#${dependency.name}`;
+        return [dependencyExportKey, dependentExportKey] as [string, string];
+      });
 
       // create links between this export and generators that depend on this export's dependencies
       const generatorsToExportRelationships = dependencies.flatMap(
@@ -67,16 +92,10 @@ function getExportInterdependencies(
         exportDependencies[dependentExportKey] || []
       ).map((generator): [string, string] => [dependentExportKey, generator]);
 
-      if (
-        !generatorsToExportRelationships.length ||
-        !exportToGeneratorRelationships.length
-      ) {
-        return [];
-      }
-
       nodes.push(dependentExportKey);
 
       return [
+        ...exportToDependentExports,
         ...generatorsToExportRelationships,
         ...exportToGeneratorRelationships,
       ];

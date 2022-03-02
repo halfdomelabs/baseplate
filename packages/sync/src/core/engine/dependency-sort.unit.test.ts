@@ -34,6 +34,7 @@ describe('getSortedEntryIds', () => {
   describe('with export inter-dependencies', () => {
     const providerOne = createProviderType('providerOne');
     const providerTwo = createProviderType('providerTwo');
+    const providerThree = createProviderType('providerThree');
 
     it('sorts a list with export inter-dependencies', () => {
       const entries = [
@@ -51,6 +52,44 @@ describe('getSortedEntryIds', () => {
         buildTestGeneratorEntry({
           id: 'entryThree',
           dependencies: { dep: providerTwo },
+        }),
+        buildTestGeneratorEntry({
+          id: 'entryFour',
+          dependencies: { dep: providerOne },
+        }),
+      ];
+      const dependencyGraphOne = {
+        entryOne: {},
+        entryTwo: { dep: 'entryOne' },
+        entryThree: { dep: 'entryOne' },
+        entryFour: { dep: 'entryOne' },
+      };
+      const resultOne = getSortedEntryIds(entries, dependencyGraphOne);
+      expect(resultOne).toEqual([
+        'entryOne',
+        'entryTwo',
+        'entryFour',
+        'entryThree',
+      ]);
+    });
+
+    it('sorts a list with two layers of export inter-dependencies', () => {
+      const entries = [
+        buildTestGeneratorEntry({
+          id: 'entryOne',
+          exports: {
+            exp: providerOne,
+            exp2: providerTwo.export().dependsOn(providerOne),
+            exp3: providerThree.export().dependsOn(providerTwo),
+          },
+        }),
+        buildTestGeneratorEntry({
+          id: 'entryTwo',
+          dependencies: { dep: providerOne },
+        }),
+        buildTestGeneratorEntry({
+          id: 'entryThree',
+          dependencies: { dep: providerThree },
         }),
         buildTestGeneratorEntry({
           id: 'entryFour',
