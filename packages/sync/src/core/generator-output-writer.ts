@@ -107,7 +107,7 @@ export async function writeGeneratorOutput(
       : [onlyIfChanged];
 
     if (
-      onlyIfChanged === undefined ||
+      command.options?.onlyIfChanged == null ||
       changedList.some((file) => modifiedFiles.includes(file))
     ) {
       const commandString = NODE_COMMANDS.includes(
