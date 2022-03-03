@@ -85,7 +85,7 @@ const EslintGenerator = createGeneratorWithChildren({
 
         // generate ignore file
         builder.writeFile(
-          '.eslintrcignore',
+          '.eslintignore',
           `${config.eslintIgnore.join('\n')}\n`
         );
       },
