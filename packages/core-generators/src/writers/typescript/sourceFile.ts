@@ -57,8 +57,10 @@ export type TypescriptTemplateConfig<T = Record<string, unknown>> = {
 };
 
 type InferCodeEntry<T extends TypescriptCodeConfig> =
-  T extends TypescriptCodeBlockConfig
-    ? TypescriptCodeBlock
+  T extends TypescriptCodeExpressionConfig
+    ? TypescriptCodeExpression | string
+    : T extends TypescriptCodeBlockConfig
+    ? TypescriptCodeBlock | string
     : T extends TypescriptCodeWrapperConfig
     ? TypescriptCodeWrapper
     : never;

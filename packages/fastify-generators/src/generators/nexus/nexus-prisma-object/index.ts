@@ -13,8 +13,6 @@ const descriptorSchema = yup.object({
 });
 
 const OBJECT_TYPE_TEMPLATE = `
-import { objectType } from 'nexus';
-
 export const OBJECT_TYPE_EXPORT = objectType({
   name: MODEL_NAME,
   definition(t) {
@@ -38,11 +36,16 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
   createGenerator({ modelName }, { prismaOutput, nexusTypes, nexusSchema }) {
     const model = prismaOutput.getPrismaModel(modelName);
 
-    const objectTypeBlock = new TypescriptSourceBlock({
-      OBJECT_TYPE_EXPORT: { type: 'code-expression' },
-      OBJECT_TYPE_DEFINITION: { type: 'code-block' },
-      MODEL_NAME: { type: 'code-expression' },
-    });
+    const objectTypeBlock = new TypescriptSourceBlock(
+      {
+        OBJECT_TYPE_EXPORT: { type: 'code-expression' },
+        OBJECT_TYPE_DEFINITION: { type: 'code-block' },
+        MODEL_NAME: { type: 'code-expression' },
+      },
+      {
+        importText: ["import { objectType } from 'nexus';"],
+      }
+    );
 
     objectTypeBlock.addCodeExpression(
       'OBJECT_TYPE_EXPORT',

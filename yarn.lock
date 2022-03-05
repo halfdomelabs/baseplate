@@ -1777,6 +1777,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/inflection@^1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@types/inflection/-/inflection-1.13.0.tgz#d641b773317f2e71e5c7c80809057e3101c4b2bf"
+  integrity sha512-kZSETqAVS74XC/K3mPX/tbMEi/Zy1KP0Wc59dB1i5P72AHz4eSW+UIpzWxmQnDxipoKSX5eRgUXy+wUr+bY73g==
+
 "@types/is-core-module@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@types/is-core-module/-/is-core-module-2.2.0.tgz#a6f01308db449fb9200cc8b8b05aa26f404f0ddb"
@@ -5226,6 +5231,11 @@ infer-owner@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/infer-owner/-/infer-owner-1.0.4.tgz#c4cefcaa8e51051c2a40ba2ce8a3d27295af9467"
   integrity sha512-IClj+Xz94+d7irH5qRyfJonOdfTzuDaifE6ZPWfx0N0+/ATZCbuTPq2prFl526urkQd90WyUKIh1DfBQ2hMz9A==
+
+inflection@^1.13.2:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/inflection/-/inflection-1.13.2.tgz#15e8c797c6c3dadf31aa658f8df8a4ea024798b0"
+  integrity sha512-cmZlljCRTBFouT8UzMzrGcVEvkv6D/wBdcdKG7J1QH5cXjtU75Dm+P27v9EKu/Y43UYyCJd1WC4zLebRrC8NBw==
 
 inflight@^1.0.4:
   version "1.0.6"
