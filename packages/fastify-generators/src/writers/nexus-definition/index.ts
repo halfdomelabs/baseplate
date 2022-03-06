@@ -1,4 +1,7 @@
-import { TypescriptCodeBlock } from '@baseplate/core-generators';
+import {
+  TypescriptCodeBlock,
+  TypescriptCodeExpression,
+} from '@baseplate/core-generators';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import {
   ServiceOutputDtoField,
@@ -13,7 +16,32 @@ export interface NexusDefinitionWriterOptions {
   lookupScalar: (name: ScalarFieldType) => NexusScalarConfig;
 }
 
-function writeNexusDefinitionFromDtoScalarField(
+export function writeNexusObjectTypeFieldFromDtoNestedField(
+  field: ServiceOutputDtoNestedField,
+  resolver: TypescriptCodeExpression,
+  options: NexusDefinitionWriterOptions
+): TypescriptCodeBlock {
+  const components = [options.builder];
+
+  if (!field.isOptional) {
+    components.push('.nonNull');
+  }
+
+  if (field.isList) {
+    components.push('.list.nonNull');
+  }
+
+  components.push(
+    `.field("${field.name}", { type: '${field.nestedType.name}', resolve: RESOLVER })`
+  );
+
+  const fieldStr = components.join('');
+  return resolver
+    .wrap((contents) => fieldStr.replace('RESOLVER', contents))
+    .toBlock();
+}
+
+export function writeNexusDefinitionFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
   options: NexusDefinitionWriterOptions
 ): string {
@@ -34,7 +62,7 @@ function writeNexusDefinitionFromDtoScalarField(
   return components.join('');
 }
 
-function writeNexusDefinitionFromDtoNestedField(
+function writeNexusInputDefinitionFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: NexusDefinitionWriterOptions
 ): string {
@@ -77,7 +105,7 @@ export function writeNexusInputDefinitionFromDtoFields(
           options
         );
       return {
-        definition: writeNexusDefinitionFromDtoNestedField(field, options),
+        definition: writeNexusInputDefinitionFromDtoNestedField(field, options),
         childInputDefinitions: [
           { name: field.nestedType.name, definition: childDefinition },
           ...childInputDefinitions,

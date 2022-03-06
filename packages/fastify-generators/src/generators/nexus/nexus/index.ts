@@ -20,6 +20,7 @@ import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { requestContextProvider } from '@src/generators/core/request-context';
 import { rootModuleProvider } from '@src/generators/core/root-module';
 import { ScalarFieldType } from '@src/types/fieldTypes';
+import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition';
 import {
   DEFAULT_NEXUS_SCALAR_CONFIG,
   NexusScalarConfig,
@@ -49,6 +50,7 @@ export interface NexusSchemaProvider {
   getScalarConfig(scalar: ScalarFieldType): NexusScalarConfig;
   registerSchemaFile(file: string): void;
   getUtilsImport(): string;
+  getNexusWriterOptions(): NexusDefinitionWriterOptions;
 }
 
 export const nexusSchemaProvider =
@@ -169,6 +171,14 @@ const NexusGenerator = createGeneratorWithChildren({
 
     const schemaFiles: string[] = [];
 
+    const getScalarConfig = (scalar: ScalarFieldType): NexusScalarConfig => {
+      const config = scalarMap.get(scalar);
+      if (!config) {
+        throw new Error(`No config found for scalar ${scalar}`);
+      }
+      return config;
+    };
+
     return {
       getProviders: () => ({
         nexusSetup: {
@@ -181,15 +191,13 @@ const NexusGenerator = createGeneratorWithChildren({
           registerSchemaFile: (file) => schemaFiles.push(file),
         },
         nexusSchema: {
-          getScalarConfig(scalar) {
-            const config = scalarMap.get(scalar);
-            if (!config) {
-              throw new Error(`No config found for scalar ${scalar}`);
-            }
-            return config;
-          },
+          getScalarConfig,
           registerSchemaFile: (file) => schemaFiles.push(file),
           getUtilsImport: () => '@/src/utils/nexus',
+          getNexusWriterOptions: () => ({
+            builder: 't',
+            lookupScalar: (scalar) => getScalarConfig(scalar),
+          }),
         },
         nexus: {
           getConfig: () => configMap,

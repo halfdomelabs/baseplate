@@ -2,7 +2,11 @@
 
 import { TypescriptCodeExpression } from '@baseplate/core-generators';
 import { ScalarFieldType } from './fieldTypes';
-import { PrismaOutputModel, PrismaOutputScalarField } from './prismaOutput';
+import {
+  PrismaOutputModel,
+  PrismaOutputRelationField,
+  PrismaOutputScalarField,
+} from './prismaOutput';
 
 interface ServiceOutputDtoBaseField {
   name: string;
@@ -51,15 +55,31 @@ export function scalarPrismaFieldToServiceField(
   };
 }
 
+export function nestedPrismaFieldToServiceField(
+  field: PrismaOutputRelationField
+): ServiceOutputDtoNestedField {
+  return {
+    type: 'nested',
+    name: field.name,
+    isOptional: field.isOptional,
+    isNullable: field.isOptional,
+    isList: field.isList,
+    nestedType: {
+      name: field.modelType,
+      fields: [], // TODO IMPORTANT: Fix this - we need to re-do the typings here
+    },
+  };
+}
+
 export function prismaToServiceOutputDto(
   model: PrismaOutputModel
 ): ServiceOutputDto {
   return {
     name: model.name,
-    fields: model.fields
-      .filter(
-        (field): field is PrismaOutputScalarField => field.type === 'scalar'
-      )
-      .map(scalarPrismaFieldToServiceField),
+    fields: model.fields.map((field) =>
+      field.type === 'scalar'
+        ? scalarPrismaFieldToServiceField(field)
+        : nestedPrismaFieldToServiceField(field)
+    ),
   };
 }
