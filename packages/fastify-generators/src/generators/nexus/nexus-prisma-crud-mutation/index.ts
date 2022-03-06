@@ -59,7 +59,6 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
     { nexusSchema, nexusTypesFile, prismaCrudServiceOutput, tsUtils }
   ) {
     const serviceOutput = prismaCrudServiceOutput.getServiceMethod(type);
-    const lowerFirstModelName = lowerCaseFirst(modelName);
 
     const objectTypeBlock = new TypescriptSourceBlock(
       {

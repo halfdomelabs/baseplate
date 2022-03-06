@@ -27,4 +27,5 @@ export type PrismaOutputField =
 export interface PrismaOutputModel {
   name: string;
   fields: PrismaOutputField[];
+  idFields: string[] | null;
 }

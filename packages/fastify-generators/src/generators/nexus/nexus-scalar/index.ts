@@ -10,6 +10,7 @@ import { ScalarFieldType } from '@src/types/fieldTypes';
 import { nexusSetupProvider } from '../nexus';
 
 interface NexusScalarConfig {
+  name: string;
   scalar: ScalarFieldType;
   templatePath: string;
   export: string;
@@ -25,6 +26,7 @@ const createNexusScalarMap = <T extends Record<string, NexusScalarConfig>>(
 
 const scalarConfigMap = createNexusScalarMap({
   dateTime: {
+    name: 'DateTime',
     scalar: 'dateTime',
     templatePath: 'date-time.ts',
     export: 'DateTimeScalar',
@@ -34,6 +36,7 @@ const scalarConfigMap = createNexusScalarMap({
     devDependencies: {},
   },
   uuid: {
+    name: 'Uuid',
     scalar: 'uuid',
     templatePath: 'uuid.ts',
     export: 'UuidScalar',
@@ -80,8 +83,9 @@ const NexusScalarGenerator = createGeneratorWithChildren({
         )}'`
       )
     );
-    const { scalar, nexusMethod, sourceType } = scalarConfig;
+    const { name, scalar, nexusMethod, sourceType } = scalarConfig;
     nexusSetup.addScalarField({
+      name,
       scalar,
       nexusMethod,
       sourceType,

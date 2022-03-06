@@ -44,7 +44,7 @@ export const validTypes: PrismaFieldTypeConfig<any>[] = [
       if (config?.autoGenerate) {
         attributes.push({
           name: '@default',
-          args: 'dbgenerated("gen_random_uuid()")',
+          args: ['dbgenerated("gen_random_uuid()")'],
         });
       }
       return attributes;
@@ -58,12 +58,12 @@ export const validTypes: PrismaFieldTypeConfig<any>[] = [
     },
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [
-        { name: '@db.Timestamptz', args: '3' },
+        { name: '@db.Timestamptz', args: ['3'] },
       ];
       if (config?.defaultToNow) {
         attributes.push({
           name: '@default',
-          args: 'now()',
+          args: ['now()'],
         });
       }
       return attributes;
@@ -123,7 +123,7 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
     }
 
     if (name !== dbName) {
-      attributes.push({ name: '@map', args: `"${dbName}"` });
+      attributes.push({ name: '@map', args: [`"${dbName}"`] });
     }
 
     attributes.push(...(type.getAttributes?.(options) || []));

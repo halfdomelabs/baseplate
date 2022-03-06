@@ -7,9 +7,11 @@ interface ModelBlockOptions {
   tableName?: string;
 }
 
+// TODO: Use https://github.com/MrLeebo/prisma-ast or something like that for proper Prisma schema parsing and generation
+
 export interface PrismaModelAttribute {
   name: string;
-  args?: string | (string | string[] | Record<string, string | string[]>)[];
+  args?: (string | string[] | Record<string, string | string[]>)[];
 }
 
 export interface PrismaModelField {
@@ -24,11 +26,9 @@ function formatAttributeArgument(argument: string | string[]): string {
   return Array.isArray(argument) ? `[${argument.join(', ')}]` : argument;
 }
 
-function formatAttribute({ args, name }: PrismaModelAttribute): string {
-  if (!args) {
-    return name;
-  }
-
+function formatAttributeArguments(
+  args: Exclude<PrismaModelAttribute['args'], undefined>
+): string {
   const argStrings =
     typeof args === 'string'
       ? [args]
@@ -41,7 +41,40 @@ function formatAttribute({ args, name }: PrismaModelAttribute): string {
           );
         });
 
-  return `${name}(${argStrings.join(', ')})`;
+  return argStrings.join(', ');
+}
+
+function formatAttribute({ args, name }: PrismaModelAttribute): string {
+  if (!args) {
+    return name;
+  }
+
+  return `${name}(${formatAttributeArguments(args)})`;
+}
+
+function parseArguments(
+  attribute: PrismaModelAttribute,
+  positionalArgumentNames: string[]
+): Record<string, string | string[]> {
+  if (!attribute.args) {
+    return {};
+  }
+
+  return attribute.args.reduce(
+    (argumentMap: Record<string, string | string[]>, arg, idx) => {
+      if (Array.isArray(arg) || typeof arg === 'string') {
+        const argName = positionalArgumentNames[idx];
+        if (!argName) {
+          throw new Error(
+            `Must provide positional argument name for ${attribute.name}`
+          );
+        }
+        return { ...argumentMap, [argName]: arg };
+      }
+      return { ...argumentMap, ...arg };
+    },
+    {}
+  );
 }
 
 function formatModel({ name, type, attributes }: PrismaModelField): string {
@@ -67,6 +100,28 @@ export class PrismaModelBlockWriter {
   addAttribute(attribute: PrismaModelAttribute): this {
     this.attributes.push(attribute);
     return this;
+  }
+
+  private extractIdFields(): string[] | null {
+    const singleIdFields = this.fields.filter((field) =>
+      field.attributes?.some((attr) => attr.name === '@id')
+    );
+    if (singleIdFields.length > 1) {
+      throw new Error(`Model ${this.name} has more than one @id field`);
+    }
+
+    if (singleIdFields.length) {
+      return singleIdFields.map((field) => field.name);
+    }
+
+    const idAttribute = this.attributes.find((attr) => attr.name === '@@id');
+    if (idAttribute) {
+      const args = parseArguments(idAttribute, ['fields']);
+      const { fields } = args;
+      return Array.isArray(fields) ? fields : [fields];
+    }
+
+    return null;
   }
 
   toOutputModel(): PrismaOutputModel {
@@ -97,6 +152,7 @@ export class PrismaModelBlockWriter {
           ...sharedFields,
         };
       }),
+      idFields: this.extractIdFields(),
     };
   }
 
@@ -105,7 +161,7 @@ export class PrismaModelBlockWriter {
     if (this.options.tableName) {
       attributes.push({
         name: '@@map',
-        args: `"${this.options.tableName}"`,
+        args: [`"${this.options.tableName}"`],
       });
     }
 

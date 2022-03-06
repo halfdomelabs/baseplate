@@ -46,7 +46,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
     const lowerFirstModelName = lowerCaseFirst(modelName);
 
     objectTypeBlock.addCodeEntries({
-      LIST_QUERY_EXPORT: `${lowerFirstModelName}ListQuery`,
+      LIST_QUERY_EXPORT: `${inflection.pluralize(lowerFirstModelName)}Query`,
       QUERY_NAME: `'${inflection.pluralize(lowerFirstModelName)}'`,
       OBJECT_TYPE_NAME: `'${objectTypeName || modelName}'`,
       MODEL: prismaOutput.getPrismaModelExpression(modelName),

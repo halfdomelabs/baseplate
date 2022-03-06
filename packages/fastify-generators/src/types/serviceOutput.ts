@@ -38,6 +38,19 @@ export interface ServiceOutputMethod {
   returnType: ServiceOutputDto;
 }
 
+export function scalarPrismaFieldToServiceField(
+  field: PrismaOutputScalarField
+): ServiceOutputDtoField {
+  return {
+    type: 'scalar',
+    name: field.name,
+    isOptional: field.isOptional,
+    isNullable: field.isOptional,
+    isList: field.isList,
+    scalarType: field.scalarType,
+  };
+}
+
 export function prismaToServiceOutputDto(
   model: PrismaOutputModel
 ): ServiceOutputDto {
@@ -47,13 +60,6 @@ export function prismaToServiceOutputDto(
       .filter(
         (field): field is PrismaOutputScalarField => field.type === 'scalar'
       )
-      .map((field) => ({
-        type: 'scalar',
-        name: field.name,
-        isOptional: field.isOptional,
-        isNullable: field.isOptional,
-        isList: field.isList,
-        scalarType: field.scalarType,
-      })),
+      .map(scalarPrismaFieldToServiceField),
   };
 }

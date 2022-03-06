@@ -8,7 +8,7 @@ import {
 import { lowerCaseFirst } from '@src/utils/case';
 import { NexusScalarConfig } from './scalars';
 
-interface NexusDefinitionWriterOptions {
+export interface NexusDefinitionWriterOptions {
   builder: string;
   lookupScalar: (name: ScalarFieldType) => NexusScalarConfig;
 }
@@ -55,7 +55,7 @@ function writeNexusDefinitionFromDtoNestedField(
   return components.join('');
 }
 
-interface ChildInputDefinition {
+export interface ChildInputDefinition {
   name: string;
   definition: string;
 }
