@@ -4,7 +4,7 @@ import inflection from 'inflection';
 import * as yup from 'yup';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { lowerCaseFirst } from '@src/utils/case';
-import { nexusTypesProvider } from '../nexus-types';
+import { nexusTypesFileProvider } from '../nexus-types-file';
 
 const descriptorSchema = yup.object({
   modelName: yup.string().required(),
@@ -20,14 +20,17 @@ export const LIST_QUERY_EXPORT = queryField((t) => {
 });
 `.trim();
 
-const NexusPrismaObjectGenerator = createGeneratorWithChildren({
+const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     prismaOutput: prismaOutputProvider,
-    nexusTypes: nexusTypesProvider,
+    nexusTypesFile: nexusTypesFileProvider,
   },
-  createGenerator({ modelName, objectTypeName }, { prismaOutput, nexusTypes }) {
+  createGenerator(
+    { modelName, objectTypeName },
+    { prismaOutput, nexusTypesFile }
+  ) {
     const objectTypeBlock = new TypescriptSourceBlock(
       {
         LIST_QUERY_EXPORT: { type: 'code-expression' },
@@ -49,7 +52,7 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
       MODEL: prismaOutput.getPrismaModelExpression(modelName),
     });
 
-    nexusTypes.registerType(
+    nexusTypesFile.registerType(
       objectTypeBlock.renderToBlock(OBJECT_TYPE_TEMPLATE)
     );
 
@@ -59,4 +62,4 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
   },
 });
 
-export default NexusPrismaObjectGenerator;
+export default NexusPrismaListQueryGenerator;

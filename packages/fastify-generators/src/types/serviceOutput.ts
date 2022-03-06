@@ -8,6 +8,7 @@ interface ServiceOutputDtoBaseField {
   name: string;
   type: string;
   isOptional?: boolean;
+  isNullable?: boolean;
   isList?: boolean;
 }
 
@@ -50,6 +51,7 @@ export function prismaToServiceOutputDto(
         type: 'scalar',
         name: field.name,
         isOptional: field.isOptional,
+        isNullable: field.isOptional,
         isList: field.isList,
         scalarType: field.scalarType,
       })),

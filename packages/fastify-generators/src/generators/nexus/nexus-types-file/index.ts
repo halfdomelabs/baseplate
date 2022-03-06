@@ -16,14 +16,14 @@ const descriptorSchema = yup.object({
   name: yup.string().required(),
 });
 
-export interface NexusTypesProvider {
+export interface NexusTypesFileProvider {
   registerType(block: TypescriptCodeBlock): void;
 }
 
-export const nexusTypesProvider =
-  createProviderType<NexusTypesProvider>('nexus-types');
+export const nexusTypesFileProvider =
+  createProviderType<NexusTypesFileProvider>('nexus-types-file');
 
-const NexusTypesGenerator = createGeneratorWithChildren({
+const NexusTypesFileGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
@@ -32,7 +32,7 @@ const NexusTypesGenerator = createGeneratorWithChildren({
     nexusSchema: nexusSchemaProvider,
   },
   exports: {
-    nexusTypes: nexusTypesProvider,
+    nexusTypes: nexusTypesFileProvider,
   },
   createGenerator({ name }, { appModule, typescript, nexusSchema }) {
     const typesPath = `${appModule.getModuleFolder()}/schema/${paramCase(
@@ -69,4 +69,4 @@ const NexusTypesGenerator = createGeneratorWithChildren({
   },
 });
 
-export default NexusTypesGenerator;
+export default NexusTypesFileGenerator;

@@ -4,9 +4,9 @@ import * as yup from 'yup';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { prismaToServiceOutputDto } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
-import { writeNexusDefinitionFromDtoFields } from '@src/writers/nexus-definition';
+import { writeScalarNexusDefinitionFromDtoFields } from '@src/writers/nexus-definition';
 import { nexusSchemaProvider } from '../nexus';
-import { nexusTypesProvider } from '../nexus-types';
+import { nexusTypesFileProvider } from '../nexus-types-file';
 
 const descriptorSchema = yup.object({
   modelName: yup.string().required(),
@@ -30,10 +30,13 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     prismaOutput: prismaOutputProvider,
-    nexusTypes: nexusTypesProvider,
+    nexusTypesFile: nexusTypesFileProvider,
     nexusSchema: nexusSchemaProvider,
   },
-  createGenerator({ modelName }, { prismaOutput, nexusTypes, nexusSchema }) {
+  createGenerator(
+    { modelName },
+    { prismaOutput, nexusTypesFile, nexusSchema }
+  ) {
     const model = prismaOutput.getPrismaModel(modelName);
 
     const objectTypeBlock = new TypescriptSourceBlock(
@@ -56,18 +59,18 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
     const outputDto = prismaToServiceOutputDto(model);
     objectTypeBlock.addCodeBlock(
       'OBJECT_TYPE_DEFINITION',
-      writeNexusDefinitionFromDtoFields(outputDto.fields, {
+      writeScalarNexusDefinitionFromDtoFields(outputDto.fields, {
         builder: 't',
         lookupScalar: (scalar) => nexusSchema.getScalarConfig(scalar),
       })
     );
 
-    nexusTypes.registerType(
+    nexusTypesFile.registerType(
       objectTypeBlock.renderToBlock(OBJECT_TYPE_TEMPLATE)
     );
 
     return {
-      build: async (builder) => {},
+      build: async () => {},
     };
   },
 });

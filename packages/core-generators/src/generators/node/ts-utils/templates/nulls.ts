@@ -10,7 +10,7 @@ import { NormalizeTypes } from './normalizeTypes';
  * @param restrictedKeys Prevents these keys from being set to null
  * @returns A newly typed object whose restrictedKeys are not null
  */
-export function restrictNulls<
+export function restrictObjectNulls<
   ObjectType extends Record<string, unknown>,
   NonNullKeys extends keyof ObjectType
 >(

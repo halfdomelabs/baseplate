@@ -48,6 +48,7 @@ export const nexusSetupProvider =
 export interface NexusSchemaProvider {
   getScalarConfig(scalar: ScalarFieldType): NexusScalarConfig;
   registerSchemaFile(file: string): void;
+  getUtilsImport(): string;
 }
 
 export const nexusSchemaProvider =
@@ -188,6 +189,7 @@ const NexusGenerator = createGeneratorWithChildren({
             return config;
           },
           registerSchemaFile: (file) => schemaFiles.push(file),
+          getUtilsImport: () => '@/src/utils/nexus',
         },
         nexus: {
           getConfig: () => configMap,

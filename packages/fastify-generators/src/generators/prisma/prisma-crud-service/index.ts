@@ -37,7 +37,7 @@ export interface PrismaCrudServiceOutputProvider {
 
 export const prismaCrudServiceOutputProvider =
   createProviderType<PrismaCrudServiceOutputProvider>(
-    'prisma-crud-service-utput'
+    'prisma-crud-service-output'
   );
 
 const PrismaCrudServiceGenerator = createGeneratorWithChildren({
@@ -59,11 +59,11 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
         modelName,
       },
     },
-    remove: {
+    delete: {
       defaultDescriptor: {
         generator: '@baseplate/fastify/prisma/prisma-crud-method',
-        name: 'remove',
-        type: 'remove',
+        name: 'delete',
+        type: 'delete',
         modelName,
       },
     },
@@ -101,7 +101,10 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
           getServiceExpression() {
             return new TypescriptCodeExpression(
               serviceName,
-              `import { ${serviceName} } from '${servicesPath}';`
+              `import { ${serviceName} } from '@/${servicesPath.replace(
+                /\.ts$/,
+                ''
+              )}';`
             );
           },
           registerMethod(key, expression, outputMethod) {

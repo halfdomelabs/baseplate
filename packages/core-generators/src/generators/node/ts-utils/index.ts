@@ -13,6 +13,7 @@ export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
 interface UtilConfig {
   export: string;
   file: string;
+  dependencies: string[];
 }
 
 function createConfigMap<T extends Record<string, UtilConfig>>(map: T): T {
@@ -23,14 +24,17 @@ const UTIL_CONFIGS = createConfigMap({
   normalizeTypes: {
     export: 'NormalizeTypes',
     file: 'normalizeTypes.ts',
+    dependencies: [],
   },
-  restrictNulls: {
-    export: 'restrictNulls',
+  restrictObjectNulls: {
+    export: 'restrictObjectNulls',
     file: 'nulls.ts',
+    dependencies: ['normalizeTypes'],
   },
   capitalizeString: {
     export: 'capitalizeString',
     file: 'string.ts',
+    dependencies: [],
   },
 });
 
@@ -62,6 +66,13 @@ const TsUtilsGenerator = createGeneratorWithChildren({
               throw new Error(`No config for key ${key}`);
             }
             usedTemplates[config.file] = true;
+            config.dependencies.forEach((dep) => {
+              const depConfig = UTIL_CONFIGS[dep as ConfigKey];
+              if (!depConfig) {
+                throw new Error(`${dep} is not a valid utility dependency`);
+              }
+              usedTemplates[depConfig.file] = true;
+            });
             return new TypescriptCodeExpression(
               config.export,
               `import { ${

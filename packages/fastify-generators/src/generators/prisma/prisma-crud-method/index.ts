@@ -12,7 +12,7 @@ import {
 import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
 import { prismaCrudServiceProvider } from '../prisma-crud-service';
 
-const CRUD_FUNCTION_TYPES = ['create', 'update', 'remove'] as const;
+const CRUD_FUNCTION_TYPES = ['create', 'update', 'delete'] as const;
 type CrudFunctionType = typeof CRUD_FUNCTION_TYPES[number];
 
 interface PrismaCrudMethodOptions<
@@ -170,6 +170,7 @@ async OPERATION_NAME(data: CREATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
             type: 'scalar',
             name: field.name,
             isOptional: true,
+            isNullable: field.isOptional,
             isList: field.isList,
             scalarType: field.scalarType,
           };
@@ -233,8 +234,8 @@ async OPERATION_NAME(id: string, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TY
       );
     },
   }),
-  remove: createConfig({
-    name: 'remove',
+  delete: createConfig({
+    name: 'delete',
     getMethodDefinition: ({
       name,
       modelName,
