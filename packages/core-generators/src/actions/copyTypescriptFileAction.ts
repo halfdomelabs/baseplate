@@ -3,13 +3,14 @@ import { createBuilderActionCreator } from '@baseplate/sync';
 import fs from 'fs-extra';
 
 interface Options {
-  destination: string;
+  destination?: string;
   source: string;
+  replacements?: { [key: string]: string };
 }
 
 export const copyTypescriptFileAction = createBuilderActionCreator(
   (options: Options) => async (builder) => {
-    const { destination, source } = options;
+    const { destination, source, replacements = {} } = options;
 
     const templatePath = path.join(
       builder.generatorBaseDirectory,
@@ -20,7 +21,13 @@ export const copyTypescriptFileAction = createBuilderActionCreator(
     const fileContents = await fs.readFile(templatePath, 'utf8');
     // strip any ts-nocheck from header
     const strippedContents = fileContents.replace(/^\/\/ @ts-nocheck\n/, '');
-    builder.writeFile(destination, strippedContents, {
+    // process any replacement
+    const replacedContents = Object.entries(replacements).reduce(
+      (str, [key, value]) => str.replace(new RegExp(key, 'g'), value),
+      strippedContents
+    );
+
+    builder.writeFile(destination || source, replacedContents, {
       shouldFormat: true,
     });
   }

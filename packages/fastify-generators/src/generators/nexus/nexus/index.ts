@@ -50,6 +50,7 @@ export interface NexusSchemaProvider {
   getScalarConfig(scalar: ScalarFieldType): NexusScalarConfig;
   registerSchemaFile(file: string): void;
   getUtilsImport(): string;
+  getUtilsExpression(method: 'STANDARD_MUTATION'): TypescriptCodeExpression;
   getNexusWriterOptions(): NexusDefinitionWriterOptions;
 }
 
@@ -198,6 +199,17 @@ const NexusGenerator = createGeneratorWithChildren({
             builder: 't',
             lookupScalar: (scalar) => getScalarConfig(scalar),
           }),
+          getUtilsExpression(method) {
+            switch (method) {
+              case 'STANDARD_MUTATION':
+                return new TypescriptCodeExpression(
+                  'createStandardMutation',
+                  `import {createStandardMutation} from '@/src/utils/nexus'`
+                );
+              default:
+                throw new Error(`Unknown method ${method as string}`);
+            }
+          },
         },
         nexus: {
           getConfig: () => configMap,

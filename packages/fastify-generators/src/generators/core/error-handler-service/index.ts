@@ -22,10 +22,21 @@ const errorHandlerFileConfig = createTypescriptTemplateConfig({
   LOGGER_ACTIONS: { type: 'code-block' },
 });
 
+const ERROR_MAP = {
+  http: 'HttpError',
+  badRequest: 'BadRequestError',
+  unauthorized: 'UnauthorizedError',
+  forbidden: 'ForbiddenError',
+  notFound: 'NotFoundError',
+};
+
 export interface ErrorHandlerServiceProvider {
   getHandlerFile(): TypescriptSourceFile<typeof errorHandlerFileConfig>;
   getHttpErrorsImport(): string;
   getErrorFunction(): TypescriptCodeExpression;
+  getHttpErrorExpression(
+    error: keyof typeof ERROR_MAP
+  ): TypescriptCodeExpression;
 }
 
 export const errorHandlerServiceProvider =
@@ -66,6 +77,11 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
           getHandlerFile: () => errorLoggerFile,
           getErrorFunction: () => errorFunction,
           getHttpErrorsImport: () => '@/src/utils/http-errors',
+          getHttpErrorExpression: (error) =>
+            new TypescriptCodeExpression(
+              ERROR_MAP[error],
+              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`
+            ),
         },
       }),
       build: async (builder) => {

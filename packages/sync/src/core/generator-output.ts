@@ -40,6 +40,15 @@ export interface GeneratorOutputBuilder {
   readTemplate(templatePath: string): Promise<string>;
   addPostWriteCommand(command: string, options?: PostWriteCommandOptions): void;
   apply(action: BuilderAction): Promise<void>;
+  /**
+   * Resolves a path with the given base directory
+   */
+  resolvePath: (path: string) => string;
+  /**
+   * Sets the base directory for the generator output
+   * (all files written will be written relative to the base directory)
+   */
+  setBaseDirectory: (baseDirectory: string) => void;
 }
 
 export interface BuilderAction {
@@ -74,12 +83,16 @@ export interface GeneratorOutput {
   postWriteCommands: PostWriteCommand[];
 }
 
+// TODO: Add unit tests
+
 export class OutputBuilder implements GeneratorOutputBuilder {
   output: GeneratorOutput;
 
   generatorBaseDirectory: string;
 
   formatter: FormatterProvider | undefined;
+
+  baseDirectory: string | undefined;
 
   constructor(generatorBaseDirectory: string, formatter?: FormatterProvider) {
     this.output = { files: {}, postWriteCommands: [] };
@@ -97,20 +110,31 @@ export class OutputBuilder implements GeneratorOutputBuilder {
   }
 
   writeFile(
-    filename: string,
+    filePath: string,
     contents: string | Buffer,
     options?: WriteFileOptions
   ): void {
-    if (this.output.files[filename]) {
-      throw new Error(`Cannot overwrite file ${filename}`);
+    const fullPath = this.resolvePath(filePath);
+    if (this.output.files[fullPath]) {
+      throw new Error(`Cannot overwrite file ${fullPath}`);
     }
 
     if (contents instanceof Buffer && options?.shouldFormat) {
-      throw new Error(`Cannot format Buffer contents for ${filename}`);
+      throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
     const formatter =
       this.formatter && options?.shouldFormat ? this.formatter : undefined;
-    this.output.files[filename] = { contents, formatter, options };
+    this.output.files[fullPath] = { contents, formatter, options };
+  }
+
+  resolvePath(relativePath: string): string {
+    return this.baseDirectory
+      ? path.join(this.baseDirectory, relativePath)
+      : relativePath;
+  }
+
+  setBaseDirectory(baseDirectory: string): void {
+    this.baseDirectory = baseDirectory;
   }
 
   addPostWriteCommand(

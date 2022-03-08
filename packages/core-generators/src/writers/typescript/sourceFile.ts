@@ -432,9 +432,10 @@ export class TypescriptSourceFile<
   ): BuilderAction {
     return {
       execute: async (builder) => {
+        const fullPath = builder.resolvePath(destination);
         const contents = this.renderToText(
           template,
-          destination,
+          fullPath,
           identifierReplacements
         );
         await builder.apply(
@@ -449,20 +450,21 @@ export class TypescriptSourceFile<
 
   renderToAction(
     templateFile: string,
-    destination: string,
+    destination?: string,
     identifierReplacements?: Record<string, string>
   ): BuilderAction {
     return {
       execute: async (builder) => {
+        const fullPath = builder.resolvePath(destination || templateFile);
         const template = await builder.readTemplate(templateFile);
         const contents = this.renderToText(
           template,
-          destination,
+          fullPath,
           identifierReplacements
         );
         await builder.apply(
           writeFormattedAction({
-            destination,
+            destination: destination || templateFile,
             contents,
           })
         );

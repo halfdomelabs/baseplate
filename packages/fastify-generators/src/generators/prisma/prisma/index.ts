@@ -37,6 +37,7 @@ export interface PrismaOutputProvider {
   getPrismaClient(): TypescriptCodeExpression;
   getPrismaModel(model: string): PrismaOutputModel;
   getPrismaModelExpression(model: string): TypescriptCodeExpression;
+  getModelTypeExpression(model: string): TypescriptCodeExpression;
 }
 
 export const prismaOutputProvider =
@@ -131,6 +132,11 @@ const PrismaGenerator = createGeneratorWithChildren({
               "import { prisma } from '@/src/services/prisma'"
             );
           },
+          getModelTypeExpression: (modelName) =>
+            TypescriptCodeUtils.createExpression(
+              modelName,
+              `import { ${modelName} } from '@prisma/client'`
+            ),
         },
       }),
       build: async (builder) => {
