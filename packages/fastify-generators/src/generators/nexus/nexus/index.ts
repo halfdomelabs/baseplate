@@ -15,6 +15,7 @@ import {
 import R from 'ramda';
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { requestContextProvider } from '@src/generators/core/request-context';
@@ -76,6 +77,7 @@ const NexusGenerator = createGeneratorWithChildren({
     tsUtils: tsUtilsProvider,
     fastifyOutput: fastifyOutputProvider,
     eslint: eslintProvider,
+    errorHandlerService: errorHandlerServiceProvider,
   },
   exports: {
     nexusSetup: nexusSetupProvider,
@@ -94,6 +96,7 @@ const NexusGenerator = createGeneratorWithChildren({
       tsUtils,
       fastifyOutput,
       eslint,
+      errorHandlerService,
     }
   ) {
     const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
@@ -148,6 +151,13 @@ const NexusGenerator = createGeneratorWithChildren({
       CONFIG: { type: 'code-expression' },
       ROOT_MODULE: { type: 'code-expression' },
       PLUGINS: { type: 'code-expression' },
+      LOG_ERROR: { type: 'code-expression' },
+      HTTP_ERROR: { type: 'code-expression' },
+    });
+
+    pluginFile.addCodeEntries({
+      LOG_ERROR: errorHandlerService.getErrorFunction(),
+      HTTP_ERROR: errorHandlerService.getHttpErrorExpression('http'),
     });
 
     pluginFile.addCodeExpression('CONFIG', configService.getConfigExpression());
@@ -265,7 +275,11 @@ const NexusGenerator = createGeneratorWithChildren({
         );
 
         builder.addPostWriteCommand('yarn nexusgen', {
-          onlyIfChanged: schemaFiles,
+          onlyIfChanged: [
+            ...schemaFiles,
+            'src/plugins/graphql/index.ts',
+            'src/utils/nexus.ts',
+          ],
         });
       },
     };

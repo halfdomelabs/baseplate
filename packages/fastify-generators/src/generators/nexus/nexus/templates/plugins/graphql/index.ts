@@ -3,7 +3,7 @@
 import path, { join } from 'path';
 import AltairFastify from 'altair-fastify-plugin';
 import fp from 'fastify-plugin';
-import { NoSchemaIntrospectionCustomRule } from 'graphql';
+import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql';
 import mercurius from 'mercurius';
 import { makeSchema } from 'nexus';
 import { createContext } from './context';
@@ -32,6 +32,40 @@ export const graphqlPlugin = fp(async (fastify) => {
     schema,
     validationRules: IS_DEVELOPMENT ? [] : [NoSchemaIntrospectionCustomRule],
     context: createContext,
+    errorFormatter: (execution, context) => {
+      function logAndAnnotateError(error: GraphQLError): GraphQLError {
+        const { originalError } = error;
+        if (originalError) {
+          LOG_ERROR(originalError);
+          if (originalError instanceof HTTP_ERROR)
+            return new GraphQLError(error.message, {
+              ...error,
+              extensions: {
+                code: originalError.code,
+                statusCode: originalError.statusCode,
+                extraData: originalError.extraData,
+                reqId: context.reply.request.id,
+              },
+            });
+        }
+        LOG_ERROR(error);
+        return new GraphQLError('Internal server error', {
+          ...error,
+          extensions: {
+            code: 'INTERNAL_SERVER_ERROR',
+            statusCode: 500,
+            reqId: context.reply.request.id,
+          },
+        });
+      }
+      return {
+        statusCode: 200,
+        response: {
+          ...execution,
+          errors: execution.errors?.map(logAndAnnotateError),
+        },
+      };
+    },
   });
 
   if (IS_DEVELOPMENT) {

@@ -4,7 +4,7 @@
 export class HttpError extends Error {
   constructor(
     message: string,
-    public errorCode?: string,
+    public code?: string,
     public extraData?: Record<string, unknown>,
     public statusCode: number = 500
   ) {
@@ -15,49 +15,49 @@ export class HttpError extends Error {
 export class BadRequestError extends HttpError {
   constructor(
     message: string,
-    errorCode = 'BAD_REQUEST',
+    code = 'BAD_REQUEST',
     extraData?: Record<string, unknown>
   ) {
-    super(message, errorCode, extraData, 400);
+    super(message, code, extraData, 400);
   }
 }
 
 export class UnauthorizedError extends HttpError {
   constructor(
     message: string,
-    errorCode = 'UNAUTHORIZED',
+    code = 'UNAUTHORIZED',
     extraData?: Record<string, unknown>
   ) {
-    super(message, errorCode, extraData, 401);
+    super(message, code, extraData, 401);
   }
 }
 
 export class ForbiddenError extends HttpError {
   constructor(
     message: string,
-    errorCode = 'FORBIDDEN',
+    code = 'FORBIDDEN',
     extraData?: Record<string, unknown>
   ) {
-    super(message, errorCode, extraData, 403);
+    super(message, code, extraData, 403);
   }
 }
 
 export class NotFoundError extends HttpError {
   constructor(
     message: string,
-    errorCode = 'NOT_FOUND',
+    code = 'NOT_FOUND',
     extraData?: Record<string, unknown>
   ) {
-    super(message, errorCode, extraData, 404);
+    super(message, code, extraData, 404);
   }
 }
 
 export class InternalServerError extends HttpError {
   constructor(
     message: string,
-    errorCode = 'INTERNAL_SERVER_ERROR',
+    code = 'INTERNAL_SERVER_ERROR',
     extraData?: Record<string, unknown>
   ) {
-    super(message, errorCode, extraData, 500);
+    super(message, code, extraData, 500);
   }
 }
