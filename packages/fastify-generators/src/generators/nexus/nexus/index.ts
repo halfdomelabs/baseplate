@@ -125,10 +125,10 @@ const NexusGenerator = createGeneratorWithChildren({
     });
 
     node.addPackages({
-      'altair-fastify-plugin': '^4.3.1',
-      graphql: '15',
-      mercurius: '^8.12.0',
-      nexus: '^1.1.0',
+      'altair-fastify-plugin': '^4.4.1',
+      graphql: '^16.3.0',
+      mercurius: '^9.3.4',
+      nexus: '^1.3.0',
     });
 
     rootModule.addModuleField(

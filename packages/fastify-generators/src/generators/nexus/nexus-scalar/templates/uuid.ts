@@ -15,11 +15,17 @@ export const UuidScalar = scalarType({
   asNexusMethod: 'uuid',
   description: 'UUID custom scalar type',
   sourceType: 'string',
-  parseValue(value: string) {
-    return parseUuid(value);
+  parseValue(value: unknown) {
+    if (value === 'string') {
+      return parseUuid(value);
+    }
+    throw new Error('Uuid field must be provided as a string');
   },
-  serialize(value: string) {
-    return parseUuid(value);
+  serialize(value: unknown) {
+    if (value === 'string') {
+      return parseUuid(value);
+    }
+    throw new Error('Uuid field must be provided as a string');
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.STRING) {
