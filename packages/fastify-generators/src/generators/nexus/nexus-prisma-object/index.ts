@@ -8,12 +8,10 @@ import * as yup from 'yup';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { prismaToServiceOutputDto } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
-import {
-  writeNexusDefinitionFromDtoScalarField,
-  writeNexusObjectTypeFieldFromDtoNestedField,
-} from '@src/writers/nexus-definition';
+import { writeNexusDefinitionFromDtoScalarField } from '@src/writers/nexus-definition';
 import { nexusSchemaProvider } from '../nexus';
 import { nexusTypesFileProvider } from '../nexus-types-file';
+import { writeObjectTypeRelationField } from './relationField';
 
 const descriptorSchema = yup.object({
   modelName: yup.string().required(),
@@ -46,7 +44,6 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
     { prismaOutput, nexusTypesFile, nexusSchema }
   ) {
     const model = prismaOutput.getPrismaModel(modelName);
-    const modelExpression = prismaOutput.getPrismaModelExpression(modelName);
 
     const objectTypeBlock = new TypescriptSourceBlock(
       {
@@ -86,26 +83,10 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
             writeNexusDefinitionFromDtoScalarField(field, writerOptions)
           );
         }
-        if (!model.idFields) {
-          throw new Error('ID field required for relationships');
-        }
-        const RESOLVER_TEMPLATE = `
-(INPUT) => MODEL.findUnique({ where: WHERE_CLAUSE }).RELATION_NAME()
-`.trim();
-        const resolver = TypescriptCodeUtils.formatExpression(
-          RESOLVER_TEMPLATE,
-          {
-            INPUT: `{${model.idFields.join(', ')}}`,
-            MODEL: modelExpression,
-            WHERE_CLAUSE: `{${model.idFields.join(', ')}}`,
-            RELATION_NAME: field.name,
-          }
-        );
-        return writeNexusObjectTypeFieldFromDtoNestedField(
-          field,
-          resolver,
-          writerOptions
-        );
+        return writeObjectTypeRelationField(field, model, {
+          prismaOutput,
+          writerOptions,
+        });
       });
     objectTypeBlock.addCodeBlock(
       'OBJECT_TYPE_DEFINITION',

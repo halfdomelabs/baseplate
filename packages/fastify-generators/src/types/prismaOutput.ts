@@ -18,6 +18,9 @@ export interface PrismaOutputScalarField extends PrismaOutputBaseField {
 export interface PrismaOutputRelationField extends PrismaOutputBaseField {
   type: 'relation';
   modelType: string;
+  relationName?: string;
+  fields?: string[];
+  references?: string[];
 }
 
 export type PrismaOutputField =

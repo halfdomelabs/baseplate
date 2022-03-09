@@ -134,6 +134,11 @@ const NexusGenerator = createGeneratorWithChildren({
       nexus: '^1.3.0',
     });
 
+    // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
+    node.addDevPackages({
+      '@types/ws': '^8.0.0',
+    });
+
     rootModule.addModuleField(
       'schemaTypes',
       new TypescriptCodeExpression(

@@ -137,9 +137,28 @@ export class PrismaModelBlockWriter {
             field.attributes?.some((attr) => attr.name === '@default') || false,
         };
         if (field.fieldType === 'relation') {
+          const relationAttribute = field.attributes?.find(
+            (attr) => attr.name === '@relation'
+          );
+          const {
+            name: relationName,
+            fields,
+            references,
+          }: Record<string, string | string[]> = relationAttribute
+            ? parseArguments(relationAttribute, ['name'])
+            : {};
+          if (Array.isArray(relationName)) {
+            throw new Error('Relation name must be string');
+          }
+          if (typeof fields === 'string' || typeof references === 'string') {
+            throw new Error('Fields and references must be arrays');
+          }
           return {
             type: 'relation',
             modelType: field.type.replace(/[[\]?]+$/g, ''),
+            relationName,
+            fields,
+            references,
             ...sharedFields,
           };
         }
