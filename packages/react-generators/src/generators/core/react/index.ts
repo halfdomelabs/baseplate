@@ -3,7 +3,7 @@ import {
   eslintProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
-  typescriptConfigProvider,
+  typescriptProvider,
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
 import {
@@ -15,7 +15,6 @@ import {
 import * as yup from 'yup';
 
 import { setupReactNode } from './node';
-import { setupReactTypescript } from './typescript';
 
 const descriptorSchema = yup.object({
   title: yup.string().default('React App'),
@@ -23,7 +22,7 @@ const descriptorSchema = yup.object({
 });
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
-  APP: { type: 'code-expression' },
+  APP: { type: 'code-expression', default: '<div />' },
 });
 
 export type ReactProvider = {
@@ -37,7 +36,7 @@ const ReactGenerator = createGeneratorWithChildren({
   descriptorSchema,
   dependencies: {
     node: nodeProvider,
-    typescriptConfig: typescriptConfigProvider,
+    typescript: typescriptProvider,
     nodeGitIgnore: nodeGitIgnoreProvider,
     eslint: eslintProvider.dependency().optional(),
   },
@@ -45,6 +44,11 @@ const ReactGenerator = createGeneratorWithChildren({
     react: reactProvider,
   },
   getDefaultChildGenerators: () => ({
+    typescript: {
+      defaultDescriptor: {
+        generator: '@baseplate/react/core/react-typescript',
+      },
+    },
     // app: {
     //   provider: 'react-app',
     //   defaultDescriptor: {
@@ -67,13 +71,9 @@ const ReactGenerator = createGeneratorWithChildren({
     //   },
     // },
   }),
-  createGenerator(
-    descriptor,
-    { node, typescriptConfig, nodeGitIgnore, eslint }
-  ) {
-    const indexFile = new TypescriptSourceFile(INDEX_FILE_CONFIG);
+  createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
+    const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
     setupReactNode(node);
-    setupReactTypescript(typescriptConfig);
 
     nodeGitIgnore.addExclusions([
       '# production',
