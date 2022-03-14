@@ -48,7 +48,7 @@ const EslintGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         // build eslint configuration
         const config = configMap.value();
-        const eslintConfig = generateConfig({});
+        const eslintConfig = generateConfig({ react: config.react });
 
         const airbnbPackage: Record<string, string> = config.react
           ? {

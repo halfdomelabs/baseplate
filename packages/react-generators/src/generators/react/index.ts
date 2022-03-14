@@ -23,7 +23,6 @@ const descriptorSchema = yup.object({
 });
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
-  HEADER: { type: 'code-block' },
   APP: { type: 'code-expression' },
 });
 
@@ -40,33 +39,33 @@ const ReactGenerator = createGeneratorWithChildren({
     node: nodeProvider,
     typescriptConfig: typescriptConfigProvider,
     nodeGitIgnore: nodeGitIgnoreProvider,
-    eslint: eslintProvider,
+    eslint: eslintProvider.dependency().optional(),
   },
   exports: {
     react: reactProvider,
   },
   getDefaultChildGenerators: () => ({
-    app: {
-      provider: 'react-app',
-      defaultDescriptor: {
-        generator: '@baseplate/react/react-app',
-        peerProvider: true,
-      },
-    },
-    router: {
-      provider: 'react-router',
-      defaultDescriptor: {
-        generator: '@baseplate/react/react-router',
-        peerProvider: true,
-      },
-    },
-    components: {
-      provider: 'react-components',
-      defaultDescriptor: {
-        generator: '@baseplate/react/react-components',
-        peerProvider: true,
-      },
-    },
+    // app: {
+    //   provider: 'react-app',
+    //   defaultDescriptor: {
+    //     generator: '@baseplate/react/react-app',
+    //     peerProvider: true,
+    //   },
+    // },
+    // router: {
+    //   provider: 'react-router',
+    //   defaultDescriptor: {
+    //     generator: '@baseplate/react/react-router',
+    //     peerProvider: true,
+    //   },
+    // },
+    // components: {
+    //   provider: 'react-components',
+    //   defaultDescriptor: {
+    //     generator: '@baseplate/react/react-components',
+    //     peerProvider: true,
+    //   },
+    // },
   }),
   createGenerator(
     descriptor,
@@ -88,7 +87,7 @@ const ReactGenerator = createGeneratorWithChildren({
       '.env.production.local',
     ]);
 
-    eslint.getConfig().set('react', true);
+    eslint?.getConfig().set('react', true);
 
     return {
       getProviders: () => ({
@@ -102,12 +101,7 @@ const ReactGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
-        const initialFiles = [
-          'public/favicon.ico',
-          'public/logo192.png',
-          'public/logo512.png',
-          'README.md',
-        ];
+        const initialFiles = ['public/favicon.ico', 'README.md'];
 
         await Promise.all(
           initialFiles.map((file) =>
@@ -119,10 +113,7 @@ const ReactGenerator = createGeneratorWithChildren({
           )
         );
 
-        const staticFiles = [
-          'src/reportWebVitals.ts',
-          'src/react-app-env.d.ts',
-        ];
+        const staticFiles = ['src/react-app-env.d.ts'];
 
         await Promise.all(
           staticFiles.map((file) =>
@@ -148,14 +139,6 @@ const ReactGenerator = createGeneratorWithChildren({
               title: descriptor.title,
               description: descriptor.description,
             },
-          })
-        );
-
-        await builder.apply(
-          writeTemplateAction({
-            template: 'public/manifest.json.ejs',
-            destination: 'public/manifest.json',
-            data: { title: descriptor.title },
           })
         );
       },
