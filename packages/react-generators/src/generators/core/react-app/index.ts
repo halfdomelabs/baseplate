@@ -18,7 +18,7 @@ const descriptorSchema = yup.object({
 const APP_FILE_CONFIG = createTypescriptTemplateConfig({
   COMPONENT_CODE: { type: 'code-block' },
   RENDER_WRAPPERS: { type: 'code-wrapper' },
-  RENDER_ROOT: { type: 'code-expression', default: 'null' },
+  RENDER_ROOT: { type: 'code-expression', default: '<div />' },
 });
 
 export type ReactAppProvider = {
@@ -58,14 +58,7 @@ const ReactAppGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         const destination = `${srcFolder}/app/App.tsx`;
-
-        if (appFile.getCodeBlocks('COMPONENT_CODE').length === 0) {
-          await builder.apply(
-            appFile.renderToAction('App.NoComponentCode.tsx', destination)
-          );
-        } else {
-          await builder.apply(appFile.renderToAction('App.tsx', destination));
-        }
+        await builder.apply(appFile.renderToAction('App.tsx', destination));
       },
     };
   },

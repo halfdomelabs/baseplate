@@ -23,6 +23,7 @@ const descriptorSchema = yup.object({
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   APP: { type: 'code-expression', default: '<div />' },
+  HEADER: { type: 'code-block' },
 });
 
 export type ReactProvider = {
@@ -49,24 +50,24 @@ const ReactGenerator = createGeneratorWithChildren({
         generator: '@baseplate/react/core/react-typescript',
       },
     },
-    // app: {
-    //   provider: 'react-app',
-    //   defaultDescriptor: {
-    //     generator: '@baseplate/react/react-app',
-    //     peerProvider: true,
-    //   },
-    // },
-    // router: {
-    //   provider: 'react-router',
-    //   defaultDescriptor: {
-    //     generator: '@baseplate/react/react-router',
-    //     peerProvider: true,
-    //   },
-    // },
+    app: {
+      provider: 'react-app',
+      defaultDescriptor: {
+        generator: '@baseplate/react/core/react-app',
+        peerProvider: true,
+      },
+    },
+    router: {
+      provider: 'react-router',
+      defaultDescriptor: {
+        generator: '@baseplate/react/core/react-router',
+        peerProvider: true,
+      },
+    },
     // components: {
     //   provider: 'react-components',
     //   defaultDescriptor: {
-    //     generator: '@baseplate/react/react-components',
+    //     generator: '@baseplate/react/core/react-components',
     //     peerProvider: true,
     //   },
     // },

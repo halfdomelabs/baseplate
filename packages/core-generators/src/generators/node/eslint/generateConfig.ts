@@ -12,7 +12,12 @@ export function generateConfig({
   react,
 }: EslintConfig): Linter.Config {
   const baseExtends = react
-    ? ['airbnb', 'airbnb-typescript', 'airbnb/hooks']
+    ? [
+        'airbnb',
+        'airbnb-typescript',
+        'airbnb/hooks',
+        'plugin:react/jsx-runtime',
+      ]
     : ['airbnb-base', 'airbnb-typescript/base'];
   return {
     extends: [
