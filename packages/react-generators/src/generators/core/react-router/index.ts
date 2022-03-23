@@ -2,6 +2,7 @@ import {
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
+  TypescriptCodeWrapper,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
@@ -83,6 +84,16 @@ const ReactRouterGenerator = createGeneratorWithChildren({
           );
         }
 
+        reactApp
+          .getAppFile()
+          .addCodeWrapper(
+            'RENDER_WRAPPERS',
+            new TypescriptCodeWrapper(
+              (contents) => `<BrowserRouter>${contents}</BrowserRouter>`,
+              "import {BrowserRouter} from 'react-router-dom'"
+            )
+          );
+
         const expression = TypescriptCodeUtils.mergeExpressions(renderedRoutes);
         reactApp.getAppFile().addCodeExpression(
           'RENDER_ROOT',
@@ -90,10 +101,8 @@ const ReactRouterGenerator = createGeneratorWithChildren({
             expression,
             TypescriptCodeUtils.createWrapper(
               (contents) =>
-                contents
-                  ? `<BrowserRouter><Routes>${contents}</Routes></BrowserRouter>`
-                  : `<BrowserRouter><Routes /></BrowserRouter>`,
-              "import {Routes, BrowserRouter} from 'react-router-dom'"
+                contents ? `<Routes>${contents}</Routes>` : `<Routes />`,
+              "import {Routes} from 'react-router-dom'"
             )
           )
         );

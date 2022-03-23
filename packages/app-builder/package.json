@@ -1,0 +1,36 @@
+{
+  "name": "@baseplate/app-builder",
+  "version": "0.0.1",
+  "description": "Full-stack app builder using Baseplate generators",
+  "main": "dist/index.js",
+  "repository": "https://github.com/kingston/baseplate/tree/master/packages/app-builder",
+  "author": "Kingston Tam",
+  "license": "UNLICENSED",
+  "private": true,
+  "devDependencies": {
+    "@baseplate/tools": "^0.0.1",
+    "@types/ramda": "^0.27.64",
+    "@types/yup": "^0.29.13",
+    "ts-node-dev": "^1.1.8",
+    "tsc-alias": "^1.5.0",
+    "tsconfig-paths": "^3.12.0",
+    "typescript": "^4.5.4"
+  },
+  "scripts": {
+    "start": "yarn build && node dist/index.js",
+    "dev": "ts-node-dev --rs --transpile-only -r tsconfig-paths/register --respawn src",
+    "build": "tsc && tsc-alias",
+    "watch": "tsc --watch",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
+  },
+  "dependencies": {
+    "@baseplate/core-generators": "^0.0.1",
+    "@baseplate/fastify-generators": "^0.0.1",
+    "@baseplate/react-generators": "^0.0.1",
+    "@baseplate/sync": "^0.0.1",
+    "commander": "^8.3.0",
+    "fs-extra": "^10.0.1",
+    "ramda": "^0.28.0",
+    "yup": "^0.32.11"
+  }
+}

@@ -114,7 +114,7 @@ const ReactGenerator = createGeneratorWithChildren({
           )
         );
 
-        const staticFiles = ['src/react-app-env.d.ts'];
+        const staticFiles = ['src/react-app-env.d.ts', 'src/setupTests.ts'];
 
         await Promise.all(
           staticFiles.map((file) =>
