@@ -6,6 +6,7 @@ async function runMain(): Promise<void> {
   program
     .command('generate <directory>')
     .description('Builds app from app.json in directory')
+    .option('--regen', 'Force regeneration of all files')
     .action(buildAppForDirectory);
 
   await program.parseAsync(process.argv);

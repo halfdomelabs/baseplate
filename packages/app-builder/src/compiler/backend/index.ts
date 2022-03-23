@@ -1,23 +1,35 @@
 // async function write backend
 
+import { AppConfig } from '../../schema';
 import { ProjectEntry } from '../../types/files';
-import type { AppConfig } from '../schema';
+import { ProjectEntryBuilder } from '../projectEntryBuilder';
+import { buildFastify } from './fastify';
+
+export function buildDocker(appConfig: AppConfig): unknown {
+  return {
+    name: 'docker',
+    generator: '@baseplate/core/docker/docker-compose',
+    postgres: {
+      port: appConfig.portBase + 432,
+    },
+  };
+}
 
 export function compileBackend(appConfig: AppConfig): ProjectEntry {
-  const projectJson = {
-    generator: '@baseplate/core/node/node',
-    name: appConfig.name,
-    description: `Backend for ${appConfig.name}`,
-  };
+  const projectBuilder = new ProjectEntryBuilder(
+    appConfig,
+    'backend',
+    'packages/backend'
+  );
 
-  return {
-    name: 'backend',
-    files: [
-      {
-        path: 'baseplate/project.json',
-        jsonContent: projectJson,
-      },
-    ],
-    rootDirectory: 'packages/backend',
-  };
+  projectBuilder.addDescriptor('project.json', {
+    generator: '@baseplate/core/node/node',
+    name: `${appConfig.name}-backend`,
+    description: `Backend for ${appConfig.name}`,
+    version: appConfig.version,
+    children: {
+      projects: [buildDocker(appConfig), buildFastify(projectBuilder)],
+    },
+  });
+  return projectBuilder.toProjectEntry();
 }

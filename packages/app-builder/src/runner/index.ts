@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import { compileApplication } from '../compiler';
-import { AppConfig, appConfigSchema } from '../compiler/schema';
+import { AppConfig, appConfigSchema } from '../schema';
 import { generateForDirectory } from '../sync';
 import { writeApplicationFiles } from '../writer';
 
@@ -17,7 +17,10 @@ async function loadAppJson(directory: string): Promise<AppConfig> {
   return appConfigSchema.validate(appJson);
 }
 
-export async function buildAppForDirectory(directory: string): Promise<void> {
+export async function buildAppForDirectory(
+  directory: string,
+  { regen }: { regen: boolean }
+): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load app.json file
   const appConfig = await loadAppJson(resolvedDirectory);
@@ -29,8 +32,10 @@ export async function buildAppForDirectory(directory: string): Promise<void> {
     projects
   );
 
+  const projectsToRegenerate = regen ? projects : modifiedProjects;
+
   // eslint-disable-next-line no-restricted-syntax
-  for (const project of modifiedProjects) {
+  for (const project of projectsToRegenerate) {
     // eslint-disable-next-line no-await-in-loop
     await generateForDirectory(resolvedDirectory, project);
   }

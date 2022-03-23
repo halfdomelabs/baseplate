@@ -39,4 +39,6 @@ export async function generateForDirectory(
 
   await engine.writeOutput(output, projectDirectory);
   console.log('Project successfully generated!');
+
+  // TODO: Strip out unused files
 }

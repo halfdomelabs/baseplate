@@ -1,6 +1,6 @@
+import { AppConfig } from '../schema';
 import { ProjectEntry } from '../types/files';
 import { compileBackend } from './backend';
-import { AppConfig } from './schema';
 
 export function compileApplication(appConfig: AppConfig): ProjectEntry[] {
   const projects: ProjectEntry[] = [];

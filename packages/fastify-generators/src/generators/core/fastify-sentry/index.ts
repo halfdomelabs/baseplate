@@ -78,6 +78,7 @@ const FastifySentryGenerator = createGeneratorWithChildren({
       SENTRY_DSN: {
         comment: 'Sentry DSN',
         value: TypescriptCodeUtils.createExpression('yup.string()'),
+        seedValue: '',
         exampleValue: '<SENTRY_DSN>',
       },
     });

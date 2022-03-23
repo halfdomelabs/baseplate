@@ -23,6 +23,7 @@ const descriptorSchema = yup.object({
 interface ConfigEntry {
   comment: string;
   value: TypescriptCodeExpression;
+  seedValue?: string;
   exampleValue?: string;
 }
 
@@ -128,12 +129,22 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
           configFile.renderToAction('config.ts', 'src/services/config.ts')
         );
 
-        const envFile = `${Object.entries(configEntriesObj)
+        const envExampleFile = `${Object.entries(configEntriesObj)
           .filter(([, { exampleValue }]) => exampleValue)
           .map(([key, { exampleValue }]) => `${key}=${exampleValue as string}`)
           .join('\n')}\n`;
 
-        builder.writeFile('.env.example', envFile);
+        const envFile = `${Object.entries(configEntriesObj)
+          .filter(
+            ([, { seedValue, exampleValue }]) => seedValue || exampleValue
+          )
+          .map(
+            ([key, { seedValue, exampleValue }]) =>
+              `${key}=${seedValue ?? exampleValue ?? ''}`
+          )
+          .join('\n')}\n`;
+
+        builder.writeFile('.env.example', envExampleFile);
         builder.writeFile('.env', envFile, {
           neverOverwrite: true,
         });

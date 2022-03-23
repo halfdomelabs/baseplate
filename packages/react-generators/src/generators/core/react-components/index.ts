@@ -70,12 +70,12 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
             'HEADER',
             TypescriptCodeUtils.createBlock("import './index.scss'")
           );
-        reactRouter.setNotFoundPageComponent(
-          TypescriptCodeUtils.createExpression(
-            'NotFoundPage',
-            `import NotFoundPage from '@/${srcFolder}/components/NotFoundPage'`
-          )
-        );
+        // reactRouter.setNotFoundPageComponent(
+        //   TypescriptCodeUtils.createExpression(
+        //     'NotFoundPage',
+        //     `import NotFoundPage from '@/${srcFolder}/components/NotFoundPage'`
+        //   )
+        // );
       },
     };
   },
