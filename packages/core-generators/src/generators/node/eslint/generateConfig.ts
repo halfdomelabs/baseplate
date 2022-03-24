@@ -19,6 +19,13 @@ export function generateConfig({
         'plugin:react/jsx-runtime',
       ]
     : ['airbnb-base', 'airbnb-typescript/base'];
+  const reactRules: Linter.RulesRecord = !react
+    ? {}
+    : {
+        'react/require-default-props': 'off',
+        'react/jsx-props-no-spreading': 'off',
+        'no-alert': 'off',
+      };
   return {
     extends: [
       ...baseExtends,
@@ -55,6 +62,7 @@ export function generateConfig({
         'error',
         { devDependencies: ['**/*.test.ts', 'src/tests/**/*.ts'] },
       ],
+      ...reactRules,
       ...extraRules,
     },
     env: {

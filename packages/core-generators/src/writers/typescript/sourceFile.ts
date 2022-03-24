@@ -115,11 +115,12 @@ export abstract class TypescriptSourceContent<
     entry: T[K] extends TypescriptCodeBlockConfig
       ? TypescriptCodeBlock | string
       : never
-  ): void {
+  ): this {
     this.checkNotGenerated();
     this.codeBlocks[name].push(
       typeof entry === 'string' ? new TypescriptCodeBlock(entry) : entry
     );
+    return this;
   }
 
   addCodeWrapper<K extends keyof T & string>(
@@ -127,9 +128,10 @@ export abstract class TypescriptSourceContent<
     entry: T[K] extends TypescriptCodeWrapperConfig
       ? TypescriptCodeWrapper
       : never
-  ): void {
+  ): this {
     this.checkNotGenerated();
     this.codeWrappers[name].push(entry);
+    return this;
   }
 
   addCodeExpression<K extends keyof T & string>(
@@ -137,14 +139,15 @@ export abstract class TypescriptSourceContent<
     entry: T[K] extends TypescriptCodeExpressionConfig
       ? TypescriptCodeExpression | string
       : never
-  ): void {
+  ): this {
     this.checkNotGenerated();
     this.codeExpressions[name].push(
       typeof entry === 'string' ? new TypescriptCodeExpression(entry) : entry
     );
+    return this;
   }
 
-  addCodeEntries(entries: Partial<InferCodeEntries<T>>): void {
+  addCodeEntries(entries: Partial<InferCodeEntries<T>>): this {
     this.checkNotGenerated();
     Object.keys(entries).forEach((key) => {
       switch (this.config[key].type) {
@@ -165,6 +168,7 @@ export abstract class TypescriptSourceContent<
           throw new Error(`Unknown config type ${this.config[key].type}`);
       }
     });
+    return this;
   }
 
   getCodeBlocks<K extends keyof T & string>(name: K): TypescriptCodeBlock[] {

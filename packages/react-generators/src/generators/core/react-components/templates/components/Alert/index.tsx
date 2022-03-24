@@ -1,7 +1,7 @@
 // @ts-nocheck
 import classNames from 'classnames';
 import AlertIcon from '../AlertIcon';
-import { Status, StatusType } from 'src/hooks/useStatus';
+import { Status, StatusType } from '../../hooks/useStatus';
 
 interface Props {
   type: StatusType;

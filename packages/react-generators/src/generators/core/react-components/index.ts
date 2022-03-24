@@ -1,8 +1,10 @@
-import { nodeProvider } from '@baseplate/core-generators';
+import {
+  copyTypescriptFileAction,
+  nodeProvider,
+} from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-  copyDirectoryAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { reactProvider } from '../react';
@@ -11,7 +13,33 @@ const descriptorSchema = yup.object({
   placeholder: yup.string(),
 });
 
-export type ReactComponentsProvider = unknown;
+interface ReactComponentEntry {
+  name: string;
+}
+
+const REACT_COMPONENTS: ReactComponentEntry[] = [
+  { name: 'Alert' },
+  { name: 'AlertIcon' },
+  { name: 'BackButton' },
+  { name: 'Button' },
+  { name: 'Card' },
+  { name: 'ErrorableLoader' },
+  { name: 'FormLabel' },
+  { name: 'LinkButton' },
+  { name: 'ListGroup' },
+  { name: 'NotFoundCard' },
+  { name: 'SelectInput' },
+  { name: 'Sidebar' },
+  { name: 'Spinner' },
+  { name: 'Table' },
+  { name: 'TextInput' },
+  { name: 'Toast' },
+  { name: 'UnauthenticatedLayout' },
+];
+
+export interface ReactComponentsProvider {
+  getComponentsFolder(): string;
+}
 
 export const reactComponentsProvider =
   createProviderType<ReactComponentsProvider>('react-components');
@@ -37,20 +65,26 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     });
     return {
       getProviders: () => ({
-        reactComponents: {},
+        reactComponents: {
+          getComponentsFolder: () => `${srcFolder}/components`,
+        },
       }),
       build: async (builder) => {
         builder.setBaseDirectory(srcFolder);
-        await builder.apply(
-          copyDirectoryAction({
-            source: 'components',
-            destination: 'components',
-          })
+        await Promise.all(
+          REACT_COMPONENTS.map(async ({ name }) =>
+            builder.apply(
+              copyTypescriptFileAction({
+                source: `components/${name}/index.tsx`,
+                destination: `components/${name}/index.tsx`,
+              })
+            )
+          )
         );
         await builder.apply(
-          copyDirectoryAction({
-            source: 'hooks',
-            destination: 'hooks',
+          copyTypescriptFileAction({
+            source: 'hooks/useStatus.ts',
+            destination: 'hooks/useStatus.ts',
           })
         );
       },

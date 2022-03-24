@@ -1,7 +1,6 @@
 // @ts-nocheck
 import Alert from '../Alert';
 import Spinner from '../Spinner';
-import { formatError } from 'src/services/error-formatter';
 
 interface Props {
   className?: string;
@@ -10,7 +9,7 @@ interface Props {
 
 function getErrorString(error: Error | string): string {
   if (error instanceof Error) {
-    return formatError(error, 'Sorry, we could not load the data.');
+    return 'Sorry, we could not load the data.';
   }
   return error;
 }
