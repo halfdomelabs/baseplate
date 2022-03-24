@@ -1,6 +1,7 @@
 import path from 'path';
 import R from 'ramda';
 import { CodeBlockWriter, SourceFile } from 'ts-morph';
+import { ImportMap, ImportMapper } from '../../providers';
 import { sortByImportOrder } from './importOrder';
 
 export interface NamedImportEntry {
@@ -32,6 +33,7 @@ export interface PathMapEntry {
 }
 
 interface ResolveModuleOptions {
+  importMappers?: ImportMapper[];
   pathMapEntries?: PathMapEntry[];
 }
 
@@ -229,14 +231,49 @@ function writeImportDeclarationsForModule(
   }
 }
 
+function buildImportMap(importMappers: ImportMapper[]): ImportMap {
+  // TODO: Throw error if merge conflict
+  return R.mergeAll(importMappers.map((m) => m.getImportMap()));
+}
+
+function resolveImportFromImportMap(
+  importDeclaration: ImportDeclarationEntry,
+  map: ImportMap
+): ImportDeclarationEntry {
+  const { moduleSpecifier } = importDeclaration;
+  const mappedSpecifierEntry = map[moduleSpecifier];
+  if (!mappedSpecifierEntry) {
+    return importDeclaration;
+  }
+  const { path: specifierPath, allowedImports } = mappedSpecifierEntry;
+  const namedImports = importDeclaration.namedImports?.map((i) => i.name) || [];
+  const missingImport = namedImports.find((i) => !allowedImports.includes(i));
+  if (missingImport) {
+    throw new Error(`${missingImport} is not exported from ${moduleSpecifier}`);
+  }
+  if (importDeclaration.defaultImport && !allowedImports.includes('default')) {
+    throw new Error(`${moduleSpecifier} has no default export`);
+  }
+  return {
+    ...importDeclaration,
+    moduleSpecifier: specifierPath,
+  };
+}
+
 export function writeImportDeclarations(
   writer: CodeBlockWriter,
   imports: ImportDeclarationEntry[],
   fileDirectory: string,
   options?: ResolveModuleOptions
 ): void {
+  // map out imports
+  const importMap = buildImportMap(options?.importMappers || []);
+  const mappedImports = imports.map((importDeclaration) =>
+    resolveImportFromImportMap(importDeclaration, importMap)
+  );
+
   const resolvedImports = R.flatten(
-    imports.map((i) =>
+    mappedImports.map((i) =>
       importDeclarationToImportEntry(i, fileDirectory, options)
     )
   );

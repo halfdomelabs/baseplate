@@ -16,17 +16,16 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
     reactComponents: reactComponentsProvider,
   },
   createGenerator(descriptor, { reactRouter, reactComponents }) {
-    const componentsFolder = reactComponents.getComponentsFolder();
     reactRouter.setMatchAllElement(
       TypescriptCodeUtils.createExpression(
         `<Route element={<UnauthenticatedLayout />}>
         <Route path="*" element={<NotFoundCard />} />
       </Route>`,
         [
-          `import UnauthenticatedLayout from '@/${componentsFolder}/UnauthenticatedLayout';`,
-          `import NotFoundCard from '@/${componentsFolder}/NotFoundCard';`,
+          `import {NotFoundCard, UnauthenticatedLayout} from '@components';`,
           `import { Route } from 'react-router-dom';`,
-        ]
+        ],
+        { importMappers: [reactComponents] }
       )
     );
     return {

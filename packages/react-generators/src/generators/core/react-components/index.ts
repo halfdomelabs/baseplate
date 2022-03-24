@@ -1,10 +1,12 @@
 import {
   copyTypescriptFileAction,
+  ImportMapper,
   nodeProvider,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
+  writeFormattedAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { reactProvider } from '../react';
@@ -37,7 +39,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'UnauthenticatedLayout' },
 ];
 
-export interface ReactComponentsProvider {
+export interface ReactComponentsProvider extends ImportMapper {
   getComponentsFolder(): string;
 }
 
@@ -67,6 +69,12 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         reactComponents: {
           getComponentsFolder: () => `${srcFolder}/components`,
+          getImportMap: () => ({
+            '@components': {
+              path: `@/${srcFolder}/components`,
+              allowedImports: REACT_COMPONENTS.map((entry) => entry.name),
+            },
+          }),
         },
       }),
       build: async (builder) => {
@@ -85,6 +93,18 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
           copyTypescriptFileAction({
             source: 'hooks/useStatus.ts',
             destination: 'hooks/useStatus.ts',
+          })
+        );
+
+        // build component index
+        const componentNames = REACT_COMPONENTS.map((entry) => entry.name);
+        const componentIndex = componentNames
+          .map((name) => `export { default as ${name} } from './${name}';`)
+          .join('\n');
+        await builder.apply(
+          writeFormattedAction({
+            contents: componentIndex,
+            destination: 'components/index.ts',
           })
         );
       },

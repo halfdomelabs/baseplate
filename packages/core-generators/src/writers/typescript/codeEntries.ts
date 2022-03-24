@@ -5,6 +5,7 @@
 // specifies a block of code
 
 import R from 'ramda';
+import { ImportMapper } from '../../providers';
 import { notEmpty } from '../../utils/array';
 import { ImportDeclarationEntry } from './imports';
 
@@ -12,6 +13,7 @@ export interface TypescriptCodeEntryOptions {
   imports?: ImportDeclarationEntry[];
   importText?: string[];
   headerBlocks?: TypescriptCodeBlock[];
+  importMappers?: ImportMapper[];
 }
 
 export abstract class TypescriptCodeEntry {
@@ -55,6 +57,9 @@ export function mergeCodeEntryOptions(
     importText: R.flatten(options.map((e) => e.importText).filter(notEmpty)),
     headerBlocks: R.flatten(
       options.map((e) => e.headerBlocks).filter(notEmpty)
+    ),
+    importMappers: R.flatten(
+      R.uniq(options.map((e) => e.importMappers).filter(notEmpty))
     ),
   };
 }

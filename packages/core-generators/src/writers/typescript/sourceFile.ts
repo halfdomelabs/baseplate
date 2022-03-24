@@ -385,6 +385,10 @@ export class TypescriptSourceFile<
       ...R.flatten(entries.map((e) => e?.options?.imports).filter(notEmpty)),
     ];
 
+    const importMappers = providedEntries.flatMap(
+      (e) => e?.options?.importMappers || []
+    );
+
     file.getImportDeclarations().forEach((i) => i.remove());
 
     if (headerBlocks.length) {
@@ -399,6 +403,7 @@ export class TypescriptSourceFile<
     file.insertText(0, (writer) => {
       writeImportDeclarations(writer, allImports, path.dirname(destination), {
         pathMapEntries: this.sourceFileOptions.pathMappings,
+        importMappers,
       });
       writer.writeLine('');
     });
