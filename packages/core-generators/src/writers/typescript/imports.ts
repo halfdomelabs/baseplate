@@ -231,7 +231,7 @@ function writeImportDeclarationsForModule(
   }
 }
 
-function buildImportMap(importMappers: ImportMapper[]): ImportMap {
+export function buildImportMap(importMappers: ImportMapper[]): ImportMap {
   // TODO: Throw error if merge conflict
   return R.mergeAll(importMappers.map((m) => m.getImportMap()));
 }
@@ -241,9 +241,12 @@ function resolveImportFromImportMap(
   map: ImportMap
 ): ImportDeclarationEntry {
   const { moduleSpecifier } = importDeclaration;
+  if (!moduleSpecifier.startsWith('%')) {
+    return importDeclaration;
+  }
   const mappedSpecifierEntry = map[moduleSpecifier];
   if (!mappedSpecifierEntry) {
-    return importDeclaration;
+    throw new Error(`Unknown import map ${moduleSpecifier}`);
   }
   const { path: specifierPath, allowedImports } = mappedSpecifierEntry;
   const namedImports = importDeclaration.namedImports?.map((i) => i.name) || [];

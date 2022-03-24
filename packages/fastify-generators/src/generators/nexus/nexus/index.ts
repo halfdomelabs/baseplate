@@ -152,20 +152,14 @@ const NexusGenerator = createGeneratorWithChildren({
       CONTEXT_CREATOR: { type: 'code-expression' },
     });
 
-    const pluginFile = typescript.createTemplate({
-      CONFIG: { type: 'code-expression' },
-      ROOT_MODULE: { type: 'code-expression' },
-      PLUGINS: { type: 'code-expression' },
-      LOG_ERROR: { type: 'code-expression' },
-      HTTP_ERROR: { type: 'code-expression' },
-    });
+    const pluginFile = typescript.createTemplate(
+      {
+        ROOT_MODULE: { type: 'code-expression' },
+        PLUGINS: { type: 'code-expression' },
+      },
+      { importMappers: [errorHandlerService, configService] }
+    );
 
-    pluginFile.addCodeEntries({
-      LOG_ERROR: errorHandlerService.getErrorFunction(),
-      HTTP_ERROR: errorHandlerService.getHttpErrorExpression('http'),
-    });
-
-    pluginFile.addCodeExpression('CONFIG', configService.getConfigExpression());
     pluginFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
 
     fastifyServer.registerPlugin({

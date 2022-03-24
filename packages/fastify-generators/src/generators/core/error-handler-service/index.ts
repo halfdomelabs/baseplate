@@ -1,6 +1,7 @@
 import {
   copyTypescriptFileAction,
   createTypescriptTemplateConfig,
+  ImportMapper,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -30,7 +31,7 @@ const ERROR_MAP = {
   notFound: 'NotFoundError',
 };
 
-export interface ErrorHandlerServiceProvider {
+export interface ErrorHandlerServiceProvider extends ImportMapper {
   getHandlerFile(): TypescriptSourceFile<typeof errorHandlerFileConfig>;
   getHttpErrorsImport(): string;
   getErrorFunction(): TypescriptCodeExpression;
@@ -82,6 +83,16 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
               ERROR_MAP[error],
               `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`
             ),
+          getImportMap: () => ({
+            '%http-errors': {
+              path: `@/src/utils/http-errors`,
+              allowedImports: Object.values(ERROR_MAP),
+            },
+            '%error-logger': {
+              path: '@/src/services/error-logger',
+              allowedImports: ['logError'],
+            },
+          }),
         },
       }),
       build: async (builder) => {

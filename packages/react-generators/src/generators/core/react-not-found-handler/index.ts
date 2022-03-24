@@ -22,7 +22,7 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
         <Route path="*" element={<NotFoundCard />} />
       </Route>`,
         [
-          `import {NotFoundCard, UnauthenticatedLayout} from '@components';`,
+          `import {NotFoundCard, UnauthenticatedLayout} from '%components';`,
           `import { Route } from 'react-router-dom';`,
         ],
         { importMappers: [reactComponents] }

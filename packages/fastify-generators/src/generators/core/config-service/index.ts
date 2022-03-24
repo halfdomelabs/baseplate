@@ -1,4 +1,5 @@
 import {
+  ImportMapper,
   mergeCodeEntryOptions,
   nodeGitIgnoreProvider,
   nodeProvider,
@@ -27,7 +28,7 @@ interface ConfigEntry {
   exampleValue?: string;
 }
 
-export interface ConfigServiceProvider {
+export interface ConfigServiceProvider extends ImportMapper {
   getConfigEntries(): NonOverwriteableMap<Record<string, ConfigEntry>>;
   addAdditionalVerification(codeBlock: TypescriptCodeBlock): void;
   getConfigExpression(): TypescriptCodeExpression;
@@ -90,6 +91,12 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
               'config',
               "import { config } from '@/src/services/config'"
             ),
+          getImportMap: () => ({
+            '%config': {
+              path: '@/src/services/config',
+              allowedImports: ['config'],
+            },
+          }),
         },
       }),
       build: async (builder) => {

@@ -6,10 +6,15 @@ import {
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { CompilerOptions, ts } from 'ts-morph';
+import {
+  copyTypescriptFileAction,
+  CopyTypescriptFileOptions,
+} from '../../../actions';
 import { PathMapEntry } from '../../../writers/typescript/imports';
 import {
   TypescriptTemplateConfig,
   TypescriptSourceFile,
+  TypescriptSourceFileOptions,
 } from '../../../writers/typescript/sourceFile';
 import { nodeProvider } from '../node';
 
@@ -32,8 +37,12 @@ export interface TypescriptProvider {
   createTemplate<
     Config extends TypescriptTemplateConfig<Record<string, unknown>>
   >(
-    config: Config
+    config: Config,
+    options?: Omit<TypescriptSourceFileOptions, 'pathMappings'>
   ): TypescriptSourceFile<Config>;
+  createCopyAction(
+    options: Omit<CopyTypescriptFileOptions, 'pathMappings'>
+  ): ReturnType<typeof copyTypescriptFileAction>;
 }
 
 export const typescriptProvider =
@@ -121,8 +130,14 @@ const TypescriptGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         typescript: {
-          createTemplate: (fileConfig) =>
+          createTemplate: (fileConfig, options) =>
             new TypescriptSourceFile(fileConfig, {
+              ...options,
+              pathMappings: getPathEntries(),
+            }),
+          createCopyAction: (options) =>
+            copyTypescriptFileAction({
+              ...options,
               pathMappings: getPathEntries(),
             }),
         } as TypescriptProvider,

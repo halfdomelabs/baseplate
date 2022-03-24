@@ -70,7 +70,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         reactComponents: {
           getComponentsFolder: () => `${srcFolder}/components`,
           getImportMap: () => ({
-            '@components': {
+            '%components': {
               path: `@/${srcFolder}/components`,
               allowedImports: REACT_COMPONENTS.map((entry) => entry.name),
             },

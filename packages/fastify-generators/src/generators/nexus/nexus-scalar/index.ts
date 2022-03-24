@@ -1,10 +1,11 @@
 import {
-  copyTypescriptFileAction,
   nodeProvider,
   TypescriptCodeExpression,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import { nexusSetupProvider } from '../nexus';
@@ -67,8 +68,13 @@ const NexusScalarGenerator = createGeneratorWithChildren({
     appModule: appModuleProvider,
     nexusSetup: nexusSetupProvider,
     node: nodeProvider,
+    errorHandlerService: errorHandlerServiceProvider,
+    typescript: typescriptProvider,
   },
-  createGenerator({ type }, { appModule, nexusSetup, node }) {
+  createGenerator(
+    { type },
+    { appModule, nexusSetup, node, errorHandlerService, typescript }
+  ) {
     const scalarConfig = scalarConfigMap[type];
     const scalarPath = `${appModule.getModuleFolder()}/scalars/${
       scalarConfig.templatePath
@@ -103,9 +109,10 @@ const NexusScalarGenerator = createGeneratorWithChildren({
     return {
       build: async (builder) => {
         await builder.apply(
-          copyTypescriptFileAction({
+          typescript.createCopyAction({
             source: scalarConfig.templatePath,
             destination: scalarPath,
+            importMappers: [errorHandlerService],
           })
         );
       },

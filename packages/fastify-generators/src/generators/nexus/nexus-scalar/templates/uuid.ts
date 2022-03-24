@@ -2,6 +2,7 @@
 import { Kind } from 'graphql';
 import { scalarType } from 'nexus';
 import { validate } from 'uuid';
+import { BadRequestError } from '%http-errors';
 
 function parseUuid(value: string): string {
   if (!validate(value)) {
@@ -16,16 +17,16 @@ export const UuidScalar = scalarType({
   description: 'UUID custom scalar type',
   sourceType: 'string',
   parseValue(value: unknown) {
-    if (value === 'string') {
+    if (typeof value === 'string') {
       return parseUuid(value);
     }
-    throw new Error('Uuid field must be provided as a string');
+    throw new BadRequestError('Uuid field must be provided as a string');
   },
   serialize(value: unknown) {
-    if (value === 'string') {
+    if (typeof value === 'string') {
       return parseUuid(value);
     }
-    throw new Error('Uuid field must be provided as a string');
+    throw new BadRequestError('Uuid field must be provided as a string');
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.STRING) {

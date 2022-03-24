@@ -7,8 +7,11 @@ import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql';
 import mercurius from 'mercurius';
 import { makeSchema } from 'nexus';
 import { createContext } from './context';
+import { config } from '%config';
+import { logError } from '%error-logger';
+import { HttpError } from '%http-errors';
 
-const IS_DEVELOPMENT = CONFIG.APP_ENVIRONMENT === 'development';
+const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
 
 const schema = makeSchema({
   types: ROOT_MODULE.schemaTypes,
@@ -32,12 +35,19 @@ export const graphqlPlugin = fp(async (fastify) => {
     schema,
     validationRules: IS_DEVELOPMENT ? [] : [NoSchemaIntrospectionCustomRule],
     context: createContext,
-    errorFormatter: (execution, context) => {
+    errorFormatter: (result, context) => {
+      // if hooks throw an error, pass through without formatting to default error handler
+      if (!result?.errors) {
+        return {
+          statusCode: 500,
+          response: result,
+        };
+      }
       function logAndAnnotateError(error: GraphQLError): GraphQLError {
         const { originalError } = error;
         if (originalError) {
-          LOG_ERROR(originalError);
-          if (originalError instanceof HTTP_ERROR)
+          logError(originalError);
+          if (originalError instanceof HttpError)
             return new GraphQLError(error.message, {
               ...error,
               extensions: {
@@ -47,22 +57,27 @@ export const graphqlPlugin = fp(async (fastify) => {
                 reqId: context.reply.request.id,
               },
             });
+          // Rewrite error message to hide sensitive details outside of development
+          const errorMessage = IS_DEVELOPMENT
+            ? error.message
+            : 'Internal server error';
+          return new GraphQLError(errorMessage, {
+            ...error,
+            extensions: {
+              code: 'INTERNAL_SERVER_ERROR',
+              statusCode: 500,
+              reqId: context.reply.request.id,
+            },
+          });
         }
-        LOG_ERROR(error);
-        return new GraphQLError('Internal server error', {
-          ...error,
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR',
-            statusCode: 500,
-            reqId: context.reply.request.id,
-          },
-        });
+        // if it's a parser error, return direct
+        return error;
       }
       return {
         statusCode: 200,
         response: {
-          ...execution,
-          errors: execution.errors?.map(logAndAnnotateError),
+          ...result,
+          errors: result.errors?.map(logAndAnnotateError),
         },
       };
     },

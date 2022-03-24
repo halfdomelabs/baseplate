@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { Kind } from 'graphql';
 import { scalarType } from 'nexus';
+import { BadRequestError } from '%http-errors';
 
 export const DateTimeScalar = scalarType({
   name: 'DateTime',
@@ -11,7 +12,7 @@ export const DateTimeScalar = scalarType({
     if (value === 'string') {
       return new Date(value);
     }
-    throw new Error('DateTime field must be provided as a string');
+    throw new BadRequestError('DateTime field must be provided as a string');
   },
   serialize(value: unknown) {
     if (value instanceof Date) {
@@ -20,7 +21,7 @@ export const DateTimeScalar = scalarType({
     if (typeof value === 'string') {
       return new Date(value).toISOString();
     }
-    throw new Error(
+    throw new BadRequestError(
       'DateTime field must be provided as a Date object or string'
     );
   },

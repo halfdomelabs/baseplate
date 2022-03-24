@@ -13,34 +13,31 @@ import { nexusTypesFileProvider } from '../nexus-types-file';
 const descriptorSchema = yup.object({
   name: yup.string().required(),
   modelName: yup.string().required(),
-  crudServiceRef: yup.string().required(),
 });
 
-const NexusPrismaCrudFileGenerator = createGeneratorWithChildren({
+const NexusPrismaQueryFileGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: (descriptor) => {
     const sharedValues = {
-      generator: '@baseplate/fastify/nexus/nexus-prisma-crud-mutation',
       modelName: descriptor.modelName,
-      crudServiceRef: descriptor.crudServiceRef,
     };
     return {
-      create: {
+      objectType: {
         defaultDescriptor: {
           ...sharedValues,
-          type: 'create',
+          generator: '@baseplate/fastify/nexus/nexus-prisma-object',
         },
       },
-      update: {
+      findQuery: {
         defaultDescriptor: {
           ...sharedValues,
-          type: 'update',
+          generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
         },
       },
-      delete: {
+      listQuery: {
         defaultDescriptor: {
           ...sharedValues,
-          type: 'delete',
+          generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
         },
       },
     };
@@ -79,13 +76,9 @@ const NexusPrismaCrudFileGenerator = createGeneratorWithChildren({
           },
         },
       }),
-      build: async (builder) => {
-        await builder.apply(
-          typesFile.renderToActionFromText('TYPES', typesPath)
-        );
-      },
+      build: async () => {},
     };
   },
 });
 
-export default NexusPrismaCrudFileGenerator;
+export default NexusPrismaQueryFileGenerator;

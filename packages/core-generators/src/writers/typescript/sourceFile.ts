@@ -12,6 +12,7 @@ import {
   SourceFile,
   SyntaxKind,
 } from 'ts-morph';
+import { ImportMapper } from '../../providers';
 import { notEmpty } from '../../utils/array';
 import {
   TypescriptCodeUtils,
@@ -328,7 +329,8 @@ export class TypescriptSourceBlock<
   }
 }
 
-interface TypescriptSourceFileOptions {
+export interface TypescriptSourceFileOptions {
+  importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
 }
 
@@ -385,9 +387,10 @@ export class TypescriptSourceFile<
       ...R.flatten(entries.map((e) => e?.options?.imports).filter(notEmpty)),
     ];
 
-    const importMappers = providedEntries.flatMap(
-      (e) => e?.options?.importMappers || []
-    );
+    const importMappers = [
+      ...providedEntries.flatMap((e) => e?.options?.importMappers || []),
+      ...(this.sourceFileOptions.importMappers || []),
+    ];
 
     file.getImportDeclarations().forEach((i) => i.remove());
 
