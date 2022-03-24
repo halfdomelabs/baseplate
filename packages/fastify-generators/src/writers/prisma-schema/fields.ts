@@ -56,6 +56,7 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
     prismaType: 'DateTime',
     optionsSchema: {
       defaultToNow: yup.boolean(),
+      updatedAt: yup.boolean(),
     },
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [
@@ -65,6 +66,11 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
         attributes.push({
           name: '@default',
           args: ['now()'],
+        });
+      }
+      if (config?.updatedAt) {
+        attributes.push({
+          name: '@updatedAt',
         });
       }
       return attributes;

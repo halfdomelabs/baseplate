@@ -23,6 +23,7 @@ const descriptorSchema = yup.object({
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   APP: { type: 'code-expression', default: '<div />' },
+  IMPORTS: { type: 'code-block' },
   HEADER: { type: 'code-block' },
 });
 
