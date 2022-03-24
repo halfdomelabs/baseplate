@@ -65,13 +65,20 @@ const ReactGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
-    // components: {
-    //   provider: 'react-components',
-    //   defaultDescriptor: {
-    //     generator: '@baseplate/react/core/react-components',
-    //     peerProvider: true,
-    //   },
-    // },
+    logger: {
+      provider: 'react-logger',
+      defaultDescriptor: {
+        generator: '@baseplate/react/core/react-logger',
+        peerProvider: true,
+      },
+    },
+    components: {
+      provider: 'react-components',
+      defaultDescriptor: {
+        generator: '@baseplate/react/core/react-components',
+        peerProvider: true,
+      },
+    },
   }),
   createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
     const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);

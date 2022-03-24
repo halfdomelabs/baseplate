@@ -1,13 +1,11 @@
-import { nodeProvider, TypescriptCodeUtils } from '@baseplate/core-generators';
+import { nodeProvider } from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-  copyFileAction,
   copyDirectoryAction,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { reactProvider } from '../react';
-import { reactRouterProvider } from '../react-router';
 
 const descriptorSchema = yup.object({
   placeholder: yup.string(),
@@ -23,59 +21,38 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
   dependencies: {
     react: reactProvider,
     node: nodeProvider,
-    reactRouter: reactRouterProvider,
   },
   exports: {
     reactComponents: reactComponentsProvider,
   },
-  createGenerator(descriptor, { react, node, reactRouter }) {
+  createGenerator(descriptor, { react, node }) {
     const srcFolder = react.getSrcFolder();
     node.addPackages({
-      bulma: '^0.9.1',
-      'styled-components': '^5.2.1',
-      classnames: '^2.2.6',
-      formik: '^2.2.6',
-    });
-    node.addDevPackages({
-      '@types/styled-components': '^5.1.7',
-      'node-sass': '^4.14.1',
-      '@types/classnames': '^2.2.11',
+      '@headlessui/react': '^1.5.0',
+      '@hookform/resolvers': '^2.8.8',
+      classnames: '^2.3.1',
+      'react-hook-form': '^7.28.0',
+      'react-hot-toast': '^2.2.0',
+      'react-icons': '^4.3.1',
     });
     return {
       getProviders: () => ({
         reactComponents: {},
       }),
       build: async (builder) => {
-        await builder.apply(
-          copyFileAction({
-            source: 'index.scss',
-            destination: 'src/index.scss',
-          })
-        );
+        builder.setBaseDirectory(srcFolder);
         await builder.apply(
           copyDirectoryAction({
             source: 'components',
-            destination: 'src/components',
+            destination: 'components',
           })
         );
         await builder.apply(
           copyDirectoryAction({
             source: 'hooks',
-            destination: 'src/hooks',
+            destination: 'hooks',
           })
         );
-        react
-          .getIndexFile()
-          .addCodeBlock(
-            'HEADER',
-            TypescriptCodeUtils.createBlock("import './index.scss'")
-          );
-        // reactRouter.setNotFoundPageComponent(
-        //   TypescriptCodeUtils.createExpression(
-        //     'NotFoundPage',
-        //     `import NotFoundPage from '@/${srcFolder}/components/NotFoundPage'`
-        //   )
-        // );
       },
     };
   },
