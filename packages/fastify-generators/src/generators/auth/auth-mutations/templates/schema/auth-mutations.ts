@@ -1,29 +1,64 @@
 // @ts-nocheck
 import { objectType } from 'nexus';
+import { authService } from '%auth-service';
+import { InvalidTokenError } from '%jwt-service';
+import {
+  clearRefreshTokenFromCookie,
+  getRefreshTokenFromCookie,
+  setRefreshTokenIntoCookie,
+} from '../utils/refresh-tokens';
+import { createStandardMutation } from '%nexus/utils';
 
 export const authPayloadObjectType = objectType({
   name: 'AuthPayload',
   definition(t) {
     t.nonNull.string('userId');
-    t.nonNull.string('refreshToken');
+    t.string('refreshToken');
     t.nonNull.string('accessToken');
   },
 });
 
-export const refreshTokenMutation = STANDARD_MUTATION({
+export const refreshTokenMutation = createStandardMutation({
   name: 'refreshToken',
   inputDefinition: (t) => {
     t.nonNull.string('userId');
-    t.nonNull.string('refreshToken');
+    t.string('refreshToken');
   },
   payloadDefinition: (t) => {
     t.nonNull.field('authPayload', { type: 'AuthPayload' });
   },
-  resolve: async (root, { input }) => {
-    const payload = await AUTH_SERVICE.refreshToken(
-      input.userId,
-      input.refreshToken
-    );
-    return { authPayload: payload };
+  resolve: async (root, { input }, context) => {
+    const refreshToken =
+      input.refreshToken || getRefreshTokenFromCookie(context);
+    if (!refreshToken) {
+      throw new InvalidTokenError('Missing refresh token');
+    }
+    const { userId } = input;
+
+    const { accessToken, refreshToken: newRefreshToken } =
+      await authService.refreshToken(userId, refreshToken);
+
+    if (!input.refreshToken) {
+      setRefreshTokenIntoCookie(context, newRefreshToken);
+    }
+
+    return {
+      authPayload: {
+        userId,
+        accessToken,
+        refreshToken: input.refreshToken ? newRefreshToken : undefined,
+      },
+    };
+  },
+});
+
+export const logOutMutation = createStandardMutation({
+  name: 'logOut',
+  payloadDefinition: (t) => {
+    t.nonNull.boolean('success');
+  },
+  resolve: async (root, args, context) => {
+    clearRefreshTokenFromCookie(context);
+    return { success: true };
   },
 });

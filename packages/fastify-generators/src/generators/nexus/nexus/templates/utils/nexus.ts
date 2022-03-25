@@ -19,7 +19,7 @@ type CapitalizedPayload<FieldName extends string> =
 
 interface CreateMutationOptions<FieldName extends string> {
   name: FieldName;
-  inputDefinition: (
+  inputDefinition?: (
     t: InputDefinitionBlock<CapitalizedInput<FieldName>>
   ) => void;
   payloadDefinition: (
@@ -44,11 +44,13 @@ export function createStandardMutation<FieldName extends string>({
   const inputName = `${CAPITALIZE_STRING(
     name
   )}Input` as CapitalizedInput<FieldName>;
-  const inputType = inputObjectType({
-    name: inputName,
-    description: `Input type for ${name} mutation`,
-    definition: inputDefinition,
-  });
+  const inputType =
+    inputDefinition &&
+    inputObjectType({
+      name: inputName,
+      description: `Input type for ${name} mutation`,
+      definition: inputDefinition,
+    });
 
   const payloadName = `${CAPITALIZE_STRING(
     name
@@ -61,13 +63,15 @@ export function createStandardMutation<FieldName extends string>({
 
   const mutationType = mutationField((t) => {
     t.field(name, {
-      args: {
-        input: arg({ type: nonNull(inputType) }),
-      },
+      args: inputType
+        ? {
+            input: arg({ type: nonNull(inputType) }),
+          }
+        : {},
       type: payloadType,
       resolve,
     });
   });
 
-  return [inputType, payloadType, mutationType];
+  return [...(inputType ? [inputType] : []), payloadType, mutationType];
 }

@@ -4,6 +4,11 @@ import {
 } from '@baseplate/sync';
 import * as yup from 'yup';
 
+/**
+ * User Model requires the following fields:
+ * + tokensNotBefore: (DateTime, nullable)
+ */
+
 const descriptorSchema = yup.object({
   userModelName: yup.string().required(),
 });

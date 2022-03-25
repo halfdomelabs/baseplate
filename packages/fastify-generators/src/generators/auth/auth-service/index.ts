@@ -1,4 +1,5 @@
 import {
+  ImportMapper,
   nodeProvider,
   TypescriptCodeExpression,
   typescriptProvider,
@@ -21,7 +22,7 @@ const descriptorSchema = yup.object({
   userModelIdField: yup.string().default('id'),
 });
 
-export interface AuthServiceProvider {
+export interface AuthServiceProvider extends ImportMapper {
   getServiceExpression(): TypescriptCodeExpression;
 }
 
@@ -86,24 +87,26 @@ const AuthServiceGenerator = createGeneratorWithChildren({
               'authService',
               `import { authService } from '@/${modulePath}/services/auth-service'`
             ),
+          getImportMap: () => ({
+            '%auth-service': {
+              path: `@/${modulePath}/services/auth-service`,
+              allowedImports: ['authService'],
+            },
+            '%jwt-service': {
+              path: `@/${modulePath}/services/jwt-service`,
+              allowedImports: ['jwtService', 'InvalidTokenError'],
+            },
+          }),
         },
       }),
       build: async (builder) => {
         builder.setBaseDirectory(modulePath);
-        const jwtServiceFile = typescript.createTemplate({
-          UNAUTHORIZED_ERROR: { type: 'code-expression' },
-          CONFIG: { type: 'code-expression' },
-        });
-        jwtServiceFile.addCodeEntries({
-          UNAUTHORIZED_ERROR: new TypescriptCodeExpression(
-            'UnauthorizedError',
-            `import { UnauthorizedError } from '${errorHandlerService.getHttpErrorsImport()}'`
-          ),
-          CONFIG: config.getConfigExpression(),
-        });
 
         await builder.apply(
-          jwtServiceFile.renderToAction('services/jwt-service.ts')
+          typescript.createCopyAction({
+            source: 'services/jwt-service.ts',
+            importMappers: [errorHandlerService, config],
+          })
         );
 
         await builder.apply(

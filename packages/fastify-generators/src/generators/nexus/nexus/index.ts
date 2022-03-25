@@ -5,6 +5,7 @@ import {
   typescriptProvider,
   tsUtilsProvider,
   eslintProvider,
+  ImportMapper,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -47,7 +48,7 @@ export interface NexusSetupProvider {
 export const nexusSetupProvider =
   createProviderType<NexusSetupProvider>('nexus-setup');
 
-export interface NexusSchemaProvider {
+export interface NexusSchemaProvider extends ImportMapper {
   getScalarConfig(scalar: ScalarFieldType): NexusScalarConfig;
   registerSchemaFile(file: string): void;
   getUtilsImport(): string;
@@ -219,6 +220,20 @@ const NexusGenerator = createGeneratorWithChildren({
                 throw new Error(`Unknown method ${method as string}`);
             }
           },
+          getImportMap: () => ({
+            '%nexus/context': {
+              path: '@/src/plugins/graphql/context.ts',
+              allowedImports: ['GraphQLContext'],
+            },
+            '%nexus/utils': {
+              path: '@/src/utils/nexus',
+              allowedImports: ['createStandardMutation'],
+            },
+            '%nexus/typegen': {
+              path: '@/src/nexus-typegen',
+              allowedImports: ['NexusGenFieldTypes'],
+            },
+          }),
         },
         nexus: {
           getConfig: () => configMap,

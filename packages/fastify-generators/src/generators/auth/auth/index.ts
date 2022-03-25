@@ -25,7 +25,7 @@ const AuthGenerator = createGeneratorWithChildren({
   exports: {
     auth: authProvider,
   },
-  createGenerator(descriptor, dependencies) {
+  createGenerator() {
     const config = createNonOverwriteableMap({}, { name: 'auth-config' });
     return {
       getProviders: () => ({
@@ -33,7 +33,7 @@ const AuthGenerator = createGeneratorWithChildren({
           getConfig: () => config,
         },
       }),
-      build: async (builder) => {},
+      build: async () => {},
     };
   },
 });

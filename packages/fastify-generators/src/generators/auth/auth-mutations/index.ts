@@ -7,6 +7,7 @@ import {
   createGeneratorWithChildren,
 } from '@baseplate/sync';
 import * as yup from 'yup';
+import { configServiceProvider } from '@src/generators/core/config-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { authServiceProvider } from '../auth-service';
@@ -28,25 +29,23 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
     nexusSchema: nexusSchemaProvider,
     authService: authServiceProvider,
     typescript: typescriptProvider,
+    configService: configServiceProvider,
   },
   exports: {
     authMutations: authMutationsProvider,
   },
   createGenerator(
     descriptor,
-    { appModule, nexusSchema, authService, typescript }
+    { appModule, nexusSchema, authService, typescript, configService }
   ) {
     const appModuleFolder = appModule.getModuleFolder();
 
-    const authMutationsFile = typescript.createTemplate({
-      STANDARD_MUTATION: { type: 'code-expression' },
-      AUTH_SERVICE: { type: 'code-expression' },
-    });
-
-    authMutationsFile.addCodeEntries({
-      STANDARD_MUTATION: nexusSchema.getUtilsExpression('STANDARD_MUTATION'),
-      AUTH_SERVICE: authService.getServiceExpression(),
-    });
+    const authMutationsFile = typescript.createTemplate(
+      {},
+      {
+        importMappers: [configService, authService, nexusSchema],
+      }
+    );
 
     nexusSchema.registerSchemaFile(
       `${appModuleFolder}/schema/auth-mutations.ts`
@@ -68,6 +67,13 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
 
         await builder.apply(
           authMutationsFile.renderToAction('schema/auth-mutations.ts')
+        );
+
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'utils/refresh-tokens.ts',
+            importMappers: [configService, nexusSchema],
+          })
         );
       },
     };
