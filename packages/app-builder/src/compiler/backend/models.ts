@@ -18,20 +18,6 @@ function buildModel(model: ModelConfig): unknown {
     generator: '@baseplate/fastify/prisma/prisma-model',
     children: {
       fields: model.fields?.map(buildField),
-      generatedFields: [
-        model.hasTimestamp
-          ? {
-              name: 'timestamp',
-              generator: '@baseplate/fastify/prisma/prisma-timestamp-fields',
-            }
-          : {},
-        model.generatedAddons?.includes('auth')
-          ? {
-              name: 'auth',
-              generator: '@baseplate/fastify/auth/auth-prisma-fields',
-            }
-          : {},
-      ],
     },
   };
 }

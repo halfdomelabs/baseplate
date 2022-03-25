@@ -32,7 +32,7 @@ const descriptorSchema = yup.object({});
 
 interface ContextField {
   type: TypescriptCodeExpression;
-  creator: (req: string) => TypescriptCodeExpression;
+  creator: (req: string, reply: string) => TypescriptCodeExpression;
 }
 
 export interface NexusGeneratorConfig {
@@ -67,7 +67,13 @@ export const nexusProvider = createProviderType<NexusProvider>('nexus');
 
 const NexusGenerator = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+  getDefaultChildGenerators: () => ({
+    cookies: {
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/nexus/nexus-cookies',
+      },
+    },
+  }),
   dependencies: {
     node: nodeProvider,
     rootModule: rootModuleProvider,
@@ -222,7 +228,7 @@ const NexusGenerator = createGeneratorWithChildren({
           },
           getImportMap: () => ({
             '%nexus/context': {
-              path: '@/src/plugins/graphql/context.ts',
+              path: '@/src/plugins/graphql/context',
               allowedImports: ['GraphQLContext'],
             },
             '%nexus/utils': {
@@ -264,7 +270,10 @@ const NexusGenerator = createGeneratorWithChildren({
         contextFile.addCodeExpression(
           'CONTEXT_CREATOR',
           TypescriptCodeUtils.mergeExpressionsAsObject(
-            R.mapObjIndexed((field) => field.creator('request'), contextFields)
+            R.mapObjIndexed(
+              (field) => field.creator('request', 'reply'),
+              contextFields
+            )
           )
         );
 

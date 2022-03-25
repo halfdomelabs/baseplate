@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { JwtPayload } from 'jsonwebtoken';
+import ms from 'ms';
 import { jwtService, InvalidTokenError } from './jwt-service';
 
 export interface AuthPayload {
@@ -13,17 +14,18 @@ interface AuthJwtPayload extends JwtPayload {
   sub: string;
 }
 
-const ACCESS_TOKEN_EXPIRY = ACCESS_TOKEN_EXPIRY_TIME;
-const REFRESH_TOKEN_EXPIRY = REFRESH_TOKEN_EXPIRY_TIME;
+export const ACCESS_TOKEN_EXPIRY_SECONDS = ms(ACCESS_TOKEN_EXPIRY_TIME) / 1000;
+export const REFRESH_TOKEN_EXPIRY_SECONDS =
+  ms(REFRESH_TOKEN_EXPIRY_TIME) / 1000;
 
 async function issueUserAuthPayload(userId: string): Promise<AuthPayload> {
   const accessToken = await jwtService.sign<AuthJwtPayload>(
     { sub: userId, type: 'access' },
-    ACCESS_TOKEN_EXPIRY
+    ACCESS_TOKEN_EXPIRY_SECONDS
   );
   const refreshToken = await jwtService.sign<AuthJwtPayload>(
     { sub: userId, type: 'refresh' },
-    REFRESH_TOKEN_EXPIRY
+    REFRESH_TOKEN_EXPIRY_SECONDS
   );
   return { userId, refreshToken, accessToken };
 }

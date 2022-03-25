@@ -4,13 +4,13 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
+import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
   prismaToServiceOutputDto,
   ServiceOutputDto,
   ServiceOutputMethod,
 } from '@src/types/serviceOutput';
 import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
-import { prismaCrudServiceProvider } from '../prisma-crud-service';
 
 const CRUD_FUNCTION_TYPES = ['create', 'update', 'delete'] as const;
 type CrudFunctionType = typeof CRUD_FUNCTION_TYPES[number];
@@ -298,14 +298,14 @@ const PrismaCrudMethodGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     prismaOutput: prismaOutputProvider,
-    prismaCrudService: prismaCrudServiceProvider,
+    serviceFile: serviceFileProvider,
   },
   createGenerator(
     { name, type, modelName, options },
-    { prismaOutput, prismaCrudService }
+    { prismaOutput, serviceFile }
   ) {
     const config = methodConfig[type];
-    const methodExpression = prismaCrudService
+    const methodExpression = serviceFile
       .getServiceExpression()
       .append(`.${name}`);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -317,7 +317,7 @@ const PrismaCrudMethodGenerator = createGeneratorWithChildren({
       methodExpression,
     };
 
-    prismaCrudService.registerMethod(
+    serviceFile.registerMethod(
       name,
       config.getMethodExpression(methodOptions),
       config.getMethodDefinition(methodOptions)

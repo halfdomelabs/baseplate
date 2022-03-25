@@ -10,7 +10,12 @@ export const modelScalarFieldSchema = yup.object({
   id: yup.boolean(),
   optional: yup.boolean(),
   unique: yup.boolean(),
+  // uuid options
   genUuid: yup.boolean(),
+  // date options
+  updatedAt: yup.boolean(),
+  defaultToNow: yup.boolean(),
+  // service/schema options
   creatable: yup.boolean(),
   updatable: yup.boolean(),
   exposed: yup.boolean(),
@@ -22,8 +27,6 @@ export const modelSchema = yup.object({
   name: yup.string().required(),
   feature: yup.string().required(),
   fields: yup.array(modelScalarFieldSchema.required()),
-  hasTimestamp: yup.boolean(),
-  generatedAddons: yup.array(yup.string().oneOf(['auth']).required()),
   generateService: yup.boolean(),
   exposedQuery: yup.boolean(),
   exposedMutations: yup.boolean(),

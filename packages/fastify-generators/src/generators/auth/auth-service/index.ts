@@ -51,10 +51,12 @@ const AuthServiceGenerator = createGeneratorWithChildren({
 
     node.addPackages({
       jsonwebtoken: '^8.5.1',
+      ms: '^2.1.3',
     });
 
     node.addDevPackages({
       '@types/jsonwebtoken': '^8.5.8',
+      '@types/ms': '^0.7.31',
     });
 
     const authServiceFile = typescript.createTemplate({
@@ -90,7 +92,11 @@ const AuthServiceGenerator = createGeneratorWithChildren({
           getImportMap: () => ({
             '%auth-service': {
               path: `@/${modulePath}/services/auth-service`,
-              allowedImports: ['authService'],
+              allowedImports: [
+                'authService',
+                'ACCESS_TOKEN_EXPIRY_SECONDS',
+                'REFRESH_TOKEN_EXPIRY_SECONDS',
+              ],
             },
             '%jwt-service': {
               path: `@/${modulePath}/services/jwt-service`,

@@ -6,7 +6,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
-import { prismaCrudServiceOutputProvider } from '@src/generators/prisma/prisma-crud-service';
+import { serviceFileOutputProvider } from '@src/generators/core/service-file';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
 import {
@@ -45,20 +45,20 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
   dependencies: {
     nexusSchema: nexusSchemaProvider,
     nexusTypesFile: nexusTypesFileProvider,
-    prismaCrudServiceOutput: prismaCrudServiceOutputProvider,
+    serviceFileOutput: serviceFileOutputProvider,
     tsUtils: tsUtilsProvider,
   },
   populateDependencies: (dependencyMap, { crudServiceRef }) => ({
     ...dependencyMap,
-    prismaCrudServiceOutput: dependencyMap.prismaCrudServiceOutput
+    serviceFileOutput: dependencyMap.serviceFileOutput
       .dependency()
       .reference(crudServiceRef),
   }),
   createGenerator(
     { modelName, type },
-    { nexusSchema, nexusTypesFile, prismaCrudServiceOutput, tsUtils }
+    { nexusSchema, nexusTypesFile, serviceFileOutput, tsUtils }
   ) {
-    const serviceOutput = prismaCrudServiceOutput.getServiceMethod(type);
+    const serviceOutput = serviceFileOutput.getServiceMethod(type);
 
     const objectTypeBlock = new TypescriptSourceBlock(
       {
