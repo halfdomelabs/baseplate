@@ -2,10 +2,10 @@
 import { FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import { stripBearer } from '../utils/headers';
+import { authService } from '%auth-service';
 
 export interface AuthInfo {
-  user: USER_TYPE | null;
-  requiredUser: () => USER_TYPE;
+  AUTH_TYPE;
 }
 
 declare module 'fastify' {
@@ -16,13 +16,13 @@ declare module 'fastify' {
 
 async function getUserFromRequest(
   req: FastifyRequest
-): Promise<USER_TYPE | null> {
+): Promise<AUTH_USER | null> {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
     return null;
   }
   const accessToken = stripBearer(authHeader);
-  const user = await AUTH_SERVICE.getUserFromToken(accessToken);
+  const user = await authService.getUserFromToken(accessToken);
   return user;
 }
 
@@ -32,14 +32,8 @@ export const authPlugin = fp(async (fastify) => {
   fastify.addHook('onRequest', async (req) => {
     const user = await getUserFromRequest(req);
 
-    req.auth = {
-      user,
-      requiredUser: () => {
-        if (!user) {
-          throw new UNAUTHORIZED_ERROR('User is required');
-        }
-        return user;
-      },
-    };
+    HOOK_BODY;
+
+    req.auth = AUTH_OBJECT;
   });
 });

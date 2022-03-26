@@ -24,12 +24,16 @@ export function buildEntryDependencyMap(
     if (reference) {
       const referencedGenerator = globalGeneratorMap[reference];
       if (!referencedGenerator) {
-        if (!optional) {
-          throw new Error(
-            `Could not resolve dependency reference ${reference} for ${entry.id}`
-          );
-        }
-        return null;
+        // TODO: Remove debug helpers
+        const generatorKeys = Object.keys(globalGeneratorMap);
+        const file = reference.split(':')[0];
+        const generatorsInFile = generatorKeys.filter((key) =>
+          key.startsWith(file)
+        );
+        console.error(`Generator IDs in file: ${generatorsInFile.join('\n')}`);
+        throw new Error(
+          `Could not resolve dependency reference ${reference} for ${entry.id}`
+        );
       }
       // validate referenced generator exports required provider
       const generatorProviders = providerMapToNames(

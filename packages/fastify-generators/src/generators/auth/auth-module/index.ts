@@ -37,8 +37,10 @@ const AuthModuleGenerator = createGeneratorWithChildren({
       defaultDescriptor: {
         generator: '@baseplate/fastify/auth/auth-plugin',
         userModelName: descriptor.userModelName,
+        peerProvider: true,
       },
     },
+    roleService: {},
   }),
   dependencies: {},
   exports: {

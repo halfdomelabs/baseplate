@@ -21,7 +21,11 @@ export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
 
 export interface ChildGeneratorConfig {
   provider?: string;
-  isMultiple?: true;
+  isMultiple?: boolean;
+  /**
+   * Whether to default to null if no config is provided.
+   */
+  defaultToNullIfEmpty?: boolean;
   defaultDescriptor?: BaseGeneratorDescriptor & {
     [key: string]: unknown;
   };
@@ -92,9 +96,12 @@ export function createGeneratorWithChildren<
       }
 
       function mergeAndValidateDescriptor(
-        defaultDescriptor: Partial<BaseGeneratorDescriptor> | undefined,
-        descriptorChild: Partial<BaseGeneratorDescriptor> | string | undefined,
-        provider?: string
+        {
+          defaultDescriptor,
+          provider,
+          defaultToNullIfEmpty,
+        }: ChildGeneratorConfig,
+        descriptorChild: Partial<BaseGeneratorDescriptor> | string | undefined
       ): BaseGeneratorDescriptor | string | null {
         if (typeof descriptorChild === 'string') {
           // child references are not parsed currently
@@ -103,9 +110,11 @@ export function createGeneratorWithChildren<
         }
 
         // if neither default descriptor nor descriptor child is provided, assume null
+        // if no descriptor child and we've been told to default to null, return null
         // if descriptor child is null, assume it's been explicitly removed
         if (
           (!defaultDescriptor && !descriptorChild) ||
+          (!descriptorChild && defaultToNullIfEmpty) ||
           descriptorChild === null
         ) {
           return null;
@@ -143,7 +152,7 @@ export function createGeneratorWithChildren<
       }
 
       const children = R.mapObjIndexed((value, key) => {
-        const { isMultiple, provider, defaultDescriptor } = value;
+        const { isMultiple } = value;
 
         if (isMultiple) {
           const childArray = descriptorChildren[key] || [];
@@ -152,20 +161,16 @@ export function createGeneratorWithChildren<
           }
           return childArray
             .map((childDescriptor) =>
-              mergeAndValidateDescriptor(
-                defaultDescriptor,
-                childDescriptor,
-                provider
-              )
+              mergeAndValidateDescriptor(value, childDescriptor)
             )
             .filter(notEmpty);
         }
-        const child = descriptorChildren[key] || {};
+        const child = descriptorChildren[key];
 
         if (Array.isArray(child)) {
           throw new Error(`${id} has invalid child ${key}. Cannot be array.`);
         }
-        return mergeAndValidateDescriptor(defaultDescriptor, child, provider);
+        return mergeAndValidateDescriptor(value, child);
       }, childGeneratorConfigs);
 
       const customChildren: Record<string, BaseGeneratorDescriptor | string> =

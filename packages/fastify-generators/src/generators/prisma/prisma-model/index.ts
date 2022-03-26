@@ -47,6 +47,12 @@ const PrismaModelGenerator = createGeneratorWithChildren({
         generator: '@baseplate/fastify/prisma/prisma-relation-field',
       },
     },
+    primaryKey: {
+      defaultToNullIfEmpty: true,
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/prisma/prisma-model-id',
+      },
+    },
     indicies: {
       isMultiple: true,
       defaultDescriptor: {

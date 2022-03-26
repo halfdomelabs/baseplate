@@ -76,16 +76,14 @@ export const authService = {
 
     return issueUserAuthPayload(user.id);
   },
-  async getUserFromToken(accessToken: string): Promise<User> {
+  async getUserFromToken(accessToken: string): Promise<AUTH_USER> {
     const payload = await jwtService.verify<AuthJwtPayload>(accessToken);
 
     if (payload.type !== 'access') {
       throw new InvalidTokenError('JWT token is not an access token');
     }
 
-    const user = await USER_MODEL.findUnique({
-      where: { USER_ID_NAME: payload.sub },
-    });
+    const user = await USER_MODEL.findUnique(AUTH_USER_QUERY_PARMS);
 
     if (!user) {
       throw new InvalidTokenError('User not found');

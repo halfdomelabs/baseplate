@@ -2,6 +2,7 @@ import {
   ImportMapper,
   nodeProvider,
   TypescriptCodeExpression,
+  TypescriptCodeUtils,
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
@@ -22,8 +23,14 @@ const descriptorSchema = yup.object({
   userModelIdField: yup.string().default('id'),
 });
 
+interface CustomUserFromToken {
+  type: TypescriptCodeExpression;
+  queryParams: Record<string, TypescriptCodeExpression | string>;
+}
+
 export interface AuthServiceProvider extends ImportMapper {
   getServiceExpression(): TypescriptCodeExpression;
+  setCustomUserFromToken(userInfo: CustomUserFromToken): void;
 }
 
 export const authServiceProvider =
@@ -65,10 +72,11 @@ const AuthServiceGenerator = createGeneratorWithChildren({
       REFRESH_TOKEN_EXPIRY_TIME: { type: 'code-expression' },
       USER_MODEL: { type: 'code-expression' },
       USER_ID_NAME: { type: 'code-expression' },
+      AUTH_USER: { type: 'code-expression' },
+      AUTH_USER_QUERY_PARMS: { type: 'code-expression' },
     });
 
     authServiceFile.addCodeEntries({
-      USER_TYPE: prismaOutput.getModelTypeExpression(userModelName),
       ACCESS_TOKEN_EXPIRY_TIME: quot(accessTokenExpiry),
       REFRESH_TOKEN_EXPIRY_TIME: quot(refreshTokenExpiry),
       USER_MODEL: prismaOutput.getPrismaModelExpression(userModelName),
@@ -81,9 +89,17 @@ const AuthServiceGenerator = createGeneratorWithChildren({
       exampleValue: 'MyJwtSecretKey',
     });
 
+    let customUserFromToken: CustomUserFromToken | null = null;
+
     return {
       getProviders: () => ({
         authService: {
+          setCustomUserFromToken: (customUser) => {
+            if (customUserFromToken) {
+              throw new Error(`Cannot override custom user from token twice`);
+            }
+            customUserFromToken = customUser;
+          },
           getServiceExpression: () =>
             new TypescriptCodeExpression(
               'authService',
@@ -114,6 +130,21 @@ const AuthServiceGenerator = createGeneratorWithChildren({
             importMappers: [errorHandlerService, config],
           })
         );
+
+        const customUser = customUserFromToken || {
+          type: prismaOutput.getModelTypeExpression(userModelName),
+          queryParams: {},
+        };
+        if (customUser.queryParams.where) {
+          throw new Error(`Cannot set where clause on custom user`);
+        }
+        authServiceFile.addCodeEntries({
+          AUTH_USER: customUser.type,
+          AUTH_USER_QUERY_PARMS: TypescriptCodeUtils.mergeExpressionsAsObject({
+            where: `{ ${userModelIdField}: payload.sub }`,
+            ...customUser.queryParams,
+          }),
+        });
 
         await builder.apply(
           authServiceFile.renderToAction('services/auth-service.ts')

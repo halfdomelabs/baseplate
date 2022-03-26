@@ -1,7 +1,9 @@
 // @ts-nocheck
+
+// HEADER:START
 export type UserWithRoles = USER & { userRoles: USER_ROLE[] };
 
-export type AuthRole = AVAILABLE_ROLES;
+AVAILABLE_ROLES_EXPORT;
 
 interface RoleConfig {
   comment: string;
@@ -20,8 +22,10 @@ function getInheritedRoles(role: AuthRole): AuthRole[] {
     ...getInheritedRoles(inheritedRole),
   ]);
 }
+// HEADER:END
 
 export const authRoleService = {
+  // BODY:START
   getRolesForUser(user?: UserWithRoles | null): AuthRole[] {
     if (!user) {
       return ['anonymous'];
@@ -33,4 +37,5 @@ export const authRoleService = {
 
     return availableRoles;
   },
+  // BODY:END
 };

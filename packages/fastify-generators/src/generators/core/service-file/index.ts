@@ -19,11 +19,12 @@ const descriptorSchema = yup.object({
 });
 
 export interface ServiceFileProvider {
+  getServiceImport: () => string;
   getServiceExpression: () => TypescriptCodeExpression;
   registerMethod(
     key: string,
     expression: TypescriptCodeExpression,
-    outputMethod: ServiceOutputMethod
+    outputMethod?: ServiceOutputMethod
   ): void;
 }
 
@@ -69,6 +70,7 @@ const ServiceFileGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         serviceFile: {
+          getServiceImport: () => `@/${servicesImport}`,
           getServiceExpression() {
             return new TypescriptCodeExpression(
               serviceName,
@@ -77,7 +79,9 @@ const ServiceFileGenerator = createGeneratorWithChildren({
           },
           registerMethod(key, expression, outputMethod) {
             methodMap.set(key, expression);
-            outputMap.set(key, outputMethod);
+            if (outputMethod) {
+              outputMap.set(key, outputMethod);
+            }
           },
         },
         serviceFileOutput: {

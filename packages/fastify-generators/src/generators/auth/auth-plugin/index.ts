@@ -1,23 +1,38 @@
 import {
   copyTypescriptFileAction,
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
+  TypescriptCodeUtils,
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
+  createNonOverwriteableMap,
 } from '@baseplate/sync';
+import R from 'ramda';
 import * as yup from 'yup';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+import { notEmpty } from '@src/utils/array';
 import { authServiceProvider } from '../auth-service';
 
 const descriptorSchema = yup.object({
   userModelName: yup.string().required(),
 });
 
-export type AuthPluginProvider = unknown;
+interface AuthField {
+  key: string;
+  value: TypescriptCodeExpression;
+  type: TypescriptCodeExpression;
+  hookBody?: TypescriptCodeBlock;
+}
+
+export interface AuthPluginProvider {
+  setCustomAuthUserType(type: TypescriptCodeExpression): void;
+  registerAuthField(field: AuthField): void;
+}
 
 export const authPluginProvider =
   createProviderType<AuthPluginProvider>('auth-plugin');
@@ -39,16 +54,47 @@ const AuthPluginGenerator = createGeneratorWithChildren({
     { userModelName },
     { authService, appModule, typescript, prismaOutput, errorHandler }
   ) {
-    const authPluginFile = typescript.createTemplate({
-      AUTH_SERVICE: { type: 'code-expression' },
-      USER_TYPE: { type: 'code-expression' },
-      UNAUTHORIZED_ERROR: { type: 'code-expression' },
-    });
-    authPluginFile.addCodeEntries({
-      AUTH_SERVICE: authService.getServiceExpression(),
-      USER_TYPE: prismaOutput.getModelTypeExpression(userModelName),
-      UNAUTHORIZED_ERROR: errorHandler.getHttpErrorExpression('unauthorized'),
-    });
+    const authFields = createNonOverwriteableMap<Record<string, AuthField>>(
+      {
+        user: {
+          key: 'user',
+          value: new TypescriptCodeExpression('user'),
+          type: prismaOutput
+            .getModelTypeExpression(userModelName)
+            .append(' | null'),
+        },
+        requiredUser: {
+          key: 'requiredUser',
+          value: TypescriptCodeUtils.createExpression(
+            `
+() => {
+  if (!user) {
+    throw new UnauthorizedError('User is required');
+  }
+  return user;
+}
+`,
+            `import { UnauthorizedError } from '%http-errors';`,
+            { importMappers: [errorHandler] }
+          ),
+          type: prismaOutput
+            .getModelTypeExpression(userModelName)
+            .wrap((contents) => `() => ${contents}`),
+        },
+      },
+      { name: 'auth-field' }
+    );
+    const authPluginFile = typescript.createTemplate(
+      {
+        AUTH_USER: { type: 'code-expression' },
+        HOOK_BODY: { type: 'code-block' },
+        AUTH_OBJECT: { type: 'code-expression' },
+        AUTH_TYPE: { type: 'code-block' },
+      },
+      {
+        importMappers: [authService],
+      }
+    );
     appModule.registerFieldEntry(
       'plugins',
       new TypescriptCodeExpression(
@@ -56,12 +102,45 @@ const AuthPluginGenerator = createGeneratorWithChildren({
         `import {authPlugin} from '@/${appModule.getModuleFolder()}/plugins/auth-plugin'`
       )
     );
+    let customAuthUserType: TypescriptCodeExpression | null = null;
     return {
       getProviders: () => ({
-        authPlugin: {},
+        authPlugin: {
+          setCustomAuthUserType(type) {
+            if (customAuthUserType) {
+              throw new Error(
+                'authPlugin.setCustomAuthUserType() can only be called once'
+              );
+            }
+            customAuthUserType = type;
+          },
+          registerAuthField(field) {
+            authFields.set(field.key, field);
+          },
+        },
       }),
       build: async (builder) => {
         builder.setBaseDirectory(appModule.getModuleFolder());
+
+        const authMap = authFields.value();
+
+        authPluginFile.addCodeEntries({
+          AUTH_USER:
+            customAuthUserType ||
+            prismaOutput.getModelTypeExpression(userModelName),
+          HOOK_BODY: TypescriptCodeUtils.mergeBlocks(
+            Object.values(authMap)
+              .map((field) => field.hookBody)
+              .filter(notEmpty)
+          ),
+          AUTH_TYPE: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+            R.mapObjIndexed((value) => value.type, authMap)
+          ),
+          AUTH_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
+            R.mapObjIndexed((value) => value.value, authMap)
+          ),
+        });
+
         await builder.apply(
           authPluginFile.renderToAction('plugins/auth-plugin.ts')
         );

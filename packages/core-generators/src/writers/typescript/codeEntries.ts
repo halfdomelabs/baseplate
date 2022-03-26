@@ -6,7 +6,7 @@
 
 import R from 'ramda';
 import { ImportMapper } from '../../providers';
-import { notEmpty } from '../../utils/array';
+import { notEmpty, notString } from '../../utils/array';
 import { ImportDeclarationEntry } from './imports';
 
 export interface TypescriptCodeEntryOptions {
@@ -47,10 +47,12 @@ export function mergeCodeEntryOptions(
     | TypescriptCodeEntry
     | undefined
     | TypescriptCodeEntryOptions
+    | string
   )[]
 ): TypescriptCodeEntryOptions {
   const options = entriesOrOptions
     .filter(notEmpty)
+    .filter(notString)
     .map((e) => (e instanceof TypescriptCodeEntry ? e.options : e));
   return {
     imports: R.flatten(options.map((e) => e.imports).filter(notEmpty)),
@@ -300,7 +302,7 @@ export const TypescriptCodeUtils = {
     );
   },
   mergeExpressionsAsObject(
-    obj: Record<string, TypescriptCodeExpression>,
+    obj: Record<string, TypescriptCodeExpression | string>,
     options: {
       wrapWithParenthesis?: boolean;
     } = {}
@@ -310,10 +312,12 @@ export const TypescriptCodeUtils = {
     const expressions = Object.values(obj);
     const mergedExpression = keys
       .map((key) => {
-        if (key === obj[key].content) {
+        const value = obj[key];
+        const content = typeof value === 'string' ? value : value.content;
+        if (key === content) {
           return `${key},`;
         }
-        return `${key}: ${obj[key].content},`;
+        return `${key}: ${content},`;
       })
       .join('\n');
     return new TypescriptCodeExpression(
@@ -381,5 +385,20 @@ export const TypescriptCodeUtils = {
         options,
       ])
     );
+  },
+  extractTemplateSnippet(template: string, key: string): string {
+    const startDivision = template.split(`// ${key}:START`);
+    if (startDivision.length !== 2) {
+      throw new Error(
+        `Could not find start divider // ${key}:START in template file`
+      );
+    }
+    const endDivision = startDivision[1].split(`// ${key}:END`);
+    if (endDivision.length !== 2) {
+      throw new Error(
+        `Could not find end divider // ${key}:END in template file`
+      );
+    }
+    return endDivision[0].trim();
   },
 };
