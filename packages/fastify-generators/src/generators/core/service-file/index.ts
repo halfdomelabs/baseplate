@@ -64,6 +64,7 @@ const ServiceFileGenerator = createGeneratorWithChildren({
     const servicesPath = `${servicesImport}.ts`;
     const servicesFile = typescript.createTemplate({
       METHODS: { type: 'code-expression' },
+      SERVICE_NAME: { type: 'code-expression' },
     });
     const serviceName = descriptor.name;
 
@@ -95,20 +96,17 @@ const ServiceFileGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
-        servicesFile.addCodeExpression(
-          'METHODS',
-          TypescriptCodeUtils.mergeExpressions(
+        servicesFile.addCodeEntries({
+          SERVICE_NAME: serviceName,
+          METHODS: TypescriptCodeUtils.mergeExpressions(
             Object.values(methodMap.value()),
             ',\n'
-          ).wrap((c) => `{${c}}`)
-        );
+          ).wrap((c) => `{${c}}`),
+        });
         await builder.apply(
           servicesFile.renderToActionFromText(
             'export const SERVICE_NAME = METHODS;',
-            servicesPath,
-            {
-              SERVICE_NAME: serviceName,
-            }
+            servicesPath
           )
         );
       },

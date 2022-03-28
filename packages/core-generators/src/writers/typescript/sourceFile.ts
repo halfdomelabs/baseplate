@@ -176,10 +176,7 @@ export abstract class TypescriptSourceContent<
     return this.codeBlocks[name] || [];
   }
 
-  protected renderIntoSourceFile(
-    file: SourceFile,
-    identifierReplacements?: Record<string, string>
-  ): SourceFile {
+  protected renderIntoSourceFile(file: SourceFile): SourceFile {
     const blockReplacements: {
       identifier: Identifier;
       contents: string;
@@ -191,9 +188,7 @@ export abstract class TypescriptSourceContent<
     file.forEachDescendant((node) => {
       if (node.getKind() === SyntaxKind.Identifier) {
         const identifier = node.getText();
-        if (identifierReplacements && identifierReplacements[identifier]) {
-          node.replaceWithText(identifierReplacements[identifier]);
-        } else if (this.config[identifier]) {
+        if (this.config[identifier]) {
           const configEntry = this.config[identifier];
           if (configEntry.type === 'code-block') {
             const blocks = this.codeBlocks[identifier];
@@ -302,17 +297,14 @@ export class TypescriptSourceBlock<
     this.blockOptions = options;
   }
 
-  renderToBlock(
-    template: string,
-    identifierReplacements?: Record<string, string>
-  ): TypescriptCodeBlock {
+  renderToBlock(template: string): TypescriptCodeBlock {
     const project = new Project();
 
     // strip any ts-nocheck from header
     const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
     const file = project.createSourceFile('/', strippedTemplate);
 
-    this.renderIntoSourceFile(file, identifierReplacements);
+    this.renderIntoSourceFile(file);
 
     return new TypescriptCodeBlock(
       file.getFullText(),
@@ -344,11 +336,7 @@ export class TypescriptSourceFile<
     this.sourceFileOptions = options;
   }
 
-  renderToText(
-    template: string,
-    destination: string,
-    identifierReplacements?: Record<string, string>
-  ): string {
+  renderToText(template: string, destination: string): string {
     this.hasCodeGenerated = true;
 
     const project = new Project();
@@ -412,7 +400,7 @@ export class TypescriptSourceFile<
     });
 
     // fill in code blocks
-    this.renderIntoSourceFile(file, identifierReplacements);
+    this.renderIntoSourceFile(file);
 
     // process all export from declarations
     file.forEachDescendant((node) => {
@@ -437,19 +425,11 @@ export class TypescriptSourceFile<
     return `${text.trim()}\n`;
   }
 
-  renderToActionFromText(
-    template: string,
-    destination: string,
-    identifierReplacements?: Record<string, string>
-  ): BuilderAction {
+  renderToActionFromText(template: string, destination: string): BuilderAction {
     return {
       execute: async (builder) => {
         const fullPath = builder.resolvePath(destination);
-        const contents = this.renderToText(
-          template,
-          fullPath,
-          identifierReplacements
-        );
+        const contents = this.renderToText(template, fullPath);
         await builder.apply(
           writeFormattedAction({
             destination,
@@ -460,20 +440,12 @@ export class TypescriptSourceFile<
     };
   }
 
-  renderToAction(
-    templateFile: string,
-    destination?: string,
-    identifierReplacements?: Record<string, string>
-  ): BuilderAction {
+  renderToAction(templateFile: string, destination?: string): BuilderAction {
     return {
       execute: async (builder) => {
         const fullPath = builder.resolvePath(destination || templateFile);
         const template = await builder.readTemplate(templateFile);
-        const contents = this.renderToText(
-          template,
-          fullPath,
-          identifierReplacements
-        );
+        const contents = this.renderToText(template, fullPath);
         await builder.apply(
           writeFormattedAction({
             destination: destination || templateFile,
