@@ -27,6 +27,7 @@ export const refreshTokenMutation = createStandardMutation({
   payloadDefinition: (t) => {
     t.nonNull.field('authPayload', { type: 'AuthPayload' });
   },
+  authorize: AUTHORIZE_ANONYMOUS,
   resolve: async (root, { input }, context) => {
     const refreshToken =
       input.refreshToken || getRefreshTokenFromCookie(context);
@@ -54,6 +55,7 @@ export const refreshTokenMutation = createStandardMutation({
 
 export const logOutMutation = createStandardMutation({
   name: 'logOut',
+  authorize: AUTHORIZE_USER,
   payloadDefinition: (t) => {
     t.nonNull.boolean('success');
   },

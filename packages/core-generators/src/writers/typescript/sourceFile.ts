@@ -22,6 +22,7 @@ import {
   TypescriptCodeWrapperFunction,
   TypescriptCodeEntryOptions,
   mergeCodeEntryOptions,
+  TypescriptStringReplacement,
 } from './codeEntries';
 import {
   getImportDeclarationEntries,
@@ -48,10 +49,23 @@ interface TypescriptCodeWrapperConfig {
   type: 'code-wrapper';
 }
 
+interface TypescriptStringReplacementConfig {
+  type: 'string-replacement';
+  // whether to replace string as comment i.e. prefixed with // IDENTIFIER
+  asSingleLineComment?: boolean;
+  default?: string;
+  multiple?: {
+    separator: string;
+  };
+  // transformer function for replacement if present
+  transform?: (replacement: string) => string;
+}
+
 type TypescriptCodeConfig =
   | TypescriptCodeBlockConfig
   | TypescriptCodeWrapperConfig
-  | TypescriptCodeExpressionConfig;
+  | TypescriptCodeExpressionConfig
+  | TypescriptStringReplacementConfig;
 
 export type TypescriptTemplateConfig<T = Record<string, unknown>> = {
   [K in keyof T]: TypescriptCodeConfig;
@@ -64,10 +78,12 @@ type InferCodeEntry<T extends TypescriptCodeConfig> =
     ? TypescriptCodeBlock | string
     : T extends TypescriptCodeWrapperConfig
     ? TypescriptCodeWrapper
+    : T extends TypescriptStringReplacementConfig
+    ? TypescriptStringReplacement
     : never;
 
 type InferCodeEntries<T extends TypescriptTemplateConfig> = {
-  [K in keyof T]: InferCodeEntry<T[K]>;
+  [K in keyof T]: InferCodeEntry<T[K]> | InferCodeEntry<T[K]>[];
 };
 
 export function createTypescriptTemplateConfig<
@@ -89,6 +105,8 @@ export abstract class TypescriptSourceContent<
 
   protected codeExpressions: Record<string, TypescriptCodeExpression[]>;
 
+  protected stringReplacements: Record<string, TypescriptStringReplacement[]>;
+
   constructor(config: T) {
     this.config = config;
     const keys = Object.keys(config);
@@ -101,6 +119,11 @@ export abstract class TypescriptSourceContent<
     this.codeExpressions = R.fromPairs(
       keys
         .filter((k) => config[k].type === 'code-expression')
+        .map((k) => [k, []])
+    );
+    this.stringReplacements = R.fromPairs(
+      keys
+        .filter((k) => config[k].type === 'string-replacement')
         .map((k) => [k, []])
     );
   }
@@ -148,32 +171,92 @@ export abstract class TypescriptSourceContent<
     return this;
   }
 
+  addStringReplacement<K extends keyof T & string>(
+    name: K,
+    entry: T[K] extends TypescriptStringReplacementConfig
+      ? TypescriptStringReplacement | string
+      : never
+  ): this {
+    this.checkNotGenerated();
+    this.stringReplacements[name].push(
+      typeof entry === 'string' ? new TypescriptStringReplacement(entry) : entry
+    );
+    return this;
+  }
+
   addCodeEntries(entries: Partial<InferCodeEntries<T>>): this {
     this.checkNotGenerated();
     Object.keys(entries).forEach((key) => {
-      switch (this.config[key].type) {
-        case 'code-block':
-          // TODO: Fix typings
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          this.addCodeBlock(key, entries[key] as unknown as any);
-          break;
-        case 'code-wrapper':
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          this.addCodeWrapper(key, entries[key] as unknown as any);
-          break;
-        case 'code-expression':
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-          this.addCodeExpression(key, entries[key] as unknown as any);
-          break;
-        default:
-          throw new Error(`Unknown config type ${this.config[key].type}`);
-      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const entryArray: any[] = (Array.isArray(entries[key])
+        ? entries[key]
+        : [entries[key]]) as unknown as any[];
+      entryArray.forEach((entry) => {
+        switch (this.config[key].type) {
+          case 'code-block':
+            // TODO: Fix typings
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            this.addCodeBlock(key, entry);
+            break;
+          case 'code-wrapper':
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            this.addCodeWrapper(key, entry);
+            break;
+          case 'code-expression':
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            this.addCodeExpression(key, entry);
+            break;
+          case 'string-replacement':
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+            this.addStringReplacement(key, entry);
+            break;
+          default:
+            throw new Error(`Unknown config type ${this.config[key].type}`);
+        }
+      });
     });
     return this;
   }
 
   getCodeBlocks<K extends keyof T & string>(name: K): TypescriptCodeBlock[] {
     return this.codeBlocks[name] || [];
+  }
+
+  protected processFileReplacements(template: string): string {
+    // strip any ts-nocheck from header
+    const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
+
+    // run through string replacements
+    return Object.entries(this.config).reduce((prevValue, [key, config]) => {
+      if (config.type !== 'string-replacement') {
+        return prevValue;
+      }
+      const values = this.stringReplacements[key];
+      if (values && !config.multiple && values.length > 1) {
+        throw new Error(`Multiple string replacements for ${key} not allowed`);
+      }
+      const replacementValue = values
+        ? TypescriptCodeUtils.mergeStringReplacements(
+            values,
+            config.multiple?.separator || ''
+          ).content
+        : config.default;
+      const transformedReplacement =
+        config.transform && replacementValue
+          ? config.transform(replacementValue)
+          : replacementValue;
+      const searchKey = config.asSingleLineComment ? `// ${key}` : key;
+      const newValue = prevValue.replace(
+        new RegExp(searchKey, 'g'),
+        transformedReplacement || ''
+      );
+      if (newValue === prevValue) {
+        throw new Error(
+          `String replacement failed for ${key}: Could not find ${searchKey}`
+        );
+      }
+      return newValue;
+    }, strippedTemplate);
   }
 
   protected renderIntoSourceFile(file: SourceFile): SourceFile {
@@ -300,9 +383,9 @@ export class TypescriptSourceBlock<
   renderToBlock(template: string): TypescriptCodeBlock {
     const project = new Project();
 
-    // strip any ts-nocheck from header
-    const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
-    const file = project.createSourceFile('/', strippedTemplate);
+    // run through string replacements
+    const replacedTemplate = this.processFileReplacements(template);
+    const file = project.createSourceFile('/', replacedTemplate);
 
     this.renderIntoSourceFile(file);
 
@@ -314,6 +397,7 @@ export class TypescriptSourceBlock<
           Object.values(this.codeBlocks),
           Object.values(this.codeWrappers),
           Object.values(this.codeExpressions),
+          Object.values(this.stringReplacements),
           this.blockOptions,
         ].flat(2)
       )
@@ -341,11 +425,12 @@ export class TypescriptSourceFile<
 
     const project = new Project();
 
-    // strip any ts-nocheck from header
-    const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
+    // run through string replacements
+    const replacedTemplate = this.processFileReplacements(template);
+
     const file = project.createSourceFile(
       path.basename(destination),
-      strippedTemplate
+      replacedTemplate
     );
 
     // insert manual imports
@@ -353,6 +438,7 @@ export class TypescriptSourceFile<
       Object.values(this.codeBlocks),
       Object.values(this.codeWrappers),
       Object.values(this.codeExpressions),
+      Object.values(this.stringReplacements),
     ]);
 
     const headerBlocks = providedEntries.flatMap(

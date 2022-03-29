@@ -7,6 +7,7 @@ import {
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
 import { serviceFileOutputProvider } from '@src/generators/core/service-file';
+import { nexusTypeProvider } from '@src/providers/nexus-type';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
 import {
@@ -25,7 +26,7 @@ const descriptorSchema = yup.object({
 // TODO: Use expression for createStandardMutation
 const MUTATION_TEMPLATE = `
 export const MUTATION_EXPORT = createStandardMutation({
-  name: MUTATION_NAME,
+  name: MUTATION_NAME, // CUSTOM_FIELDS
   inputDefinition(t) {
     MUTATION_INPUT_DEFINITION;
   },
@@ -41,7 +42,14 @@ export const MUTATION_EXPORT = createStandardMutation({
 
 const NexusPrismaCrudMutation = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+  getDefaultChildGenerators: () => ({
+    authorize: {
+      defaultToNullIfEmpty: true,
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/nexus/nexus-authorize-field',
+      },
+    },
+  }),
   dependencies: {
     nexusSchema: nexusSchemaProvider,
     nexusTypesFile: nexusTypesFileProvider,
@@ -54,6 +62,9 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       .dependency()
       .reference(crudServiceRef),
   }),
+  exports: {
+    nexusType: nexusTypeProvider,
+  },
   createGenerator(
     { modelName, type },
     { nexusSchema, nexusTypesFile, serviceFileOutput, tsUtils }
@@ -64,6 +75,11 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       {
         MUTATION_EXPORT: { type: 'code-expression' },
         MUTATION_NAME: { type: 'code-expression' },
+        CUSTOM_FIELDS: {
+          type: 'string-replacement',
+          asSingleLineComment: true,
+          transform: (value) => `\n${value},`,
+        },
         MUTATION_INPUT_DEFINITION: { type: 'code-block' },
         OBJECT_TYPE_NAME: { type: 'code-expression' },
         INPUT_PARTS: { type: 'code-expression' },
@@ -130,18 +146,28 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       nexusTypesFile.registerType(writeChildInputDefinition(child));
     });
 
-    // TODO: Make it easier to do simple replaces
-    nexusTypesFile.registerType(
-      objectTypeBlock.renderToBlock(
-        MUTATION_TEMPLATE.replace(
-          'RETURN_FIELD_NAME',
-          lowerCaseFirst(modelName)
-        )
-      )
-    );
-
     return {
-      build: async () => {},
+      getProviders: () => ({
+        nexusType: {
+          addCustomField(fieldName, fieldType) {
+            objectTypeBlock.addStringReplacement(
+              'CUSTOM_FIELDS',
+              fieldType.prepend(`${fieldName}: `).toStringReplacement()
+            );
+          },
+        },
+      }),
+      build: () => {
+        // TODO: Make it easier to do simple replaces
+        nexusTypesFile.registerType(
+          objectTypeBlock.renderToBlock(
+            MUTATION_TEMPLATE.replace(
+              'RETURN_FIELD_NAME',
+              lowerCaseFirst(modelName)
+            )
+          )
+        );
+      },
     };
   },
 });

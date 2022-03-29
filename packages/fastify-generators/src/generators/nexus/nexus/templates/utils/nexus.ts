@@ -26,6 +26,7 @@ interface CreateMutationOptions<FieldName extends string> {
     t: OutputDefinitionBlock<CapitalizedPayload<FieldName>>
   ) => void;
   resolve: FieldResolver<'Mutation', FieldName>;
+  CUSTOM_CREATE_MUTATION_OPTIONS;
 }
 
 /**
@@ -39,7 +40,7 @@ export function createStandardMutation<FieldName extends string>({
   name,
   inputDefinition,
   payloadDefinition,
-  resolve,
+  resolve, // CUSTOM_MUTATION_FIELDS
 }: CreateMutationOptions<FieldName>): NexusType[] {
   const inputName = `${CAPITALIZE_STRING(
     name
@@ -69,7 +70,7 @@ export function createStandardMutation<FieldName extends string>({
           }
         : {},
       type: payloadType,
-      resolve,
+      resolve, // CUSTOM_MUTATION_FIELDS
     });
   });
 

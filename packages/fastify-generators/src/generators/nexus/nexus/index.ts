@@ -6,6 +6,7 @@ import {
   tsUtilsProvider,
   eslintProvider,
   ImportMapper,
+  TypescriptStringReplacement,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -35,14 +36,22 @@ interface ContextField {
   creator: (req: string, reply: string) => TypescriptCodeExpression;
 }
 
-export interface NexusGeneratorConfig {
-  nexusPlugins: TypescriptCodeExpression[];
+export interface MutationField {
+  name: string;
+  type: TypescriptCodeExpression;
+  isOptional?: boolean;
 }
 
-export interface NexusSetupProvider {
+export interface NexusGeneratorConfig {
+  nexusPlugins: TypescriptCodeExpression[];
+  mutationFields: MutationField[];
+}
+
+export interface NexusSetupProvider extends ImportMapper {
   addScalarField(config: NexusScalarConfig): void;
   addContextField(name: string, field: ContextField): void;
   registerSchemaFile(file: string): void;
+  getConfig(): NonOverwriteableMap<NexusGeneratorConfig>;
 }
 
 export const nexusSetupProvider =
@@ -107,7 +116,7 @@ const NexusGenerator = createGeneratorWithChildren({
     }
   ) {
     const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
-      { nexusPlugins: [] },
+      { nexusPlugins: [], mutationFields: [] },
       { name: 'nexus-config' }
     );
 
@@ -196,6 +205,21 @@ const NexusGenerator = createGeneratorWithChildren({
       return config;
     };
 
+    const importMap = {
+      '%nexus/context': {
+        path: '@/src/plugins/graphql/context',
+        allowedImports: ['GraphQLContext'],
+      },
+      '%nexus/utils': {
+        path: '@/src/utils/nexus',
+        allowedImports: ['createStandardMutation'],
+      },
+      '%nexus/typegen': {
+        path: '@/src/nexus-typegen',
+        allowedImports: ['NexusGenFieldTypes'],
+      },
+    };
+
     return {
       getProviders: () => ({
         nexusSetup: {
@@ -206,6 +230,8 @@ const NexusGenerator = createGeneratorWithChildren({
             contextFieldsMap.set(name, config);
           },
           registerSchemaFile: (file) => schemaFiles.push(file),
+          getConfig: () => configMap,
+          getImportMap: () => importMap,
         },
         nexusSchema: {
           getScalarConfig,
@@ -226,20 +252,7 @@ const NexusGenerator = createGeneratorWithChildren({
                 throw new Error(`Unknown method ${method as string}`);
             }
           },
-          getImportMap: () => ({
-            '%nexus/context': {
-              path: '@/src/plugins/graphql/context',
-              allowedImports: ['GraphQLContext'],
-            },
-            '%nexus/utils': {
-              path: '@/src/utils/nexus',
-              allowedImports: ['createStandardMutation'],
-            },
-            '%nexus/typegen': {
-              path: '@/src/nexus-typegen',
-              allowedImports: ['NexusGenFieldTypes'],
-            },
-          }),
+          getImportMap: () => importMap,
         },
         nexus: {
           getConfig: () => configMap,
@@ -247,13 +260,27 @@ const NexusGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
+        const config = configMap.value();
+
         const utilsFile = typescript.createTemplate({
           CAPITALIZE_STRING: { type: 'code-expression' },
+          CUSTOM_CREATE_MUTATION_OPTIONS: { type: 'code-block' },
+          CUSTOM_MUTATION_FIELDS: {
+            type: 'string-replacement',
+            asSingleLineComment: true,
+          },
         });
-        utilsFile.addCodeExpression(
-          'CAPITALIZE_STRING',
-          tsUtils.getUtilExpression('capitalizeString')
-        );
+        utilsFile.addCodeEntries({
+          CAPITALIZE_STRING: tsUtils.getUtilExpression('capitalizeString'),
+          CUSTOM_MUTATION_FIELDS: new TypescriptStringReplacement(
+            config.mutationFields.map((f) => f.name).join(',\n')
+          ),
+          CUSTOM_CREATE_MUTATION_OPTIONS: config.mutationFields.map((f) =>
+            f.type
+              .prepend(`${`${f.name}${f.isOptional ? '?' : ''}`}: `)
+              .toBlock()
+          ),
+        });
         await builder.apply(
           utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts')
         );
@@ -284,7 +311,6 @@ const NexusGenerator = createGeneratorWithChildren({
           )
         );
 
-        const config = configMap.value();
         pluginFile.addCodeExpression(
           'PLUGINS',
           TypescriptCodeUtils.mergeExpressionsAsArray(config.nexusPlugins)

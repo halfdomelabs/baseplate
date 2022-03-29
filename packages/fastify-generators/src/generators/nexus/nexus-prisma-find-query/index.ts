@@ -2,6 +2,7 @@ import { TypescriptSourceBlock } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+import { nexusTypeProvider } from '@src/providers/nexus-type';
 import { scalarPrismaFieldToServiceField } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
 import { quot } from '@src/utils/string';
@@ -15,10 +16,10 @@ const descriptorSchema = yup.object({
   objectTypeName: yup.string(),
 });
 
-const OBJECT_TYPE_TEMPLATE = `
+const QUERY_TYPE_TEMPLATE = `
 export const QUERY_EXPORT = queryField((t) => {
   t.field(QUERY_NAME, {
-    type: nonNull(OBJECT_TYPE_NAME),
+    type: nonNull(OBJECT_TYPE_NAME), // CUSTOM_FIELDS
     args: QUERY_ARGS,
     resolve: async (root, ARG_INPUT, ctx, info) => MODEL.findUnique({where: MODEL_WHERE, rejectOnNotFound: true}),
   });
@@ -27,11 +28,21 @@ export const QUERY_EXPORT = queryField((t) => {
 
 const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+  getDefaultChildGenerators: () => ({
+    authorize: {
+      defaultToNullIfEmpty: true,
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/nexus/nexus-authorize-field',
+      },
+    },
+  }),
   dependencies: {
     prismaOutput: prismaOutputProvider,
     nexusTypesFile: nexusTypesFileProvider,
     nexusSchema: nexusSchemaProvider,
+  },
+  exports: {
+    nexusType: nexusTypeProvider,
   },
   createGenerator(
     { modelName, objectTypeName },
@@ -47,6 +58,11 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
 
     const objectTypeBlock = new TypescriptSourceBlock(
       {
+        CUSTOM_FIELDS: {
+          type: 'string-replacement',
+          asSingleLineComment: true,
+          transform: (value) => `\n${value},`,
+        },
         QUERY_EXPORT: { type: 'code-expression' },
         QUERY_NAME: { type: 'code-expression' },
         OBJECT_TYPE_NAME: { type: 'code-expression' },
@@ -88,12 +104,22 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
       MODEL_WHERE: `{ ${idFieldName} }`,
     });
 
-    nexusTypesFile.registerType(
-      objectTypeBlock.renderToBlock(OBJECT_TYPE_TEMPLATE)
-    );
-
     return {
-      build: async () => {},
+      getProviders: () => ({
+        nexusType: {
+          addCustomField(fieldName, fieldType) {
+            objectTypeBlock.addStringReplacement(
+              'CUSTOM_FIELDS',
+              fieldType.prepend(`${fieldName}: `).toStringReplacement()
+            );
+          },
+        },
+      }),
+      build: () => {
+        nexusTypesFile.registerType(
+          objectTypeBlock.renderToBlock(QUERY_TYPE_TEMPLATE)
+        );
+      },
     };
   },
 });

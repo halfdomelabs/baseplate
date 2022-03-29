@@ -39,7 +39,7 @@ export interface ProviderDependency<P = Provider> {
   readonly name: string;
   readonly options: ProviderDependencyOptions;
   optional(): ProviderDependency<P | undefined>;
-  reference(reference: string): ProviderDependency<P>;
+  reference(reference?: string): ProviderDependency<P>;
 }
 
 export interface ProviderExportOptions {
@@ -72,6 +72,10 @@ export function createProviderType<T>(name: string): ProviderType<T> {
           return R.mergeDeepLeft({ options: { optional: true } }, this);
         },
         reference(reference: string) {
+          // allow for undefined references
+          if (!reference) {
+            return this;
+          }
           if (!this.reference) {
             throw new Error('Cannot overwrite reference on provider type');
           }

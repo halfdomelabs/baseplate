@@ -3,6 +3,7 @@ import { createGeneratorWithChildren } from '@baseplate/sync';
 import inflection from 'inflection';
 import * as yup from 'yup';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+import { nexusTypeProvider } from '@src/providers/nexus-type';
 import { lowerCaseFirst } from '@src/utils/case';
 import { nexusTypesFileProvider } from '../nexus-types-file';
 
@@ -11,10 +12,10 @@ const descriptorSchema = yup.object({
   objectTypeName: yup.string(),
 });
 
-const OBJECT_TYPE_TEMPLATE = `
+const LIST_TYPE_TEMPLATE = `
 export const LIST_QUERY_EXPORT = queryField((t) => {
   t.field(QUERY_NAME, {
-    type: nonNull(list(nonNull(OBJECT_TYPE_NAME))),
+    type: nonNull(list(nonNull(OBJECT_TYPE_NAME))), // CUSTOM_FIELDS
     resolve: async (root, args, ctx, info) => MODEL.findMany({}),
   });
 });
@@ -22,10 +23,20 @@ export const LIST_QUERY_EXPORT = queryField((t) => {
 
 const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+  getDefaultChildGenerators: () => ({
+    authorize: {
+      defaultToNullIfEmpty: true,
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/nexus/nexus-authorize-field',
+      },
+    },
+  }),
   dependencies: {
     prismaOutput: prismaOutputProvider,
     nexusTypesFile: nexusTypesFileProvider,
+  },
+  exports: {
+    nexusType: nexusTypeProvider,
   },
   createGenerator(
     { modelName, objectTypeName },
@@ -33,6 +44,11 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
   ) {
     const objectTypeBlock = new TypescriptSourceBlock(
       {
+        CUSTOM_FIELDS: {
+          type: 'string-replacement',
+          asSingleLineComment: true,
+          transform: (value) => `\n${value},`,
+        },
         LIST_QUERY_EXPORT: { type: 'code-expression' },
         QUERY_NAME: { type: 'code-expression' },
         OBJECT_TYPE_NAME: { type: 'code-expression' },
@@ -52,12 +68,22 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
       MODEL: prismaOutput.getPrismaModelExpression(modelName),
     });
 
-    nexusTypesFile.registerType(
-      objectTypeBlock.renderToBlock(OBJECT_TYPE_TEMPLATE)
-    );
-
     return {
-      build: async () => {},
+      getProviders: () => ({
+        nexusType: {
+          addCustomField(fieldName, fieldType) {
+            objectTypeBlock.addStringReplacement(
+              'CUSTOM_FIELDS',
+              fieldType.prepend(`${fieldName}: `).toStringReplacement()
+            );
+          },
+        },
+      }),
+      build: () => {
+        nexusTypesFile.registerType(
+          objectTypeBlock.renderToBlock(LIST_TYPE_TEMPLATE)
+        );
+      },
     };
   },
 });

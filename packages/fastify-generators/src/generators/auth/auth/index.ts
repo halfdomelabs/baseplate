@@ -1,3 +1,4 @@
+import { ImportEntry, ImportMapper } from '@baseplate/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
@@ -9,11 +10,18 @@ import * as yup from 'yup';
 const descriptorSchema = yup.object({});
 
 export interface AuthGeneratorConfig {
-  setting?: string;
+  roleServiceImport?: ImportEntry;
 }
 
-export interface AuthProvider {
+export interface AuthSetupProvider {
   getConfig(): NonOverwriteableMap<AuthGeneratorConfig>;
+}
+
+export const authSetupProvider =
+  createProviderType<AuthSetupProvider>('auth-setup');
+
+export interface AuthProvider extends ImportMapper {
+  getConfig(): AuthGeneratorConfig;
 }
 
 export const authProvider = createProviderType<AuthProvider>('auth');
@@ -23,14 +31,29 @@ const AuthGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {},
   exports: {
-    auth: authProvider,
+    authSetup: authSetupProvider,
+    auth: authProvider.export().dependsOn(authSetupProvider),
   },
   createGenerator() {
-    const config = createNonOverwriteableMap({}, { name: 'auth-config' });
+    const config = createNonOverwriteableMap<AuthGeneratorConfig>(
+      {},
+      { name: 'auth-config' }
+    );
     return {
       getProviders: () => ({
-        auth: {
+        authSetup: {
           getConfig: () => config,
+        },
+        auth: {
+          getConfig: () => config.value(),
+          getImportMap() {
+            const { roleServiceImport } = config.value();
+            return {
+              ...(roleServiceImport
+                ? { '%role-service': roleServiceImport }
+                : {}),
+            };
+          },
         },
       }),
       build: async () => {},

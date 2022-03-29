@@ -1,4 +1,6 @@
 import {
+  ImportEntry,
+  ImportMapper,
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptSourceBlock,
@@ -12,6 +14,7 @@ import * as yup from 'yup';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+import { authSetupProvider } from '../auth';
 import { authPluginProvider } from '../auth-plugin';
 import { authServiceProvider } from '../auth-service';
 
@@ -45,7 +48,7 @@ interface RoleConfig {
   inherits?: string[];
 }
 
-export type RoleServiceProvider = unknown;
+export type RoleServiceProvider = ImportMapper;
 
 export const roleServiceProvider =
   createProviderType<RoleServiceProvider>('role-service');
@@ -60,13 +63,14 @@ const RoleServiceGenerator = createGeneratorWithChildren({
     appModule: appModuleProvider,
     serviceFile: serviceFileProvider,
     authService: authServiceProvider,
+    authSetup: authSetupProvider,
   },
   exports: {
     roleService: roleServiceProvider,
   },
   createGenerator(
     { userModelName, userRoleModelName, roles },
-    { serviceFile, prismaOutput, authPlugin, appModule, authService }
+    { serviceFile, prismaOutput, authPlugin, appModule, authService, authSetup }
   ) {
     const headerBlock = new TypescriptSourceBlock({
       USER: {
@@ -131,6 +135,11 @@ const RoleServiceGenerator = createGeneratorWithChildren({
     );
 
     authPlugin.setCustomAuthUserType(userWithRolesType);
+    const roleServiceImport: ImportEntry = {
+      path: serviceFile.getServiceImport(),
+      allowedImports: ['UserWithRoles', 'AUTH_ROLE_CONFIG', 'AuthRole'],
+    };
+    authSetup.getConfig().set('roleServiceImport', roleServiceImport);
 
     authService.setCustomUserFromToken({
       type: userWithRolesType,
@@ -141,7 +150,11 @@ const RoleServiceGenerator = createGeneratorWithChildren({
 
     return {
       getProviders: () => ({
-        roleService: {},
+        roleService: {
+          getImportMap: () => ({
+            '%role-service': roleServiceImport,
+          }),
+        },
       }),
       build: async (builder) => {
         builder.setBaseDirectory(appModule.getModuleFolder());

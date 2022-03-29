@@ -8,14 +8,14 @@ export interface NonOverwriteableMap<T extends object> {
    * @param key Key of value in map
    * @param value Value to set
    */
-  set<Key extends keyof T>(key: Key, value: T[Key]): void;
+  set<Key extends keyof T>(key: Key, value: T[Key]): this;
   /**
    * Appends a value to an array uniquely in the map
    *
    * @param key Key of value in map
    * @param value Array of values to append
    */
-  appendUnique<Key extends keyof T>(key: Key, value: T[Key]): void;
+  appendUnique<Key extends keyof T>(key: Key, value: T[Key]): this;
   /**
    * Gets a value from the map
    *
@@ -27,7 +27,7 @@ export interface NonOverwriteableMap<T extends object> {
    *
    * @param value Partial map of data to merge in
    */
-  merge(value: Partial<T>): void;
+  merge(value: Partial<T>): this;
   /**
    * The fully constructed map
    */
@@ -82,6 +82,7 @@ export function createNonOverwriteableMap<T extends object>(
       overrideValues = nonOverwriteableMerge(overrideValues, {
         [key]: value,
       }) as Partial<T>;
+      return this;
     },
     appendUnique(key, value) {
       if (!Array.isArray(value)) {
@@ -104,12 +105,14 @@ export function createNonOverwriteableMap<T extends object>(
           [key]: value,
         };
       }
+      return this;
     },
     merge(value) {
       overrideValues = nonOverwriteableMerge(
         overrideValues,
         value
       ) as Partial<T>;
+      return this;
     },
     value() {
       return finalMerge(defaults, overrideValues) as T;

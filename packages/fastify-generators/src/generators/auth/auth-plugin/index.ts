@@ -1,5 +1,6 @@
 import {
   copyTypescriptFileAction,
+  ImportMapper,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -29,7 +30,7 @@ interface AuthField {
   hookBody?: TypescriptCodeBlock;
 }
 
-export interface AuthPluginProvider {
+export interface AuthPluginProvider extends ImportMapper {
   setCustomAuthUserType(type: TypescriptCodeExpression): void;
   registerAuthField(field: AuthField): void;
 }
@@ -117,6 +118,12 @@ const AuthPluginGenerator = createGeneratorWithChildren({
           registerAuthField(field) {
             authFields.set(field.key, field);
           },
+          getImportMap: () => ({
+            '%auth-plugin': {
+              path: `@/${appModule.getModuleFolder()}/plugins/auth-plugin`,
+              allowedImports: ['AuthInfo'],
+            },
+          }),
         },
       }),
       build: async (builder) => {

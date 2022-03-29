@@ -80,6 +80,18 @@ export abstract class TypescriptCodeContents extends TypescriptCodeEntry {
   }
 }
 
+export class TypescriptStringReplacement extends TypescriptCodeContents {
+  type: 'string-replacement' = 'string-replacement';
+
+  constructor(
+    content: string,
+    importText?: string | string[] | null,
+    options?: TypescriptCodeEntryOptions
+  ) {
+    super('string-replacement', content, importText, options);
+  }
+}
+
 export class TypescriptCodeBlock extends TypescriptCodeContents {
   type: 'code-block' = 'code-block';
 
@@ -117,9 +129,21 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
     return new TypescriptCodeBlock(this.content, null, this.options);
   }
 
+  toStringReplacement(): TypescriptStringReplacement {
+    return new TypescriptStringReplacement(this.content, null, this.options);
+  }
+
   wrap(wrapper: (contents: string) => string): TypescriptCodeExpression {
     return new TypescriptCodeExpression(
       wrapper(this.content),
+      null,
+      this.options
+    );
+  }
+
+  prepend(text: string): TypescriptCodeExpression {
+    return new TypescriptCodeExpression(
+      `${text}${this.content}`,
       null,
       this.options
     );
@@ -170,6 +194,17 @@ function mergeExpressions(
   separator = '\n'
 ): TypescriptCodeExpression {
   return new TypescriptCodeExpression(
+    entries.map((e) => e.content).join(separator),
+    null,
+    mergeCodeEntryOptions(entries)
+  );
+}
+
+function mergeStringReplacements(
+  entries: TypescriptStringReplacement[],
+  separator = '\n'
+): TypescriptStringReplacement {
+  return new TypescriptStringReplacement(
     entries.map((e) => e.content).join(separator),
     null,
     mergeCodeEntryOptions(entries)
@@ -260,6 +295,7 @@ export const TypescriptCodeUtils = {
   mergeBlocks,
   mergeExpressions,
   mergeWrappers,
+  mergeStringReplacements,
   wrapExpression(
     entry: TypescriptCodeExpression,
     wrappers:

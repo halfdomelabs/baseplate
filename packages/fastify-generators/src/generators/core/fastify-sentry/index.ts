@@ -99,10 +99,19 @@ function shouldLogToSentry(error: Error): boolean {
   if (error instanceof HttpError) {
     return error.statusCode >= 500;
   }
+
+  const fastifyError = error as FastifyError;
+  if (fastifyError.statusCode) {
+    return fastifyError.statusCode <= 500;
+  }
+
   return true;
 }
         `,
-        `import { HttpError } from '${errorHandlerService.getHttpErrorsImport()}'`
+        [
+          `import { HttpError } from '${errorHandlerService.getHttpErrorsImport()}'`,
+          "import { FastifyError } from 'fastify';",
+        ]
       )
     );
 

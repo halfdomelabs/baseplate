@@ -10,6 +10,7 @@ import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
+import { nexusAuthProvider } from '@src/generators/nexus/nexus-auth';
 import { authServiceProvider } from '../auth-service';
 
 const descriptorSchema = yup.object({
@@ -30,22 +31,40 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
     authService: authServiceProvider,
     typescript: typescriptProvider,
     configService: configServiceProvider,
+    nexusAuth: nexusAuthProvider,
   },
   exports: {
     authMutations: authMutationsProvider,
   },
   createGenerator(
     descriptor,
-    { appModule, nexusSchema, authService, typescript, configService }
+    {
+      appModule,
+      nexusSchema,
+      authService,
+      typescript,
+      configService,
+      nexusAuth,
+    }
   ) {
     const appModuleFolder = appModule.getModuleFolder();
 
     const authMutationsFile = typescript.createTemplate(
-      {},
+      {
+        AUTHORIZE_USER: { type: 'code-expression' },
+        AUTHORIZE_ANONYMOUS: { type: 'code-expression' },
+      },
       {
         importMappers: [configService, authService, nexusSchema],
       }
     );
+
+    authMutationsFile.addCodeEntries({
+      AUTHORIZE_USER: nexusAuth.formatAuthorizeConfig({ roles: ['user'] }),
+      AUTHORIZE_ANONYMOUS: nexusAuth.formatAuthorizeConfig({
+        roles: ['anonymous'],
+      }),
+    });
 
     nexusSchema.registerSchemaFile(
       `${appModuleFolder}/schema/auth-mutations.ts`

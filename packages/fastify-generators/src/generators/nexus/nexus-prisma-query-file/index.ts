@@ -76,7 +76,11 @@ const NexusPrismaQueryFileGenerator = createGeneratorWithChildren({
           },
         },
       }),
-      build: async () => {},
+      build: async (builder) => {
+        await builder.apply(
+          typesFile.renderToActionFromText('TYPES', typesPath)
+        );
+      },
     };
   },
 });
