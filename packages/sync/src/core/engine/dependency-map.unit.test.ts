@@ -125,6 +125,63 @@ describe('buildEntryDependencyMapRecursive', () => {
     });
   });
 
+  it('should generate dependency map with hoisted provider', () => {
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      descriptor: { generator: 'g', hoistedProviders: [providerTwo.name] },
+      children: [
+        buildTestGeneratorEntry({
+          id: 'child',
+          children: [
+            buildTestGeneratorEntry({
+              id: 'grandChild',
+              exports: { exp: providerTwo },
+            }),
+          ],
+        }),
+        buildTestGeneratorEntry({
+          id: 'sideDep',
+          dependencies: { dep2: providerTwo },
+        }),
+      ],
+    });
+
+    const dependencyMap = buildEntryDependencyMapRecursive(entry, {}, {});
+    expect(dependencyMap).toEqual({
+      root: {},
+      child: {},
+      grandChild: {},
+      sideDep: { dep2: 'grandChild' },
+    });
+  });
+
+  it('should throw if multiple hoisted providers exist with same provider export', () => {
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      descriptor: { generator: 'g', hoistedProviders: [providerTwo.name] },
+      children: [
+        buildTestGeneratorEntry({
+          id: 'child',
+          children: [
+            buildTestGeneratorEntry({
+              id: 'grandChild',
+              exports: { exp: providerTwo },
+            }),
+          ],
+          exports: { exp: providerTwo },
+        }),
+        buildTestGeneratorEntry({
+          id: 'sideDep',
+          dependencies: { dep2: providerTwo },
+        }),
+      ],
+    });
+
+    expect(() => buildEntryDependencyMapRecursive(entry, {}, {})).toThrow(
+      'Duplicate hoisted provider'
+    );
+  });
+
   it('should throw if multiple peer providers exist with same provider export', () => {
     const entry = buildTestGeneratorEntry({
       id: 'root',

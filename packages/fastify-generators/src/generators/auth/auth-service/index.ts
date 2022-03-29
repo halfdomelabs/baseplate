@@ -15,6 +15,7 @@ import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { quot } from '@src/utils/string';
+import { authSetupProvider } from '../auth';
 
 const descriptorSchema = yup.object({
   accessTokenExpiry: yup.string().default('1h'),
@@ -46,13 +47,22 @@ const AuthServiceGenerator = createGeneratorWithChildren({
     prismaOutput: prismaOutputProvider,
     typescript: typescriptProvider,
     config: configServiceProvider,
+    authSetup: authSetupProvider,
   },
   exports: {
     authService: authServiceProvider,
   },
   createGenerator(
     { accessTokenExpiry, refreshTokenExpiry, userModelName, userModelIdField },
-    { appModule, node, errorHandlerService, prismaOutput, typescript, config }
+    {
+      appModule,
+      node,
+      errorHandlerService,
+      prismaOutput,
+      typescript,
+      config,
+      authSetup,
+    }
   ) {
     const modulePath = appModule.getModuleFolder();
 
@@ -89,6 +99,8 @@ const AuthServiceGenerator = createGeneratorWithChildren({
       exampleValue: 'MyJwtSecretKey',
     });
 
+    authSetup.getConfig().set('userModelName', userModelName);
+
     let customUserFromToken: CustomUserFromToken | null = null;
 
     return {
@@ -109,6 +121,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
             '%auth-service': {
               path: `@/${modulePath}/services/auth-service`,
               allowedImports: [
+                'AuthPayload',
                 'authService',
                 'ACCESS_TOKEN_EXPIRY_SECONDS',
                 'REFRESH_TOKEN_EXPIRY_SECONDS',

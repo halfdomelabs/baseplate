@@ -10,6 +10,7 @@ import * as yup from 'yup';
 const descriptorSchema = yup.object({});
 
 export interface AuthGeneratorConfig {
+  userModelName?: string;
   roleServiceImport?: ImportEntry;
 }
 

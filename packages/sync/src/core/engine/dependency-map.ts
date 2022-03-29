@@ -63,6 +63,39 @@ export function buildEntryDependencyMap(
 
 export type EntryDependencyMap = Record<string, Record<string, string | null>>;
 
+function buildHoistedProviderMap(
+  entry: GeneratorEntry,
+  providers: string[]
+): Record<string, string> {
+  if (!providers.length) {
+    return {};
+  }
+
+  const matchingProviders = providerMapToNames(entry.exports).filter((name) =>
+    providers.includes(name)
+  );
+  const matchingProviderMap = matchingProviders.reduce(
+    (acc, name) => ({ ...acc, [name]: entry.id }),
+    {} as Record<string, string>
+  );
+
+  const safeMerge = R.mergeWithKey((key) => {
+    throw new Error(
+      `Duplicate hoisted provider (${key}) detected at ${entry.id}`
+    );
+  });
+  const hoistedChildProviders = entry.children.map((child) =>
+    buildHoistedProviderMap(child, providers)
+  );
+  const hoistedProviders: Record<string, string> = R.reduce(
+    safeMerge,
+    matchingProviderMap,
+    hoistedChildProviders
+  );
+
+  return hoistedProviders;
+}
+
 /**
  * Builds a map of entry ID to resolved providers for that entry recursively from the root entry
  *
@@ -114,8 +147,14 @@ export function buildEntryDependencyMapRecursive(
     }))
   );
 
+  const hoistedProviders = buildHoistedProviderMap(
+    entry,
+    entry.descriptor.hoistedProviders || []
+  );
+
   const providerMap = {
     ...parentProviders,
+    ...hoistedProviders,
     ...selfProviders,
     ...childProviders,
   };

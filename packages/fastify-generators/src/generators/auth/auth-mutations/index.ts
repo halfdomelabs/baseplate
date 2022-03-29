@@ -1,4 +1,5 @@
 import {
+  ImportMapper,
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@baseplate/core-generators';
@@ -17,7 +18,7 @@ const descriptorSchema = yup.object({
   placeholder: yup.string(),
 });
 
-export type AuthMutationsProvider = unknown;
+export type AuthMutationsProvider = ImportMapper;
 
 export const authMutationsProvider =
   createProviderType<AuthMutationsProvider>('auth-mutations');
@@ -79,7 +80,19 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
 
     return {
       getProviders: () => ({
-        authMutations: {},
+        authMutations: {
+          getImportMap: () => ({
+            '%auth-mutations/refresh-token': {
+              path: `@/${appModuleFolder}/utils/refresh-tokens`,
+              allowedImports: [
+                'REFRESH_TOKEN_COOKIE_NAME',
+                'setRefreshTokenIntoCookie',
+                'clearRefreshTokenFromCookie',
+                'formatRefreshTokens',
+              ],
+            },
+          }),
+        },
       }),
       build: async (builder) => {
         builder.setBaseDirectory(appModule.getModuleFolder());
