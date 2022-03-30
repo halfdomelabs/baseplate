@@ -10,15 +10,14 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: ({ modelName }) => ({
     create: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-crud-method',
+        generator: '@baseplate/fastify/prisma/prisma-crud-create',
         name: 'create',
-        type: 'create',
         modelName,
       },
     },
     update: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-crud-method',
+        generator: '@baseplate/fastify/prisma/prisma-crud-update',
         name: 'update',
         type: 'update',
         modelName,
@@ -26,9 +25,8 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
     },
     delete: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-crud-method',
+        generator: '@baseplate/fastify/prisma/prisma-crud-delete',
         name: 'delete',
-        type: 'delete',
         modelName,
       },
     },
