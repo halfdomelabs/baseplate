@@ -1,16 +1,28 @@
-import { TypescriptCodeExpression } from '@baseplate/core-generators';
+import {
+  TypescriptCodeBlock,
+  TypescriptCodeExpression,
+} from '@baseplate/core-generators';
 import { createProviderType } from '@baseplate/sync';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput';
 
-export interface PrismaTransform {
-  inputFields: ServiceOutputDtoField[];
-  transformer: TypescriptCodeExpression;
-  outputFields: string[];
+interface PrismaDataTransformInput {
+  type: TypescriptCodeExpression;
+  dtoField: ServiceOutputDtoField;
+}
+
+interface PrismaDataTransformOutput {
+  name: string;
+}
+
+export interface PrismaDataTransformer {
+  inputFields: PrismaDataTransformInput[];
+  outputFields: PrismaDataTransformOutput[];
+  transformer: TypescriptCodeBlock;
 }
 
 export interface PrismaDataTransformable {
-  addTransform(transform: PrismaTransform): void;
+  addTransformer(transformer: PrismaDataTransformer): void;
 }
 
-export const prismaDataTransformable =
+export const prismaDataTransformableProvider =
   createProviderType<PrismaDataTransformable>('prisma-data-transformable');

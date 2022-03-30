@@ -10,6 +10,7 @@ export interface CopyTypescriptFileOptions {
   replacements?: { [key: string]: string };
   importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
+  neverOverwrite?: boolean;
 }
 
 function formatImports(
@@ -30,7 +31,7 @@ function formatImports(
 
 export const copyTypescriptFileAction = createBuilderActionCreator(
   (options: CopyTypescriptFileOptions) => async (builder) => {
-    const { destination, source, replacements = {} } = options;
+    const { destination, source, replacements = {}, neverOverwrite } = options;
 
     const templatePath = path.join(
       builder.generatorBaseDirectory,
@@ -59,6 +60,7 @@ export const copyTypescriptFileAction = createBuilderActionCreator(
 
     builder.writeFile(destinationPath, formattedContents, {
       shouldFormat: true,
+      neverOverwrite,
     });
   }
 );

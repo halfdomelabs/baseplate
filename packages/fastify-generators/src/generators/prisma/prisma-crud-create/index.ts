@@ -2,18 +2,24 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
-import {
-  createProviderType,
-  createGeneratorWithChildren,
-} from '@baseplate/sync';
+import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
+  PrismaDataTransformer,
+  prismaDataTransformableProvider,
+} from '@src/providers/prisma/prisma-data-transformable';
+import {
   prismaToServiceOutputDto,
-  ServiceOutputDto,
   ServiceOutputMethod,
 } from '@src/types/serviceOutput';
-import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
+import {
+  getDataInputTypeBlock,
+  getDataMethodDataExpressions,
+  getDataMethodDataType,
+  PrismaDataMethodOptions,
+} from '../_shared/crud-method/data-method';
+import { prismaOutputProvider } from '../prisma';
 
 const descriptorSchema = yup.object({
   name: yup.string().required(),
@@ -21,50 +27,17 @@ const descriptorSchema = yup.object({
   prismaFields: yup.array(yup.string().required()).required(),
 });
 
-interface PrismaCreateMethodOptions {
-  descriptor: yup.InferType<typeof descriptorSchema>;
-  prismaOutput: PrismaOutputProvider;
-  methodExpression: TypescriptCodeExpression;
-}
-
-export type PrismaCreateMethodProvider = unknown;
-
-export const prismaCreateMethodProvider =
-  createProviderType<PrismaCreateMethodProvider>('prisma-create-method');
-
-function getMethodDefinition({
-  descriptor: { name, modelName, prismaFields: prismaFieldNames },
-  prismaOutput,
-  methodExpression,
-}: PrismaCreateMethodOptions): ServiceOutputMethod {
+function getMethodDefinition(
+  serviceMethodExpression: TypescriptCodeExpression,
+  options: PrismaDataMethodOptions
+): ServiceOutputMethod {
+  const { name, modelName, prismaOutput } = options;
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
-  const prismaFields = prismaFieldNames.map((fieldName) => {
-    const field = prismaDefinition.fields.find((f) => f.name === fieldName);
-    if (!field) {
-      throw new Error(
-        `Could not find field ${fieldName} in model ${modelName}`
-      );
-    }
-    return field;
-  });
-  const dataType: ServiceOutputDto = {
-    name: `${modelName}CreateData`,
-    fields: prismaFields.map((field) => {
-      if (field.type !== 'scalar') {
-        throw new Error(`Non-scalar fields not suppported in create`);
-      }
-      return {
-        type: 'scalar',
-        name: field.name,
-        isOptional: field.isOptional || field.hasDefault,
-        isList: field.isList,
-        scalarType: field.scalarType,
-      };
-    }),
-  };
+  const dataType = getDataMethodDataType(options);
+
   return {
     name,
-    expression: methodExpression,
+    expression: serviceMethodExpression,
     arguments: [
       {
         name: 'data',
@@ -76,40 +49,36 @@ function getMethodDefinition({
   };
 }
 
-function getMethodExpression({
-  descriptor: { name, modelName, prismaFields },
-  prismaOutput,
-}: PrismaCreateMethodOptions): TypescriptCodeExpression {
-  const fields = prismaFields.map((field) => `'${field}'`).join(' | ');
+function getMethodExpression(
+  options: PrismaDataMethodOptions
+): TypescriptCodeExpression {
+  const { name, modelName, prismaOutput } = options;
 
   const createInputTypeName = `${modelName}CreateData`;
 
-  const typeHeaderBlock = TypescriptCodeUtils.formatBlock(
-    `type CREATE_INPUT_TYPE_NAME = Pick<Prisma.PRISMA_CREATE_INPUT, FIELDS>;`,
-    {
-      CREATE_INPUT_TYPE_NAME: createInputTypeName,
-      PRISMA_CREATE_INPUT: `${modelName}UncheckedCreateInput`,
-      FIELDS: fields,
-    },
-    { importText: [`import {Prisma} from '@prisma/client'`] }
-  );
+  const typeHeaderBlock = getDataInputTypeBlock(createInputTypeName, options);
 
-  const modelType = TypescriptCodeUtils.createExpression(
-    modelName,
-    `import {${modelName}} from '@prisma/client'`
-  );
+  const { functionBody, dataExpression } =
+    getDataMethodDataExpressions(options);
+
+  const modelType = prismaOutput.getModelTypeExpression(modelName);
 
   return TypescriptCodeUtils.formatExpression(
     `
-async OPERATION_NAME(data: CREATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
-return PRISMA_MODEL.create({ data });
+async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
+  FUNCTION_BODY
+  return PRISMA_MODEL.create(CREATE_ARGS);
 }
 `.trim(),
     {
-      OPERATION_NAME: name,
+      METHOD_NAME: name,
       CREATE_INPUT_TYPE_NAME: createInputTypeName,
       MODEL_TYPE: modelType,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+      FUNCTION_BODY: functionBody,
+      CREATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+        data: dataExpression,
+      }),
     },
     {
       headerBlocks: [typeHeaderBlock],
@@ -122,34 +91,43 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     prismaOutput: prismaOutputProvider,
-    serviceFile: serviceFileProvider,
+    serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
   },
   exports: {
-    prismaCreateMethod: prismaCreateMethodProvider,
+    prismaDataTransformable: prismaDataTransformableProvider,
   },
   createGenerator(descriptor, { prismaOutput, serviceFile }) {
-    const { name } = descriptor;
-    const methodExpression = serviceFile
+    const { name, modelName, prismaFields } = descriptor;
+    const serviceMethodExpression = serviceFile
       .getServiceExpression()
       .append(`.${name}`);
-
-    const methodOptions = {
-      descriptor,
-      prismaOutput,
-      methodExpression,
-    };
-
-    serviceFile.registerMethod(
-      name,
-      getMethodExpression(methodOptions),
-      getMethodDefinition(methodOptions)
-    );
+    const transformers: PrismaDataTransformer[] = [];
 
     return {
       getProviders: () => ({
-        prismaCreateMethod: {},
+        prismaDataTransformable: {
+          addTransformer(transformer) {
+            transformers.push(transformer);
+          },
+        },
       }),
-      build: async () => {},
+      build: () => {
+        const methodOptions: PrismaDataMethodOptions = {
+          name,
+          modelName,
+          prismaFieldNames: prismaFields,
+          prismaOutput,
+          operationName: 'create',
+          isPartial: false,
+          transformers,
+        };
+
+        serviceFile.registerMethod(
+          name,
+          getMethodExpression(methodOptions),
+          getMethodDefinition(serviceMethodExpression, methodOptions)
+        );
+      },
     };
   },
 });

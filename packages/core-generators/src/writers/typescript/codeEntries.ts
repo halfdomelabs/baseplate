@@ -247,7 +247,7 @@ function formatStringWithContent(
   const regex = new RegExp(`(${Object.keys(args).join('|')})`, 'g');
   return str.replace(regex, (key) => {
     const entry = args[key];
-    if (!entry) {
+    if (entry == null) {
       throw new Error(`Could not find entry for ${key}`);
     }
     return typeof entry === 'string' ? entry : entry.content;
@@ -358,8 +358,8 @@ export const TypescriptCodeUtils = {
       .join('\n');
     return new TypescriptCodeExpression(
       wrapWithParenthesis
-        ? `({\n${mergedExpression}\n})`
-        : `{\n${mergedExpression}\n}`,
+        ? `({${mergedExpression}\n})`
+        : `{${mergedExpression}\n}`,
       null,
       mergeCodeEntryOptions(expressions)
     );

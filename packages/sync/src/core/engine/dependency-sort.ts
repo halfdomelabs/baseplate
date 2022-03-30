@@ -19,7 +19,10 @@ function getExportInterdependencies(
   const entriesById = R.indexBy(R.prop('id'), entries);
 
   // Map of entry ID#providerName to generators that depend on it
-  const exportDependencies: Record<string, string[]> = {};
+  const exportDependencies: Record<
+    string,
+    { id: string; modifiedInBuild: boolean }[]
+  > = {};
 
   Object.entries(dependencyMap).forEach(([entryId, entryDependencies]) => {
     const entry = entriesById[entryId];
@@ -29,9 +32,18 @@ function getExportInterdependencies(
         return;
       }
       const providerName = dep.name;
-      const key = `${resolvedDependency}#${providerName}`;
+      const key = `provider|${resolvedDependency}#${providerName}`;
 
-      exportDependencies[key] = [...(exportDependencies[key] || []), entryId];
+      const modifiedInBuild =
+        (dep.type === 'dependency' && dep.options.modifiedInBuild) || false;
+
+      exportDependencies[key] = [
+        ...(exportDependencies[key] || []),
+        {
+          id: entryId,
+          modifiedInBuild,
+        },
+      ];
     });
   });
 
@@ -67,21 +79,23 @@ function getExportInterdependencies(
     return exportsInvolvingDependencies.flatMap((e) => {
       const { dependencies = [] } = e.options;
 
-      const dependentExportKey = `${entry.id}#${e.name}`;
+      const dependentExportKey = `provider|${entry.id}#${e.name}`;
 
       // create links from this export to the export that it depends on
       const exportToDependentExports = dependencies.map((dependency) => {
-        const dependencyExportKey = `${entry.id}#${dependency.name}`;
+        const dependencyExportKey = `provider|${entry.id}#${dependency.name}`;
         return [dependencyExportKey, dependentExportKey] as [string, string];
       });
 
-      // create links between this export and generators that depend on this export's dependencies
+      // create links between this export and the build result of generators that depend on this export's dependencies
       const generatorsToExportRelationships = dependencies.flatMap(
         (dependency) => {
-          const dependencyExportKey = `${entry.id}#${dependency.name}`;
+          const dependencyExportKey = `provider|${entry.id}#${dependency.name}`;
           const generators = exportDependencies[dependencyExportKey] || [];
-          return generators.map((generatorId): [string, string] => [
-            generatorId,
+          return generators.map((generator): [string, string] => [
+            generator.modifiedInBuild
+              ? `build|${generator.id}`
+              : `init|${generator.id}`,
             dependentExportKey,
           ]);
         }
@@ -90,7 +104,10 @@ function getExportInterdependencies(
       // create links between this export to the generators that depend on it
       const exportToGeneratorRelationships = (
         exportDependencies[dependentExportKey] || []
-      ).map((generator): [string, string] => [dependentExportKey, generator]);
+      ).map((generator): [string, string] => [
+        dependentExportKey,
+        `init|${generator.id}`,
+      ]);
 
       nodes.push(dependentExportKey);
 
@@ -106,28 +123,43 @@ function getExportInterdependencies(
 }
 
 /**
- * Extracts a sorted list of entry IDs that abides by the provided dependency map
+ * Extracts a sorted list of run steps that abides by the provided dependency map
+ *
+ * Run steps involve:
+ *  - init:<entryId>
+ *  - build:<entryId>
  *
  * @param entries All generator entries to sort
  * @param dependencyMap Dependency map of the entries
  */
-export function getSortedEntryIds(
+export function getSortedRunSteps(
   entries: GeneratorEntry[],
   dependencyMap: EntryDependencyMap
 ): string[] {
-  const dependencyGraph = R.unnest(
-    entries.map((entry) =>
-      Object.values(dependencyMap[entry.id])
+  const dependencyGraph = entries.flatMap((entry): [string, string][] => {
+    const entryInit = `init|${entry.id}`;
+    const entryBuild = `build|${entry.id}`;
+    return [
+      [entryInit, entryBuild],
+      ...Object.values(dependencyMap[entry.id])
         .filter(notEmpty)
-        .map((dependentId): [string, string] => [dependentId, entry.id])
-    )
-  );
-
+        .flatMap((dependentId): [string, string][] => {
+          const dependentInit = `init|${dependentId}`;
+          const dependentBuild = `build|${dependentId}`;
+          return [
+            [dependentInit, entryInit],
+            [entryBuild, dependentBuild],
+          ];
+        }),
+    ];
+  });
   const { nodes: interdependentNodes, edges: interdependentEdges } =
     getExportInterdependencies(entries, dependencyMap);
-
   const result = toposort.array(
-    [...entries.map(R.prop('id')), ...interdependentNodes],
+    [
+      ...entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]),
+      ...interdependentNodes,
+    ],
     [...dependencyGraph, ...interdependentEdges]
   );
 

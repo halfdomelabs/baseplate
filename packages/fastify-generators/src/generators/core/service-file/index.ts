@@ -12,6 +12,7 @@ import {
 import { paramCase } from 'change-case';
 import * as yup from 'yup';
 import { ServiceOutputMethod } from '@src/types/serviceOutput';
+import { lowerCaseFirst } from '@src/utils/case';
 import { appModuleProvider } from '../root-module';
 
 const descriptorSchema = yup.object({
@@ -47,7 +48,9 @@ const ServiceFileGenerator = createGeneratorWithChildren({
   },
   exports: {
     serviceFile: serviceFileProvider,
-    serviceFileOutput: serviceFileOutputProvider,
+    serviceFileOutput: serviceFileOutputProvider
+      .export()
+      .dependsOn(serviceFileProvider),
   },
   createGenerator(descriptor, { appModule, typescript }) {
     const methodMap = createNonOverwriteableMap<
@@ -66,7 +69,7 @@ const ServiceFileGenerator = createGeneratorWithChildren({
       METHODS: { type: 'code-expression' },
       SERVICE_NAME: { type: 'code-expression' },
     });
-    const serviceName = descriptor.name;
+    const serviceName = lowerCaseFirst(descriptor.name);
 
     return {
       getProviders: () => ({

@@ -31,5 +31,6 @@ export function setupFastifyTypescript(
     'tsc-alias': '^1.5.0',
     'tsconfig-paths': '^3.12.0',
     'ts-node-dev': '^1.1.8',
+    'ts-node': '^9.1.1',
   });
 }

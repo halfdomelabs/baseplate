@@ -2,18 +2,24 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
-import {
-  createProviderType,
-  createGeneratorWithChildren,
-} from '@baseplate/sync';
+import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
+  prismaDataTransformableProvider,
+  PrismaDataTransformer,
+} from '@src/providers/prisma/prisma-data-transformable';
+import {
   prismaToServiceOutputDto,
-  ServiceOutputDto,
   ServiceOutputMethod,
 } from '@src/types/serviceOutput';
-import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
+import {
+  getDataInputTypeBlock,
+  getDataMethodDataExpressions,
+  getDataMethodDataType,
+  PrismaDataMethodOptions,
+} from '../_shared/crud-method/data-method';
+import { prismaOutputProvider } from '../prisma';
 
 const descriptorSchema = yup.object({
   name: yup.string().required(),
@@ -21,51 +27,17 @@ const descriptorSchema = yup.object({
   prismaFields: yup.array(yup.string().required()).required(),
 });
 
-interface PrismaUpdateMethodOptions {
-  descriptor: yup.InferType<typeof descriptorSchema>;
-  prismaOutput: PrismaOutputProvider;
-  methodExpression: TypescriptCodeExpression;
-}
-
-export type PrismaUpdateMethodProvider = unknown;
-
-export const prismaUpdateMethodProvider =
-  createProviderType<PrismaUpdateMethodProvider>('prisma-update-method');
-
-function getMethodDefinition({
-  descriptor: { name, modelName, prismaFields: prismaFieldNames },
-  prismaOutput,
-  methodExpression,
-}: PrismaUpdateMethodOptions): ServiceOutputMethod {
+function getMethodDefinition(
+  serviceMethodExpression: TypescriptCodeExpression,
+  options: PrismaDataMethodOptions
+): ServiceOutputMethod {
+  const { name, modelName, prismaOutput } = options;
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
-  const prismaFields = prismaFieldNames.map((fieldName) => {
-    const field = prismaDefinition.fields.find((f) => f.name === fieldName);
-    if (!field) {
-      throw new Error(
-        `Could not find field ${fieldName} in model ${modelName}`
-      );
-    }
-    return field;
-  });
-  const dataType: ServiceOutputDto = {
-    name: `${modelName}UpdateData`,
-    fields: prismaFields.map((field) => {
-      if (field.type !== 'scalar') {
-        throw new Error(`Non-scalar fields not suppported in create`);
-      }
-      return {
-        type: 'scalar',
-        name: field.name,
-        isOptional: true,
-        isNullable: field.isOptional,
-        isList: field.isList,
-        scalarType: field.scalarType,
-      };
-    }),
-  };
+
+  const dataType = getDataMethodDataType(options);
   return {
     name,
-    expression: methodExpression,
+    expression: serviceMethodExpression,
     arguments: [
       {
         name: 'id',
@@ -82,40 +54,37 @@ function getMethodDefinition({
   };
 }
 
-function getMethodExpression({
-  descriptor: { name, modelName, prismaFields },
-  prismaOutput,
-}: PrismaUpdateMethodOptions): TypescriptCodeExpression {
-  const fields = prismaFields.map((field) => `'${field}'`).join(' | ');
+function getMethodExpression(
+  options: PrismaDataMethodOptions
+): TypescriptCodeExpression {
+  const { name, modelName, prismaOutput } = options;
 
   const updateInputTypeName = `${modelName}UpdateData`;
 
-  const typeHeaderBlock = TypescriptCodeUtils.formatBlock(
-    `type UPDATE_INPUT_TYPE_NAME = Pick<Prisma.PRISMA_UPDATE_INPUT, FIELDS>;`,
-    {
-      UPDATE_INPUT_TYPE_NAME: updateInputTypeName,
-      PRISMA_UPDATE_INPUT: `${modelName}UncheckedUpdateInput`,
-      FIELDS: fields,
-    },
-    { importText: [`import {Prisma} from '@prisma/client'`] }
-  );
+  const typeHeaderBlock = getDataInputTypeBlock(updateInputTypeName, options);
 
-  const modelType = new TypescriptCodeExpression(
-    modelName,
-    `import {${modelName}} from '@prisma/client'`
-  );
+  const { functionBody, dataExpression } =
+    getDataMethodDataExpressions(options);
+
+  const modelType = prismaOutput.getModelTypeExpression(modelName);
 
   return TypescriptCodeUtils.formatExpression(
     `
-async OPERATION_NAME(id: string, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
-return PRISMA_MODEL.update({ where: { id }, data });
+async METHOD_NAME(id: string, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
+  FUNCTION_BODY
+  return PRISMA_MODEL.update(UPDATE_ARGS);
 }
 `.trim(),
     {
-      OPERATION_NAME: name,
+      METHOD_NAME: name,
       UPDATE_INPUT_TYPE_NAME: updateInputTypeName,
       MODEL_TYPE: modelType,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+      FUNCTION_BODY: functionBody,
+      UPDATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+        where: new TypescriptCodeExpression('{ id }'),
+        data: dataExpression,
+      }),
     },
     {
       headerBlocks: [typeHeaderBlock],
@@ -128,34 +97,43 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     prismaOutput: prismaOutputProvider,
-    serviceFile: serviceFileProvider,
+    serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
   },
   exports: {
-    prismaUpdateMethod: prismaUpdateMethodProvider,
+    prismaDataTransformable: prismaDataTransformableProvider,
   },
   createGenerator(descriptor, { prismaOutput, serviceFile }) {
-    const { name } = descriptor;
-    const methodExpression = serviceFile
+    const { name, modelName, prismaFields } = descriptor;
+    const serviceMethodExpression = serviceFile
       .getServiceExpression()
       .append(`.${name}`);
-
-    const methodOptions = {
-      descriptor,
-      prismaOutput,
-      methodExpression,
-    };
-
-    serviceFile.registerMethod(
-      name,
-      getMethodExpression(methodOptions),
-      getMethodDefinition(methodOptions)
-    );
+    const transformers: PrismaDataTransformer[] = [];
 
     return {
       getProviders: () => ({
-        prismaUpdateMethod: {},
+        prismaDataTransformable: {
+          addTransformer(transformer) {
+            transformers.push(transformer);
+          },
+        },
       }),
-      build: async () => {},
+      build: () => {
+        const methodOptions: PrismaDataMethodOptions = {
+          name,
+          modelName,
+          prismaFieldNames: prismaFields,
+          prismaOutput,
+          operationName: 'update',
+          isPartial: true,
+          transformers,
+        };
+
+        serviceFile.registerMethod(
+          name,
+          getMethodExpression(methodOptions),
+          getMethodDefinition(serviceMethodExpression, methodOptions)
+        );
+      },
     };
   },
 });

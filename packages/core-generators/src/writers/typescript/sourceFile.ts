@@ -410,6 +410,10 @@ export interface TypescriptSourceFileOptions {
   pathMappings?: PathMapEntry[];
 }
 
+interface FileWriteOptions {
+  neverOverwrite?: boolean;
+}
+
 export class TypescriptSourceFile<
   T extends TypescriptTemplateConfig<any>
 > extends TypescriptSourceContent<T> {
@@ -511,7 +515,11 @@ export class TypescriptSourceFile<
     return `${text.trim()}\n`;
   }
 
-  renderToActionFromText(template: string, destination: string): BuilderAction {
+  renderToActionFromText(
+    template: string,
+    destination: string,
+    options?: FileWriteOptions
+  ): BuilderAction {
     return {
       execute: async (builder) => {
         const fullPath = builder.resolvePath(destination);
@@ -520,13 +528,18 @@ export class TypescriptSourceFile<
           writeFormattedAction({
             destination,
             contents,
+            ...options,
           })
         );
       },
     };
   }
 
-  renderToAction(templateFile: string, destination?: string): BuilderAction {
+  renderToAction(
+    templateFile: string,
+    destination?: string,
+    options?: FileWriteOptions
+  ): BuilderAction {
     return {
       execute: async (builder) => {
         const fullPath = builder.resolvePath(destination || templateFile);
@@ -536,6 +549,7 @@ export class TypescriptSourceFile<
           writeFormattedAction({
             destination: destination || templateFile,
             contents,
+            ...options,
           })
         );
       },

@@ -1,10 +1,10 @@
 import { createProviderType } from '../provider';
-import { getSortedEntryIds } from './dependency-sort';
+import { getSortedRunSteps } from './dependency-sort';
 import { buildTestGeneratorEntry } from './tests/factories.test-helper';
 
-describe('getSortedEntryIds', () => {
+describe('getSortedRunSteps', () => {
   it('sorts an empty list', () => {
-    const result = getSortedEntryIds([], {});
+    const result = getSortedRunSteps([], {});
     expect(result).toEqual([]);
   });
 
@@ -19,16 +19,33 @@ describe('getSortedEntryIds', () => {
       entryTwo: { dep: 'entryOne' },
       entryThree: { dep: 'entryTwo' },
     };
-    const resultOne = getSortedEntryIds(entries, dependencyGraphOne);
-    expect(resultOne).toEqual(['entryOne', 'entryTwo', 'entryThree']);
 
     const dependencyGraphTwo = {
       entryOne: { dep: 'entryTwo' },
       entryTwo: { dep: 'entryThree' },
       entryThree: {},
     };
-    const resultTwo = getSortedEntryIds(entries, dependencyGraphTwo);
-    expect(resultTwo).toEqual(['entryThree', 'entryTwo', 'entryOne']);
+
+    const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
+    const resultTwo = getSortedRunSteps(entries, dependencyGraphTwo);
+
+    expect(resultOne).toEqual([
+      'init|entryOne',
+      'init|entryTwo',
+      'init|entryThree',
+      'build|entryThree',
+      'build|entryTwo',
+      'build|entryOne',
+    ]);
+
+    expect(resultTwo).toEqual([
+      'init|entryThree',
+      'init|entryTwo',
+      'init|entryOne',
+      'build|entryOne',
+      'build|entryTwo',
+      'build|entryThree',
+    ]);
   });
 
   describe('with export inter-dependencies', () => {
@@ -64,12 +81,16 @@ describe('getSortedEntryIds', () => {
         entryThree: { dep: 'entryOne' },
         entryFour: { dep: 'entryOne' },
       };
-      const resultOne = getSortedEntryIds(entries, dependencyGraphOne);
+      const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
       expect(resultOne).toEqual([
-        'entryOne',
-        'entryTwo',
-        'entryFour',
-        'entryThree',
+        'init|entryOne',
+        'init|entryTwo',
+        'build|entryTwo',
+        'init|entryFour',
+        'build|entryFour',
+        'init|entryThree',
+        'build|entryThree',
+        'build|entryOne',
       ]);
     });
 
@@ -102,12 +123,16 @@ describe('getSortedEntryIds', () => {
         entryThree: { dep: 'entryOne' },
         entryFour: { dep: 'entryOne' },
       };
-      const resultOne = getSortedEntryIds(entries, dependencyGraphOne);
+      const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
       expect(resultOne).toEqual([
-        'entryOne',
-        'entryTwo',
-        'entryFour',
-        'entryThree',
+        'init|entryOne',
+        'init|entryTwo',
+        'build|entryTwo',
+        'init|entryFour',
+        'build|entryFour',
+        'init|entryThree',
+        'build|entryThree',
+        'build|entryOne',
       ]);
     });
 
@@ -129,7 +154,7 @@ describe('getSortedEntryIds', () => {
         entryOne: {},
         entryTwo: { dep: 'entryOne', dep2: 'entryOne' },
       };
-      expect(() => getSortedEntryIds(entries, dependencyGraphOne)).toThrow(
+      expect(() => getSortedRunSteps(entries, dependencyGraphOne)).toThrow(
         'Cyclic dependency'
       );
     });

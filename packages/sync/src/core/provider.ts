@@ -32,6 +32,10 @@ export interface ProviderDependencyOptions {
    * Where the dependency should be resolved from
    */
   reference?: string;
+  /**
+   * Whether the dependency is modified in the build output of this generator
+   */
+  modifiedInBuild?: boolean;
 }
 
 export interface ProviderDependency<P = Provider> {
@@ -40,6 +44,7 @@ export interface ProviderDependency<P = Provider> {
   readonly options: ProviderDependencyOptions;
   optional(): ProviderDependency<P | undefined>;
   reference(reference?: string): ProviderDependency<P>;
+  modifiedInBuild(): ProviderDependency<P>;
 }
 
 export interface ProviderExportOptions {
@@ -80,6 +85,9 @@ export function createProviderType<T>(name: string): ProviderType<T> {
             throw new Error('Cannot overwrite reference on provider type');
           }
           return R.mergeDeepLeft({ options: { reference } }, this);
+        },
+        modifiedInBuild() {
+          return R.mergeDeepLeft({ options: { modifiedInBuild: true } }, this);
         },
       };
     },

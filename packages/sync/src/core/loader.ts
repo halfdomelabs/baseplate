@@ -50,32 +50,34 @@ export async function loadGeneratorsForModule(
     onlyDirectories: true,
   });
 
-  const generators = matchedGenerators.map((folder) => {
-    const generatorFolder = path.join(generatorsDirectory, folder);
-    const generator = getModuleDefault<GeneratorConfig>(generatorFolder);
-    if (!generator) {
-      throw new Error(
-        `Generator folder has no default export: ${generatorFolder}`
-      );
-    }
-    if (!generator.createGenerator) {
-      throw new Error(
-        `Generator function lacks a createGenerator function: ${generatorFolder}`
-      );
-    }
-    if (!generator.parseDescriptor) {
-      throw new Error(
-        `Generator function lacks a parseDescriptor function: ${generatorFolder}`
-      );
-    }
-    const name = `${module.replace(/-generators$/, '')}/${folder}`;
+  const generators = matchedGenerators
+    .filter((folder) => !path.basename(folder).startsWith('_'))
+    .map((folder) => {
+      const generatorFolder = path.join(generatorsDirectory, folder);
+      const generator = getModuleDefault<GeneratorConfig>(generatorFolder);
+      if (!generator) {
+        throw new Error(
+          `Generator folder has no default export: ${generatorFolder}`
+        );
+      }
+      if (!generator.createGenerator) {
+        throw new Error(
+          `Generator function lacks a createGenerator function: ${generatorFolder}`
+        );
+      }
+      if (!generator.parseDescriptor) {
+        throw new Error(
+          `Generator function lacks a parseDescriptor function: ${generatorFolder}`
+        );
+      }
+      const name = `${module.replace(/-generators$/, '')}/${folder}`;
 
-    return {
-      [name]: {
-        ...generator,
-        configBaseDirectory: generatorFolder,
-      },
-    };
-  });
+      return {
+        [name]: {
+          ...generator,
+          configBaseDirectory: generatorFolder,
+        },
+      };
+    });
   return R.mergeAll(generators);
 }

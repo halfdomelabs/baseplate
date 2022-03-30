@@ -21,6 +21,7 @@ describe('loadGeneratorsForModule', () => {
       {
         '/modules/test-generators/lib/generators/generatorOne/index.ts': 'a();',
         '/modules/test-generators/lib/generators/generatorTwo/index.ts': 'a();',
+        '/modules/test-generators/lib/generators/_ignored/index.ts': 'a();',
         '/modules/test-generators/lib/generators/index.ts': 'a();',
         '/modules/test-generators/lib/random/foo.yml': 'test',
       },

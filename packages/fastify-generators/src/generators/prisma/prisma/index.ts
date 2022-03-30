@@ -4,6 +4,7 @@ import {
   projectProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createProviderType,
@@ -12,6 +13,7 @@ import {
 import { formatSchema } from '@prisma/sdk';
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
+import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check';
 import { PrismaOutputModel } from '@src/types/prismaOutput';
 import { PrismaModelBlockWriter } from '@src/writers/prisma-schema';
@@ -51,6 +53,8 @@ const PrismaGenerator = createGeneratorWithChildren({
     configService: configServiceProvider,
     project: projectProvider,
     fastifyHealthCheck: fastifyHealthCheckProvider,
+    fastifyOutput: fastifyOutputProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     prismaSchema: prismaSchemaProvider,
@@ -58,7 +62,14 @@ const PrismaGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { node, configService, project, fastifyHealthCheck }
+    {
+      node,
+      configService,
+      project,
+      fastifyHealthCheck,
+      fastifyOutput,
+      typescript,
+    }
   ) {
     node.addDevPackages({
       prisma: '^3.9.2',
@@ -66,6 +77,12 @@ const PrismaGenerator = createGeneratorWithChildren({
 
     node.addPackages({
       '@prisma/client': '3.9.2',
+    });
+
+    node.mergeExtraProperties({
+      prisma: {
+        seed: `ts-node ${fastifyOutput.getDevLoaderString()} src/prisma/seed.ts`,
+      },
     });
 
     const schemaFile = new PrismaSchemaFile();
@@ -154,6 +171,23 @@ const PrismaGenerator = createGeneratorWithChildren({
           copyTypescriptFileAction({
             source: 'services/prisma.ts',
             destination: 'src/services/prisma.ts',
+          })
+        );
+
+        const seedFile = typescript.createTemplate({
+          PRISMA_SERVICE: { type: 'code-expression' },
+        });
+
+        seedFile.addCodeEntries({
+          PRISMA_SERVICE: TypescriptCodeUtils.createExpression(
+            'prisma',
+            "import { prisma } from '@/src/services/prisma'"
+          ),
+        });
+
+        await builder.apply(
+          seedFile.renderToAction('prisma/seed.ts', 'src/prisma/seed.ts', {
+            neverOverwrite: true,
           })
         );
       },
