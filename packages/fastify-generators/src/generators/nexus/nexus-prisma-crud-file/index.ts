@@ -70,11 +70,18 @@ const NexusPrismaCrudFileGenerator = createGeneratorWithChildren({
     );
 
     nexusSchema.registerSchemaFile(typesPath);
+    const registeredKeys: string[] = [];
 
     return {
       getProviders: () => ({
         nexusTypes: {
-          registerType(block: TypescriptCodeBlock) {
+          registerType(block, key) {
+            if (key) {
+              if (registeredKeys.includes(key)) {
+                return;
+              }
+              registeredKeys.push(key);
+            }
             typesFile.addCodeBlock('TYPES', block);
           },
         },

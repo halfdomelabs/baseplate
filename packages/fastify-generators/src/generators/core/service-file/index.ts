@@ -103,7 +103,7 @@ const ServiceFileGenerator = createGeneratorWithChildren({
           SERVICE_NAME: serviceName,
           METHODS: TypescriptCodeUtils.mergeExpressions(
             Object.values(methodMap.value()),
-            ',\n'
+            ',\n\n'
           ).wrap((c) => `{${c}}`),
         });
         await builder.apply(

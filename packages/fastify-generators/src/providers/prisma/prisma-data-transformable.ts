@@ -5,22 +5,24 @@ import {
 import { createProviderType } from '@baseplate/sync';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput';
 
-interface PrismaDataTransformInput {
+export interface PrismaDataTransformInputField {
   type: TypescriptCodeExpression;
   dtoField: ServiceOutputDtoField;
 }
 
-interface PrismaDataTransformOutput {
+export interface PrismaDataTransformOutputField {
   name: string;
+  outputVariableName?: string;
 }
 
 export interface PrismaDataTransformer {
-  inputFields: PrismaDataTransformInput[];
-  outputFields: PrismaDataTransformOutput[];
+  inputFields: PrismaDataTransformInputField[];
+  outputFields: PrismaDataTransformOutputField[];
   transformer: TypescriptCodeBlock;
 }
 
 export interface PrismaDataTransformable {
+  getModelName(): string;
   addTransformer(transformer: PrismaDataTransformer): void;
 }
 

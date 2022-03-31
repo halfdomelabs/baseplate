@@ -115,6 +115,7 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
           addTransformer(transformer) {
             transformers.push(transformer);
           },
+          getModelName: () => modelName,
         },
       }),
       build: () => {

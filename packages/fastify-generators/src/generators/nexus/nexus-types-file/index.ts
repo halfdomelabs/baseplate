@@ -17,7 +17,7 @@ const descriptorSchema = yup.object({
 });
 
 export interface NexusTypesFileProvider {
-  registerType(block: TypescriptCodeBlock): void;
+  registerType(block: TypescriptCodeBlock, key?: string): void;
 }
 
 export const nexusTypesFileProvider =
@@ -52,10 +52,18 @@ const NexusTypesFileGenerator = createGeneratorWithChildren({
 
     nexusSchema.registerSchemaFile(typesPath);
 
+    const registeredKeys: string[] = [];
+
     return {
       getProviders: () => ({
         nexusTypes: {
-          registerType(block: TypescriptCodeBlock) {
+          registerType(block, key) {
+            if (key) {
+              if (registeredKeys.includes(key)) {
+                return;
+              }
+              registeredKeys.push(key);
+            }
             typesFile.addCodeBlock('TYPES', block);
           },
         },

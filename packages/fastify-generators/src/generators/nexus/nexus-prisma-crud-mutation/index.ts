@@ -143,7 +143,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
     });
 
     inputDefinitions.childInputDefinitions.forEach((child) => {
-      nexusTypesFile.registerType(writeChildInputDefinition(child));
+      nexusTypesFile.registerType(writeChildInputDefinition(child), child.name);
     });
 
     return {

@@ -150,7 +150,9 @@ TRANSFORMERS;`,
   );
 
   const customOutputs = transformers.flatMap((t) =>
-    t.outputFields.map((f) => f.name)
+    t.outputFields.map((f) =>
+      f.outputVariableName ? `${f.name}: ${f.outputVariableName}` : f.name
+    )
   );
 
   const dataExpression = TypescriptCodeUtils.formatExpression(

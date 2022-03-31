@@ -106,6 +106,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         prismaDataTransformable: {
+          getModelName: () => modelName,
           addTransformer(transformer) {
             transformers.push(transformer);
           },
