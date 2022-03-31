@@ -1,4 +1,4 @@
-import { AppConfig } from '../../schema';
+import { ParsedAppConfig } from '@src/parser';
 import { ModelConfig } from '../../schema/models';
 
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
@@ -13,14 +13,24 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
           ?.filter((f) => f.exposed)
           .map((f) => f.name),
       },
-      $findQuery: {
-        modelName: model.name,
-        generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
-      },
-      $listQuery: {
-        modelName: model.name,
-        generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
-      },
+      ...(!model.exposedQuery
+        ? {}
+        : {
+            $findQuery: {
+              modelName: model.name,
+              generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
+              children: {
+                authorize: { roles: model.authorizeRead },
+              },
+            },
+            $listQuery: {
+              modelName: model.name,
+              generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
+              children: {
+                authorize: { roles: model.authorizeRead },
+              },
+            },
+          }),
     },
   };
 }
@@ -34,20 +44,37 @@ function buildMutationSchemaTypeForModel(
     generator: '@baseplate/fastify/nexus/nexus-prisma-crud-file',
     modelName: model.name,
     crudServiceRef: `${feature}/root:$services.${model.name}Service`,
+    children: {
+      create: {
+        children: { authorize: { roles: model.authorizeCreate } },
+      },
+      update: {
+        children: { authorize: { roles: model.authorizeUpdate } },
+      },
+      delete: {
+        children: { authorize: { roles: model.authorizeDelete } },
+      },
+    },
   };
 }
 
 export function buildSchemaTypesForFeature(
   feature: string,
-  config: AppConfig
+  parsedApp: ParsedAppConfig
 ): unknown {
   const models =
-    config.models?.filter(
-      (m) => m.feature === feature && (m.exposedQuery || m.exposedMutations)
-    ) || [];
+    parsedApp
+      .getModels()
+      .filter(
+        (m) =>
+          m.feature === feature &&
+          (m.exposedObjectType || m.exposedQuery || m.exposedMutations)
+      ) || [];
 
   return models.flatMap((model) => [
-    model.exposedQuery ? buildQuerySchemaTypeForModel(model) : null,
+    model.exposedObjectType || model.exposedQuery
+      ? buildQuerySchemaTypeForModel(model)
+      : null,
     model.exposedMutations
       ? buildMutationSchemaTypeForModel(feature, model)
       : null,

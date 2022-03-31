@@ -27,6 +27,9 @@ export function compileBackend(appConfig: AppConfig): ProjectEntry {
     name: `${appConfig.name}-backend`,
     description: `Backend for ${appConfig.name}`,
     version: appConfig.version,
+    ...(appConfig.auth?.passwordProvider
+      ? { hoistedProviders: ['password-hasher-service'] }
+      : {}),
     children: {
       projects: [buildDocker(appConfig), buildFastify(projectBuilder)],
     },

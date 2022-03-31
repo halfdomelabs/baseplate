@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { authSchema } from './auth';
 import { backendSchema } from './backend';
 import { modelSchema } from './models';
 
@@ -14,6 +15,7 @@ export const appConfigSchema = yup.object({
     .required(),
   features: yup.array(yup.string().required()),
   models: yup.array(modelSchema),
+  auth: authSchema.optional().nullable(),
 });
 
 export type AppConfig = yup.InferType<typeof appConfigSchema>;

@@ -1,8 +1,11 @@
+import { ParsedAppConfig } from '@src/parser';
 import { AppConfig } from '../schema';
 import { ProjectEntry, FileEntry } from '../types/files';
 import { stripObject } from '../utils/strip';
 
 export class ProjectEntryBuilder {
+  public parsedApp: ParsedAppConfig;
+
   protected files: FileEntry[] = [];
 
   constructor(
@@ -10,6 +13,7 @@ export class ProjectEntryBuilder {
     protected name: string,
     protected rootDirectory: string
   ) {
+    this.parsedApp = new ParsedAppConfig(appConfig);
     this.addDescriptor = this.addDescriptor.bind(this);
     this.toProjectEntry = this.toProjectEntry.bind(this);
   }

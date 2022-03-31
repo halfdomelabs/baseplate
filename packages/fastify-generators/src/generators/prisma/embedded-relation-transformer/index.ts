@@ -90,6 +90,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         name: inputName,
         isOptional: isUpdate,
         type: 'nested',
+        isList: true,
         nestedType: {
           name: `${modelName}CreateDataWithout${capitalize(
             foreignRelation.name
