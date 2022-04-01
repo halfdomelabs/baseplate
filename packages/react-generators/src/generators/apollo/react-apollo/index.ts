@@ -48,7 +48,13 @@ export const reactApolloProvider =
 
 const ReactApolloGenerator = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+  getDefaultChildGenerators: () => ({
+    errorLink: {
+      defaultDescriptor: {
+        generator: '@baseplate/react/apollo/apollo-error-link',
+      },
+    },
+  }),
   dependencies: {
     node: nodeProvider,
     reactConfig: reactConfigProvider,
