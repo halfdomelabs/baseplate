@@ -3,6 +3,6 @@
  * @param path Path to the file with file extension
  */
 export function makeImportAndFilePath(path: string): [string, string] {
-  const importPath = `@/${path.replace(/\.(ts|tsx)$/, '')}`;
+  const importPath = `@/${path.replace(/(\/index)?\.(ts|tsx)$/, '')}`;
   return [importPath, path];
 }

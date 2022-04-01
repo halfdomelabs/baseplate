@@ -1,0 +1,13 @@
+overwrite: true
+schema: <%= SCHEMA_LOCATION %>
+documents: 'src/**/*.gql'
+config:
+  scalars:
+    DateTime: string
+    Uuid: string
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'

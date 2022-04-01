@@ -17,7 +17,7 @@ const schema = makeSchema({
   types: ROOT_MODULE.schemaTypes,
   outputs: {
     typegen: join(__dirname, '../..', 'nexus-typegen.ts'),
-    schema: join(__dirname, '../..', 'schema.graphql'),
+    schema: join(__dirname, '../../..', 'schema.graphql'),
   },
   plugins: PLUGINS,
   contextType: {
