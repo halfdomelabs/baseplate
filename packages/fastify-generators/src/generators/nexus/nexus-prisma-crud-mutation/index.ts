@@ -116,13 +116,13 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
           (f) => f.isOptional && !f.isNullable
         );
         if (nonNullableOptionalFields.length) {
-          return tsUtils
-            .getUtilExpression('restrictObjectNulls')
-            .append(
-              `(${arg.name}, [${nonNullableOptionalFields
-                .map((f) => `'${f.name}'`)
-                .join(', ')}])`
-            );
+          return TypescriptCodeUtils.createExpression(
+            `restrictObjectNulls(${arg.name}, [${nonNullableOptionalFields
+              .map((f) => `'${f.name}'`)
+              .join(', ')}])`,
+            `import {restrictObjectNulls} from '%ts-utils/nulls';`,
+            { importMappers: [tsUtils] }
+          );
         }
       }
       return new TypescriptCodeExpression(arg.name);

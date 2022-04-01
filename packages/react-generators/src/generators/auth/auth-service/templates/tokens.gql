@@ -1,0 +1,13 @@
+fragment AuthPayload on AuthPayload {
+  accessToken
+  refreshToken
+  userId
+}
+
+mutation RefreshToken($input: RefreshTokenInput!) {
+  refreshToken(input: $input) {
+    authPayload {
+      ...AuthPayload
+    }
+  }
+}

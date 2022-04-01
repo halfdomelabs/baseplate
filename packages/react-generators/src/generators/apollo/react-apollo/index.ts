@@ -1,4 +1,5 @@
 import {
+  eslintProvider,
   ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
@@ -29,8 +30,10 @@ export interface ApolloLink {
   dependencies?: [string, string][];
 }
 
-export interface ReactApolloSetupProvider {
+export interface ReactApolloSetupProvider extends ImportMapper {
   addLink(link: ApolloLink): void;
+  getApiEndpointExpression(): TypescriptCodeExpression;
+  registerGqlFile(filePath: string): void;
 }
 
 export const reactApolloSetupProvider =
@@ -51,6 +54,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     reactConfig: reactConfigProvider,
     typescript: typescriptProvider,
     reactApp: reactAppProvider,
+    eslint: eslintProvider,
   },
   exports: {
     reactApolloSetup: reactApolloSetupProvider,
@@ -58,7 +62,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { devApiEndpoint, schemaLocation },
-    { node, reactConfig, typescript, reactApp }
+    { node, reactConfig, typescript, reactApp, eslint }
   ) {
     const links: ApolloLink[] = [];
     const gqlFiles: string[] = [];
@@ -109,11 +113,39 @@ const ReactApolloGenerator = createGeneratorWithChildren({
       ),
     });
 
+    const importMap = {
+      '%react-apollo/client': {
+        path: clientImport,
+        allowedImports: ['apolloClient'],
+      },
+      '%react-apollo/generated': {
+        path: '@/src/generated/graphql',
+        allowedImports: ['*'],
+      },
+    };
+
+    eslint
+      .getConfig()
+      .appendUnique('eslintIgnore', ['src/generated/graphql.tsx']);
+
     return {
       getProviders: () => ({
         reactApolloSetup: {
           addLink(link) {
             links.push(link);
+          },
+          getApiEndpointExpression() {
+            return new TypescriptCodeExpression(
+              'config.REACT_APP_GRAPH_API_ENDPOINT',
+              'import { config } from "%react-config";',
+              { importMappers: [reactConfig] }
+            );
+          },
+          registerGqlFile(filePath) {
+            gqlFiles.push(filePath);
+          },
+          getImportMap() {
+            return importMap;
           },
         },
         reactApollo: {
@@ -121,16 +153,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
             gqlFiles.push(filePath);
           },
           getImportMap() {
-            return {
-              '%react-apollo/client': {
-                path: clientImport,
-                allowedImports: ['apolloClient'],
-              },
-              '%react-apollo/generated': {
-                path: '@/src/generated/graphql',
-                allowedImports: ['*'],
-              },
-            };
+            return importMap;
           },
         },
       }),

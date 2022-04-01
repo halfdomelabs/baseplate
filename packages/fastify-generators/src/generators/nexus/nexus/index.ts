@@ -262,16 +262,19 @@ const NexusGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const config = configMap.value();
 
-        const utilsFile = typescript.createTemplate({
-          CAPITALIZE_STRING: { type: 'code-expression' },
-          CUSTOM_CREATE_MUTATION_OPTIONS: { type: 'code-block' },
-          CUSTOM_MUTATION_FIELDS: {
-            type: 'string-replacement',
-            asSingleLineComment: true,
+        const utilsFile = typescript.createTemplate(
+          {
+            CUSTOM_CREATE_MUTATION_OPTIONS: { type: 'code-block' },
+            CUSTOM_MUTATION_FIELDS: {
+              type: 'string-replacement',
+              asSingleLineComment: true,
+            },
           },
-        });
+          {
+            importMappers: [tsUtils],
+          }
+        );
         utilsFile.addCodeEntries({
-          CAPITALIZE_STRING: tsUtils.getUtilExpression('capitalizeString'),
           CUSTOM_MUTATION_FIELDS: new TypescriptStringReplacement(
             config.mutationFields.map((f) => f.name).join(',\n')
           ),

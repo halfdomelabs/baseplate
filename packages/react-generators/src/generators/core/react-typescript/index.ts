@@ -28,10 +28,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
       isolatedModules: true,
       noEmit: true,
       jsx: 'react-jsx',
-      baseUrl: './src',
-      paths: {
-        '@src/*': ['./*'],
-      },
+      baseUrl: './',
     });
     typescriptConfig.addInclude('src');
     return {

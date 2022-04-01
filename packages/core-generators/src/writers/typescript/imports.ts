@@ -248,7 +248,11 @@ function resolveImportFromImportMap(
   if (!mappedSpecifierEntry) {
     throw new Error(`Unknown import map ${moduleSpecifier}`);
   }
-  const { path: specifierPath, allowedImports } = mappedSpecifierEntry;
+  const {
+    path: specifierPath,
+    allowedImports,
+    onImportUsed,
+  } = mappedSpecifierEntry;
   const namedImports = importDeclaration.namedImports?.map((i) => i.name) || [];
   if (!allowedImports.includes('*')) {
     const missingImport = namedImports.find((i) => !allowedImports.includes(i));
@@ -260,6 +264,10 @@ function resolveImportFromImportMap(
   }
   if (importDeclaration.defaultImport && !allowedImports.includes('default')) {
     throw new Error(`${moduleSpecifier} has no default export`);
+  }
+  if (onImportUsed) {
+    // TODO: Feels a little wonky
+    onImportUsed();
   }
   return {
     ...importDeclaration,

@@ -72,7 +72,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
           getLogger() {
             return TypescriptCodeUtils.createExpression(
               'logger',
-              'import logger from "@/src/services/logger"'
+              'import { logger } from "@/src/services/logger"'
             );
           },
         },

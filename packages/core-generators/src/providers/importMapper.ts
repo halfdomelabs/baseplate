@@ -1,6 +1,8 @@
 export interface ImportEntry {
   path: string;
   allowedImports: string[];
+  // callback when import is used
+  onImportUsed: () => void;
 }
 
 /**

@@ -4,45 +4,42 @@ import {
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { copyTypescriptFileAction } from '../../../actions';
-import { TypescriptCodeExpression } from '../../../writers/typescript';
+import { ImportMapper } from '../../../providers';
 
 const descriptorSchema = yup.object({});
 
-export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
-
 interface UtilConfig {
-  export: string;
   file: string;
-  dependencies: string[];
+  exports: string[];
+  dependencies?: string[];
 }
 
-function createConfigMap<T extends Record<string, UtilConfig>>(map: T): T {
-  return map;
-}
-
-const UTIL_CONFIGS = createConfigMap({
+const UTIL_CONFIG_MAP: Record<string, UtilConfig> = {
   normalizeTypes: {
-    export: 'NormalizeTypes',
     file: 'normalizeTypes.ts',
+    exports: ['NormalizeTypes'],
     dependencies: [],
   },
-  restrictObjectNulls: {
-    export: 'restrictObjectNulls',
+  nulls: {
     file: 'nulls.ts',
+    exports: ['restrictObjectNulls'],
     dependencies: ['normalizeTypes'],
   },
-  capitalizeString: {
-    export: 'capitalizeString',
+  string: {
     file: 'string.ts',
+    exports: ['capitalizeString'],
     dependencies: [],
   },
-});
+  typedEventEmitter: {
+    file: 'typedEventEmitter.ts',
+    exports: ['TypedEventEmitter', 'createTypedEventEmitter'],
+    dependencies: [],
+  },
+};
 
-type ConfigKey = keyof typeof UTIL_CONFIGS;
+export type TsUtilsProvider = ImportMapper;
 
-export interface TsUtilsProvider {
-  getUtilExpression(key: ConfigKey): TypescriptCodeExpression;
-}
+export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
 
 /**
  * Generator for Typescript utility functions like notEmpty
@@ -54,37 +51,42 @@ const TsUtilsGenerator = createGeneratorWithChildren({
   exports: {
     tsUtils: tsUtilsProvider,
   },
-  createGenerator(descriptor, dependencies) {
+  createGenerator() {
     const usedTemplates: Record<string, boolean> = {};
 
     return {
       getProviders: () => ({
         tsUtils: {
-          getUtilExpression(key) {
-            const config = UTIL_CONFIGS[key];
-            if (!config) {
-              throw new Error(`No config for key ${key}`);
-            }
-            usedTemplates[config.file] = true;
-            config.dependencies.forEach((dep) => {
-              const depConfig = UTIL_CONFIGS[dep as ConfigKey];
-              if (!depConfig) {
-                throw new Error(`${dep} is not a valid utility dependency`);
-              }
-              usedTemplates[depConfig.file] = true;
-            });
-            return new TypescriptCodeExpression(
-              config.export,
-              `import { ${
-                config.export
-              } } from '@/src/utils/${config.file.replace(/\.ts$/, '')}'`
-            );
-          },
+          getImportMap: () =>
+            Object.entries(UTIL_CONFIG_MAP).reduce(
+              (acc, [key, config]) => ({
+                ...acc,
+                [`%ts-utils/${key}`]: {
+                  path: `@/src/utils/${config.file.replace(/\.ts$/, '')}`,
+                  allowedImports: config.exports,
+                  onImportUsed: () => {
+                    usedTemplates[key] = true;
+                  },
+                },
+              }),
+              {}
+            ),
         },
       }),
       build: async (builder) => {
+        // recursively resolve dependencies
+        const markDependenciesAsUsed = (key: string): void => {
+          const config = UTIL_CONFIG_MAP[key];
+          config.dependencies?.forEach((dep) => {
+            usedTemplates[dep] = true;
+            markDependenciesAsUsed(dep);
+          });
+        };
+        Object.keys(usedTemplates).forEach(markDependenciesAsUsed);
         // Copy all the util files that were used
-        const templateFiles = Object.keys(usedTemplates);
+        const templateFiles = Object.keys(usedTemplates).map(
+          (key) => UTIL_CONFIG_MAP[key].file
+        );
 
         await Promise.all(
           templateFiles.map((file) =>

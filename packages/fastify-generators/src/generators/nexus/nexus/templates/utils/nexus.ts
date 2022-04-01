@@ -9,6 +9,7 @@ import {
   objectType,
 } from 'nexus';
 import { InputDefinitionBlock, OutputDefinitionBlock } from 'nexus/dist/blocks';
+import { capitalizeString } from '%ts-utils/string';
 
 export type NexusType = unknown;
 
@@ -42,7 +43,7 @@ export function createStandardMutation<FieldName extends string>({
   payloadDefinition,
   resolve, // CUSTOM_MUTATION_FIELDS
 }: CreateMutationOptions<FieldName>): NexusType[] {
-  const inputName = `${CAPITALIZE_STRING(
+  const inputName = `${capitalizeString(
     name
   )}Input` as CapitalizedInput<FieldName>;
   const inputType =
@@ -53,7 +54,7 @@ export function createStandardMutation<FieldName extends string>({
       definition: inputDefinition,
     });
 
-  const payloadName = `${CAPITALIZE_STRING(
+  const payloadName = `${capitalizeString(
     name
   )}Payload` as CapitalizedPayload<FieldName>;
   const payloadType = objectType({
