@@ -103,8 +103,11 @@ const TypescriptGenerator = createGeneratorWithChildren({
           baseUrl: string;
           paths: Record<string, string[]>;
         };
-        if (!baseUrl || !paths) {
+        if (!baseUrl) {
           cachedPathEntries = [];
+        } else if (!paths && baseUrl === '.') {
+          // TODO: Support other source folders
+          cachedPathEntries = [{ from: 'src', to: 'src' }];
         } else {
           cachedPathEntries = Object.entries(paths).map(([key, value]) => {
             if (value.length !== 1) {

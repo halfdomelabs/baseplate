@@ -52,7 +52,11 @@ export function generateConfig({
         'error',
         {
           pathGroups: [
-            { pattern: '@src/**', group: 'external', position: 'after' },
+            {
+              pattern: react ? 'src/**' : '@src/**',
+              group: 'external',
+              position: 'after',
+            },
           ],
           alphabetize: { order: 'asc' },
         },

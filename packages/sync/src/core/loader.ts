@@ -56,9 +56,8 @@ export async function loadGeneratorsForModule(
       const generatorFolder = path.join(generatorsDirectory, folder);
       const generator = getModuleDefault<GeneratorConfig>(generatorFolder);
       if (!generator) {
-        throw new Error(
-          `Generator folder has no default export: ${generatorFolder}`
-        );
+        // assume there is no generator
+        return {};
       }
       if (!generator.createGenerator) {
         throw new Error(
