@@ -1,5 +1,6 @@
 import {
   copyTypescriptFileAction,
+  ImportMapper,
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -15,7 +16,7 @@ const descriptorSchema = yup.object({
   placeholder: yup.string(),
 });
 
-export interface ReactLoggerProvider {
+export interface ReactLoggerProvider extends ImportMapper {
   getLoggerExpression(): TypescriptCodeExpression;
 }
 
@@ -45,6 +46,12 @@ const ReactLoggerGenerator = createGeneratorWithChildren({
               'logger',
               `import { logger  } from "@/${react.getSrcFolder()}/services/logger";`
             ),
+          getImportMap: () => ({
+            '%react-logger': {
+              path: `@/${react.getSrcFolder()}/services/logger`,
+              allowedImports: ['logger'],
+            },
+          }),
         },
       }),
       build: async (builder) => {

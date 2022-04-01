@@ -92,6 +92,12 @@ const ReactGenerator = createGeneratorWithChildren({
         generator: '@baseplate/react/core/react-proxy',
       },
     },
+    error: {
+      defaultDescriptor: {
+        generator: '@baseplate/react/core/react-error',
+        peerProvider: true,
+      },
+    },
   }),
   createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
     const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);

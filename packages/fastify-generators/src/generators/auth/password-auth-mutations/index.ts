@@ -1,5 +1,5 @@
 import {
-  buildPath,
+  makeImportAndFilePath,
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@baseplate/core-generators';
@@ -52,7 +52,7 @@ const PasswordAuthMutationsGenerator = createGeneratorWithChildren({
         importMappers: [nexusSchema, passwordAuthService, authMutations],
       }
     );
-    const { importPath, filePath } = buildPath(
+    const [importPath, filePath] = makeImportAndFilePath(
       `${moduleFolder}/schema/password-auth-mutations.ts`
     );
 

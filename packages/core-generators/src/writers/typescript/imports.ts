@@ -250,9 +250,13 @@ function resolveImportFromImportMap(
   }
   const { path: specifierPath, allowedImports } = mappedSpecifierEntry;
   const namedImports = importDeclaration.namedImports?.map((i) => i.name) || [];
-  const missingImport = namedImports.find((i) => !allowedImports.includes(i));
-  if (missingImport) {
-    throw new Error(`${missingImport} is not exported from ${moduleSpecifier}`);
+  if (!allowedImports.includes('*')) {
+    const missingImport = namedImports.find((i) => !allowedImports.includes(i));
+    if (missingImport) {
+      throw new Error(
+        `${missingImport} is not exported from ${moduleSpecifier}`
+      );
+    }
   }
   if (importDeclaration.defaultImport && !allowedImports.includes('default')) {
     throw new Error(`${moduleSpecifier} has no default export`);

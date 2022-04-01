@@ -1,0 +1,93 @@
+import {
+  ImportMapper,
+  makeImportAndFilePath,
+  TypescriptCodeBlock,
+  typescriptProvider,
+} from '@baseplate/core-generators';
+import {
+  createProviderType,
+  createGeneratorWithChildren,
+} from '@baseplate/sync';
+import * as yup from 'yup';
+import { reactLoggerProvider } from '../react-logger';
+
+const descriptorSchema = yup.object({
+  placeholder: yup.string(),
+});
+
+export interface ReactErrorProvider extends ImportMapper {
+  addErrorReporter(reporter: TypescriptCodeBlock): void;
+  addErrorFormatter(formatter: TypescriptCodeBlock): void;
+}
+
+export const reactErrorProvider =
+  createProviderType<ReactErrorProvider>('react-error');
+
+const ReactErrorGenerator = createGeneratorWithChildren({
+  descriptorSchema,
+  getDefaultChildGenerators: () => ({}),
+  dependencies: {
+    typescript: typescriptProvider,
+    reactLogger: reactLoggerProvider,
+  },
+  exports: {
+    reactError: reactErrorProvider,
+  },
+  createGenerator(descriptor, { typescript, reactLogger }) {
+    const loggerFile = typescript.createTemplate(
+      {
+        ERROR_REPORTERS: {
+          type: 'code-block',
+          default: '// no error reporters registered',
+        },
+      },
+      { importMappers: [reactLogger] }
+    );
+    const [loggerImport, loggerPath] = makeImportAndFilePath(
+      'src/services/error-logger.ts'
+    );
+
+    const formatterFile = typescript.createTemplate({
+      ERROR_FORMATTERS: { type: 'code-block' },
+    });
+    const [formatterImport, formatterPath] = makeImportAndFilePath(
+      'src/services/error-formatter.ts'
+    );
+
+    return {
+      getProviders: () => ({
+        reactError: {
+          addErrorReporter(reporter) {
+            loggerFile.addCodeBlock('ERROR_REPORTERS', reporter);
+          },
+          addErrorFormatter(formatter) {
+            formatterFile.addCodeBlock('ERROR_FORMATTERS', formatter);
+          },
+          getImportMap: () => ({
+            '%react-error/formatter': {
+              path: formatterImport,
+              allowedImports: ['formatError'],
+            },
+            '%react-error/logger': {
+              path: loggerImport,
+              allowedImports: ['reportError', 'reportAndLogError'],
+            },
+          }),
+        },
+      }),
+      build: async (builder) => {
+        await builder.apply(
+          loggerFile.renderToAction('services/error-logger.ts', loggerPath)
+        );
+        await builder.apply(
+          formatterFile.renderToAction(
+            'services/error-formatter.ts',
+            formatterPath
+          )
+        );
+      },
+    };
+  },
+});
+
+export default ReactErrorGenerator;

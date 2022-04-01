@@ -58,7 +58,7 @@ const ReactConfigGenerator = createGeneratorWithChildren({
           },
           getConfigMap: () => configEntryMap,
           getImportMap: () => ({
-            '%config': {
+            '%react-config': {
               path: '@/src/services/config',
               allowedImports: ['config'],
             },
@@ -89,7 +89,10 @@ const ReactConfigGenerator = createGeneratorWithChildren({
           '\n'
         );
 
-        configFile.addCodeExpression('CONFIG_SCHEMA', mergedExpression);
+        configFile.addCodeExpression(
+          'CONFIG_SCHEMA',
+          mergedExpression.wrap((contents) => `{${contents}}`)
+        );
 
         await builder.apply(
           configFile.renderToAction(

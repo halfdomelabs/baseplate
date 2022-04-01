@@ -1,8 +1,6 @@
 // @ts-nocheck
 import log from 'loglevel';
 
-const logger = log;
+export const logger = log;
 
 logger.enableAll();
-
-export default logger;
