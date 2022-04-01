@@ -137,13 +137,14 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
         );
 
         const envExampleFile = `${Object.entries(configEntriesObj)
-          .filter(([, { exampleValue }]) => exampleValue)
+          .filter(([, { exampleValue }]) => exampleValue != null)
           .map(([key, { exampleValue }]) => `${key}=${exampleValue as string}`)
           .join('\n')}\n`;
 
         const envFile = `${Object.entries(configEntriesObj)
           .filter(
-            ([, { seedValue, exampleValue }]) => seedValue || exampleValue
+            ([, { seedValue, exampleValue }]) =>
+              (seedValue || exampleValue) != null
           )
           .map(
             ([key, { seedValue, exampleValue }]) =>
