@@ -96,6 +96,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
     config.getConfigEntries().set('JWT_SECRET', {
       value: new TypescriptCodeExpression('yup.string().required()'),
       comment: "The secret used to sign JWT's",
+      seedValue: 'MyJwtSecretKey',
       exampleValue: 'MyJwtSecretKey',
     });
 

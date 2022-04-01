@@ -19,7 +19,7 @@ export function compileBackend(appConfig: AppConfig): ProjectEntry {
   const projectBuilder = new ProjectEntryBuilder(
     appConfig,
     'backend',
-    'packages/backend'
+    appConfig.apps.backend?.packageLocation || 'packages/backend'
   );
 
   projectBuilder.addDescriptor('project.json', {

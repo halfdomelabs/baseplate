@@ -62,6 +62,12 @@ export function generateConfig({
         'error',
         { devDependencies: ['**/*.test.ts', 'src/tests/**/*.ts'] },
       ],
+      '@typescript-eslint/no-misused-promises': [
+        'error',
+        {
+          checksVoidReturn: false,
+        },
+      ],
       ...reactRules,
       ...extraRules,
     },

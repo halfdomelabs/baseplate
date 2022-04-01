@@ -1,4 +1,5 @@
 import {
+  nodeGitIgnoreProvider,
   nodeProvider,
   typescriptConfigProvider,
 } from '@baseplate/core-generators';
@@ -95,6 +96,7 @@ const FastifyGenerator = createGeneratorWithChildren({
   dependencies: {
     node: nodeProvider,
     typescriptConfig: typescriptConfigProvider,
+    nodeGitIgnore: nodeGitIgnoreProvider,
   },
   exports: {
     fastify: fastifyProvider,
@@ -102,11 +104,19 @@ const FastifyGenerator = createGeneratorWithChildren({
       .export()
       .dependsOn(fastifyProvider),
   },
-  createGenerator(descriptor, { node, typescriptConfig }) {
+  createGenerator(descriptor, { node, nodeGitIgnore, typescriptConfig }) {
     const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
       { devLoaders: ['tsconfig-paths/register'] },
       { name: 'fastify-config', mergeArraysUniquely: true }
     );
+
+    // TODO: Temporarily add jest here since we need it for eslint
+    node.addDevPackages({
+      '@types/jest': '^27.4.0',
+      jest: '^27.4.7',
+    });
+
+    nodeGitIgnore.addExclusions(['/dist']);
 
     setupFastifyTypescript(node, typescriptConfig);
 

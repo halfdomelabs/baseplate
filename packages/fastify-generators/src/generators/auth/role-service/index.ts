@@ -26,7 +26,7 @@ import { authServiceProvider } from '../auth-service';
  *
  * User table:
  *
- * userRoles: UserRole[]
+ * roles: UserRole[]
  */
 
 const descriptorSchema = yup.object({
@@ -144,7 +144,7 @@ const RoleServiceGenerator = createGeneratorWithChildren({
     authService.setCustomUserFromToken({
       type: userWithRolesType,
       queryParams: {
-        include: '{ userRoles: true }',
+        include: `{ roles: true }`,
       },
     });
 

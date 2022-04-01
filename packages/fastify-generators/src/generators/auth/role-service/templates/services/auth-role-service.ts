@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 // HEADER:START
-export type UserWithRoles = USER & { userRoles: USER_ROLE[] };
+export type UserWithRoles = USER & { roles: USER_ROLE[] };
 
 AVAILABLE_ROLES_EXPORT;
 
@@ -30,7 +30,7 @@ export const authRoleService = {
     if (!user) {
       return ['anonymous'];
     }
-    const availableRoles = user.userRoles
+    const availableRoles = user.roles
       .map((role) => role.role as AuthRole)
       .filter((role) => AUTH_ROLE_CONFIG[role])
       .flatMap((role) => [role, ...getInheritedRoles(role)]);
