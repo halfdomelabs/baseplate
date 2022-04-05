@@ -1,0 +1,27 @@
+import { useMemo } from "react";
+import { Subscription, useSubscription } from "use-subscription";
+import { authService } from "src/services/auth/auth";
+
+export interface SessionData {
+  userId: string | null;
+  isAuthenticated: boolean;
+}
+
+export function useSession(): SessionData {
+  const userIdSubscription: Subscription<string | null> = useMemo(
+    () => ({
+      getCurrentValue: () => authService.getUserId(),
+      subscribe: (callback) => authService.onUserIdChanged(() => callback()),
+    }),
+    []
+  );
+  const userId = useSubscription(userIdSubscription);
+  const sessionData: SessionData = useMemo(
+    () => ({
+      userId,
+      isAuthenticated: !!userId,
+    }),
+    [userId]
+  );
+  return sessionData;
+}

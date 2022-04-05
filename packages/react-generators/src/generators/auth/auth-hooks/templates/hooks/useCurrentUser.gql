@@ -1,0 +1,10 @@
+fragment CurrentUser on User {
+  id
+  email
+}
+
+query getUserById($id: Uuid!) {
+  userById(id: $id) {
+    ...CurrentUser
+  }
+}

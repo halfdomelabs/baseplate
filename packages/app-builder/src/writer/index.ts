@@ -1,6 +1,6 @@
 import path from 'path';
+import { FileEntry, ProjectEntry } from '@baseplate/app-builder-lib';
 import fs from 'fs-extra';
-import { FileEntry, ProjectEntry } from '../types/files';
 import { notEmpty } from '../utils/array';
 
 /**

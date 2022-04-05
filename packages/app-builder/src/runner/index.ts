@@ -1,7 +1,10 @@
 import path from 'path';
+import {
+  compileApplication,
+  AppConfig,
+  appConfigSchema,
+} from '@baseplate/app-builder-lib';
 import fs from 'fs-extra';
-import { compileApplication } from '../compiler';
-import { AppConfig, appConfigSchema } from '../schema';
 import { generateForDirectory } from '../sync';
 import { writeApplicationFiles } from '../writer';
 

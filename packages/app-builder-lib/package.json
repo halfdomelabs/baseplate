@@ -1,9 +1,9 @@
 {
-  "name": "@baseplate/app-builder",
+  "name": "@baseplate/app-builder-lib",
   "version": "0.1.0",
-  "description": "Full-stack app builder using Baseplate generators",
-  "main": "dist/index.js",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/app-builder",
+  "description": "Library for App Builder using Baseplate generators",
+  "main": "lib/index.js",
+  "repository": "https://github.com/kingston/baseplate/tree/master/packages/app-builder-lib",
   "author": "Kingston Tam",
   "license": "UNLICENSED",
   "private": true,
@@ -24,18 +24,7 @@
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
   },
   "dependencies": {
-    "@baseplate/core-generators": "^0.0.1",
-    "@baseplate/fastify-generators": "^0.0.1",
-    "@baseplate/react-generators": "^0.0.1",
-    "@baseplate/app-builder-lib": "^0.1.0",
-    "@baseplate/sync": "^0.0.1",
-    "commander": "^8.3.0",
-    "fs-extra": "^10.0.1",
     "ramda": "^0.28.0",
     "yup": "^0.32.11"
-  },
-  "volta": {
-    "node": "14.18.3",
-    "yarn": "1.22.17"
   }
 }

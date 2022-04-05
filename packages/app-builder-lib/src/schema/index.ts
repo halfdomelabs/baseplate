@@ -1,4 +1,5 @@
 import * as yup from 'yup';
+import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import { authSchema } from './auth';
 import { backendSchema } from './backend';
 import { modelSchema } from './models';
@@ -15,7 +16,9 @@ export const appConfigSchema = yup.object({
     .required(),
   features: yup.array(yup.string().required()),
   models: yup.array(modelSchema),
-  auth: authSchema.optional().nullable(),
+  auth: authSchema.optional().default(undefined),
 });
 
-export type AppConfig = yup.InferType<typeof appConfigSchema>;
+export type AppConfig = MakeUndefinableFieldsOptional<
+  yup.InferType<typeof appConfigSchema>
+>;

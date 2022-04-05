@@ -1,7 +1,7 @@
 import path from 'path';
+import { ProjectEntry } from '@baseplate/app-builder-lib';
 import { GeneratorEngine, loadGeneratorsForModule } from '@baseplate/sync';
 import R from 'ramda';
-import { ProjectEntry } from '../types/files';
 
 const GENERATOR_MODULES = [
   '@baseplate/core-generators',

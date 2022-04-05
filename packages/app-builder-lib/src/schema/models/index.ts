@@ -1,5 +1,5 @@
-import { SCALAR_FIELD_TYPES } from '@baseplate/fastify-generators';
 import * as yup from 'yup';
+import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 
 export const modelScalarFieldSchema = yup.object({

@@ -27,5 +27,9 @@
     "@baseplate/sync": "^0.0.1",
     "commander": "^8.3.0",
     "ramda": "^0.28.0"
+  },
+  "volta": {
+    "node": "14.18.3",
+    "yarn": "1.22.17"
   }
 }

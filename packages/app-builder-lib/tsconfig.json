@@ -1,0 +1,12 @@
+{
+  "extends": "@baseplate/tools/tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "lib",
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}
