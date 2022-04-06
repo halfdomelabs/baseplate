@@ -1,8 +1,10 @@
-import { useToast } from "./useToast";
-import { useLogOutMutation } from "src/generated/graphql";
-import { authService } from "src/services/auth/auth";
-import { formatError } from "src/services/error-formatter";
-import { logger } from "src/services/logger";
+// @ts-nocheck
+
+import { useToast } from '%react-components/useToast';
+import { useLogOutMutation } from '%react-apollo/generated';
+import { authService } from '%auth-service';
+import { formatError } from '%react-error/formatter';
+import { logger } from '%react-logger';
 
 export function useLogOut(): () => void {
   const [logOut] = useLogOutMutation();
@@ -13,10 +15,10 @@ export function useLogOut(): () => void {
     logOut()
       .then(() => {
         authService.setAuthPayload(null);
-        toast.success("You have been successfully logged out!");
+        toast.success('You have been successfully logged out!');
       })
       .catch((err) => {
-        toast.error(formatError(err, "Sorry, we could not log you out."));
+        toast.error(formatError(err, 'Sorry, we could not log you out.'));
         logger.error(err);
       });
   };

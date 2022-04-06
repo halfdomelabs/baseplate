@@ -1,6 +1,8 @@
-import { useMemo } from "react";
-import { Subscription, useSubscription } from "use-subscription";
-import { authService } from "src/services/auth/auth";
+// @ts-nocheck
+
+import { useMemo } from 'react';
+import { Subscription, useSubscription } from 'use-subscription';
+import { authService } from '%auth-service';
 
 export interface SessionData {
   userId: string | null;

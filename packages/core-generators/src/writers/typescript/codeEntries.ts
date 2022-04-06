@@ -222,6 +222,12 @@ function mergeWrappers(
   );
 }
 
+function normalizeExpression(
+  expression: string | TypescriptCodeExpression
+): string {
+  return typeof expression === 'string' ? expression : expression.content;
+}
+
 function normalizeWrappers(
   wrappers:
     | TypescriptCodeWrapper
@@ -362,6 +368,58 @@ export const TypescriptCodeUtils = {
         : `{${mergedExpression}\n}`,
       null,
       mergeCodeEntryOptions(expressions)
+    );
+  },
+  mergeExpressionsAsJsxElement(
+    name: string,
+    attributes: Record<
+      string,
+      TypescriptCodeExpression | string | boolean | undefined
+    >,
+    importText?: string | string[] | null
+  ): TypescriptCodeExpression {
+    const { children, ...rest } = attributes;
+    const keys = Object.keys(rest);
+    const attributesStr = keys
+      .filter((key) => rest[key] !== false && rest[key] !== undefined)
+      .map((key) => {
+        const value = rest[key] || '';
+        if (value === true) {
+          return `${key}`;
+        }
+        const content = normalizeExpression(value);
+        if (content === 'true') {
+          return `${key}`;
+        }
+        if (content.startsWith("'") || content.startsWith('"')) {
+          return `${key}="${content.replace(/^['"]|['"]$/g, '')}"`;
+        }
+        return `${key}={${content}}`;
+      })
+      .join(' ');
+
+    const codeEntryOptions = mergeCodeEntryOptions(
+      Object.values(attributes).filter(
+        (value): value is TypescriptCodeExpression =>
+          value instanceof TypescriptCodeExpression
+      )
+    );
+
+    if (typeof children === 'boolean') {
+      throw new Error('children must be an expression');
+    }
+
+    if (children) {
+      return new TypescriptCodeExpression(
+        `<${name} ${attributesStr}>${normalizeExpression(children)}</${name}>`,
+        importText,
+        codeEntryOptions
+      );
+    }
+    return new TypescriptCodeExpression(
+      `<${name} ${attributesStr} />`,
+      importText,
+      codeEntryOptions
     );
   },
   mergeBlocksAsInterfaceContent(

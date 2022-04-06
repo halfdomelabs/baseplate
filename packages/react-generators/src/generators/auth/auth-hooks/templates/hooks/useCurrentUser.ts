@@ -20,10 +20,10 @@ export function useCurrentUser(): UseCurrentUserResult {
   });
 
   const noUserError =
-    data && data.userById === null ? new Error('No user found') : null;
+    data && data.USER_QUERY === null ? new Error('No user found') : null;
 
   return {
-    user: data?.userById || undefined,
+    user: data?.USER_QUERY || undefined,
     loading,
     error: error || noUserError,
   };

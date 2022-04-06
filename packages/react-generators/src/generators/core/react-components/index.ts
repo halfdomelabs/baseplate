@@ -1,7 +1,9 @@
 import {
   copyTypescriptFileAction,
   ImportMapper,
+  makeImportAndFilePath,
   nodeProvider,
+  typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
@@ -51,11 +53,12 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
   dependencies: {
     react: reactProvider,
     node: nodeProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     reactComponents: reactComponentsProvider,
   },
-  createGenerator(descriptor, { react, node }) {
+  createGenerator(descriptor, { react, node, typescript }) {
     const srcFolder = react.getSrcFolder();
     node.addPackages({
       '@headlessui/react': '^1.5.0',
@@ -65,26 +68,39 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       'react-hot-toast': '^2.2.0',
       'react-icons': '^4.3.1',
     });
+    const [useStatusImport, useStatusPath] = makeImportAndFilePath(
+      `${srcFolder}/hooks/useStatus.ts`
+    );
+    const [useToastImport, useToastPath] = makeImportAndFilePath(
+      `${srcFolder}/hooks/useToast.tsx`
+    );
     return {
       getProviders: () => ({
         reactComponents: {
           getComponentsFolder: () => `${srcFolder}/components`,
           getImportMap: () => ({
-            '%components': {
+            '%react-components': {
               path: `@/${srcFolder}/components`,
               allowedImports: REACT_COMPONENTS.map((entry) => entry.name),
+            },
+            '%react-components/useStatus': {
+              path: useStatusImport,
+              allowedImports: ['StatusType', 'Status', 'useStatus'],
+            },
+            '%react-components/useToast': {
+              path: useToastImport,
+              allowedImports: ['useToast'],
             },
           }),
         },
       }),
       build: async (builder) => {
-        builder.setBaseDirectory(srcFolder);
         await Promise.all(
           REACT_COMPONENTS.map(async ({ name }) =>
             builder.apply(
               copyTypescriptFileAction({
                 source: `components/${name}/index.tsx`,
-                destination: `components/${name}/index.tsx`,
+                destination: `${srcFolder}/components/${name}/index.tsx`,
               })
             )
           )
@@ -92,7 +108,17 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         await builder.apply(
           copyTypescriptFileAction({
             source: 'hooks/useStatus.ts',
-            destination: 'hooks/useStatus.ts',
+            destination: useStatusPath,
+          })
+        );
+
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'hooks/useToast.tsx',
+            destination: useToastPath,
+            replacements: {
+              COMPONENT_FOLDER: `@/${srcFolder}/components`,
+            },
           })
         );
 
@@ -104,7 +130,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         await builder.apply(
           writeFormattedAction({
             contents: componentIndex,
-            destination: 'components/index.ts',
+            destination: `${srcFolder}/components/index.ts`,
           })
         );
       },

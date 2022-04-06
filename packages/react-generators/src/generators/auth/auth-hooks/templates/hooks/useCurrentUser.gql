@@ -1,10 +1,11 @@
 fragment CurrentUser on User {
   id
   email
+  CURRENT_USER_FIELDS
 }
 
 query getUserById($id: Uuid!) {
-  userById(id: $id) {
+  USER_QUERY(id: $id) {
     ...CurrentUser
   }
 }

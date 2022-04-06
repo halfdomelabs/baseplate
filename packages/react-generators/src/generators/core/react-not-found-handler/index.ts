@@ -1,35 +1,51 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
+import {
+  makeImportAndFilePath,
+  TypescriptCodeUtils,
+  typescriptProvider,
+} from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
+import { reactPagesProvider } from '@src/providers/pages';
 import { reactComponentsProvider } from '../react-components';
-import { reactRouterProvider } from '../react-router';
 
 const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+  layoutKey: yup.string(),
 });
 
 const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    reactRouter: reactRouterProvider,
+    reactPages: reactPagesProvider,
     reactComponents: reactComponentsProvider,
+    typescript: typescriptProvider,
   },
-  createGenerator(descriptor, { reactRouter, reactComponents }) {
-    reactRouter.setMatchAllElement(
-      TypescriptCodeUtils.createExpression(
-        `<Route element={<UnauthenticatedLayout />}>
-        <Route path="*" element={<NotFoundCard />} />
-      </Route>`,
-        [
-          `import {NotFoundCard, UnauthenticatedLayout} from '%components';`,
-          `import { Route } from 'react-router-dom';`,
-        ],
-        { importMappers: [reactComponents] }
-      )
+  createGenerator({ layoutKey }, { reactPages, reactComponents, typescript }) {
+    const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
+      `${reactPages.getDirectoryBase()}/NotFoundPage.tsx`
     );
+
+    reactPages.registerRoute({
+      path: '*',
+      element: TypescriptCodeUtils.createExpression(
+        `<NotFoundPage />`,
+        `import NotFoundPage from '${notFoundPageImport}';`,
+        {
+          importMappers: [reactComponents],
+        }
+      ),
+      layoutKey,
+    });
     return {
-      build: () => {},
+      build: async (builder) => {
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'NotFoundPage.tsx',
+            destination: notFoundPagePath,
+            importMappers: [reactComponents],
+          })
+        );
+      },
     };
   },
 });

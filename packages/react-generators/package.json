@@ -14,14 +14,15 @@
     "@types/yup": "^0.29.13",
     "concurrently": "^7.0.0",
     "del": "^6.0.0",
+    "tsc-alias": "^1.5.0",
     "typescript": "^4.5.4"
   },
   "scripts": {
     "build": "concurrently yarn:build:*",
-    "build:tsc": "tsc",
+    "build:tsc": "rm -rf ./lib && tsc && tsc-alias",
     "build:templates": "gulp buildTemplates",
     "watch": "concurrently yarn:watch:*",
-    "watch:tsc": "tsc -w",
+    "watch:tsc": "tsc --watch & tsc-alias --watch",
     "watch:templates": "gulp watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src"
   },

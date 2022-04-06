@@ -59,7 +59,6 @@ const ReactGenerator = createGeneratorWithChildren({
       },
     },
     router: {
-      provider: 'react-router',
       defaultDescriptor: {
         generator: '@baseplate/react/core/react-router',
         peerProvider: true,
