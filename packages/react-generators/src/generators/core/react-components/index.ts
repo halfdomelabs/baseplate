@@ -17,7 +17,7 @@ const descriptorSchema = yup.object({
   placeholder: yup.string(),
 });
 
-interface ReactComponentEntry {
+export interface ReactComponentEntry {
   name: string;
 }
 
@@ -38,11 +38,17 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'Table' },
   { name: 'TextInput' },
   { name: 'Toast' },
-  { name: 'UnauthenticatedLayout' },
 ];
 
 export interface ReactComponentsProvider extends ImportMapper {
+  /**
+   * Registers component entry so it gets exported by root index component
+   *
+   * @param entry Component entry to register
+   */
+  registerComponent(entry: ReactComponentEntry): void;
   getComponentsFolder(): string;
+  getComponentsImport(): string;
 }
 
 export const reactComponentsProvider =
@@ -74,10 +80,13 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     const [useToastImport, useToastPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useToast.tsx`
     );
+    const allReactComponents = [...REACT_COMPONENTS];
     return {
       getProviders: () => ({
         reactComponents: {
+          registerComponent: (entry) => allReactComponents.push(entry),
           getComponentsFolder: () => `${srcFolder}/components`,
+          getComponentsImport: () => `@/${srcFolder}/components`,
           getImportMap: () => ({
             '%react-components': {
               path: `@/${srcFolder}/components`,
@@ -123,7 +132,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         );
 
         // build component index
-        const componentNames = REACT_COMPONENTS.map((entry) => entry.name);
+        const componentNames = allReactComponents.map((entry) => entry.name);
         const componentIndex = componentNames
           .map((name) => `export { default as ${name} } from './${name}';`)
           .join('\n');

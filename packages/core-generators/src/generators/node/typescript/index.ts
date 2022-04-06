@@ -4,12 +4,15 @@ import {
   createGeneratorWithChildren,
   writeJsonAction,
   createNonOverwriteableMap,
+  BuilderAction,
+  WriteFileOptions,
 } from '@baseplate/sync';
 import { CompilerOptions, ts } from 'ts-morph';
 import {
   copyTypescriptFileAction,
   CopyTypescriptFileOptions,
 } from '../../../actions';
+import { TypescriptCodeBlock } from '../../../writers';
 import { PathMapEntry } from '../../../writers/typescript/imports';
 import {
   TypescriptTemplateConfig,
@@ -43,6 +46,11 @@ export interface TypescriptProvider {
   createCopyAction(
     options: Omit<CopyTypescriptFileOptions, 'pathMappings'>
   ): ReturnType<typeof copyTypescriptFileAction>;
+  renderBlockToAction(
+    block: TypescriptCodeBlock,
+    destination: string,
+    options?: WriteFileOptions
+  ): BuilderAction;
 }
 
 export const typescriptProvider =
@@ -143,6 +151,14 @@ const TypescriptGenerator = createGeneratorWithChildren({
               ...options,
               pathMappings: getPathEntries(),
             }),
+          renderBlockToAction: (block, destination, options) => {
+            const file = new TypescriptSourceFile(
+              { BLOCK: { type: 'code-block' } },
+              { pathMappings: getPathEntries() }
+            );
+            file.addCodeEntries({ BLOCK: block });
+            return file.renderToActionFromText('BLOCK', destination, options);
+          },
         } as TypescriptProvider,
         typescriptConfig: {
           setTypescriptVersion(version) {
