@@ -2,6 +2,9 @@ import { ParsedAppConfig } from '@src/parser';
 import { ModelConfig } from '../../schema/models';
 
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
+  const { schema } = model || {};
+  const { authorize, buildQuery } = schema || {};
+
   return {
     name: `${model.name}Queries`,
     generator: '@baseplate/fastify/nexus/nexus-types-file',
@@ -9,25 +12,25 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
       $objectType: {
         modelName: model.name,
         generator: '@baseplate/fastify/nexus/nexus-prisma-object',
-        exposedFields: model.fields
-          ?.filter((f) => f.exposed)
+        exposedFields: model.model.fields
+          ?.filter((f) => f.schema?.exposed)
           .map((f) => f.name),
       },
-      ...(!model.exposedQuery
+      ...(!buildQuery
         ? {}
         : {
             $findQuery: {
               modelName: model.name,
               generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
               children: {
-                authorize: { roles: model.authorizeRead },
+                authorize: { roles: authorize?.read },
               },
             },
             $listQuery: {
               modelName: model.name,
               generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
               children: {
-                authorize: { roles: model.authorizeRead },
+                authorize: { roles: authorize?.read },
               },
             },
           }),
@@ -39,6 +42,9 @@ function buildMutationSchemaTypeForModel(
   feature: string,
   model: ModelConfig
 ): unknown {
+  const { schema: graphql } = model || {};
+  const { authorize = {} } = graphql || {};
+
   return {
     name: `${model.name}Mutations`,
     generator: '@baseplate/fastify/nexus/nexus-prisma-crud-file',
@@ -46,13 +52,13 @@ function buildMutationSchemaTypeForModel(
     crudServiceRef: `${feature}/root:$services.${model.name}Service`,
     children: {
       create: {
-        children: { authorize: { roles: model.authorizeCreate } },
+        children: { authorize: { roles: authorize.create } },
       },
       update: {
-        children: { authorize: { roles: model.authorizeUpdate } },
+        children: { authorize: { roles: authorize.create } },
       },
       delete: {
-        children: { authorize: { roles: model.authorizeDelete } },
+        children: { authorize: { roles: authorize.delete } },
       },
     },
   };
@@ -63,19 +69,14 @@ export function buildSchemaTypesForFeature(
   parsedApp: ParsedAppConfig
 ): unknown {
   const models =
-    parsedApp
-      .getModels()
-      .filter(
-        (m) =>
-          m.feature === feature &&
-          (m.exposedObjectType || m.exposedQuery || m.exposedMutations)
-      ) || [];
+    parsedApp.getModels().filter((m) => m.feature === feature && m.schema) ||
+    [];
 
   return models.flatMap((model) => [
-    model.exposedObjectType || model.exposedQuery
+    model.schema?.buildObjectType || model.schema?.buildQuery
       ? buildQuerySchemaTypeForModel(model)
       : null,
-    model.exposedMutations
+    model.schema?.buildMutations
       ? buildMutationSchemaTypeForModel(feature, model)
       : null,
   ]);

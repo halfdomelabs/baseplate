@@ -6,32 +6,35 @@ import {
 } from '../../schema/models';
 
 function buildScalarField(field: ModelScalarFieldConfig): unknown {
+  const { model } = field;
   return {
     name: field.name,
-    type: field.type,
-    id: field.id,
+    type: model.type,
+    id: model.id,
     options: {
-      autoGenerate: field.genUuid,
-      defaultToNow: field.defaultToNow,
-      updatedAt: field.updatedAt,
+      autoGenerate: model.genUuid,
+      defaultToNow: model.defaultToNow,
+      updatedAt: model.updatedAt,
     },
-    optional: field.optional,
-    unique: field.unique,
+    optional: model.optional,
+    unique: model.unique,
   };
 }
 
 function buildRelationField(
   {
     name,
-    fields,
-    references,
-    modelName,
-    foreignFieldName,
-    relationshipName,
-    relationshipType,
-    optional,
-    onDelete,
-    onUpdate,
+    model: {
+      fields,
+      references,
+      modelName,
+      foreignFieldName,
+      relationshipName,
+      relationshipType,
+      optional,
+      onDelete,
+      onUpdate,
+    },
   }: ModelRelationFieldConfig,
   parsedApp: ParsedAppConfig
 ): unknown {
@@ -58,10 +61,12 @@ function buildModel(model: ModelConfig, parsedApp: ParsedAppConfig): unknown {
     name: model.name,
     generator: '@baseplate/fastify/prisma/prisma-model',
     children: {
-      fields: model.fields?.map(buildScalarField),
-      relations: model.relations?.map((r) => buildRelationField(r, parsedApp)),
+      fields: model.model.fields?.map(buildScalarField),
+      relations: model.model.relations?.map((r) =>
+        buildRelationField(r, parsedApp)
+      ),
       primaryKey: {
-        fields: model.primaryKeys,
+        fields: model.model.primaryKeys,
       },
     },
   };

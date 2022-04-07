@@ -2,24 +2,9 @@ import { ProjectEntryBuilder } from '../projectEntryBuilder';
 import { buildFeature } from './feature';
 
 export function buildFastify(builder: ProjectEntryBuilder): unknown {
-  const { appConfig } = builder;
+  const { appConfig, parsedApp } = builder;
   const rootFeatures =
     appConfig.features?.filter((f) => !f.includes('/')) || [];
-
-  let authEntries = {};
-  if (appConfig.auth) {
-    authEntries = {
-      $auth: {
-        generator: '@baseplate/fastify/auth/auth',
-        peerProvider: true,
-      },
-      $nexusAuth: {
-        generator: '@baseplate/fastify/nexus/nexus-auth',
-        peerProvider: true,
-        authPluginRef: `${appConfig.auth.featurePath}/root:$auth.authPlugin`,
-      },
-    };
-  }
 
   // add graphql scalars
   builder.addDescriptor('graphql/root.json', {
@@ -65,7 +50,7 @@ export function buildFastify(builder: ProjectEntryBuilder): unknown {
         ...rootFeatures.map((feature) => buildFeature(feature, builder)),
         'graphql/root',
       ],
-      ...authEntries,
+      ...parsedApp.fastifyChildren,
     },
   };
 }

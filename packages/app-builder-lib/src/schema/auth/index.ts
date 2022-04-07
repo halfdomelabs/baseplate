@@ -11,7 +11,8 @@ export type AuthRoleConfig = yup.InferType<typeof authRoleSchema>;
 export const authSchema = yup.object({
   userModel: yup.string().required(),
   userRoleModel: yup.string().required(),
-  featurePath: yup.string().required(),
+  authFeaturePath: yup.string().required(),
+  accountsFeaturePath: yup.string().required(),
   passwordProvider: yup.boolean(),
   roles: yup.array(authRoleSchema),
 });

@@ -1,36 +1,24 @@
 import { ParsedAppConfig } from '@src/parser';
-import { ModelConfig } from '../../schema/models';
+import { ParsedModel } from '@src/parser/types';
 
-function buildServiceForModel(
-  model: ModelConfig,
-  parsedAppConfig: ParsedAppConfig
-): unknown {
-  const createAdditions: Record<string, unknown> = {};
-  const updateAdditions: Record<string, unknown> = {};
+function buildServiceForModel(model: ParsedModel): unknown {
+  const createTransformers: Record<string, unknown> =
+    model.service?.createTransformers || {};
+  const updateTransformers: Record<string, unknown> =
+    model.service?.updateTransformers || {};
 
-  if (parsedAppConfig.appConfig.auth?.passwordProvider) {
-    if (model.name === parsedAppConfig.appConfig.auth.userModel) {
-      createAdditions.$passwordHash = {
-        generator: '@baseplate/fastify/auth/password-create-transformer',
-      };
-      updateAdditions.$passwordHash = {
-        generator: '@baseplate/fastify/auth/password-update-transformer',
-      };
-    }
-  }
-
-  model.embeddedRelations
+  model.service?.embeddedRelations
     ?.map((config) => ({
       localRelationName: config.localRelationName,
       embeddedFieldNames: config.embeddedFieldNames,
     }))
     .forEach((config) => {
-      createAdditions[`$${config.localRelationName}`] = {
+      createTransformers[`$${config.localRelationName}`] = {
         generator: '@baseplate/fastify/prisma/embedded-relation-transformer',
         ...config,
         isUpdate: false,
       };
-      updateAdditions[`$${config.localRelationName}`] = {
+      updateTransformers[`$${config.localRelationName}`] = {
         generator: '@baseplate/fastify/prisma/embedded-relation-transformer',
         ...config,
         isUpdate: true,
@@ -46,16 +34,16 @@ function buildServiceForModel(
         modelName: model.name,
         children: {
           create: {
-            prismaFields: model.fields
-              ?.filter((f) => f.creatable)
+            prismaFields: model.model.fields
+              ?.filter((f) => f.service?.creatable)
               .map((f) => f.name),
-            children: createAdditions,
+            children: createTransformers,
           },
           update: {
-            prismaFields: model.fields
-              ?.filter((f) => f.updatable)
+            prismaFields: model.model.fields
+              ?.filter((f) => f.service?.updatable)
               .map((f) => f.name),
-            children: updateAdditions,
+            children: updateTransformers,
           },
         },
       },
@@ -70,6 +58,6 @@ export function buildServicesForFeature(
   const models =
     parsedAppConfig
       .getModels()
-      .filter((m) => m.feature === feature && m.generateService) || [];
-  return models.map((model) => buildServiceForModel(model, parsedAppConfig));
+      .filter((m) => m.feature === feature && m.service?.build) || [];
+  return models.map((model) => buildServiceForModel(model));
 }

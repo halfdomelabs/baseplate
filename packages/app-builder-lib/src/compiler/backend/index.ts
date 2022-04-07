@@ -1,5 +1,6 @@
 // async function write backend
 
+import { ParsedAppConfig } from '@src/parser';
 import { AppConfig } from '../../schema';
 import { ProjectEntry } from '../../types/files';
 import { ProjectEntryBuilder } from '../projectEntryBuilder';
@@ -22,14 +23,14 @@ export function compileBackend(appConfig: AppConfig): ProjectEntry {
     appConfig.apps.backend?.packageLocation || 'packages/backend'
   );
 
+  const parsedApp = new ParsedAppConfig(appConfig);
+
   projectBuilder.addDescriptor('project.json', {
     generator: '@baseplate/core/node/node',
     name: `${appConfig.name}-backend`,
     description: `Backend for ${appConfig.name}`,
     version: appConfig.version,
-    ...(appConfig.auth?.passwordProvider
-      ? { hoistedProviders: ['password-hasher-service'] }
-      : {}),
+    hoistedProviders: parsedApp.globalHoistedProviders,
     children: {
       projects: [buildDocker(appConfig), buildFastify(projectBuilder)],
     },
