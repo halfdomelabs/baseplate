@@ -7,10 +7,10 @@ import {
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
 import {
-  ReactPagesLayout,
-  reactPagesProvider,
-  ReactPagesRoute,
-} from '@src/providers/pages';
+  ReactRouteLayout,
+  reactRoutesProvider,
+  ReactRoute,
+} from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
 import { renderRoutes } from '../_shared/routes/renderRoutes';
 import { reactProvider } from '../react';
@@ -22,6 +22,17 @@ const descriptorSchema = yup.object({
 
 const ReactRouterGenerator = createGeneratorWithChildren({
   descriptorSchema,
+  getDefaultChildGenerators: () => ({
+    routes: {
+      isMultiple: true,
+    },
+    notFoundHandler: {
+      defaultDescriptor: {
+        generator: '@baseplate/react/core/react-not-found-handler',
+        peerProvider: true,
+      },
+    },
+  }),
   dependencies: {
     node: nodeProvider,
     react: reactProvider,
@@ -29,17 +40,17 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    reactPages: reactPagesProvider,
+    reactRoutes: reactRoutesProvider,
   },
   createGenerator(descriptor, { node, react, reactApp, typescript }) {
     node.addPackage('react-router-dom', '^6.2.2');
     node.addDevPackage('@types/react-router-dom', '^5.3.3');
-    const routes: ReactPagesRoute[] = [];
-    const layouts: ReactPagesLayout[] = [];
+    const routes: ReactRoute[] = [];
+    const layouts: ReactRouteLayout[] = [];
 
     return {
       getProviders: () => ({
-        reactPages: {
+        reactRoutes: {
           registerRoute(route) {
             routes.push(route);
           },
@@ -74,6 +85,8 @@ const ReactRouterGenerator = createGeneratorWithChildren({
           ROUTE_HEADER: { type: 'code-block' },
           ROUTES: { type: 'code-expression' },
         });
+
+        // TODO: Make sure we don't have more than one layout key
 
         // group routes by layout key
         const renderedRoutes = renderRoutes(routes, layouts);

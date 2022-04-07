@@ -190,11 +190,11 @@ function mergeBlocks(
  * Should only be used with JSX
  */
 function mergeExpressions(
-  entries: TypescriptCodeExpression[],
+  entries: (TypescriptCodeExpression | string)[],
   separator = '\n'
 ): TypescriptCodeExpression {
   return new TypescriptCodeExpression(
-    entries.map((e) => e.content).join(separator),
+    entries.map((e) => getExpressionContent(e)).join(separator),
     null,
     mergeCodeEntryOptions(entries)
   );
@@ -222,7 +222,7 @@ function mergeWrappers(
   );
 }
 
-function normalizeExpression(
+function getExpressionContent(
   expression: string | TypescriptCodeExpression
 ): string {
   return typeof expression === 'string' ? expression : expression.content;
@@ -334,7 +334,7 @@ export const TypescriptCodeUtils = {
     return entry.toBlock();
   },
   mergeExpressionsAsArray(
-    entries: TypescriptCodeExpression[]
+    entries: (TypescriptCodeExpression | string)[]
   ): TypescriptCodeExpression {
     const mergedExpression = mergeExpressions(entries, ', ');
     return new TypescriptCodeExpression(
@@ -387,7 +387,7 @@ export const TypescriptCodeUtils = {
         if (value === true) {
           return `${key}`;
         }
-        const content = normalizeExpression(value);
+        const content = getExpressionContent(value);
         if (content === 'true') {
           return `${key}`;
         }
@@ -411,7 +411,7 @@ export const TypescriptCodeUtils = {
 
     if (children) {
       return new TypescriptCodeExpression(
-        `<${name} ${attributesStr}>${normalizeExpression(children)}</${name}>`,
+        `<${name} ${attributesStr}>${getExpressionContent(children)}</${name}>`,
         importText,
         codeEntryOptions
       );

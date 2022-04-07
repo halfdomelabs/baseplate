@@ -4,11 +4,11 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import R from 'ramda';
-import { ReactPagesLayout, ReactPagesRoute } from '@src/providers/pages';
+import { ReactRouteLayout, ReactRoute } from '@src/providers/routes';
 
 export function renderRoutes(
-  routes: ReactPagesRoute[],
-  layouts: ReactPagesLayout[]
+  routes: ReactRoute[],
+  layouts: ReactRouteLayout[]
 ): TypescriptCodeExpression {
   // group routes by layout key
   const routesByLayoutKey = R.groupBy(
@@ -35,6 +35,7 @@ export function renderRoutes(
             path: route.path && quot(route.path),
             index: route.index,
             element: route.element,
+            children: route.children,
           },
           'import { Route } from "react-router-dom"'
         )

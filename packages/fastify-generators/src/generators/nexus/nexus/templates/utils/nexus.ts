@@ -70,7 +70,7 @@ export function createStandardMutation<FieldName extends string>({
             input: arg({ type: nonNull(inputType) }),
           }
         : {},
-      type: payloadType,
+      type: nonNull(payloadType),
       resolve, // CUSTOM_MUTATION_FIELDS
     });
   });

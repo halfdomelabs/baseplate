@@ -9,12 +9,11 @@ import {
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
+import { reactRoutesProvider } from '@src/providers/routes';
 import { writeReactComponent } from '@src/writers/component';
-import { authLayoutsSetupProvider } from '../auth-layouts';
 
 const descriptorSchema = yup.object({
   name: yup.string().required(),
-  isAuthenticated: yup.boolean().required(),
 });
 
 export type AuthLayoutProvider = unknown;
@@ -26,19 +25,16 @@ const AuthLayoutGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    authLayoutsSetup: authLayoutsSetupProvider,
     reactComponents: reactComponentsProvider,
+    reactRoutes: reactRoutesProvider,
     typescript: typescriptProvider,
   },
   exports: {
     authLayout: authLayoutProvider,
   },
-  createGenerator(
-    { name, isAuthenticated },
-    { authLayoutsSetup, reactComponents, typescript }
-  ) {
+  createGenerator({ name }, { reactRoutes, typescript }) {
     const [layoutImport, layoutPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/${name}/index.tsx`
+      `${reactRoutes.getDirectoryBase()}/components/AuthLayout/index.tsx`
     );
 
     const layoutExpression = TypescriptCodeUtils.createExpression(
@@ -46,26 +42,22 @@ const AuthLayoutGenerator = createGeneratorWithChildren({
       `import ${name} from '${layoutImport}';`
     );
 
-    if (isAuthenticated) {
-      authLayoutsSetup.setAuthenticatedLayout(layoutExpression);
-    } else {
-      authLayoutsSetup.setUnauthenticatedLayout(layoutExpression);
-    }
+    reactRoutes.registerLayout({
+      key: 'auth',
+      element: layoutExpression,
+    });
 
     return {
       getProviders: () => ({
         authLayout: {},
       }),
       build: async (builder) => {
-        const defaultBlock = TypescriptCodeUtils.createBlock(
-          `return <Outlet />;`,
+        const body = TypescriptCodeUtils.createBlock(
+          `return <div className="min-h-full flex items-center justify-center bg-slate-100"><Outlet /></div>;`,
           `import { Outlet } from 'react-router-dom'`
         );
 
-        const component = writeReactComponent({
-          name,
-          body: defaultBlock,
-        });
+        const component = writeReactComponent({ name, body });
 
         await builder.apply(
           typescript.renderBlockToAction(component, layoutPath)

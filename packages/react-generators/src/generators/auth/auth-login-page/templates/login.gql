@@ -1,0 +1,12 @@
+mutation LoginWithEmailAndPassword($input: LoginWithEmailAndPasswordInput!) {
+  loginWithEmailAndPassword(input: $input) {
+    authPayload {
+      ...AuthPayload
+    }
+    user {
+      roles {
+        role
+      }
+    }
+  }
+}

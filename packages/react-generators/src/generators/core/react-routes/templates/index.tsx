@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { Routes } from 'react-router-dom';
 
-function PagesRoot(): JSX.Element {
+function ROUTES_NAME(): JSX.Element {
   ROUTE_HEADER;
   return (
     <Routes>
@@ -10,4 +10,4 @@ function PagesRoot(): JSX.Element {
   );
 }
 
-export default PagesRoot;
+export default ROUTES_NAME;

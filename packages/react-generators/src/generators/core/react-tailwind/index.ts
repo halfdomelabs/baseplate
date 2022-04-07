@@ -65,6 +65,7 @@ body {
             },
           })
         );
+        // TODO: Dark mode not supported currently
         await builder.apply(
           copyFileAction({
             source: 'tailwind.config.js',

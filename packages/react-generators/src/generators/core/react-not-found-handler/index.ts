@@ -3,29 +3,42 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import {
+  createGeneratorWithChildren,
+  createProviderType,
+} from '@baseplate/sync';
 import * as yup from 'yup';
-import { reactPagesProvider } from '@src/providers/pages';
+import { ReactRoute, reactRoutesProvider } from '@src/providers/routes';
 import { reactComponentsProvider } from '../react-components';
 
 const descriptorSchema = yup.object({
   layoutKey: yup.string(),
 });
 
+export interface ReactNotFoundProvider {
+  getNotFoundRoute(): ReactRoute;
+}
+
+export const reactNotFoundProvider =
+  createProviderType<ReactNotFoundProvider>('react-not-found');
+
 const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    reactPages: reactPagesProvider,
+    reactPages: reactRoutesProvider,
     reactComponents: reactComponentsProvider,
     typescript: typescriptProvider,
+  },
+  exports: {
+    reactNotFound: reactNotFoundProvider,
   },
   createGenerator({ layoutKey }, { reactPages, reactComponents, typescript }) {
     const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
       `${reactPages.getDirectoryBase()}/NotFoundPage.tsx`
     );
 
-    reactPages.registerRoute({
+    const notFoundRoute = {
       path: '*',
       element: TypescriptCodeUtils.createExpression(
         `<NotFoundPage />`,
@@ -34,9 +47,18 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
           importMappers: [reactComponents],
         }
       ),
+    };
+
+    reactPages.registerRoute({
+      ...notFoundRoute,
       layoutKey,
     });
     return {
+      getProviders: () => ({
+        reactNotFound: {
+          getNotFoundRoute: () => notFoundRoute,
+        },
+      }),
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyAction({

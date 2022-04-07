@@ -58,7 +58,7 @@ export function generateConfig({
               position: 'after',
             },
           ],
-          alphabetize: { order: 'asc' },
+          alphabetize: { order: 'asc', caseInsensitive: true },
         },
       ],
       '@typescript-eslint/require-await': 'off',
