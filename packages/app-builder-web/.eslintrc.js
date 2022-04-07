@@ -63,6 +63,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'no-alert': 'off',
     'no-param-reassign': 'off',
+    'no-console': 'off',
   },
   env: {
     node: true,

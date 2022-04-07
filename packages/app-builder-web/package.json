@@ -30,6 +30,7 @@
     "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
     "classnames": "^2.3.1",
+    "immer": "^9.0.12",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.0",
     "react": "^17.0.2",
@@ -39,7 +40,6 @@
     "react-icons": "^4.3.1",
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
-    "use-immer": "^0.6.0",
     "web-vitals": "^2.1.0",
     "yup": "^0.32.11"
   },

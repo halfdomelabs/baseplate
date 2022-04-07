@@ -4,7 +4,7 @@ import { buildFeature } from './feature';
 export function buildFastify(builder: ProjectEntryBuilder): unknown {
   const { appConfig, parsedApp } = builder;
   const rootFeatures =
-    appConfig.features?.filter((f) => !f.includes('/')) || [];
+    appConfig.features?.filter((f) => !f.name.includes('/')) || [];
 
   // add graphql scalars
   builder.addDescriptor('graphql/root.json', {
@@ -47,7 +47,7 @@ export function buildFastify(builder: ProjectEntryBuilder): unknown {
         peerProvider: true,
       },
       $modules: [
-        ...rootFeatures.map((feature) => buildFeature(feature, builder)),
+        ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
         'graphql/root',
       ],
       ...parsedApp.fastifyChildren,

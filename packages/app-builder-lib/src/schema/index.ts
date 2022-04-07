@@ -14,7 +14,11 @@ export const appConfigSchema = yup.object({
       backend: backendSchema.nullable(),
     })
     .required(),
-  features: yup.array(yup.string().required()),
+  features: yup.array(
+    yup.object({
+      name: yup.string().required(),
+    })
+  ),
   models: yup.array(modelSchema),
   auth: authSchema.optional().default(undefined),
 });

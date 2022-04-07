@@ -1,4 +1,7 @@
 function getFormattedErrorSuffix(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
   return 'Please try again later.';
 }
 

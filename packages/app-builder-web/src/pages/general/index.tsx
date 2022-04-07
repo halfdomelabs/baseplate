@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Alert, Button, TextInput } from 'src/components';
 import { useAppConfig } from 'src/hooks/useAppConfig';
@@ -12,6 +12,13 @@ const validationSchema = yup.object({
   name: yup.string().required(),
   version: yup.string().required(),
   portBase: yup.number().required(),
+  features: yup.array(
+    yup
+      .object({
+        name: yup.string().required(),
+      })
+      .required()
+  ),
 });
 
 type FormData = yup.InferType<typeof validationSchema>;
@@ -21,10 +28,11 @@ function GeneralPage(): JSX.Element {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
-    defaultValues: _.pick(config, ['name', 'version', 'portBase']),
+    defaultValues: _.pick(config, ['name', 'version', 'portBase', 'features']),
   });
   const { status, setError } = useStatus();
   const toast = useToast();
@@ -35,12 +43,19 @@ function GeneralPage(): JSX.Element {
         oldConfig.name = data.name;
         oldConfig.version = data.version;
         oldConfig.portBase = data.portBase;
+        oldConfig.features = _.sortBy(data.features, (f) => f.name);
       });
       toast.success('Successfully saved configuration!');
     } catch (err) {
+      console.error(err);
       setError(formatError(err));
     }
   };
+
+  const { fields, remove, append } = useFieldArray({
+    control,
+    name: 'features',
+  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -61,7 +76,27 @@ function GeneralPage(): JSX.Element {
         register={register('portBase')}
         error={errors.portBase?.message}
       />
-      <Button type="submit">Save</Button>
+      <h2>Features</h2>
+      {fields.map((field, idx) => {
+        const { id } = field;
+        return (
+          <div key={id} className="flex flex-row space-x-4">
+            <TextInput.Labelled
+              register={register(`features.${idx}.name`)}
+              error={errors.features?.[idx]?.name?.message}
+            />
+            <Button secondary onClick={() => remove(idx)}>
+              Remove
+            </Button>
+          </div>
+        );
+      })}
+      <div>
+        <Button onClick={() => append({ name: '' })}>Add Feature</Button>
+      </div>
+      <div>
+        <Button type="submit">Save</Button>
+      </div>
     </form>
   );
 }

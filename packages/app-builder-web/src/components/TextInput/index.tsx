@@ -33,7 +33,7 @@ const TextInput = function TextInput({
 };
 
 interface TextInputLabelledProps extends Props {
-  label: string;
+  label?: string;
   error?: React.ReactNode;
 }
 
@@ -46,7 +46,7 @@ TextInput.Labelled = function TextInputLabelled({
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={classNames('block', className)}>
-      <FormLabel>{label}</FormLabel>
+      {label && <FormLabel>{label}</FormLabel>}
       <TextInput {...rest} />
       {error && (
         <p className="mt-2 text-sm text-red-600 dark:text-red-500">{error}</p>

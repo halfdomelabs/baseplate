@@ -1,9 +1,9 @@
-import { AppConfig } from '@baseplate/app-builder-lib';
-import { useEffect, useMemo } from 'react';
+import { AppConfig, ParsedAppConfig } from '@baseplate/app-builder-lib';
+import produce from 'immer';
+import { useEffect, useMemo, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
-import { useImmer } from 'use-immer';
-import { AppConfigContext } from 'src/hooks/useAppConfig';
+import { AppConfigContext, UseAppConfigResult } from 'src/hooks/useAppConfig';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -30,11 +30,23 @@ function App(): JSX.Element {
     };
   }, [savedConfig, toast]);
 
-  const [config, setConfig] = useImmer<AppConfig>(initialConfig);
-  const result = useMemo(
+  const [config, setConfig] = useState<AppConfig>(initialConfig);
+
+  const result: UseAppConfigResult = useMemo(
     () => ({
       config,
-      setConfig,
+      setConfig: (newConfig) => {
+        // validate app config
+        // TODO: Figure out better validation technique
+        // get new app config
+        const newAppConfig =
+          typeof newConfig === 'function'
+            ? produce(config, newConfig)
+            : newConfig;
+        // eslint-disable-next-line no-new
+        new ParsedAppConfig(newAppConfig);
+        setConfig(newAppConfig);
+      },
     }),
     [config, setConfig]
   );

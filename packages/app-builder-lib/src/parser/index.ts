@@ -38,6 +38,37 @@ function upsertItems<T>(
   ];
 }
 
+function validateAppConfig(appConfig: AppConfig): void {
+  const features = appConfig.features?.map((f) => f.name) || [];
+
+  // validate features
+  const missingParentFeatures = features.filter(
+    (feature) =>
+      feature.includes('/') &&
+      !features.includes(feature.substring(0, feature.lastIndexOf('/')))
+  );
+
+  if (missingParentFeatures.length) {
+    throw new Error(
+      `Nested features must be a direct child of another feature. Features with missing parents: ${missingParentFeatures.join(
+        ', '
+      )}`
+    );
+  }
+
+  // apply some basic validation rules to app config
+  const featurelessModels = (appConfig.models || []).filter(
+    (model) => !features.includes(model.feature)
+  );
+  if (featurelessModels.length) {
+    throw new Error(
+      `Models must be associated with a feature: ${featurelessModels
+        .map((model) => model.name)
+        .join(', ')}`
+    );
+  }
+}
+
 export class ParsedAppConfig {
   protected models: ParsedModel[];
 
@@ -50,7 +81,9 @@ export class ParsedAppConfig {
   public featureChildren: Record<string, Record<string, unknown>> = {};
 
   constructor(public appConfig: AppConfig) {
-    this.models = appConfig.models || [];
+    validateAppConfig(appConfig);
+    const copiedAppConfig = R.clone(appConfig);
+    this.models = copiedAppConfig.models || [];
 
     // run plugins
     PARSER_PLUGINS.forEach((plugin) =>

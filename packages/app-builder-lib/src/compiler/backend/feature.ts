@@ -12,7 +12,8 @@ export function buildFeature(
   const featureName = featurePath.split('/').pop();
   // find sub-features
   const subFeatures =
-    appConfig.features?.filter((f) => f.startsWith(`${featurePath}/`)) || [];
+    appConfig.features?.filter((f) => f.name.startsWith(`${featurePath}/`)) ||
+    [];
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,
@@ -23,7 +24,7 @@ export function buildFeature(
       $services: buildServicesForFeature(featurePath, parsedApp),
       $schemaTypes: buildSchemaTypesForFeature(featurePath, parsedApp),
       $submodules: subFeatures.map((subFeature) =>
-        buildFeature(subFeature, builder)
+        buildFeature(subFeature.name, builder)
       ),
       ...parsedApp.getFeatureChildren(featurePath),
     },
