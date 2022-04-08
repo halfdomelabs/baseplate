@@ -4,73 +4,68 @@ import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
 interface Props {
-  options: { value: string; label: string }[];
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(value: string): void;
+  onChange?(value: boolean): void;
   value?: string;
+  type?: 'checkbox' | 'radio';
   register?: UseFormRegisterReturn;
 }
 
-function SelectInput({
+function CheckedInput({
   className,
-  options,
   name,
   disabled,
   onChange,
   value,
   register,
+  type = 'checkbox',
 }: Props): JSX.Element {
   const onChangeHandler =
     onChange &&
-    ((event: React.ChangeEvent<HTMLSelectElement>): void => {
-      onChange(event.target.value);
+    ((event: React.ChangeEvent<HTMLInputElement>): void => {
+      onChange(event.target.checked);
     });
 
-  const selectProps = {
+  const inputProps = {
     name,
     disabled,
     onChange: onChangeHandler,
     value,
+    type,
     ...register,
   };
   return (
-    <select
+    <input
       className={classNames(
-        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+        'w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600',
         className
       )}
-      {...selectProps}
-    >
-      {options.map(({ value: optionValue, label }) => (
-        <option key={optionValue} value={optionValue}>
-          {label}
-        </option>
-      ))}
-    </select>
+      {...inputProps}
+    />
   );
 }
 
-interface SelectInputLabelledProps extends Props {
+interface CheckedInputLabelledProps extends Props {
   label?: string;
   error?: React.ReactNode;
 }
 
-SelectInput.Labelled = function SelectInputLabelled({
+CheckedInput.Labelled = function SelectInputLabelled({
   label,
   className,
   error,
   ...rest
-}: SelectInputLabelledProps): JSX.Element {
+}: CheckedInputLabelledProps): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={classNames('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
-      <SelectInput {...rest} />
+      <CheckedInput {...rest} />
       {error && <FormError>{error}</FormError>}
     </label>
   );
 };
 
-export default SelectInput;
+export default CheckedInput;

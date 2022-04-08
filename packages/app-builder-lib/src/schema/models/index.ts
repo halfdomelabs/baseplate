@@ -4,31 +4,20 @@ import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 
 export const modelScalarFieldSchema = yup.object({
   name: yup.string().required(),
-  model: yup
+  type: yup
+    .string()
+    .oneOf([...SCALAR_FIELD_TYPES])
+    .required(),
+  isId: yup.boolean(),
+  isOptional: yup.boolean(),
+  isUnique: yup.boolean(),
+  options: yup
     .object({
-      type: yup
-        .string()
-        .oneOf([...SCALAR_FIELD_TYPES])
-        .required(),
-      id: yup.boolean(),
-      optional: yup.boolean(),
-      unique: yup.boolean(),
       // uuid options
       genUuid: yup.boolean(),
       // date options
       updatedAt: yup.boolean(),
       defaultToNow: yup.boolean(),
-    })
-    .required(),
-  service: yup
-    .object({
-      creatable: yup.boolean(),
-      updatable: yup.boolean(),
-    })
-    .default(undefined),
-  schema: yup
-    .object({
-      exposed: yup.boolean(),
     })
     .default(undefined),
 });
@@ -47,25 +36,26 @@ const REFERENTIAL_ACTIONS = [
 
 export const modelRelationFieldSchema = yup.object({
   name: yup.string().required(),
-  model: yup.object({
-    fields: yup.array(yup.string().required()).required(),
-    references: yup.array(yup.string().required()).required(),
-    modelName: yup.string().required(),
-    foreignFieldName: yup.string(),
-    relationshipName: yup.string(),
-    relationshipType: yup
-      .string()
-      .oneOf(['oneToOne', 'oneToMany'])
-      .default('oneToMany'),
-    optional: yup.boolean().default(false),
-    onDelete: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Cascade'),
-    onUpdate: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Restrict'),
-  }),
-  schema: yup
-    .object({
-      exposed: yup.boolean(),
-    })
-    .default(undefined),
+  references: yup
+    .array(
+      yup
+        .object({
+          local: yup.string().required(),
+          foreign: yup.string().required(),
+        })
+        .required()
+    )
+    .required(),
+  modelName: yup.string().required(),
+  foreignFieldName: yup.string(),
+  relationshipName: yup.string(),
+  relationshipType: yup
+    .string()
+    .oneOf(['oneToOne', 'oneToMany'])
+    .default('oneToMany'),
+  isOptional: yup.boolean().default(false),
+  onDelete: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Cascade'),
+  onUpdate: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Restrict'),
 });
 
 export type ModelRelationFieldConfig = MakeUndefinableFieldsOptional<
@@ -83,6 +73,16 @@ export const modelSchema = yup.object({
   service: yup
     .object({
       build: yup.boolean(),
+      create: yup
+        .object({
+          fields: yup.array(yup.string().required()).required(),
+        })
+        .default(undefined),
+      update: yup
+        .object({
+          fields: yup.array(yup.string().required()).required(),
+        })
+        .default(undefined),
       embeddedRelations: yup.array(
         yup.object({
           localRelationName: yup.string().required(),
@@ -94,6 +94,7 @@ export const modelSchema = yup.object({
   schema: yup
     .object({
       buildObjectType: yup.boolean(),
+      exposedFields: yup.array(yup.string().required()),
       buildQuery: yup.boolean(),
       buildMutations: yup.boolean(),
       authorize: yup.object({

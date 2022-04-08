@@ -1,4 +1,8 @@
-import { AppConfig, ParsedAppConfig } from '@baseplate/app-builder-lib';
+import {
+  AppConfig,
+  appConfigSchema,
+  ParsedAppConfig,
+} from '@baseplate/app-builder-lib';
 import produce from 'immer';
 import { useEffect, useMemo, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -35,6 +39,7 @@ function App(): JSX.Element {
   const result: UseAppConfigResult = useMemo(
     () => ({
       config,
+      parsedConfig: new ParsedAppConfig(config),
       setConfig: (newConfig) => {
         // validate app config
         // TODO: Figure out better validation technique
@@ -43,9 +48,12 @@ function App(): JSX.Element {
           typeof newConfig === 'function'
             ? produce(config, newConfig)
             : newConfig;
+        const validatedAppConfig = appConfigSchema.validateSync(newAppConfig, {
+          stripUnknown: true,
+        });
         // eslint-disable-next-line no-new
-        new ParsedAppConfig(newAppConfig);
-        setConfig(newAppConfig);
+        new ParsedAppConfig(validatedAppConfig);
+        setConfig(validatedAppConfig);
       },
     }),
     [config, setConfig]

@@ -1,6 +1,6 @@
 import R from 'ramda';
 import { AppConfig } from '@src/schema';
-import { safeMerge } from '@src/utils/merge';
+import { deepMergeRightUniq, safeMerge } from '@src/utils/merge';
 import { AuthPlugin } from './plugins/auth';
 import { ParsedModel } from './types';
 
@@ -140,10 +140,7 @@ export class ParsedAppConfig {
                 (i) => i.name
               ),
             },
-            service: {
-              ...existingModel.service,
-              ...model.service,
-            },
+            service: deepMergeRightUniq(existingModel.service, model.service),
           });
         },
       })

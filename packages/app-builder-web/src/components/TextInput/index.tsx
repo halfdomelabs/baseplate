@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { HTMLInputTypeAttribute } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
+import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
 interface Props {
@@ -48,9 +49,7 @@ TextInput.Labelled = function TextInputLabelled({
     <label className={classNames('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <TextInput {...rest} />
-      {error && (
-        <p className="mt-2 text-sm text-red-600 dark:text-red-500">{error}</p>
-      )}
+      {error && <FormError>{error}</FormError>}
     </label>
   );
 };

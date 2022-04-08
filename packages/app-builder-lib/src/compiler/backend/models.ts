@@ -6,35 +6,32 @@ import {
 } from '../../schema/models';
 
 function buildScalarField(field: ModelScalarFieldConfig): unknown {
-  const { model } = field;
+  const { options = {} } = field;
   return {
     name: field.name,
-    type: model.type,
-    id: model.id,
+    type: field.type,
+    id: field.isId,
     options: {
-      autoGenerate: model.genUuid,
-      defaultToNow: model.defaultToNow,
-      updatedAt: model.updatedAt,
+      autoGenerate: options.genUuid,
+      defaultToNow: options.defaultToNow,
+      updatedAt: options.updatedAt,
     },
-    optional: model.optional,
-    unique: model.unique,
+    optional: field.isOptional,
+    unique: field.isUnique,
   };
 }
 
 function buildRelationField(
   {
     name,
-    model: {
-      fields,
-      references,
-      modelName,
-      foreignFieldName,
-      relationshipName,
-      relationshipType,
-      optional,
-      onDelete,
-      onUpdate,
-    },
+    references,
+    modelName,
+    foreignFieldName,
+    relationshipName,
+    relationshipType,
+    isOptional,
+    onDelete,
+    onUpdate,
   }: ModelRelationFieldConfig,
   parsedApp: ParsedAppConfig
 ): unknown {
@@ -44,13 +41,13 @@ function buildRelationField(
   }
   return {
     name,
-    fields,
-    references,
+    fields: references.map((r) => r.local),
+    references: references.map((r) => r.foreign),
     modelRef: `${model.feature}/root:$models.${model.name}`,
     foreignFieldName,
     relationshipName,
     relationshipType,
-    optional,
+    optional: isOptional,
     onDelete,
     onUpdate,
   };

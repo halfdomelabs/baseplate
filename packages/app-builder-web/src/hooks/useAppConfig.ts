@@ -1,8 +1,9 @@
-import { AppConfig } from '@baseplate/app-builder-lib';
+import { AppConfig, ParsedAppConfig } from '@baseplate/app-builder-lib';
 import React from 'react';
 
 export interface UseAppConfigResult {
   config: AppConfig;
+  parsedConfig: ParsedAppConfig;
   setConfig: (
     config: AppConfig | ((originalConfig: AppConfig) => void)
   ) => void;

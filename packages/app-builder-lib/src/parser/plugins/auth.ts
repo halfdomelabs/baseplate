@@ -1,8 +1,4 @@
-import {
-  ParserPlugin,
-  PluginMergeModelFieldInput,
-  PluginMergeModelRelationInput,
-} from '../types';
+import { ParsedModelField, ParsedRelationField, ParserPlugin } from '../types';
 
 export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -13,28 +9,33 @@ export const AuthPlugin: ParserPlugin = {
     }
 
     // annotate user model
-    const userFields: PluginMergeModelFieldInput[] = [
+    const userFields: ParsedModelField[] = [
       {
         name: 'id',
-        isModelLocked: true,
-        model: { type: 'uuid', id: true, genUuid: true },
+        isLocked: true,
+        type: 'uuid',
+        isId: true,
+        options: { genUuid: true },
       },
       {
         name: 'email',
-        isModelLocked: true,
-        model: { type: 'string', unique: true },
+        isLocked: true,
+        type: 'string',
+        isUnique: true,
       },
       {
         name: 'tokensNotBefore',
-        isModelLocked: true,
-        model: { type: 'dateTime', optional: true },
+        isLocked: true,
+        type: 'dateTime',
+        isOptional: true,
       },
     ];
     if (auth.passwordProvider) {
       userFields.push({
         name: 'passwordHash',
-        isModelLocked: true,
-        model: { type: 'string', optional: true },
+        isLocked: true,
+        type: 'string',
+        isOptional: true,
       });
     }
 
@@ -62,31 +63,28 @@ export const AuthPlugin: ParserPlugin = {
           },
     });
 
-    const userRoleFields: PluginMergeModelFieldInput[] = [
+    const userRoleFields: ParsedModelField[] = [
       {
         name: 'userId',
-        model: { type: 'uuid' },
+        type: 'uuid',
       },
       {
         name: 'role',
-        model: { type: 'string' },
+        type: 'string',
       },
     ];
 
-    const userRoleRelations: PluginMergeModelRelationInput[] = [
+    const userRoleRelations: ParsedRelationField[] = [
       {
         name: 'user',
-        model: {
-          fields: ['userId'],
-          references: ['id'],
-          modelName: auth.userModel,
-          foreignFieldName: 'roles',
-          relationshipType: 'oneToMany',
-          optional: false,
-          onDelete: 'Cascade',
-          onUpdate: 'Restrict',
-        },
-        isModelLocked: true,
+        references: [{ local: 'userId', foreign: 'id' }],
+        modelName: auth.userModel,
+        foreignFieldName: 'roles',
+        relationshipType: 'oneToMany',
+        isOptional: false,
+        onDelete: 'Cascade',
+        onUpdate: 'Restrict',
+        isLocked: true,
       },
     ];
 

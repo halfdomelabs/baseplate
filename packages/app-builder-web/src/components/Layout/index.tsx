@@ -8,9 +8,10 @@ import Sidebar from '../Sidebar';
 interface Props {
   className?: string;
   centered?: boolean;
+  noPadding?: boolean;
 }
 
-function Layout({ className, centered }: Props): JSX.Element {
+function Layout({ className, centered, noPadding }: Props): JSX.Element {
   const { config } = useAppConfig();
   return (
     <div className={classNames('h-full items-stretch flex', className)}>
@@ -38,8 +39,9 @@ function Layout({ className, centered }: Props): JSX.Element {
       </Sidebar>
       <div
         className={classNames(
-          'p-4 flex flex-col flex-auto',
-          centered && 'items-center justify-center'
+          'flex flex-col flex-auto',
+          centered && 'items-center justify-center',
+          !noPadding && 'p-4'
         )}
       >
         <Outlet />

@@ -6,48 +6,28 @@ import {
 import { AppConfig } from '../schema';
 
 export interface ParsedModelField extends ModelScalarFieldConfig {
-  isModelLocked?: boolean;
+  isLocked?: boolean;
 }
 
 export interface ParsedRelationField extends ModelRelationFieldConfig {
-  isModelLocked?: boolean;
+  isLocked?: boolean;
 }
 
 export interface ParsedModel extends ModelConfig {
-  model: {
+  model: ModelConfig['model'] & {
     fields: ParsedModelField[];
     relations?: ParsedRelationField[];
-    primaryKeys?: string[];
   };
-  service?: {
-    build?: boolean;
-    embeddedRelations?: {
-      localRelationName: string;
-      embeddedFieldNames: string[];
-    }[];
+  service?: ModelConfig['service'] & {
     createTransformers?: Record<string, unknown>;
     updateTransformers?: Record<string, unknown>;
   };
 }
 
-export type PluginMergeModelFieldInput = Pick<
-  ParsedModelField,
-  'name' | 'model' | 'isModelLocked'
+export type PluginMergeModelInput = Pick<
+  ParsedModel,
+  'name' | 'feature' | 'service' | 'model'
 >;
-
-export type PluginMergeModelRelationInput = Pick<
-  ParsedRelationField,
-  'name' | 'model' | 'isModelLocked'
->;
-
-export interface PluginMergeModelInput
-  extends Pick<ParsedModel, 'name' | 'feature' | 'service'> {
-  model: {
-    fields: PluginMergeModelFieldInput[];
-    relations?: PluginMergeModelRelationInput[];
-    primaryKeys?: string[];
-  };
-}
 
 export interface PluginHooks {
   mergeModel: (model: PluginMergeModelInput) => void;
