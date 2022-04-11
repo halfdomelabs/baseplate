@@ -1,18 +1,25 @@
-import { ModelConfig } from '@baseplate/app-builder-lib';
-import classNames from 'classnames';
-import { useFieldArray, UseFormReturn } from 'react-hook-form';
-import { Button, LinkButton } from 'src/components';
+import { useFieldArray } from 'react-hook-form';
+import { Alert, Button, LinkButton, TextInput } from 'src/components';
 import Dropdown from 'src/components/Dropdown';
+import ReactSelectInput from 'src/components/ReactSelectInput';
+import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useStatus } from 'src/hooks/useStatus';
 import ModelFieldForm from './ModelFieldForm';
 import ModelRelationForm from './ModelRelationForm';
+import { useModelForm } from './hooks/useModelForm';
 
-interface Props {
-  className?: string;
-  formProps: UseFormReturn<ModelConfig>;
-}
+function ModelEditModelPage(): JSX.Element {
+  const { status, setError } = useStatus();
+  const { form, onFormSubmit } = useModelForm({ setError });
+  const { control, handleSubmit } = form;
 
-function ModelForm({ className, formProps }: Props): JSX.Element {
-  const { control } = formProps;
+  const { parsedConfig } = useAppConfig();
+
+  const featureOptions = (parsedConfig.appConfig.features || []).map((f) => ({
+    label: f.name,
+    value: f.name,
+  }));
+
   const {
     fields: fieldFields,
     remove: removeField,
@@ -32,13 +39,25 @@ function ModelForm({ className, formProps }: Props): JSX.Element {
   });
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+      <Alert.WithStatus status={status} />
+      <TextInput.Controller
+        label="Name (e.g. User)"
+        control={control}
+        name="name"
+      />
+      <ReactSelectInput.Controller
+        label="Feature"
+        control={control}
+        name="feature"
+        options={featureOptions}
+      />
       <h3>Fields</h3>
       {fieldFields.map((field, i) => (
         <div key={field.id}>
           <div className="flex flex-row space-x-4">
             <ModelFieldForm
-              formProps={formProps}
+              formProps={form}
               idx={i}
               field={field}
               onRemove={removeField}
@@ -105,7 +124,7 @@ function ModelForm({ className, formProps }: Props): JSX.Element {
         <div key={field.id}>
           <div className="flex flex-row space-x-4">
             <ModelRelationForm
-              formProps={formProps}
+              formProps={form}
               idx={i}
               field={field}
               onRemove={removeRelation}
@@ -127,8 +146,11 @@ function ModelForm({ className, formProps }: Props): JSX.Element {
       >
         Add Field
       </LinkButton>
-    </div>
+      <div>
+        <Button type="submit">Save</Button>
+      </div>
+    </form>
   );
 }
 
-export default ModelForm;
+export default ModelEditModelPage;

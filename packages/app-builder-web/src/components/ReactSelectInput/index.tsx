@@ -61,7 +61,13 @@ ReactSelectInput.Controller = function ReactSelectInputController<T>({
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
-      <ReactSelectInput {...rest} {...field} />
+      <ReactSelectInput
+        {...rest}
+        onChange={field.onChange}
+        onBlur={field.onBlur}
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        value={field.value}
+      />
       {error && <FormError>{error.message}</FormError>}
     </div>
   );

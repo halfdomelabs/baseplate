@@ -23,18 +23,18 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
           </div>
         </Sidebar.Header>
         <Sidebar.LinkGroup>
-          <Sidebar.Link Icon={MdImportExport} to="/">
+          <Sidebar.LinkItem Icon={MdImportExport} to="/">
             Import/Export
-          </Sidebar.Link>
-          <Sidebar.Link Icon={MdSettings} to="/general">
+          </Sidebar.LinkItem>
+          <Sidebar.LinkItem Icon={MdSettings} to="/general">
             General
-          </Sidebar.Link>
-          <Sidebar.Link Icon={FaDatabase} to="/models">
+          </Sidebar.LinkItem>
+          <Sidebar.LinkItem Icon={FaDatabase} to="/models">
             Models
-          </Sidebar.Link>
-          <Sidebar.Link Icon={MdPeople} to="/auth">
+          </Sidebar.LinkItem>
+          <Sidebar.LinkItem Icon={MdPeople} to="/auth">
             Auth
-          </Sidebar.Link>
+          </Sidebar.LinkItem>
         </Sidebar.LinkGroup>
       </Sidebar>
       <div

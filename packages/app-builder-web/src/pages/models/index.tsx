@@ -1,60 +1,42 @@
-import classNames from 'classnames';
-import {
-  Link,
-  Route,
-  Routes,
-  useMatch,
-  useResolvedPath,
-} from 'react-router-dom';
+import _ from 'lodash';
+import { Route, Routes } from 'react-router-dom';
+import { Sidebar } from 'src/components';
 import { useAppConfig } from 'src/hooks/useAppConfig';
 import ModelEditPage from './edit';
 import ModelListPage from './list';
 
 function ModelLink({ modelName }: { modelName: string }): JSX.Element {
-  const link = `edit/${modelName}`;
-  const resolved = useResolvedPath(link);
-  const match = useMatch({ path: resolved.pathname, end: true });
   return (
-    <Link
-      className={classNames(
-        'text-lg block hover:underline',
-        match && 'font-bold'
-      )}
-      to={link}
-    >
-      {modelName}
-    </Link>
+    <Sidebar.LinkItem to={`edit/${modelName}`}>{modelName}</Sidebar.LinkItem>
   );
 }
 
 function ModelsPage(): JSX.Element {
   const { parsedConfig } = useAppConfig();
 
+  const models = parsedConfig.getModels();
+  const sortedModels = _.sortBy(models, (m) => m.name);
+
   return (
     <div className="h-full items-stretch flex">
-      <div className="flex-none h-full overflow-y-auto w-64 p-4 bg-slate-300 space-y-4">
-        <h2>Models</h2>
-        <ul className="space-y-4">
-          <li>
-            <Link
-              className="text-lg block hover:underline text-green-800"
-              to="new"
-            >
-              New Model
-            </Link>
-          </li>
-          {parsedConfig.getModels().map((model) => (
-            <li key={model.name}>
-              <ModelLink modelName={model.name} />
-            </li>
+      <Sidebar className="flex-none h-full !bg-white">
+        <Sidebar.Header className="mb-4">
+          <h2>Models</h2>
+        </Sidebar.Header>
+        <Sidebar.LinkGroup>
+          <Sidebar.LinkItem className="text-green-500" to="new">
+            New Model
+          </Sidebar.LinkItem>
+          {sortedModels.map((model) => (
+            <ModelLink key={model.name} modelName={model.name} />
           ))}
-        </ul>
-      </div>
+        </Sidebar.LinkGroup>
+      </Sidebar>
       <div className="flex flex-col flex-auto p-4 h-full overflow-y-auto">
         <Routes>
           <Route index element={<ModelListPage />} />
           <Route path="new" element={<ModelEditPage />} />
-          <Route path="edit/:id" element={<ModelEditPage />} />
+          <Route path="edit/:id/*" element={<ModelEditPage />} />
         </Routes>
       </div>
     </div>

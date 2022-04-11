@@ -1,6 +1,13 @@
 import classNames from 'classnames';
 import { HTMLInputTypeAttribute } from 'react';
-import { UseFormRegisterReturn } from 'react-hook-form';
+import {
+  Control,
+  FieldError,
+  FieldPath,
+  get,
+  UseFormRegisterReturn,
+  useFormState,
+} from 'react-hook-form';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
@@ -51,6 +58,28 @@ TextInput.Labelled = function TextInputLabelled({
       <TextInput {...rest} />
       {error && <FormError>{error}</FormError>}
     </label>
+  );
+};
+
+interface TextInputControllerProps<T> extends TextInputLabelledProps {
+  control: Control<T>;
+  name: FieldPath<T>;
+}
+
+TextInput.Controller = function TextInputController<T>({
+  control,
+  name,
+  ...rest
+}: TextInputControllerProps<T>): JSX.Element {
+  const { errors } = useFormState({ control, name });
+  const error = get(errors, name) as FieldError | undefined;
+
+  return (
+    <TextInput.Labelled
+      register={control.register(name)}
+      error={error?.message}
+      {...rest}
+    />
   );
 };
 

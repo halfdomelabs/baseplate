@@ -1,5 +1,12 @@
 import classNames from 'classnames';
-import { UseFormRegisterReturn } from 'react-hook-form';
+import {
+  Control,
+  FieldError,
+  FieldPath,
+  get,
+  UseFormRegisterReturn,
+  useFormState,
+} from 'react-hook-form';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
@@ -65,6 +72,29 @@ CheckedInput.Labelled = function SelectInputLabelled({
       <CheckedInput {...rest} />
       {error && <FormError>{error}</FormError>}
     </label>
+  );
+};
+
+interface CheckedInputLabelledControllerProps<T>
+  extends CheckedInputLabelledProps {
+  control: Control<T>;
+  name: FieldPath<T>;
+}
+
+CheckedInput.LabelledController = function CheckedInputLabelledController<T>({
+  control,
+  name,
+  ...rest
+}: CheckedInputLabelledControllerProps<T>): JSX.Element {
+  const { errors } = useFormState({ control, name });
+  const error = get(errors, name) as FieldError | undefined;
+
+  return (
+    <CheckedInput.Labelled
+      register={control.register(name)}
+      error={error?.message}
+      {...rest}
+    />
   );
 };
 

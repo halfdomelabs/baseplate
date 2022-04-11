@@ -45,7 +45,8 @@ function LoginPage(): JSX.Element {
         return;
       }
       authService.setAuthPayload(data.loginWithEmailAndPassword.authPayload);
-      const from = (location.state as LoginLocationState).from?.pathname || '/';
+      const from =
+        (location.state as LoginLocationState)?.from?.pathname || '/';
       navigate(from);
     },
   });
