@@ -9,7 +9,7 @@ interface AuthService {
   isAuthenticated(): boolean;
   getUserId(): string | null;
   getAccessToken(): Promise<string>;
-  invalidateRefreshToken(): void;
+  invalidateAccessToken(): void;
   setAuthPayload(payload: AuthPayload | null): void;
   onUserIdChanged(handler: (payload: string | null) => void): () => void;
 }
@@ -94,7 +94,7 @@ export function createAuthService(): AuthService {
       }
       return accessToken;
     },
-    invalidateRefreshToken() {
+    invalidateAccessToken() {
       localStorage.setItem(ACCESS_TOKEN_KEY, '');
     },
     setAuthPayload,

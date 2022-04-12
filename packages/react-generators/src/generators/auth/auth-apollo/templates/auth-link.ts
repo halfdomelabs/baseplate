@@ -19,7 +19,7 @@ const authLink = setContext(async () => {
 const refreshTokenLink = onError(({ networkError, operation, forward }) => {
   const networkServerError = networkError as ServerError;
   if (networkServerError?.statusCode === 401 && authService.isAuthenticated()) {
-    authService.invalidateRefreshToken();
+    authService.invalidateAccessToken();
     return forward(operation);
   }
   return undefined;

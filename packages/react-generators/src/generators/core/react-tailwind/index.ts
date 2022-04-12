@@ -45,8 +45,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     const globalStyles: string[] = [];
 
     if (globalBodyClasses) {
-      globalStyles.push(`
-body {
+      globalStyles.push(`body {
   @apply ${globalBodyClasses}
 }`);
     }

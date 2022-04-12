@@ -1,7 +1,6 @@
 import { Menu, Transition } from '@headlessui/react';
 import classNames from 'classnames';
 import { MdExpandMore } from 'react-icons/md';
-import LinkButton from '../LinkButton';
 
 interface Props {
   className?: string;
