@@ -76,7 +76,7 @@ CheckedInput.Labelled = function SelectInputLabelled({
 };
 
 interface CheckedInputLabelledControllerProps<T>
-  extends CheckedInputLabelledProps {
+  extends Omit<CheckedInputLabelledProps, 'register'> {
   control: Control<T>;
   name: FieldPath<T>;
 }

@@ -5,6 +5,7 @@ import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useAppConfig } from 'src/hooks/useAppConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import ModelFieldForm from './ModelFieldForm';
+import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
 import { useModelForm } from './hooks/useModelForm';
 
@@ -138,7 +139,7 @@ function ModelEditModelPage(): JSX.Element {
       <LinkButton
         onClick={() =>
           appendRelation({
-            references: [],
+            references: [{ local: '', foreign: '' }],
             modelName: '',
             relationshipType: 'oneToMany',
             isOptional: false,
@@ -149,6 +150,7 @@ function ModelEditModelPage(): JSX.Element {
       >
         Add Relation
       </LinkButton>
+      <ModelPrimaryKeyForm formProps={form} />
       <div>
         <Button type="submit">Save</Button>
       </div>

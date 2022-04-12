@@ -1,12 +1,15 @@
 import {
   ModelConfig,
   ModelRelationFieldConfig,
+  REFERENTIAL_ACTIONS,
 } from '@baseplate/app-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
+import CheckedInput from 'src/components/CheckedInput';
 import { useAppConfig } from 'src/hooks/useAppConfig';
+import { setUndefinedIfEmpty } from 'src/utils/form';
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 
 interface Props {
@@ -30,6 +33,11 @@ function formatFieldAttributes(field: ModelRelationFieldConfig): string {
   return attrStrings.join(', ');
 }
 
+const REFERENTIAL_ACTION_OPTIONS = REFERENTIAL_ACTIONS.map((action) => ({
+  label: action,
+  value: action,
+}));
+
 function ModelRelationForm({
   className,
   formProps,
@@ -42,6 +50,7 @@ function ModelRelationForm({
     register,
     formState: { errors },
     watch,
+    control,
   } = formProps;
 
   const { parsedApp } = useAppConfig();
@@ -57,7 +66,7 @@ function ModelRelationForm({
   const relationErrors = errors.model?.relations?.[idx];
 
   return (
-    <div className={classNames('space-y-4 w-3/4', className)}>
+    <div className={classNames('space-y-4 min-w-[400px] w-1/2', className)}>
       {!isOpen ? (
         <div className="flex flex-row space-x-4 items-center">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
@@ -68,7 +77,7 @@ function ModelRelationForm({
           <LinkButton onClick={() => onRemove(idx)}>Remove</LinkButton>
         </div>
       ) : (
-        <div className="space-y-4 border border-gray-200 p-4">
+        <div className="space-y-4 border border-gray-200">
           <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
           <TextInput.Labelled
             label="Name"
@@ -82,6 +91,41 @@ function ModelRelationForm({
             register={register(`model.relations.${idx}.modelName`)}
             error={relationErrors?.modelName?.message}
           />
+          <TextInput.Labelled
+            label="Foreign Field Name"
+            className="w-full"
+            register={register(`model.relations.${idx}.foreignFieldName`)}
+            error={relationErrors?.name?.message}
+          />
+          <TextInput.Labelled
+            label="Relationship Name"
+            className="w-full"
+            register={register(`model.relations.${idx}.relationshipName`, {
+              setValueAs: setUndefinedIfEmpty,
+            })}
+            error={relationErrors?.name?.message}
+          />
+          <CheckedInput.LabelledController
+            label="Is Optional?"
+            control={control}
+            name={`model.relations.${idx}.isOptional`}
+          />
+          <div className="flex flex-row space-x-4">
+            <SelectInput.LabelledController
+              className="flex-1"
+              label="On Delete?"
+              control={control}
+              options={REFERENTIAL_ACTION_OPTIONS}
+              name={`model.relations.${idx}.onDelete`}
+            />
+            <SelectInput.LabelledController
+              className="flex-1"
+              label="On Update?"
+              control={control}
+              options={REFERENTIAL_ACTION_OPTIONS}
+              name={`model.relations.${idx}.onUpdate`}
+            />
+          </div>
           <ModelRelationReferencesForm
             formProps={formProps}
             relationIdx={idx}

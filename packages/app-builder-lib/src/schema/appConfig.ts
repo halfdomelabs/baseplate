@@ -87,8 +87,8 @@ export const APP_CONFIG_REFERENCES: ObjectReference[] = [
   {
     name: 'modelPrimaryKey',
     category: 'modelField',
-    path: 'models.*.model.primaryKeys',
-    mapToKey: mapToAncestorNameCreator(0),
+    path: 'models.*.model.primaryKeys.*',
+    mapToKey: mapToAncestorNameCreator(2),
   },
   {
     name: 'modelLocalRelation',

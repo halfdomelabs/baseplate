@@ -28,7 +28,7 @@ export type ModelScalarFieldConfig = MakeUndefinableFieldsOptional<
   yup.InferType<typeof modelScalarFieldSchema>
 >;
 
-const REFERENTIAL_ACTIONS = [
+export const REFERENTIAL_ACTIONS = [
   'Cascade',
   'Restrict',
   'NoAction',
@@ -50,7 +50,7 @@ export const modelRelationFieldSchema = yup.object({
     )
     .required(),
   modelName: yup.string().required(),
-  foreignFieldName: yup.string(),
+  foreignFieldName: yup.string().required(),
   relationshipName: yup.string(),
   relationshipType: yup
     .string()
