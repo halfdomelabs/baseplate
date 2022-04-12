@@ -3,9 +3,11 @@ import {
   ModelRelationFieldConfig,
 } from '@baseplate/app-builder-lib';
 import classNames from 'classnames';
-import { UseFormReturn } from 'react-hook-form';
+import { useEffect } from 'react';
+import { UseFormReturn, useWatch } from 'react-hook-form';
 import { LinkButton, SelectInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
+import { usePrevious } from 'src/hooks/usePrevious';
 
 interface Props {
   className?: string;
@@ -22,9 +24,12 @@ function ServiceEmbeddedRelationForm({
   idx,
   onRemove,
 }: Props): JSX.Element {
-  const { control, watch } = formProps;
+  const { control, setValue } = formProps;
 
-  const embeddedRelations = watch('service.embeddedRelations');
+  const embeddedRelations = useWatch({
+    control,
+    name: 'service.embeddedRelations',
+  });
 
   const relationOptions = relations.map((relation) => ({
     label: `${relation.relation.foreignFieldName} (${relation.model.name})`,
@@ -37,11 +42,34 @@ function ServiceEmbeddedRelationForm({
     (relation) =>
       relation.relation.foreignFieldName === embeddedRelation?.localRelationName
   );
+
+  const selectedLocalRelationName = useWatch({
+    control,
+    name: `service.embeddedRelations.${idx}.localRelationName`,
+  });
+
+  const previousLocalRelationName = usePrevious(selectedLocalRelationName);
+  useEffect(() => {
+    if (
+      previousLocalRelationName !== undefined &&
+      previousLocalRelationName !== selectedLocalRelationName
+    ) {
+      setValue(`service.embeddedRelations.${idx}.embeddedFieldNames`, []);
+    }
+  }, [previousLocalRelationName, selectedLocalRelationName, idx, setValue]);
+
   const foreignFieldOptions =
-    selectedRelation?.model.model.fields.map((field) => ({
-      label: field.name,
-      value: field.name,
-    })) || [];
+    selectedRelation?.model.model.fields
+      .filter(
+        (field) =>
+          !selectedRelation.relation.references.some(
+            (reference) => reference.local === field.name
+          )
+      )
+      .map((field) => ({
+        label: field.name,
+        value: field.name,
+      })) || [];
 
   return (
     <div className={classNames('space-y-4', className)}>
@@ -57,7 +85,7 @@ function ServiceEmbeddedRelationForm({
         control={control}
         options={foreignFieldOptions}
         name={`service.embeddedRelations.${idx}.embeddedFieldNames`}
-        label="Embeddded Field Names"
+        label="Embedded Field Names"
       />
       <LinkButton onClick={onRemove}>Remove</LinkButton>
     </div>

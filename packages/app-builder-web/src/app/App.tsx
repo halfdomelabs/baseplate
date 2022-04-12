@@ -24,36 +24,36 @@ function App(): JSX.Element {
       try {
         const appConfig = JSON.parse(savedConfig) as AppConfig;
         // validate config
-        // eslint-disable-next-line no-new
-        new ParsedAppConfig(appConfig);
-        return appConfig;
+        const validatedConfig = appConfigSchema.validateSync(appConfig);
+        return new ParsedAppConfig(validatedConfig);
       } catch (err) {
         toast.error(`Could not parse stored config: ${formatError(err)}`);
       }
     }
-    return {
+    return new ParsedAppConfig({
       name: 'test-app',
       version: '0.1.0',
       portBase: 4000,
       apps: {
         backend: null,
       },
-    };
+    });
   }, [savedConfig, toast]);
 
-  const [config, setConfig] = useState<AppConfig>(initialConfig);
+  const [parsedApp, setParsedApp] = useState<ParsedAppConfig>(initialConfig);
 
   const result: UseAppConfigResult = useMemo(
     () => ({
-      config,
-      parsedApp: new ParsedAppConfig(config),
+      config: parsedApp.exportToAppConfig(),
+      parsedApp,
       setConfigAndFixReferences: (transformer, options) => {
         // validate app config
         // TODO: Figure out better validation technique
         // get new app config
-        const newAppConfig = produce(config, transformer);
+        const oldAppConfig = parsedApp.exportToAppConfig();
+        const newAppConfig = produce(oldAppConfig, transformer);
         const fixedAppConfig = fixReferenceRenames(
-          config,
+          oldAppConfig,
           newAppConfig,
           APP_CONFIG_REFERENCEABLES,
           APP_CONFIG_REFERENCES,
@@ -65,29 +65,30 @@ function App(): JSX.Element {
             stripUnknown: true,
           }
         );
-        // eslint-disable-next-line no-new
-        new ParsedAppConfig(validatedAppConfig);
-        setConfig(validatedAppConfig);
-        setSavedConfig(JSON.stringify(validatedAppConfig));
+        const parsedConfig = new ParsedAppConfig(validatedAppConfig);
+        setParsedApp(parsedConfig);
+        const exportedAppConfig = parsedConfig.exportToAppConfig();
+        setSavedConfig(JSON.stringify(exportedAppConfig));
       },
       setConfig: (newConfig) => {
         // validate app config
         // TODO: Figure out better validation technique
         // get new app config
+        const oldAppConfig = parsedApp.exportToAppConfig();
         const newAppConfig =
           typeof newConfig === 'function'
-            ? produce(config, newConfig)
+            ? produce(oldAppConfig, newConfig)
             : newConfig;
         const validatedAppConfig = appConfigSchema.validateSync(newAppConfig, {
           stripUnknown: true,
         });
-        // eslint-disable-next-line no-new
-        new ParsedAppConfig(validatedAppConfig);
-        setConfig(validatedAppConfig);
-        setSavedConfig(JSON.stringify(validatedAppConfig));
+        const parsedConfig = new ParsedAppConfig(validatedAppConfig);
+        setParsedApp(parsedConfig);
+        const exportedAppConfig = parsedConfig.exportToAppConfig();
+        setSavedConfig(JSON.stringify(exportedAppConfig));
       },
     }),
-    [config, setConfig, setSavedConfig]
+    [parsedApp, setSavedConfig]
   );
 
   return (

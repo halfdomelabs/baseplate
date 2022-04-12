@@ -81,6 +81,7 @@ export const APP_CONFIG_REFERENCEABLES = createObjectReferenceableList([
     nameProperty: 'foreignFieldName',
     mapToKey: mapToAncestorNameCreator(0, 'modelName'),
   },
+  { category: 'role', path: 'auth.roles.*' },
 ]);
 
 export const APP_CONFIG_REFERENCES: ObjectReference[] = [
@@ -153,5 +154,37 @@ export const APP_CONFIG_REFERENCES: ObjectReference[] = [
     category: 'modelField',
     path: 'models.*.schema.exposedFields.*',
     mapToKey: mapToAncestorNameCreator(2),
+  },
+  {
+    category: 'role',
+    path: 'models.*.schema.authorize.read.*',
+  },
+  {
+    category: 'role',
+    path: 'models.*.schema.authorize.create.*',
+  },
+  {
+    category: 'role',
+    path: 'models.*.schema.authorize.update.*',
+  },
+  {
+    category: 'role',
+    path: 'models.*.schema.authorize.delete.*',
+  },
+  {
+    category: 'model',
+    path: 'auth.userModel',
+  },
+  {
+    category: 'model',
+    path: 'auth.userRoleModel',
+  },
+  {
+    category: 'feature',
+    path: 'auth.authFeaturePath',
+  },
+  {
+    category: 'feature',
+    path: 'auth.accountsFeaturePath',
   },
 ];

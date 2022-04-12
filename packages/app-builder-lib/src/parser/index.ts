@@ -3,6 +3,7 @@ import {
   AppConfig,
   APP_CONFIG_REFERENCEABLES,
   APP_CONFIG_REFERENCES,
+  appConfigSchema,
 } from '@src/schema';
 import {
   findReferencableEntries,
@@ -210,9 +211,19 @@ export class ParsedAppConfig {
       })
     );
 
+    // augment app config
+    const updatedAppConfig = {
+      ...this.appConfig,
+      models: this.models,
+    };
+    this.appConfig = updatedAppConfig;
+
     // build reference map
-    this.references = buildReferenceMap(appConfig);
-    const missingKeys = findMissingReferences(appConfig, this.references);
+    this.references = buildReferenceMap(updatedAppConfig);
+    const missingKeys = findMissingReferences(
+      updatedAppConfig,
+      this.references
+    );
     if (missingKeys.length) {
       throw new Error(
         `Missing keys in references: ${missingKeys
@@ -240,5 +251,9 @@ export class ParsedAppConfig {
       throw new Error(`Model ${name} not found`);
     }
     return model;
+  }
+
+  exportToAppConfig(): AppConfig {
+    return appConfigSchema.validateSync(this.appConfig);
   }
 }

@@ -2,6 +2,7 @@ import { ModelConfig } from '@baseplate/app-builder-lib';
 import { Alert, Button } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
+import { useAppConfig } from 'src/hooks/useAppConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useModelForm } from '../hooks/useModelForm';
 
@@ -18,6 +19,13 @@ function ModelEditSchemaPage(): JSX.Element {
   const localFieldOptions = localFields.map((f) => ({
     label: f.name,
     value: f.name,
+  }));
+
+  const { parsedApp } = useAppConfig();
+
+  const roleOptions = parsedApp.appConfig.auth?.roles.map((role) => ({
+    label: role.name,
+    value: role.name,
   }));
 
   return (
@@ -44,6 +52,35 @@ function ModelEditSchemaPage(): JSX.Element {
         control={control}
         name="schema.buildMutations"
       />
+      <h3>Permissions</h3>
+      {roleOptions && (
+        <>
+          <CheckedArrayInput.LabelledController
+            label="Read"
+            control={control}
+            options={roleOptions}
+            name="schema.authorize.read"
+          />
+          <CheckedArrayInput.LabelledController
+            label="Create"
+            control={control}
+            options={roleOptions}
+            name="schema.authorize.create"
+          />
+          <CheckedArrayInput.LabelledController
+            label="Update"
+            control={control}
+            options={roleOptions}
+            name="schema.authorize.update"
+          />
+          <CheckedArrayInput.LabelledController
+            label="Delete"
+            control={control}
+            options={roleOptions}
+            name="schema.authorize.delete"
+          />
+        </>
+      )}
       <Button type="submit">Save</Button>
     </form>
   );

@@ -6,8 +6,8 @@ import {
   TypescriptSourceBlock,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import R from 'ramda';
 import * as yup from 'yup';
@@ -42,12 +42,6 @@ const descriptorSchema = yup.object({
   ),
 });
 
-interface RoleConfig {
-  name: string;
-  comment: string;
-  inherits?: string[];
-}
-
 export type RoleServiceProvider = ImportMapper;
 
 export const roleServiceProvider =
@@ -69,7 +63,7 @@ const RoleServiceGenerator = createGeneratorWithChildren({
     roleService: roleServiceProvider,
   },
   createGenerator(
-    { userModelName, userRoleModelName, roles },
+    { userModelName, userRoleModelName, roles = [] },
     { serviceFile, prismaOutput, authPlugin, appModule, authService, authSetup }
   ) {
     const headerBlock = new TypescriptSourceBlock({
@@ -81,34 +75,21 @@ const RoleServiceGenerator = createGeneratorWithChildren({
       ROLE_MAP: { type: 'code-expression' },
     });
 
-    if (roles?.some((r) => ['anonymous', 'user'].includes(r.name))) {
-      throw new Error(
-        'Anonymous and user roles are automatically added and cannot be manually included'
-      );
+    if (
+      !['anonymous', 'user'].every((name) => roles.some((r) => r.name === name))
+    ) {
+      throw new Error('Anonymous and user roles are required to be added');
     }
-
-    const compiledRoles: RoleConfig[] = [
-      {
-        name: 'anonymous',
-        comment: 'Anonymous role for unauthenticated users',
-      },
-      {
-        name: 'user',
-        comment: 'Role for authenticated users',
-        inherits: ['anonymous'],
-      },
-      ...(roles || []),
-    ];
 
     headerBlock.addCodeEntries({
       USER: prismaOutput.getModelTypeExpression(userModelName),
       USER_ROLE: prismaOutput.getModelTypeExpression(userRoleModelName),
-      AVAILABLE_ROLES_EXPORT: `export type AuthRole = ${compiledRoles
+      AVAILABLE_ROLES_EXPORT: `export type AuthRole = ${roles
         .map(({ name }) => `'${name}'`)
         .join(' | ')}`,
       ROLE_MAP: JSON.stringify(
         R.mergeAll(
-          compiledRoles.map(({ name, comment, inherits }) => ({
+          roles.map(({ name, comment, inherits }) => ({
             [name]: {
               comment,
               inherits,
