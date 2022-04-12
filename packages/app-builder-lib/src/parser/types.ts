@@ -24,10 +24,16 @@ export interface ParsedModel extends ModelConfig {
   };
 }
 
-export type PluginMergeModelInput = Pick<
-  ParsedModel,
-  'name' | 'feature' | 'service' | 'model'
->;
+export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'uid'>;
+export type PluginMergeModelRelationInput = Omit<ParsedRelationField, 'uid'>;
+
+export interface PluginMergeModelInput
+  extends Pick<ParsedModel, 'name' | 'feature' | 'service'> {
+  model: Omit<ParsedModel['model'], 'fields' | 'relations'> & {
+    fields: PluginMergeModelFieldInput[];
+    relations?: PluginMergeModelRelationInput[];
+  };
+}
 
 export interface PluginHooks {
   mergeModel: (model: PluginMergeModelInput) => void;

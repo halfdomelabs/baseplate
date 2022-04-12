@@ -1,6 +1,16 @@
 import R from 'ramda';
-import { AppConfig } from '@src/schema';
+import {
+  AppConfig,
+  APP_CONFIG_REFERENCEABLES,
+  APP_CONFIG_REFERENCES,
+} from '@src/schema';
+import {
+  findReferencableEntries,
+  findReferenceEntries,
+  ObjectReferenceEntry,
+} from '@src/schema/references';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge';
+import { randomUid } from '../utils/randomUid';
 import { AuthPlugin } from './plugins/auth';
 import { ParsedModel } from './types';
 
@@ -23,14 +33,17 @@ function upsertItems<T>(
   const itemsByKey = R.indexBy(keyFunction, items);
   const existingKeys = existingItems.map(keyFunction);
 
-  const newItems = items.filter(
-    (item) => !existingKeys.includes(keyFunction(item))
-  );
+  const newItems = items
+    .filter((item) => !existingKeys.includes(keyFunction(item)))
+    .map((item) => ({
+      ...item,
+      uid: randomUid(),
+    }));
   return [
     ...existingItems.map((item) => {
       const newItem = itemsByKey[keyFunction(item)];
       if (newItem) {
-        return { ...item, ...newItem };
+        return { uid: randomUid(), ...item, ...newItem };
       }
       return item;
     }),
@@ -57,16 +70,50 @@ function validateAppConfig(appConfig: AppConfig): void {
   }
 
   // apply some basic validation rules to app config
-  const featurelessModels = (appConfig.models || []).filter(
-    (model) => !features.includes(model.feature)
-  );
-  if (featurelessModels.length) {
-    throw new Error(
-      `Models must be associated with a feature: ${featurelessModels
-        .map((model) => model.name)
-        .join(', ')}`
+  // const featurelessModels = (appConfig.models || []).filter(
+  //   (model) => !features.includes(model.feature)
+  // );
+  // if (featurelessModels.length) {
+  //   throw new Error(
+  //     `Models must be associated with a feature: ${featurelessModels
+  //       .map((model) => model.name)
+  //       .join(', ')}`
+  //   );
+  // }
+}
+
+function buildReferenceMap(
+  appConfig: AppConfig
+): Record<string, Record<string, ObjectReferenceEntry[]>> {
+  const categories = APP_CONFIG_REFERENCEABLES.map((r) => r.category);
+  const referencesByKey = categories.map((category) => {
+    const references = APP_CONFIG_REFERENCES.filter(
+      (r) => r.category === category
     );
-  }
+    const referenceEntries = references.flatMap((reference) =>
+      findReferenceEntries(appConfig, reference)
+    );
+    return R.groupBy(R.prop('key'), referenceEntries);
+  });
+  return R.zipObj(categories, referencesByKey);
+}
+
+function findMissingReferences(
+  appConfig: AppConfig,
+  referenceMap: Record<string, Record<string, ObjectReferenceEntry[]>>
+): ObjectReferenceEntry[] {
+  return APP_CONFIG_REFERENCEABLES.flatMap((referenceable) => {
+    const availableKeys = findReferencableEntries(appConfig, referenceable).map(
+      R.prop('key')
+    );
+    const referencesByKey = referenceMap[referenceable.category];
+    // make sure keys exist in referenceables
+    const missingKeys = R.difference(
+      Object.keys(referencesByKey),
+      availableKeys
+    );
+    return missingKeys.flatMap((key) => referencesByKey[key]);
+  });
 }
 
 export class ParsedAppConfig {
@@ -79,6 +126,9 @@ export class ParsedAppConfig {
   public fastifyChildren: Record<string, unknown> = {};
 
   public featureChildren: Record<string, Record<string, unknown>> = {};
+
+  public references: Record<string, Record<string, ObjectReferenceEntry[]>> =
+    {};
 
   constructor(public appConfig: AppConfig) {
     validateAppConfig(appConfig);
@@ -114,7 +164,21 @@ export class ParsedAppConfig {
           const existingModel = this.models.find((m) => m.name === model.name);
 
           if (!existingModel) {
-            this.models.push(model);
+            this.models.push({
+              uid: randomUid(),
+              ...model,
+              model: {
+                ...model.model,
+                fields: model.model.fields.map((field) => ({
+                  ...field,
+                  uid: randomUid(),
+                })),
+                relations: model.model.relations?.map((relation) => ({
+                  ...relation,
+                  uid: randomUid(),
+                })),
+              },
+            });
             return;
           }
 
@@ -145,6 +209,17 @@ export class ParsedAppConfig {
         },
       })
     );
+
+    // build reference map
+    this.references = buildReferenceMap(appConfig);
+    const missingKeys = findMissingReferences(appConfig, this.references);
+    if (missingKeys.length) {
+      throw new Error(
+        `Missing keys in references: ${missingKeys
+          .map((key) => `${key.key} (${key.path})`)
+          .join(', ')}`
+      );
+    }
   }
 
   getFeatureHoistedProviders(featurePath: string): string[] {

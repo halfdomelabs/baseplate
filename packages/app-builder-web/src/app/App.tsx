@@ -19,7 +19,11 @@ function App(): JSX.Element {
   const initialConfig = useMemo(() => {
     if (savedConfig) {
       try {
-        return JSON.parse(savedConfig) as AppConfig;
+        const appConfig = JSON.parse(savedConfig) as AppConfig;
+        // validate config
+        // eslint-disable-next-line no-new
+        new ParsedAppConfig(appConfig);
+        return appConfig;
       } catch (err) {
         toast.error(`Could not parse stored config: ${formatError(err)}`);
       }

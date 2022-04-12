@@ -1,4 +1,8 @@
-import { ParsedModelField, ParsedRelationField, ParserPlugin } from '../types';
+import {
+  ParserPlugin,
+  PluginMergeModelFieldInput,
+  PluginMergeModelRelationInput,
+} from '../types';
 
 export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -9,7 +13,7 @@ export const AuthPlugin: ParserPlugin = {
     }
 
     // annotate user model
-    const userFields: ParsedModelField[] = [
+    const userFields: PluginMergeModelFieldInput[] = [
       {
         name: 'id',
         isLocked: true,
@@ -63,7 +67,7 @@ export const AuthPlugin: ParserPlugin = {
           },
     });
 
-    const userRoleFields: ParsedModelField[] = [
+    const userRoleFields: PluginMergeModelFieldInput[] = [
       {
         name: 'userId',
         type: 'uuid',
@@ -74,7 +78,7 @@ export const AuthPlugin: ParserPlugin = {
       },
     ];
 
-    const userRoleRelations: ParsedRelationField[] = [
+    const userRoleRelations: PluginMergeModelRelationInput[] = [
       {
         name: 'user',
         references: [{ local: 'userId', foreign: 'id' }],

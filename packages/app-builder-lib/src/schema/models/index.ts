@@ -1,8 +1,10 @@
 import * as yup from 'yup';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes';
+import { randomUid } from '@src/utils/randomUid';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 
 export const modelScalarFieldSchema = yup.object({
+  uid: yup.string().default(randomUid),
   name: yup.string().required(),
   type: yup
     .string()
@@ -35,6 +37,7 @@ const REFERENTIAL_ACTIONS = [
 ];
 
 export const modelRelationFieldSchema = yup.object({
+  uid: yup.string().default(randomUid),
   name: yup.string().required(),
   references: yup
     .array(
@@ -63,6 +66,7 @@ export type ModelRelationFieldConfig = MakeUndefinableFieldsOptional<
 >;
 
 export const modelSchema = yup.object({
+  uid: yup.string().default(randomUid),
   name: yup.string().required(),
   feature: yup.string().required(),
   model: yup.object({

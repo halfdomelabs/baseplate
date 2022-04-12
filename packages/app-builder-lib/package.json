@@ -9,22 +9,34 @@
   "private": true,
   "devDependencies": {
     "@baseplate/tools": "^0.0.1",
+    "@types/jest": "^27.4.0",
+    "@types/nanoid-dictionary": "^4.2.0",
     "@types/ramda": "^0.27.64",
     "@types/yup": "^0.29.13",
+    "jest": "^27.4.7",
     "ts-node-dev": "^1.1.8",
     "tsc-alias": "^1.5.0",
     "tsconfig-paths": "^3.12.0",
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "start": "yarn build && node dist/index.js",
-    "dev": "ts-node-dev --rs --transpile-only -r tsconfig-paths/register --respawn src",
     "build": "tsc && tsc-alias",
     "watch": "tsc --watch & tsc-alias --watch",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "test": "jest"
   },
   "dependencies": {
+    "nanoid": "^3.1.30",
+    "nanoid-dictionary": "^4.3.0",
     "ramda": "^0.28.0",
     "yup": "^0.32.11"
+  },
+  "engines": {
+    "node": "^14.18.0",
+    "yarn": "^1.22.17"
+  },
+  "volta": {
+    "node": "14.18.3",
+    "yarn": "1.22.17"
   }
 }

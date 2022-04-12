@@ -2,12 +2,16 @@ import { ParsedAppConfig } from '@src/parser';
 import { ParsedModel } from '@src/parser/types';
 
 function buildServiceForModel(model: ParsedModel): unknown {
+  const { service } = model;
+  if (!service) {
+    return undefined;
+  }
   const createTransformers: Record<string, unknown> =
-    model.service?.createTransformers || {};
+    service.createTransformers || {};
   const updateTransformers: Record<string, unknown> =
-    model.service?.updateTransformers || {};
+    service.updateTransformers || {};
 
-  model.service?.embeddedRelations
+  service.embeddedRelations
     ?.map((config) => ({
       localRelationName: config.localRelationName,
       embeddedFieldNames: config.embeddedFieldNames,
@@ -34,15 +38,11 @@ function buildServiceForModel(model: ParsedModel): unknown {
         modelName: model.name,
         children: {
           create: {
-            prismaFields: model.model.fields
-              ?.filter((f) => f.service?.creatable)
-              .map((f) => f.name),
+            prismaFields: service.create?.fields,
             children: createTransformers,
           },
           update: {
-            prismaFields: model.model.fields
-              ?.filter((f) => f.service?.updatable)
-              .map((f) => f.name),
+            prismaFields: service.update?.fields,
             children: updateTransformers,
           },
         },

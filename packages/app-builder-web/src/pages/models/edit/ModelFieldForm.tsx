@@ -64,7 +64,7 @@ function ModelFieldForm({
           <LinkButton onClick={() => onRemove(idx)}>Remove</LinkButton>
         </div>
       ) : (
-        <div className="space-y-4 border border-gray-200 p-4">
+        <div className="space-y-4 border border-gray-200">
           <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
           <TextInput.Labelled
             label="Name"

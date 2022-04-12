@@ -1,3 +1,4 @@
+import { randomUid } from '@baseplate/app-builder-lib';
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -15,6 +16,7 @@ const validationSchema = yup.object({
   features: yup.array(
     yup
       .object({
+        uid: yup.string().default(randomUid),
         name: yup.string().required(),
       })
       .required()
