@@ -1,10 +1,13 @@
 import {
   AppConfig,
   appConfigSchema,
+  APP_CONFIG_REFERENCEABLES,
+  APP_CONFIG_REFERENCES,
+  fixReferenceRenames,
   ParsedAppConfig,
 } from '@baseplate/app-builder-lib';
 import produce from 'immer';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
 import { AppConfigContext, UseAppConfigResult } from 'src/hooks/useAppConfig';
@@ -44,6 +47,29 @@ function App(): JSX.Element {
     () => ({
       config,
       parsedConfig: new ParsedAppConfig(config),
+      setConfigAndFixReferences: (transformer, options) => {
+        // validate app config
+        // TODO: Figure out better validation technique
+        // get new app config
+        const newAppConfig = produce(config, transformer);
+        const fixedAppConfig = fixReferenceRenames(
+          config,
+          newAppConfig,
+          APP_CONFIG_REFERENCEABLES,
+          APP_CONFIG_REFERENCES,
+          options
+        );
+        const validatedAppConfig = appConfigSchema.validateSync(
+          fixedAppConfig,
+          {
+            stripUnknown: true,
+          }
+        );
+        // eslint-disable-next-line no-new
+        new ParsedAppConfig(validatedAppConfig);
+        setConfig(validatedAppConfig);
+        setSavedConfig(JSON.stringify(validatedAppConfig));
+      },
       setConfig: (newConfig) => {
         // validate app config
         // TODO: Figure out better validation technique
@@ -58,14 +84,11 @@ function App(): JSX.Element {
         // eslint-disable-next-line no-new
         new ParsedAppConfig(validatedAppConfig);
         setConfig(validatedAppConfig);
+        setSavedConfig(JSON.stringify(validatedAppConfig));
       },
     }),
-    [config, setConfig]
+    [config, setConfig, setSavedConfig]
   );
-
-  useEffect(() => {
-    setSavedConfig(JSON.stringify(config));
-  }, [config, setSavedConfig]);
 
   return (
     <BrowserRouter>

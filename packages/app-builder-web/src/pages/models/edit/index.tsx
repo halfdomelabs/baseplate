@@ -14,7 +14,7 @@ function ModelEditPage(): JSX.Element {
 
   const isNew = !id;
 
-  const model = parsedConfig.getModels().find((m) => m.name === id);
+  const model = parsedConfig.getModels().find((m) => m.uid === id);
 
   const handleDelete = (): void => {
     if (window.confirm(`Are you sure you want to delete ${id || 'model'}?`)) {
@@ -36,7 +36,7 @@ function ModelEditPage(): JSX.Element {
   return (
     <div className="space-y-4">
       <div className="flex flex-row space-x-8">
-        <h1>{id || 'New Model'}</h1>
+        <h1>{model?.name || 'New Model'}</h1>
         {!isNew && (
           <Button secondary onClick={handleDelete}>
             Delete
@@ -44,16 +44,22 @@ function ModelEditPage(): JSX.Element {
         )}
       </div>
       <Alert.WithStatus status={status} />
-      <NavigationTabs>
-        <NavigationTabs.Tab to="">Model</NavigationTabs.Tab>
-        <NavigationTabs.Tab to="service">Services</NavigationTabs.Tab>
-      </NavigationTabs>
-      <div className="p-4 bg-slate-200">
-        <Routes>
-          <Route index element={<ModelEditModelPage />} />
-          <Route path="service" element={<ModelEditServicePage />} />
-        </Routes>
-      </div>
+      {isNew ? (
+        <ModelEditModelPage />
+      ) : (
+        <>
+          <NavigationTabs>
+            <NavigationTabs.Tab to="">Model</NavigationTabs.Tab>
+            <NavigationTabs.Tab to="service">Services</NavigationTabs.Tab>
+          </NavigationTabs>
+          <div className="p-4 bg-slate-200">
+            <Routes>
+              <Route index element={<ModelEditModelPage />} />
+              <Route path="service" element={<ModelEditServicePage />} />
+            </Routes>
+          </div>
+        </>
+      )}
     </div>
   );
 }

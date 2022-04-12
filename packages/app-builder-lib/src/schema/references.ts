@@ -95,6 +95,14 @@ export function findReferencableEntries(
         );
       }
 
+      const id = objectDict[reference.idProperty || reference.nameProperty];
+
+      if (typeof id !== 'string') {
+        throw new Error(
+          `ID of reference at ${path} must be a string, but got ${typeof id}`
+        );
+      }
+
       return [
         {
           id: objectDict[reference.idProperty || reference.nameProperty],
@@ -137,17 +145,17 @@ export function findReferenceEntries(
   );
 }
 
-interface FixReferenceRenamesOptions {
+export interface FixReferenceRenamesOptions {
   ignorePathPrefix?: string;
 }
 
-export function fixReferenceRenames(
-  oldConfig: unknown,
-  newConfig: unknown,
+export function fixReferenceRenames<T>(
+  oldConfig: T,
+  newConfig: T,
   referencables: ObjectReferenceable[],
   references: ObjectReference[],
   options?: FixReferenceRenamesOptions
-): void {
+): T {
   const renamedEntriesByCategory = R.zipObj(
     referencables.map((r) => r.category),
     referencables.map((referenceable) => {
@@ -170,28 +178,36 @@ export function fixReferenceRenames(
     })
   );
 
-  Object.keys(renamedEntriesByCategory).forEach((category) => {
-    const renamedEntriesForCategory = renamedEntriesByCategory[category];
-    // find references to category
-    const referencesForCategory = references.filter(
-      (r) => r.category === category
-    );
-    const referenceEntries = referencesForCategory
-      .flatMap((reference) => findReferenceEntries(newConfig, reference))
-      .filter(
-        (r) =>
-          options?.ignorePathPrefix &&
-          !r.path.startsWith(options.ignorePathPrefix)
+  return Object.keys(renamedEntriesByCategory).reduce(
+    (categoryObject, category) => {
+      const renamedEntriesForCategory = renamedEntriesByCategory[category];
+      // find references to category
+      const referencesForCategory = references.filter(
+        (r) => r.category === category
       );
-    referenceEntries.forEach((entry) => {
-      const renamedTo = renamedEntriesForCategory.find(
-        (r) => r.key === entry.key
-      )?.to;
-      if (!renamedTo) {
-        return;
-      }
-      const lens = R.lensPath(entry.path.split('.'));
-      R.set(lens, renamedTo, newConfig);
-    });
-  });
+      const referenceEntries = referencesForCategory
+        .flatMap((reference) => findReferenceEntries(newConfig, reference))
+        .filter(
+          (r) =>
+            !options?.ignorePathPrefix ||
+            !r.path.startsWith(options.ignorePathPrefix)
+        );
+      return referenceEntries.reduce((referenceObject, entry) => {
+        const renamedTo = renamedEntriesForCategory.find(
+          (r) => r.key === entry.key
+        )?.to;
+        if (!renamedTo) {
+          return referenceObject;
+        }
+
+        const lens = R.lensPath(
+          entry.path
+            .split('.')
+            .map((key) => (/^[0-9]+$/.test(key) ? parseInt(key, 10) : key))
+        );
+        return R.set(lens, renamedTo, referenceObject) as T;
+      }, categoryObject);
+    },
+    newConfig
+  );
 }

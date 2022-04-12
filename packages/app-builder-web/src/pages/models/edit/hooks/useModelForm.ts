@@ -1,4 +1,8 @@
-import { ModelConfig, modelSchema } from '@baseplate/app-builder-lib';
+import {
+  ModelConfig,
+  modelSchema,
+  randomUid,
+} from '@baseplate/app-builder-lib';
 import { yupResolver } from '@hookform/resolvers/yup';
 import _ from 'lodash';
 import { useCallback, useEffect } from 'react';
@@ -24,7 +28,7 @@ export function useModelForm({ setError }: UseModelFormOptions): {
   const { parsedConfig, setConfig } = useAppConfig();
   const toast = useToast();
   const navigate = useNavigate();
-  const model = parsedConfig.getModels().find((m) => m.name === id);
+  const model = parsedConfig.getModels().find((m) => m.uid === id);
 
   const form = useForm<ModelConfig>({
     resolver: yupResolver(modelSchema),
@@ -39,15 +43,22 @@ export function useModelForm({ setError }: UseModelFormOptions): {
   const onFormSubmit = useCallback(
     (data: ModelConfig) => {
       try {
+        const newUid = data.uid || randomUid();
         setConfig((oldConfig) => {
           oldConfig.models = _.sortBy(
-            [...(oldConfig.models?.filter((m) => m.name !== id) || []), data],
+            [
+              ...(oldConfig.models?.filter((m) => m.uid !== id) || []),
+              {
+                ...data,
+                uid: newUid,
+              },
+            ],
             (m) => m.name
           );
         });
         toast.success('Successfully saved model!');
         if (!id || model?.name !== data.name) {
-          navigate(`../edit/${data.name}`);
+          navigate(`../edit/${newUid}`);
         }
       } catch (err) {
         setError(formatError(err));

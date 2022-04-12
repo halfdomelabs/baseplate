@@ -41,7 +41,7 @@ export function createObjectReferenceableList(
 ): ObjectReferenceable[] {
   return referenceable.map((r) => ({
     nameProperty: 'name',
-    idProperty: 'id',
+    idProperty: 'uid',
     ...r,
   }));
 }
@@ -54,7 +54,13 @@ function mapToAncestorNameCreator(
     const ancestor = parents[depth] as Record<string, string | undefined>;
     const ancestorName = ancestor[nameFieldName];
     if (!ancestorName) {
-      throw new Error(`Ancestor at depth ${depth} has no ${nameFieldName}`);
+      throw new Error(
+        `Ancestor at depth ${
+          depth + 1
+        } has no ${nameFieldName} (available keys: ${Object.keys(ancestor).join(
+          ','
+        )})`
+      );
     }
     return `${ancestorName}.${name}`;
   };
@@ -66,12 +72,12 @@ export const APP_CONFIG_REFERENCEABLES = createObjectReferenceableList([
   {
     category: 'modelField',
     path: 'models.*.model.fields.*',
-    mapToKey: mapToAncestorNameCreator(1),
+    mapToKey: mapToAncestorNameCreator(2),
   },
   {
     category: 'modelRelation',
     path: 'models.*.model.relations.*',
-    mapToKey: mapToAncestorNameCreator(1),
+    mapToKey: mapToAncestorNameCreator(2),
   },
 ]);
 

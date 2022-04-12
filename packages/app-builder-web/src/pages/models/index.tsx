@@ -1,3 +1,4 @@
+import { ParsedModel } from '@baseplate/app-builder-lib/lib/parser/types';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
 import { Sidebar } from 'src/components';
@@ -5,9 +6,9 @@ import { useAppConfig } from 'src/hooks/useAppConfig';
 import ModelEditPage from './edit';
 import ModelListPage from './list';
 
-function ModelLink({ modelName }: { modelName: string }): JSX.Element {
+function ModelLink({ model }: { model: ParsedModel }): JSX.Element {
   return (
-    <Sidebar.LinkItem to={`edit/${modelName}`}>{modelName}</Sidebar.LinkItem>
+    <Sidebar.LinkItem to={`edit/${model.uid}`}>{model.name}</Sidebar.LinkItem>
   );
 }
 
@@ -28,7 +29,7 @@ function ModelsPage(): JSX.Element {
             New Model
           </Sidebar.LinkItem>
           {sortedModels.map((model) => (
-            <ModelLink key={model.name} modelName={model.name} />
+            <ModelLink key={model.uid} model={model} />
           ))}
         </Sidebar.LinkGroup>
       </Sidebar>

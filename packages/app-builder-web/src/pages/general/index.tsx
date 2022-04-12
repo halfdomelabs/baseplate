@@ -26,7 +26,7 @@ const validationSchema = yup.object({
 type FormData = yup.InferType<typeof validationSchema>;
 
 function GeneralPage(): JSX.Element {
-  const { config, setConfig } = useAppConfig();
+  const { config, setConfigAndFixReferences } = useAppConfig();
   const {
     register,
     handleSubmit,
@@ -41,7 +41,7 @@ function GeneralPage(): JSX.Element {
 
   const onSubmit = (data: FormData): void => {
     try {
-      setConfig((oldConfig) => {
+      setConfigAndFixReferences((oldConfig) => {
         oldConfig.name = data.name;
         oldConfig.version = data.version;
         oldConfig.portBase = data.portBase;
