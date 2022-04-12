@@ -5,7 +5,7 @@ export interface ObjectReference {
   category: string;
   name?: string;
   path: string;
-  mapToKey?(name: string, parents: unknown[]): string;
+  mapToKey?(name: string, parents: unknown[], object: unknown): string;
 }
 
 export interface ObjectReferenceable {
@@ -13,7 +13,7 @@ export interface ObjectReferenceable {
   path: string;
   nameProperty: string;
   idProperty?: string;
-  mapToKey?(name: string, parents: unknown[]): string;
+  mapToKey?(name: string, parents: unknown[], object: unknown): string;
 }
 
 export interface ObjectReferenceEntry {
@@ -109,7 +109,9 @@ export function findReferencableEntries(
         {
           id: objectDict[reference.idProperty || reference.nameProperty],
           name,
-          key: reference.mapToKey ? reference.mapToKey(name, parents) : name,
+          key: reference.mapToKey
+            ? reference.mapToKey(name, [foundObject, ...parents], object)
+            : name,
           path,
         },
       ];
@@ -136,7 +138,7 @@ export function findReferenceEntries(
         {
           name: foundObject,
           key: reference.mapToKey
-            ? reference.mapToKey(foundObject, parents)
+            ? reference.mapToKey(foundObject, parents, object)
             : foundObject,
           path,
           referenceName: reference.name,

@@ -3,8 +3,9 @@ import { Alert, Button, NavigationTabs } from 'src/components';
 import { useAppConfig } from 'src/hooks/useAppConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
-import ModelEditModelPage from './model.page';
-import ModelEditServicePage from './service.page';
+import ModelEditModelPage from './model/model.page';
+import ModelEditSchemaPage from './schema/schema.page';
+import ModelEditServicePage from './service/service.page';
 
 function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
@@ -51,11 +52,13 @@ function ModelEditPage(): JSX.Element {
           <NavigationTabs>
             <NavigationTabs.Tab to="">Model</NavigationTabs.Tab>
             <NavigationTabs.Tab to="service">Services</NavigationTabs.Tab>
+            <NavigationTabs.Tab to="schema">Schema</NavigationTabs.Tab>
           </NavigationTabs>
           <div className="p-4 bg-slate-200">
             <Routes>
               <Route index element={<ModelEditModelPage />} />
               <Route path="service" element={<ModelEditServicePage />} />
+              <Route path="schema" element={<ModelEditSchemaPage />} />
             </Routes>
           </div>
         </>

@@ -73,12 +73,13 @@ export const APP_CONFIG_REFERENCEABLES = createObjectReferenceableList([
   {
     category: 'modelField',
     path: 'models.*.model.fields.*',
-    mapToKey: mapToAncestorNameCreator(2),
+    mapToKey: mapToAncestorNameCreator(3),
   },
   {
-    category: 'modelRelation',
+    category: 'modelForeignField',
     path: 'models.*.model.relations.*',
-    mapToKey: mapToAncestorNameCreator(2),
+    nameProperty: 'foreignFieldName',
+    mapToKey: mapToAncestorNameCreator(0, 'modelName'),
   },
 ]);
 
@@ -103,17 +104,54 @@ export const APP_CONFIG_REFERENCES: ObjectReference[] = [
   },
   {
     category: 'modelField',
-    path: 'models.*.model.service.create.fields.*',
+    path: 'models.*.service.create.fields.*',
     mapToKey: mapToAncestorNameCreator(3),
   },
   {
     category: 'modelField',
-    path: 'models.*.model.service.update.fields.*',
+    path: 'models.*.service.update.fields.*',
+    mapToKey: mapToAncestorNameCreator(3),
+  },
+  {
+    category: 'modelForeignField',
+    path: 'models.*.service.embeddedRelations.*.localRelationName',
     mapToKey: mapToAncestorNameCreator(3),
   },
   {
     category: 'modelField',
-    path: 'models.*.model.schema.exposedFields.*',
+    path: 'models.*.service.embeddedRelations.*.embeddedFieldNames.*',
+    mapToKey: (name, parents, object: AppConfig) => {
+      const { localRelationName } = parents[1] as { localRelationName: string };
+      if (!localRelationName) {
+        throw new Error(
+          `Could not find localRelationName of model with embedded relation`
+        );
+      }
+      const { name: modelName } = parents[4] as { name: string };
+      if (!modelName) {
+        throw new Error(`Could not find name of model with embedded relation`);
+      }
+      // find corresponding model
+      const foreignModel = object.models?.find((model) =>
+        model.model.relations?.some(
+          (relation) =>
+            relation.modelName === modelName &&
+            relation.foreignFieldName === localRelationName
+        )
+      );
+
+      if (!foreignModel) {
+        throw new Error(
+          `Could not find model associated with embedded relation ${modelName}/${localRelationName}`
+        );
+      }
+
+      return `${foreignModel.name}.${name}`;
+    },
+  },
+  {
+    category: 'modelField',
+    path: 'models.*.schema.exposedFields.*',
     mapToKey: mapToAncestorNameCreator(2),
   },
 ];

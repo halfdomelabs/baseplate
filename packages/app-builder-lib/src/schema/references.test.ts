@@ -92,7 +92,7 @@ describe('findReferencableEntries', () => {
       nameProperty: 'name',
       path: 'models.*.fields.*',
       mapToKey: (name, parents) => {
-        const model = parents[1] as { name: string };
+        const model = parents[2] as { name: string };
         return `${model.name}#${name}`;
       },
     };
@@ -208,6 +208,7 @@ describe('fixReferenceRenames', () => {
           { id: 'id1', name: 'test' },
           { id: 'id2', name: 'test2' },
         ],
+        goodFields: [],
       },
     };
     const newObject = {
@@ -230,9 +231,14 @@ describe('fixReferenceRenames', () => {
       path: 'model.goodFields.*',
     };
 
-    fixReferenceRenames(oldObject, newObject, [referenceable], [reference]);
+    const updatedObject = fixReferenceRenames(
+      oldObject,
+      newObject,
+      [referenceable],
+      [reference]
+    );
 
-    expect(newObject.model.goodFields).toEqual(['test', 'test3']);
+    expect(updatedObject.model.goodFields).toEqual(['test', 'test3']);
   });
 
   it('renames nested references', () => {
@@ -242,6 +248,7 @@ describe('fixReferenceRenames', () => {
           { id: 'id1', name: 'test' },
           { id: 'id2', name: 'test2' },
         ],
+        goodFields: [],
       },
     };
     const newObject = {
@@ -264,9 +271,14 @@ describe('fixReferenceRenames', () => {
       path: 'model.goodFields.*.name',
     };
 
-    fixReferenceRenames(oldObject, newObject, [referenceable], [reference]);
+    const updatedObject = fixReferenceRenames(
+      oldObject,
+      newObject,
+      [referenceable],
+      [reference]
+    );
 
-    expect(newObject.model.goodFields).toEqual([
+    expect(updatedObject.model.goodFields).toEqual([
       { name: 'test' },
       { name: 'test3' },
     ]);

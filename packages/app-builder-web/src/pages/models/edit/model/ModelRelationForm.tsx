@@ -9,6 +9,7 @@ import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useToast } from 'src/hooks/useToast';
 import { setUndefinedIfEmpty } from 'src/utils/form';
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 
@@ -18,6 +19,7 @@ interface Props {
   idx: number;
   field: FieldArrayWithId<ModelConfig, 'model.relations', 'id'>;
   onRemove: (idx: number) => void;
+  originalModel?: ModelConfig;
 }
 
 function formatFieldAttributes(field: ModelRelationFieldConfig): string {
@@ -44,6 +46,7 @@ function ModelRelationForm({
   idx,
   field,
   onRemove,
+  originalModel,
 }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(!field.name);
   const {
@@ -55,6 +58,31 @@ function ModelRelationForm({
 
   const { parsedApp } = useAppConfig();
   const watchedField = watch(`model.relations.${idx}`);
+
+  const toast = useToast();
+  function handleRemove(): void {
+    // check for references
+    if (originalModel) {
+      const originalRelation = originalModel.model.relations?.find(
+        (f) => f.uid === watchedField.uid
+      );
+      if (originalRelation) {
+        const references =
+          parsedApp.references.modelForeignField?.[
+            `${originalRelation.modelName}.${originalRelation.foreignFieldName}`
+          ];
+        if (references?.length) {
+          toast.error(
+            `Unable to remove field ${
+              originalRelation.name
+            } as it is being used in ${references
+              .map((r) => r.path)
+              .join(', ')}`
+          );
+        }
+      }
+    }
+  }
 
   // TODO: Self references (requires a bit of patching for model renames)
   const foreignModelOptions = parsedApp.getModels().map((type) => ({
@@ -74,7 +102,7 @@ function ModelRelationForm({
             <strong>{watchedField.name}</strong> ({watchedField.modelName})
             {attrString && `: ${attrString}`}
           </div>
-          <LinkButton onClick={() => onRemove(idx)}>Remove</LinkButton>
+          <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
         </div>
       ) : (
         <div className="space-y-4 border border-gray-200">

@@ -74,14 +74,14 @@ function ModelFieldForm({
         (f) => f.uid === watchedField.uid
       );
       if (originalField) {
-        const references = parsedApp.references.modelFields[
+        const references = parsedApp.references.modelField?.[
           `${originalModel.name}.${originalField.name}`
-        ].filter(
+        ]?.filter(
           (ref) =>
             ref.referenceName !== 'modelPrimaryKey' &&
             ref.referenceName !== 'modelLocalRelation'
         );
-        if (references.length) {
+        if (references?.length) {
           toast.error(
             `Unable to remove field ${
               originalField.name

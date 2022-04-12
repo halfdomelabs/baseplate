@@ -27,6 +27,7 @@ export function useModelForm({
 }: UseModelFormOptions): {
   form: UseFormReturn<ModelConfig>;
   onFormSubmit: (data: ModelConfig) => void;
+  originalModel?: ModelConfig;
 } {
   const { id } = useParams<'id'>();
   const { parsedApp, setConfigAndFixReferences } = useAppConfig();
@@ -82,5 +83,5 @@ export function useModelForm({
     ]
   );
 
-  return { form, onFormSubmit };
+  return { form, onFormSubmit, originalModel: model };
 }

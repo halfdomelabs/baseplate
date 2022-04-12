@@ -14,7 +14,8 @@ interface Props {
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(value: boolean): void;
+  onChange?(checked: boolean, value?: string): void;
+  checked?: boolean;
   value?: string;
   type?: 'checkbox' | 'radio';
   register?: UseFormRegisterReturn;
@@ -25,6 +26,7 @@ function CheckedInput({
   name,
   disabled,
   onChange,
+  checked,
   value,
   register,
   type = 'checkbox',
@@ -32,13 +34,14 @@ function CheckedInput({
   const onChangeHandler =
     onChange &&
     ((event: React.ChangeEvent<HTMLInputElement>): void => {
-      onChange(event.target.checked);
+      onChange(event.target.checked, event.target.value);
     });
 
   const inputProps = {
     name,
     disabled,
     onChange: onChangeHandler,
+    checked,
     value,
     type,
     ...register,

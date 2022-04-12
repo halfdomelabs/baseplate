@@ -13,10 +13,11 @@ function ModelPrimaryKeyForm({ className, formProps }: Props): JSX.Element {
 
   const localFields = watch(`model.fields`);
 
-  const localFieldOptions = localFields.map((f) => ({
-    label: f.name,
-    value: f.name,
-  }));
+  const localFieldOptions =
+    localFields?.map((f) => ({
+      label: f.name,
+      value: f.name,
+    })) || [];
 
   return (
     <div className={classNames('space-y-4 min-w-[400px] w-1/2', className)}>

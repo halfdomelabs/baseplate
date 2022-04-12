@@ -1,4 +1,5 @@
 import { AppConfig } from '@baseplate/app-builder-lib';
+import stringify from 'json-stringify-pretty-compact';
 import { useMemo, useState } from 'react';
 import { Button } from 'src/components';
 import TextAreaInput from 'src/components/TextAreaInput';
@@ -7,10 +8,7 @@ import { useToast } from 'src/hooks/useToast';
 
 function HomePage(): JSX.Element {
   const { config, setConfig } = useAppConfig();
-  const initialValue = useMemo(
-    () => JSON.stringify(config, undefined, 2),
-    [config]
-  );
+  const initialValue = useMemo(() => stringify(config), [config]);
   const [value, setValue] = useState(initialValue);
   const toast = useToast();
 
@@ -52,7 +50,7 @@ function HomePage(): JSX.Element {
         <Button onClick={handleImport}>Import Config</Button>
       </div>
       <TextAreaInput
-        className="h-96"
+        className="h-96 font-mono"
         placeholder="Paste your configuration here"
         value={value}
         onTextChange={(text) => setValue(text)}
