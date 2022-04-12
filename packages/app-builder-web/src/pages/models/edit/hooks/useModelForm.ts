@@ -17,18 +17,22 @@ const NEW_MODEL = {
 };
 
 interface UseModelFormOptions {
+  ignoredReferences?: string[];
   setError: (error: string) => void;
 }
 
-export function useModelForm({ setError }: UseModelFormOptions): {
+export function useModelForm({
+  setError,
+  ignoredReferences,
+}: UseModelFormOptions): {
   form: UseFormReturn<ModelConfig>;
   onFormSubmit: (data: ModelConfig) => void;
 } {
   const { id } = useParams<'id'>();
-  const { parsedConfig, setConfig } = useAppConfig();
+  const { parsedApp, setConfigAndFixReferences } = useAppConfig();
   const toast = useToast();
   const navigate = useNavigate();
-  const model = parsedConfig.getModels().find((m) => m.uid === id);
+  const model = parsedApp.getModels().find((m) => m.uid === id);
 
   const form = useForm<ModelConfig>({
     resolver: yupResolver(modelSchema),
@@ -44,18 +48,21 @@ export function useModelForm({ setError }: UseModelFormOptions): {
     (data: ModelConfig) => {
       try {
         const newUid = data.uid || randomUid();
-        setConfig((oldConfig) => {
-          oldConfig.models = _.sortBy(
-            [
-              ...(oldConfig.models?.filter((m) => m.uid !== id) || []),
-              {
-                ...data,
-                uid: newUid,
-              },
-            ],
-            (m) => m.name
-          );
-        });
+        setConfigAndFixReferences(
+          (oldConfig) => {
+            oldConfig.models = _.sortBy(
+              [
+                ...(oldConfig.models?.filter((m) => m.uid !== id) || []),
+                {
+                  ...data,
+                  uid: newUid,
+                },
+              ],
+              (m) => m.name
+            );
+          },
+          { ignoredReferences }
+        );
         toast.success('Successfully saved model!');
         if (!id || model?.name !== data.name) {
           navigate(`../edit/${newUid}`);
@@ -64,7 +71,15 @@ export function useModelForm({ setError }: UseModelFormOptions): {
         setError(formatError(err));
       }
     },
-    [id, toast, navigate, model, setError, setConfig]
+    [
+      id,
+      toast,
+      navigate,
+      model,
+      setError,
+      setConfigAndFixReferences,
+      ignoredReferences,
+    ]
   );
 
   return { form, onFormSubmit };

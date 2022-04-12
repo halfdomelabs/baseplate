@@ -233,4 +233,12 @@ export class ParsedAppConfig {
   getModels(): ParsedModel[] {
     return this.models;
   }
+
+  getModelByName(name: string): ParsedModel {
+    const model = this.models.find((m) => m.name === name);
+    if (!model) {
+      throw new Error(`Model ${name} not found`);
+    }
+    return model;
+  }
 }

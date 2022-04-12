@@ -10,12 +10,15 @@ import { useModelForm } from './hooks/useModelForm';
 
 function ModelEditModelPage(): JSX.Element {
   const { status, setError } = useStatus();
-  const { form, onFormSubmit } = useModelForm({ setError });
+  const { form, onFormSubmit } = useModelForm({
+    setError,
+    ignoredReferences: ['modelPrimaryKey', 'modelLocalRelation'],
+  });
   const { control, handleSubmit } = form;
 
-  const { parsedConfig } = useAppConfig();
+  const { parsedApp } = useAppConfig();
 
-  const featureOptions = (parsedConfig.appConfig.features || []).map((f) => ({
+  const featureOptions = (parsedApp.appConfig.features || []).map((f) => ({
     label: f.name,
     value: f.name,
   }));
@@ -41,12 +44,12 @@ function ModelEditModelPage(): JSX.Element {
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <Alert.WithStatus status={status} />
-      <TextInput.Controller
+      <TextInput.LabelledController
         label="Name (e.g. User)"
         control={control}
         name="name"
       />
-      <ReactSelectInput.Controller
+      <ReactSelectInput.LabelledController
         label="Feature"
         control={control}
         name="feature"
@@ -144,7 +147,7 @@ function ModelEditModelPage(): JSX.Element {
           })
         }
       >
-        Add Field
+        Add Relation
       </LinkButton>
       <div>
         <Button type="submit">Save</Button>

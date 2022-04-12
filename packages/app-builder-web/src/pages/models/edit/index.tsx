@@ -8,13 +8,13 @@ import ModelEditServicePage from './service.page';
 
 function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
-  const { parsedConfig, setConfig } = useAppConfig();
+  const { parsedApp, setConfig } = useAppConfig();
   const { status, setError } = useStatus();
   const navigate = useNavigate();
 
   const isNew = !id;
 
-  const model = parsedConfig.getModels().find((m) => m.uid === id);
+  const model = parsedApp.getModels().find((m) => m.uid === id);
 
   const handleDelete = (): void => {
     if (window.confirm(`Are you sure you want to delete ${id || 'model'}?`)) {

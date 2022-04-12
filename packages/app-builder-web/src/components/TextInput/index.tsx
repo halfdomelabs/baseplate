@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { HTMLInputTypeAttribute } from 'react';
+import { HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
 import {
   Control,
   FieldError,
@@ -18,6 +18,9 @@ interface Props {
   name?: string;
   type?: HTMLInputTypeAttribute;
   register?: UseFormRegisterReturn;
+  onChange?: (value: string) => void;
+  onBlur?: () => void;
+  value?: string;
 }
 
 const TextInput = function TextInput({
@@ -26,9 +29,21 @@ const TextInput = function TextInput({
   placeholder,
   name,
   type = 'text',
+  onChange,
+  onBlur,
+  value,
   register,
 }: Props): JSX.Element {
-  const inputProps = { name, placeholder, disabled, type, ...register };
+  const inputProps: InputHTMLAttributes<HTMLInputElement> = {
+    name,
+    placeholder,
+    disabled,
+    type,
+    onChange: onChange && ((e) => onChange(e.target.value)),
+    onBlur,
+    value,
+    ...register,
+  };
   return (
     <input
       className={classNames(
@@ -66,7 +81,7 @@ interface TextInputControllerProps<T> extends TextInputLabelledProps {
   name: FieldPath<T>;
 }
 
-TextInput.Controller = function TextInputController<T>({
+TextInput.LabelledController = function TextInputController<T>({
   control,
   name,
   ...rest

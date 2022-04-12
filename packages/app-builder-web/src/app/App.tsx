@@ -46,7 +46,7 @@ function App(): JSX.Element {
   const result: UseAppConfigResult = useMemo(
     () => ({
       config,
-      parsedConfig: new ParsedAppConfig(config),
+      parsedApp: new ParsedAppConfig(config),
       setConfigAndFixReferences: (transformer, options) => {
         // validate app config
         // TODO: Figure out better validation technique

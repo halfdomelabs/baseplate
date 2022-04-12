@@ -7,7 +7,7 @@ import React from 'react';
 
 export interface UseAppConfigResult {
   config: AppConfig;
-  parsedConfig: ParsedAppConfig;
+  parsedApp: ParsedAppConfig;
   setConfigAndFixReferences: (
     transformer: (originalConfig: AppConfig) => void,
     options?: FixReferenceRenamesOptions

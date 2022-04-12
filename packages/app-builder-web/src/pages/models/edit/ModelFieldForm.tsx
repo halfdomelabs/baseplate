@@ -5,9 +5,15 @@ import {
 } from '@baseplate/app-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
+import {
+  FieldArrayWithId,
+  useController,
+  UseFormReturn,
+} from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
+import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useToast } from 'src/hooks/useToast';
 
 interface Props {
   className?: string;
@@ -15,6 +21,7 @@ interface Props {
   idx: number;
   field: FieldArrayWithId<ModelConfig, 'model.fields', 'id'>;
   onRemove: (idx: number) => void;
+  originalModel?: ModelConfig;
 }
 
 function formatFieldAttributes(field: ModelScalarFieldConfig): string {
@@ -35,15 +42,20 @@ function ModelFieldForm({
   idx,
   field,
   onRemove,
+  originalModel,
 }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(!field.name);
   const {
     register,
     watch,
+    control,
     formState: { errors },
   } = formProps;
 
   const watchedField = watch(`model.fields.${idx}`);
+
+  const watchedRelations = watch(`model.relations`);
+  const watchedPrimaryKeys = watch(`model.primaryKeys`);
 
   const typeOptions = SCALAR_FIELD_TYPES.map((type) => ({
     label: type,
@@ -51,6 +63,83 @@ function ModelFieldForm({
   }));
 
   const attrString = formatFieldAttributes(watchedField);
+
+  const { parsedApp } = useAppConfig();
+  const toast = useToast();
+
+  function handleRemove(): void {
+    // check for references
+    if (originalModel) {
+      const originalField = originalModel.model.fields.find(
+        (f) => f.uid === watchedField.uid
+      );
+      if (originalField) {
+        const references = parsedApp.references.modelFields[
+          `${originalModel.name}.${originalField.name}`
+        ].filter(
+          (ref) =>
+            ref.referenceName !== 'modelPrimaryKey' &&
+            ref.referenceName !== 'modelLocalRelation'
+        );
+        if (references.length) {
+          toast.error(
+            `Unable to remove field ${
+              originalField.name
+            } as it is being used in ${references
+              .map((r) => r.path)
+              .join(', ')}`
+          );
+          return;
+        }
+      }
+    }
+    // check local references
+    const usedRelations = watchedRelations?.filter((relation) =>
+      relation.references.some((r) => r.local.includes(watchedField.name))
+    );
+    if (usedRelations?.length) {
+      toast.error(
+        `Unable to remove field as it is being used in relations ${usedRelations
+          .map((r) => r.name)
+          .join(', ')}`
+      );
+      return;
+    }
+
+    // check primary keys
+    if (watchedPrimaryKeys?.includes(watchedField.name)) {
+      toast.error(
+        `Unable to remove field as it is being used in in the primary key`
+      );
+      return;
+    }
+    onRemove(idx);
+  }
+
+  const { field: nameField } = useController({
+    control,
+    name: `model.fields.${idx}.name`,
+  });
+
+  const handleNameChange = (name: string): void => {
+    // update local references
+    watchedRelations?.forEach((relation, relationIdx) => {
+      relation.references.forEach((reference, referenceIdx) => {
+        if (reference.local.includes(watchedField.name)) {
+          formProps.setValue(
+            `model.relations.${relationIdx}.references.${referenceIdx}.local`,
+            name
+          );
+        }
+      });
+    });
+    watchedPrimaryKeys?.forEach((primaryKey, primaryKeyIdx) => {
+      if (primaryKey === watchedField.name) {
+        formProps.setValue(`model.primaryKeys.${primaryKeyIdx}`, name);
+      }
+    });
+    nameField.onChange(name);
+  };
 
   return (
     <div className={classNames('space-y-4 min-w-[400px] w-1/2', className)}>
@@ -61,7 +150,7 @@ function ModelFieldForm({
             <strong>{watchedField.name}</strong> ({watchedField.type})
             {attrString && `: ${attrString}`}
           </div>
-          <LinkButton onClick={() => onRemove(idx)}>Remove</LinkButton>
+          <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
         </div>
       ) : (
         <div className="space-y-4 border border-gray-200">
@@ -69,7 +158,9 @@ function ModelFieldForm({
           <TextInput.Labelled
             label="Name"
             className="w-full"
-            register={register(`model.fields.${idx}.name`)}
+            onChange={handleNameChange}
+            onBlur={nameField.onBlur}
+            value={nameField.value}
             error={errors.model?.fields?.[idx].name?.message}
           />
           <SelectInput.Labelled

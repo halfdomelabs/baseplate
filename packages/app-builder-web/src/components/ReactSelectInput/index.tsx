@@ -41,7 +41,7 @@ interface ReactSelectInputControllerProps<T>
   name: FieldPath<T>;
 }
 
-ReactSelectInput.Controller = function ReactSelectInputController<T>({
+ReactSelectInput.LabelledController = function ReactSelectInputController<T>({
   label,
   className,
   name,

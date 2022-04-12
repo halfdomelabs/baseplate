@@ -54,6 +54,7 @@ function mapToAncestorNameCreator(
     const ancestor = parents[depth] as Record<string, string | undefined>;
     const ancestorName = ancestor[nameFieldName];
     if (!ancestorName) {
+      console.log(parents);
       throw new Error(
         `Ancestor at depth ${
           depth + 1
@@ -84,11 +85,13 @@ export const APP_CONFIG_REFERENCEABLES = createObjectReferenceableList([
 export const APP_CONFIG_REFERENCES: ObjectReference[] = [
   { category: 'feature', path: 'models.*.feature' },
   {
+    name: 'modelPrimaryKey',
     category: 'modelField',
     path: 'models.*.model.primaryKeys',
     mapToKey: mapToAncestorNameCreator(0),
   },
   {
+    name: 'modelLocalRelation',
     category: 'modelField',
     path: 'models.*.model.relations.*.references.*.local',
     mapToKey: mapToAncestorNameCreator(5),
@@ -96,21 +99,21 @@ export const APP_CONFIG_REFERENCES: ObjectReference[] = [
   {
     category: 'modelField',
     path: 'models.*.model.relations.*.references.*.foreign',
-    mapToKey: mapToAncestorNameCreator(1, 'modelName'),
+    mapToKey: mapToAncestorNameCreator(2, 'modelName'),
   },
   {
     category: 'modelField',
     path: 'models.*.model.service.create.fields.*',
-    mapToKey: mapToAncestorNameCreator(3, 'modelName'),
+    mapToKey: mapToAncestorNameCreator(3),
   },
   {
     category: 'modelField',
     path: 'models.*.model.service.update.fields.*',
-    mapToKey: mapToAncestorNameCreator(3, 'modelName'),
+    mapToKey: mapToAncestorNameCreator(3),
   },
   {
     category: 'modelField',
     path: 'models.*.model.schema.exposedFields.*',
-    mapToKey: mapToAncestorNameCreator(2, 'modelName'),
+    mapToKey: mapToAncestorNameCreator(2),
   },
 ];

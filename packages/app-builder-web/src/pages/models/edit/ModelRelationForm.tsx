@@ -1,9 +1,13 @@
-import { ModelConfig } from '@baseplate/app-builder-lib';
+import {
+  ModelConfig,
+  ModelRelationFieldConfig,
+} from '@baseplate/app-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import { useAppConfig } from 'src/hooks/useAppConfig';
+import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 
 interface Props {
   className?: string;
@@ -13,9 +17,7 @@ interface Props {
   onRemove: (idx: number) => void;
 }
 
-function formatFieldAttributes(
-  field: FieldArrayWithId<ModelConfig, 'model.relations', 'id'>
-): string {
+function formatFieldAttributes(field: ModelRelationFieldConfig): string {
   const attrStrings: string[] = [];
   if (field.isOptional) attrStrings.push('optional');
   if (field.relationshipName)
@@ -39,16 +41,19 @@ function ModelRelationForm({
   const {
     register,
     formState: { errors },
+    watch,
   } = formProps;
 
-  const { parsedConfig } = useAppConfig();
+  const { parsedApp } = useAppConfig();
+  const watchedField = watch(`model.relations.${idx}`);
 
-  const foreignModelOptions = parsedConfig.getModels().map((type) => ({
+  // TODO: Self references (requires a bit of patching for model renames)
+  const foreignModelOptions = parsedApp.getModels().map((type) => ({
     label: type.name,
     value: type.name,
   }));
 
-  const attrString = formatFieldAttributes(field);
+  const attrString = formatFieldAttributes(watchedField);
   const relationErrors = errors.model?.relations?.[idx];
 
   return (
@@ -57,7 +62,7 @@ function ModelRelationForm({
         <div className="flex flex-row space-x-4 items-center">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
           <div>
-            <strong>{field.name}</strong> ({field.modelName})
+            <strong>{watchedField.name}</strong> ({watchedField.modelName})
             {attrString && `: ${attrString}`}
           </div>
           <LinkButton onClick={() => onRemove(idx)}>Remove</LinkButton>
@@ -76,6 +81,10 @@ function ModelRelationForm({
             options={foreignModelOptions}
             register={register(`model.relations.${idx}.modelName`)}
             error={relationErrors?.modelName?.message}
+          />
+          <ModelRelationReferencesForm
+            formProps={formProps}
+            relationIdx={idx}
           />
         </div>
       )}

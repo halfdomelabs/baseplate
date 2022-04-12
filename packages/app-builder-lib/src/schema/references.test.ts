@@ -232,6 +232,43 @@ describe('fixReferenceRenames', () => {
 
     fixReferenceRenames(oldObject, newObject, [referenceable], [reference]);
 
-    expect(newObject.model.goodFields).toEqual(['test', 'test2']);
+    expect(newObject.model.goodFields).toEqual(['test', 'test3']);
+  });
+
+  it('renames nested references', () => {
+    const oldObject = {
+      model: {
+        fields: [
+          { id: 'id1', name: 'test' },
+          { id: 'id2', name: 'test2' },
+        ],
+      },
+    };
+    const newObject = {
+      model: {
+        fields: [
+          { id: 'id1', name: 'test' },
+          { id: 'id2', name: 'test3' },
+        ],
+        goodFields: [{ name: 'test' }, { name: 'test2' }],
+      },
+    };
+    const referenceable: ObjectReferenceable = {
+      category: 'test',
+      nameProperty: 'name',
+      idProperty: 'id',
+      path: 'model.fields.*',
+    };
+    const reference: ObjectReference = {
+      category: 'test',
+      path: 'model.goodFields.*.name',
+    };
+
+    fixReferenceRenames(oldObject, newObject, [referenceable], [reference]);
+
+    expect(newObject.model.goodFields).toEqual([
+      { name: 'test' },
+      { name: 'test3' },
+    ]);
   });
 });

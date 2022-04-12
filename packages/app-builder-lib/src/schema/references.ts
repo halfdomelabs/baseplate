@@ -3,6 +3,7 @@ import { notEmpty } from '@src/utils/array';
 
 export interface ObjectReference {
   category: string;
+  name?: string;
   path: string;
   mapToKey?(name: string, parents: unknown[]): string;
 }
@@ -19,6 +20,7 @@ export interface ObjectReferenceEntry {
   key: string;
   name: string;
   path: string;
+  referenceName?: string;
 }
 
 export interface ObjectReferenceableEntry {
@@ -137,6 +139,7 @@ export function findReferenceEntries(
             ? reference.mapToKey(foundObject, parents)
             : foundObject,
           path,
+          referenceName: reference.name,
         },
       ];
     },
@@ -146,7 +149,7 @@ export function findReferenceEntries(
 }
 
 export interface FixReferenceRenamesOptions {
-  ignorePathPrefix?: string;
+  ignoredReferences?: string[];
 }
 
 export function fixReferenceRenames<T>(
@@ -189,8 +192,9 @@ export function fixReferenceRenames<T>(
         .flatMap((reference) => findReferenceEntries(newConfig, reference))
         .filter(
           (r) =>
-            !options?.ignorePathPrefix ||
-            !r.path.startsWith(options.ignorePathPrefix)
+            !options?.ignoredReferences ||
+            !r.referenceName ||
+            !options?.ignoredReferences.includes(r.referenceName)
         );
       return referenceEntries.reduce((referenceObject, entry) => {
         const renamedTo = renamedEntriesForCategory.find(

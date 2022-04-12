@@ -13,9 +13,9 @@ function ModelLink({ model }: { model: ParsedModel }): JSX.Element {
 }
 
 function ModelsPage(): JSX.Element {
-  const { parsedConfig } = useAppConfig();
+  const { parsedApp } = useAppConfig();
 
-  const models = parsedConfig.getModels();
+  const models = parsedApp.getModels();
   const sortedModels = _.sortBy(models, (m) => m.name);
 
   return (
