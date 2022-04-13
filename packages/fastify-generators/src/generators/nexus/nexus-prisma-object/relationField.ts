@@ -3,6 +3,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
+import R from 'ramda';
 import { PrismaOutputProvider } from '@src/generators/prisma/prisma';
 import {
   PrismaOutputModel,
@@ -56,9 +57,13 @@ function getResolverForField(
   return TypescriptCodeUtils.formatExpression(RESOLVER_TEMPLATE, {
     INPUT: `{${field.fields.join(', ')}}`,
     MODEL: prismaOutput.getPrismaModelExpression(field.modelType),
-    WHERE_CLAUSE: `{${field.fields
-      .map((localName, idx) => `${(field.references || [])[idx]} :${localName}`)
-      .join(', ')}}`,
+    WHERE_CLAUSE: TypescriptCodeUtils.mergeExpressionsAsObject(
+      R.mergeAll(
+        field.fields.map((localName, index) => ({
+          [(field.references || [])[index]]: localName,
+        }))
+      )
+    ),
     RELATION_NAME: field.name,
   });
 }

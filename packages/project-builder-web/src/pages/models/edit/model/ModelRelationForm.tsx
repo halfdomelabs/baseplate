@@ -40,6 +40,11 @@ const REFERENTIAL_ACTION_OPTIONS = REFERENTIAL_ACTIONS.map((action) => ({
   value: action,
 }));
 
+const RELATIONSHIP_TYPE_OPTIONS = [
+  { label: 'One to One', value: 'oneToOne' },
+  { label: 'One to Many', value: 'oneToMany' },
+];
+
 function ModelRelationForm({
   className,
   formProps,
@@ -134,6 +139,13 @@ function ModelRelationForm({
               setValueAs: setUndefinedIfEmpty,
             })}
             error={relationErrors?.name?.message}
+          />
+          <SelectInput.LabelledController
+            label="Relationship Type"
+            className="w-full"
+            control={control}
+            name={`model.relations.${idx}.relationshipType`}
+            options={RELATIONSHIP_TYPE_OPTIONS}
           />
           <CheckedInput.LabelledController
             label="Is Optional?"
