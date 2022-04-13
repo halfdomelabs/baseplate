@@ -21,11 +21,11 @@ export class GeneratorEngine {
   async loadProject(directory: string): Promise<GeneratorEntry> {
     const projectPath = path.join(directory, 'baseplate');
     const rootDescriptor = await loadDescriptorFromFile(
-      path.join(projectPath, 'project')
+      path.join(projectPath, 'root')
     );
     const rootGeneratorEntry = await buildGeneratorEntry(
       rootDescriptor,
-      'project',
+      'root',
       { baseDirectory: projectPath, generatorMap: this.generators }
     );
 
