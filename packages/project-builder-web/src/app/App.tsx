@@ -37,7 +37,7 @@ function App(): JSX.Element {
       name: 'test-app',
       version: '0.1.0',
       portBase: 4000,
-      apps: [{ name: 'backend', type: 'backend' }],
+      apps: [],
     });
   }, [savedConfig, toast]);
 

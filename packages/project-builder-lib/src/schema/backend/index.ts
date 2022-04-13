@@ -1,12 +1,12 @@
 import * as yup from 'yup';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
-import { appBaseValidators } from '../app';
+import { baseAppValidators } from '../app';
 
-export const backendSchema = yup.object({
-  ...appBaseValidators,
+export const backendAppSchema = yup.object({
+  ...baseAppValidators,
   type: yup.mixed<'backend'>().oneOf(['backend']).required(),
 });
 
-export type BackendConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof backendSchema>
+export type BackendAppConfig = MakeUndefinableFieldsOptional<
+  yup.InferType<typeof backendAppSchema>
 >;

@@ -1,6 +1,6 @@
 import { Disclosure } from '@headlessui/react';
 import classNames from 'classnames';
-import { MdKeyboardArrowDown } from 'react-icons/md';
+import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
 
 interface Props {
@@ -145,22 +145,30 @@ Sidebar.Dropdown = function SidebarDropdown({
 }: SidebarDropdownProps): JSX.Element {
   return (
     <Disclosure as="li" className={className}>
-      <Disclosure.Button className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-        {Icon ? (
-          <>
-            <Icon className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-            <span className="flex-1 ml-3 text-left whitespace-nowrap">
-              {label}
-            </span>
-          </>
-        ) : (
-          <span>{label}</span>
-        )}
-        <MdKeyboardArrowDown className="w-6 h-6" />
-      </Disclosure.Button>
-      <Disclosure.Panel as="ul" className="py-2 space-y-2">
-        {children}
-      </Disclosure.Panel>
+      {({ open }) => (
+        <>
+          <Disclosure.Button className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+            {Icon ? (
+              <>
+                <Icon className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+                <span className="flex-1 ml-3 text-left whitespace-nowrap">
+                  {label}
+                </span>
+              </>
+            ) : (
+              <span>{label}</span>
+            )}
+            {open ? (
+              <MdKeyboardArrowUp className="w-6 h-6" />
+            ) : (
+              <MdKeyboardArrowDown className="w-6 h-6" />
+            )}
+          </Disclosure.Button>
+          <Disclosure.Panel as="ul" className="py-2 space-y-2">
+            {children}
+          </Disclosure.Panel>
+        </>
+      )}
     </Disclosure>
   );
 };

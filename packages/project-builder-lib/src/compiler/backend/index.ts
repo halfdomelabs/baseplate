@@ -1,7 +1,5 @@
-// async function write backend
-
 import { ParsedProjectConfig } from '@src/parser';
-import { ProjectConfig, BackendConfig } from '../../schema';
+import { ProjectConfig, BackendAppConfig } from '../../schema';
 import { AppEntry } from '../../types/files';
 import { AppEntryBuilder } from '../projectEntryBuilder';
 import { buildFastify } from './fastify';
@@ -18,20 +16,20 @@ export function buildDocker(projectConfig: ProjectConfig): unknown {
 
 export function compileBackend(
   projectConfig: ProjectConfig,
-  app: BackendConfig
+  app: BackendAppConfig
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(
     projectConfig,
     'backend',
-    app.packageLocation || 'packages/backend'
+    app.packageLocation || `packages/${app.name}`
   );
 
   const parsedProject = new ParsedProjectConfig(projectConfig);
 
   appBuilder.addDescriptor('root.json', {
     generator: '@baseplate/core/node/node',
-    name: `${projectConfig.name}-backend`,
-    description: `Backend for ${projectConfig.name}`,
+    name: `${projectConfig.name}-${app.name}`,
+    description: `Backend app for ${projectConfig.name}`,
     version: projectConfig.version,
     hoistedProviders: parsedProject.globalHoistedProviders,
     children: {

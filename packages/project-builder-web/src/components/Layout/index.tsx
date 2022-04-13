@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { FaDatabase } from 'react-icons/fa';
-import { MdPeople, MdSettings, MdImportExport } from 'react-icons/md';
+import { MdPeople, MdSettings, MdImportExport, MdApps } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import Sidebar from '../Sidebar';
@@ -13,6 +13,7 @@ interface Props {
 
 function Layout({ className, centered, noPadding }: Props): JSX.Element {
   const { config } = useProjectConfig();
+
   return (
     <div className={classNames('h-full items-stretch flex', className)}>
       <Sidebar className="flex-none">
@@ -29,6 +30,20 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
           <Sidebar.LinkItem Icon={MdSettings} to="/general">
             General
           </Sidebar.LinkItem>
+          <Sidebar.Dropdown Icon={MdApps} label="Apps">
+            <Sidebar.DropdownLinkItem withParentIcon to="/apps/new">
+              New App
+            </Sidebar.DropdownLinkItem>
+            {config.apps.map((app) => (
+              <Sidebar.DropdownLinkItem
+                key={app.uid}
+                withParentIcon
+                to={`/apps/edit/${app.uid}`}
+              >
+                {app.name}
+              </Sidebar.DropdownLinkItem>
+            ))}
+          </Sidebar.Dropdown>
           <Sidebar.LinkItem Icon={FaDatabase} to="/models">
             Models
           </Sidebar.LinkItem>

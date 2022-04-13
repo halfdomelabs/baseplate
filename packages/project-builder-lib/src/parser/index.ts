@@ -4,6 +4,7 @@ import {
   PROJECT_CONFIG_REFERENCEABLES,
   PROJECT_CONFIG_REFERENCES,
   projectConfigSchema,
+  AppConfig,
 } from '@src/schema';
 import {
   findReferencableEntries,
@@ -256,5 +257,9 @@ export class ParsedProjectConfig {
 
   exportToProjectConfig(): ProjectConfig {
     return projectConfigSchema.validateSync(this.projectConfig);
+  }
+
+  getAppByUid(uid: string): AppConfig | undefined {
+    return this.projectConfig.apps?.find((app) => app.uid === uid);
   }
 }
