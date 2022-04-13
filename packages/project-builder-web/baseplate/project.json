@@ -1,0 +1,22 @@
+{
+  "generator": "@baseplate/core/node/node",
+  "name": "project-builder-web",
+  "description": "Web interface for constructing app builder JSON",
+  "children": {
+    "projects": [
+      {
+        "name": "react",
+        "generator": "@baseplate/react/core/react",
+        "children": {
+          "$tailwind": {
+            "generator": "@baseplate/react/core/react-tailwind",
+            "globalBodyClasses": "text-gray-800 bg-slate-100"
+          },
+          "$notFoundHandler": {
+            "generator": "@baseplate/react/core/react-not-found-handler"
+          }
+        }
+      }
+    ]
+  }
+}
