@@ -82,6 +82,8 @@ function ModelRelationForm({
         }
       }
     }
+
+    onRemove(idx);
   }
 
   // TODO: Self references (requires a bit of patching for model renames)

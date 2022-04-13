@@ -35,7 +35,9 @@ function EditAppPage(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <h1>Edit {app.name}</h1>
+      <h1>
+        Edit {app.name} ({app.type} app)
+      </h1>
       <Button secondary onClick={handleDelete}>
         Delete
       </Button>
