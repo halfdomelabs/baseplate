@@ -1,5 +1,5 @@
 import path from 'path';
-import { ProjectEntry } from '@baseplate/project-builder-lib';
+import { AppEntry } from '@baseplate/project-builder-lib';
 import { GeneratorEngine, loadGeneratorsForModule } from '@baseplate/sync';
 import R from 'ramda';
 
@@ -25,7 +25,7 @@ async function getGeneratorEngine(): Promise<GeneratorEngine> {
 
 export async function generateForDirectory(
   baseDirectory: string,
-  { rootDirectory, name }: ProjectEntry
+  { rootDirectory, name }: AppEntry
 ): Promise<void> {
   const engine = await getGeneratorEngine();
 

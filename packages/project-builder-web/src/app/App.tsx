@@ -1,17 +1,20 @@
 import {
-  AppConfig,
-  appConfigSchema,
-  APP_CONFIG_REFERENCEABLES,
-  APP_CONFIG_REFERENCES,
+  ProjectConfig,
+  projectConfigSchema,
+  PROJECT_CONFIG_REFERENCEABLES,
+  PROJECT_CONFIG_REFERENCES,
   fixReferenceRenames,
-  ParsedAppConfig,
+  ParsedProjectConfig,
 } from '@baseplate/project-builder-lib';
 import produce from 'immer';
 import { useMemo, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
-import { AppConfigContext, UseAppConfigResult } from 'src/hooks/useAppConfig';
 import { useLocalStorage } from 'src/hooks/useLocalStorage';
+import {
+  ProjectConfigContext,
+  UseProjectConfigResult,
+} from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import PagesRoot from '../pages';
@@ -22,15 +25,15 @@ function App(): JSX.Element {
   const initialConfig = useMemo(() => {
     if (savedConfig) {
       try {
-        const appConfig = JSON.parse(savedConfig) as AppConfig;
+        const projectConfig = JSON.parse(savedConfig) as ProjectConfig;
         // validate config
-        const validatedConfig = appConfigSchema.validateSync(appConfig);
-        return new ParsedAppConfig(validatedConfig);
+        const validatedConfig = projectConfigSchema.validateSync(projectConfig);
+        return new ParsedProjectConfig(validatedConfig);
       } catch (err) {
         toast.error(`Could not parse stored config: ${formatError(err)}`);
       }
     }
-    return new ParsedAppConfig({
+    return new ParsedProjectConfig({
       name: 'test-app',
       version: '0.1.0',
       portBase: 4000,
@@ -38,63 +41,67 @@ function App(): JSX.Element {
     });
   }, [savedConfig, toast]);
 
-  const [parsedApp, setParsedApp] = useState<ParsedAppConfig>(initialConfig);
+  const [parsedProject, setParsedApp] =
+    useState<ParsedProjectConfig>(initialConfig);
 
-  const result: UseAppConfigResult = useMemo(
+  const result: UseProjectConfigResult = useMemo(
     () => ({
-      config: parsedApp.exportToAppConfig(),
-      parsedApp,
+      config: parsedProject.exportToProjectConfig(),
+      parsedProject,
       setConfigAndFixReferences: (transformer, options) => {
-        // validate app config
+        // validate project config
         // TODO: Figure out better validation technique
-        // get new app config
-        const oldAppConfig = parsedApp.exportToAppConfig();
-        const newAppConfig = produce(oldAppConfig, transformer);
-        const fixedAppConfig = fixReferenceRenames(
-          oldAppConfig,
-          newAppConfig,
-          APP_CONFIG_REFERENCEABLES,
-          APP_CONFIG_REFERENCES,
+        // get new project config
+        const oldProjectConfig = parsedProject.exportToProjectConfig();
+        const newProjectConfig = produce(oldProjectConfig, transformer);
+        const fixedProjectConfig = fixReferenceRenames(
+          oldProjectConfig,
+          newProjectConfig,
+          PROJECT_CONFIG_REFERENCEABLES,
+          PROJECT_CONFIG_REFERENCES,
           options
         );
-        const validatedAppConfig = appConfigSchema.validateSync(
-          fixedAppConfig,
+        const validatedProjectConfig = projectConfigSchema.validateSync(
+          fixedProjectConfig,
           {
             stripUnknown: true,
           }
         );
-        const parsedConfig = new ParsedAppConfig(validatedAppConfig);
+        const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
         setParsedApp(parsedConfig);
-        const exportedAppConfig = parsedConfig.exportToAppConfig();
-        setSavedConfig(JSON.stringify(exportedAppConfig));
+        const exportedProjectConfig = parsedConfig.exportToProjectConfig();
+        setSavedConfig(JSON.stringify(exportedProjectConfig));
       },
       setConfig: (newConfig) => {
-        // validate app config
+        // validate project config
         // TODO: Figure out better validation technique
-        // get new app config
-        const oldAppConfig = parsedApp.exportToAppConfig();
-        const newAppConfig =
+        // get new project config
+        const oldProjectConfig = parsedProject.exportToProjectConfig();
+        const newProjectConfig =
           typeof newConfig === 'function'
-            ? produce(oldAppConfig, newConfig)
+            ? produce(oldProjectConfig, newConfig)
             : newConfig;
-        const validatedAppConfig = appConfigSchema.validateSync(newAppConfig, {
-          stripUnknown: true,
-        });
-        const parsedConfig = new ParsedAppConfig(validatedAppConfig);
+        const validatedProjectConfig = projectConfigSchema.validateSync(
+          newProjectConfig,
+          {
+            stripUnknown: true,
+          }
+        );
+        const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
         setParsedApp(parsedConfig);
-        const exportedAppConfig = parsedConfig.exportToAppConfig();
-        setSavedConfig(JSON.stringify(exportedAppConfig));
+        const exportedProjectConfig = parsedConfig.exportToProjectConfig();
+        setSavedConfig(JSON.stringify(exportedProjectConfig));
       },
     }),
-    [parsedApp, setSavedConfig]
+    [parsedProject, setSavedConfig]
   );
 
   return (
     <BrowserRouter>
-      <AppConfigContext.Provider value={result}>
+      <ProjectConfigContext.Provider value={result}>
         <PagesRoot />
         <Toaster />
-      </AppConfigContext.Provider>
+      </ProjectConfigContext.Provider>
     </BrowserRouter>
   );
 }

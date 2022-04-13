@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Alert, Button, LinkButton, TextInput } from 'src/components';
 import Dropdown from 'src/components/Dropdown';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useModelForm } from '../hooks/useModelForm';
 import ModelFieldForm from './ModelFieldForm';
@@ -18,17 +18,19 @@ function ModelEditModelPage(): JSX.Element {
   });
   const { control, handleSubmit } = form;
 
-  const { parsedApp } = useAppConfig();
+  const { parsedProject } = useProjectConfig();
 
   const { id } = useParams<'id'>();
   const originalModel = id
-    ? parsedApp.getModels().find((m) => m.uid === id)
+    ? parsedProject.getModels().find((m) => m.uid === id)
     : undefined;
 
-  const featureOptions = (parsedApp.appConfig.features || []).map((f) => ({
-    label: f.name,
-    value: f.name,
-  }));
+  const featureOptions = (parsedProject.projectConfig.features || []).map(
+    (f) => ({
+      label: f.name,
+      value: f.name,
+    })
+  );
 
   const {
     fields: fieldFields,

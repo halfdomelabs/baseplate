@@ -3,7 +3,7 @@ export interface FileEntry {
   jsonContent: unknown;
 }
 
-export interface ProjectEntry {
+export interface AppEntry {
   name: string;
   rootDirectory: string;
   files: FileEntry[];

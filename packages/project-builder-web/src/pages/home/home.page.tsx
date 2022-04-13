@@ -1,19 +1,19 @@
-import { AppConfig } from '@baseplate/project-builder-lib';
+import { ProjectConfig } from '@baseplate/project-builder-lib';
 import stringify from 'json-stringify-pretty-compact';
 import { useMemo, useState } from 'react';
 import { Button } from 'src/components';
 import TextAreaInput from 'src/components/TextAreaInput';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 
 function HomePage(): JSX.Element {
-  const { config, setConfig } = useAppConfig();
+  const { config, setConfig } = useProjectConfig();
   const initialValue = useMemo(() => stringify(config), [config]);
   const [value, setValue] = useState(initialValue);
   const toast = useToast();
 
   const handleImport = (): void => {
-    setConfig(JSON.parse(value) as AppConfig);
+    setConfig(JSON.parse(value) as ProjectConfig);
     toast.success('Successfully imported config!');
   };
 

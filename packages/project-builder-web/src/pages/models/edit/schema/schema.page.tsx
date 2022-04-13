@@ -2,7 +2,7 @@ import { ModelConfig } from '@baseplate/project-builder-lib';
 import { Alert, Button } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useModelForm } from '../hooks/useModelForm';
 
@@ -21,9 +21,9 @@ function ModelEditSchemaPage(): JSX.Element {
     value: f.name,
   }));
 
-  const { parsedApp } = useAppConfig();
+  const { parsedProject } = useProjectConfig();
 
-  const roleOptions = parsedApp.appConfig.auth?.roles.map((role) => ({
+  const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({
     label: role.name,
     value: role.name,
   }));

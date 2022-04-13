@@ -1,6 +1,6 @@
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, NavigationTabs } from 'src/components';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
 import ModelEditModelPage from './model/model.page';
@@ -9,13 +9,13 @@ import ModelEditServicePage from './service/service.page';
 
 function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
-  const { parsedApp, setConfig } = useAppConfig();
+  const { parsedProject, setConfig } = useProjectConfig();
   const { status, setError } = useStatus();
   const navigate = useNavigate();
 
   const isNew = !id;
 
-  const model = parsedApp.getModels().find((m) => m.uid === id);
+  const model = parsedProject.getModels().find((m) => m.uid === id);
 
   const handleDelete = (): void => {
     if (window.confirm(`Are you sure you want to delete ${id || 'model'}?`)) {

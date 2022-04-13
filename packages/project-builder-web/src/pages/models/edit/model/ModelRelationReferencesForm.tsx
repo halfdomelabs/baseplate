@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { Button, LinkButton } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface Props {
   className?: string;
@@ -24,7 +24,7 @@ function ModelRelationReferencesForm({
 
   const foreignModelName = watch(`model.relations.${relationIdx}.modelName`);
   const localFields = watch(`model.fields`);
-  const { parsedApp } = useAppConfig();
+  const { parsedProject } = useProjectConfig();
 
   if (!foreignModelName) {
     return <div />;
@@ -34,7 +34,7 @@ function ModelRelationReferencesForm({
     value: f.name,
   }));
 
-  const foreignFields = parsedApp.getModelByName(foreignModelName);
+  const foreignFields = parsedProject.getModelByName(foreignModelName);
   const foreignFieldOptions = foreignFields.model.fields.map((f) => ({
     label: f.name,
     value: f.name,

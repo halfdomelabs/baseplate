@@ -1,42 +1,42 @@
 // async function write backend
 
-import { ParsedAppConfig } from '@src/parser';
-import { AppConfig, BackendConfig } from '../../schema';
-import { ProjectEntry } from '../../types/files';
-import { ProjectEntryBuilder } from '../projectEntryBuilder';
+import { ParsedProjectConfig } from '@src/parser';
+import { ProjectConfig, BackendConfig } from '../../schema';
+import { AppEntry } from '../../types/files';
+import { AppEntryBuilder } from '../projectEntryBuilder';
 import { buildFastify } from './fastify';
 
-export function buildDocker(appConfig: AppConfig): unknown {
+export function buildDocker(projectConfig: ProjectConfig): unknown {
   return {
     name: 'docker',
     generator: '@baseplate/core/docker/docker-compose',
     postgres: {
-      port: appConfig.portBase + 432,
+      port: projectConfig.portBase + 432,
     },
   };
 }
 
 export function compileBackend(
-  appConfig: AppConfig,
+  projectConfig: ProjectConfig,
   app: BackendConfig
-): ProjectEntry {
-  const projectBuilder = new ProjectEntryBuilder(
-    appConfig,
+): AppEntry {
+  const appBuilder = new AppEntryBuilder(
+    projectConfig,
     'backend',
     app.packageLocation || 'packages/backend'
   );
 
-  const parsedApp = new ParsedAppConfig(appConfig);
+  const parsedProject = new ParsedProjectConfig(projectConfig);
 
-  projectBuilder.addDescriptor('project.json', {
+  appBuilder.addDescriptor('root.json', {
     generator: '@baseplate/core/node/node',
-    name: `${appConfig.name}-backend`,
-    description: `Backend for ${appConfig.name}`,
-    version: appConfig.version,
-    hoistedProviders: parsedApp.globalHoistedProviders,
+    name: `${projectConfig.name}-backend`,
+    description: `Backend for ${projectConfig.name}`,
+    version: projectConfig.version,
+    hoistedProviders: parsedProject.globalHoistedProviders,
     children: {
-      projects: [buildDocker(appConfig), buildFastify(projectBuilder)],
+      projects: [buildDocker(projectConfig), buildFastify(appBuilder)],
     },
   });
-  return projectBuilder.toProjectEntry();
+  return appBuilder.toProjectEntry();
 }

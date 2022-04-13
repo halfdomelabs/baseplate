@@ -1,5 +1,5 @@
 import path from 'path';
-import { FileEntry, ProjectEntry } from '@baseplate/project-builder-lib';
+import { FileEntry, AppEntry } from '@baseplate/project-builder-lib';
 import fs from 'fs-extra';
 import { notEmpty } from '../utils/array';
 
@@ -26,21 +26,21 @@ async function writeFileEntry(
 }
 
 /**
- * Writes out files for project and returns if any files have changed
+ * Writes out files for application and returns if any files have changed
  */
-async function writeProjectFiles(
+async function writeAppFiles(
   baseDirectory: string,
-  project: ProjectEntry
+  app: AppEntry
 ): Promise<boolean> {
   try {
-    const projectDirectory = path.join(baseDirectory, project.rootDirectory);
+    const appDirectory = path.join(baseDirectory, app.rootDirectory);
     const anyModified = await Promise.all(
-      project.files.map((file) => writeFileEntry(projectDirectory, file))
+      app.files.map((file) => writeFileEntry(appDirectory, file))
     );
     return anyModified.some((m) => m);
   } catch (err) {
     console.error(
-      `Error writing out project ${project.name}: ${(err as Error).message}`
+      `Error writing out app ${app.name}: ${(err as Error).message}`
     );
     console.error(err);
     return false;
@@ -52,13 +52,13 @@ async function writeProjectFiles(
  */
 export async function writeApplicationFiles(
   baseDirectory: string,
-  projects: ProjectEntry[]
-): Promise<ProjectEntry[]> {
-  const modifiedProjects = await Promise.all(
-    projects.map(async (project) => {
-      const wasModified = await writeProjectFiles(baseDirectory, project);
-      return wasModified ? project : null;
+  apps: AppEntry[]
+): Promise<AppEntry[]> {
+  const modifiedApps = await Promise.all(
+    apps.map(async (app) => {
+      const wasModified = await writeAppFiles(baseDirectory, app);
+      return wasModified ? app : null;
     })
   );
-  return modifiedProjects.filter(notEmpty);
+  return modifiedApps.filter(notEmpty);
 }

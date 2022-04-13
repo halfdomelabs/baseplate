@@ -8,7 +8,7 @@ import { ObjectReference, ObjectReferenceable } from './references';
 
 export type AppBase = BackendConfig;
 
-export const appConfigSchema = yup.object({
+export const projectConfigSchema = yup.object({
   name: yup.string().required(),
   version: yup.string().required(),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
@@ -33,8 +33,8 @@ export const appConfigSchema = yup.object({
   auth: authSchema.optional().default(undefined),
 });
 
-export type AppConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof appConfigSchema>
+export type ProjectConfig = MakeUndefinableFieldsOptional<
+  yup.InferType<typeof projectConfigSchema>
 >;
 
 interface ObjectReferenceableWithOptionalProperties
@@ -74,7 +74,7 @@ function mapToAncestorNameCreator(
   };
 }
 
-export const APP_CONFIG_REFERENCEABLES = createObjectReferenceableList([
+export const PROJECT_CONFIG_REFERENCEABLES = createObjectReferenceableList([
   { category: 'feature', path: 'features.*' },
   { category: 'model', path: 'models.*' },
   {
@@ -91,7 +91,7 @@ export const APP_CONFIG_REFERENCEABLES = createObjectReferenceableList([
   { category: 'role', path: 'auth.roles.*' },
 ]);
 
-export const APP_CONFIG_REFERENCES: ObjectReference[] = [
+export const PROJECT_CONFIG_REFERENCES: ObjectReference[] = [
   { category: 'feature', path: 'models.*.feature' },
   {
     name: 'modelPrimaryKey',
@@ -128,7 +128,7 @@ export const APP_CONFIG_REFERENCES: ObjectReference[] = [
   {
     category: 'modelField',
     path: 'models.*.service.embeddedRelations.*.embeddedFieldNames.*',
-    mapToKey: (name, parents, object: AppConfig) => {
+    mapToKey: (name, parents, object: ProjectConfig) => {
       const { localRelationName } = parents[1] as { localRelationName: string };
       if (!localRelationName) {
         throw new Error(

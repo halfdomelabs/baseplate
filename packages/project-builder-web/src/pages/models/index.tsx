@@ -2,7 +2,7 @@ import { ParsedModel } from '@baseplate/project-builder-lib';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
 import { Sidebar } from 'src/components';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import ModelEditPage from './edit';
 import ModelListPage from './list';
 
@@ -13,9 +13,9 @@ function ModelLink({ model }: { model: ParsedModel }): JSX.Element {
 }
 
 function ModelsPage(): JSX.Element {
-  const { parsedApp } = useAppConfig();
+  const { parsedProject } = useProjectConfig();
 
-  const models = parsedApp.getModels();
+  const models = parsedProject.getModels();
   const sortedModels = _.sortBy(models, (m) => m.name);
 
   return (

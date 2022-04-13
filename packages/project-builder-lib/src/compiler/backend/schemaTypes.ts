@@ -1,4 +1,4 @@
-import { ParsedAppConfig } from '@src/parser';
+import { ParsedProjectConfig } from '@src/parser';
 import { ModelConfig } from '../../schema/models';
 
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
@@ -64,11 +64,12 @@ function buildMutationSchemaTypeForModel(
 
 export function buildSchemaTypesForFeature(
   feature: string,
-  parsedApp: ParsedAppConfig
+  parsedProject: ParsedProjectConfig
 ): unknown {
   const models =
-    parsedApp.getModels().filter((m) => m.feature === feature && m.schema) ||
-    [];
+    parsedProject
+      .getModels()
+      .filter((m) => m.feature === feature && m.schema) || [];
 
   return models.flatMap((model) => [
     model.schema?.buildObjectType || model.schema?.buildQuery

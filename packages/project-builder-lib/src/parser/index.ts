@@ -1,9 +1,9 @@
 import R from 'ramda';
 import {
-  AppConfig,
-  APP_CONFIG_REFERENCEABLES,
-  APP_CONFIG_REFERENCES,
-  appConfigSchema,
+  ProjectConfig,
+  PROJECT_CONFIG_REFERENCEABLES,
+  PROJECT_CONFIG_REFERENCES,
+  projectConfigSchema,
 } from '@src/schema';
 import {
   findReferencableEntries,
@@ -52,8 +52,8 @@ function upsertItems<T>(
   ];
 }
 
-function validateAppConfig(appConfig: AppConfig): void {
-  const features = appConfig.features?.map((f) => f.name) || [];
+function validateProjectConfig(projectConfig: ProjectConfig): void {
+  const features = projectConfig.features?.map((f) => f.name) || [];
 
   // validate features
   const missingParentFeatures = features.filter(
@@ -70,8 +70,8 @@ function validateAppConfig(appConfig: AppConfig): void {
     );
   }
 
-  // apply some basic validation rules to app config
-  // const featurelessModels = (appConfig.models || []).filter(
+  // apply some basic validation rules to project config
+  // const featurelessModels = (projectConfig.models || []).filter(
   //   (model) => !features.includes(model.feature)
   // );
   // if (featurelessModels.length) {
@@ -84,15 +84,15 @@ function validateAppConfig(appConfig: AppConfig): void {
 }
 
 function buildReferenceMap(
-  appConfig: AppConfig
+  projectConfig: ProjectConfig
 ): Record<string, Record<string, ObjectReferenceEntry[]>> {
-  const categories = APP_CONFIG_REFERENCEABLES.map((r) => r.category);
+  const categories = PROJECT_CONFIG_REFERENCEABLES.map((r) => r.category);
   const referencesByKey = categories.map((category) => {
-    const references = APP_CONFIG_REFERENCES.filter(
+    const references = PROJECT_CONFIG_REFERENCES.filter(
       (r) => r.category === category
     );
     const referenceEntries = references.flatMap((reference) =>
-      findReferenceEntries(appConfig, reference)
+      findReferenceEntries(projectConfig, reference)
     );
     return R.groupBy(R.prop('key'), referenceEntries);
   });
@@ -100,13 +100,14 @@ function buildReferenceMap(
 }
 
 function findMissingReferences(
-  appConfig: AppConfig,
+  projectConfig: ProjectConfig,
   referenceMap: Record<string, Record<string, ObjectReferenceEntry[]>>
 ): ObjectReferenceEntry[] {
-  return APP_CONFIG_REFERENCEABLES.flatMap((referenceable) => {
-    const availableKeys = findReferencableEntries(appConfig, referenceable).map(
-      R.prop('key')
-    );
+  return PROJECT_CONFIG_REFERENCEABLES.flatMap((referenceable) => {
+    const availableKeys = findReferencableEntries(
+      projectConfig,
+      referenceable
+    ).map(R.prop('key'));
     const referencesByKey = referenceMap[referenceable.category];
     // make sure keys exist in referenceables
     const missingKeys = R.difference(
@@ -117,7 +118,7 @@ function findMissingReferences(
   });
 }
 
-export class ParsedAppConfig {
+export class ParsedProjectConfig {
   protected models: ParsedModel[];
 
   public globalHoistedProviders: string[] = [];
@@ -131,14 +132,14 @@ export class ParsedAppConfig {
   public references: Record<string, Record<string, ObjectReferenceEntry[]>> =
     {};
 
-  constructor(public appConfig: AppConfig) {
-    validateAppConfig(appConfig);
-    const copiedAppConfig = R.clone(appConfig);
-    this.models = copiedAppConfig.models || [];
+  constructor(public projectConfig: ProjectConfig) {
+    validateProjectConfig(projectConfig);
+    const copiedProjectConfig = R.clone(projectConfig);
+    this.models = copiedProjectConfig.models || [];
 
     // run plugins
     PARSER_PLUGINS.forEach((plugin) =>
-      plugin.run(appConfig, {
+      plugin.run(projectConfig, {
         addGlobalHoistedProviders: (providers) => {
           this.globalHoistedProviders = [
             ...this.globalHoistedProviders,
@@ -211,17 +212,17 @@ export class ParsedAppConfig {
       })
     );
 
-    // augment app config
-    const updatedAppConfig = {
-      ...this.appConfig,
+    // augment project config
+    const updatedProjectConfig = {
+      ...this.projectConfig,
       models: this.models,
     };
-    this.appConfig = updatedAppConfig;
+    this.projectConfig = updatedProjectConfig;
 
     // build reference map
-    this.references = buildReferenceMap(updatedAppConfig);
+    this.references = buildReferenceMap(updatedProjectConfig);
     const missingKeys = findMissingReferences(
-      updatedAppConfig,
+      updatedProjectConfig,
       this.references
     );
     if (missingKeys.length) {
@@ -253,7 +254,7 @@ export class ParsedAppConfig {
     return model;
   }
 
-  exportToAppConfig(): AppConfig {
-    return appConfigSchema.validateSync(this.appConfig);
+  exportToProjectConfig(): ProjectConfig {
+    return projectConfigSchema.validateSync(this.projectConfig);
   }
 }

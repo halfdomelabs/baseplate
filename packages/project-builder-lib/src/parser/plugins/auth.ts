@@ -6,8 +6,8 @@ import {
 
 export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',
-  run(appConfig, hooks) {
-    const { auth } = appConfig;
+  run(projectConfig, hooks) {
+    const { auth } = projectConfig;
     if (!auth) {
       return;
     }

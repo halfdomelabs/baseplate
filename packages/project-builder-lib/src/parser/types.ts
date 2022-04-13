@@ -3,7 +3,7 @@ import {
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
 } from '@src/schema/models';
-import { AppConfig } from '../schema';
+import { ProjectConfig } from '../schema';
 
 export interface ParsedModelField extends ModelScalarFieldConfig {
   isLocked?: boolean;
@@ -51,5 +51,5 @@ export interface PluginHooks {
 
 export interface ParserPlugin {
   name: string;
-  run(appConfig: AppConfig, hooks: PluginHooks): void;
+  run(projectConfig: ProjectConfig, hooks: PluginHooks): void;
 }

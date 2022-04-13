@@ -9,15 +9,15 @@ import { useForm } from 'react-hook-form';
 import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import RoleEditorForm from './RoleEditorForm';
 
 function AuthPage(): JSX.Element {
-  const { config, parsedApp, setConfig, setConfigAndFixReferences } =
-    useAppConfig();
+  const { config, parsedProject, setConfig, setConfigAndFixReferences } =
+    useProjectConfig();
 
   const formProps = useForm<AuthConfig>({
     resolver: yupResolver(authSchema),
@@ -52,7 +52,7 @@ function AuthPage(): JSX.Element {
     setIsAuthEnabled(false);
   };
 
-  const modelOptions = parsedApp.getModels().map((m) => ({
+  const modelOptions = parsedProject.getModels().map((m) => ({
     label: m.name,
     value: m.name,
   }));

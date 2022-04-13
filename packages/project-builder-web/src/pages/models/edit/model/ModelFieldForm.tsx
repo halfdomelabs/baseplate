@@ -12,7 +12,7 @@ import {
 } from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 
 interface Props {
@@ -64,7 +64,7 @@ function ModelFieldForm({
 
   const attrString = formatFieldAttributes(watchedField);
 
-  const { parsedApp } = useAppConfig();
+  const { parsedProject } = useProjectConfig();
   const toast = useToast();
 
   function handleRemove(): void {
@@ -74,7 +74,7 @@ function ModelFieldForm({
         (f) => f.uid === watchedField.uid
       );
       if (originalField) {
-        const references = parsedApp.references.modelField?.[
+        const references = parsedProject.references.modelField?.[
           `${originalModel.name}.${originalField.name}`
         ]?.filter(
           (ref) =>

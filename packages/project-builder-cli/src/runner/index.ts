@@ -1,23 +1,23 @@
 import path from 'path';
 import {
-  compileApplication,
-  AppConfig,
-  appConfigSchema,
+  compileApplications,
+  ProjectConfig,
+  projectConfigSchema,
 } from '@baseplate/project-builder-lib';
 import fs from 'fs-extra';
 import { generateForDirectory } from '../sync';
 import { writeApplicationFiles } from '../writer';
 
-async function loadAppJson(directory: string): Promise<AppConfig> {
-  const appJsonPath = path.join(directory, 'baseplate/project.json');
-  const fileExists = await fs.pathExists(appJsonPath);
+async function loadAppJson(directory: string): Promise<ProjectConfig> {
+  const projectJsonPath = path.join(directory, 'baseplate/project.json');
+  const fileExists = await fs.pathExists(projectJsonPath);
 
   if (!fileExists) {
-    throw new Error(`Could not find project.json file at ${appJsonPath}`);
+    throw new Error(`Could not find project.json file at ${projectJsonPath}`);
   }
 
-  const appJson: unknown = await fs.readJson(appJsonPath);
-  return appConfigSchema.validate(appJson);
+  const projectJson: unknown = await fs.readJson(projectJsonPath);
+  return projectConfigSchema.validate(projectJson);
 }
 
 export async function buildAppForDirectory(
@@ -26,22 +26,19 @@ export async function buildAppForDirectory(
 ): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file
-  const appConfig = await loadAppJson(resolvedDirectory);
+  const projectConfig = await loadAppJson(resolvedDirectory);
 
-  const projects = compileApplication(appConfig);
+  const apps = compileApplications(projectConfig);
 
-  const modifiedProjects = await writeApplicationFiles(
-    resolvedDirectory,
-    projects
-  );
+  const modifiedApps = await writeApplicationFiles(resolvedDirectory, apps);
 
-  const projectsToRegenerate = regen ? projects : modifiedProjects;
+  const appsToRegenerate = regen ? apps : modifiedApps;
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const project of projectsToRegenerate) {
+  for (const app of appsToRegenerate) {
     // eslint-disable-next-line no-await-in-loop
-    await generateForDirectory(resolvedDirectory, project);
+    await generateForDirectory(resolvedDirectory, app);
   }
 
-  console.log(`Application written to ${resolvedDirectory}!`);
+  console.log(`Project written to ${resolvedDirectory}!`);
 }

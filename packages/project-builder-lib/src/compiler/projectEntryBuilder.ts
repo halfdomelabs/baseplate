@@ -1,19 +1,19 @@
-import { ParsedAppConfig } from '@src/parser';
-import { AppConfig } from '../schema';
-import { ProjectEntry, FileEntry } from '../types/files';
+import { ParsedProjectConfig } from '@src/parser';
+import { ProjectConfig } from '../schema';
+import { AppEntry, FileEntry } from '../types/files';
 import { stripObject } from '../utils/strip';
 
-export class ProjectEntryBuilder {
-  public parsedApp: ParsedAppConfig;
+export class AppEntryBuilder {
+  public parsedProject: ParsedProjectConfig;
 
   protected files: FileEntry[] = [];
 
   constructor(
-    public appConfig: AppConfig,
+    public projectConfig: ProjectConfig,
     protected name: string,
     protected rootDirectory: string
   ) {
-    this.parsedApp = new ParsedAppConfig(appConfig);
+    this.parsedProject = new ParsedProjectConfig(projectConfig);
     this.addDescriptor = this.addDescriptor.bind(this);
     this.toProjectEntry = this.toProjectEntry.bind(this);
   }
@@ -26,7 +26,7 @@ export class ProjectEntryBuilder {
     return this;
   }
 
-  toProjectEntry(): ProjectEntry {
+  toProjectEntry(): AppEntry {
     return {
       name: this.name,
       rootDirectory: this.rootDirectory,

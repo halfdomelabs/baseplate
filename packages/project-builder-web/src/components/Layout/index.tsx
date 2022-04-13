@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import { FaDatabase } from 'react-icons/fa';
 import { MdPeople, MdSettings, MdImportExport } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import Sidebar from '../Sidebar';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 }
 
 function Layout({ className, centered, noPadding }: Props): JSX.Element {
-  const { config } = useAppConfig();
+  const { config } = useProjectConfig();
   return (
     <div className={classNames('h-full items-stretch flex', className)}>
       <Sidebar className="flex-none">

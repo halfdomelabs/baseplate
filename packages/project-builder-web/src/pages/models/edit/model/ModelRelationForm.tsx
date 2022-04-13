@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { setUndefinedIfEmpty } from 'src/utils/form';
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
@@ -56,7 +56,7 @@ function ModelRelationForm({
     control,
   } = formProps;
 
-  const { parsedApp } = useAppConfig();
+  const { parsedProject } = useProjectConfig();
   const watchedField = watch(`model.relations.${idx}`);
 
   const toast = useToast();
@@ -68,7 +68,7 @@ function ModelRelationForm({
       );
       if (originalRelation) {
         const references =
-          parsedApp.references.modelForeignField?.[
+          parsedProject.references.modelForeignField?.[
             `${originalRelation.modelName}.${originalRelation.foreignFieldName}`
           ];
         if (references?.length) {
@@ -85,7 +85,7 @@ function ModelRelationForm({
   }
 
   // TODO: Self references (requires a bit of patching for model renames)
-  const foreignModelOptions = parsedApp.getModels().map((type) => ({
+  const foreignModelOptions = parsedProject.getModels().map((type) => ({
     label: type.name,
     value: type.name,
   }));

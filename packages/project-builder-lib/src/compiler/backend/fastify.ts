@@ -1,10 +1,10 @@
-import { ProjectEntryBuilder } from '../projectEntryBuilder';
+import { AppEntryBuilder } from '../projectEntryBuilder';
 import { buildFeature } from './feature';
 
-export function buildFastify(builder: ProjectEntryBuilder): unknown {
-  const { appConfig, parsedApp } = builder;
+export function buildFastify(builder: AppEntryBuilder): unknown {
+  const { projectConfig, parsedProject } = builder;
   const rootFeatures =
-    appConfig.features?.filter((f) => !f.name.includes('/')) || [];
+    projectConfig.features?.filter((f) => !f.name.includes('/')) || [];
 
   // add graphql scalars
   builder.addDescriptor('graphql/root.json', {
@@ -31,7 +31,7 @@ export function buildFastify(builder: ProjectEntryBuilder): unknown {
     generator: '@baseplate/fastify/core/fastify',
     children: {
       server: {
-        defaultPort: appConfig.portBase + 1,
+        defaultPort: projectConfig.portBase + 1,
       },
       $sentry: {
         generator: '@baseplate/fastify/core/fastify-sentry',
@@ -40,7 +40,7 @@ export function buildFastify(builder: ProjectEntryBuilder): unknown {
       $prisma: {
         generator: '@baseplate/fastify/prisma/prisma',
         peerProvider: true,
-        defaultPort: appConfig.portBase + 432,
+        defaultPort: projectConfig.portBase + 432,
       },
       $nexus: {
         generator: '@baseplate/fastify/nexus/nexus',
@@ -50,7 +50,7 @@ export function buildFastify(builder: ProjectEntryBuilder): unknown {
         ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
         'graphql/root',
       ],
-      ...parsedApp.fastifyChildren,
+      ...parsedProject.fastifyChildren,
     },
   };
 }

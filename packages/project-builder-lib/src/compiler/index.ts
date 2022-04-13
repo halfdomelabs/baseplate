@@ -1,13 +1,13 @@
-import { AppConfig } from '../schema';
-import { ProjectEntry } from '../types/files';
+import { ProjectConfig } from '../schema';
+import { AppEntry } from '../types/files';
 import { compileBackend } from './backend';
 
-export function compileApplication(appConfig: AppConfig): ProjectEntry[] {
-  const projects: ProjectEntry[] = appConfig.apps.map((app) => {
+export function compileApplications(projectConfig: ProjectConfig): AppEntry[] {
+  const apps: AppEntry[] = projectConfig.apps.map((app) => {
     if (app.type === 'backend') {
-      return compileBackend(appConfig, app);
+      return compileBackend(projectConfig, app);
     }
     throw new Error(`Unknown app type: ${app.type as string}`);
   });
-  return projects;
+  return apps;
 }

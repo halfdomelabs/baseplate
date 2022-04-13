@@ -1,4 +1,4 @@
-import { ParsedAppConfig } from '@src/parser';
+import { ParsedProjectConfig } from '@src/parser';
 import {
   ModelConfig,
   ModelRelationFieldConfig,
@@ -33,9 +33,9 @@ function buildRelationField(
     onDelete,
     onUpdate,
   }: ModelRelationFieldConfig,
-  parsedApp: ParsedAppConfig
+  parsedProject: ParsedProjectConfig
 ): unknown {
-  const model = parsedApp.getModels().find((m) => m.name === modelName);
+  const model = parsedProject.getModels().find((m) => m.name === modelName);
   if (!model) {
     throw new Error(`Could not find model ${modelName}`);
   }
@@ -53,14 +53,17 @@ function buildRelationField(
   };
 }
 
-function buildModel(model: ModelConfig, parsedApp: ParsedAppConfig): unknown {
+function buildModel(
+  model: ModelConfig,
+  parsedProject: ParsedProjectConfig
+): unknown {
   return {
     name: model.name,
     generator: '@baseplate/fastify/prisma/prisma-model',
     children: {
       fields: model.model.fields?.map(buildScalarField),
       relations: model.model.relations?.map((r) =>
-        buildRelationField(r, parsedApp)
+        buildRelationField(r, parsedProject)
       ),
       primaryKey: {
         fields: model.model.primaryKeys,
@@ -71,12 +74,12 @@ function buildModel(model: ModelConfig, parsedApp: ParsedAppConfig): unknown {
 
 export function buildModelsForFeature(
   feature: string,
-  parsedApp: ParsedAppConfig
+  parsedProject: ParsedProjectConfig
 ): unknown {
   const models =
-    parsedApp.getModels().filter((m) => m.feature === feature) || [];
+    parsedProject.getModels().filter((m) => m.feature === feature) || [];
   if (!models.length) {
     return {};
   }
-  return models.map((m) => buildModel(m, parsedApp));
+  return models.map((m) => buildModel(m, parsedProject));
 }

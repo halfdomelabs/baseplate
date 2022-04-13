@@ -1,4 +1,4 @@
-import { ParsedAppConfig } from '@src/parser';
+import { ParsedProjectConfig } from '@src/parser';
 import { ParsedModel } from '@src/parser/types';
 
 function buildServiceForModel(model: ParsedModel): unknown {
@@ -53,10 +53,10 @@ function buildServiceForModel(model: ParsedModel): unknown {
 
 export function buildServicesForFeature(
   feature: string,
-  parsedAppConfig: ParsedAppConfig
+  parsedProjectConfig: ParsedProjectConfig
 ): unknown {
   const models =
-    parsedAppConfig
+    parsedProjectConfig
       .getModels()
       .filter((m) => m.feature === feature && m.service?.build) || [];
   return models.map((model) => buildServiceForModel(model));

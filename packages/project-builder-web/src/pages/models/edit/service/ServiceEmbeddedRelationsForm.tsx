@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useMemo } from 'react';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { Button } from 'src/components';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
 
 interface Props {
@@ -23,11 +23,11 @@ function ServiceEmbeddedRelationsForm({
     name: `service.embeddedRelations`,
   });
 
-  const { parsedApp } = useAppConfig();
+  const { parsedProject } = useProjectConfig();
 
   const foreignRelations = useMemo(
     () =>
-      parsedApp.getModels().flatMap(
+      parsedProject.getModels().flatMap(
         (model) =>
           model.model.relations
             ?.filter((relation) => relation.modelName === originalModel.name)
@@ -36,7 +36,7 @@ function ServiceEmbeddedRelationsForm({
               relation,
             })) || []
       ),
-    [parsedApp, originalModel]
+    [parsedProject, originalModel]
   );
   return (
     <div className={classNames('space-y-4', className)}>

@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { useCallback, useEffect } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
@@ -30,10 +30,10 @@ export function useModelForm({
   originalModel?: ModelConfig;
 } {
   const { id } = useParams<'id'>();
-  const { parsedApp, setConfigAndFixReferences } = useAppConfig();
+  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
   const toast = useToast();
   const navigate = useNavigate();
-  const model = parsedApp.getModels().find((m) => m.uid === id);
+  const model = parsedProject.getModels().find((m) => m.uid === id);
 
   const form = useForm<ModelConfig>({
     resolver: yupResolver(modelSchema),

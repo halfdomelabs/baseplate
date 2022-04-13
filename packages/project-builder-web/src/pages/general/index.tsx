@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { Alert, Button, TextInput } from 'src/components';
-import { useAppConfig } from 'src/hooks/useAppConfig';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -26,7 +26,7 @@ const validationSchema = yup.object({
 type FormData = yup.InferType<typeof validationSchema>;
 
 function GeneralPage(): JSX.Element {
-  const { config, setConfigAndFixReferences } = useAppConfig();
+  const { config, setConfigAndFixReferences } = useProjectConfig();
   const {
     register,
     handleSubmit,

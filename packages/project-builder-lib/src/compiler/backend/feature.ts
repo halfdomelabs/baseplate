@@ -1,32 +1,33 @@
-import { ProjectEntryBuilder } from '../projectEntryBuilder';
+import { AppEntryBuilder } from '../projectEntryBuilder';
 import { buildModelsForFeature } from './models';
 import { buildSchemaTypesForFeature } from './schemaTypes';
 import { buildServicesForFeature } from './services';
 
 export function buildFeature(
   featurePath: string,
-  builder: ProjectEntryBuilder
+  builder: AppEntryBuilder
 ): unknown {
-  const { appConfig, parsedApp } = builder;
+  const { projectConfig, parsedProject } = builder;
   const descriptorLocation = `${featurePath}/root`;
   const featureName = featurePath.split('/').pop();
   // find sub-features
   const subFeatures =
-    appConfig.features?.filter((f) => f.name.startsWith(`${featurePath}/`)) ||
-    [];
+    projectConfig.features?.filter((f) =>
+      f.name.startsWith(`${featurePath}/`)
+    ) || [];
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,
     generator: '@baseplate/fastify/core/app-module',
-    hoistedProviders: parsedApp.getFeatureHoistedProviders(featurePath),
+    hoistedProviders: parsedProject.getFeatureHoistedProviders(featurePath),
     children: {
-      $models: buildModelsForFeature(featurePath, parsedApp),
-      $services: buildServicesForFeature(featurePath, parsedApp),
-      $schemaTypes: buildSchemaTypesForFeature(featurePath, parsedApp),
+      $models: buildModelsForFeature(featurePath, parsedProject),
+      $services: buildServicesForFeature(featurePath, parsedProject),
+      $schemaTypes: buildSchemaTypesForFeature(featurePath, parsedProject),
       $submodules: subFeatures.map((subFeature) =>
         buildFeature(subFeature.name, builder)
       ),
-      ...parsedApp.getFeatureChildren(featurePath),
+      ...parsedProject.getFeatureChildren(featurePath),
     },
   });
 
