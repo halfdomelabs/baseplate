@@ -1,7 +1,7 @@
 // async function write backend
 
 import { ParsedAppConfig } from '@src/parser';
-import { AppConfig } from '../../schema';
+import { AppConfig, BackendConfig } from '../../schema';
 import { ProjectEntry } from '../../types/files';
 import { ProjectEntryBuilder } from '../projectEntryBuilder';
 import { buildFastify } from './fastify';
@@ -16,11 +16,14 @@ export function buildDocker(appConfig: AppConfig): unknown {
   };
 }
 
-export function compileBackend(appConfig: AppConfig): ProjectEntry {
+export function compileBackend(
+  appConfig: AppConfig,
+  app: BackendConfig
+): ProjectEntry {
   const projectBuilder = new ProjectEntryBuilder(
     appConfig,
     'backend',
-    appConfig.apps.backend?.packageLocation || 'packages/backend'
+    app.packageLocation || 'packages/backend'
   );
 
   const parsedApp = new ParsedAppConfig(appConfig);

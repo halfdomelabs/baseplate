@@ -2,9 +2,11 @@ import * as yup from 'yup';
 import { randomUid } from '@src/utils/randomUid';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import { authSchema } from './auth';
-import { backendSchema } from './backend';
+import { BackendConfig, backendSchema } from './backend';
 import { modelSchema } from './models';
 import { ObjectReference, ObjectReferenceable } from './references';
+
+export type AppBase = BackendConfig;
 
 export const appConfigSchema = yup.object({
   name: yup.string().required(),
@@ -12,9 +14,14 @@ export const appConfigSchema = yup.object({
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
   portBase: yup.number().required(),
   apps: yup
-    .object({
-      backend: backendSchema.nullable(),
-    })
+    .array(
+      yup.lazy((value: AppBase) => {
+        if (value.type === 'backend') {
+          return backendSchema;
+        }
+        throw new Error(`Unknown app type: ${value.type as string}`);
+      })
+    )
     .required(),
   features: yup.array(
     yup.object({
