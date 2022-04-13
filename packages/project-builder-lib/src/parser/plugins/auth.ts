@@ -83,7 +83,7 @@ export const AuthPlugin: ParserPlugin = {
         name: 'user',
         references: [{ local: 'userId', foreign: 'id' }],
         modelName: auth.userModel,
-        foreignFieldName: 'roles',
+        foreignRelationName: 'roles',
         relationshipType: 'oneToMany',
         isOptional: false,
         onDelete: 'Cascade',

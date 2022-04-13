@@ -15,7 +15,7 @@ const descriptorSchema = yup.object({
   fields: yup.array(yup.string().required()).required(),
   references: yup.array(yup.string().required()).required(),
   modelRef: yup.string().required(),
-  foreignFieldName: yup.string(),
+  foreignRelationName: yup.string(),
   relationshipName: yup.string(),
   relationshipType: yup
     .string()
@@ -42,7 +42,7 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
       name,
       fields,
       references,
-      foreignFieldName,
+      foreignRelationName,
       relationshipName,
       relationshipType,
       optional,
@@ -73,9 +73,9 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
       ],
     });
 
-    if (foreignFieldName) {
+    if (foreignRelationName) {
       foreignModel.addField({
-        name: foreignFieldName,
+        name: foreignRelationName,
         type: `${prismaModel.getName()}${isManyToOne ? '[]' : '?'}`,
         fieldType: 'relation',
         attributes: relationshipName

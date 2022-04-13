@@ -50,7 +50,7 @@ export const modelRelationFieldSchema = yup.object({
     )
     .required(),
   modelName: yup.string().required(),
-  foreignFieldName: yup.string().required(),
+  foreignRelationName: yup.string().required(),
   relationshipName: yup.string(),
   relationshipType: yup
     .string()
@@ -99,6 +99,8 @@ export const modelSchema = yup.object({
     .object({
       buildObjectType: yup.boolean(),
       exposedFields: yup.array(yup.string().required()),
+      exposedLocalRelations: yup.array(yup.string().required()),
+      exposedForeignRelations: yup.array(yup.string().required()),
       buildQuery: yup.boolean(),
       buildMutations: yup.boolean(),
       authorize: yup.object({

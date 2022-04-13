@@ -5,6 +5,7 @@ import { Button } from 'src/components';
 import TextAreaInput from 'src/components/TextAreaInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
+import { formatError } from 'src/services/error-formatter';
 
 function HomePage(): JSX.Element {
   const { config, setConfig } = useProjectConfig();
@@ -13,8 +14,12 @@ function HomePage(): JSX.Element {
   const toast = useToast();
 
   const handleImport = (): void => {
-    setConfig(JSON.parse(value) as ProjectConfig);
-    toast.success('Successfully imported config!');
+    try {
+      setConfig(JSON.parse(value) as ProjectConfig);
+      toast.success('Successfully imported config!');
+    } catch (err) {
+      toast.error(`Error importing config: ${formatError(err)}`);
+    }
   };
 
   return (

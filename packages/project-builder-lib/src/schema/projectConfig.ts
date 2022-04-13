@@ -84,9 +84,15 @@ export const PROJECT_CONFIG_REFERENCEABLES = createObjectReferenceableList([
     mapToKey: mapToAncestorNameCreator(3),
   },
   {
-    category: 'modelForeignField',
+    category: 'modelLocalRelation',
     path: 'models.*.model.relations.*',
-    nameProperty: 'foreignFieldName',
+    nameProperty: 'name',
+    mapToKey: mapToAncestorNameCreator(3),
+  },
+  {
+    category: 'modelForeignRelation',
+    path: 'models.*.model.relations.*',
+    nameProperty: 'foreignRelationName',
     mapToKey: mapToAncestorNameCreator(0, 'modelName'),
   },
   { category: 'role', path: 'auth.roles.*' },
@@ -122,7 +128,7 @@ export const PROJECT_CONFIG_REFERENCES: ObjectReference[] = [
     mapToKey: mapToAncestorNameCreator(3),
   },
   {
-    category: 'modelForeignField',
+    category: 'modelForeignRelation',
     path: 'models.*.service.embeddedRelations.*.localRelationName',
     mapToKey: mapToAncestorNameCreator(3),
   },
@@ -145,7 +151,7 @@ export const PROJECT_CONFIG_REFERENCES: ObjectReference[] = [
         model.model.relations?.some(
           (relation) =>
             relation.modelName === modelName &&
-            relation.foreignFieldName === localRelationName
+            relation.foreignRelationName === localRelationName
         )
       );
 
@@ -161,6 +167,16 @@ export const PROJECT_CONFIG_REFERENCES: ObjectReference[] = [
   {
     category: 'modelField',
     path: 'models.*.schema.exposedFields.*',
+    mapToKey: mapToAncestorNameCreator(2),
+  },
+  {
+    category: 'modelLocalRelation',
+    path: 'models.*.schema.exposedLocalRelations.*',
+    mapToKey: mapToAncestorNameCreator(2),
+  },
+  {
+    category: 'modelForeignRelation',
+    path: 'models.*.schema.exposedForeignRelations.*',
     mapToKey: mapToAncestorNameCreator(2),
   },
   {

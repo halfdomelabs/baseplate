@@ -32,15 +32,16 @@ function ServiceEmbeddedRelationForm({
   });
 
   const relationOptions = relations.map((relation) => ({
-    label: `${relation.relation.foreignFieldName} (${relation.model.name})`,
-    value: relation.relation.foreignFieldName,
+    label: `${relation.relation.foreignRelationName} (${relation.model.name})`,
+    value: relation.relation.foreignRelationName,
   }));
 
   const embeddedRelation = embeddedRelations?.[idx];
 
   const selectedRelation = relations.find(
     (relation) =>
-      relation.relation.foreignFieldName === embeddedRelation?.localRelationName
+      relation.relation.foreignRelationName ===
+      embeddedRelation?.localRelationName
   );
 
   const selectedLocalRelationName = useWatch({

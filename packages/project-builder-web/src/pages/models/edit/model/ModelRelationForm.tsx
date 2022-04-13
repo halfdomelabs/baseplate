@@ -68,8 +68,8 @@ function ModelRelationForm({
       );
       if (originalRelation) {
         const references =
-          parsedProject.references.modelForeignField?.[
-            `${originalRelation.modelName}.${originalRelation.foreignFieldName}`
+          parsedProject.references.modelForeignRelation?.[
+            `${originalRelation.modelName}.${originalRelation.foreignRelationName}`
           ];
         if (references?.length) {
           toast.error(
@@ -124,7 +124,7 @@ function ModelRelationForm({
           <TextInput.Labelled
             label="Foreign Field Name"
             className="w-full"
-            register={register(`model.relations.${idx}.foreignFieldName`)}
+            register={register(`model.relations.${idx}.foreignRelationName`)}
             error={relationErrors?.name?.message}
           />
           <TextInput.Labelled

@@ -1,4 +1,5 @@
 import { ModelConfig } from '@baseplate/project-builder-lib';
+import { useMemo } from 'react';
 import { Alert, Button } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
@@ -8,8 +9,9 @@ import { useModelForm } from '../hooks/useModelForm';
 
 function ModelEditSchemaPage(): JSX.Element {
   const { status, setError } = useStatus();
-  const { form, onFormSubmit } = useModelForm({ setError });
+  const { form, onFormSubmit, originalModel } = useModelForm({ setError });
   const { control, handleSubmit, watch } = form;
+  const { parsedProject } = useProjectConfig();
 
   const onSubmit = (data: ModelConfig): void => {
     onFormSubmit(data);
@@ -21,7 +23,29 @@ function ModelEditSchemaPage(): JSX.Element {
     value: f.name,
   }));
 
-  const { parsedProject } = useProjectConfig();
+  const localRelations = watch(`model.relations`);
+  const localRelationOptions = localRelations?.map((f) => ({
+    label: f.name,
+    value: f.name,
+  }));
+
+  const foreignRelations = useMemo(
+    () =>
+      parsedProject.getModels().flatMap(
+        (model) =>
+          model.model.relations
+            ?.filter((relation) => relation.modelName === originalModel?.name)
+            .map((relation) => ({
+              model,
+              relation,
+            })) || []
+      ),
+    [parsedProject, originalModel]
+  );
+  const foreignRelationOptions = foreignRelations?.map((f) => ({
+    label: f.relation.foreignRelationName,
+    value: f.relation.foreignRelationName,
+  }));
 
   const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({
     label: role.name,
@@ -42,6 +66,22 @@ function ModelEditSchemaPage(): JSX.Element {
         options={localFieldOptions}
         name="schema.exposedFields"
       />
+      {!localRelationOptions?.length ? null : (
+        <CheckedArrayInput.LabelledController
+          label="Exposed Local Relations"
+          control={control}
+          options={localRelationOptions}
+          name="schema.exposedLocalRelations"
+        />
+      )}
+      {!foreignRelationOptions?.length ? null : (
+        <CheckedArrayInput.LabelledController
+          label="Exposed Foreign Relations"
+          control={control}
+          options={foreignRelationOptions}
+          name="schema.exposedForeignRelations"
+        />
+      )}
       <CheckedInput.LabelledController
         label="Build Query?"
         control={control}

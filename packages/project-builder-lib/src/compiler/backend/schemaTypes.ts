@@ -3,7 +3,13 @@ import { ModelConfig } from '../../schema/models';
 
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
   const { schema } = model || {};
-  const { authorize, buildQuery, exposedFields } = schema || {};
+  const {
+    authorize,
+    buildQuery,
+    exposedFields = [],
+    exposedForeignRelations = [],
+    exposedLocalRelations = [],
+  } = schema || {};
 
   return {
     name: `${model.name}Queries`,
@@ -12,7 +18,11 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
       $objectType: {
         modelName: model.name,
         generator: '@baseplate/fastify/nexus/nexus-prisma-object',
-        exposedFields,
+        exposedFields: [
+          ...exposedFields,
+          ...exposedForeignRelations,
+          ...exposedLocalRelations,
+        ],
       },
       ...(!buildQuery
         ? {}
