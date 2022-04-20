@@ -1,12 +1,13 @@
 import * as yup from 'yup';
 import { randomUid } from '@src/utils/randomUid';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
+import { BaseAppConfig, WebAppConfig, webAppSchema } from './apps';
+import { BackendAppConfig, backendAppSchema } from './apps/backend';
 import { authSchema } from './auth';
-import { BackendAppConfig, backendAppSchema } from './backend';
 import { modelSchema } from './models';
 import { ObjectReference, ObjectReferenceable } from './references';
 
-export type AppConfig = BackendAppConfig;
+export type AppConfig = BackendAppConfig | WebAppConfig;
 
 export const projectConfigSchema = yup.object({
   name: yup.string().required(),
@@ -20,7 +21,10 @@ export const projectConfigSchema = yup.object({
         if (value.type === 'backend') {
           return backendAppSchema;
         }
-        throw new Error(`Unknown app type: ${value.type as string}`);
+        if (value.type === 'web') {
+          return webAppSchema;
+        }
+        throw new Error(`Unknown app type: ${(value as BaseAppConfig).type}`);
       }) as unknown as yup.SchemaOf<AppConfig>
     )
     .required(),

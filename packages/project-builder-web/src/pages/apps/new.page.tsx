@@ -27,7 +27,10 @@ function NewAppPage(): JSX.Element {
   });
   const { control, handleSubmit } = formProps;
 
-  const appTypeOptions = [{ label: 'Backend App', value: 'backend' }];
+  const appTypeOptions = [
+    { label: 'Backend App', value: 'backend' },
+    { label: 'Web App', value: 'web' },
+  ];
   const toast = useToast();
 
   const onSubmit = (data: BaseAppConfig): void => {

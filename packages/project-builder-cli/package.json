@@ -26,11 +26,12 @@
   "dependencies": {
     "@baseplate/core-generators": "^0.0.1",
     "@baseplate/fastify-generators": "^0.0.1",
-    "@baseplate/react-generators": "^0.0.1",
     "@baseplate/project-builder-lib": "^0.1.0",
+    "@baseplate/react-generators": "^0.0.1",
     "@baseplate/sync": "^0.0.1",
     "commander": "^8.3.0",
     "fs-extra": "^10.0.1",
+    "json-stringify-pretty-compact": "^3.0.0",
     "ramda": "^0.28.0",
     "yup": "^0.32.11"
   },

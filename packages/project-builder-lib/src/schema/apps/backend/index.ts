@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
-import { baseAppValidators } from '../app';
+import { baseAppValidators } from '../base';
 
 export const backendAppSchema = yup.object({
   ...baseAppValidators,

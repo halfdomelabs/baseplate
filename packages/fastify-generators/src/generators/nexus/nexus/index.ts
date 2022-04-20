@@ -159,7 +159,7 @@ const NexusGenerator = createGeneratorWithChildren({
       'schemaTypes',
       new TypescriptCodeExpression(
         'NexusType',
-        "import {NexusType} from '@/src/utils/nexus'"
+        "import type {NexusType} from '@/src/utils/nexus'"
       )
     );
 

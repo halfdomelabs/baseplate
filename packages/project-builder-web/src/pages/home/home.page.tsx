@@ -40,10 +40,8 @@ function HomePage(): JSX.Element {
                   name: 'test-app',
                   version: '0.1.0',
                   portBase: 4000,
-                  apps: {
-                    backend: null,
-                  },
-                },
+                  apps: [],
+                } as ProjectConfig,
                 undefined,
                 2
               )

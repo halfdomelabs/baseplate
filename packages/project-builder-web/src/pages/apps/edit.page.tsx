@@ -1,9 +1,11 @@
+import { BaseAppConfig } from '@baseplate/project-builder-lib';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, NotFoundCard } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import BackendAppForm from './edit/BackendAppForm';
+import WebAppForm from './edit/WebAppForm';
 
 function EditAppPage(): JSX.Element {
   const { id } = useParams<'id'>();
@@ -46,8 +48,14 @@ function EditAppPage(): JSX.Element {
           switch (app.type) {
             case 'backend':
               return <BackendAppForm appConfig={app} />;
+            case 'web':
+              return <WebAppForm appConfig={app} />;
             default:
-              return <Alert type="error">Unknown App Type {app.type}</Alert>;
+              return (
+                <Alert type="error">
+                  Unknown App Type {(app as BaseAppConfig).type}
+                </Alert>
+              );
           }
         })()}
       </div>

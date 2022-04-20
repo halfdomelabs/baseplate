@@ -1,11 +1,11 @@
 import * as yup from 'yup';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
-import { randomUid } from '../utils/randomUid';
+import { randomUid } from '../../utils/randomUid';
 
 export const baseAppValidators = {
   uid: yup.string().default(randomUid),
   name: yup.string().required(),
-  type: yup.mixed<'backend'>().oneOf(['backend']).required(),
+  type: yup.mixed<'backend' | 'web'>().oneOf(['backend', 'web']).required(),
   packageLocation: yup.string(),
 } as const;
 

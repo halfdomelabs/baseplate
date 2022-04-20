@@ -1,7 +1,7 @@
 import { ParsedProjectConfig } from '@src/parser';
 import { ProjectConfig, BackendAppConfig } from '../../schema';
 import { AppEntry } from '../../types/files';
-import { AppEntryBuilder } from '../projectEntryBuilder';
+import { AppEntryBuilder } from '../appEntryBuilder';
 import { buildFastify } from './fastify';
 
 export function buildDocker(projectConfig: ProjectConfig): unknown {
@@ -18,11 +18,7 @@ export function compileBackend(
   projectConfig: ProjectConfig,
   app: BackendAppConfig
 ): AppEntry {
-  const appBuilder = new AppEntryBuilder(
-    projectConfig,
-    'backend',
-    app.packageLocation || `packages/${app.name}`
-  );
+  const appBuilder = new AppEntryBuilder(projectConfig, app);
 
   const parsedProject = new ParsedProjectConfig(projectConfig);
 

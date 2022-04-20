@@ -1,17 +1,16 @@
 import { ParsedProjectConfig } from '@src/parser';
-import { ProjectConfig } from '../schema';
+import { BaseAppConfig, ProjectConfig } from '../schema';
 import { AppEntry, FileEntry } from '../types/files';
 import { stripObject } from '../utils/strip';
 
-export class AppEntryBuilder {
+export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public parsedProject: ParsedProjectConfig;
 
   protected files: FileEntry[] = [];
 
   constructor(
     public projectConfig: ProjectConfig,
-    protected name: string,
-    protected rootDirectory: string
+    public appConfig: AppConfig
   ) {
     this.parsedProject = new ParsedProjectConfig(projectConfig);
     this.addDescriptor = this.addDescriptor.bind(this);
@@ -28,8 +27,9 @@ export class AppEntryBuilder {
 
   toProjectEntry(): AppEntry {
     return {
-      name: this.name,
-      rootDirectory: this.rootDirectory,
+      name: `${this.projectConfig.name}-${this.appConfig.name}`,
+      rootDirectory:
+        this.appConfig.packageLocation || `packages/${this.appConfig.name}`,
       files: this.files,
     };
   }

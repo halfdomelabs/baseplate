@@ -1,6 +1,7 @@
 import path from 'path';
 import { FileEntry, AppEntry } from '@baseplate/project-builder-lib';
 import fs from 'fs-extra';
+import stringify from 'json-stringify-pretty-compact';
 import { notEmpty } from '../utils/array';
 
 /**
@@ -10,7 +11,7 @@ async function writeFileEntry(
   rootDirectory: string,
   file: FileEntry
 ): Promise<boolean> {
-  const jsonContent = JSON.stringify(file.jsonContent, null, 2);
+  const jsonContent = stringify(file.jsonContent);
   const filePath = path.join(rootDirectory, file.path);
 
   const fileExists = await fs.pathExists(filePath);

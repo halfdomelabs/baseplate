@@ -83,7 +83,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
 
     const inputField: PrismaDataTransformInputField = {
       type: TypescriptCodeUtils.createExpression(
-        `Pick<Prisma.${foreignModel.name}CreateInput, ${pickSelection}>[]`,
+        `Pick<Prisma.${foreignModel.name}UncheckedCreateInput, ${pickSelection}>[]`,
         'import { Prisma } from "@prisma/client";'
       ),
       dtoField: {
@@ -92,7 +92,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         type: 'nested',
         isList: true,
         nestedType: {
-          name: `${modelName}CreateDataWithout${capitalize(
+          name: `${foreignModel.name}CreateDataWithout${capitalize(
             foreignRelation.name
           )}Data`,
           fields: embeddedFields.map((field) =>

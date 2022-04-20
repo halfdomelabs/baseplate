@@ -1,4 +1,4 @@
-import { AppEntryBuilder } from '../projectEntryBuilder';
+import { AppEntryBuilder } from '../appEntryBuilder';
 import { buildModelsForFeature } from './models';
 import { buildSchemaTypesForFeature } from './schemaTypes';
 import { buildServicesForFeature } from './services';

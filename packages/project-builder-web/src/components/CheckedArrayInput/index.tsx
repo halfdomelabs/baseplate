@@ -3,6 +3,7 @@ import { Control, FieldPath, useController } from 'react-hook-form';
 import CheckedInput from '../CheckedInput';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
+import LinkButton from '../LinkButton';
 
 interface Props {
   className?: string;
@@ -32,6 +33,11 @@ function CheckedArrayInput({
           }}
         />
       ))}
+      {options.length > 4 && (
+        <LinkButton onClick={() => onChange(options.map((o) => o.value))}>
+          Select All
+        </LinkButton>
+      )}
     </div>
   );
 }

@@ -47,7 +47,7 @@ function getResolverForField(
   //  TODO: Support optional field IDs
 
   const RESOLVER_TEMPLATE = `
-  (INPUT) => MODEL.findUnique({ where: WHERE_CLAUSE, rejectOnNotFound: true })
+  (INPUT) => OPTIONAL_CHECK MODEL.findUnique({ where: WHERE_CLAUSE, rejectOnNotFound: true })
   `.trim();
 
   if (field.fields.length !== field.references.length || !field.fields.length) {
@@ -57,6 +57,9 @@ function getResolverForField(
   return TypescriptCodeUtils.formatExpression(RESOLVER_TEMPLATE, {
     INPUT: `{${field.fields.join(', ')}}`,
     MODEL: prismaOutput.getPrismaModelExpression(field.modelType),
+    OPTIONAL_CHECK: field.isOptional
+      ? `${field.fields.map((f) => `${f} == null`).join(' || ')} ? null : `
+      : '',
     WHERE_CLAUSE: TypescriptCodeUtils.mergeExpressionsAsObject(
       R.mergeAll(
         field.fields.map((localName, index) => ({

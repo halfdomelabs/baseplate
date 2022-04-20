@@ -1,4 +1,4 @@
-import { AppEntryBuilder } from '../projectEntryBuilder';
+import { AppEntryBuilder } from '../appEntryBuilder';
 import { buildFeature } from './feature';
 
 export function buildFastify(builder: AppEntryBuilder): unknown {
