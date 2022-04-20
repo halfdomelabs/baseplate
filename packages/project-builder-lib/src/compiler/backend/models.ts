@@ -3,6 +3,7 @@ import {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
+  ModelUniqueConstraintConfig,
 } from '../../schema/models';
 
 function buildScalarField(field: ModelScalarFieldConfig): unknown {
@@ -53,6 +54,16 @@ function buildRelationField(
   };
 }
 
+function buildUniqueConstraint({
+  name,
+  fields,
+}: ModelUniqueConstraintConfig): unknown {
+  return {
+    name,
+    fields,
+  };
+}
+
 function buildModel(
   model: ModelConfig,
   parsedProject: ParsedProjectConfig
@@ -68,6 +79,9 @@ function buildModel(
       primaryKey: {
         fields: model.model.primaryKeys,
       },
+      uniqueConstraints: model.model.uniqueConstraints?.map(
+        buildUniqueConstraint
+      ),
     },
   };
 }

@@ -56,6 +56,7 @@ function ModelFieldForm({
 
   const watchedRelations = watch(`model.relations`);
   const watchedPrimaryKeys = watch(`model.primaryKeys`);
+  const watchedUniqueConstraints = watch(`model.uniqueConstraints`);
 
   const typeOptions = SCALAR_FIELD_TYPES.map((type) => ({
     label: type,
@@ -113,6 +114,19 @@ function ModelFieldForm({
       );
       return;
     }
+
+    // check unique constraints
+    if (
+      watchedUniqueConstraints?.some(
+        (constraint) => constraint.name === watchedField.name
+      )
+    ) {
+      toast.error(
+        `Unable to remove field as it is being used in in a unique constraint`
+      );
+      return;
+    }
+
     onRemove(idx);
   }
 
@@ -138,6 +152,14 @@ function ModelFieldForm({
         formProps.setValue(`model.primaryKeys.${primaryKeyIdx}`, name);
       }
     });
+    watchedUniqueConstraints?.forEach((constraint, constraintIdx) => {
+      if (constraint.name === watchedField.name) {
+        formProps.setValue(
+          `model.uniqueConstraints.${constraintIdx}.name`,
+          name
+        );
+      }
+    });
     nameField.onChange(name);
   };
 
@@ -154,7 +176,10 @@ function ModelFieldForm({
         </div>
       ) : (
         <div className="space-y-4 border border-gray-200">
-          <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
+          <div className="space-x-4 flex flex-row">
+            <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
+            <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
+          </div>
           <TextInput.Labelled
             label="Name"
             className="w-full"

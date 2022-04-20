@@ -1,16 +1,16 @@
 import {
+  mergeCodeEntryOptions,
   nodeProvider,
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-  mergeCodeEntryOptions,
-  TypescriptCodeBlock,
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
-  NonOverwriteableMap,
   createNonOverwriteableMap,
+  createProviderType,
+  NonOverwriteableMap,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { configServiceProvider } from '../config-service';

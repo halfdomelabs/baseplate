@@ -103,7 +103,7 @@ const NexusScalarGenerator = createGeneratorWithChildren({
     }
 
     if (scalarConfig.devDependencies) {
-      node.addPackages(scalarConfig.devDependencies);
+      node.addDevPackages(scalarConfig.devDependencies);
     }
 
     return {

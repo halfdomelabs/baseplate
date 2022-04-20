@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import indentString from 'indent-string';
+import R from 'ramda';
 import { PrismaOutputModel } from '@src/types/prismaOutput';
 import { PrismaModelBlockWriter } from './model-writer';
 import {
@@ -96,10 +97,12 @@ export class PrismaSchemaFile {
     if (!this.datasourceBlock) {
       throw new Error(`Datasource block required`);
     }
+    const sortedBlockWriters = R.sortBy(R.prop('name'), this.modelBlockWriters);
+
     return `${[
       ...this.generatorBlocks.map(formatBlock),
       formatBlock(this.datasourceBlock),
-      ...this.modelBlockWriters.map((writer) => formatBlock(writer.toBlock())),
+      ...sortedBlockWriters.map((writer) => formatBlock(writer.toBlock())),
     ].join('\n\n')}\n`;
   }
 }

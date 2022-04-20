@@ -113,7 +113,10 @@ function ModelRelationForm({
         </div>
       ) : (
         <div className="space-y-4 border border-gray-200">
-          <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
+          <div className="space-x-4 flex flex-row">
+            <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
+            <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
+          </div>
           <TextInput.Labelled
             label="Name"
             className="w-full"

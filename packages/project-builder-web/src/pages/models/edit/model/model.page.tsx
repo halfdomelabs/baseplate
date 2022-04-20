@@ -9,12 +9,17 @@ import { useModelForm } from '../hooks/useModelForm';
 import ModelFieldForm from './ModelFieldForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
+import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 
 function ModelEditModelPage(): JSX.Element {
   const { status, setError } = useStatus();
   const { form, onFormSubmit } = useModelForm({
     setError,
-    ignoredReferences: ['modelPrimaryKey', 'modelLocalRelation'],
+    ignoredReferences: [
+      'modelPrimaryKey',
+      'modelLocalRelation',
+      'modelUniqueConstraint',
+    ],
   });
   const { control, handleSubmit } = form;
 
@@ -159,6 +164,7 @@ function ModelEditModelPage(): JSX.Element {
         Add Relation
       </LinkButton>
       <ModelPrimaryKeyForm formProps={form} />
+      <ModelUniqueConstraintsField formProps={form} />
       <div>
         <Button type="submit">Save</Button>
       </div>

@@ -92,7 +92,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
     const lowerFirstModelName = lowerCaseFirst(modelName);
 
     objectTypeBlock.addCodeEntries({
-      QUERY_EXPORT: lowerFirstModelName,
+      QUERY_EXPORT: `${lowerFirstModelName}Query`,
       QUERY_NAME: quot(lowerFirstModelName),
       OBJECT_TYPE_NAME: `'${objectTypeName || modelName}'`,
       QUERY_ARGS: writeNexusArgsFromDtoFields(

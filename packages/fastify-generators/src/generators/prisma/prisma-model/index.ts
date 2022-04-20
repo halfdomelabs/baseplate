@@ -59,6 +59,12 @@ const PrismaModelGenerator = createGeneratorWithChildren({
         generator: '@baseplate/fastify/prisma/prisma-model-index',
       },
     },
+    uniqueConstraints: {
+      isMultiple: true,
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/prisma/prisma-model-unique',
+      },
+    },
     generatedFields: {
       isMultiple: true,
     },

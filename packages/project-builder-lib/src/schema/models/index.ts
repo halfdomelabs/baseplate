@@ -65,6 +65,18 @@ export type ModelRelationFieldConfig = MakeUndefinableFieldsOptional<
   yup.InferType<typeof modelRelationFieldSchema>
 >;
 
+export const modelUniqueConstraintSchema = yup.object({
+  uid: yup.string().default(randomUid),
+  name: yup.string().required(),
+  fields: yup
+    .array(yup.object({ name: yup.string().required() }).required())
+    .required(),
+});
+
+export type ModelUniqueConstraintConfig = MakeUndefinableFieldsOptional<
+  yup.InferType<typeof modelUniqueConstraintSchema>
+>;
+
 export const modelSchema = yup.object({
   uid: yup.string().default(randomUid),
   name: yup.string().required(),
@@ -73,6 +85,7 @@ export const modelSchema = yup.object({
     fields: yup.array(modelScalarFieldSchema.required()).required(),
     relations: yup.array(modelRelationFieldSchema.required()),
     primaryKeys: yup.array(yup.string().required()),
+    uniqueConstraints: yup.array(modelUniqueConstraintSchema.required()),
   }),
   service: yup
     .object({

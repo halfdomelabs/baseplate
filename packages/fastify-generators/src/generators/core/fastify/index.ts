@@ -92,6 +92,11 @@ const FastifyGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    gracefulShutdown: {
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/core/fastify-graceful-shutdown',
+      },
+    },
   }),
   dependencies: {
     node: nodeProvider,
@@ -114,6 +119,10 @@ const FastifyGenerator = createGeneratorWithChildren({
     node.addDevPackages({
       '@types/jest': '^27.4.0',
       jest: '^27.4.7',
+    });
+
+    node.mergeExtraProperties({
+      main: 'dist/index.js',
     });
 
     nodeGitIgnore.addExclusions(['/dist']);

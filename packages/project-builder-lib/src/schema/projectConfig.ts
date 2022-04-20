@@ -117,6 +117,12 @@ export const PROJECT_CONFIG_REFERENCES: ObjectReference[] = [
     mapToKey: mapToAncestorNameCreator(5),
   },
   {
+    name: 'modelUniqueConstraint',
+    category: 'modelField',
+    path: 'models.*.model.uniqueConstraints.*.fields.*.name',
+    mapToKey: mapToAncestorNameCreator(5),
+  },
+  {
     category: 'modelField',
     path: 'models.*.model.relations.*.references.*.foreign',
     mapToKey: mapToAncestorNameCreator(2, 'modelName'),

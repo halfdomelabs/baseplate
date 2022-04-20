@@ -1,5 +1,6 @@
 import {
   createTypescriptTemplateConfig,
+  ImportMapper,
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -17,7 +18,7 @@ const descriptorSchema = yup.object({
   placeholder: yup.string(),
 });
 
-export interface LoggerServiceProvider {
+export interface LoggerServiceProvider extends ImportMapper {
   addMixin(key: string, expression: TypescriptCodeExpression): void;
   /**
    * Exports expression of singleton loggerService with standard methods:
@@ -74,6 +75,14 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
               'logger',
               'import { logger } from "@/src/services/logger"'
             );
+          },
+          getImportMap() {
+            return {
+              '%logger-service': {
+                path: '@/src/services/logger',
+                allowedImports: ['logger'],
+              },
+            };
           },
         },
       }),
