@@ -79,47 +79,44 @@ function ModelEditModelPage(): JSX.Element {
         </div>
       ))}
       <div className="flex flex-row space-x-4">
-        <Dropdown>
-          <Dropdown.Button>Add Common Fields</Dropdown.Button>
-          <Dropdown.Items>
-            <Dropdown.ButtonItem
-              onClick={() =>
-                appendField({
-                  name: 'id',
-                  type: 'uuid',
-                  isId: true,
+        <Dropdown buttonLabel="Add Common Fields">
+          <Dropdown.ButtonItem
+            onClick={() =>
+              appendField({
+                name: 'id',
+                type: 'uuid',
+                isId: true,
+                options: {
+                  genUuid: true,
+                },
+              })
+            }
+          >
+            id (uuid)
+          </Dropdown.ButtonItem>
+          <Dropdown.ButtonItem
+            onClick={() =>
+              appendField([
+                {
+                  name: 'updatedAt',
+                  type: 'dateTime',
                   options: {
-                    genUuid: true,
+                    updatedAt: true,
+                    defaultToNow: true,
                   },
-                })
-              }
-            >
-              id (uuid)
-            </Dropdown.ButtonItem>
-            <Dropdown.ButtonItem
-              onClick={() =>
-                appendField([
-                  {
-                    name: 'updatedAt',
-                    type: 'dateTime',
-                    options: {
-                      updatedAt: true,
-                      defaultToNow: true,
-                    },
+                },
+                {
+                  name: 'createdAt',
+                  type: 'dateTime',
+                  options: {
+                    defaultToNow: true,
                   },
-                  {
-                    name: 'createdAt',
-                    type: 'dateTime',
-                    options: {
-                      defaultToNow: true,
-                    },
-                  },
-                ])
-              }
-            >
-              Timestamps
-            </Dropdown.ButtonItem>
-          </Dropdown.Items>
+                },
+              ])
+            }
+          >
+            Timestamps
+          </Dropdown.ButtonItem>
         </Dropdown>
         <Button
           secondary
