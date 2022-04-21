@@ -1,52 +1,84 @@
-import {
-  ModelConfig,
-  ModelRelationFieldConfig,
-} from '@baseplate/project-builder-lib';
+import { ModelConfig } from '@baseplate/project-builder-lib';
 import classNames from 'classnames';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 import { LinkButton, SelectInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { usePrevious } from 'src/hooks/usePrevious';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface Props {
   className?: string;
   formProps: UseFormReturn<ModelConfig>;
-  relations: { model: ModelConfig; relation: ModelRelationFieldConfig }[];
   idx: number;
   onRemove: () => void;
+  originalModel: ModelConfig;
 }
 
 function ServiceEmbeddedRelationForm({
   className,
   formProps,
-  relations,
   idx,
   onRemove,
+  originalModel,
 }: Props): JSX.Element {
   const { control, setValue } = formProps;
 
-  const embeddedRelations = useWatch({
+  const { parsedProject } = useProjectConfig();
+
+  const transformers = useWatch({
     control,
-    name: 'service.embeddedRelations',
+    name: 'service.transformers',
   });
+  const embeddedRelationTransformers = transformers?.filter(
+    (t) => t.type === 'embeddedRelation'
+  );
+
+  const selectedTransformer = transformers?.[idx];
+  const embeddedRelation =
+    selectedTransformer?.type === 'embeddedRelation'
+      ? selectedTransformer
+      : null;
+
+  const relations = useMemo(
+    () =>
+      parsedProject.getModels().flatMap(
+        (model) =>
+          model.model.relations
+            ?.filter((relation) => relation.modelName === originalModel.name)
+            .filter(
+              (relation) =>
+                embeddedRelation?.name === relation.foreignRelationName ||
+                !embeddedRelationTransformers?.some(
+                  (t) => t.name === relation.foreignRelationName
+                )
+            )
+            .map((relation) => ({
+              model,
+              relation,
+            })) || []
+      ),
+    [
+      parsedProject,
+      originalModel,
+      embeddedRelation,
+      embeddedRelationTransformers,
+    ]
+  );
 
   const relationOptions = relations.map((relation) => ({
     label: `${relation.relation.foreignRelationName} (${relation.model.name})`,
     value: relation.relation.foreignRelationName,
   }));
 
-  const embeddedRelation = embeddedRelations?.[idx];
-
   const selectedRelation = relations.find(
     (relation) =>
-      relation.relation.foreignRelationName ===
-      embeddedRelation?.localRelationName
+      relation.relation.foreignRelationName === embeddedRelation?.name
   );
 
   const selectedLocalRelationName = useWatch({
     control,
-    name: `service.embeddedRelations.${idx}.localRelationName`,
+    name: `service.transformers.${idx}.name`,
   });
 
   const previousLocalRelationName = usePrevious(selectedLocalRelationName);
@@ -55,7 +87,7 @@ function ServiceEmbeddedRelationForm({
       previousLocalRelationName !== undefined &&
       previousLocalRelationName !== selectedLocalRelationName
     ) {
-      setValue(`service.embeddedRelations.${idx}.embeddedFieldNames`, []);
+      setValue(`service.transformers.${idx}.embeddedFieldNames`, []);
     }
   }, [previousLocalRelationName, selectedLocalRelationName, idx, setValue]);
 
@@ -72,12 +104,18 @@ function ServiceEmbeddedRelationForm({
         value: field.name,
       })) || [];
 
+  const foreignTransformerOptions =
+    selectedRelation?.model.service?.transformers?.map((transformer) => ({
+      label: transformer.name,
+      value: transformer.name,
+    })) || [];
+
   return (
     <div className={classNames('space-y-4', className)}>
       <SelectInput.LabelledController
         className="w-full"
         control={control}
-        name={`service.embeddedRelations.${idx}.localRelationName`}
+        name={`service.transformers.${idx}.name`}
         options={relationOptions}
         label="Relation"
       />
@@ -85,9 +123,18 @@ function ServiceEmbeddedRelationForm({
         className="w-full"
         control={control}
         options={foreignFieldOptions}
-        name={`service.embeddedRelations.${idx}.embeddedFieldNames`}
+        name={`service.transformers.${idx}.embeddedFieldNames`}
         label="Embedded Field Names"
       />
+      {!!foreignTransformerOptions.length && (
+        <CheckedArrayInput.LabelledController
+          className="w-full"
+          control={control}
+          options={foreignTransformerOptions}
+          name={`service.transformers.${idx}.embeddedTransformerNames`}
+          label="Embedded Transformers"
+        />
+      )}
       <LinkButton onClick={onRemove}>Remove</LinkButton>
     </div>
   );

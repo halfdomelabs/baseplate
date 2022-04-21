@@ -18,10 +18,7 @@ export interface ParsedModel extends ModelConfig {
     fields: ParsedModelField[];
     relations?: ParsedRelationField[];
   };
-  service?: ModelConfig['service'] & {
-    createTransformers?: Record<string, unknown>;
-    updateTransformers?: Record<string, unknown>;
-  };
+  service?: ModelConfig['service'];
 }
 
 export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'uid'>;

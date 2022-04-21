@@ -6,8 +6,8 @@ import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
-  prismaDataTransformableProvider,
   PrismaDataTransformer,
+  PrismaDataTransformerOptions,
 } from '@src/providers/prisma/prisma-data-transformable';
 import {
   prismaToServiceOutputDto,
@@ -20,11 +20,13 @@ import {
   PrismaDataMethodOptions,
 } from '../_shared/crud-method/data-method';
 import { prismaOutputProvider } from '../prisma';
+import { prismaCrudServiceProvider } from '../prisma-crud-service';
 
 const descriptorSchema = yup.object({
   name: yup.string().required(),
   modelName: yup.string().required(),
   prismaFields: yup.array(yup.string().required()).required(),
+  transformerNames: yup.array(yup.string().required()),
 });
 
 function getMethodDefinition(
@@ -98,26 +100,28 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
   dependencies: {
     prismaOutput: prismaOutputProvider,
     serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
+    crudPrismaService: prismaCrudServiceProvider,
   },
-  exports: {
-    prismaDataTransformable: prismaDataTransformableProvider,
-  },
-  createGenerator(descriptor, { prismaOutput, serviceFile }) {
-    const { name, modelName, prismaFields } = descriptor;
+  createGenerator(
+    descriptor,
+    { prismaOutput, serviceFile, crudPrismaService }
+  ) {
+    const { name, modelName, prismaFields, transformerNames } = descriptor;
     const serviceMethodExpression = serviceFile
       .getServiceExpression()
       .append(`.${name}`);
-    const transformers: PrismaDataTransformer[] = [];
+    const transformerOption: PrismaDataTransformerOptions = {
+      isUpdate: true,
+    };
+    const transformers: PrismaDataTransformer[] =
+      transformerNames?.map((transformerName) =>
+        crudPrismaService
+          .getTransformerByName(transformerName)
+          .buildTransformer(transformerOption)
+      ) || [];
 
     return {
-      getProviders: () => ({
-        prismaDataTransformable: {
-          addTransformer(transformer) {
-            transformers.push(transformer);
-          },
-          getModelName: () => modelName,
-        },
-      }),
+      getProviders: () => ({}),
       build: () => {
         const methodOptions: PrismaDataMethodOptions = {
           name,

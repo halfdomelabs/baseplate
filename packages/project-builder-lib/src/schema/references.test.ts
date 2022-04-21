@@ -6,7 +6,7 @@ import {
   ObjectReferenceable,
 } from './references';
 
-describe('findReferencableEntries', () => {
+describe('findReferenceableEntries', () => {
   it('should find nested arrayed references', () => {
     const object = {
       features: [
@@ -167,7 +167,7 @@ describe('findReferenceEntries', () => {
     ]);
   });
 
-  it('should allow context', () => {
+  it('should work with mapToKey', () => {
     const object = {
       models: [
         {
@@ -196,6 +196,40 @@ describe('findReferenceEntries', () => {
       { name: 'test2', key: 'model1#test2', path: 'models.0.fields.1.name' },
       { name: 'test1', key: 'model2#test1', path: 'models.1.fields.0.name' },
       { name: 'test2', key: 'model2#test2', path: 'models.1.fields.1.name' },
+    ]);
+  });
+
+  it('should work with shouldInclude', () => {
+    const object = {
+      models: [
+        {
+          name: 'model1',
+          fields: [{ name: 'test1' }, { name: 'test2' }],
+        },
+        {
+          name: 'model2',
+          fields: [{ name: 'test1' }, { name: 'test2' }],
+        },
+      ],
+    };
+    const reference: ObjectReference = {
+      category: 'test',
+      path: 'models.*.fields.*.name',
+      shouldInclude: (name, parents) => {
+        const model = parents[2] as { name: string };
+        return model.name === 'model1';
+      },
+      mapToKey: (name, parents) => {
+        const model = parents[2] as { name: string };
+        return `${model.name}#${name}`;
+      },
+    };
+
+    const references = findReferenceEntries(object, reference);
+
+    expect(references).toEqual([
+      { name: 'test1', key: 'model1#test1', path: 'models.0.fields.0.name' },
+      { name: 'test2', key: 'model1#test2', path: 'models.0.fields.1.name' },
     ]);
   });
 });
@@ -282,5 +316,64 @@ describe('fixReferenceRenames', () => {
       { name: 'test' },
       { name: 'test3' },
     ]);
+  });
+
+  it('renames references to references', () => {
+    const oldObject = {
+      model: {
+        fields: [
+          { id: 'id1', name: 'test' },
+          { id: 'id2', name: 'test2' },
+        ],
+        fieldRef: [{ id: 'id2', name: 'test' }],
+        fieldRefRef: [{ name: 'test' }],
+      },
+    };
+    const newObject = {
+      model: {
+        fields: [
+          { id: 'id1', name: 'test3' },
+          { id: 'id2', name: 'test2' },
+        ],
+        fieldRef: [{ id: 'id2', name: 'test' }],
+        fieldRefRef: [{ name: 'test' }],
+      },
+    };
+    const referenceables: ObjectReferenceable[] = [
+      {
+        category: 'field',
+        nameProperty: 'name',
+        idProperty: 'id',
+        path: 'model.fields.*',
+      },
+      {
+        category: 'fieldRef',
+        nameProperty: 'name',
+        idProperty: 'id',
+        path: 'model.fieldRef.*',
+      },
+    ];
+    const references: ObjectReference[] = [
+      {
+        category: 'field',
+        path: 'model.fieldRef.*.name',
+      },
+      {
+        category: 'fieldRef',
+        path: 'model.fieldRefRef.*.name',
+      },
+    ];
+
+    const updatedObject = fixReferenceRenames(
+      oldObject,
+      newObject,
+      referenceables,
+      references
+    );
+
+    expect(updatedObject.model.fieldRef).toEqual([
+      { id: 'id2', name: 'test3' },
+    ]);
+    expect(updatedObject.model.fieldRefRef).toEqual([{ name: 'test3' }]);
   });
 });

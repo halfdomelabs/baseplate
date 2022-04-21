@@ -4,7 +4,7 @@ import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useStatus } from 'src/hooks/useStatus';
 import { useModelForm } from '../hooks/useModelForm';
-import ServiceEmbeddedRelationsForm from './ServiceEmbeddedRelationsForm';
+import ServiceTransformersForm from './ServiceTransformersForm';
 
 function ModelEditServicePage(): JSX.Element {
   const { status, setError } = useStatus();
@@ -33,6 +33,14 @@ function ModelEditServicePage(): JSX.Element {
     value: f.name,
   }));
 
+  const transformers = watch(`service.transformers`);
+  const transformerOptions = transformers?.map((f) => ({
+    label: f.name,
+    value: f.name,
+  }));
+
+  // TODO: Need to unset transformer options when reset
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <Alert.WithStatus status={status} />
@@ -49,14 +57,30 @@ function ModelEditServicePage(): JSX.Element {
             options={localFieldOptions}
             name="service.create.fields"
           />
+          {!!transformerOptions?.length && (
+            <CheckedArrayInput.LabelledController
+              label="Create Transformers"
+              control={control}
+              options={transformerOptions}
+              name="service.create.transformerNames"
+            />
+          )}
           <CheckedArrayInput.LabelledController
             label="Updateable Fields"
             control={control}
             options={localFieldOptions}
             name="service.update.fields"
           />
+          {!!transformerOptions?.length && (
+            <CheckedArrayInput.LabelledController
+              label="Update Transformers"
+              control={control}
+              options={transformerOptions}
+              name="service.update.transformerNames"
+            />
+          )}
           {originalModel && (
-            <ServiceEmbeddedRelationsForm
+            <ServiceTransformersForm
               formProps={form}
               originalModel={originalModel}
             />

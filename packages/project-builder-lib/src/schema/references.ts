@@ -5,6 +5,7 @@ export interface ObjectReference {
   category: string;
   name?: string;
   path: string;
+  shouldInclude?(name: string, parents: unknown[], object: unknown): boolean;
   mapToKey?(name: string, parents: unknown[], object: unknown): string;
 }
 
@@ -13,6 +14,7 @@ export interface ObjectReferenceable {
   path: string;
   nameProperty: string;
   idProperty?: string;
+  shouldInclude?(name: string, parents: unknown[], object: unknown): boolean;
   mapToKey?(name: string, parents: unknown[], object: unknown): string;
 }
 
@@ -105,6 +107,13 @@ export function findReferencableEntries(
         );
       }
 
+      if (
+        reference.shouldInclude &&
+        !reference.shouldInclude(name, parents, object)
+      ) {
+        return [];
+      }
+
       return [
         {
           id: objectDict[reference.idProperty || reference.nameProperty],
@@ -134,6 +143,13 @@ export function findReferenceEntries(
         );
       }
 
+      if (
+        reference.shouldInclude &&
+        !reference.shouldInclude(foundObject, parents, object)
+      ) {
+        return [];
+      }
+
       return [
         {
           name: foundObject,
@@ -154,6 +170,12 @@ export interface FixReferenceRenamesOptions {
   ignoredReferences?: string[];
 }
 
+interface RenameEntry {
+  key: string;
+  from: string;
+  to: string;
+}
+
 export function fixReferenceRenames<T>(
   oldConfig: T,
   newConfig: T,
@@ -161,59 +183,91 @@ export function fixReferenceRenames<T>(
   references: ObjectReference[],
   options?: FixReferenceRenamesOptions
 ): T {
-  const renamedEntriesByCategory = R.zipObj(
-    referencables.map((r) => r.category),
-    referencables.map((referenceable) => {
-      const oldEntries = findReferencableEntries(oldConfig, referenceable);
-      const newEntries = findReferencableEntries(newConfig, referenceable);
+  // run fix repeatedly until we have no more renames (allows renames of references to references)
+  let previousConfig = oldConfig;
+  let currentConfig = newConfig;
 
-      return newEntries
-        .map((entry) => {
-          const oldEntry = oldEntries.find((e) => e.id === entry.id);
-          if (oldEntry && oldEntry.name !== entry.name) {
-            return {
-              key: oldEntry.key,
-              from: oldEntry.name,
-              to: entry.name,
-            };
-          }
-          return null;
-        })
-        .filter(notEmpty);
-    })
-  );
+  const getRenameEntries = (
+    referenceable: ObjectReferenceable
+  ): RenameEntry[] => {
+    const oldEntries = findReferencableEntries(previousConfig, referenceable);
+    const newEntries = findReferencableEntries(currentConfig, referenceable);
 
-  return Object.keys(renamedEntriesByCategory).reduce(
-    (categoryObject, category) => {
-      const renamedEntriesForCategory = renamedEntriesByCategory[category];
-      // find references to category
-      const referencesForCategory = references.filter(
-        (r) => r.category === category
-      );
-      const referenceEntries = referencesForCategory
-        .flatMap((reference) => findReferenceEntries(newConfig, reference))
-        .filter(
-          (r) =>
-            !options?.ignoredReferences ||
-            !r.referenceName ||
-            !options?.ignoredReferences.includes(r.referenceName)
-        );
-      return referenceEntries.reduce((referenceObject, entry) => {
-        const renamedTo = renamedEntriesForCategory.find(
-          (r) => r.key === entry.key
-        )?.to;
-        if (!renamedTo) {
-          return referenceObject;
+    return newEntries
+      .map((entry) => {
+        const oldEntry = oldEntries.find((e) => e.id === entry.id);
+        if (oldEntry && oldEntry.name !== entry.name) {
+          return {
+            key: oldEntry.key,
+            from: oldEntry.name,
+            to: entry.name,
+          };
         }
+        return null;
+      })
+      .filter(notEmpty);
+  };
 
-        const lens = R.lensPath(
-          entry.path
-            .split('.')
-            .map((key) => (/^[0-9]+$/.test(key) ? parseInt(key, 10) : key))
+  const renameEntryForCategory = (
+    config: T,
+    category: string,
+    renameEntries: RenameEntry[]
+  ): T => {
+    // find references to category
+    const referencesForCategory = references.filter(
+      (r) => r.category === category
+    );
+    const referenceEntries = referencesForCategory
+      .flatMap((reference) => findReferenceEntries(currentConfig, reference))
+      .filter(
+        (r) =>
+          !options?.ignoredReferences ||
+          !r.referenceName ||
+          !options?.ignoredReferences.includes(r.referenceName)
+      );
+    return referenceEntries.reduce((referenceObject, entry) => {
+      const renamedTo = renameEntries.find((r) => r.key === entry.key)?.to;
+      if (!renamedTo) {
+        return referenceObject;
+      }
+
+      const lens = R.lensPath(
+        entry.path
+          .split('.')
+          .map((key) => (/^[0-9]+$/.test(key) ? parseInt(key, 10) : key))
+      );
+      return R.set(lens, renamedTo, referenceObject) as T;
+    }, config);
+  };
+
+  for (let i = 0; i < 100; i += 1) {
+    const renamedEntriesByCategory = R.zipObj(
+      referencables.map((r) => r.category),
+      referencables.map(getRenameEntries)
+    );
+
+    if (
+      Object.keys(renamedEntriesByCategory).every(
+        (category) => renamedEntriesByCategory[category].length === 0
+      )
+    ) {
+      return currentConfig;
+    }
+
+    previousConfig = currentConfig;
+    currentConfig = Object.keys(renamedEntriesByCategory).reduce(
+      (categoryObject, category) => {
+        const renamedEntriesForCategory = renamedEntriesByCategory[category];
+
+        return renameEntryForCategory(
+          categoryObject,
+          category,
+          renamedEntriesForCategory
         );
-        return R.set(lens, renamedTo, referenceObject) as T;
-      }, categoryObject);
-    },
-    newConfig
-  );
+      },
+      currentConfig
+    );
+  }
+
+  throw new Error(`Exceeded max iterations for renaming references`);
 }

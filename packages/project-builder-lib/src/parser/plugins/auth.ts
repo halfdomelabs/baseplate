@@ -49,22 +49,6 @@ export const AuthPlugin: ParserPlugin = {
       model: {
         fields: userFields,
       },
-      service: !auth.passwordProvider
-        ? {}
-        : {
-            createTransformers: {
-              $passwordHash: {
-                generator:
-                  '@baseplate/fastify/auth/password-create-transformer',
-              },
-            },
-            updateTransformers: {
-              $passwordHash: {
-                generator:
-                  '@baseplate/fastify/auth/password-update-transformer',
-              },
-            },
-          },
     });
 
     const userRoleFields: PluginMergeModelFieldInput[] = [

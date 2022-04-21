@@ -2,6 +2,11 @@ import * as yup from 'yup';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes';
 import { randomUid } from '@src/utils/randomUid';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
+import {
+  embeddedRelationTransformerSchema,
+  passwordTransformerSchema,
+  TransformerConfig,
+} from './transformers';
 
 export const modelScalarFieldSchema = yup.object({
   uid: yup.string().default(randomUid),
@@ -93,18 +98,28 @@ export const modelSchema = yup.object({
       create: yup
         .object({
           fields: yup.array(yup.string().required()).required(),
+          transformerNames: yup.array(yup.string().required()),
         })
         .default(undefined),
       update: yup
         .object({
           fields: yup.array(yup.string().required()).required(),
+          transformerNames: yup.array(yup.string().required()),
         })
         .default(undefined),
-      embeddedRelations: yup.array(
-        yup.object({
-          localRelationName: yup.string().required(),
-          embeddedFieldNames: yup.array(yup.string().required()).required(),
-        })
+      transformers: yup.array().of(
+        yup.lazy((value: TransformerConfig) => {
+          switch (value.type) {
+            case 'embeddedRelation':
+              return embeddedRelationTransformerSchema.required();
+            case 'password':
+              return passwordTransformerSchema.required();
+            default:
+              throw new Error(
+                `Unknown transformer type: ${(value as { type: string }).type}`
+              );
+          }
+        }) as unknown as yup.SchemaOf<TransformerConfig>
       ),
     })
     .default(undefined),

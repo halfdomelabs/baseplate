@@ -99,6 +99,12 @@ export const PROJECT_CONFIG_REFERENCEABLES = createObjectReferenceableList([
     nameProperty: 'foreignRelationName',
     mapToKey: mapToAncestorNameCreator(0, 'modelName'),
   },
+  {
+    category: 'modelTransformer',
+    path: 'models.*.service.transformers.*',
+    nameProperty: 'name',
+    mapToKey: mapToAncestorNameCreator(3),
+  },
   { category: 'role', path: 'auth.roles.*' },
 ]);
 
@@ -138,15 +144,39 @@ export const PROJECT_CONFIG_REFERENCES: ObjectReference[] = [
     mapToKey: mapToAncestorNameCreator(3),
   },
   {
+    category: 'modelTransformer',
+    path: 'models.*.service.create.transformerNames.*',
+    mapToKey: mapToAncestorNameCreator(3),
+  },
+  {
+    category: 'modelTransformer',
+    path: 'models.*.service.update.transformerNames.*',
+    mapToKey: mapToAncestorNameCreator(3),
+  },
+  {
     category: 'modelForeignRelation',
-    path: 'models.*.service.embeddedRelations.*.localRelationName',
+    path: 'models.*.service.transformers.*.name',
+    shouldInclude: (name, parents) => {
+      const { type } = parents[0] as { type: string };
+      if (!type) {
+        throw new Error('Missing type');
+      }
+      return type === 'embeddedRelation';
+    },
     mapToKey: mapToAncestorNameCreator(3),
   },
   {
     category: 'modelField',
-    path: 'models.*.service.embeddedRelations.*.embeddedFieldNames.*',
+    path: 'models.*.service.transformers.*.embeddedFieldNames.*',
+    shouldInclude: (name, parents) => {
+      const { type } = parents[1] as { type: string };
+      if (!type) {
+        throw new Error('Missing type');
+      }
+      return type === 'embeddedRelation';
+    },
     mapToKey: (name, parents, object: ProjectConfig) => {
-      const { localRelationName } = parents[1] as { localRelationName: string };
+      const { name: localRelationName } = parents[1] as { name: string };
       if (!localRelationName) {
         throw new Error(
           `Could not find localRelationName of model with embedded relation`
