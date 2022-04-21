@@ -1,6 +1,7 @@
 import path from 'path';
 import { FileEntry, AppEntry } from '@baseplate/project-builder-lib';
 import fs from 'fs-extra';
+import globby from 'globby';
 import stringify from 'json-stringify-pretty-compact';
 import { notEmpty } from '../utils/array';
 
@@ -38,6 +39,19 @@ async function writeAppFiles(
     const anyModified = await Promise.all(
       app.files.map((file) => writeFileEntry(appDirectory, file))
     );
+
+    // delete all files that aren't present
+    const allJsonFiles = await globby(['baseplate/**/*.json'], {
+      cwd: `${appDirectory}`,
+    });
+    const missingJsonFiles = allJsonFiles.filter(
+      (file) => !app.files.find((f) => f.path === file)
+    );
+
+    await Promise.all(
+      missingJsonFiles.map((f) => fs.unlink(path.join(appDirectory, f)))
+    );
+
     return anyModified.some((m) => m);
   } catch (err) {
     console.error(
@@ -63,3 +77,36 @@ export async function writeApplicationFiles(
   );
   return modifiedApps.filter(notEmpty);
 }
+
+// async function areAppFilesModified(
+//   baseDirectory: string,
+//   app: AppEntry
+// ): Promise<boolean> {
+//   const appDirectory = path.join(baseDirectory, app.rootDirectory);
+//   const modifiedFiles = await Promise.all(
+//     app.files.map(async (file) => {
+//       const filePath = path.join(appDirectory, file.path);
+//       const fileExists = await fs.pathExists(filePath);
+//       if (!fileExists) {
+//         return true;
+//       }
+//       const existingContents = await fs.readFile(filePath, 'utf8');
+//       const jsonContent = stringify(file.jsonContent);
+//       return existingContents !== jsonContent;
+//     })
+//   );
+//   return modifiedFiles.some((f) => f);
+// }
+
+// export async function getModifiedApps(
+//   baseDirectory: string,
+//   apps: AppEntry[]
+// ): Promise<AppEntry[]> {
+//   const modifiedApps = await Promise.all(
+//     apps.map(async (app) => {
+//       const isModified = await areAppFilesModified(baseDirectory, app);
+//       return isModified ? app : null;
+//     })
+//   );
+//   return modifiedApps.filter(notEmpty);
+// }
