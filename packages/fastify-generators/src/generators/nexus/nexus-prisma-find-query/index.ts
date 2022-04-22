@@ -1,13 +1,16 @@
 import { TypescriptSourceBlock } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
+import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { nexusTypeProvider } from '@src/providers/nexus-type';
-import { scalarPrismaFieldToServiceField } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
 import { quot } from '@src/utils/string';
 import { writeNexusArgsFromDtoFields } from '@src/writers/nexus-args';
-import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition';
+import {
+  NexusDefinitionWriterOptions,
+  writeChildInputDefinition,
+} from '@src/writers/nexus-definition';
 import { nexusSchemaProvider } from '../nexus';
 import { nexusTypesFileProvider } from '../nexus-types-file';
 
@@ -52,8 +55,8 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
 
     const { idFields } = modelOutput;
 
-    if (!idFields || idFields.length > 1) {
-      throw new Error('Only one id field is supported');
+    if (!idFields) {
+      throw new Error(`Model ${modelName} does not have an ID field`);
     }
 
     const objectTypeBlock = new TypescriptSourceBlock(
@@ -76,13 +79,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
       }
     );
 
-    const idFieldName = idFields[0];
-    const idField = modelOutput.fields.find(
-      (field) => field.name === idFieldName
-    );
-    if (!idField || idField.type !== 'scalar') {
-      throw new Error(`Could not find ID field ${idFieldName}`);
-    }
+    const primaryKeyDefinition = getPrimaryKeyDefinition(modelOutput);
 
     const writerOptions: NexusDefinitionWriterOptions = {
       builder: 't',
@@ -91,17 +88,23 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
 
     const lowerFirstModelName = lowerCaseFirst(modelName);
 
+    const nexusArgs = writeNexusArgsFromDtoFields(
+      [primaryKeyDefinition],
+      writerOptions
+    );
+
+    nexusArgs.childInputDefinitions.forEach((child) => {
+      nexusTypesFile.registerType(writeChildInputDefinition(child), child.name);
+    });
+
     objectTypeBlock.addCodeEntries({
       QUERY_EXPORT: `${lowerFirstModelName}Query`,
       QUERY_NAME: quot(lowerFirstModelName),
       OBJECT_TYPE_NAME: `'${objectTypeName || modelName}'`,
-      QUERY_ARGS: writeNexusArgsFromDtoFields(
-        [scalarPrismaFieldToServiceField(idField)],
-        writerOptions
-      ).expression,
+      QUERY_ARGS: nexusArgs.expression,
       MODEL: prismaOutput.getPrismaModelExpression(modelName),
-      ARG_INPUT: `{ ${idFieldName} }`,
-      MODEL_WHERE: `{ ${idFieldName} }`,
+      ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
+      MODEL_WHERE: `{ ${primaryKeyDefinition.name} }`,
     });
 
     return {

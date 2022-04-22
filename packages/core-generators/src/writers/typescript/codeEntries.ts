@@ -14,6 +14,11 @@ export interface TypescriptCodeEntryOptions {
   importText?: string[];
   headerBlocks?: TypescriptCodeBlock[];
   importMappers?: ImportMapper[];
+  /**
+   * (only for header blocks) will de-duplicate header blocks so only one block
+   * with a particular header key will be added
+   */
+  headerKey?: string;
 }
 
 export abstract class TypescriptCodeEntry {
@@ -103,6 +108,10 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
     super('code-block', content, importText, options);
   }
 
+  wrap(wrapper: (contents: string) => string): TypescriptCodeBlock {
+    return new TypescriptCodeBlock(wrapper(this.content), null, this.options);
+  }
+
   wrapAsExpression(
     wrapper: (contents: string) => string
   ): TypescriptCodeExpression {
@@ -111,6 +120,13 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
       null,
       this.options
     );
+  }
+
+  withHeaderKey(key: string): TypescriptCodeBlock {
+    return new TypescriptCodeBlock(this.content, null, {
+      ...this.options,
+      headerKey: key,
+    });
   }
 }
 
