@@ -7,8 +7,11 @@
 // having a field day with anys :)
 
 function isObjectEmpty(obj: any): boolean {
-  if (obj === null || obj === undefined) {
+  if (obj === undefined) {
     return true;
+  }
+  if (obj === null) {
+    return false;
   }
   if (Array.isArray(obj)) {
     return obj.length === 0;
@@ -27,7 +30,7 @@ function isObjectEmpty(obj: any): boolean {
  */
 export function stripObject(obj: any): any {
   if (obj === null || obj === undefined) {
-    return undefined;
+    return obj;
   }
   if (Array.isArray(obj)) {
     const strippedArray = obj

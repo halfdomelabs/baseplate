@@ -79,6 +79,11 @@ function ModelEditServicePage(): JSX.Element {
               name="service.update.transformerNames"
             />
           )}
+          <CheckedInput.LabelledController
+            label="Disable Delete?"
+            control={control}
+            name="service.delete.disabled"
+          />
           {originalModel && (
             <ServiceTransformersForm
               formProps={form}

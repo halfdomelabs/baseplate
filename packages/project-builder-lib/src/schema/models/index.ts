@@ -97,14 +97,19 @@ export const modelSchema = yup.object({
       build: yup.boolean(),
       create: yup
         .object({
-          fields: yup.array(yup.string().required()).required(),
+          fields: yup.array(yup.string().required()),
           transformerNames: yup.array(yup.string().required()),
         })
         .default(undefined),
       update: yup
         .object({
-          fields: yup.array(yup.string().required()).required(),
+          fields: yup.array(yup.string().required()),
           transformerNames: yup.array(yup.string().required()),
+        })
+        .default(undefined),
+      delete: yup
+        .object({
+          disabled: yup.boolean(),
         })
         .default(undefined),
       transformers: yup.array().of(

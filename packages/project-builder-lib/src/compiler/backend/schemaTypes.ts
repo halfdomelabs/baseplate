@@ -84,9 +84,9 @@ export function buildSchemaTypesForFeature(
   return models.flatMap((model) => [
     model.schema?.buildObjectType || model.schema?.buildQuery
       ? buildQuerySchemaTypeForModel(model)
-      : null,
+      : undefined,
     model.schema?.buildMutations
       ? buildMutationSchemaTypeForModel(feature, model)
-      : null,
+      : undefined,
   ]);
 }

@@ -106,12 +106,14 @@ const ServiceFileGenerator = createGeneratorWithChildren({
             ',\n\n'
           ).wrap((c) => `{${c}}`),
         });
-        await builder.apply(
-          servicesFile.renderToActionFromText(
-            'export const SERVICE_NAME = METHODS;',
-            servicesPath
-          )
-        );
+        if (Object.keys(methodMap.value()).length) {
+          await builder.apply(
+            servicesFile.renderToActionFromText(
+              'export const SERVICE_NAME = METHODS;',
+              servicesPath
+            )
+          );
+        }
       },
     };
   },

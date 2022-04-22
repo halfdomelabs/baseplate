@@ -39,14 +39,19 @@ function buildServiceForModel(model: ParsedModel): unknown {
           transformers: service.transformers?.map((transfomer) =>
             buildTransformer(transfomer)
           ),
-          create: {
-            prismaFields: service.create?.fields,
-            transformerNames: service.create?.transformerNames,
-          },
-          update: {
-            prismaFields: service.update?.fields,
-            transformerNames: service.create?.transformerNames,
-          },
+          create: service.create?.fields?.length
+            ? {
+                prismaFields: service.create.fields,
+                transformerNames: service.create.transformerNames,
+              }
+            : null,
+          update: service.update?.fields?.length
+            ? {
+                prismaFields: service.update.fields,
+                transformerNames: service.update.transformerNames,
+              }
+            : null,
+          delete: service.delete?.disabled ? null : undefined,
         },
       },
     },
