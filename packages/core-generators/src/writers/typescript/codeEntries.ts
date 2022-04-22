@@ -31,14 +31,6 @@ export abstract class TypescriptCodeEntry {
     importText?: string | string[] | null,
     options?: TypescriptCodeEntryOptions
   ) {
-    if (
-      options?.headerBlocks?.some(
-        (block) => block?.options.headerBlocks?.length
-      )
-    ) {
-      throw new Error('Header blocks cannot contain header blocks');
-    }
-
     this.type = type;
     this.options = {
       ...options,

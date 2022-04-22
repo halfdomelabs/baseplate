@@ -39,6 +39,7 @@ const PrismaPasswordTransformerGenerator = createGeneratorWithChildren({
           'import {hasherService} from "%password-hasher-service";',
           { importMappers: [passwordHasherService] }
         ),
+        isAsync: true,
       }),
     });
     return {

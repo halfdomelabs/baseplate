@@ -18,6 +18,7 @@ export interface PrismaDataTransformer {
   inputFields: PrismaDataTransformInputField[];
   outputFields: PrismaDataTransformOutputField[];
   transformer: TypescriptCodeBlock;
+  isAsync: boolean;
 }
 
 export interface PrismaDataTransformerOptions {

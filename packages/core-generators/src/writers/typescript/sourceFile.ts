@@ -414,6 +414,14 @@ interface FileWriteOptions {
   neverOverwrite?: boolean;
 }
 
+function unnestHeaderBlocks(block: TypescriptCodeBlock): TypescriptCodeBlock[] {
+  return [
+    ...(block.options.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) ||
+      []),
+    block,
+  ];
+}
+
 export class TypescriptSourceFile<
   T extends TypescriptTemplateConfig<any>
 > extends TypescriptSourceContent<T> {
@@ -446,7 +454,8 @@ export class TypescriptSourceFile<
     ]);
 
     const headerBlocks = providedEntries.flatMap(
-      (e) => e?.options?.headerBlocks || []
+      (e) =>
+        e?.options?.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) || []
     );
 
     const entries = [...providedEntries, ...headerBlocks];
