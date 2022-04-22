@@ -79,6 +79,7 @@ function getMethodExpression(
     `
 async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
   FUNCTION_BODY
+
   return PRISMA_MODEL.update(UPDATE_ARGS);
 }
 `.trim(),
