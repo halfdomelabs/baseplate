@@ -473,9 +473,16 @@ export class TypescriptSourceFile<
     file.getImportDeclarations().forEach((i) => i.remove());
 
     if (headerBlocks.length) {
+      const deduplicatedHeaderBlocks = R.uniqWith(
+        (a, b) =>
+          a.options.headerKey === b.options.headerKey &&
+          a.options.headerKey != null,
+        headerBlocks
+      );
       file.insertText(0, (writer) => {
         writer.writeLine(
-          TypescriptCodeUtils.mergeBlocks(headerBlocks, '\n\n').content
+          TypescriptCodeUtils.mergeBlocks(deduplicatedHeaderBlocks, '\n\n')
+            .content
         );
         writer.writeLine('');
       });

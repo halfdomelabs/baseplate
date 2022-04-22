@@ -62,6 +62,11 @@ const NexusTypesFileGenerator = createGeneratorWithChildren({
               if (registeredKeys.includes(key)) {
                 return;
               }
+              const isSchemaTypeGloballyRegistered =
+                nexusSchema.registerSchemaType(key);
+              if (isSchemaTypeGloballyRegistered) {
+                return;
+              }
               registeredKeys.push(key);
             }
             typesFile.addCodeBlock('TYPES', block);

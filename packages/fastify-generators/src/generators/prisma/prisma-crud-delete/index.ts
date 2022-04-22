@@ -12,6 +12,10 @@ import {
   prismaToServiceOutputDto,
   ServiceOutputMethod,
 } from '@src/types/serviceOutput';
+import {
+  getPrimaryKeyDefinition,
+  getPrimaryKeyExpressions,
+} from '../_shared/crud-method/primary-key-input';
 import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
 
 const descriptorSchema = yup.object({
@@ -36,16 +40,11 @@ function getMethodDefinition({
   methodExpression,
 }: PrismaDeleteMethodOptions): ServiceOutputMethod {
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
+  const idArgument = getPrimaryKeyDefinition(prismaDefinition);
   return {
     name,
     expression: methodExpression,
-    arguments: [
-      {
-        name: 'id',
-        type: 'scalar',
-        scalarType: 'uuid',
-      },
-    ],
+    arguments: [idArgument],
     returnType: prismaToServiceOutputDto(prismaDefinition),
   };
 }
@@ -59,16 +58,24 @@ function getMethodExpression({
     `import {${modelName}} from '@prisma/client'`
   );
 
+  const model = prismaOutput.getPrismaModel(modelName);
+  const primaryKey = getPrimaryKeyExpressions(model);
+
   return TypescriptCodeUtils.formatExpression(
     `
-async OPERATION_NAME(id: string): Promise<MODEL_TYPE> {
-return PRISMA_MODEL.delete({ where: { id } });
+async OPERATION_NAME(ID_ARGUMENT): Promise<MODEL_TYPE> {
+return PRISMA_MODEL.delete({ where: WHERE_CLAUSE });
 }
 `.trim(),
     {
       OPERATION_NAME: name,
       MODEL_TYPE: modelType,
+      ID_ARGUMENT: primaryKey.argument,
+      WHERE_CLAUSE: primaryKey.whereClause,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+    },
+    {
+      headerBlocks: primaryKey.headerTypeBlock && [primaryKey.headerTypeBlock],
     }
   );
 }

@@ -60,6 +60,14 @@ export const nexusSetupProvider =
 export interface NexusSchemaProvider extends ImportMapper {
   getScalarConfig(scalar: ScalarFieldType): NexusScalarConfig;
   registerSchemaFile(file: string): void;
+  /**
+   * Attempts to register schema type. If already used, returns false.
+   *
+   * This is a hack to allow for the same type to be added in multiple places.
+   *
+   * TODO: Figure out a more deterministic way to place the type.
+   */
+  registerSchemaType(name: string): boolean;
   getUtilsImport(): string;
   getUtilsExpression(method: 'STANDARD_MUTATION'): TypescriptCodeExpression;
   getNexusWriterOptions(): NexusDefinitionWriterOptions;
@@ -220,6 +228,8 @@ const NexusGenerator = createGeneratorWithChildren({
       },
     };
 
+    const usedSchemaTypes: string[] = [];
+
     return {
       getProviders: () => ({
         nexusSetup: {
@@ -236,6 +246,13 @@ const NexusGenerator = createGeneratorWithChildren({
         nexusSchema: {
           getScalarConfig,
           registerSchemaFile: (file) => schemaFiles.push(file),
+          registerSchemaType: (name) => {
+            if (usedSchemaTypes.includes(name)) {
+              return false;
+            }
+            usedSchemaTypes.push(name);
+            return true;
+          },
           getUtilsImport: () => '@/src/utils/nexus',
           getNexusWriterOptions: () => ({
             builder: 't',

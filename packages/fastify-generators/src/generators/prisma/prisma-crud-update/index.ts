@@ -13,12 +13,17 @@ import {
   prismaToServiceOutputDto,
   ServiceOutputMethod,
 } from '@src/types/serviceOutput';
+import { notEmpty } from '@src/utils/array';
 import {
   getDataInputTypeBlock,
   getDataMethodDataExpressions,
   getDataMethodDataType,
   PrismaDataMethodOptions,
 } from '../_shared/crud-method/data-method';
+import {
+  getPrimaryKeyDefinition,
+  getPrimaryKeyExpressions,
+} from '../_shared/crud-method/primary-key-input';
 import { prismaOutputProvider } from '../prisma';
 import { prismaCrudServiceProvider } from '../prisma-crud-service';
 
@@ -37,15 +42,12 @@ function getMethodDefinition(
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
 
   const dataType = getDataMethodDataType(options);
+  const idArgument = getPrimaryKeyDefinition(prismaDefinition);
   return {
     name,
     expression: serviceMethodExpression,
     arguments: [
-      {
-        name: 'id',
-        type: 'scalar',
-        scalarType: 'uuid',
-      },
+      idArgument,
       {
         name: 'data',
         type: 'nested',
@@ -70,9 +72,12 @@ function getMethodExpression(
 
   const modelType = prismaOutput.getModelTypeExpression(modelName);
 
+  const model = prismaOutput.getPrismaModel(modelName);
+  const primaryKey = getPrimaryKeyExpressions(model);
+
   return TypescriptCodeUtils.formatExpression(
     `
-async METHOD_NAME(id: string, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
+async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
   FUNCTION_BODY
   return PRISMA_MODEL.update(UPDATE_ARGS);
 }
@@ -81,15 +86,18 @@ async METHOD_NAME(id: string, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE>
       METHOD_NAME: name,
       UPDATE_INPUT_TYPE_NAME: updateInputTypeName,
       MODEL_TYPE: modelType,
+      ID_ARGUMENT: primaryKey.argument,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
       FUNCTION_BODY: functionBody,
       UPDATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
-        where: new TypescriptCodeExpression('{ id }'),
+        where: primaryKey.whereClause,
         data: dataExpression,
       }),
     },
     {
-      headerBlocks: [typeHeaderBlock],
+      headerBlocks: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
+        notEmpty
+      ),
     }
   );
 }
