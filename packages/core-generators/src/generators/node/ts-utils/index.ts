@@ -15,6 +15,11 @@ interface UtilConfig {
 }
 
 const UTIL_CONFIG_MAP: Record<string, UtilConfig> = {
+  arrays: {
+    file: 'arrays.ts',
+    exports: ['notEmpty'],
+    dependencies: [],
+  },
   normalizeTypes: {
     file: 'normalizeTypes.ts',
     exports: ['NormalizeTypes'],
