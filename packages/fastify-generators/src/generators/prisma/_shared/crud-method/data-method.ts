@@ -3,10 +3,10 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
-import { capitalize } from 'inflection';
 import R from 'ramda';
 import { PrismaDataTransformer } from '@src/providers/prisma/prisma-data-transformable';
 import { ServiceOutputDto } from '@src/types/serviceOutput';
+import { upperCaseFirst } from '@src/utils/case';
 import { PrismaOutputProvider } from '../../prisma';
 
 export interface PrismaDataMethodOptions {
@@ -26,7 +26,7 @@ export function getDataMethodDataType({
   operationName,
   isPartial,
   transformers,
-}: PrismaDataMethodOptions): ServiceOutputDto {
+}: Omit<PrismaDataMethodOptions, 'name'>): ServiceOutputDto {
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
   const prismaFields = prismaFieldNames.map((fieldName) => {
     const field = prismaDefinition.fields.find((f) => f.name === fieldName);
@@ -41,7 +41,7 @@ export function getDataMethodDataType({
     transformer.inputFields.map((f) => f.dtoField)
   );
   return {
-    name: `${modelName}${capitalize(operationName)}Data`,
+    name: `${modelName}${upperCaseFirst(operationName)}Data`,
     fields: [
       ...prismaFields.map((field) => {
         if (field.type !== 'scalar') {
@@ -71,7 +71,7 @@ export function getDataInputTypeBlock(
     prismaFieldNames,
     operationName,
     transformers,
-  }: PrismaDataMethodOptions
+  }: Omit<PrismaDataMethodOptions, 'name'>
 ): TypescriptCodeBlock {
   const prismaFieldSelection = prismaFieldNames
     .map((field) => `'${field}'`)
@@ -86,7 +86,7 @@ export function getDataInputTypeBlock(
       `type DATA_INPUT_TYPE_NAME = Pick<Prisma.PRISMA_DATA_INPUT, PRISMA_FIELDS>;`,
       {
         DATA_INPUT_TYPE_NAME: dataInputTypeName,
-        PRISMA_DATA_INPUT: `${modelName}Unchecked${capitalize(
+        PRISMA_DATA_INPUT: `${modelName}Unchecked${upperCaseFirst(
           operationName
         )}Input`,
         PRISMA_FIELDS: prismaFieldSelection,
@@ -108,7 +108,7 @@ export function getDataInputTypeBlock(
 }`,
     {
       DATA_INPUT_TYPE_NAME: dataInputTypeName,
-      PRISMA_DATA_INPUT: `${modelName}Unchecked${capitalize(
+      PRISMA_DATA_INPUT: `${modelName}Unchecked${upperCaseFirst(
         operationName
       )}Input`,
       PRISMA_FIELDS: prismaFieldSelection,
@@ -121,7 +121,7 @@ export function getDataInputTypeBlock(
 
 export function getDataMethodDataExpressions({
   transformers,
-}: PrismaDataMethodOptions): {
+}: Pick<PrismaDataMethodOptions, 'transformers'>): {
   functionBody: TypescriptCodeBlock | string;
   dataExpression: TypescriptCodeExpression;
 } {

@@ -16,10 +16,14 @@ export function buildEntryDependencyMap(
 ): Record<string, string | null> {
   return R.mapObjIndexed((dep) => {
     const provider = dep.name;
-    const { optional, reference } =
+    const { optional, reference, resolveToNull } =
       dep.type === 'dependency'
         ? dep.options
         : ({} as ProviderDependencyOptions);
+
+    if (resolveToNull) {
+      return null;
+    }
 
     if (reference) {
       const referencedGenerator = globalGeneratorMap[reference];

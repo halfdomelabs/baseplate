@@ -69,6 +69,7 @@ function getMethodExpression(
     `
 async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
   FUNCTION_BODY
+
   return PRISMA_MODEL.create(CREATE_ARGS);
 }
 `.trim(),

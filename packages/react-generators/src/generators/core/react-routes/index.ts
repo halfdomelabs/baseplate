@@ -3,7 +3,6 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import { capitalize } from 'inflection';
 import * as yup from 'yup';
 import {
   ReactRoute,
@@ -11,6 +10,7 @@ import {
   reactRoutesProvider,
 } from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
+import { upperCaseFirst } from '@src/utils/case';
 import { renderRoutes } from '../_shared/routes/renderRoutes';
 import { reactNotFoundProvider } from '../react-not-found-handler';
 
@@ -80,7 +80,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
 
           const renderedRoutes = renderRoutes(routes, layouts);
 
-          const routesName = `${capitalize(name)}Routes`;
+          const routesName = `${upperCaseFirst(name)}Routes`;
 
           const pagesRootFile = typescript.createTemplate({
             ROUTE_HEADER: { type: 'code-block' },

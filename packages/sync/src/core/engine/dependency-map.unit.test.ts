@@ -28,6 +28,21 @@ describe('buildEntryDependencyMap', () => {
     });
   });
 
+  it('should resolve dependencies to resolveToNull to null always', () => {
+    const entry = buildTestGeneratorEntry({
+      dependencies: {
+        dependency: providerOne.dependency().resolveToNull(),
+      },
+    });
+
+    const parentProviders: Record<string, string> = {
+      [providerOne.name]: 'parentId',
+    };
+
+    const dependencyMap = buildEntryDependencyMap(entry, parentProviders, {});
+    expect(dependencyMap).toEqual({ dependency: null });
+  });
+
   it('should resolve reference dependency', () => {
     const entry = buildTestGeneratorEntry({
       dependencies: {

@@ -36,6 +36,10 @@ export interface ProviderDependencyOptions {
    * Whether the dependency is modified in the build output of this generator
    */
   modifiedInBuild?: boolean;
+  /**
+   * Whether to resolve the dependency to null always (good for disabling a dependency)
+   */
+  resolveToNull?: boolean;
 }
 
 export interface ProviderDependency<P = Provider> {
@@ -45,6 +49,7 @@ export interface ProviderDependency<P = Provider> {
   optional(): ProviderDependency<P | undefined>;
   reference(reference?: string): ProviderDependency<P>;
   modifiedInBuild(): ProviderDependency<P>;
+  resolveToNull(): ProviderDependency<P | undefined>;
 }
 
 export interface ProviderExportOptions {
@@ -88,6 +93,9 @@ export function createProviderType<T>(name: string): ProviderType<T> {
         },
         modifiedInBuild() {
           return R.mergeDeepLeft({ options: { modifiedInBuild: true } }, this);
+        },
+        resolveToNull() {
+          return R.mergeDeepLeft({ options: { resolveToNull: true } }, this);
         },
       };
     },

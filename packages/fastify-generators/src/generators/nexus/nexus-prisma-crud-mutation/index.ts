@@ -1,14 +1,19 @@
 import {
+  TsUtilsProvider,
   tsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   TypescriptSourceBlock,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
+import { singularize } from 'inflection';
 import * as yup from 'yup';
 import { serviceFileOutputProvider } from '@src/generators/core/service-file';
 import { nexusTypeProvider } from '@src/providers/nexus-type';
-import { ServiceOutputDtoField } from '@src/types/serviceOutput';
+import {
+  ServiceOutputDtoField,
+  ServiceOutputDtoNestedField,
+} from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
 import {
   writeChildInputDefinition,
@@ -39,6 +44,110 @@ export const MUTATION_EXPORT = createStandardMutation({
   },
 });
 `.trim();
+
+function buildNestedArgExpression(
+  arg: ServiceOutputDtoNestedField,
+  tsUtils: TsUtilsProvider
+): TypescriptCodeExpression {
+  const { fields } = arg.nestedType;
+  const nestedFields = fields.filter(
+    (f): f is ServiceOutputDtoNestedField => f.type === 'nested'
+  );
+
+  if (nestedFields.length) {
+    // look for all nested expressions with restrictions
+    const nestedExpressionsWithRestrict = nestedFields
+      .map((nestedField) => ({
+        field: nestedField,
+        // mutual recursion
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        expression: convertNestedArgForCall(
+          {
+            ...nestedField,
+            name: nestedField.isList
+              ? singularize(nestedField.name)
+              : `${arg.name}.${nestedField.name}`,
+          },
+          tsUtils
+        ),
+      }))
+      .filter((f) => f.expression.content.includes('restrictObjectNulls'));
+
+    if (nestedExpressionsWithRestrict.length) {
+      return TypescriptCodeUtils.formatExpression(
+        `{
+          ...${arg.name},
+          RESTRICT_EXPRESSIONS
+        }`,
+        {
+          RESTRICT_EXPRESSIONS: TypescriptCodeUtils.mergeExpressions(
+            nestedExpressionsWithRestrict.map(({ field, expression }) => {
+              if (field.isList) {
+                return expression.wrap(
+                  (contents) =>
+                    `${field.name}: ${arg.name}.${
+                      field.name
+                    }?.map((${singularize(field.name)}) => ${
+                      contents.trimStart().startsWith('{')
+                        ? `(${contents})`
+                        : contents
+                    })`
+                );
+              }
+              return expression.wrap(
+                (contents) =>
+                  `${field.name}: ${arg.name}.${field.name} && ${contents}`
+              );
+            }),
+            ',\n'
+          ),
+        }
+      );
+    }
+  }
+  return new TypescriptCodeExpression(arg.name);
+}
+
+function convertNestedArgForCall(
+  arg: ServiceOutputDtoNestedField,
+  tsUtils: TsUtilsProvider
+): TypescriptCodeExpression {
+  const { fields } = arg.nestedType;
+  const nonNullableOptionalFields = fields.filter(
+    (f) => f.isOptional && !f.isNullable
+  );
+
+  const nestedArgExpression: TypescriptCodeExpression =
+    buildNestedArgExpression(arg, tsUtils);
+
+  if (nonNullableOptionalFields.length) {
+    return TypescriptCodeUtils.formatExpression(
+      `restrictObjectNulls(ARG, [${nonNullableOptionalFields
+        .map((f) => `'${f.name}'`)
+        .join(', ')}])`,
+      { ARG: nestedArgExpression },
+      {
+        importText: [`import {restrictObjectNulls} from '%ts-utils/nulls';`],
+        importMappers: [tsUtils],
+      }
+    );
+  }
+  return nestedArgExpression;
+}
+
+function convertArgForCall(
+  arg: ServiceOutputDtoField,
+  tsUtils: TsUtilsProvider
+): TypescriptCodeExpression {
+  // TODO: Handle convert all nulls
+  if (arg.isOptional && !arg.isNullable) {
+    throw new Error(`Optional non-nullable top-level args not handled`);
+  }
+  if (arg.type === 'nested') {
+    return convertNestedArgForCall(arg, tsUtils);
+  }
+  return new TypescriptCodeExpression(arg.name);
+}
 
 const NexusPrismaCrudMutation = createGeneratorWithChildren({
   descriptorSchema,
@@ -104,30 +213,6 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
 
     const argNames = serviceOutput.arguments.map((arg) => arg.name);
 
-    function convertArgForCall(
-      arg: ServiceOutputDtoField
-    ): TypescriptCodeExpression {
-      // TODO: Handle convert all nulls
-      if (arg.isOptional && !arg.isNullable) {
-        throw new Error(`Optional non-nullable top-level args not handled`);
-      }
-      if (arg.type === 'nested') {
-        const nonNullableOptionalFields = arg.nestedType.fields.filter(
-          (f) => f.isOptional && !f.isNullable
-        );
-        if (nonNullableOptionalFields.length) {
-          return TypescriptCodeUtils.createExpression(
-            `restrictObjectNulls(${arg.name}, [${nonNullableOptionalFields
-              .map((f) => `'${f.name}'`)
-              .join(', ')}])`,
-            `import {restrictObjectNulls} from '%ts-utils/nulls';`,
-            { importMappers: [tsUtils] }
-          );
-        }
-      }
-      return new TypescriptCodeExpression(arg.name);
-    }
-
     objectTypeBlock.addCodeEntries({
       MUTATION_EXPORT: `${type}${modelName}Mutation`,
       MUTATION_NAME: `'${type}${modelName}'`,
@@ -136,7 +221,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       INPUT_PARTS: `{ ${argNames.join(', ')} }`,
       SERVICE_CALL: serviceOutput.expression,
       SERVICE_ARGUMENTS: TypescriptCodeUtils.mergeExpressions(
-        serviceOutput.arguments.map(convertArgForCall),
+        serviceOutput.arguments.map((arg) => convertArgForCall(arg, tsUtils)),
         ', '
       ),
       RETURN_FIELD_NAME: lowerCaseFirst(modelName),

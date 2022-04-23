@@ -11,6 +11,7 @@ interface PrimaryKeyOutput {
   argument: string;
   whereClause: string;
   headerTypeBlock?: TypescriptCodeBlock;
+  argumentType: string;
 }
 
 export function getPrimaryKeyDefinition(
@@ -81,11 +82,13 @@ export function getPrimaryKeyExpressions(
       throw new Error(`Model ${model.name} must have a scalar primary key`);
     }
 
+    const argumentType =
+      scalarFieldTypeInfoMap[idField.scalarType].typescriptType;
+
     return {
-      argument: `${idFieldName}: ${
-        scalarFieldTypeInfoMap[idField.scalarType].typescriptType
-      }`,
+      argument: `${idFieldName}: ${argumentType}`,
       whereClause: `{ ${idFieldName} }`,
+      argumentType,
     };
   }
 
@@ -107,5 +110,6 @@ export function getPrimaryKeyExpressions(
     argument: `${compoundUniqueName}: ${primaryKeyInputName}`,
     whereClause: `{ ${compoundUniqueName} }`,
     headerTypeBlock,
+    argumentType: primaryKeyInputName,
   };
 }
