@@ -1,10 +1,10 @@
 import R from 'ramda';
 import {
+  AppConfig,
   ProjectConfig,
+  projectConfigSchema,
   PROJECT_CONFIG_REFERENCEABLES,
   PROJECT_CONFIG_REFERENCES,
-  projectConfigSchema,
-  AppConfig,
 } from '@src/schema';
 import {
   findReferencableEntries,
@@ -71,17 +71,43 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
     );
   }
 
-  // apply some basic validation rules to project config
-  // const featurelessModels = (projectConfig.models || []).filter(
-  //   (model) => !features.includes(model.feature)
-  // );
-  // if (featurelessModels.length) {
-  //   throw new Error(
-  //     `Models must be associated with a feature: ${featurelessModels
-  //       .map((model) => model.name)
-  //       .join(', ')}`
-  //   );
-  // }
+  // validate relations
+  const { models = [] } = projectConfig;
+  models.forEach(
+    (model) =>
+      model.model.relations?.forEach((relation) => {
+        const foreignModel = models.find((m) => m.name === relation.modelName);
+        if (!foreignModel) {
+          throw new Error(
+            `Model ${model.name} has a relation to ${relation.modelName} but that model does not exist`
+          );
+        }
+        // verify types of fields match
+        relation.references.forEach((reference) => {
+          const foreignField = foreignModel.model.fields.find(
+            (f) => f.name === reference.foreign
+          );
+          if (!foreignField) {
+            throw new Error(
+              `Could not find ${reference.foreign} on ${foreignModel.name}`
+            );
+          }
+          const localField = model.model.fields.find(
+            (f) => f.name === reference.local
+          );
+          if (!localField) {
+            throw new Error(
+              `Could not find ${reference.local} on ${model.name}`
+            );
+          }
+          if (foreignField.type !== localField.type) {
+            throw new Error(
+              `Field types do not match for ${reference.local} on ${model.name} and ${reference.foreign} on ${foreignModel.name}`
+            );
+          }
+        });
+      }) || []
+  );
 }
 
 function buildReferenceMap(

@@ -26,7 +26,7 @@ export function getDataMethodDataType({
   operationName,
   isPartial,
   transformers,
-}: PrismaDataMethodOptions): ServiceOutputDto {
+}: Omit<PrismaDataMethodOptions, 'name'>): ServiceOutputDto {
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
   const prismaFields = prismaFieldNames.map((fieldName) => {
     const field = prismaDefinition.fields.find((f) => f.name === fieldName);
@@ -121,7 +121,7 @@ export function getDataInputTypeBlock(
 
 export function getDataMethodDataExpressions({
   transformers,
-}: PrismaDataMethodOptions): {
+}: Pick<PrismaDataMethodOptions, 'transformers'>): {
   functionBody: TypescriptCodeBlock | string;
   dataExpression: TypescriptCodeExpression;
 } {
