@@ -18,10 +18,14 @@ function ModelEditPage(): JSX.Element {
   const model = parsedProject.getModels().find((m) => m.uid === id);
 
   const handleDelete = (): void => {
-    if (window.confirm(`Are you sure you want to delete ${id || 'model'}?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${model?.name || 'model'}?`
+      )
+    ) {
       try {
         setConfig((oldConfig) => {
-          oldConfig.models = oldConfig.models?.filter((m) => m.name !== id);
+          oldConfig.models = oldConfig.models?.filter((m) => m.uid !== id);
         });
         navigate('..');
       } catch (err) {

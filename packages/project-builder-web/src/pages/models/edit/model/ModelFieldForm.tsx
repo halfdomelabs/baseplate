@@ -139,7 +139,7 @@ function ModelFieldForm({
     // update local references
     watchedRelations?.forEach((relation, relationIdx) => {
       relation.references.forEach((reference, referenceIdx) => {
-        if (reference.local.includes(watchedField.name)) {
+        if (reference.local === watchedField.name) {
           formProps.setValue(
             `model.relations.${relationIdx}.references.${referenceIdx}.local`,
             name
