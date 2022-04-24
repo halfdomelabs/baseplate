@@ -217,7 +217,7 @@ function ModelFieldForm({
                 error={errors.model?.fields?.[idx].options?.genUuid?.message}
               />
             )}
-            {field.type === 'dateTime' && (
+            {(field.type === 'dateTime' || field.type === 'date') && (
               <>
                 <CheckedInput.Labelled
                   label="Default to Now"
@@ -228,13 +228,15 @@ function ModelFieldForm({
                     errors.model?.fields?.[idx].options?.defaultToNow?.message
                   }
                 />
-                <CheckedInput.Labelled
-                  label="Updated At"
-                  register={register(`model.fields.${idx}.options.updatedAt`)}
-                  error={
-                    errors.model?.fields?.[idx].options?.updatedAt?.message
-                  }
-                />
+                {field.type !== 'date' && (
+                  <CheckedInput.Labelled
+                    label="Updated At"
+                    register={register(`model.fields.${idx}.options.updatedAt`)}
+                    error={
+                      errors.model?.fields?.[idx].options?.updatedAt?.message
+                    }
+                  />
+                )}
               </>
             )}
           </div>

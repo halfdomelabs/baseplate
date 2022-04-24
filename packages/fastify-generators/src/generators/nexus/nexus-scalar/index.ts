@@ -36,6 +36,16 @@ const scalarConfigMap = createNexusScalarMap({
     dependencies: {},
     devDependencies: {},
   },
+  date: {
+    name: 'Date',
+    scalar: 'date',
+    templatePath: 'date.ts',
+    export: 'DateScalar',
+    nexusMethod: 'date',
+    sourceType: 'Date',
+    dependencies: {},
+    devDependencies: {},
+  },
   uuid: {
     name: 'Uuid',
     scalar: 'uuid',

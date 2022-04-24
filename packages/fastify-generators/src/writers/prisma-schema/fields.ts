@@ -76,6 +76,22 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       return attributes;
     },
   }),
+  date: createConfig({
+    prismaType: 'DateTime',
+    optionsSchema: {
+      defaultToNow: yup.boolean(),
+    },
+    getAttributes: (config) => {
+      const attributes: PrismaModelAttribute[] = [{ name: '@db.Date' }];
+      if (config?.defaultToNow) {
+        attributes.push({
+          name: '@default',
+          args: ['now()'],
+        });
+      }
+      return attributes;
+    },
+  }),
 });
 
 export function buildPrismaScalarField<T extends ScalarFieldType>(

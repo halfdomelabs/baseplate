@@ -22,6 +22,11 @@ export function buildFastify(builder: AppEntryBuilder): unknown {
           generator: '@baseplate/fastify/nexus/nexus-scalar',
           type: 'dateTime',
         },
+        {
+          name: 'DateScalar',
+          generator: '@baseplate/fastify/nexus/nexus-scalar',
+          type: 'date',
+        },
       ],
     },
   });
