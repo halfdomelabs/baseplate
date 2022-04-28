@@ -27,6 +27,14 @@ const schema = makeSchema({
   shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
 });
 
+function toGraphQLError(error: unknown): GraphQLError {
+  if (error instanceof Error) {
+    return new GraphQLError(error.message, { originalError: error });
+  }
+  logError(error);
+  return new GraphQLError(`Received ${typeof error} when expected error`, {});
+}
+
 export const graphqlPlugin = fp(async (fastify) => {
   await fastify.register(mercurius, {
     graphiql: false,
@@ -36,13 +44,8 @@ export const graphqlPlugin = fp(async (fastify) => {
     validationRules: IS_DEVELOPMENT ? [] : [NoSchemaIntrospectionCustomRule],
     context: createContext,
     errorFormatter: (result, context) => {
-      // if hooks throw an error, pass through without formatting to default error handler
-      if (!result?.errors) {
-        return {
-          statusCode: 500,
-          response: result,
-        };
-      }
+      const errors = result.errors ?? [toGraphQLError(result)];
+
       function logAndAnnotateError(error: GraphQLError): GraphQLError {
         const { originalError } = error;
         if (originalError) {
@@ -77,7 +80,7 @@ export const graphqlPlugin = fp(async (fastify) => {
         statusCode: 200,
         response: {
           ...result,
-          errors: result.errors?.map(logAndAnnotateError),
+          errors: errors.map(logAndAnnotateError),
         },
       };
     },

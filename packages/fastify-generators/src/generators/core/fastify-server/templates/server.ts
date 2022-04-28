@@ -7,6 +7,7 @@ export async function buildServer(
 ): Promise<FastifyInstance> {
   const fastify = Fastify({
     genReqId: () => nanoid(),
+    forceCloseConnections: true,
     // possible trust proxy here?
     ...options,
   });
