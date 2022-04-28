@@ -41,6 +41,12 @@ export const DEFAULT_NEXUS_SCALAR_CONFIG: Record<
     nexusMethod: 'string',
     sourceType: 'string',
   },
+  date: {
+    name: 'String',
+    scalar: 'date',
+    nexusMethod: 'string',
+    sourceType: 'string',
+  },
   decimal: {
     name: 'Float',
     scalar: 'decimal',

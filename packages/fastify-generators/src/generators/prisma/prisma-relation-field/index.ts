@@ -1,5 +1,6 @@
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
+import { doubleQuot } from '@src/utils/string';
 import { prismaModelProvider } from '../prisma-model';
 
 const REFERENTIAL_ACTIONS = [
@@ -61,7 +62,7 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
         {
           name: '@relation',
           args: [
-            ...(relationshipName ? [relationshipName] : []),
+            ...(relationshipName ? [doubleQuot(relationshipName)] : []),
             {
               fields,
               references,
@@ -79,7 +80,7 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
         type: `${prismaModel.getName()}${isManyToOne ? '[]' : '?'}`,
         fieldType: 'relation',
         attributes: relationshipName
-          ? [{ name: '@relation', args: [relationshipName] }]
+          ? [{ name: '@relation', args: [doubleQuot(relationshipName)] }]
           : [],
       });
     }

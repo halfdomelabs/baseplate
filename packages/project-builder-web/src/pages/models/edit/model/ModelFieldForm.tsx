@@ -210,14 +210,15 @@ function ModelFieldForm({
               register={register(`model.fields.${idx}.isUnique`)}
               error={errors.model?.fields?.[idx].isUnique?.message}
             />
-            {field.type === 'uuid' && (
+            {watchedField.type === 'uuid' && (
               <CheckedInput.Labelled
                 label="Auto-Generate UUID"
                 register={register(`model.fields.${idx}.options.genUuid`)}
                 error={errors.model?.fields?.[idx].options?.genUuid?.message}
               />
             )}
-            {field.type === 'dateTime' && (
+            {(watchedField.type === 'dateTime' ||
+              watchedField.type === 'date') && (
               <>
                 <CheckedInput.Labelled
                   label="Default to Now"
@@ -228,13 +229,15 @@ function ModelFieldForm({
                     errors.model?.fields?.[idx].options?.defaultToNow?.message
                   }
                 />
-                <CheckedInput.Labelled
-                  label="Updated At"
-                  register={register(`model.fields.${idx}.options.updatedAt`)}
-                  error={
-                    errors.model?.fields?.[idx].options?.updatedAt?.message
-                  }
-                />
+                {watchedField.type !== 'date' && (
+                  <CheckedInput.Labelled
+                    label="Updated At"
+                    register={register(`model.fields.${idx}.options.updatedAt`)}
+                    error={
+                      errors.model?.fields?.[idx].options?.updatedAt?.message
+                    }
+                  />
+                )}
               </>
             )}
           </div>

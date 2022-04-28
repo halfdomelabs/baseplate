@@ -6,7 +6,7 @@ import { BadRequestError } from '%http-errors';
 export const DateTimeScalar = scalarType({
   name: 'DateTime',
   asNexusMethod: 'dateTime',
-  description: 'Date custom scalar type',
+  description: 'DateTime custom scalar type',
   sourceType: 'Date | string',
   parseValue(value: unknown) {
     if (value === 'string') {

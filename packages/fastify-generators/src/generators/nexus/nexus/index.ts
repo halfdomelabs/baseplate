@@ -135,6 +135,13 @@ const NexusGenerator = createGeneratorWithChildren({
       ),
     ]);
 
+    configMap.appendUnique('nexusPlugins', [
+      new TypescriptCodeExpression(
+        'missingTypePlugin',
+        "import { missingTypePlugin } from './missing-type-plugin'"
+      ),
+    ]);
+
     const scalarMap = createNonOverwriteableMap<
       Record<ScalarFieldType, NexusScalarConfig>
     >(DEFAULT_NEXUS_SCALAR_CONFIG, {
@@ -343,10 +350,19 @@ const NexusGenerator = createGeneratorWithChildren({
           )
         );
 
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'plugins/graphql/missing-type-plugin.ts',
+            destination: 'src/plugins/graphql/missing-type-plugin.ts',
+          })
+        );
+
         builder.addPostWriteCommand('yarn nexusgen', {
           onlyIfChanged: [
             ...schemaFiles,
             'src/plugins/graphql/index.ts',
+            'src/plugins/graphql/context.ts',
+            'src/plugins/graphql/missing-type-plugin.ts',
             'src/utils/nexus.ts',
           ],
         });
