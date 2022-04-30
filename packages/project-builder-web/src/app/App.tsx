@@ -1,8 +1,7 @@
 import {
   ProjectConfig,
   projectConfigSchema,
-  PROJECT_CONFIG_REFERENCEABLES,
-  PROJECT_CONFIG_REFERENCES,
+  getProjectConfigReferences,
   fixReferenceRenames,
   ParsedProjectConfig,
 } from '@baseplate/project-builder-lib';
@@ -57,10 +56,10 @@ function App(): JSX.Element {
         const fixedProjectConfig = fixReferenceRenames(
           oldProjectConfig,
           newProjectConfig,
-          PROJECT_CONFIG_REFERENCEABLES,
-          PROJECT_CONFIG_REFERENCES,
+          getProjectConfigReferences,
           options
         );
+        console.log(fixedProjectConfig);
         const validatedProjectConfig = projectConfigSchema.validateSync(
           fixedProjectConfig,
           {
