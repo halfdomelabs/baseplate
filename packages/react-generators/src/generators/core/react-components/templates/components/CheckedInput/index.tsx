@@ -1,6 +1,6 @@
 // @ts-nocheck
+
 import classNames from 'classnames';
-import { HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
 import {
   Control,
   FieldError,
@@ -14,84 +14,88 @@ import FormLabel from '../FormLabel';
 
 interface Props {
   className?: string;
-  disabled?: boolean;
-  placeholder?: string;
   name?: string;
-  type?: HTMLInputTypeAttribute;
-  register?: UseFormRegisterReturn;
-  onChange?: (value: string) => void;
-  onBlur?: () => void;
+  disabled?: boolean;
+  onChange?(checked: boolean, value?: string): void;
+  checked?: boolean;
   value?: string;
+  type?: 'checkbox' | 'radio';
+  register?: UseFormRegisterReturn;
 }
 
-const TextInput = function TextInput({
+function CheckedInput({
   className,
-  disabled,
-  placeholder,
   name,
-  type = 'text',
+  disabled,
   onChange,
-  onBlur,
+  checked,
   value,
   register,
+  type = 'checkbox',
 }: Props): JSX.Element {
-  const inputProps: InputHTMLAttributes<HTMLInputElement> = {
+  const onChangeHandler =
+    onChange &&
+    ((event: React.ChangeEvent<HTMLInputElement>): void => {
+      onChange(event.target.checked, event.target.value);
+    });
+
+  const inputProps = {
     name,
-    placeholder,
     disabled,
-    type,
-    onChange: onChange && ((e) => onChange(e.target.value)),
-    onBlur,
+    onChange: onChangeHandler,
+    checked,
     value,
+    type,
     ...register,
   };
   return (
     <input
       className={classNames(
-        'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+        'w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600',
         className
       )}
       {...inputProps}
     />
   );
-};
+}
 
-interface TextInputLabelledProps extends Props {
+interface CheckedInputLabelledProps extends Props {
   label?: string;
   error?: React.ReactNode;
 }
 
-TextInput.Labelled = function TextInputLabelled({
+CheckedInput.Labelled = function SelectInputLabelled({
   label,
   className,
   error,
   ...rest
-}: TextInputLabelledProps): JSX.Element {
+}: CheckedInputLabelledProps): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={classNames('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
-      <TextInput {...rest} />
+      <CheckedInput {...rest} />
       {error && <FormError>{error}</FormError>}
     </label>
   );
 };
 
-interface TextInputControllerProps<T> extends TextInputLabelledProps {
+interface CheckedInputLabelledControllerProps<T>
+  extends Omit<CheckedInputLabelledProps, 'register'> {
   control: Control<T>;
   name: FieldPath<T>;
 }
 
-TextInput.LabelledController = function TextInputController<T>({
+CheckedInput.LabelledController = function CheckedInputLabelledController<T>({
   control,
   name,
   ...rest
-}: TextInputControllerProps<T>): JSX.Element {
+}: CheckedInputLabelledControllerProps<T>): JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 
   return (
-    <TextInput.Labelled
+    <CheckedInput.Labelled
       register={control.register(name)}
       error={error?.message}
       {...rest}
@@ -99,4 +103,4 @@ TextInput.LabelledController = function TextInputController<T>({
   );
 };
 
-export default TextInput;
+export default CheckedInput;

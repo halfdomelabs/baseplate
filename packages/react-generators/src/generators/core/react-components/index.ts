@@ -27,7 +27,9 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'BackButton' },
   { name: 'Button' },
   { name: 'Card' },
+  { name: 'CheckedInput' },
   { name: 'ErrorableLoader' },
+  { name: 'FormError' },
   { name: 'FormLabel' },
   { name: 'LinkButton' },
   { name: 'ListGroup' },
@@ -85,11 +87,11 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         reactComponents: {
           registerComponent: (entry) => allReactComponents.push(entry),
-          getComponentsFolder: () => `${srcFolder}/components`,
-          getComponentsImport: () => `@/${srcFolder}/components`,
+          getComponentsFolder: () => `${srcFolder}/components/common`,
+          getComponentsImport: () => `@/${srcFolder}/components/common`,
           getImportMap: () => ({
             '%react-components': {
-              path: `@/${srcFolder}/components`,
+              path: `@/${srcFolder}/components/common`,
               allowedImports: REACT_COMPONENTS.map((entry) => entry.name),
             },
             '%react-components/useStatus': {
@@ -139,7 +141,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         await builder.apply(
           writeFormattedAction({
             contents: componentIndex,
-            destination: `${srcFolder}/components/index.ts`,
+            destination: `${srcFolder}/components/common/index.ts`,
           })
         );
       },

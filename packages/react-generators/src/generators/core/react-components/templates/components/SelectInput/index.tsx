@@ -53,7 +53,7 @@ function SelectInput({
 }
 
 interface SelectInputLabelledProps extends Props {
-  label: string;
+  label?: string;
   error?: React.ReactNode;
 }
 
@@ -66,12 +66,33 @@ SelectInput.Labelled = function SelectInputLabelled({
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={classNames('block', className)}>
-      <FormLabel>{label}</FormLabel>
+      {label && <FormLabel>{label}</FormLabel>}
       <SelectInput {...rest} />
-      {error && (
-        <p className="mt-2 text-sm text-red-600 dark:text-red-500">{error}</p>
-      )}
+      {error && <FormError>{error}</FormError>}
     </label>
+  );
+};
+
+interface SelectInputLabelledController<T>
+  extends Omit<SelectInputLabelledProps, 'register'> {
+  control: Control<T>;
+  name: FieldPath<T>;
+}
+
+SelectInput.LabelledController = function SelectInputController<T>({
+  name,
+  control,
+  ...rest
+}: SelectInputLabelledController<T>): JSX.Element {
+  const { errors } = useFormState({ name, control });
+  const error = get(errors, name) as FieldError | undefined;
+
+  return (
+    <SelectInput.Labelled
+      register={control.register(name)}
+      error={error?.message}
+      {...rest}
+    />
   );
 };
 

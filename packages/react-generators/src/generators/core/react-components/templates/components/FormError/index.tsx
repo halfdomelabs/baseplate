@@ -6,11 +6,11 @@ interface Props {
   children: React.ReactNode;
 }
 
-function FormLabel({ className, children }: Props): JSX.Element {
+function FormError({ className, children }: Props): JSX.Element {
   return (
     <div
       className={classNames(
-        'text-sm mb-2 font-semibold text-gray-900 dark:text-gray-300',
+        'mt-2 text-sm text-red-600 dark:text-red-500',
         className
       )}
     >
@@ -19,4 +19,4 @@ function FormLabel({ className, children }: Props): JSX.Element {
   );
 }
 
-export default FormLabel;
+export default FormError;
