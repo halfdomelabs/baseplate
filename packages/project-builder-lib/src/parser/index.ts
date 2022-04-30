@@ -3,13 +3,12 @@ import {
   AppConfig,
   ProjectConfig,
   projectConfigSchema,
-  PROJECT_CONFIG_REFERENCEABLES,
-  PROJECT_CONFIG_REFERENCES,
+  getProjectConfigReferences,
 } from '@src/schema';
 import {
-  findReferencableEntries,
-  findReferenceEntries,
+  REFERENCEABLE_CATEGORIES,
   ObjectReferenceEntry,
+  GetReferencesResult,
 } from '@src/schema/references';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge';
 import { randomUid } from '../utils/randomUid';
@@ -110,32 +109,26 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
   );
 }
 
-function buildReferenceMap(
-  projectConfig: ProjectConfig
-): Record<string, Record<string, ObjectReferenceEntry[]>> {
-  const categories = PROJECT_CONFIG_REFERENCEABLES.map((r) => r.category);
-  const referencesByKey = categories.map((category) => {
-    const references = PROJECT_CONFIG_REFERENCES.filter(
-      (r) => r.category === category
-    );
-    const referenceEntries = references.flatMap((reference) =>
-      findReferenceEntries(projectConfig, reference)
-    );
+function buildReferenceMap({
+  references,
+}: GetReferencesResult): Record<
+  string,
+  Record<string, ObjectReferenceEntry[]>
+> {
+  const referencesByKey = REFERENCEABLE_CATEGORIES.map((category) => {
+    const referenceEntries = references.filter((r) => r.category === category);
     return R.groupBy(R.prop('key'), referenceEntries);
   });
-  return R.zipObj(categories, referencesByKey);
+  return R.zipObj(REFERENCEABLE_CATEGORIES, referencesByKey);
 }
 
 function findMissingReferences(
-  projectConfig: ProjectConfig,
+  { referenceables }: GetReferencesResult,
   referenceMap: Record<string, Record<string, ObjectReferenceEntry[]>>
 ): ObjectReferenceEntry[] {
-  return PROJECT_CONFIG_REFERENCEABLES.flatMap((referenceable) => {
-    const availableKeys = findReferencableEntries(
-      projectConfig,
-      referenceable
-    ).map(R.prop('key'));
-    const referencesByKey = referenceMap[referenceable.category];
+  return REFERENCEABLE_CATEGORIES.flatMap((category) => {
+    const availableKeys = referenceables.map(R.prop('key'));
+    const referencesByKey = referenceMap[category];
     // make sure keys exist in referenceables
     const missingKeys = R.difference(
       Object.keys(referencesByKey),
@@ -247,11 +240,9 @@ export class ParsedProjectConfig {
     this.projectConfig = updatedProjectConfig;
 
     // build reference map
-    this.references = buildReferenceMap(updatedProjectConfig);
-    const missingKeys = findMissingReferences(
-      updatedProjectConfig,
-      this.references
-    );
+    const referenceResult = getProjectConfigReferences(updatedProjectConfig);
+    this.references = buildReferenceMap(referenceResult);
+    const missingKeys = findMissingReferences(referenceResult, this.references);
     if (missingKeys.length) {
       throw new Error(
         `Missing keys in references: ${missingKeys

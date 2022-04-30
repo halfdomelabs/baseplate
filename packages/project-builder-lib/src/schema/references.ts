@@ -1,169 +1,217 @@
 import R from 'ramda';
+import {
+  FieldPath,
+  FieldPathValue,
+  GlobFieldPath,
+  GlobFieldPathValue,
+} from '@src/types/path';
 import { notEmpty } from '@src/utils/array';
 
-export interface ObjectReference {
-  category: string;
-  name?: string;
-  path: string;
-  shouldInclude?(name: string, parents: unknown[], object: unknown): boolean;
-  mapToKey?(name: string, parents: unknown[], object: unknown): string;
-}
-
-export interface ObjectReferenceable {
-  category: string;
-  path: string;
-  nameProperty: string;
-  idProperty?: string;
-  shouldInclude?(name: string, parents: unknown[], object: unknown): boolean;
-  mapToKey?(name: string, parents: unknown[], object: unknown): string;
-}
-
-export interface ObjectReferenceEntry {
-  key: string;
-  name: string;
-  path: string;
-  referenceName?: string;
-}
+export const REFERENCEABLE_CATEGORIES = [
+  'feature',
+  'model',
+  'modelField',
+  'modelLocalRelation',
+  'modelForeignRelation',
+  'modelTransformer',
+  'role',
+] as const;
 
 export interface ObjectReferenceableEntry {
+  category: ReferenceableCategory;
   id: string;
   name: string;
   key: string;
+}
+
+export interface ObjectReferenceEntry {
+  category: ReferenceableCategory;
+  referenceType?: string;
+  key: string;
+  name: string;
   path: string;
 }
 
-export function walkObjectRecursive<T>(
+export type ReferenceableCategory = typeof REFERENCEABLE_CATEGORIES[number];
+
+export interface GetReferencesResult {
+  referenceables: ObjectReferenceableEntry[];
+  references: ObjectReferenceEntry[];
+}
+
+export type GetReferencesFunction<T> = (data: T) => GetReferencesResult;
+
+function pathToParts(path: string): (string | number)[] {
+  return path
+    .split('.')
+    .map((key) => (/^[0-9]+$/.test(key) ? parseInt(key, 10) : key));
+}
+
+export function walkGlobPathRecursive(
   object: unknown,
-  getValues: (object: unknown, path: string, parents: unknown[]) => T[],
+  callback: (object: unknown, path: string) => void,
   prefix: string,
-  remainingPath: string,
-  parents: unknown[] = []
-): T[] {
+  remainingPath: string
+): void {
   if (object === null || object === undefined) {
-    return [];
+    return;
   }
 
   if (!remainingPath) {
-    return getValues(object, prefix, parents);
+    callback(object, prefix);
+    return;
   }
 
   const currentPart = remainingPath.split('.')[0];
   const newRemainingPath = remainingPath.substring(currentPart.length + 1);
-  const newParents = [object, ...parents];
 
-  if (Array.isArray(object)) {
-    if (currentPart !== '*') {
+  if (currentPart === '*') {
+    if (!Array.isArray(object)) {
       throw new Error(
-        `Found array when not provided * in ${prefix} in ${prefix}.${remainingPath}`
+        `Did not find array when provided * in ${prefix} in ${prefix}.${remainingPath}`
       );
     }
-    return object.flatMap((item, idx) =>
-      walkObjectRecursive(
+    object.forEach((item, idx) =>
+      walkGlobPathRecursive(
         item,
-        getValues,
+        callback,
         `${prefix ? `${prefix}.` : ''}${idx}`,
-        newRemainingPath,
-        newParents
+        newRemainingPath
       )
     );
+  } else {
+    if (typeof object !== 'object') {
+      throw new Error(
+        `Found non-object when expected object (${prefix} in ${prefix}.${remainingPath})`
+      );
+    }
+
+    walkGlobPathRecursive(
+      (object as Record<string, unknown>)[currentPart],
+      callback,
+      `${prefix ? `${prefix}.` : ''}${currentPart}`,
+      newRemainingPath
+    );
+  }
+}
+
+export class ReferencesBuilder<T> {
+  private baseObject: T;
+
+  private references: ObjectReferenceEntry[] = [];
+
+  private referenceables: ObjectReferenceableEntry[] = [];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private parentBuilder: ReferencesBuilder<any> | null;
+
+  private prefix: string;
+
+  public constructor(
+    baseObject: T,
+    prefix?: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    parentBuilder: ReferencesBuilder<any> | null = null
+  ) {
+    this.baseObject = baseObject;
+    this.prefix = prefix || '';
+    this.parentBuilder = parentBuilder;
   }
 
-  if (typeof object !== 'object') {
-    throw new Error(
-      `Found non-object when expected object (${prefix} in ${prefix}.${remainingPath})`
+  public withPrefix<Prefix extends FieldPath<T>>(
+    prefix: Prefix
+  ): ReferencesBuilder<FieldPathValue<T, Prefix>> {
+    return new ReferencesBuilder(
+      R.path(pathToParts(prefix), this.baseObject) as FieldPathValue<T, Prefix>,
+      prefix,
+      this
     );
   }
 
-  return walkObjectRecursive(
-    (object as Record<string, unknown>)[currentPart],
-    getValues,
-    `${prefix ? `${prefix}.` : ''}${currentPart}`,
-    newRemainingPath,
-    newParents
-  );
-}
+  public addReference<Path extends FieldPath<T>>(
+    path: Path,
+    reference: FieldPathValue<T, Path> extends string
+      ? Omit<ObjectReferenceEntry, 'path' | 'key' | 'name'> & {
+          key?: string;
+          name?: string;
+        }
+      : never
+  ): ReferencesBuilder<T> {
+    const name = reference.name || R.path(pathToParts(path), this.baseObject);
+    if (!name) {
+      throw new Error(`Cannot find value of reference ${path}`);
+    }
+    const fullPath = this.prefix ? `${this.prefix}.${path}` : path;
+    const constructedReference = {
+      ...reference,
+      key: reference.key || name,
+      name,
+    };
+    if (this.parentBuilder) {
+      this.parentBuilder.addReference(fullPath, constructedReference);
+    } else {
+      this.references.push({ ...constructedReference, path: fullPath });
+    }
+    return this;
+  }
 
-export function findReferencableEntries(
-  object: unknown,
-  reference: ObjectReferenceable
-): ObjectReferenceableEntry[] {
-  return walkObjectRecursive(
-    object,
-    (foundObject, path, parents) => {
-      const objectDict = foundObject as Record<string, string>;
-      const name = objectDict[reference.nameProperty];
-
-      if (typeof name !== 'string') {
-        throw new Error(
-          `Name of reference at ${path} must be a string, but got ${typeof name}`
+  public addReferences<Path extends GlobFieldPath<T>>(
+    path: Path,
+    {
+      generateKey,
+      ...config
+    }: GlobFieldPathValue<T, Path> extends string
+      ? Omit<ObjectReferenceEntry, 'path' | 'key' | 'name'> & {
+          generateKey?: (name: string) => string;
+        }
+      : never
+  ): ReferencesBuilder<T> {
+    walkGlobPathRecursive(
+      this.baseObject,
+      (name, fullPath) => {
+        if (typeof name !== 'string') {
+          throw new Error(
+            `Found non-string when expected string (${fullPath})`
+          );
+        }
+        const constructedReference = {
+          ...config,
+          key: generateKey ? generateKey(name) : name,
+        };
+        this.addReference(
+          fullPath as FieldPath<T>,
+          // tricky to hack in
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+          constructedReference as any
         );
-      }
+      },
+      '',
+      path
+    );
+    return this;
+  }
 
-      const id = objectDict[reference.idProperty || reference.nameProperty];
+  public addReferenceable(
+    referenceable: Omit<ObjectReferenceableEntry, 'key'> & { key?: string }
+  ): ReferencesBuilder<T> {
+    const constructedReferenceable = {
+      ...referenceable,
+      key: referenceable.key || referenceable.name,
+    };
+    if (this.parentBuilder) {
+      this.parentBuilder.addReferenceable(constructedReferenceable);
+    } else {
+      this.referenceables.push(constructedReferenceable);
+    }
+    return this;
+  }
 
-      if (typeof id !== 'string') {
-        throw new Error(
-          `ID of reference at ${path} must be a string, but got ${typeof id}`
-        );
-      }
-
-      if (
-        reference.shouldInclude &&
-        !reference.shouldInclude(name, parents, object)
-      ) {
-        return [];
-      }
-
-      return [
-        {
-          id: objectDict[reference.idProperty || reference.nameProperty],
-          name,
-          key: reference.mapToKey
-            ? reference.mapToKey(name, [foundObject, ...parents], object)
-            : name,
-          path,
-        },
-      ];
-    },
-    '',
-    reference.path
-  );
-}
-
-export function findReferenceEntries(
-  object: unknown,
-  reference: ObjectReference
-): ObjectReferenceEntry[] {
-  return walkObjectRecursive(
-    object,
-    (foundObject, path, parents) => {
-      if (typeof foundObject !== 'string') {
-        throw new Error(
-          `Name of reference at ${path} must be a string, but got ${typeof foundObject}`
-        );
-      }
-
-      if (
-        reference.shouldInclude &&
-        !reference.shouldInclude(foundObject, parents, object)
-      ) {
-        return [];
-      }
-
-      return [
-        {
-          name: foundObject,
-          key: reference.mapToKey
-            ? reference.mapToKey(foundObject, parents, object)
-            : foundObject,
-          path,
-          referenceName: reference.name,
-        },
-      ];
-    },
-    '',
-    reference.path
-  );
+  public build(): GetReferencesResult {
+    return {
+      referenceables: this.referenceables,
+      references: this.references,
+    };
+  }
 }
 
 export interface FixReferenceRenamesOptions {
@@ -174,97 +222,72 @@ interface RenameEntry {
   key: string;
   from: string;
   to: string;
+  category: string;
 }
 
 export function fixReferenceRenames<T>(
   oldConfig: T,
   newConfig: T,
-  referencables: ObjectReferenceable[],
-  references: ObjectReference[],
+  getReferences: GetReferencesFunction<T>,
   options?: FixReferenceRenamesOptions
 ): T {
   // run fix repeatedly until we have no more renames (allows renames of references to references)
   let previousConfig = oldConfig;
   let currentConfig = newConfig;
 
-  const getRenameEntries = (
-    referenceable: ObjectReferenceable
-  ): RenameEntry[] => {
-    const oldEntries = findReferencableEntries(previousConfig, referenceable);
-    const newEntries = findReferencableEntries(currentConfig, referenceable);
+  const renameReferences = (
+    config: T,
+    references: ObjectReferenceEntry[],
+    renameEntry: RenameEntry
+  ): T => {
+    // find references to rename
+    const referencesToRename = references
+      .filter(
+        (r) => r.category === renameEntry.category && r.key === renameEntry.key
+      )
+      .filter(
+        (r) =>
+          !options?.ignoredReferences ||
+          !r.referenceType ||
+          !options?.ignoredReferences.includes(r.referenceType)
+      );
 
-    return newEntries
+    return referencesToRename.reduce((priorConfig, entry) => {
+      const lens = R.lensPath(pathToParts(entry.path));
+      return R.set(lens, renameEntry.to, priorConfig) as T;
+    }, config);
+  };
+
+  for (let i = 0; i < 100; i += 1) {
+    const { referenceables: oldReferenceables } = getReferences(previousConfig);
+    const { referenceables: newReferenceables, references: newReferences } =
+      getReferences(currentConfig);
+
+    const renamedReferenceables = newReferenceables
       .map((entry) => {
-        const oldEntry = oldEntries.find((e) => e.id === entry.id);
+        const oldEntry = oldReferenceables.find(
+          (e) => e.id === entry.id && e.category === entry.category
+        );
         if (oldEntry && oldEntry.name !== entry.name) {
           return {
             key: oldEntry.key,
             from: oldEntry.name,
             to: entry.name,
+            category: oldEntry.category,
           };
         }
         return null;
       })
       .filter(notEmpty);
-  };
 
-  const renameEntryForCategory = (
-    config: T,
-    category: string,
-    renameEntries: RenameEntry[]
-  ): T => {
-    // find references to category
-    const referencesForCategory = references.filter(
-      (r) => r.category === category
-    );
-    const referenceEntries = referencesForCategory
-      .flatMap((reference) => findReferenceEntries(currentConfig, reference))
-      .filter(
-        (r) =>
-          !options?.ignoredReferences ||
-          !r.referenceName ||
-          !options?.ignoredReferences.includes(r.referenceName)
-      );
-    return referenceEntries.reduce((referenceObject, entry) => {
-      const renamedTo = renameEntries.find((r) => r.key === entry.key)?.to;
-      if (!renamedTo) {
-        return referenceObject;
-      }
-
-      const lens = R.lensPath(
-        entry.path
-          .split('.')
-          .map((key) => (/^[0-9]+$/.test(key) ? parseInt(key, 10) : key))
-      );
-      return R.set(lens, renamedTo, referenceObject) as T;
-    }, config);
-  };
-
-  for (let i = 0; i < 100; i += 1) {
-    const renamedEntriesByCategory = R.zipObj(
-      referencables.map((r) => r.category),
-      referencables.map(getRenameEntries)
-    );
-
-    if (
-      Object.keys(renamedEntriesByCategory).every(
-        (category) => renamedEntriesByCategory[category].length === 0
-      )
-    ) {
+    if (!renamedReferenceables.length) {
       return currentConfig;
     }
 
     previousConfig = currentConfig;
-    currentConfig = Object.keys(renamedEntriesByCategory).reduce(
-      (categoryObject, category) => {
-        const renamedEntriesForCategory = renamedEntriesByCategory[category];
-
-        return renameEntryForCategory(
-          categoryObject,
-          category,
-          renamedEntriesForCategory
-        );
-      },
+    currentConfig = renamedReferenceables.reduce(
+      (priorConfig, renamedReferenceable) =>
+        renameReferences(priorConfig, newReferences, renamedReferenceable),
       currentConfig
     );
   }

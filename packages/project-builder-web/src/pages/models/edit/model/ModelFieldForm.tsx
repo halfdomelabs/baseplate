@@ -79,8 +79,8 @@ function ModelFieldForm({
           `${originalModel.name}.${originalField.name}`
         ]?.filter(
           (ref) =>
-            ref.referenceName !== 'modelPrimaryKey' &&
-            ref.referenceName !== 'modelLocalRelation'
+            ref.referenceType !== 'modelPrimaryKey' &&
+            ref.referenceType !== 'modelLocalRelation'
         );
         if (references?.length) {
           toast.error(

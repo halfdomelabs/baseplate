@@ -1,5 +1,7 @@
 import * as yup from 'yup';
 import { randomUid } from '@src/utils/randomUid';
+import { MakeUndefinableFieldsOptional } from '@src/utils/types';
+import { ReferencesBuilder } from '../references';
 
 export const authRoleSchema = yup.object({
   uid: yup.string().default(randomUid),
@@ -37,4 +39,25 @@ export const authSchema = yup.object({
     ),
 });
 
-export type AuthConfig = yup.InferType<typeof authSchema>;
+export type AuthConfig = MakeUndefinableFieldsOptional<
+  yup.InferType<typeof authSchema>
+>;
+
+export function buildAuthReferences(
+  config: AuthConfig,
+  builder: ReferencesBuilder<AuthConfig | undefined>
+): void {
+  config.roles.forEach((role) => {
+    builder.addReferenceable({
+      category: 'role',
+      id: role.uid,
+      name: role.name,
+    });
+  });
+
+  builder
+    .addReference('userModel', { category: 'model' })
+    .addReference('userRoleModel', { category: 'model' })
+    .addReference('authFeaturePath', { category: 'feature' })
+    .addReference('accountsFeaturePath', { category: 'feature' });
+}
