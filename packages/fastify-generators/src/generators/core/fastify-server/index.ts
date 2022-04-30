@@ -67,7 +67,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
 
     node.addPackages({
       fastify: '^3.28.0',
-      'fastify-helmet': '^7.0.1',
+      '@fastify/helmet': '^8.0.0',
       'fastify-plugin': '^3.0.1',
       nanoid: '^3.1.30',
     });
@@ -76,7 +76,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       name: 'helmet',
       plugin: TypescriptCodeUtils.createExpression(
         'helmet',
-        "import helmet from 'fastify-helmet'"
+        "import helmet from '@fastify/helmet'"
       ),
       options: TypescriptCodeUtils.createExpression(
         `{
