@@ -45,6 +45,16 @@ const ReactRouterGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node, react, reactApp, typescript }) {
     node.addPackage('react-router-dom', '^6.2.2');
     node.addDevPackage('@types/react-router-dom', '^5.3.3');
+
+    // add forced resolution due to bug where @types/react are resolving to ^18
+    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/59809
+    // TODO: Fix and remove when we upgrade React to 18
+    node.mergeExtraProperties({
+      resolutions: {
+        '@types/react': '^17.0.20',
+      },
+    });
+
     const routes: ReactRoute[] = [];
     const layouts: ReactRouteLayout[] = [];
 

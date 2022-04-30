@@ -27,7 +27,10 @@ export const jwtService = {
       if (err instanceof Error && err.name === 'TokenExpiredError') {
         throw new UnauthorizedError('Token expired', 'token-expired');
       }
-      throw new InvalidTokenError('Error validating token');
+      if (err instanceof Error) {
+        throw new InvalidTokenError(`Error validating token: ${err.message}`);
+      }
+      throw new InvalidTokenError(`Error validating token`);
     }
   },
 };

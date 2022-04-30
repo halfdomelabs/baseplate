@@ -1,6 +1,14 @@
 // @ts-nocheck
 import classNames from 'classnames';
-import { UseFormRegisterReturn } from 'react-hook-form';
+import {
+  Control,
+  FieldError,
+  FieldPath,
+  get,
+  UseFormRegisterReturn,
+  useFormState,
+} from 'react-hook-form';
+import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
 interface Props {

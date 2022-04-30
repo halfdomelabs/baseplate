@@ -57,7 +57,9 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
   statusCode?: number;
   extraData?: Record<string, unknown>;
   reqId?: string;
-}`
+}`,
+              undefined,
+              { headerKey: 'ErrorExtensions' }
             ),
           ],
         }

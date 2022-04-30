@@ -65,7 +65,9 @@ export function createAuthService(): AuthService {
       if (
         err instanceof ApolloError &&
         err.graphQLErrors.some(
-          (gqlErr) => gqlErr.extensions?.code === 'invalid-token'
+          (gqlErr) =>
+            gqlErr.extensions?.code === 'invalid-token' ||
+            gqlErr.extensions?.code === 'token-expired'
         )
       ) {
         // log us out if the refresh token is invalid

@@ -16,12 +16,25 @@ const authLink = setContext(async () => {
 // AUTH_LINK:END
 
 // REFRESH_TOKEN_LINK:START
-const refreshTokenLink = onError(({ networkError, operation, forward }) => {
-  const networkServerError = networkError as ServerError;
-  if (networkServerError?.statusCode === 401 && authService.isAuthenticated()) {
-    authService.invalidateAccessToken();
-    return forward(operation);
+const refreshTokenLink = onError(
+  ({ graphQLErrors, networkError, operation, forward }) => {
+    const hasInvalidTokenError = graphQLErrors?.some((error) => {
+      const { extensions } = error;
+      const errorExtensions: ErrorExtensions | undefined = extensions;
+      return (
+        errorExtensions.code === 'invalid-token' ||
+        errorExtensions.code === 'token-expired'
+      );
+    });
+    if (
+      ((networkError as ServerError)?.statusCode === 401 ||
+        hasInvalidTokenError) &&
+      authService.isAuthenticated()
+    ) {
+      authService.invalidateAccessToken();
+      return forward(operation);
+    }
+    return undefined;
   }
-  return undefined;
-});
+);
 // REFRESH_TOKEN_LINK:END
