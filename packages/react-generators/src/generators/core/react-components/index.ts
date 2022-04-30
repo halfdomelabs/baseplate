@@ -87,11 +87,11 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         reactComponents: {
           registerComponent: (entry) => allReactComponents.push(entry),
-          getComponentsFolder: () => `${srcFolder}/components/common`,
-          getComponentsImport: () => `@/${srcFolder}/components/common`,
+          getComponentsFolder: () => `${srcFolder}/components`,
+          getComponentsImport: () => `@/${srcFolder}/components`,
           getImportMap: () => ({
             '%react-components': {
-              path: `@/${srcFolder}/components/common`,
+              path: `@/${srcFolder}/components`,
               allowedImports: REACT_COMPONENTS.map((entry) => entry.name),
             },
             '%react-components/useStatus': {
@@ -141,7 +141,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         await builder.apply(
           writeFormattedAction({
             contents: componentIndex,
-            destination: `${srcFolder}/components/common/index.ts`,
+            destination: `${srcFolder}/components/index.ts`,
           })
         );
       },
