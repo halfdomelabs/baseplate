@@ -4,6 +4,7 @@ documents: 'src/**/*.gql'
 config:
   scalars:
     DateTime: string
+    Date: string
     Uuid: string
 generates:
   src/generated/graphql.tsx:
