@@ -66,6 +66,8 @@ const AuthHooksGenerator = createGeneratorWithChildren({
     const [useSessionImport, useSessionPath] = makeImportAndFilePath(
       `${hookFolder}/useSession.ts`
     );
+    const [useRequiredUserIdImport, useRequiredUserIdPath] =
+      makeImportAndFilePath(`${hookFolder}/useRequiredUserId.ts`);
 
     node.addPackages({
       'use-subscription': '^1.5.1',
@@ -88,6 +90,10 @@ const AuthHooksGenerator = createGeneratorWithChildren({
             '%auth-hooks/useLogOut': {
               path: useLogOutImport,
               allowedImports: ['useLogOut'],
+            },
+            '%auth-hooks/useRequiredUserId': {
+              path: useRequiredUserIdImport,
+              allowedImports: ['useRequiredUserId'],
             },
             '%auth-hooks/useSession': {
               path: useSessionImport,
@@ -149,6 +155,13 @@ const AuthHooksGenerator = createGeneratorWithChildren({
             source: 'hooks/useSession.ts',
             destination: useSessionPath,
             importMappers: [authService],
+          })
+        );
+
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'hooks/useRequiredUserId.ts',
+            destination: useRequiredUserIdPath,
           })
         );
       },

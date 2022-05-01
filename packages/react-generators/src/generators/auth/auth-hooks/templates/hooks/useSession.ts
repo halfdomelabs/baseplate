@@ -6,7 +6,6 @@ import { authService } from '%auth-service';
 
 export interface SessionData {
   userId: string | null;
-  requiredUserId: () => string;
   isAuthenticated: boolean;
 }
 
