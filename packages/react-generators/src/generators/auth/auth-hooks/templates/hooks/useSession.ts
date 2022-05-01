@@ -6,6 +6,7 @@ import { authService } from '%auth-service';
 
 export interface SessionData {
   userId: string | null;
+  requiredUserId: () => string;
   isAuthenticated: boolean;
 }
 
@@ -21,6 +22,12 @@ export function useSession(): SessionData {
   const sessionData: SessionData = useMemo(
     () => ({
       userId,
+      requiredUserId: () => {
+        if (!userId) {
+          throw new Error('User is not authenticated');
+        }
+        return userId;
+      },
       isAuthenticated: !!userId,
     }),
     [userId]
