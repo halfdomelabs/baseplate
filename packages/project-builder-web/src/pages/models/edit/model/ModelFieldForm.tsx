@@ -194,6 +194,14 @@ function ModelFieldForm({
             register={register(`model.fields.${idx}.type`)}
             error={errors.model?.fields?.[idx].name?.message}
           />
+          {watchedField.type === 'string' && (
+            <TextInput.LabelledController
+              label="Default Value"
+              className="w-full"
+              control={control}
+              name={`model.fields.${idx}.options.default`}
+            />
+          )}
           <div className="flex flex-row space-x-4">
             <CheckedInput.Labelled
               label="ID"

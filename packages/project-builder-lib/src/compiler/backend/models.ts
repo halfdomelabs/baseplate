@@ -16,6 +16,7 @@ function buildScalarField(field: ModelScalarFieldConfig): unknown {
       autoGenerate: options.genUuid,
       defaultToNow: options.defaultToNow,
       updatedAt: options.updatedAt,
+      default: options.default,
     },
     optional: field.isOptional,
     unique: field.isUnique,

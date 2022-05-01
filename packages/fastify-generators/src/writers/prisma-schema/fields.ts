@@ -1,6 +1,7 @@
 import { snakeCase } from 'change-case';
 import * as yup from 'yup';
 import { ScalarFieldType } from '@src/types/fieldTypes';
+import { doubleQuot } from '@src/utils/string';
 import { PrismaModelAttribute, PrismaModelField } from './model-writer';
 
 type GetConfigType<Schema extends Record<string, yup.AnySchema>> = {
@@ -30,7 +31,18 @@ function createConfigMap<
 }
 
 export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
-  string: { prismaType: 'String', optionsSchema: {} },
+  string: createConfig({
+    prismaType: 'String',
+    optionsSchema: {
+      default: yup.string(),
+    },
+    getAttributes: (config) => {
+      if (config?.default) {
+        return [{ name: '@default', args: [doubleQuot(config.default)] }];
+      }
+      return [];
+    },
+  }),
   int: { prismaType: 'Int', optionsSchema: {} },
   float: { prismaType: 'Float', optionsSchema: {} },
   decimal: { prismaType: 'Decimal', optionsSchema: {} },

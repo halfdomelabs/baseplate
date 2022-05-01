@@ -22,6 +22,8 @@ export const modelScalarFieldSchema = yup.object({
   isUnique: yup.boolean(),
   options: yup
     .object({
+      // string options
+      default: yup.string(),
       // uuid options
       genUuid: yup.boolean(),
       // date options
