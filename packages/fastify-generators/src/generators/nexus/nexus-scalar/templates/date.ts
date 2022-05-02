@@ -8,7 +8,9 @@ const DATE_REGEX = /^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/;
 function parseDateString(value: string): Date {
   // timezones can be very wonky so we expect only a simple YYYY-MM-DD string
   if (!DATE_REGEX.test(value)) {
-    throw new BadRequestError('Date field must be provided as a string');
+    throw new BadRequestError(
+      'Date field must be provided as a string with format YYYY-MM-DD'
+    );
   }
   // this ensures that we will always be using UTC timezone
   return new Date(`${value}T00:00:00.000Z`);
@@ -24,7 +26,7 @@ export const DateScalar = scalarType({
   description: 'Date custom scalar type',
   sourceType: 'Date | string',
   parseValue(value: unknown) {
-    if (value === 'string') {
+    if (typeof value === 'string') {
       return parseDateString(value);
     }
     throw new BadRequestError('Date field must be provided as a string');
