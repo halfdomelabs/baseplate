@@ -11,6 +11,10 @@ export interface WriteFileOptions {
    * Whether we should never overwrite the file (e.g. for placeholder images)
    */
   neverOverwrite?: boolean;
+  /**
+   * Contents of the clean file (such that the diff will be merged into the existing file)
+   */
+  cleanContents?: string;
 }
 
 export interface PostWriteCommandOptions {

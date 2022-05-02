@@ -48,6 +48,101 @@ describe('writeGeneratorOutput', () => {
     expect(formatFunction).toHaveBeenCalledWith('hello', '/root/formatted.txt');
   });
 
+  it('should perform 3-way merge', async () => {
+    vol.fromJSON({
+      '/root/file.txt': ['hello', 'bonjour', 'something', 'bye'].join('\n'),
+      '/root/file2.txt': ['abc', 'def', 'ghi', 'jki'].join('\n'),
+    });
+
+    await writeGeneratorOutput(
+      {
+        files: {
+          'file.txt': {
+            contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
+            options: {
+              cleanContents: ['hello', 'hi', 'something', 'bye'].join('\n'),
+            },
+          },
+          'file2.txt': {
+            contents: ['123', '456', '789', '012'].join('\n'),
+            options: {
+              cleanContents: ['123', '456', '789', '012'].join('\n'),
+            },
+          },
+        },
+        postWriteCommands: [],
+      },
+      '/root'
+    );
+    expect(vol.toJSON()).toEqual({
+      '/root/file.txt': ['hello', 'bonjour', 'something', 'adios'].join('\n'),
+      '/root/file2.txt': ['abc', 'def', 'ghi', 'jki'].join('\n'),
+    });
+  });
+
+  it('should perform 3-way merge with conflict', async () => {
+    vol.fromJSON({
+      '/root/file.txt': ['hello', 'bonjour', 'something', 'bye'].join('\n'),
+    });
+
+    await writeGeneratorOutput(
+      {
+        files: {
+          'file.txt': {
+            contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
+            options: {
+              cleanContents: ['hello', 'hola', 'something', 'bye'].join('\n'),
+            },
+          },
+        },
+        postWriteCommands: [],
+      },
+      '/root'
+    );
+    expect(vol.toJSON()).toEqual({
+      '/root/file.txt': [
+        'hello',
+        '<<<<<<< existing',
+        'bonjour',
+        '=======',
+        'hi',
+        '>>>>>>> baseplate',
+        'something',
+        'adios',
+      ].join('\n'),
+    });
+  });
+
+  it('should perform 2-way merge with conflict', async () => {
+    vol.fromJSON({
+      '/root/file.txt': ['hello', 'hi', 'something', 'bye'].join('\n'),
+    });
+
+    await writeGeneratorOutput(
+      {
+        files: {
+          'file.txt': {
+            contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
+          },
+        },
+        postWriteCommands: [],
+      },
+      '/root'
+    );
+    expect(vol.toJSON()).toEqual({
+      '/root/file.txt': [
+        'hello',
+        'hi',
+        'something',
+        '<<<<<<< existing',
+        'bye',
+        '=======',
+        'adios',
+        '>>>>>>> baseplate',
+      ].join('\n'),
+    });
+  });
+
   it('should never overwrite files with neverOverwrite set', async () => {
     vol.fromJSON({ '/root/file.txt': 'hi' });
 
@@ -104,7 +199,7 @@ describe('writeGeneratorOutput', () => {
       {
         files: {
           'file.txt': { contents: 'hi' },
-          'file2.txt': { contents: 'hello' },
+          'file2.txt': { contents: 'hello', options: { cleanContents: 'hi2' } },
         },
         postWriteCommands: [
           {
@@ -122,6 +217,7 @@ describe('writeGeneratorOutput', () => {
     });
 
     expect(mockedChildProcess.exec.mock.calls[0][0]).toBe('custom');
+    expect(mockedChildProcess.exec).toHaveBeenCalledTimes(1);
   });
 
   it('should run post-write commands only on modified binary files', async () => {
