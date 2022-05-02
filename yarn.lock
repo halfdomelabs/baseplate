@@ -11160,6 +11160,11 @@ no-case@^3.0.4:
     lower-case "^2.0.2"
     tslib "^2.0.3"
 
+node-diff3@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/node-diff3/-/node-diff3-3.1.0.tgz#df2c949447d3314e9d263bd6106768bd8cfcb722"
+  integrity sha512-Po+8MaiOAJkT3YJZPiBEszjpxs29mzIQtk2Idi+Xl0x8WIhkg2Rcinhy/wi8r2YMyPTd6IH86seUQAfj1USPiA==
+
 node-fetch@2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"

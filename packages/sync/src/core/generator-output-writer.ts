@@ -1,64 +1,131 @@
 import childProcess from 'child_process';
 import path from 'path';
 import { promisify } from 'util';
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import R from 'ramda';
 import { logToConsole } from '@src/utils/logger';
+import { mergeStrings } from '@src/utils/merge';
 import { FileData, GeneratorOutput } from './generator-output';
 
 const exec = promisify(childProcess.exec);
 
-async function contentEquals(
-  contents: string | Buffer,
-  filePath: string
-): Promise<boolean> {
+async function mergeContents(
+  newContents: string,
+  filePath: string,
+  cleanContents?: string
+): Promise<{ contents: string; hasConflict: boolean } | null> {
   const pathExists = await fs.pathExists(filePath);
   if (!pathExists) {
-    return false;
+    return { contents: newContents, hasConflict: false };
   }
-  if (contents instanceof Buffer) {
-    const fileContents = await fs.readFile(filePath);
-    return contents.equals(fileContents);
+  const existingContents = await fs.readFile(filePath, 'utf8');
+
+  if (
+    existingContents.includes('<<<<<<<') &&
+    existingContents.includes('>>>>>>>')
+  ) {
+    throw new Error(`Conflict detected in ${filePath}. Stopping write.`);
   }
-  const fileString = await fs.readFile(filePath, 'utf8');
-  // HACK: Can create an option for this in the future
+
+  // we will skip writing the file if the contents are unchanged from before or the
+  // new contents matches the existing contents
+
+  // TODO: HACK: Can create an option for this in the future
   // Necessary because package.json files are not formatted using a provided formatter
   if (filePath.endsWith('/package.json')) {
-    return R.equals(JSON.parse(contents), JSON.parse(fileString));
+    if (
+      R.equals(JSON.parse(existingContents), JSON.parse(newContents)) ||
+      (cleanContents &&
+        R.equals(JSON.parse(cleanContents), JSON.parse(newContents)))
+    ) {
+      return null;
+    }
+  } else if (
+    existingContents === newContents ||
+    cleanContents === newContents
+  ) {
+    return null;
   }
-  return contents === fileString;
+
+  return mergeStrings(existingContents, newContents, cleanContents);
 }
 
-async function writeFile(filePath: string, data: FileData): Promise<boolean> {
-  let formattedContents = data.contents;
-  if (data.formatter) {
-    if (data.contents instanceof Buffer) {
+interface ModifiedWriteFileResult {
+  type: 'modified';
+  path: string;
+  contents: string | Buffer;
+  hasConflict?: boolean;
+  originalPath: string;
+}
+
+interface SkippedWriteFileResult {
+  type: 'skipped';
+}
+
+type WriteFileResult = ModifiedWriteFileResult | SkippedWriteFileResult;
+
+async function writeFile(
+  filePath: string,
+  data: FileData,
+  originalPath: string
+): Promise<WriteFileResult> {
+  // if file exists and we never overwrite, return false
+  const { options, contents, formatter } = data;
+  if (options?.neverOverwrite) {
+    const fileExists = await fs.pathExists(filePath);
+    if (fileExists) {
+      return { type: 'skipped' };
+    }
+  }
+
+  if (contents instanceof Buffer) {
+    if (formatter) {
       throw new Error(`Cannot format Buffer contents for ${filePath}`);
     }
+
+    // we don't attempt 3-way merge on Buffer contents
+
+    const pathExists = await fs.pathExists(filePath);
+    if (pathExists) {
+      const existingContents = await fs.readFile(filePath);
+      if (contents.equals(existingContents)) {
+        return { type: 'skipped' };
+      }
+    }
+    return { type: 'modified', path: filePath, contents, originalPath };
+  }
+
+  let formattedContents = contents;
+  if (formatter) {
     try {
-      formattedContents = await data.formatter.format(data.contents, filePath);
+      formattedContents = await formatter.format(contents, filePath);
     } catch (err) {
       console.error(`Error formatting ${filePath}\n`, err);
     }
   }
-  // if file exists and we never overwrite, return false
-  if (data.options?.neverOverwrite) {
-    const fileExists = await fs.pathExists(filePath);
-    if (fileExists) {
-      return false;
-    }
-  }
-  // check if file matches contents already
-  const isContentSame = await contentEquals(formattedContents, filePath);
+  // check if we need to do a 3-way merge
+  const cleanContents = options?.cleanContents;
 
-  if (isContentSame) {
-    return false;
+  // attempt 3-way merge
+  const mergeResult = await mergeContents(
+    formattedContents,
+    filePath,
+    cleanContents
+  );
+  // if there's no merge result, existing contents matches new contents so no modification is required
+  if (!mergeResult) {
+    return { type: 'skipped' };
   }
-  await fs.ensureDir(path.dirname(filePath));
-  await fs.writeFile(filePath, formattedContents, {
-    encoding: 'utf-8',
-  });
-  return true;
+  const { contents: mergedContents, hasConflict } = mergeResult;
+
+  return {
+    type: 'modified',
+    path: filePath,
+    contents: mergedContents,
+    hasConflict,
+    originalPath,
+  };
 }
 
 /* eslint-disable no-await-in-loop */
@@ -79,17 +146,49 @@ export async function writeGeneratorOutput(
   outputDirectory: string
 ): Promise<void> {
   // write files
-  const modifiedFiles: string[] = [];
   const filenames = Object.keys(output.files);
 
-  // TODO: parallelize
-  for (const filename of filenames) {
-    const wasModified = await writeFile(
-      path.join(outputDirectory, filename),
-      output.files[filename]
+  const isModifiedFileResult = (
+    result: WriteFileResult
+  ): result is ModifiedWriteFileResult => result.type === 'modified';
+
+  const fileResults = await Promise.all(
+    filenames.map((filename) =>
+      writeFile(
+        path.join(outputDirectory, filename),
+        output.files[filename],
+        filename
+      )
+    )
+  );
+
+  const modifiedFiles = fileResults.filter(isModifiedFileResult);
+  const modifiedFilenames = modifiedFiles.map((result) => result.originalPath);
+  const conflictFilenames: string[] = modifiedFiles
+    .filter((result) => result.hasConflict)
+    .map((result) => result.originalPath);
+  // TODO: parallelize?
+  for (const modifiedFile of modifiedFiles) {
+    await fs.ensureDir(path.dirname(modifiedFile.path));
+    if (modifiedFile.contents instanceof Buffer) {
+      await fs.writeFile(modifiedFile.path, modifiedFile.contents);
+    } else {
+      await fs.writeFile(modifiedFile.path, modifiedFile.contents, {
+        encoding: 'utf-8',
+      });
+    }
+  }
+
+  if (conflictFilenames.length) {
+    logToConsole(
+      chalk.red(
+        `Conflicts occurred while writing files:\n${conflictFilenames.join(
+          '\n'
+        )}`
+      )
     );
-    if (wasModified) {
-      modifiedFiles.push(filename);
+    if (output.postWriteCommands.length) {
+      logToConsole(`\nOnce resolved, please run the following commands:`);
     }
   }
 
@@ -108,17 +207,22 @@ export async function writeGeneratorOutput(
 
     if (
       command.options?.onlyIfChanged == null ||
-      changedList.some((file) => modifiedFiles.includes(file))
+      changedList.some((file) => modifiedFilenames.includes(file))
     ) {
       const commandString = NODE_COMMANDS.includes(
         command.command.split(' ')[0]
       )
         ? `${nodePrefix}${command.command}`
         : command.command;
-      logToConsole(`Running ${commandString}...`);
-      await exec(commandString, {
-        cwd: path.join(outputDirectory, workingDirectory),
-      });
+
+      if (conflictFilenames.length) {
+        logToConsole(command.command);
+      } else {
+        logToConsole(`Running ${commandString}...`);
+        await exec(commandString, {
+          cwd: path.join(outputDirectory, workingDirectory),
+        });
+      }
     }
   }
 }
