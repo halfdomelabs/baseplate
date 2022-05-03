@@ -152,7 +152,21 @@ export async function generateCleanAppForDirectory(
 
   // strip out any post write commands
   await engine.writeOutput(
-    { ...output, postWriteCommands: [] },
+    {
+      ...output,
+      files: R.mergeAll(
+        Object.entries(output.files).map(([filePath, file]) => {
+          // reject any files that are buffers since we can't merge them
+          if (file.contents instanceof Buffer) {
+            return {};
+          }
+          return {
+            [filePath]: file,
+          };
+        })
+      ),
+      postWriteCommands: [],
+    },
     cleanDirectory
   );
   console.log('Project successfully written to clean project!');

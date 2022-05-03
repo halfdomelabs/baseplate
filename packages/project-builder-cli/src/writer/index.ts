@@ -77,36 +77,3 @@ export async function writeApplicationFiles(
   );
   return modifiedApps.filter(notEmpty);
 }
-
-// async function areAppFilesModified(
-//   baseDirectory: string,
-//   app: AppEntry
-// ): Promise<boolean> {
-//   const appDirectory = path.join(baseDirectory, app.rootDirectory);
-//   const modifiedFiles = await Promise.all(
-//     app.files.map(async (file) => {
-//       const filePath = path.join(appDirectory, file.path);
-//       const fileExists = await fs.pathExists(filePath);
-//       if (!fileExists) {
-//         return true;
-//       }
-//       const existingContents = await fs.readFile(filePath, 'utf8');
-//       const jsonContent = stringify(file.jsonContent);
-//       return existingContents !== jsonContent;
-//     })
-//   );
-//   return modifiedFiles.some((f) => f);
-// }
-
-// export async function getModifiedApps(
-//   baseDirectory: string,
-//   apps: AppEntry[]
-// ): Promise<AppEntry[]> {
-//   const modifiedApps = await Promise.all(
-//     apps.map(async (app) => {
-//       const isModified = await areAppFilesModified(baseDirectory, app);
-//       return isModified ? app : null;
-//     })
-//   );
-//   return modifiedApps.filter(notEmpty);
-// }
