@@ -94,9 +94,6 @@ const PrettierGenerator = createGeneratorWithChildren({
         return {
           formatter: {
             format: async (input: string, fullPath: string) => {
-              if (fullPath.includes('index.html')) {
-                console.log(input);
-              }
               if (!PARSEABLE_EXTENSIONS.includes(path.extname(fullPath))) {
                 return input;
               }
