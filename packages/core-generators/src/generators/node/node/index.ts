@@ -187,7 +187,10 @@ const NodeGenerator = createGeneratorWithChildren({
           devDependencies: extractDependencies('dev'),
           engines: {
             node: `^${descriptor.nodeVersion}`,
-            yarn: `^${descriptor.yarnVersion}`,
+            // use major/minor version of Yarn
+            yarn: `^${semver.major(descriptor.yarnVersion)}.${semver.minor(
+              descriptor.yarnVersion
+            )}.0`,
           },
           volta: {
             node: descriptor.nodeVersion,
