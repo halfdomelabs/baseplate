@@ -29,6 +29,7 @@ export function mergeStrings(
       ...({
         label: { a: 'existing', b: 'baseplate' },
       } as Record<string, unknown>),
+      stringSeparator: '\n',
     });
     return {
       contents: mergeResult.result.join('\n'),
