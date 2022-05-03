@@ -8,6 +8,7 @@ import {
   writeJsonAction,
   createProviderType,
 } from '@baseplate/sync';
+import * as prettier from 'prettier';
 import requireResolve from 'resolve';
 import * as yup from 'yup';
 import { nodeProvider } from '../node';
@@ -75,31 +76,35 @@ const PrettierGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let prettierLib: PrettierModule;
-        let prettierLibNotFound = false;
+        let prettierLibPromise: Promise<PrettierModule> | undefined;
+
         return {
           formatter: {
             format: async (input: string, fullPath: string) => {
               if (!PARSEABLE_EXTENSIONS.includes(path.extname(fullPath))) {
                 return input;
               }
-              // no prettier lib found
-              if (prettierLibNotFound) {
-                return input;
-              }
-              if (!prettierLib) {
-                const prettierLibPath = await resolveModule(
-                  'prettier',
-                  fullPath
-                );
-                if (!prettierLibPath) {
-                  console.log(
-                    'Could not find prettier library. Run again once dependencies have been installed.'
+              if (!prettierLibPromise) {
+                prettierLibPromise = (async () => {
+                  const prettierLibPath = await resolveModule(
+                    'prettier',
+                    fullPath
                   );
-                  prettierLibNotFound = true;
-                  return input;
-                }
-                prettierLib = module.require(prettierLibPath) as PrettierModule;
+                  if (!prettierLibPath) {
+                    console.log(
+                      'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.'
+                    );
+                    return prettier;
+                  }
+                  return module.require(prettierLibPath) as PrettierModule;
+                })();
+              }
+
+              const prettierLib = await prettierLibPromise;
+
+              // no prettier lib found
+              if (!prettierLib) {
+                return input;
               }
               return prettierLib.format(input, {
                 ...prettierConfig,

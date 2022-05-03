@@ -48,7 +48,6 @@ export async function generateForDirectory(
 
   // check if the project directory exists
   const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
-  console.log(cleanDirectory);
 
   if (!cleanDirectoryExists) {
     await engine.writeOutput(output, projectDirectory);
