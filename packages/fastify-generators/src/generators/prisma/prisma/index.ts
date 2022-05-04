@@ -161,7 +161,10 @@ const PrismaGenerator = createGeneratorWithChildren({
         const formattedSchemaText = (await formatSchema({
           schema: schemaText,
         })) as string;
-        builder.writeFile('prisma/schema.prisma', formattedSchemaText);
+        builder.writeFile(
+          'prisma/schema.prisma',
+          `${formattedSchemaText.trimEnd()}\n`
+        );
 
         builder.addPostWriteCommand('yarn prisma generate', {
           onlyIfChanged: ['prisma/schema.prisma'],
