@@ -97,6 +97,13 @@ const FastifyGenerator = createGeneratorWithChildren({
         generator: '@baseplate/fastify/core/fastify-graceful-shutdown',
       },
     },
+    jest: {
+      provider: 'fastify-jest',
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/jest/fastify-jest',
+        peerProvider: true,
+      },
+    },
   }),
   dependencies: {
     node: nodeProvider,

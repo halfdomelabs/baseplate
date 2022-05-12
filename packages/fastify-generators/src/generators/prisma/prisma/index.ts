@@ -1,5 +1,6 @@
 import {
   copyTypescriptFileAction,
+  ImportMapper,
   nodeProvider,
   projectProvider,
   TypescriptCodeExpression,
@@ -35,7 +36,8 @@ export interface PrismaSchemaProvider {
 export const prismaSchemaProvider =
   createProviderType<PrismaSchemaProvider>('prisma-schema');
 
-export interface PrismaOutputProvider {
+export interface PrismaOutputProvider extends ImportMapper {
+  getPrismaServicePath(): string;
   getPrismaClient(): TypescriptCodeExpression;
   getPrismaModel(model: string): PrismaOutputModel;
   getPrismaModelExpression(model: string): TypescriptCodeExpression;
@@ -129,6 +131,13 @@ const PrismaGenerator = createGeneratorWithChildren({
           },
         },
         prismaOutput: {
+          getImportMap: () => ({
+            '%prisma-service': {
+              path: '@/src/services/prisma',
+              allowedImports: ['prisma'],
+            },
+          }),
+          getPrismaServicePath: () => '@/src/services/prisma',
           getPrismaClient: () =>
             TypescriptCodeUtils.createExpression(
               'prisma',

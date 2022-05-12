@@ -36,7 +36,11 @@ const JestGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node, typescript }) {
     const configMap = createNonOverwriteableMap<JestGeneratorConfig>(
       {
-        testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/'],
+        testPathIgnorePatterns: [
+          '<rootDir>/baseplate/',
+          '<rootDir>/dist/',
+          '<rootDir>/node_modules/',
+        ],
         customSetupBlocks: [],
       },
       { name: 'jest-config', mergeArraysUniquely: true }
