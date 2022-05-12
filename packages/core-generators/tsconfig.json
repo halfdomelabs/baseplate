@@ -2,7 +2,12 @@
   "extends": "@baseplate/tools/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "lib",
-    "declaration": true
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@generators/*": ["src/generators/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["**/generators/*/*/templates/**"]

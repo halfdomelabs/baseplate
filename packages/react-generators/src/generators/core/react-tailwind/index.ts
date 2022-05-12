@@ -69,6 +69,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
           copyFileAction({
             source: 'tailwind.config.js',
             destination: 'tailwind.config.js',
+            shouldFormat: true,
           })
         );
       },

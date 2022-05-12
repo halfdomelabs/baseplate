@@ -43,22 +43,15 @@ export async function buildProjectForDirectory(
   console.log(`Project written to ${resolvedDirectory}!`);
 }
 
-export async function buildToCleanFolder(
-  directory: string,
-  { regen }: { regen: boolean }
-): Promise<void> {
+export async function buildToCleanFolder(directory: string): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file
   const projectConfig = await loadAppJson(resolvedDirectory);
 
   const apps = compileApplications(projectConfig);
 
-  const modifiedApps = await writeApplicationFiles(resolvedDirectory, apps);
-
-  const appsToRegenerate = regen ? apps : modifiedApps;
-
   // eslint-disable-next-line no-restricted-syntax
-  for (const app of appsToRegenerate) {
+  for (const app of apps) {
     // eslint-disable-next-line no-await-in-loop
     await generateCleanAppForDirectory(resolvedDirectory, app);
   }

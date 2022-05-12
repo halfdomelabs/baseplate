@@ -47,6 +47,10 @@ export function buildFastify(builder: AppEntryBuilder): unknown {
         peerProvider: true,
         defaultPort: projectConfig.portBase + 432,
       },
+      $prismaJest: {
+        generator: '@baseplate/fastify/jest/prisma-jest',
+        peerProvider: true,
+      },
       $nexus: {
         generator: '@baseplate/fastify/nexus/nexus',
         peerProvider: true,

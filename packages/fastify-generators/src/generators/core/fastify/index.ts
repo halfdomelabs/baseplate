@@ -97,6 +97,13 @@ const FastifyGenerator = createGeneratorWithChildren({
         generator: '@baseplate/fastify/core/fastify-graceful-shutdown',
       },
     },
+    jest: {
+      provider: 'fastify-jest',
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/jest/fastify-jest',
+        peerProvider: true,
+      },
+    },
   }),
   dependencies: {
     node: nodeProvider,
@@ -114,12 +121,6 @@ const FastifyGenerator = createGeneratorWithChildren({
       { devLoaders: ['tsconfig-paths/register'] },
       { name: 'fastify-config', mergeArraysUniquely: true }
     );
-
-    // TODO: Temporarily add jest here since we need it for eslint
-    node.addDevPackages({
-      '@types/jest': '^27.4.0',
-      jest: '^27.4.7',
-    });
 
     node.mergeExtraProperties({
       main: 'dist/index.js',

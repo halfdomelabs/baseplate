@@ -13,7 +13,10 @@ import {
   CopyTypescriptFileOptions,
 } from '../../../actions';
 import { TypescriptCodeBlock } from '../../../writers';
-import { PathMapEntry } from '../../../writers/typescript/imports';
+import {
+  PathMapEntry,
+  resolveModule,
+} from '../../../writers/typescript/imports';
 import {
   TypescriptTemplateConfig,
   TypescriptSourceFile,
@@ -51,6 +54,7 @@ export interface TypescriptProvider {
     destination: string,
     options?: WriteFileOptions
   ): BuilderAction;
+  resolveModule(moduleSpecifier: string, from: string): string;
 }
 
 export const typescriptProvider =
@@ -159,6 +163,10 @@ const TypescriptGenerator = createGeneratorWithChildren({
             file.addCodeEntries({ BLOCK: block });
             return file.renderToActionFromText('BLOCK', destination, options);
           },
+          resolveModule: (moduleSpecifier, from) =>
+            resolveModule(moduleSpecifier, from, {
+              pathMapEntries: getPathEntries(),
+            }),
         } as TypescriptProvider,
         typescriptConfig: {
           setTypescriptVersion(version) {

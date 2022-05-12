@@ -1,5 +1,4 @@
 import {
-  TypescriptCodeBlock,
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@baseplate/core-generators';
