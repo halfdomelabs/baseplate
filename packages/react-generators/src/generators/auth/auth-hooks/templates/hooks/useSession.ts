@@ -21,12 +21,6 @@ export function useSession(): SessionData {
   const sessionData: SessionData = useMemo(
     () => ({
       userId,
-      requiredUserId: () => {
-        if (!userId) {
-          throw new Error('User is not authenticated');
-        }
-        return userId;
-      },
       isAuthenticated: !!userId,
     }),
     [userId]

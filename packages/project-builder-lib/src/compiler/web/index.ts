@@ -1,3 +1,4 @@
+import { relative } from 'path-browserify';
 import { ProjectConfig, WebAppConfig } from '@src/schema';
 import { AppEntry } from '@src/types/files';
 import { AppEntryBuilder } from '../appEntryBuilder';
@@ -15,15 +16,16 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const backendApp = backendApps[0];
 
   // TODO: Extract out logic
-  const backendRelativePath = `../${backendApp.name}`;
-  // path.relative(
-  //   appConfig.packageLocation || `packages/${appConfig.name}`,
-  //   backendApp.packageLocation || `packages/${backendApp.name}`
-  // );
+  const backendRelativePath = relative(
+    appConfig.packageLocation || `packages/${appConfig.name}`,
+    backendApp.packageLocation || `packages/${backendApp.name}`
+  );
 
   return {
     name: 'react',
     generator: '@baseplate/react/core/react',
+    title: appConfig.title,
+    description: appConfig.description,
     children: {
       router: {
         children: {

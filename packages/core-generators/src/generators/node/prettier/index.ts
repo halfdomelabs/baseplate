@@ -32,7 +32,21 @@ export interface PrettierProvider {
 export const prettierProvider =
   createProviderType<PrettierProvider>('prettier');
 
-const PARSEABLE_EXTENSIONS = ['.json', '.js', '.ts', '.jsx', '.tsx'];
+const PARSEABLE_EXTENSIONS = [
+  '.json',
+  '.js',
+  '.ts',
+  '.jsx',
+  '.tsx',
+  '.scss',
+  '.css',
+  '.html',
+  '.sass',
+  '.gql',
+  '.graphql',
+  '.yml',
+  '.yaml',
+];
 
 const PRETTIER_VERSION = '^2.5.1';
 

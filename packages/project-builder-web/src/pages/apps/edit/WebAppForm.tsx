@@ -44,6 +44,16 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
           control={control}
           name="packageLocation"
         />
+        <TextInput.LabelledController
+          label="Page Title"
+          control={control}
+          name="title"
+        />
+        <TextInput.LabelledController
+          label="Description Meta Tag"
+          control={control}
+          name="description"
+        />
         <CheckedInput.LabelledController
           label="Include Auth?"
           control={control}
