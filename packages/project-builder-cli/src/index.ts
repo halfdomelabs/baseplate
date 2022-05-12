@@ -14,7 +14,6 @@ async function runMain(): Promise<void> {
     .description(
       'Writes a clean project from project.json in baseplate/ directory to sub-apps'
     )
-    .option('--regen', 'Force regeneration of all files')
     .action(buildToCleanFolder);
 
   await program.parseAsync(process.argv);
