@@ -115,12 +115,6 @@ const FastifyGenerator = createGeneratorWithChildren({
       { name: 'fastify-config', mergeArraysUniquely: true }
     );
 
-    // TODO: Temporarily add jest here since we need it for eslint
-    node.addDevPackages({
-      '@types/jest': '^27.4.0',
-      jest: '^27.4.7',
-    });
-
     node.mergeExtraProperties({
       main: 'dist/index.js',
     });

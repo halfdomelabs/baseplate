@@ -18,7 +18,7 @@
     "typescript": "^4.5.4"
   },
   "scripts": {
-    "start": "ts-node -r tsconfig-paths/register src",
+    "start": "ts-node --transpile-only -r tsconfig-paths/register dist/index.js",
     "dev": "ts-node-dev --rs --transpile-only -r tsconfig-paths/register --respawn src",
     "build": "tsc && tsc-alias",
     "watch": "tsc --watch & tsc-alias --watch",
@@ -37,6 +37,10 @@
     "json-stringify-pretty-compact": "^3.0.0",
     "ramda": "^0.28.0",
     "yup": "^0.32.11"
+  },
+  "engines": {
+    "node": "^14.18.0",
+    "yarn": "^1.22.17"
   },
   "volta": {
     "node": "14.18.3",

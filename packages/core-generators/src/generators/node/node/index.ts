@@ -83,6 +83,13 @@ const NodeGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    jest: {
+      provider: 'jest',
+      defaultDescriptor: {
+        generator: '@baseplate/core/node/jest',
+        peerProvider: true,
+      },
+    },
   }),
   exports: {
     node: nodeProvider,
