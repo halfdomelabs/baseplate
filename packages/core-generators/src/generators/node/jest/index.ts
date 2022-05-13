@@ -7,6 +7,7 @@ import {
 import * as yup from 'yup';
 import { quot } from '@src/utils/string';
 import { TypescriptCodeBlock, TypescriptCodeUtils } from '@src/writers';
+import { eslintProvider } from '../eslint';
 import { nodeProvider } from '../node';
 import { typescriptProvider } from '../typescript';
 
@@ -29,11 +30,12 @@ const JestGenerator = createGeneratorWithChildren({
   dependencies: {
     node: nodeProvider,
     typescript: typescriptProvider,
+    eslint: eslintProvider,
   },
   exports: {
     jest: jestProvider,
   },
-  createGenerator(descriptor, { node, typescript }) {
+  createGenerator(descriptor, { node, typescript, eslint }) {
     const configMap = createNonOverwriteableMap<JestGeneratorConfig>(
       {
         testPathIgnorePatterns: [
@@ -51,6 +53,8 @@ const JestGenerator = createGeneratorWithChildren({
       'ts-jest': '^28.0.2',
       '@types/jest': '^27.5.1',
     });
+
+    eslint.getConfig().appendUnique('eslintIgnore', ['jest.config.ts']);
 
     return {
       getProviders: () => ({

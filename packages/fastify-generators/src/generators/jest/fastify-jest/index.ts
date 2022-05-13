@@ -1,4 +1,8 @@
-import { jestProvider, TypescriptCodeUtils } from '@baseplate/core-generators';
+import {
+  jestProvider,
+  nodeProvider,
+  TypescriptCodeUtils,
+} from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
@@ -19,11 +23,12 @@ const FastifyJestGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     jest: jestProvider,
+    node: nodeProvider,
   },
   exports: {
     fastifyJest: fastifyJestProvider,
   },
-  createGenerator(descriptor, { jest }) {
+  createGenerator(descriptor, { jest, node }) {
     // add config to jest setup
     jest
       .getConfig()
@@ -33,6 +38,8 @@ const FastifyJestGenerator = createGeneratorWithChildren({
           "import { config } from 'dotenv'"
         ),
       ]);
+
+    node.addScript('test', 'jest');
 
     return {
       getProviders: () => ({
