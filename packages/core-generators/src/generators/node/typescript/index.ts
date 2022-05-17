@@ -55,6 +55,7 @@ export interface TypescriptProvider {
     options?: WriteFileOptions
   ): BuilderAction;
   resolveModule(moduleSpecifier: string, from: string): string;
+  getCompilerOptions(): CompilerOptions;
 }
 
 export const typescriptProvider =
@@ -142,6 +143,19 @@ const TypescriptGenerator = createGeneratorWithChildren({
       return cachedPathEntries;
     }
 
+    function getCompilerOptions(): CompilerOptions {
+      const result = ts.convertCompilerOptionsFromJson(
+        config.get('compilerOptions'),
+        '.'
+      );
+      if (result.errors.length) {
+        throw new Error(
+          `Unable to extract compiler options: ${JSON.stringify(result.errors)}`
+        );
+      }
+      return result.options;
+    }
+
     return {
       getProviders: () => ({
         typescript: {
@@ -167,6 +181,7 @@ const TypescriptGenerator = createGeneratorWithChildren({
             resolveModule(moduleSpecifier, from, {
               pathMapEntries: getPathEntries(),
             }),
+          getCompilerOptions,
         } as TypescriptProvider,
         typescriptConfig: {
           setTypescriptVersion(version) {
@@ -175,20 +190,7 @@ const TypescriptGenerator = createGeneratorWithChildren({
           setTypescriptCompilerOptions(options) {
             config.merge({ compilerOptions: options });
           },
-          getCompilerOptions() {
-            const result = ts.convertCompilerOptionsFromJson(
-              config.get('compilerOptions'),
-              '.'
-            );
-            if (result.errors.length) {
-              throw new Error(
-                `Unable to extract compiler options: ${JSON.stringify(
-                  result.errors
-                )}`
-              );
-            }
-            return result.options;
-          },
+          getCompilerOptions,
           addInclude(path) {
             config.appendUnique('include', [path]);
           },

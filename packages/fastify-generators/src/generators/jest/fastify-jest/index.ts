@@ -39,7 +39,9 @@ const FastifyJestGenerator = createGeneratorWithChildren({
         ),
       ]);
 
-    node.addScript('test', 'jest');
+    // have to run in band until we figure out how to parallelize integration tests
+    node.addScript('test', 'jest --runInBand');
+    node.addScript('test:unit', 'jest .unit.');
 
     return {
       getProviders: () => ({

@@ -12,7 +12,7 @@ export function generatePostgresDockerCompose(
     services: [
       `  db:
     image: postgres:13.5-alpine
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_PASSWORD: ${config.password}
     ports:

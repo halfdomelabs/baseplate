@@ -352,7 +352,7 @@ export const TypescriptCodeUtils = {
     );
   },
   mergeExpressionsAsObject(
-    obj: Record<string, TypescriptCodeExpression | string>,
+    obj: Record<string, TypescriptCodeExpression | string | undefined>,
     options: {
       wrapWithParenthesis?: boolean;
     } = {}
@@ -361,8 +361,9 @@ export const TypescriptCodeUtils = {
     const keys = Object.keys(obj);
     const expressions = Object.values(obj);
     const mergedExpression = keys
+      .filter((key) => obj[key] != null)
       .map((key) => {
-        const value = obj[key];
+        const value = obj[key] || '';
         const content = typeof value === 'string' ? value : value.content;
         if (key === content) {
           return `${key},`;

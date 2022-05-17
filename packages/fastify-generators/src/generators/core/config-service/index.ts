@@ -71,8 +71,8 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
       comment: 'Environment the app is running in',
       value: TypescriptCodeUtils.createExpression(
         `yup
-      .mixed<'development' | 'staging' | 'production'>()
-      .oneOf(['development', 'staging', 'production'])
+      .mixed<'development' | 'test' | 'staging' | 'production'>()
+      .oneOf(['development', 'test', 'staging', 'production'])
       .required()`,
         "import * as yup from 'yup'"
       ),

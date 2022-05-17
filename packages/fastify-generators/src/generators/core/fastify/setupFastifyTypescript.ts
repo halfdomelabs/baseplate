@@ -11,9 +11,9 @@ export function setupFastifyTypescript(
   typescriptConfig.setTypescriptCompilerOptions({
     outDir: 'dist',
     declaration: true,
-    baseUrl: './src',
+    baseUrl: './',
     paths: {
-      '@src/*': ['./*'],
+      '@src/*': ['./src/*'],
     },
     target: 'ES2020',
     lib: ['ES2020'],

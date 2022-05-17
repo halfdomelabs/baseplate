@@ -65,9 +65,12 @@ const JestGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const config = configMap.value();
 
-        // TODO: Use base path from typescript module
+        const typescriptOptions = typescript.getCompilerOptions();
+        const prefix = typescriptOptions.rootDir
+          ? `<rootDir>/${typescriptOptions.rootDir}`
+          : '<rootDir>';
         const moduleNameMapper = TypescriptCodeUtils.createExpression(
-          "pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>'})",
+          `pathsToModuleNameMapper(compilerOptions.paths, { prefix: '${prefix}'})`,
           [
             "import { pathsToModuleNameMapper } from 'ts-jest'",
             "import { compilerOptions } from './tsconfig.json'",
@@ -91,7 +94,10 @@ const JestGenerator = createGeneratorWithChildren({
           preset: quot('ts-jest'),
           testEnvironment: quot('node'),
           clearMocks: 'true',
-          moduleNameMapper,
+          moduleNameMapper: Object.keys(typescriptOptions.paths || {}).length
+            ? moduleNameMapper
+            : undefined,
+          roots: '["<rootDir>/src/"]',
           ...(config.customSetupBlocks.length
             ? {
                 globalSetup: quot(`./${customSetupPath}`),
