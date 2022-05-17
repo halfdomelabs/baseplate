@@ -140,7 +140,7 @@ export async function generateCleanAppForDirectory(
   const cleanProjectExists = await fs.pathExists(cleanDirectory);
 
   if (cleanProjectExists) {
-    await fs.rmdir(cleanDirectory, { recursive: true });
+    await fs.rm(cleanDirectory, { recursive: true });
   }
 
   console.log(`Generating clean project ${name} in ${cleanDirectory}...`);

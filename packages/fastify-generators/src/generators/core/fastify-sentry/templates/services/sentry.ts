@@ -17,6 +17,13 @@ if (SENTRY_ENABLED) {
     environment: CONFIG.APP_ENVIRONMENT,
     serverName: os.hostname(),
     tracesSampleRate: 1.0,
+    tracesSampler: (samplingContext) => {
+      // ignore health checks to avoid overloading transaction traces
+      if (samplingContext?.request?.url === '/healthz') {
+        return false;
+      }
+      return true;
+    },
   });
 }
 

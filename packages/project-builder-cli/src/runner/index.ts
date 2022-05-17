@@ -21,8 +21,8 @@ async function loadAppJson(directory: string): Promise<ProjectConfig> {
 }
 
 export async function buildProjectForDirectory(
-  directory: string,
-  { regen }: { regen: boolean }
+  directory: string
+  // { regen }: { regen: boolean }
 ): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file
@@ -32,7 +32,8 @@ export async function buildProjectForDirectory(
 
   const modifiedApps = await writeApplicationFiles(resolvedDirectory, apps);
 
-  const appsToRegenerate = regen ? apps : modifiedApps;
+  // TODO: Remove regen disabled (for dev it's convenient)
+  const appsToRegenerate = apps; // regen ? apps : modifiedApps;
 
   // eslint-disable-next-line no-restricted-syntax
   for (const app of appsToRegenerate) {
