@@ -30,7 +30,7 @@ export async function buildProjectForDirectory(
 
   const apps = compileApplications(projectConfig);
 
-  const modifiedApps = await writeApplicationFiles(resolvedDirectory, apps);
+  await writeApplicationFiles(resolvedDirectory, apps);
 
   // TODO: Remove regen disabled (for dev it's convenient)
   const appsToRegenerate = apps; // regen ? apps : modifiedApps;
