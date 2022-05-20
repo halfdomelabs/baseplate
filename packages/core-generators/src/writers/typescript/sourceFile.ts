@@ -23,6 +23,12 @@ import {
   TypescriptCodeEntryOptions,
   mergeCodeEntryOptions,
   TypescriptStringReplacement,
+  TypescriptCodeEntry,
+  TypescriptCodeContents,
+  normalizeTypescriptCodeBlock,
+  normalizeTypescriptCodeWrappers,
+  normalizeTypescriptCodeExpression,
+  normalizeTypescriptStringReplacement,
 } from './codeEntries';
 import {
   getImportDeclarationEntries,
@@ -33,13 +39,13 @@ import {
 
 interface TypescriptCodeBlockConfig {
   type: 'code-block';
-  default?: string;
+  default?: string | TypescriptCodeBlock;
   single?: boolean;
 }
 
 interface TypescriptCodeExpressionConfig {
   type: 'code-expression';
-  default?: string;
+  default?: string | TypescriptCodeExpression;
   multiple?: {
     separator: string;
   };
@@ -47,13 +53,14 @@ interface TypescriptCodeExpressionConfig {
 
 interface TypescriptCodeWrapperConfig {
   type: 'code-wrapper';
+  default?: TypescriptCodeWrapperFunction | TypescriptCodeWrapper;
 }
 
 interface TypescriptStringReplacementConfig {
   type: 'string-replacement';
   // whether to replace string as comment i.e. prefixed with // IDENTIFIER
   asSingleLineComment?: boolean;
-  default?: string;
+  default?: string | TypescriptStringReplacement;
   multiple?: {
     separator: string;
   };
@@ -67,11 +74,34 @@ type TypescriptCodeConfig =
   | TypescriptCodeExpressionConfig
   | TypescriptStringReplacementConfig;
 
-export type TypescriptTemplateConfig<T = Record<string, unknown>> = {
-  [K in keyof T]: TypescriptCodeConfig;
+export type TypescriptTemplateConfigOrEntry<T = Record<string, unknown>> = {
+  [K in keyof T]: TypescriptCodeConfig | TypescriptCodeEntry;
 };
 
-type InferCodeEntry<T extends TypescriptCodeConfig> =
+type TypescriptTemplateConfigFromEntry<
+  T extends TypescriptCodeConfig | TypescriptCodeEntry
+> = T extends TypescriptCodeConfig
+  ? T
+  : T extends TypescriptCodeBlock
+  ? TypescriptCodeBlockConfig
+  : T extends TypescriptCodeWrapper
+  ? TypescriptCodeWrapperConfig
+  : T extends TypescriptCodeExpression
+  ? TypescriptCodeExpressionConfig
+  : T extends TypescriptStringReplacement
+  ? TypescriptStringReplacementConfig
+  : never;
+
+type TypescriptTemplateConfig<
+  T extends TypescriptTemplateConfigOrEntry = Record<
+    string,
+    TypescriptCodeConfig | TypescriptCodeEntry
+  >
+> = {
+  [K in keyof T]: TypescriptTemplateConfigFromEntry<T[K]>;
+};
+
+type InferCodeEntry<T extends TypescriptCodeConfig | TypescriptCodeEntry> =
   T extends TypescriptCodeExpressionConfig
     ? TypescriptCodeExpression | string
     : T extends TypescriptCodeBlockConfig
@@ -79,23 +109,38 @@ type InferCodeEntry<T extends TypescriptCodeConfig> =
     : T extends TypescriptCodeWrapperConfig
     ? TypescriptCodeWrapper
     : T extends TypescriptStringReplacementConfig
-    ? TypescriptStringReplacement
+    ? TypescriptStringReplacement | string
+    : T extends TypescriptCodeContents
+    ? T | string
+    : T extends TypescriptCodeEntry
+    ? T
     : never;
 
-type InferCodeEntries<T extends TypescriptTemplateConfig> = {
+type InferCodeEntries<T extends TypescriptTemplateConfigOrEntry> = {
   [K in keyof T]: InferCodeEntry<T[K]> | InferCodeEntry<T[K]>[];
 };
 
 export function createTypescriptTemplateConfig<
-  T extends TypescriptTemplateConfig<Record<string, unknown>>
+  T extends TypescriptTemplateConfigOrEntry<
+    Record<string, TypescriptCodeEntry | TypescriptCodeConfig>
+  >
 >(config: T): T {
   return config;
 }
 
+interface CodeEntriesContainer {
+  codeBlocks: Record<string, TypescriptCodeBlock[]>;
+  codeWrappers: Record<string, TypescriptCodeWrapper[]>;
+  codeExpressions: Record<string, TypescriptCodeExpression[]>;
+  stringReplacements: Record<string, TypescriptStringReplacement[]>;
+}
+
 export abstract class TypescriptSourceContent<
-  T extends TypescriptTemplateConfig<Record<string, unknown>>
+  T extends TypescriptTemplateConfigOrEntry<
+    Record<string, TypescriptCodeEntry | TypescriptCodeConfig>
+  >
 > {
-  protected config: T;
+  protected config: Record<string, TypescriptCodeConfig>;
 
   protected hasCodeGenerated = false;
 
@@ -107,8 +152,30 @@ export abstract class TypescriptSourceContent<
 
   protected stringReplacements: Record<string, TypescriptStringReplacement[]>;
 
-  constructor(config: T) {
-    this.config = config;
+  constructor(configOrEntries: T) {
+    const config = R.mapObjIndexed((value): TypescriptCodeConfig => {
+      if (value instanceof TypescriptCodeEntry || typeof value === 'string') {
+        if (value instanceof TypescriptCodeBlock) {
+          return { type: 'code-block', default: value };
+        }
+        if (value instanceof TypescriptCodeExpression) {
+          return { type: 'code-expression', default: value };
+        }
+        if (value instanceof TypescriptCodeWrapper) {
+          return { type: 'code-wrapper', default: value };
+        }
+        if (
+          value instanceof TypescriptStringReplacement ||
+          typeof value === 'string'
+        ) {
+          return { type: 'string-replacement', default: value };
+        }
+        throw new Error(`Unsupported code entry type: ${value.type}`);
+      }
+      return value;
+    }, configOrEntries);
+
+    this.config = config as TypescriptTemplateConfig<T>;
     const keys = Object.keys(config);
     this.codeBlocks = R.fromPairs(
       keys.filter((k) => config[k].type === 'code-block').map((k) => [k, []])
@@ -222,7 +289,10 @@ export abstract class TypescriptSourceContent<
     return this.codeBlocks[name] || [];
   }
 
-  protected processFileReplacements(template: string): string {
+  protected processFileReplacements(
+    template: string,
+    stringReplacements: CodeEntriesContainer['stringReplacements']
+  ): string {
     // strip any ts-nocheck from header
     const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
 
@@ -231,7 +301,7 @@ export abstract class TypescriptSourceContent<
       if (config.type !== 'string-replacement') {
         return prevValue;
       }
-      const values = this.stringReplacements[key];
+      const values = stringReplacements[key];
       if (values && !config.multiple && values.length > 1) {
         throw new Error(`Multiple string replacements for ${key} not allowed`);
       }
@@ -240,7 +310,7 @@ export abstract class TypescriptSourceContent<
             values,
             config.multiple?.separator || ''
           ).content
-        : config.default;
+        : '';
       const transformedReplacement =
         config.transform && replacementValue
           ? config.transform(replacementValue)
@@ -259,7 +329,57 @@ export abstract class TypescriptSourceContent<
     }, strippedTemplate);
   }
 
-  protected renderIntoSourceFile(file: SourceFile): SourceFile {
+  protected getCodeEntriesWithDefaults(): {
+    codeBlocks: Record<string, TypescriptCodeBlock[]>;
+    codeWrappers: Record<string, TypescriptCodeWrapper[]>;
+    codeExpressions: Record<string, TypescriptCodeExpression[]>;
+    stringReplacements: Record<string, TypescriptStringReplacement[]>;
+  } {
+    return {
+      codeBlocks: R.mapObjIndexed((value, key) => {
+        const configEntry = this.config[key];
+        if (configEntry.type !== 'code-block') {
+          throw new Error('Config entry is not a code block');
+        }
+        const def = configEntry.default;
+        if (value.length) return value;
+        return def ? [normalizeTypescriptCodeBlock(def)] : [];
+      }, this.codeBlocks),
+      codeWrappers: R.mapObjIndexed((value, key) => {
+        const configEntry = this.config[key];
+        if (configEntry.type !== 'code-wrapper') {
+          throw new Error('Config entry is not a code wrapper');
+        }
+        const def = configEntry.default;
+        if (value.length) return value;
+        return def ? [normalizeTypescriptCodeWrappers(def)] : [];
+      }, this.codeWrappers),
+      codeExpressions: R.mapObjIndexed((value, key) => {
+        const configEntry = this.config[key];
+        if (configEntry.type !== 'code-expression') {
+          throw new Error('Config entry is not a code expression');
+        }
+        const def = configEntry.default;
+        if (value.length) return value;
+        return def ? [normalizeTypescriptCodeExpression(def)] : [];
+      }, this.codeExpressions),
+      stringReplacements: R.mapObjIndexed((value, key) => {
+        const configEntry = this.config[key];
+        if (configEntry.type !== 'string-replacement') {
+          throw new Error('Config entry is not a string replacement');
+        }
+        const def = configEntry.default;
+        if (value.length) return value;
+        return def ? [normalizeTypescriptStringReplacement(def)] : [];
+      }, this.stringReplacements),
+    };
+  }
+
+  protected renderIntoSourceFile(
+    file: SourceFile,
+    entries: CodeEntriesContainer
+  ): SourceFile {
+    const codeEntries = this.getCodeEntriesWithDefaults();
     const blockReplacements: {
       identifier: Identifier;
       contents: string;
@@ -274,33 +394,31 @@ export abstract class TypescriptSourceContent<
         if (this.config[identifier]) {
           const configEntry = this.config[identifier];
           if (configEntry.type === 'code-block') {
-            const blocks = this.codeBlocks[identifier];
+            const blocks = entries.codeBlocks[identifier];
             if (configEntry.single && blocks.length > 1) {
               throw new Error(`Only expected a single entry for ${identifier}`);
             }
-            const mergedBlock =
-              configEntry.default && !blocks.length
-                ? configEntry.default
-                : TypescriptCodeUtils.mergeBlocks(
-                    this.codeBlocks[identifier],
-                    '\n\n'
-                  ).content;
+            const mergedBlock = !blocks.length
+              ? ''
+              : TypescriptCodeUtils.mergeBlocks(
+                  codeEntries.codeBlocks[identifier],
+                  '\n\n'
+                ).content;
             blockReplacements.push({
               identifier: node as Identifier,
               contents: mergedBlock,
             });
           } else if (configEntry.type === 'code-expression') {
-            const providedExpressions = this.codeExpressions[identifier];
+            const providedExpressions = entries.codeExpressions[identifier];
             if (!configEntry.multiple && providedExpressions.length > 1) {
               throw new Error(`Only expected a single entry for ${identifier}`);
             }
-            const expression =
-              !providedExpressions.length && configEntry.default
-                ? configEntry.default
-                : TypescriptCodeUtils.mergeExpressions(
-                    providedExpressions,
-                    configEntry.multiple?.separator || ''
-                  ).content;
+            const expression = !providedExpressions.length
+              ? ''
+              : TypescriptCodeUtils.mergeExpressions(
+                  providedExpressions,
+                  configEntry.multiple?.separator || ''
+                ).content;
             expressionReplacements.push({
               identifier: node as Identifier,
               contents: expression || '',
@@ -371,7 +489,7 @@ export abstract class TypescriptSourceContent<
 }
 
 export class TypescriptSourceBlock<
-  T extends TypescriptTemplateConfig<any>
+  T extends TypescriptTemplateConfigOrEntry<any>
 > extends TypescriptSourceContent<T> {
   protected blockOptions: TypescriptCodeEntryOptions;
 
@@ -383,21 +501,25 @@ export class TypescriptSourceBlock<
   renderToBlock(template: string): TypescriptCodeBlock {
     const project = new Project();
 
+    const entriesWithDefault = this.getCodeEntriesWithDefaults();
     // run through string replacements
-    const replacedTemplate = this.processFileReplacements(template);
+    const replacedTemplate = this.processFileReplacements(
+      template,
+      entriesWithDefault.stringReplacements
+    );
     const file = project.createSourceFile('/', replacedTemplate);
 
-    this.renderIntoSourceFile(file);
+    this.renderIntoSourceFile(file, entriesWithDefault);
 
     return new TypescriptCodeBlock(
       file.getFullText(),
       null,
       mergeCodeEntryOptions(
         [
-          Object.values(this.codeBlocks),
-          Object.values(this.codeWrappers),
-          Object.values(this.codeExpressions),
-          Object.values(this.stringReplacements),
+          Object.values(entriesWithDefault.codeBlocks),
+          Object.values(entriesWithDefault.codeWrappers),
+          Object.values(entriesWithDefault.codeExpressions),
+          Object.values(entriesWithDefault.stringReplacements),
           this.blockOptions,
         ].flat(2)
       )
@@ -423,7 +545,7 @@ function unnestHeaderBlocks(block: TypescriptCodeBlock): TypescriptCodeBlock[] {
 }
 
 export class TypescriptSourceFile<
-  T extends TypescriptTemplateConfig<any>
+  T extends TypescriptTemplateConfigOrEntry<any>
 > extends TypescriptSourceContent<T> {
   protected sourceFileOptions: TypescriptSourceFileOptions;
 
@@ -437,8 +559,13 @@ export class TypescriptSourceFile<
 
     const project = new Project();
 
+    const entriesWithDefault = this.getCodeEntriesWithDefaults();
+
     // run through string replacements
-    const replacedTemplate = this.processFileReplacements(template);
+    const replacedTemplate = this.processFileReplacements(
+      template,
+      entriesWithDefault.stringReplacements
+    );
 
     const file = project.createSourceFile(
       path.basename(destination),
@@ -447,10 +574,10 @@ export class TypescriptSourceFile<
 
     // insert manual imports
     const providedEntries = R.flatten([
-      Object.values(this.codeBlocks),
-      Object.values(this.codeWrappers),
-      Object.values(this.codeExpressions),
-      Object.values(this.stringReplacements),
+      Object.values(entriesWithDefault.codeBlocks),
+      Object.values(entriesWithDefault.codeWrappers),
+      Object.values(entriesWithDefault.codeExpressions),
+      Object.values(entriesWithDefault.stringReplacements),
     ]);
 
     const headerBlocks = providedEntries.flatMap(
@@ -506,7 +633,7 @@ export class TypescriptSourceFile<
     });
 
     // fill in code blocks
-    this.renderIntoSourceFile(file);
+    this.renderIntoSourceFile(file, entriesWithDefault);
 
     // process all export from declarations
     file.forEachDescendant((node) => {

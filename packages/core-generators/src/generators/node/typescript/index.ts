@@ -22,7 +22,7 @@ import {
   resolveModule,
 } from '../../../writers/typescript/imports';
 import {
-  TypescriptTemplateConfig,
+  TypescriptTemplateConfigOrEntry,
   TypescriptSourceFile,
   TypescriptSourceFileOptions,
 } from '../../../writers/typescript/sourceFile';
@@ -45,7 +45,7 @@ export const typescriptConfigProvider =
 
 export interface TypescriptProvider {
   createTemplate<
-    Config extends TypescriptTemplateConfig<Record<string, unknown>>
+    Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>
   >(
     config: Config,
     options?: Omit<TypescriptSourceFileOptions, 'pathMappings'>
