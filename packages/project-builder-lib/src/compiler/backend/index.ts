@@ -30,6 +30,9 @@ export function compileBackend(
     hoistedProviders: parsedProject.globalHoistedProviders,
     children: {
       projects: [buildDocker(projectConfig), buildFastify(appBuilder)],
+      jest: {
+        generator: '@baseplate/core/node/jest',
+      },
     },
   });
   return appBuilder.toProjectEntry();

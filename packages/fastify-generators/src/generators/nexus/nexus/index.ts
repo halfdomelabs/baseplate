@@ -1,27 +1,26 @@
 import {
+  eslintProvider,
+  ImportMapper,
   nodeProvider,
+  tsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-  tsUtilsProvider,
-  eslintProvider,
-  ImportMapper,
   TypescriptStringReplacement,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
-  NonOverwriteableMap,
   createNonOverwriteableMap,
+  createProviderType,
+  NonOverwriteableMap,
 } from '@baseplate/sync';
-import R from 'ramda';
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
-import { requestContextProvider } from '@src/generators/core/request-context';
 import { rootModuleProvider } from '@src/generators/core/root-module';
+import { serviceContextSetupProvider } from '@src/generators/core/service-context';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition';
 import {
@@ -30,11 +29,6 @@ import {
 } from '@src/writers/nexus-definition/scalars';
 
 const descriptorSchema = yup.object({});
-
-interface ContextField {
-  type: TypescriptCodeExpression;
-  creator: (req: string, reply: string) => TypescriptCodeExpression;
-}
 
 export interface MutationField {
   name: string;
@@ -49,7 +43,6 @@ export interface NexusGeneratorConfig {
 
 export interface NexusSetupProvider extends ImportMapper {
   addScalarField(config: NexusScalarConfig): void;
-  addContextField(name: string, field: ContextField): void;
   registerSchemaFile(file: string): void;
   getConfig(): NonOverwriteableMap<NexusGeneratorConfig>;
 }
@@ -84,24 +77,18 @@ export const nexusProvider = createProviderType<NexusProvider>('nexus');
 
 const NexusGenerator = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    cookies: {
-      defaultDescriptor: {
-        generator: '@baseplate/fastify/nexus/nexus-cookies',
-      },
-    },
-  }),
+  getDefaultChildGenerators: () => ({}),
   dependencies: {
     node: nodeProvider,
     rootModule: rootModuleProvider,
     typescript: typescriptProvider,
     configService: configServiceProvider,
-    requestContext: requestContextProvider,
     fastifyServer: fastifyServerProvider,
     tsUtils: tsUtilsProvider,
     fastifyOutput: fastifyOutputProvider,
     eslint: eslintProvider,
     errorHandlerService: errorHandlerServiceProvider,
+    serviceContextSetup: serviceContextSetupProvider,
   },
   exports: {
     nexusSetup: nexusSetupProvider,
@@ -115,7 +102,7 @@ const NexusGenerator = createGeneratorWithChildren({
       rootModule,
       typescript,
       configService,
-      requestContext,
+      serviceContextSetup,
       fastifyServer,
       tsUtils,
       fastifyOutput,
@@ -149,15 +136,6 @@ const NexusGenerator = createGeneratorWithChildren({
       name: 'nexus-scalars',
     });
 
-    const contextFieldsMap = createNonOverwriteableMap<
-      Record<string, ContextField>
-    >({}, { name: 'nexus-context-fields' });
-
-    contextFieldsMap.set('reqInfo', {
-      type: requestContext.getRequestInfoType(),
-      creator: (req) => new TypescriptCodeExpression(`${req}.reqInfo`),
-    });
-
     node.addPackages({
       'altair-fastify-plugin': '^4.4.1',
       graphql: '^16.3.0',
@@ -178,17 +156,24 @@ const NexusGenerator = createGeneratorWithChildren({
       )
     );
 
-    const contextFile = typescript.createTemplate({
-      CONTEXT_FIELDS: { type: 'code-block' },
-      CONTEXT_CREATOR: { type: 'code-expression' },
-    });
-
     const pluginFile = typescript.createTemplate(
       {
         ROOT_MODULE: { type: 'code-expression' },
         PLUGINS: { type: 'code-expression' },
+        CONTEXT_PATH: { type: 'string-replacement' },
       },
-      { importMappers: [errorHandlerService, configService] }
+      {
+        importMappers: [
+          errorHandlerService,
+          configService,
+          serviceContextSetup,
+        ],
+      }
+    );
+
+    pluginFile.addStringReplacement(
+      'CONTEXT_PATH',
+      serviceContextSetup.getContextPath()
     );
 
     pluginFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
@@ -221,10 +206,6 @@ const NexusGenerator = createGeneratorWithChildren({
     };
 
     const importMap = {
-      '%nexus/context': {
-        path: '@/src/plugins/graphql/context',
-        allowedImports: ['GraphQLContext'],
-      },
       '%nexus/utils': {
         path: '@/src/utils/nexus',
         allowedImports: ['createStandardMutation'],
@@ -242,9 +223,6 @@ const NexusGenerator = createGeneratorWithChildren({
         nexusSetup: {
           addScalarField: (config) => {
             scalarMap.set(config.scalar, config);
-          },
-          addContextField: (name, config) => {
-            contextFieldsMap.set(name, config);
           },
           registerSchemaFile: (file) => schemaFiles.push(file),
           getConfig: () => configMap,
@@ -280,7 +258,6 @@ const NexusGenerator = createGeneratorWithChildren({
         },
         nexus: {
           getConfig: () => configMap,
-          getContextFields: () => contextFieldsMap,
         },
       }),
       build: async (builder) => {
@@ -312,32 +289,6 @@ const NexusGenerator = createGeneratorWithChildren({
           utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts')
         );
 
-        const contextFields = contextFieldsMap.value();
-
-        contextFile.addCodeBlock(
-          'CONTEXT_FIELDS',
-          TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-            R.mapObjIndexed((field) => field.type, contextFields)
-          )
-        );
-
-        contextFile.addCodeExpression(
-          'CONTEXT_CREATOR',
-          TypescriptCodeUtils.mergeExpressionsAsObject(
-            R.mapObjIndexed(
-              (field) => field.creator('request', 'reply'),
-              contextFields
-            )
-          )
-        );
-
-        await builder.apply(
-          contextFile.renderToAction(
-            'plugins/graphql/context.ts',
-            'src/plugins/graphql/context.ts'
-          )
-        );
-
         pluginFile.addCodeExpression(
           'PLUGINS',
           TypescriptCodeUtils.mergeExpressionsAsArray(config.nexusPlugins)
@@ -361,7 +312,6 @@ const NexusGenerator = createGeneratorWithChildren({
           onlyIfChanged: [
             ...schemaFiles,
             'src/plugins/graphql/index.ts',
-            'src/plugins/graphql/context.ts',
             'src/plugins/graphql/missing-type-plugin.ts',
             'src/utils/nexus.ts',
           ],
