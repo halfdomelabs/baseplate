@@ -13,9 +13,10 @@ import {
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge';
 import { randomUid } from '../utils/randomUid';
 import { AuthPlugin } from './plugins/auth';
+import { StoragePlugin } from './plugins/storage';
 import { ParsedModel } from './types';
 
-const PARSER_PLUGINS = [AuthPlugin];
+const PARSER_PLUGINS = [AuthPlugin, StoragePlugin];
 
 function upsertItems<T>(
   items: T[] | undefined,

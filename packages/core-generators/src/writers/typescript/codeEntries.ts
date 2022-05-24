@@ -100,8 +100,15 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
     super('code-block', content, importText, options);
   }
 
-  wrap(wrapper: (contents: string) => string): TypescriptCodeBlock {
-    return new TypescriptCodeBlock(wrapper(this.content), null, this.options);
+  wrap(
+    wrapper: (contents: string) => string,
+    importText?: string | string[] | null
+  ): TypescriptCodeBlock {
+    return new TypescriptCodeBlock(
+      wrapper(this.content),
+      importText,
+      this.options
+    );
   }
 
   wrapAsExpression(
@@ -141,10 +148,13 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
     return new TypescriptStringReplacement(this.content, null, this.options);
   }
 
-  wrap(wrapper: (contents: string) => string): TypescriptCodeExpression {
+  wrap(
+    wrapper: (contents: string) => string,
+    importText?: string | string[] | null
+  ): TypescriptCodeExpression {
     return new TypescriptCodeExpression(
       wrapper(this.content),
-      null,
+      importText,
       this.options
     );
   }

@@ -1,6 +1,7 @@
 import {
   ImportEntry,
   ImportMapper,
+  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptSourceBlock,
@@ -101,11 +102,24 @@ const RoleServiceGenerator = createGeneratorWithChildren({
 
     authPlugin.registerAuthField({
       key: 'roles',
-      value: serviceFile
+      hookBody: serviceFile
         .getServiceExpression()
-        .append('.getRolesForUser(user)'),
+        .wrap((contents) => `const roles = ${contents}.getRolesForUser(user);`)
+        .toBlock(),
+      value: TypescriptCodeUtils.createExpression('roles'),
       type: TypescriptCodeUtils.createExpression(
         `AuthRole[]`,
+        `import {AuthRole} from '${serviceFile.getServiceImport()}'`
+      ),
+    });
+
+    authPlugin.registerAuthField({
+      key: 'hasSomeRole',
+      value: new TypescriptCodeExpression(
+        '(possibleRoles) => roles.some((role) => possibleRoles.includes(role))'
+      ),
+      type: TypescriptCodeUtils.createExpression(
+        `(possibleRoles: AuthRole[]) => boolean`,
         `import {AuthRole} from '${serviceFile.getServiceImport()}'`
       ),
     });

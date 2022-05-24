@@ -15,6 +15,8 @@ export const REFERENCEABLE_CATEGORIES = [
   'modelForeignRelation',
   'modelTransformer',
   'role',
+  'storageAdapter',
+  'storageCategory',
 ] as const;
 
 export interface ObjectReferenceableEntry {
