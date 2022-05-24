@@ -85,7 +85,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
         </div>
       ))}
 
-      <Button onClick={() => append({})}>Add Adapter</Button>
+      <Button onClick={() => append({})}>Add Category</Button>
     </div>
   );
 }
