@@ -64,6 +64,7 @@ export const StoragePlugin: ParserPlugin = {
         name: 'uploaderId',
         isLocked: true,
         type: 'uuid',
+        isOptional: true,
       },
       {
         name: 'updatedAt',
@@ -91,7 +92,7 @@ export const StoragePlugin: ParserPlugin = {
             modelName: auth.userModel,
             foreignRelationName: 'files',
             relationshipType: 'oneToMany',
-            isOptional: false,
+            isOptional: true,
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
             isLocked: true,

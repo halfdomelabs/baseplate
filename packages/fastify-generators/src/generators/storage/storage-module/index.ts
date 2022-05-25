@@ -132,7 +132,7 @@ const StorageModuleGenerator = createGeneratorWithChildren({
 
           await builder.apply(
             typescript.createCopyAction({
-              source: file,
+              source: `${file}.ts`,
               destination: path.join(moduleFolder, `${file}.ts`),
               importMappers: [nexusSchema],
             })
