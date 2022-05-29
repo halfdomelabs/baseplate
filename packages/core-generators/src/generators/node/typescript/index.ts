@@ -9,6 +9,10 @@ import {
 } from '@baseplate/sync';
 import { CompilerOptions, ts } from 'ts-morph';
 import {
+  copyTypescriptFilesAction,
+  CopyTypescriptFilesOptions,
+} from '@src/actions/copyTypescriptFilesAction';
+import {
   copyTypescriptFileAction,
   CopyTypescriptFileOptions,
 } from '../../../actions';
@@ -18,7 +22,7 @@ import {
   resolveModule,
 } from '../../../writers/typescript/imports';
 import {
-  TypescriptTemplateConfig,
+  TypescriptTemplateConfigOrEntry,
   TypescriptSourceFile,
   TypescriptSourceFileOptions,
 } from '../../../writers/typescript/sourceFile';
@@ -41,11 +45,14 @@ export const typescriptConfigProvider =
 
 export interface TypescriptProvider {
   createTemplate<
-    Config extends TypescriptTemplateConfig<Record<string, unknown>>
+    Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>
   >(
     config: Config,
     options?: Omit<TypescriptSourceFileOptions, 'pathMappings'>
   ): TypescriptSourceFile<Config>;
+  createCopyFilesAction(
+    options: Omit<CopyTypescriptFilesOptions, 'pathMappings'>
+  ): ReturnType<typeof copyTypescriptFilesAction>;
   createCopyAction(
     options: Omit<CopyTypescriptFileOptions, 'pathMappings'>
   ): ReturnType<typeof copyTypescriptFileAction>;
@@ -161,6 +168,11 @@ const TypescriptGenerator = createGeneratorWithChildren({
         typescript: {
           createTemplate: (fileConfig, options) =>
             new TypescriptSourceFile(fileConfig, {
+              ...options,
+              pathMappings: getPathEntries(),
+            }),
+          createCopyFilesAction: (options) =>
+            copyTypescriptFilesAction({
               ...options,
               pathMappings: getPathEntries(),
             }),

@@ -11,6 +11,7 @@ import * as yup from 'yup';
 import { authProvider } from '@src/generators/auth/auth';
 import { authPluginProvider } from '@src/generators/auth/auth-plugin';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
+import { serviceContextSetupProvider } from '@src/generators/core/service-context';
 import { nexusSetupProvider } from '../nexus';
 
 const descriptorSchema = yup.object({
@@ -38,6 +39,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     nexusSetup: nexusSetupProvider,
+    serviceContextSetup: serviceContextSetupProvider,
     auth: authProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
@@ -52,14 +54,26 @@ const NexusAuthGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { requireOnRootFields },
-    { nexusSetup, errorHandlerService, typescript, auth, authPlugin }
+    {
+      nexusSetup,
+      errorHandlerService,
+      typescript,
+      auth,
+      authPlugin,
+      serviceContextSetup,
+    }
   ) {
     const nexusAuthorizePluginFile = typescript.createTemplate(
       {
         MODULE_FILE: { type: 'code-expression' },
       },
       {
-        importMappers: [auth, errorHandlerService, nexusSetup],
+        importMappers: [
+          auth,
+          errorHandlerService,
+          nexusSetup,
+          serviceContextSetup,
+        ],
       }
     );
 
@@ -95,7 +109,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
         },
       ]);
 
-    nexusSetup.addContextField('auth', {
+    serviceContextSetup.addContextField('auth', {
       type: TypescriptCodeUtils.createExpression(
         'AuthInfo',
         'import { AuthInfo } from "%auth-plugin";',

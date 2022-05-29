@@ -1,6 +1,12 @@
 import classNames from 'classnames';
 import { FaDatabase } from 'react-icons/fa';
-import { MdPeople, MdSettings, MdImportExport, MdApps } from 'react-icons/md';
+import {
+  MdPeople,
+  MdSettings,
+  MdImportExport,
+  MdApps,
+  MdAttachFile,
+} from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import Sidebar from '../Sidebar';
@@ -49,6 +55,9 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
           </Sidebar.LinkItem>
           <Sidebar.LinkItem Icon={MdPeople} to="/auth">
             Auth
+          </Sidebar.LinkItem>
+          <Sidebar.LinkItem Icon={MdAttachFile} to="/storage">
+            Storage
           </Sidebar.LinkItem>
         </Sidebar.LinkGroup>
       </Sidebar>

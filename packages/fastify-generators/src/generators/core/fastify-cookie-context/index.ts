@@ -6,21 +6,21 @@ import {
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import * as yup from 'yup';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
-import { nexusSetupProvider } from '../nexus';
+import { serviceContextSetupProvider } from '@src/generators/core/service-context';
 
 const descriptorSchema = yup.object({
   placeholder: yup.string(),
 });
 
-const NexusCookiesGenerator = createGeneratorWithChildren({
+const FastifyCookieContextGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     node: nodeProvider,
     fastifyServer: fastifyServerProvider,
-    nexusSetup: nexusSetupProvider,
+    serviceContextSetup: serviceContextSetupProvider,
   },
-  createGenerator(descriptor, { node, fastifyServer, nexusSetup }) {
+  createGenerator(descriptor, { node, fastifyServer, serviceContextSetup }) {
     node.addPackages({
       'fastify-cookie': '^5.6.0',
     });
@@ -33,7 +33,7 @@ const NexusCookiesGenerator = createGeneratorWithChildren({
       ),
     });
 
-    nexusSetup.addContextField('cookieStore', {
+    serviceContextSetup.addContextField('cookieStore', {
       type: TypescriptCodeUtils.createExpression('CookieStore', undefined, {
         headerBlocks: [
           TypescriptCodeUtils.createBlock(
@@ -65,4 +65,4 @@ interface CookieStore {
   },
 });
 
-export default NexusCookiesGenerator;
+export default FastifyCookieContextGenerator;

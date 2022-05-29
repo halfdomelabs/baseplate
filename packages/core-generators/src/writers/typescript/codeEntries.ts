@@ -100,8 +100,15 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
     super('code-block', content, importText, options);
   }
 
-  wrap(wrapper: (contents: string) => string): TypescriptCodeBlock {
-    return new TypescriptCodeBlock(wrapper(this.content), null, this.options);
+  wrap(
+    wrapper: (contents: string) => string,
+    importText?: string | string[] | null
+  ): TypescriptCodeBlock {
+    return new TypescriptCodeBlock(
+      wrapper(this.content),
+      importText,
+      this.options
+    );
   }
 
   wrapAsExpression(
@@ -141,10 +148,13 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
     return new TypescriptStringReplacement(this.content, null, this.options);
   }
 
-  wrap(wrapper: (contents: string) => string): TypescriptCodeExpression {
+  wrap(
+    wrapper: (contents: string) => string,
+    importText?: string | string[] | null
+  ): TypescriptCodeExpression {
     return new TypescriptCodeExpression(
       wrapper(this.content),
-      null,
+      importText,
       this.options
     );
   }
@@ -236,7 +246,7 @@ function getExpressionContent(
   return typeof expression === 'string' ? expression : expression.content;
 }
 
-function normalizeWrappers(
+export function normalizeTypescriptCodeWrappers(
   wrappers:
     | TypescriptCodeWrapper
     | TypescriptCodeWrapper[]
@@ -249,6 +259,33 @@ function normalizeWrappers(
     return new TypescriptCodeWrapper(wrappers);
   }
   return wrappers;
+}
+
+export function normalizeTypescriptCodeBlock(
+  block: TypescriptCodeBlock | string
+): TypescriptCodeBlock {
+  if (typeof block === 'string') {
+    return new TypescriptCodeBlock(block);
+  }
+  return block;
+}
+
+export function normalizeTypescriptCodeExpression(
+  expression: TypescriptCodeExpression | string
+): TypescriptCodeExpression {
+  if (typeof expression === 'string') {
+    return new TypescriptCodeExpression(expression);
+  }
+  return expression;
+}
+
+export function normalizeTypescriptStringReplacement(
+  replacement: TypescriptStringReplacement | string
+): TypescriptStringReplacement {
+  if (typeof replacement === 'string') {
+    return new TypescriptStringReplacement(replacement);
+  }
+  return replacement;
 }
 
 function formatStringWithContent(
@@ -317,7 +354,7 @@ export const TypescriptCodeUtils = {
       | TypescriptCodeWrapper[]
       | TypescriptCodeWrapperFunction
   ): TypescriptCodeExpression {
-    const wrapper = normalizeWrappers(wrappers);
+    const wrapper = normalizeTypescriptCodeWrappers(wrappers);
     return new TypescriptCodeExpression(
       wrapper.wrap(entry.content),
       null,
@@ -331,7 +368,7 @@ export const TypescriptCodeUtils = {
       | TypescriptCodeWrapper[]
       | TypescriptCodeWrapperFunction
   ): TypescriptCodeBlock {
-    const wrapper = normalizeWrappers(wrappers);
+    const wrapper = normalizeTypescriptCodeWrappers(wrappers);
     return new TypescriptCodeBlock(
       wrapper.wrap(entry.content),
       null,

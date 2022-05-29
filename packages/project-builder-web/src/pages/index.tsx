@@ -6,6 +6,7 @@ import AuthPage from './auth';
 import GeneralPage from './general';
 import HomePage from './home/home.page';
 import ModelsPage from './models';
+import StoragePage from './storage';
 
 function PagesRoot(): JSX.Element {
   return (
@@ -14,6 +15,7 @@ function PagesRoot(): JSX.Element {
         <Route path="/" element={<HomePage />} />
         <Route path="/general" element={<GeneralPage />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route path="/storage" element={<StoragePage />} />
         <Route path="/apps/*" element={<AppsPages />} />
       </Route>
       <Route element={<Layout noPadding />}>

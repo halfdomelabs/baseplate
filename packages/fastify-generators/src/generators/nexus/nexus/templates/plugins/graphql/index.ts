@@ -6,7 +6,7 @@ import fp from 'fastify-plugin';
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql';
 import mercurius from 'mercurius';
 import { makeSchema } from 'nexus';
-import { createContext } from './context';
+import { createContextFromRequest } from '%service-context';
 import { config } from '%config';
 import { logError } from '%error-logger';
 import { HttpError } from '%http-errors';
@@ -21,8 +21,8 @@ const schema = makeSchema({
   },
   plugins: PLUGINS,
   contextType: {
-    module: path.join(__dirname, 'context.ts'),
-    export: 'GraphQLContext',
+    module: path.join(__dirname, '../../..', 'CONTEXT_PATH'),
+    export: 'ServiceContext',
   },
   shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
 });
@@ -42,7 +42,7 @@ export const graphqlPlugin = fp(async (fastify) => {
     path: '/graphql',
     schema,
     validationRules: IS_DEVELOPMENT ? [] : [NoSchemaIntrospectionCustomRule],
-    context: createContext,
+    context: createContextFromRequest,
     errorFormatter: (result, context) => {
       const errors = result.errors ?? [toGraphQLError(result)];
 

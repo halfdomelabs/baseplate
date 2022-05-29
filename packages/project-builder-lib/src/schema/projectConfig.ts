@@ -6,6 +6,7 @@ import { BackendAppConfig, backendAppSchema } from './apps/backend';
 import { authSchema, buildAuthReferences } from './auth';
 import { buildModelReferences, modelSchema } from './models';
 import { GetReferencesFunction, ReferencesBuilder } from './references';
+import { buildStorageReferences, storageSchema } from './storage';
 
 export type AppConfig = BackendAppConfig | WebAppConfig;
 
@@ -36,6 +37,7 @@ export const projectConfigSchema = yup.object({
   ),
   models: yup.array(modelSchema),
   auth: authSchema.optional().default(undefined),
+  storage: storageSchema.optional().default(undefined),
 });
 
 export type ProjectConfig = MakeUndefinableFieldsOptional<
@@ -56,6 +58,10 @@ export const getProjectConfigReferences: GetReferencesFunction<
 
   if (config.auth) {
     buildAuthReferences(config.auth, builder.withPrefix('auth'));
+  }
+
+  if (config.storage) {
+    buildStorageReferences(config.storage, builder.withPrefix('storage'))
   }
 
   config.models?.forEach((model, idx) => {

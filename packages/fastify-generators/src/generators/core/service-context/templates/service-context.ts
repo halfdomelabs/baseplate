@@ -2,13 +2,13 @@
 
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-export interface GraphQLContext {
+export interface ServiceContext {
   CONTEXT_FIELDS;
 }
 
-export function createContext(
+export function createContextFromRequest(
   request: FastifyRequest,
   reply: FastifyReply
-): GraphQLContext {
+): ServiceContext {
   return CONTEXT_CREATOR;
 }

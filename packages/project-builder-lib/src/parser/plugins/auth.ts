@@ -88,7 +88,7 @@ export const AuthPlugin: ParserPlugin = {
 
     // hoist hasher
     if (auth.passwordProvider) {
-      // TODO: Move hasher service call into user service to make a bit more normal
+      // TODO: Move hasher service call into user service to make a bit more accessible
       hooks.addGlobalHoistedProviders('password-hasher-service');
     }
 

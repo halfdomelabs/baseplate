@@ -5,7 +5,7 @@ import { plugin } from 'nexus';
 import { CreateFieldResolverInfo, NexusPlugin } from 'nexus/dist/plugin';
 import { ArgsValue, GetGen, SourceValue } from 'nexus/dist/typegenTypeHelpers';
 import { printedGenTyping, printedGenTypingImport } from 'nexus/dist/utils';
-import { GraphQLContext } from '%nexus/context';
+import { ServiceContext } from '%service-context';
 import { ForbiddenError } from '%http-errors';
 import { AuthRole } from '%role-service';
 
@@ -83,7 +83,7 @@ export const fieldAuthorizeRolePlugin = (
         return undefined;
       }
       return async (root, args: Record<string, unknown>, ctx, info, next) => {
-        const context = ctx as GraphQLContext;
+        const context = ctx as ServiceContext;
         const rules = Array.isArray(authorize) ? authorize : [authorize];
 
         const ruleFunctions: FieldAuthorizeRuleFunction<string, string>[] =

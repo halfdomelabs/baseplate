@@ -51,7 +51,6 @@ export async function generateForDirectory(
 
   if (!cleanDirectoryExists) {
     await engine.writeOutput(output, projectDirectory);
-    console.log('Project successfully generated!');
   } else {
     console.log(
       'Detected project clean folder. Attempting 3-way mediocre-merge...'
@@ -122,9 +121,38 @@ export async function generateForDirectory(
         }
       })
     );
-
-    console.log('Project successfully generated!');
   }
+
+  console.log('Project successfully generated!');
+
+  console.log('Generating clean project...');
+
+  if (cleanDirectoryExists) {
+    await fs.rm(cleanDirectory, { recursive: true });
+  }
+
+  console.log(`Generating clean project ${name} in ${cleanDirectory}...`);
+
+  // strip out any post write commands
+  await engine.writeOutput(
+    {
+      ...output,
+      files: R.mergeAll(
+        Object.entries(output.files).map(([filePath, file]) => {
+          // reject any files that are buffers since we can't merge them
+          if (file.contents instanceof Buffer) {
+            return {};
+          }
+          return {
+            [filePath]: file,
+          };
+        })
+      ),
+      postWriteCommands: [],
+    },
+    cleanDirectory
+  );
+  console.log('Project successfully written to clean project!');
 }
 
 export async function generateCleanAppForDirectory(

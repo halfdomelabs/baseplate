@@ -104,6 +104,18 @@ const FastifyGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    serviceContext: {
+      provider: 'service-context',
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/core/service-context',
+        peerProvider: true,
+      },
+    },
+    cookies: {
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/core/fastify-cookie-context',
+      },
+    },
   }),
   dependencies: {
     node: nodeProvider,

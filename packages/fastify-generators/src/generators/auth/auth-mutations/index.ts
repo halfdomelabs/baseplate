@@ -10,6 +10,7 @@ import {
 import * as yup from 'yup';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
+import { serviceContextProvider } from '@src/generators/core/service-context';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { nexusAuthProvider } from '@src/generators/nexus/nexus-auth';
 import { authServiceProvider } from '../auth-service';
@@ -33,6 +34,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
     configService: configServiceProvider,
     nexusAuth: nexusAuthProvider,
+    serviceContext: serviceContextProvider,
   },
   exports: {
     authMutations: authMutationsProvider,
@@ -46,6 +48,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
       typescript,
       configService,
       nexusAuth,
+      serviceContext,
     }
   ) {
     const appModuleFolder = appModule.getModuleFolder();
@@ -104,7 +107,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
         await builder.apply(
           typescript.createCopyAction({
             source: 'utils/refresh-tokens.ts',
-            importMappers: [configService, nexusSchema],
+            importMappers: [configService, nexusSchema, serviceContext],
           })
         );
       },
