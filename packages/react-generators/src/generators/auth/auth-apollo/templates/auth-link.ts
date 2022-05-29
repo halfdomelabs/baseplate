@@ -22,8 +22,8 @@ const refreshTokenLink = onError(
       const { extensions } = error;
       const errorExtensions: ErrorExtensions | undefined = extensions;
       return (
-        errorExtensions.code === 'invalid-token' ||
-        errorExtensions.code === 'token-expired'
+        errorExtensions?.code === 'invalid-token' ||
+        errorExtensions?.code === 'token-expired'
       );
     });
     if (
