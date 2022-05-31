@@ -1,7 +1,11 @@
+import { BackendAppConfig } from '@src/schema';
 import { AppEntryBuilder } from '../appEntryBuilder';
 import { buildFeature } from './feature';
 
-export function buildFastify(builder: AppEntryBuilder): unknown {
+export function buildFastify(
+  builder: AppEntryBuilder,
+  app: BackendAppConfig
+): unknown {
   const { projectConfig, parsedProject } = builder;
   const rootFeatures =
     projectConfig.features?.filter((f) => !f.name.includes('/')) || [];
@@ -59,6 +63,12 @@ export function buildFastify(builder: AppEntryBuilder): unknown {
         ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
         'graphql/root',
       ],
+      $stripe: !app.enableStripe
+        ? null
+        : {
+            generator: '@baseplate/fastify/stripe/fastify-stripe',
+            peerProvider: true,
+          },
       ...parsedProject.fastifyChildren,
     },
   };

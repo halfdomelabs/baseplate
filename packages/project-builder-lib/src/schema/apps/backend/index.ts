@@ -5,6 +5,7 @@ import { baseAppValidators } from '../base';
 export const backendAppSchema = yup.object({
   ...baseAppValidators,
   type: yup.mixed<'backend'>().oneOf(['backend']).required(),
+  enableStripe: yup.boolean(),
 });
 
 export type BackendAppConfig = MakeUndefinableFieldsOptional<

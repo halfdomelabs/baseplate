@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames';
 import { useForm } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
+import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 
@@ -45,6 +46,11 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
           label="Package Location (optional) e.g. packages/backend"
           control={control}
           name="packageLocation"
+        />
+        <CheckedInput.LabelledController
+          label="Enable Stripe?"
+          control={control}
+          name="enableStripe"
         />
         <Button type="submit">Save</Button>
       </form>

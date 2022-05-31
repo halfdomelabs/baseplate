@@ -23,7 +23,7 @@ const descriptorSchema = yup.object({
 
 interface ConfigEntry {
   comment: string;
-  value: TypescriptCodeExpression;
+  value: TypescriptCodeExpression | string;
   seedValue?: string;
   exampleValue?: string;
 }
@@ -112,7 +112,7 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
             const { comment, value } = configEntriesObj[key];
             return `${
               comment ? `${TypescriptCodeUtils.formatAsComment(comment)}\n` : ''
-            }${key}: ${value.content},`;
+            }${key}: ${typeof value === 'string' ? value : value.content},`;
           })
           .join('\n');
 
