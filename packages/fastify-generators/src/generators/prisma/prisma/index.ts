@@ -74,11 +74,11 @@ const PrismaGenerator = createGeneratorWithChildren({
     }
   ) {
     node.addDevPackages({
-      prisma: '^3.9.2',
+      prisma: '^3.14.0',
     });
 
     node.addPackages({
-      '@prisma/client': '3.9.2',
+      '@prisma/client': '^3.14.0',
     });
 
     node.mergeExtraProperties({
