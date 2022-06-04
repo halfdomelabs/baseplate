@@ -1,7 +1,12 @@
 import * as yup from 'yup';
 import { randomUid } from '@src/utils/randomUid';
 import { MakeUndefinableFieldsOptional } from '@src/utils/types';
-import { BaseAppConfig, WebAppConfig, webAppSchema } from './apps';
+import {
+  BaseAppConfig,
+  buildWebAppReferences,
+  WebAppConfig,
+  webAppSchema,
+} from './apps';
 import { BackendAppConfig, backendAppSchema } from './apps/backend';
 import { authSchema, buildAuthReferences } from './auth';
 import { buildModelReferences, modelSchema } from './models';
@@ -56,12 +61,21 @@ export const getProjectConfigReferences: GetReferencesFunction<
     });
   });
 
+  config.apps?.forEach((app, idx) => {
+    if (app.type === 'web') {
+      buildWebAppReferences(
+        app,
+        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<WebAppConfig>
+      );
+    }
+  });
+
   if (config.auth) {
     buildAuthReferences(config.auth, builder.withPrefix('auth'));
   }
 
   if (config.storage) {
-    buildStorageReferences(config.storage, builder.withPrefix('storage'))
+    buildStorageReferences(config.storage, builder.withPrefix('storage'));
   }
 
   config.models?.forEach((model, idx) => {

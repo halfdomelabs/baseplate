@@ -3,6 +3,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import classNames from 'classnames';
 import { useForm } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
+import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
@@ -21,6 +22,7 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
   });
   const { control, handleSubmit } = formProps;
   const toast = useToast();
+  const { parsedProject } = useProjectConfig();
 
   function onSubmit(data: WebAppConfig): void {
     setConfigAndFixReferences((oldConfig) => {
@@ -30,6 +32,11 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
     });
     toast.success('Successfully saved app!');
   }
+
+  const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({
+    label: role.name,
+    value: role.name,
+  }));
 
   return (
     <div className={classNames('', className)}>
@@ -59,6 +66,14 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
           control={control}
           name="includeAuth"
         />
+        {roleOptions && (
+          <CheckedArrayInput.LabelledController
+            label="Allowed Roles?"
+            control={control}
+            options={roleOptions}
+            name="allowedRoles"
+          />
+        )}
         <Button type="submit">Save</Button>
       </form>
     </div>

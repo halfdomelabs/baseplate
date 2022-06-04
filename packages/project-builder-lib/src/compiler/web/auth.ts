@@ -16,7 +16,7 @@ export function compileAuthPages(
         generator: '@baseplate/react/auth/auth-pages',
         children: {
           login: {
-            allowedRoles: ['admin'],
+            allowedRoles: builder.appConfig.allowedRoles,
           },
         },
       },
