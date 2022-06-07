@@ -1,17 +1,21 @@
 import { BaseAppConfig, ProjectConfig } from '../schema';
 import { AppEntry } from '../types/files';
+import { compileAdmin } from './admin';
 import { compileBackend } from './backend';
 import { compileWeb } from './web';
 
 export function compileApplications(projectConfig: ProjectConfig): AppEntry[] {
   const apps: AppEntry[] = projectConfig.apps.map((app) => {
-    if (app.type === 'backend') {
-      return compileBackend(projectConfig, app);
+    switch (app.type) {
+      case 'backend':
+        return compileBackend(projectConfig, app);
+      case 'web':
+        return compileWeb(projectConfig, app);
+      case 'admin':
+        return compileAdmin(projectConfig, app);
+      default:
+        throw new Error(`Unknown app type: ${(app as BaseAppConfig).type}`);
     }
-    if (app.type === 'web') {
-      return compileWeb(projectConfig, app);
-    }
-    throw new Error(`Unknown app type: ${(app as BaseAppConfig).type}`);
   });
   return apps;
 }

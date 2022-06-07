@@ -4,6 +4,7 @@ import { Alert, Button, NotFoundCard } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
+import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
 import WebAppForm from './edit/WebAppForm';
 
@@ -50,6 +51,8 @@ function EditAppPage(): JSX.Element {
               return <BackendAppForm appConfig={app} key={app.uid} />;
             case 'web':
               return <WebAppForm appConfig={app} key={app.uid} />;
+            case 'admin':
+              return <AdminAppForm appConfig={app} key={app.uid} />;
             default:
               return (
                 <Alert type="error">

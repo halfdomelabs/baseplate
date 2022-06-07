@@ -30,6 +30,7 @@ function NewAppPage(): JSX.Element {
   const appTypeOptions = [
     { label: 'Backend App', value: 'backend' },
     { label: 'Web App', value: 'web' },
+    { label: 'Admin App', value: 'admin' },
   ];
   const toast = useToast();
 

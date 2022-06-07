@@ -5,7 +5,10 @@ import { randomUid } from '../../utils/randomUid';
 export const baseAppValidators = {
   uid: yup.string().default(randomUid),
   name: yup.string().required(),
-  type: yup.mixed<'backend' | 'web'>().oneOf(['backend', 'web']).required(),
+  type: yup
+    .mixed<'backend' | 'web' | 'admin'>()
+    .oneOf(['backend', 'web', 'admin'])
+    .required(),
   packageLocation: yup.string(),
 } as const;
 

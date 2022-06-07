@@ -7,13 +7,18 @@ import {
   WebAppConfig,
   webAppSchema,
 } from './apps';
+import {
+  AdminAppConfig,
+  adminAppSchema,
+  buildAdminAppReferences,
+} from './apps/admin';
 import { BackendAppConfig, backendAppSchema } from './apps/backend';
 import { authSchema, buildAuthReferences } from './auth';
 import { buildModelReferences, modelSchema } from './models';
 import { GetReferencesFunction, ReferencesBuilder } from './references';
 import { buildStorageReferences, storageSchema } from './storage';
 
-export type AppConfig = BackendAppConfig | WebAppConfig;
+export type AppConfig = BackendAppConfig | WebAppConfig | AdminAppConfig;
 
 export const projectConfigSchema = yup.object({
   name: yup.string().required(),
@@ -29,6 +34,9 @@ export const projectConfigSchema = yup.object({
         }
         if (value.type === 'web') {
           return webAppSchema;
+        }
+        if (value.type === 'admin') {
+          return adminAppSchema;
         }
         throw new Error(`Unknown app type: ${(value as BaseAppConfig).type}`);
       }) as unknown as yup.SchemaOf<AppConfig>
@@ -66,6 +74,12 @@ export const getProjectConfigReferences: GetReferencesFunction<
       buildWebAppReferences(
         app,
         builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<WebAppConfig>
+      );
+    }
+    if (app.type === 'admin') {
+      buildAdminAppReferences(
+        app,
+        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<AdminAppConfig>
       );
     }
   });
