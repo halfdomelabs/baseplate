@@ -4,8 +4,8 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import * as yup from 'yup';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks';

@@ -66,7 +66,7 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
     }
 
     const navEntries = links.map((link) =>
-      TypescriptCodeUtils.mergeExpressionsAsJsxElement('Sidebar.Link', {
+      TypescriptCodeUtils.mergeExpressionsAsJsxElement('Sidebar.LinkItem', {
         Icon: TypescriptCodeUtils.createExpression(
           link.icon,
           `import { ${link.icon} } from '${getIconImport(link.icon)}';`

@@ -41,6 +41,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
       },
       $adminLayout: {
         generator: '@baseplate/react/admin/admin-layout',
+        links: [{ label: 'Home', icon: 'MdHome', path: '/' }],
       },
       $sentry: {
         generator: '@baseplate/react/core/react-sentry',
