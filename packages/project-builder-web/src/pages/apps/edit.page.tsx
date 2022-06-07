@@ -47,9 +47,9 @@ function EditAppPage(): JSX.Element {
         {(() => {
           switch (app.type) {
             case 'backend':
-              return <BackendAppForm appConfig={app} />;
+              return <BackendAppForm appConfig={app} key={app.uid} />;
             case 'web':
-              return <WebAppForm appConfig={app} />;
+              return <WebAppForm appConfig={app} key={app.uid} />;
             default:
               return (
                 <Alert type="error">
