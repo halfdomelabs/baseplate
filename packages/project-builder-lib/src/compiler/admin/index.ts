@@ -4,7 +4,7 @@ import { AdminAppConfig } from '@src/schema/apps/admin';
 import { AppEntry } from '@src/types/files';
 import { AppEntryBuilder } from '../appEntryBuilder';
 import { compileAuthPages } from './auth';
-import { compileAdminPages } from './pages';
+import { compileAdminSections } from './sections';
 
 export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
@@ -29,7 +29,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
     children: {
       router: {
         children: {
-          routes: [compileAuthPages(builder), ...compileAdminPages(builder)],
+          routes: [compileAuthPages(builder), ...compileAdminSections(builder)],
         },
       },
       $tailwind: {

@@ -8,7 +8,7 @@ function AppsPages(): JSX.Element {
     <div>
       <Routes>
         <Route path="new" element={<NewAppPage />} />
-        <Route path="edit/:id" element={<EditAppPage />} />
+        <Route path="edit/:id/*" element={<EditAppPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
