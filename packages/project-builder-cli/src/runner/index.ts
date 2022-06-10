@@ -17,7 +17,7 @@ async function loadAppJson(directory: string): Promise<ProjectConfig> {
   }
 
   const projectJson: unknown = await fs.readJson(projectJsonPath);
-  return projectConfigSchema.validate(projectJson);
+  return projectConfigSchema.parse(projectJson);
 }
 
 export async function buildProjectForDirectory(

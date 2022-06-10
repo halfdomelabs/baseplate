@@ -1,34 +1,31 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import { baseAdminSectionValidators } from './base';
 
-export const adminCrudSectionSchema = yup.object({
+export const adminCrudSectionSchema = z.object({
   ...baseAdminSectionValidators,
-  type: yup.mixed<'crud'>().oneOf(['crud']).required(),
-  title: yup.string().required(),
-  model: yup.string().required(),
-  table: yup.object({
-    fields: yup.array().of(
-      yup.object({
-        name: yup.string().required(),
-        label: yup.string().required(),
+  type: z.literal('crud'),
+  title: z.string().min(1),
+  model: z.string().min(1),
+  table: z.object({
+    fields: z.array(
+      z.object({
+        name: z.string().min(1),
+        label: z.string().min(1),
       })
     ),
   }),
-  form: yup.object({
-    fields: yup.array().of(
-      yup.object({
-        name: yup.string().required(),
-        label: yup.string().required(),
+  form: z.object({
+    fields: z.array(
+      z.object({
+        name: z.string().min(1),
+        label: z.string().min(1),
       })
     ),
   }),
 });
 
-export type AdminCrudSectionConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof adminCrudSectionSchema>
->;
+export type AdminCrudSectionConfig = z.infer<typeof adminCrudSectionSchema>;
 
 export function buildAdminCrudSectionReferences(
   config: AdminCrudSectionConfig,

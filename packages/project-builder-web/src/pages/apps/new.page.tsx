@@ -1,9 +1,9 @@
 import {
-  BaseAppConfig,
+  AppConfig,
   baseAppSchema,
   randomUid,
 } from '@baseplate/project-builder-lib';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
@@ -17,8 +17,8 @@ function NewAppPage(): JSX.Element {
   const { setConfigAndFixReferences } = useProjectConfig();
   const { status, setError } = useStatus();
   const navigate = useNavigate();
-  const formProps = useForm<BaseAppConfig>({
-    resolver: yupResolver(baseAppSchema),
+  const formProps = useForm<AppConfig>({
+    resolver: zodResolver(baseAppSchema),
     defaultValues: {
       uid: randomUid(),
       name: '',
@@ -34,7 +34,7 @@ function NewAppPage(): JSX.Element {
   ];
   const toast = useToast();
 
-  const onSubmit = (data: BaseAppConfig): void => {
+  const onSubmit = (data: AppConfig): void => {
     try {
       setConfigAndFixReferences((oldConfig) => {
         const newApps = [...oldConfig.apps, data];

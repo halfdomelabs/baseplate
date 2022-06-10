@@ -274,7 +274,7 @@ export class ParsedProjectConfig {
   }
 
   exportToProjectConfig(): ProjectConfig {
-    return projectConfigSchema.validateSync(this.projectConfig);
+    return projectConfigSchema.parse(this.projectConfig);
   }
 
   getAppByUid(uid: string): AppConfig | undefined {

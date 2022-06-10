@@ -1,61 +1,43 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { randomUid } from '@src/utils/randomUid';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
-import {
-  BaseAppConfig,
-  buildWebAppReferences,
-  WebAppConfig,
-  webAppSchema,
-} from './apps';
+import { buildWebAppReferences, WebAppConfig, webAppSchema } from './apps';
 import {
   AdminAppConfig,
   adminAppSchema,
   buildAdminAppReferences,
 } from './apps/admin';
-import { BackendAppConfig, backendAppSchema } from './apps/backend';
+import { backendAppSchema } from './apps/backend';
 import { authSchema, buildAuthReferences } from './auth';
 import { buildModelReferences, modelSchema } from './models';
 import { GetReferencesFunction, ReferencesBuilder } from './references';
 import { buildStorageReferences, storageSchema } from './storage';
 
-export type AppConfig = BackendAppConfig | WebAppConfig | AdminAppConfig;
+export const appSchema = z.discriminatedUnion('type', [
+  backendAppSchema,
+  webAppSchema,
+  adminAppSchema,
+]);
 
-export const projectConfigSchema = yup.object({
-  name: yup.string().required(),
-  version: yup.string().required(),
+export type AppConfig = z.infer<typeof appSchema>;
+
+export const projectConfigSchema = z.object({
+  name: z.string().min(1),
+  version: z.string().min(1),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
-  portBase: yup.number().required(),
-  apps: yup
-    .array()
-    .of(
-      yup.lazy((value: AppConfig) => {
-        if (value.type === 'backend') {
-          return backendAppSchema;
-        }
-        if (value.type === 'web') {
-          return webAppSchema;
-        }
-        if (value.type === 'admin') {
-          return adminAppSchema;
-        }
-        throw new Error(`Unknown app type: ${(value as BaseAppConfig).type}`);
-      }) as unknown as yup.SchemaOf<AppConfig>
-    )
-    .required(),
-  features: yup.array(
-    yup.object({
-      uid: yup.string().default(randomUid),
-      name: yup.string().required(),
+  portBase: z.number(),
+  apps: z.array(appSchema),
+  features: z.array(
+    z.object({
+      uid: z.string().default(randomUid),
+      name: z.string().min(1),
     })
   ),
-  models: yup.array(modelSchema),
-  auth: authSchema.optional().default(undefined),
-  storage: storageSchema.optional().default(undefined),
+  models: z.array(modelSchema),
+  auth: authSchema.optional(),
+  storage: storageSchema.optional(),
 });
 
-export type ProjectConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof projectConfigSchema>
->;
+export type ProjectConfig = z.infer<typeof projectConfigSchema>;
 
 export const getProjectConfigReferences: GetReferencesFunction<
   ProjectConfig

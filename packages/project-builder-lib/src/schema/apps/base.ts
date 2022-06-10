@@ -1,19 +1,13 @@
-import * as yup from 'yup';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
+import { z } from 'zod';
 import { randomUid } from '../../utils/randomUid';
 
 export const baseAppValidators = {
-  uid: yup.string().default(randomUid),
-  name: yup.string().required(),
-  type: yup
-    .mixed<'backend' | 'web' | 'admin'>()
-    .oneOf(['backend', 'web', 'admin'])
-    .required(),
-  packageLocation: yup.string(),
+  uid: z.string().default(randomUid),
+  name: z.string().min(1),
+  type: z.string(),
+  packageLocation: z.string().optional(),
 } as const;
 
-export const baseAppSchema = yup.object(baseAppValidators);
+export const baseAppSchema = z.object(baseAppValidators);
 
-export type BaseAppConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof baseAppSchema>
->;
+export type BaseAppConfig = z.infer<typeof baseAppSchema>;

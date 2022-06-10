@@ -1,33 +1,30 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { randomUid } from '@src/utils/randomUid';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import { ReferencesBuilder } from '../references';
 
-export const storageSchema = yup.object({
-  fileModel: yup.string().required(),
-  featurePath: yup.string().required(),
-  s3Adapters: yup.array().of(
-    yup.object({
-      uid: yup.string().default(randomUid),
-      name: yup.string().required(),
-      bucketConfigVar: yup.string().required(),
+export const storageSchema = z.object({
+  fileModel: z.string().min(1),
+  featurePath: z.string().min(1),
+  s3Adapters: z.array(
+    z.object({
+      uid: z.string().default(randomUid),
+      name: z.string().min(1),
+      bucketConfigVar: z.string().min(1),
     })
   ),
-  categories: yup.array().of(
-    yup.object({
-      uid: yup.string().default(randomUid),
-      name: yup.string().required(),
-      defaultAdapter: yup.string().required(),
-      maxFileSize: yup.number().required(),
-      usedByRelation: yup.string().required(),
-      uploadRoles: yup.array().of(yup.string().required()),
+  categories: z.array(
+    z.object({
+      uid: z.string().default(randomUid),
+      name: z.string().min(1),
+      defaultAdapter: z.string().min(1),
+      maxFileSize: z.number(),
+      usedByRelation: z.string().min(1),
+      uploadRoles: z.array(z.string().min(1)),
     })
   ),
 });
 
-export type StorageConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof storageSchema>
->;
+export type StorageConfig = z.infer<typeof storageSchema>;
 
 export function buildStorageReferences(
   config: StorageConfig,

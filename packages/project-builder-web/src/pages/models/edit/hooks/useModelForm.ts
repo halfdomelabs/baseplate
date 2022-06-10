@@ -3,7 +3,7 @@ import {
   modelSchema,
   randomUid,
 } from '@baseplate/project-builder-lib';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useCallback, useEffect } from 'react';
 import { useForm, UseFormReturn } from 'react-hook-form';
@@ -36,7 +36,7 @@ export function useModelForm({
   const model = parsedProject.getModels().find((m) => m.uid === id);
 
   const form = useForm<ModelConfig>({
-    resolver: yupResolver(modelSchema),
+    resolver: zodResolver(modelSchema),
     defaultValues: model || NEW_MODEL,
   });
   const { reset } = form;

@@ -51,7 +51,7 @@ function buildMutationSchemaTypeForModel(
   model: ModelConfig
 ): unknown {
   const { schema: graphql } = model || {};
-  const { authorize = {} } = graphql || {};
+  const { authorize } = graphql || {};
 
   return {
     name: `${model.name}Mutations`,
@@ -60,13 +60,13 @@ function buildMutationSchemaTypeForModel(
     crudServiceRef: `${feature}/root:$services.${model.name}Service`,
     children: {
       create: {
-        children: { authorize: { roles: authorize.create } },
+        children: { authorize: { roles: authorize?.create } },
       },
       update: {
-        children: { authorize: { roles: authorize.create } },
+        children: { authorize: { roles: authorize?.create } },
       },
       delete: {
-        children: { authorize: { roles: authorize.delete } },
+        children: { authorize: { roles: authorize?.delete } },
       },
     },
   };

@@ -1,41 +1,31 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes';
 import { randomUid } from '@src/utils/randomUid';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import type { ProjectConfig } from '../projectConfig';
 import { ReferencesBuilder } from '../references';
-import {
-  embeddedRelationTransformerSchema,
-  passwordTransformerSchema,
-  TransformerConfig,
-} from './transformers';
+import { TransformerConfig, transformerSchema } from './transformers';
 
-export const modelScalarFieldSchema = yup.object({
-  uid: yup.string().default(randomUid),
-  name: yup.string().required(),
-  type: yup
-    .string()
-    .oneOf([...SCALAR_FIELD_TYPES])
-    .required(),
-  isId: yup.boolean(),
-  isOptional: yup.boolean(),
-  isUnique: yup.boolean(),
-  options: yup
+export const modelScalarFieldSchema = z.object({
+  uid: z.string().default(randomUid),
+  name: z.string().min(1),
+  type: z.enum(SCALAR_FIELD_TYPES),
+  isId: z.boolean().optional(),
+  isOptional: z.boolean().optional(),
+  isUnique: z.boolean().optional(),
+  options: z
     .object({
       // string options
-      default: yup.string(),
+      default: z.string().optional(),
       // uuid options
-      genUuid: yup.boolean(),
+      genUuid: z.boolean().optional(),
       // date options
-      updatedAt: yup.boolean(),
-      defaultToNow: yup.boolean(),
+      updatedAt: z.boolean().optional(),
+      defaultToNow: z.boolean().optional(),
     })
-    .default(undefined),
+    .optional(),
 });
 
-export type ModelScalarFieldConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof modelScalarFieldSchema>
->;
+export type ModelScalarFieldConfig = z.infer<typeof modelScalarFieldSchema>;
 
 export const REFERENTIAL_ACTIONS = [
   'Cascade',
@@ -43,124 +33,96 @@ export const REFERENTIAL_ACTIONS = [
   'NoAction',
   'SetNull',
   'SetDefault',
-];
+] as const;
 
-export const modelRelationFieldSchema = yup.object({
-  uid: yup.string().default(randomUid),
-  name: yup.string().required(),
-  references: yup
-    .array(
-      yup
-        .object({
-          local: yup.string().required(),
-          foreign: yup.string().required(),
-        })
-        .required()
-    )
-    .required(),
-  modelName: yup.string().required(),
-  foreignRelationName: yup.string().required(),
-  relationshipName: yup.string(),
-  relationshipType: yup
-    .string()
-    .oneOf(['oneToOne', 'oneToMany'])
-    .default('oneToMany'),
-  isOptional: yup.boolean().default(false),
-  onDelete: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Cascade'),
-  onUpdate: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Restrict'),
-});
-
-export type ModelRelationFieldConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof modelRelationFieldSchema>
->;
-
-export const modelUniqueConstraintSchema = yup.object({
-  uid: yup.string().default(randomUid),
-  name: yup.string().required(),
-  fields: yup
-    .array(yup.object({ name: yup.string().required() }).required())
-    .required(),
-});
-
-export type ModelUniqueConstraintConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof modelUniqueConstraintSchema>
->;
-
-export const modelServiceSchema = yup.object({
-  build: yup.boolean(),
-  create: yup
-    .object({
-      fields: yup.array(yup.string().required()),
-      transformerNames: yup.array(yup.string().required()),
+export const modelRelationFieldSchema = z.object({
+  uid: z.string().default(randomUid),
+  name: z.string().min(1),
+  references: z.array(
+    z.object({
+      local: z.string().min(1),
+      foreign: z.string().min(1),
     })
-    .default(undefined),
-  update: yup
-    .object({
-      fields: yup.array(yup.string().required()),
-      transformerNames: yup.array(yup.string().required()),
-    })
-    .default(undefined),
-  delete: yup
-    .object({
-      disabled: yup.boolean(),
-    })
-    .default(undefined),
-  transformers: yup.array().of(
-    yup.lazy((value: TransformerConfig) => {
-      switch (value.type) {
-        case 'embeddedRelation':
-          return embeddedRelationTransformerSchema.required();
-        case 'password':
-          return passwordTransformerSchema.required();
-        default:
-          throw new Error(
-            `Unknown transformer type: ${(value as { type: string }).type}`
-          );
-      }
-    }) as unknown as yup.SchemaOf<TransformerConfig>
   ),
+  modelName: z.string().min(1),
+  foreignRelationName: z.string().min(1),
+  relationshipName: z.string().optional(),
+  relationshipType: z.enum(['oneToOne', 'oneToMany']).default('oneToMany'),
+  isOptional: z.boolean().optional().default(false),
+  onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
+  onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
 });
 
-export type ModelServiceConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof modelServiceSchema>
+export type ModelRelationFieldConfig = z.infer<typeof modelRelationFieldSchema>;
+
+export const modelUniqueConstraintSchema = z.object({
+  uid: z.string().default(randomUid),
+  name: z.string().min(1),
+  fields: z.array(z.object({ name: z.string().min(1) })),
+});
+
+export type ModelUniqueConstraintConfig = z.infer<
+  typeof modelUniqueConstraintSchema
 >;
 
-export const modelSchemaSchema = yup.object({
-  buildObjectType: yup.boolean(),
-  exposedFields: yup.array(yup.string().required()),
-  exposedLocalRelations: yup.array(yup.string().required()),
-  exposedForeignRelations: yup.array(yup.string().required()),
-  buildQuery: yup.boolean(),
-  buildMutations: yup.boolean(),
-  authorize: yup.object({
-    read: yup.array(yup.string().required()),
-    create: yup.array(yup.string().required()),
-    update: yup.array(yup.string().required()),
-    delete: yup.array(yup.string().required()),
+export const modelServiceSchema = z.object({
+  build: z.boolean().optional(),
+  create: z
+    .object({
+      fields: z.array(z.string().min(1)).optional(),
+      transformerNames: z.array(z.string().min(1)).optional(),
+    })
+    .optional(),
+  update: z
+    .object({
+      fields: z.array(z.string().min(1)).optional(),
+      transformerNames: z.array(z.string().min(1)).optional(),
+    })
+    .optional(),
+  delete: z
+    .object({
+      disabled: z.boolean().optional(),
+    })
+    .optional(),
+  transformers: z.array(transformerSchema).optional(),
+});
+
+export type ModelServiceConfig = z.infer<typeof modelServiceSchema>;
+
+export const modelSchemaSchema = z.object({
+  buildObjectType: z.boolean().optional(),
+  exposedFields: z.array(z.string().min(1)).optional(),
+  exposedLocalRelations: z.array(z.string().min(1)).optional(),
+  exposedForeignRelations: z.array(z.string().min(1)).optional(),
+  buildQuery: z.boolean().optional(),
+  buildMutations: z.boolean().optional(),
+  authorize: z
+    .object({
+      read: z.array(z.string().min(1)).optional(),
+      create: z.array(z.string().min(1)).optional(),
+      update: z.array(z.string().min(1)).optional(),
+      delete: z.array(z.string().min(1)).optional(),
+    })
+    .optional(),
+});
+
+export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
+
+export const modelSchema = z.object({
+  uid: z.string().default(randomUid),
+  name: z.string().min(1),
+  feature: z.string().min(1),
+  model: z.object({
+    fields: z.array(modelScalarFieldSchema),
+    relations: z.array(modelRelationFieldSchema).optional(),
+    primaryKeys: z.array(z.string().min(1)).optional(),
+    uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
   }),
+  service: modelServiceSchema.optional(),
+  schema: modelSchemaSchema.optional(),
 });
 
-export type ModelSchemaConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof modelSchemaSchema>
->;
-
-export const modelSchema = yup.object({
-  uid: yup.string().default(randomUid),
-  name: yup.string().required(),
-  feature: yup.string().required(),
-  model: yup.object({
-    fields: yup.array(modelScalarFieldSchema.required()).required(),
-    relations: yup.array(modelRelationFieldSchema.required()),
-    primaryKeys: yup.array(yup.string().required()),
-    uniqueConstraints: yup.array(modelUniqueConstraintSchema.required()),
-  }),
-  service: modelServiceSchema.default(undefined),
-  schema: modelSchemaSchema.default(undefined),
-});
-
-export type ModelConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof modelSchema>
->;
+export type ModelConfig = z.infer<typeof modelSchema>;
 
 function buildModelScalarFieldReferences(
   modelName: string,

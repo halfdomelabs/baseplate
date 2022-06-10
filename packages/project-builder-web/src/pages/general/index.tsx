@@ -1,29 +1,22 @@
-import { randomUid } from '@baseplate/project-builder-lib';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { projectConfigSchema } from '@baseplate/project-builder-lib';
+import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useFieldArray, useForm } from 'react-hook-form';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { Alert, Button, TextInput } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
-const validationSchema = yup.object({
-  name: yup.string().required(),
-  version: yup.string().required(),
-  portBase: yup.number().required(),
-  features: yup.array(
-    yup
-      .object({
-        uid: yup.string().default(randomUid),
-        name: yup.string().required(),
-      })
-      .required()
-  ),
+const validationSchema = projectConfigSchema.pick({
+  name: true,
+  version: true,
+  portBase: true,
+  features: true,
 });
 
-type FormData = yup.InferType<typeof validationSchema>;
+type FormData = z.infer<typeof validationSchema>;
 
 function GeneralPage(): JSX.Element {
   const { config, setConfigAndFixReferences } = useProjectConfig();
@@ -33,7 +26,7 @@ function GeneralPage(): JSX.Element {
     control,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(validationSchema),
+    resolver: zodResolver(validationSchema),
     defaultValues: _.pick(config, ['name', 'version', 'portBase', 'features']),
   });
   const { status, setError } = useStatus();

@@ -1,20 +1,17 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import { baseAppValidators } from '../base';
 
-export const webAppSchema = yup.object({
+export const webAppSchema = z.object({
   ...baseAppValidators,
-  type: yup.mixed<'web'>().oneOf(['web']).required(),
-  includeAuth: yup.boolean(),
-  title: yup.string(),
-  description: yup.string(),
-  allowedRoles: yup.array().of(yup.string().required()),
+  type: z.literal('web'),
+  includeAuth: z.boolean().optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  allowedRoles: z.array(z.string().min(1)).optional(),
 });
 
-export type WebAppConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof webAppSchema>
->;
+export type WebAppConfig = z.infer<typeof webAppSchema>;
 
 export function buildWebAppReferences(
   config: WebAppConfig,

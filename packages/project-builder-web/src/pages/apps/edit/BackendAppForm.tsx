@@ -2,7 +2,7 @@ import {
   BackendAppConfig,
   backendAppSchema,
 } from '@baseplate/project-builder-lib';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import { useForm } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
@@ -19,7 +19,7 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
   const { setConfigAndFixReferences } = useProjectConfig();
 
   const formProps = useForm<BackendAppConfig>({
-    resolver: yupResolver(backendAppSchema),
+    resolver: zodResolver(backendAppSchema),
     defaultValues: appConfig,
   });
   const { control, handleSubmit } = formProps;

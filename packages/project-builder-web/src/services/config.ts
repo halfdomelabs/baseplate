@@ -1,7 +1,5 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const configSchema = yup.object({});
+const configSchema = z.object({});
 
-export const config = configSchema.validateSync(process.env, {
-  stripUnknown: true,
-});
+export const config = configSchema.parse(process.env);

@@ -1,16 +1,9 @@
-import * as yup from 'yup';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
+import { z } from 'zod';
 
 export const baseAdminSectionValidators = {
-  uid: yup.string().required(),
-  title: yup.string().required(),
-  icon: yup.string(),
-  feature: yup.string().required(),
-  type: yup.mixed<'crud'>().oneOf(['crud']).required(),
+  uid: z.string().min(1),
+  title: z.string(),
+  icon: z.string(),
+  feature: z.string(),
+  type: z.string(),
 };
-
-export const adminSectionSchema = yup.object(baseAdminSectionValidators);
-
-export type AdminSectionConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof adminSectionSchema>
->;

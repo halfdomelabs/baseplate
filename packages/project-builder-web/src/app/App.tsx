@@ -26,7 +26,7 @@ function App(): JSX.Element {
       try {
         const projectConfig = JSON.parse(savedConfig) as ProjectConfig;
         // validate config
-        const validatedConfig = projectConfigSchema.validateSync(projectConfig);
+        const validatedConfig = projectConfigSchema.parse(projectConfig);
         return new ParsedProjectConfig(validatedConfig);
       } catch (err) {
         toast.error(`Could not parse stored config: ${formatError(err)}`);
@@ -37,6 +37,8 @@ function App(): JSX.Element {
       version: '0.1.0',
       portBase: 4000,
       apps: [],
+      features: [],
+      models: [],
     });
   }, [savedConfig, toast]);
 
@@ -60,12 +62,8 @@ function App(): JSX.Element {
           options
         );
         console.log(fixedProjectConfig);
-        const validatedProjectConfig = projectConfigSchema.validateSync(
-          fixedProjectConfig,
-          {
-            stripUnknown: true,
-          }
-        );
+        const validatedProjectConfig =
+          projectConfigSchema.parse(fixedProjectConfig);
         const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
         setParsedApp(parsedConfig);
         const exportedProjectConfig = parsedConfig.exportToProjectConfig();
@@ -80,12 +78,8 @@ function App(): JSX.Element {
           typeof newConfig === 'function'
             ? produce(oldProjectConfig, newConfig)
             : newConfig;
-        const validatedProjectConfig = projectConfigSchema.validateSync(
-          newProjectConfig,
-          {
-            stripUnknown: true,
-          }
-        );
+        const validatedProjectConfig =
+          projectConfigSchema.parse(newProjectConfig);
         const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
         setParsedApp(parsedConfig);
         const exportedProjectConfig = parsedConfig.exportToProjectConfig();

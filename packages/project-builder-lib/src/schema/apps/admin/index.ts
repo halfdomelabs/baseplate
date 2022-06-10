@@ -1,6 +1,5 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import { baseAppValidators } from '../base';
 import { AdminCrudSectionConfig } from './pages';
 import {
@@ -8,27 +7,18 @@ import {
   buildAdminCrudSectionReferences,
 } from './pages/crud';
 
+export const adminSectionSchema = adminCrudSectionSchema;
+
 export type AdminSectionConfig = AdminCrudSectionConfig;
 
-export const adminAppSchema = yup.object({
+export const adminAppSchema = z.object({
   ...baseAppValidators,
-  type: yup.mixed<'admin'>().oneOf(['admin']).required(),
-  allowedRoles: yup.array().of(yup.string().required()),
-  sections: yup.array().of(
-    yup.lazy((value: AdminSectionConfig) => {
-      if (value.type === 'crud') {
-        return adminCrudSectionSchema;
-      }
-      throw new Error(
-        `Unknown app type: ${(value as unknown as AdminSectionConfig).type}`
-      );
-    }) as unknown as yup.SchemaOf<AdminSectionConfig>
-  ),
+  type: z.literal('admin'),
+  allowedRoles: z.array(z.string().min(1)),
+  sections: z.array(adminSectionSchema).optional(),
 });
 
-export type AdminAppConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof adminAppSchema>
->;
+export type AdminAppConfig = z.infer<typeof adminAppSchema>;
 
 export function buildAdminAppReferences(
   config: AdminAppConfig,
@@ -47,9 +37,7 @@ export function buildAdminAppReferences(
         );
         break;
       default:
-        throw new Error(
-          `Unknown page type: ${(page as AdminSectionConfig).type}`
-        );
+        throw new Error(`Unknown page type: ${page.type as string}`);
     }
   });
 }

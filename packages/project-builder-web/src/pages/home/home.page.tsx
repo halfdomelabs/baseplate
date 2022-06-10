@@ -47,6 +47,8 @@ function HomePage(): JSX.Element {
                   version: '0.1.0',
                   portBase: 4000,
                   apps: [],
+                  features: [],
+                  models: [],
                 } as ProjectConfig,
                 undefined,
                 2

@@ -3,7 +3,7 @@ import {
   authSchema,
   AUTH_DEFAULT_ROLES,
 } from '@baseplate/project-builder-lib';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Button } from 'src/components';
@@ -20,7 +20,7 @@ function AuthPage(): JSX.Element {
     useProjectConfig();
 
   const formProps = useForm<AuthConfig>({
-    resolver: yupResolver(authSchema),
+    resolver: zodResolver(authSchema),
     defaultValues: {
       ...config.auth,
       roles: config.auth?.roles || AUTH_DEFAULT_ROLES,

@@ -1,16 +1,15 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { randomUid } from '@src/utils/randomUid';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 import { ReferencesBuilder } from '../references';
 
-export const authRoleSchema = yup.object({
-  uid: yup.string().default(randomUid),
-  name: yup.string().required(),
-  comment: yup.string().required(),
-  inherits: yup.array(yup.string().required()),
+export const authRoleSchema = z.object({
+  uid: z.string().default(randomUid),
+  name: z.string().min(1),
+  comment: z.string().min(1),
+  inherits: z.array(z.string().min(1)),
 });
 
-export type AuthRoleConfig = yup.InferType<typeof authRoleSchema>;
+export type AuthRoleConfig = z.infer<typeof authRoleSchema>;
 
 export const AUTH_DEFAULT_ROLES = [
   {
@@ -25,23 +24,24 @@ export const AUTH_DEFAULT_ROLES = [
   },
 ];
 
-export const authSchema = yup.object({
-  userModel: yup.string().required(),
-  userRoleModel: yup.string().required(),
-  authFeaturePath: yup.string().required(),
-  accountsFeaturePath: yup.string().required(),
-  passwordProvider: yup.boolean(),
-  roles: yup
+export const authSchema = z.object({
+  userModel: z.string().min(1),
+  userRoleModel: z.string().min(1),
+  authFeaturePath: z.string().min(1),
+  accountsFeaturePath: z.string().min(1),
+  passwordProvider: z.boolean().optional(),
+  roles: z
     .array(authRoleSchema)
-    .required()
-    .test('roles', 'Anonymous and user role required', (roles) =>
-      ['anonymous', 'user'].every((name) => roles?.some((r) => r.name === name))
+    .refine(
+      (roles) =>
+        ['anonymous', 'user'].every((name) =>
+          roles?.some((r) => r.name === name)
+        ),
+      { message: 'Anonymous and user role required' }
     ),
 });
 
-export type AuthConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof authSchema>
->;
+export type AuthConfig = z.infer<typeof authSchema>;
 
 export function buildAuthReferences(
   config: AuthConfig,

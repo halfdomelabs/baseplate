@@ -1,33 +1,35 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 import { randomUid } from '@src/utils/randomUid';
-import { MakeUndefinableFieldsOptional } from '@src/utils/types';
 
 const baseTransformerFields = {
-  uid: yup.string().default(randomUid),
-  name: yup.string().required(),
-  type: yup.string().required(),
+  uid: z.string().default(randomUid),
+  name: z.string().min(1),
+  type: z.string().min(1),
 } as const;
 
-export const passwordTransformerSchema = yup.object({
+export const passwordTransformerSchema = z.object({
   ...baseTransformerFields,
-  type: yup.mixed<'password'>().oneOf(['password']).required(),
+  type: z.literal('password'),
 });
 
-export type PasswordTransformerConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof passwordTransformerSchema>
+export type PasswordTransformerConfig = z.infer<
+  typeof passwordTransformerSchema
 >;
 
-export const embeddedRelationTransformerSchema = yup.object({
+export const embeddedRelationTransformerSchema = z.object({
   ...baseTransformerFields,
-  type: yup.mixed<'embeddedRelation'>().oneOf(['embeddedRelation']).required(),
-  embeddedFieldNames: yup.array(yup.string().required()),
-  embeddedTransformerNames: yup.array(yup.string().required()),
+  type: z.literal('embeddedRelation'),
+  embeddedFieldNames: z.array(z.string().min(1)),
+  embeddedTransformerNames: z.array(z.string().min(1)).optional(),
 });
 
-export type EmbeddedRelationTransformerConfig = MakeUndefinableFieldsOptional<
-  yup.InferType<typeof embeddedRelationTransformerSchema>
+export type EmbeddedRelationTransformerConfig = z.infer<
+  typeof embeddedRelationTransformerSchema
 >;
 
-export type TransformerConfig =
-  | PasswordTransformerConfig
-  | EmbeddedRelationTransformerConfig;
+export const transformerSchema = z.discriminatedUnion('type', [
+  passwordTransformerSchema,
+  embeddedRelationTransformerSchema,
+]);
+
+export type TransformerConfig = z.infer<typeof transformerSchema>;

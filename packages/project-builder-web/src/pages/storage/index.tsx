@@ -1,5 +1,5 @@
 import { StorageConfig, storageSchema } from '@baseplate/project-builder-lib';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Button } from 'src/components';
@@ -16,7 +16,7 @@ function StoragePage(): JSX.Element {
     useProjectConfig();
 
   const formProps = useForm<StorageConfig>({
-    resolver: yupResolver(storageSchema),
+    resolver: zodResolver(storageSchema),
     defaultValues: config.storage,
   });
   const { control, reset, handleSubmit } = formProps;
