@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { Route, Routes } from 'react-router-dom';
 import { NavigationTabs } from 'src/components';
 import AdminGeneralForm from './admin/AdminGeneralForm';
+import AdminSectionsForm from './admin/AdminSectionsForm';
 
 interface Props {
   className?: string;
@@ -19,6 +20,10 @@ function AdminAppForm({ className, appConfig }: Props): JSX.Element {
       <div className="p-4 bg-slate-200">
         <Routes>
           <Route index element={<AdminGeneralForm appConfig={appConfig} />} />
+          <Route
+            path="/sections"
+            element={<AdminSectionsForm appConfig={appConfig} />}
+          />
         </Routes>
       </div>
     </div>
