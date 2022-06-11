@@ -2,26 +2,44 @@ import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references';
 import { baseAdminSectionValidators } from './base';
 
+export const adminCrudTextRendererSchema = z.object({
+  type: z.literal('text'),
+  field: z.string().min(1),
+});
+
+export type AdminCrudTextRendererConfig = z.infer<
+  typeof adminCrudTextRendererSchema
+>;
+
+export const adminCrudRendererSchema = adminCrudTextRendererSchema;
+
+export const adminCrudTableColumnSchema = z.object({
+  label: z.string().min(1),
+  renderer: adminCrudRendererSchema,
+});
+
+export const adminCrudTextInputSchema = z.object({
+  type: z.literal('text'),
+  field: z.string().min(1),
+});
+
+export const adminCrudInputSchema = adminCrudTextInputSchema;
+
+export const adminCrudFormFieldSchema = z.object({
+  label: z.string().min(1),
+  input: adminCrudTextInputSchema,
+});
+
 export const adminCrudSectionSchema = z.object({
   ...baseAdminSectionValidators,
   type: z.literal('crud'),
   title: z.string().min(1),
   model: z.string().min(1),
   table: z.object({
-    fields: z.array(
-      z.object({
-        name: z.string().min(1),
-        label: z.string().min(1),
-      })
-    ),
+    columns: z.array(adminCrudTableColumnSchema),
   }),
   form: z.object({
-    fields: z.array(
-      z.object({
-        name: z.string().min(1),
-        label: z.string().min(1),
-      })
-    ),
+    fields: z.array(adminCrudFormFieldSchema),
   }),
 });
 
@@ -32,12 +50,34 @@ export function buildAdminCrudSectionReferences(
   builder: ReferencesBuilder<AdminCrudSectionConfig>
 ): void {
   builder.addReference('model', { category: 'model' });
-  builder.addReferences('table.fields.*.name', {
-    category: 'modelField',
-    generateKey: (name) => `${config.model}.${name}`,
+
+  config.table.columns.forEach((column, idx) => {
+    const columnBuilder = builder.withPrefix(`table.columns.${idx}`);
+    switch (column.renderer.type) {
+      case 'text':
+        columnBuilder.addReference('renderer.field', {
+          category: 'modelField',
+          key: `${config.model}.${column.renderer.field}`,
+        });
+        break;
+      default:
+        throw new Error(
+          `Unknown renderer type: ${column.renderer.type as string}`
+        );
+    }
   });
-  builder.addReferences('form.fields.*.name', {
-    category: 'modelField',
-    generateKey: (name) => `${config.model}.${name}`,
+
+  config.form.fields.forEach((field, idx) => {
+    const fieldBuilder = builder.withPrefix(`form.fields.${idx}`);
+    switch (field.input.type) {
+      case 'text':
+        fieldBuilder.addReference('input.field', {
+          category: 'modelField',
+          key: `${config.model}.${field.input.field}`,
+        });
+        break;
+      default:
+        throw new Error(`Unknown input type: ${field.input.type as string}`);
+    }
   });
 }
