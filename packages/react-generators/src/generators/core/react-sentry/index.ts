@@ -5,11 +5,11 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactConfigProvider } from '../react-config';
 import { reactErrorProvider } from '../react-error';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 const ReactSentryGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -42,7 +42,7 @@ const ReactSentryGenerator = createGeneratorWithChildren({
 
     reactConfig.getConfigMap().set('REACT_APP_SENTRY_DSN', {
       comment: 'DSN for Sentry (optional)',
-      validator: TypescriptCodeUtils.createExpression('yup.string()'),
+      validator: TypescriptCodeUtils.createExpression('z.string().optional()'),
       devValue: '',
     });
 

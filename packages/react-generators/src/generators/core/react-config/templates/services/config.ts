@@ -1,9 +1,7 @@
 // @ts-nocheck
 
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const configSchema = yup.object(CONFIG_SCHEMA);
+const configSchema = z.object(CONFIG_SCHEMA);
 
-export const config = configSchema.validateSync(process.env, {
-  stripUnknown: true,
-});
+export const config = configSchema.parse(process.env);

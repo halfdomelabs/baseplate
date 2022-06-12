@@ -12,13 +12,13 @@ import {
   createProviderType,
   NonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { configServiceProvider } from '../config-service';
 import { loggerServiceProvider } from '../logger-service';
 import { rootModuleProvider } from '../root-module';
 
-const descriptorSchema = yup.object({
-  defaultPort: yup.number().default(7001),
+const descriptorSchema = z.object({
+  defaultPort: z.number().default(7001),
 });
 
 interface FastifyServerConfig {
@@ -88,12 +88,12 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     configService.getConfigEntries().merge({
       SERVER_HOST: {
         comment: 'Hostname to bind the server to',
-        value: TypescriptCodeUtils.createExpression('yup.string()'),
+        value: TypescriptCodeUtils.createExpression('z.string().optional()'),
       },
       SERVER_PORT: {
         comment: 'Port to bind the server to',
         value: TypescriptCodeUtils.createExpression(
-          `yup.number().default(${descriptor.defaultPort})`
+          `z.number().default(${descriptor.defaultPort})`
         ),
       },
     });

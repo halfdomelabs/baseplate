@@ -1,11 +1,11 @@
 import R from 'ramda';
-import * as yup from 'yup';
+import { z } from 'zod';
 import {
+  baseDescriptorSchema,
   BaseGeneratorDescriptor,
+  GeneratorConfig,
   ProviderDependencyMap,
   ProviderExportMap,
-  GeneratorConfig,
-  baseDescriptorSchema,
 } from '../core';
 import { notEmpty } from './arrays';
 
@@ -32,13 +32,13 @@ export interface ChildGeneratorConfig {
 }
 
 export interface SimpleGeneratorConfig<
-  DescriptorSchema extends yup.BaseSchema,
+  DescriptorSchema extends z.ZodType,
   ExportMap extends ProviderExportMap,
   DependencyMap extends ProviderDependencyMap
 > {
   descriptorSchema?: DescriptorSchema;
   getDefaultChildGenerators?(
-    descriptor: yup.InferType<DescriptorSchema>
+    descriptor: z.infer<DescriptorSchema>
   ): Record<string, ChildGeneratorConfig>;
   exports?: ExportMap;
   dependencies?: DependencyMap;
@@ -46,10 +46,10 @@ export interface SimpleGeneratorConfig<
   // dependency map from a generator function that takes in a generic descriptor
   populateDependencies?: (
     dependencyMap: DependencyMap,
-    descriptor: yup.InferType<DescriptorSchema>
+    descriptor: z.infer<DescriptorSchema>
   ) => ProviderDependencyMap;
   createGenerator: GeneratorConfig<
-    DescriptorWithChildren & yup.InferType<DescriptorSchema>,
+    DescriptorWithChildren & z.infer<DescriptorSchema>,
     ExportMap,
     DependencyMap
   >['createGenerator'];
@@ -66,21 +66,24 @@ export interface SimpleGeneratorConfig<
  * @returns Normal generator
  */
 export function createGeneratorWithChildren<
-  DescriptorSchema extends yup.BaseSchema,
+  DescriptorSchema extends z.ZodType,
   ExportMap extends ProviderExportMap,
   DependencyMap extends ProviderDependencyMap
 >(
   config: SimpleGeneratorConfig<DescriptorSchema, ExportMap, DependencyMap>
 ): GeneratorConfig<
-  DescriptorWithChildren & yup.InferType<DescriptorSchema>,
+  DescriptorWithChildren & z.infer<DescriptorSchema>,
   ExportMap,
   DependencyMap
 > {
   return {
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
       try {
-        const validatedDescriptor =
-          config.descriptorSchema?.validateSync(descriptor);
+        // TODO: Merge with base descriptor
+        const mergedSchema = config.descriptorSchema?.and(baseDescriptorSchema);
+        const validatedDescriptor = mergedSchema?.parse(
+          descriptor
+        ) as DescriptorWithChildren & z.infer<DescriptorSchema>;
         const { id, generatorMap } = context;
         const childGeneratorConfigs =
           config.getDefaultChildGenerators?.(descriptor) || {};
@@ -126,9 +129,9 @@ export function createGeneratorWithChildren<
             descriptorChild || {}
           );
 
-          const validatedChildDescriptor = yup
-            .object(baseDescriptorSchema)
-            .validateSync(mergedDescriptor);
+          const validatedChildDescriptor = baseDescriptorSchema
+            .passthrough()
+            .parse(mergedDescriptor);
 
           if (provider) {
             const childGeneratorConfig =
@@ -191,7 +194,11 @@ export function createGeneratorWithChildren<
           validatedDescriptor,
         };
       } catch (err) {
-        console.error(`Descriptor validation failed at ${context.id}`);
+        console.error(
+          `Descriptor validation failed at ${context.id}: ${
+            (err as Error).message
+          }`
+        );
         throw err;
       }
     },

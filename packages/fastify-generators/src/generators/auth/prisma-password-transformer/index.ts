@@ -1,11 +1,11 @@
 import { TypescriptCodeUtils } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service';
 import { passwordHasherServiceProvider } from '../password-hasher-service';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 const PrismaPasswordTransformerGenerator = createGeneratorWithChildren({

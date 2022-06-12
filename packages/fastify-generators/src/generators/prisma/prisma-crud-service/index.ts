@@ -3,11 +3,11 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { PrismaDataTransformerFactory } from '@src/providers/prisma/prisma-data-transformable';
 
-const descriptorSchema = yup.object({
-  modelName: yup.string().required(),
+const descriptorSchema = z.object({
+  modelName: z.string().min(1),
 });
 
 export interface PrismaCrudServiceSetupProvider {

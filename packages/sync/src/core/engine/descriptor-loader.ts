@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
-import * as yup from 'yup';
 import { getErrorMessage } from '@src/utils/errors';
-import { BaseGeneratorDescriptor, baseDescriptorSchema } from '../descriptor';
+import { baseDescriptorSchema, BaseGeneratorDescriptor } from '../descriptor';
 
 export async function loadDescriptorFromFile(
   filePath: string
@@ -13,7 +12,7 @@ export async function loadDescriptorFromFile(
     if (!data) {
       throw new Error(`Descriptor in is invalid!`);
     }
-    yup.object(baseDescriptorSchema).validateSync(data);
+    baseDescriptorSchema.parse(data);
     return data;
   } catch (err) {
     throw new Error(

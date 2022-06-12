@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-import { yupResolver } from '@hookform/resolvers/yup';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Location, useLocation, useNavigate } from 'react-router-dom';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { Alert, Button, Card, TextInput } from '%react-components';
 import { useLoginWithEmailAndPasswordMutation } from '%react-apollo/generated';
 import { useStatus } from '%react-components/useStatus';
@@ -11,12 +11,15 @@ import { authService } from '%auth-service';
 import { formatError } from '%react-error/formatter';
 import { getApolloErrorCode } from '%apollo-error/utils';
 
-const formSchema = yup.object({
-  email: yup.string().email().lowercase().required(),
-  password: yup.string().min(8).required(),
+const formSchema = z.object({
+  email: z
+    .string()
+    .email()
+    .transform((value) => value.toLowerCase()),
+  password: z.string().min(8),
 });
 
-type FormData = yup.InferType<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>;
 
 const REQUIRED_ROLES = ALLOWED_ROLES;
 
@@ -32,7 +35,7 @@ function LoginPage(): JSX.Element {
     setError: setFormError,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: yupResolver(formSchema),
+    resolver: zodResolver(formSchema),
   });
   const { status, setError } = useStatus();
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
   PrismaDataTransformer,
@@ -27,11 +27,11 @@ import {
 import { prismaOutputProvider } from '../prisma';
 import { prismaCrudServiceProvider } from '../prisma-crud-service';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  modelName: yup.string().required(),
-  prismaFields: yup.array(yup.string().required()).required(),
-  transformerNames: yup.array(yup.string().required()),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  modelName: z.string().min(1),
+  prismaFields: z.array(z.string().min(1)),
+  transformerNames: z.array(z.string().min(1)).optional(),
 });
 
 function getMethodDefinition(

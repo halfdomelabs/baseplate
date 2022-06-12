@@ -10,12 +10,12 @@ import {
 } from '@baseplate/sync';
 import { paramCase } from 'change-case';
 import R from 'ramda';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { appModuleProvider } from '../root-module';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  folderName: yup.string(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  folderName: z.string().optional(),
 });
 
 const AppModuleGenerator = createGeneratorWithChildren({

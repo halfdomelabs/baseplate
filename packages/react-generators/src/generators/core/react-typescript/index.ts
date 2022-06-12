@@ -1,8 +1,8 @@
 import { typescriptConfigProvider } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 const ReactTypescriptGenerator = createGeneratorWithChildren({
   descriptorSchema,

@@ -11,7 +11,7 @@ import {
   createProviderType,
 } from '@baseplate/sync';
 import R from 'ramda';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
@@ -30,17 +30,19 @@ import { authServiceProvider } from '../auth-service';
  * roles: UserRole[]
  */
 
-const descriptorSchema = yup.object({
-  userModelName: yup.string().required(),
-  userRoleModelName: yup.string().required(),
+const descriptorSchema = z.object({
+  userModelName: z.string().min(1),
+  userRoleModelName: z.string().min(1),
   // Note: Anonymous and user roles are automatically added
-  roles: yup.array(
-    yup.object({
-      name: yup.string().required(),
-      comment: yup.string().required(),
-      inherits: yup.array(yup.string().required()),
-    })
-  ),
+  roles: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        comment: z.string().min(1),
+        inherits: z.array(z.string().min(1)).optional(),
+      })
+    )
+    .optional(),
 });
 
 export type RoleServiceProvider = ImportMapper;

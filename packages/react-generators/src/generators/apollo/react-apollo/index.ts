@@ -14,14 +14,14 @@ import {
   writeTemplateAction,
 } from '@baseplate/sync';
 import toposort from 'toposort';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { notEmpty } from '../../../utils/array';
 import { reactAppProvider } from '../../core/react-app';
 import { reactConfigProvider } from '../../core/react-config';
 
-const descriptorSchema = yup.object({
-  devApiEndpoint: yup.string().required(),
-  schemaLocation: yup.string().required(),
+const descriptorSchema = z.object({
+  devApiEndpoint: z.string().min(1),
+  schemaLocation: z.string().min(1),
 });
 
 export interface ApolloLink {
@@ -91,9 +91,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
 
     reactConfig.getConfigMap().set('REACT_APP_GRAPH_API_ENDPOINT', {
       comment: 'URL for the GraphQL API endpoint',
-      validator: TypescriptCodeUtils.createExpression(
-        'yup.string().required()'
-      ),
+      validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
       devValue: devApiEndpoint,
     });
 

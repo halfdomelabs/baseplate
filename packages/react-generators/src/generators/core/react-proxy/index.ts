@@ -1,10 +1,10 @@
 import { eslintProvider, nodeProvider } from '@baseplate/core-generators';
 import { copyFileAction, createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactConfigProvider } from '../react-config';
 
-const descriptorSchema = yup.object({
-  devBackendHost: yup.string().required(),
+const descriptorSchema = z.object({
+  devBackendHost: z.string().min(1),
 });
 
 const ReactProxyGenerator = createGeneratorWithChildren({

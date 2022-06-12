@@ -12,15 +12,15 @@ import {
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import R from 'ramda';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { notEmpty } from '@src/utils/array';
 import { authServiceProvider } from '../auth-service';
 
-const descriptorSchema = yup.object({
-  userModelName: yup.string().required(),
+const descriptorSchema = z.object({
+  userModelName: z.string().min(1),
 });
 
 interface AuthField {

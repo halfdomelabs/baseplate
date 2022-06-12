@@ -2,11 +2,11 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { copyTypescriptFileAction } from '../../../actions';
 import { ImportMapper } from '../../../providers';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 interface UtilConfig {
   file: string;

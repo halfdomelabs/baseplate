@@ -8,12 +8,12 @@ import {
   createGeneratorWithChildren,
 } from '@baseplate/sync';
 import { paramCase } from 'change-case';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { nexusSchemaProvider } from '../nexus';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
 });
 
 export interface NexusTypesFileProvider {

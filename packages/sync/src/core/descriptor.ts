@@ -1,15 +1,10 @@
-import * as yup from 'yup';
+import { z } from 'zod';
 
-export interface BaseGeneratorDescriptor {
-  name?: string;
-  generator: string;
-  peerProvider?: boolean;
-  hoistedProviders?: string[];
-}
+export const baseDescriptorSchema = z.object({
+  name: z.string().optional(),
+  generator: z.string(),
+  peerProvider: z.boolean().optional(),
+  hoistedProviders: z.array(z.string()).optional(),
+});
 
-export const baseDescriptorSchema = {
-  name: yup.string(),
-  generator: yup.string().required(),
-  peerProvider: yup.boolean(),
-  hoistedProviders: yup.array(yup.string().required()),
-};
+export type BaseGeneratorDescriptor = z.infer<typeof baseDescriptorSchema>;

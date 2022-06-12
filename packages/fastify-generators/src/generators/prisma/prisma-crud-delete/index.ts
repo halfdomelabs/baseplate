@@ -6,7 +6,7 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
   prismaToServiceOutputDto,
@@ -18,13 +18,13 @@ import {
 } from '../_shared/crud-method/primary-key-input';
 import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  modelName: yup.string().required(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  modelName: z.string().min(1),
 });
 
 interface PrismaDeleteMethodOptions {
-  descriptor: yup.InferType<typeof descriptorSchema>;
+  descriptor: z.infer<typeof descriptorSchema>;
   prismaOutput: PrismaOutputProvider;
   methodExpression: TypescriptCodeExpression;
 }

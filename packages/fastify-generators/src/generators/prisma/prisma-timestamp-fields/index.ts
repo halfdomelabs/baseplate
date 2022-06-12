@@ -1,10 +1,10 @@
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { prismaModelProvider } from '../prisma-model';
 
-const descriptorSchema = yup.object({
-  createdAt: yup.boolean().default(true),
-  updatedAt: yup.boolean().default(true),
+const descriptorSchema = z.object({
+  createdAt: z.boolean().default(true),
+  updatedAt: z.boolean().default(true),
 });
 
 const PrismaTimestampFieldsGenerator = createGeneratorWithChildren({

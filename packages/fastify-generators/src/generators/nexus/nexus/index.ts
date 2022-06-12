@@ -14,7 +14,7 @@ import {
   createProviderType,
   NonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
@@ -28,7 +28,7 @@ import {
   NexusScalarConfig,
 } from '@src/writers/nexus-definition/scalars';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 export interface MutationField {
   name: string;

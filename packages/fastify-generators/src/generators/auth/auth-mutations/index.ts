@@ -7,7 +7,7 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { serviceContextProvider } from '@src/generators/core/service-context';
@@ -15,8 +15,8 @@ import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { nexusAuthProvider } from '@src/generators/nexus/nexus-auth';
 import { authServiceProvider } from '../auth-service';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export type AuthMutationsProvider = ImportMapper;

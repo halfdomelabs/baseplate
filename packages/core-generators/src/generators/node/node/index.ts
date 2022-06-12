@@ -6,18 +6,18 @@ import {
 } from '@baseplate/sync';
 import R from 'ramda';
 import semver from 'semver';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { projectProvider } from '../../../providers';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  description: yup.string(),
-  license: yup.string().default('UNLICENSED'),
-  version: yup.string().default('0.1.0'),
-  private: yup.bool().default(true),
-  path: yup.string().default(''),
-  nodeVersion: yup.string().default('14.19.0'),
-  yarnVersion: yup.string().default('1.22.17'),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+  license: z.string().default('UNLICENSED'),
+  version: z.string().default('0.1.0'),
+  private: z.boolean().default(true),
+  path: z.string().default(''),
+  nodeVersion: z.string().default('14.19.0'),
+  yarnVersion: z.string().default('1.22.17'),
 });
 
 export interface NodeProvider {

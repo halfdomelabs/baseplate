@@ -3,7 +3,7 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import {
   ReactRoute,
   ReactRouteLayout,
@@ -14,11 +14,11 @@ import { upperCaseFirst } from '@src/utils/case';
 import { renderRoutes } from '../_shared/routes/renderRoutes';
 import { reactNotFoundProvider } from '../react-not-found-handler';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  layoutKey: yup.string(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  layoutKey: z.string().optional(),
   // whether to pass the routes through to the parent routes container
-  isPassthrough: yup.boolean(),
+  isPassthrough: z.boolean().optional(),
 });
 
 const ReactRoutesGenerator = createGeneratorWithChildren({

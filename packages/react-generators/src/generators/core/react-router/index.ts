@@ -5,7 +5,7 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import {
   ReactRouteLayout,
   reactRoutesProvider,
@@ -16,8 +16,8 @@ import { renderRoutes } from '../_shared/routes/renderRoutes';
 import { reactProvider } from '../react';
 import { reactAppProvider } from '../react-app';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 const ReactRouterGenerator = createGeneratorWithChildren({

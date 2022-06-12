@@ -7,12 +7,12 @@ import {
   createGeneratorWithChildren,
   createProviderType,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { ReactRoute, reactRoutesProvider } from '@src/providers/routes';
 import { reactComponentsProvider } from '../react-components';
 
-const descriptorSchema = yup.object({
-  layoutKey: yup.string(),
+const descriptorSchema = z.object({
+  layoutKey: z.string().optional(),
 });
 
 export interface ReactNotFoundProvider {

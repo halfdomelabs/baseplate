@@ -10,10 +10,10 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { fastifyServerProvider } from '../fastify-server';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 export interface RequestContextGeneratorConfig {
   setting?: string;

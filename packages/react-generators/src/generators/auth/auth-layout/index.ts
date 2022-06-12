@@ -7,13 +7,13 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactRoutesProvider } from '@src/providers/routes';
 import { writeReactComponent } from '@src/writers/component';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
 });
 
 export type AuthLayoutProvider = unknown;

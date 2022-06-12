@@ -10,11 +10,11 @@ import {
   createProviderType,
   writeFormattedAction,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactProvider } from '../react';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export interface ReactComponentEntry {

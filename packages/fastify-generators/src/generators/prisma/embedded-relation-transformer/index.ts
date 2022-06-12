@@ -4,7 +4,7 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import {
   PrismaDataTransformer,
   PrismaDataTransformerOptions,
@@ -29,13 +29,13 @@ import {
   prismaCrudServiceSetupProvider,
 } from '../prisma-crud-service';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  inputName: yup.string(),
-  localRelationName: yup.string(),
-  embeddedFieldNames: yup.array().of(yup.string().required()),
-  foreignCrudServiceRef: yup.string(),
-  embeddedTransformerNames: yup.array().of(yup.string().required()),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  inputName: z.string().optional(),
+  localRelationName: z.string().optional(),
+  embeddedFieldNames: z.array(z.string().min(1)),
+  foreignCrudServiceRef: z.string().optional(),
+  embeddedTransformerNames: z.array(z.string().min(1)).optional(),
 });
 
 function getForeignModelRelation(

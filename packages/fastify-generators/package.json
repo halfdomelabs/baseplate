@@ -12,7 +12,6 @@
     "@types/inflection": "^1.13.0",
     "@types/ramda": "^0.27.64",
     "@types/semver": "^7.3.9",
-    "@types/yup": "^0.29.13",
     "concurrently": "^7.0.0",
     "del": "^6.0.0",
     "tsc-alias": "^1.5.0",
@@ -41,7 +40,7 @@
     "resolve": "^1.21.0",
     "semver": "^7.3.5",
     "ts-morph": "^13.0.2",
-    "yup": "^0.32.11"
+    "zod": "^3.17.3"
   },
   "engines": {
     "node": "^16.0.0",

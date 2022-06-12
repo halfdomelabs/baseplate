@@ -12,7 +12,7 @@ import {
   createGeneratorWithChildren,
 } from '@baseplate/sync';
 import { formatSchema } from '@prisma/sdk';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check';
@@ -24,9 +24,9 @@ import {
   PrismaSchemaFile,
 } from '@src/writers/prisma-schema/schema';
 
-const descriptorSchema = yup.object({
-  defaultPort: yup.string().default('5432'),
-  defaultDatabaseUrl: yup.string(),
+const descriptorSchema = z.object({
+  defaultPort: z.number().default(5432),
+  defaultDatabaseUrl: z.string().optional(),
 });
 
 export interface PrismaSchemaProvider {
@@ -112,7 +112,7 @@ const PrismaGenerator = createGeneratorWithChildren({
 
     configService.getConfigEntries().set('DATABASE_URL', {
       comment: 'Connection URL of the database',
-      value: TypescriptCodeUtils.createExpression('yup.string().required()'),
+      value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
       exampleValue: defaultDatabaseUrl,
     });
 

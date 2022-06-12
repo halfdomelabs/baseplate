@@ -6,11 +6,11 @@ import {
   writeTemplateAction,
   copyFileAction,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactProvider } from '../react';
 
-const descriptorSchema = yup.object({
-  globalBodyClasses: yup.string(),
+const descriptorSchema = z.object({
+  globalBodyClasses: z.string().optional(),
 });
 
 export type ReactTailwindProvider = unknown;

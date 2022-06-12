@@ -3,7 +3,7 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
@@ -11,7 +11,7 @@ import { authProvider } from '../auth';
 import { authServiceProvider } from '../auth-service';
 import { passwordHasherServiceProvider } from '../password-hasher-service';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 /**
  * Expects

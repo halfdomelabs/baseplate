@@ -7,13 +7,13 @@ import {
   createGeneratorWithChildren,
   createProviderType,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactRoutesProvider } from '@src/providers/routes';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export type AdminHomeProvider = unknown;

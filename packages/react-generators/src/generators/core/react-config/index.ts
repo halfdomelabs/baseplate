@@ -11,10 +11,10 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 interface ConfigEntry {
@@ -48,7 +48,7 @@ const ReactConfigGenerator = createGeneratorWithChildren({
     const customEnvVars: { name: string; value: string }[] = [];
 
     node.addPackages({
-      yup: '^0.32.11',
+      zod: '^3.17.3',
     });
     return {
       getProviders: () => ({

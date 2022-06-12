@@ -1,15 +1,13 @@
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { prismaModelProvider } from '../prisma-model';
 
-const descriptorSchema = yup.object({
-  fields: yup
-    .array(
-      yup.object({
-        name: yup.string().required(),
-      })
-    )
-    .required(),
+const descriptorSchema = z.object({
+  fields: z.array(
+    z.object({
+      name: z.string().min(1),
+    })
+  ),
 });
 
 const PrismaModelUniqueGenerator = createGeneratorWithChildren({

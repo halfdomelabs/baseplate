@@ -1,24 +1,18 @@
 import { snakeCase } from 'change-case';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import { doubleQuot } from '@src/utils/string';
 import { PrismaModelAttribute, PrismaModelField } from './model-writer';
 
-type GetConfigType<Schema extends Record<string, yup.AnySchema>> = {
-  [Key in keyof Schema]: yup.InferType<Schema[Key]>;
-};
-
 export interface PrismaFieldTypeConfig<
-  // without any, types get messed up
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Schema extends Record<string, yup.AnySchema> = any
+  Schema extends z.AnyZodObject = z.AnyZodObject
 > {
   prismaType: string;
-  optionsSchema: Schema;
-  getAttributes?: (config?: GetConfigType<Schema>) => PrismaModelAttribute[];
+  optionsSchema?: Schema;
+  getAttributes?: (config?: z.infer<Schema>) => PrismaModelAttribute[];
 }
 
-function createConfig<Schema extends Record<string, yup.AnySchema>>(
+function createConfig<Schema extends z.AnyZodObject>(
   config: PrismaFieldTypeConfig<Schema>
 ): PrismaFieldTypeConfig<Schema> {
   return config;
@@ -33,9 +27,9 @@ function createConfigMap<
 export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
   string: createConfig({
     prismaType: 'String',
-    optionsSchema: {
-      default: yup.string(),
-    },
+    optionsSchema: z.object({
+      default: z.string().optional(),
+    }),
     getAttributes: (config) => {
       if (config?.default) {
         return [{ name: '@default', args: [doubleQuot(config.default)] }];
@@ -43,16 +37,16 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       return [];
     },
   }),
-  int: { prismaType: 'Int', optionsSchema: {} },
-  float: { prismaType: 'Float', optionsSchema: {} },
-  decimal: { prismaType: 'Decimal', optionsSchema: {} },
-  boolean: { prismaType: 'Boolean', optionsSchema: {} },
-  json: { prismaType: 'JSON', optionsSchema: {} },
+  int: { prismaType: 'Int' },
+  float: { prismaType: 'Float' },
+  decimal: { prismaType: 'Decimal' },
+  boolean: { prismaType: 'Boolean' },
+  json: { prismaType: 'JSON' },
   uuid: createConfig({
     prismaType: 'String',
-    optionsSchema: {
-      autoGenerate: yup.boolean(),
-    },
+    optionsSchema: z.object({
+      autoGenerate: z.boolean().optional(),
+    }),
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [{ name: '@db.Uuid' }];
       if (config?.autoGenerate) {
@@ -66,10 +60,10 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
   }),
   dateTime: createConfig({
     prismaType: 'DateTime',
-    optionsSchema: {
-      defaultToNow: yup.boolean(),
-      updatedAt: yup.boolean(),
-    },
+    optionsSchema: z.object({
+      defaultToNow: z.boolean().optional(),
+      updatedAt: z.boolean().optional(),
+    }),
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [
         { name: '@db.Timestamptz', args: ['3'] },
@@ -90,9 +84,9 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
   }),
   date: createConfig({
     prismaType: 'DateTime',
-    optionsSchema: {
-      defaultToNow: yup.boolean(),
-    },
+    optionsSchema: z.object({
+      defaultToNow: z.boolean().optional(),
+    }),
     getAttributes: (config) => {
       const attributes: PrismaModelAttribute[] = [{ name: '@db.Date' }];
       if (config?.defaultToNow) {
@@ -114,9 +108,11 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
     unique?: boolean;
     optional?: boolean;
     dbName?: string;
-    typeOptions?: GetConfigType<
-      typeof PRISMA_SCALAR_FIELD_TYPES[T]['optionsSchema']
-    >;
+    typeOptions?: typeof PRISMA_SCALAR_FIELD_TYPES[T] extends {
+      optionsSchema: z.ZodType;
+    }
+      ? z.infer<typeof PRISMA_SCALAR_FIELD_TYPES[T]['optionsSchema']>
+      : unknown;
   }
 ): PrismaModelField {
   const typeConfig: PrismaFieldTypeConfig = PRISMA_SCALAR_FIELD_TYPES[type];
@@ -146,7 +142,10 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
     attributes.push({ name: '@map', args: [`"${dbName}"`] });
   }
 
-  attributes.push(...(typeConfig.getAttributes?.(typeOptions) || []));
+  attributes.push(
+    ...(typeConfig.getAttributes?.(typeOptions as Record<string, unknown>) ||
+      [])
+  );
 
   return {
     name,

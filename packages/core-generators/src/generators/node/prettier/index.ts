@@ -10,13 +10,13 @@ import {
 } from '@baseplate/sync';
 import * as prettier from 'prettier';
 import requireResolve from 'resolve';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { nodeProvider } from '../node';
 
-const descriptorSchema = yup.object({
-  tabWidth: yup.number().default(2),
-  singleQuote: yup.boolean().default(true),
-  trailingComma: yup.string().default('es5'),
+const descriptorSchema = z.object({
+  tabWidth: z.number().default(2),
+  singleQuote: z.boolean().default(true),
+  trailingComma: z.string().default('es5'),
 });
 
 interface PrettierConfig {

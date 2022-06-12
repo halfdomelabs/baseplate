@@ -4,13 +4,13 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { errorHandlerServiceProvider } from '../error-handler-service';
 import { fastifyServerProvider } from '../fastify-server';
 import { loggerServiceProvider } from '../logger-service';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 const FastifyGracefulShutdownGenerator = createGeneratorWithChildren({

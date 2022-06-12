@@ -10,13 +10,13 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { configServiceProvider } from '../config-service';
 import { errorHandlerServiceProvider } from '../error-handler-service';
 import { fastifyServerProvider } from '../fastify-server';
 import { requestContextProvider } from '../request-context';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 export interface FastifySentryGeneratorConfig {
   setting?: string;
@@ -77,7 +77,7 @@ const FastifySentryGenerator = createGeneratorWithChildren({
     configService.getConfigEntries().merge({
       SENTRY_DSN: {
         comment: 'Sentry DSN',
-        value: TypescriptCodeUtils.createExpression('yup.string()'),
+        value: TypescriptCodeUtils.createExpression('z.string().optional()'),
         seedValue: '',
         exampleValue: '',
       },

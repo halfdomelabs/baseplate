@@ -7,10 +7,10 @@ import {
   createGeneratorWithChildren,
   createProviderType,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export type FastifyJestProvider = unknown;

@@ -1,19 +1,17 @@
 import path from 'path';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { projectProvider } from '../../../providers';
 import { generatePostgresDockerCompose } from './postgres';
 import { DockerComposeOutput } from './types';
 
-const descriptorSchema = yup.object({
-  projectName: yup.string(),
-  dockerFolder: yup.string().default('docker'),
-  postgres: yup
-    .object({
-      port: yup.string().default('5432'),
-      password: yup.string(),
-    })
-    .default(undefined),
+const descriptorSchema = z.object({
+  projectName: z.string().optional(),
+  dockerFolder: z.string().default('docker'),
+  postgres: z.object({
+    port: z.number().default(5432),
+    password: z.string().optional(),
+  }),
 });
 
 const DockerComposeGenerator = createGeneratorWithChildren({
@@ -34,7 +32,7 @@ const DockerComposeGenerator = createGeneratorWithChildren({
     if (postgres) {
       outputs.push(
         generatePostgresDockerCompose({
-          port: postgres.port,
+          port: postgres.port.toString(),
           password: postgres.password || `${projectName}-password`,
         })
       );

@@ -5,7 +5,7 @@ import {
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { snakeCase } from 'change-case';
-import * as yup from 'yup';
+import { z } from 'zod';
 import {
   PrismaModelAttribute,
   PrismaModelBlockWriter,
@@ -13,9 +13,9 @@ import {
 } from '@src/writers/prisma-schema';
 import { prismaSchemaProvider } from '../prisma';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  tableName: yup.string(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  tableName: z.string().optional(),
 });
 
 export interface PrismaModelGeneratorConfig {

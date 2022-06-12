@@ -7,14 +7,14 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { loggerServiceProvider } from '@src/generators/core/logger-service';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export type FastifyStripeProvider = unknown;
@@ -53,12 +53,12 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
     });
     configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
       comment: 'Stripe secret API key',
-      value: 'yup.string().required()',
+      value: 'z.string().min(1)',
       seedValue: 'STRIPE_SECRET_KEY',
     });
     configService.getConfigEntries().set('STRIPE_ENDPOINT_SECRET', {
       comment: 'Stripe webhook endpoint secret',
-      value: 'yup.string().required()',
+      value: 'z.string().min(1)',
       seedValue: 'STRIPE_ENDPOINT_SECRET',
     });
     fastifyServer.registerPlugin({

@@ -9,11 +9,11 @@ import {
   createGeneratorWithChildren,
   copyFileAction,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactApolloSetupProvider } from '../../apollo/react-apollo';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export type AuthServiceProvider = ImportMapper;

@@ -2,15 +2,15 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 
 /**
  * User Model requires the following fields:
  * + tokensNotBefore: (DateTime, nullable)
  */
 
-const descriptorSchema = yup.object({
-  userModelName: yup.string().required(),
+const descriptorSchema = z.object({
+  userModelName: z.string().min(1),
 });
 
 export type AuthModuleProvider = unknown;

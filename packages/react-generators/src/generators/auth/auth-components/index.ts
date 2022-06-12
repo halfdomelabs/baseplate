@@ -7,12 +7,12 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { authHooksProvider } from '../auth-hooks';
 
-const descriptorSchema = yup.object({
-  loginPath: yup.string().required(),
+const descriptorSchema = z.object({
+  loginPath: z.string().min(1),
 });
 
 export type AuthComponentsProvider = ImportMapper;

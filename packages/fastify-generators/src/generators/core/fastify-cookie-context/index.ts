@@ -4,12 +4,12 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { serviceContextSetupProvider } from '@src/generators/core/service-context';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 const FastifyCookieContextGenerator = createGeneratorWithChildren({

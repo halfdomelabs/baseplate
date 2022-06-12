@@ -4,7 +4,7 @@ import {
   TypescriptSourceBlock,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { prismaToServiceOutputDto } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
@@ -13,9 +13,9 @@ import { nexusSchemaProvider } from '../nexus';
 import { nexusTypesFileProvider } from '../nexus-types-file';
 import { writeObjectTypeRelationField } from './relationField';
 
-const descriptorSchema = yup.object({
-  modelName: yup.string().required(),
-  exposedFields: yup.array(yup.string().required()).required(),
+const descriptorSchema = z.object({
+  modelName: z.string().min(1),
+  exposedFields: z.array(z.string().min(1)),
 });
 
 const OBJECT_TYPE_TEMPLATE = `

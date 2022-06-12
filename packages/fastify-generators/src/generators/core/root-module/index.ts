@@ -9,10 +9,10 @@ import {
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import R from 'ramda';
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export interface RootModuleProvider {

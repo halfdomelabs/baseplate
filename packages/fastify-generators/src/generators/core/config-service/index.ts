@@ -14,11 +14,11 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { fastifyProvider } from '../fastify';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 interface ConfigEntry {
@@ -56,7 +56,7 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
     const additionalVerifications: TypescriptCodeBlock[] = [];
 
     node.addPackages({
-      yup: '^0.32.11',
+      zod: '^3.17.3',
     });
 
     node.addDevPackages({
@@ -70,11 +70,8 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
     configEntries.set('APP_ENVIRONMENT', {
       comment: 'Environment the app is running in',
       value: TypescriptCodeUtils.createExpression(
-        `yup
-      .mixed<'development' | 'test' | 'staging' | 'production'>()
-      .oneOf(['development', 'test', 'staging', 'production'])
-      .required()`,
-        "import * as yup from 'yup'"
+        `z.enum(['development', 'test', 'staging', 'production'])`,
+        "import { z } from 'zod'"
       ),
       exampleValue: 'development',
     });

@@ -1,5 +1,5 @@
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { doubleQuot } from '@src/utils/string';
 import { prismaModelProvider } from '../prisma-model';
 
@@ -9,22 +9,19 @@ const REFERENTIAL_ACTIONS = [
   'NoAction',
   'SetNull',
   'SetDefault',
-];
+] as const;
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  fields: yup.array(yup.string().required()).required(),
-  references: yup.array(yup.string().required()).required(),
-  modelRef: yup.string().required(),
-  foreignRelationName: yup.string(),
-  relationshipName: yup.string(),
-  relationshipType: yup
-    .string()
-    .oneOf(['oneToOne', 'oneToMany'])
-    .default('oneToMany'),
-  optional: yup.boolean().default(false),
-  onDelete: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Cascade'),
-  onUpdate: yup.string().oneOf(REFERENTIAL_ACTIONS).default('Restrict'),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  fields: z.array(z.string().min(1)),
+  references: z.array(z.string().min(1)),
+  modelRef: z.string().min(1),
+  foreignRelationName: z.string().optional(),
+  relationshipName: z.string().optional(),
+  relationshipType: z.enum(['oneToOne', 'oneToMany']).default('oneToMany'),
+  optional: z.boolean().default(false),
+  onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
+  onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
 });
 
 const PrismaRelationFieldGenerator = createGeneratorWithChildren({

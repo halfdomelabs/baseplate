@@ -4,7 +4,7 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { ScalarFieldType } from '@src/types/fieldTypes';
@@ -64,11 +64,10 @@ const scalarConfigMap = createNexusScalarMap({
 
 type ScalarConfigKey = keyof typeof scalarConfigMap;
 
-const descriptorSchema = yup.object({
-  type: yup
-    .mixed<ScalarConfigKey>()
-    .oneOf(Object.keys(scalarConfigMap) as ScalarConfigKey[])
-    .required(),
+const descriptorSchema = z.object({
+  type: z.enum(
+    Object.keys(scalarConfigMap) as [ScalarConfigKey, ...ScalarConfigKey[]]
+  ),
 });
 
 const NexusScalarGenerator = createGeneratorWithChildren({

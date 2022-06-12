@@ -1,15 +1,15 @@
 import { TypescriptSourceBlock } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import inflection from 'inflection';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { nexusTypeProvider } from '@src/providers/nexus-type';
 import { lowerCaseFirst } from '@src/utils/case';
 import { nexusTypesFileProvider } from '../nexus-types-file';
 
-const descriptorSchema = yup.object({
-  modelName: yup.string().required(),
-  objectTypeName: yup.string(),
+const descriptorSchema = z.object({
+  modelName: z.string().min(1),
+  objectTypeName: z.string().optional(),
 });
 
 const LIST_TYPE_TEMPLATE = `

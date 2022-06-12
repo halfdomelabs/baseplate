@@ -1,12 +1,12 @@
 import { TypescriptCodeUtils } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactErrorProvider } from '../../core/react-error';
 import { reactLoggerProvider } from '../../core/react-logger';
 import { reactApolloSetupProvider } from '../react-apollo';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 const ApolloErrorLinkGenerator = createGeneratorWithChildren({

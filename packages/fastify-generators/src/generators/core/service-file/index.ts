@@ -10,13 +10,13 @@ import {
   createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { paramCase } from 'change-case';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { ServiceOutputMethod } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
 import { appModuleProvider } from '../root-module';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
 });
 
 export interface ServiceFileProvider {

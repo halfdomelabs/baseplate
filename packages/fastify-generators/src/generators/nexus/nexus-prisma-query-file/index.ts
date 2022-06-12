@@ -5,14 +5,14 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { paramCase } from 'change-case';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { nexusSchemaProvider } from '../nexus';
 import { nexusTypesFileProvider } from '../nexus-types-file';
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  modelName: yup.string().required(),
+const descriptorSchema = z.object({
+  name: z.string().min(1),
+  modelName: z.string().min(1),
 });
 
 const NexusPrismaQueryFileGenerator = createGeneratorWithChildren({

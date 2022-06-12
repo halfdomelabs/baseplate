@@ -11,11 +11,11 @@ import {
   createGeneratorWithChildren,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { fastifyProvider } from '../fastify';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export interface LoggerServiceProvider extends ImportMapper {

@@ -2,7 +2,7 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import {
   buildPrismaScalarField,
@@ -17,22 +17,32 @@ const prismaScalarFieldTypes = PRISMA_SCALAR_FIELD_TYPES as Record<
   PrismaFieldTypeConfig
 >;
 
-const descriptorSchema = yup.object({
-  name: yup.string().required(),
-  dbName: yup.string(),
-  type: yup
-    .mixed<ScalarFieldType>()
-    .oneOf(Object.keys(prismaScalarFieldTypes) as ScalarFieldType[])
-    .required(),
-  options: yup
-    .object()
-    .when('type', ([type]: [ScalarFieldType], schema: yup.AnyObjectSchema) =>
-      schema.shape(prismaScalarFieldTypes[type]?.optionsSchema)
+const descriptorSchema = z
+  .object({
+    name: z.string().min(1),
+    dbName: z.string().optional(),
+    type: z.enum(
+      Object.keys(prismaScalarFieldTypes) as [
+        ScalarFieldType,
+        ...ScalarFieldType[]
+      ]
     ),
-  id: yup.boolean(),
-  unique: yup.boolean(),
-  optional: yup.boolean(),
-});
+    options: z.object({}).catchall(z.any()).optional(),
+    id: z.boolean().optional(),
+    unique: z.boolean().optional(),
+    optional: z.boolean().optional(),
+  })
+  .superRefine((obj, ctx) => {
+    // TODO: Clean up
+    const schema = prismaScalarFieldTypes[obj.type]?.optionsSchema;
+    if (schema) {
+      const parseResult = schema.safeParse(obj.options || {});
+      if (!parseResult.success) {
+        ctx.addIssue(parseResult.error.errors[0]);
+      }
+    }
+    return obj;
+  });
 
 export type PrismaFieldProvider = unknown;
 

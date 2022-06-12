@@ -9,15 +9,15 @@ import {
   createGeneratorWithChildren,
   copyFileAction,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { reactApolloProvider } from '../../apollo/react-apollo';
 import { reactComponentsProvider } from '../../core/react-components';
 import { reactErrorProvider } from '../../core/react-error';
 import { reactLoggerProvider } from '../../core/react-logger';
 import { authServiceProvider } from '../auth-service';
 
-const descriptorSchema = yup.object({
-  userQueryName: yup.string().default('user'),
+const descriptorSchema = z.object({
+  userQueryName: z.string().default('user'),
 });
 
 export interface AuthHooksProvider extends ImportMapper {

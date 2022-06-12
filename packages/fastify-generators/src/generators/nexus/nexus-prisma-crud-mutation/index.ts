@@ -7,7 +7,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { singularize } from 'inflection';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { serviceFileOutputProvider } from '@src/generators/core/service-file';
 import { nexusTypeProvider } from '@src/providers/nexus-type';
 import {
@@ -22,10 +22,10 @@ import {
 import { nexusSchemaProvider } from '../nexus';
 import { nexusTypesFileProvider } from '../nexus-types-file';
 
-const descriptorSchema = yup.object({
-  modelName: yup.string().required(),
-  type: yup.string().oneOf(['create', 'update', 'delete']).required(),
-  crudServiceRef: yup.string().required(),
+const descriptorSchema = z.object({
+  modelName: z.string().min(1),
+  type: z.enum(['create', 'update', 'delete']),
+  crudServiceRef: z.string().min(1),
 });
 
 // TODO: Use expression for createStandardMutation

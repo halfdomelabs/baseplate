@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import globby from 'globby';
 import R from 'ramda';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { getModuleDefault, resolveModule } from '../utils/require';
 import { GeneratorConfig } from './generator';
 
@@ -17,11 +17,11 @@ export type GeneratorConfigMap = Record<string, GeneratorConfigWithLocation>;
 
 // Generator modules have the ability to add a generator.json to the root to specify
 // where the loader should look for generators
-const GENERATOR_LOADER_CONFIG_SCHEMA = yup.object({
+const GENERATOR_LOADER_CONFIG_SCHEMA = z.object({
   // the base directory to look for generators, defaults to the lib/generators folder
-  generatorBaseDirectory: yup.string().default('lib/generators'),
+  generatorBaseDirectory: z.string().default('lib/generators'),
   // glob patterns to match generators
-  generatorPatterns: yup.array(yup.string().required()).default(['*']),
+  generatorPatterns: z.array(z.string()).default(['*']),
 });
 
 export async function loadGeneratorsForModule(
@@ -36,7 +36,7 @@ export async function loadGeneratorsForModule(
     ? ((await fs.readJSON(moduleConfigPath)) as unknown)
     : {};
 
-  const validatedConfig = await GENERATOR_LOADER_CONFIG_SCHEMA.validate(
+  const validatedConfig = GENERATOR_LOADER_CONFIG_SCHEMA.parse(
     generatorLoaderConfig
   );
 

@@ -12,13 +12,13 @@ import {
   writeTemplateAction,
   createProviderType,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 
 import { setupReactNode } from './node';
 
-const descriptorSchema = yup.object({
-  title: yup.string().default('React App'),
-  description: yup.string().default('A React app'),
+const descriptorSchema = z.object({
+  title: z.string().default('React App'),
+  description: z.string().default('A React app'),
 });
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({

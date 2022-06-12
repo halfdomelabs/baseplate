@@ -11,12 +11,12 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { fastifyJestProvider } from '../fastify-jest';
 
-const descriptorSchema = yup.object({
-  placeholder: yup.string(),
+const descriptorSchema = z.object({
+  placeholder: z.string().optional(),
 });
 
 export type PrismaJestProvider = ImportMapper;

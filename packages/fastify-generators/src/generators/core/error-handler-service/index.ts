@@ -12,11 +12,11 @@ import {
   createGeneratorWithChildren,
   copyFileAction,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { fastifyServerProvider } from '../fastify-server';
 import { loggerServiceProvider } from '../logger-service';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 const errorHandlerFileConfig = createTypescriptTemplateConfig({
   HEADER: { type: 'code-block' },

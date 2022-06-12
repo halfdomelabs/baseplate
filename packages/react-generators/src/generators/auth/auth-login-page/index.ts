@@ -9,7 +9,7 @@ import {
   createGeneratorWithChildren,
   copyFileAction,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { apolloErrorProvider } from '@src/generators/apollo/apollo-error';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
@@ -18,8 +18,8 @@ import { reactLinkableProvider } from '@src/providers/linkable';
 import { reactRoutesProvider } from '@src/providers/routes';
 import { authServiceProvider } from '../auth-service';
 
-const descriptorSchema = yup.object({
-  allowedRoles: yup.array(yup.string().required()).required(),
+const descriptorSchema = z.object({
+  allowedRoles: z.array(z.string().min(1)),
 });
 
 export type AuthLoginPageProvider = unknown;

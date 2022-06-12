@@ -11,7 +11,7 @@ import {
   createGeneratorWithChildren,
   createProviderType,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
@@ -19,21 +19,21 @@ import { serviceContextProvider } from '@src/generators/core/service-context';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 
-const descriptorSchema = yup.object({
-  fileModel: yup.string().required(),
-  s3Adapters: yup.array().of(
-    yup.object({
-      name: yup.string().required(),
-      bucketConfigVar: yup.string().required(),
+const descriptorSchema = z.object({
+  fileModel: z.string().min(1),
+  s3Adapters: z.array(
+    z.object({
+      name: z.string().min(1),
+      bucketConfigVar: z.string().min(1),
     })
   ),
-  categories: yup.array().of(
-    yup.object({
-      name: yup.string().required(),
-      defaultAdapter: yup.string().required(),
-      maxFileSize: yup.number().required(),
-      usedByRelation: yup.string().required(),
-      uploadRoles: yup.array().of(yup.string().required()).required(),
+  categories: z.array(
+    z.object({
+      name: z.string().min(1),
+      defaultAdapter: z.string().min(1),
+      maxFileSize: z.number(),
+      usedByRelation: z.string().min(1),
+      uploadRoles: z.array(z.string().min(1)),
     })
   ),
 });
@@ -88,17 +88,17 @@ const StorageModuleGenerator = createGeneratorWithChildren({
       .getConfigEntries()
       .set('AWS_ACCESS_KEY_ID', {
         comment: 'AWS access key ID',
-        value: new TypescriptCodeExpression('yup.string().required()'),
+        value: new TypescriptCodeExpression('z.string().min(1)'),
         seedValue: 'AWS_ACCESS_KEY',
       })
       .set('AWS_SECRET_ACCESS_KEY', {
         comment: 'AWS secret access key',
-        value: new TypescriptCodeExpression('yup.string().required()'),
+        value: new TypescriptCodeExpression('z.string().min(1)'),
         seedValue: 'AWS_SECRET_ACCSS_KEY',
       })
       .set('AWS_DEFAULT_REGION', {
         comment: 'AWS default region',
-        value: new TypescriptCodeExpression('yup.string().required()'),
+        value: new TypescriptCodeExpression('z.string().min(1)'),
         seedValue: 'AWS_DEFAULT_REGION',
       });
 
@@ -177,7 +177,7 @@ const StorageModuleGenerator = createGeneratorWithChildren({
         s3Adapters?.forEach((adapter) => {
           configService.getConfigEntries().set(adapter.bucketConfigVar, {
             comment: `S3 bucket for ${adapter.name}`,
-            value: new TypescriptCodeExpression('yup.string().required()'),
+            value: new TypescriptCodeExpression('z.string().min(1)'),
             seedValue: adapter.bucketConfigVar,
           });
 

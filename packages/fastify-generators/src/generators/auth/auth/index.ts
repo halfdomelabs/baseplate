@@ -5,9 +5,9 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 export interface AuthGeneratorConfig {
   userModelName?: string;

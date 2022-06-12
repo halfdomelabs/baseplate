@@ -1,6 +1,6 @@
 import { TypescriptSourceBlock } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { nexusTypeProvider } from '@src/providers/nexus-type';
@@ -14,9 +14,9 @@ import {
 import { nexusSchemaProvider } from '../nexus';
 import { nexusTypesFileProvider } from '../nexus-types-file';
 
-const descriptorSchema = yup.object({
-  modelName: yup.string().required(),
-  objectTypeName: yup.string(),
+const descriptorSchema = z.object({
+  modelName: z.string().min(1),
+  objectTypeName: z.string().optional(),
 });
 
 const QUERY_TYPE_TEMPLATE = `

@@ -3,10 +3,10 @@ import {
   createProviderType,
   writeFormattedAction,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 
-const descriptorSchema = yup.object({
-  additionalExclusions: yup.array(yup.string().required()),
+const descriptorSchema = z.object({
+  additionalExclusions: z.array(z.string().min(1)).optional(),
 });
 
 export type NodeGitIgnoreProvider = {

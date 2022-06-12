@@ -4,14 +4,14 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
-import * as yup from 'yup';
+import { z } from 'zod';
 import { quot } from '@src/utils/string';
 import { TypescriptCodeBlock, TypescriptCodeUtils } from '@src/writers';
 import { eslintProvider } from '../eslint';
 import { nodeProvider } from '../node';
 import { typescriptProvider } from '../typescript';
 
-const descriptorSchema = yup.object({});
+const descriptorSchema = z.object({});
 
 export interface JestGeneratorConfig {
   testPathIgnorePatterns: string[];
