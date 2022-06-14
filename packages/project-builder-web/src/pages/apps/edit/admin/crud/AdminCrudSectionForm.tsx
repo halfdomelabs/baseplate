@@ -3,7 +3,8 @@ import classNames from 'classnames';
 import { Control } from 'react-hook-form';
 import { SelectInput } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import CrudTableColumnsForm from './CrudTableColumnForm';
+import CrudFormFieldsForm from './CrudFormFieldsForm';
+import CrudTableColumnsForm from './CrudTableColumnsForm';
 
 interface Props {
   className?: string;
@@ -28,6 +29,8 @@ function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
       />
       <h2>Table</h2>
       <CrudTableColumnsForm control={control} />
+      <h2>Form</h2>
+      <CrudFormFieldsForm control={control} />
     </div>
   );
 }

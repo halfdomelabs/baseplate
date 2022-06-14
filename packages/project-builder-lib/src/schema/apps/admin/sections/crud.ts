@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references';
 import { baseAdminSectionValidators } from './base';
 
+// Table Columns
+
 export const adminCrudTextRendererSchema = z.object({
   type: z.literal('text'),
   field: z.string().min(1),
@@ -18,9 +20,11 @@ export const adminCrudTableColumnSchema = z.object({
   renderer: adminCrudRendererSchema,
 });
 
+// Form Fields
+
 export const adminCrudTextInputSchema = z.object({
   type: z.literal('text'),
-  field: z.string().min(1),
+  modelField: z.string().min(1),
 });
 
 export const adminCrudInputSchema = adminCrudTextInputSchema;
@@ -29,6 +33,8 @@ export const adminCrudFormFieldSchema = z.object({
   label: z.string().min(1),
   input: adminCrudTextInputSchema,
 });
+
+// Admin Section
 
 export const adminCrudSectionSchema = z.object({
   ...baseAdminSectionValidators,
@@ -70,9 +76,9 @@ export function buildAdminCrudSectionReferences(
     const fieldBuilder = builder.withPrefix(`form.fields.${idx}`);
     switch (field.input.type) {
       case 'text':
-        fieldBuilder.addReference('input.field', {
+        fieldBuilder.addReference('input.modelField', {
           category: 'modelField',
-          key: `${config.modelName}.${field.input.field}`,
+          key: `${config.modelName}.${field.input.modelField || ''}`,
         });
         break;
       default:
