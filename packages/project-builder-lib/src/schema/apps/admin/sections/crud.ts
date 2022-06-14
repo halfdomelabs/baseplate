@@ -33,8 +33,7 @@ export const adminCrudFormFieldSchema = z.object({
 export const adminCrudSectionSchema = z.object({
   ...baseAdminSectionValidators,
   type: z.literal('crud'),
-  title: z.string().min(1),
-  model: z.string().min(1),
+  modelName: z.string().min(1),
   table: z.object({
     columns: z.array(adminCrudTableColumnSchema),
   }),
@@ -49,7 +48,7 @@ export function buildAdminCrudSectionReferences(
   config: AdminCrudSectionConfig,
   builder: ReferencesBuilder<AdminCrudSectionConfig>
 ): void {
-  builder.addReference('model', { category: 'model' });
+  builder.addReference('modelName', { category: 'model' });
 
   config.table.columns.forEach((column, idx) => {
     const columnBuilder = builder.withPrefix(`table.columns.${idx}`);
@@ -57,7 +56,7 @@ export function buildAdminCrudSectionReferences(
       case 'text':
         columnBuilder.addReference('renderer.field', {
           category: 'modelField',
-          key: `${config.model}.${column.renderer.field}`,
+          key: `${config.modelName}.${column.renderer.field}`,
         });
         break;
       default:
@@ -73,7 +72,7 @@ export function buildAdminCrudSectionReferences(
       case 'text':
         fieldBuilder.addReference('input.field', {
           category: 'modelField',
-          key: `${config.model}.${field.input.field}`,
+          key: `${config.modelName}.${field.input.field}`,
         });
         break;
       default:

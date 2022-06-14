@@ -17,11 +17,18 @@ function AdminAppForm({ className, appConfig }: Props): JSX.Element {
         <NavigationTabs.Tab to="">General</NavigationTabs.Tab>
         <NavigationTabs.Tab to="sections">Sections</NavigationTabs.Tab>
       </NavigationTabs>
-      <div className="p-4 bg-slate-200">
+      <div className=" bg-slate-200">
         <Routes>
-          <Route index element={<AdminGeneralForm appConfig={appConfig} />} />
           <Route
-            path="/sections"
+            index
+            element={
+              <div className="p-4">
+                <AdminGeneralForm appConfig={appConfig} />
+              </div>
+            }
+          />
+          <Route
+            path="/sections/*"
             element={<AdminSectionsForm appConfig={appConfig} />}
           />
         </Routes>
