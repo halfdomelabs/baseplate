@@ -27,7 +27,7 @@ async function getUserFromRequest(
 }
 
 export const authPlugin = fp(async (fastify) => {
-  fastify.decorateRequest('user', null);
+  fastify.decorateRequest('auth', null);
 
   fastify.addHook('onRequest', async (req) => {
     const user = await getUserFromRequest(req);

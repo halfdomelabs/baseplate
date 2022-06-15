@@ -72,6 +72,7 @@ const FastifySentryGenerator = createGeneratorWithChildren({
 
     node.addDevPackages({
       '@sentry/types': '^6.16.1',
+      '@types/lodash': '^4.14.182',
     });
 
     configService.getConfigEntries().merge({

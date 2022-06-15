@@ -17,7 +17,10 @@ export const storageSchema = z.object({
       uid: z.string().default(randomUid),
       name: z.string().min(1),
       defaultAdapter: z.string().min(1),
-      maxFileSize: z.number(),
+      maxFileSize: z.preprocess(
+        (a) => (a ? parseInt(a as string, 10) : undefined),
+        z.number().positive().optional()
+      ),
       usedByRelation: z.string().min(1),
       uploadRoles: z.array(z.string().min(1)),
     })
