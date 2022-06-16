@@ -21,16 +21,21 @@ function FieldForm({
 }): JSX.Element {
   return (
     <div className="space-y-4">
-      <SelectInput.LabelledController
-        label="Field"
-        control={control}
-        name={`form.fields.${idx}.input.modelField`}
-        options={fieldOptions}
-      />
       <TextInput.LabelledController
         label="Label"
         control={control}
         name={`form.fields.${idx}.label`}
+      />
+      <SelectInput.LabelledController
+        label="Field"
+        control={control}
+        name={`form.fields.${idx}.modelField`}
+        options={fieldOptions}
+      />
+      <TextInput.LabelledController
+        label="Validation (zod), e.g. z.string().min(1) (optional)"
+        control={control}
+        name={`form.fields.${idx}.validation`}
       />
     </div>
   );
@@ -58,7 +63,7 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
           key={field.id}
           collapsedContents={
             <div>
-              {field.label} ({field.input.modelField})
+              {field.label} ({field.modelField})
             </div>
           }
           onRemove={() => remove(idx)}
@@ -72,11 +77,7 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
           />
         </CollapsibleRow>
       ))}
-      <Button
-        onClick={() => append({ input: { type: 'text', modelField: '' } })}
-      >
-        Add Column
-      </Button>
+      <Button onClick={() => append({ type: 'text' })}>Add Column</Button>
     </div>
   );
 }

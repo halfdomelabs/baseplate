@@ -7,11 +7,31 @@ export function compileAdminCrudSection(
 ): unknown {
   return {
     name: crudSection.name,
-    generator: '@baseplate/react/admin/admin-crud-section',
-    modelName: crudSection.modelName,
+    generator: '@baseplate/react/core/react-routes',
     children: {
-      list: {
-        columns: crudSection.table.columns,
+      $section: {
+        generator: '@baseplate/react/admin/admin-crud-section',
+        modelName: crudSection.modelName,
+        children: {
+          edit: {
+            fields: crudSection.form.fields.map((f) => {
+              if (f.type === 'text' && !f.validation) {
+                return {
+                  ...f,
+                  validation: builder.parsedProject.getModelFieldValidation(
+                    crudSection.modelName,
+                    f.modelField,
+                    true
+                  ),
+                };
+              }
+              return f;
+            }),
+          },
+          list: {
+            columns: crudSection.table.columns,
+          },
+        },
       },
     },
   };
@@ -66,6 +86,8 @@ function compileAdminFeatureRecursive(
     name: featureName,
     generator: '@baseplate/react/core/react-routes',
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featurePath),
+    // add admin layout to any root features
+    layoutKey: featurePath.includes('/') ? undefined : 'admin',
     children: {
       $sections: sectionDescriptors,
       $childRoutes: subDescriptors,

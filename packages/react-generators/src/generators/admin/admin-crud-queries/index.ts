@@ -46,6 +46,7 @@ export interface AdminCrudQueriesProvider {
   getCreateHookInfo: () => ApolloHookInfo;
   getUpdateHookInfo: () => ApolloHookInfo;
   getDeleteHookInfo: () => ApolloHookInfo;
+  getListDocumentExpression: () => TypescriptCodeExpression;
 }
 
 export const adminCrudQueriesProvider =
@@ -78,8 +79,8 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
     const createFieldName = `create${modelName}`;
     const createMutationName = `Create${modelName}`;
 
-    const updateFieldName = `delete${modelName}`;
-    const updateMutationName = `Delete${modelName}`;
+    const updateFieldName = `update${modelName}`;
+    const updateMutationName = `Update${modelName}`;
 
     const deleteFieldName = `delete${modelName}`;
     const deleteMutationName = `Delete${modelName}`;
@@ -136,6 +137,8 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
               deleteFieldName
             );
           },
+          getListDocumentExpression: () =>
+            getGeneratedImport(`${listQueryName}Document`),
         },
       }),
       build: async (builder) => {

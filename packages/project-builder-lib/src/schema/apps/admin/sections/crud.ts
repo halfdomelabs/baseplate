@@ -24,15 +24,14 @@ export const adminCrudTableColumnSchema = z.object({
 
 export const adminCrudTextInputSchema = z.object({
   type: z.literal('text'),
+  label: z.string().min(1),
   modelField: z.string().min(1),
+  validation: z.string().optional(),
 });
 
 export const adminCrudInputSchema = adminCrudTextInputSchema;
 
-export const adminCrudFormFieldSchema = z.object({
-  label: z.string().min(1),
-  input: adminCrudTextInputSchema,
-});
+export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 
 // Admin Section
 
@@ -44,7 +43,7 @@ export const adminCrudSectionSchema = z.object({
     columns: z.array(adminCrudTableColumnSchema),
   }),
   form: z.object({
-    fields: z.array(adminCrudFormFieldSchema),
+    fields: z.array(adminCrudInputSchema),
   }),
 });
 
@@ -74,15 +73,15 @@ export function buildAdminCrudSectionReferences(
 
   config.form.fields.forEach((field, idx) => {
     const fieldBuilder = builder.withPrefix(`form.fields.${idx}`);
-    switch (field.input.type) {
+    switch (field.type) {
       case 'text':
-        fieldBuilder.addReference('input.modelField', {
+        fieldBuilder.addReference('modelField', {
           category: 'modelField',
-          key: `${config.modelName}#${field.input.modelField || ''}`,
+          key: `${config.modelName}#${field.modelField || ''}`,
         });
         break;
       default:
-        throw new Error(`Unknown input type: ${field.input.type as string}`);
+        throw new Error(`Unknown input type: ${field.type as string}`);
     }
   });
 }

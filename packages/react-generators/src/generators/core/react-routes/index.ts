@@ -10,7 +10,11 @@ import {
   reactRoutesProvider,
 } from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
-import { upperCaseFirst } from '@src/utils/case';
+import {
+  dasherizeCamel,
+  lowerCaseFirst,
+  upperCaseFirst,
+} from '@src/utils/case';
 import { renderRoutes } from '../_shared/routes/renderRoutes';
 import { reactNotFoundProvider } from '../react-not-found-handler';
 
@@ -39,7 +43,9 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
     const routes: ReactRoute[] = [];
     const layouts: ReactRouteLayout[] = [];
 
-    const directoryBase = `${reactRoutes.getDirectoryBase()}/${name}`;
+    const pathName = dasherizeCamel(name);
+
+    const directoryBase = `${reactRoutes.getDirectoryBase()}/${pathName}`;
 
     return {
       getProviders: () => ({
@@ -51,7 +57,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
             layouts.push(layout);
           },
           getDirectoryBase: () => directoryBase,
-          getRoutePrefix: () => `${reactRoutes.getRoutePrefix()}/${name}`,
+          getRoutePrefix: () => `${reactRoutes.getRoutePrefix()}/${pathName}`,
         },
       }),
       build: async (builder) => {
@@ -59,7 +65,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
           const renderedRoutes = renderRoutes(routes, layouts);
 
           reactRoutes.registerRoute({
-            path: name,
+            path: pathName,
             layoutKey,
             children: renderedRoutes,
           });
@@ -68,7 +74,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
               ...route,
               path:
                 route.path &&
-                `${reactRoutes.getRoutePrefix()}/${name}/${route.path}`,
+                `${reactRoutes.getRoutePrefix()}/${pathName}/${route.path}`,
             })
           );
           layouts.forEach((layout) => reactRoutes.registerLayout(layout));
@@ -80,7 +86,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
 
           const renderedRoutes = renderRoutes(routes, layouts);
 
-          const routesName = `${upperCaseFirst(name)}Routes`;
+          const componentName = `${upperCaseFirst(name)}Routes`;
 
           const pagesRootFile = typescript.createTemplate({
             ROUTE_HEADER: { type: 'code-block' },
@@ -92,16 +98,16 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
             ROUTE_HEADER: layouts
               .map((layout) => layout.header)
               .filter(notEmpty),
-            ROUTES_NAME: routesName,
+            ROUTES_NAME: componentName,
             ROUTES: renderedRoutes,
           });
 
           reactRoutes.registerRoute({
-            path: `${name}/*`,
+            path: `${pathName}/*`,
             layoutKey,
             element: TypescriptCodeUtils.createExpression(
-              `<${routesName} />`,
-              `import ${routesName} from "@/${directoryBase}"`
+              `<${componentName} />`,
+              `import ${componentName} from "@/${directoryBase}"`
             ),
           });
 

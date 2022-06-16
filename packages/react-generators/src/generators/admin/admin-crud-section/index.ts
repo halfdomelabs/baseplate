@@ -16,6 +16,12 @@ export const adminCrudSectionProvider =
 const AdminCrudSectionGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: ({ modelName }) => ({
+    edit: {
+      defaultDescriptor: {
+        generator: '@baseplate/react/admin/admin-crud-edit',
+        modelName,
+      },
+    },
     list: {
       defaultDescriptor: {
         generator: '@baseplate/react/admin/admin-crud-list',
