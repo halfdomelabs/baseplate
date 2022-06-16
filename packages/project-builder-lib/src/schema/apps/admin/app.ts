@@ -14,7 +14,7 @@ export type AdminSectionConfig = AdminCrudSectionConfig;
 export const adminAppSchema = z.object({
   ...baseAppValidators,
   type: z.literal('admin'),
-  allowedRoles: z.array(z.string().min(1)),
+  allowedRoles: z.array(z.string().min(1)).optional(),
   sections: z.array(adminSectionSchema).optional(),
 });
 
