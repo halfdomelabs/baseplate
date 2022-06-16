@@ -82,11 +82,11 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
         const listPage = typescript.createTemplate(
           {
             PAGE_NAME: new TypescriptStringReplacement(listPageComponentName),
-            GET_ITEM_QUERY: listInfo.hookExpression.append('()'),
+            GET_ITEM_QUERY: listInfo.hookExpression,
             DELETE_FUNCTION: new TypescriptStringReplacement(
               deleteInfo.fieldName
             ),
-            DELETE_MUTATION: deleteInfo.hookExpression.append('()'),
+            DELETE_MUTATION: deleteInfo.hookExpression,
             ROW_FRAGMENT_NAME: adminCrudQueries.getRowFragmentExpression(),
             PLURAL_MODEL: new TypescriptStringReplacement(
               humanizeCamel(pluralize(modelName))
@@ -98,6 +98,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
               `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} />`,
               `import ${tableComponentName} from '${tableComponentImport}'`
             ),
+            REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),
           },
           {
             importMappers: [reactComponents, reactError],

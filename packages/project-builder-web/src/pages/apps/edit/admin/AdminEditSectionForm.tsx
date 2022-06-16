@@ -123,6 +123,11 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
           options={featureOptions}
           name="feature"
         />
+        <TextInput.LabelledController
+          label="Icon"
+          control={control}
+          name="icon"
+        />
         <SelectInput.LabelledController
           label="Type"
           control={control}

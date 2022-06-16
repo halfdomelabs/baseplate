@@ -2,9 +2,21 @@ import { relative } from 'path-browserify';
 import { ProjectConfig } from '@src/schema';
 import { AdminAppConfig } from '@src/schema/apps/admin';
 import { AppEntry } from '@src/types/files';
+import { dasherizeCamel } from '@src/utils/case';
 import { AppEntryBuilder } from '../appEntryBuilder';
 import { compileAuthPages } from './auth';
 import { compileAdminFeatures } from './sections';
+
+export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
+  return (
+    config.sections?.map((section) => ({
+      type: 'link',
+      label: section.name,
+      icon: section.icon || 'MdHome',
+      path: `${section.feature}/${dasherizeCamel(section.name)}`,
+    })) || []
+  );
+}
 
 export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
@@ -48,7 +60,10 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
       },
       $adminLayout: {
         generator: '@baseplate/react/admin/admin-layout',
-        links: [{ type: 'link', label: 'Home', icon: 'MdHome', path: '/' }],
+        links: [
+          { type: 'link', label: 'Home', icon: 'MdHome', path: '/' },
+          ...buildNavigationLinks(appConfig),
+        ],
       },
       $sentry: {
         generator: '@baseplate/react/core/react-sentry',

@@ -10,11 +10,7 @@ import {
   reactRoutesProvider,
 } from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
-import {
-  dasherizeCamel,
-  lowerCaseFirst,
-  upperCaseFirst,
-} from '@src/utils/case';
+import { dasherizeCamel, upperCaseFirst } from '@src/utils/case';
 import { renderRoutes } from '../_shared/routes/renderRoutes';
 import { reactNotFoundProvider } from '../react-not-found-handler';
 

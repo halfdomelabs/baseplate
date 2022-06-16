@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import { Button, ErrorableLoader } from '%react-components';
 
 function PAGE_NAME(): JSX.Element {
-  const { data, error } = GET_ITEM_QUERY;
-  const [DELETE_FUNCTION] = DELETE_MUTATION;
+  const { data, error } = GET_ITEM_QUERY();
+  const [DELETE_FUNCTION] = DELETE_MUTATION({
+    refetchQueries: [{ query: REFETCH_DOCUMENT }],
+  });
 
   const handleDeleteItem = async (item: ROW_FRAGMENT_NAME): Promise<void> => {
     await DELETE_FUNCTION({
