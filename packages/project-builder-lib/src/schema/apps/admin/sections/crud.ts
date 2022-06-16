@@ -62,7 +62,7 @@ export function buildAdminCrudSectionReferences(
       case 'text':
         columnBuilder.addReference('renderer.field', {
           category: 'modelField',
-          key: `${config.modelName}.${column.renderer.field}`,
+          key: `${config.modelName}#${column.renderer.field}`,
         });
         break;
       default:
@@ -78,7 +78,7 @@ export function buildAdminCrudSectionReferences(
       case 'text':
         fieldBuilder.addReference('input.modelField', {
           category: 'modelField',
-          key: `${config.modelName}.${field.input.modelField || ''}`,
+          key: `${config.modelName}#${field.input.modelField || ''}`,
         });
         break;
       default:

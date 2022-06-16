@@ -4,7 +4,7 @@ import { AdminAppConfig } from '@src/schema/apps/admin';
 import { AppEntry } from '@src/types/files';
 import { AppEntryBuilder } from '../appEntryBuilder';
 import { compileAuthPages } from './auth';
-import { compileAdminSections } from './sections';
+import { compileAdminFeatures } from './sections';
 
 export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
@@ -29,7 +29,14 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
     children: {
       router: {
         children: {
-          routes: [compileAuthPages(builder), ...compileAdminSections(builder)],
+          routes: [
+            compileAuthPages(builder),
+            {
+              name: 'home',
+              generator: '@baseplate/react/admin/admin-home',
+            },
+            ...compileAdminFeatures(builder),
+          ],
         },
       },
       $tailwind: {
@@ -41,7 +48,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
       },
       $adminLayout: {
         generator: '@baseplate/react/admin/admin-layout',
-        links: [{ label: 'Home', icon: 'MdHome', path: '/' }],
+        links: [{ type: 'link', label: 'Home', icon: 'MdHome', path: '/' }],
       },
       $sentry: {
         generator: '@baseplate/react/core/react-sentry',

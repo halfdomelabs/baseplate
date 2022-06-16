@@ -61,7 +61,6 @@ function App(): JSX.Element {
           getProjectConfigReferences,
           options
         );
-        console.log(fixedProjectConfig);
         const validatedProjectConfig =
           projectConfigSchema.parse(fixedProjectConfig);
         const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);

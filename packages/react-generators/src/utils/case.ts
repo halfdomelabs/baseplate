@@ -1,3 +1,5 @@
+import { humanize, underscore } from 'inflection';
+
 export function lowerCaseFirst(str: string): string {
   if (!str.length) {
     return str;
@@ -10,4 +12,8 @@ export function upperCaseFirst(str: string): string {
     return str;
   }
   return str.charAt(0).toUpperCase() + str.substring(1);
+}
+
+export function humanizeCamel(str: string, lowerFirst?: boolean): string {
+  return humanize(underscore(str), lowerFirst);
 }

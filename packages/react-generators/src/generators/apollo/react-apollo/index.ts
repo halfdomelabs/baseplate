@@ -41,6 +41,7 @@ export const reactApolloSetupProvider =
 
 export interface ReactApolloProvider extends ImportMapper {
   registerGqlFile(filePath: string): void;
+  getGeneratedFilePath(): string;
 }
 
 export const reactApolloProvider =
@@ -158,6 +159,9 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           },
           getImportMap() {
             return importMap;
+          },
+          getGeneratedFilePath() {
+            return '@/src/generated/graphql';
           },
         },
       }),
