@@ -40,12 +40,12 @@ const AdminCrudSectionGenerator = createGeneratorWithChildren({
   exports: {
     adminCrudSection: adminCrudSectionProvider,
   },
-  createGenerator(descriptor, dependencies) {
+  createGenerator() {
     return {
       getProviders: () => ({
         adminCrudSection: {},
       }),
-      build: async (builder) => {},
+      build: async () => {},
     };
   },
 });
