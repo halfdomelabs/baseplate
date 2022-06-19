@@ -70,7 +70,7 @@ const EslintGenerator = createGeneratorWithChildren({
           'eslint-plugin-import': '^2.25.4',
           'eslint-plugin-jest': '^25.3.4',
         });
-        node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx');
+        node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
 
         await builder.apply(
           writeFormattedAction({
