@@ -20,7 +20,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "lint": "eslint --ext .ts,.tsx,.js.,.jsx"
+    "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src"
   },
   "dependencies": {
     "@baseplate/project-builder-lib": "^0.1.0",
