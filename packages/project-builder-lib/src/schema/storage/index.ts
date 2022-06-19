@@ -18,7 +18,7 @@ export const storageSchema = z.object({
       name: z.string().min(1),
       defaultAdapter: z.string().min(1),
       maxFileSize: z.preprocess(
-        (a) => (a ? parseInt(a as string, 10) : undefined),
+        (a) => a && parseInt(a as string, 10),
         z.number().positive().optional()
       ),
       usedByRelation: z.string().min(1),

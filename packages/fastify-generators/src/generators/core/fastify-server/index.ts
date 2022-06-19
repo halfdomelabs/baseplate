@@ -93,7 +93,10 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       SERVER_PORT: {
         comment: 'Port to bind the server to',
         value: TypescriptCodeUtils.createExpression(
-          `z.number().default(${descriptor.defaultPort})`
+          `z.preprocess(
+            (x) => x && parseInt(x as string, 10),
+            z.number().default(${descriptor.defaultPort})
+          )`
         ),
       },
     });
