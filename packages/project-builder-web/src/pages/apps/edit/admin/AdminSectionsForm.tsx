@@ -37,10 +37,10 @@ function AdminSectionsForm({ className, appConfig }: Props): JSX.Element {
         <Routes>
           <Route
             path="new"
-            element={<AdminEditSectionForm appConfig={appConfig} />}
+            element={<AdminEditSectionForm key="new" appConfig={appConfig} />}
           />
           <Route
-            path="edit/:id"
+            path="edit/:sectionId"
             element={<AdminEditSectionForm appConfig={appConfig} />}
           />
         </Routes>

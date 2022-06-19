@@ -102,6 +102,7 @@ async function writeFile(
       formattedContents = await formatter.format(contents, filePath);
     } catch (err) {
       console.error(`Error formatting ${filePath}\n`, err);
+      throw err;
     }
   }
   // check if we need to do a 3-way merge

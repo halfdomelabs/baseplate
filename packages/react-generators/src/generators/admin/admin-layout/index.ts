@@ -14,16 +14,15 @@ import { authHooksProvider } from '@src/generators/auth/auth-hooks';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactRoutesProvider } from '@src/providers/routes';
 
+const linkItemSchema = z.object({
+  type: z.literal('link'),
+  label: z.string().min(1),
+  icon: z.string().min(1),
+  path: z.string().min(1),
+});
+
 const descriptorSchema = z.object({
-  links: z
-    .array(
-      z.object({
-        label: z.string().min(1),
-        icon: z.string().min(1),
-        path: z.string().min(1),
-      })
-    )
-    .optional(),
+  links: z.array(linkItemSchema).optional(),
 });
 
 export type AdminLayoutProvider = unknown;

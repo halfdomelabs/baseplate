@@ -14,7 +14,7 @@ import { deepMergeRightUniq, safeMerge } from '@src/utils/merge';
 import { randomUid } from '../utils/randomUid';
 import { AuthPlugin } from './plugins/auth';
 import { StoragePlugin } from './plugins/storage';
-import { ParsedModel } from './types';
+import { ParsedModel, ParsedModelField } from './types';
 
 const PARSER_PLUGINS = [AuthPlugin, StoragePlugin];
 
@@ -279,5 +279,56 @@ export class ParsedProjectConfig {
 
   getAppByUid(uid: string): AppConfig | undefined {
     return this.projectConfig.apps?.find((app) => app.uid === uid);
+  }
+
+  getModelFieldValidation(
+    modelName: string,
+    fieldName: string,
+    preProcess?: boolean
+  ): string {
+    const model = this.getModelByName(modelName);
+    const field = model.model.fields.find((f) => f.name === fieldName);
+    if (!field) {
+      throw new Error(`Field ${fieldName} not found in model ${modelName}`);
+    }
+
+    function getModelValidator(modelField: ParsedModelField): string {
+      switch (modelField.type) {
+        case 'boolean':
+          return 'boolean()';
+        case 'date':
+          return 'string()';
+        case 'int':
+        case 'float':
+          return 'number()';
+        case 'dateTime':
+        case 'string':
+        case 'decimal':
+        case 'uuid':
+          return 'string()';
+        default:
+          throw new Error(`Unsupported validator for ${modelField.type}`);
+      }
+    }
+
+    const validator = `z.${getModelValidator(field)}${
+      field.isOptional ? '.nullish()' : ''
+    }`;
+    if (!preProcess) {
+      return validator;
+    }
+    if (field.type === 'int') {
+      return `z.preprocess(
+        (a) => (a ? parseInt(a as string, 10) : undefined),
+        ${validator}
+      )`;
+    }
+    if (field.type === 'float') {
+      return `z.preprocess(
+        (a) => (a ? parseFloat(a as string) : undefined),
+        ${validator}
+      )`;
+    }
+    return validator;
   }
 }

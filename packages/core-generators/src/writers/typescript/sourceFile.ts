@@ -572,90 +572,95 @@ export class TypescriptSourceFile<
       replacedTemplate
     );
 
-    // insert manual imports
-    const providedEntries = R.flatten([
-      Object.values(entriesWithDefault.codeBlocks),
-      Object.values(entriesWithDefault.codeWrappers),
-      Object.values(entriesWithDefault.codeExpressions),
-      Object.values(entriesWithDefault.stringReplacements),
-    ]);
+    try {
+      // insert manual imports
+      const providedEntries = R.flatten([
+        Object.values(entriesWithDefault.codeBlocks),
+        Object.values(entriesWithDefault.codeWrappers),
+        Object.values(entriesWithDefault.codeExpressions),
+        Object.values(entriesWithDefault.stringReplacements),
+      ]);
 
-    const headerBlocks = providedEntries.flatMap(
-      (e) =>
-        e?.options?.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) || []
-    );
-
-    const entries = [...providedEntries, ...headerBlocks];
-
-    const importStrings = R.flatten(
-      entries.map((e) => e?.options?.importText).filter(notEmpty)
-    ).join('\n');
-
-    file.insertText(0, importStrings);
-
-    const fileImports = getImportDeclarationEntries(file);
-
-    // collate all entry import declarations and write it out
-    const allImports = [
-      ...fileImports,
-      ...R.flatten(entries.map((e) => e?.options?.imports).filter(notEmpty)),
-    ];
-
-    const importMappers = [
-      ...providedEntries.flatMap((e) => e?.options?.importMappers || []),
-      ...(this.sourceFileOptions.importMappers || []),
-    ];
-
-    file.getImportDeclarations().forEach((i) => i.remove());
-
-    if (headerBlocks.length) {
-      const deduplicatedHeaderBlocks = R.uniqWith(
-        (a, b) =>
-          a.options.headerKey === b.options.headerKey &&
-          a.options.headerKey != null,
-        headerBlocks
+      const headerBlocks = providedEntries.flatMap(
+        (e) =>
+          e?.options?.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) || []
       );
-      file.insertText(0, (writer) => {
-        writer.writeLine(
-          TypescriptCodeUtils.mergeBlocks(deduplicatedHeaderBlocks, '\n\n')
-            .content
+
+      const entries = [...providedEntries, ...headerBlocks];
+
+      const importStrings = R.flatten(
+        entries.map((e) => e?.options?.importText).filter(notEmpty)
+      ).join('\n');
+
+      file.insertText(0, importStrings);
+
+      const fileImports = getImportDeclarationEntries(file);
+
+      // collate all entry import declarations and write it out
+      const allImports = [
+        ...fileImports,
+        ...R.flatten(entries.map((e) => e?.options?.imports).filter(notEmpty)),
+      ];
+
+      const importMappers = [
+        ...providedEntries.flatMap((e) => e?.options?.importMappers || []),
+        ...(this.sourceFileOptions.importMappers || []),
+      ];
+
+      file.getImportDeclarations().forEach((i) => i.remove());
+
+      if (headerBlocks.length) {
+        const deduplicatedHeaderBlocks = R.uniqWith(
+          (a, b) =>
+            a.options.headerKey === b.options.headerKey &&
+            a.options.headerKey != null,
+          headerBlocks
         );
+        file.insertText(0, (writer) => {
+          writer.writeLine(
+            TypescriptCodeUtils.mergeBlocks(deduplicatedHeaderBlocks, '\n\n')
+              .content
+          );
+          writer.writeLine('');
+        });
+      }
+
+      file.insertText(0, (writer) => {
+        writeImportDeclarations(writer, allImports, path.dirname(destination), {
+          pathMapEntries: this.sourceFileOptions.pathMappings,
+          importMappers,
+        });
         writer.writeLine('');
       });
-    }
 
-    file.insertText(0, (writer) => {
-      writeImportDeclarations(writer, allImports, path.dirname(destination), {
-        pathMapEntries: this.sourceFileOptions.pathMappings,
-        importMappers,
-      });
-      writer.writeLine('');
-    });
+      // fill in code blocks
+      this.renderIntoSourceFile(file, entriesWithDefault);
 
-    // fill in code blocks
-    this.renderIntoSourceFile(file, entriesWithDefault);
-
-    // process all export from declarations
-    file.forEachDescendant((node) => {
-      if (node.getKind() === SyntaxKind.ExportDeclaration) {
-        const exportDeclaration = node as ExportDeclaration;
-        const moduleSpecifier = exportDeclaration.getModuleSpecifier();
-        if (moduleSpecifier) {
-          exportDeclaration.setModuleSpecifier(
-            resolveModule(
-              moduleSpecifier.getLiteralValue(),
-              path.dirname(destination),
-              { pathMapEntries: this.sourceFileOptions.pathMappings }
-            )
-          );
+      // process all export from declarations
+      file.forEachDescendant((node) => {
+        if (node.getKind() === SyntaxKind.ExportDeclaration) {
+          const exportDeclaration = node as ExportDeclaration;
+          const moduleSpecifier = exportDeclaration.getModuleSpecifier();
+          if (moduleSpecifier) {
+            exportDeclaration.setModuleSpecifier(
+              resolveModule(
+                moduleSpecifier.getLiteralValue(),
+                path.dirname(destination),
+                { pathMapEntries: this.sourceFileOptions.pathMappings }
+              )
+            );
+          }
         }
-      }
-    });
+      });
 
-    const text = file.getFullText();
+      const text = file.getFullText();
 
-    // get rid of any leading whitespace and add newline to the end
-    return `${text.trim()}\n`;
+      // get rid of any leading whitespace and add newline to the end
+      return `${text.trim()}\n`;
+    } catch (err) {
+      console.log(`File Dump: ${file.getText()}`);
+      throw err;
+    }
   }
 
   renderToActionFromText(
