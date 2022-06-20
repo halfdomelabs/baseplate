@@ -3,7 +3,7 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
-import { scalarFieldTypeInfoMap } from '@src/types/fieldTypes';
+import { getScalarFieldTypeInfo } from '@src/types/fieldTypes';
 import { PrismaOutputModel } from '@src/types/prismaOutput';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput';
 
@@ -82,8 +82,9 @@ export function getPrimaryKeyExpressions(
       throw new Error(`Model ${model.name} must have a scalar primary key`);
     }
 
-    const argumentType =
-      scalarFieldTypeInfoMap[idField.scalarType].typescriptType;
+    const argumentType = getScalarFieldTypeInfo(
+      idField.scalarType
+    ).typescriptType;
 
     return {
       argument: `${idFieldName}: ${argumentType}`,

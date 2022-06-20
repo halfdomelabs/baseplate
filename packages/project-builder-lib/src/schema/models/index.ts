@@ -21,6 +21,8 @@ export const modelScalarFieldSchema = z.object({
       // date options
       updatedAt: z.boolean().optional(),
       defaultToNow: z.boolean().optional(),
+      // enum options
+      enumType: z.string().optional(),
     })
     .optional(),
 });
@@ -135,6 +137,11 @@ function buildModelScalarFieldReferences(
     key: `${modelName}#${field.name}`,
     name: field.name,
   });
+  if (field.type === 'enum') {
+    builder.addReference('options.enumType', {
+      category: 'enum',
+    });
+  }
 }
 
 function buildModelRelationFieldReferences(

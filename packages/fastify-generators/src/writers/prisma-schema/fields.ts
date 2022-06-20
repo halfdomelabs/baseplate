@@ -5,10 +5,10 @@ import { doubleQuot } from '@src/utils/string';
 import { PrismaModelAttribute, PrismaModelField } from './model-writer';
 
 export interface PrismaFieldTypeConfig<
-  Schema extends z.AnyZodObject = z.AnyZodObject
+  Schema extends z.ZodType = z.AnyZodObject
 > {
-  prismaType: string;
   optionsSchema?: Schema;
+  prismaType: string | ((config?: z.infer<Schema>) => string);
   getAttributes?: (config?: z.infer<Schema>) => PrismaModelAttribute[];
 }
 
@@ -98,6 +98,17 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       return attributes;
     },
   }),
+  enum: createConfig({
+    optionsSchema: z.object({
+      enumType: z.string().optional(),
+    }),
+    prismaType: (config) => {
+      if (!config?.enumType) {
+        throw new Error(`Enum type required`);
+      }
+      return config?.enumType;
+    },
+  }),
 });
 
 export function buildPrismaScalarField<T extends ScalarFieldType>(
@@ -147,9 +158,14 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
       [])
   );
 
+  const prismaType =
+    typeof typeConfig.prismaType === 'string'
+      ? typeConfig.prismaType
+      : typeConfig.prismaType(typeOptions as Record<string, unknown>);
+
   return {
     name,
-    type: `${typeConfig.prismaType}${optional ? '?' : ''}`,
+    type: `${prismaType}${optional ? '?' : ''}`,
     attributes,
     fieldType: 'scalar',
     scalarType: type,

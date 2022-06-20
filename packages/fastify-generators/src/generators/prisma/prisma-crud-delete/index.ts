@@ -45,7 +45,9 @@ function getMethodDefinition({
     name,
     expression: methodExpression,
     arguments: [idArgument],
-    returnType: prismaToServiceOutputDto(prismaDefinition),
+    returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
+      prismaOutput.getServiceEnum(enumName)
+    ),
   };
 }
 

@@ -9,6 +9,7 @@ import {
 import { backendAppSchema } from './apps/backend';
 import { authSchema, buildAuthReferences } from './auth';
 import { buildModelReferences, modelSchema } from './models';
+import { buildEnumReferences, enumSchema } from './models/enums';
 import { GetReferencesFunction, ReferencesBuilder } from './references';
 import { buildStorageReferences, storageSchema } from './storage';
 
@@ -33,6 +34,7 @@ export const projectConfigSchema = z.object({
     })
   ),
   models: z.array(modelSchema),
+  enums: z.array(enumSchema).optional(),
   auth: authSchema.optional(),
   storage: storageSchema.optional(),
 });
@@ -76,6 +78,10 @@ export const getProjectConfigReferences: GetReferencesFunction<
 
   config.models?.forEach((model, idx) => {
     buildModelReferences(config, model, builder.withPrefix(`models.${idx}`));
+  });
+
+  config.enums?.forEach((enumConfig, idx) => {
+    buildEnumReferences(enumConfig, builder.withPrefix(`enums.${idx}`));
   });
 
   return builder.build();

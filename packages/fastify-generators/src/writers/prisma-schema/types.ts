@@ -1,4 +1,4 @@
-type PrismaSchemaBlockType = 'datasource' | 'generator' | 'model';
+type PrismaSchemaBlockType = 'datasource' | 'generator' | 'model' | 'enum';
 
 export interface PrismaSchemaBlock {
   name: string;
@@ -9,3 +9,4 @@ export interface PrismaSchemaBlock {
 export type PrismaGeneratorBlock = PrismaSchemaBlock & { type: 'generator' };
 export type PrismaDatasourceBlock = PrismaSchemaBlock & { type: 'datasource' };
 export type PrismaModelBlock = PrismaSchemaBlock & { type: 'model' };
+export type PrismaEnumBlock = PrismaSchemaBlock & { type: 'enum' };

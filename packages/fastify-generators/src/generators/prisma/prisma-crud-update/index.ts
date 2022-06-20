@@ -54,7 +54,9 @@ function getMethodDefinition(
         nestedType: dataType,
       },
     ],
-    returnType: prismaToServiceOutputDto(prismaDefinition),
+    returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
+      prismaOutput.getServiceEnum(enumName)
+    ),
   };
 }
 

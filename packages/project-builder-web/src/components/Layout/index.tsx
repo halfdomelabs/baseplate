@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FaDatabase } from 'react-icons/fa';
+import { FaDatabase, FaList } from 'react-icons/fa';
 import {
   MdPeople,
   MdSettings,
@@ -52,6 +52,9 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
           </Sidebar.Dropdown>
           <Sidebar.LinkItem Icon={FaDatabase} to="/models">
             Models
+          </Sidebar.LinkItem>
+          <Sidebar.LinkItem Icon={FaList} to="/enums">
+            Enums
           </Sidebar.LinkItem>
           <Sidebar.LinkItem Icon={MdPeople} to="/auth">
             Auth

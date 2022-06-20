@@ -1,4 +1,5 @@
 import { AppEntryBuilder } from '../appEntryBuilder';
+import { buildEnumsForFeature } from './enums';
 import { buildModelsForFeature } from './models';
 import { buildSchemaTypesForFeature } from './schemaTypes';
 import { buildServicesForFeature } from './services';
@@ -21,6 +22,7 @@ export function buildFeature(
     generator: '@baseplate/fastify/core/app-module',
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featurePath),
     children: {
+      $enums: buildEnumsForFeature(featurePath, parsedProject),
       $models: buildModelsForFeature(featurePath, parsedProject),
       $services: buildServicesForFeature(featurePath, parsedProject),
       $schemaTypes: buildSchemaTypesForFeature(featurePath, parsedProject),

@@ -1,4 +1,5 @@
 import { ParsedProjectConfig } from '@src/parser';
+import { EnumConfig } from '@src/schema/models/enums';
 import { ModelConfig } from '../../schema/models';
 
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
@@ -72,6 +73,25 @@ function buildMutationSchemaTypeForModel(
   };
 }
 
+function buildEnumSchema(enums: EnumConfig[]): unknown[] {
+  if (!enums.length) {
+    return [];
+  }
+  return [
+    {
+      name: `Enums`,
+      generator: '@baseplate/fastify/nexus/nexus-types-file',
+      children: {
+        $enums: enums.map((enumConfig) => ({
+          name: enumConfig.name,
+          generator: '@baseplate/fastify/nexus/nexus-prisma-enum',
+          enumName: enumConfig.name,
+        })),
+      },
+    },
+  ];
+}
+
 export function buildSchemaTypesForFeature(
   feature: string,
   parsedProject: ParsedProjectConfig
@@ -80,13 +100,19 @@ export function buildSchemaTypesForFeature(
     parsedProject
       .getModels()
       .filter((m) => m.feature === feature && m.schema) || [];
+  const enums = parsedProject
+    .getEnums()
+    .filter((e) => e.feature === feature && e.isExposed);
 
-  return models.flatMap((model) => [
-    model.schema?.buildObjectType || model.schema?.buildQuery
-      ? buildQuerySchemaTypeForModel(model)
-      : undefined,
-    model.schema?.buildMutations
-      ? buildMutationSchemaTypeForModel(feature, model)
-      : undefined,
-  ]);
+  return [
+    ...models.flatMap((model) => [
+      model.schema?.buildObjectType || model.schema?.buildQuery
+        ? buildQuerySchemaTypeForModel(model)
+        : undefined,
+      model.schema?.buildMutations
+        ? buildMutationSchemaTypeForModel(feature, model)
+        : undefined,
+    ]),
+    ...buildEnumSchema(enums),
+  ];
 }

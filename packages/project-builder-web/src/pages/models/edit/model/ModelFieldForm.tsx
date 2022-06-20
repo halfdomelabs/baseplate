@@ -12,6 +12,7 @@ import {
 } from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
+import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 
@@ -67,6 +68,11 @@ function ModelFieldForm({
 
   const { parsedProject } = useProjectConfig();
   const toast = useToast();
+
+  const enumOptions = parsedProject.getEnums().map((config) => ({
+    label: config.name,
+    value: config.name,
+  }));
 
   function handleRemove(): void {
     // check for references
@@ -194,6 +200,14 @@ function ModelFieldForm({
             register={register(`model.fields.${idx}.type`)}
             error={errors.model?.fields?.[idx].name?.message}
           />
+          {watchedField.type === 'enum' && (
+            <ReactSelectInput.LabelledController
+              label="Enum Type"
+              control={control}
+              options={enumOptions}
+              name={`model.fields.${idx}.options.enumType`}
+            />
+          )}
           {watchedField.type === 'string' && (
             <TextInput.LabelledController
               label="Default Value"

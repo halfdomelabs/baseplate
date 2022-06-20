@@ -3,8 +3,8 @@ import { ScalarFieldType } from '@src/types/fieldTypes';
 export interface NexusScalarConfig {
   name: string;
   scalar: ScalarFieldType;
-  nexusMethod: string;
-  sourceType: string;
+  nexusMethod: string | null;
+  sourceType: string | null;
 }
 
 export const DEFAULT_NEXUS_SCALAR_CONFIG: Record<
@@ -64,5 +64,11 @@ export const DEFAULT_NEXUS_SCALAR_CONFIG: Record<
     scalar: 'uuid',
     nexusMethod: 'string',
     sourceType: 'string',
+  },
+  enum: {
+    name: 'Enum',
+    scalar: 'enum',
+    nexusMethod: null,
+    sourceType: null,
   },
 };
