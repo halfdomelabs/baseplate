@@ -1,10 +1,44 @@
 import {
   AdminAppConfig,
+  AdminCrudEnumInputConfig,
   AdminCrudForeignInputConfig,
   AdminCrudInputConfig,
   AdminCrudSectionConfig,
 } from '@src/schema';
 import { AppEntryBuilder } from '../appEntryBuilder';
+
+function compileAdminEnumInput(
+  field: AdminCrudEnumInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>
+): unknown {
+  const model = builder.parsedProject.getModelByName(modelName);
+  const fieldConfig = model.model.fields.find(
+    (f) => f.name === field.modelField
+  );
+  if (fieldConfig?.type !== 'enum') {
+    throw new Error(`Admin enum input ${field.modelField} is not an enum`);
+  }
+  const enumBlock = builder.parsedProject
+    .getEnums()
+    .find((e) => e.name === fieldConfig.options?.enumType);
+  if (!enumBlock) {
+    throw new Error(
+      `Could not find enum type ${fieldConfig.options?.enumType || ''}`
+    );
+  }
+  return {
+    name: field.modelField,
+    generator: '@baseplate/react/admin/admin-crud-enum-input',
+    modelField: field.modelField,
+    label: field.label,
+    isOptional: fieldConfig.isOptional,
+    options: enumBlock.values.map((v) => ({
+      label: v.friendlyName,
+      value: v.name,
+    })),
+  };
+}
 
 function compileAdminForeignInput(
   field: AdminCrudForeignInputConfig,
@@ -50,6 +84,8 @@ function compileAdminCrudInput(
   switch (field.type) {
     case 'foreign':
       return compileAdminForeignInput(field, modelName, builder);
+    case 'enum':
+      return compileAdminEnumInput(field, modelName, builder);
     case 'text':
       return {
         name: field.modelField,

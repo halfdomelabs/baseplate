@@ -57,6 +57,9 @@ export function scalarPrismaFieldToServiceField(
   field: PrismaOutputScalarField,
   lookupEnum: (name: string) => ServiceOutputEnum
 ): ServiceOutputDtoField {
+  if (field.scalarType === 'enum' && !field.enumType) {
+    throw new Error(`Enum field must have enum type.`);
+  }
   return {
     type: 'scalar',
     name: field.name,

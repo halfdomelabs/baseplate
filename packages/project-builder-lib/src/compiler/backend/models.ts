@@ -17,10 +17,10 @@ function buildScalarField(field: ModelScalarFieldConfig): unknown {
       defaultToNow: options.defaultToNow,
       updatedAt: options.updatedAt,
       default: options.default,
-      enumType: options.enumType,
     },
     optional: field.isOptional,
     unique: field.isUnique,
+    enumType: options.enumType,
   };
 }
 

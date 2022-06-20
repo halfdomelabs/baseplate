@@ -20,6 +20,7 @@ export interface PrismaModelField {
   attributes?: PrismaModelAttribute[];
   fieldType: 'scalar' | 'relation';
   scalarType?: ScalarFieldType;
+  enumType?: string;
 }
 
 function formatAttributeArgument(argument: string | string[]): string {
@@ -168,6 +169,7 @@ export class PrismaModelBlockWriter {
         return {
           type: 'scalar',
           scalarType: field.scalarType,
+          enumType: field.enumType,
           ...sharedFields,
         };
       }),

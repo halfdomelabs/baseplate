@@ -15,7 +15,7 @@ import { convertExpressionToField } from '../_utils/graphql';
 const descriptorSchema = z.object({
   label: z.string().min(1),
   localRelationName: z.string().min(1),
-  isOptional: z.boolean(),
+  isOptional: z.boolean().optional(),
   localField: z.string().min(1),
   foreignModelName: z.string().min(1),
   labelExpression: z.string().min(1),
@@ -115,7 +115,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
         {
           key: localField,
           expression: TypescriptCodeUtils.createExpression(
-            `z.string().uuid()${isOptional ? '.optional()' : ''}`
+            `z.string().uuid()${isOptional ? '.nullish()' : ''}`
           ),
         },
       ],

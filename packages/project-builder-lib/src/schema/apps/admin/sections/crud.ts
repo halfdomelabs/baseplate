@@ -44,9 +44,18 @@ export type AdminCrudForeignInputConfig = z.infer<
   typeof adminCrudForeignInputSchema
 >;
 
+export const adminCrudEnumInputSchema = z.object({
+  type: z.literal('enum'),
+  label: z.string().min(1),
+  modelField: z.string().min(1),
+});
+
+export type AdminCrudEnumInputConfig = z.infer<typeof adminCrudEnumInputSchema>;
+
 export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudForeignInputSchema,
   adminCrudTextInputSchema,
+  adminCrudEnumInputSchema,
 ]);
 
 export const adminCrudInputTypes =
@@ -105,6 +114,12 @@ export function buildAdminCrudSectionReferences(
         fieldBuilder.addReference('localRelationName', {
           category: 'modelLocalRelation',
           key: `${config.modelName}#${field.localRelationName || ''}`,
+        });
+        break;
+      case 'enum':
+        fieldBuilder.addReference('modelField', {
+          category: 'modelField',
+          key: `${config.modelName}#${field.modelField || ''}`,
         });
         break;
       default:
