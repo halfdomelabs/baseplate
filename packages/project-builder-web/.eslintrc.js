@@ -50,7 +50,11 @@ module.exports = {
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: ['**/*.test.ts', 'src/tests/**/*.ts'],
+        devDependencies: [
+          '**/*.test.ts',
+          'src/tests/**/*.ts',
+          '**/setupTests.ts',
+        ],
       },
     ],
     '@typescript-eslint/no-misused-promises': [

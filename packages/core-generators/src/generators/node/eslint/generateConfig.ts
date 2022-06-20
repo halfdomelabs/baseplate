@@ -64,7 +64,13 @@ export function generateConfig({
       '@typescript-eslint/require-await': 'off',
       'import/no-extraneous-dependencies': [
         'error',
-        { devDependencies: ['**/*.test.ts', 'src/tests/**/*.ts'] },
+        {
+          devDependencies: [
+            '**/*.test.ts',
+            'src/tests/**/*.ts',
+            ...(react ? ['**/setupTests.ts'] : []),
+          ],
+        },
       ],
       '@typescript-eslint/no-misused-promises': [
         'error',
