@@ -1,5 +1,75 @@
-import { AdminAppConfig, AdminCrudSectionConfig } from '@src/schema';
+import {
+  AdminAppConfig,
+  AdminCrudForeignInputConfig,
+  AdminCrudInputConfig,
+  AdminCrudSectionConfig,
+} from '@src/schema';
 import { AppEntryBuilder } from '../appEntryBuilder';
+
+function compileAdminForeignInput(
+  field: AdminCrudForeignInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>
+): unknown {
+  const model = builder.parsedProject.getModelByName(modelName);
+  const relation = model.model.relations?.find(
+    (r) => r.name === field.localRelationName
+  );
+
+  if (!relation) {
+    throw new Error(
+      `Could not find relation ${field.localRelationName} in model ${modelName}`
+    );
+  }
+
+  if (relation.references.length !== 1) {
+    throw new Error(`Only relations with a single reference are supported`);
+  }
+
+  const localField = relation.references[0].local;
+
+  return {
+    name: field.localRelationName,
+    generator: '@baseplate/react/admin/admin-crud-foreign-input',
+    label: field.label,
+    localRelationName: field.localRelationName,
+    isOptional: relation.isOptional,
+    localField,
+    foreignModelName: relation.modelName,
+    labelExpression: field.labelExpression,
+    valueExpression: field.valueExpression,
+    defaultLabel: field.defaultLabel,
+  };
+}
+
+function compileAdminCrudInput(
+  field: AdminCrudInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>
+): unknown {
+  switch (field.type) {
+    case 'foreign':
+      return compileAdminForeignInput(field, modelName, builder);
+    case 'text':
+      return {
+        name: field.modelField,
+        generator: '@baseplate/react/admin/admin-crud-text-input',
+        label: field.label,
+        modelField: field.modelField,
+        validation:
+          field.validation ||
+          builder.parsedProject.getModelFieldValidation(
+            modelName,
+            field.modelField,
+            true
+          ),
+      };
+    default:
+      throw new Error(
+        `Unknown admin crud input ${(field as { type: string }).type}`
+      );
+  }
+}
 
 export function compileAdminCrudSection(
   crudSection: AdminCrudSectionConfig,
@@ -14,19 +84,11 @@ export function compileAdminCrudSection(
         modelName: crudSection.modelName,
         children: {
           edit: {
-            fields: crudSection.form.fields.map((f) => {
-              if (f.type === 'text' && !f.validation) {
-                return {
-                  ...f,
-                  validation: builder.parsedProject.getModelFieldValidation(
-                    crudSection.modelName,
-                    f.modelField,
-                    true
-                  ),
-                };
-              }
-              return f;
-            }),
+            children: {
+              inputs: crudSection.form.fields.map((field) =>
+                compileAdminCrudInput(field, crudSection.modelName, builder)
+              ),
+            },
           },
           list: {
             columns: crudSection.table.columns,

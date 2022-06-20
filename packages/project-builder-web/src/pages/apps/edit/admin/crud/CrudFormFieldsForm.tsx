@@ -1,4 +1,7 @@
-import { AdminCrudSectionConfig } from '@baseplate/project-builder-lib';
+import {
+  AdminCrudSectionConfig,
+  adminCrudInputTypes,
+} from '@baseplate/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 import { Button, SelectInput, TextInput } from 'src/components';
@@ -14,29 +17,75 @@ function FieldForm({
   idx,
   control,
   fieldOptions,
+  localRelationOptions,
 }: {
   idx: number;
   control: Control<AdminCrudSectionConfig>;
   fieldOptions: { label: string; value: string }[];
+  localRelationOptions: { label: string; value: string }[];
 }): JSX.Element {
+  const fieldTypeOptions = adminCrudInputTypes.map((t) => ({
+    label: t,
+    value: t,
+  }));
+  const type = useWatch({
+    control,
+    name: `form.fields.${idx}.type`,
+  });
+
   return (
     <div className="space-y-4">
+      <SelectInput.LabelledController
+        label="Type"
+        control={control}
+        options={fieldTypeOptions}
+        name={`form.fields.${idx}.type`}
+      />
       <TextInput.LabelledController
         label="Label"
         control={control}
         name={`form.fields.${idx}.label`}
       />
-      <SelectInput.LabelledController
-        label="Field"
-        control={control}
-        name={`form.fields.${idx}.modelField`}
-        options={fieldOptions}
-      />
-      <TextInput.LabelledController
-        label="Validation (zod), e.g. z.string().min(1) (optional)"
-        control={control}
-        name={`form.fields.${idx}.validation`}
-      />
+      {type === 'foreign' && (
+        <>
+          <SelectInput.LabelledController
+            label="Local Relation Name"
+            control={control}
+            name={`form.fields.${idx}.localRelationName`}
+            options={localRelationOptions}
+          />
+          <TextInput.LabelledController
+            label="Label Expression (e.g. name)"
+            control={control}
+            name={`form.fields.${idx}.labelExpression`}
+          />
+          <TextInput.LabelledController
+            label="Value Expression (e.g. id)"
+            control={control}
+            name={`form.fields.${idx}.valueExpression`}
+          />
+          <TextInput.LabelledController
+            label="Default Label (optional)"
+            control={control}
+            name={`form.fields.${idx}.defaultLabel`}
+          />
+        </>
+      )}
+      {type === 'text' && (
+        <>
+          <SelectInput.LabelledController
+            label="Field"
+            control={control}
+            name={`form.fields.${idx}.modelField`}
+            options={fieldOptions}
+          />
+          <TextInput.LabelledController
+            label="Validation (zod), e.g. z.string().min(1) (optional)"
+            control={control}
+            name={`form.fields.${idx}.validation`}
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -56,6 +105,12 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
       value: field.name,
     })) || [];
 
+  const localRelationOptions =
+    model?.model.relations?.map((relation) => ({
+      label: `${relation.name} (${relation.modelName})`,
+      value: relation.name,
+    })) || [];
+
   return (
     <div className={classNames('space-y-4', className)}>
       {fields.map((field, idx) => (
@@ -63,7 +118,7 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
           key={field.id}
           collapsedContents={
             <div>
-              {field.label} ({field.modelField})
+              {field.label} ({field.type})
             </div>
           }
           onRemove={() => remove(idx)}
@@ -74,10 +129,11 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
             idx={idx}
             control={control}
             fieldOptions={fieldOptions}
+            localRelationOptions={localRelationOptions}
           />
         </CollapsibleRow>
       ))}
-      <Button onClick={() => append({ type: 'text' })}>Add Column</Button>
+      <Button onClick={() => append({ type: 'text' })}>Add Field</Button>
     </div>
   );
 }

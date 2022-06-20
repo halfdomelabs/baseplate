@@ -8,22 +8,13 @@ import { useToast } from '%react-components/useToast';
 function COMPONENT_NAME(): JSX.Element {
   const { id } = useParams() as { id: string };
 
-  const { data, error } = GET_EDIT_BY_ID_QUERY({
-    variables: { id },
-  });
+  DATA_LOADER;
 
   const [MUTATION_NAME] = UPDATE_MUTATION();
   const toast = useToast();
   const navigate = useNavigate();
 
-  const initialData: FORM_DATA_NAME | undefined = useMemo(() => {
-    if (!data?.QUERY_FIELD_NAME) return undefined;
-    return data.QUERY_FIELD_NAME;
-  }, [data]);
-
-  if (!initialData) {
-    return <ErrorableLoader error={error} />;
-  }
+  DATA_GATE;
 
   const submitData = async (formData: FORM_DATA_NAME): Promise<void> => {
     await MUTATION_NAME({
