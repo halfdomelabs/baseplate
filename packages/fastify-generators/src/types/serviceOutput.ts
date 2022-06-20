@@ -16,9 +16,20 @@ interface ServiceOutputDtoBaseField {
   isList?: boolean;
 }
 
+export interface ServiceOutputEnumValue {
+  name: string;
+}
+
+export interface ServiceOutputEnum {
+  name: string;
+  values: ServiceOutputEnumValue[];
+  expression: TypescriptCodeExpression;
+}
+
 export interface ServiceOutputDtoScalarField extends ServiceOutputDtoBaseField {
   type: 'scalar';
   scalarType: ScalarFieldType;
+  enumType?: ServiceOutputEnum;
 }
 
 export interface ServiceOutputDtoNestedField extends ServiceOutputDtoBaseField {
@@ -43,7 +54,8 @@ export interface ServiceOutputMethod {
 }
 
 export function scalarPrismaFieldToServiceField(
-  field: PrismaOutputScalarField
+  field: PrismaOutputScalarField,
+  lookupEnum: (name: string) => ServiceOutputEnum
 ): ServiceOutputDtoField {
   return {
     type: 'scalar',
@@ -52,6 +64,8 @@ export function scalarPrismaFieldToServiceField(
     isNullable: field.isOptional,
     isList: field.isList,
     scalarType: field.scalarType,
+    enumType:
+      field.enumType === undefined ? undefined : lookupEnum(field.enumType),
   };
 }
 
@@ -72,13 +86,14 @@ export function nestedPrismaFieldToServiceField(
 }
 
 export function prismaToServiceOutputDto(
-  model: PrismaOutputModel
+  model: PrismaOutputModel,
+  lookupEnum: (name: string) => ServiceOutputEnum
 ): ServiceOutputDto {
   return {
     name: model.name,
     fields: model.fields.map((field) =>
       field.type === 'scalar'
-        ? scalarPrismaFieldToServiceField(field)
+        ? scalarPrismaFieldToServiceField(field, lookupEnum)
         : nestedPrismaFieldToServiceField(field)
     ),
   };

@@ -3,6 +3,7 @@ import { Layout } from '../components';
 import NotFoundPage from './NotFound.page';
 import AppsPages from './apps';
 import AuthPage from './auth';
+import EnumsPage from './enums';
 import GeneralPage from './general';
 import HomePage from './home/home.page';
 import ModelsPage from './models';
@@ -20,6 +21,7 @@ function PagesRoot(): JSX.Element {
       </Route>
       <Route element={<Layout noPadding />}>
         <Route path="/models/*" element={<ModelsPage />} />
+        <Route path="/enums/*" element={<EnumsPage />} />
       </Route>
       <Route element={<Layout centered />}>
         <Route path="*" element={<NotFoundPage />} />

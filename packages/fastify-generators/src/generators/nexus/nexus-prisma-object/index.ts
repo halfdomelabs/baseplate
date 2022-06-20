@@ -62,7 +62,9 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
     );
     objectTypeBlock.addCodeExpression('MODEL_NAME', `'${model.name}'`);
 
-    const outputDto = prismaToServiceOutputDto(model);
+    const outputDto = prismaToServiceOutputDto(model, (enumName) =>
+      prismaOutput.getServiceEnum(enumName)
+    );
 
     const writerOptions = nexusSchema.getNexusWriterOptions();
 

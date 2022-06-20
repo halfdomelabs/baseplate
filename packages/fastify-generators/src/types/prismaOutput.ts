@@ -1,3 +1,4 @@
+import { TypescriptCodeExpression } from '@baseplate/core-generators';
 import { ScalarFieldType } from './fieldTypes';
 
 // A standardized Prisma model for use in other generators
@@ -13,6 +14,7 @@ interface PrismaOutputBaseField {
 export interface PrismaOutputScalarField extends PrismaOutputBaseField {
   type: 'scalar';
   scalarType: ScalarFieldType;
+  enumType?: string;
 }
 
 export interface PrismaOutputRelationField extends PrismaOutputBaseField {
@@ -31,4 +33,13 @@ export interface PrismaOutputModel {
   name: string;
   fields: PrismaOutputField[];
   idFields: string[] | null;
+}
+
+export interface PrismaOutputEnumValue {
+  name: string;
+}
+
+export interface PrismaOutputEnum {
+  name: string;
+  values: PrismaOutputEnumValue[];
 }

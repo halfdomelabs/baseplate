@@ -16,7 +16,8 @@ import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check';
-import { PrismaOutputModel } from '@src/types/prismaOutput';
+import { PrismaOutputEnum, PrismaOutputModel } from '@src/types/prismaOutput';
+import { ServiceOutputEnum } from '@src/types/serviceOutput';
 import { PrismaModelBlockWriter } from '@src/writers/prisma-schema';
 import {
   createPrismaSchemaDatasourceBlock,
@@ -31,6 +32,7 @@ const descriptorSchema = z.object({
 
 export interface PrismaSchemaProvider {
   addPrismaModel(model: PrismaModelBlockWriter): void;
+  addPrismaEnum(block: PrismaOutputEnum): void;
 }
 
 export const prismaSchemaProvider =
@@ -40,6 +42,7 @@ export interface PrismaOutputProvider extends ImportMapper {
   getPrismaServicePath(): string;
   getPrismaClient(): TypescriptCodeExpression;
   getPrismaModel(model: string): PrismaOutputModel;
+  getServiceEnum(name: string): ServiceOutputEnum;
   getPrismaModelExpression(model: string): TypescriptCodeExpression;
   getModelTypeExpression(model: string): TypescriptCodeExpression;
 }
@@ -129,6 +132,9 @@ const PrismaGenerator = createGeneratorWithChildren({
           addPrismaModel: (model) => {
             schemaFile.addModelWriter(model);
           },
+          addPrismaEnum: (block) => {
+            schemaFile.addEnum(block);
+          },
         },
         prismaOutput: {
           getImportMap: () => ({
@@ -149,6 +155,20 @@ const PrismaGenerator = createGeneratorWithChildren({
               throw new Error(`Model ${modelName} not found`);
             }
             return modelBlock;
+          },
+          getServiceEnum: (name) => {
+            const block = schemaFile.getEnum(name);
+            if (!block) {
+              throw new Error(`Enum ${name} not found`);
+            }
+            return {
+              name: block.name,
+              values: block.values,
+              expression: TypescriptCodeUtils.createExpression(
+                block.name,
+                `import { ${block.name} } from '@prisma/client'`
+              ),
+            };
           },
           getPrismaModelExpression: (modelName) => {
             const modelExport =

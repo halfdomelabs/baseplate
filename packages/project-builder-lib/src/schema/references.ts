@@ -17,6 +17,7 @@ export const REFERENCEABLE_CATEGORIES = [
   'role',
   'storageAdapter',
   'storageCategory',
+  'enum',
 ] as const;
 
 export interface ObjectReferenceableEntry {
@@ -132,7 +133,7 @@ export class ReferencesBuilder<T> {
 
   public addReference<Path extends FieldPath<T>>(
     path: Path,
-    reference: FieldPathValue<T, Path> extends string
+    reference: FieldPathValue<T, Path> extends string | undefined
       ? Omit<ObjectReferenceEntry, 'path' | 'key' | 'name'> & {
           key?: string;
           name?: string;

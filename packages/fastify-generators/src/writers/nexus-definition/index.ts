@@ -55,9 +55,18 @@ export function writeNexusDefinitionFromDtoScalarField(
     components.push('.list.nonNull');
   }
 
-  components.push(
-    `.${options.lookupScalar(field.scalarType).nexusMethod}("${field.name}")`
-  );
+  const { nexusMethod } = options.lookupScalar(field.scalarType);
+
+  if (!nexusMethod) {
+    if (field.scalarType !== 'enum' || !field.enumType) {
+      throw new Error(`Field must have nexus type or be enum!`);
+    }
+    components.push(
+      `.field("${field.name}", { type: "${field.enumType.name}" })`
+    );
+  } else {
+    components.push(`.${nexusMethod}("${field.name}")`);
+  }
 
   return components.join('');
 }

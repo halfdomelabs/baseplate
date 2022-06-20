@@ -5,6 +5,7 @@ import {
   projectConfigSchema,
   getProjectConfigReferences,
 } from '@src/schema';
+import { EnumConfig } from '@src/schema/models/enums';
 import {
   REFERENCEABLE_CATEGORIES,
   ObjectReferenceEntry,
@@ -263,6 +264,10 @@ export class ParsedProjectConfig {
 
   getModels(): ParsedModel[] {
     return this.models;
+  }
+
+  getEnums(): EnumConfig[] {
+    return this.projectConfig.enums || [];
   }
 
   getModelByName(name: string): ParsedModel {

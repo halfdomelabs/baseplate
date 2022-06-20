@@ -1,10 +1,11 @@
 /* eslint-disable max-classes-per-file */
 import indentString from 'indent-string';
 import R from 'ramda';
-import { PrismaOutputModel } from '@src/types/prismaOutput';
+import { PrismaOutputEnum, PrismaOutputModel } from '@src/types/prismaOutput';
 import { PrismaModelBlockWriter } from './model-writer';
 import {
   PrismaDatasourceBlock,
+  PrismaEnumBlock,
   PrismaGeneratorBlock,
   PrismaSchemaBlock,
 } from './types';
@@ -50,6 +51,14 @@ interface PrismaDatasourceBlockOptions {
   url: string;
 }
 
+function printEnumBlock(block: PrismaOutputEnum): PrismaEnumBlock {
+  return {
+    type: 'enum',
+    name: block.name,
+    contents: block.values.map((v) => v.name).join('\n'),
+  };
+}
+
 export function createPrismaSchemaDatasourceBlock({
   name,
   provider,
@@ -72,6 +81,8 @@ export class PrismaSchemaFile {
 
   modelBlockWriters: PrismaModelBlockWriter[] = [];
 
+  enums: PrismaOutputEnum[] = [];
+
   addGeneratorBlock(block: PrismaGeneratorBlock): void {
     this.generatorBlocks.push(block);
   }
@@ -87,22 +98,38 @@ export class PrismaSchemaFile {
     this.modelBlockWriters.push(block);
   }
 
+  addEnum(block: PrismaOutputEnum): void {
+    if (this.enums.some((b) => b.name === block.name)) {
+      throw new Error(`Duplicate enum name: ${block.name}`);
+    }
+    this.enums.push(block);
+  }
+
   getModelBlock(name: string): PrismaOutputModel | undefined {
     return this.modelBlockWriters
       .find((block) => block.name === name)
       ?.toOutputModel();
   }
 
+  getEnum(name: string): PrismaOutputEnum | undefined {
+    return this.enums.find((block) => block.name === name);
+  }
+
   toText(): string {
     if (!this.datasourceBlock) {
       throw new Error(`Datasource block required`);
     }
-    const sortedBlockWriters = R.sortBy(R.prop('name'), this.modelBlockWriters);
+    const modelBlocks = this.modelBlockWriters.map((b) => b.toBlock());
+    const enumBlocks = this.enums.map((block) => printEnumBlock(block));
+    const sortedBlocks = R.sortBy(R.prop('name'), [
+      ...modelBlocks,
+      ...enumBlocks,
+    ]);
 
     return `${[
       ...this.generatorBlocks.map(formatBlock),
       formatBlock(this.datasourceBlock),
-      ...sortedBlockWriters.map((writer) => formatBlock(writer.toBlock())),
+      ...sortedBlocks.map(formatBlock),
     ].join('\n\n')}\n`;
   }
 }
