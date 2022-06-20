@@ -8,7 +8,7 @@ export interface PrismaFieldTypeConfig<
   Schema extends z.ZodType = z.AnyZodObject
 > {
   optionsSchema?: Schema;
-  prismaType: string | ((config?: z.infer<Schema>) => string);
+  prismaType: string;
   getAttributes?: (config?: z.infer<Schema>) => PrismaModelAttribute[];
 }
 
@@ -99,15 +99,7 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
     },
   }),
   enum: createConfig({
-    optionsSchema: z.object({
-      enumType: z.string().optional(),
-    }),
-    prismaType: (config) => {
-      if (!config?.enumType) {
-        throw new Error(`Enum type required`);
-      }
-      return config?.enumType;
-    },
+    prismaType: '',
   }),
 });
 
@@ -119,6 +111,7 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
     unique?: boolean;
     optional?: boolean;
     dbName?: string;
+    enumType?: string;
     typeOptions?: typeof PRISMA_SCALAR_FIELD_TYPES[T] extends {
       optionsSchema: z.ZodType;
     }
@@ -138,6 +131,7 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
     optional,
     dbName = snakeCase(name),
     typeOptions,
+    enumType,
   } = options || {};
   const attributes: PrismaModelAttribute[] = [];
 
@@ -158,10 +152,11 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
       [])
   );
 
-  const prismaType =
-    typeof typeConfig.prismaType === 'string'
-      ? typeConfig.prismaType
-      : typeConfig.prismaType(typeOptions as Record<string, unknown>);
+  const prismaType = type === 'enum' ? enumType : typeConfig.prismaType;
+
+  if (!prismaType) {
+    throw new Error(`Prisma type required ${type}`);
+  }
 
   return {
     name,
@@ -169,5 +164,6 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
     attributes,
     fieldType: 'scalar',
     scalarType: type,
+    enumType,
   };
 }

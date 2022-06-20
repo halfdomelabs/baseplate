@@ -18,9 +18,11 @@ function FieldForm({
   control,
   fieldOptions,
   localRelationOptions,
+  enumFieldOptions,
 }: {
   idx: number;
   control: Control<AdminCrudSectionConfig>;
+  enumFieldOptions: { label: string; value: string }[];
   fieldOptions: { label: string; value: string }[];
   localRelationOptions: { label: string; value: string }[];
 }): JSX.Element {
@@ -46,6 +48,14 @@ function FieldForm({
         control={control}
         name={`form.fields.${idx}.label`}
       />
+      {type === 'enum' && (
+        <SelectInput.LabelledController
+          label="Enum Field"
+          control={control}
+          name={`form.fields.${idx}.modelField`}
+          options={enumFieldOptions}
+        />
+      )}
       {type === 'foreign' && (
         <>
           <SelectInput.LabelledController
@@ -111,6 +121,14 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
       value: relation.name,
     })) || [];
 
+  const enumFieldOptions =
+    model?.model.fields
+      .filter((f) => f.type === 'enum')
+      .map((field) => ({
+        label: field.name,
+        value: field.name,
+      })) || [];
+
   return (
     <div className={classNames('space-y-4', className)}>
       {fields.map((field, idx) => (
@@ -130,6 +148,7 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
             control={control}
             fieldOptions={fieldOptions}
             localRelationOptions={localRelationOptions}
+            enumFieldOptions={enumFieldOptions}
           />
         </CollapsibleRow>
       ))}

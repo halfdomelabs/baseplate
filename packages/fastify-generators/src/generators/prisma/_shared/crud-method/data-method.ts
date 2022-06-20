@@ -54,6 +54,9 @@ export function getDataMethodDataType({
           name: field.name,
           isList: field.isList,
           scalarType: field.scalarType,
+          enumType: field.enumType
+            ? prismaOutput.getServiceEnum(field.enumType)
+            : undefined,
           ...(isPartial
             ? { isOptional: true, isNullable: field.isOptional }
             : { isOptional: field.isOptional || field.hasDefault }),

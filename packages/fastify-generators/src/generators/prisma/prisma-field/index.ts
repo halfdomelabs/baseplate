@@ -31,6 +31,7 @@ const descriptorSchema = z
     id: z.boolean().optional(),
     unique: z.boolean().optional(),
     optional: z.boolean().optional(),
+    enumType: z.string().optional(),
   })
   .superRefine((obj, ctx) => {
     // TODO: Clean up
@@ -59,7 +60,16 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
     prismaField: prismaFieldProvider,
   },
   createGenerator(descriptor, { prismaModel }) {
-    const { name, type, id, unique, options, optional, dbName } = descriptor;
+    const { name, type, id, unique, options, optional, dbName, enumType } =
+      descriptor;
+
+    if (type === 'enum' && !enumType) {
+      throw new Error(`Enum type required`);
+    }
+
+    if (enumType && type !== 'enum') {
+      throw new Error(`Enum type can only be used with type 'enum'`);
+    }
 
     const prismaField = buildPrismaScalarField(name, type, {
       id,
@@ -67,6 +77,7 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
       optional,
       dbName,
       typeOptions: options,
+      enumType,
     });
 
     prismaModel.addField(prismaField);
