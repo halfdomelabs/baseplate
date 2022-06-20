@@ -6,8 +6,8 @@ import {
   TypescriptStringReplacement,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
@@ -15,15 +15,19 @@ import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactErrorProvider } from '@src/generators/core/react-error';
 import { reactRoutesProvider } from '@src/providers/routes';
+import { notEmpty } from '@src/utils/array';
 import { humanizeCamel, lowerCaseFirst } from '@src/utils/case';
 import { createRouteElement } from '@src/utils/routes';
 import { mergeGraphQLFields } from '@src/writers/graphql';
+import {
+  AdminCrudInput,
+  adminCrudInputContainerProvider,
+} from '../_providers/admin-crud-input-container';
+import { DataLoader, printDataLoaders } from '../_providers/admin-loader';
 import { adminCrudQueriesProvider } from '../admin-crud-queries';
-import { adminCrudInputSchema, ADMIN_CRUD_INPUTS } from './inputs';
 
 const descriptorSchema = z.object({
   modelName: z.string(),
-  fields: z.array(adminCrudInputSchema),
 });
 
 export type AdminCrudEditProvider = unknown;
@@ -33,7 +37,11 @@ export const adminCrudEditProvider =
 
 const AdminCrudEditGenerator = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+  getDefaultChildGenerators: () => ({
+    inputs: {
+      isMultiple: true,
+    },
+  }),
   dependencies: {
     typescript: typescriptProvider,
     reactRoutes: reactRoutesProvider,
@@ -43,9 +51,10 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
   },
   exports: {
     adminCrudEdit: adminCrudEditProvider,
+    adminCrudInputContainer: adminCrudInputContainerProvider,
   },
   createGenerator(
-    { modelName, fields },
+    { modelName },
     { typescript, adminCrudQueries, reactRoutes, reactComponents, reactError }
   ) {
     const [editSchemaImport, editSchemaPath] = makeImportAndFilePath(
@@ -97,27 +106,40 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
     const createInfo = adminCrudQueries.getCreateHookInfo();
     const updateInfo = adminCrudQueries.getUpdateHookInfo();
 
-    const renderedInputs = fields.map((field) => {
-      const input = ADMIN_CRUD_INPUTS[field.type];
-      if (!input) {
-        throw new Error(`Unknown input type: ${field.type}`);
-      }
-      return input.render(field);
-    });
-
-    adminCrudQueries.setFormFields(
-      mergeGraphQLFields([
-        { name: 'id' },
-        ...renderedInputs.flatMap((c) => c.graphQLFields),
-      ])
-    );
+    const inputFields: AdminCrudInput[] = [];
 
     return {
       getProviders: () => ({
         adminCrudEdit: {},
+        adminCrudInputContainer: {
+          addInput: (input) => {
+            inputFields.push(input);
+          },
+          getModelName: () => modelName,
+        },
       }),
       build: async (builder) => {
-        const validations = renderedInputs.flatMap((c) => c.validation);
+        adminCrudQueries.setFormFields(
+          mergeGraphQLFields([
+            { name: 'id' },
+            ...inputFields.flatMap((c) => c.graphQLFields),
+          ])
+        );
+
+        const dataDependencies = inputFields.flatMap(
+          (f) => f.dataDependencies || []
+        );
+
+        dataDependencies.forEach((dep) => {
+          dep.graphFragments?.forEach((frag) => {
+            adminCrudQueries.addFragment(frag);
+          });
+          dep.graphRoots?.forEach((root) => {
+            adminCrudQueries.addRoot(root);
+          });
+        });
+
+        const validations = inputFields.flatMap((c) => c.validation);
         const schemaPage = typescript.createTemplate({
           SCHEMA_NAME: new TypescriptStringReplacement(editSchemaName),
           SCHEMA_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
@@ -140,8 +162,24 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
             FORM_DATA_NAME: formDataExpression,
             EDIT_SCHEMA: editSchemaExpression,
             INPUTS: TypescriptCodeUtils.mergeExpressions(
-              renderedInputs.map((input) => input.content),
+              inputFields.map((input) => input.content),
               '\n'
+            ),
+            HEADER: TypescriptCodeUtils.mergeBlocks(
+              inputFields.map((field) => field.header).filter(notEmpty)
+            ),
+            EXTRA_PROPS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+              _.fromPairs(
+                dataDependencies.map(
+                  (d): [string, TypescriptCodeExpression] => [
+                    d.propName,
+                    d.propType,
+                  ]
+                )
+              )
+            ),
+            'EXTRA_PROP_SPREAD,': new TypescriptStringReplacement(
+              dataDependencies.map((d) => d.propName).join(',\n')
             ),
           },
           {
@@ -152,11 +190,32 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
           editFormPage.renderToAction('EditForm.tsx', editFormComponentPath)
         );
 
+        const inputLoaders = inputFields.flatMap(
+          (field) => field.dataDependencies?.map((d) => d.loader) || []
+        );
+
+        const inputLoaderExtraProps = inputFields
+          .flatMap((field) =>
+            field.dataDependencies?.map(
+              (d) =>
+                `${d.propName}={${d.propLoaderValueGetter(
+                  d.loader.loaderValueName
+                )}}`
+            )
+          )
+          .join(' ');
+
+        const createLoaderOutput = printDataLoaders(
+          inputLoaders,
+          reactComponents
+        );
+
         const createPage = typescript.createTemplate(
           {
             COMPONENT_NAME: new TypescriptStringReplacement(createPageName),
             EDIT_FORM: editFormComponentExpression.wrap(
-              (content) => `<${content} submitData={submitData} />`
+              (content) =>
+                `<${content} submitData={submitData} ${inputLoaderExtraProps} />`
             ),
             CREATE_MUTATION: createInfo.hookExpression,
             MUTATION_NAME: new TypescriptStringReplacement(
@@ -167,6 +226,8 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
               humanizeCamel(modelName)
             ),
             REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),
+            DATA_LOADER: createLoaderOutput.loader,
+            DATA_GATE: createLoaderOutput.gate,
           },
           {
             importMappers: [reactComponents, reactError],
@@ -176,25 +237,53 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
           createPage.renderToAction('create.page.tsx', createPagePath)
         );
 
+        const editPageLoader: DataLoader = {
+          loader: TypescriptCodeUtils.formatBlock(
+            `
+          const { data, error } = GET_EDIT_BY_ID_QUERY({
+            variables: { id },
+          });
+        
+          const initialData: FORM_DATA_NAME | undefined = useMemo(() => {
+            if (!data?.QUERY_FIELD_NAME) return undefined;
+            return data.QUERY_FIELD_NAME;
+          }, [data]);
+          `,
+            {
+              GET_EDIT_BY_ID_QUERY: editQueryInfo.hookExpression,
+              FORM_DATA_NAME: formDataExpression,
+              QUERY_FIELD_NAME: editQueryInfo.fieldName,
+            },
+            {
+              importText: ['import {useMemo} from "react"'],
+            }
+          ),
+          loaderErrorName: 'error',
+          loaderValueName: 'initialData',
+        };
+
+        const editPageLoaderOutput = printDataLoaders(
+          [editPageLoader, ...inputLoaders],
+          reactComponents
+        );
+
         const editPage = typescript.createTemplate(
           {
             COMPONENT_NAME: new TypescriptStringReplacement(editPageName),
-            GET_EDIT_BY_ID_QUERY: editQueryInfo.hookExpression,
             EDIT_FORM: editFormComponentExpression.wrap(
               (content) =>
-                `<${content} submitData={submitData} initialData={initialData} />`
+                `<${content} submitData={submitData} initialData={initialData} ${inputLoaderExtraProps} />`
             ),
             UPDATE_MUTATION: updateInfo.hookExpression,
             MUTATION_NAME: new TypescriptStringReplacement(
               updateInfo.fieldName
             ),
             FORM_DATA_NAME: formDataExpression,
-            QUERY_FIELD_NAME: new TypescriptStringReplacement(
-              editQueryInfo.fieldName
-            ),
             MODEL_NAME: new TypescriptStringReplacement(
               humanizeCamel(modelName)
             ),
+            DATA_LOADER: editPageLoaderOutput.loader,
+            DATA_GATE: editPageLoaderOutput.gate,
           },
           {
             importMappers: [reactComponents, reactError],

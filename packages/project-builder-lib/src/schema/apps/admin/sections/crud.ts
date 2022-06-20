@@ -29,7 +29,28 @@ export const adminCrudTextInputSchema = z.object({
   validation: z.string().optional(),
 });
 
-export const adminCrudInputSchema = adminCrudTextInputSchema;
+export type AdminCrudTextInputConfig = z.infer<typeof adminCrudTextInputSchema>;
+
+export const adminCrudForeignInputSchema = z.object({
+  type: z.literal('foreign'),
+  label: z.string().min(1),
+  localRelationName: z.string().min(1),
+  labelExpression: z.string().min(1),
+  valueExpression: z.string().min(1),
+  defaultLabel: z.string().optional(),
+});
+
+export type AdminCrudForeignInputConfig = z.infer<
+  typeof adminCrudForeignInputSchema
+>;
+
+export const adminCrudInputSchema = z.discriminatedUnion('type', [
+  adminCrudForeignInputSchema,
+  adminCrudTextInputSchema,
+]);
+
+export const adminCrudInputTypes =
+  adminCrudInputSchema.validDiscriminatorValues as string[];
 
 export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 
@@ -80,8 +101,16 @@ export function buildAdminCrudSectionReferences(
           key: `${config.modelName}#${field.modelField || ''}`,
         });
         break;
+      case 'foreign':
+        fieldBuilder.addReference('localRelationName', {
+          category: 'modelLocalRelation',
+          key: `${config.modelName}#${field.localRelationName || ''}`,
+        });
+        break;
       default:
-        throw new Error(`Unknown input type: ${field.type as string}`);
+        throw new Error(
+          `Unknown input type: ${(field as { type: string }).type}`
+        );
     }
   });
 }

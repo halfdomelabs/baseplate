@@ -15,6 +15,8 @@ import { reactRoutesProvider } from '@src/providers/routes';
 import { lowerCaseFirst } from '@src/utils/case';
 import {
   GraphQLField,
+  GraphQLFragment,
+  GraphQLRoot,
   renderGraphQLFragment,
   renderGraphQLRoot,
 } from '@src/writers/graphql';
@@ -47,6 +49,8 @@ export interface AdminCrudQueriesProvider {
   getUpdateHookInfo: () => ApolloHookInfo;
   getDeleteHookInfo: () => ApolloHookInfo;
   getListDocumentExpression: () => TypescriptCodeExpression;
+  addRoot: (root: GraphQLRoot) => void;
+  addFragment: (fragment: GraphQLFragment) => void;
 }
 
 export const adminCrudQueriesProvider =
@@ -99,6 +103,8 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
       };
     }
 
+    const queries: string[] = [];
+
     return {
       getProviders: () => ({
         adminCrudQueries: {
@@ -139,10 +145,15 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
           },
           getListDocumentExpression: () =>
             getGeneratedImport(`${listQueryName}Document`),
+          addFragment: (fragment) => {
+            queries.push(renderGraphQLFragment(fragment));
+          },
+          addRoot: (root) => {
+            queries.push(renderGraphQLRoot(root));
+          },
         },
       }),
       build: async (builder) => {
-        const queries: string[] = [];
         if (config.rowFields.length) {
           // create fragment and query
           queries.push(

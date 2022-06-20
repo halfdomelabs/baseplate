@@ -5,6 +5,8 @@ import { useToast } from '%react-components/useToast';
 import { useNavigate } from 'react-router-dom';
 
 function COMPONENT_NAME(): JSX.Element {
+  DATA_LOADER;
+
   const [MUTATION_NAME] = CREATE_MUTATION({
     refetchQueries: [{ query: REFETCH_DOCUMENT }],
   });
@@ -20,13 +22,15 @@ function COMPONENT_NAME(): JSX.Element {
     navigate('..');
   };
 
+  DATA_GATE;
+
   return (
     <div className="space-y-4">
       <h1 className="flex space-x-2">
         <BackButton />
         <span>Create New MODEL_NAME</span>
       </h1>
-      <EDIT_FORM submitData={submitData} />
+      <EDIT_FORM />
     </div>
   );
 }

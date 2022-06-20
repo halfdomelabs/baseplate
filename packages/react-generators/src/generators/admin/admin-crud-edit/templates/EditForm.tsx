@@ -11,12 +11,14 @@ interface Props {
   className?: string;
   initialData?: Partial<FORM_DATA_NAME>;
   submitData: (data: FORM_DATA_NAME) => Promise<void>;
+  EXTRA_PROPS;
 }
 
 function COMPONENT_NAME({
   className,
   initialData,
   submitData,
+  EXTRA_PROP_SPREAD,
 }: Props): JSX.Element {
   const { handleSubmit, control } = useForm<FORM_DATA_NAME>({
     resolver: zodResolver(EDIT_SCHEMA),
@@ -35,6 +37,8 @@ function COMPONENT_NAME({
       setIsUpdating(false);
     }
   };
+
+  HEADER;
 
   return (
     <div className={className}>
