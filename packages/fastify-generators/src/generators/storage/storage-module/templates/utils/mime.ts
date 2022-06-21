@@ -15,7 +15,7 @@ export function validateFileExtensionWithMimeType(
   if (!extensions) {
     throw new Error(`Invalid mime type ${mimeType}`);
   }
-  const extension = extname(fileName).substring(1);
+  const extension = extname(fileName).substring(1).toLowerCase();
   if (!extensions.includes(extension)) {
     throw new Error(
       `File extension ${extension} does not match mime type ${mimeType}`
