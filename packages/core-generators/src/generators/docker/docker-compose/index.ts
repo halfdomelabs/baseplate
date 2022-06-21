@@ -69,7 +69,8 @@ ${volumeEntries.join('\n')}`.trim();
           `${`
 version: '3.9'
 
-${entries.join('\n')}`.trim()}\n`
+${entries.join('\n')}`.trim()}\n`,
+          { shouldFormat: true }
         );
 
         builder.writeFile(

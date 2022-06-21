@@ -3,6 +3,7 @@ import {
   ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
+  prettierProvider,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -62,6 +63,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
     reactApp: reactAppProvider,
     eslint: eslintProvider,
+    prettier: prettierProvider,
   },
   exports: {
     reactApolloSetup: reactApolloSetupProvider,
@@ -69,7 +71,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { devApiEndpoint, schemaLocation },
-    { node, reactConfig, typescript, reactApp, eslint }
+    { node, reactConfig, typescript, reactApp, eslint, prettier }
   ) {
     const links: ApolloLink[] = [];
     const gqlFiles: string[] = [];
@@ -132,6 +134,8 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     eslint
       .getConfig()
       .appendUnique('eslintIgnore', ['src/generated/graphql.tsx']);
+
+    prettier.addPrettierIgnore('src/generated/graphql.tsx');
 
     return {
       getProviders: () => ({

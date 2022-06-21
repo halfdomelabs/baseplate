@@ -10,7 +10,7 @@ export const writeJsonAction = createBuilderActionCreator(
   (options: Options) => (builder) => {
     const { destination, contents, noFormat } = options;
 
-    const jsonString = JSON.stringify(contents, null, 2);
+    const jsonString = `${JSON.stringify(contents, null, 2)}\n`;
 
     builder.writeFile(destination, jsonString, {
       shouldFormat: !noFormat,

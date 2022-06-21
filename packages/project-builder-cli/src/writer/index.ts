@@ -23,7 +23,7 @@ async function writeFileEntry(
     }
   }
   await fs.ensureDir(path.dirname(filePath));
-  await fs.writeFile(filePath, jsonContent);
+  await fs.writeFile(filePath, `${jsonContent}\n`);
   return true;
 }
 

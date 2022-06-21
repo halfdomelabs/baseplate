@@ -12,3 +12,4 @@ export {
 export { eslintProvider, EslintProvider } from './eslint';
 export { tsUtilsProvider, TsUtilsProvider } from './ts-utils';
 export { jestProvider, JestProvider } from './jest';
+export { prettierProvider, PrettierProvider } from './prettier';

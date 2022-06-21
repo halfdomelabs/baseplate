@@ -2,6 +2,7 @@ import {
   eslintProvider,
   ImportMapper,
   nodeProvider,
+  prettierProvider,
   tsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -89,6 +90,7 @@ const NexusGenerator = createGeneratorWithChildren({
     eslint: eslintProvider,
     errorHandlerService: errorHandlerServiceProvider,
     serviceContextSetup: serviceContextSetupProvider,
+    prettier: prettierProvider,
   },
   exports: {
     nexusSetup: nexusSetupProvider,
@@ -108,6 +110,7 @@ const NexusGenerator = createGeneratorWithChildren({
       fastifyOutput,
       eslint,
       errorHandlerService,
+      prettier,
     }
   ) {
     const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
@@ -194,6 +197,8 @@ const NexusGenerator = createGeneratorWithChildren({
 
     // ignore nexus typegen file
     eslint.getConfig().appendUnique('eslintIgnore', ['src/nexus-typegen.ts']);
+    prettier.addPrettierIgnore('/src/nexus-typegen.ts');
+    prettier.addPrettierIgnore('/schema.graphql');
 
     const schemaFiles: string[] = [];
 

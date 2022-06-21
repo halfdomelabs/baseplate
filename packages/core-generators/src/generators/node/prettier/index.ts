@@ -27,6 +27,7 @@ interface PrettierConfig {
 
 export interface PrettierProvider {
   getConfig(): PrettierConfig;
+  addPrettierIgnore(path: string): void;
 }
 
 export const prettierProvider =
@@ -87,6 +88,13 @@ const PrettierGenerator = createGeneratorWithChildren({
       singleQuote: descriptor.singleQuote,
       trailingComma: descriptor.trailingComma,
     };
+    const prettierIgnore: string[] = [
+      '/coverage',
+      '/dist',
+      '/lib',
+      '/node_modules',
+      '/baseplate',
+    ];
     return {
       getProviders: () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -128,11 +136,19 @@ const PrettierGenerator = createGeneratorWithChildren({
           },
           prettier: {
             getConfig: () => prettierConfig,
+            addPrettierIgnore(ignorePath) {
+              prettierIgnore.push(ignorePath);
+            },
           },
         };
       },
       build: async (builder) => {
         node.addDevPackage('prettier', PRETTIER_VERSION);
+
+        node.addScripts({
+          'prettier:check': 'prettier --check .',
+          'prettier:format': 'prettier -w .',
+        });
 
         await builder.apply(
           writeJsonAction({
@@ -140,6 +156,8 @@ const PrettierGenerator = createGeneratorWithChildren({
             contents: prettierConfig,
           })
         );
+
+        builder.writeFile('.prettierignore', `${prettierIgnore.join('\n')}\n`);
       },
     };
   },
