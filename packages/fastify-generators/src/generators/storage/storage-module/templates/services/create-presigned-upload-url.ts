@@ -105,7 +105,7 @@ export async function createPresignedUploadUrl(
   });
 
   const result = await adapter.createPresignedUploadUrl({
-    path: `${fileCategory.name}/${nanoid(12)}/${cleanedFileName}`,
+    path,
     minFileSize: fileCategory.minFileSize,
     maxFileSize: fileCategory.maxFileSize,
     contentType,
