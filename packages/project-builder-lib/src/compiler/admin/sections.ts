@@ -119,6 +119,7 @@ export function compileAdminCrudSection(
       $section: {
         generator: '@baseplate/react/admin/admin-crud-section',
         modelName: crudSection.modelName,
+        disableCreate: crudSection.disableCreate,
         children: {
           edit: {
             children: {

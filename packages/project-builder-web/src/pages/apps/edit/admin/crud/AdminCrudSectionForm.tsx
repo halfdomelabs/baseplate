@@ -2,6 +2,7 @@ import { AdminCrudSectionConfig } from '@baseplate/project-builder-lib';
 import classNames from 'classnames';
 import { Control } from 'react-hook-form';
 import { SelectInput } from 'src/components';
+import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import CrudFormFieldsForm from './CrudFormFieldsForm';
 import CrudTableColumnsForm from './CrudTableColumnsForm';
@@ -26,6 +27,11 @@ function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
         control={control}
         options={modelOptions}
         name="modelName"
+      />
+      <CheckedInput.LabelledController
+        label="Disable Create?"
+        control={control}
+        name="disableCreate"
       />
       <h2>Table</h2>
       <CrudTableColumnsForm control={control} />

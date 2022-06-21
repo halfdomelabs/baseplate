@@ -69,6 +69,7 @@ export const adminCrudSectionSchema = z.object({
   ...baseAdminSectionValidators,
   type: z.literal('crud'),
   modelName: z.string().min(1),
+  disableCreate: z.boolean().optional(),
   table: z.object({
     columns: z.array(adminCrudTableColumnSchema),
   }),

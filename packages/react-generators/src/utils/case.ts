@@ -1,4 +1,4 @@
-import { dasherize, humanize, underscore } from 'inflection';
+import { dasherize, humanize, titleize, underscore } from 'inflection';
 
 export function lowerCaseFirst(str: string): string {
   if (!str.length) {
@@ -17,6 +17,11 @@ export function upperCaseFirst(str: string): string {
 export function humanizeCamel(str: string, lowerFirst?: boolean): string {
   return humanize(underscore(str), lowerFirst);
 }
+
 export function dasherizeCamel(str: string): string {
   return dasherize(underscore(lowerCaseFirst(str)));
+}
+
+export function titleizeCamel(str: string): string {
+  return titleize(underscore(str));
 }

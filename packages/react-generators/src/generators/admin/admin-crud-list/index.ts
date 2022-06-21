@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactErrorProvider } from '@src/generators/core/react-error';
 import { reactRoutesProvider } from '@src/providers/routes';
-import { humanizeCamel } from '@src/utils/case';
+import { humanizeCamel, titleizeCamel } from '@src/utils/case';
 import { createRouteElement } from '@src/utils/routes';
 import { mergeGraphQLFields } from '@src/writers/graphql';
 import { adminCrudQueriesProvider } from '../admin-crud-queries';
@@ -23,6 +23,7 @@ import { adminCrudTableColumnSchema, ADMIN_CRUD_RENDERERS } from './renderers';
 const descriptorSchema = z.object({
   modelName: z.string(),
   columns: z.array(adminCrudTableColumnSchema),
+  disableCreate: z.boolean().optional(),
 });
 
 export type AdminCrudListProvider = unknown;
@@ -44,7 +45,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
     adminCrudList: adminCrudListProvider,
   },
   createGenerator(
-    { modelName, columns },
+    { modelName, columns, disableCreate },
     { typescript, adminCrudQueries, reactRoutes, reactComponents, reactError }
   ) {
     const [listPageImport, listPagePath] = makeImportAndFilePath(
@@ -91,14 +92,27 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
             PLURAL_MODEL: new TypescriptStringReplacement(
               humanizeCamel(pluralize(modelName))
             ),
-            MODEL_NAME: new TypescriptStringReplacement(
-              humanizeCamel(modelName, true)
-            ),
             TABLE_COMPONENT: new TypescriptCodeExpression(
               `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} />`,
               `import ${tableComponentName} from '${tableComponentImport}'`
             ),
             REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),
+            CREATE_BUTTON: disableCreate
+              ? // TODO: Fix up
+                TypescriptCodeUtils.createExpression('<div />')
+              : TypescriptCodeUtils.createExpression(
+                  `
+            <div className="block">
+            <Link to="new">
+              <Button>Create ${titleizeCamel(modelName)}</Button>
+            </Link>
+          </div>`,
+                  [
+                    "import { Link } from 'react-router-dom';",
+                    "import { Button, ErrorableLoader } from '%react-components';",
+                  ],
+                  { importMappers: [reactComponents] }
+                ),
           },
           {
             importMappers: [reactComponents, reactError],

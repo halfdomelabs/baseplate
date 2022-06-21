@@ -28,6 +28,7 @@ import { adminCrudQueriesProvider } from '../admin-crud-queries';
 
 const descriptorSchema = z.object({
   modelName: z.string(),
+  disableCreate: z.boolean().optional(),
 });
 
 export type AdminCrudEditProvider = unknown;
@@ -54,7 +55,7 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
     adminCrudInputContainer: adminCrudInputContainerProvider,
   },
   createGenerator(
-    { modelName },
+    { modelName, disableCreate },
     { typescript, adminCrudQueries, reactRoutes, reactComponents, reactError }
   ) {
     const [editSchemaImport, editSchemaPath] = makeImportAndFilePath(
@@ -97,10 +98,6 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
       `${reactRoutes.getDirectoryBase()}/edit/create.page.tsx`
     );
     const createPageName = `${modelName}CreatePage`;
-    reactRoutes.registerRoute({
-      path: 'new',
-      element: createRouteElement(createPageName, createPageImport),
-    });
 
     const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
     const createInfo = adminCrudQueries.getCreateHookInfo();
@@ -210,32 +207,39 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
           reactComponents
         );
 
-        const createPage = typescript.createTemplate(
-          {
-            COMPONENT_NAME: new TypescriptStringReplacement(createPageName),
-            EDIT_FORM: editFormComponentExpression.wrap(
-              (content) =>
-                `<${content} submitData={submitData} ${inputLoaderExtraProps} />`
-            ),
-            CREATE_MUTATION: createInfo.hookExpression,
-            MUTATION_NAME: new TypescriptStringReplacement(
-              createInfo.fieldName
-            ),
-            FORM_DATA_NAME: formDataExpression,
-            MODEL_NAME: new TypescriptStringReplacement(
-              humanizeCamel(modelName)
-            ),
-            REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),
-            DATA_LOADER: createLoaderOutput.loader,
-            DATA_GATE: createLoaderOutput.gate,
-          },
-          {
-            importMappers: [reactComponents, reactError],
-          }
-        );
-        await builder.apply(
-          createPage.renderToAction('create.page.tsx', createPagePath)
-        );
+        if (!disableCreate) {
+          const createPage = typescript.createTemplate(
+            {
+              COMPONENT_NAME: new TypescriptStringReplacement(createPageName),
+              EDIT_FORM: editFormComponentExpression.wrap(
+                (content) =>
+                  `<${content} submitData={submitData} ${inputLoaderExtraProps} />`
+              ),
+              CREATE_MUTATION: createInfo.hookExpression,
+              MUTATION_NAME: new TypescriptStringReplacement(
+                createInfo.fieldName
+              ),
+              FORM_DATA_NAME: formDataExpression,
+              MODEL_NAME: new TypescriptStringReplacement(
+                humanizeCamel(modelName)
+              ),
+              REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),
+              DATA_LOADER: createLoaderOutput.loader,
+              DATA_GATE: createLoaderOutput.gate,
+            },
+            {
+              importMappers: [reactComponents, reactError],
+            }
+          );
+          await builder.apply(
+            createPage.renderToAction('create.page.tsx', createPagePath)
+          );
+
+          reactRoutes.registerRoute({
+            path: 'new',
+            element: createRouteElement(createPageName, createPageImport),
+          });
+        }
 
         const editPageLoader: DataLoader = {
           loader: TypescriptCodeUtils.formatBlock(

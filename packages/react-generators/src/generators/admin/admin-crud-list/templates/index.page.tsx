@@ -1,7 +1,6 @@
 // @ts-nocheck
 
-import { Link } from 'react-router-dom';
-import { Button, ErrorableLoader } from '%react-components';
+import { ErrorableLoader } from '%react-components';
 
 function PAGE_NAME(): JSX.Element {
   const { data, error } = GET_ITEM_QUERY();
@@ -18,11 +17,7 @@ function PAGE_NAME(): JSX.Element {
   return (
     <div className="space-y-4">
       <h1>PLURAL_MODEL</h1>
-      <div className="block">
-        <Link to="new">
-          <Button>Create MODEL_NAME</Button>
-        </Link>
-      </div>
+      <CREATE_BUTTON />
       {!data ? <ErrorableLoader error={error} /> : <TABLE_COMPONENT />}
     </div>
   );
