@@ -160,7 +160,7 @@ export function compileAdminSections(
 function compileAdminFeatureRecursive(
   featurePath: string,
   builder: AppEntryBuilder<AdminAppConfig>
-): unknown | null {
+): unknown {
   const { projectConfig, parsedProject } = builder;
   const descriptorLocation = `${featurePath}/root`;
   const featureName = featurePath.split('/').pop();
@@ -177,7 +177,7 @@ function compileAdminFeatureRecursive(
   const sectionDescriptors = compileAdminSections(featurePath, builder);
 
   if (!subDescriptors.length && !sectionDescriptors) {
-    return null;
+    return undefined;
   }
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
