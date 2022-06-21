@@ -98,8 +98,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
             ),
             REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),
             CREATE_BUTTON: disableCreate
-              ? // TODO: Fix up
-                TypescriptCodeUtils.createExpression('<div />')
+              ? TypescriptCodeUtils.createExpression('')
               : TypescriptCodeUtils.createExpression(
                   `
             <div className="block">
