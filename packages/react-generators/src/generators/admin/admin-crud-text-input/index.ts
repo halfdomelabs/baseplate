@@ -8,6 +8,7 @@ const descriptorSchema = z.object({
   label: z.string().min(1),
   modelField: z.string().min(1),
   validation: z.string().min(1),
+  isCheckbox: z.boolean().optional(),
 });
 
 const AdminCrudTextInputGenerator = createGeneratorWithChildren({
@@ -18,17 +19,18 @@ const AdminCrudTextInputGenerator = createGeneratorWithChildren({
     reactComponents: reactComponentsProvider,
   },
   createGenerator(
-    { label, modelField, validation },
+    { label, modelField, validation, isCheckbox },
     { adminCrudInputContainer, reactComponents }
   ) {
+    const inputType = isCheckbox ? 'CheckedInput' : 'TextInput';
     adminCrudInputContainer.addInput({
       content: TypescriptCodeUtils.createExpression(
-        `<TextInput.LabelledController
+        `<${inputType}.LabelledController
           label="${label}"
           control={control}
           name="${modelField}"
         />`,
-        'import { TextInput } from "%react-components"',
+        `import { ${inputType} } from "%react-components"`,
         { importMappers: [reactComponents] }
       ),
       graphQLFields: [{ name: modelField }],

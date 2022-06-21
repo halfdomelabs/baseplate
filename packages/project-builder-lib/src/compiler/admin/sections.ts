@@ -4,6 +4,7 @@ import {
   AdminCrudForeignInputConfig,
   AdminCrudInputConfig,
   AdminCrudSectionConfig,
+  AdminCrudTextInputConfig,
 } from '@src/schema';
 import { notEmpty } from '@src/utils/array';
 import { AppEntryBuilder } from '../appEntryBuilder';
@@ -77,6 +78,34 @@ function compileAdminForeignInput(
   };
 }
 
+function compileAdminCrudTextInput(
+  field: AdminCrudTextInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>
+): unknown {
+  const model = builder.parsedProject.getModelByName(modelName);
+  const fieldConfig = model.model.fields.find(
+    (f) => f.name === field.modelField
+  );
+  if (!fieldConfig) {
+    throw new Error(`Admin enum input ${field.modelField} cannot be found`);
+  }
+  return {
+    name: field.modelField,
+    generator: '@baseplate/react/admin/admin-crud-text-input',
+    label: field.label,
+    modelField: field.modelField,
+    isCheckbox: fieldConfig.type === 'boolean',
+    validation:
+      field.validation ||
+      builder.parsedProject.getModelFieldValidation(
+        modelName,
+        field.modelField,
+        true
+      ),
+  };
+}
+
 function compileAdminCrudInput(
   field: AdminCrudInputConfig,
   modelName: string,
@@ -88,19 +117,7 @@ function compileAdminCrudInput(
     case 'enum':
       return compileAdminEnumInput(field, modelName, builder);
     case 'text':
-      return {
-        name: field.modelField,
-        generator: '@baseplate/react/admin/admin-crud-text-input',
-        label: field.label,
-        modelField: field.modelField,
-        validation:
-          field.validation ||
-          builder.parsedProject.getModelFieldValidation(
-            modelName,
-            field.modelField,
-            true
-          ),
-      };
+      return compileAdminCrudTextInput(field, modelName, builder);
     default:
       throw new Error(
         `Unknown admin crud input ${(field as { type: string }).type}`
