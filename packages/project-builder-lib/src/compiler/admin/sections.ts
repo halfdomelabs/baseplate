@@ -5,6 +5,7 @@ import {
   AdminCrudInputConfig,
   AdminCrudSectionConfig,
 } from '@src/schema';
+import { notEmpty } from '@src/utils/array';
 import { AppEntryBuilder } from '../appEntryBuilder';
 
 function compileAdminEnumInput(
@@ -170,9 +171,11 @@ function compileAdminFeatureRecursive(
       f.name.startsWith(`${featurePath}/`)
     ) || [];
 
-  const subDescriptors = subFeatures.flatMap((subFeature) =>
-    compileAdminFeatureRecursive(subFeature.name, builder)
-  );
+  const subDescriptors = subFeatures
+    .flatMap((subFeature) =>
+      compileAdminFeatureRecursive(subFeature.name, builder)
+    )
+    .filter(notEmpty);
 
   const sectionDescriptors = compileAdminSections(featurePath, builder);
 
