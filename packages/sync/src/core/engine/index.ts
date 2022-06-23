@@ -38,8 +38,9 @@ export class GeneratorEngine {
 
   async writeOutput(
     output: GeneratorOutput,
-    outputDirectory: string
+    outputDirectory: string,
+    cleanDirectory?: string
   ): Promise<void> {
-    await writeGeneratorOutput(output, outputDirectory);
+    await writeGeneratorOutput(output, outputDirectory, cleanDirectory);
   }
 }

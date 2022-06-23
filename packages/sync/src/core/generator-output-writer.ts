@@ -3,6 +3,7 @@ import path from 'path';
 import { promisify } from 'util';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import pLimit from 'p-limit';
 import R from 'ramda';
 import { logToConsole } from '@src/utils/logger';
 import { mergeStrings } from '@src/utils/merge';
@@ -61,6 +62,8 @@ interface ModifiedWriteFileResult {
 
 interface SkippedWriteFileResult {
   type: 'skipped';
+  originalPath: string;
+  contents: string | Buffer;
 }
 
 type WriteFileResult = ModifiedWriteFileResult | SkippedWriteFileResult;
@@ -72,16 +75,16 @@ async function writeFile(
 ): Promise<WriteFileResult> {
   // if file exists and we never overwrite, return false
   const { options, contents, formatter } = data;
-  if (options?.neverOverwrite) {
-    const fileExists = await fs.pathExists(filePath);
-    if (fileExists) {
-      return { type: 'skipped' };
-    }
-  }
 
   if (contents instanceof Buffer) {
     if (formatter) {
       throw new Error(`Cannot format Buffer contents for ${filePath}`);
+    }
+    if (options?.neverOverwrite) {
+      const fileExists = await fs.pathExists(filePath);
+      if (fileExists) {
+        return { type: 'skipped', contents, originalPath };
+      }
     }
 
     // we don't attempt 3-way merge on Buffer contents
@@ -90,7 +93,7 @@ async function writeFile(
     if (pathExists) {
       const existingContents = await fs.readFile(filePath);
       if (contents.equals(existingContents)) {
-        return { type: 'skipped' };
+        return { type: 'skipped', contents, originalPath };
       }
     }
     return { type: 'modified', path: filePath, contents, originalPath };
@@ -105,6 +108,14 @@ async function writeFile(
       throw err;
     }
   }
+
+  if (options?.neverOverwrite) {
+    const fileExists = await fs.pathExists(filePath);
+    if (fileExists) {
+      return { type: 'skipped', contents: formattedContents, originalPath };
+    }
+  }
+
   // check if we need to do a 3-way merge
   const cleanContents = options?.cleanContents;
 
@@ -116,7 +127,7 @@ async function writeFile(
   );
   // if there's no merge result, existing contents matches new contents so no modification is required
   if (!mergeResult) {
-    return { type: 'skipped' };
+    return { type: 'skipped', contents: formattedContents, originalPath };
   }
   const { contents: mergedContents, hasConflict } = mergeResult;
 
@@ -144,7 +155,8 @@ function getNodePrefix(): string {
 
 export async function writeGeneratorOutput(
   output: GeneratorOutput,
-  outputDirectory: string
+  outputDirectory: string,
+  cleanDirectory?: string
 ): Promise<void> {
   // write files
   const filenames = Object.keys(output.files);
@@ -168,16 +180,41 @@ export async function writeGeneratorOutput(
   const conflictFilenames: string[] = modifiedFiles
     .filter((result) => result.hasConflict)
     .map((result) => result.originalPath);
-  // TODO: parallelize?
-  for (const modifiedFile of modifiedFiles) {
-    await fs.ensureDir(path.dirname(modifiedFile.path));
-    if (modifiedFile.contents instanceof Buffer) {
-      await fs.writeFile(modifiedFile.path, modifiedFile.contents);
-    } else {
-      await fs.writeFile(modifiedFile.path, modifiedFile.contents, {
-        encoding: 'utf-8',
-      });
-    }
+
+  const writeLimit = pLimit(10);
+
+  await Promise.all(
+    modifiedFiles.map((modifiedFile) =>
+      writeLimit(async () => {
+        await fs.ensureDir(path.dirname(modifiedFile.path));
+        if (modifiedFile.contents instanceof Buffer) {
+          await fs.writeFile(modifiedFile.path, modifiedFile.contents);
+        } else {
+          await fs.writeFile(modifiedFile.path, modifiedFile.contents, {
+            encoding: 'utf-8',
+          });
+        }
+      })
+    )
+  );
+
+  // Write clean directory
+  if (cleanDirectory) {
+    await Promise.all(
+      fileResults.map((fileResult) =>
+        writeLimit(async () => {
+          const cleanPath = path.join(cleanDirectory, fileResult.originalPath);
+          await fs.ensureDir(path.dirname(cleanPath));
+          if (fileResult.contents instanceof Buffer) {
+            await fs.writeFile(cleanPath, fileResult.contents);
+          } else {
+            await fs.writeFile(cleanPath, fileResult.contents, {
+              encoding: 'utf-8',
+            });
+          }
+        })
+      )
+    );
   }
 
   if (conflictFilenames.length) {

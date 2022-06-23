@@ -20,6 +20,8 @@ beforeEach(() => {
   vol.reset();
 });
 
+// TODO: Add tests for clean folder
+
 describe('writeGeneratorOutput', () => {
   it('should write nothing with a blank output', async () => {
     await writeGeneratorOutput({ files: {}, postWriteCommands: [] }, '/root');

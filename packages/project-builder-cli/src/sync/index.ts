@@ -50,109 +50,97 @@ export async function generateForDirectory(
   const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
 
   if (!cleanDirectoryExists) {
-    await engine.writeOutput(output, projectDirectory);
+    await engine.writeOutput(output, projectDirectory, cleanDirectory);
   } else {
     console.log(
       'Detected project clean folder. Attempting 3-way mediocre-merge...'
     );
+    const cleanTmpDirectory = path.join(
+      projectDirectory,
+      'baseplate/.clean_tmp'
+    );
 
-    // load clean directory contents
-    const files = await globby('**/*', { cwd: cleanDirectory, dot: true });
-    const cleanProjectFiles: { filePath: string; contents: string }[] =
-      await Promise.all(
-        files.map(async (filePath) => {
-          const contents = await fs.readFile(
-            path.join(cleanDirectory, filePath),
-            'utf8'
-          );
-          return {
-            filePath,
-            contents,
-          };
-        })
+    try {
+      // load clean directory contents
+      const files = await globby('**/*', { cwd: cleanDirectory, dot: true });
+      const cleanProjectFiles: { filePath: string; contents: string }[] =
+        await Promise.all(
+          files.map(async (filePath) => {
+            const contents = await fs.readFile(
+              path.join(cleanDirectory, filePath),
+              'utf8'
+            );
+            return {
+              filePath,
+              contents,
+            };
+          })
+        );
+
+      const augmentedOutput = {
+        ...output,
+        files: R.mergeAll(
+          Object.entries(output.files).map(
+            ([filePath, data]): Record<string, FileData> => {
+              const cleanFile = cleanProjectFiles.find(
+                (f) => f.filePath === filePath
+              );
+
+              return {
+                [filePath]: {
+                  ...data,
+                  options: {
+                    ...data.options,
+                    cleanContents: cleanFile?.contents,
+                  },
+                },
+              };
+            }
+          )
+        ),
+      };
+
+      await engine.writeOutput(
+        augmentedOutput,
+        projectDirectory,
+        cleanTmpDirectory
       );
 
-    const augmentedOutput = {
-      ...output,
-      files: R.mergeAll(
-        Object.entries(output.files).map(
-          ([filePath, data]): Record<string, FileData> => {
-            const cleanFile = cleanProjectFiles.find(
-              (f) => f.filePath === filePath
-            );
+      // swap out clean directory with clean_tmp
+      await fs.rm(cleanDirectory, { recursive: true });
+      await fs.move(cleanTmpDirectory, cleanDirectory);
 
-            return {
-              [filePath]: {
-                ...data,
-                options: {
-                  ...data.options,
-                  cleanContents: cleanFile?.contents,
-                },
-              },
-            };
+      // find deleted files
+      const deletedCleanFiles = cleanProjectFiles.filter(
+        (f) => !output.files[f.filePath]
+      );
+
+      await Promise.all(
+        deletedCleanFiles.map(async (file) => {
+          const pathToDelete = path.join(projectDirectory, file.filePath);
+          const pathExists = await fs.pathExists(pathToDelete);
+          if (!pathExists) {
+            return;
           }
-        )
-      ),
-    };
-
-    await engine.writeOutput(augmentedOutput, projectDirectory);
-
-    // find deleted files
-    const deletedCleanFiles = cleanProjectFiles.filter(
-      (f) => !output.files[f.filePath]
-    );
-
-    await Promise.all(
-      deletedCleanFiles.map(async (file) => {
-        const pathToDelete = path.join(projectDirectory, file.filePath);
-        const pathExists = await fs.pathExists(pathToDelete);
-        if (!pathExists) {
-          return;
-        }
-        // TODO: Support binary support for files here
-        const existingContents = await fs.readFile(pathToDelete, 'utf-8');
-        if (existingContents === file.contents) {
-          console.log(`Deleting ${file.filePath}...`);
-          await fs.remove(pathToDelete);
-        } else {
-          console.log(
-            chalk.red(`${file.filePath} has been modified. Skipping delete.`)
-          );
-        }
-      })
-    );
+          // TODO: Support binary support for files here
+          const existingContents = await fs.readFile(pathToDelete, 'utf-8');
+          if (existingContents === file.contents) {
+            console.log(`Deleting ${file.filePath}...`);
+            await fs.remove(pathToDelete);
+          } else {
+            console.log(
+              chalk.red(`${file.filePath} has been modified. Skipping delete.`)
+            );
+          }
+        })
+      );
+    } finally {
+      // attempt to remove any temporary directory
+      await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {});
+    }
   }
 
   console.log('Project successfully generated!');
-
-  console.log('Generating clean project...');
-
-  if (cleanDirectoryExists) {
-    await fs.rm(cleanDirectory, { recursive: true });
-  }
-
-  console.log(`Generating clean project ${name} in ${cleanDirectory}...`);
-
-  // strip out any post write commands
-  await engine.writeOutput(
-    {
-      ...output,
-      files: R.mergeAll(
-        Object.entries(output.files).map(([filePath, file]) => {
-          // reject any files that are buffers since we can't merge them
-          if (file.contents instanceof Buffer) {
-            return {};
-          }
-          return {
-            [filePath]: file,
-          };
-        })
-      ),
-      postWriteCommands: [],
-    },
-    cleanDirectory
-  );
-  console.log('Project successfully written to clean project!');
 }
 
 export async function generateCleanAppForDirectory(
