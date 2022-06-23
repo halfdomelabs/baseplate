@@ -92,6 +92,7 @@ const PrettierGenerator = createGeneratorWithChildren({
       '/coverage',
       '/dist',
       '/lib',
+      '/build',
       '/node_modules',
       '/baseplate',
     ];

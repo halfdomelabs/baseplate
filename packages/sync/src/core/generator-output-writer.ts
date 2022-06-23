@@ -35,12 +35,16 @@ async function mergeContents(
   // TODO: HACK: Can create an option for this in the future
   // Necessary because package.json files are not formatted using a provided formatter
   if (filePath.endsWith('/package.json')) {
-    if (
-      R.equals(JSON.parse(existingContents), JSON.parse(newContents)) ||
-      (cleanContents &&
-        R.equals(JSON.parse(cleanContents), JSON.parse(newContents)))
-    ) {
-      return null;
+    try {
+      if (
+        R.equals(JSON.parse(existingContents), JSON.parse(newContents)) ||
+        (cleanContents &&
+          R.equals(JSON.parse(cleanContents), JSON.parse(newContents)))
+      ) {
+        return null;
+      }
+    } catch (err) {
+      throw new Error(`Error parsing JSON: ${filePath}`);
     }
   } else if (
     existingContents === newContents ||
@@ -56,6 +60,7 @@ interface ModifiedWriteFileResult {
   type: 'modified';
   path: string;
   contents: string | Buffer;
+  cleanContents: string | Buffer;
   hasConflict?: boolean;
   originalPath: string;
 }
@@ -63,7 +68,7 @@ interface ModifiedWriteFileResult {
 interface SkippedWriteFileResult {
   type: 'skipped';
   originalPath: string;
-  contents: string | Buffer;
+  cleanContents: string | Buffer;
 }
 
 type WriteFileResult = ModifiedWriteFileResult | SkippedWriteFileResult;
@@ -83,7 +88,7 @@ async function writeFile(
     if (options?.neverOverwrite) {
       const fileExists = await fs.pathExists(filePath);
       if (fileExists) {
-        return { type: 'skipped', contents, originalPath };
+        return { type: 'skipped', cleanContents: contents, originalPath };
       }
     }
 
@@ -93,10 +98,16 @@ async function writeFile(
     if (pathExists) {
       const existingContents = await fs.readFile(filePath);
       if (contents.equals(existingContents)) {
-        return { type: 'skipped', contents, originalPath };
+        return { type: 'skipped', cleanContents: contents, originalPath };
       }
     }
-    return { type: 'modified', path: filePath, contents, originalPath };
+    return {
+      type: 'modified',
+      path: filePath,
+      contents,
+      cleanContents: contents,
+      originalPath,
+    };
   }
 
   let formattedContents = contents;
@@ -112,7 +123,11 @@ async function writeFile(
   if (options?.neverOverwrite) {
     const fileExists = await fs.pathExists(filePath);
     if (fileExists) {
-      return { type: 'skipped', contents: formattedContents, originalPath };
+      return {
+        type: 'skipped',
+        cleanContents: formattedContents,
+        originalPath,
+      };
     }
   }
 
@@ -127,7 +142,7 @@ async function writeFile(
   );
   // if there's no merge result, existing contents matches new contents so no modification is required
   if (!mergeResult) {
-    return { type: 'skipped', contents: formattedContents, originalPath };
+    return { type: 'skipped', cleanContents: formattedContents, originalPath };
   }
   const { contents: mergedContents, hasConflict } = mergeResult;
 
@@ -135,6 +150,7 @@ async function writeFile(
     type: 'modified',
     path: filePath,
     contents: mergedContents,
+    cleanContents: formattedContents,
     hasConflict,
     originalPath,
   };
@@ -205,10 +221,10 @@ export async function writeGeneratorOutput(
         writeLimit(async () => {
           const cleanPath = path.join(cleanDirectory, fileResult.originalPath);
           await fs.ensureDir(path.dirname(cleanPath));
-          if (fileResult.contents instanceof Buffer) {
-            await fs.writeFile(cleanPath, fileResult.contents);
+          if (fileResult.cleanContents instanceof Buffer) {
+            await fs.writeFile(cleanPath, fileResult.cleanContents);
           } else {
-            await fs.writeFile(cleanPath, fileResult.contents, {
+            await fs.writeFile(cleanPath, fileResult.cleanContents, {
               encoding: 'utf-8',
             });
           }
