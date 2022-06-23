@@ -220,9 +220,14 @@ export async function writeGeneratorOutput(
         logToConsole(command.command);
       } else {
         logToConsole(`Running ${commandString}...`);
-        await exec(commandString, {
-          cwd: path.join(outputDirectory, workingDirectory),
-        });
+        try {
+          await exec(commandString, {
+            cwd: path.join(outputDirectory, workingDirectory),
+          });
+        } catch (err) {
+          console.error(chalk.red(`Unable to run ${commandString}`));
+          console.error(err);
+        }
       }
     }
   }
