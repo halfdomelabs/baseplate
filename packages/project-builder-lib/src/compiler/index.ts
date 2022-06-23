@@ -5,7 +5,12 @@ import { compileBackend } from './backend';
 import { compileWeb } from './web';
 
 export function compileApplications(projectConfig: ProjectConfig): AppEntry[] {
-  const apps: AppEntry[] = projectConfig.apps.map((app) => {
+  // Compile backend app first since it's likely the dependency for the other apps
+  const appConfigs = [
+    ...projectConfig.apps.filter((app) => app.type === 'backend'),
+    ...projectConfig.apps.filter((app) => app.type !== 'backend'),
+  ];
+  const apps: AppEntry[] = appConfigs.map((app) => {
     switch (app.type) {
       case 'backend':
         return compileBackend(projectConfig, app);
