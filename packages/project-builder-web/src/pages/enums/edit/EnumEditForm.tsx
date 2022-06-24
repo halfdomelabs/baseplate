@@ -3,6 +3,7 @@ import {
   enumSchema,
 } from '@baseplate/project-builder-lib/lib/schema/models/enums';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
@@ -15,10 +16,14 @@ interface Props {
 }
 
 function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: config,
     resolver: zodResolver(enumSchema),
   });
+
+  useEffect(() => {
+    reset(config);
+  }, [config, reset]);
 
   const { parsedProject } = useProjectConfig();
 
