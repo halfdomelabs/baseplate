@@ -1,7 +1,6 @@
 import { randomUid } from '@baseplate/project-builder-lib';
 import { EnumConfig } from '@baseplate/project-builder-lib/lib/schema/models/enums';
 import _ from 'lodash';
-import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -41,7 +40,7 @@ function EnumEditPage(): JSX.Element {
 
   const handleSubmit = (config: EnumConfig): void => {
     try {
-      const uid = randomUid();
+      const uid = config.uid || randomUid();
       setConfigAndFixReferences((oldConfig) => {
         oldConfig.enums = _.sortBy(
           [
