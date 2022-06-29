@@ -112,7 +112,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
     serviceContextSetup.addContextField('auth', {
       type: TypescriptCodeUtils.createExpression(
         'AuthInfo',
-        'import { AuthInfo } from "%auth-plugin";',
+        'import { AuthInfo } from "%auth-info";',
         {
           importMappers: [authPlugin],
         }

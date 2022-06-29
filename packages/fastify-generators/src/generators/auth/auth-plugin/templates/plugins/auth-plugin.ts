@@ -3,10 +3,7 @@ import { FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import { stripBearer } from '../utils/headers';
 import { authService } from '%auth-service';
-
-export interface AuthInfo {
-  AUTH_TYPE;
-}
+import { AuthInfo, createAuthInfoFromUser } from '../utils/auth-info';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -34,6 +31,6 @@ export const authPlugin = fp(async (fastify) => {
 
     HOOK_BODY;
 
-    req.auth = AUTH_OBJECT;
+    req.auth = createAuthInfoFromUser(user, EXTRA_ARGS);
   });
 });

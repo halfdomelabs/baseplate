@@ -102,17 +102,20 @@ const RoleServiceGenerator = createGeneratorWithChildren({
       ),
     });
 
+    const authRolesType = TypescriptCodeUtils.createExpression(
+      `AuthRole[]`,
+      `import {AuthRole} from '${serviceFile.getServiceImport()}'`
+    );
+
     authPlugin.registerAuthField({
       key: 'roles',
       hookBody: serviceFile
         .getServiceExpression()
         .wrap((contents) => `const roles = ${contents}.getRolesForUser(user);`)
         .toBlock(),
+      extraCreateArgs: [{ name: 'roles', type: authRolesType }],
       value: TypescriptCodeUtils.createExpression('roles'),
-      type: TypescriptCodeUtils.createExpression(
-        `AuthRole[]`,
-        `import {AuthRole} from '${serviceFile.getServiceImport()}'`
-      ),
+      type: authRolesType,
     });
 
     authPlugin.registerAuthField({
