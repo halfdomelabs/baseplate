@@ -6,13 +6,12 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
   createNonOverwriteableMap,
+  createProviderType,
 } from '@baseplate/sync';
 import R from 'ramda';
 import { z } from 'zod';
-import { requestContextProvider } from '../request-context';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -20,7 +19,8 @@ const descriptorSchema = z.object({
 
 interface ContextField {
   type: TypescriptCodeExpression;
-  creator: (req: string, reply: string) => TypescriptCodeExpression;
+  value: TypescriptCodeExpression;
+  contextArg?: { name: string; type: TypescriptCodeExpression }[];
 }
 
 export interface ServiceContextSetupProvider extends ImportMapper {
@@ -43,7 +43,6 @@ const ServiceContextGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     typescript: typescriptProvider,
-    requestContext: requestContextProvider,
   },
   exports: {
     serviceContextSetup: serviceContextSetupProvider,
@@ -51,20 +50,10 @@ const ServiceContextGenerator = createGeneratorWithChildren({
       .export()
       .dependsOn(serviceContextSetupProvider),
   },
-  createGenerator(descriptor, { typescript, requestContext }) {
+  createGenerator(descriptor, { typescript }) {
     const contextFieldsMap = createNonOverwriteableMap<
       Record<string, ContextField>
     >({}, { name: 'service-context-fields' });
-
-    contextFieldsMap.set('reqInfo', {
-      type: requestContext.getRequestInfoType(),
-      creator: (req) => new TypescriptCodeExpression(`${req}.reqInfo`),
-    });
-
-    const contextFile = typescript.createTemplate({
-      CONTEXT_FIELDS: { type: 'code-block' },
-      CONTEXT_CREATOR: { type: 'code-expression' },
-    });
 
     const [contextImport, contextPath] = makeImportAndFilePath(
       'src/utils/service-context.ts'
@@ -73,7 +62,7 @@ const ServiceContextGenerator = createGeneratorWithChildren({
     const importMap = {
       '%service-context': {
         path: contextImport,
-        allowedImports: ['ServiceContext', 'createContextFromRequest'],
+        allowedImports: ['ServiceContext', 'createServiceContext'],
       },
     };
 
@@ -94,22 +83,28 @@ const ServiceContextGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const contextFields = contextFieldsMap.value();
 
-        contextFile.addCodeBlock(
-          'CONTEXT_FIELDS',
-          TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-            R.mapObjIndexed((field) => field.type, contextFields)
-          )
+        const contextArgs = Object.values(contextFields).flatMap(
+          (f) => f.contextArg || []
         );
 
-        contextFile.addCodeExpression(
-          'CONTEXT_CREATOR',
-          TypescriptCodeUtils.mergeExpressionsAsObject(
-            R.mapObjIndexed(
-              (field) => field.creator('request', 'reply'),
-              contextFields
-            )
-          )
-        );
+        const contextFile = typescript.createTemplate({
+          CONTEXT_FIELDS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+            R.mapObjIndexed((field) => field.type, contextFields)
+          ),
+          CREATE_CONTEXT_ARGS: TypescriptCodeUtils.mergeExpressions(
+            contextArgs.map((arg) =>
+              arg.type.wrap((contents) => `${arg.name}: ${contents}`)
+            ),
+            '; '
+          ).wrap(
+            (contents) => `
+            {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
+          `
+          ),
+          CONTEXT_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
+            R.mapObjIndexed((field) => field.value, contextFields)
+          ),
+        });
 
         await builder.apply(
           contextFile.renderToAction('service-context.ts', contextPath)

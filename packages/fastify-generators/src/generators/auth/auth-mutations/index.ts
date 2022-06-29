@@ -4,13 +4,13 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
+import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
 import { appModuleProvider } from '@src/generators/core/root-module';
-import { serviceContextProvider } from '@src/generators/core/service-context';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { nexusAuthProvider } from '@src/generators/nexus/nexus-auth';
 import { authServiceProvider } from '../auth-service';
@@ -34,7 +34,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
     configService: configServiceProvider,
     nexusAuth: nexusAuthProvider,
-    serviceContext: serviceContextProvider,
+    requestServiceContext: requestServiceContextProvider,
   },
   exports: {
     authMutations: authMutationsProvider,
@@ -48,7 +48,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
       typescript,
       configService,
       nexusAuth,
-      serviceContext,
+      requestServiceContext,
     }
   ) {
     const appModuleFolder = appModule.getModuleFolder();
@@ -107,7 +107,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
         await builder.apply(
           typescript.createCopyAction({
             source: 'utils/refresh-tokens.ts',
-            importMappers: [configService, nexusSchema, serviceContext],
+            importMappers: [configService, nexusSchema, requestServiceContext],
           })
         );
       },

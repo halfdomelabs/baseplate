@@ -4,13 +4,14 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { authProvider } from '@src/generators/auth/auth';
 import { authPluginProvider } from '@src/generators/auth/auth-plugin';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
+import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
 import { serviceContextSetupProvider } from '@src/generators/core/service-context';
 import { nexusSetupProvider } from '../nexus';
 
@@ -40,6 +41,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
   dependencies: {
     nexusSetup: nexusSetupProvider,
     serviceContextSetup: serviceContextSetupProvider,
+    requestServiceContextSetup: requestServiceContextSetupProvider,
     auth: authProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
@@ -61,6 +63,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       auth,
       authPlugin,
       serviceContextSetup,
+      requestServiceContextSetup,
     }
   ) {
     const nexusAuthorizePluginFile = typescript.createTemplate(
@@ -72,7 +75,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
           auth,
           errorHandlerService,
           nexusSetup,
-          serviceContextSetup,
+          requestServiceContextSetup,
         ],
       }
     );
@@ -109,15 +112,30 @@ const NexusAuthGenerator = createGeneratorWithChildren({
         },
       ]);
 
+    const authInfoType = TypescriptCodeUtils.createExpression(
+      'AuthInfo',
+      'import { AuthInfo } from "%auth-info";',
+      {
+        importMappers: [authPlugin],
+      }
+    );
+
     serviceContextSetup.addContextField('auth', {
-      type: TypescriptCodeUtils.createExpression(
-        'AuthInfo',
-        'import { AuthInfo } from "%auth-info";',
+      type: authInfoType,
+      value: TypescriptCodeUtils.createExpression('auth'),
+      contextArg: [
         {
-          importMappers: [authPlugin],
-        }
-      ),
-      creator: (req) => TypescriptCodeUtils.createExpression(`${req}.auth`),
+          name: 'auth',
+          type: authInfoType,
+        },
+      ],
+    });
+
+    requestServiceContextSetup.addContextPassthrough({
+      name: 'auth',
+      creator(req) {
+        return TypescriptCodeUtils.createExpression(`${req}.auth`);
+      },
     });
 
     return {

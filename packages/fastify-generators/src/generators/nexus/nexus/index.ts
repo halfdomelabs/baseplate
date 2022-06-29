@@ -20,8 +20,8 @@ import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
+import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
 import { rootModuleProvider } from '@src/generators/core/root-module';
-import { serviceContextSetupProvider } from '@src/generators/core/service-context';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition';
 import {
@@ -89,7 +89,7 @@ const NexusGenerator = createGeneratorWithChildren({
     fastifyOutput: fastifyOutputProvider,
     eslint: eslintProvider,
     errorHandlerService: errorHandlerServiceProvider,
-    serviceContextSetup: serviceContextSetupProvider,
+    requestServiceContextSetup: requestServiceContextSetupProvider,
     prettier: prettierProvider,
   },
   exports: {
@@ -104,7 +104,7 @@ const NexusGenerator = createGeneratorWithChildren({
       rootModule,
       typescript,
       configService,
-      serviceContextSetup,
+      requestServiceContextSetup,
       fastifyServer,
       tsUtils,
       fastifyOutput,
@@ -169,14 +169,14 @@ const NexusGenerator = createGeneratorWithChildren({
         importMappers: [
           errorHandlerService,
           configService,
-          serviceContextSetup,
+          requestServiceContextSetup,
         ],
       }
     );
 
     pluginFile.addStringReplacement(
       'CONTEXT_PATH',
-      serviceContextSetup.getContextPath()
+      requestServiceContextSetup.getContextPath()
     );
 
     pluginFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
