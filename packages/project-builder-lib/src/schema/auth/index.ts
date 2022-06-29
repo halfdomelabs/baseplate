@@ -6,7 +6,7 @@ export const authRoleSchema = z.object({
   uid: z.string().default(randomUid),
   name: z.string().min(1),
   comment: z.string().min(1),
-  inherits: z.array(z.string().min(1)),
+  inherits: z.array(z.string().min(1)).optional(),
 });
 
 export type AuthRoleConfig = z.infer<typeof authRoleSchema>;
@@ -22,6 +22,10 @@ export const AUTH_DEFAULT_ROLES = [
     comment: 'Role for authenticated users',
     inherits: ['anonymous'],
   },
+  {
+    name: 'system',
+    comment: 'Role for jobs/tests without a user',
+  },
 ];
 
 export const authSchema = z.object({
@@ -34,10 +38,10 @@ export const authSchema = z.object({
     .array(authRoleSchema)
     .refine(
       (roles) =>
-        ['anonymous', 'user'].every((name) =>
+        ['anonymous', 'user', 'system'].every((name) =>
           roles?.some((r) => r.name === name)
         ),
-      { message: 'Anonymous and user role required' }
+      { message: 'Anonymous, user, system role required' }
     ),
 });
 
