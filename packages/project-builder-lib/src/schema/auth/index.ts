@@ -34,15 +34,14 @@ export const authSchema = z.object({
   authFeaturePath: z.string().min(1),
   accountsFeaturePath: z.string().min(1),
   passwordProvider: z.boolean().optional(),
-  roles: z
-    .array(authRoleSchema)
-    .refine(
-      (roles) =>
-        ['anonymous', 'user', 'system'].every((name) =>
-          roles?.some((r) => r.name === name)
-        ),
-      { message: 'Anonymous, user, system role required' }
-    ),
+  roles: z.array(authRoleSchema).refine(
+    (roles) =>
+      // TODO: Add system role
+      ['anonymous', 'user'].every((name) =>
+        roles?.some((r) => r.name === name)
+      ),
+    { message: 'Anonymous, user, system role required' }
+  ),
 });
 
 export type AuthConfig = z.infer<typeof authSchema>;
