@@ -7,9 +7,9 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
   createNonOverwriteableMap,
+  createProviderType,
 } from '@baseplate/sync';
 import R from 'ramda';
 import { z } from 'zod';
@@ -28,6 +28,10 @@ interface AuthField {
   value: TypescriptCodeExpression;
   type: TypescriptCodeExpression;
   hookBody?: TypescriptCodeBlock;
+  extraCreateArgs?: {
+    name: string;
+    type: TypescriptCodeExpression;
+  }[];
 }
 
 export interface AuthPluginProvider extends ImportMapper {
@@ -60,9 +64,7 @@ const AuthPluginGenerator = createGeneratorWithChildren({
         user: {
           key: 'user',
           value: new TypescriptCodeExpression('user'),
-          type: prismaOutput
-            .getModelTypeExpression(userModelName)
-            .append(' | null'),
+          type: TypescriptCodeUtils.createExpression('UserInfo | null'),
         },
         requiredUser: {
           key: 'requiredUser',
@@ -78,23 +80,10 @@ const AuthPluginGenerator = createGeneratorWithChildren({
             `import { UnauthorizedError } from '%http-errors';`,
             { importMappers: [errorHandler] }
           ),
-          type: prismaOutput
-            .getModelTypeExpression(userModelName)
-            .wrap((contents) => `() => ${contents}`),
+          type: TypescriptCodeUtils.createExpression('() => UserInfo'),
         },
       },
       { name: 'auth-field' }
-    );
-    const authPluginFile = typescript.createTemplate(
-      {
-        AUTH_USER: { type: 'code-expression' },
-        HOOK_BODY: { type: 'code-block' },
-        AUTH_OBJECT: { type: 'code-expression' },
-        AUTH_TYPE: { type: 'code-block' },
-      },
-      {
-        importMappers: [authService],
-      }
     );
     appModule.registerFieldEntry(
       'plugins',
@@ -119,9 +108,9 @@ const AuthPluginGenerator = createGeneratorWithChildren({
             authFields.set(field.key, field);
           },
           getImportMap: () => ({
-            '%auth-plugin': {
-              path: `@/${appModule.getModuleFolder()}/plugins/auth-plugin`,
-              allowedImports: ['AuthInfo'],
+            '%auth-info': {
+              path: `@/${appModule.getModuleFolder()}/utils/auth-info`,
+              allowedImports: ['AuthInfo', 'createAuthInfoFromUser'],
             },
           }),
         },
@@ -130,15 +119,14 @@ const AuthPluginGenerator = createGeneratorWithChildren({
         builder.setBaseDirectory(appModule.getModuleFolder());
 
         const authMap = authFields.value();
+        const authValues = Object.values(authMap);
 
-        authPluginFile.addCodeEntries({
-          AUTH_USER:
-            customAuthUserType ||
-            prismaOutput.getModelTypeExpression(userModelName),
-          HOOK_BODY: TypescriptCodeUtils.mergeBlocks(
-            Object.values(authMap)
-              .map((field) => field.hookBody)
-              .filter(notEmpty)
+        const authInfoFile = typescript.createTemplate({
+          EXTRA_ARGS: TypescriptCodeUtils.mergeExpressions(
+            authValues
+              .flatMap((v) => v.extraCreateArgs || [])
+              .map((arg) => arg.type.wrap((type) => `${arg.name}: ${type}`)),
+            ', '
           ),
           AUTH_TYPE: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
             R.mapObjIndexed((value) => value.type, authMap)
@@ -148,9 +136,34 @@ const AuthPluginGenerator = createGeneratorWithChildren({
           ),
         });
 
+        await builder.apply(authInfoFile.renderToAction('utils/auth-info.ts'));
+
+        const authPluginFile = typescript.createTemplate(
+          {
+            EXTRA_ARGS: TypescriptCodeUtils.mergeExpressions(
+              authValues
+                .flatMap((v) => v.extraCreateArgs || [])
+                .map((arg) => arg.name),
+              ', '
+            ),
+            AUTH_USER:
+              customAuthUserType ||
+              prismaOutput.getModelTypeExpression(userModelName),
+            HOOK_BODY: TypescriptCodeUtils.mergeBlocks(
+              Object.values(authMap)
+                .map((field) => field.hookBody)
+                .filter(notEmpty)
+            ),
+          },
+          {
+            importMappers: [authService],
+          }
+        );
+
         await builder.apply(
           authPluginFile.renderToAction('plugins/auth-plugin.ts')
         );
+
         await builder.apply(
           copyTypescriptFileAction({ source: 'utils/headers.ts' })
         );

@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { NexusGenFieldTypes } from '%nexus/typegen';
-import { ServiceContext } from '%service-context';
+import { RequestServiceContext } from '%request-service-context';
 import { config } from '%config';
 import {
   AuthPayload,
@@ -15,13 +15,13 @@ export const REFRESH_TOKEN_COOKIE_NAME =
     : '__Host-auth_refresh_token';
 
 export function getRefreshTokenFromCookie(
-  context: ServiceContext
+  context: RequestServiceContext
 ): string | undefined {
   return context.cookieStore.get(REFRESH_TOKEN_COOKIE_NAME);
 }
 
 export function setRefreshTokenIntoCookie(
-  context: ServiceContext,
+  context: RequestServiceContext,
   refreshToken: string
 ): void {
   context.cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
@@ -33,12 +33,14 @@ export function setRefreshTokenIntoCookie(
   });
 }
 
-export function clearRefreshTokenFromCookie(context: ServiceContext): void {
+export function clearRefreshTokenFromCookie(
+  context: RequestServiceContext
+): void {
   context.cookieStore.clear(REFRESH_TOKEN_COOKIE_NAME);
 }
 
 export function formatRefreshTokens(
-  context: ServiceContext,
+  context: RequestServiceContext,
   payload: AuthPayload
 ): NexusGenFieldTypes['AuthPayload'] {
   // if request needs refresh token returned directly, e.g. mobile app

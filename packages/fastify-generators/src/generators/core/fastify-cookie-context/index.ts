@@ -6,7 +6,7 @@ import {
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
-import { serviceContextSetupProvider } from '@src/generators/core/service-context';
+import { requestServiceContextSetupProvider } from '../request-service-context';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -18,9 +18,12 @@ const FastifyCookieContextGenerator = createGeneratorWithChildren({
   dependencies: {
     node: nodeProvider,
     fastifyServer: fastifyServerProvider,
-    serviceContextSetup: serviceContextSetupProvider,
+    requestServiceContextSetup: requestServiceContextSetupProvider,
   },
-  createGenerator(descriptor, { node, fastifyServer, serviceContextSetup }) {
+  createGenerator(
+    descriptor,
+    { node, fastifyServer, requestServiceContextSetup }
+  ) {
     node.addPackages({
       'fastify-cookie': '^5.6.0',
     });
@@ -33,7 +36,8 @@ const FastifyCookieContextGenerator = createGeneratorWithChildren({
       ),
     });
 
-    serviceContextSetup.addContextField('cookieStore', {
+    requestServiceContextSetup.addContextField({
+      name: 'cookieStore',
       type: TypescriptCodeUtils.createExpression('CookieStore', undefined, {
         headerBlocks: [
           TypescriptCodeUtils.createBlock(

@@ -6,7 +6,7 @@ import fp from 'fastify-plugin';
 import { GraphQLError, NoSchemaIntrospectionCustomRule } from 'graphql';
 import mercurius from 'mercurius';
 import { makeSchema } from 'nexus';
-import { createContextFromRequest } from '%service-context';
+import { createContextFromRequest } from '%request-service-context';
 import { config } from '%config';
 import { logError } from '%error-logger';
 import { HttpError } from '%http-errors';
@@ -22,7 +22,7 @@ const schema = makeSchema({
   plugins: PLUGINS,
   contextType: {
     module: path.join(__dirname, '../../..', 'CONTEXT_PATH'),
-    export: 'ServiceContext',
+    export: 'RequestServiceContext',
   },
   shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
 });
