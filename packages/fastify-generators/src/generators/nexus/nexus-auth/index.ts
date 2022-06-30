@@ -127,6 +127,12 @@ const NexusAuthGenerator = createGeneratorWithChildren({
         {
           name: 'auth',
           type: authInfoType,
+          // TODO: Figure out how to allow role service to inject test default here
+          testDefault: TypescriptCodeUtils.createExpression(
+            'createAuthInfoFromUser(null, ["system"])',
+            'import { createAuthInfoFromUser } from "%auth-info";',
+            { importMappers: [authPlugin] }
+          ),
         },
       ],
     });

@@ -5,12 +5,11 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-  TypescriptStringReplacement,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
   createNonOverwriteableMap,
+  createProviderType,
 } from '@baseplate/sync';
 import R from 'ramda';
 import { z } from 'zod';
@@ -29,7 +28,10 @@ interface AuthField {
   value: TypescriptCodeExpression;
   type: TypescriptCodeExpression;
   hookBody?: TypescriptCodeBlock;
-  extraCreateArgs?: { name: string; type: TypescriptCodeExpression }[];
+  extraCreateArgs?: {
+    name: string;
+    type: TypescriptCodeExpression;
+  }[];
 }
 
 export interface AuthPluginProvider extends ImportMapper {

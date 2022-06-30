@@ -20,7 +20,11 @@ const descriptorSchema = z.object({
 interface ContextField {
   type: TypescriptCodeExpression;
   value: TypescriptCodeExpression;
-  contextArg?: { name: string; type: TypescriptCodeExpression }[];
+  contextArg?: {
+    name: string;
+    type: TypescriptCodeExpression;
+    testDefault?: TypescriptCodeExpression;
+  }[];
 }
 
 export interface ServiceContextSetupProvider extends ImportMapper {
@@ -59,10 +63,18 @@ const ServiceContextGenerator = createGeneratorWithChildren({
       'src/utils/service-context.ts'
     );
 
+    const [testHelperImport, testHelperPath] = makeImportAndFilePath(
+      'src/tests/helpers/service-context.test-helper.ts'
+    );
+
     const importMap = {
       '%service-context': {
         path: contextImport,
         allowedImports: ['ServiceContext', 'createServiceContext'],
+      },
+      '%service-context/test': {
+        path: testHelperImport,
+        allowedImports: ['createTestServiceContext'],
       },
     };
 
@@ -108,6 +120,42 @@ const ServiceContextGenerator = createGeneratorWithChildren({
 
         await builder.apply(
           contextFile.renderToAction('service-context.ts', contextPath)
+        );
+
+        const testHelperFile = typescript.createTemplate(
+          {
+            TEST_ARGS: TypescriptCodeUtils.mergeExpressions(
+              contextArgs.map((arg) =>
+                arg.type.wrap(
+                  (contents) =>
+                    `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`
+                )
+              ),
+              '; '
+            ).wrap(
+              (contents) => `
+            {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
+          `
+            ),
+            TEST_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
+              R.fromPairs(
+                contextArgs.map((arg) => [
+                  arg.name,
+                  arg.testDefault
+                    ? arg.testDefault.prepend(`${arg.name} ?? `)
+                    : TypescriptCodeUtils.createExpression(arg.name),
+                ])
+              )
+            ),
+          },
+          { importMappers: [{ getImportMap: () => importMap }] }
+        );
+
+        await builder.apply(
+          testHelperFile.renderToAction(
+            'service-context.test-helper.ts',
+            testHelperPath
+          )
         );
       },
     };
