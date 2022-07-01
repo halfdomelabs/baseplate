@@ -14,6 +14,7 @@ import {
   createGeneratorWithChildren,
   writeTemplateAction,
 } from '@baseplate/sync';
+import R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
 import { notEmpty } from '../../../utils/array';
@@ -25,6 +26,15 @@ const descriptorSchema = z.object({
   schemaLocation: z.string().min(1),
 });
 
+export interface ApolloCreateArg {
+  name: string;
+  type: TypescriptCodeExpression;
+  creatorValue: TypescriptCodeExpression;
+  createArgs?: string[];
+  hookDependency?: string;
+  renderBody?: TypescriptCodeBlock;
+}
+
 export interface ApolloLink {
   name: string;
   bodyExpression: TypescriptCodeBlock;
@@ -32,6 +42,7 @@ export interface ApolloLink {
 }
 
 export interface ReactApolloSetupProvider extends ImportMapper {
+  addCreateArg(arg: ApolloCreateArg): void;
   addLink(link: ApolloLink): void;
   getApiEndpointExpression(): TypescriptCodeExpression;
   registerGqlFile(filePath: string): void;
@@ -73,6 +84,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     { devApiEndpoint, schemaLocation },
     { node, reactConfig, typescript, reactApp, eslint, prettier }
   ) {
+    const apolloCreateArgs: ApolloCreateArg[] = [];
     const links: ApolloLink[] = [];
     const gqlFiles: string[] = [];
 
@@ -101,29 +113,25 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     const cacheFile = typescript.createTemplate({});
     const cachePath = 'src/services/apollo/cache.ts';
 
-    const clientFile = typescript.createTemplate({
-      LINK_BODIES: { type: 'code-block' },
-      LINKS: { type: 'code-expression' },
-    });
     const [clientImport, clientPath] = makeImportAndFilePath(
       'src/services/apollo/index.ts'
     );
 
+    const [providerImport, providerPath] = makeImportAndFilePath(
+      'src/app/AppApolloProvider.tsx'
+    );
+
     reactApp.getAppFile().addCodeEntries({
       RENDER_WRAPPERS: TypescriptCodeUtils.createWrapper(
-        (contents) =>
-          `<ApolloProvider client={apolloClient}>${contents}</ApolloProvider>`,
-        [
-          `import { ApolloProvider } from '@apollo/client';`,
-          `import { apolloClient } from '${clientImport}';`,
-        ]
+        (contents) => `<AppApolloProvider>${contents}</AppApolloProvider>`,
+        [`import AppApolloProvider from '${providerImport}';`]
       ),
     });
 
     const importMap = {
       '%react-apollo/client': {
         path: clientImport,
-        allowedImports: ['apolloClient'],
+        allowedImports: ['createApolloClient'],
       },
       '%react-apollo/generated': {
         path: '@/src/generated/graphql',
@@ -140,6 +148,9 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         reactApolloSetup: {
+          addCreateArg(arg) {
+            apolloCreateArgs.push(arg);
+          },
           addLink(link) {
             links.push(link);
           },
@@ -196,8 +207,33 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           cacheFile.renderToAction('services/apollo/cache.ts', cachePath)
         );
 
-        clientFile.addCodeEntries({
-          LINK_BODIES: sortedLinks.map((link) => link.bodyExpression),
+        const createArgNames = apolloCreateArgs
+          .map((arg) => arg.name)
+          .join(', ');
+
+        const clientFile = typescript.createTemplate({
+          CREATE_ARGS: !apolloCreateArgs.length
+            ? new TypescriptCodeExpression('')
+            : TypescriptCodeUtils.createExpression(
+                `{${createArgNames}}: CreateApolloClientOptions`,
+                undefined,
+                {
+                  headerBlocks: [
+                    TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+                      R.fromPairs(
+                        apolloCreateArgs.map((arg) => [arg.name, arg.type])
+                      )
+                    ).wrap(
+                      (contents) =>
+                        `interface CreateApolloClientOptions {\n${contents}\n}`
+                    ),
+                  ],
+                }
+              ),
+          LINK_BODIES: TypescriptCodeUtils.mergeBlocks(
+            sortedLinks.map((link) => link.bodyExpression),
+            '\n\n'
+          ),
           LINKS: TypescriptCodeUtils.mergeExpressionsAsArray(
             sortedLinks.map((link) => new TypescriptCodeExpression(link.name))
           ),
@@ -215,6 +251,37 @@ const ReactApolloGenerator = createGeneratorWithChildren({
               SCHEMA_LOCATION: schemaLocation,
             },
           })
+        );
+
+        const apolloProviderFile = typescript.createTemplate(
+          {
+            RENDER_BODY: TypescriptCodeUtils.mergeBlocks(
+              apolloCreateArgs.map((arg) => arg.renderBody).filter(notEmpty)
+            ),
+            CREATE_ARG_VALUE: !apolloCreateArgs.length
+              ? TypescriptCodeUtils.createExpression('')
+              : TypescriptCodeUtils.mergeExpressionsAsObject(
+                  R.fromPairs(
+                    apolloCreateArgs.map((arg) => [arg.name, arg.creatorValue])
+                  )
+                ),
+            CREATE_ARGS: TypescriptCodeUtils.createExpression(
+              apolloCreateArgs
+                .map((arg) => arg.hookDependency)
+                .filter(notEmpty)
+                .join(', ')
+            ),
+          },
+          {
+            importMappers: [{ getImportMap: () => importMap }],
+          }
+        );
+
+        await builder.apply(
+          apolloProviderFile.renderToAction(
+            'app/AppApolloProvider.tsx',
+            providerPath
+          )
         );
 
         builder.addPostWriteCommand('yarn generate', {

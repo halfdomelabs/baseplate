@@ -450,6 +450,8 @@ export abstract class TypescriptSourceContent<
         identifier.getParent().getKind() === SyntaxKind.JsxSelfClosingElement
       ) {
         identifier.getParent().replaceWithText(contents);
+      } else if (identifier.getParent().getKind() === SyntaxKind.Parameter) {
+        identifier.getParent().replaceWithText(contents);
       } else {
         identifier.replaceWithText(contents);
       }
