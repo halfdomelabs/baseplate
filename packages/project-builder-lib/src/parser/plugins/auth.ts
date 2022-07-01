@@ -125,6 +125,11 @@ export const AuthPlugin: ParserPlugin = {
                 userModelName: auth.userModel,
                 userRoleModelName: auth.userRoleModel,
                 roles: auth.roles,
+                children: {
+                  $authRoles: {
+                    generator: '@baseplate/fastify/auth/auth-roles',
+                  },
+                },
               },
             },
           },

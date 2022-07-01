@@ -2,6 +2,7 @@
 
 // HEADER:START
 export type UserWithRoles = USER & { roles: USER_ROLE[] };
+HEADER;
 
 AVAILABLE_ROLES_EXPORT;
 
@@ -26,12 +27,11 @@ function getInheritedRoles(role: AuthRole): AuthRole[] {
 
 export const authRoleService = {
   // BODY:START
-  getRolesForUser(user?: UserWithRoles | null): AuthRole[] {
-    if (!user) {
+  populateAuthRoles(roles?: string[] | null): AuthRole[] {
+    if (!roles) {
       return ['anonymous'];
     }
-    const availableRoles = user.roles
-      .map((role) => role.role as AuthRole)
+    const availableRoles = (roles as AuthRole[])
       .filter((role) => AUTH_ROLE_CONFIG[role])
       .flatMap((role) => [role, ...getInheritedRoles(role)]);
 

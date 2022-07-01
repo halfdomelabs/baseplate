@@ -1,6 +1,7 @@
 import {
   ImportEntry,
   ImportMapper,
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -16,8 +17,6 @@ import { appModuleProvider } from '@src/generators/core/root-module';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { authSetupProvider } from '../auth';
-import { authPluginProvider } from '../auth-plugin';
-import { authServiceProvider } from '../auth-service';
 
 /**
  * UserRole schema:
@@ -45,7 +44,11 @@ const descriptorSchema = z.object({
     .optional(),
 });
 
-export type RoleServiceProvider = ImportMapper;
+export interface RoleServiceProvider extends ImportMapper {
+  addHeaderBlock(block: TypescriptCodeBlock): void;
+  getServiceExpression(): TypescriptCodeExpression;
+  getServiceImport(): string;
+}
 
 export const roleServiceProvider =
   createProviderType<RoleServiceProvider>('role-service');
@@ -56,10 +59,8 @@ const RoleServiceGenerator = createGeneratorWithChildren({
   dependencies: {
     typescript: typescriptProvider,
     prismaOutput: prismaOutputProvider,
-    authPlugin: authPluginProvider,
     appModule: appModuleProvider,
     serviceFile: serviceFileProvider,
-    authService: authServiceProvider,
     authSetup: authSetupProvider,
   },
   exports: {
@@ -67,9 +68,11 @@ const RoleServiceGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { userModelName, userRoleModelName, roles = [] },
-    { serviceFile, prismaOutput, authPlugin, appModule, authService, authSetup }
+    { serviceFile, prismaOutput, appModule, authSetup }
   ) {
+    const customHeaderBlocks: TypescriptCodeBlock[] = [];
     const headerBlock = new TypescriptSourceBlock({
+      HEADER: { type: 'code-block' },
       USER: {
         type: 'code-expression',
       },
@@ -102,51 +105,12 @@ const RoleServiceGenerator = createGeneratorWithChildren({
       ),
     });
 
-    const authRolesType = TypescriptCodeUtils.createExpression(
-      `AuthRole[]`,
-      `import {AuthRole} from '${serviceFile.getServiceImport()}'`
-    );
-
-    authPlugin.registerAuthField({
-      key: 'roles',
-      hookBody: serviceFile
-        .getServiceExpression()
-        .wrap((contents) => `const roles = ${contents}.getRolesForUser(user);`)
-        .toBlock(),
-      extraCreateArgs: [{ name: 'roles', type: authRolesType }],
-      value: TypescriptCodeUtils.createExpression('roles'),
-      type: authRolesType,
-    });
-
-    authPlugin.registerAuthField({
-      key: 'hasSomeRole',
-      value: new TypescriptCodeExpression(
-        '(possibleRoles) => roles.some((role) => possibleRoles.includes(role))'
-      ),
-      type: TypescriptCodeUtils.createExpression(
-        `(possibleRoles: AuthRole[]) => boolean`,
-        `import {AuthRole} from '${serviceFile.getServiceImport()}'`
-      ),
-    });
-
-    const userWithRolesType = TypescriptCodeUtils.createExpression(
-      `UserWithRoles`,
-      `import {UserWithRoles} from '${serviceFile.getServiceImport()}'`
-    );
-
-    authPlugin.setCustomAuthUserType(userWithRolesType);
     const roleServiceImport: ImportEntry = {
       path: serviceFile.getServiceImport(),
-      allowedImports: ['UserWithRoles', 'AUTH_ROLE_CONFIG', 'AuthRole'],
+      allowedImports: ['AUTH_ROLE_CONFIG', 'AuthRole'],
     };
-    authSetup.getConfig().set('roleServiceImport', roleServiceImport);
 
-    authService.setCustomUserFromToken({
-      type: userWithRolesType,
-      queryParams: {
-        include: `{ roles: true }`,
-      },
-    });
+    authSetup.getConfig().set('roleServiceImport', roleServiceImport);
 
     return {
       getProviders: () => ({
@@ -154,6 +118,11 @@ const RoleServiceGenerator = createGeneratorWithChildren({
           getImportMap: () => ({
             '%role-service': roleServiceImport,
           }),
+          addHeaderBlock(block) {
+            customHeaderBlocks.push(block);
+          },
+          getServiceExpression: () => serviceFile.getServiceExpression(),
+          getServiceImport: () => serviceFile.getServiceImport(),
         },
       }),
       build: async (builder) => {
@@ -163,8 +132,10 @@ const RoleServiceGenerator = createGeneratorWithChildren({
           'services/auth-role-service.ts'
         );
 
+        headerBlock.addCodeEntries({ HEADER: customHeaderBlocks });
+
         serviceFile.registerMethod(
-          'getRolesForUser',
+          'populateAuthRoles',
           TypescriptCodeUtils.createExpression(
             TypescriptCodeUtils.extractTemplateSnippet(template, 'BODY'),
             undefined,
