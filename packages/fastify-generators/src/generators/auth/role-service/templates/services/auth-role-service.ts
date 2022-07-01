@@ -1,7 +1,6 @@
 // @ts-nocheck
 
 // HEADER:START
-export type UserWithRoles = USER & { roles: USER_ROLE[] };
 HEADER;
 
 AVAILABLE_ROLES_EXPORT;

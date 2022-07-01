@@ -42,6 +42,11 @@ export interface AuthPluginProvider extends ImportMapper {
 export const authPluginProvider =
   createProviderType<AuthPluginProvider>('auth-plugin');
 
+export type AuthInfoProvider = ImportMapper;
+
+export const authInfoProvider =
+  createProviderType<AuthInfoProvider>('auth-info');
+
 const AuthPluginGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
@@ -54,6 +59,7 @@ const AuthPluginGenerator = createGeneratorWithChildren({
   },
   exports: {
     authPlugin: authPluginProvider,
+    authInfo: authInfoProvider,
   },
   createGenerator(
     { userModelName },
@@ -107,6 +113,14 @@ const AuthPluginGenerator = createGeneratorWithChildren({
           registerAuthField(field) {
             authFields.set(field.key, field);
           },
+          getImportMap: () => ({
+            '%auth-info': {
+              path: `@/${appModule.getModuleFolder()}/utils/auth-info`,
+              allowedImports: ['AuthInfo', 'createAuthInfoFromUser'],
+            },
+          }),
+        },
+        authInfo: {
           getImportMap: () => ({
             '%auth-info': {
               path: `@/${appModule.getModuleFolder()}/utils/auth-info`,

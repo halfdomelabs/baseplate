@@ -3,7 +3,10 @@ import { FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
 import { stripBearer } from '../utils/headers';
 import { authService } from '%auth-service';
-import { AuthInfo, createAuthInfoFromUser } from '../utils/auth-info';
+import {
+  AuthInfo,
+  createAuthInfoFromUser,
+} from '../../../auth-info/templates/auth-info';
 
 declare module 'fastify' {
   interface FastifyRequest {

@@ -30,7 +30,8 @@ export const AUTH_DEFAULT_ROLES = [
 
 export const authSchema = z.object({
   userModel: z.string().min(1),
-  userRoleModel: z.string().min(1),
+  userRoleModel: z.string().min(1).optional(),
+  useAuth0: z.boolean().default(false),
   authFeaturePath: z.string().min(1),
   accountsFeaturePath: z.string().min(1),
   passwordProvider: z.boolean().optional(),
