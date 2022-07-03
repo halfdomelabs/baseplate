@@ -22,6 +22,7 @@ const descriptorSchema = z.object({
 export interface ServiceFileProvider {
   getServiceImport: () => string;
   getServiceExpression: () => TypescriptCodeExpression;
+  getServiceName: () => string;
   registerMethod(
     key: string,
     expression: TypescriptCodeExpression,
@@ -81,6 +82,7 @@ const ServiceFileGenerator = createGeneratorWithChildren({
               `import { ${serviceName} } from '@/${servicesImport}';`
             );
           },
+          getServiceName: () => serviceName,
           registerMethod(key, expression, outputMethod) {
             methodMap.set(key, expression);
             if (outputMethod) {

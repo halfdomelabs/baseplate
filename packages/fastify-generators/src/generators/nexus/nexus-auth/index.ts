@@ -9,7 +9,7 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { authProvider } from '@src/generators/auth/auth';
-import { authPluginProvider } from '@src/generators/auth/auth-plugin';
+import { authInfoProvider } from '@src/generators/auth/auth-plugin';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
 import { serviceContextSetupProvider } from '@src/generators/core/service-context';
@@ -17,7 +17,7 @@ import { nexusSetupProvider } from '../nexus';
 
 const descriptorSchema = z.object({
   requireOnRootFields: z.boolean().default(true),
-  authPluginRef: z.string().min(1),
+  authInfoRef: z.string().min(1),
 });
 
 export const authorizeConfigSchema = z.object({
@@ -45,11 +45,11 @@ const NexusAuthGenerator = createGeneratorWithChildren({
     auth: authProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
-    authPlugin: authPluginProvider,
+    authInfo: authInfoProvider,
   },
-  populateDependencies: (deps, { authPluginRef }) => ({
+  populateDependencies: (deps, { authInfoRef }) => ({
     ...deps,
-    authPlugin: deps.authPlugin.dependency().reference(authPluginRef),
+    authInfo: deps.authInfo.dependency().reference(authInfoRef),
   }),
   exports: {
     nexusAuth: nexusAuthProvider,
@@ -61,7 +61,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       errorHandlerService,
       typescript,
       auth,
-      authPlugin,
+      authInfo,
       serviceContextSetup,
       requestServiceContextSetup,
     }
@@ -116,7 +116,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       'AuthInfo',
       'import { AuthInfo } from "%auth-info";',
       {
-        importMappers: [authPlugin],
+        importMappers: [authInfo],
       }
     );
 
@@ -131,7 +131,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
           testDefault: TypescriptCodeUtils.createExpression(
             'createAuthInfoFromUser(null, ["system"])',
             'import { createAuthInfoFromUser } from "%auth-info";',
-            { importMappers: [authPlugin] }
+            { importMappers: [authInfo] }
           ),
         },
       ],

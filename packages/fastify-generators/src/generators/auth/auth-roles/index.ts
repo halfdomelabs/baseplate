@@ -7,11 +7,15 @@ import {
   createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { authPluginProvider } from '../auth-plugin';
 import { authServiceProvider } from '../auth-service';
 import { roleServiceProvider } from '../role-service';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  userModelName: z.string().min(1),
+  userRoleModelName: z.string().min(1),
+});
 
 export type AuthRolesProvider = unknown;
 
@@ -25,11 +29,15 @@ const AuthRolesGenerator = createGeneratorWithChildren({
     authPlugin: authPluginProvider,
     authService: authServiceProvider,
     roleService: roleServiceProvider,
+    prismaOutput: prismaOutputProvider,
   },
   exports: {
     authRoles: authRolesProvider,
   },
-  createGenerator(descriptor, { authPlugin, authService, roleService }) {
+  createGenerator(
+    { userModelName, userRoleModelName },
+    { authPlugin, prismaOutput, authService, roleService }
+  ) {
     const authRolesType = TypescriptCodeUtils.createExpression(
       `AuthRole[]`,
       `import {AuthRole} from '%role-service'`,
@@ -75,6 +83,17 @@ const AuthRolesGenerator = createGeneratorWithChildren({
         include: `{ roles: true }`,
       },
     });
+
+    roleService.addHeaderBlock(
+      TypescriptCodeUtils.formatBlock(
+        `export type UserWithRoles = USER_MODEL & { roles: USER_ROLE_MODEL[] };`,
+        {
+          USER_MODEL: prismaOutput.getModelTypeExpression(userModelName),
+          USER_ROLE_MODEL:
+            prismaOutput.getModelTypeExpression(userRoleModelName),
+        }
+      )
+    );
 
     return {
       getProviders: () => ({

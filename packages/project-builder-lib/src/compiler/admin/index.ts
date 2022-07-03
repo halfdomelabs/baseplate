@@ -4,7 +4,7 @@ import { AdminAppConfig } from '@src/schema/apps/admin';
 import { AppEntry } from '@src/types/files';
 import { dasherizeCamel } from '@src/utils/case';
 import { AppEntryBuilder } from '../appEntryBuilder';
-import { compileAuthPages } from './auth';
+import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth';
 import { compileAdminFeatures } from './sections';
 
 export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
@@ -42,7 +42,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
       router: {
         children: {
           routes: [
-            compileAuthPages(builder),
+            compileAuthPages(builder, appConfig.allowedRoles),
             {
               name: 'home',
               generator: '@baseplate/react/admin/admin-home',
@@ -78,22 +78,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         generator: '@baseplate/react/apollo/apollo-error',
         peerProvider: true,
       },
-      $authService: {
-        generator: '@baseplate/react/auth/auth-service',
-        peerProvider: true,
-      },
-      $authHooks: {
-        generator: '@baseplate/react/auth/auth-hooks',
-        peerProvider: true,
-      },
-      $authApollo: {
-        generator: '@baseplate/react/auth/auth-apollo',
-      },
-      $authComponents: {
-        generator: '@baseplate/react/auth/auth-components',
-        loginPath: '/auth/login',
-        peerProvider: true,
-      },
+      ...compileAuthFeatures(builder),
     },
   };
 }

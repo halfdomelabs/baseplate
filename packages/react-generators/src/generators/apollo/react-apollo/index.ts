@@ -121,12 +121,13 @@ const ReactApolloGenerator = createGeneratorWithChildren({
       'src/app/AppApolloProvider.tsx'
     );
 
-    reactApp.getAppFile().addCodeEntries({
-      RENDER_WRAPPERS: TypescriptCodeUtils.createWrapper(
+    reactApp.getRenderWrappers().addItem(
+      'react-apollo',
+      TypescriptCodeUtils.createWrapper(
         (contents) => `<AppApolloProvider>${contents}</AppApolloProvider>`,
         [`import AppApolloProvider from '${providerImport}';`]
-      ),
-    });
+      )
+    );
 
     const importMap = {
       '%react-apollo/client': {

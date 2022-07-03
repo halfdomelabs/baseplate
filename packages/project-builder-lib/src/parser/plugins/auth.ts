@@ -8,7 +8,7 @@ export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',
   run(projectConfig, hooks) {
     const { auth } = projectConfig;
-    if (!auth) {
+    if (!auth || auth.useAuth0) {
       return;
     }
 
@@ -76,6 +76,10 @@ export const AuthPlugin: ParserPlugin = {
       },
     ];
 
+    if (!auth.userRoleModel) {
+      throw new Error(`User role model required`);
+    }
+
     hooks.mergeModel({
       name: auth.userRoleModel,
       feature: auth.accountsFeaturePath,
@@ -101,7 +105,7 @@ export const AuthPlugin: ParserPlugin = {
       $nexusAuth: {
         generator: '@baseplate/fastify/nexus/nexus-auth',
         peerProvider: true,
-        authPluginRef: `${auth.authFeaturePath}/root:$auth.authPlugin`,
+        authInfoRef: `${auth.authFeaturePath}/root:$auth.authPlugin`,
       },
     });
 
@@ -122,12 +126,12 @@ export const AuthPlugin: ParserPlugin = {
             children: {
               $roles: {
                 generator: '@baseplate/fastify/auth/role-service',
-                userModelName: auth.userModel,
-                userRoleModelName: auth.userRoleModel,
                 roles: auth.roles,
                 children: {
                   $authRoles: {
                     generator: '@baseplate/fastify/auth/auth-roles',
+                    userModelName: auth.userModel,
+                    userRoleModelName: auth.userRoleModel,
                   },
                 },
               },

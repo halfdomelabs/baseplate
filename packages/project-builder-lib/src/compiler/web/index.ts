@@ -2,7 +2,7 @@ import { relative } from 'path-browserify';
 import { ProjectConfig, WebAppConfig } from '@src/schema';
 import { AppEntry } from '@src/types/files';
 import { AppEntryBuilder } from '../appEntryBuilder';
-import { compileAuthPages } from './auth';
+import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
@@ -29,10 +29,13 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
     children: {
       router: {
         children: {
-          routes: [compileAuthPages(builder)],
+          routes: [
+            !builder.appConfig.includeAuth
+              ? undefined
+              : compileAuthPages(builder, appConfig.allowedRoles),
+          ],
         },
       },
-
       $tailwind: {
         generator: '@baseplate/react/core/react-tailwind',
       },
@@ -53,26 +56,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
         generator: '@baseplate/react/apollo/apollo-error',
         peerProvider: true,
       },
-      ...(appConfig.includeAuth
-        ? {
-            $authService: {
-              generator: '@baseplate/react/auth/auth-service',
-              peerProvider: true,
-            },
-            $authHooks: {
-              generator: '@baseplate/react/auth/auth-hooks',
-              peerProvider: true,
-            },
-            $authApollo: {
-              generator: '@baseplate/react/auth/auth-apollo',
-            },
-            $authComponents: {
-              generator: '@baseplate/react/auth/auth-components',
-              loginPath: '/auth/login',
-              peerProvider: true,
-            },
-          }
-        : {}),
+      ...compileAuthFeatures(builder),
     },
   };
 }

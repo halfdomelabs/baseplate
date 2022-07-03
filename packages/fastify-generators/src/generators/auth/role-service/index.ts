@@ -15,7 +15,6 @@ import R from 'ramda';
 import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { serviceFileProvider } from '@src/generators/core/service-file';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { authSetupProvider } from '../auth';
 
 /**
@@ -30,8 +29,6 @@ import { authSetupProvider } from '../auth';
  */
 
 const descriptorSchema = z.object({
-  userModelName: z.string().min(1),
-  userRoleModelName: z.string().min(1),
   // Note: Anonymous and user roles are automatically added
   roles: z
     .array(
@@ -58,7 +55,6 @@ const RoleServiceGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     typescript: typescriptProvider,
-    prismaOutput: prismaOutputProvider,
     appModule: appModuleProvider,
     serviceFile: serviceFileProvider,
     authSetup: authSetupProvider,
@@ -66,10 +62,7 @@ const RoleServiceGenerator = createGeneratorWithChildren({
   exports: {
     roleService: roleServiceProvider,
   },
-  createGenerator(
-    { userModelName, userRoleModelName, roles = [] },
-    { serviceFile, prismaOutput, appModule, authSetup }
-  ) {
+  createGenerator({ roles = [] }, { serviceFile, appModule, authSetup }) {
     const customHeaderBlocks: TypescriptCodeBlock[] = [];
     const headerBlock = new TypescriptSourceBlock({
       HEADER: { type: 'code-block' },
@@ -88,8 +81,6 @@ const RoleServiceGenerator = createGeneratorWithChildren({
     }
 
     headerBlock.addCodeEntries({
-      USER: prismaOutput.getModelTypeExpression(userModelName),
-      USER_ROLE: prismaOutput.getModelTypeExpression(userRoleModelName),
       AVAILABLE_ROLES_EXPORT: `export type AuthRole = ${roles
         .map(({ name }) => `'${name}'`)
         .join(' | ')}`,
@@ -107,7 +98,11 @@ const RoleServiceGenerator = createGeneratorWithChildren({
 
     const roleServiceImport: ImportEntry = {
       path: serviceFile.getServiceImport(),
-      allowedImports: ['AUTH_ROLE_CONFIG', 'AuthRole'],
+      allowedImports: [
+        'AUTH_ROLE_CONFIG',
+        'AuthRole',
+        serviceFile.getServiceName(),
+      ],
     };
 
     authSetup.getConfig().set('roleServiceImport', roleServiceImport);
