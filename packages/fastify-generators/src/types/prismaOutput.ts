@@ -1,4 +1,3 @@
-import { TypescriptCodeExpression } from '@baseplate/core-generators';
 import { ScalarFieldType } from './fieldTypes';
 
 // A standardized Prisma model for use in other generators
