@@ -72,6 +72,11 @@ function AuthPage(): JSX.Element {
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Button onClick={disableAuth}>Disable Auth</Button>
+          <CheckedInput.LabelledController
+            label="Use Auth0?"
+            name="useAuth0"
+            control={control}
+          />
           <ReactSelectInput.LabelledController
             label="User Model"
             options={modelOptions}

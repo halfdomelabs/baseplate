@@ -1,12 +1,14 @@
 import {
-  TypescriptSourceFile,
-  createTypescriptTemplateConfig,
+  TypescriptCodeExpression,
   TypescriptCodeUtils,
+  TypescriptCodeWrapper,
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithChildren,
+  createOrderedList,
   createProviderType,
+  OrderedList,
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { reactProvider } from '../react';
@@ -15,14 +17,9 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-const APP_FILE_CONFIG = createTypescriptTemplateConfig({
-  COMPONENT_CODE: { type: 'code-block' },
-  RENDER_WRAPPERS: { type: 'code-wrapper' },
-  RENDER_ROOT: { type: 'code-expression', default: '<div />' },
-});
-
 export type ReactAppProvider = {
-  getAppFile(): TypescriptSourceFile<typeof APP_FILE_CONFIG>;
+  getRenderWrappers(): OrderedList<TypescriptCodeWrapper>;
+  setRenderRoot(root: TypescriptCodeExpression): void;
 };
 
 export const reactAppProvider =
@@ -38,7 +35,15 @@ const ReactAppGenerator = createGeneratorWithChildren({
     reactApp: reactAppProvider,
   },
   createGenerator(descriptor, { react, typescript }) {
-    const appFile = typescript.createTemplate(APP_FILE_CONFIG);
+    const renderWrappers = createOrderedList<TypescriptCodeWrapper>();
+    let renderRoot: TypescriptCodeExpression =
+      TypescriptCodeUtils.createExpression('<div />');
+
+    const appFile = typescript.createTemplate({
+      COMPONENT_CODE: { type: 'code-block' },
+      RENDER_WRAPPERS: { type: 'code-wrapper' },
+      RENDER_ROOT: { type: 'code-expression', default: '<div />' },
+    });
     const srcFolder = react.getSrcFolder();
 
     react
@@ -53,10 +58,20 @@ const ReactAppGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         reactApp: {
-          getAppFile: () => appFile,
+          getRenderWrappers() {
+            return renderWrappers;
+          },
+          setRenderRoot(root) {
+            renderRoot = root;
+          },
         },
       }),
       build: async (builder) => {
+        appFile.addCodeEntries({
+          RENDER_WRAPPERS: renderWrappers.getItems(),
+          RENDER_ROOT: renderRoot,
+        });
+
         const destination = `${srcFolder}/app/App.tsx`;
         await builder.apply(appFile.renderToAction('App.tsx', destination));
       },

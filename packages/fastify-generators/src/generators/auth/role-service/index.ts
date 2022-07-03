@@ -98,7 +98,11 @@ const RoleServiceGenerator = createGeneratorWithChildren({
 
     const roleServiceImport: ImportEntry = {
       path: serviceFile.getServiceImport(),
-      allowedImports: ['AUTH_ROLE_CONFIG', 'AuthRole'],
+      allowedImports: [
+        'AUTH_ROLE_CONFIG',
+        'AuthRole',
+        serviceFile.getServiceName(),
+      ],
     };
 
     authSetup.getConfig().set('roleServiceImport', roleServiceImport);

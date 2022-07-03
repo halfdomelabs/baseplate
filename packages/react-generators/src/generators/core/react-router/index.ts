@@ -75,21 +75,21 @@ const ReactRouterGenerator = createGeneratorWithChildren({
         builder.setBaseDirectory(react.getSrcFolder());
 
         reactApp
-          .getAppFile()
-          .addCodeWrapper(
-            'RENDER_WRAPPERS',
+          .getRenderWrappers()
+          .addItem(
+            'react-router',
             new TypescriptCodeWrapper(
               (contents) => `<BrowserRouter>${contents}</BrowserRouter>`,
               "import {BrowserRouter} from 'react-router-dom'"
             )
-          )
-          .addCodeExpression(
-            'RENDER_ROOT',
-            TypescriptCodeUtils.createExpression(
-              '<PagesRoot />',
-              `import PagesRoot from "@/${react.getSrcFolder()}/pages"`
-            )
           );
+
+        reactApp.setRenderRoot(
+          TypescriptCodeUtils.createExpression(
+            '<PagesRoot />',
+            `import PagesRoot from "@/${react.getSrcFolder()}/pages"`
+          )
+        );
 
         const pagesRootFile = typescript.createTemplate({
           ROUTE_HEADER: { type: 'code-block' },
