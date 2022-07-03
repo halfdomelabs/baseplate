@@ -4,6 +4,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
+import { serviceContextProvider } from '@src/generators/core/service-context';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
   PrismaDataTransformer,
@@ -16,6 +17,7 @@ import {
 import { notEmpty } from '@src/utils/array';
 import {
   getDataInputTypeBlock,
+  getDataMethodContextRequired,
   getDataMethodDataExpressions,
   getDataMethodDataType,
   PrismaDataMethodOptions,
@@ -43,6 +45,8 @@ function getMethodDefinition(
 
   const dataType = getDataMethodDataType(options);
   const idArgument = getPrimaryKeyDefinition(prismaDefinition);
+  const contextRequired = getDataMethodContextRequired(options);
+
   return {
     name,
     expression: serviceMethodExpression,
@@ -54,6 +58,7 @@ function getMethodDefinition(
         nestedType: dataType,
       },
     ],
+    requiresContext: contextRequired,
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
       prismaOutput.getServiceEnum(enumName)
     ),
@@ -63,7 +68,7 @@ function getMethodDefinition(
 function getMethodExpression(
   options: PrismaDataMethodOptions
 ): TypescriptCodeExpression {
-  const { name, modelName, prismaOutput } = options;
+  const { name, modelName, prismaOutput, serviceContext } = options;
 
   const updateInputTypeName = `${modelName}UpdateData`;
 
@@ -72,6 +77,8 @@ function getMethodExpression(
   const { functionBody, dataExpression } =
     getDataMethodDataExpressions(options);
 
+  const contextRequired = getDataMethodContextRequired(options);
+
   const modelType = prismaOutput.getModelTypeExpression(modelName);
 
   const model = prismaOutput.getPrismaModel(modelName);
@@ -79,7 +86,7 @@ function getMethodExpression(
 
   return TypescriptCodeUtils.formatExpression(
     `
-async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
+async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
   return PRISMA_MODEL.update(UPDATE_ARGS);
@@ -96,6 +103,9 @@ async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE
         where: primaryKey.whereClause,
         data: dataExpression,
       }),
+      CONTEXT: contextRequired
+        ? serviceContext.getServiceContextType().prepend(`context: `)
+        : '',
     },
     {
       headerBlocks: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
@@ -112,10 +122,11 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
     prismaOutput: prismaOutputProvider,
     serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
     crudPrismaService: prismaCrudServiceProvider,
+    serviceContext: serviceContextProvider,
   },
   createGenerator(
     descriptor,
-    { prismaOutput, serviceFile, crudPrismaService }
+    { prismaOutput, serviceFile, crudPrismaService, serviceContext }
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
     const serviceMethodExpression = serviceFile
@@ -142,6 +153,7 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
           operationName: 'update',
           isPartial: true,
           transformers,
+          serviceContext,
         };
 
         serviceFile.registerMethod(

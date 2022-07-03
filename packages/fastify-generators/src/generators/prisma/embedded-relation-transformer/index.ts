@@ -5,6 +5,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
+import { serviceContextProvider } from '@src/generators/core/service-context';
 import {
   PrismaDataTransformer,
   PrismaDataTransformerOptions,
@@ -189,6 +190,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
     prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
     foreignCrudService: prismaCrudServiceProvider.dependency().optional(),
     tsUtils: tsUtilsProvider,
+    serviceContext: serviceContextProvider,
   },
   populateDependencies: (dependencies, { foreignCrudServiceRef }) => ({
     ...dependencies,
@@ -203,7 +205,13 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       embeddedTransformerNames,
       inputName: inputNameDescriptor,
     },
-    { prismaOutput, prismaCrudServiceSetup, foreignCrudService, tsUtils }
+    {
+      prismaOutput,
+      prismaCrudServiceSetup,
+      foreignCrudService,
+      tsUtils,
+      serviceContext,
+    }
   ) {
     function buildTransformer({
       isUpdate,
@@ -278,6 +286,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         transformers: createTransformers,
         prismaOutput,
         isPartial: false,
+        serviceContext,
       };
 
       const dataInputType = getDataInputTypeBlock(

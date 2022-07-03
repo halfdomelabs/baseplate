@@ -51,6 +51,7 @@ export interface ServiceOutputMethod {
   expression: TypescriptCodeExpression;
   arguments: ServiceOutputDtoField[];
   returnType: ServiceOutputDto;
+  requiresContext?: boolean;
 }
 
 export function scalarPrismaFieldToServiceField(

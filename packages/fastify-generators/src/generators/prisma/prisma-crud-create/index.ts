@@ -4,6 +4,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
+import { serviceContextProvider } from '@src/generators/core/service-context';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
   PrismaDataTransformer,
@@ -18,6 +19,7 @@ import {
   getDataMethodDataExpressions,
   getDataMethodDataType,
   PrismaDataMethodOptions,
+  getDataMethodContextRequired,
 } from '../_shared/crud-method/data-method';
 import { prismaOutputProvider } from '../prisma';
 import { prismaCrudServiceProvider } from '../prisma-crud-service';
@@ -36,6 +38,7 @@ function getMethodDefinition(
   const { name, modelName, prismaOutput } = options;
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
   const dataType = getDataMethodDataType(options);
+  const hasContext = getDataMethodContextRequired(options);
 
   return {
     name,
@@ -47,6 +50,7 @@ function getMethodDefinition(
         nestedType: dataType,
       },
     ],
+    requiresContext: hasContext,
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
       prismaOutput.getServiceEnum(enumName)
     ),
@@ -56,7 +60,7 @@ function getMethodDefinition(
 function getMethodExpression(
   options: PrismaDataMethodOptions
 ): TypescriptCodeExpression {
-  const { name, modelName, prismaOutput } = options;
+  const { name, modelName, prismaOutput, serviceContext } = options;
 
   const createInputTypeName = `${modelName}CreateData`;
 
@@ -65,11 +69,13 @@ function getMethodExpression(
   const { functionBody, dataExpression } =
     getDataMethodDataExpressions(options);
 
+  const contextRequired = getDataMethodContextRequired(options);
+
   const modelType = prismaOutput.getModelTypeExpression(modelName);
 
   return TypescriptCodeUtils.formatExpression(
     `
-async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
+async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
   return PRISMA_MODEL.create(CREATE_ARGS);
@@ -79,6 +85,9 @@ async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
       METHOD_NAME: name,
       CREATE_INPUT_TYPE_NAME: createInputTypeName,
       MODEL_TYPE: modelType,
+      CONTEXT: contextRequired
+        ? serviceContext.getServiceContextType().prepend(`context: `)
+        : '',
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
       FUNCTION_BODY: functionBody,
       CREATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
@@ -98,10 +107,11 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
     prismaOutput: prismaOutputProvider,
     serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
     crudPrismaService: prismaCrudServiceProvider,
+    serviceContext: serviceContextProvider,
   },
   createGenerator(
     descriptor,
-    { prismaOutput, serviceFile, crudPrismaService }
+    { prismaOutput, serviceFile, crudPrismaService, serviceContext }
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
     const serviceMethodExpression = serviceFile
@@ -128,6 +138,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
           operationName: 'create',
           isPartial: false,
           transformers,
+          serviceContext,
         };
 
         serviceFile.registerMethod(

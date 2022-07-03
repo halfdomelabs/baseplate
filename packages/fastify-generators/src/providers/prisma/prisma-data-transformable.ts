@@ -19,6 +19,7 @@ export interface PrismaDataTransformer {
   outputFields: PrismaDataTransformOutputField[];
   transformer: TypescriptCodeBlock;
   isAsync: boolean;
+  needsContext?: boolean;
 }
 
 export interface PrismaDataTransformerOptions {

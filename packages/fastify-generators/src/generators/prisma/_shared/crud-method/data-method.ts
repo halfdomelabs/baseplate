@@ -4,6 +4,7 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import R from 'ramda';
+import { ServiceContextProvider } from '@src/generators/core/service-context';
 import { PrismaDataTransformer } from '@src/providers/prisma/prisma-data-transformable';
 import { ServiceOutputDto } from '@src/types/serviceOutput';
 import { upperCaseFirst } from '@src/utils/case';
@@ -17,6 +18,13 @@ export interface PrismaDataMethodOptions {
   operationName: string;
   isPartial: boolean;
   transformers: PrismaDataTransformer[];
+  serviceContext: ServiceContextProvider;
+}
+
+export function getDataMethodContextRequired({
+  transformers,
+}: Pick<PrismaDataMethodOptions, 'transformers'>): boolean {
+  return transformers.some((t) => t.needsContext);
 }
 
 export function getDataMethodDataType({
@@ -165,5 +173,8 @@ TRANSFORMERS;`,
     }
   );
 
-  return { functionBody, dataExpression };
+  return {
+    functionBody,
+    dataExpression,
+  };
 }

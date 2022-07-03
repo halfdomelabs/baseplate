@@ -12,11 +12,13 @@ import {
 import { paramCase } from 'change-case';
 import { z } from 'zod';
 import { ServiceOutputMethod } from '@src/types/serviceOutput';
+import { notEmpty } from '@src/utils/array';
 import { lowerCaseFirst } from '@src/utils/case';
 import { appModuleProvider } from '../root-module';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
+  methodOrder: z.array(z.string()).optional(),
 });
 
 export interface ServiceFileProvider {
@@ -101,10 +103,19 @@ const ServiceFileGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
+        const methods = methodMap.value();
+        const methodOrder = descriptor.methodOrder || [];
+        const orderedMethods = [
+          ...methodOrder.map((key) => methods[key]).filter(notEmpty),
+          ...Object.keys(methods)
+            .filter((m) => !methodOrder.includes(m))
+            .map((key) => methods[key]),
+        ];
+
         servicesFile.addCodeEntries({
           SERVICE_NAME: serviceName,
           METHODS: TypescriptCodeUtils.mergeExpressions(
-            Object.values(methodMap.value()),
+            orderedMethods,
             ',\n\n'
           ).wrap((c) => `{${c}}`),
         });
