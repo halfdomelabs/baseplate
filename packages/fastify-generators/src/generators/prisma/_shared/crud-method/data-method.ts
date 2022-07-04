@@ -1,5 +1,4 @@
 import {
-  quot,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
