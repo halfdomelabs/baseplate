@@ -228,11 +228,11 @@ const existingItem = OPTIONAL_WHERE
   const functionBody = TypescriptCodeUtils.formatBlock(
     `const { CUSTOM_INPUTS, ...rest } = data;
 
-    EXISTING_ITEM_GETTER;
+    EXISTING_ITEM_GETTER
 
-    PARENT_ID_CHECK;
+    PARENT_ID_CHECK
      
-TRANSFORMERS;`,
+TRANSFORMERS`,
     {
       CUSTOM_INPUTS: customInputs.join(', '),
       EXISTING_ITEM_GETTER: existingItemGetter,

@@ -94,7 +94,6 @@ function createEmbeddedTransformFunction(options: {
   prismaUtils: PrismaUtilsProvider;
   serviceContextType: TypescriptCodeExpression;
   isOneToOne?: boolean;
-  parentIdFieldName?: string;
   whereUniqueType: string;
 }): EmbeddedTransformFunctionOutput {
   const {
@@ -127,6 +126,7 @@ function createEmbeddedTransformFunction(options: {
       isAsync ? 'async ' : ''
     }function FUNC_NAME(data: INPUT_DATA_TYPE, context: CONTEXT_TYPE, whereUnique?: WHERE_UNIQUE_TYPE, parentId?: string): OUTPUT_TYPE {
       FUNCTION_BODY
+
       return DATA_RESULT;
     }`,
     {
@@ -243,6 +243,26 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         factory.buildTransformer({ operationType: 'upsert' })
       );
 
+      // If we use the existing item, we should check that its ID is actually owned
+      // by the parent
+      const parentIdCheckField = ((): string | undefined => {
+        if (!upsertTransformers.some((t) => t.needsExistingItem)) {
+          return undefined;
+        }
+        // figure out which field is parent ID
+        const foreignParentIdx = foreignRelation.references?.findIndex(
+          (reference) => reference === localId
+        );
+        // foreign parent ID is not in list
+        if (foreignParentIdx == null || foreignParentIdx === -1) {
+          throw new Error(
+            `Foreign reference must contain primary key of local model`
+          );
+        }
+        const foreignParentField = foreignRelation.fields?.[foreignParentIdx];
+        return foreignParentField;
+      })();
+
       const dataMethodOptions: Omit<PrismaDataMethodOptions, 'name'> = {
         modelName: foreignModel.name,
         prismaFieldNames: embeddedFields.map((f) => f.name),
@@ -254,6 +274,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         prismaUtils,
         operationType: 'upsert',
         whereUniqueExpression: 'whereUnique',
+        parentIdCheckField,
       };
 
       const upsertFunction = !embeddedTransformerFactories.length
