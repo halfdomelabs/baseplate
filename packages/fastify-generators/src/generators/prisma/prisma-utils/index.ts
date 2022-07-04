@@ -39,6 +39,10 @@ const UTIL_CONFIG_MAP: Record<string, UtilConfig> = {
     exports: ['createOneToOneCreateData', 'createOneToOneUpsertData'],
     dependencies: ['dataPipes', 'embeddedTypes'],
   },
+  prismaRelations: {
+    file: 'prisma-relations.ts',
+    exports: ['createPrismaDisconnectOrConnectData'],
+  },
 };
 
 export type PrismaUtilsProvider = ImportMapper;
