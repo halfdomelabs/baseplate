@@ -140,7 +140,7 @@ const ServiceContextGenerator = createGeneratorWithChildren({
               '; '
             ).wrap(
               (contents) => `
-            {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
+            {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}} = {}
           `
             ),
             TEST_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
