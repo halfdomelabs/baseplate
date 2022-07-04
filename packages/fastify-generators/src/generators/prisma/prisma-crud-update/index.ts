@@ -4,6 +4,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
+import { serviceContextProvider } from '@src/generators/core/service-context';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
   PrismaDataTransformer,
@@ -16,9 +17,11 @@ import {
 import { notEmpty } from '@src/utils/array';
 import {
   getDataInputTypeBlock,
+  getDataMethodContextRequired,
   getDataMethodDataExpressions,
   getDataMethodDataType,
   PrismaDataMethodOptions,
+  wrapWithApplyDataPipe,
 } from '../_shared/crud-method/data-method';
 import {
   getPrimaryKeyDefinition,
@@ -26,6 +29,7 @@ import {
 } from '../_shared/crud-method/primary-key-input';
 import { prismaOutputProvider } from '../prisma';
 import { prismaCrudServiceProvider } from '../prisma-crud-service';
+import { prismaUtilsProvider } from '../prisma-utils';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -43,6 +47,8 @@ function getMethodDefinition(
 
   const dataType = getDataMethodDataType(options);
   const idArgument = getPrimaryKeyDefinition(prismaDefinition);
+  const contextRequired = getDataMethodContextRequired(options);
+
   return {
     name,
     expression: serviceMethodExpression,
@@ -54,6 +60,7 @@ function getMethodDefinition(
         nestedType: dataType,
       },
     ],
+    requiresContext: contextRequired,
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
       prismaOutput.getServiceEnum(enumName)
     ),
@@ -63,26 +70,40 @@ function getMethodDefinition(
 function getMethodExpression(
   options: PrismaDataMethodOptions
 ): TypescriptCodeExpression {
-  const { name, modelName, prismaOutput } = options;
+  const { name, modelName, prismaOutput, serviceContext, prismaUtils } =
+    options;
 
   const updateInputTypeName = `${modelName}UpdateData`;
 
   const typeHeaderBlock = getDataInputTypeBlock(updateInputTypeName, options);
 
-  const { functionBody, dataExpression } =
+  const { functionBody, updateExpression, dataPipeNames } =
     getDataMethodDataExpressions(options);
+
+  const contextRequired = getDataMethodContextRequired(options);
 
   const modelType = prismaOutput.getModelTypeExpression(modelName);
 
   const model = prismaOutput.getPrismaModel(modelName);
   const primaryKey = getPrimaryKeyExpressions(model);
 
+  const operation = TypescriptCodeUtils.formatExpression(
+    `PRISMA_MODEL.update(UPDATE_ARGS)`,
+    {
+      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+      UPDATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+        where: primaryKey.whereClause,
+        data: updateExpression,
+      }),
+    }
+  );
+
   return TypescriptCodeUtils.formatExpression(
     `
-async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
+async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
-  return PRISMA_MODEL.update(UPDATE_ARGS);
+  return OPERATION;
 }
 `.trim(),
     {
@@ -92,10 +113,10 @@ async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE
       ID_ARGUMENT: primaryKey.argument,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
       FUNCTION_BODY: functionBody,
-      UPDATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
-        where: primaryKey.whereClause,
-        data: dataExpression,
-      }),
+      OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
+      CONTEXT: contextRequired
+        ? serviceContext.getServiceContextType().prepend(`context: `)
+        : '',
     },
     {
       headerBlocks: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
@@ -112,17 +133,25 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
     prismaOutput: prismaOutputProvider,
     serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
     crudPrismaService: prismaCrudServiceProvider,
+    serviceContext: serviceContextProvider,
+    prismaUtils: prismaUtilsProvider,
   },
   createGenerator(
     descriptor,
-    { prismaOutput, serviceFile, crudPrismaService }
+    {
+      prismaOutput,
+      serviceFile,
+      crudPrismaService,
+      serviceContext,
+      prismaUtils,
+    }
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
     const serviceMethodExpression = serviceFile
       .getServiceExpression()
       .append(`.${name}`);
     const transformerOption: PrismaDataTransformerOptions = {
-      isUpdate: true,
+      operationType: 'update',
     };
     const transformers: PrismaDataTransformer[] =
       transformerNames?.map((transformerName) =>
@@ -134,6 +163,8 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({}),
       build: () => {
+        const model = prismaOutput.getPrismaModel(modelName);
+        const primaryKey = getPrimaryKeyExpressions(model);
         const methodOptions: PrismaDataMethodOptions = {
           name,
           modelName,
@@ -142,6 +173,10 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
           operationName: 'update',
           isPartial: true,
           transformers,
+          serviceContext,
+          prismaUtils,
+          operationType: 'update',
+          whereUniqueExpression: primaryKey.whereClause,
         };
 
         serviceFile.registerMethod(

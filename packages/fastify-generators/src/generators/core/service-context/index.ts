@@ -37,6 +37,7 @@ export const serviceContextSetupProvider =
 
 export interface ServiceContextProvider extends ImportMapper {
   getContextPath(): string;
+  getServiceContextType(): TypescriptCodeExpression;
 }
 
 export const serviceContextProvider =
@@ -90,6 +91,11 @@ const ServiceContextGenerator = createGeneratorWithChildren({
         serviceContext: {
           getImportMap: () => importMap,
           getContextPath: () => contextPath,
+          getServiceContextType: () =>
+            TypescriptCodeUtils.createExpression(
+              'ServiceContext',
+              `import {ServiceContext} from '${contextImport}'`
+            ),
         },
       }),
       build: async (builder) => {
@@ -134,7 +140,7 @@ const ServiceContextGenerator = createGeneratorWithChildren({
               '; '
             ).wrap(
               (contents) => `
-            {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
+            {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}} = {}
           `
             ),
             TEST_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(

@@ -74,6 +74,7 @@ function buildServiceForModel(
   return {
     name: `${model.name}Service`,
     generator: '@baseplate/fastify/core/service-file',
+    methodOrder: ['create', 'update', 'delete'],
     children: {
       $crud: {
         generator: '@baseplate/fastify/prisma/prisma-crud-service',

@@ -4,6 +4,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
+import { serviceContextProvider } from '@src/generators/core/service-context';
 import { serviceFileProvider } from '@src/generators/core/service-file';
 import {
   PrismaDataTransformer,
@@ -18,9 +19,12 @@ import {
   getDataMethodDataExpressions,
   getDataMethodDataType,
   PrismaDataMethodOptions,
+  getDataMethodContextRequired,
+  wrapWithApplyDataPipe,
 } from '../_shared/crud-method/data-method';
 import { prismaOutputProvider } from '../prisma';
 import { prismaCrudServiceProvider } from '../prisma-crud-service';
+import { prismaUtilsProvider } from '../prisma-utils';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -36,6 +40,7 @@ function getMethodDefinition(
   const { name, modelName, prismaOutput } = options;
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
   const dataType = getDataMethodDataType(options);
+  const hasContext = getDataMethodContextRequired(options);
 
   return {
     name,
@@ -47,6 +52,7 @@ function getMethodDefinition(
         nestedType: dataType,
       },
     ],
+    requiresContext: hasContext,
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
       prismaOutput.getServiceEnum(enumName)
     ),
@@ -56,34 +62,47 @@ function getMethodDefinition(
 function getMethodExpression(
   options: PrismaDataMethodOptions
 ): TypescriptCodeExpression {
-  const { name, modelName, prismaOutput } = options;
+  const { name, modelName, prismaOutput, serviceContext, prismaUtils } =
+    options;
 
   const createInputTypeName = `${modelName}CreateData`;
 
   const typeHeaderBlock = getDataInputTypeBlock(createInputTypeName, options);
 
-  const { functionBody, dataExpression } =
+  const { functionBody, createExpression, dataPipeNames } =
     getDataMethodDataExpressions(options);
+
+  const contextRequired = getDataMethodContextRequired(options);
 
   const modelType = prismaOutput.getModelTypeExpression(modelName);
 
+  const operation = TypescriptCodeUtils.formatExpression(
+    `PRISMA_MODEL.create(CREATE_ARGS)`,
+    {
+      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+      CREATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+        data: createExpression,
+      }),
+    }
+  );
+
   return TypescriptCodeUtils.formatExpression(
     `
-async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME): Promise<MODEL_TYPE> {
+async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
-  return PRISMA_MODEL.create(CREATE_ARGS);
+  return OPERATION;
 }
 `.trim(),
     {
       METHOD_NAME: name,
       CREATE_INPUT_TYPE_NAME: createInputTypeName,
       MODEL_TYPE: modelType,
-      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+      CONTEXT: contextRequired
+        ? serviceContext.getServiceContextType().prepend(`context: `)
+        : '',
       FUNCTION_BODY: functionBody,
-      CREATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
-        data: dataExpression,
-      }),
+      OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
     },
     {
       headerBlocks: [typeHeaderBlock],
@@ -98,17 +117,25 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
     prismaOutput: prismaOutputProvider,
     serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
     crudPrismaService: prismaCrudServiceProvider,
+    serviceContext: serviceContextProvider,
+    prismaUtils: prismaUtilsProvider,
   },
   createGenerator(
     descriptor,
-    { prismaOutput, serviceFile, crudPrismaService }
+    {
+      prismaOutput,
+      serviceFile,
+      crudPrismaService,
+      serviceContext,
+      prismaUtils,
+    }
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
     const serviceMethodExpression = serviceFile
       .getServiceExpression()
       .append(`.${name}`);
     const transformerOption: PrismaDataTransformerOptions = {
-      isUpdate: false,
+      operationType: 'create',
     };
     const transformers: PrismaDataTransformer[] =
       transformerNames?.map((transformerName) =>
@@ -128,6 +155,10 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
           operationName: 'create',
           isPartial: false,
           transformers,
+          serviceContext,
+          prismaUtils,
+          operationType: 'create',
+          whereUniqueExpression: null,
         };
 
         serviceFile.registerMethod(

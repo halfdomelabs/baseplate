@@ -55,6 +55,10 @@ export function buildFastify(
         generator: '@baseplate/fastify/jest/prisma-jest',
         peerProvider: true,
       },
+      $prismaUtils: {
+        generator: '@baseplate/fastify/prisma/prisma-utils',
+        peerProvider: true,
+      },
       $nexus: {
         generator: '@baseplate/fastify/nexus/nexus',
         peerProvider: true,

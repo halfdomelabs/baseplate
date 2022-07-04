@@ -402,6 +402,9 @@ export const TypescriptCodeUtils = {
       .map((key) => {
         const value = obj[key] || '';
         const content = typeof value === 'string' ? value : value.content;
+        if (key.startsWith('...')) {
+          return `...${content}`;
+        }
         if (key === content) {
           return `${key},`;
         }

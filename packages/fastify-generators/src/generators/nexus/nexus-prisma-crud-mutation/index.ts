@@ -38,7 +38,7 @@ export const MUTATION_EXPORT = createStandardMutation({
   payloadDefinition(t) {
     t.nonNull.field('RETURN_FIELD_NAME', { type: OBJECT_TYPE_NAME });
   },
-  async resolve(root, { input: INPUT_PARTS }) {
+  async resolve(root, { input: INPUT_PARTS }, CONTEXT) {
     const RETURN_FIELD_NAME = await SERVICE_CALL(SERVICE_ARGUMENTS);
     return { RETURN_FIELD_NAME };
   },
@@ -192,6 +192,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
         MUTATION_INPUT_DEFINITION: { type: 'code-block' },
         OBJECT_TYPE_NAME: { type: 'code-expression' },
         INPUT_PARTS: { type: 'code-expression' },
+        CONTEXT: { type: 'code-expression' },
         SERVICE_CALL: { type: 'code-expression' },
         SERVICE_ARGUMENTS: { type: 'code-expression' },
         RETURN_FIELD_NAME: { type: 'code-expression' },
@@ -219,11 +220,12 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       MUTATION_INPUT_DEFINITION: inputDefinitions.definition,
       OBJECT_TYPE_NAME: `'${modelName}'`,
       INPUT_PARTS: `{ ${argNames.join(', ')} }`,
+      CONTEXT: serviceOutput.requiresContext ? 'context' : '',
       SERVICE_CALL: serviceOutput.expression,
       SERVICE_ARGUMENTS: TypescriptCodeUtils.mergeExpressions(
         serviceOutput.arguments.map((arg) => convertArgForCall(arg, tsUtils)),
         ', '
-      ),
+      ).append(serviceOutput.requiresContext ? ', context' : ''),
       RETURN_FIELD_NAME: lowerCaseFirst(modelName),
     });
 

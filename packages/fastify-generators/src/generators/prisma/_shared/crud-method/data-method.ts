@@ -4,10 +4,16 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import R from 'ramda';
-import { PrismaDataTransformer } from '@src/providers/prisma/prisma-data-transformable';
+import { ServiceContextProvider } from '@src/generators/core/service-context';
+import {
+  PrismaDataTransformer,
+  PrismaDataTransformOutputField,
+} from '@src/providers/prisma/prisma-data-transformable';
 import { ServiceOutputDto } from '@src/types/serviceOutput';
+import { notEmpty } from '@src/utils/array';
 import { upperCaseFirst } from '@src/utils/case';
 import { PrismaOutputProvider } from '../../prisma';
+import { PrismaUtilsProvider } from '../../prisma-utils';
 
 export interface PrismaDataMethodOptions {
   name: string;
@@ -15,8 +21,43 @@ export interface PrismaDataMethodOptions {
   prismaFieldNames: string[];
   prismaOutput: PrismaOutputProvider;
   operationName: string;
+  operationType: 'create' | 'upsert' | 'update';
+  whereUniqueExpression: string | null;
+  // optionally check parent ID matches existing item
+  parentIdCheckField?: string;
   isPartial: boolean;
   transformers: PrismaDataTransformer[];
+  serviceContext: ServiceContextProvider;
+  prismaUtils: PrismaUtilsProvider;
+}
+
+export function getDataMethodContextRequired({
+  transformers,
+}: Pick<PrismaDataMethodOptions, 'transformers'>): boolean {
+  return transformers.some((t) => t.needsContext);
+}
+
+export function wrapWithApplyDataPipe(
+  operation: TypescriptCodeExpression,
+  pipeNames: string[],
+  prismaUtils: PrismaUtilsProvider
+): TypescriptCodeExpression {
+  if (!pipeNames.length) {
+    return operation;
+  }
+  return TypescriptCodeUtils.formatExpression(
+    `applyDataPipeOutput(PIPE_NAMES, OPERATION)`,
+    {
+      PIPE_NAMES: `[${pipeNames.join(', ')}]`,
+      OPERATION: operation,
+    },
+    {
+      importText: [
+        "import {applyDataPipeOutput} from '%prisma-utils/dataPipes'",
+      ],
+      importMappers: [prismaUtils],
+    }
+  );
 }
 
 export function getDataMethodDataType({
@@ -124,14 +165,31 @@ export function getDataInputTypeBlock(
 
 export function getDataMethodDataExpressions({
   transformers,
-}: Pick<PrismaDataMethodOptions, 'transformers'>): {
+  operationType,
+  whereUniqueExpression,
+  parentIdCheckField,
+  prismaOutput,
+  modelName,
+}: Pick<
+  PrismaDataMethodOptions,
+  | 'prismaOutput'
+  | 'modelName'
+  | 'transformers'
+  | 'operationType'
+  | 'whereUniqueExpression'
+  | 'parentIdCheckField'
+>): {
   functionBody: TypescriptCodeBlock | string;
-  dataExpression: TypescriptCodeExpression;
+  createExpression: TypescriptCodeExpression;
+  updateExpression: TypescriptCodeExpression;
+  dataPipeNames: string[];
 } {
   if (!transformers.length) {
     return {
       functionBody: '',
-      dataExpression: TypescriptCodeUtils.createExpression('data'),
+      createExpression: TypescriptCodeUtils.createExpression('data'),
+      updateExpression: TypescriptCodeUtils.createExpression('data'),
+      dataPipeNames: [],
     };
   }
 
@@ -139,31 +197,84 @@ export function getDataMethodDataExpressions({
     t.inputFields.map((f) => f.dtoField.name)
   );
 
+  const needsExistingItem = transformers.some((t) => t.needsExistingItem);
+
+  const existingItemGetter = !needsExistingItem
+    ? TypescriptCodeUtils.createBlock('')
+    : TypescriptCodeUtils.formatBlock(
+        `
+const existingItem = OPTIONAL_WHERE
+(await PRISMA_MODEL.findUnique({ where: WHERE_UNIQUE, rejectOnNotFound: true }))
+`,
+        {
+          OPTIONAL_WHERE:
+            // TODO: Make it a bit more flexible
+            operationType === 'upsert' && whereUniqueExpression
+              ? `${whereUniqueExpression} && `
+              : '',
+          PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
+          WHERE_UNIQUE: whereUniqueExpression || '',
+        }
+      );
+
+  const parentIdCheck =
+    parentIdCheckField &&
+    `
+    if (existingItem && existingItem.${parentIdCheckField} !== parentId) {
+      throw new Error('${modelName} not attached to the correct parent item');
+    }
+    `;
+
   const functionBody = TypescriptCodeUtils.formatBlock(
     `const { CUSTOM_INPUTS, ...rest } = data;
+
+    EXISTING_ITEM_GETTER
+
+    PARENT_ID_CHECK
      
-TRANSFORMERS;`,
+TRANSFORMERS`,
     {
       CUSTOM_INPUTS: customInputs.join(', '),
+      EXISTING_ITEM_GETTER: existingItemGetter,
+      PARENT_ID_CHECK: parentIdCheck ?? '',
       TRANSFORMERS: TypescriptCodeUtils.mergeBlocks(
-        transformers.map((t) => t.transformer),
+        transformers.flatMap((t) => t.outputFields.map((f) => f.transformer)),
         '\n\n'
       ),
     }
   );
 
-  const customOutputs = transformers.flatMap((t) =>
-    t.outputFields.map((f) =>
-      f.outputVariableName ? `${f.name}: ${f.outputVariableName}` : f.name
-    )
-  );
+  function createExpressionEntries(
+    expressionExtractor: (
+      field: PrismaDataTransformOutputField
+    ) => TypescriptCodeExpression | string | undefined
+  ): TypescriptCodeExpression {
+    const dataExpressionEntries = [
+      ...transformers.flatMap((t) =>
+        t.outputFields.map((f): [string, TypescriptCodeExpression | string] => [
+          f.name,
+          expressionExtractor(f) ||
+            (f.pipeOutputName ? `${f.pipeOutputName}.data` : f.name),
+        ])
+      ),
+      ['...', 'rest'] as [string, string],
+    ];
 
-  const dataExpression = TypescriptCodeUtils.formatExpression(
-    `{ CUSTOM_OUTPUTS, ...rest }`,
-    {
-      CUSTOM_OUTPUTS: customOutputs.join(', '),
-    }
-  );
+    return TypescriptCodeUtils.mergeExpressionsAsObject(
+      R.fromPairs(dataExpressionEntries)
+    );
+  }
 
-  return { functionBody, dataExpression };
+  const createExpression = createExpressionEntries((f) => f.createExpression);
+
+  const updateExpression = createExpressionEntries((f) => f.updateExpression);
+
+  return {
+    functionBody,
+    createExpression,
+    updateExpression,
+    dataPipeNames: transformers.flatMap((t) =>
+      t.outputFields.map((f) => f.pipeOutputName).filter(notEmpty)
+    ),
+  };
 }

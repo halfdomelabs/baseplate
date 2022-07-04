@@ -11,18 +11,22 @@ export interface PrismaDataTransformInputField {
 
 export interface PrismaDataTransformOutputField {
   name: string;
-  outputVariableName?: string;
+  transformer: TypescriptCodeBlock;
+  pipeOutputName?: string;
+  createExpression?: TypescriptCodeExpression | string;
+  updateExpression?: TypescriptCodeExpression | string;
 }
 
 export interface PrismaDataTransformer {
   inputFields: PrismaDataTransformInputField[];
   outputFields: PrismaDataTransformOutputField[];
-  transformer: TypescriptCodeBlock;
   isAsync: boolean;
+  needsContext?: boolean;
+  needsExistingItem?: boolean;
 }
 
 export interface PrismaDataTransformerOptions {
-  isUpdate: boolean;
+  operationType: 'create' | 'update' | 'upsert';
 }
 
 export interface PrismaDataTransformerFactory {
