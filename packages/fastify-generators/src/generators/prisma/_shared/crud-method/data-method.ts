@@ -9,6 +9,11 @@ import {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
 } from '@src/providers/prisma/prisma-data-transformable';
+import { getScalarFieldTypeInfo } from '@src/types/fieldTypes';
+import {
+  PrismaOutputRelationField,
+  PrismaOutputScalarField,
+} from '@src/types/prismaOutput';
 import { ServiceOutputDto } from '@src/types/serviceOutput';
 import { notEmpty } from '@src/utils/array';
 import { upperCaseFirst } from '@src/utils/case';
@@ -170,6 +175,8 @@ export function getDataMethodDataExpressions({
   parentIdCheckField,
   prismaOutput,
   modelName,
+  prismaFieldNames,
+  prismaUtils,
 }: Pick<
   PrismaDataMethodOptions,
   | 'prismaOutput'
@@ -178,6 +185,8 @@ export function getDataMethodDataExpressions({
   | 'operationType'
   | 'whereUniqueExpression'
   | 'parentIdCheckField'
+  | 'prismaFieldNames'
+  | 'prismaUtils'
 >): {
   functionBody: TypescriptCodeBlock | string;
   createExpression: TypescriptCodeExpression;
@@ -193,11 +202,128 @@ export function getDataMethodDataExpressions({
     };
   }
 
-  const customInputs = transformers.flatMap((t) =>
+  // if there are transformers, try to use the CheckedDataInput instead of Unchecked to allow nested creations
+  const outputModel = prismaOutput.getPrismaModel(modelName);
+  const relationFields = outputModel.fields.filter(
+    (field): field is PrismaOutputRelationField =>
+      field.type === 'relation' &&
+      !!field.fields &&
+      field.fields?.some((relationScalarField) =>
+        prismaFieldNames.includes(relationScalarField)
+      )
+  );
+
+  const relationTransformers = relationFields.map(
+    (field): PrismaDataTransformer => {
+      const relationScalarFields = field.fields || [];
+      const missingFields = relationScalarFields.filter(
+        (f) => !prismaFieldNames.includes(f)
+      );
+      if (missingFields.length) {
+        throw new Error(
+          `Relation named ${
+            field.name
+          } requires all fields as inputs (missing ${missingFields.join(', ')})`
+        );
+      }
+
+      // create pseudo-transformer for relation fields
+      const transformerPrefix =
+        operationType === 'update' || field.isOptional
+          ? `${relationScalarFields
+              .map((f) => `${f} == null`)
+              .join(' || ')} ? ${relationScalarFields.join(' && ')} : `
+          : '';
+
+      const foreignModel = prismaOutput.getPrismaModel(field.modelType);
+      const foreignIdFields = foreignModel.idFields;
+
+      if (!foreignIdFields?.length) {
+        throw new Error(`Foreign model has to have primary key`);
+      }
+
+      const uniqueWhereValue = TypescriptCodeUtils.mergeExpressionsAsObject(
+        R.fromPairs(
+          foreignIdFields.map((idField): [string, string] => {
+            const idx = field.references?.findIndex(
+              (refName) => refName === idField
+            );
+            if (idx == null || idx === -1) {
+              throw new Error(
+                `Relation ${field.name} must have a reference to the primary key of ${field.modelType}`
+              );
+            }
+            const localField = relationScalarFields[idx];
+            // slightly awkward cast since update data might not be just a string
+            const localFieldScalarType = getScalarFieldTypeInfo(
+              (
+                outputModel.fields.find(
+                  (f) => f.name === localField
+                ) as PrismaOutputScalarField
+              ).scalarType
+            );
+            const castSuffix =
+              operationType === 'update'
+                ? ` as ${localFieldScalarType.typescriptType}`
+                : '';
+            return [idField, `${localField}${castSuffix}`];
+          })
+        )
+      );
+
+      const uniqueWhere =
+        foreignIdFields.length > 1
+          ? uniqueWhereValue.wrap(
+              (contents) => `{ ${foreignIdFields.join('_')}: ${contents}}`
+            )
+          : uniqueWhereValue;
+
+      const transformer = field.isOptional
+        ? // awkward hack where null doesn't mean disconnect
+          TypescriptCodeUtils.formatBlock(
+            'const FIELD_NAME = createPrismaDisconnectOrConnectData(TRANSFORMER_PREFIX UNIQUE_WHERE)',
+            {
+              FIELD_NAME: field.name,
+              TRANSFORMER_PREFIX: transformerPrefix,
+              UNIQUE_WHERE: uniqueWhere,
+            },
+            {
+              importText: [
+                `import {createPrismaDisconnectOrConnectData} from '%prisma-utils/prismaRelations'`,
+              ],
+              importMappers: [prismaUtils],
+            }
+          )
+        : TypescriptCodeUtils.formatBlock(
+            'const FIELD_NAME = TRANSFORMER_PREFIX { connect: UNIQUE_WHERE }',
+            {
+              FIELD_NAME: field.name,
+              TRANSFORMER_PREFIX: transformerPrefix,
+              UNIQUE_WHERE: uniqueWhere,
+            }
+          );
+
+      return {
+        inputFields:
+          relationScalarFields.map((f) => ({
+            type: TypescriptCodeUtils.createExpression(''),
+            dtoField: { name: f, type: 'scalar', scalarType: 'string' },
+          })) || [],
+        outputFields: [{ name: field.name, transformer }],
+        isAsync: false,
+      };
+    }
+  );
+
+  const augmentedTransformers = [...transformers, ...relationTransformers];
+
+  const customInputs = augmentedTransformers.flatMap((t) =>
     t.inputFields.map((f) => f.dtoField.name)
   );
 
-  const needsExistingItem = transformers.some((t) => t.needsExistingItem);
+  const needsExistingItem = augmentedTransformers.some(
+    (t) => t.needsExistingItem
+  );
 
   const existingItemGetter = !needsExistingItem
     ? TypescriptCodeUtils.createBlock('')
@@ -238,7 +364,9 @@ TRANSFORMERS`,
       EXISTING_ITEM_GETTER: existingItemGetter,
       PARENT_ID_CHECK: parentIdCheck ?? '',
       TRANSFORMERS: TypescriptCodeUtils.mergeBlocks(
-        transformers.flatMap((t) => t.outputFields.map((f) => f.transformer)),
+        augmentedTransformers
+          .flatMap((t) => t.outputFields.map((f) => f.transformer))
+          .filter(notEmpty),
         '\n\n'
       ),
     }
@@ -250,7 +378,7 @@ TRANSFORMERS`,
     ) => TypescriptCodeExpression | string | undefined
   ): TypescriptCodeExpression {
     const dataExpressionEntries = [
-      ...transformers.flatMap((t) =>
+      ...augmentedTransformers.flatMap((t) =>
         t.outputFields.map((f): [string, TypescriptCodeExpression | string] => [
           f.name,
           expressionExtractor(f) ||

@@ -11,7 +11,7 @@ export interface PrismaDataTransformInputField {
 
 export interface PrismaDataTransformOutputField {
   name: string;
-  transformer: TypescriptCodeBlock;
+  transformer?: TypescriptCodeBlock;
   pipeOutputName?: string;
   createExpression?: TypescriptCodeExpression | string;
   updateExpression?: TypescriptCodeExpression | string;
