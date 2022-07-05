@@ -101,13 +101,13 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
 
     adminCrudInputContainer.addInput({
       content: TypescriptCodeUtils.createExpression(
-        `<SelectInput.LabelledController
+        `<ReactSelectInput.LabelledController
           label="${label}"
           control={control}
           name="${localField}"
           options={${optionsName}}
         />`,
-        'import { SelectInput } from "%react-components"',
+        'import { ReactSelectInput } from "%react-components"',
         { importMappers: [reactComponents] }
       ),
       graphQLFields: [{ name: localField }],

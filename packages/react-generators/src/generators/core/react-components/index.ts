@@ -36,6 +36,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'LinkButton' },
   { name: 'ListGroup' },
   { name: 'NotFoundCard' },
+  { name: 'ReactSelectInput' },
   { name: 'SelectInput' },
   { name: 'Sidebar' },
   { name: 'Spinner' },
@@ -78,6 +79,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       'react-hook-form': '^7.28.0',
       'react-hot-toast': '^2.2.0',
       'react-icons': '^4.3.1',
+      'react-select': '~5.2.2',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useStatus.ts`
