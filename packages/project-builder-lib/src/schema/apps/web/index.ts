@@ -9,6 +9,7 @@ export const webAppSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
   allowedRoles: z.array(z.string().min(1)).optional(),
+  includeUploadComponents: z.boolean().optional(),
 });
 
 export type WebAppConfig = z.infer<typeof webAppSchema>;

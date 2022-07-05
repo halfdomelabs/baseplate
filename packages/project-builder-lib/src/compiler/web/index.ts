@@ -56,6 +56,11 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
         generator: '@baseplate/react/apollo/apollo-error',
         peerProvider: true,
       },
+      $uploadComponents: projectConfig.storage &&
+        appConfig.includeUploadComponents && {
+          generator: '@baseplate/react/storage/upload-components',
+          peerProvider: true,
+        },
       ...compileAuthFeatures(builder),
     },
   };
