@@ -20,6 +20,7 @@ const descriptorSchema = z.object({
 export type ReactAppProvider = {
   getRenderWrappers(): OrderedList<TypescriptCodeWrapper>;
   setRenderRoot(root: TypescriptCodeExpression): void;
+  addRenderSibling(sibling: TypescriptCodeExpression): void;
 };
 
 export const reactAppProvider =
@@ -38,6 +39,7 @@ const ReactAppGenerator = createGeneratorWithChildren({
     const renderWrappers = createOrderedList<TypescriptCodeWrapper>();
     let renderRoot: TypescriptCodeExpression =
       TypescriptCodeUtils.createExpression('<div />');
+    const renderSiblings: TypescriptCodeExpression[] = [];
 
     const appFile = typescript.createTemplate({
       COMPONENT_CODE: { type: 'code-block' },
@@ -64,12 +66,20 @@ const ReactAppGenerator = createGeneratorWithChildren({
           setRenderRoot(root) {
             renderRoot = root;
           },
+          addRenderSibling(sibling) {
+            renderSiblings.push(sibling);
+          },
         },
       }),
       build: async (builder) => {
+        const rootWithSiblings = TypescriptCodeUtils.mergeExpressions(
+          [renderRoot, ...renderSiblings],
+          '\n'
+        );
+
         appFile.addCodeEntries({
           RENDER_WRAPPERS: renderWrappers.getItems(),
-          RENDER_ROOT: renderRoot,
+          RENDER_ROOT: rootWithSiblings,
         });
 
         const destination = `${srcFolder}/app/App.tsx`;

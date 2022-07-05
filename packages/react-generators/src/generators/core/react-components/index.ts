@@ -3,6 +3,7 @@ import {
   ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
+  TypescriptCodeUtils,
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
@@ -12,6 +13,7 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { reactProvider } from '../react';
+import { reactAppProvider } from '../react-app';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -62,11 +64,12 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     react: reactProvider,
     node: nodeProvider,
     typescript: typescriptProvider,
+    reactApp: reactAppProvider,
   },
   exports: {
     reactComponents: reactComponentsProvider,
   },
-  createGenerator(descriptor, { react, node, typescript }) {
+  createGenerator(descriptor, { react, node, typescript, reactApp }) {
     const srcFolder = react.getSrcFolder();
     node.addPackages({
       '@headlessui/react': '^1.5.0',
@@ -83,6 +86,15 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       `${srcFolder}/hooks/useToast.tsx`
     );
     const allReactComponents = [...REACT_COMPONENTS];
+
+    // add toaster root sibling component
+    reactApp.addRenderSibling(
+      TypescriptCodeUtils.createExpression(
+        '<Toaster />',
+        "import { Toaster } from 'react-hot-toast';"
+      )
+    );
+
     return {
       getProviders: () => ({
         reactComponents: {
