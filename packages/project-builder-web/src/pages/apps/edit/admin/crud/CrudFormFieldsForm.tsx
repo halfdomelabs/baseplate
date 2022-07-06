@@ -1,6 +1,7 @@
 import {
   AdminCrudSectionConfig,
   adminCrudInputTypes,
+  FileTransformerConfig,
 } from '@baseplate/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
@@ -19,12 +20,14 @@ function FieldForm({
   fieldOptions,
   localRelationOptions,
   enumFieldOptions,
+  fileTransformerOptions,
 }: {
   idx: number;
   control: Control<AdminCrudSectionConfig>;
   enumFieldOptions: { label: string; value: string }[];
   fieldOptions: { label: string; value: string }[];
   localRelationOptions: { label: string; value: string }[];
+  fileTransformerOptions: { label: string; value: string }[];
 }): JSX.Element {
   const fieldTypeOptions = adminCrudInputTypes.map((t) => ({
     label: t,
@@ -81,6 +84,14 @@ function FieldForm({
           />
         </>
       )}
+      {type === 'file' && (
+        <SelectInput.LabelledController
+          label="File Transformer Name"
+          control={control}
+          name={`form.fields.${idx}.modelRelation`}
+          options={fileTransformerOptions}
+        />
+      )}
       {type === 'text' && (
         <>
           <SelectInput.LabelledController
@@ -121,6 +132,14 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
       value: relation.name,
     })) || [];
 
+  const fileTransformerOptions =
+    model?.service?.transformers
+      ?.filter((t): t is FileTransformerConfig => t.type === 'file')
+      .map((transformer) => ({
+        label: transformer.name,
+        value: transformer.name,
+      })) || [];
+
   const enumFieldOptions =
     model?.model.fields
       .filter((f) => f.type === 'enum')
@@ -149,6 +168,7 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
             fieldOptions={fieldOptions}
             localRelationOptions={localRelationOptions}
             enumFieldOptions={enumFieldOptions}
+            fileTransformerOptions={fileTransformerOptions}
           />
         </CollapsibleRow>
       ))}

@@ -2,6 +2,7 @@ import { ParsedProjectConfig } from '@src/parser';
 import { ParsedModel } from '@src/parser/types';
 import {
   EmbeddedRelationTransformerConfig,
+  FileTransformerConfig,
   TransformerConfig,
 } from '@src/schema/models/transformers';
 
@@ -38,6 +39,38 @@ function buildEmbeddedRelationTransformer(
   };
 }
 
+function buildFileTransformer(
+  transformer: FileTransformerConfig,
+  model: ParsedModel,
+  parsedProject: ParsedProjectConfig
+): unknown {
+  const { name } = transformer;
+
+  const foreignRelation = model.model.relations?.find(
+    (relation) => relation.name === name
+  );
+
+  if (!foreignRelation) {
+    throw new Error(`Could not find relation ${name} for file transformer`);
+  }
+
+  const category = parsedProject.projectConfig.storage?.categories.find(
+    (c) => c.usedByRelation === foreignRelation.foreignRelationName
+  );
+
+  if (!category) {
+    throw new Error(
+      `Could not find category for relation ${foreignRelation.name}`
+    );
+  }
+
+  return {
+    generator: '@baseplate/fastify/storage/prisma-file-transformer',
+    category: category.name,
+    name,
+  };
+}
+
 function buildTransformer(
   transformer: TransformerConfig,
   model: ParsedModel,
@@ -55,6 +88,8 @@ function buildTransformer(
         name: transformer.name,
         generator: '@baseplate/fastify/auth/prisma-password-transformer',
       };
+    case 'file':
+      return buildFileTransformer(transformer, model, parsedProject);
     default:
       throw new Error(
         `Unknown transformer type: ${(transformer as { type: string }).type}`

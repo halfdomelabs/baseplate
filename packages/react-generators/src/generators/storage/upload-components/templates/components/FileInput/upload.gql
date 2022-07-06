@@ -1,0 +1,19 @@
+fragment FileInput on FILE_SCHEMA {
+  id
+  name
+}
+
+mutation CreateUploadUrl($input: CreatePresignedUploadUrlInput!) {
+  createPresignedUploadUrl(input: $input) {
+    url
+    fields {
+      name
+      value
+    }
+    method
+    file {
+      id
+      name
+    }
+  }
+}

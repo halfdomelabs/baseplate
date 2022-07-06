@@ -605,7 +605,7 @@ export class TypescriptSourceFile<
       ];
 
       const importMappers = [
-        ...providedEntries.flatMap((e) => e?.options?.importMappers || []),
+        ...entries.flatMap((e) => e?.options?.importMappers || []),
         ...(this.sourceFileOptions.importMappers || []),
       ];
 

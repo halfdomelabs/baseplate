@@ -232,7 +232,11 @@ export function getDataMethodDataExpressions({
         operationType === 'update' || field.isOptional
           ? `${relationScalarFields
               .map((f) => `${f} == null`)
-              .join(' || ')} ? ${relationScalarFields.join(' && ')} : `
+              .join(' || ')} ? ${
+              operationType === 'create'
+                ? 'undefined'
+                : relationScalarFields.join(' && ')
+            } : `
           : '';
 
       const foreignModel = prismaOutput.getPrismaModel(field.modelType);
@@ -278,30 +282,14 @@ export function getDataMethodDataExpressions({
             )
           : uniqueWhereValue;
 
-      const transformer = field.isOptional
-        ? // awkward hack where null doesn't mean disconnect
-          TypescriptCodeUtils.formatBlock(
-            'const FIELD_NAME = createPrismaDisconnectOrConnectData(TRANSFORMER_PREFIX UNIQUE_WHERE)',
-            {
-              FIELD_NAME: field.name,
-              TRANSFORMER_PREFIX: transformerPrefix,
-              UNIQUE_WHERE: uniqueWhere,
-            },
-            {
-              importText: [
-                `import {createPrismaDisconnectOrConnectData} from '%prisma-utils/prismaRelations'`,
-              ],
-              importMappers: [prismaUtils],
-            }
-          )
-        : TypescriptCodeUtils.formatBlock(
-            'const FIELD_NAME = TRANSFORMER_PREFIX { connect: UNIQUE_WHERE }',
-            {
-              FIELD_NAME: field.name,
-              TRANSFORMER_PREFIX: transformerPrefix,
-              UNIQUE_WHERE: uniqueWhere,
-            }
-          );
+      const transformer = TypescriptCodeUtils.formatBlock(
+        'const FIELD_NAME = TRANSFORMER_PREFIX { connect: UNIQUE_WHERE }',
+        {
+          FIELD_NAME: field.name,
+          TRANSFORMER_PREFIX: transformerPrefix,
+          UNIQUE_WHERE: uniqueWhere,
+        }
+      );
 
       return {
         inputFields:
@@ -309,7 +297,23 @@ export function getDataMethodDataExpressions({
             type: TypescriptCodeUtils.createExpression(''),
             dtoField: { name: f, type: 'scalar', scalarType: 'string' },
           })) || [],
-        outputFields: [{ name: field.name, transformer }],
+        outputFields: [
+          {
+            name: field.name,
+            transformer,
+            createExpression:
+              operationType === 'upsert'
+                ? `${field.name} || undefined`
+                : undefined,
+            updateExpression: field.isOptional
+              ? TypescriptCodeUtils.createExpression(
+                  `createPrismaDisconnectOrConnectData(${field.name})`,
+                  'import {createPrismaDisconnectOrConnectData} from "%prisma-utils/prismaRelations"',
+                  { importMappers: [prismaUtils] }
+                )
+              : undefined,
+          },
+        ],
         isAsync: false,
       };
     }
@@ -321,9 +325,9 @@ export function getDataMethodDataExpressions({
     t.inputFields.map((f) => f.dtoField.name)
   );
 
-  const needsExistingItem = augmentedTransformers.some(
-    (t) => t.needsExistingItem
-  );
+  const needsExistingItem =
+    operationType !== 'create' &&
+    augmentedTransformers.some((t) => t.needsExistingItem);
 
   const existingItemGetter = !needsExistingItem
     ? TypescriptCodeUtils.createBlock('')

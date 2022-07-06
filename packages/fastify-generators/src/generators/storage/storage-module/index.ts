@@ -1,5 +1,7 @@
 import path from 'path';
 import {
+  ImportMapper,
+  makeImportAndFilePath,
   nodeProvider,
   quot,
   TypescriptCodeExpression,
@@ -18,6 +20,7 @@ import { appModuleProvider } from '@src/generators/core/root-module';
 import { serviceContextProvider } from '@src/generators/core/service-context';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+import { prismaUtilsProvider } from '@src/generators/prisma/prisma-utils';
 
 const descriptorSchema = z.object({
   fileModel: z.string().min(1),
@@ -38,7 +41,7 @@ const descriptorSchema = z.object({
   ),
 });
 
-export type StorageModuleProvider = unknown;
+export type StorageModuleProvider = ImportMapper;
 
 export const storageModuleProvider =
   createProviderType<StorageModuleProvider>('storage-module');
@@ -55,6 +58,7 @@ const StorageModuleGenerator = createGeneratorWithChildren({
     errorHandlerService: errorHandlerServiceProvider,
     prismaOutput: prismaOutputProvider,
     configService: configServiceProvider,
+    prismaUtils: prismaUtilsProvider,
   },
   exports: {
     storageModule: storageModuleProvider,
@@ -70,6 +74,7 @@ const StorageModuleGenerator = createGeneratorWithChildren({
       errorHandlerService,
       prismaOutput,
       configService,
+      prismaUtils,
     }
   ) {
     const moduleFolder = appModule.getModuleFolder();
@@ -102,9 +107,22 @@ const StorageModuleGenerator = createGeneratorWithChildren({
         seedValue: 'AWS_DEFAULT_REGION',
       });
 
+    const [validatorImport, validatorPath] = makeImportAndFilePath(
+      `${moduleFolder}/services/validate-upload-input.ts`
+    );
+
     return {
       getProviders: () => ({
-        storageModule: {},
+        storageModule: {
+          getImportMap() {
+            return {
+              '%storage-module/validate-upload-input': {
+                path: validatorImport,
+                allowedImports: ['FileUploadInput', 'validateFileUploadInput'],
+              },
+            };
+          },
+        },
       }),
       build: async (builder) => {
         // Copy adapters
@@ -160,6 +178,19 @@ const StorageModuleGenerator = createGeneratorWithChildren({
           createPresignedUploadUrlFile.renderToAction(
             'services/create-presigned-upload-url.ts',
             path.join(moduleFolder, 'services/create-presigned-upload-url.ts')
+          )
+        );
+
+        const validateUploadInputFile = typescript.createTemplate(
+          { FILE_MODEL: model },
+          {
+            importMappers: [prismaUtils, errorHandlerService, serviceContext],
+          }
+        );
+        await builder.apply(
+          validateUploadInputFile.renderToAction(
+            'services/validate-upload-input.ts',
+            validatorPath
           )
         );
 

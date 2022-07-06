@@ -5,18 +5,18 @@
  * See https://github.com/prisma/prisma/issues/5044
  */
 export function createPrismaDisconnectOrConnectData<UniqueWhere>(
-  uniqueWhere?: UniqueWhere | null
+  data?: { connect: UniqueWhere } | null
 ):
   | {
       disconnect?: boolean;
       connect?: UniqueWhere;
     }
   | undefined {
-  if (uniqueWhere === undefined) {
+  if (data === undefined) {
     return undefined;
   }
-  if (uniqueWhere === null) {
+  if (data === null) {
     return { disconnect: true };
   }
-  return { connect: uniqueWhere };
+  return data;
 }

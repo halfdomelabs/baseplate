@@ -86,7 +86,9 @@ function writeNexusInputDefinitionFromDtoNestedField(
   }
 
   components.push(
-    `.field("${field.name}", { type: '${field.nestedType.name}Input' })`
+    `.field("${field.name}", { type: '${
+      field.schemaFieldName || `${field.nestedType.name}Input`
+    }' })`
   );
 
   return components.join('');
@@ -108,6 +110,15 @@ export function writeNexusInputDefinitionFromDtoFields(
 ): InputDefinition {
   const inputDefinitions = fields.map((field) => {
     if (field.type === 'nested') {
+      if (field.schemaFieldName) {
+        return {
+          definition: writeNexusInputDefinitionFromDtoNestedField(
+            field,
+            options
+          ),
+          childInputDefinitions: [],
+        };
+      }
       const { definition: childDefinition, childInputDefinitions } =
         writeNexusInputDefinitionFromDtoFields(
           field.nestedType.fields,

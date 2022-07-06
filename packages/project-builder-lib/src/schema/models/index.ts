@@ -3,7 +3,10 @@ import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes';
 import { randomUid } from '@src/utils/randomUid';
 import type { ProjectConfig } from '../projectConfig';
 import { ReferencesBuilder } from '../references';
-import { TransformerConfig, transformerSchema } from './transformers';
+import {
+  buildServiceTransformerReferences,
+  transformerSchema,
+} from './transformers';
 
 export const modelScalarFieldSchema = z.object({
   uid: z.string().default(randomUid),
@@ -171,47 +174,6 @@ function buildModelRelationFieldReferences(
     category: 'modelField',
     generateKey: (name) => `${modelName}#${name}`,
   });
-}
-
-function buildServiceTransformerReferences(
-  originalConfig: ProjectConfig,
-  modelName: string,
-  transformer: TransformerConfig,
-  builder: ReferencesBuilder<TransformerConfig>
-): void {
-  builder.addReferenceable({
-    category: 'modelTransformer',
-    id: transformer.uid,
-    key: `${modelName}#${transformer.name}`,
-    name: transformer.name,
-  });
-
-  if (transformer.type === 'embeddedRelation') {
-    builder.addReference('name', {
-      category: 'modelForeignRelation',
-      key: `${modelName}#${transformer.name}`,
-    });
-
-    const localRelationName = transformer.name;
-    const foreignModel = originalConfig.models?.find((model) =>
-      model.model.relations?.some(
-        (relation) =>
-          relation.modelName === modelName &&
-          relation.foreignRelationName === localRelationName
-      )
-    );
-
-    if (!foreignModel) {
-      throw new Error(
-        `Could not find model associated with embedded relation ${modelName}/${localRelationName}`
-      );
-    }
-
-    builder.addReferences('embeddedFieldNames.*', {
-      category: 'modelField',
-      generateKey: (name) => `${foreignModel.name}#${name}`,
-    });
-  }
 }
 
 function buildModelServiceReferences(
