@@ -8,7 +8,7 @@ interface Props {
   className?: string;
   options: { label: string; value: string }[];
   onChange: (newValue?: string) => void;
-  onBlur: () => void;
+  onBlur?: () => void;
   value: string;
 }
 
@@ -22,7 +22,7 @@ function ReactSelectInput({
   const selectedOption = options.find((option) => option.value === value);
   return (
     <Select
-      className={classNames('', className)}
+      className={classNames('shadow-sm', className)}
       onChange={(newValue) => {
         onChange(newValue?.value);
       }}

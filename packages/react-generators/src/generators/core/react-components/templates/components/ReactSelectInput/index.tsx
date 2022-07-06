@@ -8,7 +8,7 @@ interface Props {
   className?: string;
   options: { label: string; value: string }[];
   onChange: (newValue?: string) => void;
-  onBlur: () => void;
+  onBlur?: () => void;
   value: string;
 }
 
@@ -22,7 +22,7 @@ function ReactSelectInput({
   const selectedOption = options.find((option) => option.value === value);
   return (
     <Select
-      className={classNames('', className)}
+      className={classNames('shadow-sm', className)}
       onChange={(newValue) => {
         onChange(newValue?.value);
       }}
@@ -34,7 +34,7 @@ function ReactSelectInput({
 }
 
 interface ReactSelectInputLabelledProps extends Props {
-  label?: string;
+  label?: React.ReactNode;
   error?: React.ReactNode;
 }
 
@@ -53,21 +53,24 @@ ReactSelectInput.Labelled = function ReactSelectInputLabelled({
   );
 };
 
-interface ReactSelectInputControllerProps<T>
-  extends Omit<Props, 'onChange' | 'onBlur' | 'value'> {
-  label?: string;
+interface ReactSelectInputLabelledControllerProps<T>
+  extends Omit<
+    ReactSelectInputLabelledProps,
+    'onChange' | 'onBlur' | 'value' | 'error'
+  > {
   className?: string;
   control: Control<T>;
   name: FieldPath<T>;
+  emptyAsNull?: boolean;
 }
 
 ReactSelectInput.LabelledController = function ReactSelectInputController<T>({
-  label,
   className,
   name,
   control,
+  emptyAsNull,
   ...rest
-}: ReactSelectInputControllerProps<T>): JSX.Element {
+}: ReactSelectInputLabelledControllerProps<T>): JSX.Element {
   const {
     field,
     fieldState: { error },
@@ -79,9 +82,14 @@ ReactSelectInput.LabelledController = function ReactSelectInputController<T>({
   return (
     <ReactSelectInput.Labelled
       {...rest}
-      label={label}
       error={error}
-      onChange={field.onChange}
+      onChange={(val) => {
+        if (!val && emptyAsNull) {
+          field.onChange(null);
+        } else {
+          field.onChange(val);
+        }
+      }}
       onBlur={field.onBlur}
       value={field.value as string}
     />

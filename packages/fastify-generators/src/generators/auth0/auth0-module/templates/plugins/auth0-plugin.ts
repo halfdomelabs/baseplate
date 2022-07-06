@@ -45,16 +45,21 @@ async function getUserFromRequest(
 
   // create user if one does not exist already
   if (!user) {
-    if (!verifiedJwt[EMAIL_CLAIM]) {
+    const email = verifiedJwt[EMAIL_CLAIM];
+    if (!email) {
       throw new Error(`Missing email claim in JWT`);
     }
 
-    await USER_MODEL.create({
-      data: {
-        id: userId,
-        auth0Id: verifiedJwt.sub,
-        email: verifiedJwt[EMAIL_CLAIM],
-      },
+    // Use createMany to avoid race-conditions with creating the user
+    await USER_MODEL.createMany({
+      data: [
+        {
+          id: userId,
+          auth0Id: verifiedJwt.sub,
+          email,
+        },
+      ],
+      skipDuplicates: true,
     });
   }
 
