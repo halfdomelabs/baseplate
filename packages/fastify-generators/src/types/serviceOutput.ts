@@ -35,6 +35,8 @@ export interface ServiceOutputDtoScalarField extends ServiceOutputDtoBaseField {
 export interface ServiceOutputDtoNestedField extends ServiceOutputDtoBaseField {
   type: 'nested';
   nestedType: ServiceOutputDto;
+  schemaFieldName?: string;
+  typescriptType?: TypescriptCodeExpression;
 }
 
 export type ServiceOutputDtoField =

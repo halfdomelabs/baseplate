@@ -1,14 +1,39 @@
+import { notEmpty } from '@src/utils/array';
 import { ParserPlugin, PluginMergeModelFieldInput } from '../types';
 
 export const StoragePlugin: ParserPlugin = {
   name: 'StoragePlugin',
   run(projectConfig, hooks) {
-    const { storage, auth } = projectConfig;
+    const { storage, auth, models } = projectConfig;
     if (!storage) {
       return;
     }
     if (!auth) {
       throw new Error(`Auth required for storage to be enabled`);
+    }
+
+    const transformerRelationNames = models.flatMap(
+      (m) =>
+        m.service?.transformers
+          ?.map((t) => {
+            if (t.type !== 'file') {
+              return undefined;
+            }
+            // look up relation
+            const relation = m.model.relations?.find((r) => r.name === t.name);
+            // shouldn't happen as checked elsewhere
+            if (!relation) throw new Error(`Relation not found for ${t.name}`);
+            return relation.foreignRelationName;
+          })
+          .filter(notEmpty) || []
+    );
+
+    const invalidTransformer = transformerRelationNames.find(
+      (name) => !storage.categories.find((c) => c.usedByRelation === name)
+    );
+
+    if (invalidTransformer) {
+      throw new Error(`No storage category found for ${invalidTransformer}`);
     }
 
     // annotate file model
@@ -110,5 +135,7 @@ export const StoragePlugin: ParserPlugin = {
         categories: storage.categories,
       },
     });
+
+    hooks.addGlobalHoistedProviders('storage-module');
   },
 };

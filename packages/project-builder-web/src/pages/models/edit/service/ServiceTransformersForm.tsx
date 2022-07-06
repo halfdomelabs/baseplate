@@ -3,7 +3,9 @@ import classNames from 'classnames';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { LinkButton } from 'src/components';
 import Dropdown from 'src/components/Dropdown';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
+import ServiceFileTransformerForm from './ServiceFileTransformerForm';
 
 interface Props {
   className?: string;
@@ -21,6 +23,7 @@ function ServiceEmbeddedRelationsForm({
     control,
     name: `service.transformers`,
   });
+  const { parsedProject } = useProjectConfig();
 
   return (
     <div className={classNames('space-y-4', className)}>
@@ -47,6 +50,16 @@ function ServiceEmbeddedRelationsForm({
                 <LinkButton onClick={() => remove(idx)}>Remove</LinkButton>
               </div>
             );
+          case 'file':
+            return (
+              <ServiceFileTransformerForm
+                key={field.id}
+                control={control}
+                onRemove={() => remove(idx)}
+                idx={idx}
+                originalModel={originalModel}
+              />
+            );
           default:
             return (
               <div key={(field as { id: string }).id}>
@@ -62,6 +75,11 @@ function ServiceEmbeddedRelationsForm({
             onClick={() => append({ name: 'password', type: 'password' })}
           >
             Password
+          </Dropdown.ButtonItem>
+        )}
+        {parsedProject.projectConfig.storage && (
+          <Dropdown.ButtonItem onClick={() => append({ type: 'file' })}>
+            File
           </Dropdown.ButtonItem>
         )}
         <Dropdown.ButtonItem
