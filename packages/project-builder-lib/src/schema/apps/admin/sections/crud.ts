@@ -52,10 +52,19 @@ export const adminCrudEnumInputSchema = z.object({
 
 export type AdminCrudEnumInputConfig = z.infer<typeof adminCrudEnumInputSchema>;
 
+export const adminCrudFileInputSchema = z.object({
+  type: z.literal('file'),
+  label: z.string().min(1),
+  modelRelation: z.string().min(1),
+});
+
+export type AdminCrudFileInputConfig = z.infer<typeof adminCrudFileInputSchema>;
+
 export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudForeignInputSchema,
   adminCrudTextInputSchema,
   adminCrudEnumInputSchema,
+  adminCrudFileInputSchema,
 ]);
 
 export const adminCrudInputTypes =
@@ -108,19 +117,25 @@ export function buildAdminCrudSectionReferences(
       case 'text':
         fieldBuilder.addReference('modelField', {
           category: 'modelField',
-          key: `${config.modelName}#${field.modelField || ''}`,
+          key: `${config.modelName}#${field.modelField}`,
         });
         break;
       case 'foreign':
         fieldBuilder.addReference('localRelationName', {
           category: 'modelLocalRelation',
-          key: `${config.modelName}#${field.localRelationName || ''}`,
+          key: `${config.modelName}#${field.localRelationName}`,
         });
         break;
       case 'enum':
         fieldBuilder.addReference('modelField', {
           category: 'modelField',
-          key: `${config.modelName}#${field.modelField || ''}`,
+          key: `${config.modelName}#${field.modelField}`,
+        });
+        break;
+      case 'file':
+        fieldBuilder.addReference('modelRelation', {
+          category: 'modelTransformer',
+          key: `${config.modelName}#${field.modelRelation}`,
         });
         break;
       default:

@@ -60,6 +60,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
         appConfig.includeUploadComponents && {
           generator: '@baseplate/react/storage/upload-components',
           peerProvider: true,
+          fileModelName: projectConfig.storage.fileModel,
         },
       ...compileAuthFeatures(builder),
     },

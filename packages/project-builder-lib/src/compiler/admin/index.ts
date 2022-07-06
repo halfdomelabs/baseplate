@@ -81,6 +81,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
       $uploadComponents: projectConfig.storage && {
         generator: '@baseplate/react/storage/upload-components',
         peerProvider: true,
+        fileModelName: projectConfig.storage.fileModel,
       },
       ...compileAuthFeatures(builder),
     },

@@ -1,6 +1,7 @@
 import {
   AdminAppConfig,
   AdminCrudEnumInputConfig,
+  AdminCrudFileInputConfig,
   AdminCrudForeignInputConfig,
   AdminCrudInputConfig,
   AdminCrudSectionConfig,
@@ -106,6 +107,42 @@ function compileAdminCrudTextInput(
   };
 }
 
+function compileAdminCrudFileInput(
+  field: AdminCrudFileInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>
+): unknown {
+  const model = builder.parsedProject.getModelByName(modelName);
+  const relation = model.model.relations?.find(
+    (r) => r.name === field.modelRelation
+  );
+
+  if (!relation) {
+    throw new Error(
+      `Could not find relation ${field.modelRelation} in model ${modelName}`
+    );
+  }
+
+  const category = builder.parsedProject.projectConfig.storage?.categories.find(
+    (c) => c.usedByRelation === relation.foreignRelationName
+  );
+
+  if (!category) {
+    throw new Error(
+      `Could not find category for relation ${relation.foreignRelationName}`
+    );
+  }
+
+  return {
+    name: field.modelRelation,
+    generator: '@baseplate/react/admin/admin-crud-file-input',
+    label: field.label,
+    isOptional: relation.isOptional,
+    category: category.name,
+    modelRelation: field.modelRelation,
+  };
+}
+
 function compileAdminCrudInput(
   field: AdminCrudInputConfig,
   modelName: string,
@@ -118,6 +155,8 @@ function compileAdminCrudInput(
       return compileAdminEnumInput(field, modelName, builder);
     case 'text':
       return compileAdminCrudTextInput(field, modelName, builder);
+    case 'file':
+      return compileAdminCrudFileInput(field, modelName, builder);
     default:
       throw new Error(
         `Unknown admin crud input ${(field as { type: string }).type}`

@@ -9,12 +9,15 @@ import {
   createGeneratorWithChildren,
   copyFileAction,
 } from '@baseplate/sync';
+import { capitalize } from 'inflection';
 import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactErrorProvider } from '@src/generators/core/react-error';
 
-const descriptorSchema = z.object({});
+const descriptorSchema = z.object({
+  fileModelName: z.string().min(1),
+});
 
 export type UploadComponentsProvider = ImportMapper;
 
@@ -35,7 +38,7 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
     uploadComponents: uploadComponentsProvider,
   },
   createGenerator(
-    descriptor,
+    { fileModelName },
     { node, reactError, typescript, reactComponents, reactApollo }
   ) {
     node.addPackages({
@@ -91,6 +94,9 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
             source: 'components/FileInput/upload.gql',
             destination: gqlFilePath,
             shouldFormat: true,
+            replacements: {
+              FILE_SCHEMA: capitalize(fileModelName),
+            },
           })
         );
 

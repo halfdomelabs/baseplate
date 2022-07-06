@@ -232,7 +232,11 @@ export function getDataMethodDataExpressions({
         operationType === 'update' || field.isOptional
           ? `${relationScalarFields
               .map((f) => `${f} == null`)
-              .join(' || ')} ? ${relationScalarFields.join(' && ')} : `
+              .join(' || ')} ? ${
+              operationType === 'create'
+                ? 'undefined'
+                : relationScalarFields.join(' && ')
+            } : `
           : '';
 
       const foreignModel = prismaOutput.getPrismaModel(field.modelType);
@@ -297,6 +301,10 @@ export function getDataMethodDataExpressions({
           {
             name: field.name,
             transformer,
+            createExpression:
+              operationType === 'upsert'
+                ? `${field.name} || undefined`
+                : undefined,
             updateExpression: field.isOptional
               ? TypescriptCodeUtils.createExpression(
                   `createPrismaDisconnectOrConnectData(${field.name})`,

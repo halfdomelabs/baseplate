@@ -109,7 +109,7 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
                 : undefined,
               updateExpression: isFieldOptional
                 ? TypescriptCodeUtils.createExpression(
-                    `createPrismaDisconnectOrConnectData(${name}Output?.data)`,
+                    `createPrismaDisconnectOrConnectData(${name}Output && ${name}Output.data)`,
                     `import {createPrismaDisconnectOrConnectData} from "%prisma-utils/prismaRelations";`,
                     { importMappers: [prismaUtils] }
                   )
