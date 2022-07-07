@@ -47,7 +47,7 @@ function getResolverForField(
   //  TODO: Support optional field IDs
 
   const RESOLVER_TEMPLATE = `
-  (INPUT) => OPTIONAL_CHECK MODEL.findUnique({ where: WHERE_CLAUSE, rejectOnNotFound: true })
+  (INPUT) => OPTIONAL_CHECK MODEL.findUniqueOrThrow({ where: WHERE_CLAUSE })
   `.trim();
 
   if (field.fields.length !== field.references.length || !field.fields.length) {

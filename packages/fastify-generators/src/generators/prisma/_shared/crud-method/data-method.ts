@@ -334,7 +334,7 @@ export function getDataMethodDataExpressions({
     : TypescriptCodeUtils.formatBlock(
         `
 const existingItem = OPTIONAL_WHERE
-(await PRISMA_MODEL.findUnique({ where: WHERE_UNIQUE, rejectOnNotFound: true }))
+(await PRISMA_MODEL.findUniqueOrThrow({ where: WHERE_UNIQUE }))
 `,
         {
           OPTIONAL_WHERE:
