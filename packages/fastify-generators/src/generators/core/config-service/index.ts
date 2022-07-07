@@ -56,7 +56,7 @@ const ConfigServiceGenerator = createGeneratorWithChildren({
     const additionalVerifications: TypescriptCodeBlock[] = [];
 
     node.addPackages({
-      zod: '^3.17.3',
+      zod: '3.17.3',
     });
 
     node.addDevPackages({

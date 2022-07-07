@@ -25,14 +25,14 @@ const FastifyCookieContextGenerator = createGeneratorWithChildren({
     { node, fastifyServer, requestServiceContextSetup }
   ) {
     node.addPackages({
-      'fastify-cookie': '5.6.0',
+      '@fastify/cookie': '7.0.0',
     });
 
     fastifyServer.registerPlugin({
       name: 'cookies',
       plugin: new TypescriptCodeExpression(
         'fastifyCookie',
-        "import fastifyCookie from 'fastify-cookie'"
+        "import fastifyCookie from '@fastify/cookie'"
       ),
     });
 
@@ -48,7 +48,7 @@ interface CookieStore {
   clear(name: string): void;
 }
 `,
-            "import { CookieSerializeOptions } from 'fastify-cookie';"
+            "import { CookieSerializeOptions } from '@fastify/cookie';"
           ),
         ],
       }),

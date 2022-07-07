@@ -57,11 +57,11 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
     fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
 
     node.addPackages({
-      pino: '^7.6.2',
+      pino: '8.1.0',
     });
 
     node.addDevPackages({
-      'pino-pretty': '^7.3.0',
+      'pino-pretty': '8.1.0',
     });
 
     return {
@@ -87,10 +87,6 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
-        node.addPackages({
-          pino: '^7.6.2',
-        });
-
         const loggerFile = typescript.createTemplate(loggerServiceFileConfig);
 
         const loggerOptions = Object.keys(mixins.value()).length

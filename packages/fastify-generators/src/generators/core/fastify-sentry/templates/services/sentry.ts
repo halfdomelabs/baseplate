@@ -4,7 +4,7 @@ import { URL } from 'url';
 import * as Sentry from '@sentry/node';
 import type { ExtractedNodeRequestData } from '@sentry/types';
 import { FastifyRequest } from 'fastify';
-import { requestContext } from 'fastify-request-context';
+import { requestContext } from '@fastify/request-context';
 import _ from 'lodash';
 
 import '@sentry/tracing';
