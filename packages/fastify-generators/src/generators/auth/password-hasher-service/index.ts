@@ -33,7 +33,7 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
     const moduleFolder = appModule.getModuleFolder();
 
     node.addPackages({
-      argon2: '^0.28.3',
+      argon2: '0.28.7',
     });
     return {
       getProviders: () => ({

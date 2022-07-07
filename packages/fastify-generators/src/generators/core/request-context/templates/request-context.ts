@@ -4,7 +4,7 @@ import fp from 'fastify-plugin';
 import {
   requestContext,
   fastifyRequestContextPlugin,
-} from 'fastify-request-context';
+} from '@fastify/request-context';
 
 export interface RequestInfo {
   id: string;
@@ -14,7 +14,7 @@ export interface RequestInfo {
   ip: string;
 }
 
-declare module 'fastify-request-context' {
+declare module '@fastify/request-context' {
   interface RequestContextData {
     reqInfo: RequestInfo;
   }

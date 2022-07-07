@@ -66,9 +66,9 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     const plugins: FastifyServerPlugin[] = [];
 
     node.addPackages({
-      fastify: '^3.28.0',
-      '@fastify/helmet': '^8.0.0',
-      'fastify-plugin': '^3.0.1',
+      fastify: '4.2.0',
+      '@fastify/helmet': '9.1.0',
+      'fastify-plugin': '3.0.1',
       nanoid: '^3.1.30',
     });
 
@@ -88,7 +88,9 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     configService.getConfigEntries().merge({
       SERVER_HOST: {
         comment: 'Hostname to bind the server to',
-        value: TypescriptCodeUtils.createExpression('z.string().optional()'),
+        value: TypescriptCodeUtils.createExpression(
+          "z.string().default('localhost')"
+        ),
       },
       SERVER_PORT: {
         comment: 'Port to bind the server to',

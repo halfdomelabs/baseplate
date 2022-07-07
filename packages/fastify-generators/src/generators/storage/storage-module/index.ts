@@ -80,13 +80,13 @@ const StorageModuleGenerator = createGeneratorWithChildren({
     const moduleFolder = appModule.getModuleFolder();
 
     node.addPackages({
-      '@aws-sdk/client-s3': '^3.86.0',
-      '@aws-sdk/s3-presigned-post': '^3.86.0',
-      'mime-types': '^2.1.35',
+      '@aws-sdk/client-s3': '3.121.0',
+      '@aws-sdk/s3-presigned-post': '3.121.0',
+      'mime-types': '2.1.35',
     });
 
     node.addDevPackages({
-      '@types/mime-types': '^2.1.1',
+      '@types/mime-types': '2.1.1',
     });
 
     configService

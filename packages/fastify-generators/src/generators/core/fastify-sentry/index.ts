@@ -65,14 +65,14 @@ const FastifySentryGenerator = createGeneratorWithChildren({
     });
 
     node.addPackages({
-      '@sentry/node': '^6.16.1',
-      '@sentry/tracing': '^6.16.1',
-      lodash: '^4.17.21',
+      '@sentry/node': '7.5.1',
+      '@sentry/tracing': '7.5.1',
+      lodash: '4.17.21',
     });
 
     node.addDevPackages({
-      '@sentry/types': '^6.16.1',
-      '@types/lodash': '^4.14.182',
+      '@sentry/types': '7.5.1',
+      '@types/lodash': '4.14.182',
     });
 
     configService.getConfigEntries().merge({

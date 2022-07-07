@@ -140,15 +140,15 @@ const NexusGenerator = createGeneratorWithChildren({
     });
 
     node.addPackages({
-      'altair-fastify-plugin': '^4.4.1',
+      'altair-fastify-plugin': '4.5.1',
       graphql: '^16.3.0',
-      mercurius: '^9.3.4',
-      nexus: '^1.3.0',
+      mercurius: '10.1.0',
+      nexus: '1.3.0',
     });
 
     // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
     node.addDevPackages({
-      '@types/ws': '^8.0.0',
+      '@types/ws': '8.5.3',
     });
 
     rootModule.addModuleField(
