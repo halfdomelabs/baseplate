@@ -1,10 +1,10 @@
 // @ts-nocheck
-import { FastifyRequest } from 'fastify';
-import fp from 'fastify-plugin';
 import {
   requestContext,
   fastifyRequestContextPlugin,
 } from '@fastify/request-context';
+import { FastifyRequest } from 'fastify';
+import fp from 'fastify-plugin';
 
 export interface RequestInfo {
   id: string;

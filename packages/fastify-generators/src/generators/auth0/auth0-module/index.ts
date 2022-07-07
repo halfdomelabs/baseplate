@@ -55,15 +55,15 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
     }
   ) {
     node.addPackages({
-      'fastify-auth0-verify': '^0.7.4',
+      'fastify-auth0-verify': '0.8.0',
     });
 
     if (includeManagement) {
       node.addPackages({
-        auth0: '~2.42.0',
+        auth0: '2.42.0',
       });
       node.addDevPackages({
-        '@types/auth0': '~2.35.2',
+        '@types/auth0': '2.35.2',
       });
     }
 
