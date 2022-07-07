@@ -24,7 +24,7 @@ export const QUERY_EXPORT = queryField((t) => {
   t.field(QUERY_NAME, {
     type: nonNull(OBJECT_TYPE_NAME), // CUSTOM_FIELDS
     args: QUERY_ARGS,
-    resolve: async (root, ARG_INPUT, ctx, info) => MODEL.findUnique({where: MODEL_WHERE, rejectOnNotFound: true}),
+    resolve: async (root, ARG_INPUT, ctx, info) => MODEL.findUniqueOrThrow({where: MODEL_WHERE}),
   });
 });
 `.trim();

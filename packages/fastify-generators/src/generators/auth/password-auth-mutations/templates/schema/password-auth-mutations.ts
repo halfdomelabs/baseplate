@@ -19,9 +19,8 @@ export const loginWithEmailAndPasswordMutation = createStandardMutation({
       input.email,
       input.password
     );
-    const user = await USER_MODEL.findUnique({
+    const user = await USER_MODEL.findUniqueOrThrow({
       where: { id: payload.userId },
-      rejectOnNotFound: true,
     });
     return { user, authPayload: formatRefreshTokens(context, payload) };
   },

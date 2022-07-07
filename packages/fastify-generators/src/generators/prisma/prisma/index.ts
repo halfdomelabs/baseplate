@@ -11,7 +11,7 @@ import {
   createProviderType,
   createGeneratorWithChildren,
 } from '@baseplate/sync';
-import { formatSchema } from '@prisma/sdk';
+import { formatSchema } from '@prisma/internals';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
@@ -77,11 +77,11 @@ const PrismaGenerator = createGeneratorWithChildren({
     }
   ) {
     node.addDevPackages({
-      prisma: '^3.14.0',
+      prisma: '4.0.0',
     });
 
     node.addPackages({
-      '@prisma/client': '^3.14.0',
+      '@prisma/client': '4.0.0',
     });
 
     node.mergeExtraProperties({
