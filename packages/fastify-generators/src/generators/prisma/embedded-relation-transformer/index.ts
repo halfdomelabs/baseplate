@@ -418,9 +418,10 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
                 name: idField,
                 value: `input.${idField}`,
                 usesInput: true,
-                requiredInputField: embeddedField.isOptional
-                  ? idField
-                  : undefined,
+                requiredInputField:
+                  embeddedField.isOptional || embeddedField.hasDefault
+                    ? idField
+                    : undefined,
               };
             }
             throw new Error(
@@ -455,6 +456,17 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
           (k) => k.needsExistingItem
         );
 
+        const requirementsList = [
+          ...(needsExistingItem && operationType === 'upsert'
+            ? ['!existingItem']
+            : []),
+          ...primaryKeyFields
+            .map(
+              (f) => f.requiredInputField && `!input.${f.requiredInputField}`
+            )
+            .filter(notEmpty),
+        ];
+
         return {
           func: TypescriptCodeUtils.formatExpression(
             `(INPUT): RETURN_TYPE => VALUE`,
@@ -462,18 +474,11 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
               INPUT: usesInput ? 'input' : '',
               RETURN_TYPE: returnType,
               PREFIX: '',
-              VALUE: TypescriptCodeUtils.mergeExpressions(
-                [
-                  ...(needsExistingItem && operationType === 'upsert'
-                    ? ['existingItem']
-                    : []),
-                  ...primaryKeyFields
-                    .map((f) => f.requiredInputField)
-                    .filter(notEmpty),
-                  value,
-                ],
-                ' && '
-              ),
+              VALUE: requirementsList.length
+                ? value.prepend(
+                    `${requirementsList.join(' || ')} ? undefined : `
+                  )
+                : value,
             }
           ),
           needsExistingItem,
