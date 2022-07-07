@@ -15,9 +15,11 @@ export interface DataPipeOutput<Output = unknown> {
 }
 
 export function mergePipeOperations(
-  outputs: (DataPipeOutput | undefined | null)[]
+  outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[]
 ): DataPipeOperations {
-  const operations = outputs.map((o) => o?.operations).filter(notEmpty);
+  const operations = outputs
+    .map((o) => (o && 'data' in o ? o.operations : o))
+    .filter(notEmpty);
 
   return {
     beforePrismaPromises: operations.flatMap(
@@ -30,7 +32,7 @@ export function mergePipeOperations(
 }
 
 export async function applyDataPipeOutput<DataType>(
-  outputs: (DataPipeOutput | undefined | null)[],
+  outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[],
   operation: PrismaPromise<DataType>
 ): Promise<DataType> {
   const { beforePrismaPromises = [], afterPrismaPromises = [] } =

@@ -70,6 +70,7 @@ export const Auth0Plugin: ParserPlugin = {
       $auth0: {
         generator: '@baseplate/fastify/auth0/auth0-module',
         userModelName: auth.userModel,
+        includeManagement: true,
       },
     });
   },

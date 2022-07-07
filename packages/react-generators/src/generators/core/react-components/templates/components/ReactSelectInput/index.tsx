@@ -82,7 +82,7 @@ ReactSelectInput.LabelledController = function ReactSelectInputController<T>({
   return (
     <ReactSelectInput.Labelled
       {...rest}
-      error={error}
+      error={error?.message}
       onChange={(val) => {
         if (!val && emptyAsNull) {
           field.onChange(null);

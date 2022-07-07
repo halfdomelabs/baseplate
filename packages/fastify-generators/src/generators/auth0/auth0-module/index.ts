@@ -18,6 +18,7 @@ import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 
 const descriptorSchema = z.object({
   userModelName: z.string().min(1),
+  includeManagement: z.boolean().optional(),
 });
 
 export type Auth0ModuleProvider = unknown;
@@ -42,7 +43,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
     authInfo: authInfoProvider,
   },
   createGenerator(
-    { userModelName },
+    { userModelName, includeManagement },
     {
       node,
       typescript,
@@ -56,6 +57,15 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
     node.addPackages({
       'fastify-auth0-verify': '^0.7.4',
     });
+
+    if (includeManagement) {
+      node.addPackages({
+        auth0: '~2.42.0',
+      });
+      node.addDevPackages({
+        '@types/auth0': '~2.35.2',
+      });
+    }
 
     const [pluginImport, pluginPath] = makeImportAndFilePath(
       `${appModule.getModuleFolder()}/plugins/auth0-plugin.ts`
@@ -75,7 +85,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
 
     configService.getConfigEntries().set('AUTH0_DOMAIN', {
       value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-      comment: 'Auth0 domain',
+      comment: 'Auth0 domain (can be custom domain)',
       seedValue: 'subdomain.auth0.com',
       exampleValue: '<AUTH0_DOMAIN>',
     });
@@ -86,6 +96,35 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
       seedValue: 'https://api.example.com',
       exampleValue: '<AUTH0_AUDIENCE>',
     });
+
+    const [, managementPath] = makeImportAndFilePath(
+      `${appModule.getModuleFolder()}/services/management.ts`
+    );
+
+    if (includeManagement) {
+      configService.getConfigEntries().set('AUTH0_TENANT_DOMAIN', {
+        value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+        comment:
+          'Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com',
+        seedValue: 'domain.auth0.com',
+        exampleValue: '<AUTH0_TENANT_DOMAIN>',
+      });
+
+      configService.getConfigEntries().set('AUTH0_CLIENT_ID', {
+        value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+        comment:
+          'Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)',
+        seedValue: 'CLIENT_ID',
+        exampleValue: '<AUTH0_CLIENT_ID>',
+      });
+
+      configService.getConfigEntries().set('AUTH0_CLIENT_SECRET', {
+        value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+        comment: 'Auth0 management client secret',
+        seedValue: 'CLIENT_SECRET',
+        exampleValue: '<AUTH0_CLIENT_SECRET>',
+      });
+    }
 
     return {
       getProviders: () => ({
@@ -120,6 +159,16 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
         await builder.apply(
           authInfoFile.renderToAction('utils/auth-info.ts', authInfoPath)
         );
+
+        if (includeManagement) {
+          await builder.apply(
+            typescript.createCopyAction({
+              source: 'services/management.ts',
+              destination: managementPath,
+              importMappers: [configService],
+            })
+          );
+        }
       },
     };
   },
