@@ -124,7 +124,7 @@ function ModelEditModelPage(): JSX.Element {
           </Dropdown.ButtonItem>
         </Dropdown>
         <Button
-          secondary
+          color="light"
           onClick={() =>
             appendField({
               name: '',

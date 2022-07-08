@@ -1,6 +1,7 @@
 fragment FileInput on FILE_SCHEMA {
   id
   name
+  hostedUrl
 }
 
 mutation CreateUploadUrl($input: CreatePresignedUploadUrlInput!) {

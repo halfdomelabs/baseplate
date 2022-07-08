@@ -34,6 +34,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
 
     node.addDevPackages({
       tailwindcss: '^3.0.23',
+      'prettier-plugin-tailwindcss': '0.1.12',
     });
 
     eslint

@@ -41,7 +41,7 @@ function EditAppPage(): JSX.Element {
       <h1>
         Edit {app.name} ({app.type} app)
       </h1>
-      <Button secondary onClick={handleDelete}>
+      <Button color="light" onClick={handleDelete}>
         Delete
       </Button>
       <div>

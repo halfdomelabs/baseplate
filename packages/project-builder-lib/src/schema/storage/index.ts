@@ -10,6 +10,7 @@ export const storageSchema = z.object({
       uid: z.string().default(randomUid),
       name: z.string().min(1),
       bucketConfigVar: z.string().min(1),
+      hostedUrlConfigVar: z.string().optional(),
     })
   ),
   categories: z.array(

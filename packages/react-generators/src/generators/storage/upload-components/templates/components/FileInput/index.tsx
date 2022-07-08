@@ -2,6 +2,7 @@
 
 import classNames from 'classnames';
 import { useCallback } from 'react';
+import { CircularProgressbar } from 'react-circular-progressbar';
 import { useDropzone } from 'react-dropzone';
 import {
   Control,
@@ -10,6 +11,7 @@ import {
   get,
   useController,
 } from 'react-hook-form';
+import { MdUploadFile } from 'react-icons/md';
 import Button from '../Button';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -18,9 +20,12 @@ import { useUpload } from '%upload-components/use-upload';
 import { formatError } from '%react-error/formatter';
 import { reportAndLogError } from '%react-error/logger';
 
+import 'react-circular-progressbar/dist/styles.css';
+
 interface FileUploadInput {
   id: string;
   name: string;
+  hostedUrl?: string | null;
 }
 
 interface Props {
@@ -28,10 +33,10 @@ interface Props {
   disabled?: boolean;
   name?: string;
   onChange?: (value: FileUploadInput | null) => void;
-  onBlur?: () => void;
   value?: FileUploadInput;
   placeholder?: string;
   category: string;
+  imagePreview?: boolean;
 }
 
 const FileInput = function FileInput({
@@ -39,10 +44,10 @@ const FileInput = function FileInput({
   disabled,
   name,
   onChange,
-  onBlur,
   value,
   category,
   placeholder,
+  imagePreview,
 }: Props): JSX.Element {
   const [createUploadUrl] = useCreateUploadUrlMutation();
 
@@ -72,7 +77,11 @@ const FileInput = function FileInput({
       onUploaded: (file) => {
         const uploadedFile = file.meta;
         if (onChange) {
-          onChange({ name: uploadedFile.name, id: uploadedFile.id });
+          onChange({
+            name: uploadedFile.name,
+            id: uploadedFile.id,
+            hostedUrl: uploadedFile.hostedUrl,
+          });
         }
       },
       onError: (err) => {
@@ -89,10 +98,13 @@ const FileInput = function FileInput({
     [uploadFile]
   );
 
-  const { getRootProps, getInputProps, inputRef } = useDropzone({
+  const isDraggable = !isUploading && !error && !disabled;
+
+  const { getRootProps, getInputProps, inputRef, isDragActive } = useDropzone({
     onDropAccepted,
     multiple: false,
     maxFiles: 1,
+    disabled: !isDraggable,
   });
 
   const handleRemove = (): void => {
@@ -115,47 +127,105 @@ const FileInput = function FileInput({
       {(() => {
         if (value) {
           return (
-            <div className="flex space-x-4">
-              <div className="text-lg text-black-600">{value.name}</div>
-              <Button onClick={handleRemove}>Remove</Button>
+            <div className="flex h-32 w-full max-w-sm flex-row items-center justify-center rounded-lg border bg-white p-4 shadow-md">
+              {imagePreview && value.hostedUrl && (
+                <a href={value.hostedUrl} target="_blank" rel="noreferrer">
+                  <img
+                    src={value.hostedUrl}
+                    className="mr-4 h-24 w-32 rounded-lg bg-gray-300 object-cover"
+                    alt={`${value.name} upload`}
+                  />
+                </a>
+              )}
+              <div className="flex flex-row space-x-4">
+                <div className="text-lg font-medium">
+                  {value.hostedUrl ? (
+                    <a
+                      href={value.hostedUrl}
+                      className="text-gray-700 hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {value.name}
+                    </a>
+                  ) : (
+                    value.name
+                  )}
+                </div>
+                <Button color="light" size="small" onClick={handleRemove}>
+                  Remove
+                </Button>
+              </div>
             </div>
           );
         }
 
-        if (isUploading) {
-          return (
-            <div className="flex space-x-4">
-              <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div
-                  className="bg-blue-600 h-2.5 rounded-full"
-                  style={{ width: `${Math.round(progress * 100)}%` }}
-                />
-              </div>
-              <Button onClick={handleCancel}>Cancel</Button>
-            </div>
-          );
-        }
-
-        if (error) {
-          return (
-            <div className="flex space-x-4">
-              <div className="text-red-600">
-                {formatError(error, 'Sorry, we could not upload the file.')}
-              </div>
-              <Button onClick={handleRemove}>Try Again</Button>
-            </div>
-          );
-        }
+        const uploadPercentage = Math.round(progress * 100);
 
         return (
           <div
             {...getRootProps()}
-            className="flex items-center justify-center w-full h-32 px-4 border-2 border-gray-300 border-dashed rounded-md cursor-pointer"
+            className={classNames(
+              'flex h-32 w-full max-w-sm items-center justify-center rounded-md border-2 border-dashed px-4',
+              isDragActive
+                ? 'border-blue-300 text-blue-600'
+                : 'border-gray-300 text-gray-600',
+              { 'opacity-50': disabled, 'cursor-pointer': isDraggable }
+            )}
           >
-            <input name={name} {...getInputProps()} />
-            <div className="text-lg text-gray-600">
-              {placeholder || 'Drag or click here to add file'}
-            </div>
+            {(() => {
+              if (isUploading) {
+                return (
+                  <div className="flex flex-col items-center space-y-2">
+                    <CircularProgressbar
+                      value={uploadPercentage}
+                      text={`${uploadPercentage}%`}
+                      className="h-12 w-12"
+                    />
+                    <Button
+                      onClick={handleCancel}
+                      color="red"
+                      size="small"
+                      disabled={disabled}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                );
+              }
+              if (error) {
+                return (
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="text-center text-red-600">
+                      {formatError(
+                        error,
+                        'Sorry, we could not upload the file.'
+                      )}
+                    </div>
+                    <Button
+                      size="small"
+                      onClick={handleRemove}
+                      disabled={disabled}
+                    >
+                      Retry
+                    </Button>
+                  </div>
+                );
+              }
+              return (
+                <div className="flex flex-col items-center space-y-2">
+                  <input
+                    name={name}
+                    {...getInputProps()}
+                    disabled={isDraggable}
+                  />
+                  <MdUploadFile className="h-12 w-12" />
+                  <div className="text-lg font-medium">
+                    {placeholder || 'Select a file to upload'}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         );
       })()}

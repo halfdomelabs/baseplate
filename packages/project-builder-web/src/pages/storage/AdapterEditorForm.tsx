@@ -29,7 +29,12 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
             control={control}
             name={`s3Adapters.${idx}.bucketConfigVar`}
           />
-          <Button secondary onClick={() => remove(idx)}>
+          <TextInput.LabelledController
+            label="Hosted URL prefix Config Variable Name, e.g. UPLOADS_URL_PREFIX"
+            control={control}
+            name={`s3Adapters.${idx}.hostedUrlConfigVar`}
+          />
+          <Button color="light" onClick={() => remove(idx)}>
             Remove
           </Button>
         </div>

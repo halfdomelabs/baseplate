@@ -75,7 +75,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
               control={control}
               name={`values.${i}.friendlyName`}
             />
-            <Button secondary type="button" onClick={() => removeValue(i)}>
+            <Button color="light" type="button" onClick={() => removeValue(i)}>
               Remove
             </Button>
           </div>

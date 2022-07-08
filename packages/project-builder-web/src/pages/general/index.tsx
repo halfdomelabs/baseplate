@@ -80,7 +80,7 @@ function GeneralPage(): JSX.Element {
               register={register(`features.${idx}.name`)}
               error={errors.features?.[idx]?.name?.message}
             />
-            <Button secondary onClick={() => remove(idx)}>
+            <Button color="light" onClick={() => remove(idx)}>
               Remove
             </Button>
           </div>

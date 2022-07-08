@@ -1,32 +1,65 @@
 import classNames from 'classnames';
 
+type ButtonColor = 'blue' | 'green' | 'red' | 'light' | 'dark';
+
+type ButtonSize = 'small' | 'base' | 'large';
+
 interface Props {
   className?: string;
   children: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
-  // eslint-disable-next-line react/no-unused-prop-types
-  secondary?: boolean;
+  color?: ButtonColor;
+  size?: ButtonSize;
   type?: 'button' | 'submit' | 'reset';
 }
 
-function getButtonColorClass(props: Props): string {
-  if (props.secondary) {
-    return 'text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700';
+function getButtonColorClass(color: ButtonColor): string {
+  switch (color) {
+    case 'blue':
+      return 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300';
+    case 'green':
+      return 'text-white bg-green-700 hover:bg-green-800 focus:ring-green-300';
+    case 'red':
+      return 'text-white bg-red-700 hover:bg-red-800 focus:ring-red-300';
+    case 'light':
+      return 'text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-gray-200';
+    case 'dark':
+      return 'text-white bg-gray-800 hover:bg-gray-900 focus:ring-gray-300';
+    default:
+      throw new Error(`Unknown button color: ${color as string}`);
   }
-  if (!props.disabled) {
-    return 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800';
+}
+
+function getButtonSizeClass(size: ButtonSize): string {
+  switch (size) {
+    case 'small':
+      return 'px-3 py-2 text-sm';
+    case 'base':
+      return 'px-5 py-2.5 text-sm';
+    case 'large':
+      return 'px-5 py-3 text-base';
+    default:
+      throw new Error(`Unknown button size: ${size as string}`);
   }
-  return 'text-white bg-blue-400 dark:bg-blue-500 cursor-not-allowed';
 }
 
 function Button(props: Props): JSX.Element {
-  const { className, children, disabled, type = 'button', onClick } = props;
+  const {
+    className,
+    children,
+    disabled,
+    size = 'base',
+    color = 'blue',
+    type = 'button',
+    onClick,
+  } = props;
   return (
     <button
       className={classNames(
-        ' font-medium rounded-lg text-sm px-5 py-2.5 text-center',
-        getButtonColorClass(props),
+        'rounded-lg text-center font-medium focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:bg-opacity-50',
+        getButtonColorClass(color),
+        getButtonSizeClass(size),
         className
       )}
       disabled={disabled}

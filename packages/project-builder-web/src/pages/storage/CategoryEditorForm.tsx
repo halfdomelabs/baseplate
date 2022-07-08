@@ -79,7 +79,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
             options={roleOptions}
             name={`categories.${idx}.uploadRoles`}
           />
-          <Button secondary onClick={() => remove(idx)}>
+          <Button color="light" onClick={() => remove(idx)}>
             Remove
           </Button>
         </div>
