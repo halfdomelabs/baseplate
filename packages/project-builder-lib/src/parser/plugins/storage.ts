@@ -51,7 +51,7 @@ export const StoragePlugin: ParserPlugin = {
         type: 'string',
       },
       {
-        name: 'category',
+        name: 'adapter',
         isLocked: true,
         type: 'string',
       },

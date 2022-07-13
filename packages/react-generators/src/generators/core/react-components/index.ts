@@ -41,6 +41,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'Sidebar' },
   { name: 'Spinner' },
   { name: 'Table' },
+  { name: 'TextAreaInput' },
   { name: 'TextInput' },
   { name: 'Toast' },
 ];

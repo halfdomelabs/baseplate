@@ -1,3 +1,4 @@
+import inflection from 'inflection';
 import {
   AdminAppConfig,
   AdminCrudEnumInputConfig,
@@ -169,7 +170,7 @@ export function compileAdminCrudSection(
   builder: AppEntryBuilder<AdminAppConfig>
 ): unknown {
   return {
-    name: crudSection.name,
+    name: inflection.camelize(crudSection.name.replace(' ', ''), true),
     generator: '@baseplate/react/core/react-routes',
     children: {
       $section: {

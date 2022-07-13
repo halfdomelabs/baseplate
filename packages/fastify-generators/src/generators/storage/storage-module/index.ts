@@ -230,9 +230,9 @@ const StorageModuleGenerator = createGeneratorWithChildren({
             {
               bucket: `config.${adapter.bucketConfigVar}`,
               region: `config.AWS_DEFAULT_REGION`,
-              hostedUrl:
-                adapter.hostedUrlConfigVar &&
-                `config.${adapter.hostedUrlConfigVar}`,
+              hostedUrl: adapter.hostedUrlConfigVar
+                ? `config.${adapter.hostedUrlConfigVar}`
+                : undefined,
             }
           ).wrap(
             (contents) => `createS3Adapter(${contents})`,
