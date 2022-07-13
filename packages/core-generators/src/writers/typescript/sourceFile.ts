@@ -609,7 +609,14 @@ export class TypescriptSourceFile<
         ...(this.sourceFileOptions.importMappers || []),
       ];
 
-      file.getImportDeclarations().forEach((i) => i.remove());
+      file
+        .getImportDeclarations()
+        .filter(
+          (declaration) =>
+            declaration.getImportClause() ||
+            !declaration.getModuleSpecifierValue().endsWith('.css')
+        )
+        .forEach((i) => i.remove());
 
       if (headerBlocks.length) {
         const deduplicatedHeaderBlocks = R.uniqWith(

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import AlertIcon from 'src/components/AlertIcon';
 import Toast from 'src/components/Toast';
@@ -11,30 +11,36 @@ interface UseToastResult {
 }
 
 export function useToast(): UseToastResult {
-  function showToast(message: string, icon?: React.ReactElement): void {
-    toast.custom((t) => (
-      <Toast
-        visible={t.visible}
-        icon={icon}
-        onClose={() => toast.dismiss(t.id)}
-      >
-        {message}
-      </Toast>
-    ));
-  }
+  const showToast = useCallback(
+    (message: string, icon?: React.ReactElement): void => {
+      toast.custom((t) => (
+        <Toast
+          visible={t.visible}
+          icon={icon}
+          onClose={() => toast.dismiss(t.id)}
+        >
+          {message}
+        </Toast>
+      ));
+    },
+    []
+  );
 
-  return {
-    error: (message: string) => {
-      showToast(message, <AlertIcon type="error" />);
-    },
-    success: (message: string) => {
-      showToast(message, <AlertIcon type="success" />);
-    },
-    warning: (message: string) => {
-      showToast(message, <AlertIcon type="warning" />);
-    },
-    info: (message: string) => {
-      showToast(message, <AlertIcon type="info" />);
-    },
-  };
+  return useMemo(
+    () => ({
+      error: (message: string) => {
+        showToast(message, <AlertIcon type="error" />);
+      },
+      success: (message: string) => {
+        showToast(message, <AlertIcon type="success" />);
+      },
+      warning: (message: string) => {
+        showToast(message, <AlertIcon type="warning" />);
+      },
+      info: (message: string) => {
+        showToast(message, <AlertIcon type="info" />);
+      },
+    }),
+    [showToast]
+  );
 }

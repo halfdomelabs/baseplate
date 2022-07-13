@@ -137,7 +137,7 @@ const FileInput = function FileInput({
                   />
                 </a>
               )}
-              <div className="flex flex-row space-x-4">
+              <div className="flex flex-col space-y-4">
                 <div className="text-lg font-medium">
                   {value.hostedUrl ? (
                     <a

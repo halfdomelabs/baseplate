@@ -308,14 +308,21 @@ export function writeImportDeclarations(
 export function getImportDeclarationEntries(
   file: SourceFile
 ): ImportDeclarationEntry[] {
-  return file.getImportDeclarations().map((declaration) => ({
-    isTypeOnly: declaration.isTypeOnly(),
-    defaultImport: declaration.getDefaultImport()?.getText(),
-    namespaceImport: declaration.getNamespaceImport()?.getText(),
-    namedImports: declaration.getNamedImports().map((namedImport) => ({
-      name: namedImport.getName(),
-      alias: namedImport.getAliasNode()?.getText(),
-    })),
-    moduleSpecifier: declaration.getModuleSpecifier().getLiteralValue(),
-  }));
+  return file
+    .getImportDeclarations()
+    .filter(
+      (declaration) =>
+        declaration.getImportClause() ||
+        !declaration.getModuleSpecifierValue().endsWith('.css')
+    )
+    .map((declaration) => ({
+      isTypeOnly: declaration.isTypeOnly(),
+      defaultImport: declaration.getDefaultImport()?.getText(),
+      namespaceImport: declaration.getNamespaceImport()?.getText(),
+      namedImports: declaration.getNamedImports().map((namedImport) => ({
+        name: namedImport.getName(),
+        alias: namedImport.getAliasNode()?.getText(),
+      })),
+      moduleSpecifier: declaration.getModuleSpecifier().getLiteralValue(),
+    }));
 }
