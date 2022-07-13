@@ -38,7 +38,7 @@ function HomePage(): JSX.Element {
       <h2>Import/Export Configuration</h2>
       <div className="flex flex-row space-x-4">
         <Button
-          secondary
+          color="light"
           onClick={() =>
             setValue(
               JSON.stringify(

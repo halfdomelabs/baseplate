@@ -63,7 +63,7 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
             name={`roles.${idx}.inherits`}
           />
           {!isFixedRole(field.name) && (
-            <Button secondary onClick={() => remove(idx)}>
+            <Button color="light" onClick={() => remove(idx)}>
               Remove
             </Button>
           )}

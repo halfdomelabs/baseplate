@@ -56,6 +56,7 @@ export function useUpload<FileMetadata>({
       currentAbortController.current = null;
     }
     setError(null);
+    setProgress(0);
   }, []);
 
   const uploadFile = useCallback(

@@ -45,3 +45,11 @@ export async function applyDataPipeOutput<DataType>(
 
   return results[beforePrismaPromises.length] as DataType;
 }
+
+export async function applyDataPipeOutputWithoutOperation(
+  outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[]
+): Promise<void> {
+  const { beforePrismaPromises = [], afterPrismaPromises = [] } =
+    mergePipeOperations(outputs);
+  await prisma.$transaction([...beforePrismaPromises, ...afterPrismaPromises]);
+}

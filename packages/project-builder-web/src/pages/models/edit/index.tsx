@@ -43,7 +43,7 @@ function ModelEditPage(): JSX.Element {
       <div className="flex flex-row space-x-8">
         <h1>{model?.name || 'New Model'}</h1>
         {!isNew && (
-          <Button secondary onClick={handleDelete}>
+          <Button color="light" onClick={handleDelete}>
             Delete
           </Button>
         )}

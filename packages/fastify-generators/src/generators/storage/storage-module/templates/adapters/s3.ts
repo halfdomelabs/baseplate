@@ -10,13 +10,17 @@ import {
 
 interface S3AdapterOptions {
   region?: string;
+  /**
+   * Publicly hosted URL for the S3 bucket, e.g. https://uploads.example.com
+   */
+  hostedUrl?: string;
   bucket: string;
 }
 
 const PRESIGNED_S3_EXPIRATION = 600;
 
 export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
-  const { region, bucket } = options;
+  const { region, hostedUrl, bucket } = options;
 
   const client = new S3Client({ region });
 
@@ -44,7 +48,15 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     };
   }
 
+  function getHostedUrl(path: string): string | null {
+    if (!hostedUrl) {
+      return null;
+    }
+    return `${hostedUrl.replace(/\/$/, '')}/${path}`;
+  }
+
   return {
     createPresignedUploadUrl,
+    getHostedUrl,
   };
 };

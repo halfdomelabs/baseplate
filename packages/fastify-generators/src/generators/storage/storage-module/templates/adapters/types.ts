@@ -21,5 +21,5 @@ export interface StorageAdapter {
     input: AdapterPresignedUploadUrlInput
   ) => Promise<AdapterPresignedUploadUrlPayload>;
   createPresignedDownloadUrl?: (path: string) => Promise<string>;
-  getHostedUrl?: (path: string) => void;
+  getHostedUrl?: (path: string) => string | null;
 }

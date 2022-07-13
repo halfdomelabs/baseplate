@@ -28,6 +28,7 @@ const descriptorSchema = z.object({
     z.object({
       name: z.string().min(1),
       bucketConfigVar: z.string().min(1),
+      hostedUrlConfigVar: z.string().optional(),
     })
   ),
   categories: z.array(
@@ -129,7 +130,12 @@ const StorageModuleGenerator = createGeneratorWithChildren({
         await builder.apply(
           typescript.createCopyFilesAction({
             destinationBaseDirectory: moduleFolder,
-            paths: ['adapters/index.ts', 'adapters/s3.ts', 'adapters/types.ts'],
+            paths: [
+              'adapters/index.ts',
+              'adapters/s3.ts',
+              'adapters/url.ts',
+              'adapters/types.ts',
+            ],
           })
         );
         // Copy schema
@@ -212,10 +218,21 @@ const StorageModuleGenerator = createGeneratorWithChildren({
             seedValue: adapter.bucketConfigVar,
           });
 
+          if (adapter.hostedUrlConfigVar) {
+            configService.getConfigEntries().set(adapter.hostedUrlConfigVar, {
+              comment: `Hosted URL prefix for ${adapter.name}, e.g. https://uploads.example.com`,
+              value: new TypescriptCodeExpression('z.string().min(1)'),
+              seedValue: adapter.hostedUrlConfigVar,
+            });
+          }
+
           adapters[adapter.name] = TypescriptCodeUtils.mergeExpressionsAsObject(
             {
               bucket: `config.${adapter.bucketConfigVar}`,
               region: `config.AWS_DEFAULT_REGION`,
+              hostedUrl:
+                adapter.hostedUrlConfigVar &&
+                `config.${adapter.hostedUrlConfigVar}`,
             }
           ).wrap(
             (contents) => `createS3Adapter(${contents})`,
