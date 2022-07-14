@@ -17,7 +17,7 @@ interface S3AdapterOptions {
   bucket: string;
 }
 
-const PRESIGNED_S3_EXPIRATION = 600;
+const PRESIGNED_S3_EXPIRATION_SECONDS = 600;
 
 export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
   const { region, hostedUrl, bucket } = options;
@@ -38,7 +38,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
         { key: path },
         ...(contentType ? [{ 'Content-Type': contentType }] : []),
       ],
-      Expires: PRESIGNED_S3_EXPIRATION,
+      Expires: PRESIGNED_S3_EXPIRATION_SECONDS,
     });
 
     return {

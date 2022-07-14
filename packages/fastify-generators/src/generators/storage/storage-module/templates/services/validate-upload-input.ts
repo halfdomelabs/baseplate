@@ -23,7 +23,7 @@ export async function validateFileUploadInput(
     where: { id },
   });
 
-  // Upload must either be conducted by system
+  // Operation must either be conducted by system
   // or the user who uploaded the file
   if (
     !file ||

@@ -61,7 +61,7 @@ const AdminCrudEditGenerator = createGeneratorWithChildren({
     const [editSchemaImport, editSchemaPath] = makeImportAndFilePath(
       `${reactRoutes.getDirectoryBase()}/edit/${lowerCaseFirst(
         dasherize(underscore(modelName))
-      )}-schema.tsx`
+      )}-schema.ts`
     );
     const editSchemaName = `${lowerCaseFirst(modelName)}EditFormSchema`;
     const editSchemaExpression = TypescriptCodeUtils.createExpression(

@@ -313,6 +313,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         dtoField: {
           name: inputName,
           isOptional: true,
+          isNullable: !localRelation.isList && operationType === 'update',
           type: 'nested',
           isList: localRelation.isList,
           nestedType: {

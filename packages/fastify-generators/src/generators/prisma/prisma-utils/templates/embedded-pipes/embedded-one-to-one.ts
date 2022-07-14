@@ -110,8 +110,13 @@ export async function createOneToOneUpsertData<
       WhereUniqueInput,
       ParentId,
       UpsertData
-    >): Promise<DataPipeOutput<{ upsert: UpsertData } | undefined>> {
-  if (!input) {
+    >): Promise<
+  DataPipeOutput<{ upsert: UpsertData } | { delete: true } | undefined>
+> {
+  if (input === null) {
+    return { data: { delete: true } };
+  }
+  if (input === undefined) {
     return { data: undefined, operations: {} };
   }
   if (transform) {
