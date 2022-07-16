@@ -11,7 +11,7 @@ import {
  * An instance of a generator that has providers for other
  * generators to consume and can then add its own files
  */
-export interface GeneratorInstance<
+export interface GeneratorTaskInstance<
   ExportMap extends Record<string, unknown> = Record<string, Provider>
 > {
   getProviders?: () => ExportMap;
@@ -26,10 +26,12 @@ export type ProviderDependencyMap<T = Record<string, Provider>> = {
   [key in keyof T]: ProviderType<T[key]> | ProviderDependency<T[key]>;
 };
 
-type InferExportProviderMap<T> = T extends ProviderExportMap<infer P>
+export type InferExportProviderMap<T> = T extends ProviderExportMap<infer P>
   ? P
   : never;
-type InferDependencyProviderMap<T> = T extends ProviderDependencyMap<infer P>
+export type InferDependencyProviderMap<T> = T extends ProviderDependencyMap<
+  infer P
+>
   ? P
   : never;
 
@@ -40,11 +42,7 @@ export interface ParseDescriptorContext {
   id: string;
 }
 
-/**
- * Configuration of a generator
- */
-export interface GeneratorConfig<
-  Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor,
+export interface GeneratorTask<
   ExportMap extends ProviderExportMap = ProviderExportMap<
     Record<string, Provider>
   >,
@@ -52,10 +50,21 @@ export interface GeneratorConfig<
     Record<string, Provider>
   >
 > {
-  /**
-   * A map of the providers the generator exports
-   */
+  name: string;
   exports?: ExportMap;
+  dependencies?: DependencyMap;
+  taskDependencies: string[];
+  run: (
+    dependencies: InferDependencyProviderMap<DependencyMap>
+  ) => GeneratorTaskInstance<InferExportProviderMap<ExportMap>>;
+}
+
+/**
+ * Configuration of a generator
+ */
+export interface GeneratorConfig<
+  Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor
+> {
   /**
    * Parses descriptors and extracts out the structure of the generator
    */
@@ -63,7 +72,6 @@ export interface GeneratorConfig<
     descriptor: Descriptor,
     context: ParseDescriptorContext
   ) => {
-    dependencies?: DependencyMap;
     validatedDescriptor?: Descriptor;
     children?: {
       [key: string]:
@@ -76,21 +84,14 @@ export interface GeneratorConfig<
    * Creates an instance of the generator with a given descriptor and
    * resolved dependencies
    */
-  createGenerator: (
-    descriptor: Descriptor,
-    dependencies: InferDependencyProviderMap<DependencyMap>
-  ) => GeneratorInstance<InferExportProviderMap<ExportMap>>;
+  createGenerator: (descriptor: Descriptor) => GeneratorTask[];
 }
 
 /**
  * Helper function for creating a generator config (for typing)
  */
 export function createGeneratorConfig<
-  Descriptor extends BaseGeneratorDescriptor,
-  ExportMap extends ProviderExportMap<unknown> = ProviderExportMap<Provider>,
-  DependencyMap extends ProviderDependencyMap<unknown> = ProviderDependencyMap<Provider>
->(
-  config: GeneratorConfig<Descriptor, ExportMap, DependencyMap>
-): GeneratorConfig<Descriptor, ExportMap, DependencyMap> {
+  Descriptor extends BaseGeneratorDescriptor
+>(config: GeneratorConfig<Descriptor>): GeneratorConfig<Descriptor> {
   return config;
 }

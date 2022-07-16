@@ -4,7 +4,7 @@ import { notEmpty } from '@src/utils/arrays';
 import { ProviderExportMap } from '../generator';
 import { ProviderExport } from '../provider';
 import { EntryDependencyMap } from './dependency-map';
-import { GeneratorEntry } from './generator-builder';
+import { GeneratorTaskEntry } from './generator-builder';
 
 function normalizeExportMap(exportMap: ProviderExportMap): ProviderExport[] {
   return Object.values(exportMap).map((provider) =>
@@ -13,7 +13,7 @@ function normalizeExportMap(exportMap: ProviderExportMap): ProviderExport[] {
 }
 
 function getExportInterdependencies(
-  entries: GeneratorEntry[],
+  entries: GeneratorTaskEntry[],
   dependencyMap: EntryDependencyMap
 ): { nodes: string[]; edges: [string, string][] } {
   const entriesById = R.indexBy(R.prop('id'), entries);
@@ -39,10 +39,7 @@ function getExportInterdependencies(
 
       exportDependencies[key] = [
         ...(exportDependencies[key] || []),
-        {
-          id: entryId,
-          modifiedInBuild,
-        },
+        { id: entryId, modifiedInBuild },
       ];
     });
   });
@@ -133,14 +130,19 @@ function getExportInterdependencies(
  * @param dependencyMap Dependency map of the entries
  */
 export function getSortedRunSteps(
-  entries: GeneratorEntry[],
+  entries: GeneratorTaskEntry[],
   dependencyMap: EntryDependencyMap
 ): string[] {
   const dependencyGraph = entries.flatMap((entry): [string, string][] => {
     const entryInit = `init|${entry.id}`;
     const entryBuild = `build|${entry.id}`;
+
     return [
       [entryInit, entryBuild],
+      ...entry.taskDependencies.map((taskDependency): [string, string] => {
+        const dependentBuild = `build|${taskDependency}`;
+        return [dependentBuild, entryInit];
+      }),
       ...Object.values(dependencyMap[entry.id])
         .filter(notEmpty)
         .flatMap((dependentId): [string, string][] => {

@@ -1,12 +1,12 @@
 import R from 'ramda';
 import { FormatterProvider } from '@src/providers';
-import { GeneratorInstance } from '../generator';
+import { GeneratorTaskInstance } from '../generator';
 import { GeneratorOutput, OutputBuilder } from '../generator-output';
 import { Provider } from '../provider';
-import { buildEntryDependencyMapRecursive } from './dependency-map';
+import { buildEntryDependencyMapRecursive as buildTaskEntryDependencyMapRecursive } from './dependency-map';
 import { getSortedRunSteps } from './dependency-sort';
 import { GeneratorEntry } from './generator-builder';
-import { flattenGeneratorEntries } from './utils';
+import { flattenGeneratorTaskEntries } from './utils';
 
 // running awaits in serial for ease of reading
 
@@ -16,30 +16,29 @@ import { flattenGeneratorEntries } from './utils';
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry
 ): Promise<GeneratorOutput> {
-  const entries = flattenGeneratorEntries(rootEntry);
-  const entriesById = R.indexBy(R.prop('id'), entries);
-  const dependencyMap = buildEntryDependencyMapRecursive(
+  const taskEntries = flattenGeneratorTaskEntries(rootEntry);
+  const taskEntriesById = R.indexBy(R.prop('id'), taskEntries);
+  const dependencyMap = buildTaskEntryDependencyMapRecursive(
     rootEntry,
     {},
-    entriesById
+    taskEntriesById
   );
-  const sortedRunSteps = getSortedRunSteps(entries, dependencyMap);
+  const sortedRunSteps = getSortedRunSteps(taskEntries, dependencyMap);
 
-  const generatorsById: Record<string, GeneratorInstance> = {}; // map of entry ID to initialized generator
+  const taskInstanceById: Record<string, GeneratorTaskInstance> = {}; // map of entry ID to initialized generator
   const providerMapById: Record<string, Record<string, Provider>> = {}; // map of entry ID to map of provider name to Provider
 
   const generatorOutputs: GeneratorOutput[] = [];
 
   for (const runStep of sortedRunSteps) {
-    const [action, entryId] = runStep.split('|');
+    const [action, taskId] = runStep.split('|');
     try {
       if (action === 'init') {
         // run through init step
-        const { descriptor, generatorConfig, dependencies, exports } =
-          entriesById[entryId];
+        const { task, dependencies, exports } = taskEntriesById[taskId];
 
         const resolvedDependencies = R.mapObjIndexed((dependency, key) => {
-          const dependencyId = dependencyMap[entryId][key];
+          const dependencyId = dependencyMap[taskId][key];
           const provider =
             dependencyId == null
               ? null
@@ -51,45 +50,46 @@ export async function executeGeneratorEntry(
 
           if (!provider && !optional) {
             throw new Error(
-              `Could not resolve required dependency ${key} in ${entryId}`
+              `Could not resolve required dependency ${key} in ${taskId}`
             );
           }
           return provider as Provider; // cheat Type system to prevent null from appearing
         }, dependencies);
 
-        const generator = generatorConfig.createGenerator(
-          descriptor,
-          resolvedDependencies
-        );
-        generatorsById[entryId] = generator;
+        const taskInstance = task.run(resolvedDependencies);
+        taskInstanceById[taskId] = taskInstance;
 
-        if (!generator.getProviders && exports && Object.keys(exports).length) {
+        if (
+          !taskInstance.getProviders &&
+          exports &&
+          Object.keys(exports).length
+        ) {
           throw new Error(
-            `Generator ${entryId} does not have getProviders function despite having exports`
+            `Task ${taskId} does not have getProviders function despite having exports`
           );
         }
-        if (generator.getProviders && exports) {
-          const providers = generator.getProviders();
+        if (taskInstance.getProviders && exports) {
+          const providers = taskInstance.getProviders();
           const missingProvider = Object.keys(exports).find(
             (key) => !providers[key]
           );
           if (missingProvider) {
             throw new Error(
-              `Generator ${entryId} did not export provider ${missingProvider}`
+              `Task ${taskId} did not export provider ${missingProvider}`
             );
           }
-          providerMapById[entryId] = R.zipObj(
+          providerMapById[taskId] = R.zipObj(
             Object.values(exports).map((value) => value.name),
             Object.keys(exports).map((key) => providers[key])
           );
         }
       } else if (action === 'build') {
         // run through build step
-        const entry = entriesById[entryId];
-        const generator = generatorsById[entryId];
+        const entry = taskEntriesById[taskId];
+        const generator = taskInstanceById[taskId];
 
         // get default formatter for this instance
-        const formatterId = dependencyMap[entryId].formatter;
+        const formatterId = dependencyMap[taskId].formatter;
         const formatter =
           formatterId == null
             ? undefined
@@ -97,7 +97,7 @@ export async function executeGeneratorEntry(
                 .formatter as unknown as FormatterProvider);
 
         const outputBuilder = new OutputBuilder(
-          entry.generatorConfig.configBaseDirectory,
+          entry.generatorBaseDirectory,
           formatter
         );
 
@@ -108,7 +108,7 @@ export async function executeGeneratorEntry(
         throw new Error(`Unknown action ${action}`);
       }
     } catch (err) {
-      console.error(`Error encountered in ${action} step of ${entryId}`);
+      console.error(`Error encountered in ${action} step of ${taskId}`);
       throw err;
     }
   }

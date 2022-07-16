@@ -52,11 +52,16 @@ describe('buildGeneratorEntry', () => {
   };
   const generatorMap: GeneratorConfigMap = {
     simple: {
-      parseDescriptor: () => ({
-        dependencies: simpleDependencies,
-      }),
-      exports: simpleExports,
-      createGenerator: jest.fn(),
+      parseDescriptor: () => ({}),
+      createGenerator: () => [
+        {
+          name: 'main',
+          dependencies: simpleDependencies,
+          exports: simpleExports,
+          taskDependencies: [],
+          run: jest.fn(),
+        },
+      ],
       configBaseDirectory: '/simple',
     },
     nested: {
@@ -66,12 +71,12 @@ describe('buildGeneratorEntry', () => {
           childMany: [{ name: 'bob', generator: 'simple' }],
         },
       }),
-      createGenerator: jest.fn(),
+      createGenerator: () => [],
       configBaseDirectory: '/simple',
     },
     reference: {
       parseDescriptor: () => ({ children: { child: 'child-descriptor' } }),
-      createGenerator: jest.fn(),
+      createGenerator: () => [],
       configBaseDirectory: '/simple',
     },
     duplicateReference: {
@@ -81,14 +86,14 @@ describe('buildGeneratorEntry', () => {
           childDuplicate: 'child-descriptor',
         },
       }),
-      createGenerator: jest.fn(),
+      createGenerator: () => [],
       configBaseDirectory: '/simple',
     },
     validatedDescriptor: {
       parseDescriptor: () => ({
         validatedDescriptor: { name: 'hi', generator: 'foo' },
       }),
-      createGenerator: jest.fn(),
+      createGenerator: () => [],
       configBaseDirectory: '/simple',
     },
   };
@@ -108,9 +113,14 @@ describe('buildGeneratorEntry', () => {
       id: 'project',
       generatorConfig: generatorMap.simple,
       descriptor: { generator: 'simple' },
-      dependencies: simpleDependencies,
       children: [],
-      exports: simpleExports,
+      tasks: [
+        {
+          id: 'project#main',
+          dependencies: simpleDependencies,
+          exports: simpleExports,
+        },
+      ],
     });
   });
 

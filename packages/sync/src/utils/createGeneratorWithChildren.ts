@@ -4,6 +4,9 @@ import {
   baseDescriptorSchema,
   BaseGeneratorDescriptor,
   GeneratorConfig,
+  GeneratorTaskInstance,
+  InferDependencyProviderMap,
+  InferExportProviderMap,
   ProviderDependencyMap,
   ProviderExportMap,
 } from '../core';
@@ -48,11 +51,10 @@ export interface SimpleGeneratorConfig<
     dependencyMap: DependencyMap,
     descriptor: z.infer<DescriptorSchema>
   ) => ProviderDependencyMap;
-  createGenerator: GeneratorConfig<
-    DescriptorWithChildren & z.infer<DescriptorSchema>,
-    ExportMap,
-    DependencyMap
-  >['createGenerator'];
+  createGenerator: (
+    descriptor: DescriptorWithChildren & z.infer<DescriptorSchema>,
+    dependencies: InferDependencyProviderMap<DependencyMap>
+  ) => GeneratorTaskInstance<InferExportProviderMap<ExportMap>>;
 }
 
 /**
@@ -71,11 +73,10 @@ export function createGeneratorWithChildren<
   DependencyMap extends ProviderDependencyMap
 >(
   config: SimpleGeneratorConfig<DescriptorSchema, ExportMap, DependencyMap>
-): GeneratorConfig<
-  DescriptorWithChildren & z.infer<DescriptorSchema>,
-  ExportMap,
-  DependencyMap
-> {
+): GeneratorConfig<DescriptorWithChildren & z.infer<DescriptorSchema>> {
+  let dependencyMap: DependencyMap =
+    config.dependencies || ({} as DependencyMap);
+
   return {
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
       try {
@@ -84,7 +85,7 @@ export function createGeneratorWithChildren<
         const validatedDescriptor = mergedSchema?.parse(
           descriptor
         ) as DescriptorWithChildren & z.infer<DescriptorSchema>;
-        const { id, generatorMap } = context;
+        const { id } = context;
         const childGeneratorConfigs =
           config.getDefaultChildGenerators?.(descriptor) || {};
 
@@ -100,11 +101,7 @@ export function createGeneratorWithChildren<
         }
 
         const mergeAndValidateDescriptor = (
-          {
-            defaultDescriptor,
-            provider,
-            defaultToNullIfEmpty,
-          }: ChildGeneratorConfig,
+          { defaultDescriptor, defaultToNullIfEmpty }: ChildGeneratorConfig,
           descriptorChild: Partial<BaseGeneratorDescriptor> | string | undefined
         ): BaseGeneratorDescriptor | string | null => {
           if (typeof descriptorChild === 'string') {
@@ -133,25 +130,8 @@ export function createGeneratorWithChildren<
             .passthrough()
             .parse(mergedDescriptor);
 
-          if (provider) {
-            const childGeneratorConfig =
-              generatorMap[validatedChildDescriptor.generator];
-            if (!childGeneratorConfig) {
-              throw new Error(
-                `Child generator in ${id} has invalid generator ${validatedChildDescriptor.generator}`
-              );
-            }
-            const exportKeys = Object.keys(childGeneratorConfig.exports || {});
-            if (
-              !exportKeys.some(
-                (key) => childGeneratorConfig.exports?.[key].name === provider
-              )
-            ) {
-              throw new Error(
-                `Child generator ${validatedChildDescriptor.generator} in ${id} does not provide ${provider}`
-              );
-            }
-          }
+          // TODO: Need to implement provider
+
           return validatedChildDescriptor;
         };
 
@@ -180,17 +160,15 @@ export function createGeneratorWithChildren<
         const customChildren: Record<string, BaseGeneratorDescriptor | string> =
           R.pickBy((_, key) => key.startsWith('$'), descriptorChildren);
 
-        const dependencies =
-          config.populateDependencies && config.dependencies
-            ? (config.populateDependencies(
-                config.dependencies,
-                validatedDescriptor
-              ) as DependencyMap)
-            : config.dependencies;
+        if (config.populateDependencies && config.dependencies) {
+          dependencyMap = config.populateDependencies(
+            config.dependencies,
+            validatedDescriptor
+          ) as DependencyMap;
+        }
 
         return {
           children: R.mergeRight(children, customChildren),
-          dependencies,
           validatedDescriptor,
         };
       } catch (err) {
@@ -202,7 +180,19 @@ export function createGeneratorWithChildren<
         throw err;
       }
     },
-    exports: config.exports,
-    createGenerator: config.createGenerator,
+    createGenerator: (descriptor) => [
+      {
+        name: 'main',
+        dependencies: dependencyMap,
+        exports: config.exports,
+        taskDependencies: [],
+        run(dependencies) {
+          return config.createGenerator(
+            descriptor,
+            dependencies as InferDependencyProviderMap<DependencyMap>
+          );
+        },
+      },
+    ],
   };
 }
