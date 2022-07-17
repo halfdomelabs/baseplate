@@ -10,7 +10,7 @@ import {
   TypescriptStringReplacement,
 } from '@baseplate/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
@@ -20,7 +20,7 @@ import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
-import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
+import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
 import { rootModuleProvider } from '@src/generators/core/root-module';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition';
@@ -76,253 +76,298 @@ export interface NexusProvider {
 
 export const nexusProvider = createProviderType<NexusProvider>('nexus');
 
-const NexusGenerator = createGeneratorWithChildren({
+const NexusGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    rootModule: rootModuleProvider,
-    typescript: typescriptProvider,
-    configService: configServiceProvider,
-    fastifyServer: fastifyServerProvider,
-    tsUtils: tsUtilsProvider,
-    fastifyOutput: fastifyOutputProvider,
-    eslint: eslintProvider,
-    errorHandlerService: errorHandlerServiceProvider,
-    requestServiceContextSetup: requestServiceContextSetupProvider,
-    prettier: prettierProvider,
-  },
-  exports: {
-    nexusSetup: nexusSetupProvider,
-    nexusSchema: nexusSchemaProvider.export().dependsOn(nexusSetupProvider),
-    nexus: nexusProvider.export().dependsOn(nexusSchemaProvider),
-  },
-  createGenerator(
-    descriptor,
-    {
-      node,
-      rootModule,
-      typescript,
-      configService,
-      requestServiceContextSetup,
-      fastifyServer,
-      tsUtils,
-      fastifyOutput,
-      eslint,
-      errorHandlerService,
-      prettier,
-    }
-  ) {
-    const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
-      { nexusPlugins: [], mutationFields: [] },
-      { name: 'nexus-config' }
-    );
-
-    configMap.appendUnique('nexusPlugins', [
-      new TypescriptCodeExpression(
-        'connectionPlugin({ includeNodesField: true })',
-        "import { connectionPlugin } from 'nexus'"
-      ),
-    ]);
-
-    configMap.appendUnique('nexusPlugins', [
-      new TypescriptCodeExpression(
-        'missingTypePlugin',
-        "import { missingTypePlugin } from './missing-type-plugin'"
-      ),
-    ]);
-
-    const scalarMap = createNonOverwriteableMap<
-      Record<ScalarFieldType, NexusScalarConfig>
-    >(DEFAULT_NEXUS_SCALAR_CONFIG, {
-      defaultsOverwriteable: true,
-      name: 'nexus-scalars',
-    });
-
-    node.addPackages({
-      'altair-fastify-plugin': '4.5.1',
-      graphql: '^16.3.0',
-      mercurius: '10.1.0',
-      nexus: '1.3.0',
-    });
-
-    // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
-    node.addDevPackages({
-      '@types/ws': '8.5.3',
-    });
-
-    rootModule.addModuleField(
-      'schemaTypes',
-      new TypescriptCodeExpression(
-        'NexusType',
-        "import type {NexusType} from '@/src/utils/nexus'"
-      )
-    );
-
-    const pluginFile = typescript.createTemplate(
-      {
-        ROOT_MODULE: { type: 'code-expression' },
-        PLUGINS: { type: 'code-expression' },
-        CONTEXT_PATH: { type: 'string-replacement' },
-      },
-      {
-        importMappers: [
-          errorHandlerService,
-          configService,
-          requestServiceContextSetup,
-        ],
-      }
-    );
-
-    pluginFile.addStringReplacement(
-      'CONTEXT_PATH',
-      requestServiceContextSetup.getContextPath()
-    );
-
-    pluginFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
-
-    fastifyServer.registerPlugin({
-      name: 'graphqlPlugin',
-      plugin: new TypescriptCodeExpression(
-        'graphqlPlugin',
-        "import { graphqlPlugin } from '@/src/plugins/graphql'"
-      ),
-    });
-
-    // add script to generate types
-    node.addScript(
-      'nexusgen',
-      `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
-    );
-
-    // ignore nexus typegen file
-    eslint.getConfig().appendUnique('eslintIgnore', ['src/nexus-typegen.ts']);
-    prettier.addPrettierIgnore('/src/nexus-typegen.ts');
-    prettier.addPrettierIgnore('/schema.graphql');
-
-    const schemaFiles: string[] = [];
-
-    const getScalarConfig = (scalar: ScalarFieldType): NexusScalarConfig => {
-      const config = scalarMap.get(scalar);
-      if (!config) {
-        throw new Error(`No config found for scalar ${scalar}`);
-      }
-      return config;
-    };
-
-    const importMap = {
-      '%nexus/utils': {
-        path: '@/src/utils/nexus',
-        allowedImports: ['createStandardMutation'],
-      },
-      '%nexus/typegen': {
-        path: '@/src/nexus-typegen',
-        allowedImports: ['NexusGenFieldTypes'],
-      },
-    };
-
-    const usedSchemaTypes: string[] = [];
-
-    return {
-      getProviders: () => ({
-        nexusSetup: {
-          addScalarField: (config) => {
-            scalarMap.set(config.scalar, config);
-          },
-          registerSchemaFile: (file) => schemaFiles.push(file),
-          getConfig: () => configMap,
-          getImportMap: () => importMap,
-        },
-        nexusSchema: {
-          getScalarConfig,
-          registerSchemaFile: (file) => schemaFiles.push(file),
-          registerSchemaType: (name) => {
-            if (usedSchemaTypes.includes(name)) {
-              return false;
-            }
-            usedSchemaTypes.push(name);
-            return true;
-          },
-          getUtilsImport: () => '@/src/utils/nexus',
-          getNexusWriterOptions: () => ({
-            builder: 't',
-            lookupScalar: (scalar) => getScalarConfig(scalar),
-          }),
-          getUtilsExpression(method) {
-            switch (method) {
-              case 'STANDARD_MUTATION':
-                return new TypescriptCodeExpression(
-                  'createStandardMutation',
-                  `import {createStandardMutation} from '@/src/utils/nexus'`
-                );
-              default:
-                throw new Error(`Unknown method ${method as string}`);
-            }
-          },
-          getImportMap: () => importMap,
-        },
-        nexus: {
-          getConfig: () => configMap,
-        },
-      }),
-      build: async (builder) => {
-        const config = configMap.value();
-
-        const utilsFile = typescript.createTemplate(
-          {
-            CUSTOM_CREATE_MUTATION_OPTIONS: { type: 'code-block' },
-            CUSTOM_MUTATION_FIELDS: {
-              type: 'string-replacement',
-              asSingleLineComment: true,
-            },
-          },
-          {
-            importMappers: [tsUtils],
-          }
+  buildTasks(taskBuilder) {
+    // Setup Task
+    const setupTask = taskBuilder.addTask({
+      name: 'setup',
+      dependencies: {},
+      exports: { nexusSetup: nexusSetupProvider },
+      run() {
+        const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
+          { nexusPlugins: [], mutationFields: [] },
+          { name: 'nexus-config' }
         );
-        utilsFile.addCodeEntries({
-          CUSTOM_MUTATION_FIELDS: new TypescriptStringReplacement(
-            config.mutationFields.map((f) => f.name).join(',\n')
+
+        configMap.appendUnique('nexusPlugins', [
+          new TypescriptCodeExpression(
+            'connectionPlugin({ includeNodesField: true })',
+            "import { connectionPlugin } from 'nexus'"
           ),
-          CUSTOM_CREATE_MUTATION_OPTIONS: config.mutationFields.map((f) =>
-            f.type
-              .prepend(`${`${f.name}${f.isOptional ? '?' : ''}`}: `)
-              .toBlock()
+        ]);
+
+        configMap.appendUnique('nexusPlugins', [
+          new TypescriptCodeExpression(
+            'missingTypePlugin',
+            "import { missingTypePlugin } from './missing-type-plugin'"
           ),
+        ]);
+
+        const scalarMap = createNonOverwriteableMap<
+          Record<ScalarFieldType, NexusScalarConfig>
+        >(DEFAULT_NEXUS_SCALAR_CONFIG, {
+          defaultsOverwriteable: true,
+          name: 'nexus-scalars',
         });
-        await builder.apply(
-          utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts')
-        );
 
-        pluginFile.addCodeExpression(
-          'PLUGINS',
-          TypescriptCodeUtils.mergeExpressionsAsArray(config.nexusPlugins)
-        );
+        const schemaFiles: string[] = [];
 
-        await builder.apply(
-          pluginFile.renderToAction(
-            'plugins/graphql/index.ts',
-            'src/plugins/graphql/index.ts'
+        const importMap = {
+          '%nexus/utils': {
+            path: '@/src/utils/nexus',
+            allowedImports: ['createStandardMutation'],
+          },
+          '%nexus/typegen': {
+            path: '@/src/nexus-typegen',
+            allowedImports: ['NexusGenFieldTypes'],
+          },
+        };
+
+        return {
+          getProviders() {
+            return {
+              nexusSetup: {
+                addScalarField: (config) => {
+                  scalarMap.set(config.scalar, config);
+                },
+                registerSchemaFile: (file) => schemaFiles.push(file),
+                getConfig: () => configMap,
+                getImportMap: () => importMap,
+              },
+            };
+          },
+          build() {
+            return { scalarMap, schemaFiles, configMap, importMap };
+          },
+        };
+      },
+    });
+
+    // Schema Task
+    const schemaTask = taskBuilder.addTask({
+      name: 'schema',
+      dependsOn: setupTask,
+      exports: {
+        nexusSchema: nexusSchemaProvider,
+      },
+      run() {
+        const { scalarMap, schemaFiles, importMap } = setupTask.getOutput();
+
+        const getScalarConfig = (
+          scalar: ScalarFieldType
+        ): NexusScalarConfig => {
+          const config = scalarMap.get(scalar);
+          if (!config) {
+            throw new Error(`No config found for scalar ${scalar}`);
+          }
+          return config;
+        };
+
+        const usedSchemaTypes: string[] = [];
+
+        return {
+          getProviders() {
+            return {
+              nexusSchema: {
+                getScalarConfig,
+                registerSchemaFile: (file) => schemaFiles.push(file),
+                registerSchemaType: (name) => {
+                  if (usedSchemaTypes.includes(name)) {
+                    return false;
+                  }
+                  usedSchemaTypes.push(name);
+                  return true;
+                },
+                getUtilsImport: () => '@/src/utils/nexus',
+                getNexusWriterOptions: () => ({
+                  builder: 't',
+                  lookupScalar: (scalar) => getScalarConfig(scalar),
+                }),
+                getUtilsExpression(method) {
+                  switch (method) {
+                    case 'STANDARD_MUTATION':
+                      return new TypescriptCodeExpression(
+                        'createStandardMutation',
+                        `import {createStandardMutation} from '@/src/utils/nexus'`
+                      );
+                    default:
+                      throw new Error(`Unknown method ${method as string}`);
+                  }
+                },
+                getImportMap: () => importMap,
+              },
+            };
+          },
+          build() {
+            return { usedSchemaTypes };
+          },
+        };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'main',
+      dependsOn: [setupTask, schemaTask],
+      dependencies: {
+        node: nodeProvider,
+        rootModule: rootModuleProvider,
+        typescript: typescriptProvider,
+        configService: configServiceProvider,
+        fastifyServer: fastifyServerProvider,
+        tsUtils: tsUtilsProvider,
+        fastifyOutput: fastifyOutputProvider,
+        eslint: eslintProvider,
+        errorHandlerService: errorHandlerServiceProvider,
+        requestServiceContext: requestServiceContextProvider,
+        prettier: prettierProvider,
+      },
+      exports: {
+        nexus: nexusProvider,
+      },
+      run({
+        node,
+        rootModule,
+        typescript,
+        errorHandlerService,
+        configService,
+        requestServiceContext,
+        fastifyServer,
+        fastifyOutput,
+        eslint,
+        prettier,
+        tsUtils,
+      }) {
+        const { configMap, schemaFiles } = setupTask.getOutput();
+
+        node.addPackages({
+          'altair-fastify-plugin': '4.5.1',
+          graphql: '^16.3.0',
+          mercurius: '10.1.0',
+          nexus: '1.3.0',
+        });
+
+        // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
+        node.addDevPackages({
+          '@types/ws': '8.5.3',
+        });
+
+        rootModule.addModuleField(
+          'schemaTypes',
+          new TypescriptCodeExpression(
+            'NexusType',
+            "import type {NexusType} from '@/src/utils/nexus'"
           )
         );
 
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'plugins/graphql/missing-type-plugin.ts',
-            destination: 'src/plugins/graphql/missing-type-plugin.ts',
-          })
+        const pluginFile = typescript.createTemplate(
+          {
+            ROOT_MODULE: { type: 'code-expression' },
+            PLUGINS: { type: 'code-expression' },
+            CONTEXT_PATH: { type: 'string-replacement' },
+          },
+          {
+            importMappers: [
+              errorHandlerService,
+              configService,
+              requestServiceContext,
+            ],
+          }
         );
 
-        builder.addPostWriteCommand('yarn nexusgen', {
-          onlyIfChanged: [
-            ...schemaFiles,
-            'src/plugins/graphql/index.ts',
-            'src/plugins/graphql/missing-type-plugin.ts',
-            'src/utils/nexus.ts',
-          ],
+        pluginFile.addStringReplacement(
+          'CONTEXT_PATH',
+          requestServiceContext.getContextPath()
+        );
+
+        pluginFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
+
+        fastifyServer.registerPlugin({
+          name: 'graphqlPlugin',
+          plugin: new TypescriptCodeExpression(
+            'graphqlPlugin',
+            "import { graphqlPlugin } from '@/src/plugins/graphql'"
+          ),
         });
+
+        // add script to generate types
+        node.addScript(
+          'nexusgen',
+          `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
+        );
+
+        // ignore nexus typegen file
+        eslint
+          .getConfig()
+          .appendUnique('eslintIgnore', ['src/nexus-typegen.ts']);
+        prettier.addPrettierIgnore('/src/nexus-typegen.ts');
+        prettier.addPrettierIgnore('/schema.graphql');
+
+        return {
+          getProviders() {
+            return { nexus: { getConfig: () => configMap } };
+          },
+          async build(builder) {
+            const config = configMap.value();
+
+            const utilsFile = typescript.createTemplate(
+              {
+                CUSTOM_CREATE_MUTATION_OPTIONS: { type: 'code-block' },
+                CUSTOM_MUTATION_FIELDS: {
+                  type: 'string-replacement',
+                  asSingleLineComment: true,
+                },
+              },
+              {
+                importMappers: [tsUtils],
+              }
+            );
+            utilsFile.addCodeEntries({
+              CUSTOM_MUTATION_FIELDS: new TypescriptStringReplacement(
+                config.mutationFields.map((f) => f.name).join(',\n')
+              ),
+              CUSTOM_CREATE_MUTATION_OPTIONS: config.mutationFields.map((f) =>
+                f.type
+                  .prepend(`${`${f.name}${f.isOptional ? '?' : ''}`}: `)
+                  .toBlock()
+              ),
+            });
+            await builder.apply(
+              utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts')
+            );
+
+            pluginFile.addCodeExpression(
+              'PLUGINS',
+              TypescriptCodeUtils.mergeExpressionsAsArray(config.nexusPlugins)
+            );
+
+            await builder.apply(
+              pluginFile.renderToAction(
+                'plugins/graphql/index.ts',
+                'src/plugins/graphql/index.ts'
+              )
+            );
+
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'plugins/graphql/missing-type-plugin.ts',
+                destination: 'src/plugins/graphql/missing-type-plugin.ts',
+              })
+            );
+
+            builder.addPostWriteCommand('yarn nexusgen', {
+              onlyIfChanged: [
+                ...schemaFiles,
+                'src/plugins/graphql/index.ts',
+                'src/plugins/graphql/missing-type-plugin.ts',
+                'src/utils/nexus.ts',
+              ],
+            });
+          },
+        };
       },
-    };
+    });
   },
 });
 

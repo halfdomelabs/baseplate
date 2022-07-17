@@ -15,7 +15,7 @@ export interface GeneratorTaskEntry {
   exports: ProviderExportMap;
   task: GeneratorTask;
   generatorBaseDirectory: string;
-  taskDependencies: string[];
+  dependentTaskIds: string[];
 }
 
 export interface GeneratorEntry {
@@ -107,7 +107,7 @@ export async function buildGeneratorEntry(
         exports: task.exports || {},
         task,
         generatorBaseDirectory: generatorConfig.configBaseDirectory,
-        taskDependencies: task.taskDependencies,
+        dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
       })
     );
 

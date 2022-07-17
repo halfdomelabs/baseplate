@@ -1,5 +1,5 @@
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
 } from '@baseplate/sync';
@@ -27,7 +27,7 @@ export interface PrismaCrudServiceProvider {
 export const prismaCrudServiceProvider =
   createProviderType<PrismaCrudServiceProvider>('prisma-crud-service');
 
-const PrismaCrudServiceGenerator = createGeneratorWithChildren({
+const PrismaCrudServiceGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: ({ modelName }) => ({
     create: {
@@ -54,39 +54,55 @@ const PrismaCrudServiceGenerator = createGeneratorWithChildren({
     },
     transformers: { isMultiple: true },
   }),
-  exports: {
-    prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
-    prismaCrudService: prismaCrudServiceProvider
-      .export()
-      .dependsOn(prismaCrudServiceSetupProvider),
-  },
-  dependencies: {},
-  createGenerator({ modelName }) {
-    const transformers = createNonOverwriteableMap<
-      Record<string, PrismaDataTransformerFactory>
-    >({});
-    return {
-      getProviders: () => ({
-        prismaCrudServiceSetup: {
-          getModelName() {
-            return modelName;
+  buildTasks(taskBuilder, { modelName }) {
+    const setupTask = taskBuilder.addTask({
+      name: 'setup',
+      exports: { prismaCrudServiceSetup: prismaCrudServiceSetupProvider },
+      run() {
+        const transformers = createNonOverwriteableMap<
+          Record<string, PrismaDataTransformerFactory>
+        >({});
+
+        return {
+          getProviders: () => ({
+            prismaCrudServiceSetup: {
+              getModelName() {
+                return modelName;
+              },
+              addTransformer(name, transformer) {
+                transformers.set(name, transformer);
+              },
+            },
+          }),
+          build: () => ({ transformers }),
+        };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'main',
+      dependsOn: setupTask,
+      exports: { prismaCrudService: prismaCrudServiceProvider },
+      run() {
+        const { transformers } = setupTask.getOutput();
+
+        return {
+          getProviders() {
+            return {
+              prismaCrudService: {
+                getTransformerByName(name) {
+                  const transformer = transformers.get(name);
+                  if (!transformer) {
+                    throw new Error(`Transformer ${name} not found`);
+                  }
+                  return transformer;
+                },
+              },
+            };
           },
-          addTransformer(name, transformer) {
-            transformers.set(name, transformer);
-          },
-        },
-        prismaCrudService: {
-          getTransformerByName(name) {
-            const transformer = transformers.get(name);
-            if (!transformer) {
-              throw new Error(`Transformer ${name} not found`);
-            }
-            return transformer;
-          },
-        },
-      }),
-      build: async () => {},
-    };
+        };
+      },
+    });
   },
 });
 

@@ -139,8 +139,9 @@ export function getSortedRunSteps(
 
     return [
       [entryInit, entryBuild],
-      ...entry.taskDependencies.map((taskDependency): [string, string] => {
-        const dependentBuild = `build|${taskDependency}`;
+      ...entry.dependentTaskIds.map((taskId): [string, string] => {
+        const dependentBuild = `build|${taskId}`;
+        console.log([dependentBuild, entryInit]);
         return [dependentBuild, entryInit];
       }),
       ...Object.values(dependencyMap[entry.id])
@@ -157,6 +158,7 @@ export function getSortedRunSteps(
   });
   const { nodes: interdependentNodes, edges: interdependentEdges } =
     getExportInterdependencies(entries, dependencyMap);
+
   const result = toposort.array(
     [
       ...entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]),

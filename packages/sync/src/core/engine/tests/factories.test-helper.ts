@@ -11,7 +11,7 @@ export function buildTestGeneratorTaskEntry(
     id: lastTaskId.toString(),
     dependencies: {},
     exports: {},
-    taskDependencies: [],
+    dependentTaskIds: [],
     task: {
       name: `task-${lastTaskId}`,
       exports: {},

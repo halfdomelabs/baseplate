@@ -174,7 +174,7 @@ describe('getSortedRunSteps', () => {
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
           exports: { exp2: providerTwo },
-          taskDependencies: ['entryOne#exp'],
+          dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryTwo',
@@ -220,12 +220,12 @@ describe('getSortedRunSteps', () => {
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
           exports: { exp2: providerTwo },
-          taskDependencies: ['entryOne#exp'],
+          dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp3',
           exports: { exp3: providerThree },
-          taskDependencies: ['entryOne#exp2'],
+          dependentTaskIds: ['entryOne#exp2'],
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryTwo',
@@ -274,7 +274,7 @@ describe('getSortedRunSteps', () => {
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
           exports: { exp2: providerTwo },
-          taskDependencies: ['entryOne#exp'],
+          dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryTwo',

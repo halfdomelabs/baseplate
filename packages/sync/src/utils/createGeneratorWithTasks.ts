@@ -4,9 +4,10 @@ import {
   baseDescriptorSchema,
   BaseGeneratorDescriptor,
   GeneratorConfig,
-  GeneratorTaskInstance,
+  GeneratorOutputBuilder,
   InferDependencyProviderMap,
   InferExportProviderMap,
+  Provider,
   ProviderDependencyMap,
   ProviderExportMap,
 } from '../core';
@@ -16,27 +17,55 @@ import {
   DescriptorWithChildren,
 } from './createGeneratorTypes';
 
-export interface SimpleGeneratorConfig<
-  DescriptorSchema extends z.ZodType,
-  ExportMap extends ProviderExportMap,
-  DependencyMap extends ProviderDependencyMap
+export interface SimpleGeneratorTaskOutput<TaskOutput = void> {
+  name: string;
+  getOutput: () => TaskOutput;
+}
+
+interface SimpleGeneratorTaskInstance<
+  ExportMap extends Record<string, unknown> = Record<string, Provider>,
+  TaskOutput = unknown
 > {
+  getProviders?: () => ExportMap;
+  build?: (builder: GeneratorOutputBuilder) => Promise<TaskOutput> | TaskOutput;
+}
+
+interface SimpleGeneratorTaskConfig<
+  ExportMap extends ProviderExportMap,
+  DependencyMap extends ProviderDependencyMap,
+  TaskOutput = unknown
+> {
+  name: string;
+  exports?: ExportMap;
+  dependencies?: DependencyMap;
+  dependsOn?: { name: string }[] | { name: string };
+  run: (
+    dependencies: InferDependencyProviderMap<DependencyMap>
+  ) => SimpleGeneratorTaskInstance<
+    InferExportProviderMap<ExportMap>,
+    TaskOutput
+  >;
+}
+
+export interface GeneratorTaskBuilder {
+  addTask: <
+    ExportMap extends ProviderExportMap,
+    DependencyMap extends ProviderDependencyMap,
+    TaskOutput = unknown
+  >(
+    task: SimpleGeneratorTaskConfig<ExportMap, DependencyMap, TaskOutput>
+  ) => SimpleGeneratorTaskOutput<TaskOutput>;
+}
+
+export interface GeneratorWithTasksConfig<DescriptorSchema extends z.ZodType> {
   descriptorSchema?: DescriptorSchema;
   getDefaultChildGenerators?(
     descriptor: z.infer<DescriptorSchema>
   ): Record<string, ChildGeneratorConfig>;
-  exports?: ExportMap;
-  dependencies?: DependencyMap;
-  // we need a separate function because we can't infer the type of the
-  // dependency map from a generator function that takes in a generic descriptor
-  populateDependencies?: (
-    dependencyMap: DependencyMap,
-    descriptor: z.infer<DescriptorSchema>
-  ) => ProviderDependencyMap;
-  createGenerator: (
-    descriptor: DescriptorWithChildren & z.infer<DescriptorSchema>,
-    dependencies: InferDependencyProviderMap<DependencyMap>
-  ) => GeneratorTaskInstance<InferExportProviderMap<ExportMap>>;
+  buildTasks: (
+    taskBuilder: GeneratorTaskBuilder,
+    descriptor: DescriptorWithChildren & z.infer<DescriptorSchema>
+  ) => void;
 }
 
 /**
@@ -49,16 +78,9 @@ export interface SimpleGeneratorConfig<
  * @param config Configuration of the generator
  * @returns Normal generator
  */
-export function createGeneratorWithChildren<
-  DescriptorSchema extends z.ZodType,
-  ExportMap extends ProviderExportMap,
-  DependencyMap extends ProviderDependencyMap
->(
-  config: SimpleGeneratorConfig<DescriptorSchema, ExportMap, DependencyMap>
+export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
+  config: GeneratorWithTasksConfig<DescriptorSchema>
 ): GeneratorConfig<DescriptorWithChildren & z.infer<DescriptorSchema>> {
-  let dependencyMap: DependencyMap =
-    config.dependencies || ({} as DependencyMap);
-
   return {
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
       try {
@@ -142,13 +164,6 @@ export function createGeneratorWithChildren<
         const customChildren: Record<string, BaseGeneratorDescriptor | string> =
           R.pickBy((_, key) => key.startsWith('$'), descriptorChildren);
 
-        if (config.populateDependencies && config.dependencies) {
-          dependencyMap = config.populateDependencies(
-            config.dependencies,
-            validatedDescriptor
-          ) as DependencyMap;
-        }
-
         return {
           children: R.mergeRight(children, customChildren),
           validatedDescriptor,
@@ -162,19 +177,54 @@ export function createGeneratorWithChildren<
         throw err;
       }
     },
-    createGenerator: (descriptor) => [
-      {
-        name: 'main',
-        dependencies: dependencyMap,
-        exports: config.exports,
-        taskDependencies: [],
-        run(dependencies) {
-          return config.createGenerator(
-            descriptor,
-            dependencies as InferDependencyProviderMap<DependencyMap>
-          );
+    createGenerator: (descriptor) => {
+      const tasks: SimpleGeneratorTaskConfig<
+        ProviderExportMap<Record<string, Provider>>,
+        ProviderDependencyMap<Record<string, Provider>>
+      >[] = [];
+      const taskOutputs: Record<string, unknown> = {};
+      const taskBuilder: GeneratorTaskBuilder = {
+        addTask: (task) => {
+          tasks.push(task);
+          return {
+            name: task.name,
+            getOutput: () => {
+              if (!(task.name in taskOutputs)) {
+                throw new Error(`Task ${task.name} has not run yet`);
+              }
+              // no easy way of typing this
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+              return taskOutputs[task.name] as any;
+            },
+          };
         },
-      },
-    ],
+      };
+      config.buildTasks(taskBuilder, descriptor);
+
+      return tasks.map((task) => {
+        const taskDependsOn =
+          task.dependsOn &&
+          (Array.isArray(task.dependsOn) ? task.dependsOn : [task.dependsOn]);
+        return {
+          name: task.name,
+          dependencies: task.dependencies,
+          exports: task.exports,
+          taskDependencies: taskDependsOn?.map((dep) => dep.name) || [],
+          run(dependencies) {
+            const runResult = task.run(dependencies);
+            return {
+              getProviders: runResult.getProviders,
+              build(builder) {
+                if (!runResult.build) {
+                  return;
+                }
+                const taskOutput = runResult.build(builder);
+                taskOutputs[task.name] = taskOutput;
+              },
+            };
+          },
+        };
+      });
+    },
   };
 }
