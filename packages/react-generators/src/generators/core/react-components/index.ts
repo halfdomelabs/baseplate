@@ -35,6 +35,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'FormLabel' },
   { name: 'LinkButton' },
   { name: 'ListGroup' },
+  { name: 'Modal' },
   { name: 'NotFoundCard' },
   { name: 'ReactSelectInput' },
   { name: 'SelectInput' },
