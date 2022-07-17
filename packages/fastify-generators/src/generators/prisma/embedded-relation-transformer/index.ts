@@ -302,9 +302,13 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       ).withHeaderKey(dataInputName);
       const dataMethodDataType = getDataMethodDataType(dataMethodOptions);
 
+      const isNullable = !localRelation.isList && operationType === 'update';
+
       const inputField: PrismaDataTransformInputField = {
         type: TypescriptCodeUtils.createExpression(
-          `${dataInputName}${localRelation.isList ? '[]' : ''}`,
+          `${dataInputName}${localRelation.isList ? '[]' : ''}${
+            isNullable ? ' | null' : ''
+          }`,
           undefined,
           {
             headerBlocks: [dataInputType],
@@ -313,7 +317,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         dtoField: {
           name: inputName,
           isOptional: true,
-          isNullable: !localRelation.isList && operationType === 'update',
+          isNullable,
           type: 'nested',
           isList: localRelation.isList,
           nestedType: {
