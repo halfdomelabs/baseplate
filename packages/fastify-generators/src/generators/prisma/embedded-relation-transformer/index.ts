@@ -245,10 +245,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
 
       // If we use the existing item, we should check that its ID is actually owned
       // by the parent
-      const parentIdCheckField = ((): string | undefined => {
-        if (!upsertTransformers.some((t) => t.needsExistingItem)) {
-          return undefined;
-        }
+      const getForeignRelationParentField = (): string => {
         // figure out which field is parent ID
         const foreignParentIdx = foreignRelation.references?.findIndex(
           (reference) => reference === localId
@@ -260,8 +257,11 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
           );
         }
         const foreignParentField = foreignRelation.fields?.[foreignParentIdx];
+        if (!foreignParentField) {
+          throw new Error(`Unable to find foreign parent field`);
+        }
         return foreignParentField;
-      })();
+      };
 
       const dataMethodOptions: Omit<PrismaDataMethodOptions, 'name'> = {
         modelName: foreignModel.name,
@@ -274,7 +274,9 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         prismaUtils,
         operationType: 'upsert',
         whereUniqueExpression: 'whereUnique',
-        parentIdCheckField,
+        parentIdCheckField: upsertTransformers.some((t) => t.needsExistingItem)
+          ? getForeignRelationParentField()
+          : undefined,
       };
 
       const upsertFunction = !embeddedTransformerFactories.length
@@ -505,16 +507,16 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         }
         const whereUniqueResult = getWhereUniqueFunction();
 
+        const parentId =
+          operationType === 'update' ? localId : `existingItem.${localId}`;
+
         const transformAdditions = !upsertFunction
           ? {}
           : {
               transform: upsertFunction.name,
               context: 'context',
               getWhereUnique: whereUniqueResult.func,
-              parentId:
-                operationType === 'update'
-                  ? localId
-                  : `existingItem.${localId}`,
+              parentId,
             };
 
         const oneToManyAdditions = isOneToOne
@@ -524,11 +526,30 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
               getWhereUnique: whereUniqueResult.func,
             };
 
+        const parentField = getForeignRelationParentField();
+
+        const oneToOneAdditions = !isOneToOne
+          ? {}
+          : {
+              deleteRelation: TypescriptCodeUtils.formatExpression(
+                '() => PRISMA_MODEL.deleteMany({ where: WHERE_ARGS })',
+                {
+                  PRISMA_MODEL: prismaOutput.getPrismaModelExpression(
+                    foreignModel.name
+                  ),
+                  WHERE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+                    [parentField]: parentId,
+                  }),
+                }
+              ),
+            };
+
         return {
           args: TypescriptCodeUtils.mergeExpressionsAsObject({
             input: inputName,
             ...transformAdditions,
             ...oneToManyAdditions,
+            ...oneToOneAdditions,
           }),
           needsExistingItem:
             whereUniqueResult.needsExistingItem ||
