@@ -44,7 +44,9 @@ export interface RequestServiceContextProvider extends ImportMapper {
 }
 
 export const requestServiceContextProvider =
-  createProviderType<RequestServiceContextProvider>('request-service-context');
+  createProviderType<RequestServiceContextProvider>('request-service-context', {
+    isReadOnly: true,
+  });
 
 const RequestServiceContextGenerator = createGeneratorWithTasks({
   descriptorSchema,

@@ -16,6 +16,7 @@ export interface GeneratorTaskEntry {
   task: GeneratorTask;
   generatorBaseDirectory: string;
   dependentTaskIds: string[];
+  generatorName: string;
 }
 
 export interface GeneratorEntry {
@@ -108,6 +109,7 @@ export async function buildGeneratorEntry(
         task,
         generatorBaseDirectory: generatorConfig.configBaseDirectory,
         dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
+        generatorName: descriptor.generator,
       })
     );
 

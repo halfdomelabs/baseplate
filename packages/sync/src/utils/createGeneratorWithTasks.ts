@@ -30,7 +30,7 @@ interface SimpleGeneratorTaskInstance<
   build?: (builder: GeneratorOutputBuilder) => Promise<TaskOutput> | TaskOutput;
 }
 
-interface SimpleGeneratorTaskConfig<
+export interface SimpleGeneratorTaskConfig<
   ExportMap extends ProviderExportMap,
   DependencyMap extends ProviderDependencyMap,
   TaskOutput = unknown
@@ -45,6 +45,21 @@ interface SimpleGeneratorTaskConfig<
     InferExportProviderMap<ExportMap>,
     TaskOutput
   >;
+}
+
+export function createTaskConfigBuilder<
+  ExportMap extends ProviderExportMap,
+  DependencyMap extends ProviderDependencyMap,
+  TaskOutput = unknown,
+  Input = never
+>(
+  builder: (
+    input: Input
+  ) => SimpleGeneratorTaskConfig<ExportMap, DependencyMap, TaskOutput>
+): (
+  input: Input
+) => SimpleGeneratorTaskConfig<ExportMap, DependencyMap, TaskOutput> {
+  return builder;
 }
 
 export interface GeneratorTaskBuilder {
@@ -214,11 +229,13 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
             const runResult = task.run(dependencies);
             return {
               getProviders: runResult.getProviders,
-              build(builder) {
+              async build(builder) {
                 if (!runResult.build) {
                   return;
                 }
-                const taskOutput = runResult.build(builder);
+                const taskOutput = await Promise.resolve(
+                  runResult.build(builder)
+                );
                 taskOutputs[task.name] = taskOutput;
               },
             };

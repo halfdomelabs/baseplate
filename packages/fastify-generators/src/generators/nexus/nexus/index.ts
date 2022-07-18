@@ -21,7 +21,10 @@ import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
-import { rootModuleProvider } from '@src/generators/core/root-module';
+import {
+  rootModuleImportProvider,
+  rootModuleProvider,
+} from '@src/generators/core/root-module';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition';
 import {
@@ -145,8 +148,36 @@ const NexusGenerator = createGeneratorWithTasks({
       },
     });
 
+    // Setup Fastify
+    taskBuilder.addTask({
+      name: 'fastify',
+      dependencies: {
+        fastifyServer: fastifyServerProvider,
+        rootModule: rootModuleProvider,
+      },
+      run({ fastifyServer, rootModule }) {
+        fastifyServer.registerPlugin({
+          name: 'graphqlPlugin',
+          plugin: new TypescriptCodeExpression(
+            'graphqlPlugin',
+            "import { graphqlPlugin } from '@/src/plugins/graphql'"
+          ),
+        });
+
+        rootModule.addModuleField(
+          'schemaTypes',
+          new TypescriptCodeExpression(
+            'NexusType',
+            "import type {NexusType} from '@/src/utils/nexus'"
+          )
+        );
+
+        return {};
+      },
+    });
+
     // Schema Task
-    const schemaTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'schema',
       dependsOn: setupTask,
       exports: {
@@ -209,35 +240,31 @@ const NexusGenerator = createGeneratorWithTasks({
 
     taskBuilder.addTask({
       name: 'main',
-      dependsOn: [setupTask, schemaTask],
+      dependsOn: [setupTask],
       dependencies: {
         node: nodeProvider,
-        rootModule: rootModuleProvider,
         typescript: typescriptProvider,
         configService: configServiceProvider,
-        fastifyServer: fastifyServerProvider,
         tsUtils: tsUtilsProvider,
-        fastifyOutput: fastifyOutputProvider,
         eslint: eslintProvider,
         errorHandlerService: errorHandlerServiceProvider,
         requestServiceContext: requestServiceContextProvider,
         prettier: prettierProvider,
+        rootModuleImport: rootModuleImportProvider,
       },
       exports: {
         nexus: nexusProvider,
       },
       run({
         node,
-        rootModule,
         typescript,
         errorHandlerService,
         configService,
         requestServiceContext,
-        fastifyServer,
-        fastifyOutput,
         eslint,
         prettier,
         tsUtils,
+        rootModuleImport,
       }) {
         const { configMap, schemaFiles } = setupTask.getOutput();
 
@@ -252,14 +279,6 @@ const NexusGenerator = createGeneratorWithTasks({
         node.addDevPackages({
           '@types/ws': '8.5.3',
         });
-
-        rootModule.addModuleField(
-          'schemaTypes',
-          new TypescriptCodeExpression(
-            'NexusType',
-            "import type {NexusType} from '@/src/utils/nexus'"
-          )
-        );
 
         const pluginFile = typescript.createTemplate(
           {
@@ -281,20 +300,9 @@ const NexusGenerator = createGeneratorWithTasks({
           requestServiceContext.getContextPath()
         );
 
-        pluginFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
-
-        fastifyServer.registerPlugin({
-          name: 'graphqlPlugin',
-          plugin: new TypescriptCodeExpression(
-            'graphqlPlugin',
-            "import { graphqlPlugin } from '@/src/plugins/graphql'"
-          ),
-        });
-
-        // add script to generate types
-        node.addScript(
-          'nexusgen',
-          `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
+        pluginFile.addCodeExpression(
+          'ROOT_MODULE',
+          rootModuleImport.getRootModule()
         );
 
         // ignore nexus typegen file
@@ -366,6 +374,23 @@ const NexusGenerator = createGeneratorWithTasks({
             });
           },
         };
+      },
+    });
+
+    // split out nexusgen steps to avoid cyclical dependencies
+    taskBuilder.addTask({
+      name: 'nexusgen',
+      dependencies: {
+        node: nodeProvider,
+        fastifyOutput: fastifyOutputProvider,
+      },
+      run({ node, fastifyOutput }) {
+        // add script to generate types
+        node.addScript(
+          'nexusgen',
+          `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
+        );
+        return {};
       },
     });
   },

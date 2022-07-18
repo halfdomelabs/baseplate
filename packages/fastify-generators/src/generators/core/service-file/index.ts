@@ -128,6 +128,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'output',
       exports: { serviceFileOutput: serviceFileOutputProvider },
+      dependsOn: mainTask,
       run() {
         const { outputMap } = mainTask.getOutput();
         return {

@@ -18,8 +18,14 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-export interface LoggerServiceProvider extends ImportMapper {
+export interface LoggerServiceSetupProvider extends ImportMapper {
   addMixin(key: string, expression: TypescriptCodeExpression): void;
+}
+
+export const loggerServiceSetupProvider =
+  createProviderType<LoggerServiceSetupProvider>('logger-service-setup');
+
+export interface LoggerServiceProvider extends ImportMapper {
   /**
    * Exports expression of singleton loggerService with standard methods:
    *  - .debug
@@ -31,8 +37,10 @@ export interface LoggerServiceProvider extends ImportMapper {
   getLogger(): TypescriptCodeExpression;
 }
 
-export const loggerServiceProvider =
-  createProviderType<LoggerServiceProvider>('logger-service');
+export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
+  'logger-service',
+  { isReadOnly: true }
+);
 
 const loggerServiceFileConfig = createTypescriptTemplateConfig({
   LOGGER_OPTIONS: { type: 'code-expression' },
@@ -47,6 +55,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
+    loggerServiceSetup: loggerServiceSetupProvider,
     loggerService: loggerServiceProvider,
   },
   createGenerator(descriptor, { node, fastify, typescript }) {
@@ -64,12 +73,22 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
       'pino-pretty': '8.1.0',
     });
 
+    const importMap = {
+      '%logger-service': {
+        path: '@/src/services/logger',
+        allowedImports: ['logger'],
+      },
+    };
+
     return {
       getProviders: () => ({
-        loggerService: {
+        loggerServiceSetup: {
           addMixin(key, expression) {
             mixins.merge({ [key]: expression });
           },
+          getImportMap: () => importMap,
+        },
+        loggerService: {
           getLogger() {
             return TypescriptCodeUtils.createExpression(
               'logger',
@@ -77,12 +96,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
             );
           },
           getImportMap() {
-            return {
-              '%logger-service': {
-                path: '@/src/services/logger',
-                allowedImports: ['logger'],
-              },
-            };
+            return importMap;
           },
         },
       }),

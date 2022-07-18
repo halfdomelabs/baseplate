@@ -38,7 +38,7 @@ export async function executeGeneratorEntry(
         const { task, dependencies, exports } = taskEntriesById[taskId];
 
         const resolvedDependencies = R.mapObjIndexed((dependency, key) => {
-          const dependencyId = dependencyMap[taskId][key];
+          const dependencyId = dependencyMap[taskId][key]?.id;
           const provider =
             dependencyId == null
               ? null
@@ -89,7 +89,7 @@ export async function executeGeneratorEntry(
         const generator = taskInstanceById[taskId];
 
         // get default formatter for this instance
-        const formatterId = dependencyMap[taskId].formatter;
+        const formatterId = dependencyMap[taskId].formatter?.id;
         const formatter =
           formatterId == null
             ? undefined
@@ -108,7 +108,10 @@ export async function executeGeneratorEntry(
         throw new Error(`Unknown action ${action}`);
       }
     } catch (err) {
-      console.error(`Error encountered in ${action} step of ${taskId}`);
+      const { generatorName } = taskEntriesById[taskId];
+      console.error(
+        `Error encountered in ${action} step of ${taskId} (${generatorName})`
+      );
       throw err;
     }
   }

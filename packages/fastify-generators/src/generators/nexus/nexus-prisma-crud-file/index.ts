@@ -1,13 +1,6 @@
-import {
-  TypescriptCodeExpression,
-  typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
-import { paramCase } from 'change-case';
+import { createGeneratorWithTasks } from '@baseplate/sync';
 import { z } from 'zod';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { nexusSchemaProvider } from '../nexus';
-import { nexusTypesFileProvider } from '../nexus-types-file';
+import { createNexusTypesFileTask } from '../nexus-types-file';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -15,7 +8,7 @@ const descriptorSchema = z.object({
   crudServiceRef: z.string().min(1),
 });
 
-const NexusPrismaCrudFileGenerator = createGeneratorWithChildren({
+const NexusPrismaCrudFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: (descriptor) => {
     const sharedValues = {
@@ -44,53 +37,12 @@ const NexusPrismaCrudFileGenerator = createGeneratorWithChildren({
       },
     };
   },
-  dependencies: {
-    appModule: appModuleProvider,
-    typescript: typescriptProvider,
-    nexusSchema: nexusSchemaProvider,
-  },
-  exports: {
-    nexusTypes: nexusTypesFileProvider,
-  },
-  createGenerator({ name }, { appModule, typescript, nexusSchema }) {
-    const typesPath = `${appModule.getModuleFolder()}/schema/${paramCase(
-      name
-    )}.ts`;
-    const typesFile = typescript.createTemplate({
-      TYPES: { type: 'code-block' },
-    });
-
-    appModule.registerFieldEntry(
-      'schemaTypes',
-      new TypescriptCodeExpression(
+  buildTasks(taskBuilder, { name }) {
+    taskBuilder.addTask(
+      createNexusTypesFileTask({
         name,
-        `import * as ${name} from '@/${typesPath.replace(/\.ts$/, '')}'`
-      )
+      })
     );
-
-    nexusSchema.registerSchemaFile(typesPath);
-    const registeredKeys: string[] = [];
-
-    return {
-      getProviders: () => ({
-        nexusTypes: {
-          registerType(block, key) {
-            if (key) {
-              if (registeredKeys.includes(key)) {
-                return;
-              }
-              registeredKeys.push(key);
-            }
-            typesFile.addCodeBlock('TYPES', block);
-          },
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typesFile.renderToActionFromText('TYPES', typesPath)
-        );
-      },
-    };
   },
 });
 

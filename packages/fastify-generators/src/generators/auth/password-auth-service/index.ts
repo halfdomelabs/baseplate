@@ -1,14 +1,14 @@
 import { ImportMapper, typescriptProvider } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { authProvider } from '../auth';
-import { authServiceProvider } from '../auth-service';
+import { authServiceImportProvider } from '../auth-service';
 import { passwordHasherServiceProvider } from '../password-hasher-service';
 
 const descriptorSchema = z.object({});
@@ -24,7 +24,9 @@ const descriptorSchema = z.object({});
 export type PasswordAuthServiceProvider = ImportMapper;
 
 export const passwordAuthServiceProvider =
-  createProviderType<PasswordAuthServiceProvider>('password-auth-service');
+  createProviderType<PasswordAuthServiceProvider>('password-auth-service', {
+    isReadOnly: true,
+  });
 
 const PasswordAuthServiceGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -33,7 +35,7 @@ const PasswordAuthServiceGenerator = createGeneratorWithChildren({
     appModule: appModuleProvider,
     passwordHasherService: passwordHasherServiceProvider,
     prismaOutput: prismaOutputProvider,
-    authService: authServiceProvider,
+    authServiceImport: authServiceImportProvider,
     auth: authProvider,
     typescript: typescriptProvider,
     errorHandlerService: errorHandlerServiceProvider,
@@ -47,7 +49,7 @@ const PasswordAuthServiceGenerator = createGeneratorWithChildren({
       appModule,
       passwordHasherService,
       prismaOutput,
-      authService,
+      authServiceImport,
       auth,
       typescript,
       errorHandlerService,
@@ -67,7 +69,7 @@ const PasswordAuthServiceGenerator = createGeneratorWithChildren({
       {
         importMappers: [
           passwordHasherService,
-          authService,
+          authServiceImport,
           errorHandlerService,
         ],
       }

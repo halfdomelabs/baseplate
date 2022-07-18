@@ -23,6 +23,17 @@ export interface RootModuleProvider {
 export const rootModuleProvider =
   createProviderType<RootModuleProvider>('root-module');
 
+export interface RootModuleImport {
+  getRootModule: () => TypescriptCodeExpression;
+}
+
+export const rootModuleImportProvider = createProviderType<RootModuleImport>(
+  'root-module-import',
+  {
+    isReadOnly: true,
+  }
+);
+
 export interface AppModuleProvider {
   getModuleFolder(): string;
   registerFieldEntry: (
@@ -41,7 +52,9 @@ const RootModuleGenerator = createGeneratorWithTasks({
   buildTasks(taskBuilder) {
     const rootModuleTask = taskBuilder.addTask({
       name: 'rootModule',
-      exports: { rootModule: rootModuleProvider },
+      exports: {
+        rootModule: rootModuleProvider,
+      },
       run() {
         const moduleFieldMap = createNonOverwriteableMap<
           Record<string, TypescriptCodeExpression>
@@ -68,9 +81,30 @@ const RootModuleGenerator = createGeneratorWithTasks({
     });
 
     taskBuilder.addTask({
+      name: 'rootModuleImport',
+      exports: { rootModuleImport: rootModuleImportProvider },
+      run() {
+        return {
+          getProviders() {
+            return {
+              rootModuleImport: {
+                getRootModule: () =>
+                  TypescriptCodeUtils.createExpression(
+                    'RootModule',
+                    "import { RootModule } from '@/src/modules'"
+                  ),
+              },
+            };
+          },
+        };
+      },
+    });
+
+    taskBuilder.addTask({
       name: 'appModule',
       dependencies: { typescript: typescriptProvider },
       exports: { appModule: appModuleProvider },
+      dependsOn: rootModuleTask,
       run({ typescript }) {
         const rootModuleEntries = createNonOverwriteableMap<
           Record<string, TypescriptCodeExpression[]>

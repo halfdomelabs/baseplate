@@ -32,7 +32,7 @@ function getExportInterdependencies(
         return;
       }
       const providerName = dep.name;
-      const key = `provider|${resolvedDependency}#${providerName}`;
+      const key = `provider|${resolvedDependency.id}#${providerName}`;
 
       const modifiedInBuild =
         (dep.type === 'dependency' && dep.options.modifiedInBuild) || false;
@@ -141,17 +141,19 @@ export function getSortedRunSteps(
       [entryInit, entryBuild],
       ...entry.dependentTaskIds.map((taskId): [string, string] => {
         const dependentBuild = `build|${taskId}`;
-        console.log([dependentBuild, entryInit]);
         return [dependentBuild, entryInit];
       }),
       ...Object.values(dependencyMap[entry.id])
         .filter(notEmpty)
-        .flatMap((dependentId): [string, string][] => {
-          const dependentInit = `init|${dependentId}`;
-          const dependentBuild = `build|${dependentId}`;
+        .flatMap((dependent): [string, string][] => {
+          const dependentInit = `init|${dependent.id}`;
+          const dependentBuild = `build|${dependent.id}`;
           return [
             [dependentInit, entryInit],
-            [entryBuild, dependentBuild],
+            // we don't attach a build step dependency if the provider is a read-only provider
+            ...(dependent.options?.isReadOnly
+              ? []
+              : [[entryBuild, dependentBuild] as [string, string]]),
           ];
         }),
     ];

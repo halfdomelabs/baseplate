@@ -13,13 +13,11 @@ export function buildTaskDependencyMap(
   entry: GeneratorTaskEntry,
   parentProviders: Record<string, string>,
   globalGeneratorTaskMap: Record<string, GeneratorTaskEntry>
-): Record<string, string | null> {
+): Record<string, { id: string; options: ProviderDependencyOptions } | null> {
   return R.mapObjIndexed((dep) => {
-    const provider = dep.name;
-    const { optional, reference, resolveToNull } =
-      dep.type === 'dependency'
-        ? dep.options
-        : ({} as ProviderDependencyOptions);
+    const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
+    const provider = normalizedDep.name;
+    const { optional, reference, resolveToNull } = normalizedDep.options;
 
     if (resolveToNull) {
       return null;
@@ -58,7 +56,7 @@ export function buildTaskDependencyMap(
         );
       }
 
-      return referencedTaskId;
+      return { id: referencedTaskId, options: normalizedDep.options };
     }
 
     if (!parentProviders[provider]) {
@@ -70,11 +68,14 @@ export function buildTaskDependencyMap(
       return null;
     }
 
-    return parentProviders[provider];
+    return { id: parentProviders[provider], options: normalizedDep.options };
   }, entry.dependencies);
 }
 
-export type EntryDependencyMap = Record<string, Record<string, string | null>>;
+export type EntryDependencyMap = Record<
+  string,
+  Record<string, { id: string; options?: ProviderDependencyOptions } | null>
+>;
 
 function buildHoistedProviderMap(
   entry: GeneratorEntry,
@@ -144,7 +145,10 @@ export function buildEntryDependencyMapRecursive(
         formatter &&
         !getGeneratorEntryExportNames(entry).includes('formatter')
       ) {
-        taskDependencyMap.formatter = formatter;
+        taskDependencyMap.formatter = {
+          id: formatter,
+          options: {},
+        };
       }
       return {
         [task.id]: taskDependencyMap,

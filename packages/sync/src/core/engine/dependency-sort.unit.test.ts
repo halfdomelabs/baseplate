@@ -16,13 +16,13 @@ describe('getSortedRunSteps', () => {
     ];
     const dependencyGraphOne = {
       entryOne: {},
-      entryTwo: { dep: 'entryOne' },
-      entryThree: { dep: 'entryTwo' },
+      entryTwo: { dep: { id: 'entryOne', options: {} } },
+      entryThree: { dep: { id: 'entryTwo', options: {} } },
     };
 
     const dependencyGraphTwo = {
-      entryOne: { dep: 'entryTwo' },
-      entryTwo: { dep: 'entryThree' },
+      entryOne: { dep: { id: 'entryTwo' } },
+      entryTwo: { dep: { id: 'entryThree' } },
       entryThree: {},
     };
 
@@ -77,9 +77,9 @@ describe('getSortedRunSteps', () => {
       ];
       const dependencyGraphOne = {
         entryOne: {},
-        entryTwo: { dep: 'entryOne' },
-        entryThree: { dep: 'entryOne' },
-        entryFour: { dep: 'entryOne' },
+        entryTwo: { dep: { id: 'entryOne' } },
+        entryThree: { dep: { id: 'entryOne' } },
+        entryFour: { dep: { id: 'entryOne' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
       expect(resultOne).toEqual([
@@ -119,9 +119,9 @@ describe('getSortedRunSteps', () => {
       ];
       const dependencyGraphOne = {
         entryOne: {},
-        entryTwo: { dep: 'entryOne' },
-        entryThree: { dep: 'entryOne' },
-        entryFour: { dep: 'entryOne' },
+        entryTwo: { dep: { id: 'entryOne' } },
+        entryThree: { dep: { id: 'entryOne' } },
+        entryFour: { dep: { id: 'entryOne' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
       expect(resultOne).toEqual([
@@ -152,7 +152,7 @@ describe('getSortedRunSteps', () => {
       ];
       const dependencyGraphOne = {
         entryOne: {},
-        entryTwo: { dep: 'entryOne', dep2: 'entryOne' },
+        entryTwo: { dep: { id: 'entryOne' }, dep2: { id: 'entryOne' } },
       };
       expect(() => getSortedRunSteps(entries, dependencyGraphOne)).toThrow(
         'Cyclic dependency'
@@ -192,9 +192,9 @@ describe('getSortedRunSteps', () => {
       const dependencyGraphOne = {
         'entryOne#exp': {},
         'entryOne#exp2': {},
-        entryTwo: { dep: 'entryOne#exp' },
-        entryThree: { dep: 'entryOne#exp2' },
-        entryFour: { dep: 'entryOne#exp' },
+        entryTwo: { dep: { id: 'entryOne#exp' } },
+        entryThree: { dep: { id: 'entryOne#exp2' } },
+        entryFour: { dep: { id: 'entryOne#exp' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
       expect(resultOne).toEqual([
@@ -244,9 +244,9 @@ describe('getSortedRunSteps', () => {
         'entryOne#exp': {},
         'entryOne#exp2': {},
         'entryOne#exp3': {},
-        entryTwo: { dep: 'entryOne#exp' },
-        entryThree: { dep: 'entryOne#exp3' },
-        entryFour: { dep: 'entryOne#exp' },
+        entryTwo: { dep: { id: 'entryOne#exp' } },
+        entryThree: { dep: { id: 'entryOne#exp3' } },
+        entryFour: { dep: { id: 'entryOne#exp' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
       expect(resultOne).toEqual([
@@ -284,7 +284,10 @@ describe('getSortedRunSteps', () => {
       const dependencyGraphOne = {
         'entryOne#exp': {},
         'entryOne#exp2': {},
-        entryTwo: { dep: 'entryOne#exp', dep2: 'entryOne#exp2' },
+        entryTwo: {
+          dep: { id: 'entryOne#exp' },
+          dep2: { id: 'entryOne#exp2' },
+        },
       };
       expect(() => getSortedRunSteps(entries, dependencyGraphOne)).toThrow(
         'Cyclic dependency'

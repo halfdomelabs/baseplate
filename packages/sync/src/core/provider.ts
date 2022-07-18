@@ -14,6 +14,10 @@ export interface ProviderType<P = Provider> {
   readonly type: 'type';
   readonly name: string;
   /**
+   * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
+   */
+  readonly isReadOnly?: boolean;
+  /**
    * Creates a dependency config for the provider that can be used in dependency maps
    */
   dependency(): ProviderDependency<P>;
@@ -40,6 +44,10 @@ export interface ProviderDependencyOptions {
    * Whether to resolve the dependency to null always (good for disabling a dependency)
    */
   resolveToNull?: boolean;
+  /**
+   * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
+   */
+  readonly isReadOnly?: boolean;
 }
 
 export interface ProviderDependency<P = Provider> {
@@ -69,15 +77,23 @@ export interface ProviderExport<P = Provider> {
   dependsOn(deps: ProviderType | ProviderType[]): ProviderExport<P>;
 }
 
-export function createProviderType<T>(name: string): ProviderType<T> {
+interface ProviderTypeOptions {
+  isReadOnly?: boolean;
+}
+
+export function createProviderType<T>(
+  name: string,
+  options?: ProviderTypeOptions
+): ProviderType<T> {
   return {
     type: 'type',
     name,
+    isReadOnly: options?.isReadOnly,
     dependency() {
       return {
         ...this,
         type: 'dependency',
-        options: {},
+        options: options?.isReadOnly ? { isReadOnly: true } : {},
         optional() {
           return R.mergeDeepLeft({ options: { optional: true } }, this);
         },

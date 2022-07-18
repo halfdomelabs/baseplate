@@ -25,7 +25,9 @@ export interface AuthProvider extends ImportMapper {
   getConfig(): AuthGeneratorConfig;
 }
 
-export const authProvider = createProviderType<AuthProvider>('auth');
+export const authProvider = createProviderType<AuthProvider>('auth', {
+  isReadOnly: true,
+});
 
 const AuthGenerator = createGeneratorWithTasks({
   descriptorSchema,

@@ -26,7 +26,7 @@ describe('buildEntryDependencyMap', () => {
 
     const dependencyMap = buildTaskDependencyMap(entry, parentProviders, {});
     expect(dependencyMap).toEqual({
-      dependency: 'parentId#main',
+      dependency: { id: 'parentId#main', options: {} },
       optionalDependency: null,
     });
   });
@@ -61,7 +61,10 @@ describe('buildEntryDependencyMap', () => {
 
     const dependencyMap = buildTaskDependencyMap(entry, {}, taskMap);
     expect(dependencyMap).toEqual({
-      referenceDependency: 'dependent#main',
+      referenceDependency: {
+        id: 'dependent#main',
+        options: { reference: 'dependent' },
+      },
     });
   });
 
@@ -112,8 +115,8 @@ describe('buildEntryDependencyMapRecursive', () => {
       {}
     );
     expect(dependencyMap).toEqual({
-      'root#main': { dep: 'parentId#main' },
-      'child#main': { dep2: 'root#main' },
+      'root#main': { dep: { id: 'parentId#main', options: {} } },
+      'child#main': { dep2: { id: 'root#main', options: {} } },
     });
   });
 
@@ -146,7 +149,7 @@ describe('buildEntryDependencyMapRecursive', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'peer#main': {},
-      'child#main': { dep2: 'peer#main' },
+      'child#main': { dep2: { id: 'peer#main', options: {} } },
     });
   });
 
@@ -182,7 +185,9 @@ describe('buildEntryDependencyMapRecursive', () => {
       'root#main': {},
       'child#main': {},
       'grandChild#main': {},
-      'sideDep#main': { dep2: 'grandChild#main' },
+      'sideDep#main': {
+        dep2: { id: 'grandChild#main', options: {} },
+      },
     });
   });
 

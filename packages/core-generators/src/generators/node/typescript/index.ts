@@ -199,36 +199,44 @@ const TypescriptGenerator = createGeneratorWithTasks({
           return cachedPathEntries;
         }
         return {
-          typescript: {
-            createTemplate: (fileConfig, options) =>
-              new TypescriptSourceFile(fileConfig, {
-                ...options,
-                pathMappings: getPathEntries(),
-              }),
-            createCopyFilesAction: (options) =>
-              copyTypescriptFilesAction({
-                ...options,
-                pathMappings: getPathEntries(),
-              }),
-            createCopyAction: (options) =>
-              copyTypescriptFileAction({
-                ...options,
-                pathMappings: getPathEntries(),
-              }),
-            renderBlockToAction: (block, destination, options) => {
-              const file = new TypescriptSourceFile(
-                { BLOCK: { type: 'code-block' } },
-                { pathMappings: getPathEntries() }
-              );
-              file.addCodeEntries({ BLOCK: block });
-              return file.renderToActionFromText('BLOCK', destination, options);
-            },
-            resolveModule: (moduleSpecifier, from) =>
-              resolveModule(moduleSpecifier, from, {
-                pathMapEntries: getPathEntries(),
-              }),
-            getCompilerOptions,
-          } as TypescriptProvider,
+          getProviders() {
+            return {
+              typescript: {
+                createTemplate: (fileConfig, options) =>
+                  new TypescriptSourceFile(fileConfig, {
+                    ...options,
+                    pathMappings: getPathEntries(),
+                  }),
+                createCopyFilesAction: (options) =>
+                  copyTypescriptFilesAction({
+                    ...options,
+                    pathMappings: getPathEntries(),
+                  }),
+                createCopyAction: (options) =>
+                  copyTypescriptFileAction({
+                    ...options,
+                    pathMappings: getPathEntries(),
+                  }),
+                renderBlockToAction: (block, destination, options) => {
+                  const file = new TypescriptSourceFile(
+                    { BLOCK: { type: 'code-block' } },
+                    { pathMappings: getPathEntries() }
+                  );
+                  file.addCodeEntries({ BLOCK: block });
+                  return file.renderToActionFromText(
+                    'BLOCK',
+                    destination,
+                    options
+                  );
+                },
+                resolveModule: (moduleSpecifier, from) =>
+                  resolveModule(moduleSpecifier, from, {
+                    pathMapEntries: getPathEntries(),
+                  }),
+                getCompilerOptions,
+              } as TypescriptProvider,
+            };
+          },
           async build(builder) {
             const { compilerOptions, include, exclude, version } =
               config.value();

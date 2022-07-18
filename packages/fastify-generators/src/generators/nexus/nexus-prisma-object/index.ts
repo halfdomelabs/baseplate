@@ -95,9 +95,10 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
       TypescriptCodeUtils.mergeBlocks(fieldDefinitions, '\n')
     );
 
-    nexusTypesFile.registerType(
-      objectTypeBlock.renderToBlock(OBJECT_TYPE_TEMPLATE)
-    );
+    nexusTypesFile.registerType({
+      block: objectTypeBlock.renderToBlock(OBJECT_TYPE_TEMPLATE),
+      category: 'object-type',
+    });
 
     return {
       build: async () => {},

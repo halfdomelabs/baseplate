@@ -125,17 +125,28 @@ const FastifyGenerator = createGeneratorWithTasks({
     },
   }),
   buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'typescript',
+      dependencies: {
+        node: nodeProvider,
+        typescriptConfig: typescriptConfigProvider,
+      },
+      run({ node, typescriptConfig }) {
+        setupFastifyTypescript(node, typescriptConfig);
+        return {};
+      },
+    });
+
     const mainTask = taskBuilder.addTask({
       name: 'main',
       dependencies: {
         node: nodeProvider,
-        typescriptConfig: typescriptConfigProvider,
         nodeGitIgnore: nodeGitIgnoreProvider,
       },
       exports: {
         fastify: fastifyProvider,
       },
-      run({ node, nodeGitIgnore, typescriptConfig }) {
+      run({ node, nodeGitIgnore }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
           { devLoaders: ['tsconfig-paths/register'] },
           { name: 'fastify-config', mergeArraysUniquely: true }
@@ -146,8 +157,6 @@ const FastifyGenerator = createGeneratorWithTasks({
         });
 
         nodeGitIgnore.addExclusions(['/dist']);
-
-        setupFastifyTypescript(node, typescriptConfig);
 
         const formatDevLoaders = (loaders: string[]): string =>
           (loaders || []).map((loader) => `-r ${loader}`).join(' ');
