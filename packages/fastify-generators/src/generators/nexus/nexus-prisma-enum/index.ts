@@ -40,7 +40,7 @@ const NexusPrismaEnumGenerator = createGeneratorWithChildren({
       { importText: ['import {enumType} from "nexus"'] }
     );
 
-    nexusTypesFile.registerType(nexusBlock);
+    nexusTypesFile.registerType({ block: nexusBlock });
 
     return {
       build: async () => {},

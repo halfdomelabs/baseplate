@@ -27,20 +27,27 @@ function buildGeneratorEntry(
     dependencyMap = {},
     exportMap = {},
   } = options;
-  return buildTestGeneratorEntry({
-    id,
-    dependencies: dependencyMap,
-    exports: exportMap,
-    generatorConfig: {
-      configBaseDirectory: '/',
-      parseDescriptor: jest.fn(),
-      createGenerator: (descriptor, deps) => ({
-        getProviders: () => exports,
-        build: (builder) => build(builder, deps),
-      }),
+  return buildTestGeneratorEntry(
+    {
+      id,
+      children,
     },
-    children,
-  });
+    {
+      ...(id && { id: `${id}#main` }),
+      dependencies: dependencyMap,
+      exports: exportMap,
+      task: {
+        name: 'main',
+        dependencies: dependencyMap,
+        exports: exportMap,
+        taskDependencies: [],
+        run: (deps) => ({
+          getProviders: () => exports,
+          build: (builder) => build(builder, deps),
+        }),
+      },
+    }
+  );
 }
 
 describe('executeGeneratorEntry', () => {

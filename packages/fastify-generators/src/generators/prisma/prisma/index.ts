@@ -7,10 +7,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@baseplate/core-generators';
-import {
-  createProviderType,
-  createGeneratorWithChildren,
-} from '@baseplate/sync';
+import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
 import { formatSchema } from '@prisma/internals';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
@@ -50,180 +47,194 @@ export interface PrismaOutputProvider extends ImportMapper {
 export const prismaOutputProvider =
   createProviderType<PrismaOutputProvider>('prisma-output');
 
-const PrismaGenerator = createGeneratorWithChildren({
+const PrismaGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    configService: configServiceProvider,
-    project: projectProvider,
-    fastifyHealthCheck: fastifyHealthCheckProvider,
-    fastifyOutput: fastifyOutputProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    prismaSchema: prismaSchemaProvider,
-    prismaOutput: prismaOutputProvider.export().dependsOn(prismaSchemaProvider),
-  },
-  createGenerator(
-    descriptor,
-    {
-      node,
-      configService,
-      project,
-      fastifyHealthCheck,
-      fastifyOutput,
-      typescript,
-    }
-  ) {
-    node.addDevPackages({
-      prisma: '4.0.0',
-    });
-
-    node.addPackages({
-      '@prisma/client': '4.0.0',
-    });
-
-    node.mergeExtraProperties({
-      prisma: {
-        seed: `ts-node ${fastifyOutput.getDevLoaderString()} src/prisma/seed.ts`,
+  buildTasks(taskBuilder, descriptor) {
+    const schemaTask = taskBuilder.addTask({
+      name: 'schema',
+      dependencies: {
+        node: nodeProvider,
+        configService: configServiceProvider,
+        project: projectProvider,
+        fastifyHealthCheck: fastifyHealthCheckProvider,
+        fastifyOutput: fastifyOutputProvider,
+        typescript: typescriptProvider,
       },
-    });
+      exports: { prismaSchema: prismaSchemaProvider },
+      run({
+        node,
+        configService,
+        project,
+        fastifyHealthCheck,
+        fastifyOutput,
+        typescript,
+      }) {
+        node.addDevPackages({
+          prisma: '4.0.0',
+        });
 
-    const schemaFile = new PrismaSchemaFile();
+        node.addPackages({
+          '@prisma/client': '4.0.0',
+        });
 
-    schemaFile.addGeneratorBlock(
-      createPrismaSchemaGeneratorBlock({
-        name: 'client',
-        provider: 'prisma-client-js',
-      })
-    );
-
-    schemaFile.setDatasourceBlock(
-      createPrismaSchemaDatasourceBlock({
-        name: 'db',
-        provider: 'postgresql',
-        url: 'env("DATABASE_URL")',
-      })
-    );
-
-    const defaultDatabaseUrl =
-      descriptor.defaultDatabaseUrl ||
-      `postgres://postgres:${project.getProjectName()}-password@localhost:${
-        descriptor.defaultPort
-      }/postgres?schema=public`;
-
-    configService.getConfigEntries().set('DATABASE_URL', {
-      comment: 'Connection URL of the database',
-      value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-      exampleValue: defaultDatabaseUrl,
-    });
-
-    fastifyHealthCheck.addCheck(
-      TypescriptCodeUtils.createBlock(
-        '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
-        "import { prisma } from '@/src/services/prisma'"
-      )
-    );
-
-    return {
-      getProviders: () => ({
-        prismaSchema: {
-          addPrismaModel: (model) => {
-            schemaFile.addModelWriter(model);
+        node.mergeExtraProperties({
+          prisma: {
+            seed: `ts-node ${fastifyOutput.getDevLoaderString()} src/prisma/seed.ts`,
           },
-          addPrismaEnum: (block) => {
-            schemaFile.addEnum(block);
-          },
-        },
-        prismaOutput: {
-          getImportMap: () => ({
-            '%prisma-service': {
-              path: '@/src/services/prisma',
-              allowedImports: ['prisma'],
+        });
+
+        const schemaFile = new PrismaSchemaFile();
+
+        schemaFile.addGeneratorBlock(
+          createPrismaSchemaGeneratorBlock({
+            name: 'client',
+            provider: 'prisma-client-js',
+          })
+        );
+
+        schemaFile.setDatasourceBlock(
+          createPrismaSchemaDatasourceBlock({
+            name: 'db',
+            provider: 'postgresql',
+            url: 'env("DATABASE_URL")',
+          })
+        );
+
+        const defaultDatabaseUrl =
+          descriptor.defaultDatabaseUrl ||
+          `postgres://postgres:${project.getProjectName()}-password@localhost:${
+            descriptor.defaultPort
+          }/postgres?schema=public`;
+
+        configService.getConfigEntries().set('DATABASE_URL', {
+          comment: 'Connection URL of the database',
+          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          exampleValue: defaultDatabaseUrl,
+        });
+
+        fastifyHealthCheck.addCheck(
+          TypescriptCodeUtils.createBlock(
+            '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
+            "import { prisma } from '@/src/services/prisma'"
+          )
+        );
+
+        return {
+          getProviders: () => ({
+            prismaSchema: {
+              addPrismaModel: (model) => {
+                schemaFile.addModelWriter(model);
+              },
+              addPrismaEnum: (block) => {
+                schemaFile.addEnum(block);
+              },
             },
           }),
-          getPrismaServicePath: () => '@/src/services/prisma',
-          getPrismaClient: () =>
-            TypescriptCodeUtils.createExpression(
-              'prisma',
-              "import { prisma } from '@/src/services/prisma'"
-            ),
-          getPrismaModel: (modelName) => {
-            const modelBlock = schemaFile.getModelBlock(modelName);
-            if (!modelBlock) {
-              throw new Error(`Model ${modelName} not found`);
-            }
-            return modelBlock;
-          },
-          getServiceEnum: (name) => {
-            const block = schemaFile.getEnum(name);
-            if (!block) {
-              throw new Error(`Enum ${name} not found`);
-            }
-            return {
-              name: block.name,
-              values: block.values,
-              expression: TypescriptCodeUtils.createExpression(
-                block.name,
-                `import { ${block.name} } from '@prisma/client'`
-              ),
-            };
-          },
-          getPrismaModelExpression: (modelName) => {
-            const modelExport =
-              modelName.charAt(0).toLocaleLowerCase() + modelName.slice(1);
-            return TypescriptCodeUtils.createExpression(
-              `prisma.${modelExport}`,
-              "import { prisma } from '@/src/services/prisma'"
+          build: async (builder) => {
+            const schemaText = schemaFile.toText();
+            const formattedSchemaText = (await formatSchema({
+              schema: schemaText,
+            })) as string;
+            builder.writeFile(
+              'prisma/schema.prisma',
+              `${formattedSchemaText.trimEnd()}\n`
             );
+
+            builder.addPostWriteCommand('yarn prisma generate', {
+              onlyIfChanged: ['prisma/schema.prisma'],
+            });
+
+            await builder.apply(
+              copyTypescriptFileAction({
+                source: 'services/prisma.ts',
+                destination: 'src/services/prisma.ts',
+              })
+            );
+
+            const seedFile = typescript.createTemplate({
+              PRISMA_SERVICE: { type: 'code-expression' },
+            });
+
+            seedFile.addCodeEntries({
+              PRISMA_SERVICE: TypescriptCodeUtils.createExpression(
+                'prisma',
+                "import { prisma } from '@/src/services/prisma'"
+              ),
+            });
+
+            await builder.apply(
+              seedFile.renderToAction('prisma/seed.ts', 'src/prisma/seed.ts', {
+                neverOverwrite: true,
+              })
+            );
+
+            return { schemaFile };
           },
-          getModelTypeExpression: (modelName) =>
-            TypescriptCodeUtils.createExpression(
-              modelName,
-              `import { ${modelName} } from '@prisma/client'`
-            ),
-        },
-      }),
-      build: async (builder) => {
-        const schemaText = schemaFile.toText();
-        const formattedSchemaText = (await formatSchema({
-          schema: schemaText,
-        })) as string;
-        builder.writeFile(
-          'prisma/schema.prisma',
-          `${formattedSchemaText.trimEnd()}\n`
-        );
-
-        builder.addPostWriteCommand('yarn prisma generate', {
-          onlyIfChanged: ['prisma/schema.prisma'],
-        });
-
-        await builder.apply(
-          copyTypescriptFileAction({
-            source: 'services/prisma.ts',
-            destination: 'src/services/prisma.ts',
-          })
-        );
-
-        const seedFile = typescript.createTemplate({
-          PRISMA_SERVICE: { type: 'code-expression' },
-        });
-
-        seedFile.addCodeEntries({
-          PRISMA_SERVICE: TypescriptCodeUtils.createExpression(
-            'prisma',
-            "import { prisma } from '@/src/services/prisma'"
-          ),
-        });
-
-        await builder.apply(
-          seedFile.renderToAction('prisma/seed.ts', 'src/prisma/seed.ts', {
-            neverOverwrite: true,
-          })
-        );
+        };
       },
-    };
+    });
+
+    taskBuilder.addTask({
+      name: 'output',
+      exports: { prismaOutput: prismaOutputProvider },
+      dependsOn: schemaTask,
+      run() {
+        const { schemaFile } = schemaTask.getOutput();
+        return {
+          getProviders: () => ({
+            prismaOutput: {
+              getImportMap: () => ({
+                '%prisma-service': {
+                  path: '@/src/services/prisma',
+                  allowedImports: ['prisma'],
+                },
+              }),
+              getPrismaServicePath: () => '@/src/services/prisma',
+              getPrismaClient: () =>
+                TypescriptCodeUtils.createExpression(
+                  'prisma',
+                  "import { prisma } from '@/src/services/prisma'"
+                ),
+              getPrismaModel: (modelName) => {
+                const modelBlock = schemaFile.getModelBlock(modelName);
+                if (!modelBlock) {
+                  throw new Error(`Model ${modelName} not found`);
+                }
+                return modelBlock;
+              },
+              getServiceEnum: (name) => {
+                const block = schemaFile.getEnum(name);
+                if (!block) {
+                  throw new Error(`Enum ${name} not found`);
+                }
+                return {
+                  name: block.name,
+                  values: block.values,
+                  expression: TypescriptCodeUtils.createExpression(
+                    block.name,
+                    `import { ${block.name} } from '@prisma/client'`
+                  ),
+                };
+              },
+              getPrismaModelExpression: (modelName) => {
+                const modelExport =
+                  modelName.charAt(0).toLocaleLowerCase() + modelName.slice(1);
+                return TypescriptCodeUtils.createExpression(
+                  `prisma.${modelExport}`,
+                  "import { prisma } from '@/src/services/prisma'"
+                );
+              },
+              getModelTypeExpression: (modelName) =>
+                TypescriptCodeUtils.createExpression(
+                  modelName,
+                  `import { ${modelName} } from '@prisma/client'`
+                ),
+            },
+          }),
+        };
+      },
+    });
   },
 });
 

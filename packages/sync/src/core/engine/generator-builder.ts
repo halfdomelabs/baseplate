@@ -1,17 +1,30 @@
 import path from 'path';
 import { notEmpty } from '@src/utils/arrays';
 import { BaseGeneratorDescriptor } from '../descriptor';
-import { ProviderDependencyMap, ProviderExportMap } from '../generator';
+import {
+  GeneratorTask,
+  ProviderDependencyMap,
+  ProviderExportMap,
+} from '../generator';
 import { GeneratorConfigMap, GeneratorConfigWithLocation } from '../loader';
 import { loadDescriptorFromFile } from './descriptor-loader';
+
+export interface GeneratorTaskEntry {
+  id: string;
+  dependencies: ProviderDependencyMap;
+  exports: ProviderExportMap;
+  task: GeneratorTask;
+  generatorBaseDirectory: string;
+  dependentTaskIds: string[];
+  generatorName: string;
+}
 
 export interface GeneratorEntry {
   id: string;
   generatorConfig: GeneratorConfigWithLocation;
   descriptor: BaseGeneratorDescriptor;
-  dependencies: ProviderDependencyMap;
   children: GeneratorEntry[];
-  exports: ProviderExportMap;
+  tasks: GeneratorTaskEntry[];
 }
 
 interface GeneratorEntryBuilderContext {
@@ -80,15 +93,25 @@ export async function buildGeneratorEntry(
     );
   }
 
-  const {
-    dependencies = {},
-    children = {},
-    validatedDescriptor,
-  } = generatorConfig.parseDescriptor(descriptor, {
-    generatorMap: context.generatorMap,
-    id,
-  });
-  const { exports = {} } = generatorConfig;
+  const { children = {}, validatedDescriptor } =
+    generatorConfig.parseDescriptor(descriptor, {
+      generatorMap: context.generatorMap,
+      id,
+    });
+
+  const tasks = generatorConfig
+    .createGenerator(validatedDescriptor || descriptor)
+    .map(
+      (task): GeneratorTaskEntry => ({
+        id: `${id}#${task.name}`,
+        dependencies: task.dependencies || {},
+        exports: task.exports || {},
+        task,
+        generatorBaseDirectory: generatorConfig.configBaseDirectory,
+        dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
+        generatorName: descriptor.generator,
+      })
+    );
 
   // recursively build children generator entries
   const childGeneratorEntryArrays = await Promise.all(
@@ -122,8 +145,7 @@ export async function buildGeneratorEntry(
     id,
     generatorConfig,
     descriptor: validatedDescriptor || descriptor,
-    dependencies,
     children: childGenerators,
-    exports,
+    tasks,
   };
 }

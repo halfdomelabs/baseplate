@@ -1,9 +1,9 @@
 import { ImportEntry, ImportMapper } from '@baseplate/core-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
-  NonOverwriteableMap,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
+  createProviderType,
+  NonOverwriteableMap,
 } from '@baseplate/sync';
 import { z } from 'zod';
 
@@ -25,40 +25,60 @@ export interface AuthProvider extends ImportMapper {
   getConfig(): AuthGeneratorConfig;
 }
 
-export const authProvider = createProviderType<AuthProvider>('auth');
+export const authProvider = createProviderType<AuthProvider>('auth', {
+  isReadOnly: true,
+});
 
-const AuthGenerator = createGeneratorWithChildren({
+const AuthGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {},
-  exports: {
-    authSetup: authSetupProvider,
-    auth: authProvider.export().dependsOn(authSetupProvider),
-  },
-  createGenerator() {
-    const config = createNonOverwriteableMap<AuthGeneratorConfig>(
-      {},
-      { name: 'auth-config' }
-    );
-    return {
-      getProviders: () => ({
-        authSetup: {
-          getConfig: () => config,
-        },
-        auth: {
-          getConfig: () => config.value(),
-          getImportMap() {
-            const { roleServiceImport } = config.value();
-            return {
-              ...(roleServiceImport
-                ? { '%role-service': roleServiceImport }
-                : {}),
-            };
-          },
-        },
-      }),
-      build: async () => {},
-    };
+  buildTasks(taskBuilder) {
+    const setupTask = taskBuilder.addTask({
+      name: 'setup',
+      exports: {
+        authSetup: authSetupProvider,
+      },
+      run() {
+        const config = createNonOverwriteableMap<AuthGeneratorConfig>(
+          {},
+          { name: 'auth-config' }
+        );
+        return {
+          getProviders: () => ({
+            authSetup: {
+              getConfig: () => config,
+            },
+          }),
+          build: () => ({ config }),
+        };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'main',
+      exports: {
+        auth: authProvider,
+      },
+      dependsOn: setupTask,
+      run() {
+        const { config } = setupTask.getOutput();
+        return {
+          getProviders: () => ({
+            auth: {
+              getConfig: () => config.value(),
+              getImportMap() {
+                const { roleServiceImport } = config.value();
+                return {
+                  ...(roleServiceImport
+                    ? { '%role-service': roleServiceImport }
+                    : {}),
+                };
+              },
+            },
+          }),
+        };
+      },
+    });
   },
 });
 

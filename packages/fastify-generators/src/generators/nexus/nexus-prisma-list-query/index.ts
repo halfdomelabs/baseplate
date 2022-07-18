@@ -80,9 +80,10 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
         },
       }),
       build: () => {
-        nexusTypesFile.registerType(
-          objectTypeBlock.renderToBlock(LIST_TYPE_TEMPLATE)
-        );
+        nexusTypesFile.registerType({
+          block: objectTypeBlock.renderToBlock(LIST_TYPE_TEMPLATE),
+          category: 'list-query',
+        });
       },
     };
   },

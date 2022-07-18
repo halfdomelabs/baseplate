@@ -31,8 +31,18 @@ const ERROR_MAP = {
   notFound: 'NotFoundError',
 };
 
-export interface ErrorHandlerServiceProvider extends ImportMapper {
+export interface ErrorHandlerServiceSetupProvider extends ImportMapper {
   getHandlerFile(): TypescriptSourceFile<typeof errorHandlerFileConfig>;
+  getHttpErrorsImport(): string;
+  getErrorFunction(): TypescriptCodeExpression;
+}
+
+export const errorHandlerServiceSetupProvider =
+  createProviderType<ErrorHandlerServiceSetupProvider>(
+    'error-handler-service-setup'
+  );
+
+export interface ErrorHandlerServiceProvider extends ImportMapper {
   getHttpErrorsImport(): string;
   getErrorFunction(): TypescriptCodeExpression;
   getHttpErrorExpression(
@@ -41,7 +51,9 @@ export interface ErrorHandlerServiceProvider extends ImportMapper {
 }
 
 export const errorHandlerServiceProvider =
-  createProviderType<ErrorHandlerServiceProvider>('error-handler-service');
+  createProviderType<ErrorHandlerServiceProvider>('error-handler-service', {
+    isReadOnly: true,
+  });
 
 const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -52,6 +64,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
+    errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
     errorHandlerService: errorHandlerServiceProvider,
   },
   createGenerator(descriptor, { loggerService, fastifyServer, typescript }) {
@@ -63,6 +76,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
         'errorHandlerPlugin',
         "import { errorHandlerPlugin } from '@/src/plugins/error-handler'"
       ),
+      orderPriority: 'EARLY',
     });
 
     const errorFunction = TypescriptCodeUtils.createExpression(
@@ -72,10 +86,26 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
 
     fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
 
+    const importMap = {
+      '%http-errors': {
+        path: `@/src/utils/http-errors`,
+        allowedImports: Object.values(ERROR_MAP),
+      },
+      '%error-logger': {
+        path: '@/src/services/error-logger',
+        allowedImports: ['logError'],
+      },
+    };
+
     return {
       getProviders: () => ({
-        errorHandlerService: {
+        errorHandlerServiceSetup: {
           getHandlerFile: () => errorLoggerFile,
+          getImportMap: () => importMap,
+          getErrorFunction: () => errorFunction,
+          getHttpErrorsImport: () => '@/src/utils/http-errors',
+        },
+        errorHandlerService: {
           getErrorFunction: () => errorFunction,
           getHttpErrorsImport: () => '@/src/utils/http-errors',
           getHttpErrorExpression: (error) =>
@@ -83,16 +113,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
               ERROR_MAP[error],
               `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`
             ),
-          getImportMap: () => ({
-            '%http-errors': {
-              path: `@/src/utils/http-errors`,
-              allowedImports: Object.values(ERROR_MAP),
-            },
-            '%error-logger': {
-              path: '@/src/services/error-logger',
-              allowedImports: ['logError'],
-            },
-          }),
+          getImportMap: () => importMap,
         },
       }),
       build: async (builder) => {

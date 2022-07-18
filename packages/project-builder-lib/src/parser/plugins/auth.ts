@@ -112,6 +112,7 @@ export const AuthPlugin: ParserPlugin = {
     // add feature providers
     hooks.addFeatureHoistedProviders(auth.authFeaturePath, [
       'auth-service',
+      'auth-service-import',
       'auth-mutations',
     ]);
     hooks.addFeatureChildren(auth.authFeaturePath, {

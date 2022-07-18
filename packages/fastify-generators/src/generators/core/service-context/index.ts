@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
 } from '@baseplate/sync';
@@ -43,128 +43,145 @@ export interface ServiceContextProvider extends ImportMapper {
 export const serviceContextProvider =
   createProviderType<ServiceContextProvider>('service-context');
 
-const ServiceContextGenerator = createGeneratorWithChildren({
+const ServiceContextGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    typescript: typescriptProvider,
-  },
-  exports: {
-    serviceContextSetup: serviceContextSetupProvider,
-    serviceContext: serviceContextProvider
-      .export()
-      .dependsOn(serviceContextSetupProvider),
-  },
-  createGenerator(descriptor, { typescript }) {
-    const contextFieldsMap = createNonOverwriteableMap<
-      Record<string, ContextField>
-    >({}, { name: 'service-context-fields' });
-
-    const [contextImport, contextPath] = makeImportAndFilePath(
-      'src/utils/service-context.ts'
-    );
-
-    const [testHelperImport, testHelperPath] = makeImportAndFilePath(
-      'src/tests/helpers/service-context.test-helper.ts'
-    );
-
-    const importMap = {
-      '%service-context': {
-        path: contextImport,
-        allowedImports: ['ServiceContext', 'createServiceContext'],
+  buildTasks(taskBuilder) {
+    const setupTask = taskBuilder.addTask({
+      name: 'setup',
+      dependencies: {
+        typescript: typescriptProvider,
       },
-      '%service-context/test': {
-        path: testHelperImport,
-        allowedImports: ['createTestServiceContext'],
+      exports: {
+        serviceContextSetup: serviceContextSetupProvider,
       },
-    };
+      run({ typescript }) {
+        const contextFieldsMap = createNonOverwriteableMap<
+          Record<string, ContextField>
+        >({}, { name: 'service-context-fields' });
 
-    return {
-      getProviders: () => ({
-        serviceContextSetup: {
-          addContextField: (name, config) => {
-            contextFieldsMap.set(name, config);
-          },
-          getImportMap: () => importMap,
-          getContextPath: () => contextPath,
-        },
-        serviceContext: {
-          getImportMap: () => importMap,
-          getContextPath: () => contextPath,
-          getServiceContextType: () =>
-            TypescriptCodeUtils.createExpression(
-              'ServiceContext',
-              `import {ServiceContext} from '${contextImport}'`
-            ),
-        },
-      }),
-      build: async (builder) => {
-        const contextFields = contextFieldsMap.value();
-
-        const contextArgs = Object.values(contextFields).flatMap(
-          (f) => f.contextArg || []
+        const [contextImport, contextPath] = makeImportAndFilePath(
+          'src/utils/service-context.ts'
         );
 
-        const contextFile = typescript.createTemplate({
-          CONTEXT_FIELDS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-            R.mapObjIndexed((field) => field.type, contextFields)
-          ),
-          CREATE_CONTEXT_ARGS: TypescriptCodeUtils.mergeExpressions(
-            contextArgs.map((arg) =>
-              arg.type.wrap((contents) => `${arg.name}: ${contents}`)
-            ),
-            '; '
-          ).wrap(
-            (contents) => `
+        const [testHelperImport, testHelperPath] = makeImportAndFilePath(
+          'src/tests/helpers/service-context.test-helper.ts'
+        );
+
+        const importMap = {
+          '%service-context': {
+            path: contextImport,
+            allowedImports: ['ServiceContext', 'createServiceContext'],
+          },
+          '%service-context/test': {
+            path: testHelperImport,
+            allowedImports: ['createTestServiceContext'],
+          },
+        };
+
+        return {
+          getProviders: () => ({
+            serviceContextSetup: {
+              addContextField: (name, config) => {
+                contextFieldsMap.set(name, config);
+              },
+              getImportMap: () => importMap,
+              getContextPath: () => contextPath,
+            },
+          }),
+          build: async (builder) => {
+            const contextFields = contextFieldsMap.value();
+
+            const contextArgs = Object.values(contextFields).flatMap(
+              (f) => f.contextArg || []
+            );
+
+            const contextFile = typescript.createTemplate({
+              CONTEXT_FIELDS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+                R.mapObjIndexed((field) => field.type, contextFields)
+              ),
+              CREATE_CONTEXT_ARGS: TypescriptCodeUtils.mergeExpressions(
+                contextArgs.map((arg) =>
+                  arg.type.wrap((contents) => `${arg.name}: ${contents}`)
+                ),
+                '; '
+              ).wrap(
+                (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
           `
-          ),
-          CONTEXT_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-            R.mapObjIndexed((field) => field.value, contextFields)
-          ),
-        });
-
-        await builder.apply(
-          contextFile.renderToAction('service-context.ts', contextPath)
-        );
-
-        const testHelperFile = typescript.createTemplate(
-          {
-            TEST_ARGS: TypescriptCodeUtils.mergeExpressions(
-              contextArgs.map((arg) =>
-                arg.type.wrap(
-                  (contents) =>
-                    `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`
-                )
               ),
-              '; '
-            ).wrap(
-              (contents) => `
+              CONTEXT_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
+                R.mapObjIndexed((field) => field.value, contextFields)
+              ),
+            });
+
+            await builder.apply(
+              contextFile.renderToAction('service-context.ts', contextPath)
+            );
+
+            const testHelperFile = typescript.createTemplate(
+              {
+                TEST_ARGS: TypescriptCodeUtils.mergeExpressions(
+                  contextArgs.map((arg) =>
+                    arg.type.wrap(
+                      (contents) =>
+                        `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`
+                    )
+                  ),
+                  '; '
+                ).wrap(
+                  (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}} = {}
           `
-            ),
-            TEST_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-              R.fromPairs(
-                contextArgs.map((arg) => [
-                  arg.name,
-                  arg.testDefault
-                    ? arg.testDefault.prepend(`${arg.name} ?? `)
-                    : TypescriptCodeUtils.createExpression(arg.name),
-                ])
-              )
-            ),
-          },
-          { importMappers: [{ getImportMap: () => importMap }] }
-        );
+                ),
+                TEST_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
+                  R.fromPairs(
+                    contextArgs.map((arg) => [
+                      arg.name,
+                      arg.testDefault
+                        ? arg.testDefault.prepend(`${arg.name} ?? `)
+                        : TypescriptCodeUtils.createExpression(arg.name),
+                    ])
+                  )
+                ),
+              },
+              { importMappers: [{ getImportMap: () => importMap }] }
+            );
 
-        await builder.apply(
-          testHelperFile.renderToAction(
-            'service-context.test-helper.ts',
-            testHelperPath
-          )
-        );
+            await builder.apply(
+              testHelperFile.renderToAction(
+                'service-context.test-helper.ts',
+                testHelperPath
+              )
+            );
+
+            return { importMap, contextPath, contextImport };
+          },
+        };
       },
-    };
+    });
+
+    taskBuilder.addTask({
+      name: 'main',
+      dependsOn: setupTask,
+      exports: { serviceContext: serviceContextProvider },
+      run() {
+        const { importMap, contextPath, contextImport } = setupTask.getOutput();
+        return {
+          getProviders: () => ({
+            serviceContext: {
+              getImportMap: () => importMap,
+              getContextPath: () => contextPath,
+              getServiceContextType: () =>
+                TypescriptCodeUtils.createExpression(
+                  'ServiceContext',
+                  `import {ServiceContext} from '${contextImport}'`
+                ),
+            },
+          }),
+        };
+      },
+    });
   },
 });
 

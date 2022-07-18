@@ -94,7 +94,10 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
     );
 
     nexusArgs.childInputDefinitions.forEach((child) => {
-      nexusTypesFile.registerType(writeChildInputDefinition(child), child.name);
+      nexusTypesFile.registerType({
+        name: child.name,
+        block: writeChildInputDefinition(child),
+      });
     });
 
     objectTypeBlock.addCodeEntries({
@@ -119,9 +122,10 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
         },
       }),
       build: () => {
-        nexusTypesFile.registerType(
-          objectTypeBlock.renderToBlock(QUERY_TYPE_TEMPLATE)
-        );
+        nexusTypesFile.registerType({
+          category: 'find-query',
+          block: objectTypeBlock.renderToBlock(QUERY_TYPE_TEMPLATE),
+        });
       },
     };
   },

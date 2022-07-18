@@ -4,10 +4,10 @@ import {
   typescriptConfigProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
-  NonOverwriteableMap,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
+  createProviderType,
+  NonOverwriteableMap,
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { setupFastifyTypescript } from './setupFastifyTypescript';
@@ -40,7 +40,7 @@ export interface FastifyOutputProvider {
 export const fastifyOutputProvider =
   createProviderType<FastifyOutputProvider>('fastify-output');
 
-const FastifyGenerator = createGeneratorWithChildren({
+const FastifyGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({
     logger: {
@@ -124,58 +124,87 @@ const FastifyGenerator = createGeneratorWithChildren({
       },
     },
   }),
-  dependencies: {
-    node: nodeProvider,
-    typescriptConfig: typescriptConfigProvider,
-    nodeGitIgnore: nodeGitIgnoreProvider,
-  },
-  exports: {
-    fastify: fastifyProvider,
-    fastifyOutputProvider: fastifyOutputProvider
-      .export()
-      .dependsOn(fastifyProvider),
-  },
-  createGenerator(descriptor, { node, nodeGitIgnore, typescriptConfig }) {
-    const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
-      { devLoaders: ['tsconfig-paths/register'] },
-      { name: 'fastify-config', mergeArraysUniquely: true }
-    );
-
-    node.mergeExtraProperties({
-      main: 'dist/index.js',
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'typescript',
+      dependencies: {
+        node: nodeProvider,
+        typescriptConfig: typescriptConfigProvider,
+      },
+      run({ node, typescriptConfig }) {
+        setupFastifyTypescript(node, typescriptConfig);
+        return {};
+      },
     });
 
-    nodeGitIgnore.addExclusions(['/dist']);
-
-    setupFastifyTypescript(node, typescriptConfig);
-
-    const formatDevLoaders = (loaders: string[]): string =>
-      (loaders || []).map((loader) => `-r ${loader}`).join(' ');
-
-    return {
-      getProviders: () => ({
-        fastify: {
-          getConfig: () => config,
-        },
-        fastifyOutputProvider: {
-          getDevLoaderString: () =>
-            formatDevLoaders(config.get('devLoaders') || []),
-        },
-      }),
-      build: () => {
-        // add scripts
-        const { devOutputFormatter, devLoaders } = config.value();
-        const devRegister = formatDevLoaders(devLoaders || []);
-        const devCommand = `ts-node-dev --rs --transpile-only --respawn ${devRegister} src${
-          devOutputFormatter ? ` | ${devOutputFormatter}` : ''
-        }`;
-        node.addScripts({
-          build: 'tsc && tsc-alias',
-          start: 'node ./dist',
-          dev: devCommand,
-        });
+    const mainTask = taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        nodeGitIgnore: nodeGitIgnoreProvider,
       },
-    };
+      exports: {
+        fastify: fastifyProvider,
+      },
+      run({ node, nodeGitIgnore }) {
+        const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
+          { devLoaders: ['tsconfig-paths/register'] },
+          { name: 'fastify-config', mergeArraysUniquely: true }
+        );
+
+        node.mergeExtraProperties({
+          main: 'dist/index.js',
+        });
+
+        nodeGitIgnore.addExclusions(['/dist']);
+
+        const formatDevLoaders = (loaders: string[]): string =>
+          (loaders || []).map((loader) => `-r ${loader}`).join(' ');
+
+        return {
+          getProviders: () => ({
+            fastify: {
+              getConfig: () => config,
+            },
+          }),
+          build() {
+            // add scripts
+            const { devOutputFormatter, devLoaders } = config.value();
+            const devRegister = formatDevLoaders(devLoaders || []);
+            const devCommand = `ts-node-dev --rs --transpile-only --respawn ${devRegister} src${
+              devOutputFormatter ? ` | ${devOutputFormatter}` : ''
+            }`;
+            node.addScripts({
+              build: 'tsc && tsc-alias',
+              start: 'node ./dist',
+              dev: devCommand,
+            });
+
+            return { formatDevLoaders, config };
+          },
+        };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'output',
+      dependsOn: mainTask,
+      exports: { fastifyOutput: fastifyOutputProvider },
+      run() {
+        const { formatDevLoaders, config } = mainTask.getOutput();
+        return {
+          getProviders() {
+            return {
+              fastifyOutput: {
+                getDevLoaderString: () =>
+                  formatDevLoaders(config.get('devLoaders') || []),
+              },
+            };
+          },
+          build() {},
+        };
+      },
+    });
   },
 });
 

@@ -32,8 +32,10 @@ export interface NexusAuthProvider {
   formatAuthorizeConfig(config: AuthorizeConfig): TypescriptCodeExpression;
 }
 
-export const nexusAuthProvider =
-  createProviderType<NexusAuthProvider>('nexus-auth');
+export const nexusAuthProvider = createProviderType<NexusAuthProvider>(
+  'nexus-auth',
+  { isReadOnly: true }
+);
 
 const NexusAuthGenerator = createGeneratorWithChildren({
   descriptorSchema,

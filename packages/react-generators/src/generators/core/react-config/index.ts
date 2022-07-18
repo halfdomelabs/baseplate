@@ -11,6 +11,7 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@baseplate/sync';
+import R from 'ramda';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -71,7 +72,11 @@ const ReactConfigGenerator = createGeneratorWithChildren({
         });
 
         const configEntries = configEntryMap.value();
-        const configEntryKeys = Object.keys(configEntries);
+        const sortedConfigEntries = R.sortBy(
+          (entry) => entry[0],
+          Object.entries(configEntries)
+        );
+        const configEntryKeys = Object.keys(configEntries).sort();
         const mergedExpression = TypescriptCodeUtils.mergeExpressions(
           configEntryKeys.map((key) => {
             const { comment, validator } = configEntries[key];
@@ -101,9 +106,10 @@ const ReactConfigGenerator = createGeneratorWithChildren({
           )
         );
 
-        const configVars = Object.entries(configEntries).map(
-          ([key, { devValue }]) => ({ name: key, value: devValue })
-        );
+        const configVars = sortedConfigEntries.map(([key, { devValue }]) => ({
+          name: key,
+          value: devValue,
+        }));
 
         const devEnvVars = [...configVars, ...customEnvVars];
 

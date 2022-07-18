@@ -26,6 +26,7 @@ async function mergeContents(
     existingContents.includes('<<<<<<<') &&
     existingContents.includes('>>>>>>>')
   ) {
+    console.error(chalk.red(`Conflict detected in ${filePath}`));
     throw new Error(`Conflict detected in ${filePath}. Stopping write.`);
   }
 

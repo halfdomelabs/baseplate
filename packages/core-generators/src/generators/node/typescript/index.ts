@@ -1,11 +1,11 @@
 import { join } from 'path';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
-  writeJsonAction,
-  createNonOverwriteableMap,
   BuilderAction,
+  createGeneratorWithTasks,
+  createNonOverwriteableMap,
+  createProviderType,
   WriteFileOptions,
+  writeJsonAction,
 } from '@baseplate/sync';
 import { CompilerOptions, ts } from 'ts-morph';
 import {
@@ -22,9 +22,9 @@ import {
   resolveModule,
 } from '../../../writers/typescript/imports';
 import {
-  TypescriptTemplateConfigOrEntry,
   TypescriptSourceFile,
   TypescriptSourceFileOptions,
+  TypescriptTemplateConfigOrEntry,
 } from '../../../writers/typescript/sourceFile';
 import { nodeProvider } from '../node';
 
@@ -98,131 +98,160 @@ const DEFAULT_CONFIG: TypescriptConfig = {
   exclude: ['**/node_modules', '**/dist', '**/lib'],
 };
 
-const TypescriptGenerator = createGeneratorWithChildren({
-  dependencies: {
-    node: nodeProvider,
-  },
-  exports: {
-    typescriptConfig: typescriptConfigProvider,
-    typescript: typescriptProvider.export().dependsOn(typescriptConfigProvider),
-  },
-  createGenerator(descriptor, { node }) {
-    const config = createNonOverwriteableMap<TypescriptConfig>(DEFAULT_CONFIG, {
-      name: 'typescript',
-      defaultsOverwriteable: true,
+const TypescriptGenerator = createGeneratorWithTasks({
+  buildTasks(taskBuilder) {
+    const configTask = taskBuilder.addTask({
+      name: 'config',
+      exports: {
+        typescriptConfig: typescriptConfigProvider,
+      },
+      run() {
+        const config = createNonOverwriteableMap<TypescriptConfig>(
+          DEFAULT_CONFIG,
+          {
+            name: 'typescript',
+            defaultsOverwriteable: true,
+          }
+        );
+
+        function getCompilerOptions(): CompilerOptions {
+          const result = ts.convertCompilerOptionsFromJson(
+            config.get('compilerOptions'),
+            '.'
+          );
+          if (result.errors.length) {
+            throw new Error(
+              `Unable to extract compiler options: ${JSON.stringify(
+                result.errors
+              )}`
+            );
+          }
+          return result.options;
+        }
+
+        return {
+          getProviders: () => ({
+            typescriptConfig: {
+              setTypescriptVersion(version) {
+                config.merge({ version });
+              },
+              setTypescriptCompilerOptions(options) {
+                config.merge({ compilerOptions: options });
+              },
+              getCompilerOptions,
+              addInclude(path) {
+                config.appendUnique('include', [path]);
+              },
+              addExclude(path) {
+                config.appendUnique('exclude', [path]);
+              },
+            },
+          }),
+          build: () => ({ config, getCompilerOptions }),
+        };
+      },
     });
 
-    let cachedPathEntries: PathMapEntry[];
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: { node: nodeProvider },
+      exports: { typescript: typescriptProvider },
+      dependsOn: configTask,
+      run({ node }) {
+        const { config, getCompilerOptions } = configTask.getOutput();
+        let cachedPathEntries: PathMapEntry[];
 
-    function getPathEntries(): PathMapEntry[] {
-      if (!cachedPathEntries) {
-        // { "baseUrl": "./src", "paths": { "@src/*": ["./*"] } }
-        // would be { from: "src", to: "@src" }
-        const configMap = config.value();
-        const { baseUrl, paths } = configMap.compilerOptions as {
-          baseUrl: string;
-          paths: Record<string, string[]>;
-        };
-        if (!paths && (baseUrl === './' || baseUrl === '.')) {
-          // TODO: Support other source folders
-          cachedPathEntries = [{ from: 'src', to: 'src' }];
-        } else if (!paths || !baseUrl) {
-          cachedPathEntries = [];
-        } else {
-          cachedPathEntries = Object.entries(paths).map(([key, value]) => {
-            if (value.length !== 1) {
-              throw new Error('We do not support paths with multiple values');
-            }
-            if (!key.endsWith('/*')) {
-              throw new Error('Paths must end in /*');
-            }
-            return {
-              from: join(baseUrl, value[0].replace(/\/\*$/, '')).replace(
-                /^\./,
-                ''
-              ),
-              to: key.substring(0, key.length - 2),
+        function getPathEntries(): PathMapEntry[] {
+          if (!cachedPathEntries) {
+            // { "baseUrl": "./src", "paths": { "@src/*": ["./*"] } }
+            // would be { from: "src", to: "@src" }
+            const configMap = config.value();
+            const { baseUrl, paths } = configMap.compilerOptions as {
+              baseUrl: string;
+              paths: Record<string, string[]>;
             };
-          });
+            if (!paths && (baseUrl === './' || baseUrl === '.')) {
+              // TODO: Support other source folders
+              cachedPathEntries = [{ from: 'src', to: 'src' }];
+            } else if (!paths || !baseUrl) {
+              cachedPathEntries = [];
+            } else {
+              cachedPathEntries = Object.entries(paths).map(([key, value]) => {
+                if (value.length !== 1) {
+                  throw new Error(
+                    'We do not support paths with multiple values'
+                  );
+                }
+                if (!key.endsWith('/*')) {
+                  throw new Error('Paths must end in /*');
+                }
+                return {
+                  from: join(baseUrl, value[0].replace(/\/\*$/, '')).replace(
+                    /^\./,
+                    ''
+                  ),
+                  to: key.substring(0, key.length - 2),
+                };
+              });
+            }
+          }
+
+          return cachedPathEntries;
         }
-      }
+        return {
+          getProviders() {
+            return {
+              typescript: {
+                createTemplate: (fileConfig, options) =>
+                  new TypescriptSourceFile(fileConfig, {
+                    ...options,
+                    pathMappings: getPathEntries(),
+                  }),
+                createCopyFilesAction: (options) =>
+                  copyTypescriptFilesAction({
+                    ...options,
+                    pathMappings: getPathEntries(),
+                  }),
+                createCopyAction: (options) =>
+                  copyTypescriptFileAction({
+                    ...options,
+                    pathMappings: getPathEntries(),
+                  }),
+                renderBlockToAction: (block, destination, options) => {
+                  const file = new TypescriptSourceFile(
+                    { BLOCK: { type: 'code-block' } },
+                    { pathMappings: getPathEntries() }
+                  );
+                  file.addCodeEntries({ BLOCK: block });
+                  return file.renderToActionFromText(
+                    'BLOCK',
+                    destination,
+                    options
+                  );
+                },
+                resolveModule: (moduleSpecifier, from) =>
+                  resolveModule(moduleSpecifier, from, {
+                    pathMapEntries: getPathEntries(),
+                  }),
+                getCompilerOptions,
+              } as TypescriptProvider,
+            };
+          },
+          async build(builder) {
+            const { compilerOptions, include, exclude, version } =
+              config.value();
+            node.addDevPackage('typescript', version);
 
-      return cachedPathEntries;
-    }
-
-    function getCompilerOptions(): CompilerOptions {
-      const result = ts.convertCompilerOptionsFromJson(
-        config.get('compilerOptions'),
-        '.'
-      );
-      if (result.errors.length) {
-        throw new Error(
-          `Unable to extract compiler options: ${JSON.stringify(result.errors)}`
-        );
-      }
-      return result.options;
-    }
-
-    return {
-      getProviders: () => ({
-        typescript: {
-          createTemplate: (fileConfig, options) =>
-            new TypescriptSourceFile(fileConfig, {
-              ...options,
-              pathMappings: getPathEntries(),
-            }),
-          createCopyFilesAction: (options) =>
-            copyTypescriptFilesAction({
-              ...options,
-              pathMappings: getPathEntries(),
-            }),
-          createCopyAction: (options) =>
-            copyTypescriptFileAction({
-              ...options,
-              pathMappings: getPathEntries(),
-            }),
-          renderBlockToAction: (block, destination, options) => {
-            const file = new TypescriptSourceFile(
-              { BLOCK: { type: 'code-block' } },
-              { pathMappings: getPathEntries() }
+            await builder.apply(
+              writeJsonAction({
+                destination: 'tsconfig.json',
+                contents: { compilerOptions, include, exclude },
+              })
             );
-            file.addCodeEntries({ BLOCK: block });
-            return file.renderToActionFromText('BLOCK', destination, options);
           },
-          resolveModule: (moduleSpecifier, from) =>
-            resolveModule(moduleSpecifier, from, {
-              pathMapEntries: getPathEntries(),
-            }),
-          getCompilerOptions,
-        } as TypescriptProvider,
-        typescriptConfig: {
-          setTypescriptVersion(version) {
-            config.merge({ version });
-          },
-          setTypescriptCompilerOptions(options) {
-            config.merge({ compilerOptions: options });
-          },
-          getCompilerOptions,
-          addInclude(path) {
-            config.appendUnique('include', [path]);
-          },
-          addExclude(path) {
-            config.appendUnique('exclude', [path]);
-          },
-        },
-      }),
-      build: async (builder) => {
-        const { compilerOptions, include, exclude, version } = config.value();
-        node.addDevPackage('typescript', version);
-
-        await builder.apply(
-          writeJsonAction({
-            destination: 'tsconfig.json',
-            contents: { compilerOptions, include, exclude },
-          })
-        );
+        };
       },
-    };
+    });
   },
 });
 

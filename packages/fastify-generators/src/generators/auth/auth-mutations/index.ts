@@ -13,7 +13,7 @@ import { requestServiceContextProvider } from '@src/generators/core/request-serv
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { nexusAuthProvider } from '@src/generators/nexus/nexus-auth';
-import { authServiceProvider } from '../auth-service';
+import { authServiceImportProvider } from '../auth-service';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -21,8 +21,10 @@ const descriptorSchema = z.object({
 
 export type AuthMutationsProvider = ImportMapper;
 
-export const authMutationsProvider =
-  createProviderType<AuthMutationsProvider>('auth-mutations');
+export const authMutationsProvider = createProviderType<AuthMutationsProvider>(
+  'auth-mutations',
+  { isReadOnly: true }
+);
 
 const AuthMutationsGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -30,7 +32,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
   dependencies: {
     appModule: appModuleProvider,
     nexusSchema: nexusSchemaProvider,
-    authService: authServiceProvider,
+    authServiceImport: authServiceImportProvider,
     typescript: typescriptProvider,
     configService: configServiceProvider,
     nexusAuth: nexusAuthProvider,
@@ -44,7 +46,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
     {
       appModule,
       nexusSchema,
-      authService,
+      authServiceImport,
       typescript,
       configService,
       nexusAuth,
@@ -59,7 +61,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
         AUTHORIZE_ANONYMOUS: { type: 'code-expression' },
       },
       {
-        importMappers: [configService, authService, nexusSchema],
+        importMappers: [configService, authServiceImport, nexusSchema],
       }
     );
 

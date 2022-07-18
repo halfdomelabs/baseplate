@@ -25,7 +25,9 @@ export interface RequestContextProvider {
 }
 
 export const requestContextProvider =
-  createProviderType<RequestContextProvider>('request-context');
+  createProviderType<RequestContextProvider>('request-context', {
+    isReadOnly: true,
+  });
 
 const RequestContextGenerator = createGeneratorWithChildren({
   descriptorSchema,
