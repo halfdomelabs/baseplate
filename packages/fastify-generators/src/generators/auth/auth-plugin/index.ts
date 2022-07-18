@@ -44,8 +44,10 @@ export const authPluginProvider =
 
 export type AuthInfoProvider = ImportMapper;
 
-export const authInfoProvider =
-  createProviderType<AuthInfoProvider>('auth-info');
+export const authInfoProvider = createProviderType<AuthInfoProvider>(
+  'auth-info',
+  { isReadOnly: true }
+);
 
 const AuthPluginGenerator = createGeneratorWithChildren({
   descriptorSchema,

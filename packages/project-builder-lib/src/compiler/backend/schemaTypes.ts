@@ -14,10 +14,10 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
 
   return {
     name: `${model.name}Queries`,
-    generator: '@baseplate/fastify/nexus/nexus-types-file',
+    generator: '@baseplate/fastify/nexus/nexus-prisma-query-file',
+    modelName: model.name,
     children: {
-      $objectType: {
-        modelName: model.name,
+      objectType: {
         generator: '@baseplate/fastify/nexus/nexus-prisma-object',
         exposedFields: [
           ...exposedFields,
@@ -28,15 +28,13 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
       ...(!buildQuery
         ? {}
         : {
-            $findQuery: {
-              modelName: model.name,
+            findQuery: {
               generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
               children: {
                 authorize: { roles: authorize?.read },
               },
             },
-            $listQuery: {
-              modelName: model.name,
+            listQuery: {
               generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
               children: {
                 authorize: { roles: authorize?.read },

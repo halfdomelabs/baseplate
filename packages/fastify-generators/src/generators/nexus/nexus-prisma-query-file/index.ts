@@ -1,21 +1,13 @@
-import {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-  typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
-import { paramCase } from 'change-case';
+import { createGeneratorWithTasks } from '@baseplate/sync';
 import { z } from 'zod';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { nexusSchemaProvider } from '../nexus';
-import { nexusTypesFileProvider } from '../nexus-types-file';
+import { createNexusTypesFileTask } from '../nexus-types-file';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
   modelName: z.string().min(1),
 });
 
-const NexusPrismaQueryFileGenerator = createGeneratorWithChildren({
+const NexusPrismaQueryFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: (descriptor) => {
     const sharedValues = {
@@ -27,61 +19,31 @@ const NexusPrismaQueryFileGenerator = createGeneratorWithChildren({
           ...sharedValues,
           generator: '@baseplate/fastify/nexus/nexus-prisma-object',
         },
+        defaultToNullIfEmpty: true,
       },
       findQuery: {
         defaultDescriptor: {
           ...sharedValues,
           generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
         },
+        defaultToNullIfEmpty: true,
       },
       listQuery: {
         defaultDescriptor: {
           ...sharedValues,
           generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
         },
+        defaultToNullIfEmpty: true,
       },
     };
   },
-  dependencies: {
-    appModule: appModuleProvider,
-    typescript: typescriptProvider,
-    nexusSchema: nexusSchemaProvider,
-  },
-  exports: {
-    nexusTypes: nexusTypesFileProvider,
-  },
-  createGenerator({ name }, { appModule, typescript, nexusSchema }) {
-    const typesPath = `${appModule.getModuleFolder()}/schema/${paramCase(
-      name
-    )}.ts`;
-    const typesFile = typescript.createTemplate({
-      TYPES: { type: 'code-block' },
-    });
-
-    appModule.registerFieldEntry(
-      'schemaTypes',
-      new TypescriptCodeExpression(
+  buildTasks(taskBuilder, { name }) {
+    taskBuilder.addTask(
+      createNexusTypesFileTask({
         name,
-        `import * as ${name} from '@/${typesPath.replace(/\.ts$/, '')}'`
-      )
+        categoryOrder: ['object-type', 'find-query', 'list-query'],
+      })
     );
-
-    nexusSchema.registerSchemaFile(typesPath);
-
-    return {
-      getProviders: () => ({
-        nexusTypes: {
-          registerType(block: TypescriptCodeBlock) {
-            typesFile.addCodeBlock('TYPES', block);
-          },
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typesFile.renderToActionFromText('TYPES', typesPath)
-        );
-      },
-    };
   },
 });
 

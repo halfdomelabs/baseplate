@@ -12,6 +12,7 @@ import {
   createProviderType,
   NonOverwriteableMap,
 } from '@baseplate/sync';
+import R from 'ramda';
 import { z } from 'zod';
 import { configServiceProvider } from '../config-service';
 import { loggerServiceProvider } from '../logger-service';
@@ -29,6 +30,7 @@ interface FastifyServerPlugin {
   name: string;
   plugin: TypescriptCodeExpression;
   options?: TypescriptCodeExpression;
+  orderPriority?: 'EARLY' | 'MIDDLE' | 'END';
 }
 
 export interface FastifyServerProvider {
@@ -83,6 +85,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
           contentSecurityPolicy: false, // disable to enable Altair to function (alright since we're a backend service)
         }`
       ),
+      orderPriority: 'EARLY',
     });
 
     configService.getConfigEntries().merge({
@@ -157,10 +160,23 @@ const FastifyServerGenerator = createGeneratorWithChildren({
           PLUGINS: { type: 'code-block' },
           ROOT_MODULE: { type: 'code-expression' },
         });
+
+        const orderedPlugins = R.sortBy((plugin) => {
+          switch (plugin.orderPriority) {
+            case 'EARLY':
+              return 0;
+            case 'END':
+              return 2;
+            case 'MIDDLE':
+            default:
+              return 1;
+          }
+        }, plugins);
+
         serverFile.addCodeBlock(
           'PLUGINS',
           TypescriptCodeUtils.mergeBlocks(
-            plugins.map((plugin) => {
+            orderedPlugins.map((plugin) => {
               const options = plugin.options?.content;
               return new TypescriptCodeBlock(
                 `await fastify.register(${plugin.plugin.content}${

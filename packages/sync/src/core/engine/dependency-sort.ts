@@ -4,7 +4,7 @@ import { notEmpty } from '@src/utils/arrays';
 import { ProviderExportMap } from '../generator';
 import { ProviderExport } from '../provider';
 import { EntryDependencyMap } from './dependency-map';
-import { GeneratorEntry } from './generator-builder';
+import { GeneratorTaskEntry } from './generator-builder';
 
 function normalizeExportMap(exportMap: ProviderExportMap): ProviderExport[] {
   return Object.values(exportMap).map((provider) =>
@@ -13,7 +13,7 @@ function normalizeExportMap(exportMap: ProviderExportMap): ProviderExport[] {
 }
 
 function getExportInterdependencies(
-  entries: GeneratorEntry[],
+  entries: GeneratorTaskEntry[],
   dependencyMap: EntryDependencyMap
 ): { nodes: string[]; edges: [string, string][] } {
   const entriesById = R.indexBy(R.prop('id'), entries);
@@ -32,17 +32,14 @@ function getExportInterdependencies(
         return;
       }
       const providerName = dep.name;
-      const key = `provider|${resolvedDependency}#${providerName}`;
+      const key = `provider|${resolvedDependency.id}#${providerName}`;
 
       const modifiedInBuild =
         (dep.type === 'dependency' && dep.options.modifiedInBuild) || false;
 
       exportDependencies[key] = [
         ...(exportDependencies[key] || []),
-        {
-          id: entryId,
-          modifiedInBuild,
-        },
+        { id: entryId, modifiedInBuild },
       ];
     });
   });
@@ -133,28 +130,37 @@ function getExportInterdependencies(
  * @param dependencyMap Dependency map of the entries
  */
 export function getSortedRunSteps(
-  entries: GeneratorEntry[],
+  entries: GeneratorTaskEntry[],
   dependencyMap: EntryDependencyMap
 ): string[] {
   const dependencyGraph = entries.flatMap((entry): [string, string][] => {
     const entryInit = `init|${entry.id}`;
     const entryBuild = `build|${entry.id}`;
+
     return [
       [entryInit, entryBuild],
+      ...entry.dependentTaskIds.map((taskId): [string, string] => {
+        const dependentBuild = `build|${taskId}`;
+        return [dependentBuild, entryInit];
+      }),
       ...Object.values(dependencyMap[entry.id])
         .filter(notEmpty)
-        .flatMap((dependentId): [string, string][] => {
-          const dependentInit = `init|${dependentId}`;
-          const dependentBuild = `build|${dependentId}`;
+        .flatMap((dependent): [string, string][] => {
+          const dependentInit = `init|${dependent.id}`;
+          const dependentBuild = `build|${dependent.id}`;
           return [
             [dependentInit, entryInit],
-            [entryBuild, dependentBuild],
+            // we don't attach a build step dependency if the provider is a read-only provider
+            ...(dependent.options?.isReadOnly
+              ? []
+              : [[entryBuild, dependentBuild] as [string, string]]),
           ];
         }),
     ];
   });
   const { nodes: interdependentNodes, edges: interdependentEdges } =
     getExportInterdependencies(entries, dependencyMap);
+
   const result = toposort.array(
     [
       ...entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]),

@@ -5,14 +5,14 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
-  NonOverwriteableMap,
   createNonOverwriteableMap,
+  createProviderType,
+  NonOverwriteableMap,
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { configServiceProvider } from '../config-service';
-import { errorHandlerServiceProvider } from '../error-handler-service';
+import { errorHandlerServiceSetupProvider } from '../error-handler-service';
 import { fastifyServerProvider } from '../fastify-server';
 import { requestContextProvider } from '../request-context';
 
@@ -37,7 +37,7 @@ const FastifySentryGenerator = createGeneratorWithChildren({
     requestContext: requestContextProvider,
     configService: configServiceProvider,
     fastifyServer: fastifyServerProvider,
-    errorHandlerService: errorHandlerServiceProvider,
+    errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
     typescript: typescriptProvider,
   },
   exports: {
@@ -50,7 +50,7 @@ const FastifySentryGenerator = createGeneratorWithChildren({
       requestContext,
       configService,
       fastifyServer,
-      errorHandlerService,
+      errorHandlerServiceSetup,
       typescript,
     }
   ) {
@@ -90,9 +90,10 @@ const FastifySentryGenerator = createGeneratorWithChildren({
         'sentryPlugin',
         "import {sentryPlugin} from '@/src/plugins/sentry'"
       ),
+      orderPriority: 'EARLY',
     });
 
-    errorHandlerService.getHandlerFile().addCodeBlock(
+    errorHandlerServiceSetup.getHandlerFile().addCodeBlock(
       'HEADER',
       TypescriptCodeUtils.createBlock(
         `
@@ -110,13 +111,13 @@ function shouldLogToSentry(error: Error): boolean {
 }
         `,
         [
-          `import { HttpError } from '${errorHandlerService.getHttpErrorsImport()}'`,
+          `import { HttpError } from '${errorHandlerServiceSetup.getHttpErrorsImport()}'`,
           "import { FastifyError } from 'fastify';",
         ]
       )
     );
 
-    errorHandlerService.getHandlerFile().addCodeBlock(
+    errorHandlerServiceSetup.getHandlerFile().addCodeBlock(
       'LOGGER_ACTIONS',
       TypescriptCodeUtils.createBlock(
         `

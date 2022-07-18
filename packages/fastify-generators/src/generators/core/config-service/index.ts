@@ -9,11 +9,12 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
-  NonOverwriteableMap,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
+  createProviderType,
+  NonOverwriteableMap,
 } from '@baseplate/sync';
+import R from 'ramda';
 import { z } from 'zod';
 import { fastifyProvider } from '../fastify';
 
@@ -37,124 +38,144 @@ export interface ConfigServiceProvider extends ImportMapper {
 export const configServiceProvider =
   createProviderType<ConfigServiceProvider>('config-service');
 
-const ConfigServiceGenerator = createGeneratorWithChildren({
+const ConfigServiceGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    nodeGitIgnore: nodeGitIgnoreProvider,
-    fastify: fastifyProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    configService: configServiceProvider,
-  },
-  createGenerator(descriptor, { node, nodeGitIgnore, fastify, typescript }) {
-    const configEntries = createNonOverwriteableMap<
-      Record<string, ConfigEntry>
-    >({}, { name: 'config-service-config-entries' });
-    const additionalVerifications: TypescriptCodeBlock[] = [];
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'fastify',
+      dependencies: {
+        fastify: fastifyProvider,
+      },
+      run({ fastify }) {
+        fastify.getConfig().appendUnique('devLoaders', ['dotenv/config']);
 
-    node.addPackages({
-      zod: '3.17.3',
+        return {};
+      },
     });
 
-    node.addDevPackages({
-      dotenv: '^10.0.0',
-    });
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        nodeGitIgnore: nodeGitIgnoreProvider,
+        typescript: typescriptProvider,
+      },
+      exports: { configService: configServiceProvider },
+      run({ node, nodeGitIgnore, typescript }) {
+        const configEntries = createNonOverwriteableMap<
+          Record<string, ConfigEntry>
+        >({}, { name: 'config-service-config-entries' });
+        const additionalVerifications: TypescriptCodeBlock[] = [];
 
-    nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
+        node.addPackages({
+          zod: '3.17.3',
+        });
 
-    fastify.getConfig().appendUnique('devLoaders', ['dotenv/config']);
+        node.addDevPackages({
+          dotenv: '^10.0.0',
+        });
 
-    configEntries.set('APP_ENVIRONMENT', {
-      comment: 'Environment the app is running in',
-      value: TypescriptCodeUtils.createExpression(
-        `z.enum(['development', 'test', 'staging', 'production'])`,
-        "import { z } from 'zod'"
-      ),
-      exampleValue: 'development',
-    });
+        nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
 
-    return {
-      getProviders: () => ({
-        configService: {
-          getConfigEntries: () => configEntries,
-          addAdditionalVerification: (codeBlock) => {
-            additionalVerifications.push(codeBlock);
-          },
-          getConfigExpression: () =>
-            TypescriptCodeUtils.createExpression(
-              'config',
-              "import { config } from '@/src/services/config'"
-            ),
-          getImportMap: () => ({
-            '%config': {
-              path: '@/src/services/config',
-              allowedImports: ['config'],
+        configEntries.set('APP_ENVIRONMENT', {
+          comment: 'Environment the app is running in',
+          value: TypescriptCodeUtils.createExpression(
+            `z.enum(['development', 'test', 'staging', 'production'])`,
+            "import { z } from 'zod'"
+          ),
+          exampleValue: 'development',
+        });
+
+        return {
+          getProviders: () => ({
+            configService: {
+              getConfigEntries: () => configEntries,
+              addAdditionalVerification: (codeBlock) => {
+                additionalVerifications.push(codeBlock);
+              },
+              getConfigExpression: () =>
+                TypescriptCodeUtils.createExpression(
+                  'config',
+                  "import { config } from '@/src/services/config'"
+                ),
+              getImportMap: () => ({
+                '%config': {
+                  path: '@/src/services/config',
+                  allowedImports: ['config'],
+                },
+              }),
             },
           }),
-        },
-      }),
-      build: async (builder) => {
-        const configFile = typescript.createTemplate({
-          CONFIG_OBJECT: { type: 'code-expression' },
-          ADDITIONAL_VERIFICATIONS: { type: 'code-block' },
-        });
+          build: async (builder) => {
+            const configFile = typescript.createTemplate({
+              CONFIG_OBJECT: { type: 'code-expression' },
+              ADDITIONAL_VERIFICATIONS: { type: 'code-block' },
+            });
 
-        const configEntriesObj = configEntries.value();
-        const configEntryKeys = Object.keys(configEntriesObj);
-        const mergedExpression = configEntryKeys
-          .map((key) => {
-            const { comment, value } = configEntriesObj[key];
-            return `${
-              comment ? `${TypescriptCodeUtils.formatAsComment(comment)}\n` : ''
-            }${key}: ${typeof value === 'string' ? value : value.content},`;
-          })
-          .join('\n');
+            const configEntriesObj = configEntries.value();
+            const sortedConfigEntries = R.sortBy(
+              (entry) => entry[0],
+              Object.entries(configEntriesObj)
+            );
+            const configEntryKeys = Object.keys(configEntriesObj).sort();
+            const mergedExpression = configEntryKeys
+              .map((key) => {
+                const { comment, value } = configEntriesObj[key];
+                return `${
+                  comment
+                    ? `${TypescriptCodeUtils.formatAsComment(comment)}\n`
+                    : ''
+                }${key}: ${typeof value === 'string' ? value : value.content},`;
+              })
+              .join('\n');
 
-        configFile.addCodeExpression(
-          'CONFIG_OBJECT',
-          new TypescriptCodeExpression(
-            `{\n${mergedExpression}\n}`,
-            null,
-            mergeCodeEntryOptions(
-              Object.values(configEntriesObj).map((e) => e.value)
-            )
-          )
-        );
+            configFile.addCodeExpression(
+              'CONFIG_OBJECT',
+              new TypescriptCodeExpression(
+                `{\n${mergedExpression}\n}`,
+                null,
+                mergeCodeEntryOptions(
+                  Object.values(configEntriesObj).map((e) => e.value)
+                )
+              )
+            );
 
-        configFile.addCodeBlock(
-          'ADDITIONAL_VERIFICATIONS',
-          TypescriptCodeUtils.mergeBlocks(additionalVerifications)
-        );
+            configFile.addCodeBlock(
+              'ADDITIONAL_VERIFICATIONS',
+              TypescriptCodeUtils.mergeBlocks(additionalVerifications)
+            );
 
-        await builder.apply(
-          configFile.renderToAction('config.ts', 'src/services/config.ts')
-        );
+            await builder.apply(
+              configFile.renderToAction('config.ts', 'src/services/config.ts')
+            );
 
-        const envExampleFile = `${Object.entries(configEntriesObj)
-          .filter(([, { exampleValue }]) => exampleValue != null)
-          .map(([key, { exampleValue }]) => `${key}=${exampleValue as string}`)
-          .join('\n')}\n`;
+            const envExampleFile = `${sortedConfigEntries
+              .filter(([, { exampleValue }]) => exampleValue != null)
+              .map(
+                ([key, { exampleValue }]) => `${key}=${exampleValue as string}`
+              )
+              .join('\n')}\n`;
 
-        const envFile = `${Object.entries(configEntriesObj)
-          .filter(
-            ([, { seedValue, exampleValue }]) =>
-              (seedValue || exampleValue) != null
-          )
-          .map(
-            ([key, { seedValue, exampleValue }]) =>
-              `${key}=${seedValue ?? exampleValue ?? ''}`
-          )
-          .join('\n')}\n`;
+            const envFile = `${sortedConfigEntries
+              .filter(
+                ([, { seedValue, exampleValue }]) =>
+                  (seedValue || exampleValue) != null
+              )
+              .map(
+                ([key, { seedValue, exampleValue }]) =>
+                  `${key}=${seedValue ?? exampleValue ?? ''}`
+              )
+              .join('\n')}\n`;
 
-        builder.writeFile('.env.example', envExampleFile);
-        builder.writeFile('.env', envFile, {
-          neverOverwrite: true,
-        });
+            builder.writeFile('.env.example', envExampleFile);
+            builder.writeFile('.env', envFile, {
+              neverOverwrite: true,
+            });
+          },
+        };
       },
-    };
+    });
   },
 });
 

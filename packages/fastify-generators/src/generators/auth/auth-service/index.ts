@@ -37,6 +37,13 @@ export interface AuthServiceProvider extends ImportMapper {
 export const authServiceProvider =
   createProviderType<AuthServiceProvider>('auth-service');
 
+export type AuthServiceImportProvider = ImportMapper;
+
+export const authServiceImportProvider =
+  createProviderType<AuthServiceImportProvider>('auth-service-import', {
+    isReadOnly: true,
+  });
+
 const AuthServiceGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
@@ -51,6 +58,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
   },
   exports: {
     authService: authServiceProvider,
+    authServiceImport: authServiceImportProvider,
   },
   createGenerator(
     { accessTokenExpiry, refreshTokenExpiry, userModelName, userModelIdField },
@@ -104,6 +112,22 @@ const AuthServiceGenerator = createGeneratorWithChildren({
 
     let customUserFromToken: CustomUserFromToken | null = null;
 
+    const importMap = {
+      '%auth-service': {
+        path: `@/${modulePath}/services/auth-service`,
+        allowedImports: [
+          'AuthPayload',
+          'authService',
+          'ACCESS_TOKEN_EXPIRY_SECONDS',
+          'REFRESH_TOKEN_EXPIRY_SECONDS',
+        ],
+      },
+      '%jwt-service': {
+        path: `@/${modulePath}/services/jwt-service`,
+        allowedImports: ['jwtService', 'InvalidTokenError'],
+      },
+    };
+
     return {
       getProviders: () => ({
         authService: {
@@ -118,21 +142,10 @@ const AuthServiceGenerator = createGeneratorWithChildren({
               'authService',
               `import { authService } from '@/${modulePath}/services/auth-service'`
             ),
-          getImportMap: () => ({
-            '%auth-service': {
-              path: `@/${modulePath}/services/auth-service`,
-              allowedImports: [
-                'AuthPayload',
-                'authService',
-                'ACCESS_TOKEN_EXPIRY_SECONDS',
-                'REFRESH_TOKEN_EXPIRY_SECONDS',
-              ],
-            },
-            '%jwt-service': {
-              path: `@/${modulePath}/services/jwt-service`,
-              allowedImports: ['jwtService', 'InvalidTokenError'],
-            },
-          }),
+          getImportMap: () => importMap,
+        },
+        authServiceImport: {
+          getImportMap: () => importMap,
         },
       }),
       build: async (builder) => {

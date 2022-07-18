@@ -230,7 +230,10 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
     });
 
     inputDefinitions.childInputDefinitions.forEach((child) => {
-      nexusTypesFile.registerType(writeChildInputDefinition(child), child.name);
+      nexusTypesFile.registerType({
+        name: child.name,
+        block: writeChildInputDefinition(child),
+      });
     });
 
     return {
@@ -246,14 +249,14 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       }),
       build: () => {
         // TODO: Make it easier to do simple replaces
-        nexusTypesFile.registerType(
-          objectTypeBlock.renderToBlock(
+        nexusTypesFile.registerType({
+          block: objectTypeBlock.renderToBlock(
             MUTATION_TEMPLATE.replace(
               'RETURN_FIELD_NAME',
               lowerCaseFirst(modelName)
             )
-          )
-        );
+          ),
+        });
       },
     };
   },

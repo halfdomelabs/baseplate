@@ -1,16 +1,19 @@
 import { createProviderType } from '../provider';
 import {
-  buildEntryDependencyMap,
+  buildTaskDependencyMap,
   buildEntryDependencyMapRecursive,
 } from './dependency-map';
-import { buildTestGeneratorEntry } from './tests/factories.test-helper';
+import {
+  buildTestGeneratorEntry,
+  buildTestGeneratorTaskEntry,
+} from './tests/factories.test-helper';
 
 const providerOne = createProviderType('providerOne');
 const providerTwo = createProviderType('providerTwo');
 
 describe('buildEntryDependencyMap', () => {
   it('should resolve basic dependency map', () => {
-    const entry = buildTestGeneratorEntry({
+    const entry = buildTestGeneratorTaskEntry({
       dependencies: {
         dependency: providerOne,
         optionalDependency: providerTwo.dependency().optional(),
@@ -18,61 +21,68 @@ describe('buildEntryDependencyMap', () => {
     });
 
     const parentProviders: Record<string, string> = {
-      [providerOne.name]: 'parentId',
+      [providerOne.name]: 'parentId#main',
     };
 
-    const dependencyMap = buildEntryDependencyMap(entry, parentProviders, {});
+    const dependencyMap = buildTaskDependencyMap(entry, parentProviders, {});
     expect(dependencyMap).toEqual({
-      dependency: 'parentId',
+      dependency: { id: 'parentId#main', options: {} },
       optionalDependency: null,
     });
   });
 
   it('should resolve dependencies to resolveToNull to null always', () => {
-    const entry = buildTestGeneratorEntry({
+    const entry = buildTestGeneratorTaskEntry({
       dependencies: {
         dependency: providerOne.dependency().resolveToNull(),
       },
     });
 
     const parentProviders: Record<string, string> = {
-      [providerOne.name]: 'parentId',
+      [providerOne.name]: 'parentId#main',
     };
 
-    const dependencyMap = buildEntryDependencyMap(entry, parentProviders, {});
+    const dependencyMap = buildTaskDependencyMap(entry, parentProviders, {});
     expect(dependencyMap).toEqual({ dependency: null });
   });
 
   it('should resolve reference dependency', () => {
-    const entry = buildTestGeneratorEntry({
+    const entry = buildTestGeneratorTaskEntry({
       dependencies: {
         referenceDependency: providerOne.dependency().reference('dependent'),
       },
     });
 
-    const generatorMap = {
-      dependent: buildTestGeneratorEntry({ exports: { export: providerOne } }),
+    const taskMap = {
+      'dependent#main': buildTestGeneratorTaskEntry({
+        exports: { export: providerOne },
+      }),
     };
 
-    const dependencyMap = buildEntryDependencyMap(entry, {}, generatorMap);
+    const dependencyMap = buildTaskDependencyMap(entry, {}, taskMap);
     expect(dependencyMap).toEqual({
-      referenceDependency: 'dependent',
+      referenceDependency: {
+        id: 'dependent#main',
+        options: { reference: 'dependent' },
+      },
     });
   });
 
   it('should throw if reference dependent does not implement provider', () => {
-    const entry = buildTestGeneratorEntry({
+    const entry = buildTestGeneratorTaskEntry({
       dependencies: {
         referenceDependency: providerOne.dependency().reference('dependent'),
       },
     });
 
-    const generatorMap = {
-      dependent: buildTestGeneratorEntry({ exports: { export: providerTwo } }),
+    const taskMap = {
+      'dependent#main': buildTestGeneratorTaskEntry({
+        exports: { export: providerTwo },
+      }),
     };
 
-    expect(() => buildEntryDependencyMap(entry, {}, generatorMap)).toThrow(
-      'does not implement'
+    expect(() => buildTaskDependencyMap(entry, {}, taskMap)).toThrow(
+      'Could not resolve'
     );
   });
 });
@@ -82,51 +92,54 @@ describe('buildEntryDependencyMapRecursive', () => {
     const entry = buildTestGeneratorEntry({ id: 'root' });
 
     const dependencyMap = buildEntryDependencyMapRecursive(entry, {}, {});
-    expect(dependencyMap).toEqual({ root: {} });
+    expect(dependencyMap).toEqual({});
   });
 
   it('should generate dependency map of a nested entry', () => {
-    const entry = buildTestGeneratorEntry({
-      id: 'root',
-      children: [
-        buildTestGeneratorEntry({
-          id: 'child',
-          dependencies: { dep2: providerOne },
-        }),
-      ],
-      dependencies: { dep: providerOne },
-      exports: {
-        provider: providerOne,
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        children: [
+          buildTestGeneratorEntry(
+            { id: 'child' },
+            { dependencies: { dep2: providerOne } }
+          ),
+        ],
       },
-    });
+      { dependencies: { dep: providerOne }, exports: { provider: providerOne } }
+    );
 
     const dependencyMap = buildEntryDependencyMapRecursive(
       entry,
-      { [providerOne.name]: 'parentId' },
+      { [providerOne.name]: 'parentId#main' },
       {}
     );
     expect(dependencyMap).toEqual({
-      root: { dep: 'parentId' },
-      child: { dep2: 'root' },
+      'root#main': { dep: { id: 'parentId#main', options: {} } },
+      'child#main': { dep2: { id: 'root#main', options: {} } },
     });
   });
 
   it('should generate dependency map with peer provider entry', () => {
-    const entry = buildTestGeneratorEntry({
-      id: 'root',
-      children: [
-        buildTestGeneratorEntry({
-          id: 'child',
-          dependencies: { dep2: providerOne },
-        }),
-        buildTestGeneratorEntry({
-          id: 'peer',
-          descriptor: { generator: 'g', peerProvider: true },
-          exports: { exp: providerOne },
-        }),
-      ],
-      exports: { provider: providerOne },
-    });
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        children: [
+          buildTestGeneratorEntry(
+            { id: 'child' },
+            { dependencies: { dep2: providerOne } }
+          ),
+          buildTestGeneratorEntry(
+            {
+              id: 'peer',
+              descriptor: { generator: 'g', peerProvider: true },
+            },
+            { exports: { exp: providerOne } }
+          ),
+        ],
+      },
+      { exports: { provider: providerOne } }
+    );
 
     const dependencyMap = buildEntryDependencyMapRecursive(
       entry,
@@ -134,39 +147,47 @@ describe('buildEntryDependencyMapRecursive', () => {
       {}
     );
     expect(dependencyMap).toEqual({
-      root: {},
-      child: { dep2: 'peer' },
-      peer: {},
+      'root#main': {},
+      'peer#main': {},
+      'child#main': { dep2: { id: 'peer#main', options: {} } },
     });
   });
 
   it('should generate dependency map with hoisted provider', () => {
-    const entry = buildTestGeneratorEntry({
-      id: 'root',
-      descriptor: { generator: 'g', hoistedProviders: [providerTwo.name] },
-      children: [
-        buildTestGeneratorEntry({
-          id: 'child',
-          children: [
-            buildTestGeneratorEntry({
-              id: 'grandChild',
-              exports: { exp: providerTwo },
-            }),
-          ],
-        }),
-        buildTestGeneratorEntry({
-          id: 'sideDep',
-          dependencies: { dep2: providerTwo },
-        }),
-      ],
-    });
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        descriptor: { generator: 'g', hoistedProviders: [providerTwo.name] },
+        children: [
+          buildTestGeneratorEntry(
+            {
+              id: 'child',
+              children: [
+                buildTestGeneratorEntry(
+                  { id: 'grandChild' },
+                  { exports: { exp: providerTwo } }
+                ),
+              ],
+            },
+            {}
+          ),
+          buildTestGeneratorEntry(
+            { id: 'sideDep' },
+            { dependencies: { dep2: providerTwo } }
+          ),
+        ],
+      },
+      {}
+    );
 
     const dependencyMap = buildEntryDependencyMapRecursive(entry, {}, {});
     expect(dependencyMap).toEqual({
-      root: {},
-      child: {},
-      grandChild: {},
-      sideDep: { dep2: 'grandChild' },
+      'root#main': {},
+      'child#main': {},
+      'grandChild#main': {},
+      'sideDep#main': {
+        dep2: { id: 'grandChild#main', options: {} },
+      },
     });
   });
 
@@ -175,20 +196,24 @@ describe('buildEntryDependencyMapRecursive', () => {
       id: 'root',
       descriptor: { generator: 'g', hoistedProviders: [providerTwo.name] },
       children: [
-        buildTestGeneratorEntry({
-          id: 'child',
-          children: [
-            buildTestGeneratorEntry({
-              id: 'grandChild',
-              exports: { exp: providerTwo },
-            }),
-          ],
-          exports: { exp: providerTwo },
-        }),
-        buildTestGeneratorEntry({
-          id: 'sideDep',
-          dependencies: { dep2: providerTwo },
-        }),
+        buildTestGeneratorEntry(
+          {
+            id: 'child',
+            children: [
+              buildTestGeneratorEntry(
+                { id: 'grandChild' },
+                { exports: { exp: providerTwo } }
+              ),
+            ],
+          },
+          { exports: { exp: providerTwo } }
+        ),
+        buildTestGeneratorEntry(
+          {
+            id: 'sideDep',
+          },
+          { dependencies: { dep2: providerTwo } }
+        ),
       ],
     });
 
@@ -198,22 +223,28 @@ describe('buildEntryDependencyMapRecursive', () => {
   });
 
   it('should throw if multiple peer providers exist with same provider export', () => {
-    const entry = buildTestGeneratorEntry({
-      id: 'root',
-      children: [
-        buildTestGeneratorEntry({
-          id: 'peerOne',
-          descriptor: { generator: 'g', peerProvider: true },
-          exports: { exp: providerOne },
-        }),
-        buildTestGeneratorEntry({
-          id: 'peerTwo',
-          descriptor: { generator: 'g', peerProvider: true },
-          exports: { expTwo: providerOne },
-        }),
-      ],
-      exports: { provider: providerOne },
-    });
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        children: [
+          buildTestGeneratorEntry(
+            {
+              id: 'peerOne',
+              descriptor: { generator: 'g', peerProvider: true },
+            },
+            { exports: { exp: providerOne } }
+          ),
+          buildTestGeneratorEntry(
+            {
+              id: 'peerTwo',
+              descriptor: { generator: 'g', peerProvider: true },
+            },
+            { exports: { expTwo: providerOne } }
+          ),
+        ],
+      },
+      { exports: { provider: providerOne } }
+    );
 
     expect(() => buildEntryDependencyMapRecursive(entry, {}, {})).toThrow(
       'Duplicate provider'
