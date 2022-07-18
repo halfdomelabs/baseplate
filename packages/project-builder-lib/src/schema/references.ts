@@ -18,6 +18,7 @@ export const REFERENCEABLE_CATEGORIES = [
   'storageAdapter',
   'storageCategory',
   'enum',
+  'adminCrudEmbeddedForm',
 ] as const;
 
 export interface ObjectReferenceableEntry {

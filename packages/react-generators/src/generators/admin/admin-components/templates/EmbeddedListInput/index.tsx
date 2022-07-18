@@ -28,8 +28,8 @@ export interface EmbeddedListFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType[]) => void;
-  tableElement: React.FC<EmbeddedListTableProps<InputType>>;
-  formElement: React.FC<EmbeddedListFormProps<InputType>>;
+  renderTable: (tableProps: EmbeddedListTableProps<InputType>) => JSX.Element;
+  renderForm: (formProps: EmbeddedListFormProps<InputType>) => JSX.Element;
   value: InputType[];
   itemName?: string;
 }
@@ -37,8 +37,8 @@ interface Props<InputType> {
 function EmbeddedListInput<InputType>({
   className,
   onChange,
-  tableElement: TableElement,
-  formElement: FormElement,
+  renderTable,
+  renderForm,
   value,
   itemName,
 }: Props<InputType>): JSX.Element {
@@ -63,11 +63,11 @@ function EmbeddedListInput<InputType>({
         Add Item
       </Button>
       {value.length ? (
-        <TableElement
-          items={value}
-          edit={(idx) => setValueToEdit({ idx, data: value[idx] })}
-          remove={(idx) => onChange(value.filter((_, i) => i !== idx))}
-        />
+        renderTable({
+          items: value,
+          edit: (idx) => setValueToEdit({ idx, data: value[idx] }),
+          remove: (idx) => onChange(value.filter((_, i) => i !== idx)),
+        })
       ) : (
         <Alert type="info">No items currently</Alert>
       )}
@@ -76,10 +76,10 @@ function EmbeddedListInput<InputType>({
           Edit {itemName || 'Item'}
         </Modal.Header>
         <Modal.Body>
-          <FormElement
-            initialData={valueToEdit?.data}
-            onSubmit={handleSubmit}
-          />
+          {renderForm({
+            initialData: valueToEdit?.data,
+            onSubmit: handleSubmit,
+          })}
         </Modal.Body>
       </Modal>
     </div>

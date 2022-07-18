@@ -21,7 +21,7 @@ interface EmbeddedFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType | null | undefined) => void;
-  formElement: React.FC<EmbeddedFormProps<InputType>>;
+  renderForm: (options: EmbeddedFormProps<InputType>) => JSX.Element;
   value: InputType | null | undefined;
   itemName?: string;
 }
@@ -29,7 +29,7 @@ interface Props<InputType> {
 function EmbeddedObjectInput<InputType>({
   className,
   onChange,
-  formElement: FormElement,
+  renderForm,
   value,
   itemName,
 }: Props<InputType>): JSX.Element {
@@ -57,7 +57,7 @@ function EmbeddedObjectInput<InputType>({
           Edit {itemName || 'Item'}
         </Modal.Header>
         <Modal.Body>
-          <FormElement initialData={valueToEdit} onSubmit={handleSubmit} />
+          {renderForm({ initialData: valueToEdit, onSubmit: handleSubmit })}
         </Modal.Body>
       </Modal>
     </div>

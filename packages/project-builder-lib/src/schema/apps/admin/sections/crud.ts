@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references';
+import { randomUid } from '@src/utils/randomUid';
 import { baseAdminSectionValidators } from './base';
 
 // Table Columns
@@ -60,17 +61,65 @@ export const adminCrudFileInputSchema = z.object({
 
 export type AdminCrudFileInputConfig = z.infer<typeof adminCrudFileInputSchema>;
 
+export const adminCrudEmbeddedInputSchema = z.object({
+  type: z.literal('embedded'),
+  label: z.string().min(1),
+  localRelationName: z.string().min(1),
+  embeddedFormName: z.string().min(1),
+});
+
+export type AdminCrudEmbeddedInputConfig = z.infer<
+  typeof adminCrudEmbeddedInputSchema
+>;
+
 export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudForeignInputSchema,
   adminCrudTextInputSchema,
   adminCrudEnumInputSchema,
   adminCrudFileInputSchema,
+  adminCrudEmbeddedInputSchema,
 ]);
 
 export const adminCrudInputTypes =
   adminCrudInputSchema.validDiscriminatorValues as string[];
 
 export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
+
+// Embedded Crud
+export const adminCrudEmbeddedObjectSchema = z.object({
+  id: z.string().default(randomUid),
+  name: z.string().min(1),
+  modelName: z.string().min(1),
+  type: z.literal('object'),
+  table: z
+    .object({
+      columns: z.array(adminCrudTableColumnSchema),
+    })
+    .optional(),
+  form: z.object({
+    fields: z.array(adminCrudInputSchema),
+  }),
+});
+
+export const adminCrudEmbeddedListSchema = z.object({
+  id: z.string().default(randomUid),
+  name: z.string().min(1),
+  modelName: z.string().min(1),
+  type: z.literal('list'),
+  table: z
+    .object({
+      columns: z.array(adminCrudTableColumnSchema),
+    })
+    .optional(),
+  form: z.object({
+    fields: z.array(adminCrudInputSchema),
+  }),
+});
+
+export const adminCrudEmbeddedFormSchema = z.discriminatedUnion('type', [
+  adminCrudEmbeddedObjectSchema,
+  adminCrudEmbeddedListSchema,
+]);
 
 // Admin Section
 
@@ -85,6 +134,7 @@ export const adminCrudSectionSchema = z.object({
   form: z.object({
     fields: z.array(adminCrudInputSchema),
   }),
+  embeddedForms: z.array(adminCrudEmbeddedFormSchema).optional(),
 });
 
 export type AdminCrudSectionConfig = z.infer<typeof adminCrudSectionSchema>;
@@ -138,10 +188,30 @@ export function buildAdminCrudSectionReferences(
           key: `${config.modelName}#${field.modelRelation}`,
         });
         break;
+      case 'embedded':
+        fieldBuilder.addReference('modelRelation', {
+          category: 'modelLocalRelation',
+          key: `${config.modelName}#${field.localRelationName}`,
+        });
+        fieldBuilder.addReference('embeddedFormName', {
+          category: 'adminCrudEmbeddedForm',
+          key: `${config.name}#${field.embeddedFormName}`,
+        });
+        break;
       default:
         throw new Error(
           `Unknown input type: ${(field as { type: string }).type}`
         );
     }
+  });
+
+  config.embeddedForms?.forEach((form, idx) => {
+    const formBuilder = builder.withPrefix(`embeddedForms.${idx}`);
+    formBuilder.addReferenceable({
+      id: form.id,
+      name: form.name,
+      key: `${config.name}#${form.name}`,
+      category: 'adminCrudEmbeddedForm',
+    });
   });
 }

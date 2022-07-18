@@ -79,7 +79,7 @@ function Modal({
 interface ModalHeaderProps {
   className?: string;
   children: React.ReactNode;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 Modal.Header = function ModalHeader({
