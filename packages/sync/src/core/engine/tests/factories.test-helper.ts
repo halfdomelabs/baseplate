@@ -20,6 +20,7 @@ export function buildTestGeneratorTaskEntry(
       run: jest.fn(),
     },
     generatorBaseDirectory: '/',
+    generatorName: 'test-generator',
     ...data,
   };
 }
@@ -37,6 +38,7 @@ export function buildTestGeneratorEntry(
       : [
           buildTestGeneratorTaskEntry({
             id: `${id}#main`,
+            generatorName: 'simple',
             ...task,
           }),
         ]);
