@@ -61,7 +61,7 @@ export async function createOneToOneCreateData<
 // Upsert helpers
 
 interface OneToOneUpsertPipeInput<DataInput> {
-  input: DataInput | undefined;
+  input: DataInput | null | undefined;
   transform?: undefined;
   context?: undefined;
   getWhereUnique?: undefined;
@@ -77,7 +77,7 @@ interface OneToOneUpsertPipeInputWithTransform<
     update: DataInput;
   }
 > {
-  input: DataInput | undefined;
+  input: DataInput | null | undefined;
   transform: (
     input: DataInput,
     context: ServiceContext,
