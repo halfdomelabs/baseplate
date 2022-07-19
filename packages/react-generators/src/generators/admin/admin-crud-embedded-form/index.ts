@@ -38,6 +38,7 @@ import {
 import { adminCrudEditProvider } from '../admin-crud-edit';
 
 const descriptorSchema = z.object({
+  name: z.string(),
   isList: z.boolean(),
   modelName: z.string(),
 });
@@ -164,7 +165,7 @@ const createSetupFormTask = createTaskConfigBuilder(
 
 const createMainTask = createTaskConfigBuilder(
   (
-    { isList, modelName }: Descriptor,
+    { isList, modelName, name }: Descriptor,
     taskDependencies?: InferTaskBuilderMap<{
       setupTask: typeof createSetupFormTask;
     }>
@@ -191,10 +192,10 @@ const createMainTask = createTaskConfigBuilder(
       },
       { setupTask: { inputFields, tableColumns } }
     ) {
-      const capitalizedModelName = upperCaseFirst(modelName);
-      const formName = `Embedded${capitalizedModelName}Form`;
-      const formDataType = `Embedded${capitalizedModelName}FormData`;
-      const formSchema = `embedded${capitalizedModelName}FormSchema`;
+      const capitalizedName = upperCaseFirst(name);
+      const formName = `Embedded${capitalizedName}Form`;
+      const formDataType = `Embedded${capitalizedName}FormData`;
+      const formSchema = `embedded${capitalizedName}FormSchema`;
 
       const [formImport, formPath] = makeImportAndFilePath(
         `${adminCrudEdit.getDirectoryBase()}/${formName}.tsx`
@@ -204,7 +205,7 @@ const createMainTask = createTaskConfigBuilder(
         (f) => f.dataDependencies || []
       );
 
-      const tableName = `Embedded${capitalizedModelName}Table`;
+      const tableName = `Embedded${capitalizedName}Table`;
       const tableDataDependencies = tableColumns.flatMap(
         (f) => f.display.dataDependencies || []
       );
