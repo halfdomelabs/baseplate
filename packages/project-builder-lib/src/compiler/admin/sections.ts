@@ -5,7 +5,8 @@ import { compileAdminCrudSection } from './crud';
 
 export function compileAdminSections(
   featurePath: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
+  sectionsId: string
 ): unknown[] | undefined {
   const sections = builder.appConfig.sections?.filter(
     (s) => s.feature === featurePath
@@ -18,7 +19,7 @@ export function compileAdminSections(
   return sections.map((section) => {
     switch (section.type) {
       case 'crud':
-        return compileAdminCrudSection(section, builder);
+        return compileAdminCrudSection(section, builder, sectionsId);
       default:
         throw new Error(`Unknown section type ${section.type as string}`);
     }
@@ -44,7 +45,11 @@ function compileAdminFeatureRecursive(
     )
     .filter(notEmpty);
 
-  const sectionDescriptors = compileAdminSections(featurePath, builder);
+  const sectionDescriptors = compileAdminSections(
+    featurePath,
+    builder,
+    `${descriptorLocation}:$sections`
+  );
 
   if (!subDescriptors.length && !sectionDescriptors) {
     return undefined;

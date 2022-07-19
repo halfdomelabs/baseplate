@@ -1,20 +1,18 @@
-// @ts-nocheck
-
 import classNames from 'classnames';
 import { useState } from 'react';
 import {
   Control,
+  DefaultValues,
   FieldPath,
   FieldPathValue,
   useController,
-  DefaultValues,
 } from 'react-hook-form';
 import Button from '../Button';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 import Modal from '../Modal';
 
-export interface EmbeddedObjectFormProps<InputType> {
+interface EmbeddedFormProps<InputType> {
   initialData?: DefaultValues<Exclude<InputType, undefined | null>>;
   onSubmit: (data: InputType) => void;
 }
@@ -22,7 +20,7 @@ export interface EmbeddedObjectFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType | null | undefined) => void;
-  renderForm: (options: EmbeddedObjectFormProps<InputType>) => JSX.Element;
+  renderForm: (options: EmbeddedFormProps<InputType>) => JSX.Element;
   value: InputType | null | undefined;
   itemName?: string;
   defaultValue?: DefaultValues<InputType>;

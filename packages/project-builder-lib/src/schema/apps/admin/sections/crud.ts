@@ -66,7 +66,7 @@ export type AdminCrudFileInputConfig = z.infer<typeof adminCrudFileInputSchema>;
 export const adminCrudEmbeddedInputSchema = z.object({
   type: z.literal('embedded'),
   label: z.string().min(1),
-  localRelationName: z.string().min(1),
+  modelRelation: z.string().min(1),
   embeddedFormName: z.string().min(1),
 });
 
@@ -93,11 +93,6 @@ export const adminCrudEmbeddedObjectSchema = z.object({
   name: z.string().min(1),
   modelName: z.string().min(1),
   type: z.literal('object'),
-  table: z
-    .object({
-      columns: z.array(adminCrudTableColumnSchema),
-    })
-    .optional(),
   form: z.object({
     fields: z.array(adminCrudInputSchema),
   }),
@@ -108,11 +103,11 @@ export const adminCrudEmbeddedListSchema = z.object({
   name: z.string().min(1),
   modelName: z.string().min(1),
   type: z.literal('list'),
-  table: z
-    .object({
-      columns: z.array(adminCrudTableColumnSchema),
-    })
-    .optional(),
+  // NOTE: These two fields need to be synced with crud section schema
+  // because the web app expects that (TODO)
+  table: z.object({
+    columns: z.array(adminCrudTableColumnSchema),
+  }),
   form: z.object({
     fields: z.array(adminCrudInputSchema),
   }),
@@ -122,6 +117,10 @@ export const adminCrudEmbeddedFormSchema = z.discriminatedUnion('type', [
   adminCrudEmbeddedObjectSchema,
   adminCrudEmbeddedListSchema,
 ]);
+
+export type AdminCrudEmbeddedFormConfig = z.infer<
+  typeof adminCrudEmbeddedFormSchema
+>;
 
 // Admin Section
 
@@ -192,8 +191,8 @@ export function buildAdminCrudSectionReferences(
         break;
       case 'embedded':
         fieldBuilder.addReference('modelRelation', {
-          category: 'modelLocalRelation',
-          key: `${config.modelName}#${field.localRelationName}`,
+          category: 'modelForeignRelation',
+          key: `${config.modelName}#${field.modelRelation}`,
         });
         fieldBuilder.addReference('embeddedFormName', {
           category: 'adminCrudEmbeddedForm',

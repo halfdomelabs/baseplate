@@ -9,9 +9,14 @@ import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
+export type AdminCrudTableConfig = Pick<
+  AdminCrudSectionConfig,
+  'table' | 'modelName'
+>;
+
 interface Props {
   className?: string;
-  control: Control<AdminCrudSectionConfig>;
+  control: Control<AdminCrudTableConfig>;
 }
 
 function ColumnForm({
@@ -22,7 +27,7 @@ function ColumnForm({
 }: {
   idx: number;
   field: z.infer<typeof adminCrudTableColumnSchema>;
-  control: Control<AdminCrudSectionConfig>;
+  control: Control<AdminCrudTableConfig>;
   fieldOptions: { label: string; value: string }[];
 }): JSX.Element {
   return (
@@ -30,7 +35,7 @@ function ColumnForm({
       <SelectInput.LabelledController
         label="Field"
         control={control}
-        name={`table.columns.${idx}.display.field`}
+        name={`table.columns.${idx}.display.modelField`}
         options={fieldOptions}
       />
       <TextInput.LabelledController
@@ -79,7 +84,9 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
           />
         </CollapsibleRow>
       ))}
-      <Button onClick={() => append({ display: { type: 'text', field: '' } })}>
+      <Button
+        onClick={() => append({ display: { type: 'text', modelField: '' } })}
+      >
         Add Column
       </Button>
     </div>

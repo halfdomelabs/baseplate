@@ -1,6 +1,7 @@
 import { AppEntryBuilder } from '@src/compiler/appEntryBuilder';
 import {
   AdminAppConfig,
+  AdminCrudEmbeddedInputConfig,
   AdminCrudEnumInputConfig,
   AdminCrudFileInputConfig,
   AdminCrudForeignInputConfig,
@@ -87,7 +88,9 @@ function compileAdminCrudTextInput(
     (f) => f.name === field.modelField
   );
   if (!fieldConfig) {
-    throw new Error(`Admin enum input ${field.modelField} cannot be found`);
+    throw new Error(
+      `Field ${field.modelField} cannot be found in ${modelName}`
+    );
   }
   return {
     name: field.modelField,
@@ -141,10 +144,26 @@ function compileAdminCrudFileInput(
   };
 }
 
+function compileAdminCrudEmbeddedInput(
+  field: AdminCrudEmbeddedInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>,
+  crudSectionId: string
+): unknown {
+  return {
+    name: field.modelRelation,
+    generator: '@baseplate/react/admin/admin-crud-embedded-input',
+    label: field.label,
+    modelRelation: field.modelRelation,
+    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
+  };
+}
+
 export function compileAdminCrudInput(
   field: AdminCrudInputConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
+  crudSectionId: string
 ): unknown {
   switch (field.type) {
     case 'foreign':
@@ -155,6 +174,13 @@ export function compileAdminCrudInput(
       return compileAdminCrudTextInput(field, modelName, builder);
     case 'file':
       return compileAdminCrudFileInput(field, modelName, builder);
+    case 'embedded':
+      return compileAdminCrudEmbeddedInput(
+        field,
+        modelName,
+        builder,
+        crudSectionId
+      );
     default:
       throw new Error(
         `Unknown admin crud input ${(field as { type: string }).type}`

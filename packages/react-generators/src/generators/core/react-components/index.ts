@@ -75,7 +75,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { react, node, typescript, reactApp }) {
     const srcFolder = react.getSrcFolder();
     node.addPackages({
-      '@headlessui/react': '^1.5.0',
+      '@headlessui/react': '1.6.6',
       '@hookform/resolvers': '^2.8.8',
       classnames: '^2.3.1',
       'react-hook-form': '^7.28.0',

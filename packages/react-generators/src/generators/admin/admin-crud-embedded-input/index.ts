@@ -5,13 +5,14 @@ import {
   createTaskConfigBuilder,
 } from '@baseplate/sync';
 import { z } from 'zod';
+import { mergeGraphQLFields } from '@src/writers/graphql';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container';
 import { adminComponentsProvider } from '../admin-components';
 import { adminCrudEmbeddedFormProvider } from '../admin-crud-embedded-form';
 
 const descriptorSchema = z.object({
   label: z.string().min(1),
-  localRelationName: z.string().min(1),
+  modelRelation: z.string().min(1),
   embeddedFormRef: z.string().min(1),
 });
 
@@ -25,7 +26,7 @@ export const adminCrudEmbeddedInputProvider =
   );
 
 const createMainTask = createTaskConfigBuilder(
-  ({ label, localRelationName, embeddedFormRef }: Descriptor) => ({
+  ({ label, modelRelation, embeddedFormRef }: Descriptor) => ({
     name: 'main',
     dependencies: {
       adminCrudInputContainer: adminCrudInputContainerProvider,
@@ -39,7 +40,12 @@ const createMainTask = createTaskConfigBuilder(
     },
     run({ adminCrudInputContainer, adminComponents, adminCrudEmbeddedForm }) {
       const formInfo = adminCrudEmbeddedForm.getEmbeddedFormInfo();
-      const { embeddedFormComponent } = formInfo;
+      const {
+        embeddedFormComponent,
+        dataDependencies,
+        graphQLFields,
+        validationExpression,
+      } = formInfo;
 
       const content =
         formInfo.type === 'object'
@@ -47,7 +53,7 @@ const createMainTask = createTaskConfigBuilder(
               `<EmbeddedObjectInput.LabelledController
           label="${label}"
           control={control}
-          name="${localRelationName}"
+          name="${modelRelation}"
           renderForm={(formProps) => (
             <EMBEDDED_FORM_COMPONENT {...formProps} EXTRA_FORM_PROPS />
           )}
@@ -67,7 +73,7 @@ const createMainTask = createTaskConfigBuilder(
               `<EmbeddedListInput.LabelledController
         label="${label}"
         control={control}
-        name="${localRelationName}"
+        name="${modelRelation}"
         renderForm={(formProps) => (
           <EMBEDDED_FORM_COMPONENT {...formProps} EXTRA_FORM_PROPS />
         )}
@@ -92,8 +98,10 @@ const createMainTask = createTaskConfigBuilder(
 
       adminCrudInputContainer.addInput({
         content,
-        graphQLFields: [{ name: localRelationName }],
-        validation: [{ key: localRelationName, expression: null }],
+        graphQLFields: [
+          { name: modelRelation, fields: mergeGraphQLFields(graphQLFields) },
+        ],
+        validation: [{ key: modelRelation, expression: validationExpression }],
         dataDependencies,
       });
 
@@ -101,7 +109,7 @@ const createMainTask = createTaskConfigBuilder(
         getProviders: () => ({
           adminCrudEmbeddedInput: {},
         }),
-        build: async (builder) => {},
+        build: () => {},
       };
     },
   })

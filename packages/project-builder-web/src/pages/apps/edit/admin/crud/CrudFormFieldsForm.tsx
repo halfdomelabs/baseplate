@@ -9,9 +9,15 @@ import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
+export type AdminCrudFormConfig = Pick<
+  AdminCrudSectionConfig,
+  'form' | 'modelName'
+>;
+
 interface Props {
   className?: string;
-  control: Control<AdminCrudSectionConfig>;
+  control: Control<AdminCrudFormConfig>;
+  embeddedFormOptions: { label: string; value: string }[];
 }
 
 function FieldForm({
@@ -19,15 +25,19 @@ function FieldForm({
   control,
   fieldOptions,
   localRelationOptions,
+  foreignRelationOptions,
   enumFieldOptions,
   fileTransformerOptions,
+  embeddedFormOptions,
 }: {
   idx: number;
-  control: Control<AdminCrudSectionConfig>;
+  control: Control<AdminCrudFormConfig>;
   enumFieldOptions: { label: string; value: string }[];
   fieldOptions: { label: string; value: string }[];
   localRelationOptions: { label: string; value: string }[];
+  foreignRelationOptions: { label: string; value: string }[];
   fileTransformerOptions: { label: string; value: string }[];
+  embeddedFormOptions: { label: string; value: string }[];
 }): JSX.Element {
   const fieldTypeOptions = adminCrudInputTypes.map((t) => ({
     label: t,
@@ -107,11 +117,31 @@ function FieldForm({
           />
         </>
       )}
+      {type === 'embedded' && (
+        <>
+          <SelectInput.LabelledController
+            label="Relation Name"
+            control={control}
+            name={`form.fields.${idx}.modelRelation`}
+            options={foreignRelationOptions}
+          />
+          <SelectInput.LabelledController
+            label="Embedded Form"
+            control={control}
+            name={`form.fields.${idx}.embeddedFormName`}
+            options={embeddedFormOptions}
+          />
+        </>
+      )}
     </div>
   );
 }
 
-function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
+function CrudFormFieldsForm({
+  className,
+  control,
+  embeddedFormOptions,
+}: Props): JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
   const { parsedProject } = useProjectConfig();
   const model = modelName ? parsedProject.getModelByName(modelName) : undefined;
@@ -131,6 +161,13 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
       label: `${relation.name} (${relation.modelName})`,
       value: relation.name,
     })) || [];
+
+  const foreignRelationOptions = parsedProject
+    .getModelForeignRelations(modelName)
+    .map((r) => ({
+      label: `${r.relation.foreignRelationName} (${r.model.name})`,
+      value: r.relation.foreignRelationName,
+    }));
 
   const fileTransformerOptions =
     model?.service?.transformers
@@ -169,6 +206,8 @@ function CrudFormFieldsForm({ className, control }: Props): JSX.Element {
             localRelationOptions={localRelationOptions}
             enumFieldOptions={enumFieldOptions}
             fileTransformerOptions={fileTransformerOptions}
+            foreignRelationOptions={foreignRelationOptions}
+            embeddedFormOptions={embeddedFormOptions}
           />
         </CollapsibleRow>
       ))}

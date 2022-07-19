@@ -5,20 +5,13 @@ import {
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@baseplate/core-generators';
-import {
-  createGeneratorWithChildren,
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@baseplate/sync';
+import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
 import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactErrorProvider } from '@src/generators/core/react-error';
-import {
-  reactRoutesProvider,
-  reactRoutesReadOnlyProvider,
-} from '@src/providers/routes';
+import { reactRoutesProvider } from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
 import { humanizeCamel, lowerCaseFirst } from '@src/utils/case';
 import { createRouteElement } from '@src/utils/routes';
@@ -41,6 +34,7 @@ export interface AdminCrudEmbeddedForm {
 
 export interface AdminCrudEditProvider {
   getSchemaPath(): string;
+  getSchemaImport(): string;
   getDirectoryBase(): string;
 }
 
@@ -52,6 +46,12 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
   getDefaultChildGenerators: () => ({
     inputs: {
       isMultiple: true,
+    },
+    embeddedForms: {
+      isMultiple: true,
+      defaultDescriptor: {
+        generator: '@baseplate/react/admin/admin-crud-embedded-form',
+      },
     },
   }),
   buildTasks(taskBuilder, { modelName, disableCreate }) {
@@ -128,6 +128,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
             adminCrudEdit: {
               getDirectoryBase: () => `${reactRoutes.getDirectoryBase()}/edit`,
               getSchemaPath: () => editSchemaPath,
+              getSchemaImport: () => editSchemaImport,
             },
             adminCrudInputContainer: {
               addInput: (input) => {

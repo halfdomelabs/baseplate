@@ -1,14 +1,11 @@
-// @ts-nocheck
-
 import classNames from 'classnames';
-import { nanoid } from 'nanoid';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   Control,
+  DefaultValues,
   FieldPath,
   FieldPathValue,
   useController,
-  DefaultValues,
 } from 'react-hook-form';
 import Alert from '../Alert';
 import Button from '../Button';
@@ -17,7 +14,7 @@ import FormLabel from '../FormLabel';
 import Modal from '../Modal';
 
 export interface EmbeddedListTableProps<InputType> {
-  items: (InputType & { id: string })[];
+  items: InputType[];
   edit: (index: number) => void;
   remove: (index: number) => void;
 }
@@ -63,15 +60,6 @@ function EmbeddedListInput<InputType>({
     setValueToEdit(undefined);
   };
 
-  // TODO: Improve with better ID tracking
-  // We don't have a good way of making sure each row has a unique key
-  // so since we rarely update items, we just re-assign a random ID every time
-  // the values change
-  const valueWithIds = useMemo(
-    () => (value || []).map((item) => ({ id: nanoid(), ...item })),
-    [value]
-  );
-
   return (
     <div className={classNames('space-y-2', className)}>
       <Button
@@ -82,7 +70,7 @@ function EmbeddedListInput<InputType>({
       </Button>
       {definedValue.length ? (
         renderTable({
-          items: valueWithIds,
+          items: definedValue,
           edit: (idx) =>
             setValueToEdit({
               idx,

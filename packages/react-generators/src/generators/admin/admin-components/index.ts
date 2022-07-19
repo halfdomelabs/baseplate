@@ -1,6 +1,7 @@
 import {
   ImportMapper,
   makeImportAndFilePath,
+  nodeProvider,
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
@@ -23,17 +24,22 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
   dependencies: {
     reactComponents: reactComponentsProvider,
     typescript: typescriptProvider,
+    node: nodeProvider,
   },
   exports: {
     adminComponents: adminComponentsProvider,
   },
-  createGenerator(descriptor, { reactComponents, typescript }) {
-    const [, embeddedListPath] = makeImportAndFilePath(
+  createGenerator(descriptor, { reactComponents, typescript, node }) {
+    node.addPackages({
+      nanoid: '3.1.30',
+    });
+
+    const [embeddedListImport, embeddedListPath] = makeImportAndFilePath(
       `${reactComponents.getComponentsFolder()}/EmbeddedListInput/index.tsx`
     );
     reactComponents.registerComponent({ name: 'EmbeddedListInput' });
 
-    const [, embeddedObjectPath] = makeImportAndFilePath(
+    const [embeddedObjectImport, embeddedObjectPath] = makeImportAndFilePath(
       `${reactComponents.getComponentsFolder()}/EmbeddedObjectInput/index.tsx`
     );
     reactComponents.registerComponent({ name: 'EmbeddedObjectInput' });
@@ -45,6 +51,17 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
             '%admin-components': {
               path: reactComponents.getComponentsImport(),
               allowedImports: ['EmbeddedListInput', 'EmbeddedObjectInput'],
+            },
+            '%admin-components/EmbeddedObjectInput': {
+              path: embeddedObjectImport,
+              allowedImports: ['EmbeddedObjectFormProps'],
+            },
+            '%admin-components/EmbeddedListInput': {
+              path: embeddedListImport,
+              allowedImports: [
+                'EmbeddedListTableProps',
+                'EmbeddedListFormProps',
+              ],
             },
           }),
         },

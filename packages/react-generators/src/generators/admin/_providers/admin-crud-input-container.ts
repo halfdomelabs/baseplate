@@ -6,10 +6,15 @@ import { createProviderType } from '@baseplate/sync';
 import { GraphQLField } from '@src/writers/graphql';
 import { AdminCrudDataDependency } from '../_utils/data-loaders';
 
+export interface AdminCrudInputValidation {
+  key: string;
+  expression: TypescriptCodeExpression;
+}
+
 export interface AdminCrudInput {
   content: TypescriptCodeExpression;
   graphQLFields: GraphQLField[];
-  validation: { key: string; expression: TypescriptCodeExpression }[];
+  validation: AdminCrudInputValidation[];
   dataDependencies?: AdminCrudDataDependency[];
   header?: TypescriptCodeBlock;
 }

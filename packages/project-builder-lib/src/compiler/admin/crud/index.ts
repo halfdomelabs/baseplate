@@ -1,15 +1,69 @@
 import inflection from 'inflection';
 import { AppEntryBuilder } from '@src/compiler/appEntryBuilder';
-import { AdminAppConfig, AdminCrudSectionConfig } from '@src/schema';
+import {
+  AdminAppConfig,
+  AdminCrudEmbeddedFormConfig,
+  AdminCrudSectionConfig,
+} from '@src/schema';
 import { compileAdminCrudDisplay } from './displays';
 import { compileAdminCrudInput } from './inputs';
 
+function compileAdminCrudEmbeddedForm(
+  form: AdminCrudEmbeddedFormConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>,
+  crudSectionId: string
+): unknown {
+  const sharedData = {
+    name: form.name,
+    modelName: form.modelName,
+  };
+  if (form.type === 'list') {
+    return {
+      ...sharedData,
+      isList: true,
+      children: {
+        columns: form.table?.columns.map((c) => ({
+          generator: '@baseplate/react/admin/admin-crud-column',
+          name: c.label,
+          label: c.label,
+          children: {
+            display: compileAdminCrudDisplay(
+              c.display,
+              form.modelName,
+              builder
+            ),
+          },
+        })),
+        inputs: form.form.fields.map((field) =>
+          compileAdminCrudInput(field, form.modelName, builder, crudSectionId)
+        ),
+      },
+    };
+  }
+  return {
+    ...sharedData,
+    isList: false,
+    children: {
+      inputs: form.form.fields.map((field) =>
+        compileAdminCrudInput(field, form.modelName, builder, crudSectionId)
+      ),
+    },
+  };
+}
+
 export function compileAdminCrudSection(
   crudSection: AdminCrudSectionConfig,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
+  parentId: string
 ): unknown {
+  const sectionName = inflection.camelize(
+    crudSection.name.replace(' ', ''),
+    true
+  );
+  const crudSectionId = `${parentId}.${sectionName}.$section`;
   return {
-    name: inflection.camelize(crudSection.name.replace(' ', ''), true),
+    name: sectionName,
     generator: '@baseplate/react/core/react-routes',
     children: {
       $section: {
@@ -20,7 +74,20 @@ export function compileAdminCrudSection(
           edit: {
             children: {
               inputs: crudSection.form.fields.map((field) =>
-                compileAdminCrudInput(field, crudSection.modelName, builder)
+                compileAdminCrudInput(
+                  field,
+                  crudSection.modelName,
+                  builder,
+                  crudSectionId
+                )
+              ),
+              embeddedForms: crudSection.embeddedForms?.map((form) =>
+                compileAdminCrudEmbeddedForm(
+                  form,
+                  crudSection.modelName,
+                  builder,
+                  crudSectionId
+                )
               ),
             },
           },

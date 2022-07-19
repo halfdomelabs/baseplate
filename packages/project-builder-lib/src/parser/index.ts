@@ -16,7 +16,7 @@ import { randomUid } from '../utils/randomUid';
 import { AuthPlugin } from './plugins/auth';
 import { Auth0Plugin } from './plugins/auth0';
 import { StoragePlugin } from './plugins/storage';
-import { ParsedModel, ParsedModelField } from './types';
+import { ParsedModel, ParsedModelField, ParsedRelationField } from './types';
 
 const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
 
@@ -261,6 +261,17 @@ export class ParsedProjectConfig {
 
   getFeatureChildren(featurePath: string): Record<string, unknown> {
     return this.featureChildren[featurePath];
+  }
+
+  getModelForeignRelations(
+    modelName: string
+  ): { relation: ParsedRelationField; model: ParsedModel }[] {
+    return this.models.flatMap(
+      (m) =>
+        m.model.relations
+          ?.filter((relation) => relation.modelName === modelName)
+          .map((relation) => ({ relation, model: m })) || []
+    );
   }
 
   getModels(): ParsedModel[] {

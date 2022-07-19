@@ -103,7 +103,7 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
 
         await builder.apply(
           typescript.createCopyAction({
-            source: 'hooks/useUpload.tsx',
+            source: 'hooks/useUpload.ts',
             destination: hookPath,
           })
         );

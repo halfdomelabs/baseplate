@@ -15,7 +15,9 @@ function compileAdminCrudTextDisplay(
     (f) => f.name === field.modelField
   );
   if (!fieldConfig) {
-    throw new Error(`Admin enum input ${field.modelField} cannot be found`);
+    throw new Error(
+      `Field ${field.modelField} cannot be found in ${modelName}`
+    );
   }
   return {
     name: field.modelField,
