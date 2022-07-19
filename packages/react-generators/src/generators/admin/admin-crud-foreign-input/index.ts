@@ -104,6 +104,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
           control={control}
           name="${localField}"
           options={${optionsName}}
+          ${adminCrudInputContainer.isInModal() ? 'fixedPosition' : ''}
         />`,
         'import { ReactSelectInput } from "%react-components"',
         { importMappers: [reactComponents] }

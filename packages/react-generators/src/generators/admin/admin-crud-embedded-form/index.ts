@@ -144,6 +144,7 @@ const createSetupFormTask = createTaskConfigBuilder(
           adminCrudInputContainer: {
             addInput: (input) => inputFields.push(input),
             getModelName: () => modelName,
+            isInModal: () => true,
           },
           adminCrudColumnContainer: {
             addColumn: (column) => {
@@ -306,8 +307,8 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
               remove,
               EXTRA_PROP_SPREAD
             }: PROPS): JSX.Element {
-              return (
-                <Table className="max-w-lg">
+            return (
+                <Table className="max-w-6xl">
                   <Table.Head>
                     <Table.HeadRow>
                       HEADERS

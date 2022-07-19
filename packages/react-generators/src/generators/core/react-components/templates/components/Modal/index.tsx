@@ -21,9 +21,9 @@ function getModalWidthClass(width: ModalWidth): string {
     case 'small':
       return 'w-72 md:w-72';
     case 'base':
-      return 'w-72 md:w-[140rem]';
+      return 'w-72 md:w-[50rem]';
     case 'large':
-      return 'w-72 md:w-[200rem]';
+      return 'w-72 md:w-[80rem]';
     default:
       throw new Error(`Unknown modal width: ${width as string}`);
   }
@@ -62,7 +62,7 @@ function Modal({
           >
             <Dialog.Panel
               className={classNames(
-                'max-h-full overflow-y-auto rounded-lg bg-white shadow md:max-w-md',
+                'max-h-full overflow-y-auto rounded-lg bg-white shadow md:max-w-7xl',
                 getModalWidthClass(width),
                 className
               )}

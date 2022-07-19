@@ -30,7 +30,7 @@ export function AdminCrudEmbeddedTable({
   remove,
 }: EmbeddedListTableProps<AdminCrudEmbeddedFormConfig>): JSX.Element {
   return (
-    <Table className="max-w-lg">
+    <Table className="max-w-6xl">
       <Table.Head>
         <Table.HeadRow>
           <Table.HeadCell>Form Name</Table.HeadCell>

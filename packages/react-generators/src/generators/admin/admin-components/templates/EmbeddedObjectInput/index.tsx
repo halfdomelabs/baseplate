@@ -64,7 +64,11 @@ function EmbeddedObjectInput<InputType>({
           Remove
         </Button>
       )}
-      <Modal isOpen={!!valueToEdit} onClose={() => setValueToEdit(undefined)}>
+      <Modal
+        isOpen={!!valueToEdit}
+        onClose={() => setValueToEdit(undefined)}
+        width="large"
+      >
         <Modal.Header onClose={() => setValueToEdit(undefined)}>
           Edit {itemName || 'Item'}
         </Modal.Header>

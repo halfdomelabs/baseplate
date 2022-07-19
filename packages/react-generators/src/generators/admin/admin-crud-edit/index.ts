@@ -135,6 +135,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
                 inputFields.push(input);
               },
               getModelName: () => modelName,
+              isInModal: () => false,
             },
           }),
           build: async (builder) => {

@@ -93,7 +93,11 @@ function EmbeddedListInput<InputType>({
       ) : (
         <Alert type="info">No items currently</Alert>
       )}
-      <Modal isOpen={!!valueToEdit} onClose={() => setValueToEdit(undefined)}>
+      <Modal
+        isOpen={!!valueToEdit}
+        onClose={() => setValueToEdit(undefined)}
+        width="large"
+      >
         <Modal.Header onClose={() => setValueToEdit(undefined)}>
           Edit {itemName || 'Item'}
         </Modal.Header>
