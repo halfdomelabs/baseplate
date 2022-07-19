@@ -62,7 +62,7 @@ function buildMutationSchemaTypeForModel(
         children: { authorize: { roles: authorize?.create } },
       },
       update: {
-        children: { authorize: { roles: authorize?.create } },
+        children: { authorize: { roles: authorize?.update } },
       },
       delete: {
         children: { authorize: { roles: authorize?.delete } },

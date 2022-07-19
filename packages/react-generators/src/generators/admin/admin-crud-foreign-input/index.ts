@@ -8,7 +8,7 @@ import { lowerCaseFirst } from '@src/utils/case';
 import { mergeGraphQLFields } from '@src/writers/graphql';
 import {
   adminCrudInputContainerProvider,
-  AdminCrudInputDataDependency,
+  AdminCrudDataDependency,
 } from '../_providers/admin-crud-input-container';
 import { convertExpressionToField } from '../_utils/graphql';
 
@@ -54,7 +54,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
     const loaderValueName = `${lowerCaseFirst(dataName)}Data`;
     const loaderErrorName = `${lowerCaseFirst(dataName)}Error`;
 
-    const dataDependency: AdminCrudInputDataDependency = {
+    const dataDependency: AdminCrudDataDependency = {
       propName: lowerCaseFirst(dataName),
       propType: TypescriptCodeUtils.createExpression(
         `${fragmentName}Fragment[]`,

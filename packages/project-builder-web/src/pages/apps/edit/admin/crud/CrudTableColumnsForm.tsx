@@ -30,7 +30,7 @@ function ColumnForm({
       <SelectInput.LabelledController
         label="Field"
         control={control}
-        name={`table.columns.${idx}.renderer.field`}
+        name={`table.columns.${idx}.display.field`}
         options={fieldOptions}
       />
       <TextInput.LabelledController
@@ -64,7 +64,7 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
           key={field.id}
           collapsedContents={
             <div>
-              {field.label} ({field.renderer.type})
+              {field.label} ({field.display.type})
             </div>
           }
           onRemove={() => remove(idx)}
@@ -79,7 +79,7 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
           />
         </CollapsibleRow>
       ))}
-      <Button onClick={() => append({ renderer: { type: 'text', field: '' } })}>
+      <Button onClick={() => append({ display: { type: 'text', field: '' } })}>
         Add Column
       </Button>
     </div>

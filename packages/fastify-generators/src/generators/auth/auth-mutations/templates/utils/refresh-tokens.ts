@@ -45,7 +45,7 @@ export function formatRefreshTokens(
 ): NexusGenFieldTypes['AuthPayload'] {
   // if request needs refresh token returned directly, e.g. mobile app
   // return the refresh token in the payload
-  if (context.reqInfo.headers['X-Refresh-Token-Format'] === 'payload') {
+  if (context.reqInfo.headers['x-refresh-token-format'] === 'payload') {
     return payload;
   }
 

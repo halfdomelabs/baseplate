@@ -188,10 +188,9 @@ const FastifyGenerator = createGeneratorWithTasks({
 
     taskBuilder.addTask({
       name: 'output',
-      dependsOn: mainTask,
+      taskDependencies: { mainTask },
       exports: { fastifyOutput: fastifyOutputProvider },
-      run() {
-        const { formatDevLoaders, config } = mainTask.getOutput();
+      run(deps, { mainTask: { formatDevLoaders, config } }) {
         return {
           getProviders() {
             return {

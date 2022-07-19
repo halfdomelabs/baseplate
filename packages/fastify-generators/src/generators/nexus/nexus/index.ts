@@ -179,13 +179,11 @@ const NexusGenerator = createGeneratorWithTasks({
     // Schema Task
     taskBuilder.addTask({
       name: 'schema',
-      dependsOn: setupTask,
+      taskDependencies: { setupTask },
       exports: {
         nexusSchema: nexusSchemaProvider,
       },
-      run() {
-        const { scalarMap, schemaFiles, importMap } = setupTask.getOutput();
-
+      run(deps, { setupTask: { scalarMap, schemaFiles, importMap } }) {
         const getScalarConfig = (
           scalar: ScalarFieldType
         ): NexusScalarConfig => {
@@ -240,7 +238,7 @@ const NexusGenerator = createGeneratorWithTasks({
 
     taskBuilder.addTask({
       name: 'main',
-      dependsOn: [setupTask],
+      taskDependencies: { setupTask },
       dependencies: {
         node: nodeProvider,
         typescript: typescriptProvider,
@@ -255,19 +253,20 @@ const NexusGenerator = createGeneratorWithTasks({
       exports: {
         nexus: nexusProvider,
       },
-      run({
-        node,
-        typescript,
-        errorHandlerService,
-        configService,
-        requestServiceContext,
-        eslint,
-        prettier,
-        tsUtils,
-        rootModuleImport,
-      }) {
-        const { configMap, schemaFiles } = setupTask.getOutput();
-
+      run(
+        {
+          node,
+          typescript,
+          errorHandlerService,
+          configService,
+          requestServiceContext,
+          eslint,
+          prettier,
+          tsUtils,
+          rootModuleImport,
+        },
+        { setupTask: { configMap, schemaFiles } }
+      ) {
         node.addPackages({
           'altair-fastify-plugin': '4.5.1',
           graphql: '^16.3.0',

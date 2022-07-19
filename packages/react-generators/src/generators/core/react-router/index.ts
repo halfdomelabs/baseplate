@@ -10,6 +10,7 @@ import {
   ReactRouteLayout,
   reactRoutesProvider,
   ReactRoute,
+  reactRoutesReadOnlyProvider,
 } from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
 import { renderRoutes } from '../_shared/routes/renderRoutes';
@@ -41,6 +42,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
   },
   exports: {
     reactRoutes: reactRoutesProvider,
+    reactRoutesReadOnly: reactRoutesReadOnlyProvider,
   },
   createGenerator(descriptor, { node, react, reactApp, typescript }) {
     node.addPackage('react-router-dom', '^6.2.2');
@@ -67,6 +69,10 @@ const ReactRouterGenerator = createGeneratorWithChildren({
           registerLayout(layout) {
             layouts.push(layout);
           },
+          getDirectoryBase: () => `${react.getSrcFolder()}/pages`,
+          getRoutePrefix: () => ``,
+        },
+        reactRoutesReadOnly: {
           getDirectoryBase: () => `${react.getSrcFolder()}/pages`,
           getRoutePrefix: () => ``,
         },

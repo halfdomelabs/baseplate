@@ -5,20 +5,22 @@ import { baseAdminSectionValidators } from './base';
 
 // Table Columns
 
-export const adminCrudTextRendererSchema = z.object({
+export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
-  field: z.string().min(1),
+  modelField: z.string().min(1),
 });
 
-export type AdminCrudTextRendererConfig = z.infer<
-  typeof adminCrudTextRendererSchema
+export type AdminCrudTextDisplayConfig = z.infer<
+  typeof adminCrudTextDisplaySchema
 >;
 
-export const adminCrudRendererSchema = adminCrudTextRendererSchema;
+export const adminCrudDisplaySchema = adminCrudTextDisplaySchema;
+
+export type AdminCrudDisplayConfig = z.infer<typeof adminCrudDisplaySchema>;
 
 export const adminCrudTableColumnSchema = z.object({
   label: z.string().min(1),
-  renderer: adminCrudRendererSchema,
+  display: adminCrudDisplaySchema,
 });
 
 // Form Fields
@@ -147,16 +149,16 @@ export function buildAdminCrudSectionReferences(
 
   config.table.columns.forEach((column, idx) => {
     const columnBuilder = builder.withPrefix(`table.columns.${idx}`);
-    switch (column.renderer.type) {
+    switch (column.display.type) {
       case 'text':
-        columnBuilder.addReference('renderer.field', {
+        columnBuilder.addReference('display.modelField', {
           category: 'modelField',
-          key: `${config.modelName}#${column.renderer.field}`,
+          key: `${config.modelName}#${column.display.modelField}`,
         });
         break;
       default:
         throw new Error(
-          `Unknown renderer type: ${column.renderer.type as string}`
+          `Unknown display type: ${column.display.type as string}`
         );
     }
   });

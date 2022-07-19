@@ -156,9 +156,8 @@ const TypescriptGenerator = createGeneratorWithTasks({
       name: 'main',
       dependencies: { node: nodeProvider },
       exports: { typescript: typescriptProvider },
-      dependsOn: configTask,
-      run({ node }) {
-        const { config, getCompilerOptions } = configTask.getOutput();
+      taskDependencies: { configTask },
+      run({ node }, { configTask: { config, getCompilerOptions } }) {
         let cachedPathEntries: PathMapEntry[];
 
         function getPathEntries(): PathMapEntry[] {
