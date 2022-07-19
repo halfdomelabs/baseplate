@@ -30,35 +30,96 @@ interface SimpleGeneratorTaskInstance<
   build?: (builder: GeneratorOutputBuilder) => Promise<TaskOutput> | TaskOutput;
 }
 
+type TaskOutputDependencyMap<T = Record<string, unknown>> = {
+  [key in keyof T]: SimpleGeneratorTaskOutput<T[key]>;
+};
+
+export type InferTaskOutputDependencyMap<T> = T extends TaskOutputDependencyMap<
+  infer P
+>
+  ? P
+  : never;
+
 export interface SimpleGeneratorTaskConfig<
   ExportMap extends ProviderExportMap,
   DependencyMap extends ProviderDependencyMap,
+  TaskDependencyMap extends TaskOutputDependencyMap,
   TaskOutput = unknown
 > {
   name: string;
   exports?: ExportMap;
   dependencies?: DependencyMap;
-  dependsOn?: { name: string }[] | { name: string };
+  taskDependencies?: TaskDependencyMap;
   run: (
-    dependencies: InferDependencyProviderMap<DependencyMap>
+    dependencies: InferDependencyProviderMap<DependencyMap>,
+    taskDependencies: InferTaskOutputDependencyMap<TaskDependencyMap>
   ) => SimpleGeneratorTaskInstance<
     InferExportProviderMap<ExportMap>,
     TaskOutput
   >;
 }
 
+type TaskConfigBuilder<
+  ExportMap extends ProviderExportMap,
+  DependencyMap extends ProviderDependencyMap,
+  TaskDependencyMap extends TaskOutputDependencyMap,
+  TaskOutput = unknown,
+  Input = never
+> = (
+  input: Input,
+  taskDependencies?: TaskDependencyMap
+) => SimpleGeneratorTaskConfig<
+  ExportMap,
+  DependencyMap,
+  TaskDependencyMap,
+  TaskOutput
+>;
+
+export type ExtractTaskOutputFromBuilder<T> = T extends TaskConfigBuilder<
+  ProviderExportMap<Record<string, Provider>>,
+  ProviderDependencyMap<Record<string, Provider>>,
+  TaskOutputDependencyMap<Record<string, unknown>>,
+  infer TaskOutput
+>
+  ? TaskOutput
+  : never;
+
+type TaskBuilderMap<T> = {
+  [key in keyof T]: TaskConfigBuilder<
+    ProviderExportMap<Record<string, Provider>>,
+    ProviderDependencyMap<Record<string, Provider>>,
+    TaskOutputDependencyMap<Record<string, unknown>>,
+    T[key]
+  >;
+};
+
+export type InferTaskBuilderMap<T> = T extends TaskBuilderMap<infer P>
+  ? { [key in keyof P]: SimpleGeneratorTaskOutput<P[key]> }
+  : never;
+
 export function createTaskConfigBuilder<
   ExportMap extends ProviderExportMap,
   DependencyMap extends ProviderDependencyMap,
+  TaskDependencyMap extends TaskOutputDependencyMap,
   TaskOutput = unknown,
   Input = never
 >(
-  builder: (
-    input: Input
-  ) => SimpleGeneratorTaskConfig<ExportMap, DependencyMap, TaskOutput>
+  builder: TaskConfigBuilder<
+    ExportMap,
+    DependencyMap,
+    TaskDependencyMap,
+    TaskOutput,
+    Input
+  >
 ): (
-  input: Input
-) => SimpleGeneratorTaskConfig<ExportMap, DependencyMap, TaskOutput> {
+  input: Input,
+  taskDependencies?: TaskDependencyMap
+) => SimpleGeneratorTaskConfig<
+  ExportMap,
+  DependencyMap,
+  TaskDependencyMap,
+  TaskOutput
+> {
   return builder;
 }
 
@@ -66,9 +127,15 @@ export interface GeneratorTaskBuilder {
   addTask: <
     ExportMap extends ProviderExportMap,
     DependencyMap extends ProviderDependencyMap,
+    TaskDependencyMap extends TaskOutputDependencyMap,
     TaskOutput = unknown
   >(
-    task: SimpleGeneratorTaskConfig<ExportMap, DependencyMap, TaskOutput>
+    task: SimpleGeneratorTaskConfig<
+      ExportMap,
+      DependencyMap,
+      TaskDependencyMap,
+      TaskOutput
+    >
   ) => SimpleGeneratorTaskOutput<TaskOutput>;
 }
 
@@ -195,7 +262,8 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
     createGenerator: (descriptor) => {
       const tasks: SimpleGeneratorTaskConfig<
         ProviderExportMap<Record<string, Provider>>,
-        ProviderDependencyMap<Record<string, Provider>>
+        ProviderDependencyMap<Record<string, Provider>>,
+        TaskOutputDependencyMap<Record<string, unknown>>
       >[] = [];
       const taskOutputs: Record<string, unknown> = {};
       const taskBuilder: GeneratorTaskBuilder = {
@@ -217,16 +285,20 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
       config.buildTasks(taskBuilder, descriptor);
 
       return tasks.map((task) => {
-        const taskDependsOn =
-          task.dependsOn &&
-          (Array.isArray(task.dependsOn) ? task.dependsOn : [task.dependsOn]);
+        const taskDependencies = task.taskDependencies || {};
         return {
           name: task.name,
           dependencies: task.dependencies,
           exports: task.exports,
-          taskDependencies: taskDependsOn?.map((dep) => dep.name) || [],
+          taskDependencies: Object.values(taskDependencies).map(
+            (dep) => dep.name
+          ),
           run(dependencies) {
-            const runResult = task.run(dependencies);
+            const resolvedTaskOutputs = R.mapObjIndexed(
+              (obj) => obj.getOutput(),
+              taskDependencies
+            );
+            const runResult = task.run(dependencies, resolvedTaskOutputs);
             return {
               getProviders: runResult.getProviders,
               async build(builder) {

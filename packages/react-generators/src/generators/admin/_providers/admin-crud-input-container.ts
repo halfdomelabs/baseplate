@@ -3,27 +3,19 @@ import {
   TypescriptCodeExpression,
 } from '@baseplate/core-generators';
 import { createProviderType } from '@baseplate/sync';
-import {
-  GraphQLField,
-  GraphQLFragment,
-  GraphQLRoot,
-} from '@src/writers/graphql';
-import { DataLoader } from './admin-loader';
+import { GraphQLField } from '@src/writers/graphql';
+import { AdminCrudDataDependency } from '../_utils/data-loaders';
 
-export interface AdminCrudInputDataDependency {
-  propName: string;
-  propType: TypescriptCodeExpression;
-  propLoaderValueGetter: (value: string) => string;
-  loader: DataLoader;
-  graphRoots?: GraphQLRoot[];
-  graphFragments?: GraphQLFragment[];
+export interface AdminCrudInputValidation {
+  key: string;
+  expression: TypescriptCodeExpression;
 }
 
 export interface AdminCrudInput {
   content: TypescriptCodeExpression;
   graphQLFields: GraphQLField[];
-  validation: { key: string; expression: TypescriptCodeExpression }[];
-  dataDependencies?: AdminCrudInputDataDependency[];
+  validation: AdminCrudInputValidation[];
+  dataDependencies?: AdminCrudDataDependency[];
   header?: TypescriptCodeBlock;
 }
 

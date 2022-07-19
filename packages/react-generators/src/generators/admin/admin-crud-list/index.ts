@@ -5,10 +5,7 @@ import {
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@baseplate/core-generators';
-import {
-  createGeneratorWithChildren,
-  createProviderType,
-} from '@baseplate/sync';
+import { createGeneratorWithChildren } from '@baseplate/sync';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
@@ -17,23 +14,27 @@ import { reactRoutesProvider } from '@src/providers/routes';
 import { humanizeCamel, titleizeCamel } from '@src/utils/case';
 import { createRouteElement } from '@src/utils/routes';
 import { mergeGraphQLFields } from '@src/writers/graphql';
+import {
+  AdminCrudColumn,
+  adminCrudColumnContainerProvider,
+} from '../_providers/admin-crud-column-container';
 import { adminCrudQueriesProvider } from '../admin-crud-queries';
-import { adminCrudTableColumnSchema, ADMIN_CRUD_RENDERERS } from './renderers';
 
 const descriptorSchema = z.object({
   modelName: z.string(),
-  columns: z.array(adminCrudTableColumnSchema),
   disableCreate: z.boolean().optional(),
 });
 
-export type AdminCrudListProvider = unknown;
-
-export const adminCrudListProvider =
-  createProviderType<AdminCrudListProvider>('admin-crud-list');
-
 const AdminCrudListGenerator = createGeneratorWithChildren({
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+  getDefaultChildGenerators: () => ({
+    columns: {
+      isMultiple: true,
+      defaultDescriptor: {
+        generator: '@baseplate/react/admin/admin-crud-column',
+      },
+    },
+  }),
   dependencies: {
     typescript: typescriptProvider,
     reactRoutes: reactRoutesProvider,
@@ -42,12 +43,13 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
     reactError: reactErrorProvider,
   },
   exports: {
-    adminCrudList: adminCrudListProvider,
+    adminCrudColumnContainer: adminCrudColumnContainerProvider,
   },
   createGenerator(
-    { modelName, columns, disableCreate },
+    { modelName, disableCreate },
     { typescript, adminCrudQueries, reactRoutes, reactComponents, reactError }
   ) {
+    const columns: AdminCrudColumn[] = [];
     const [listPageImport, listPagePath] = makeImportAndFilePath(
       `${reactRoutes.getDirectoryBase()}/list/index.page.tsx`
     );
@@ -59,26 +61,21 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
     const listInfo = adminCrudQueries.getListQueryHookInfo();
     const deleteInfo = adminCrudQueries.getDeleteHookInfo();
 
-    const renderedColumns = columns.map((column) => {
-      const renderer = ADMIN_CRUD_RENDERERS[column.renderer.type];
-      return {
-        label: column.label,
-        result: renderer.render(column.renderer, 'item'),
-      };
-    });
-
-    adminCrudQueries.setRowFields(
-      mergeGraphQLFields([
-        { name: 'id' },
-        ...renderedColumns.flatMap((c) => c.result.graphQLFields),
-      ])
-    );
-
     return {
       getProviders: () => ({
-        adminCrudList: {},
+        adminCrudColumnContainer: {
+          addColumn: (input) => columns.push(input),
+          getModelName: () => modelName,
+        },
       }),
       build: async (builder) => {
+        adminCrudQueries.setRowFields(
+          mergeGraphQLFields([
+            { name: 'id' },
+            ...columns.flatMap((c) => c.display.graphQLFields),
+          ])
+        );
+
         const listPageComponentName = `${modelName}ListPage`;
         const listPage = typescript.createTemplate(
           {
@@ -126,15 +123,15 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
           element: createRouteElement(listPageComponentName, listPageImport),
         });
 
-        const headers = renderedColumns.map((column) =>
+        const headers = columns.map((column) =>
           TypescriptCodeUtils.createExpression(
             `<Table.HeadCell>${column.label}</Table.HeadCell>`
           )
         );
-        const cells = renderedColumns.map((column) =>
-          column.result.content.wrap(
-            (content) => `<Table.Cell>${content}</Table.Cell>`
-          )
+        const cells = columns.map((column) =>
+          column.display
+            .content('item')
+            .wrap((content) => `<Table.Cell>${content}</Table.Cell>`)
         );
         const tableComponent = typescript.createTemplate(
           {

@@ -81,11 +81,9 @@ const PrismaCrudServiceGenerator = createGeneratorWithTasks({
 
     taskBuilder.addTask({
       name: 'main',
-      dependsOn: setupTask,
+      taskDependencies: { setupTask },
       exports: { prismaCrudService: prismaCrudServiceProvider },
-      run() {
-        const { transformers } = setupTask.getOutput();
-
+      run(deps, { setupTask: { transformers } }) {
         return {
           getProviders() {
             return {

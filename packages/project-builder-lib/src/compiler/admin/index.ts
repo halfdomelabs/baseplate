@@ -65,6 +65,10 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
           ...buildNavigationLinks(appConfig),
         ],
       },
+      $adminComponents: {
+        generator: '@baseplate/react/admin/admin-components',
+        peerProvider: true,
+      },
       $sentry: {
         generator: '@baseplate/react/core/react-sentry',
       },

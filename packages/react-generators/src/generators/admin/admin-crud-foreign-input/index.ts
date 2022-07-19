@@ -6,10 +6,8 @@ import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { lowerCaseFirst } from '@src/utils/case';
 import { mergeGraphQLFields } from '@src/writers/graphql';
-import {
-  adminCrudInputContainerProvider,
-  AdminCrudInputDataDependency,
-} from '../_providers/admin-crud-input-container';
+import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container';
+import { AdminCrudDataDependency } from '../_utils/data-loaders';
 import { convertExpressionToField } from '../_utils/graphql';
 
 const descriptorSchema = z.object({
@@ -54,7 +52,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
     const loaderValueName = `${lowerCaseFirst(dataName)}Data`;
     const loaderErrorName = `${lowerCaseFirst(dataName)}Error`;
 
-    const dataDependency: AdminCrudInputDataDependency = {
+    const dataDependency: AdminCrudDataDependency = {
       propName: lowerCaseFirst(dataName),
       propType: TypescriptCodeUtils.createExpression(
         `${fragmentName}Fragment[]`,

@@ -37,7 +37,7 @@ export interface ProviderDependencyOptions {
    */
   reference?: string;
   /**
-   * Whether the dependency is modified in the build output of this generator
+   * Whether the dependency is modified in the build output of this generator (deprecated)
    */
   modifiedInBuild?: boolean;
   /**
@@ -56,6 +56,9 @@ export interface ProviderDependency<P = Provider> {
   readonly options: ProviderDependencyOptions;
   optional(): ProviderDependency<P | undefined>;
   reference(reference?: string): ProviderDependency<P>;
+  /**
+   * Deprecated
+   */
   modifiedInBuild(): ProviderDependency<P>;
   resolveToNull(): ProviderDependency<P | undefined>;
 }
@@ -74,6 +77,9 @@ export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
   readonly options: ProviderExportOptions;
+  /**
+   * Deprecated.
+   */
   dependsOn(deps: ProviderType | ProviderType[]): ProviderExport<P>;
 }
 

@@ -1,23 +1,26 @@
 import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references';
+import { randomUid } from '@src/utils/randomUid';
 import { baseAdminSectionValidators } from './base';
 
 // Table Columns
 
-export const adminCrudTextRendererSchema = z.object({
+export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
-  field: z.string().min(1),
+  modelField: z.string().min(1),
 });
 
-export type AdminCrudTextRendererConfig = z.infer<
-  typeof adminCrudTextRendererSchema
+export type AdminCrudTextDisplayConfig = z.infer<
+  typeof adminCrudTextDisplaySchema
 >;
 
-export const adminCrudRendererSchema = adminCrudTextRendererSchema;
+export const adminCrudDisplaySchema = adminCrudTextDisplaySchema;
+
+export type AdminCrudDisplayConfig = z.infer<typeof adminCrudDisplaySchema>;
 
 export const adminCrudTableColumnSchema = z.object({
   label: z.string().min(1),
-  renderer: adminCrudRendererSchema,
+  display: adminCrudDisplaySchema,
 });
 
 // Form Fields
@@ -60,17 +63,64 @@ export const adminCrudFileInputSchema = z.object({
 
 export type AdminCrudFileInputConfig = z.infer<typeof adminCrudFileInputSchema>;
 
+export const adminCrudEmbeddedInputSchema = z.object({
+  type: z.literal('embedded'),
+  label: z.string().min(1),
+  modelRelation: z.string().min(1),
+  embeddedFormName: z.string().min(1),
+});
+
+export type AdminCrudEmbeddedInputConfig = z.infer<
+  typeof adminCrudEmbeddedInputSchema
+>;
+
 export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudForeignInputSchema,
   adminCrudTextInputSchema,
   adminCrudEnumInputSchema,
   adminCrudFileInputSchema,
+  adminCrudEmbeddedInputSchema,
 ]);
 
 export const adminCrudInputTypes =
   adminCrudInputSchema.validDiscriminatorValues as string[];
 
 export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
+
+// Embedded Crud
+export const adminCrudEmbeddedObjectSchema = z.object({
+  id: z.string().default(randomUid),
+  name: z.string().min(1),
+  modelName: z.string().min(1),
+  type: z.literal('object'),
+  form: z.object({
+    fields: z.array(adminCrudInputSchema),
+  }),
+});
+
+export const adminCrudEmbeddedListSchema = z.object({
+  id: z.string().default(randomUid),
+  name: z.string().min(1),
+  modelName: z.string().min(1),
+  type: z.literal('list'),
+  // NOTE: These two fields need to be synced with crud section schema
+  // because the web app expects that (TODO)
+  table: z.object({
+    columns: z.array(adminCrudTableColumnSchema),
+  }),
+  form: z.object({
+    fields: z.array(adminCrudInputSchema),
+  }),
+});
+
+export const adminCrudEmbeddedFormSchema = z.discriminatedUnion('type', [
+  adminCrudEmbeddedObjectSchema,
+  adminCrudEmbeddedListSchema,
+]);
+
+export type AdminCrudEmbeddedFormConfig = z.infer<
+  typeof adminCrudEmbeddedFormSchema
+>;
 
 // Admin Section
 
@@ -85,6 +135,7 @@ export const adminCrudSectionSchema = z.object({
   form: z.object({
     fields: z.array(adminCrudInputSchema),
   }),
+  embeddedForms: z.array(adminCrudEmbeddedFormSchema).optional(),
 });
 
 export type AdminCrudSectionConfig = z.infer<typeof adminCrudSectionSchema>;
@@ -97,16 +148,16 @@ export function buildAdminCrudSectionReferences(
 
   config.table.columns.forEach((column, idx) => {
     const columnBuilder = builder.withPrefix(`table.columns.${idx}`);
-    switch (column.renderer.type) {
+    switch (column.display.type) {
       case 'text':
-        columnBuilder.addReference('renderer.field', {
+        columnBuilder.addReference('display.modelField', {
           category: 'modelField',
-          key: `${config.modelName}#${column.renderer.field}`,
+          key: `${config.modelName}#${column.display.modelField}`,
         });
         break;
       default:
         throw new Error(
-          `Unknown renderer type: ${column.renderer.type as string}`
+          `Unknown display type: ${column.display.type as string}`
         );
     }
   });
@@ -138,10 +189,30 @@ export function buildAdminCrudSectionReferences(
           key: `${config.modelName}#${field.modelRelation}`,
         });
         break;
+      case 'embedded':
+        fieldBuilder.addReference('modelRelation', {
+          category: 'modelForeignRelation',
+          key: `${config.modelName}#${field.modelRelation}`,
+        });
+        fieldBuilder.addReference('embeddedFormName', {
+          category: 'adminCrudEmbeddedForm',
+          key: `${config.name}#${field.embeddedFormName}`,
+        });
+        break;
       default:
         throw new Error(
           `Unknown input type: ${(field as { type: string }).type}`
         );
     }
+  });
+
+  config.embeddedForms?.forEach((form, idx) => {
+    const formBuilder = builder.withPrefix(`embeddedForms.${idx}`);
+    formBuilder.addReferenceable({
+      id: form.id,
+      name: form.name,
+      key: `${config.name}#${form.name}`,
+      category: 'adminCrudEmbeddedForm',
+    });
   });
 }

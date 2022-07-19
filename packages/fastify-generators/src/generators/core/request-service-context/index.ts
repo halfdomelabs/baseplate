@@ -155,10 +155,8 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
       exports: {
         requestServiceContext: requestServiceContextProvider,
       },
-      dependsOn: setupTask,
-      run() {
-        const { importMap, contextPath } = setupTask.getOutput();
-
+      taskDependencies: { setupTask },
+      run(deps, { setupTask: { importMap, contextPath } }) {
         return {
           getProviders: () => ({
             requestServiceContext: {

@@ -178,9 +178,8 @@ const PrismaGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'output',
       exports: { prismaOutput: prismaOutputProvider },
-      dependsOn: schemaTask,
-      run() {
-        const { schemaFile } = schemaTask.getOutput();
+      taskDependencies: { schemaTask },
+      run(deps, { schemaTask: { schemaFile } }) {
         return {
           getProviders: () => ({
             prismaOutput: {

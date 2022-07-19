@@ -8,6 +8,7 @@ import {
   ReactRoute,
   ReactRouteLayout,
   reactRoutesProvider,
+  reactRoutesReadOnlyProvider,
 } from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
 import { dasherizeCamel, upperCaseFirst } from '@src/utils/case';
@@ -31,6 +32,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
   },
   exports: {
     reactRoutes: reactRoutesProvider,
+    reactRoutesReadOnly: reactRoutesReadOnlyProvider,
   },
   createGenerator(
     { name, layoutKey, isPassthrough },
@@ -52,6 +54,10 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
           registerLayout(layout) {
             layouts.push(layout);
           },
+          getDirectoryBase: () => directoryBase,
+          getRoutePrefix: () => `${reactRoutes.getRoutePrefix()}/${pathName}`,
+        },
+        reactRoutesReadOnly: {
           getDirectoryBase: () => directoryBase,
           getRoutePrefix: () => `${reactRoutes.getRoutePrefix()}/${pathName}`,
         },

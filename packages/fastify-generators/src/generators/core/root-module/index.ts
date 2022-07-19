@@ -104,12 +104,11 @@ const RootModuleGenerator = createGeneratorWithTasks({
       name: 'appModule',
       dependencies: { typescript: typescriptProvider },
       exports: { appModule: appModuleProvider },
-      dependsOn: rootModuleTask,
-      run({ typescript }) {
+      taskDependencies: { rootModuleTask },
+      run({ typescript }, { rootModuleTask: { moduleFieldMap } }) {
         const rootModuleEntries = createNonOverwriteableMap<
           Record<string, TypescriptCodeExpression[]>
         >({}, { name: 'root-module-entries' });
-        const { moduleFieldMap } = rootModuleTask.getOutput();
 
         return {
           getProviders: () => ({

@@ -59,9 +59,8 @@ const AuthGenerator = createGeneratorWithTasks({
       exports: {
         auth: authProvider,
       },
-      dependsOn: setupTask,
-      run() {
-        const { config } = setupTask.getOutput();
+      taskDependencies: { setupTask },
+      run(deps, { setupTask: { config } }) {
         return {
           getProviders: () => ({
             auth: {
