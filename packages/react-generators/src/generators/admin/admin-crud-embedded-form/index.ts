@@ -29,7 +29,7 @@ import {
 } from '../_providers/admin-crud-input-container';
 import {
   AdminCrudDataDependency,
-  getLoaderExtraProps,
+  getPassthroughExtraProps,
 } from '../_utils/data-loaders';
 import {
   adminComponentsProvider,
@@ -165,7 +165,7 @@ const createSetupFormTask = createTaskConfigBuilder(
 
 const createMainTask = createTaskConfigBuilder(
   (
-    { isList, modelName, name }: Descriptor,
+    { isList, name }: Descriptor,
     taskDependencies?: InferTaskBuilderMap<{
       setupTask: typeof createSetupFormTask;
     }>
@@ -259,7 +259,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                     formName,
                     `import { ${formName} } from '${formImport}'`
                   ),
-                  extraProps: getLoaderExtraProps(inputDataDependencies),
+                  extraProps: getPassthroughExtraProps(inputDataDependencies),
                 },
                 dataDependencies: allDataDependencies,
                 graphQLFields,
@@ -274,7 +274,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                       tableName,
                       `import { ${tableName} } from '${formImport}'`
                     ),
-                    extraProps: getLoaderExtraProps(tableDataDependencies),
+                    extraProps: getPassthroughExtraProps(tableDataDependencies),
                   },
                 };
               }

@@ -100,7 +100,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
             ROUTE_HEADER: layouts
               .map((layout) => layout.header)
               .filter(notEmpty),
-            ROUTES_NAME: componentName,
+            ROUTES_NAME: `${upperCaseFirst(name)}FeatureRoutes`,
             ROUTES: renderedRoutes,
           });
 

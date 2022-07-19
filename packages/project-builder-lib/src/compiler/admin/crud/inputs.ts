@@ -6,6 +6,7 @@ import {
   AdminCrudFileInputConfig,
   AdminCrudForeignInputConfig,
   AdminCrudInputConfig,
+  AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
 } from '@src/schema';
 
@@ -159,6 +160,16 @@ function compileAdminCrudEmbeddedInput(
   };
 }
 
+function compileAdminCrudPasswordInput(
+  field: AdminCrudPasswordInputConfig
+): unknown {
+  return {
+    name: 'password',
+    generator: '@baseplate/react/admin/admin-crud-password-input',
+    label: field.label,
+  };
+}
+
 export function compileAdminCrudInput(
   field: AdminCrudInputConfig,
   modelName: string,
@@ -174,6 +185,8 @@ export function compileAdminCrudInput(
       return compileAdminCrudTextInput(field, modelName, builder);
     case 'file':
       return compileAdminCrudFileInput(field, modelName, builder);
+    case 'password':
+      return compileAdminCrudPasswordInput(field);
     case 'embedded':
       return compileAdminCrudEmbeddedInput(
         field,

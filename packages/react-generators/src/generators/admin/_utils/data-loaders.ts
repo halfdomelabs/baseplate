@@ -21,3 +21,11 @@ export function getLoaderExtraProps(
     )
     .join(' ');
 }
+
+export function getPassthroughExtraProps(
+  dataDependencies: AdminCrudDataDependency[]
+): string {
+  return dataDependencies
+    ?.map((d) => `${d.propName}={${d.propName}}`)
+    .join(' ');
+}

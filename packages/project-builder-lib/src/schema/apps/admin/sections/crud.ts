@@ -74,12 +74,22 @@ export type AdminCrudEmbeddedInputConfig = z.infer<
   typeof adminCrudEmbeddedInputSchema
 >;
 
+export const adminCrudPasswordInputSchema = z.object({
+  type: z.literal('password'),
+  label: z.string().min(1),
+});
+
+export type AdminCrudPasswordInputConfig = z.infer<
+  typeof adminCrudPasswordInputSchema
+>;
+
 export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudForeignInputSchema,
   adminCrudTextInputSchema,
   adminCrudEnumInputSchema,
   adminCrudFileInputSchema,
   adminCrudEmbeddedInputSchema,
+  adminCrudPasswordInputSchema,
 ]);
 
 export const adminCrudInputTypes =
@@ -198,6 +208,8 @@ export function buildAdminCrudSectionReferences(
           category: 'adminCrudEmbeddedForm',
           key: `${config.name}#${field.embeddedFormName}`,
         });
+        break;
+      case 'password':
         break;
       default:
         throw new Error(
