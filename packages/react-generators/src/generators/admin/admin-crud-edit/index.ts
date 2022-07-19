@@ -21,6 +21,7 @@ import {
   adminCrudInputContainerProvider,
 } from '../_providers/admin-crud-input-container';
 import { DataLoader, printDataLoaders } from '../_providers/admin-loader';
+import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders';
 import { adminCrudQueriesProvider } from '../admin-crud-queries';
 
 const descriptorSchema = z.object({
@@ -146,8 +147,8 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
               ])
             );
 
-            const dataDependencies = inputFields.flatMap(
-              (f) => f.dataDependencies || []
+            const dataDependencies = mergeAdminCrudDataDependencies(
+              inputFields.flatMap((f) => f.dataDependencies || [])
             );
 
             dataDependencies.forEach((dep) => {

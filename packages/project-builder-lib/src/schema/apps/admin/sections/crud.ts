@@ -4,6 +4,16 @@ import { randomUid } from '@src/utils/randomUid';
 import { baseAdminSectionValidators } from './base';
 
 // Table Columns
+export const adminCrudForeignDisplaySchema = z.object({
+  type: z.literal('foreign'),
+  localRelationName: z.string().min(1),
+  labelExpression: z.string().min(1),
+  valueExpression: z.string().min(1),
+});
+
+export type AdminCrudForeignDisplayConfig = z.infer<
+  typeof adminCrudForeignDisplaySchema
+>;
 
 export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
@@ -14,7 +24,13 @@ export type AdminCrudTextDisplayConfig = z.infer<
   typeof adminCrudTextDisplaySchema
 >;
 
-export const adminCrudDisplaySchema = adminCrudTextDisplaySchema;
+export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
+  adminCrudTextDisplaySchema,
+  adminCrudForeignDisplaySchema,
+]);
+
+export const adminCrudDisplayTypes =
+  adminCrudDisplaySchema.validDiscriminatorValues as string[];
 
 export type AdminCrudDisplayConfig = z.infer<typeof adminCrudDisplaySchema>;
 
@@ -159,6 +175,12 @@ export function buildAdminCrudSectionReferences(
   config.table.columns.forEach((column, idx) => {
     const columnBuilder = builder.withPrefix(`table.columns.${idx}`);
     switch (column.display.type) {
+      case 'foreign':
+        columnBuilder.addReference('display.localRelationName', {
+          category: 'modelLocalRelation',
+          key: `${config.modelName}#${column.display.localRelationName}`,
+        });
+        break;
       case 'text':
         columnBuilder.addReference('display.modelField', {
           category: 'modelField',
@@ -167,7 +189,7 @@ export function buildAdminCrudSectionReferences(
         break;
       default:
         throw new Error(
-          `Unknown display type: ${column.display.type as string}`
+          `Unknown display type: ${(column.display as { type: string }).type}`
         );
     }
   });

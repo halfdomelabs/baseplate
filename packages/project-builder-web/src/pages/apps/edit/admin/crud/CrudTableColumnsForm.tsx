@@ -1,4 +1,5 @@
 import {
+  adminCrudDisplayTypes,
   AdminCrudSectionConfig,
   adminCrudTableColumnSchema,
 } from '@baseplate/project-builder-lib';
@@ -24,25 +25,61 @@ function ColumnForm({
   field,
   control,
   fieldOptions,
+  localRelationOptions,
 }: {
   idx: number;
   field: z.infer<typeof adminCrudTableColumnSchema>;
   control: Control<AdminCrudTableConfig>;
   fieldOptions: { label: string; value: string }[];
+  localRelationOptions: { label: string; value: string }[];
 }): JSX.Element {
+  const displayTypeOptions = adminCrudDisplayTypes.map((t) => ({
+    label: t,
+    value: t,
+  }));
+  const type = useWatch({ control, name: `table.columns.${idx}.display.type` });
   return (
     <div className="space-y-4">
       <SelectInput.LabelledController
-        label="Field"
+        label="Type"
         control={control}
-        name={`table.columns.${idx}.display.modelField`}
-        options={fieldOptions}
+        options={displayTypeOptions}
+        name={`table.columns.${idx}.display.type`}
       />
       <TextInput.LabelledController
         label="Label"
         control={control}
         name={`table.columns.${idx}.label`}
       />
+
+      {type === 'text' && (
+        <SelectInput.LabelledController
+          label="Field"
+          control={control}
+          name={`table.columns.${idx}.display.modelField`}
+          options={fieldOptions}
+        />
+      )}
+      {type === 'foreign' && (
+        <>
+          <SelectInput.LabelledController
+            label="Local Relation Name"
+            control={control}
+            name={`table.columns.${idx}.display.localRelationName`}
+            options={localRelationOptions}
+          />
+          <TextInput.LabelledController
+            label="Label Expression (e.g. name)"
+            control={control}
+            name={`table.columns.${idx}.display.labelExpression`}
+          />
+          <TextInput.LabelledController
+            label="Value Expression (e.g. id)"
+            control={control}
+            name={`table.columns.${idx}.display.valueExpression`}
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -55,6 +92,12 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
     control,
     name: 'table.columns',
   });
+
+  const localRelationOptions =
+    model?.model.relations?.map((relation) => ({
+      label: `${relation.name} (${relation.modelName})`,
+      value: relation.name,
+    })) || [];
 
   const fieldOptions =
     model?.model.fields.map((field) => ({
@@ -81,6 +124,7 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
             field={field}
             control={control}
             fieldOptions={fieldOptions}
+            localRelationOptions={localRelationOptions}
           />
         </CollapsibleRow>
       ))}

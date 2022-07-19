@@ -30,6 +30,7 @@ import {
 import {
   AdminCrudDataDependency,
   getPassthroughExtraProps,
+  mergeAdminCrudDataDependencies,
 } from '../_utils/data-loaders';
 import {
   adminComponentsProvider,
@@ -211,10 +212,10 @@ const createMainTask = createTaskConfigBuilder(
         (f) => f.display.dataDependencies || []
       );
 
-      const allDataDependencies = [
+      const allDataDependencies = mergeAdminCrudDataDependencies([
         ...inputDataDependencies,
         ...tableDataDependencies,
-      ];
+      ]);
 
       const graphQLFields = [
         ...inputFields.flatMap((f) => f.graphQLFields),

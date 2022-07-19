@@ -7,10 +7,12 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { pluralize } from 'inflection';
+import _ from 'lodash';
 import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactErrorProvider } from '@src/generators/core/react-error';
 import { reactRoutesProvider } from '@src/providers/routes';
+import { notEmpty } from '@src/utils/array';
 import { titleizeCamel } from '@src/utils/case';
 import { createRouteElement } from '@src/utils/routes';
 import { mergeGraphQLFields } from '@src/writers/graphql';
@@ -18,6 +20,8 @@ import {
   AdminCrudColumn,
   adminCrudColumnContainerProvider,
 } from '../_providers/admin-crud-column-container';
+import { DataLoader, printDataLoaders } from '../_providers/admin-loader';
+import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders';
 import { adminCrudQueriesProvider } from '../admin-crud-queries';
 
 const descriptorSchema = z.object({
@@ -69,6 +73,26 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
+        const dataDependencies = mergeAdminCrudDataDependencies(
+          columns.flatMap((c) => c.display.dataDependencies).filter(notEmpty)
+        );
+
+        const inputLoaders = dataDependencies.map((d) => d.loader);
+
+        const listPageLoader: DataLoader = {
+          loader: TypescriptCodeUtils.formatBlock(
+            `const { data, error } = GET_ITEM_QUERY();`,
+            { GET_ITEM_QUERY: listInfo.hookExpression }
+          ),
+          loaderErrorName: 'error',
+          loaderValueName: 'data',
+        };
+
+        const loaderOutput = printDataLoaders(
+          [listPageLoader, ...inputLoaders],
+          reactComponents
+        );
+
         adminCrudQueries.setRowFields(
           mergeGraphQLFields([
             { name: 'id' },
@@ -80,7 +104,6 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
         const listPage = typescript.createTemplate(
           {
             PAGE_NAME: new TypescriptStringReplacement(listPageComponentName),
-            GET_ITEM_QUERY: listInfo.hookExpression,
             DELETE_FUNCTION: new TypescriptStringReplacement(
               deleteInfo.fieldName
             ),
@@ -109,6 +132,9 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
                   ],
                   { importMappers: [reactComponents] }
                 ),
+            DATA_LOADER: loaderOutput.loader,
+            DATA_PARTS: new TypescriptCodeExpression(loaderOutput.dataParts),
+            ERROR_PARTS: new TypescriptCodeExpression(loaderOutput.errorParts),
           },
           {
             importMappers: [reactComponents, reactError],
@@ -141,6 +167,19 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
             CELLS: TypescriptCodeUtils.mergeExpressions(cells, '\n'),
             PLURAL_MODEL: new TypescriptStringReplacement(
               titleizeCamel(pluralize(modelName))
+            ),
+            EXTRA_PROPS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+              _.fromPairs(
+                dataDependencies.map(
+                  (d): [string, TypescriptCodeExpression] => [
+                    d.propName,
+                    d.propType,
+                  ]
+                )
+              )
+            ),
+            'EXTRA_PROP_SPREAD,': new TypescriptStringReplacement(
+              dataDependencies.map((d) => d.propName).join(',\n')
             ),
           },
           {
