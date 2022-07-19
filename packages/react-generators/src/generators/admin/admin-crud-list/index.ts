@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactErrorProvider } from '@src/generators/core/react-error';
 import { reactRoutesProvider } from '@src/providers/routes';
-import { humanizeCamel, titleizeCamel } from '@src/utils/case';
+import { titleizeCamel } from '@src/utils/case';
 import { createRouteElement } from '@src/utils/routes';
 import { mergeGraphQLFields } from '@src/writers/graphql';
 import {
@@ -87,7 +87,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
             DELETE_MUTATION: deleteInfo.hookExpression,
             ROW_FRAGMENT_NAME: adminCrudQueries.getRowFragmentExpression(),
             PLURAL_MODEL: new TypescriptStringReplacement(
-              humanizeCamel(pluralize(modelName))
+              titleizeCamel(pluralize(modelName))
             ),
             TABLE_COMPONENT: new TypescriptCodeExpression(
               `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} />`,
@@ -140,7 +140,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
             HEADERS: TypescriptCodeUtils.mergeExpressions(headers, '\n'),
             CELLS: TypescriptCodeUtils.mergeExpressions(cells, '\n'),
             PLURAL_MODEL: new TypescriptStringReplacement(
-              humanizeCamel(pluralize(modelName))
+              titleizeCamel(pluralize(modelName))
             ),
           },
           {
