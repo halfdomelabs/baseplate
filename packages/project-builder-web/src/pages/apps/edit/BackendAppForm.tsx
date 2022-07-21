@@ -52,6 +52,11 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
           control={control}
           name="enableStripe"
         />
+        <CheckedInput.LabelledController
+          label="Enable Redis?"
+          control={control}
+          name="enableRedis"
+        />
         <Button type="submit">Save</Button>
       </form>
     </div>

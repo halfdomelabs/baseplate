@@ -5,6 +5,7 @@ export const backendAppSchema = z.object({
   ...baseAppValidators,
   type: z.literal('backend'),
   enableStripe: z.boolean().optional(),
+  enableRedis: z.boolean().optional(),
 });
 
 export type BackendAppConfig = z.infer<typeof backendAppSchema>;
