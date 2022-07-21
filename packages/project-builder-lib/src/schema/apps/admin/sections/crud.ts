@@ -90,6 +90,17 @@ export type AdminCrudEmbeddedInputConfig = z.infer<
   typeof adminCrudEmbeddedInputSchema
 >;
 
+export const adminCrudEmbeddedLocalInputSchema = z.object({
+  type: z.literal('embeddedLocal'),
+  label: z.string().min(1),
+  localRelation: z.string().min(1),
+  embeddedFormName: z.string().min(1),
+});
+
+export type AdminCrudEmbeddedLocalInputConfig = z.infer<
+  typeof adminCrudEmbeddedLocalInputSchema
+>;
+
 export const adminCrudPasswordInputSchema = z.object({
   type: z.literal('password'),
   label: z.string().min(1),
@@ -105,6 +116,7 @@ export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudEnumInputSchema,
   adminCrudFileInputSchema,
   adminCrudEmbeddedInputSchema,
+  adminCrudEmbeddedLocalInputSchema,
   adminCrudPasswordInputSchema,
 ]);
 
@@ -118,6 +130,7 @@ export const adminCrudEmbeddedObjectSchema = z.object({
   id: z.string().default(randomUid),
   name: z.string().min(1),
   modelName: z.string().min(1),
+  includeIdField: z.boolean().optional(),
   type: z.literal('object'),
   form: z.object({
     fields: z.array(adminCrudInputSchema),
@@ -128,6 +141,7 @@ export const adminCrudEmbeddedListSchema = z.object({
   id: z.string().default(randomUid),
   name: z.string().min(1),
   modelName: z.string().min(1),
+  includeIdField: z.boolean().optional(),
   type: z.literal('list'),
   // NOTE: These two fields need to be synced with crud section schema
   // because the web app expects that (TODO)
@@ -225,6 +239,17 @@ export function buildAdminCrudSectionReferences(
         fieldBuilder.addReference('modelRelation', {
           category: 'modelForeignRelation',
           key: `${config.modelName}#${field.modelRelation}`,
+        });
+        fieldBuilder.addReference('embeddedFormName', {
+          category: 'adminCrudEmbeddedForm',
+          key: `${config.name}#${field.embeddedFormName}`,
+        });
+        break;
+      case 'embeddedLocal':
+        // TODO: Not supported in backend generation yet (but can be manually created)
+        fieldBuilder.addReference('localRelation', {
+          category: 'modelLocalRelation',
+          key: `${config.modelName}#${field.localRelation}`,
         });
         fieldBuilder.addReference('embeddedFormName', {
           category: 'adminCrudEmbeddedForm',

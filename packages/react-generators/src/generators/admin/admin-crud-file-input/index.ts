@@ -42,7 +42,9 @@ const AdminCrudFileInputGenerator = createGeneratorWithChildren({
         {
           key: modelRelation,
           expression: TypescriptCodeUtils.createExpression(
-            `z.object({ id: z.string() })${isOptional ? '.nullish()' : ''}`
+            `z.object({ id: z.string(), name: z.string().nullish() })${
+              isOptional ? '.nullish()' : ''
+            }`
           ),
         },
       ],

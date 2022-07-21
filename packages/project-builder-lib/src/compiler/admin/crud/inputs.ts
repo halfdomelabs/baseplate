@@ -2,6 +2,7 @@ import { AppEntryBuilder } from '@src/compiler/appEntryBuilder';
 import {
   AdminAppConfig,
   AdminCrudEmbeddedInputConfig,
+  AdminCrudEmbeddedLocalInputConfig,
   AdminCrudEnumInputConfig,
   AdminCrudFileInputConfig,
   AdminCrudForeignInputConfig,
@@ -160,6 +161,32 @@ function compileAdminCrudEmbeddedInput(
   };
 }
 
+function compileAdminCrudEmbeddedLocalInput(
+  field: AdminCrudEmbeddedLocalInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>,
+  crudSectionId: string
+): unknown {
+  const localRelation = builder.parsedProject
+    .getModelByName(modelName)
+    .model.relations?.find((r) => r.name === field.localRelation);
+
+  if (!localRelation) {
+    throw new Error(
+      `Could not find relation ${field.localRelation} in model ${modelName}`
+    );
+  }
+
+  return {
+    name: field.localRelation,
+    generator: '@baseplate/react/admin/admin-crud-embedded-input',
+    label: field.label,
+    modelRelation: field.localRelation,
+    isRequired: !localRelation.isOptional,
+    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
+  };
+}
+
 function compileAdminCrudPasswordInput(
   field: AdminCrudPasswordInputConfig
 ): unknown {
@@ -189,6 +216,13 @@ export function compileAdminCrudInput(
       return compileAdminCrudPasswordInput(field);
     case 'embedded':
       return compileAdminCrudEmbeddedInput(
+        field,
+        modelName,
+        builder,
+        crudSectionId
+      );
+    case 'embeddedLocal':
+      return compileAdminCrudEmbeddedLocalInput(
         field,
         modelName,
         builder,

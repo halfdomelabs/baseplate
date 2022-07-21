@@ -26,6 +26,7 @@ import {
 import {
   AdminCrudInput,
   adminCrudInputContainerProvider,
+  AdminCrudInputValidation,
 } from '../_providers/admin-crud-input-container';
 import {
   AdminCrudDataDependency,
@@ -42,6 +43,7 @@ const descriptorSchema = z.object({
   name: z.string(),
   isList: z.boolean(),
   modelName: z.string(),
+  idField: z.string().optional(),
 });
 
 type Descriptor = z.infer<typeof descriptorSchema>;
@@ -167,7 +169,7 @@ const createSetupFormTask = createTaskConfigBuilder(
 
 const createMainTask = createTaskConfigBuilder(
   (
-    { isList, name }: Descriptor,
+    { isList, name, idField }: Descriptor,
     taskDependencies?: InferTaskBuilderMap<{
       setupTask: typeof createSetupFormTask;
     }>
@@ -217,13 +219,28 @@ const createMainTask = createTaskConfigBuilder(
         ...tableDataDependencies,
       ]);
 
-      const graphQLFields = [
+      const graphQLFields: GraphQLField[] = [
+        ...(idField ? [{ name: idField }] : []),
         ...inputFields.flatMap((f) => f.graphQLFields),
         ...tableColumns.flatMap((f) => f.display.graphQLFields),
       ];
 
       // Create schema
-      const validations = inputFields.flatMap((f) => f.validation);
+      const validations: AdminCrudInputValidation[] = [
+        ...(idField &&
+        !inputFields.some((f) => f.validation.some((v) => v.key === idField))
+          ? [
+              {
+                key: idField,
+                // TODO: Allow non-string IDs
+                expression: new TypescriptCodeExpression(
+                  'z.string().nullish()'
+                ),
+              },
+            ]
+          : []),
+        ...inputFields.flatMap((f) => f.validation),
+      ];
       const embeddedBlock = TypescriptCodeUtils.formatBlock(
         `
 export const SCHEMA_NAME = z.object(SCHEMA_OBJECT);
@@ -239,16 +256,13 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
               validations.map((v) => v.expression)
             )
           ),
-        },
-        { headerKey: formSchema }
-      );
+        }
+      ).withHeaderKey(formSchema);
 
       const validationExpression = TypescriptCodeUtils.createExpression(
-        `${isList ? `z.array(${formSchema})` : formSchema}.nullish()`,
+        `${isList ? `z.array(${formSchema})` : formSchema}`,
         undefined,
-        {
-          headerBlocks: [embeddedBlock],
-        }
+        { headerBlocks: [embeddedBlock] }
       );
 
       return {

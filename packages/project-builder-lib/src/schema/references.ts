@@ -143,7 +143,9 @@ export class ReferencesBuilder<T> {
   ): ReferencesBuilder<T> {
     const name = reference.name || R.path(pathToParts(path), this.baseObject);
     if (!name) {
-      throw new Error(`Cannot find value of reference ${path}`);
+      throw new Error(
+        `Cannot find value of reference ${path} (${reference.category})`
+      );
     }
     const fullPath = this.prefix ? `${this.prefix}.${path}` : path;
     const constructedReference = {

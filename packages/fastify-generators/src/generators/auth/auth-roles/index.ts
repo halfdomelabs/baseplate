@@ -70,6 +70,16 @@ const AuthRolesGenerator = createGeneratorWithChildren({
       ),
     });
 
+    authPlugin.registerAuthField({
+      key: 'hasRole',
+      value: new TypescriptCodeExpression('(role) => roles.includes(role)'),
+      type: TypescriptCodeUtils.createExpression(
+        `(role: AuthRole) => boolean`,
+        `import {AuthRole} from '%role-service'`,
+        { importMappers: [roleService] }
+      ),
+    });
+
     const userWithRolesType = TypescriptCodeUtils.createExpression(
       `UserWithRoles`,
       `import {UserWithRoles} from '${roleService.getServiceImport()}'`

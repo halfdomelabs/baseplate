@@ -500,7 +500,7 @@ export const TypescriptCodeUtils = {
   formatBlock(
     formatString: string,
     args: Record<string, TypescriptCodeContents | string>,
-    options?: TypescriptCodeEntryOptions
+    options?: Omit<TypescriptCodeEntryOptions, 'headerKey'>
   ): TypescriptCodeBlock {
     return new TypescriptCodeBlock(
       formatStringWithContent(formatString, args),

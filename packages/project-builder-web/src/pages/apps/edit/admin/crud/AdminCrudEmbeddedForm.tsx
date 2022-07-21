@@ -12,6 +12,7 @@ import {
   Table,
   TextInput,
 } from 'src/components';
+import CheckedInput from 'src/components/CheckedInput';
 import {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
@@ -107,6 +108,11 @@ function AdminCrudEmbeddedForm({
         control={control}
         name="type"
         options={TYPE_OPTIONS}
+      />
+      <CheckedInput.LabelledController
+        label="Include ID Field? (useful for list types)"
+        control={control}
+        name="includeIdField"
       />
       <SelectInput.LabelledController
         label="Model"

@@ -31,7 +31,7 @@ export function COMPONENT_NAME({
     >
       <Alert.WithStatus status={status} />
       <INPUTS />
-      <Button type="submit">Save</Button>
+      <Button type="submit">Update</Button>
     </form>
   );
 }

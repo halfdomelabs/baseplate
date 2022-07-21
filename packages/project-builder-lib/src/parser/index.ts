@@ -290,6 +290,15 @@ export class ParsedProjectConfig {
     return model;
   }
 
+  getModelPrimaryKeys(modelName: string): string[] {
+    const model = this.getModelByName(modelName);
+    return (
+      model.model.primaryKeys ||
+      model.model.fields.filter((f) => f.isId).map((f) => f.name) ||
+      []
+    );
+  }
+
   exportToProjectConfig(): ProjectConfig {
     return projectConfigSchema.parse(this.projectConfig);
   }
