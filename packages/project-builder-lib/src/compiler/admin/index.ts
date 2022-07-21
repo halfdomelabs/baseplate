@@ -2,7 +2,7 @@ import { relative } from 'path-browserify';
 import { ProjectConfig } from '@src/schema';
 import { AdminAppConfig } from '@src/schema/apps/admin';
 import { AppEntry } from '@src/types/files';
-import { dasherizeCamel } from '@src/utils/case';
+import { dasherizeCamel, titleizeCamel } from '@src/utils/case';
 import { AppEntryBuilder } from '../appEntryBuilder';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth';
 import { compileAdminFeatures } from './sections';
@@ -11,7 +11,7 @@ export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
   return (
     config.sections?.map((section) => ({
       type: 'link',
-      label: section.name,
+      label: titleizeCamel(section.name),
       icon: section.icon || 'MdHome',
       path: `${section.feature}/${dasherizeCamel(section.name)}`,
     })) || []

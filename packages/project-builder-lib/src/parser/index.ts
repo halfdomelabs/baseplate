@@ -290,6 +290,15 @@ export class ParsedProjectConfig {
     return model;
   }
 
+  getModelPrimaryKeys(modelName: string): string[] {
+    const model = this.getModelByName(modelName);
+    return (
+      model.model.primaryKeys ||
+      model.model.fields.filter((f) => f.isId).map((f) => f.name) ||
+      []
+    );
+  }
+
   exportToProjectConfig(): ProjectConfig {
     return projectConfigSchema.parse(this.projectConfig);
   }
@@ -336,13 +345,13 @@ export class ParsedProjectConfig {
     }
     if (field.type === 'int') {
       return `z.preprocess(
-        (a) => (a ? parseInt(a as string, 10) : undefined),
+        (a) => (a != null ? parseInt(a as string, 10) : undefined),
         ${validator}
       )`;
     }
     if (field.type === 'float') {
       return `z.preprocess(
-        (a) => (a ? parseFloat(a as string) : undefined),
+        (a) => (a != null ? parseFloat(a as string) : undefined),
         ${validator}
       )`;
     }

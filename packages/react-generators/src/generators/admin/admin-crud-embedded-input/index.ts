@@ -14,6 +14,7 @@ const descriptorSchema = z.object({
   label: z.string().min(1),
   modelRelation: z.string().min(1),
   embeddedFormRef: z.string().min(1),
+  isRequired: z.boolean().optional(),
 });
 
 type Descriptor = z.infer<typeof descriptorSchema>;
@@ -26,7 +27,7 @@ export const adminCrudEmbeddedInputProvider =
   );
 
 const createMainTask = createTaskConfigBuilder(
-  ({ label, modelRelation, embeddedFormRef }: Descriptor) => ({
+  ({ label, modelRelation, embeddedFormRef, isRequired }: Descriptor) => ({
     name: 'main',
     dependencies: {
       adminCrudInputContainer: adminCrudInputContainerProvider,
@@ -101,7 +102,14 @@ const createMainTask = createTaskConfigBuilder(
         graphQLFields: [
           { name: modelRelation, fields: mergeGraphQLFields(graphQLFields) },
         ],
-        validation: [{ key: modelRelation, expression: validationExpression }],
+        validation: [
+          {
+            key: modelRelation,
+            expression: validationExpression.append(
+              isRequired ? '' : '.nullish()'
+            ),
+          },
+        ],
         dataDependencies,
       });
 

@@ -26,10 +26,12 @@ import {
 import {
   AdminCrudInput,
   adminCrudInputContainerProvider,
+  AdminCrudInputValidation,
 } from '../_providers/admin-crud-input-container';
 import {
   AdminCrudDataDependency,
-  getLoaderExtraProps,
+  getPassthroughExtraProps,
+  mergeAdminCrudDataDependencies,
 } from '../_utils/data-loaders';
 import {
   adminComponentsProvider,
@@ -38,8 +40,10 @@ import {
 import { adminCrudEditProvider } from '../admin-crud-edit';
 
 const descriptorSchema = z.object({
+  name: z.string(),
   isList: z.boolean(),
   modelName: z.string(),
+  idField: z.string().optional(),
 });
 
 type Descriptor = z.infer<typeof descriptorSchema>;
@@ -143,6 +147,7 @@ const createSetupFormTask = createTaskConfigBuilder(
           adminCrudInputContainer: {
             addInput: (input) => inputFields.push(input),
             getModelName: () => modelName,
+            isInModal: () => true,
           },
           adminCrudColumnContainer: {
             addColumn: (column) => {
@@ -164,7 +169,7 @@ const createSetupFormTask = createTaskConfigBuilder(
 
 const createMainTask = createTaskConfigBuilder(
   (
-    { isList, modelName }: Descriptor,
+    { isList, name, idField }: Descriptor,
     taskDependencies?: InferTaskBuilderMap<{
       setupTask: typeof createSetupFormTask;
     }>
@@ -191,10 +196,10 @@ const createMainTask = createTaskConfigBuilder(
       },
       { setupTask: { inputFields, tableColumns } }
     ) {
-      const capitalizedModelName = upperCaseFirst(modelName);
-      const formName = `Embedded${capitalizedModelName}Form`;
-      const formDataType = `Embedded${capitalizedModelName}FormData`;
-      const formSchema = `embedded${capitalizedModelName}FormSchema`;
+      const capitalizedName = upperCaseFirst(name);
+      const formName = `Embedded${capitalizedName}Form`;
+      const formDataType = `Embedded${capitalizedName}FormData`;
+      const formSchema = `embedded${capitalizedName}FormSchema`;
 
       const [formImport, formPath] = makeImportAndFilePath(
         `${adminCrudEdit.getDirectoryBase()}/${formName}.tsx`
@@ -204,23 +209,38 @@ const createMainTask = createTaskConfigBuilder(
         (f) => f.dataDependencies || []
       );
 
-      const tableName = `Embedded${capitalizedModelName}Table`;
+      const tableName = `Embedded${capitalizedName}Table`;
       const tableDataDependencies = tableColumns.flatMap(
         (f) => f.display.dataDependencies || []
       );
 
-      const allDataDependencies = [
+      const allDataDependencies = mergeAdminCrudDataDependencies([
         ...inputDataDependencies,
         ...tableDataDependencies,
-      ];
+      ]);
 
-      const graphQLFields = [
+      const graphQLFields: GraphQLField[] = [
+        ...(idField ? [{ name: idField }] : []),
         ...inputFields.flatMap((f) => f.graphQLFields),
         ...tableColumns.flatMap((f) => f.display.graphQLFields),
       ];
 
       // Create schema
-      const validations = inputFields.flatMap((f) => f.validation);
+      const validations: AdminCrudInputValidation[] = [
+        ...(idField &&
+        !inputFields.some((f) => f.validation.some((v) => v.key === idField))
+          ? [
+              {
+                key: idField,
+                // TODO: Allow non-string IDs
+                expression: new TypescriptCodeExpression(
+                  'z.string().nullish()'
+                ),
+              },
+            ]
+          : []),
+        ...inputFields.flatMap((f) => f.validation),
+      ];
       const embeddedBlock = TypescriptCodeUtils.formatBlock(
         `
 export const SCHEMA_NAME = z.object(SCHEMA_OBJECT);
@@ -236,16 +256,13 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
               validations.map((v) => v.expression)
             )
           ),
-        },
-        { headerKey: formSchema }
-      );
+        }
+      ).withHeaderKey(formSchema);
 
       const validationExpression = TypescriptCodeUtils.createExpression(
-        `${isList ? `z.array(${formSchema})` : formSchema}.nullish()`,
+        `${isList ? `z.array(${formSchema})` : formSchema}`,
         undefined,
-        {
-          headerBlocks: [embeddedBlock],
-        }
+        { headerBlocks: [embeddedBlock] }
       );
 
       return {
@@ -258,7 +275,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                     formName,
                     `import { ${formName} } from '${formImport}'`
                   ),
-                  extraProps: getLoaderExtraProps(inputDataDependencies),
+                  extraProps: getPassthroughExtraProps(inputDataDependencies),
                 },
                 dataDependencies: allDataDependencies,
                 graphQLFields,
@@ -273,7 +290,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                       tableName,
                       `import { ${tableName} } from '${formImport}'`
                     ),
-                    extraProps: getLoaderExtraProps(tableDataDependencies),
+                    extraProps: getPassthroughExtraProps(tableDataDependencies),
                   },
                 };
               }
@@ -305,8 +322,8 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
               remove,
               EXTRA_PROP_SPREAD
             }: PROPS): JSX.Element {
-              return (
-                <Table className="max-w-lg">
+            return (
+                <Table className="max-w-6xl">
                   <Table.Head>
                     <Table.HeadRow>
                       HEADERS

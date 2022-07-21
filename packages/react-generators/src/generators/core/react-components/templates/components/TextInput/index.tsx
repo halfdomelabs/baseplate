@@ -8,6 +8,8 @@ import {
   get,
   UseFormRegisterReturn,
   useFormState,
+  RegisterOptions,
+  FieldValues,
 } from 'react-hook-form';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -77,16 +79,23 @@ TextInput.Labelled = function TextInputLabelled({
   );
 };
 
-interface TextInputControllerProps<T> extends TextInputLabelledProps {
-  control: Control<T>;
-  name: FieldPath<T>;
+interface TextInputControllerProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> extends TextInputLabelledProps {
+  control: Control<TFieldValues>;
+  name: TFieldName;
+  registerOptions?: RegisterOptions<TFieldValues, TFieldName>;
 }
 
-TextInput.LabelledController = function TextInputController<T>({
+TextInput.LabelledController = function TextInputController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
   control,
   name,
   ...rest
-}: TextInputControllerProps<T>): JSX.Element {
+}: TextInputControllerProps<TFieldValues, TFieldName>): JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

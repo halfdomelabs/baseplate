@@ -12,6 +12,7 @@ import {
   Table,
   TextInput,
 } from 'src/components';
+import CheckedInput from 'src/components/CheckedInput';
 import {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
@@ -30,7 +31,7 @@ export function AdminCrudEmbeddedTable({
   remove,
 }: EmbeddedListTableProps<AdminCrudEmbeddedFormConfig>): JSX.Element {
   return (
-    <Table className="max-w-lg">
+    <Table className="max-w-6xl">
       <Table.Head>
         <Table.HeadRow>
           <Table.HeadCell>Form Name</Table.HeadCell>
@@ -107,6 +108,11 @@ function AdminCrudEmbeddedForm({
         control={control}
         name="type"
         options={TYPE_OPTIONS}
+      />
+      <CheckedInput.LabelledController
+        label="Include ID Field? (useful for list types)"
+        control={control}
+        name="includeIdField"
       />
       <SelectInput.LabelledController
         label="Model"

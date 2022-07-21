@@ -2,10 +2,12 @@ import { AppEntryBuilder } from '@src/compiler/appEntryBuilder';
 import {
   AdminAppConfig,
   AdminCrudEmbeddedInputConfig,
+  AdminCrudEmbeddedLocalInputConfig,
   AdminCrudEnumInputConfig,
   AdminCrudFileInputConfig,
   AdminCrudForeignInputConfig,
   AdminCrudInputConfig,
+  AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
 } from '@src/schema';
 
@@ -159,6 +161,42 @@ function compileAdminCrudEmbeddedInput(
   };
 }
 
+function compileAdminCrudEmbeddedLocalInput(
+  field: AdminCrudEmbeddedLocalInputConfig,
+  modelName: string,
+  builder: AppEntryBuilder<AdminAppConfig>,
+  crudSectionId: string
+): unknown {
+  const localRelation = builder.parsedProject
+    .getModelByName(modelName)
+    .model.relations?.find((r) => r.name === field.localRelation);
+
+  if (!localRelation) {
+    throw new Error(
+      `Could not find relation ${field.localRelation} in model ${modelName}`
+    );
+  }
+
+  return {
+    name: field.localRelation,
+    generator: '@baseplate/react/admin/admin-crud-embedded-input',
+    label: field.label,
+    modelRelation: field.localRelation,
+    isRequired: !localRelation.isOptional,
+    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
+  };
+}
+
+function compileAdminCrudPasswordInput(
+  field: AdminCrudPasswordInputConfig
+): unknown {
+  return {
+    name: 'password',
+    generator: '@baseplate/react/admin/admin-crud-password-input',
+    label: field.label,
+  };
+}
+
 export function compileAdminCrudInput(
   field: AdminCrudInputConfig,
   modelName: string,
@@ -174,8 +212,17 @@ export function compileAdminCrudInput(
       return compileAdminCrudTextInput(field, modelName, builder);
     case 'file':
       return compileAdminCrudFileInput(field, modelName, builder);
+    case 'password':
+      return compileAdminCrudPasswordInput(field);
     case 'embedded':
       return compileAdminCrudEmbeddedInput(
+        field,
+        modelName,
+        builder,
+        crudSectionId
+      );
+    case 'embeddedLocal':
+      return compileAdminCrudEmbeddedLocalInput(
         field,
         modelName,
         builder,

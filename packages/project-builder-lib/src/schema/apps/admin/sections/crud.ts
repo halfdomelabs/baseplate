@@ -4,6 +4,16 @@ import { randomUid } from '@src/utils/randomUid';
 import { baseAdminSectionValidators } from './base';
 
 // Table Columns
+export const adminCrudForeignDisplaySchema = z.object({
+  type: z.literal('foreign'),
+  localRelationName: z.string().min(1),
+  labelExpression: z.string().min(1),
+  valueExpression: z.string().min(1),
+});
+
+export type AdminCrudForeignDisplayConfig = z.infer<
+  typeof adminCrudForeignDisplaySchema
+>;
 
 export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
@@ -14,7 +24,13 @@ export type AdminCrudTextDisplayConfig = z.infer<
   typeof adminCrudTextDisplaySchema
 >;
 
-export const adminCrudDisplaySchema = adminCrudTextDisplaySchema;
+export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
+  adminCrudTextDisplaySchema,
+  adminCrudForeignDisplaySchema,
+]);
+
+export const adminCrudDisplayTypes =
+  adminCrudDisplaySchema.validDiscriminatorValues as string[];
 
 export type AdminCrudDisplayConfig = z.infer<typeof adminCrudDisplaySchema>;
 
@@ -74,12 +90,34 @@ export type AdminCrudEmbeddedInputConfig = z.infer<
   typeof adminCrudEmbeddedInputSchema
 >;
 
+export const adminCrudEmbeddedLocalInputSchema = z.object({
+  type: z.literal('embeddedLocal'),
+  label: z.string().min(1),
+  localRelation: z.string().min(1),
+  embeddedFormName: z.string().min(1),
+});
+
+export type AdminCrudEmbeddedLocalInputConfig = z.infer<
+  typeof adminCrudEmbeddedLocalInputSchema
+>;
+
+export const adminCrudPasswordInputSchema = z.object({
+  type: z.literal('password'),
+  label: z.string().min(1),
+});
+
+export type AdminCrudPasswordInputConfig = z.infer<
+  typeof adminCrudPasswordInputSchema
+>;
+
 export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudForeignInputSchema,
   adminCrudTextInputSchema,
   adminCrudEnumInputSchema,
   adminCrudFileInputSchema,
   adminCrudEmbeddedInputSchema,
+  adminCrudEmbeddedLocalInputSchema,
+  adminCrudPasswordInputSchema,
 ]);
 
 export const adminCrudInputTypes =
@@ -92,6 +130,7 @@ export const adminCrudEmbeddedObjectSchema = z.object({
   id: z.string().default(randomUid),
   name: z.string().min(1),
   modelName: z.string().min(1),
+  includeIdField: z.boolean().optional(),
   type: z.literal('object'),
   form: z.object({
     fields: z.array(adminCrudInputSchema),
@@ -102,6 +141,7 @@ export const adminCrudEmbeddedListSchema = z.object({
   id: z.string().default(randomUid),
   name: z.string().min(1),
   modelName: z.string().min(1),
+  includeIdField: z.boolean().optional(),
   type: z.literal('list'),
   // NOTE: These two fields need to be synced with crud section schema
   // because the web app expects that (TODO)
@@ -149,6 +189,12 @@ export function buildAdminCrudSectionReferences(
   config.table.columns.forEach((column, idx) => {
     const columnBuilder = builder.withPrefix(`table.columns.${idx}`);
     switch (column.display.type) {
+      case 'foreign':
+        columnBuilder.addReference('display.localRelationName', {
+          category: 'modelLocalRelation',
+          key: `${config.modelName}#${column.display.localRelationName}`,
+        });
+        break;
       case 'text':
         columnBuilder.addReference('display.modelField', {
           category: 'modelField',
@@ -157,7 +203,7 @@ export function buildAdminCrudSectionReferences(
         break;
       default:
         throw new Error(
-          `Unknown display type: ${column.display.type as string}`
+          `Unknown display type: ${(column.display as { type: string }).type}`
         );
     }
   });
@@ -198,6 +244,19 @@ export function buildAdminCrudSectionReferences(
           category: 'adminCrudEmbeddedForm',
           key: `${config.name}#${field.embeddedFormName}`,
         });
+        break;
+      case 'embeddedLocal':
+        // TODO: Not supported in backend generation yet (but can be manually created)
+        fieldBuilder.addReference('localRelation', {
+          category: 'modelLocalRelation',
+          key: `${config.modelName}#${field.localRelation}`,
+        });
+        fieldBuilder.addReference('embeddedFormName', {
+          category: 'adminCrudEmbeddedForm',
+          key: `${config.name}#${field.embeddedFormName}`,
+        });
+        break;
+      case 'password':
         break;
       default:
         throw new Error(

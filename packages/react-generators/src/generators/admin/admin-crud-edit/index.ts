@@ -13,7 +13,7 @@ import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactErrorProvider } from '@src/generators/core/react-error';
 import { reactRoutesProvider } from '@src/providers/routes';
 import { notEmpty } from '@src/utils/array';
-import { humanizeCamel, lowerCaseFirst } from '@src/utils/case';
+import { lowerCaseFirst, titleizeCamel } from '@src/utils/case';
 import { createRouteElement } from '@src/utils/routes';
 import { mergeGraphQLFields } from '@src/writers/graphql';
 import {
@@ -21,6 +21,7 @@ import {
   adminCrudInputContainerProvider,
 } from '../_providers/admin-crud-input-container';
 import { DataLoader, printDataLoaders } from '../_providers/admin-loader';
+import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders';
 import { adminCrudQueriesProvider } from '../admin-crud-queries';
 
 const descriptorSchema = z.object({
@@ -135,6 +136,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
                 inputFields.push(input);
               },
               getModelName: () => modelName,
+              isInModal: () => false,
             },
           }),
           build: async (builder) => {
@@ -145,8 +147,8 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
               ])
             );
 
-            const dataDependencies = inputFields.flatMap(
-              (f) => f.dataDependencies || []
+            const dataDependencies = mergeAdminCrudDataDependencies(
+              inputFields.flatMap((f) => f.dataDependencies || [])
             );
 
             dataDependencies.forEach((dep) => {
@@ -245,7 +247,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
                   ),
                   FORM_DATA_NAME: formDataExpression,
                   MODEL_NAME: new TypescriptStringReplacement(
-                    humanizeCamel(modelName)
+                    titleizeCamel(modelName)
                   ),
                   REFETCH_DOCUMENT:
                     adminCrudQueries.getListDocumentExpression(),
@@ -309,7 +311,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
                 ),
                 FORM_DATA_NAME: formDataExpression,
                 MODEL_NAME: new TypescriptStringReplacement(
-                  humanizeCamel(modelName)
+                  titleizeCamel(modelName)
                 ),
                 DATA_LOADER: editPageLoaderOutput.loader,
                 DATA_GATE: editPageLoaderOutput.gate,

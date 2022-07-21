@@ -8,9 +8,14 @@ import { formatError } from '%react-error/formatter';
 interface Props {
   items: ROW_FRAGMENT[];
   deleteItem: (item: ROW_FRAGMENT) => Promise<void>;
+  EXTRA_PROPS;
 }
 
-function COMPONENT_NAME({ items, deleteItem }: Props): JSX.Element {
+function COMPONENT_NAME({
+  items,
+  deleteItem,
+  EXTRA_PROP_SPREAD,
+}: Props): JSX.Element {
   const toast = useToast();
   async function handleDelete(item: ROW_FRAGMENT): Promise<void> {
     if (!window.confirm(`Are you sure you want to delete this item?`)) {

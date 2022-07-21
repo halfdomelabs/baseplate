@@ -133,6 +133,22 @@ function FieldForm({
           />
         </>
       )}
+      {type === 'embeddedLocal' && (
+        <>
+          <SelectInput.LabelledController
+            label="Relation Name"
+            control={control}
+            name={`form.fields.${idx}.localRelation`}
+            options={localRelationOptions}
+          />
+          <SelectInput.LabelledController
+            label="Embedded Form"
+            control={control}
+            name={`form.fields.${idx}.embeddedFormName`}
+            options={embeddedFormOptions}
+          />
+        </>
+      )}
     </div>
   );
 }

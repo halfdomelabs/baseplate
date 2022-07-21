@@ -218,3 +218,45 @@ export function mergeGraphQLFields(fields: GraphQLField[]): GraphQLField[] {
     });
   }, [] as GraphQLField[]);
 }
+
+export function areFragmentsMergeable(
+  fragOne: GraphQLFragment,
+  fragTwo: GraphQLFragment
+): boolean {
+  if (fragOne.name === fragTwo.name) {
+    if (fragOne.type !== fragTwo.type) {
+      throw new Error(
+        `Unable to merge fragments with different types ${fragOne.name}`
+      );
+    }
+    return true;
+  }
+  return false;
+}
+
+export function mergeGraphQLFragments(
+  frags: GraphQLFragment[]
+): GraphQLFragment[] {
+  // FYI: Not Immutable
+  return frags.reduce((accumulator, frag) => {
+    const idx = accumulator.findIndex((accumFrag) =>
+      areFragmentsMergeable(accumFrag, frag)
+    );
+    if (idx === -1) {
+      return [...accumulator, frag];
+    }
+    return accumulator.map((accumFrag, i) => {
+      // perform merge operation
+      if (idx === i) {
+        return {
+          ...accumFrag,
+          fields: mergeGraphQLFields([
+            ...(accumFrag.fields || []),
+            ...(frag.fields || []),
+          ]),
+        };
+      }
+      return accumFrag;
+    });
+  }, [] as GraphQLFragment[]);
+}

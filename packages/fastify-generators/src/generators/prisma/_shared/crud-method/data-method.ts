@@ -105,7 +105,10 @@ export function getDataMethodDataType({
             : undefined,
           ...(isPartial
             ? { isOptional: true, isNullable: field.isOptional }
-            : { isOptional: field.isOptional || field.hasDefault }),
+            : {
+                isOptional: field.isOptional || field.hasDefault,
+                isNullable: field.isOptional,
+              }),
         };
       }),
       ...transformerFields,

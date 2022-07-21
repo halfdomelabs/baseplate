@@ -1,14 +1,10 @@
 import { TypescriptCodeUtils } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
-import { pluralize } from 'inflection';
 import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { lowerCaseFirst } from '@src/utils/case';
-import { mergeGraphQLFields } from '@src/writers/graphql';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container';
-import { AdminCrudDataDependency } from '../_utils/data-loaders';
-import { convertExpressionToField } from '../_utils/graphql';
+import { createForeignDataDependency } from '../_utils/foreign-data-dependency';
 
 const descriptorSchema = z.object({
   label: z.string().min(1),
@@ -44,58 +40,14 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
   ) {
     const optionsName = `${localRelationName}Options`;
     const modelName = adminCrudInputContainer.getModelName();
-    const fragmentName = `${modelName}${foreignModelName}Option`;
-    const dataName = `${fragmentName}s`;
 
-    const querySubcomponent = lowerCaseFirst(pluralize(foreignModelName));
-
-    const loaderValueName = `${lowerCaseFirst(dataName)}Data`;
-    const loaderErrorName = `${lowerCaseFirst(dataName)}Error`;
-
-    const dataDependency: AdminCrudDataDependency = {
-      propName: lowerCaseFirst(dataName),
-      propType: TypescriptCodeUtils.createExpression(
-        `${fragmentName}Fragment[]`,
-        `import { ${fragmentName}Fragment } from '${reactApollo.getGeneratedFilePath()}'`
-      ),
-      graphFragments: [
-        {
-          name: fragmentName,
-          type: foreignModelName,
-          fields: mergeGraphQLFields([
-            convertExpressionToField(labelExpression),
-            convertExpressionToField(valueExpression),
-          ]),
-        },
-      ],
-      graphRoots: [
-        {
-          type: 'query',
-          name: `Get${dataName}`,
-          fields: [
-            {
-              type: 'simple',
-              name: querySubcomponent,
-              fields: [
-                {
-                  type: 'spread',
-                  on: fragmentName,
-                },
-              ],
-            },
-          ],
-        },
-      ],
-      loader: {
-        loader: TypescriptCodeUtils.createBlock(
-          `const { data: ${loaderValueName}, error: ${loaderErrorName} } = useGet${dataName}Query();`,
-          `import { useGet${dataName}Query } from '${reactApollo.getGeneratedFilePath()}'`
-        ),
-        loaderErrorName,
-        loaderValueName,
-      },
-      propLoaderValueGetter: (value) => `${value}.${querySubcomponent}`,
-    };
+    const { dataDependency, propName } = createForeignDataDependency({
+      foreignModelName,
+      modelName,
+      reactApollo,
+      labelExpression,
+      valueExpression,
+    });
 
     adminCrudInputContainer.addInput({
       content: TypescriptCodeUtils.createExpression(
@@ -104,6 +56,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
           control={control}
           name="${localField}"
           options={${optionsName}}
+          ${adminCrudInputContainer.isInModal() ? 'fixedPosition' : ''}
         />`,
         'import { ReactSelectInput } from "%react-components"',
         { importMappers: [reactComponents] }
@@ -119,7 +72,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
       ],
       dataDependencies: [dataDependency],
       header: TypescriptCodeUtils.createBlock(`
-        const ${optionsName} = ${lowerCaseFirst(dataName)}.map((option) => ({
+        const ${optionsName} = ${propName}.map((option) => ({
           label: option.${labelExpression}${
         defaultLabel ? ` || ${defaultLabel}` : ''
       },

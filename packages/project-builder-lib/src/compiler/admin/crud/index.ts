@@ -14,10 +14,19 @@ function compileAdminCrudEmbeddedForm(
   builder: AppEntryBuilder<AdminAppConfig>,
   crudSectionId: string
 ): unknown {
+  const idFields = builder.parsedProject.getModelPrimaryKeys(form.modelName);
+  if (form.includeIdField && idFields.length !== 1) {
+    throw new Error(
+      `Embedded form ${form.modelName} has ${idFields.length} primary keys, but only one is allowed`
+    );
+  }
   const sharedData = {
     name: form.name,
     modelName: form.modelName,
+    // auto-add id field if it's a single ID
+    idField: form.includeIdField ? idFields[0] : undefined,
   };
+
   if (form.type === 'list') {
     return {
       ...sharedData,

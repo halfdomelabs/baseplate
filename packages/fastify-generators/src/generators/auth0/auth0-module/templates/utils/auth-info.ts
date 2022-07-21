@@ -12,6 +12,7 @@ export interface AuthInfo {
   requiredUser: () => UserInfo;
   roles: AuthRole[];
   hasSomeRole: (possibleRoles: AuthRole[]) => boolean;
+  hasRole: (role: AuthRole) => boolean;
 }
 
 export function createAuthInfoFromUser(
@@ -29,5 +30,6 @@ export function createAuthInfoFromUser(
     roles,
     hasSomeRole: (possibleRoles) =>
       roles.some((role) => possibleRoles.includes(role)),
+    hasRole: (role) => roles.includes(role),
   };
 }

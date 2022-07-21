@@ -22,6 +22,7 @@ export interface AdminCrudInput {
 export interface AdminCrudInputContainer {
   addInput: (input: AdminCrudInput) => void;
   getModelName: () => string;
+  isInModal: () => boolean;
 }
 
 export const adminCrudInputContainerProvider =
