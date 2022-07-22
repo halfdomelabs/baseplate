@@ -3,14 +3,19 @@ import { ProjectConfig, BackendAppConfig } from '../../schema';
 import { AppEntry } from '../../types/files';
 import { AppEntryBuilder } from '../appEntryBuilder';
 import { buildFastify } from './fastify';
+import { getPostgresSettings, getRedisSettings } from './utils';
 
-export function buildDocker(projectConfig: ProjectConfig): unknown {
+export function buildDocker(
+  projectConfig: ProjectConfig,
+  app: BackendAppConfig
+): unknown {
   return {
     name: 'docker',
     generator: '@baseplate/core/docker/docker-compose',
-    postgres: {
-      port: projectConfig.portBase + 432,
-    },
+    postgres: getPostgresSettings(projectConfig).config,
+    ...(app.enableRedis
+      ? { redis: getRedisSettings(projectConfig).config }
+      : {}),
   };
 }
 
@@ -29,7 +34,10 @@ export function compileBackend(
     version: projectConfig.version,
     hoistedProviders: parsedProject.globalHoistedProviders,
     children: {
-      projects: [buildDocker(projectConfig), buildFastify(appBuilder, app)],
+      projects: [
+        buildDocker(projectConfig, app),
+        buildFastify(appBuilder, app),
+      ],
       jest: {
         generator: '@baseplate/core/node/jest',
       },

@@ -1,6 +1,7 @@
 import { BackendAppConfig } from '@src/schema';
 import { AppEntryBuilder } from '../appEntryBuilder';
 import { buildFeature } from './feature';
+import { getPostgresSettings, getRedisSettings } from './utils';
 
 export function buildFastify(
   builder: AppEntryBuilder,
@@ -46,10 +47,17 @@ export function buildFastify(
         generator: '@baseplate/fastify/core/fastify-sentry',
         peerProvider: true,
       },
+      $redis: !app.enableRedis
+        ? undefined
+        : {
+            generator: '@baseplate/fastify/core/fastify-redis',
+            peerProvider: true,
+            defaultUrl: getRedisSettings(projectConfig).url,
+          },
       $prisma: {
         generator: '@baseplate/fastify/prisma/prisma',
         peerProvider: true,
-        defaultPort: projectConfig.portBase + 432,
+        defaultDatabaseUrl: getPostgresSettings(projectConfig).url,
       },
       $prismaJest: {
         generator: '@baseplate/fastify/jest/prisma-jest',
@@ -68,7 +76,7 @@ export function buildFastify(
         'graphql/root',
       ],
       $stripe: !app.enableStripe
-        ? null
+        ? undefined
         : {
             generator: '@baseplate/fastify/stripe/fastify-stripe',
             peerProvider: true,

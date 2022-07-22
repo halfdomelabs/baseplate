@@ -3,15 +3,24 @@ import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
 import { projectProvider } from '../../../providers';
 import { generatePostgresDockerCompose } from './postgres';
+import { generateRedisDockerCompose } from './redis';
 import { DockerComposeOutput } from './types';
 
 const descriptorSchema = z.object({
   projectName: z.string().optional(),
   dockerFolder: z.string().default('docker'),
-  postgres: z.object({
-    port: z.number().default(5432),
-    password: z.string().optional(),
-  }),
+  postgres: z
+    .object({
+      port: z.number().default(5432),
+      password: z.string().optional(),
+    })
+    .nullish(),
+  redis: z
+    .object({
+      port: z.number().default(6379),
+      password: z.string().optional(),
+    })
+    .nullish(),
 });
 
 const DockerComposeGenerator = createGeneratorWithChildren({
@@ -25,6 +34,7 @@ const DockerComposeGenerator = createGeneratorWithChildren({
       projectName = project.getProjectName(),
       dockerFolder,
       postgres,
+      redis,
     } = descriptor;
 
     const outputs: DockerComposeOutput[] = [];
@@ -34,6 +44,15 @@ const DockerComposeGenerator = createGeneratorWithChildren({
         generatePostgresDockerCompose({
           port: postgres.port.toString(),
           password: postgres.password || `${projectName}-password`,
+        })
+      );
+    }
+
+    if (redis) {
+      outputs.push(
+        generateRedisDockerCompose({
+          port: redis.port.toString(),
+          password: redis.password || `${projectName}-password`,
         })
       );
     }
