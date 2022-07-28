@@ -1,5 +1,7 @@
 // @ts-nocheck
 
+import { logError } from './error-logger';
+
 function getFormattedErrorSuffix(error: unknown): string {
   ERROR_FORMATTERS;
 
@@ -12,4 +14,9 @@ export function formatError(
 ): string {
   const suffix = getFormattedErrorSuffix(error);
   return `${context} ${suffix}`;
+}
+
+export function logAndFormatError(error: unknown, context?: string): string {
+  logError(error);
+  return formatError(error, context);
 }

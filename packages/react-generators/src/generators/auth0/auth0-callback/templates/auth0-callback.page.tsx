@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Card, Spinner } from '%react-components';
 import { useLogOut } from '%auth-hooks/useLogOut';
-import { reportError } from '%react-error/logger';
+import { logError } from '%react-error/logger';
 
 function formatAndReportAuthError(error: unknown): string {
   if (
@@ -15,7 +15,7 @@ function formatAndReportAuthError(error: unknown): string {
   ) {
     return 'You do not have permission to access this page.';
   }
-  reportError(error);
+  logError(error);
   return 'Sorry, we could not log you in. Please try again.';
 }
 

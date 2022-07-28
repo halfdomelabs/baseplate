@@ -8,10 +8,10 @@ import {
   REFRESH_TOKEN_EXPIRY_SECONDS,
 } from '../services/auth-service';
 
-// localhost does not appear to support the __Host prefix
+// localhost does not support the __Host prefix and should be scoped to port
 export const REFRESH_TOKEN_COOKIE_NAME =
   config.APP_ENVIRONMENT === 'development'
-    ? 'auth-refresh-token'
+    ? `auth-refresh-token-${config.SERVER_PORT}`
     : '__Host-auth_refresh_token';
 
 export function getRefreshTokenFromCookie(

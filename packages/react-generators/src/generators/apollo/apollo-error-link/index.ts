@@ -31,7 +31,7 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
         (!errorExtensions?.statusCode || errorExtensions?.statusCode >= 500)
       ) {
         // TODO: Figure out better condition e.g. need to record 401 unauthorized
-        reportError(error);
+        logError(error);
       }
       logger.error(
         \`[GraphQL error]: Message: \${message}, Path: \${path?.join(",") || ""}\`
@@ -44,7 +44,7 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
   }
 });`,
         [
-          'import { reportError } from "%react-error/logger"',
+          'import { logError } from "%react-error/logger"',
           'import { logger } from "%react-logger"',
           'import { onError } from "@apollo/client/link/error"',
         ],

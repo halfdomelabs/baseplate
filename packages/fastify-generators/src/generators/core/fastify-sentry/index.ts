@@ -65,13 +65,13 @@ const FastifySentryGenerator = createGeneratorWithChildren({
     });
 
     node.addPackages({
-      '@sentry/node': '7.5.1',
-      '@sentry/tracing': '7.5.1',
+      '@sentry/node': '7.7.0',
+      '@sentry/tracing': '7.7.0',
       lodash: '4.17.21',
     });
 
     node.addDevPackages({
-      '@sentry/types': '7.5.1',
+      '@sentry/types': '7.7.0',
       '@types/lodash': '4.14.182',
     });
 
