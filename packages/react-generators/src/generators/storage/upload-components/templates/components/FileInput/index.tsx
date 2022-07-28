@@ -18,7 +18,7 @@ import FormLabel from '../FormLabel';
 import { useCreateUploadUrlMutation } from '%react-apollo/generated';
 import { useUpload } from '%upload-components/use-upload';
 import { formatError } from '%react-error/formatter';
-import { reportAndLogError } from '%react-error/logger';
+import { logError } from '%react-error/logger';
 
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -85,7 +85,7 @@ const FileInput = function FileInput({
         }
       },
       onError: (err) => {
-        reportAndLogError(err);
+        logError(err);
       },
       trackProgress: true,
     });

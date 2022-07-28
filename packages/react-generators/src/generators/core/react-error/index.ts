@@ -66,11 +66,11 @@ const ReactErrorGenerator = createGeneratorWithChildren({
           getImportMap: () => ({
             '%react-error/formatter': {
               path: formatterImport,
-              allowedImports: ['formatError'],
+              allowedImports: ['formatError', 'logAndFormatError'],
             },
             '%react-error/logger': {
               path: loggerImport,
-              allowedImports: ['reportError', 'reportAndLogError'],
+              allowedImports: ['logError'],
             },
           }),
         },

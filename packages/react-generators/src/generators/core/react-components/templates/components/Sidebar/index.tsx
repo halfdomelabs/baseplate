@@ -17,7 +17,7 @@ function Sidebar({ className, children }: Props): JSX.Element {
       className={classNames('w-64 bg-gray-50', className)}
       aria-label="Sidebar"
     >
-      <div className="h-full overflow-y-auto py-4 px-3 dark:bg-gray-800">
+      <div className="min-h-full overflow-y-auto py-4 px-3 dark:bg-gray-800">
         {children}
       </div>
     </aside>

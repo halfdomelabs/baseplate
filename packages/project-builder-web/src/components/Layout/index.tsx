@@ -21,7 +21,7 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
   const { config } = useProjectConfig();
 
   return (
-    <div className={classNames('h-full items-stretch flex', className)}>
+    <div className={classNames('min-h-full items-stretch flex', className)}>
       <Sidebar className="flex-none">
         <Sidebar.Header className="mb-4 space-y-2">
           <h1>App Builder</h1>
