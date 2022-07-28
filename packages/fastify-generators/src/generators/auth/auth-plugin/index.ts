@@ -1,6 +1,7 @@
 import {
   copyTypescriptFileAction,
   ImportMapper,
+  nodeProvider,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -53,6 +54,7 @@ const AuthPluginGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
+    node: nodeProvider,
     authService: authServiceProvider,
     appModule: appModuleProvider,
     typescript: typescriptProvider,
@@ -65,8 +67,10 @@ const AuthPluginGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { userModelName },
-    { authService, appModule, typescript, prismaOutput, errorHandler }
+    { authService, appModule, typescript, prismaOutput, errorHandler, node }
   ) {
+    node.addPackages({ '@fastify/request-context': '4.0.0' });
+
     const authFields = createNonOverwriteableMap<Record<string, AuthField>>(
       {
         user: {
@@ -118,7 +122,11 @@ const AuthPluginGenerator = createGeneratorWithChildren({
           getImportMap: () => ({
             '%auth-info': {
               path: `@/${appModule.getModuleFolder()}/utils/auth-info`,
-              allowedImports: ['AuthInfo', 'createAuthInfoFromUser'],
+              allowedImports: [
+                'UserInfo',
+                'AuthInfo',
+                'createAuthInfoFromUser',
+              ],
             },
           }),
         },

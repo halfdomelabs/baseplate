@@ -1,7 +1,8 @@
 // @ts-nocheck
 
-interface UserInfo {
+export interface UserInfo {
   id: string;
+  email: string;
 }
 
 export interface AuthInfo {

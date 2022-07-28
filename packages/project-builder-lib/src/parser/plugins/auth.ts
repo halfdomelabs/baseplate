@@ -96,6 +96,8 @@ export const AuthPlugin: ParserPlugin = {
       hooks.addGlobalHoistedProviders('password-hasher-service');
     }
 
+    hooks.addGlobalHoistedProviders('auth-info');
+
     // add global auth providers
     hooks.addFastifyChildren({
       $auth: {

@@ -11,6 +11,8 @@ import '@sentry/tracing';
 
 const SENTRY_ENABLED = !!CONFIG.SENTRY_DSN;
 
+const IGNORED_TRANSACTION_PATHS = ['/graphql', '/healthz'];
+
 if (SENTRY_ENABLED) {
   Sentry.init({
     dsn: CONFIG.SENTRY_DSN,
@@ -18,8 +20,10 @@ if (SENTRY_ENABLED) {
     serverName: os.hostname(),
     tracesSampleRate: 1.0,
     tracesSampler: (samplingContext) => {
-      // ignore health checks to avoid overloading transaction traces
-      if (samplingContext?.request?.url === '/healthz') {
+      if (
+        samplingContext?.request?.url &&
+        IGNORED_TRANSACTION_PATHS.includes(samplingContext?.request?.url)
+      ) {
         return false;
       }
       return true;
@@ -58,24 +62,31 @@ export function extractSentryRequestData(
   };
 }
 
+export function configureSentryScope(scope: Sentry.Scope): void {
+  const requestData = requestContext.get('reqInfo');
+  if (requestData) {
+    scope.setUser({
+      ip_address: requestData.ip,
+    });
+    scope.setTag('path', requestData.url);
+    scope.setTag('request_id', requestData.id);
+    const sentryRequestData = extractSentryRequestData(requestData);
+    scope.addEventProcessor((event) => ({
+      ...event,
+      request: { ...event.request, ...sentryRequestData },
+    }));
+  }
+
+  SCOPE_CONFIGURATION_BLOCKS;
+}
+
 export function logErrorToSentry(error: Error): void {
   if (!SENTRY_ENABLED) {
     return;
   }
   Sentry.withScope((scope) => {
-    const requestData = requestContext.get('reqInfo');
-    if (requestData) {
-      scope.setUser({
-        ip_address: requestData.ip,
-      });
-      scope.setTag('path', requestData.url);
-      scope.setTag('request_id', requestData.id);
-      const sentryRequestData = extractSentryRequestData(requestData);
-      scope.addEventProcessor((event) => ({
-        ...event,
-        request: { ...event.request, ...sentryRequestData },
-      }));
-    }
+    configureSentryScope(scope);
+
     Sentry.captureException(error);
   });
 }

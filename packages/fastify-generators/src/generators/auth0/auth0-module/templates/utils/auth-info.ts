@@ -5,6 +5,7 @@ import { AuthRole } from '%role-service';
 
 export interface UserInfo {
   id: string;
+  email: string;
 }
 
 export interface AuthInfo {

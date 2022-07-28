@@ -8,6 +8,8 @@ export const Auth0Plugin: ParserPlugin = {
       return;
     }
 
+    hooks.addGlobalHoistedProviders('auth-info');
+
     // annotate user model
     const userFields: PluginMergeModelFieldInput[] = [
       {

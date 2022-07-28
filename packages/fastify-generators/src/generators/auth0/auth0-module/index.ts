@@ -56,6 +56,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
   ) {
     node.addPackages({
       'fastify-auth0-verify': '0.8.0',
+      '@fastify/request-context': '4.0.0',
     });
 
     if (includeManagement) {
@@ -133,7 +134,11 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
           getImportMap: () => ({
             '%auth-info': {
               path: authInfoImport,
-              allowedImports: ['createAuthInfoFromUser', 'AuthInfo'],
+              allowedImports: [
+                'createAuthInfoFromUser',
+                'UserInfo',
+                'AuthInfo',
+              ],
             },
           }),
         },
