@@ -12,7 +12,10 @@ import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
 import { z } from 'zod';
 import { authInfoProvider } from '@src/generators/auth/auth-plugin';
 import { configServiceProvider } from '../config-service';
-import { errorHandlerServiceSetupProvider } from '../error-handler-service';
+import {
+  errorHandlerServiceProvider,
+  errorHandlerServiceSetupProvider,
+} from '../error-handler-service';
 import { fastifyServerProvider } from '../fastify-server';
 import { requestContextProvider } from '../request-context';
 
@@ -49,7 +52,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           'HEADER',
           TypescriptCodeUtils.createBlock(
             `
-      function shouldLogToSentry(error: Error): boolean {
+      export function shouldLogToSentry(error: Error): boolean {
         if (error instanceof HttpError) {
           return error.statusCode >= 500;
         }
@@ -93,11 +96,12 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         requestContext: requestContextProvider,
         configService: configServiceProvider,
         typescript: typescriptProvider,
+        errorHandler: errorHandlerServiceProvider,
       },
       exports: {
         fastifySentry: fastifySentryProvider,
       },
-      run({ node, requestContext, configService, typescript }) {
+      run({ node, requestContext, configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate({
           CONFIG: { type: 'code-expression' },
           REQUEST_INFO_TYPE: { type: 'code-expression' },
@@ -138,6 +142,10 @@ const FastifySentryGenerator = createGeneratorWithTasks({
               'configureSentryScope',
               'logErrorToSentry',
             ],
+          },
+          '%fastify-sentry/logger': {
+            path: errorHandler.getImportMap()['%error-logger'].path,
+            allowedImports: ['shouldLogToSentry'],
           },
         };
 

@@ -102,7 +102,7 @@ export function createTaskConfigBuilder<
   DependencyMap extends ProviderDependencyMap,
   TaskDependencyMap extends TaskOutputDependencyMap,
   TaskOutput = unknown,
-  Input = never
+  Input = unknown
 >(
   builder: TaskConfigBuilder<
     ExportMap,

@@ -82,7 +82,9 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       ),
       options: TypescriptCodeUtils.createExpression(
         `{
-          contentSecurityPolicy: false, // disable to enable Altair to function (alright since we're a backend service)
+          // disable to enable Altair to function (alright since we're a backend service)
+          contentSecurityPolicy: false,
+          crossOriginEmbedderPolicy: false,
         }`
       ),
       orderPriority: 'EARLY',
