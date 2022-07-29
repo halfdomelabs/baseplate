@@ -5,13 +5,14 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
-  NonOverwriteableMap,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
+  createProviderType,
+  NonOverwriteableMap,
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { fastifyServerProvider } from '../fastify-server';
+import { loggerServiceSetupProvider } from '../logger-service';
 
 const descriptorSchema = z.object({});
 
@@ -29,49 +30,70 @@ export const requestContextProvider =
     isReadOnly: true,
   });
 
-const RequestContextGenerator = createGeneratorWithChildren({
+const RequestContextGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    fastifyServer: fastifyServerProvider,
-  },
-  exports: {
-    requestContext: requestContextProvider,
-  },
-  createGenerator(descriptor, { node, fastifyServer }) {
-    const config = createNonOverwriteableMap(
-      {},
-      { name: 'request-context-config' }
-    );
-    node.addPackages({ '@fastify/request-context': '4.0.0' });
-    fastifyServer.registerPlugin({
-      name: 'requestContextPlugin',
-      plugin: TypescriptCodeUtils.createExpression(
-        'requestContextPlugin',
-        "import {requestContextPlugin} from '@/src/plugins/request-context"
-      ),
-    });
-    return {
-      getProviders: () => ({
-        requestContext: {
-          getConfig: () => config,
-          getRequestInfoType: () =>
-            TypescriptCodeUtils.createExpression(
-              'RequestInfo',
-              "import type {RequestInfo} from '@/src/plugins/request-context'"
-            ),
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          copyTypescriptFileAction({
-            source: 'request-context.ts',
-            destination: 'src/plugins/request-context.ts',
-          })
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'logger-request-context',
+      dependencies: { loggerServiceSetup: loggerServiceSetupProvider },
+      run({ loggerServiceSetup }) {
+        loggerServiceSetup.addMixin(
+          'reqId',
+          TypescriptCodeUtils.createExpression(
+            "requestContext.get('reqInfo')?.id",
+            "import { requestContext } from '@fastify/request-context';"
+          )
         );
+
+        return {};
       },
-    };
+    });
+
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        fastifyServer: fastifyServerProvider,
+      },
+      exports: {
+        requestContext: requestContextProvider,
+      },
+      run({ node, fastifyServer }) {
+        const config = createNonOverwriteableMap(
+          {},
+          { name: 'request-context-config' }
+        );
+        node.addPackages({ '@fastify/request-context': '4.0.0' });
+        fastifyServer.registerPlugin({
+          name: 'requestContextPlugin',
+          plugin: TypescriptCodeUtils.createExpression(
+            'requestContextPlugin',
+            "import {requestContextPlugin} from '@/src/plugins/request-context"
+          ),
+        });
+        return {
+          getProviders: () => ({
+            requestContext: {
+              getConfig: () => config,
+              getRequestInfoType: () =>
+                TypescriptCodeUtils.createExpression(
+                  'RequestInfo',
+                  "import type {RequestInfo} from '@/src/plugins/request-context'"
+                ),
+            },
+          }),
+          build: async (builder) => {
+            await builder.apply(
+              copyTypescriptFileAction({
+                source: 'request-context.ts',
+                destination: 'src/plugins/request-context.ts',
+              })
+            );
+          },
+        };
+      },
+    });
   },
 });
 
