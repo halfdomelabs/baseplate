@@ -18,6 +18,7 @@ if (SENTRY_ENABLED) {
     dsn: CONFIG.SENTRY_DSN,
     environment: CONFIG.APP_ENVIRONMENT,
     serverName: os.hostname(),
+    integrations: SENTRY_INTEGRATIONS,
     tracesSampleRate: 1.0,
     tracesSampler: (samplingContext) => {
       if (

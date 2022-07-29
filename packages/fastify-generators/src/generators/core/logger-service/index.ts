@@ -103,20 +103,34 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const loggerFile = typescript.createTemplate(loggerServiceFileConfig);
 
-        const loggerOptions = Object.keys(mixins.value()).length
-          ? TypescriptCodeUtils.wrapExpression(
-              TypescriptCodeUtils.mergeExpressionsAsObject(mixins.value()),
-              TypescriptCodeUtils.createWrapper(
-                (expression) => `{
-              mixin() {
-                return ${expression};
-              }
-            }`
-              )
-            )
-          : TypescriptCodeUtils.createExpression('');
+        const loggerOptions: Record<string, TypescriptCodeExpression> = {};
 
-        loggerFile.addCodeExpression('LOGGER_OPTIONS', loggerOptions);
+        // log level vs. number for better log parsing
+        loggerOptions.formatters = TypescriptCodeUtils.createExpression(
+          `{
+  level(level) {
+    return { level };
+  },
+}`
+        );
+
+        if (Object.keys(mixins.value()).length) {
+          loggerOptions.mixin = TypescriptCodeUtils.wrapExpression(
+            TypescriptCodeUtils.mergeExpressionsAsObject(mixins.value()),
+            TypescriptCodeUtils.createWrapper(
+              (expression) => `function mixin() {
+              return ${expression};
+            }`
+            )
+          );
+        }
+
+        loggerFile.addCodeExpression(
+          'LOGGER_OPTIONS',
+          Object.keys(loggerOptions).length
+            ? TypescriptCodeUtils.mergeExpressionsAsObject(loggerOptions)
+            : TypescriptCodeUtils.createExpression('')
+        );
 
         await builder.apply(
           loggerFile.renderToAction('logger.ts', 'src/services/logger.ts')

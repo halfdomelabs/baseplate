@@ -408,6 +408,9 @@ export const TypescriptCodeUtils = {
         if (key === content) {
           return `${key},`;
         }
+        if (content.startsWith(`function ${key}`)) {
+          return `${content.replace(/^function /, '')}`;
+        }
         return `${key}: ${content},`;
       })
       .join('\n');

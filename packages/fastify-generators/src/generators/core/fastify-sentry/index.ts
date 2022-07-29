@@ -5,12 +5,14 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeBlock,
+  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@baseplate/core-generators';
 import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
 import { z } from 'zod';
 import { authInfoProvider } from '@src/generators/auth/auth-plugin';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { configServiceProvider } from '../config-service';
 import {
   errorHandlerServiceProvider,
@@ -23,6 +25,7 @@ const descriptorSchema = z.object({});
 
 export interface FastifySentryProvider extends ImportMapper {
   addScopeConfigurationBlock(block: TypescriptCodeBlock): void;
+  addSentryIntegration(integration: TypescriptCodeExpression): void;
 }
 
 export const fastifySentryProvider =
@@ -106,6 +109,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           CONFIG: { type: 'code-expression' },
           REQUEST_INFO_TYPE: { type: 'code-expression' },
           SCOPE_CONFIGURATION_BLOCKS: { type: 'code-block' },
+          SENTRY_INTEGRATIONS: { type: 'code-expression' },
         });
 
         node.addPackages({
@@ -151,12 +155,23 @@ const FastifySentryGenerator = createGeneratorWithTasks({
 
         const scopeConfigurationBlocks: TypescriptCodeBlock[] = [];
 
+        const sentryIntegrations: TypescriptCodeExpression[] = [];
+
+        sentryIntegrations.push(
+          TypescriptCodeUtils.createExpression(
+            `new Sentry.Integrations.Http({ tracing: true })`
+          )
+        );
+
         return {
           getProviders: () => ({
             fastifySentry: {
               getImportMap: () => importMap,
               addScopeConfigurationBlock(block) {
                 scopeConfigurationBlocks.push(block);
+              },
+              addSentryIntegration(integration) {
+                sentryIntegrations.push(integration);
               },
             },
           }),
@@ -165,6 +180,8 @@ const FastifySentryGenerator = createGeneratorWithTasks({
               CONFIG: configService.getConfigExpression(),
               REQUEST_INFO_TYPE: requestContext.getRequestInfoType(),
               SCOPE_CONFIGURATION_BLOCKS: scopeConfigurationBlocks,
+              SENTRY_INTEGRATIONS:
+                TypescriptCodeUtils.mergeExpressionsAsArray(sentryIntegrations),
             });
 
             await builder.apply(
@@ -206,6 +223,27 @@ const FastifySentryGenerator = createGeneratorWithTasks({
             )
           );
         }
+        return {};
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'prisma',
+      dependencies: {
+        fastifySentry: fastifySentryProvider,
+        prismaOutput: prismaOutputProvider,
+      },
+      run({ fastifySentry, prismaOutput }) {
+        fastifySentry.addSentryIntegration(
+          TypescriptCodeUtils.createExpression(
+            `new Tracing.Integrations.Prisma({ client: prisma })`,
+            [
+              `import * as Tracing from '@sentry/tracing';`,
+              `import { prisma } from '%prisma-service';`,
+            ],
+            { importMappers: [prismaOutput] }
+          )
+        );
         return {};
       },
     });

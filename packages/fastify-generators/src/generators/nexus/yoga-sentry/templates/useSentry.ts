@@ -15,7 +15,6 @@ import {
   Kind,
   OperationDefinitionNode,
   print,
-  responsePathAsArray,
 } from 'graphql';
 import { HttpError } from '%http-errors';
 
@@ -96,6 +95,10 @@ export type SentryPluginOptions = {
    * By default, this plugin skips all `EnvelopError` errors and does not report it to Sentry.
    */
   skipError?: (args: Error) => boolean;
+  /**
+   * Indicates whether or not to track root level resolvers.
+   */
+  trackRootResolversOnly?: boolean;
 };
 
 export function defaultSkipError(error: Error): boolean {
@@ -126,6 +129,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
   const renameTransaction = pick('renameTransaction', false);
   const skipOperation = pick('skip', () => false);
   const skipError = pick('skipError', defaultSkipError);
+  const trackRootResolversOnly = pick('trackRootResolversOnly', false);
 
   function addEventId(err: GraphQLError, eventId: string): GraphQLError {
     if (options.eventIdKey === null) {
@@ -148,12 +152,28 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
   }
 
   const onResolverCalled: OnResolverCalledHook | undefined = trackResolvers
-    ? ({ args: resolversArgs, info, context }) => {
-        const { rootSpan, opName, operationType } = context[
-          sentryTracingSymbol
-        ] as SentryTracingContext;
+    ? ({
+        args: resolversArgs,
+        info,
+        context,
+        replaceResolverFn,
+        resolverFn,
+      }) => {
+        const sentryTracingContext = context[sentryTracingSymbol];
+        if (!sentryTracingContext) {
+          return () => {};
+        }
+        const { rootSpan } = sentryTracingContext as SentryTracingContext;
         if (rootSpan) {
           const { fieldName, returnType, parentType } = info;
+
+          if (
+            trackRootResolversOnly &&
+            !['Query', 'Mutation', 'Subscription'].includes(parentType.name)
+          ) {
+            return () => {};
+          }
+
           const parent = rootSpan;
           const tags: Record<string, string> = {
             fieldName,
@@ -166,24 +186,23 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
           }
 
           const childSpan = parent.startChild({
-            op: `${parentType.name}.${fieldName}`,
+            description: `${parentType.name}.${fieldName}`,
+            op: 'db.graphql.yoga',
             tags,
+          });
+
+          replaceResolverFn((root, args, ctx, inf) => {
+            const scope = Sentry.getCurrentHub().pushScope();
+            scope.setSpan(childSpan);
+            const result = resolverFn(root, args, ctx, inf);
+            return Promise.resolve(result).finally(() => {
+              Sentry.getCurrentHub().popScope();
+            });
           });
 
           return ({ result }) => {
             if (includeRawResult) {
               childSpan.setData('result', result);
-            }
-
-            if (result instanceof Error && !skipError(result)) {
-              // Map index values in list to $index for better grouping of events.
-              const errorPath = responsePathAsArray(info.path)
-                .map((v) => (typeof v === 'number' ? '$index' : v))
-                .join(' > ');
-
-              Sentry.captureException(result, {
-                fingerprint: ['graphql', errorPath, opName, operationType],
-              });
             }
 
             childSpan.finish();
@@ -221,7 +240,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
         : opName;
       const op = options.operationName
         ? options.operationName(args)
-        : 'execute';
+        : 'db.graphql.yoga';
       const tags = {
         operationName: opName,
         operation: operationType,
@@ -233,6 +252,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
       if (startTransaction) {
         rootSpan = Sentry.startTransaction({
           name: transactionName,
+          description: 'execute',
           op,
           tags,
           ...traceparentData,
@@ -245,6 +265,10 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
           ];
           throw new Error(error.join('\n'));
         }
+
+        // set current scope to rootSpan
+        const scope = Sentry.getCurrentHub().getScope();
+        scope?.setSpan(rootSpan);
       } else {
         const scope = Sentry.getCurrentHub().getScope();
         const parentSpan = scope?.getSpan();
@@ -318,6 +342,10 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
                 }
 
                 const errors = result.errors?.map((err) => {
+                  if (skipError(err)) {
+                    return err;
+                  }
+
                   if (err.originalError instanceof HttpError) {
                     rootSpan.setHttpStatus(err.originalError.statusCode);
                   } else {
@@ -362,6 +390,8 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
                   errors,
                 });
               });
+            } else {
+              rootSpan.setStatus('ok');
             }
 
             rootSpan.finish();
