@@ -5,10 +5,17 @@ import fastifyAuth0Verify from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
 import { config } from '%config';
 import { AuthInfo, createAuthInfoFromUser, UserInfo } from '../utils/auth-info';
+import { requestContext } from '@fastify/request-context';
 
 declare module 'fastify' {
   interface FastifyRequest {
     auth: AuthInfo;
+  }
+}
+
+declare module '@fastify/request-context' {
+  interface RequestContextData {
+    user: UserInfo | null | undefined;
   }
 }
 
@@ -35,7 +42,8 @@ async function getUserFromRequest(
   }
   const verifiedJwt = await req.jwtVerify<Auth0Jwt>();
   const userId = verifiedJwt[USER_ID_CLAIM];
-  const roles = verifiedJwt[ROLES_CLAIM];
+  const roles = verifiedJwt[ROLES_CLAIM] || [];
+  const email = verifiedJwt[EMAIL_CLAIM];
 
   if (!userId) {
     throw new Error(`Missing user id in JWT`);
@@ -44,12 +52,10 @@ async function getUserFromRequest(
   const user = await USER_MODEL.findUnique({ where: { id: userId } });
 
   // create user if one does not exist already
+  if (!email) {
+    throw new Error(`Missing email claim in JWT`);
+  }
   if (!user) {
-    const email = verifiedJwt[EMAIL_CLAIM];
-    if (!email) {
-      throw new Error(`Missing email claim in JWT`);
-    }
-
     // Use createMany to avoid race-conditions with creating the user
     await USER_MODEL.createMany({
       data: [
@@ -65,6 +71,7 @@ async function getUserFromRequest(
 
   return {
     id: userId,
+    email,
     roles: roles?.includes('user') ? roles : ['user', ...(roles || [])],
   };
 }
@@ -83,5 +90,7 @@ export const auth0Plugin = fp(async (fastify) => {
     const roles = AUTH_ROLE_SERVICE.populateAuthRoles(user?.roles);
 
     req.auth = createAuthInfoFromUser(user, roles);
+
+    requestContext.set('user', user);
   });
 });

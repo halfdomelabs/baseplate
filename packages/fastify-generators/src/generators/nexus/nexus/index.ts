@@ -20,6 +20,7 @@ import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
+import { loggerServiceProvider } from '@src/generators/core/logger-service';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
 import {
   rootModuleImportProvider,
@@ -42,6 +43,7 @@ export interface MutationField {
 
 export interface NexusGeneratorConfig {
   nexusPlugins: TypescriptCodeExpression[];
+  envelopPlugins: TypescriptCodeExpression[];
   mutationFields: MutationField[];
 }
 
@@ -90,7 +92,7 @@ const NexusGenerator = createGeneratorWithTasks({
       exports: { nexusSetup: nexusSetupProvider },
       run() {
         const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
-          { nexusPlugins: [], mutationFields: [] },
+          { nexusPlugins: [], envelopPlugins: [], mutationFields: [] },
           { name: 'nexus-config' }
         );
 
@@ -105,6 +107,19 @@ const NexusGenerator = createGeneratorWithTasks({
           new TypescriptCodeExpression(
             'missingTypePlugin',
             "import { missingTypePlugin } from './missing-type-plugin'"
+          ),
+        ]);
+
+        configMap.appendUnique('envelopPlugins', [
+          new TypescriptCodeExpression(
+            'useGraphLogger()',
+            "import { useGraphLogger } from './useGraphLogger'"
+          ),
+        ]);
+        configMap.appendUnique('envelopPlugins', [
+          new TypescriptCodeExpression(
+            'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
+            "import { useDisableIntrospection } from '@envelop/disable-introspection';"
           ),
         ]);
 
@@ -249,6 +264,7 @@ const NexusGenerator = createGeneratorWithTasks({
         requestServiceContext: requestServiceContextProvider,
         prettier: prettierProvider,
         rootModuleImport: rootModuleImportProvider,
+        loggerService: loggerServiceProvider,
       },
       exports: {
         nexus: nexusProvider,
@@ -257,21 +273,28 @@ const NexusGenerator = createGeneratorWithTasks({
         {
           node,
           typescript,
-          errorHandlerService,
           configService,
           requestServiceContext,
           eslint,
           prettier,
           tsUtils,
           rootModuleImport,
+          loggerService,
+          errorHandlerService,
         },
         { setupTask: { configMap, schemaFiles } }
       ) {
         node.addPackages({
           'altair-fastify-plugin': '4.5.1',
           graphql: '^16.3.0',
-          mercurius: '10.1.0',
           nexus: '1.3.0',
+          '@envelop/core': '2.4.0',
+          '@envelop/disable-introspection': '3.4.0',
+          '@graphql-yoga/node': '2.13.4',
+        });
+
+        node.addDevPackages({
+          '@envelop/types': '2.3.0',
         });
 
         // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
@@ -282,7 +305,8 @@ const NexusGenerator = createGeneratorWithTasks({
         const pluginFile = typescript.createTemplate(
           {
             ROOT_MODULE: { type: 'code-expression' },
-            PLUGINS: { type: 'code-expression' },
+            NEXUS_PLUGINS: { type: 'code-expression' },
+            ENVELOP_PLUGINS: { type: 'code-expression' },
             CONTEXT_PATH: { type: 'string-replacement' },
           },
           {
@@ -290,6 +314,7 @@ const NexusGenerator = createGeneratorWithTasks({
               errorHandlerService,
               configService,
               requestServiceContext,
+              loggerService,
             ],
           }
         );
@@ -345,8 +370,13 @@ const NexusGenerator = createGeneratorWithTasks({
             );
 
             pluginFile.addCodeExpression(
-              'PLUGINS',
+              'NEXUS_PLUGINS',
               TypescriptCodeUtils.mergeExpressionsAsArray(config.nexusPlugins)
+            );
+
+            pluginFile.addCodeExpression(
+              'ENVELOP_PLUGINS',
+              TypescriptCodeUtils.mergeExpressionsAsArray(config.envelopPlugins)
             );
 
             await builder.apply(
@@ -360,6 +390,14 @@ const NexusGenerator = createGeneratorWithTasks({
               typescript.createCopyAction({
                 source: 'plugins/graphql/missing-type-plugin.ts',
                 destination: 'src/plugins/graphql/missing-type-plugin.ts',
+              })
+            );
+
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'plugins/graphql/useGraphLogger.ts',
+                destination: 'src/plugins/graphql/useGraphLogger.ts',
+                importMappers: [loggerService],
               })
             );
 

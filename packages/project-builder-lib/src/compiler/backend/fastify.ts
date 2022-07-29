@@ -71,6 +71,9 @@ export function buildFastify(
         generator: '@baseplate/fastify/nexus/nexus',
         peerProvider: true,
       },
+      $yogaSentry: {
+        generator: '@baseplate/fastify/nexus/yoga-sentry',
+      },
       $modules: [
         ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
         'graphql/root',

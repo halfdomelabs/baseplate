@@ -316,12 +316,12 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             );
 
             // awkward AWS hack (https://stackoverflow.com/questions/66275648/aws-javascript-sdk-v3-typescript-doesnt-compile-due-to-error-ts2304-cannot-f/66275649#66275649)
-            await builder.apply(
-              typescript.createCopyAction({
-                source: '@types/dom.ts',
-                destination: 'src/@types/dom.ts',
-              })
-            );
+            // await builder.apply(
+            //   typescript.createCopyAction({
+            //     source: '@types/dom.ts',
+            //     destination: 'src/@types/dom.ts',
+            //   })
+            // );
           },
         };
       },
