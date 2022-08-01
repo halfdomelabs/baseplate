@@ -92,6 +92,11 @@ function FieldForm({
             control={control}
             name={`form.fields.${idx}.defaultLabel`}
           />
+          <TextInput.LabelledController
+            label="Empty Label (optional) - only if field is nullable"
+            control={control}
+            name={`form.fields.${idx}.nullLabel`}
+          />
         </>
       )}
       {type === 'file' && (

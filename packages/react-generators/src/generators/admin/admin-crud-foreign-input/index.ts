@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
+import { quot, TypescriptCodeUtils } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
@@ -15,6 +15,7 @@ const descriptorSchema = z.object({
   labelExpression: z.string().min(1),
   valueExpression: z.string().min(1).default('id'),
   defaultLabel: z.string().optional(),
+  nullLabel: z.string().optional(),
 });
 
 const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
@@ -35,6 +36,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
       labelExpression,
       valueExpression,
       defaultLabel,
+      nullLabel,
     },
     { adminCrudInputContainer, reactComponents, reactApollo }
   ) {
@@ -48,6 +50,15 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
       labelExpression,
       valueExpression,
     });
+
+    const optionsCreator = TypescriptCodeUtils.createExpression(
+      `${propName}.map((option) => ({
+        label: option.${labelExpression}${
+        defaultLabel ? ` || ${defaultLabel}` : ''
+      },
+        value: option.${valueExpression},
+      }))`
+    );
 
     adminCrudInputContainer.addInput({
       content: TypescriptCodeUtils.createExpression(
@@ -71,13 +82,21 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
         },
       ],
       dataDependencies: [dataDependency],
-      header: TypescriptCodeUtils.createBlock(`
-        const ${optionsName} = ${propName}.map((option) => ({
-          label: option.${labelExpression}${
-        defaultLabel ? ` || ${defaultLabel}` : ''
-      },
-          value: option.${valueExpression},
-        }));`),
+      header: TypescriptCodeUtils.formatBlock(
+        `
+        const ${optionsName} = OPTIONS;`,
+        {
+          OPTIONS: !nullLabel
+            ? optionsCreator
+            : optionsCreator.wrap(
+                (contents) =>
+                  `[
+              { label: ${quot(nullLabel)}, value: null },
+              ...${contents}
+            ]`
+              ),
+        }
+      ),
     });
     return {
       build: async () => {},

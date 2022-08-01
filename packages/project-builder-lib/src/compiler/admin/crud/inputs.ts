@@ -77,6 +77,7 @@ function compileAdminForeignInput(
     labelExpression: field.labelExpression,
     valueExpression: field.valueExpression,
     defaultLabel: field.defaultLabel,
+    nullLabel: field.nullLabel,
   };
 }
 
