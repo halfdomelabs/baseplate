@@ -208,7 +208,7 @@ function ModelFieldForm({
               name={`model.fields.${idx}.options.enumType`}
             />
           )}
-          {watchedField.type === 'string' && (
+          {['string', 'int', 'boolean'].includes(watchedField.type) && (
             <TextInput.LabelledController
               label="Default Value"
               className="w-full"
