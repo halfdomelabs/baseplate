@@ -1,4 +1,5 @@
 // @ts-nocheck
+import * as domain from 'domain';
 import { URL } from 'url';
 import * as Sentry from '@sentry/node';
 import { extractTraceparentData } from '@sentry/tracing';
@@ -24,19 +25,28 @@ function getTransactionName(request: FastifyRequest): string {
 export const sentryPlugin = fp(async (fastify) => {
   fastify.decorateRequest('sentryTransaction', null);
 
-  fastify.addHook('onRequest', async (req) => {
-    let traceparentData: TraceparentData | undefined;
-    if (typeof req.headers['sentry-trace'] === 'string') {
-      traceparentData = extractTraceparentData(req.headers['sentry-trace']);
-    }
-    req.sentryTransaction = Sentry.startTransaction(
-      {
-        name: getTransactionName(req),
-        op: 'http.server',
-        ...traceparentData,
-      },
-      { request: extractSentryRequestData(req) }
-    );
+  fastify.addHook('onRequest', (req, reply, done) => {
+    // create domain for request (like handler in Sentry Express handler)
+    // Domain is deprecated but still used by Sentry
+    // See https://github.com/getsentry/sentry-javascript/issues/4633
+    const local = domain.create();
+    local.on('error', done);
+    local.run(() => {
+      let traceparentData: TraceparentData | undefined;
+      if (typeof req.headers['sentry-trace'] === 'string') {
+        traceparentData = extractTraceparentData(req.headers['sentry-trace']);
+      }
+      req.sentryTransaction = Sentry.startTransaction(
+        {
+          name: getTransactionName(req),
+          op: 'http.server',
+          ...traceparentData,
+        },
+        { request: extractSentryRequestData(req) }
+      );
+
+      done();
+    });
   });
 
   fastify.addHook('onResponse', async (req, reply) => {

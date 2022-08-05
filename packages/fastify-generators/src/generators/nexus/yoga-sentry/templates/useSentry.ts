@@ -152,13 +152,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
   }
 
   const onResolverCalled: OnResolverCalledHook | undefined = trackResolvers
-    ? ({
-        args: resolversArgs,
-        info,
-        context,
-        replaceResolverFn,
-        resolverFn,
-      }) => {
+    ? ({ args: resolversArgs, info, context }) => {
         const sentryTracingContext = context[sentryTracingSymbol];
         if (!sentryTracingContext) {
           return () => {};
@@ -189,15 +183,6 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
             description: `${parentType.name}.${fieldName}`,
             op: 'db.graphql.yoga',
             tags,
-          });
-
-          replaceResolverFn((root, args, ctx, inf) => {
-            const scope = Sentry.getCurrentHub().pushScope();
-            scope.setSpan(childSpan);
-            const result = resolverFn(root, args, ctx, inf);
-            return Promise.resolve(result).finally(() => {
-              Sentry.getCurrentHub().popScope();
-            });
           });
 
           return ({ result }) => {
