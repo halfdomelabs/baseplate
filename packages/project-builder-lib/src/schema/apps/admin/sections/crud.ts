@@ -57,6 +57,7 @@ export const adminCrudForeignInputSchema = z.object({
   labelExpression: z.string().min(1),
   valueExpression: z.string().min(1),
   defaultLabel: z.string().optional(),
+  nullLabel: z.string().optional(),
 });
 
 export type AdminCrudForeignInputConfig = z.infer<

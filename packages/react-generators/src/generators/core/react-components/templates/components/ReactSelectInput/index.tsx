@@ -1,28 +1,34 @@
 // @ts-nocheck
 
 import classNames from 'classnames';
-import { Control, FieldPath, useController } from 'react-hook-form';
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  PathValue,
+  useController,
+} from 'react-hook-form';
 import Select from 'react-select';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
-interface Props {
+interface Props<ValueType = string> {
   className?: string;
-  options: { label: string; value: string }[];
-  onChange: (newValue?: string) => void;
+  options: { label: string; value: ValueType }[];
+  onChange: (newValue?: ValueType) => void;
   onBlur?: () => void;
-  value: string;
+  value: ValueType;
   fixedPosition?: boolean;
 }
 
-function ReactSelectInput({
+function ReactSelectInput<ValueType>({
   className,
   onChange,
   onBlur,
   options,
   value,
   fixedPosition,
-}: Props): JSX.Element {
+}: Props<ValueType>): JSX.Element {
   const selectedOption = options.find((option) => option.value === value);
 
   const fixedPositionProps = fixedPosition
@@ -52,7 +58,8 @@ function ReactSelectInput({
   );
 }
 
-interface ReactSelectInputLabelledProps extends Props {
+interface ReactSelectInputLabelledProps<ValueType = string>
+  extends Props<ValueType> {
   label?: React.ReactNode;
   error?: React.ReactNode;
 }
@@ -72,24 +79,32 @@ ReactSelectInput.Labelled = function ReactSelectInputLabelled({
   );
 };
 
-interface ReactSelectInputLabelledControllerProps<T>
-  extends Omit<
-    ReactSelectInputLabelledProps,
+interface ReactSelectInputLabelledControllerProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> extends Omit<
+    ReactSelectInputLabelledProps<PathValue<TFieldValues, TFieldName>>,
     'onChange' | 'onBlur' | 'value' | 'error'
   > {
   className?: string;
-  control: Control<T>;
-  name: FieldPath<T>;
+  control: Control<TFieldValues>;
+  name: TFieldName;
   emptyAsNull?: boolean;
 }
 
-ReactSelectInput.LabelledController = function ReactSelectInputController<T>({
+ReactSelectInput.LabelledController = function ReactSelectInputController<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
   className,
   name,
   control,
   emptyAsNull,
   ...rest
-}: ReactSelectInputLabelledControllerProps<T>): JSX.Element {
+}: ReactSelectInputLabelledControllerProps<
+  TFieldValues,
+  TFieldName
+>): JSX.Element {
   const {
     field,
     fieldState: { error },
