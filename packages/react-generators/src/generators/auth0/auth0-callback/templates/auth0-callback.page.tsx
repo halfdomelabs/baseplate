@@ -19,7 +19,7 @@ function formatAndReportAuthError(error: unknown): string {
   return 'Sorry, we could not log you in. Please try again.';
 }
 
-function Auth0Callback(): JSX.Element {
+function Auth0CallbackPage(): JSX.Element {
   const logOut = useLogOut();
   const navigate = useNavigate();
 
@@ -29,7 +29,7 @@ function Auth0Callback(): JSX.Element {
   useEffect(() => {
     handleRedirectCallback()
       .then(({ appState }: { appState?: { returnTo?: string } }) => {
-        navigate(appState?.returnTo || window.location.pathname);
+        navigate(appState?.returnTo || '/');
       })
       .catch((err) => {
         setError(formatAndReportAuthError(err));
@@ -37,7 +37,7 @@ function Auth0Callback(): JSX.Element {
   }, [handleRedirectCallback, navigate]);
 
   return (
-    <div className="h-full flex items-center justify-center bg-gray-100">
+    <div className="flex h-full items-center justify-center bg-gray-100">
       {error ? (
         <Card className="space-y-4 p-4">
           <Alert type="error">{error}</Alert>
@@ -50,4 +50,4 @@ function Auth0Callback(): JSX.Element {
   );
 }
 
-export default Auth0Callback;
+export default Auth0CallbackPage;
