@@ -9,22 +9,29 @@ import {
 } from '../services/auth-service';
 
 // localhost does not support the __Host prefix and should be scoped to port
-export const REFRESH_TOKEN_COOKIE_NAME =
-  config.APP_ENVIRONMENT === 'development'
-    ? `auth-refresh-token-${config.SERVER_PORT}`
-    : '__Host-auth_refresh_token';
+function getRefreshCookieName(context: RequestServiceContext): string {
+  if (config.APP_ENVIRONMENT !== 'development') {
+    return '__Host-auth_refresh_token';
+  }
+  // use referer to determine hostname because React reverse proxies use referer to signal the original host
+  const { referer } = context.reqInfo.headers;
+  const port = referer ? new URL(referer).port : config.SERVER_PORT;
+  return `auth-refresh-token-${port}`;
+}
 
 export function getRefreshTokenFromCookie(
   context: RequestServiceContext
 ): string | undefined {
-  return context.cookieStore.get(REFRESH_TOKEN_COOKIE_NAME);
+  const cookieName = getRefreshCookieName(context);
+  return context.cookieStore.get(cookieName);
 }
 
 export function setRefreshTokenIntoCookie(
   context: RequestServiceContext,
   refreshToken: string
 ): void {
-  context.cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+  const cookieName = getRefreshCookieName(context);
+  context.cookieStore.set(cookieName, refreshToken, {
     httpOnly: true,
     secure: true,
     sameSite: 'strict',
@@ -36,7 +43,8 @@ export function setRefreshTokenIntoCookie(
 export function clearRefreshTokenFromCookie(
   context: RequestServiceContext
 ): void {
-  context.cookieStore.clear(REFRESH_TOKEN_COOKIE_NAME);
+  const cookieName = getRefreshCookieName(context);
+  context.cookieStore.clear(cookieName);
 }
 
 export function formatRefreshTokens(

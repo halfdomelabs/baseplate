@@ -90,7 +90,6 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
             '%auth-mutations/refresh-token': {
               path: `@/${appModuleFolder}/utils/refresh-tokens`,
               allowedImports: [
-                'REFRESH_TOKEN_COOKIE_NAME',
                 'setRefreshTokenIntoCookie',
                 'clearRefreshTokenFromCookie',
                 'formatRefreshTokens',
