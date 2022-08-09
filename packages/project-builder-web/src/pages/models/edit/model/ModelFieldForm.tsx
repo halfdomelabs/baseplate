@@ -102,7 +102,9 @@ function ModelFieldForm({
     }
     // check local references
     const usedRelations = watchedRelations?.filter((relation) =>
-      relation.references.some((r) => r.local.includes(watchedField.name))
+      relation.references.some(
+        (r) => watchedField.name && r.local.includes(watchedField.name)
+      )
     );
     if (usedRelations?.length) {
       toast.error(
@@ -208,7 +210,9 @@ function ModelFieldForm({
               name={`model.fields.${idx}.options.enumType`}
             />
           )}
-          {['string', 'int', 'boolean'].includes(watchedField.type) && (
+          {['string', 'int', 'float', 'boolean'].includes(
+            watchedField.type
+          ) && (
             <TextInput.LabelledController
               label="Default Value"
               className="w-full"

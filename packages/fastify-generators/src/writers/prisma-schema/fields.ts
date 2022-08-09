@@ -49,7 +49,18 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
       return [];
     },
   },
-  float: { prismaType: 'Float' },
+  float: {
+    prismaType: 'Float',
+    optionsSchema: z.object({
+      default: z.string().optional(),
+    }),
+    getAttributes: (config) => {
+      if (config?.default) {
+        return [{ name: '@default', args: [config.default] }];
+      }
+      return [];
+    },
+  },
   decimal: { prismaType: 'Decimal' },
   boolean: {
     prismaType: 'Boolean',
