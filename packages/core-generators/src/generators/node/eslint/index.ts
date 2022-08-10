@@ -11,6 +11,7 @@ import { generateConfig } from './generateConfig';
 interface EslintConfig {
   react?: boolean;
   eslintIgnore: string[];
+  extraTsconfigProjects: string[];
 }
 
 export interface EslintProvider {
@@ -36,6 +37,7 @@ const EslintGenerator = createGeneratorWithChildren({
           '/node_modules',
           '.eslintrc.js',
         ],
+        extraTsconfigProjects: [],
       },
       { name: 'eslint-config', mergeArraysUniquely: true }
     );
@@ -48,7 +50,10 @@ const EslintGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         // build eslint configuration
         const config = configMap.value();
-        const eslintConfig = generateConfig({ react: config.react });
+        const eslintConfig = generateConfig({
+          react: config.react,
+          extraTsconfigProjects: config.extraTsconfigProjects,
+        });
 
         const airbnbPackage: Record<string, string> = config.react
           ? {

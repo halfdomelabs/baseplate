@@ -123,6 +123,11 @@ const FastifyGenerator = createGeneratorWithTasks({
         generator: '@baseplate/fastify/core/fastify-cookie-context',
       },
     },
+    scripts: {
+      defaultDescriptor: {
+        generator: '@baseplate/fastify/core/fastify-scripts',
+      },
+    },
   }),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
