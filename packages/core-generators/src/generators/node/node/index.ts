@@ -6,6 +6,7 @@ import {
 } from '@baseplate/sync';
 import R from 'ramda';
 import semver from 'semver';
+import sortKeys from 'sort-keys';
 import { z } from 'zod';
 import { projectProvider } from '../../../providers';
 
@@ -189,8 +190,8 @@ const NodeGenerator = createGeneratorWithChildren({
           license: descriptor.license,
           version: descriptor.version,
           private: descriptor.private,
-          ...extraProperties.value(),
-          scripts: scripts.value(),
+          ...sortKeys(extraProperties.value()),
+          scripts: sortKeys(scripts.value()),
           dependencies: extractDependencies('normal'),
           devDependencies: extractDependencies('dev'),
           engines: {
