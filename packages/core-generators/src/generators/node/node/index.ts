@@ -17,7 +17,7 @@ const descriptorSchema = z.object({
   version: z.string().default('0.1.0'),
   private: z.boolean().default(true),
   path: z.string().default(''),
-  nodeVersion: z.string().default('14.19.3'),
+  nodeVersion: z.string().default('16.10.0'),
   yarnVersion: z.string().default('1.22.19'),
 });
 
