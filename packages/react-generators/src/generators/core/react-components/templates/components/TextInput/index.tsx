@@ -94,6 +94,7 @@ TextInput.LabelledController = function TextInputController<
 >({
   control,
   name,
+  registerOptions,
   ...rest
 }: TextInputControllerProps<TFieldValues, TFieldName>): JSX.Element {
   const { errors } = useFormState({ control, name });
@@ -101,7 +102,7 @@ TextInput.LabelledController = function TextInputController<
 
   return (
     <TextInput.Labelled
-      register={control.register(name)}
+      register={control.register(name, registerOptions)}
       error={error?.message}
       {...rest}
     />
