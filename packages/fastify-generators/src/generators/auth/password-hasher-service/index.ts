@@ -35,6 +35,10 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
     node.addPackages({
       argon2: '0.28.7',
     });
+    // add node-gyp to allow support for compliation on M1
+    node.addDevPackages({
+      'node-gyp': '9.1.0',
+    });
     return {
       getProviders: () => ({
         passwordHasherService: {
