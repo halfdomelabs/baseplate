@@ -54,6 +54,12 @@ export function buildFastify(
             peerProvider: true,
             defaultUrl: getRedisSettings(projectConfig).url,
           },
+      $postmark: !app.enablePostmark
+        ? undefined
+        : {
+            generator: '@baseplate/fastify/email/fastify-postmark',
+            peerProvider: true,
+          },
       $prisma: {
         generator: '@baseplate/fastify/prisma/prisma',
         peerProvider: true,
