@@ -7,7 +7,10 @@ import { StorageAdapterKey } from './adapters';
 interface FileCategory {
   name: string;
   authorizeUpload?: (context: ServiceContext) => Promise<boolean> | boolean;
-  authorizeRead?: (context: ServiceContext) => Promise<boolean> | boolean;
+  authorizeRead?: (
+    file: FILE_MODEL_TYPE,
+    context: ServiceContext
+  ) => Promise<boolean> | boolean;
   minFileSize?: number;
   maxFileSize: number;
   allowedMimeTypes?: string[];

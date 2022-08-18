@@ -114,6 +114,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
         node.addPackages({
           '@aws-sdk/client-s3': '3.121.0',
           '@aws-sdk/s3-presigned-post': '3.121.0',
+          '@aws-sdk/s3-request-presigner': '3.121.0',
           'mime-types': '2.1.35',
         });
 
@@ -199,6 +200,20 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                 path.join(
                   moduleFolder,
                   'services/create-presigned-upload-url.ts'
+                )
+              )
+            );
+
+            const createPresignedDownloadUrlFile = typescript.createTemplate(
+              { FILE_MODEL: model },
+              { importMappers: [errorHandlerService, serviceContext] }
+            );
+            await builder.apply(
+              createPresignedDownloadUrlFile.renderToAction(
+                'services/create-presigned-download-url.ts',
+                path.join(
+                  moduleFolder,
+                  'services/create-presigned-download-url.ts'
                 )
               )
             );
@@ -305,6 +320,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                 FILE_COUNT_OUTPUT_TYPE: new TypescriptStringReplacement(
                   `${fileModel}CountOutputType`
                 ),
+                FILE_MODEL_TYPE: modelType,
               },
               { importMappers: [serviceContext] }
             );
