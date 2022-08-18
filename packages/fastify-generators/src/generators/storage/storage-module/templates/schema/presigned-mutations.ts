@@ -2,6 +2,7 @@
 
 import { objectType } from 'nexus';
 import { createStandardMutation } from '%nexus/utils';
+import { createPresignedDownloadUrl } from '../services/create-presigned-download-url';
 import { createPresignedUploadUrl } from '../services/create-presigned-upload-url';
 
 export const presignedUrlFieldObjectType = objectType({
@@ -29,4 +30,17 @@ export const createPresignedUploadUrlMutation = createStandardMutation({
   },
   resolve: (root, args, context) =>
     createPresignedUploadUrl(args.input, context),
+});
+
+export const createPresignedDownloadUrlMutation = createStandardMutation({
+  name: 'createPresignedDownloadUrl',
+  authorize: 'user',
+  inputDefinition: (t) => {
+    t.nonNull.string('fileId');
+  },
+  payloadDefinition: (t) => {
+    t.nonNull.string('url');
+  },
+  resolve: (root, args, context) =>
+    createPresignedDownloadUrl(args.input, context),
 });
