@@ -49,6 +49,17 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     };
   }
 
+  async function createPresignedDownloadUrl(path: string): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: path,
+    });
+
+    return getSignedUrl(client, command, {
+      expiresIn: PRESIGNED_S3_EXPIRATION_SECONDS,
+    });
+  }
+
   function getHostedUrl(path: string): string | null {
     if (!hostedUrl) {
       return null;
@@ -58,6 +69,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
 
   return {
     createPresignedUploadUrl,
+    createPresignedDownloadUrl,
     getHostedUrl,
   };
 };

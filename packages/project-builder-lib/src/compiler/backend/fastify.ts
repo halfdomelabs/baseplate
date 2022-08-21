@@ -60,6 +60,12 @@ export function buildFastify(
             generator: '@baseplate/fastify/email/fastify-postmark',
             peerProvider: true,
           },
+      $sendgrid: !app.enableSendgrid
+        ? undefined
+        : {
+            generator: '@baseplate/fastify/email/fastify-sendgrid',
+            peerProvider: true,
+          },
       $prisma: {
         generator: '@baseplate/fastify/prisma/prisma',
         peerProvider: true,
