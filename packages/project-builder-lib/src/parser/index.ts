@@ -292,11 +292,9 @@ export class ParsedProjectConfig {
 
   getModelPrimaryKeys(modelName: string): string[] {
     const model = this.getModelByName(modelName);
-    return (
-      model.model.primaryKeys ||
-      model.model.fields.filter((f) => f.isId).map((f) => f.name) ||
-      []
-    );
+    return model.model.primaryKeys?.length
+      ? model.model.primaryKeys
+      : model.model.fields.filter((f) => f.isId).map((f) => f.name) || [];
   }
 
   exportToProjectConfig(): ProjectConfig {
