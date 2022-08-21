@@ -53,6 +53,11 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
           name="enableStripe"
         />
         <CheckedInput.LabelledController
+          label="Enable Postmark?"
+          control={control}
+          name="enablePostmark"
+        />
+        <CheckedInput.LabelledController
           label="Enable Redis?"
           control={control}
           name="enableRedis"

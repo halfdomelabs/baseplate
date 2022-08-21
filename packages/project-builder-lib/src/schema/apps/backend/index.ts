@@ -6,6 +6,7 @@ export const backendAppSchema = z.object({
   type: z.literal('backend'),
   enableStripe: z.boolean().optional(),
   enableRedis: z.boolean().optional(),
+  enablePostmark: z.boolean().optional(),
 });
 
 export type BackendAppConfig = z.infer<typeof backendAppSchema>;
