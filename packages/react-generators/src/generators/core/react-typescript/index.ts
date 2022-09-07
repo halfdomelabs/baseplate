@@ -11,7 +11,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
     typescriptConfig: typescriptConfigProvider,
   },
   createGenerator(descriptor, { typescriptConfig }) {
-    typescriptConfig.setTypescriptVersion('~4.6.4');
+    typescriptConfig.setTypescriptVersion('~4.7.4');
     typescriptConfig.setTypescriptCompilerOptions({
       target: 'es5',
       lib: ['dom', 'dom.iterable', 'esnext'],

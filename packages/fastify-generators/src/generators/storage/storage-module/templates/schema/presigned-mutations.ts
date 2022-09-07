@@ -36,7 +36,7 @@ export const createPresignedDownloadUrlMutation = createStandardMutation({
   name: 'createPresignedDownloadUrl',
   authorize: 'user',
   inputDefinition: (t) => {
-    t.nonNull.string('fileId');
+    t.nonNull.uuid('fileId');
   },
   payloadDefinition: (t) => {
     t.nonNull.string('url');

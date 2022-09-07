@@ -285,16 +285,16 @@ const NexusGenerator = createGeneratorWithTasks({
         { setupTask: { configMap, schemaFiles } }
       ) {
         node.addPackages({
-          'altair-fastify-plugin': '4.5.1',
+          'altair-fastify-plugin': '4.6.4',
           graphql: '^16.3.0',
           nexus: '1.3.0',
-          '@envelop/core': '2.4.0',
-          '@envelop/disable-introspection': '3.4.0',
-          '@graphql-yoga/node': '2.13.4',
+          '@envelop/core': '2.6.0',
+          '@envelop/disable-introspection': '3.6.0',
+          '@graphql-yoga/node': '2.13.12',
         });
 
         node.addDevPackages({
-          '@envelop/types': '2.3.0',
+          '@envelop/types': '2.4.0',
         });
 
         // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
