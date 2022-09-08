@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { BadRequestError, NotFoundError } from '%http-errors';
 import { hasherService } from '%password-hasher-service';
-import { AuthPayload, authService } from '%auth-service';
+import { AuthPayload, loginUser } from '%auth-service';
 
 export const passwordAuthService = {
   async loginWithPassword(
@@ -25,6 +25,6 @@ export const passwordAuthService = {
       throw new BadRequestError('Invalid password', 'invalid-password');
     }
 
-    return authService.login(user.id);
+    return loginUser(user.id);
   },
 };

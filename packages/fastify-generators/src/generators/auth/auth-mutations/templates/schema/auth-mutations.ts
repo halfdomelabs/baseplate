@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { objectType } from 'nexus';
-import { authService } from '%auth-service';
+import { renewToken } from '%auth-service';
 import { InvalidTokenError } from '%jwt-service';
 import {
   clearRefreshTokenFromCookie,
@@ -36,8 +36,10 @@ export const refreshTokenMutation = createStandardMutation({
     }
     const { userId } = input;
 
-    const { accessToken, refreshToken: newRefreshToken } =
-      await authService.refreshToken(userId, refreshToken);
+    const { accessToken, refreshToken: newRefreshToken } = await renewToken(
+      userId,
+      refreshToken
+    );
 
     if (!input.refreshToken) {
       setRefreshTokenIntoCookie(context, newRefreshToken);

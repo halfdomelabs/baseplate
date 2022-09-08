@@ -2,6 +2,7 @@
 import { JwtPayload } from 'jsonwebtoken';
 import ms from 'ms';
 import { jwtService, InvalidTokenError } from './jwt-service';
+import { AuthInfo, createAuthInfoFromUser, UserInfo } from '../utils/auth-info';
 
 export interface AuthPayload {
   userId: string;
@@ -44,55 +45,85 @@ function isJwtIssueDateValid(
   return !payload.iat || payload.iat * 1000 < notBefore.getTime();
 }
 
-export const authService = {
-  async login(userId: string): Promise<AuthPayload> {
-    const payload = await issueUserAuthPayload(userId);
-    return payload;
-  },
-  async refreshToken(
-    userId: string,
-    refreshToken: string
-  ): Promise<AuthPayload> {
-    const user = await USER_MODEL.findUnique({
-      where: { USER_ID_NAME: userId },
-    });
+export async function loginUser(userId: string): Promise<AuthPayload> {
+  const payload = await issueUserAuthPayload(userId);
+  return payload;
+}
 
-    if (!user) {
-      throw new InvalidTokenError();
-    }
-    const payload = await jwtService.verify<AuthJwtPayload>(refreshToken);
+export async function renewToken(
+  userId: string,
+  refreshToken: string
+): Promise<AuthPayload> {
+  const user = await USER_MODEL.findUnique({
+    where: { USER_ID_NAME: userId },
+  });
 
-    if (payload.type !== 'refresh') {
-      throw new InvalidTokenError('Must be provided refresh token');
-    }
+  if (!user) {
+    throw new InvalidTokenError();
+  }
+  const payload = await jwtService.verify<AuthJwtPayload>(refreshToken);
 
-    if (payload.sub !== user.id) {
-      throw new InvalidTokenError('Refresh token does not match user ID');
-    }
+  if (payload.type !== 'refresh') {
+    throw new InvalidTokenError('Must be provided refresh token');
+  }
 
-    if (!isJwtIssueDateValid(payload, user.tokensNotBefore)) {
-      throw new InvalidTokenError('Refresh token has been invalidated');
-    }
+  if (payload.sub !== user.id) {
+    throw new InvalidTokenError('Refresh token does not match user ID');
+  }
 
-    return issueUserAuthPayload(user.id);
-  },
-  async getUserFromToken(accessToken: string): Promise<AUTH_USER> {
-    const payload = await jwtService.verify<AuthJwtPayload>(accessToken);
+  if (!isJwtIssueDateValid(payload, user.tokensNotBefore)) {
+    throw new InvalidTokenError('Refresh token has been invalidated');
+  }
 
-    if (payload.type !== 'access') {
-      throw new InvalidTokenError('JWT token is not an access token');
-    }
+  return issueUserAuthPayload(user.id);
+}
 
-    const user = await USER_MODEL.findUnique(AUTH_USER_QUERY_PARMS);
+async function getUserInfoFromToken(accessToken: string): Promise<UserInfo> {
+  const payload = await jwtService.verify<AuthJwtPayload>(accessToken);
 
-    if (!user) {
-      throw new InvalidTokenError('User not found');
-    }
+  if (payload.type !== 'access') {
+    throw new InvalidTokenError('JWT token is not an access token');
+  }
 
-    if (!isJwtIssueDateValid(payload, user.tokensNotBefore)) {
-      throw new InvalidTokenError('Access token has been invalidated');
-    }
+  const user = await prisma.user.findUnique({ where: { id: payload.sub } });
 
-    return user;
-  },
-};
+  if (!user) {
+    throw new InvalidTokenError('User not found');
+  }
+
+  if (!isJwtIssueDateValid(payload, user.tokensNotBefore)) {
+    throw new InvalidTokenError('Access token has been invalidated');
+  }
+
+  return {
+    id: user.id,
+    email: user.email,
+    tokenExpiry:
+      typeof payload.exp === 'number'
+        ? new Date(payload.exp * 1000)
+        : undefined,
+  };
+}
+
+export async function getUserInfoFromAuthorization(
+  authorization?: string
+): Promise<UserInfo | null> {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return null;
+  }
+  const accessToken = authorization.substring(7);
+  return getUserInfoFromToken(accessToken);
+}
+
+export async function createAuthInfoFromAuthorization(
+  authorization: string | undefined
+): Promise<AuthInfo> {
+  const user = await getUserInfoFromAuthorization(authorization);
+  if (!user) {
+    return createAuthInfoFromUser(null, ['anonymous']);
+  }
+
+  AUTH_INFO_CREATOR;
+
+  return createAuthInfoFromUser(user, EXTRA_ARGS);
+}

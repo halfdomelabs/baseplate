@@ -3,6 +3,7 @@
 export interface UserInfo {
   id: string;
   email: string;
+  tokenExpiry?: Date;
 }
 
 export interface AuthInfo {

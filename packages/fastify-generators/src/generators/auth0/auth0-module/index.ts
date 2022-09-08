@@ -5,11 +5,11 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
-import { authInfoProvider } from '@src/generators/auth/auth-plugin';
+import { authInfoImportProvider } from '@src/generators/auth/auth-service';
 import { roleServiceProvider } from '@src/generators/auth/role-service';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
@@ -40,7 +40,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
   },
   exports: {
     auth0Module: auth0ModuleProvider,
-    authInfo: authInfoProvider,
+    authInfoImport: authInfoImportProvider,
   },
   createGenerator(
     { userModelName, includeManagement },
@@ -70,6 +70,10 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
 
     const [pluginImport, pluginPath] = makeImportAndFilePath(
       `${appModule.getModuleFolder()}/plugins/auth0-plugin.ts`
+    );
+
+    const [, authServicePath] = makeImportAndFilePath(
+      `${appModule.getModuleFolder()}/services/auth-service.ts`
     );
 
     const [authInfoImport, authInfoPath] = makeImportAndFilePath(
@@ -130,7 +134,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         auth0Module: {},
-        authInfo: {
+        authInfoImport: {
           getImportMap: () => ({
             '%auth-info': {
               path: authInfoImport,
@@ -145,6 +149,15 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         const pluginFile = typescript.createTemplate(
+          {},
+          { importMappers: [configService] }
+        );
+
+        await builder.apply(
+          pluginFile.renderToAction('plugins/auth0-plugin.ts', pluginPath)
+        );
+
+        const serviceFile = typescript.createTemplate(
           {
             USER_MODEL: prismaOutput.getPrismaModelExpression(userModelName),
             AUTH_ROLE_SERVICE: roleService.getServiceExpression(),
@@ -153,7 +166,10 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
         );
 
         await builder.apply(
-          pluginFile.renderToAction('plugins/auth0-plugin.ts', pluginPath)
+          serviceFile.renderToAction(
+            'services/auth-service.ts',
+            authServicePath
+          )
         );
 
         const authInfoFile = typescript.createTemplate(

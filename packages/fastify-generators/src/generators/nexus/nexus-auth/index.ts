@@ -9,7 +9,7 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { authProvider } from '@src/generators/auth/auth';
-import { authInfoProvider } from '@src/generators/auth/auth-plugin';
+import { authInfoImportProvider } from '@src/generators/auth/auth-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
 import { serviceContextSetupProvider } from '@src/generators/core/service-context';
@@ -47,11 +47,11 @@ const NexusAuthGenerator = createGeneratorWithChildren({
     auth: authProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
-    authInfo: authInfoProvider,
+    authInfoImport: authInfoImportProvider,
   },
   populateDependencies: (deps, { authInfoRef }) => ({
     ...deps,
-    authInfo: deps.authInfo.dependency().reference(authInfoRef),
+    authInfoImport: deps.authInfoImport.dependency().reference(authInfoRef),
   }),
   exports: {
     nexusAuth: nexusAuthProvider,
@@ -63,7 +63,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       errorHandlerService,
       typescript,
       auth,
-      authInfo,
+      authInfoImport,
       serviceContextSetup,
       requestServiceContextSetup,
     }
@@ -118,7 +118,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       'AuthInfo',
       'import { AuthInfo } from "%auth-info";',
       {
-        importMappers: [authInfo],
+        importMappers: [authInfoImport],
       }
     );
 
@@ -133,7 +133,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
           testDefault: TypescriptCodeUtils.createExpression(
             'createAuthInfoFromUser(null, ["system"])',
             'import { createAuthInfoFromUser } from "%auth-info";',
-            { importMappers: [authInfo] }
+            { importMappers: [authInfoImport] }
           ),
         },
       ],

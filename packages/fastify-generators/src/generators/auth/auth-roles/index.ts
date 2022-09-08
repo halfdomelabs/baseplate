@@ -1,4 +1,5 @@
 import {
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
@@ -8,12 +9,10 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { authPluginProvider } from '../auth-plugin';
-import { authServiceProvider } from '../auth-service';
+import { authInfoProvider } from '../auth-service';
 import { roleServiceProvider } from '../role-service';
 
 const descriptorSchema = z.object({
-  userModelName: z.string().min(1),
   userRoleModelName: z.string().min(1),
 });
 
@@ -26,8 +25,7 @@ const AuthRolesGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    authPlugin: authPluginProvider,
-    authService: authServiceProvider,
+    authInfo: authInfoProvider,
     roleService: roleServiceProvider,
     prismaOutput: prismaOutputProvider,
   },
@@ -35,8 +33,8 @@ const AuthRolesGenerator = createGeneratorWithChildren({
     authRoles: authRolesProvider,
   },
   createGenerator(
-    { userModelName, userRoleModelName },
-    { authPlugin, prismaOutput, authService, roleService }
+    { userRoleModelName },
+    { authInfo, prismaOutput, roleService }
   ) {
     const authRolesType = TypescriptCodeUtils.createExpression(
       `AuthRole[]`,
@@ -44,21 +42,29 @@ const AuthRolesGenerator = createGeneratorWithChildren({
       { importMappers: [roleService] }
     );
 
-    authPlugin.registerAuthField({
+    const rolesCreatorBody: TypescriptCodeBlock =
+      TypescriptCodeUtils.formatBlock(
+        `const userRoles = await USER_ROLE_MODEL.findMany({
+        where: { userId: user.id },
+      });
+      
+      const roles = ROLES_SERVICE.populateAuthRoles(userRoles.map(r => r.role));`,
+        {
+          USER_ROLE_MODEL:
+            prismaOutput.getPrismaModelExpression(userRoleModelName),
+          ROLES_SERVICE: roleService.getServiceExpression(),
+        }
+      );
+
+    authInfo.registerAuthField({
       key: 'roles',
-      hookBody: roleService
-        .getServiceExpression()
-        .wrap(
-          (contents) =>
-            `const roles = ${contents}.populateAuthRoles(user?.roles.map(role => role.role));`
-        )
-        .toBlock(),
+      creatorBody: rolesCreatorBody,
       extraCreateArgs: [{ name: 'roles', type: authRolesType }],
       value: TypescriptCodeUtils.createExpression('roles'),
       type: authRolesType,
     });
 
-    authPlugin.registerAuthField({
+    authInfo.registerAuthField({
       key: 'hasSomeRole',
       value: new TypescriptCodeExpression(
         '(possibleRoles) => roles.some((role) => possibleRoles.includes(role))'
@@ -70,7 +76,7 @@ const AuthRolesGenerator = createGeneratorWithChildren({
       ),
     });
 
-    authPlugin.registerAuthField({
+    authInfo.registerAuthField({
       key: 'hasRole',
       value: new TypescriptCodeExpression('(role) => roles.includes(role)'),
       type: TypescriptCodeUtils.createExpression(
@@ -79,31 +85,6 @@ const AuthRolesGenerator = createGeneratorWithChildren({
         { importMappers: [roleService] }
       ),
     });
-
-    const userWithRolesType = TypescriptCodeUtils.createExpression(
-      `UserWithRoles`,
-      `import {UserWithRoles} from '${roleService.getServiceImport()}'`
-    );
-
-    authPlugin.setCustomAuthUserType(userWithRolesType);
-
-    authService.setCustomUserFromToken({
-      type: userWithRolesType,
-      queryParams: {
-        include: `{ roles: true }`,
-      },
-    });
-
-    roleService.addHeaderBlock(
-      TypescriptCodeUtils.formatBlock(
-        `export type UserWithRoles = USER_MODEL & { roles: USER_ROLE_MODEL[] };`,
-        {
-          USER_MODEL: prismaOutput.getModelTypeExpression(userModelName),
-          USER_ROLE_MODEL:
-            prismaOutput.getModelTypeExpression(userRoleModelName),
-        }
-      )
-    );
 
     return {
       getProviders: () => ({
