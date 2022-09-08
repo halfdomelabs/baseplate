@@ -81,6 +81,7 @@ export function buildFastify(
       },
       $nexus: {
         generator: '@baseplate/fastify/nexus/nexus',
+        enableSubscriptions: app.enableSubscriptions,
         peerProvider: true,
       },
       $yogaSentry: {

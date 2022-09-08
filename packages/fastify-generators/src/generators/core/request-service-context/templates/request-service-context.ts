@@ -9,7 +9,9 @@ export interface RequestServiceContext extends ServiceContext {
 
 export function createContextFromRequest(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply?: FastifyReply
 ): RequestServiceContext {
+  CONTEXT_BODY;
+
   return CONTEXT_CREATOR;
 }

@@ -96,7 +96,11 @@ export const AuthPlugin: ParserPlugin = {
       hooks.addGlobalHoistedProviders('password-hasher-service');
     }
 
-    hooks.addGlobalHoistedProviders(['auth-info', 'auth-info-import']);
+    hooks.addGlobalHoistedProviders([
+      'auth-info',
+      'auth-service-import',
+      'auth-info-import',
+    ]);
 
     // add global auth providers
     hooks.addFastifyChildren({
@@ -114,7 +118,6 @@ export const AuthPlugin: ParserPlugin = {
     // add feature providers
     hooks.addFeatureHoistedProviders(auth.authFeaturePath, [
       'auth-service',
-      'auth-service-import',
       'auth-mutations',
     ]);
     hooks.addFeatureChildren(auth.authFeaturePath, {

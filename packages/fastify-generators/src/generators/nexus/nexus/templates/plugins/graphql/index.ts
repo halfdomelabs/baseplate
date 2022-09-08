@@ -98,11 +98,7 @@ export const graphqlPlugin = fp(async (fastify) => {
     return reply;
   };
 
-  fastify.route({
-    url: '/graphql',
-    method: ['GET', 'POST', 'OPTIONS'],
-    handler: httpHandler,
-  });
+  GRAPHQL_HANDLER;
 
   if (IS_DEVELOPMENT) {
     await fastify.register(AltairFastify, {

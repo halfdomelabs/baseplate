@@ -58,6 +58,45 @@ export const fieldAuthorizeRolePlugin = (
 ): NexusPlugin => {
   const { requireOnRootFields } = authorizeConfig;
 
+  async function authorizeAccess(
+    authorize: FieldAuthorizeRoleResolver<string, string>,
+    root: unknown,
+    args: Record<string, unknown>,
+    context: RequestServiceContext,
+    info: GraphQLResolveInfo
+  ): Promise<void> {
+    const rules = Array.isArray(authorize) ? authorize : [authorize];
+
+    const ruleFunctions: FieldAuthorizeRuleFunction<string, string>[] =
+      rules.map((rule) => {
+        if (typeof rule === 'function') {
+          return rule;
+        }
+        return () => context.auth.roles.includes(rule);
+      });
+
+    // try all rules and see if any match
+    const results = await Promise.allSettled(
+      ruleFunctions.map((func) => func(root, args, context, info))
+    );
+
+    // if any check passed, return success
+    if (results.some((r) => r.status === 'fulfilled' && r.value === true)) {
+      return;
+    }
+
+    // if a check threw an unexpected error, throw that since it may mean
+    // the authorization rule may have been valid but failed to run
+    const unexpectedError = results.find(
+      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError)
+    ) as PromiseRejectedResult;
+
+    if (unexpectedError) {
+      throw unexpectedError.reason;
+    }
+    throw new ForbiddenError('Forbidden');
+  }
+
   return plugin({
     name: 'AuthorizeRole',
     description:
@@ -74,7 +113,9 @@ export const fieldAuthorizeRolePlugin = (
       if (authorize == null) {
         if (
           requireOnRootFields &&
-          ['Query', 'Mutation'].includes(config.parentTypeConfig.name)
+          ['Query', 'Mutation', 'Subscription'].includes(
+            config.parentTypeConfig.name
+          )
         ) {
           throw new Error(
             `Authorize configuration required on root-field ${config.fieldConfig.name}`
@@ -82,40 +123,53 @@ export const fieldAuthorizeRolePlugin = (
         }
         return undefined;
       }
+
       return async (root, args: Record<string, unknown>, ctx, info, next) => {
-        const context = ctx as RequestServiceContext;
-        const rules = Array.isArray(authorize) ? authorize : [authorize];
-
-        const ruleFunctions: FieldAuthorizeRuleFunction<string, string>[] =
-          rules.map((rule) => {
-            if (typeof rule === 'function') {
-              return rule;
-            }
-            return () => context.auth.roles.includes(rule);
-          });
-
-        // try all rules and see if any match
-        const results = await Promise.allSettled(
-          ruleFunctions.map((func) => func(root, args, context, info))
+        await authorizeAccess(
+          authorize,
+          root,
+          args,
+          ctx as RequestServiceContext,
+          info
         );
 
-        // if any check passed, move to next middleware
-        if (results.some((r) => r.status === 'fulfilled' && r.value === true)) {
-          return next(root, args, ctx, info);
-        }
-
-        // if a check threw an unexpected error, throw that since it may mean
-        // the authorization rule may have been valid but failed to run
-        const unexpectedError = results.find(
-          (r) =>
-            r.status === 'rejected' && !(r.reason instanceof ForbiddenError)
-        ) as PromiseRejectedResult;
-
-        if (unexpectedError) {
-          throw unexpectedError.reason;
-        }
-        throw new ForbiddenError('Forbidden');
+        return next(root, args, ctx, info);
       };
+    },
+    onAddOutputField(field) {
+      const { authorize, subscribe } = field;
+
+      // due to onFieldCreateSubscribe not being implemented (https://github.com/graphql-nexus/nexus/issues/868)
+      // we need to manually patch subscribe field config
+      if (subscribe && authorize) {
+        // eslint-disable-next-line no-param-reassign
+        field.subscribe = async function* authorizeSubscribe(
+          root,
+          args: Record<string, unknown>,
+          context,
+          info
+        ) {
+          try {
+            await authorizeAccess(
+              authorize,
+              root,
+              args,
+              context as RequestServiceContext,
+              info
+            );
+          } catch (err) {
+            yield err;
+            return;
+          }
+
+          yield* subscribe(
+            root,
+            args,
+            context,
+            info
+          ) as AsyncIterableIterator<unknown>;
+        };
+      }
     },
   });
 };
