@@ -8,6 +8,7 @@ export const backendAppSchema = z.object({
   enableRedis: z.boolean().optional(),
   enablePostmark: z.boolean().optional(),
   enableSendgrid: z.boolean().optional(),
+  enableSubscriptions: z.boolean().optional(),
 });
 
 export type BackendAppConfig = z.infer<typeof backendAppSchema>;

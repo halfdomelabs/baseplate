@@ -1,5 +1,4 @@
 import {
-  copyTypescriptFileAction,
   createTypescriptTemplateConfig,
   ImportMapper,
   TypescriptCodeExpression,
@@ -8,11 +7,12 @@ import {
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
   copyFileAction,
+  createGeneratorWithChildren,
+  createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
+import { configServiceProvider } from '../config-service';
 import { fastifyServerProvider } from '../fastify-server';
 import { loggerServiceProvider } from '../logger-service';
 
@@ -62,12 +62,16 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
     loggerService: loggerServiceProvider,
     fastifyServer: fastifyServerProvider,
     typescript: typescriptProvider,
+    configService: configServiceProvider,
   },
   exports: {
     errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
     errorHandlerService: errorHandlerServiceProvider,
   },
-  createGenerator(descriptor, { loggerService, fastifyServer, typescript }) {
+  createGenerator(
+    descriptor,
+    { loggerService, fastifyServer, typescript, configService }
+  ) {
     const errorLoggerFile = typescript.createTemplate(errorHandlerFileConfig);
 
     fastifyServer.registerPlugin({
@@ -128,9 +132,10 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
         );
 
         await builder.apply(
-          copyTypescriptFileAction({
+          typescript.createCopyAction({
             source: 'plugins/error-handler.ts',
             destination: 'src/plugins/error-handler.ts',
+            importMappers: [configService],
           })
         );
 

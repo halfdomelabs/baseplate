@@ -3,6 +3,9 @@
 import fp from 'fastify-plugin';
 import { logError } from '../services/error-logger';
 import { HttpError, NotFoundError } from '../utils/http-errors';
+import { config } from '%config';
+
+const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
 
 /**
  * Handles errors from Fastify route handlers, sending the correct code
@@ -37,6 +40,9 @@ export const errorHandlerPlugin = fp(async (fastify) => {
         code: 'INTERNAL_SERVER_ERROR',
         statusCode: error.statusCode,
         reqId: request.id as string,
+        originalError: IS_DEVELOPMENT
+          ? { message: error?.message, stack: error?.stack }
+          : undefined,
       });
     }
   });

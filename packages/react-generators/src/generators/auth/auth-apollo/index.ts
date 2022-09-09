@@ -40,6 +40,7 @@ const AuthApolloGenerator = createGeneratorWithChildren({
 
         reactApolloSetup.addLink({
           name: 'authLink',
+          httpOnly: true,
           bodyExpression: TypescriptCodeUtils.createBlock(
             authLink,
             [
@@ -58,6 +59,7 @@ const AuthApolloGenerator = createGeneratorWithChildren({
 
         reactApolloSetup.addLink({
           name: 'refreshTokenLink',
+          httpOnly: true,
           bodyExpression: TypescriptCodeUtils.createBlock(
             refreshTokenLink,
             [
@@ -69,6 +71,37 @@ const AuthApolloGenerator = createGeneratorWithChildren({
           ),
           dependencies: [['errorLink', 'refreshTokenLink']],
         });
+
+        reactApolloSetup.addWebsocketOption(
+          'on',
+          TypescriptCodeUtils.createExpression(
+            `{
+              closed: (e) => {
+                if (e instanceof CloseEvent && e.reason === 'token-expired') {
+                  authService.invalidateAccessToken();
+                }
+              },
+          }`,
+            'import { authService } from "%auth-service"',
+            { importMappers: [authService] }
+          )
+        );
+
+        reactApolloSetup.addWebsocketOption(
+          'connectionParams',
+          TypescriptCodeUtils.createExpression(
+            `async () => {
+              const isAuthenticated = authService.isAuthenticated();
+              if (!isAuthenticated) {
+                return {};
+              }
+              const accessToken = await authService.getAccessToken();
+              return { authorization: \`Bearer \${accessToken}\` };
+            }`,
+            'import { authService } from "%auth-service"',
+            { importMappers: [authService] }
+          )
+        );
       },
     };
   },

@@ -11,7 +11,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
 import { z } from 'zod';
-import { authInfoProvider } from '@src/generators/auth/auth-plugin';
+import { authInfoImportProvider } from '@src/generators/auth/auth-service';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { configServiceProvider } from '../config-service';
 import {
@@ -206,10 +206,10 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       name: 'auth',
       dependencies: {
         fastifySentry: fastifySentryProvider,
-        authInfo: authInfoProvider.dependency().optional(),
+        authInfoImport: authInfoImportProvider.dependency().optional(),
       },
-      run({ authInfo, fastifySentry }) {
-        if (authInfo) {
+      run({ authInfoImport, fastifySentry }) {
+        if (authInfoImport) {
           fastifySentry.addScopeConfigurationBlock(
             TypescriptCodeUtils.createBlock(
               `const userData = requestContext.get('user');

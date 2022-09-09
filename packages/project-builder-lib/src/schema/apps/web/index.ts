@@ -10,6 +10,7 @@ export const webAppSchema = z.object({
   description: z.string().optional(),
   allowedRoles: z.array(z.string().min(1)).optional(),
   includeUploadComponents: z.boolean().optional(),
+  enableSubscriptions: z.boolean().optional(),
 });
 
 export type WebAppConfig = z.infer<typeof webAppSchema>;

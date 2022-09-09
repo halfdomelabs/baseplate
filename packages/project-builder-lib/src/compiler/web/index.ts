@@ -50,6 +50,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
         generator: '@baseplate/react/apollo/react-apollo',
         devApiEndpoint: '/api/graphql',
         schemaLocation: `${backendRelativePath}/schema.graphql`,
+        enableSubscriptions: appConfig.enableSubscriptions,
         peerProvider: true,
       },
       $apolloError: {

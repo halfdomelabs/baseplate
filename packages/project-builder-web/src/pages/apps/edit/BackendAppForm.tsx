@@ -67,6 +67,11 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
           control={control}
           name="enableRedis"
         />
+        <CheckedInput.LabelledController
+          label="Enable GraphQL Subscriptions?"
+          control={control}
+          name="enableSubscriptions"
+        />
         <Button type="submit">Save</Button>
       </form>
     </div>

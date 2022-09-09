@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
@@ -52,6 +53,18 @@ interface CookieStore {
           ),
         ],
       }),
+      body: (req, reply) =>
+        new TypescriptCodeBlock(
+          `function getReply(): FastifyReply {
+          if (!${reply}) {
+            throw new Error(
+              'Reply is not defined. This may happen if calling this function from a websocket connection.'
+            );
+          }
+          return reply;
+        }
+      `
+        ),
       creator: (req, reply) =>
         new TypescriptCodeExpression(
           `

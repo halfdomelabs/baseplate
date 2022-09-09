@@ -96,7 +96,11 @@ export const AuthPlugin: ParserPlugin = {
       hooks.addGlobalHoistedProviders('password-hasher-service');
     }
 
-    hooks.addGlobalHoistedProviders('auth-info');
+    hooks.addGlobalHoistedProviders([
+      'auth-info',
+      'auth-service-import',
+      'auth-info-import',
+    ]);
 
     // add global auth providers
     hooks.addFastifyChildren({
@@ -107,14 +111,13 @@ export const AuthPlugin: ParserPlugin = {
       $nexusAuth: {
         generator: '@baseplate/fastify/nexus/nexus-auth',
         peerProvider: true,
-        authInfoRef: `${auth.authFeaturePath}/root:$auth.authPlugin`,
+        authInfoRef: `${auth.authFeaturePath}/root:$auth.service`,
       },
     });
 
     // add feature providers
     hooks.addFeatureHoistedProviders(auth.authFeaturePath, [
       'auth-service',
-      'auth-service-import',
       'auth-mutations',
     ]);
     hooks.addFeatureChildren(auth.authFeaturePath, {
@@ -133,7 +136,6 @@ export const AuthPlugin: ParserPlugin = {
                 children: {
                   $authRoles: {
                     generator: '@baseplate/fastify/auth/auth-roles',
-                    userModelName: auth.userModel,
                     userRoleModelName: auth.userRoleModel,
                   },
                 },

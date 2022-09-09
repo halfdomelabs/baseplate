@@ -1,5 +1,6 @@
 import {
   ImportMap,
+  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeUtils,
@@ -20,10 +21,12 @@ const descriptorSchema = z.object({
 
 type Descriptor = z.infer<typeof descriptorSchema>;
 
-export type FastifyRedisProvider = unknown;
+export type FastifyRedisProvider = ImportMapper;
 
-export const fastifyRedisProvider =
-  createProviderType<FastifyRedisProvider>('fastify-redis');
+export const fastifyRedisProvider = createProviderType<FastifyRedisProvider>(
+  'fastify-redis',
+  { isReadOnly: true }
+);
 
 const createMainTask = createTaskConfigBuilder(
   ({ defaultUrl }: Descriptor) => ({
@@ -68,7 +71,14 @@ const createMainTask = createTaskConfigBuilder(
 
       return {
         getProviders: () => ({
-          fastifyRedis: {},
+          fastifyRedis: {
+            getImportMap: () => ({
+              '%fastify-redis': {
+                path: redisImport,
+                allowedImports: ['getRedisClient', 'createRedisClient'],
+              },
+            }),
+          },
         }),
         build: async (builder) => {
           const redisFile = typescript.createTemplate({

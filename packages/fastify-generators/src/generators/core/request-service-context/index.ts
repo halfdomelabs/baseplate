@@ -1,6 +1,7 @@
 import {
   ImportMapper,
   makeImportAndFilePath,
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -12,6 +13,7 @@ import {
 } from '@baseplate/sync';
 import R from 'ramda';
 import { z } from 'zod';
+import { notEmpty } from '@src/utils/array';
 import { requestContextProvider } from '../request-context';
 import { serviceContextSetupProvider } from '../service-context';
 
@@ -20,6 +22,7 @@ const descriptorSchema = z.object({});
 interface RequestContextField {
   name: string;
   type: TypescriptCodeExpression;
+  body?: (req: string, reply: string) => TypescriptCodeBlock;
   creator: (req: string, reply: string) => TypescriptCodeExpression;
 }
 
@@ -113,6 +116,11 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
                   TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
                     R.mapObjIndexed((field) => field.type, contextFields)
                   ),
+                CONTEXT_BODY: TypescriptCodeUtils.mergeBlocks(
+                  Object.values(contextFields)
+                    .map((f) => f.body && f.body('request', 'reply'))
+                    .filter(notEmpty)
+                ),
                 CONTEXT_CREATOR: TypescriptCodeUtils.mergeExpressions(
                   [
                     TypescriptCodeUtils.mergeExpressionsAsObject(

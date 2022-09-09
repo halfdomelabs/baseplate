@@ -6,6 +6,8 @@ import { AuthRole } from '%role-service';
 export interface UserInfo {
   id: string;
   email: string;
+  roles?: string[];
+  tokenExpiry?: Date;
 }
 
 export interface AuthInfo {

@@ -88,11 +88,8 @@ export function createAuthService(): AuthService {
     async getAccessToken() {
       const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
       // Check if access token has been invalidated
-      if (accessToken === '') {
-        return renewAccessToken();
-      }
       if (!accessToken) {
-        throw new Error('No access token found');
+        return renewAccessToken();
       }
       return accessToken;
     },
