@@ -117,6 +117,7 @@ async function writeFile(
       formattedContents = await formatter.format(contents, filePath);
     } catch (err) {
       console.error(`Error formatting ${filePath}\n`, err);
+      console.log(`File dump:\n${contents}`);
       throw err;
     }
   }

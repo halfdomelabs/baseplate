@@ -411,6 +411,17 @@ export const TypescriptCodeUtils = {
         if (content.startsWith(`function ${key}`)) {
           return `${content.replace(/^function /, '')}`;
         }
+        if (content.endsWith('*/')) {
+          const comment = content
+            .substring(content.lastIndexOf('/*') + 2)
+            .replace(/\*\/$/, '')
+            .trim();
+          const strippedContent = content.substring(
+            0,
+            content.lastIndexOf('/*')
+          );
+          return `// ${comment}\n${key}: ${strippedContent},`;
+        }
         return `${key}: ${content},`;
       })
       .join('\n');

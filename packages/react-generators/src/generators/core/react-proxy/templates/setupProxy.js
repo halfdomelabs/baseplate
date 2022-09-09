@@ -8,6 +8,7 @@ module.exports = function (app) {
         '^/api': '',
       },
       changeOrigin: true,
+      WS_OPTION,
     })
   );
 };

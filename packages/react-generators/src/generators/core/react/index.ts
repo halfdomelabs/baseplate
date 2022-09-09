@@ -89,6 +89,7 @@ const ReactGenerator = createGeneratorWithChildren({
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
         generator: '@baseplate/react/core/react-proxy',
+        peerProvider: true,
       },
     },
     error: {

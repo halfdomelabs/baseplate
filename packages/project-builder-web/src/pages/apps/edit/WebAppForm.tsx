@@ -71,6 +71,11 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
           control={control}
           name="includeUploadComponents"
         />
+        <CheckedInput.LabelledController
+          label="Enable Subscriptions?"
+          control={control}
+          name="enableSubscriptions"
+        />
         {roleOptions && (
           <CheckedArrayInput.LabelledController
             label="Allowed Roles?"

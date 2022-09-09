@@ -13,10 +13,12 @@ import {
   createProviderType,
   createGeneratorWithChildren,
   writeTemplateAction,
+  createNonOverwriteableMap,
 } from '@baseplate/sync';
 import R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
+import { reactProxyProvider } from '@src/generators/core/react-proxy';
 import { notEmpty } from '../../../utils/array';
 import { reactAppProvider } from '../../core/react-app';
 import { reactConfigProvider } from '../../core/react-config';
@@ -24,6 +26,7 @@ import { reactConfigProvider } from '../../core/react-config';
 const descriptorSchema = z.object({
   devApiEndpoint: z.string().min(1),
   schemaLocation: z.string().min(1),
+  enableSubscriptions: z.boolean().optional(),
 });
 
 export interface ApolloCreateArg {
@@ -39,11 +42,14 @@ export interface ApolloLink {
   name: string;
   bodyExpression: TypescriptCodeBlock;
   dependencies?: [string, string][];
+  httpOnly?: boolean;
+  wsOnly?: boolean;
 }
 
 export interface ReactApolloSetupProvider extends ImportMapper {
   addCreateArg(arg: ApolloCreateArg): void;
   addLink(link: ApolloLink): void;
+  addWebsocketOption(name: string, expression: TypescriptCodeExpression): void;
   getApiEndpointExpression(): TypescriptCodeExpression;
   registerGqlFile(filePath: string): void;
 }
@@ -75,14 +81,15 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     reactApp: reactAppProvider,
     eslint: eslintProvider,
     prettier: prettierProvider,
+    reactProxy: reactProxyProvider,
   },
   exports: {
     reactApolloSetup: reactApolloSetupProvider,
     reactApollo: reactApolloProvider,
   },
   createGenerator(
-    { devApiEndpoint, schemaLocation },
-    { node, reactConfig, typescript, reactApp, eslint, prettier }
+    { devApiEndpoint, schemaLocation, enableSubscriptions },
+    { node, reactConfig, typescript, reactApp, eslint, prettier, reactProxy }
   ) {
     const apolloCreateArgs: ApolloCreateArg[] = [];
     const links: ApolloLink[] = [];
@@ -92,6 +99,12 @@ const ReactApolloGenerator = createGeneratorWithChildren({
       '@apollo/client': '^3.5.10',
       graphql: '^16.3.0',
     });
+
+    if (enableSubscriptions) {
+      node.addPackages({
+        'graphql-ws': '5.10.1',
+      });
+    }
 
     node.addDevPackages({
       '@graphql-codegen/cli': '2.6.2',
@@ -146,6 +159,14 @@ const ReactApolloGenerator = createGeneratorWithChildren({
 
     prettier.addPrettierIgnore('src/generated/graphql.tsx');
 
+    const websocketOptions = createNonOverwriteableMap<
+      Record<string, TypescriptCodeExpression | string>
+    >({});
+
+    if (enableSubscriptions) {
+      reactProxy.enableWebSocket();
+    }
+
     return {
       getProviders: () => ({
         reactApolloSetup: {
@@ -167,6 +188,9 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           },
           getImportMap() {
             return importMap;
+          },
+          addWebsocketOption(name, expression) {
+            websocketOptions.set(name, expression);
           },
         },
         reactApollo: {
@@ -192,6 +216,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
         // always push http link at the last one
         sortedLinks.push({
           name: 'httpLink',
+          httpOnly: true,
           bodyExpression: new TypescriptCodeBlock(
             `const httpLink = new HttpLink({
               uri: config.REACT_APP_GRAPH_API_ENDPOINT,
@@ -203,6 +228,88 @@ const ReactApolloGenerator = createGeneratorWithChildren({
             { importMappers: [reactConfig] }
           ),
         });
+
+        if (enableSubscriptions) {
+          const websocketTemplate = await builder.readTemplate(
+            'websocket-links.ts'
+          );
+          const getWsUrlTemplate = TypescriptCodeUtils.extractTemplateSnippet(
+            websocketTemplate,
+            'GET_WS_URL'
+          );
+          const retryWaitTemplate = TypescriptCodeUtils.extractTemplateSnippet(
+            websocketTemplate,
+            'RETRY_WAIT'
+          ).replace(/;$/, '');
+
+          websocketOptions.merge({
+            url: TypescriptCodeUtils.createExpression(`getWsUrl()`, undefined, {
+              headerBlocks: [TypescriptCodeUtils.createBlock(getWsUrlTemplate)],
+            }),
+            retryAttempts:
+              "86400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */",
+            retryWait: retryWaitTemplate,
+          });
+
+          const wsOptions = TypescriptCodeUtils.mergeExpressionsAsObject(
+            websocketOptions.value()
+          );
+
+          sortedLinks.push({
+            name: 'wsLink',
+            wsOnly: true,
+            bodyExpression: TypescriptCodeUtils.formatBlock(
+              `const wsLink = new GraphQLWsLink(createClient(WS_OPTIONS));`,
+              { WS_OPTIONS: wsOptions },
+              {
+                importText: [
+                  `import { GraphQLWsLink } from '@apollo/client/link/subscriptions';`,
+                  `import { createClient } from 'graphql-ws';`,
+                ],
+              }
+            ),
+          });
+
+          const splitLinkTemplate = TypescriptCodeUtils.extractTemplateSnippet(
+            websocketTemplate,
+            'SPLIT_LINK'
+          );
+
+          const wsLinks = sortedLinks.filter((l) => l.wsOnly);
+          const httpLinks = sortedLinks.filter((l) => l.httpOnly);
+
+          const formatLinks = (
+            linksToFormat: ApolloLink[]
+          ): TypescriptCodeExpression => {
+            const linkNames = linksToFormat.map(
+              (link) => new TypescriptCodeExpression(link.name)
+            );
+            if (linkNames.length === 1) {
+              return linkNames[0];
+            }
+            return TypescriptCodeUtils.mergeExpressionsAsArray(linkNames).wrap(
+              (contents) => `from(${contents})`,
+              'import { from } from "@apollo/client";'
+            );
+          };
+
+          sortedLinks.push({
+            name: 'splitLink',
+            bodyExpression: TypescriptCodeUtils.formatBlock(
+              splitLinkTemplate,
+              {
+                WS_LINK: formatLinks(wsLinks),
+                HTTP_LINK: formatLinks(httpLinks),
+              },
+              {
+                importText: [
+                  `import { split } from '@apollo/client';`,
+                  `import { getMainDefinition } from '@apollo/client/utilities';`,
+                ],
+              }
+            ),
+          });
+        }
 
         await builder.apply(
           cacheFile.renderToAction('services/apollo/cache.ts', cachePath)
@@ -236,7 +343,11 @@ const ReactApolloGenerator = createGeneratorWithChildren({
             '\n\n'
           ),
           LINKS: TypescriptCodeUtils.mergeExpressionsAsArray(
-            sortedLinks.map((link) => new TypescriptCodeExpression(link.name))
+            sortedLinks
+              .filter((l) =>
+                enableSubscriptions ? !l.httpOnly && !l.wsOnly : true
+              )
+              .map((link) => new TypescriptCodeExpression(link.name))
           ),
         });
 
