@@ -9,7 +9,10 @@ import {
   createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
-import { authInfoImportProvider } from '@src/generators/auth/auth-service';
+import {
+  authInfoImportProvider,
+  authServiceImportProvider,
+} from '@src/generators/auth/auth-service';
 import { roleServiceProvider } from '@src/generators/auth/role-service';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
@@ -41,6 +44,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
   exports: {
     auth0Module: auth0ModuleProvider,
     authInfoImport: authInfoImportProvider,
+    authServiceImport: authServiceImportProvider,
   },
   createGenerator(
     { userModelName, includeManagement },
@@ -145,6 +149,20 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
               ],
             },
           }),
+        },
+        authServiceImport: {
+          getImportMap: () => ({
+            '%auth-service': {
+              path: authServicePath,
+              allowedImports: ['createAuthInfoFromRequest'],
+            },
+          }),
+          getAuthInfoCreator(request, token) {
+            return TypescriptCodeUtils.formatExpression(
+              `await createAuthInfoFromAuthorization(REQUEST, TOKEN)`,
+              { REQUEST: request, TOKEN: token }
+            );
+          },
         },
       }),
       build: async (builder) => {

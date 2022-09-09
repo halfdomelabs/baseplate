@@ -1,6 +1,7 @@
 import {
   ImportMap,
   ImportMapper,
+  makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
@@ -36,7 +37,12 @@ export interface AuthServiceProvider extends ImportMapper {
 export const authServiceProvider =
   createProviderType<AuthServiceProvider>('auth-service');
 
-export type AuthServiceImportProvider = ImportMapper;
+export interface AuthServiceImportProvider extends ImportMapper {
+  getAuthInfoCreator(
+    request: TypescriptCodeExpression,
+    token: TypescriptCodeExpression
+  ): TypescriptCodeExpression;
+}
 
 export const authServiceImportProvider =
   createProviderType<AuthServiceImportProvider>('auth-service-import', {
@@ -242,9 +248,13 @@ const AuthServiceGenerator = createGeneratorWithTasks({
 
         authSetup.getConfig().set('userModelName', userModelName);
 
+        const [authServiceImport] = makeImportAndFilePath(
+          `${modulePath}/services/auth-service`
+        );
+
         const importMap = {
           '%auth-service': {
-            path: `@/${modulePath}/services/auth-service`,
+            path: authServiceImport,
             allowedImports: [
               'AuthPayload',
               'loginUser',
@@ -267,12 +277,18 @@ const AuthServiceGenerator = createGeneratorWithTasks({
               getServiceExpression: () =>
                 new TypescriptCodeExpression(
                   'authService',
-                  `import { authService } from '@/${modulePath}/services/auth-service'`
+                  `import { authService } from '${authServiceImport}'`
                 ),
               getImportMap: () => importMap,
             },
             authServiceImport: {
               getImportMap: () => importMap,
+              getAuthInfoCreator(request, token) {
+                return token.wrap(
+                  (t) => `await createAuthInfoFromAuthorization(${t})`,
+                  `import { createAuthInfoFromAuthorization } from '${authServiceImport}'`
+                );
+              },
             },
           }),
           build: async (builder) => {

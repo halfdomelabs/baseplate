@@ -511,17 +511,29 @@ const NexusGenerator = createGeneratorWithTasks({
                 })
               );
 
-              await builder.apply(
-                typescript.createCopyAction({
-                  source: 'plugins/graphql/websocket.ts',
-                  destination: websocketPath,
+              const websocketFile = typescript.createTemplate(
+                {
+                  AUTH_INFO_CREATOR: authServiceImport.getAuthInfoCreator(
+                    TypescriptCodeUtils.createExpression('ctx.extra.request'),
+                    TypescriptCodeUtils.createExpression(
+                      `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`
+                    )
+                  ),
+                },
+                {
                   importMappers: [
-                    authServiceImport,
                     errorLoggerService,
                     loggerService,
                     requestServiceContext,
                   ],
-                })
+                }
+              );
+
+              await builder.apply(
+                websocketFile.renderToAction(
+                  'plugins/graphql/websocket.ts',
+                  websocketPath
+                )
               );
             },
           };

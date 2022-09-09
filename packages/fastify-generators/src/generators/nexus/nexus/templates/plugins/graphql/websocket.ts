@@ -6,7 +6,6 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { ExecutionArgs, ExecutionResult } from 'graphql';
 import { CloseCode } from 'graphql-ws';
 import { makeHandler } from 'graphql-ws/lib/use/@fastify/websocket';
-import { createAuthInfoFromAuthorization } from '%auth-service';
 import { logError } from '%error-logger';
 import { logger } from '%logger-service';
 import { HttpError } from '%http-errors';
@@ -35,11 +34,7 @@ export function getGraphqlWsHandler(
       try {
         // attach auth info to request
         const authorizationHeader = ctx.connectionParams?.authorization;
-        const authInfo = await createAuthInfoFromAuthorization(
-          typeof authorizationHeader === 'string'
-            ? authorizationHeader
-            : undefined
-        );
+        const authInfo = AUTH_INFO_CREATOR;
         ctx.extra.request.auth = authInfo;
 
         // set expiry for socket based on auth token expiry

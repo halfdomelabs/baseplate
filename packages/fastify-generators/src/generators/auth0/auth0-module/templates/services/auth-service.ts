@@ -77,3 +77,13 @@ export async function createAuthInfoFromRequest(
 
   return createAuthInfoFromUser(user, roles);
 }
+
+export async function createAuthInfoFromAuthorization(
+  req: FastifyRequest,
+  authorization: string | undefined
+): Promise<AuthInfo> {
+  // We have to manually add the header to the request since we can't
+  // use server.jwt.verify due to an error
+  req.headers.authorization = authorization;
+  return createAuthInfoFromRequest(req);
+}
