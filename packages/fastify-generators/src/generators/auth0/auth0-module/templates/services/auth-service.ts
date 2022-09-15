@@ -57,7 +57,7 @@ export async function getUserInfoFromRequest(
   return {
     id: userId,
     email,
-    roles: roles?.includes('user') ? roles : ['user', ...(roles || [])],
+    roles: roles.includes('user') ? roles : ['user', ...roles],
     tokenExpiry:
       typeof verifiedJwt.exp === 'number'
         ? new Date(verifiedJwt.exp * 1000)

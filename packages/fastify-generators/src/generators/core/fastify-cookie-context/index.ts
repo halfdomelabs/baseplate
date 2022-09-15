@@ -61,7 +61,7 @@ interface CookieStore {
               'Reply is not defined. This may happen if calling this function from a websocket connection.'
             );
           }
-          return reply;
+          return ${reply};
         }
       `
         ),
@@ -70,8 +70,8 @@ interface CookieStore {
           `
 {
   get: (name) => ${req}.cookies[name],
-  set: (name, value, options) => ${reply}.setCookie(name, value, options),
-  clear: (name) => ${reply}.clearCookie(name),
+  set: (name, value, options) => getReply().setCookie(name, value, options),
+  clear: (name) => getReply().clearCookie(name),
 }
 `
         ),

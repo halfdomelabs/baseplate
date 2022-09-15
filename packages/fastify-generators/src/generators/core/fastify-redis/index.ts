@@ -1,6 +1,7 @@
 import {
   ImportMap,
   ImportMapper,
+  jestProvider,
   makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeUtils,
@@ -36,12 +37,14 @@ const createMainTask = createTaskConfigBuilder(
       configService: configServiceProvider,
       fastifyHealthCheck: fastifyHealthCheckProvider,
       typescript: typescriptProvider,
+      jest: jestProvider.dependency().optional(),
     },
     exports: {
       fastifyRedis: fastifyRedisProvider,
     },
-    run({ node, configService, fastifyHealthCheck, typescript }) {
+    run({ node, configService, fastifyHealthCheck, typescript, jest }) {
       node.addPackages({ ioredis: '5.2.1' });
+      node.addDevPackages({ 'ioredis-mock': '8.2.2' });
 
       const [redisImport, redisPath] = makeImportAndFilePath(
         `src/services/redis.ts`
@@ -85,6 +88,20 @@ const createMainTask = createTaskConfigBuilder(
             CONFIG: configService.getConfigExpression(),
           });
           await builder.apply(redisFile.renderToAction('redis.ts', redisPath));
+
+          if (jest) {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'mock-redis.ts',
+                destination: 'src/tests/scripts/mock-redis.ts',
+              })
+            );
+            jest
+              .getConfig()
+              .appendUnique('setupFilesAfterEnv', [
+                './src/tests/scripts/mock-redis.ts',
+              ]);
+          }
         },
       };
     },

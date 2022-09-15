@@ -16,6 +16,7 @@ const descriptorSchema = z.object({});
 export interface JestGeneratorConfig {
   testPathIgnorePatterns: string[];
   customSetupBlocks: TypescriptCodeBlock[];
+  setupFilesAfterEnv: string[];
 }
 
 export interface JestProvider {
@@ -44,6 +45,7 @@ const JestGenerator = createGeneratorWithChildren({
           '<rootDir>/node_modules/',
         ],
         customSetupBlocks: [],
+        setupFilesAfterEnv: [],
       },
       { name: 'jest-config', mergeArraysUniquely: true }
     );
@@ -106,6 +108,13 @@ const JestGenerator = createGeneratorWithChildren({
           testPathIgnorePatterns: TypescriptCodeUtils.mergeExpressionsAsArray(
             config.testPathIgnorePatterns.map((str) => quot(str))
           ),
+          ...(config.setupFilesAfterEnv.length
+            ? {
+                setupFilesAfterEnv: TypescriptCodeUtils.mergeExpressionsAsArray(
+                  config.setupFilesAfterEnv.map((str) => quot(str))
+                ),
+              }
+            : {}),
         };
 
         const jestConfigFile = typescript.createTemplate({
