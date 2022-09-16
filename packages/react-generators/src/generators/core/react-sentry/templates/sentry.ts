@@ -18,6 +18,12 @@ if (SENTRY_ENABLED) {
   });
 }
 
+export function identifySentryUser(user: Sentry.User): void {
+  if (SENTRY_ENABLED) {
+    Sentry.setUser(user);
+  }
+}
+
 export function captureSentryError(error: unknown): void {
   if (SENTRY_ENABLED) {
     Sentry.captureException(error);

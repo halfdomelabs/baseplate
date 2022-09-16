@@ -1,10 +1,14 @@
 import {
   nodeProvider,
+  TypescriptCodeBlock,
   TypescriptCodeUtils,
   TypescriptCodeWrapper,
   typescriptProvider,
 } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import {
+  createGeneratorWithChildren,
+  createProviderType,
+} from '@baseplate/sync';
 import { z } from 'zod';
 import {
   ReactRouteLayout,
@@ -20,6 +24,13 @@ import { reactAppProvider } from '../react-app';
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
+
+export interface ReactRouterProvider {
+  addRouteHeader(block: TypescriptCodeBlock): void;
+}
+
+export const reactRouterProvider =
+  createProviderType<ReactRouterProvider>('react-router');
 
 const ReactRouterGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -43,6 +54,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
   exports: {
     reactRoutes: reactRoutesProvider,
     reactRoutesReadOnly: reactRoutesReadOnlyProvider,
+    reactRouter: reactRouterProvider,
   },
   createGenerator(descriptor, { node, react, reactApp, typescript }) {
     node.addPackage('react-router-dom', '^6.2.2');
@@ -59,6 +71,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
 
     const routes: ReactRoute[] = [];
     const layouts: ReactRouteLayout[] = [];
+    const headerBlocks: TypescriptCodeBlock[] = [];
 
     return {
       getProviders: () => ({
@@ -75,6 +88,11 @@ const ReactRouterGenerator = createGeneratorWithChildren({
         reactRoutesReadOnly: {
           getDirectoryBase: () => `${react.getSrcFolder()}/pages`,
           getRoutePrefix: () => ``,
+        },
+        reactRouter: {
+          addRouteHeader(block) {
+            headerBlocks.push(block);
+          },
         },
       }),
       build: async (builder) => {
@@ -108,7 +126,10 @@ const ReactRouterGenerator = createGeneratorWithChildren({
         const renderedRoutes = renderRoutes(routes, layouts);
 
         pagesRootFile.addCodeEntries({
-          ROUTE_HEADER: layouts.map((layout) => layout.header).filter(notEmpty),
+          ROUTE_HEADER: [
+            ...headerBlocks,
+            ...layouts.map((layout) => layout.header).filter(notEmpty),
+          ],
           ROUTES: renderedRoutes,
         });
 
