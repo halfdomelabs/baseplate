@@ -45,7 +45,19 @@ const ReactConfigGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node, typescript }) {
     const configEntryMap = createNonOverwriteableMap<
       Record<string, ConfigEntry>
-    >({}, { name: 'react-config-entries' });
+    >(
+      {
+        REACT_APP_ENVIRONMENT: {
+          comment: 'Environment the app is running in',
+          validator: TypescriptCodeUtils.createExpression(
+            `z.enum(['dev', 'test', 'stage', 'prod'])`,
+            "import { z } from 'zod'"
+          ),
+          devValue: 'dev',
+        },
+      },
+      { name: 'react-config-entries' }
+    );
     const customEnvVars: { name: string; value: string }[] = [];
 
     node.addPackages({

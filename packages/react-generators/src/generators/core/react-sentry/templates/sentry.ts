@@ -9,6 +9,7 @@ const SENTRY_ENABLED = !!config.REACT_APP_SENTRY_DSN;
 if (SENTRY_ENABLED) {
   Sentry.init({
     dsn: config.REACT_APP_SENTRY_DSN,
+    environment: config.REACT_APP_ENVIRONMENT,
     integrations: [new BrowserTracing()],
 
     // Set tracesSampleRate to 1.0 to capture 100%
