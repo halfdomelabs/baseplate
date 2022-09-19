@@ -127,6 +127,15 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
       headerKey: key,
     });
   }
+
+  withImportMappers(
+    mappers: ImportMapper[] | ImportMapper
+  ): TypescriptCodeBlock {
+    return new TypescriptCodeBlock(this.content, null, {
+      ...this.options,
+      importMappers: [this.options.importMappers || [], mappers].flat(),
+    });
+  }
 }
 
 export class TypescriptCodeExpression extends TypescriptCodeContents {

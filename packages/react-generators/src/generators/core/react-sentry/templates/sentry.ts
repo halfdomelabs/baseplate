@@ -9,6 +9,7 @@ const SENTRY_ENABLED = !!config.REACT_APP_SENTRY_DSN;
 if (SENTRY_ENABLED) {
   Sentry.init({
     dsn: config.REACT_APP_SENTRY_DSN,
+    environment: config.REACT_APP_ENVIRONMENT,
     integrations: [new BrowserTracing()],
 
     // Set tracesSampleRate to 1.0 to capture 100%
@@ -16,6 +17,12 @@ if (SENTRY_ENABLED) {
     // We recommend adjusting this value in production
     tracesSampleRate: 1.0,
   });
+}
+
+export function identifySentryUser(user: Sentry.User): void {
+  if (SENTRY_ENABLED) {
+    Sentry.setUser(user);
+  }
 }
 
 export function captureSentryError(error: unknown): void {

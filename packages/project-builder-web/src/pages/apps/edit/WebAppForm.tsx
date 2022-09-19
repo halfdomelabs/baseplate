@@ -76,6 +76,11 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
           control={control}
           name="enableSubscriptions"
         />
+        <CheckedInput.LabelledController
+          label="Enable Datadog Logging?"
+          control={control}
+          name="enableDatadog"
+        />
         {roleOptions && (
           <CheckedArrayInput.LabelledController
             label="Allowed Roles?"

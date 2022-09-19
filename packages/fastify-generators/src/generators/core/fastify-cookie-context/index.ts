@@ -65,7 +65,7 @@ interface CookieStore {
         }
       `
         ),
-      creator: (req, reply) =>
+      creator: (req) =>
         new TypescriptCodeExpression(
           `
 {

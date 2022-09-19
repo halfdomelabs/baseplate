@@ -6,6 +6,7 @@ import {
 } from '@baseplate/core-generators';
 import { createGeneratorWithChildren } from '@baseplate/sync';
 import { z } from 'zod';
+import { authIdentifyProvider } from '@src/generators/auth/auth-identify';
 import { reactConfigProvider } from '../react-config';
 import { reactErrorProvider } from '../react-error';
 
@@ -19,8 +20,12 @@ const ReactSentryGenerator = createGeneratorWithChildren({
     reactError: reactErrorProvider,
     reactConfig: reactConfigProvider,
     node: nodeProvider,
+    authIdentify: authIdentifyProvider,
   },
-  createGenerator(descriptor, { typescript, reactError, reactConfig, node }) {
+  createGenerator(
+    descriptor,
+    { typescript, reactError, reactConfig, node, authIdentify }
+  ) {
     const sentryFile = typescript.createTemplate(
       {},
       { importMappers: [reactConfig] }
@@ -45,6 +50,16 @@ const ReactSentryGenerator = createGeneratorWithChildren({
       validator: TypescriptCodeUtils.createExpression('z.string().optional()'),
       devValue: '',
     });
+
+    authIdentify.addBlock(
+      TypescriptCodeUtils.createBlock(
+        `identifySentryUser({
+        id: user.id,
+        email: user.email,
+      });`,
+        `import { identifySentryUser } from '${sentryImport}';`
+      )
+    );
 
     return {
       build: async (builder) => {

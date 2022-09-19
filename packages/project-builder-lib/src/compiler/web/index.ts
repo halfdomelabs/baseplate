@@ -65,6 +65,9 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
               fileModelName: projectConfig.storage.fileModel,
             }
           : undefined,
+      $datadogLogger: appConfig.enableDatadog
+        ? { generator: '@baseplate/react/core/react-datadog' }
+        : undefined,
       ...compileAuthFeatures(builder),
     },
   };
