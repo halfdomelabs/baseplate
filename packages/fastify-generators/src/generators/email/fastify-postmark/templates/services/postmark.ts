@@ -46,6 +46,11 @@ export async function renderAndSendTemplate<
 
   const validatedData = template.schema.parse(data);
 
+  // Avoid sending emails in tests
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+
   await client.sendEmailWithTemplate({
     From: from || DEFAULT_FROM,
     To: to,

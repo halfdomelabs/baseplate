@@ -57,7 +57,13 @@ export function writeNexusDefinitionFromDtoScalarField(
 
   const { nexusMethod } = options.lookupScalar(field.scalarType);
 
-  if (!nexusMethod) {
+  // prefer use of .id instead of .uuid for IDs
+  const nexusMethodWithId =
+    field.isId && (field.scalarType === 'uuid' || field.scalarType === 'string')
+      ? 'id'
+      : nexusMethod;
+
+  if (!nexusMethodWithId) {
     if (field.scalarType !== 'enum' || !field.enumType) {
       throw new Error(`Field must have nexus type or be enum!`);
     }
@@ -65,7 +71,7 @@ export function writeNexusDefinitionFromDtoScalarField(
       `.field("${field.name}", { type: "${field.enumType.name}" })`
     );
   } else {
-    components.push(`.${nexusMethod}("${field.name}")`);
+    components.push(`.${nexusMethodWithId}("${field.name}")`);
   }
 
   return components.join('');

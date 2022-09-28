@@ -50,10 +50,10 @@ const ReactConfigGenerator = createGeneratorWithChildren({
         REACT_APP_ENVIRONMENT: {
           comment: 'Environment the app is running in',
           validator: TypescriptCodeUtils.createExpression(
-            `z.enum(['dev', 'test', 'stage', 'prod'])`,
+            `z.enum(['development', 'test', 'staging', 'production'])`,
             "import { z } from 'zod'"
           ),
-          devValue: 'dev',
+          devValue: 'development',
         },
       },
       { name: 'react-config-entries' }

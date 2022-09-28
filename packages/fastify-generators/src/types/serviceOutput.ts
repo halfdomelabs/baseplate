@@ -30,6 +30,7 @@ export interface ServiceOutputDtoScalarField extends ServiceOutputDtoBaseField {
   type: 'scalar';
   scalarType: ScalarFieldType;
   enumType?: ServiceOutputEnum;
+  isId?: boolean;
 }
 
 export interface ServiceOutputDtoNestedField extends ServiceOutputDtoBaseField {
@@ -72,6 +73,7 @@ export function scalarPrismaFieldToServiceField(
     scalarType: field.scalarType,
     enumType:
       field.enumType === undefined ? undefined : lookupEnum(field.enumType),
+    isId: field.id,
   };
 }
 

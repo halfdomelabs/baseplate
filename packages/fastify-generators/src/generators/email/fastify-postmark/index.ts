@@ -32,6 +32,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
       comment: 'Postmark API token',
       value: 'z.string().min(1)',
       seedValue: 'POSTMARK_API_TOKEN',
+      exampleValue: 'POSTMARK_API_TOKEN',
     });
 
     return {

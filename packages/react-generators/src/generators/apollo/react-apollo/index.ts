@@ -123,6 +123,14 @@ const ReactApolloGenerator = createGeneratorWithChildren({
       devValue: devApiEndpoint,
     });
 
+    if (enableSubscriptions) {
+      reactConfig.getConfigMap().set('REACT_APP_GRAPH_WS_API_ENDPOINT', {
+        comment: 'URL for the GraphQL web socket API endpoint (optional)',
+        validator: TypescriptCodeUtils.createExpression('z.string()'),
+        devValue: '',
+      });
+    }
+
     const cacheFile = typescript.createTemplate({});
     const cachePath = 'src/services/apollo/cache.ts';
 

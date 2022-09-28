@@ -2,6 +2,9 @@
 
 // GET_WS_URL:START
 function getWsUrl(): string {
+  if (config.REACT_APP_GRAPH_WS_API_ENDPOINT) {
+    return config.REACT_APP_GRAPH_WS_API_ENDPOINT;
+  }
   // handle case where API endpoint includes domain, e.g. http://localhost/api/graphql
   if (config.REACT_APP_GRAPH_API_ENDPOINT.includes('http')) {
     return config.REACT_APP_GRAPH_API_ENDPOINT.replace(

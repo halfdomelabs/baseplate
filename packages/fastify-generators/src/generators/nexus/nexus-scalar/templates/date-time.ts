@@ -9,7 +9,7 @@ export const DateTimeScalar = scalarType({
   description: 'DateTime custom scalar type',
   sourceType: 'Date | string',
   parseValue(value: unknown) {
-    if (value === 'string') {
+    if (typeof value === 'string') {
       return new Date(value);
     }
     throw new BadRequestError('DateTime field must be provided as a string');
