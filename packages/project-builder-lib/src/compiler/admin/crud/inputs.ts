@@ -9,6 +9,7 @@ import {
   AdminCrudInputConfig,
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
+  ModelScalarFieldConfig,
 } from '@src/schema';
 
 function compileAdminEnumInput(
@@ -81,6 +82,19 @@ function compileAdminForeignInput(
   };
 }
 
+function getInputType(fieldConfig: ModelScalarFieldConfig): string {
+  switch (fieldConfig.type) {
+    case 'boolean':
+      return 'checked';
+    case 'date':
+      return 'date';
+    case 'dateTime':
+      return 'dateTime';
+    default:
+      return 'text';
+  }
+}
+
 function compileAdminCrudTextInput(
   field: AdminCrudTextInputConfig,
   modelName: string,
@@ -100,7 +114,7 @@ function compileAdminCrudTextInput(
     generator: '@baseplate/react/admin/admin-crud-text-input',
     label: field.label,
     modelField: field.modelField,
-    isCheckbox: fieldConfig.type === 'boolean',
+    type: getInputType(fieldConfig),
     validation:
       field.validation ||
       builder.parsedProject.getModelFieldValidation(

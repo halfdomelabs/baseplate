@@ -1,3 +1,4 @@
+import { capitalize } from 'inflection';
 import { relative } from 'path-browserify';
 import { ProjectConfig } from '@src/schema';
 import { AdminAppConfig } from '@src/schema/apps/admin';
@@ -38,6 +39,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
   return {
     name: 'react',
     generator: '@baseplate/react/core/react',
+    title: `${capitalize(projectConfig.name)} Admin Dashboard`,
     children: {
       router: {
         children: {
