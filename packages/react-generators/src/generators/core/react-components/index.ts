@@ -37,6 +37,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'ListGroup' },
   { name: 'Modal' },
   { name: 'NotFoundCard' },
+  { name: 'ReactDatePickerInput' },
   { name: 'ReactSelectInput' },
   { name: 'SelectInput' },
   { name: 'Sidebar' },
@@ -82,6 +83,10 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       'react-hot-toast': '^2.2.0',
       'react-icons': '^4.3.1',
       'react-select': '~5.2.2',
+      'react-datepicker': '4.8.0',
+    });
+    node.addDevPackages({
+      '@types/react-datepicker': '4.4.2',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useStatus.ts`
