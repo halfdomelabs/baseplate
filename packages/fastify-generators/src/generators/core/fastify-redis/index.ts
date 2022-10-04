@@ -43,7 +43,7 @@ const createMainTask = createTaskConfigBuilder(
       fastifyRedis: fastifyRedisProvider,
     },
     run({ node, configService, fastifyHealthCheck, typescript, jest }) {
-      node.addPackages({ ioredis: '5.2.1' });
+      node.addPackages({ ioredis: '5.2.3' });
       node.addDevPackages({ 'ioredis-mock': '8.2.2' });
 
       const [redisImport, redisPath] = makeImportAndFilePath(

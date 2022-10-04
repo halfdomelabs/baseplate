@@ -32,7 +32,8 @@ const createMainTask = createTaskConfigBuilder(() => ({
       .getConfig()
       .appendUnique('extraTsconfigProjects', ['./scripts/tsconfig.json']);
     node.addScripts({
-      'run:script': `ts-node --cwd scripts --transpile-only ${fastifyOutput.getDevLoaderString()}`,
+      'run:script': `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()}`,
+      'dev:script': `ts-node-dev --rs --transpile-only --respawn ${fastifyOutput.getDevLoaderString()}`,
     });
     return {
       getProviders: () => ({

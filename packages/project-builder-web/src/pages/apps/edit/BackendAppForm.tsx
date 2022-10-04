@@ -68,6 +68,11 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
           name="enableRedis"
         />
         <CheckedInput.LabelledController
+          label="Enable Bull Queue?"
+          control={control}
+          name="enableBullQueue"
+        />
+        <CheckedInput.LabelledController
           label="Enable GraphQL Subscriptions?"
           control={control}
           name="enableSubscriptions"
