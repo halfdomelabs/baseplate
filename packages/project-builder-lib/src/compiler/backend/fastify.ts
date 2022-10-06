@@ -54,12 +54,18 @@ export function buildFastify(
             peerProvider: true,
             defaultUrl: getRedisSettings(projectConfig).url,
           },
-      $bull: !app.enableBullQueue
-        ? undefined
+      ...(!app.enableBullQueue
+        ? {}
         : {
-            generator: '@baseplate/fastify/bull/bullmq',
-            peerProvider: true,
-          },
+            $bull: {
+              generator: '@baseplate/fastify/bull/bullmq',
+              peerProvider: true,
+            },
+            $bullBoard: {
+              generator: '@baseplate/fastify/bull/fastify-bull-board',
+              peerProvider: true,
+            },
+          }),
       $postmark: !app.enablePostmark
         ? undefined
         : {

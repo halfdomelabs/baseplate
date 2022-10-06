@@ -15,6 +15,10 @@ export function compileAuthFeatures(
         generator: '@baseplate/react/auth0/auth0-hooks',
         peerProvider: true,
       },
+      $authIdentify: {
+        generator: '@baseplate/react/auth/auth-identify',
+        peerProvider: true,
+      },
       $authApollo: {
         generator: '@baseplate/react/auth0/auth0-apollo',
       },

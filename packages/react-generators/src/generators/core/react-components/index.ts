@@ -79,7 +79,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       '@headlessui/react': '1.6.6',
       '@hookform/resolvers': '^2.8.8',
       classnames: '^2.3.1',
-      'react-hook-form': '^7.28.0',
+      'react-hook-form': '7.30.0',
       'react-hot-toast': '^2.2.0',
       'react-icons': '^4.3.1',
       'react-select': '~5.2.2',
