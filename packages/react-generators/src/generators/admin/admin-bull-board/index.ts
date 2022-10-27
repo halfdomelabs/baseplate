@@ -64,7 +64,7 @@ const createMainTask = createTaskConfigBuilder(
           reactRoutes.registerRoute({
             path: 'bull-board',
             element: TypescriptCodeUtils.createExpression(
-              'BullBoardPage',
+              '<BullBoardPage />',
               `import BullBoardPage from '@/${baseDirectory}'`
             ),
           });

@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { ServiceContext } from '%service-context';
 import { StorageAdapterKey } from './adapters';
 
-interface FileCategory {
+export interface FileCategory {
   name: string;
   authorizeUpload?: (context: ServiceContext) => Promise<boolean> | boolean;
   authorizeRead?: (

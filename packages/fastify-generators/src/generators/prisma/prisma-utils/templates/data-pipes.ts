@@ -31,8 +31,8 @@ export function mergePipeOperations(
   };
 }
 
-// Borrowed from Prisma generated code
-type UnwrapPromise<P extends any> = P extends Promise<infer R> ? R : P;
+// Taken from Prisma generated code
+type UnwrapPromise<P> = P extends Promise<infer R> ? R : P;
 type UnwrapTuple<Tuple extends readonly unknown[]> = {
   [K in keyof Tuple]: K extends `${number}`
     ? Tuple[K] extends PrismaPromise<infer X>
@@ -42,7 +42,7 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
 };
 
 export async function applyDataPipeOutputToOperations<
-  Promises extends PrismaPromise<any>[]
+  Promises extends PrismaPromise<unknown>[]
 >(
   outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[],
   operations: [...Promises]

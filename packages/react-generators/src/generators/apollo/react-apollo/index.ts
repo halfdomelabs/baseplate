@@ -96,7 +96,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     const gqlFiles: string[] = [];
 
     node.addPackages({
-      '@apollo/client': '^3.5.10',
+      '@apollo/client': '3.7.0',
       graphql: '^16.3.0',
     });
 
@@ -257,6 +257,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
             retryAttempts:
               "86400 /* effectively retry forever (1 month of retries) - there's no way of disabling retry attempts */",
             retryWait: retryWaitTemplate,
+            shouldRetry: '() => true',
           });
 
           const wsOptions = TypescriptCodeUtils.mergeExpressionsAsObject(

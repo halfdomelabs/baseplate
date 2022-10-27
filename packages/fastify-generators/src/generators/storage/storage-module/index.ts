@@ -218,6 +218,17 @@ const StorageModuleGenerator = createGeneratorWithTasks({
               )
             );
 
+            const downloadFile = typescript.createTemplate(
+              { FILE_MODEL: model },
+              { importMappers: [errorHandlerService, serviceContext] }
+            );
+            await builder.apply(
+              downloadFile.renderToAction(
+                'services/download-file.ts',
+                path.join(moduleFolder, 'services/download-file.ts')
+              )
+            );
+
             const validateUploadInputFile = typescript.createTemplate(
               { FILE_MODEL: model },
               {
@@ -239,7 +250,17 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             await builder.apply(
               typescript.createCopyFilesAction({
                 destinationBaseDirectory: moduleFolder,
-                paths: ['utils/mime.ts', 'utils/mime.unit.test.ts'],
+                paths: [
+                  'utils/mime.ts',
+                  'utils/mime.unit.test.ts',
+                  {
+                    path: 'utils/upload.ts',
+                    replacements: {
+                      FILE_CREATE_INPUT: `${fileModel}CreateInput`,
+                    },
+                  },
+                ],
+                importMappers: [serviceContext, errorHandlerService],
               })
             );
 

@@ -66,6 +66,9 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
           ],
         },
       },
+      components: {
+        includeDatePicker: true,
+      },
       $tailwind: {
         generator: '@baseplate/react/core/react-tailwind',
       },
@@ -78,6 +81,16 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         links: [
           { type: 'link', label: 'Home', icon: 'MdHome', path: '/' },
           ...buildNavigationLinks(appConfig),
+          ...(backendApp.enableBullQueue
+            ? [
+                {
+                  type: 'link',
+                  label: 'Queues',
+                  icon: 'AiOutlineOrderedList',
+                  path: '/bull-board',
+                },
+              ]
+            : []),
         ],
       },
       $adminComponents: {

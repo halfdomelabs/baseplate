@@ -67,7 +67,7 @@ export function compileAdminCrudSection(
   parentId: string
 ): unknown {
   const sectionName = inflection.camelize(
-    crudSection.name.replace(' ', ''),
+    crudSection.name.replace(/ /g, '_'),
     true
   );
   const crudSectionId = `${parentId}.${sectionName}.$section`;

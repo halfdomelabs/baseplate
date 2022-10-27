@@ -57,6 +57,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
       '@bull-board/fastify': '4.3.2',
     });
 
+    // required for bull-board to compile
+    node.addDevPackages({
+      '@types/redis-info': '3.0.0',
+    });
+
     return {
       getProviders: () => ({
         fastifyBullBoard: {
@@ -76,6 +81,14 @@ const createMainTask = createTaskConfigBuilder(() => ({
         );
 
         const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
+
+        appModule.registerFieldEntry(
+          'children',
+          TypescriptCodeUtils.createExpression(
+            'bullBoardModule',
+            `import { bullBoardModule } from '${moduleFolder}'`
+          )
+        );
 
         await builder.apply(
           pluginFile.renderToAction(

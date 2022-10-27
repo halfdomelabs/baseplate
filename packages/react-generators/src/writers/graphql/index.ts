@@ -260,3 +260,10 @@ export function mergeGraphQLFragments(
     });
   }, [] as GraphQLFragment[]);
 }
+
+export function areFieldsIdentical(
+  fieldsOne: GraphQLField[],
+  fieldsTwo: GraphQLField[]
+): boolean {
+  return _.isEqual(fieldsOne, fieldsTwo);
+}
