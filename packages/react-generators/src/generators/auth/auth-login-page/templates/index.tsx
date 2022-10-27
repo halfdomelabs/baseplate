@@ -8,7 +8,7 @@ import { Alert, Button, Card, TextInput } from '%react-components';
 import { useLoginWithEmailAndPasswordMutation } from '%react-apollo/generated';
 import { useStatus } from '%react-components/useStatus';
 import { authService } from '%auth-service';
-import { formatError } from '%react-error/formatter';
+import { logAndFormatError } from '%react-error/formatter';
 import { getApolloErrorCode } from '%apollo-error/utils';
 
 const formSchema = z.object({
@@ -90,7 +90,7 @@ function LoginPage(): JSX.Element {
           );
           break;
         default:
-          setError(formatError(err, 'Sorry, we could not log you in.'));
+          setError(logAndFormatError(err, 'Sorry, we could not log you in.'));
       }
     });
   };

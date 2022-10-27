@@ -3,7 +3,7 @@
 import { Link } from 'react-router-dom';
 import { Alert, LinkButton, Table } from '%react-components';
 import { useToast } from '%react-components/useToast';
-import { formatError } from '%react-error/formatter';
+import { logAndFormatError } from '%react-error/formatter';
 
 interface Props {
   items: ROW_FRAGMENT[];
@@ -25,7 +25,9 @@ function COMPONENT_NAME({
       await deleteItem(item);
       toast.success('Successfully deleted the item!');
     } catch (err) {
-      toast.error(formatError(err, 'Sorry we could not delete the item.'));
+      toast.error(
+        logAndFormatError(err, 'Sorry we could not delete the item.')
+      );
     }
   }
 

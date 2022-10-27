@@ -3,7 +3,7 @@
 import { useToast } from '%react-components/useToast';
 import { useLogOutMutation } from '%react-apollo/generated';
 import { authService } from '%auth-service';
-import { formatError } from '%react-error/formatter';
+import { logAndFormatError } from '%react-error/formatter';
 import { logger } from '%react-logger';
 
 export function useLogOut(): () => void {
@@ -18,7 +18,7 @@ export function useLogOut(): () => void {
         toast.success('You have been successfully logged out!');
       })
       .catch((err) => {
-        toast.error(formatError(err, 'Sorry, we could not log you out.'));
+        toast.error(logAndFormatError(err, 'Sorry, we could not log you out.'));
         logger.error(err);
       });
   };
