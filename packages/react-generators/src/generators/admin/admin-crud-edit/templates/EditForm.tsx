@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Button } from '%react-components';
 import { useStatus } from '%react-components/useStatus';
-import { formatError } from '%react-error/formatter';
+import { logAndFormatError } from '%react-error/formatter';
 
 interface Props {
   className?: string;
@@ -32,7 +32,7 @@ function COMPONENT_NAME({
       setIsUpdating(true);
       await submitData(data);
     } catch (err) {
-      setError(formatError(err));
+      setError(logAndFormatError(err));
     } finally {
       setIsUpdating(false);
     }
