@@ -143,26 +143,21 @@ export const fieldAuthorizeRolePlugin = (
       // we need to manually patch subscribe field config
       if (subscribe && authorize) {
         // eslint-disable-next-line no-param-reassign
-        field.subscribe = async function* authorizeSubscribe(
+        field.subscribe = async function authorizeSubscribe(
           root,
           args: Record<string, unknown>,
           context,
           info
         ) {
-          try {
-            await authorizeAccess(
-              authorize,
-              root,
-              args,
-              context as RequestServiceContext,
-              info
-            );
-          } catch (err) {
-            yield err;
-            return;
-          }
+          await authorizeAccess(
+            authorize,
+            root,
+            args,
+            context as RequestServiceContext,
+            info
+          );
 
-          yield* subscribe(
+          return subscribe(
             root,
             args,
             context,

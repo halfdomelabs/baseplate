@@ -1,6 +1,11 @@
 // @ts-nocheck
 
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { Readable } from 'stream';
+import {
+  S3Client,
+  GetObjectCommand,
+  PutObjectCommand,
+} from '@aws-sdk/client-s3';
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
@@ -67,9 +72,36 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
     return `${hostedUrl.replace(/\/$/, '')}/${path}`;
   }
 
+  async function uploadFile(
+    path: string,
+    contents: Buffer | ReadableStream | string
+  ): Promise<void> {
+    await client.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: path,
+        Body: contents,
+        ServerSideEncryption: 'AES256',
+      })
+    );
+  }
+
+  async function downloadFile(path: string): Promise<Readable> {
+    const command = new GetObjectCommand({
+      Bucket: bucket,
+      Key: path,
+    });
+
+    const response = await client.send(command);
+
+    return response.Body as Readable;
+  }
+
   return {
     createPresignedUploadUrl,
     createPresignedDownloadUrl,
     getHostedUrl,
+    uploadFile,
+    downloadFile,
   };
 };

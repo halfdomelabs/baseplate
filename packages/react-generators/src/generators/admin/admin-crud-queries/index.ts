@@ -4,8 +4,8 @@ import {
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
   writeFormattedAction,
 } from '@baseplate/sync';
 import { pluralize } from 'inflection';
@@ -14,9 +14,11 @@ import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { reactRoutesProvider } from '@src/providers/routes';
 import { lowerCaseFirst } from '@src/utils/case';
 import {
+  areFieldsIdentical,
   GraphQLField,
   GraphQLFragment,
   GraphQLRoot,
+  mergeGraphQLFragments,
   renderGraphQLFragment,
   renderGraphQLRoot,
 } from '@src/writers/graphql';
@@ -105,6 +107,10 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
 
     const queries: string[] = [];
 
+    const fragments: GraphQLFragment[] = [];
+
+    const roots: GraphQLRoot[] = [];
+
     return {
       getProviders: () => ({
         adminCrudQueries: {
@@ -146,14 +152,35 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
           getListDocumentExpression: () =>
             getGeneratedImport(`${listQueryName}Document`),
           addFragment: (fragment) => {
-            queries.push(renderGraphQLFragment(fragment));
+            fragments.push(fragment);
           },
           addRoot: (root) => {
-            queries.push(renderGraphQLRoot(root));
+            const existingRoot = roots.find((r) => r.name === root.name);
+            if (existingRoot) {
+              if (!areFieldsIdentical(existingRoot.fields, root.fields)) {
+                throw new Error(
+                  `Root ${
+                    root.name || 'unnamed'
+                  } already exists with different fields`
+                );
+              }
+              return;
+            }
+            roots.push(root);
           },
         },
       }),
       build: async (builder) => {
+        // merge fragments together
+        mergeGraphQLFragments(fragments).forEach((fragment) => {
+          queries.push(renderGraphQLFragment(fragment));
+        });
+
+        // merge roots together
+        roots.forEach((root) => {
+          queries.push(renderGraphQLRoot(root));
+        });
+
         if (config.rowFields.length) {
           // create fragment and query
           queries.push(

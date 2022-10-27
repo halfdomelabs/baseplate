@@ -1,3 +1,5 @@
+import { Readable } from 'stream';
+
 export interface PresignedUrlField {
   name: string;
   value: string;
@@ -22,4 +24,9 @@ export interface StorageAdapter {
   ) => Promise<AdapterPresignedUploadUrlPayload>;
   createPresignedDownloadUrl?: (path: string) => Promise<string>;
   getHostedUrl?: (path: string) => string | null;
+  uploadFile?: (
+    path: string,
+    contents: Buffer | ReadableStream | string
+  ) => Promise<void>;
+  downloadFile?: (path: string) => Promise<Readable>;
 }

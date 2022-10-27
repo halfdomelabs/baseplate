@@ -16,7 +16,7 @@ import { reactProvider } from '../react';
 import { reactAppProvider } from '../react-app';
 
 const descriptorSchema = z.object({
-  placeholder: z.string().optional(),
+  includeDatePicker: z.boolean().optional(),
 });
 
 export interface ReactComponentEntry {
@@ -37,7 +37,6 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'ListGroup' },
   { name: 'Modal' },
   { name: 'NotFoundCard' },
-  { name: 'ReactDatePickerInput' },
   { name: 'ReactSelectInput' },
   { name: 'SelectInput' },
   { name: 'Sidebar' },
@@ -73,20 +72,19 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
   exports: {
     reactComponents: reactComponentsProvider,
   },
-  createGenerator(descriptor, { react, node, typescript, reactApp }) {
+  createGenerator(
+    { includeDatePicker },
+    { react, node, typescript, reactApp }
+  ) {
     const srcFolder = react.getSrcFolder();
     node.addPackages({
       '@headlessui/react': '1.6.6',
       '@hookform/resolvers': '^2.8.8',
       classnames: '^2.3.1',
-      'react-hook-form': '^7.28.0',
+      'react-hook-form': '7.30.0',
       'react-hot-toast': '^2.2.0',
       'react-icons': '^4.3.1',
       'react-select': '~5.2.2',
-      'react-datepicker': '4.8.0',
-    });
-    node.addDevPackages({
-      '@types/react-datepicker': '4.4.2',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useStatus.ts`
@@ -94,7 +92,19 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     const [useToastImport, useToastPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useToast.tsx`
     );
-    const allReactComponents = [...REACT_COMPONENTS];
+    const coreReactComponents = [...REACT_COMPONENTS];
+
+    if (includeDatePicker) {
+      coreReactComponents.push({ name: 'ReactDatePickerInput' });
+      node.addPackages({
+        'react-datepicker': '4.8.0',
+      });
+      node.addDevPackages({
+        '@types/react-datepicker': '4.4.2',
+      });
+    }
+
+    const allReactComponents = [...coreReactComponents];
 
     // add toaster root sibling component
     reactApp.addRenderSibling(
@@ -113,7 +123,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
           getImportMap: () => ({
             '%react-components': {
               path: `@/${srcFolder}/components`,
-              allowedImports: REACT_COMPONENTS.map((entry) => entry.name),
+              allowedImports: coreReactComponents.map((entry) => entry.name),
             },
             '%react-components/useStatus': {
               path: useStatusImport,
@@ -128,7 +138,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         await Promise.all(
-          REACT_COMPONENTS.map(async ({ name }) =>
+          coreReactComponents.map(async ({ name }) =>
             builder.apply(
               copyTypescriptFileAction({
                 source: `components/${name}/index.tsx`,

@@ -77,6 +77,15 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
           columns.flatMap((c) => c.display.dataDependencies).filter(notEmpty)
         );
 
+        dataDependencies.forEach((dep) => {
+          dep.graphFragments?.forEach((frag) => {
+            adminCrudQueries.addFragment(frag);
+          });
+          dep.graphRoots?.forEach((root) => {
+            adminCrudQueries.addRoot(root);
+          });
+        });
+
         const inputLoaders = dataDependencies.map((d) => d.loader);
 
         const listPageLoader: DataLoader = {
@@ -99,6 +108,14 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
             ...columns.flatMap((c) => c.display.graphQLFields),
           ])
         );
+        const tableLoaderExtraProps = dataDependencies
+          .map(
+            (d) =>
+              `${d.propName}={${d.propLoaderValueGetter(
+                d.loader.loaderValueName
+              )}}`
+          )
+          .join(' ');
 
         const listPageComponentName = `${modelName}ListPage`;
         const listPage = typescript.createTemplate(
@@ -113,7 +130,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
               titleizeCamel(pluralize(modelName))
             ),
             TABLE_COMPONENT: new TypescriptCodeExpression(
-              `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} />`,
+              `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
               `import ${tableComponentName} from '${tableComponentImport}'`
             ),
             REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),

@@ -1,6 +1,6 @@
 import { capitalize } from 'inflection';
 import { relative } from 'path-browserify';
-import { ProjectConfig } from '@src/schema';
+import { BackendAppConfig, ProjectConfig } from '@src/schema';
 import { AdminAppConfig } from '@src/schema/apps/admin';
 import { AppEntry } from '@src/types/files';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case';
@@ -22,7 +22,9 @@ export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
 export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
 
-  const backendApps = projectConfig.apps.filter((a) => a.type === 'backend');
+  const backendApps = projectConfig.apps.filter(
+    (a): a is BackendAppConfig => a.type === 'backend'
+  );
 
   if (backendApps.length > 1 || !backendApps.length) {
     throw new Error(`Only one backend app is supported and must exist`);
@@ -50,8 +52,22 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
               generator: '@baseplate/react/admin/admin-home',
             },
             ...compileAdminFeatures(builder),
+            ...(backendApp.enableBullQueue
+              ? [
+                  {
+                    name: 'bull-board',
+                    generator: '@baseplate/react/admin/admin-bull-board',
+                    bullBoardUrl: `http://localhost:${
+                      projectConfig.portBase + 1
+                    }`,
+                  },
+                ]
+              : []),
           ],
         },
+      },
+      components: {
+        includeDatePicker: true,
       },
       $tailwind: {
         generator: '@baseplate/react/core/react-tailwind',
@@ -65,6 +81,16 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         links: [
           { type: 'link', label: 'Home', icon: 'MdHome', path: '/' },
           ...buildNavigationLinks(appConfig),
+          ...(backendApp.enableBullQueue
+            ? [
+                {
+                  type: 'link',
+                  label: 'Queues',
+                  icon: 'AiOutlineOrderedList',
+                  path: '/bull-board',
+                },
+              ]
+            : []),
         ],
       },
       $adminComponents: {

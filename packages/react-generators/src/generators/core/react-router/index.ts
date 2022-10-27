@@ -65,7 +65,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     // TODO: Fix and remove when we upgrade React to 18
     node.mergeExtraProperties({
       resolutions: {
-        '@types/react': '^17.0.20',
+        '@types/react': '17.0.20',
       },
     });
 
