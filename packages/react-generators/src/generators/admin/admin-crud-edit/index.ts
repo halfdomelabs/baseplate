@@ -119,7 +119,6 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
         const createPageName = `${modelName}CreatePage`;
 
         const editQueryInfo = adminCrudQueries.getEditQueryHookInfo();
-        const createInfo = adminCrudQueries.getCreateHookInfo();
         const updateInfo = adminCrudQueries.getUpdateHookInfo();
 
         const inputFields: AdminCrudInput[] = [];
@@ -232,6 +231,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
             );
 
             if (!disableCreate) {
+              const createInfo = adminCrudQueries.getCreateHookInfo();
               const createPage = typescript.createTemplate(
                 {
                   COMPONENT_NAME: new TypescriptStringReplacement(

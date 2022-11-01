@@ -65,12 +65,13 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
           'import { onError } from "@apollo/client/link/error"',
           'import { getMainDefinition } from "@apollo/client/utilities"',
           'import { GraphQLError } from "graphql";',
+          'import { ServerError } from "@apollo/client/link/utils";',
         ],
         {
           importMappers: [reactError, reactLogger],
           headerBlocks: [
             TypescriptCodeUtils.createBlock(
-              `interface ErrorExtensions {
+              `export interface ErrorExtensions {
   code?: string;
   statusCode?: number;
   extraData?: Record<string, unknown>;

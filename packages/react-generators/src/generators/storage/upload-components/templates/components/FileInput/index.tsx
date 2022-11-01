@@ -37,6 +37,7 @@ interface Props {
   placeholder?: string;
   category: string;
   imagePreview?: boolean;
+  accept?: Record<string, string[]>;
 }
 
 const FileInput = function FileInput({
@@ -48,6 +49,7 @@ const FileInput = function FileInput({
   category,
   placeholder,
   imagePreview,
+  accept,
 }: Props): JSX.Element {
   const [createUploadUrl] = useCreateUploadUrlMutation();
 
@@ -101,6 +103,7 @@ const FileInput = function FileInput({
   const isDraggable = !isUploading && !error && !disabled;
 
   const { getRootProps, getInputProps, inputRef, isDragActive } = useDropzone({
+    accept,
     onDropAccepted,
     multiple: false,
     maxFiles: 1,

@@ -58,9 +58,11 @@ function buildMutationSchemaTypeForModel(
     modelName: model.name,
     crudServiceRef: `${feature}/root:$services.${model.name}Service`,
     children: {
-      create: {
-        children: { authorize: { roles: authorize?.create } },
-      },
+      create: model.service?.create?.fields?.length
+        ? {
+            children: { authorize: { roles: authorize?.create } },
+          }
+        : null,
       update: {
         children: { authorize: { roles: authorize?.update } },
       },
