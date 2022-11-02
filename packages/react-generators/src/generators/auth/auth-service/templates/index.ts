@@ -3,6 +3,7 @@ import { ApolloError } from '@apollo/client';
 import { getRefreshedAccessToken } from './tokens';
 import { AuthPayload } from './types';
 import { createTypedEventEmitter } from '%ts-utils/typedEventEmitter';
+import { getSafeLocalStorage } from '%react-utils/safeLocalStorage';
 
 interface AuthService {
   destroy(): void;
@@ -18,6 +19,8 @@ const USER_ID_KEY = 'AUTH_USER_ID';
 const ACCESS_TOKEN_KEY = 'AUTH_ACCESS_TOKEN';
 const REFRESH_TOKEN_KEY = 'AUTH_REFRESH_TOKEN';
 
+const safeLocalStorage = getSafeLocalStorage();
+
 export function createAuthService(): AuthService {
   const events = createTypedEventEmitter<{ userIdChanged: string | null }>();
 
@@ -30,21 +33,21 @@ export function createAuthService(): AuthService {
   window.addEventListener('storage', storageEventListener);
 
   function getUserId(): string | null {
-    return localStorage.getItem(USER_ID_KEY);
+    return safeLocalStorage.getItem(USER_ID_KEY);
   }
 
   function setAuthPayload(payload: AuthPayload | null): void {
     const userIdChanged = payload?.userId !== getUserId();
     if (!payload) {
-      localStorage.removeItem(ACCESS_TOKEN_KEY);
-      localStorage.removeItem(REFRESH_TOKEN_KEY);
-      localStorage.removeItem(USER_ID_KEY);
+      safeLocalStorage.removeItem(ACCESS_TOKEN_KEY);
+      safeLocalStorage.removeItem(REFRESH_TOKEN_KEY);
+      safeLocalStorage.removeItem(USER_ID_KEY);
     } else {
-      localStorage.setItem(ACCESS_TOKEN_KEY, payload.accessToken);
+      safeLocalStorage.setItem(ACCESS_TOKEN_KEY, payload.accessToken);
       if (payload.refreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, payload.refreshToken);
+        safeLocalStorage.setItem(REFRESH_TOKEN_KEY, payload.refreshToken);
       }
-      localStorage.setItem(USER_ID_KEY, payload.userId);
+      safeLocalStorage.setItem(USER_ID_KEY, payload.userId);
     }
     if (userIdChanged) {
       events.emit('userIdChanged', null);
@@ -53,7 +56,7 @@ export function createAuthService(): AuthService {
 
   async function renewAccessToken(): Promise<string> {
     const userId = getUserId();
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+    const refreshToken = safeLocalStorage.getItem(REFRESH_TOKEN_KEY);
     if (!userId) {
       throw new Error('No user ID found');
     }
@@ -86,7 +89,7 @@ export function createAuthService(): AuthService {
     },
     getUserId,
     async getAccessToken() {
-      const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
+      const accessToken = safeLocalStorage.getItem(ACCESS_TOKEN_KEY);
       // Check if access token has been invalidated
       if (!accessToken) {
         return renewAccessToken();
@@ -94,7 +97,7 @@ export function createAuthService(): AuthService {
       return accessToken;
     },
     invalidateAccessToken() {
-      localStorage.setItem(ACCESS_TOKEN_KEY, '');
+      safeLocalStorage.setItem(ACCESS_TOKEN_KEY, '');
     },
     setAuthPayload,
     onUserIdChanged(handler) {
