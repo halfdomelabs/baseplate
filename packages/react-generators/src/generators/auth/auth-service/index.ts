@@ -10,6 +10,7 @@ import {
   copyFileAction,
 } from '@baseplate/sync';
 import { z } from 'zod';
+import { reactUtilsProvider } from '@src/generators/core/react-utils';
 import { reactApolloSetupProvider } from '../../apollo/react-apollo';
 
 const descriptorSchema = z.object({
@@ -28,11 +29,15 @@ const AuthServiceGenerator = createGeneratorWithChildren({
     tsUtils: tsUtilsProvider,
     reactApolloSetup: reactApolloSetupProvider,
     typescript: typescriptProvider,
+    reactUtils: reactUtilsProvider,
   },
   exports: {
     authService: authServiceProvider,
   },
-  createGenerator(descriptor, { tsUtils, reactApolloSetup, typescript }) {
+  createGenerator(
+    descriptor,
+    { tsUtils, reactApolloSetup, typescript, reactUtils }
+  ) {
     const authFolder = 'src/services/auth';
     const [serviceImport, servicePath] = makeImportAndFilePath(
       `${authFolder}/index.ts`
@@ -70,7 +75,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'index.ts',
             destination: servicePath,
-            importMappers: [tsUtils],
+            importMappers: [tsUtils, reactUtils],
           })
         );
 
