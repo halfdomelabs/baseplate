@@ -7,12 +7,15 @@ import { STORAGE_ADAPTERS } from '../constants/adapters';
 import { FILE_CATEGORIES } from '../constants/file-categories';
 
 export async function downloadFile(
-  fileId: string,
+  fileIdOrFile: string | FILE_MODEL_TYPE,
   context: ServiceContext
 ): Promise<Readable> {
-  const file = await FILE_MODEL.findUniqueOrThrow({
-    where: { id: fileId },
-  });
+  const file =
+    typeof fileIdOrFile === 'string'
+      ? await FILE_MODEL.findUniqueOrThrow({
+          where: { id: fileIdOrFile },
+        })
+      : fileIdOrFile;
 
   const category = FILE_CATEGORIES.find((c) => c.name === file.category);
   if (!category) {

@@ -219,7 +219,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             );
 
             const downloadFile = typescript.createTemplate(
-              { FILE_MODEL: model },
+              { FILE_MODEL: model, FILE_MODEL_TYPE: modelType },
               { importMappers: [errorHandlerService, serviceContext] }
             );
             await builder.apply(

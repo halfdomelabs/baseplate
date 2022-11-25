@@ -98,6 +98,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       coreReactComponents.push({ name: 'ReactDatePickerInput' });
       node.addPackages({
         'react-datepicker': '4.8.0',
+        'date-fns': '2.29.3',
       });
       node.addDevPackages({
         '@types/react-datepicker': '4.4.2',
