@@ -1,5 +1,7 @@
 import { program } from 'commander';
 import { buildProjectForDirectory, buildToCleanFolder } from './runner';
+import { startWebServer } from './server';
+import { logger } from './services/logger';
 
 async function runMain(): Promise<void> {
   program.version('0.0.1');
@@ -16,7 +18,14 @@ async function runMain(): Promise<void> {
     )
     .action(buildToCleanFolder);
 
+  program
+    .command('serve <directories...>')
+    .description('Starts the project builder web service')
+    .option('--no-browser', 'Do not start browser')
+    .option('--port <number>', 'Port to listen on', parseInt)
+    .action(startWebServer);
+
   await program.parseAsync(process.argv);
 }
 
-runMain().catch((err) => console.error(err));
+runMain().catch((err) => logger.error(err));

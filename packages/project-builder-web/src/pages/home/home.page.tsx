@@ -1,21 +1,15 @@
 import { ProjectConfig } from '@baseplate/project-builder-lib';
-import prettyStringify from 'json-stringify-pretty-compact';
 import { useMemo, useState } from 'react';
-import sortKeys from 'sort-keys';
 import { Button } from 'src/components';
 import TextAreaInput from 'src/components/TextAreaInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
+import { prettyStableStringify } from 'src/utils/json';
 
 function HomePage(): JSX.Element {
   const { config, setConfig } = useProjectConfig();
-  const initialValue = useMemo(() => {
-    const stableConfig = sortKeys(config, {
-      deep: true,
-    });
-    return prettyStringify(stableConfig);
-  }, [config]);
+  const initialValue = useMemo(() => prettyStableStringify(config), [config]);
   const [value, setValue] = useState(initialValue);
   const toast = useToast();
 
