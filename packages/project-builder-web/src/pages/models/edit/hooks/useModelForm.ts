@@ -6,9 +6,10 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useCallback, useEffect } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
@@ -35,7 +36,7 @@ export function useModelForm({
   const navigate = useNavigate();
   const model = parsedProject.getModels().find((m) => m.uid === id);
 
-  const form = useForm<ModelConfig>({
+  const form = useResettableForm<ModelConfig>({
     resolver: zodResolver(modelSchema),
     defaultValues: model || NEW_MODEL,
   });

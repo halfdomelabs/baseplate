@@ -1,10 +1,10 @@
 import { StorageConfig, storageSchema } from '@baseplate/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { Alert, Button } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -15,7 +15,7 @@ function StoragePage(): JSX.Element {
   const { config, parsedProject, setConfig, setConfigAndFixReferences } =
     useProjectConfig();
 
-  const formProps = useForm<StorageConfig>({
+  const formProps = useResettableForm<StorageConfig>({
     resolver: zodResolver(storageSchema),
     defaultValues: config.storage,
   });

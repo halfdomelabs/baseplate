@@ -100,8 +100,9 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
           const exportedProjectConfig = parsedConfig.exportToProjectConfig();
           saveRemoteConfig(prettyStableStringify(exportedProjectConfig));
         },
+        externalChangeCounter,
       },
-    [parsedProject, saveRemoteConfig]
+    [parsedProject, saveRemoteConfig, externalChangeCounter]
   );
 
   if (!loaded || error || configError) {

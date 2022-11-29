@@ -1,10 +1,11 @@
 import { projectConfigSchema } from '@baseplate/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { Alert, Button, TextInput } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -25,7 +26,7 @@ function GeneralPage(): JSX.Element {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: _.pick(config, ['name', 'version', 'portBase', 'features']),
   });
