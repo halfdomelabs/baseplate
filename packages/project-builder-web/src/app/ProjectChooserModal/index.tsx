@@ -6,9 +6,10 @@ import { getProjects, Project } from 'src/services/remote';
 
 interface Props {
   onClose: () => void;
+  isOpen?: boolean;
 }
 
-function ProjectChooserModal({ onClose }: Props): JSX.Element {
+function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
   const [, setProjectId] = useProjectIdState(null);
   const [projects, setProjects] = useState<Project[]>();
   const [error, setError] = useState<Error | null>(null);
@@ -29,7 +30,7 @@ function ProjectChooserModal({ onClose }: Props): JSX.Element {
   }
 
   return (
-    <Modal width="base" onClose={onClose} isOpen>
+    <Modal width="base" onClose={onClose} isOpen={isOpen}>
       <Modal.Header>Pick Project</Modal.Header>
       <Modal.Body>
         <Table>

@@ -55,6 +55,12 @@ export async function baseplatePlugin(
     })
   );
 
+  console.log(
+    `Loaded projects:\n${apis
+      .map((api) => `${api.directory}: ${api.id}`)
+      .join('\n')}`
+  );
+
   fastify.get('/api/auth', (req) => {
     // DNS rebinding attack prevention
     if (!req.headers.host?.startsWith('localhost')) {
@@ -96,7 +102,7 @@ export async function baseplatePlugin(
   );
 
   function getApi(id: string): ProjectBuilderApi {
-    const api = apis.find((a) => a.id);
+    const api = apis.find((a) => a.id === id);
     if (!api) {
       throw new Error(`No project with id ${id}`);
     }

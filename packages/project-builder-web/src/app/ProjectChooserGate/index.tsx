@@ -9,7 +9,7 @@ function ProjectChooserGate({ children }: Props): JSX.Element {
   const [projectId] = useProjectIdState(null);
 
   if (!projectId) {
-    return <ProjectChooserModal onClose={() => {}} />;
+    return <ProjectChooserModal onClose={() => {}} isOpen />;
   }
 
   return <div>{children}</div>;

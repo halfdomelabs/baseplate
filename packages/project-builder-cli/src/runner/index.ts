@@ -21,9 +21,13 @@ async function loadProjectJson(directory: string): Promise<ProjectConfig> {
   return projectConfigSchema.parse(projectJson);
 }
 
+export interface BuildProjectForDirectoryOptions {
+  regen?: boolean;
+}
+
 export async function buildProjectForDirectory(
   directory: string,
-  options: { regen: boolean },
+  options: BuildProjectForDirectoryOptions,
   logger: Logger = console
 ): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);

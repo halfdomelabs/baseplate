@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { useState } from 'react';
 import { FaDatabase, FaList } from 'react-icons/fa';
 import {
   MdPeople,
@@ -8,7 +9,9 @@ import {
   MdAttachFile,
 } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
+import ProjectChooserModal from 'src/app/ProjectChooserModal';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { LinkButton } from '..';
 import Sidebar from '../Sidebar';
 
 interface Props {
@@ -19,14 +22,25 @@ interface Props {
 
 function Layout({ className, centered, noPadding }: Props): JSX.Element {
   const { config } = useProjectConfig();
+  const [showProjectChooserModal, setShowProjectChooserModal] = useState(false);
 
   return (
     <div className={classNames('min-h-full items-stretch flex', className)}>
+      <ProjectChooserModal
+        onClose={() => setShowProjectChooserModal(false)}
+        isOpen={showProjectChooserModal}
+      />
       <Sidebar className="flex-none">
         <Sidebar.Header className="mb-4 space-y-2">
           <h1>App Builder</h1>
           <div>
-            <strong>{config.name}</strong>
+            <strong>
+              {config.name} (
+              <LinkButton onClick={() => setShowProjectChooserModal(true)}>
+                Change
+              </LinkButton>
+              )
+            </strong>
           </div>
         </Sidebar.Header>
         <Sidebar.LinkGroup>
