@@ -10,7 +10,7 @@ interface Props {
 }
 
 function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
-  const [, setProjectId] = useProjectIdState(null);
+  const [projectId, setProjectId] = useProjectIdState(null);
   const [projects, setProjects] = useState<Project[]>();
   const [error, setError] = useState<Error | null>(null);
 
@@ -49,14 +49,18 @@ function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
                 </Table.Cell>
                 <Table.Cell>{project.directory}</Table.Cell>
                 <Table.Cell>
-                  <LinkButton
-                    onClick={() => {
-                      setProjectId(project.id);
-                      onClose();
-                    }}
-                  >
-                    Select
-                  </LinkButton>
+                  {projectId === project.id ? (
+                    <LinkButton disabled>Selected</LinkButton>
+                  ) : (
+                    <LinkButton
+                      onClick={() => {
+                        setProjectId(project.id);
+                        onClose();
+                      }}
+                    >
+                      Select
+                    </LinkButton>
+                  )}
                 </Table.Cell>
               </Table.Row>
             ))}

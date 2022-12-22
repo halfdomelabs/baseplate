@@ -84,7 +84,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       'react-hook-form': '7.30.0',
       'react-hot-toast': '^2.2.0',
       'react-icons': '^4.3.1',
-      'react-select': '~5.2.2',
+      'react-select': '5.7.0',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useStatus.ts`

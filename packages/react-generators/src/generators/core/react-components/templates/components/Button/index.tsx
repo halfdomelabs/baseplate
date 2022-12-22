@@ -13,6 +13,7 @@ interface Props {
   color?: ButtonColor;
   size?: ButtonSize;
   type?: 'button' | 'submit' | 'reset';
+  icon?: React.ReactNode;
 }
 
 function getButtonColorClass(color: ButtonColor): string {
@@ -54,6 +55,7 @@ function Button(props: Props): JSX.Element {
     color = 'blue',
     type = 'button',
     onClick,
+    icon,
   } = props;
   return (
     <button
@@ -69,7 +71,14 @@ function Button(props: Props): JSX.Element {
       // eslint-disable-next-line react/button-has-type
       type={type}
     >
-      {children}
+      {icon ? (
+        <div className="flex flex-row items-center space-x-2">
+          {icon}
+          <div>{children}</div>
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 }

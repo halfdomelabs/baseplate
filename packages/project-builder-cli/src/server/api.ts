@@ -1,7 +1,9 @@
 import path from 'path';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
+import { buildProjectForDirectory } from '@src/runner';
 import { logger } from '@src/services/logger';
+import { createEventedLogger, EventedLogger } from '@src/utils/evented-logger';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter';
 
 export interface FilePayload {
@@ -17,8 +19,14 @@ function getLastModifiedTime(filePath: string): Promise<string> {
   return fs.stat(filePath).then((stat) => stat.mtime.toISOString());
 }
 
+export interface CommandConsoleEmittedPayload {
+  id: string;
+  message: string;
+}
+
 export class ProjectBuilderApi extends TypedEventEmitterBase<{
   'project-json-changed': FilePayload | null;
+  'command-console-emitted': CommandConsoleEmittedPayload;
 }> {
   public readonly directory: string;
 
@@ -28,12 +36,24 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
   public readonly id: string;
 
+  private isRunningCommand = false;
+
+  private logger: EventedLogger;
+
   constructor(directory: string, id: string) {
     super();
 
     this.directory = directory;
     this.projectJsonPath = path.join(directory, 'baseplate/project.json');
     this.id = id;
+
+    this.logger = createEventedLogger();
+    this.logger.onLog((message) => {
+      this.emit('command-console-emitted', {
+        id: this.id,
+        message,
+      });
+    });
   }
 
   public async init(): Promise<void> {
@@ -87,5 +107,18 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
     await fs.promises.writeFile(this.projectJsonPath, payload.contents, 'utf8');
     const newLastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
     return { type: 'success', lastModifiedAt: newLastModifiedAt };
+  }
+
+  public async buildProject(): Promise<void> {
+    try {
+      if (this.isRunningCommand) {
+        throw new Error('Another command is already running');
+      }
+      this.isRunningCommand = true;
+
+      await buildProjectForDirectory(this.directory, {}, this.logger);
+    } finally {
+      this.isRunningCommand = false;
+    }
   }
 }

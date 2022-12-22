@@ -5,14 +5,18 @@ import LinkButton from '../LinkButton';
 
 interface Props {
   className?: string;
+  href?: string;
 }
 
-function BackButton({ className }: Props): JSX.Element {
+function BackButton({ className, href }: Props): JSX.Element {
   const navigate = useNavigate();
 
   return (
-    <LinkButton className={className} onClick={() => navigate(-1)}>
-      <MdArrowBack className="w-6 h-6 text-gray-600" />
+    <LinkButton
+      className={className}
+      onClick={() => (href ? navigate(href) : navigate(-1))}
+    >
+      <MdArrowBack className="h-6 w-6 text-gray-600" />
       <span className="sr-only">Back</span>
     </LinkButton>
   );

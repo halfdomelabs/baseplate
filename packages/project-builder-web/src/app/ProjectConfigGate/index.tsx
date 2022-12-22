@@ -28,6 +28,7 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
     error,
     saveValue: saveRemoteConfig,
     externalChangeCounter,
+    projectId,
   } = useRemoteProjectConfig();
 
   const [configError, setConfigError] = useState<Error | null>(null);
@@ -39,6 +40,12 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
   >(undefined);
 
   const oldExternalChangeCounter = useRef(-1);
+
+  useEffect(() => {
+    setParsedProject(null);
+    oldExternalChangeCounter.current = -1;
+  }, [projectId]);
+
   useEffect(() => {
     if (oldExternalChangeCounter.current === externalChangeCounter) {
       return;

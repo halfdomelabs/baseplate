@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { authComponentsProvider } from '@src/generators/auth/auth-components';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
+import { reactTailwindProvider } from '@src/generators/core/react-tailwind';
 import { reactRoutesProvider } from '@src/providers/routes';
 
 const linkItemSchema = z.object({
@@ -41,13 +42,21 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
     authComponents: authComponentsProvider,
     typescript: typescriptProvider,
     authHooks: authHooksProvider,
+    reactTailwind: reactTailwindProvider,
   },
   exports: {
     adminLayout: adminLayoutProvider,
   },
   createGenerator(
     { links = [] },
-    { reactComponents, reactRoutes, authComponents, typescript, authHooks }
+    {
+      reactComponents,
+      reactRoutes,
+      authComponents,
+      typescript,
+      authHooks,
+      reactTailwind,
+    }
   ) {
     const adminLayout = typescript.createTemplate(
       {
@@ -98,6 +107,12 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
         }
       ),
     });
+
+    reactTailwind.addGlobalStyle(
+      `body {
+        overscroll-behavior-y: none;
+      }`
+    );
 
     return {
       getProviders: () => ({

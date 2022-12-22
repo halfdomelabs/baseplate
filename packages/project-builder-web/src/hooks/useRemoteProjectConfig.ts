@@ -18,6 +18,7 @@ interface UseRemoteProjectConfigResult {
    * gets updated externally
    */
   externalChangeCounter: number;
+  projectId?: string | null;
 }
 
 export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
@@ -34,6 +35,14 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   const toast = useToast();
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
+
+  useEffect(() => {
+    setFile(null);
+    setError(undefined);
+    setLoaded(false);
+    setExternalChangeCounter(0);
+    lastSavedValueRef.current = null;
+  }, [projectId]);
 
   const updateConfig = useCallback((payload: FilePayload | null): boolean => {
     // skip saving if we already have this value
@@ -153,5 +162,6 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     loaded,
     saveValue,
     externalChangeCounter,
+    projectId,
   };
 }

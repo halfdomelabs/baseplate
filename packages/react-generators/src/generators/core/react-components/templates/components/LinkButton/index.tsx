@@ -8,6 +8,7 @@ interface Props {
   onClick?: React.MouseEventHandler;
   type?: 'button' | 'submit' | 'reset';
   negative?: boolean;
+  disabled?: boolean;
 }
 
 function LinkButton({
@@ -16,8 +17,12 @@ function LinkButton({
   onClick,
   type = 'button',
   negative,
+  disabled,
 }: Props): JSX.Element {
   const colorClass = (() => {
+    if (disabled) {
+      return 'text-gray-400 dark:text-gray-500';
+    }
     if (negative) {
       return 'text-red-600 dark:text-red-500';
     }
@@ -27,7 +32,8 @@ function LinkButton({
   return (
     <button
       className={classNames(
-        'hover:underline font-medium',
+        'font-medium',
+        { 'hover:underline': !disabled },
         colorClass,
         className
       )}
@@ -35,6 +41,7 @@ function LinkButton({
       // eslint-disable-next-line react/button-has-type
       type={type}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>

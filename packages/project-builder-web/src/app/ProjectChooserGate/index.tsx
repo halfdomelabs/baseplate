@@ -12,7 +12,8 @@ function ProjectChooserGate({ children }: Props): JSX.Element {
     return <ProjectChooserModal onClose={() => {}} isOpen />;
   }
 
-  return <div>{children}</div>;
+  // eslint-disable-next-line react/jsx-no-useless-fragment
+  return <>{children}</>;
 }
 
 export default ProjectChooserGate;
