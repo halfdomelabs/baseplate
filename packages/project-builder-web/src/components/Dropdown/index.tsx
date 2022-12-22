@@ -33,12 +33,12 @@ function Dropdown({
             <Menu.Button
               ref={setReferenceElement}
               className={classNames(
-                'w-44 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800',
+                'inline-flex w-44 items-center rounded-lg bg-blue-700 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800',
                 buttonClassName
               )}
             >
               {buttonLabel}
-              <MdExpandMore className="ml-2 w-4 h-4" />
+              <MdExpandMore className="ml-2 h-4 w-4" />
             </Menu.Button>
             <div
               ref={popperElementRef}
@@ -56,7 +56,7 @@ function Dropdown({
                 beforeEnter={() => setPopperElement(popperElementRef.current)}
                 afterLeave={() => setPopperElement(null)}
               >
-                <Menu.Items className="absolute z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700">
+                <Menu.Items className="absolute z-10 w-44 divide-y divide-gray-100 rounded bg-white shadow dark:bg-gray-700">
                   <ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
                     {children}
                   </ul>
@@ -88,7 +88,7 @@ Dropdown.ButtonItem = function DropdownItem({
           type="button"
           onClick={onClick}
           className={classNames(
-            'block text-left w-full py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',
+            'block w-full py-2 px-4 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',
             className
           )}
         >

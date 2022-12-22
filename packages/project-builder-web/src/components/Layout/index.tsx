@@ -25,7 +25,7 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
   const [showProjectChooserModal, setShowProjectChooserModal] = useState(false);
 
   return (
-    <div className={classNames('h-full items-stretch flex', className)}>
+    <div className={classNames('flex h-full items-stretch', className)}>
       <ProjectChooserModal
         onClose={() => setShowProjectChooserModal(false)}
         isOpen={showProjectChooserModal}
@@ -80,7 +80,7 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
       </Sidebar>
       <div
         className={classNames(
-          'flex flex-col flex-auto overflow-auto',
+          'flex flex-auto flex-col overflow-auto',
           centered && 'items-center justify-center',
           !noPadding && 'p-4'
         )}

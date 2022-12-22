@@ -19,8 +19,8 @@ function ModelsPage(): JSX.Element {
   const sortedModels = _.sortBy(models, (m) => m.name);
 
   return (
-    <div className="h-full items-stretch flex">
-      <Sidebar className="flex-none h-full !bg-white">
+    <div className="flex h-full items-stretch">
+      <Sidebar className="h-full flex-none !bg-white">
         <Sidebar.Header className="mb-4">
           <h2>Models</h2>
         </Sidebar.Header>
@@ -33,7 +33,7 @@ function ModelsPage(): JSX.Element {
           ))}
         </Sidebar.LinkGroup>
       </Sidebar>
-      <div className="flex flex-col flex-auto p-4 h-full overflow-y-auto">
+      <div className="flex h-full flex-auto flex-col overflow-y-auto p-4">
         <Routes>
           <Route index element={<ModelListPage />} />
           <Route path="new" element={<ModelEditPage />} />

@@ -11,7 +11,7 @@ function ListGroup({ className, children }: Props): JSX.Element {
   return (
     <ul
       className={classNames(
-        'text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white',
+        'rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white',
         className
       )}
     >
@@ -32,7 +32,7 @@ ListGroup.Item = function ListGroupItem({
   return (
     <li
       className={classNames(
-        'w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600 last:border-none',
+        'w-full border-b border-gray-200 px-4 py-2 last:border-none dark:border-gray-600',
         className
       )}
     >

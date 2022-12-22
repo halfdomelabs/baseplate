@@ -33,5 +33,5 @@ body,
 }
 
 body {
-  @apply text-gray-800 bg-slate-100 font-sans;
+  @apply bg-slate-100 font-sans text-gray-800;
 }

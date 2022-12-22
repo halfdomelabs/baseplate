@@ -10,11 +10,11 @@ function NavigationTabs({ className, children }: Props): JSX.Element {
   return (
     <div
       className={classNames(
-        'text-sm font-semibold text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700',
+        'border-b border-gray-200 text-center text-sm font-semibold text-gray-500 dark:border-gray-700 dark:text-gray-400',
         className
       )}
     >
-      <ul className="flex flex-wrap -mb-px">{children}</ul>
+      <ul className="-mb-px flex flex-wrap">{children}</ul>
     </div>
   );
 }
@@ -37,11 +37,11 @@ NavigationTabs.Tab = function TabsTab({
       <Link
         to={to}
         className={classNames(
-          'inline-block p-4 rounded-t-lg border-b-2 border-transparent',
+          'inline-block rounded-t-lg border-b-2 border-transparent p-4',
           {
-            'text-blue-600 border-blue-600 active dark:text-blue-500 dark:border-blue-500':
+            'active border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500':
               selected,
-            'hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300':
+            'hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300':
               !selected,
           }
         )}

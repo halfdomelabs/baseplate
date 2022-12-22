@@ -17,7 +17,7 @@ function AdminSectionsForm({ className, appConfig }: Props): JSX.Element {
   ]);
 
   return (
-    <div className={classNames('items-stretch flex', className)}>
+    <div className={classNames('flex items-stretch', className)}>
       <Sidebar className="flex-none !bg-white">
         <Sidebar.Header className="mb-4">
           <h2>Sections</h2>
@@ -33,7 +33,7 @@ function AdminSectionsForm({ className, appConfig }: Props): JSX.Element {
           ))}
         </Sidebar.LinkGroup>
       </Sidebar>
-      <div className="flex flex-col flex-auto p-4 h-full overflow-y-auto">
+      <div className="flex h-full flex-auto flex-col overflow-y-auto p-4">
         <Routes>
           <Route
             path="new"

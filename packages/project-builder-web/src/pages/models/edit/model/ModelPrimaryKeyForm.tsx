@@ -20,7 +20,7 @@ function ModelPrimaryKeyForm({ className, formProps }: Props): JSX.Element {
     })) || [];
 
   return (
-    <div className={classNames('space-y-4 min-w-[400px] w-1/2', className)}>
+    <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>
       <h2>Primary Keys</h2>
       <SelectArrayInput.LabelledController
         name="model.primaryKeys"

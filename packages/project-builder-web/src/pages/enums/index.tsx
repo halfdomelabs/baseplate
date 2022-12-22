@@ -11,8 +11,8 @@ function EnumsPage(): JSX.Element {
   const sortedEnums = _.sortBy(enums, (m) => m.name);
 
   return (
-    <div className="h-full items-stretch flex">
-      <Sidebar className="flex-none h-full !bg-white">
+    <div className="flex h-full items-stretch">
+      <Sidebar className="h-full flex-none !bg-white">
         <Sidebar.Header className="mb-4">
           <h2>Enums</h2>
         </Sidebar.Header>
@@ -27,7 +27,7 @@ function EnumsPage(): JSX.Element {
           ))}
         </Sidebar.LinkGroup>
       </Sidebar>
-      <div className="flex flex-col flex-auto p-4 h-full overflow-y-auto">
+      <div className="flex h-full flex-auto flex-col overflow-y-auto p-4">
         <Routes>
           <Route index element={<div />} />
           <Route path="new" element={<EnumEditPage key="new" />} />
