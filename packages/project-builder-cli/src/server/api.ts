@@ -1,9 +1,10 @@
 import path from 'path';
+import { createEventedLogger, EventedLogger } from '@baseplate/sync';
+import chalk from 'chalk';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { buildProjectForDirectory } from '@src/runner';
 import { logger } from '@src/services/logger';
-import { createEventedLogger, EventedLogger } from '@src/utils/evented-logger';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter';
 
 export interface FilePayload {
@@ -49,6 +50,12 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
     this.logger = createEventedLogger();
     this.logger.onLog((message) => {
+      this.emit('command-console-emitted', {
+        id: this.id,
+        message,
+      });
+    });
+    this.logger.onError((message) => {
       this.emit('command-console-emitted', {
         id: this.id,
         message,
@@ -117,6 +124,17 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
       this.isRunningCommand = true;
 
       await buildProjectForDirectory(this.directory, {}, this.logger);
+    } catch (err) {
+      console.error(err);
+      this.emit('command-console-emitted', {
+        id: this.id,
+        message: chalk.red(
+          `Error building project: ${
+            err instanceof Error ? err.message : 'Unknown error'
+          }`
+        ),
+      });
+      throw err;
     } finally {
       this.isRunningCommand = false;
     }

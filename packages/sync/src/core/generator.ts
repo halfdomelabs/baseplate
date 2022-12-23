@@ -1,3 +1,4 @@
+import { Logger } from '../utils/evented-logger';
 import { BaseGeneratorDescriptor } from './descriptor';
 import { GeneratorOutputBuilder } from './generator-output';
 import {
@@ -40,6 +41,7 @@ export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
 export interface ParseDescriptorContext {
   generatorMap: Record<string, GeneratorConfig>;
   id: string;
+  logger: Logger;
 }
 
 export interface GeneratorTask<

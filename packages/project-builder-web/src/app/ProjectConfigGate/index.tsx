@@ -14,6 +14,7 @@ import {
 } from 'src/hooks/useProjectConfig';
 import { useRemoteProjectConfig } from 'src/hooks/useRemoteProjectConfig';
 import { useToast } from 'src/hooks/useToast';
+import { WebsocketClientContext } from 'src/hooks/useWebsocketClient';
 import { formatError } from 'src/services/error-formatter';
 import { prettyStableStringify } from 'src/utils/json';
 
@@ -29,6 +30,7 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
     saveValue: saveRemoteConfig,
     externalChangeCounter,
     projectId,
+    websocketClient,
   } = useRemoteProjectConfig();
 
   const [configError, setConfigError] = useState<Error | null>(null);
@@ -112,6 +114,11 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
     [parsedProject, saveRemoteConfig, externalChangeCounter]
   );
 
+  const websocketClientResult = useMemo(
+    () => ({ websocketClient }),
+    [websocketClient]
+  );
+
   if (!loaded || error || configError) {
     return (
       <div className="mt-16 flex items-center justify-center">
@@ -129,9 +136,11 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
   }
 
   return (
-    <ProjectConfigContext.Provider value={result}>
-      {children}
-    </ProjectConfigContext.Provider>
+    <WebsocketClientContext.Provider value={websocketClientResult}>
+      <ProjectConfigContext.Provider value={result}>
+        {children}
+      </ProjectConfigContext.Provider>
+    </WebsocketClientContext.Provider>
   );
 }
 

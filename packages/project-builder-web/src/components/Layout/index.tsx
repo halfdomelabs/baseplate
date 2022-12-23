@@ -10,6 +10,7 @@ import {
 } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
 import ProjectChooserModal from 'src/app/ProjectChooserModal';
+import ProjectSyncModal from 'src/app/ProjectSyncModal';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { LinkButton } from '..';
 import Sidebar from '../Sidebar';
@@ -42,6 +43,7 @@ function Layout({ className, centered, noPadding }: Props): JSX.Element {
               )
             </strong>
           </div>
+          <ProjectSyncModal />
         </Sidebar.Header>
         <Sidebar.LinkGroup>
           <Sidebar.LinkItem Icon={MdImportExport} to="/">

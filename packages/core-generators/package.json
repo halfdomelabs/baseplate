@@ -37,6 +37,7 @@
     "fs-extra": "^10.0.0",
     "gulp": "^4.0.2",
     "is-core-module": "^2.8.1",
+    "piscina": "^3.2.0",
     "prettier": "^2.5.1",
     "ramda": "^0.28.0",
     "resolve": "^1.21.0",

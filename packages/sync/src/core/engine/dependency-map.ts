@@ -1,4 +1,5 @@
 import R from 'ramda';
+import { Logger } from '@src/utils/evented-logger';
 import { ProviderDependencyOptions } from '../provider';
 import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder';
 import { getGeneratorEntryExportNames, providerMapToNames } from './utils';
@@ -12,7 +13,8 @@ import { getGeneratorEntryExportNames, providerMapToNames } from './utils';
 export function buildTaskDependencyMap(
   entry: GeneratorTaskEntry,
   parentProviders: Record<string, string>,
-  globalGeneratorTaskMap: Record<string, GeneratorTaskEntry>
+  globalGeneratorTaskMap: Record<string, GeneratorTaskEntry>,
+  logger: Logger
 ): Record<string, { id: string; options: ProviderDependencyOptions } | null> {
   return R.mapObjIndexed((dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
@@ -41,7 +43,7 @@ export function buildTaskDependencyMap(
         const taskKeys = Object.keys(globalGeneratorTaskMap);
         const file = reference.split(':')[0];
         const tasksInFile = taskKeys.filter((key) => key.startsWith(file));
-        console.error(`Task IDs in file: ${tasksInFile.join('\n')}`);
+        logger.error(`Task IDs in file: ${tasksInFile.join('\n')}`);
         throw new Error(
           `Could not resolve dependency reference ${reference} for ${entry.id}`
         );
@@ -123,14 +125,16 @@ function buildHoistedProviderMap(
 export function buildEntryDependencyMapRecursive(
   entry: GeneratorEntry,
   parentProviders: Record<string, string>,
-  globalTaskMap: Record<string, GeneratorTaskEntry>
+  globalTaskMap: Record<string, GeneratorTaskEntry>,
+  logger: Logger
 ): EntryDependencyMap {
   const entryDependencyMaps = R.mergeAll(
     entry.tasks.map((task) => {
       const taskDependencyMap = buildTaskDependencyMap(
         task,
         parentProviders,
-        globalTaskMap
+        globalTaskMap,
+        logger
       );
 
       // force formatter to be optionally added since it's used by most generators
@@ -198,7 +202,12 @@ export function buildEntryDependencyMapRecursive(
 
   const childDependencyMaps = R.mergeAll(
     entry.children.map((childEntry) =>
-      buildEntryDependencyMapRecursive(childEntry, providerMap, globalTaskMap)
+      buildEntryDependencyMapRecursive(
+        childEntry,
+        providerMap,
+        globalTaskMap,
+        logger
+      )
     )
   );
 

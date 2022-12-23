@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { TypedEventEmitterBase } from 'src/utils/typed-event-emitter';
 
 const URL_BASE = undefined;
 
@@ -83,6 +84,12 @@ export async function uploadProjectConfig(
   return response.data;
 }
 
+export async function startSync(id: string): Promise<void> {
+  await axiosClient.post(`/api/start-sync/${id}`, undefined, {
+    baseURL: URL_BASE,
+  });
+}
+
 interface ConnectMessage {
   type: 'connect';
   csrfKey: string;
@@ -110,80 +117,91 @@ interface ErrorMessage {
   message: string;
 }
 
+interface CommandConsoleEmittedMessage {
+  type: 'command-console-emitted';
+  message: string;
+}
+
 type ServerWebsocketMessage =
   | ConnectedMessage
   | ErrorMessage
-  | ProjectJsonChangedMessage;
+  | ProjectJsonChangedMessage
+  | CommandConsoleEmittedMessage;
 
-interface ProjectWebsocketClientOptions {
-  onProjectJsonChanged?: (payload: ProjectJsonChangedMessage) => void;
-  onError?: (error: Error) => void;
-  onOpen?: () => void;
-  onClose?: () => void;
-}
+export class ProjectWebsocketClient extends TypedEventEmitterBase<{
+  connectionOpened: unknown;
+  connected: unknown;
+  closed: unknown;
+  error: Error;
+  message: ServerWebsocketMessage;
+}> {
+  private socket: ReconnectingWebSocket;
 
-interface ProjectWebsocketClient {
-  subscribe(id: string): void;
-  close(): void;
-}
+  constructor() {
+    super();
+    const websocketUrl = `${
+      (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
+      window.location.host
+    }/api/ws`;
+    this.socket = new ReconnectingWebSocket(websocketUrl);
 
-export function createProjectWebsocketClient(
-  options: ProjectWebsocketClientOptions
-): ProjectWebsocketClient {
-  const websocketUrl = `${
-    (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
-    window.location.host
-  }/api/ws`;
-  const socket = new ReconnectingWebSocket(websocketUrl);
+    this.socket.addEventListener(
+      'message',
+      ({ data }: MessageEvent<string>) => {
+        const message = JSON.parse(data) as ServerWebsocketMessage;
+        switch (message.type) {
+          case 'connected':
+            this.emit('connected', null);
+            console.log(`Websocket connection successfully established!`);
+            break;
+          case 'command-console-emitted':
+          case 'project-json-changed':
+            this.emit('message', message);
+            break;
+          case 'error':
+            this.emit('error', new Error(message.message));
+            console.error(`Error from websocket: ${message.message}`);
+            break;
+          default:
+            console.error(
+              'Unknown message type',
+              (message as { type: string }).type
+            );
+            break;
+        }
+      }
+    );
 
-  socket.addEventListener('message', ({ data }: MessageEvent<string>) => {
-    const message = JSON.parse(data) as ServerWebsocketMessage;
-    switch (message.type) {
-      case 'connected':
-        console.log(`Websocket connection successfully established!`);
-        break;
-      case 'project-json-changed':
-        options.onProjectJsonChanged?.(message);
-        break;
-      case 'error':
-        console.error(`Error from websocket: ${message.message}`);
-        break;
-      default:
-        console.error(
-          'Unknown message type',
-          (message as { type: string }).type
-        );
-        break;
-    }
-  });
-
-  function sendMessage(message: ClientWebsocketMessage): void {
-    socket.send(JSON.stringify(message));
+    this.socket.addEventListener('open', () => {
+      getCsrfToken()
+        .then((csrfKey) => {
+          this.sendMessage({
+            type: 'connect',
+            csrfKey,
+          });
+          this.emit('connectionOpened', null);
+        })
+        .catch((err) => {
+          this.emit('error', err as Error);
+        });
+    });
+    this.socket.addEventListener('close', () => this.emit('closed', null));
   }
 
-  socket.addEventListener('open', () => {
-    getCsrfToken()
-      .then((csrfKey) => {
-        sendMessage({
-          type: 'connect',
-          csrfKey,
-        });
-        options.onOpen?.();
+  sendMessage(message: ClientWebsocketMessage): void {
+    this.socket.send(JSON.stringify(message));
+  }
+
+  subscribe(id: string): void {
+    this.socket.send(
+      JSON.stringify({
+        type: 'subscribe',
+        id,
       })
-      .catch((err) => {
-        options.onError?.(err as Error);
-      });
-  });
-  socket.addEventListener('close', () => options.onClose?.());
+    );
+  }
 
-  socket.addEventListener('error', (event) => options.onError?.(event.error));
-
-  return {
-    subscribe(id) {
-      sendMessage({ type: 'subscribe', id });
-    },
-    close() {
-      socket.close();
-    },
-  };
+  close(): void {
+    this.socket.close();
+  }
 }

@@ -4,8 +4,8 @@ import {
   ProjectConfig,
   projectConfigSchema,
 } from '@baseplate/project-builder-lib';
+import { Logger } from '@baseplate/sync';
 import fs from 'fs-extra';
-import { Logger } from '@src/utils/evented-logger';
 import { generateCleanAppForDirectory, generateForDirectory } from '../sync';
 import { writeApplicationFiles } from '../writer';
 

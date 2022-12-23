@@ -1,5 +1,6 @@
 import path from 'path';
 import { notEmpty } from '@src/utils/arrays';
+import { Logger } from '@src/utils/evented-logger';
 import { BaseGeneratorDescriptor } from '../descriptor';
 import {
   GeneratorTask,
@@ -30,6 +31,7 @@ export interface GeneratorEntry {
 interface GeneratorEntryBuilderContext {
   baseDirectory: string;
   generatorMap: GeneratorConfigMap;
+  logger: Logger;
 }
 
 /**
@@ -97,6 +99,7 @@ export async function buildGeneratorEntry(
     generatorConfig.parseDescriptor(descriptor, {
       generatorMap: context.generatorMap,
       id,
+      logger: context.logger,
     });
 
   const tasks = generatorConfig

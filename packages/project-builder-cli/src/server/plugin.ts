@@ -31,10 +31,16 @@ interface ErrorMessage {
   message: string;
 }
 
+interface CommandConsoleEmittedMessage {
+  type: 'command-console-emitted';
+  message: string;
+}
+
 type ServerWebsocketMessage =
   | ConnectedMessage
   | ErrorMessage
-  | ProjectJsonChangedMessage;
+  | ProjectJsonChangedMessage
+  | CommandConsoleEmittedMessage;
 
 export async function baseplatePlugin(
   fastify: FastifyInstance,
@@ -132,6 +138,22 @@ export async function baseplatePlugin(
 
   fastify.post<{
     Params: { id: string };
+  }>('/api/start-sync/:id', {
+    schema: {
+      params: { $ref: 'apiIdSchema#' },
+    },
+    handler: (req) => {
+      const { id } = req.params;
+      const api = getApi(id);
+
+      api.buildProject().catch((err) => console.error(err));
+
+      return { success: true };
+    },
+  });
+
+  fastify.post<{
+    Params: { id: string };
     Body: { contents: string; lastModifiedAt: string };
   }>('/api/project-json/:id', {
     schema: {
@@ -155,7 +177,7 @@ export async function baseplatePlugin(
     },
   });
 
-  fastify.get('/api/ws', { websocket: true }, (connection, req) => {
+  fastify.get('/api/ws', { websocket: true }, (connection) => {
     let unsubscribe: () => void | undefined;
     let isAuthenticated = false;
     function sendWebsocketMessage(message: ServerWebsocketMessage): void {
@@ -163,6 +185,42 @@ export async function baseplatePlugin(
     }
     connection.socket.on('message', (rawData) => {
       const message = JSON.parse(rawData.toString()) as ClientWebsocketMessage;
+
+      const handleSubscribe = (msg: SubscribeMessage): void => {
+        if (!isAuthenticated) {
+          sendWebsocketMessage({
+            type: 'error',
+            message: `Not Authenticated`,
+          });
+        }
+        if (unsubscribe) {
+          unsubscribe();
+        }
+        const unsubscribeProjectJsonChanged = getApi(msg.id).on(
+          'project-json-changed',
+          (payload) => {
+            sendWebsocketMessage({
+              type: 'project-json-changed',
+              file: payload,
+              id: msg.id,
+            });
+          }
+        );
+        const unsubscribeConsoleEmitted = getApi(msg.id).on(
+          'command-console-emitted',
+          (payload) => {
+            sendWebsocketMessage({
+              type: 'command-console-emitted',
+              message: payload.message,
+            });
+          }
+        );
+        unsubscribe = () => {
+          unsubscribeProjectJsonChanged();
+          unsubscribeConsoleEmitted();
+        };
+      };
+
       switch (message.type) {
         case 'connect':
           if (csrfToken !== message.csrfKey) {
@@ -178,25 +236,7 @@ export async function baseplatePlugin(
           sendWebsocketMessage({ type: 'connected' });
           break;
         case 'subscribe':
-          if (!isAuthenticated) {
-            sendWebsocketMessage({
-              type: 'error',
-              message: `Not Authenticated`,
-            });
-          }
-          if (unsubscribe) {
-            unsubscribe();
-          }
-          unsubscribe = getApi(message.id).on(
-            'project-json-changed',
-            (payload) => {
-              sendWebsocketMessage({
-                type: 'project-json-changed',
-                file: payload,
-                id: message.id,
-              });
-            }
-          );
+          handleSubscribe(message);
           break;
         default:
           sendWebsocketMessage({

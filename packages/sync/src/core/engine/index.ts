@@ -1,4 +1,5 @@
 import path from 'path';
+import { Logger } from '@src/utils/evented-logger';
 import { GeneratorOutput } from '../generator-output';
 import { writeGeneratorOutput } from '../generator-output-writer';
 import { GeneratorConfigMap } from '../loader';
@@ -18,7 +19,10 @@ export class GeneratorEngine {
    *
    * @param directory Directory of project to load
    */
-  async loadProject(directory: string): Promise<GeneratorEntry> {
+  async loadProject(
+    directory: string,
+    logger: Logger = console
+  ): Promise<GeneratorEntry> {
     const projectPath = path.join(directory, 'baseplate');
     const rootDescriptor = await loadDescriptorFromFile(
       path.join(projectPath, 'root')
@@ -26,21 +30,25 @@ export class GeneratorEngine {
     const rootGeneratorEntry = await buildGeneratorEntry(
       rootDescriptor,
       'root',
-      { baseDirectory: projectPath, generatorMap: this.generators }
+      { baseDirectory: projectPath, generatorMap: this.generators, logger }
     );
 
     return rootGeneratorEntry;
   }
 
-  async build(rootEntry: GeneratorEntry): Promise<GeneratorOutput> {
-    return executeGeneratorEntry(rootEntry);
+  async build(
+    rootEntry: GeneratorEntry,
+    logger: Logger = console
+  ): Promise<GeneratorOutput> {
+    return executeGeneratorEntry(rootEntry, logger);
   }
 
   async writeOutput(
     output: GeneratorOutput,
     outputDirectory: string,
-    cleanDirectory?: string
+    cleanDirectory?: string,
+    logger: Logger = console
   ): Promise<void> {
-    await writeGeneratorOutput(output, outputDirectory, cleanDirectory);
+    await writeGeneratorOutput(output, outputDirectory, cleanDirectory, logger);
   }
 }

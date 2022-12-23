@@ -4,12 +4,12 @@ import {
   FileData,
   GeneratorEngine,
   loadGeneratorsForModule,
+  Logger,
 } from '@baseplate/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import globby from 'globby';
 import R from 'ramda';
-import { Logger } from '@src/utils/evented-logger';
 
 const GENERATOR_MODULES = [
   '@baseplate/core-generators',
@@ -44,8 +44,8 @@ export async function generateForDirectory(
 
   logger.log(`Generating project ${name} in ${projectDirectory}...`);
 
-  const project = await engine.loadProject(projectDirectory);
-  const output = await engine.build(project);
+  const project = await engine.loadProject(projectDirectory, logger);
+  const output = await engine.build(project, logger);
   logger.log('Project built! Writing output....');
 
   // check if the project directory exists
@@ -105,7 +105,8 @@ export async function generateForDirectory(
       await engine.writeOutput(
         augmentedOutput,
         projectDirectory,
-        cleanTmpDirectory
+        cleanTmpDirectory,
+        logger
       );
 
       // swap out clean directory with clean_tmp
@@ -164,8 +165,8 @@ export async function generateCleanAppForDirectory(
 
   logger.log(`Generating clean project ${name} in ${cleanDirectory}...`);
 
-  const project = await engine.loadProject(projectDirectory);
-  const output = await engine.build(project);
+  const project = await engine.loadProject(projectDirectory, logger);
+  const output = await engine.build(project, logger);
   logger.log('Project built! Writing output....');
 
   // strip out any post write commands
@@ -185,7 +186,9 @@ export async function generateCleanAppForDirectory(
       ),
       postWriteCommands: [],
     },
-    cleanDirectory
+    cleanDirectory,
+    undefined,
+    logger
   );
   logger.log('Project successfully written to clean project!');
 }

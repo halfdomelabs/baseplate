@@ -154,7 +154,7 @@ export function createGeneratorWithChildren<
           validatedDescriptor,
         };
       } catch (err) {
-        console.error(
+        context.logger.error(
           `Descriptor validation failed at ${context.id}: ${
             (err as Error).message
           }`

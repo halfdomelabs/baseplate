@@ -251,7 +251,7 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
           validatedDescriptor,
         };
       } catch (err) {
-        console.error(
+        context.logger.error(
           `Descriptor validation failed at ${context.id}: ${
             (err as Error).message
           }`

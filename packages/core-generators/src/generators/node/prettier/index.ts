@@ -8,7 +8,7 @@ import {
   writeJsonAction,
   createProviderType,
 } from '@baseplate/sync';
-import * as prettier from 'prettier';
+import Piscina from 'piscina';
 import requireResolve from 'resolve';
 import { z } from 'zod';
 import { nodeProvider } from '../node';
@@ -71,9 +71,9 @@ function resolveModule(name: string, fullPath: string): Promise<string | null> {
   });
 }
 
-interface PrettierModule {
-  format(input: string, config: Record<string, unknown>): string;
-}
+const piscina = new Piscina({
+  filename: path.resolve(__dirname, 'formatter'),
+});
 
 const PrettierGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -98,40 +98,45 @@ const PrettierGenerator = createGeneratorWithChildren({
     ];
     return {
       getProviders: () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let prettierLibPromise: Promise<PrettierModule> | undefined;
+        let prettierLibPathPromise: Promise<string | null> | undefined;
 
         return {
           formatter: {
-            format: async (input: string, fullPath: string) => {
+            format: async (input: string, fullPath: string, logger) => {
               if (!PARSEABLE_EXTENSIONS.includes(path.extname(fullPath))) {
                 return input;
               }
-              if (!prettierLibPromise) {
-                prettierLibPromise = (async () => {
+              if (!prettierLibPathPromise) {
+                prettierLibPathPromise = (async () => {
                   const prettierLibPath = await resolveModule(
                     'prettier',
                     fullPath
                   );
                   if (!prettierLibPath) {
-                    console.log(
+                    logger.log(
                       'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.'
                     );
-                    return prettier;
+                    return null;
                   }
-                  return module.require(prettierLibPath) as PrettierModule;
+                  return prettierLibPath;
                 })();
               }
 
-              const prettierLib = await prettierLibPromise;
+              const prettierLibPath = await prettierLibPathPromise;
 
               // no prettier lib found
-              if (!prettierLib) {
+              if (!prettierLibPath) {
                 return input;
               }
-              return prettierLib.format(input, {
-                ...prettierConfig,
-                filepath: fullPath,
+
+              // run in separate worker thread to avoid issues with caching modules and triggering restarts of process while developing
+              return piscina.run({
+                prettierLibPath,
+                input,
+                config: {
+                  ...prettierConfig,
+                  filepath: fullPath,
+                },
               });
             },
           },

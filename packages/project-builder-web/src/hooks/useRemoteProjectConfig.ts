@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  createProjectWebsocketClient,
   downloadProjectConfig,
   FilePayload,
+  ProjectWebsocketClient,
   uploadProjectConfig,
 } from 'src/services/remote';
 import { useProjectIdState } from './useProjectIdState';
@@ -18,6 +18,7 @@ interface UseRemoteProjectConfigResult {
    * gets updated externally
    */
   externalChangeCounter: number;
+  websocketClient?: ProjectWebsocketClient;
   projectId?: string | null;
 }
 
@@ -136,24 +137,41 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     [toast, projectId, file?.lastModifiedAt, downloadConfig]
   );
 
+  const [websocketClient, setWebsocketClient] = useState<
+    ProjectWebsocketClient | undefined
+  >();
+
   useEffect(() => {
-    const socket = createProjectWebsocketClient({
-      onOpen: () => {
-        if (projectId) {
-          socket.subscribe(projectId);
-        }
-      },
-      onProjectJsonChanged: (message) => {
+    const socket = new ProjectWebsocketClient();
+
+    const unsubscribeError = socket.on('error', (err) => {
+      setError(err);
+    });
+
+    const unsubscribeConnectionOpened = socket.on('connectionOpened', () => {
+      if (projectId) {
+        socket.subscribe(projectId);
+      }
+    });
+
+    const unsubscribeMessage = socket.on('message', (message) => {
+      if (message.type === 'project-json-changed') {
         const didChange = updateConfig(message.file);
         if (didChange) {
           setExternalChangeCounter((val) => val + 1);
         }
-      },
-      onError: (err) => {
-        setError(err);
-      },
+      }
     });
-    return () => socket.close();
+
+    setWebsocketClient(socket);
+
+    return () => {
+      unsubscribeError();
+      unsubscribeConnectionOpened();
+      unsubscribeMessage();
+      socket.close();
+      setWebsocketClient(undefined);
+    };
   }, [downloadConfig, updateConfig, projectId]);
 
   return {
@@ -163,5 +181,6 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     saveValue,
     externalChangeCounter,
     projectId,
+    websocketClient,
   };
 }

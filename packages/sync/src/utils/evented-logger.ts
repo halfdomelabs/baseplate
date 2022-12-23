@@ -13,7 +13,11 @@ export interface EventedLogger extends Logger {
   onError(listener: (message: string) => void): () => void;
 }
 
-export function createEventedLogger(): EventedLogger {
+export function createEventedLogger({
+  noConsole = false,
+}: {
+  noConsole?: boolean;
+} = {}): EventedLogger {
   const eventEmitter = createTypedEventEmitter<{
     log: string;
     error: string;
@@ -21,23 +25,23 @@ export function createEventedLogger(): EventedLogger {
   return {
     log(message) {
       eventEmitter.emit('log', message);
-      console.log(message);
+      if (noConsole) console.log(message);
     },
     error(message) {
       eventEmitter.emit('error', message);
-      console.error(message);
+      if (noConsole) console.error(message);
     },
     warn(message) {
       eventEmitter.emit('log', message);
-      console.warn(message);
+      if (noConsole) console.warn(message);
     },
     info(message) {
       eventEmitter.emit('log', message);
-      console.info(message);
+      if (noConsole) console.info(message);
     },
     debug(message) {
       eventEmitter.emit('log', message);
-      console.debug(message);
+      if (noConsole) console.debug(message);
     },
     onLog(listener) {
       return eventEmitter.on('log', listener);
