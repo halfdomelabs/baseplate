@@ -4,10 +4,10 @@ import {
 } from '@baseplate/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
-import { useForm } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 
 interface Props {
@@ -18,7 +18,7 @@ interface Props {
 function BackendAppForm({ className, appConfig }: Props): JSX.Element {
   const { setConfigAndFixReferences } = useProjectConfig();
 
-  const formProps = useForm<BackendAppConfig>({
+  const formProps = useResettableForm<BackendAppConfig>({
     resolver: zodResolver(backendAppSchema),
     defaultValues: appConfig,
   });

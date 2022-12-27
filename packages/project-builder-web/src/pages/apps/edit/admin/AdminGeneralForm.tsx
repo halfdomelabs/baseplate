@@ -1,10 +1,10 @@
 import { AdminAppConfig, adminAppSchema } from '@baseplate/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
-import { useForm } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
   const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
 
-  const formProps = useForm<AdminAppConfig>({
+  const formProps = useResettableForm<AdminAppConfig>({
     resolver: zodResolver(adminAppSchema),
     defaultValues: appConfig,
   });

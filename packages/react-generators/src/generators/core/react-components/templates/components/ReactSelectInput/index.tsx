@@ -8,7 +8,7 @@ import {
   PathValue,
   useController,
 } from 'react-hook-form';
-import Select from 'react-select';
+import Select, { InputProps, GroupBase, components } from 'react-select';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
@@ -19,6 +19,20 @@ interface Props<ValueType = string> {
   onBlur?: () => void;
   value: ValueType;
   fixedPosition?: boolean;
+}
+
+/**
+ * we need to clear the box shadow since @tailwindcss/forms adds a ring
+ * to all input type text
+ *
+ * https://github.com/JedWatson/react-select/issues/4686
+ */
+function Input<
+  OptionType = unknown,
+  IsMultiType extends boolean = boolean,
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
+>(props: InputProps<OptionType, IsMultiType, GroupType>): JSX.Element {
+  return <components.Input {...props} inputClassName="focus:ring-0" />;
 }
 
 function ReactSelectInput<ValueType>({
@@ -50,9 +64,11 @@ function ReactSelectInput<ValueType>({
       onChange={(newValue) => {
         onChange(newValue?.value);
       }}
+      isMulti={false}
       onBlur={onBlur}
       value={selectedOption}
       options={options}
+      components={{ Input }}
       {...fixedPositionProps}
     />
   );

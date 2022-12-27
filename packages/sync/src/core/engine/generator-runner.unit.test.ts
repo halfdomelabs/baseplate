@@ -1,10 +1,13 @@
 import { formatterProvider } from '@src/providers';
+import { createEventedLogger } from '@src/utils';
 import { ProviderDependencyMap, ProviderExportMap } from '../generator';
 import { GeneratorOutputBuilder } from '../generator-output';
 import { Provider, createProviderType } from '../provider';
 import { GeneratorEntry } from './generator-builder';
 import { executeGeneratorEntry } from './generator-runner';
 import { buildTestGeneratorEntry } from './tests/factories.test-helper';
+
+const logger = createEventedLogger({ noConsole: true });
 
 function buildGeneratorEntry(
   options: {
@@ -53,7 +56,7 @@ function buildGeneratorEntry(
 describe('executeGeneratorEntry', () => {
   it('generates an empty generator entry', async () => {
     const entry = buildGeneratorEntry();
-    const result = await executeGeneratorEntry(entry);
+    const result = await executeGeneratorEntry(entry, logger);
     expect(result).toEqual({
       files: {},
       postWriteCommands: [],
@@ -67,7 +70,7 @@ describe('executeGeneratorEntry', () => {
         builder.addPostWriteCommand('simple command');
       },
     });
-    const result = await executeGeneratorEntry(entry);
+    const result = await executeGeneratorEntry(entry, logger);
     expect(result).toEqual({
       files: {
         '/simple/file.txt': {
@@ -111,7 +114,7 @@ describe('executeGeneratorEntry', () => {
         }),
       ],
     });
-    const result = await executeGeneratorEntry(entry);
+    const result = await executeGeneratorEntry(entry, logger);
     expect(result).toEqual({
       files: {
         '/simple/file.txt': {

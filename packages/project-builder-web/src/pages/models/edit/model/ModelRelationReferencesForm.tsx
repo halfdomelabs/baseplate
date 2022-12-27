@@ -43,7 +43,7 @@ function ModelRelationReferencesForm({
   return (
     <div className={classNames('space-y-4', className)}>
       {fields.map((field, idx) => (
-        <div key={field.id} className="flex flex-row space-x-4 justify-between">
+        <div key={field.id} className="flex flex-row justify-between space-x-4">
           <ReactSelectInput.LabelledController
             className="w-full"
             control={control}

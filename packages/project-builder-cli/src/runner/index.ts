@@ -4,11 +4,12 @@ import {
   ProjectConfig,
   projectConfigSchema,
 } from '@baseplate/project-builder-lib';
+import { Logger } from '@baseplate/sync';
 import fs from 'fs-extra';
 import { generateCleanAppForDirectory, generateForDirectory } from '../sync';
 import { writeApplicationFiles } from '../writer';
 
-async function loadAppJson(directory: string): Promise<ProjectConfig> {
+async function loadProjectJson(directory: string): Promise<ProjectConfig> {
   const projectJsonPath = path.join(directory, 'baseplate/project.json');
   const fileExists = await fs.pathExists(projectJsonPath);
 
@@ -20,13 +21,18 @@ async function loadAppJson(directory: string): Promise<ProjectConfig> {
   return projectConfigSchema.parse(projectJson);
 }
 
+export interface BuildProjectForDirectoryOptions {
+  regen?: boolean;
+}
+
 export async function buildProjectForDirectory(
-  directory: string
-  // { regen }: { regen: boolean }
+  directory: string,
+  options: BuildProjectForDirectoryOptions,
+  logger: Logger = console
 ): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file
-  const projectConfig = await loadAppJson(resolvedDirectory);
+  const projectConfig = await loadProjectJson(resolvedDirectory);
 
   const apps = compileApplications(projectConfig);
 
@@ -38,24 +44,28 @@ export async function buildProjectForDirectory(
   // eslint-disable-next-line no-restricted-syntax
   for (const app of appsToRegenerate) {
     // eslint-disable-next-line no-await-in-loop
-    await generateForDirectory(resolvedDirectory, app);
+    await generateForDirectory(resolvedDirectory, app, logger);
   }
 
-  console.log(`Project written to ${resolvedDirectory}!`);
+  logger.log(`Project written to ${resolvedDirectory}!`);
 }
 
-export async function buildToCleanFolder(directory: string): Promise<void> {
+export async function buildToCleanFolder(
+  directory: string,
+  options: unknown,
+  logger: Logger = console
+): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file
-  const projectConfig = await loadAppJson(resolvedDirectory);
+  const projectConfig = await loadProjectJson(resolvedDirectory);
 
   const apps = compileApplications(projectConfig);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const app of apps) {
     // eslint-disable-next-line no-await-in-loop
-    await generateCleanAppForDirectory(resolvedDirectory, app);
+    await generateCleanAppForDirectory(resolvedDirectory, app, logger);
   }
 
-  console.log(`Project written to ${resolvedDirectory}!`);
+  logger.log(`Project written to ${resolvedDirectory}!`);
 }

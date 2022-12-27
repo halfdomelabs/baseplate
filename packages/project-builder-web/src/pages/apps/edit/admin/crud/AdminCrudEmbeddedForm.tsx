@@ -3,7 +3,7 @@ import {
   adminCrudEmbeddedFormSchema,
 } from '@baseplate/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Control, useForm } from 'react-hook-form';
+import { Control } from 'react-hook-form';
 import {
   Alert,
   Button,
@@ -18,6 +18,7 @@ import {
   EmbeddedListTableProps,
 } from 'src/components/EmbeddedListInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
 import CrudFormFieldsForm, { AdminCrudFormConfig } from './CrudFormFieldsForm';
@@ -74,12 +75,11 @@ function AdminCrudEmbeddedForm({
   embeddedFormOptions,
 }: Props): JSX.Element {
   const { parsedProject } = useProjectConfig();
-  const { handleSubmit, control, watch } = useForm<AdminCrudEmbeddedFormConfig>(
-    {
+  const { handleSubmit, control, watch } =
+    useResettableForm<AdminCrudEmbeddedFormConfig>({
       resolver: zodResolver(adminCrudEmbeddedFormSchema),
       defaultValues: initialData,
-    }
-  );
+    });
   const { status, setError } = useStatus();
 
   const modelOptions = parsedProject.getModels().map((model) => ({

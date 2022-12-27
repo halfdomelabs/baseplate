@@ -8,7 +8,7 @@ interface Props {
 
 function getErrorString(error: Error | string): string {
   if (error instanceof Error) {
-    return 'Sorry, we could not load the data.';
+    return `Sorry, we could not load the data: ${error.message}`;
   }
   return error;
 }

@@ -1,3 +1,4 @@
+import { createEventedLogger } from '@src/utils';
 import { ProviderDependencyMap, ProviderExportMap } from '../generator';
 import { GeneratorConfigMap } from '../loader';
 import { createProviderType } from '../provider';
@@ -101,6 +102,7 @@ describe('buildGeneratorEntry', () => {
   const generatorContext = {
     baseDirectory: '/root',
     generatorMap,
+    logger: createEventedLogger({ noConsole: true }),
   };
 
   it('should build a simple unnested generator', async () => {

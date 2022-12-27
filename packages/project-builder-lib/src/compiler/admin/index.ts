@@ -71,6 +71,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
       },
       $tailwind: {
         generator: '@baseplate/react/core/react-tailwind',
+        peerProvider: true,
       },
       proxy: {
         // TODO: Extract out logic

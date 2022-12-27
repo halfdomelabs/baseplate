@@ -26,7 +26,7 @@ function AdminLayout({ className }: Props): JSX.Element {
           </Sidebar.ButtonItem>
         </Sidebar.LinkGroup>
       </Sidebar>
-      <div className="p-4 flex flex-col flex-auto">
+      <div className="flex flex-auto flex-col overflow-auto p-4">
         <Outlet />
       </div>
     </div>

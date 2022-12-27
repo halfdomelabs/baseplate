@@ -58,7 +58,7 @@ async function writeAppFiles(
       `Error writing out app ${app.name}: ${(err as Error).message}`
     );
     console.error(err);
-    return false;
+    throw err;
   }
 }
 

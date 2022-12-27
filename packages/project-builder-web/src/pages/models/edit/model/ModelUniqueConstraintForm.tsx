@@ -36,9 +36,9 @@ function ModelUniqueConstraintForm({
   const relationErrors = errors.model?.uniqueConstraints?.[idx];
 
   return (
-    <div className={classNames('space-y-4 min-w-[400px] w-1/2', className)}>
+    <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>
       {!isOpen ? (
-        <div className="flex flex-row space-x-4 items-center">
+        <div className="flex flex-row items-center space-x-4">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
           <div>
             <strong>
@@ -51,7 +51,7 @@ function ModelUniqueConstraintForm({
         </div>
       ) : (
         <div className="space-y-4 border border-gray-200">
-          <div className="space-x-4 flex flex-row">
+          <div className="flex flex-row space-x-4">
             <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
             <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
           </div>

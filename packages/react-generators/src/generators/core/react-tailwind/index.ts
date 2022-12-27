@@ -13,7 +13,9 @@ const descriptorSchema = z.object({
   globalBodyClasses: z.string().optional(),
 });
 
-export type ReactTailwindProvider = unknown;
+export interface ReactTailwindProvider {
+  addGlobalStyle: (style: string) => void;
+}
 
 export const reactTailwindProvider =
   createProviderType<ReactTailwindProvider>('react-tailwind');
@@ -33,8 +35,9 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     const srcFolder = react.getSrcFolder();
 
     node.addDevPackages({
-      tailwindcss: '^3.0.23',
-      'prettier-plugin-tailwindcss': '0.1.12',
+      tailwindcss: '3.2.4',
+      'prettier-plugin-tailwindcss': '0.2.1',
+      '@tailwindcss/forms': '0.5.3',
     });
 
     eslint
@@ -53,7 +56,11 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
 
     return {
       getProviders: () => ({
-        reactTailwind: {},
+        reactTailwind: {
+          addGlobalStyle: (style) => {
+            globalStyles.push(style);
+          },
+        },
       }),
       build: async (builder) => {
         await builder.apply(

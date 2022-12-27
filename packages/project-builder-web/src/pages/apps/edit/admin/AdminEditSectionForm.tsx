@@ -8,11 +8,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
@@ -35,7 +35,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     appConfig.sections?.find((section) => section.uid === sectionId);
 
   const { control, handleSubmit, watch, formState, reset } =
-    useForm<AdminSectionConfig>({
+    useResettableForm<AdminSectionConfig>({
       defaultValues: existingSection || { type: 'crud' },
       resolver: zodResolver(adminSectionSchema),
     });

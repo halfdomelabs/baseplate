@@ -1,6 +1,7 @@
 import childProcess from 'child_process';
 import { vol } from 'memfs';
 import { FormatterProvider } from '@src/providers';
+import { createEventedLogger } from '../utils';
 import { writeGeneratorOutput } from './generator-output-writer';
 
 jest.mock('fs');
@@ -20,11 +21,18 @@ beforeEach(() => {
   vol.reset();
 });
 
+const testLogger = createEventedLogger({ noConsole: true });
+
 // TODO: Add tests for clean folder
 
 describe('writeGeneratorOutput', () => {
   it('should write nothing with a blank output', async () => {
-    await writeGeneratorOutput({ files: {}, postWriteCommands: [] }, '/root');
+    await writeGeneratorOutput(
+      { files: {}, postWriteCommands: [] },
+      '/root',
+      undefined,
+      testLogger
+    );
     expect(vol.toJSON()).toEqual({});
   });
 
@@ -41,13 +49,19 @@ describe('writeGeneratorOutput', () => {
         },
         postWriteCommands: [],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': 'hi',
       '/root/formatted.txt': 'formatted-output',
     });
-    expect(formatFunction).toHaveBeenCalledWith('hello', '/root/formatted.txt');
+    expect(formatFunction).toHaveBeenCalledWith(
+      'hello',
+      '/root/formatted.txt',
+      testLogger
+    );
   });
 
   it('should perform 3-way merge', async () => {
@@ -74,7 +88,9 @@ describe('writeGeneratorOutput', () => {
         },
         postWriteCommands: [],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': ['hello', 'bonjour', 'something', 'adios'].join('\n'),
@@ -99,7 +115,9 @@ describe('writeGeneratorOutput', () => {
         },
         postWriteCommands: [],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': [
@@ -129,7 +147,9 @@ describe('writeGeneratorOutput', () => {
         },
         postWriteCommands: [],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': [
@@ -155,7 +175,9 @@ describe('writeGeneratorOutput', () => {
         },
         postWriteCommands: [],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({ '/root/file.txt': 'hi' });
   });
@@ -166,7 +188,9 @@ describe('writeGeneratorOutput', () => {
         files: { 'file.txt': { contents: Buffer.from('hi', 'utf8') } },
         postWriteCommands: [],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({ '/root/file.txt': 'hi' });
   });
@@ -180,7 +204,9 @@ describe('writeGeneratorOutput', () => {
           { command: 'custom', options: { workingDirectory: '/folder' } },
         ],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({});
 
@@ -211,7 +237,9 @@ describe('writeGeneratorOutput', () => {
           { command: 'custom', options: { onlyIfChanged: ['file2.txt'] } },
         ],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': 'hi',
@@ -236,7 +264,9 @@ describe('writeGeneratorOutput', () => {
           { command: 'yarn install', options: { onlyIfChanged: ['file.txt'] } },
         ],
       },
-      '/root'
+      '/root',
+      undefined,
+      testLogger
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': 'binary-data',

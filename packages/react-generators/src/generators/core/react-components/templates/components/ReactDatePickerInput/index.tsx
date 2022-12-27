@@ -1,5 +1,6 @@
 // @ts-nocheck
 
+import format from 'date-fns/format';
 import {
   FocusEventHandler,
   forwardRef,
@@ -69,7 +70,12 @@ function ReactDatePickerInput({
   return (
     <DatePicker
       className={className}
-      onChange={(date) => onChange(date && date.toISOString())}
+      onChange={(date) =>
+        onChange(
+          date &&
+            (showTimeSelect ? date.toISOString() : format(date, 'yyyy-MM-dd'))
+        )
+      }
       onBlur={onBlur}
       selected={selectedDate}
       customInput={<DatePickerTextInput />}

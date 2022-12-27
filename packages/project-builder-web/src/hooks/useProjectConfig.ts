@@ -15,6 +15,7 @@ export interface UseProjectConfigResult {
   setConfig: (
     config: ProjectConfig | ((originalConfig: ProjectConfig) => void)
   ) => void;
+  externalChangeCounter: number;
 }
 
 export const ProjectConfigContext =

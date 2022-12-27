@@ -1,5 +1,6 @@
 import R from 'ramda';
 import { FormatterProvider } from '@src/providers';
+import { Logger } from '@src/utils/evented-logger';
 import { GeneratorTaskInstance } from '../generator';
 import { GeneratorOutput, OutputBuilder } from '../generator-output';
 import { Provider } from '../provider';
@@ -14,14 +15,16 @@ import { flattenGeneratorTaskEntries } from './utils';
 /* eslint-disable no-restricted-syntax */
 
 export async function executeGeneratorEntry(
-  rootEntry: GeneratorEntry
+  rootEntry: GeneratorEntry,
+  logger: Logger
 ): Promise<GeneratorOutput> {
   const taskEntries = flattenGeneratorTaskEntries(rootEntry);
   const taskEntriesById = R.indexBy(R.prop('id'), taskEntries);
   const dependencyMap = buildTaskEntryDependencyMapRecursive(
     rootEntry,
     {},
-    taskEntriesById
+    taskEntriesById,
+    logger
   );
   const sortedRunSteps = getSortedRunSteps(taskEntries, dependencyMap);
 
@@ -109,7 +112,7 @@ export async function executeGeneratorEntry(
       }
     } catch (err) {
       const { generatorName } = taskEntriesById[taskId];
-      console.error(
+      logger.error(
         `Error encountered in ${action} step of ${taskId} (${generatorName})`
       );
       throw err;

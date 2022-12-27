@@ -11,14 +11,14 @@ import {
   get,
   useController,
 } from 'react-hook-form';
-import { MdUploadFile } from 'react-icons/md';
-import Button from '../Button';
+import { MdOutlineClear, MdUploadFile } from 'react-icons/md';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 import { useCreateUploadUrlMutation } from '%react-apollo/generated';
 import { useUpload } from '%upload-components/use-upload';
 import { formatError } from '%react-error/formatter';
 import { logError } from '%react-error/logger';
+import LinkButton from '../LinkButton';
 
 import 'react-circular-progressbar/dist/styles.css';
 
@@ -130,17 +130,18 @@ const FileInput = function FileInput({
       {(() => {
         if (value) {
           return (
-            <div className="flex h-32 w-full max-w-sm flex-row items-center justify-center rounded-lg border bg-white p-4 shadow-md">
-              {imagePreview && value.hostedUrl && (
-                <a href={value.hostedUrl} target="_blank" rel="noreferrer">
-                  <img
-                    src={value.hostedUrl}
-                    className="mr-4 h-24 w-32 rounded-lg bg-gray-300 object-cover"
-                    alt={`${value.name} upload`}
-                  />
-                </a>
-              )}
-              <div className="flex flex-col space-y-4">
+            <div className="flex h-12 w-full max-w-md items-center justify-between rounded-lg border bg-white p-4 shadow-md">
+              <div />
+              <div className="flex items-center">
+                {imagePreview && value.hostedUrl && (
+                  <a href={value.hostedUrl} target="_blank" rel="noreferrer">
+                    <img
+                      src={value.hostedUrl}
+                      className="mr-4 h-8 w-8 rounded-lg bg-gray-300 object-cover"
+                      alt={`${value.name} upload`}
+                    />
+                  </a>
+                )}
                 <div className="text-lg font-medium">
                   {value.hostedUrl ? (
                     <a
@@ -155,10 +156,13 @@ const FileInput = function FileInput({
                     value.name
                   )}
                 </div>
-                <Button color="light" size="small" onClick={handleRemove}>
-                  Remove
-                </Button>
               </div>
+              <LinkButton onClick={handleRemove}>
+                <MdOutlineClear
+                  aria-label="Remove"
+                  className="h-8 w-6 text-black"
+                />
+              </LinkButton>
             </div>
           );
         }
@@ -169,7 +173,7 @@ const FileInput = function FileInput({
           <div
             {...getRootProps()}
             className={classNames(
-              'flex h-32 w-full max-w-sm items-center justify-center rounded-md border-2 border-dashed px-4',
+              'flex h-12 w-full max-w-md items-center justify-center rounded-md border-2 border-dashed px-4',
               isDragActive
                 ? 'border-blue-300 text-blue-600'
                 : 'border-gray-300 text-gray-600',
@@ -179,52 +183,41 @@ const FileInput = function FileInput({
             {(() => {
               if (isUploading) {
                 return (
-                  <div className="flex flex-col items-center space-y-2">
+                  <div className="flex items-center space-x-4">
                     <CircularProgressbar
                       value={uploadPercentage}
                       text={`${uploadPercentage}%`}
-                      className="h-12 w-12"
+                      className="h-8 w-8"
                     />
-                    <Button
+                    <LinkButton
+                      negative
                       onClick={handleCancel}
-                      color="red"
-                      size="small"
                       disabled={disabled}
                     >
                       Cancel
-                    </Button>
+                    </LinkButton>
                   </div>
                 );
               }
               if (error) {
                 return (
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="text-center text-red-600">
-                      {formatError(
-                        error,
-                        'Sorry, we could not upload the file.'
-                      )}
-                    </div>
-                    <Button
-                      size="small"
-                      onClick={handleRemove}
-                      disabled={disabled}
-                    >
+                  <div className="flex items-center space-x-4">
+                    <LinkButton onClick={handleRemove} disabled={disabled}>
                       Retry
-                    </Button>
+                    </LinkButton>
                   </div>
                 );
               }
               return (
-                <div className="flex flex-col items-center space-y-2">
+                <div className="flex items-center space-x-2">
                   <input
                     name={name}
                     {...getInputProps()}
                     disabled={isDraggable}
                   />
-                  <MdUploadFile className="h-12 w-12" />
+                  <MdUploadFile className="h-6 w-6" />
                   <div className="text-lg font-medium">
-                    {placeholder || 'Select a file to upload'}
+                    {placeholder || 'Select a file for upload'}
                   </div>
                 </div>
               );
@@ -232,6 +225,11 @@ const FileInput = function FileInput({
           </div>
         );
       })()}
+      {error && (
+        <FormError>
+          {formatError(error, 'Sorry, we could not upload the file.')}
+        </FormError>
+      )}
     </div>
   );
 };

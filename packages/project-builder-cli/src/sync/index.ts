@@ -4,6 +4,7 @@ import {
   FileData,
   GeneratorEngine,
   loadGeneratorsForModule,
+  Logger,
 } from '@baseplate/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -32,7 +33,8 @@ async function getGeneratorEngine(): Promise<GeneratorEngine> {
 
 export async function generateForDirectory(
   baseDirectory: string,
-  appEntry: AppEntry
+  appEntry: AppEntry,
+  logger: Logger = console
 ): Promise<void> {
   const { rootDirectory, name } = appEntry;
   const engine = await getGeneratorEngine();
@@ -40,11 +42,11 @@ export async function generateForDirectory(
   const projectDirectory = path.join(baseDirectory, rootDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
 
-  console.log(`Generating project ${name} in ${projectDirectory}...`);
+  logger.log(`Generating project ${name} in ${projectDirectory}...`);
 
-  const project = await engine.loadProject(projectDirectory);
-  const output = await engine.build(project);
-  console.log('Project built! Writing output....');
+  const project = await engine.loadProject(projectDirectory, logger);
+  const output = await engine.build(project, logger);
+  logger.log('Project built! Writing output....');
 
   // check if the project directory exists
   const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
@@ -52,7 +54,7 @@ export async function generateForDirectory(
   if (!cleanDirectoryExists) {
     await engine.writeOutput(output, projectDirectory, cleanDirectory);
   } else {
-    console.log(
+    logger.log(
       'Detected project clean folder. Attempting 3-way mediocre-merge...'
     );
     const cleanTmpDirectory = path.join(
@@ -103,7 +105,8 @@ export async function generateForDirectory(
       await engine.writeOutput(
         augmentedOutput,
         projectDirectory,
-        cleanTmpDirectory
+        cleanTmpDirectory,
+        logger
       );
 
       // swap out clean directory with clean_tmp
@@ -125,10 +128,10 @@ export async function generateForDirectory(
           // TODO: Support binary support for files here
           const existingContents = await fs.readFile(pathToDelete, 'utf-8');
           if (existingContents === file.contents) {
-            console.log(`Deleting ${file.filePath}...`);
+            logger.log(`Deleting ${file.filePath}...`);
             await fs.remove(pathToDelete);
           } else {
-            console.log(
+            logger.log(
               chalk.red(`${file.filePath} has been modified. Skipping delete.`)
             );
           }
@@ -140,12 +143,13 @@ export async function generateForDirectory(
     }
   }
 
-  console.log('Project successfully generated!');
+  logger.log('Project successfully generated!');
 }
 
 export async function generateCleanAppForDirectory(
   baseDirectory: string,
-  { rootDirectory, name }: AppEntry
+  { rootDirectory, name }: AppEntry,
+  logger: Logger = console
 ): Promise<void> {
   const engine = await getGeneratorEngine();
 
@@ -159,11 +163,11 @@ export async function generateCleanAppForDirectory(
     await fs.rm(cleanDirectory, { recursive: true });
   }
 
-  console.log(`Generating clean project ${name} in ${cleanDirectory}...`);
+  logger.log(`Generating clean project ${name} in ${cleanDirectory}...`);
 
-  const project = await engine.loadProject(projectDirectory);
-  const output = await engine.build(project);
-  console.log('Project built! Writing output....');
+  const project = await engine.loadProject(projectDirectory, logger);
+  const output = await engine.build(project, logger);
+  logger.log('Project built! Writing output....');
 
   // strip out any post write commands
   await engine.writeOutput(
@@ -182,7 +186,9 @@ export async function generateCleanAppForDirectory(
       ),
       postWriteCommands: [],
     },
-    cleanDirectory
+    cleanDirectory,
+    undefined,
+    logger
   );
-  console.log('Project successfully written to clean project!');
+  logger.log('Project successfully written to clean project!');
 }

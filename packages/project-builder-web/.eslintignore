@@ -5,3 +5,4 @@
 .eslintrc.js
 postcs.config.js
 tailwind.config.js
+src/setupProxy.js

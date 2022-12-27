@@ -58,7 +58,7 @@ function ModelEditPage(): JSX.Element {
             <NavigationTabs.Tab to="service">Services</NavigationTabs.Tab>
             <NavigationTabs.Tab to="schema">Schema</NavigationTabs.Tab>
           </NavigationTabs>
-          <div className="p-4 bg-slate-200">
+          <div className="bg-slate-200 p-4">
             <Routes>
               <Route index element={<ModelEditModelPage />} />
               <Route path="service" element={<ModelEditServicePage />} />

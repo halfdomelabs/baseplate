@@ -5,7 +5,8 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import pLimit from 'p-limit';
 import R from 'ramda';
-import { logToConsole } from '@src/utils/logger';
+import { getErrorMessage } from '@src/utils/errors';
+import { Logger } from '@src/utils/evented-logger';
 import { mergeStrings } from '@src/utils/merge';
 import { FileData, GeneratorOutput } from './generator-output';
 
@@ -26,7 +27,6 @@ async function mergeContents(
     existingContents.includes('<<<<<<<') &&
     existingContents.includes('>>>>>>>')
   ) {
-    console.error(chalk.red(`Conflict detected in ${filePath}`));
     throw new Error(`Conflict detected in ${filePath}. Stopping write.`);
   }
 
@@ -74,10 +74,27 @@ interface SkippedWriteFileResult {
 
 type WriteFileResult = ModifiedWriteFileResult | SkippedWriteFileResult;
 
+class FormatterError extends Error {
+  fileContents: string;
+
+  constructor(originalError: unknown, fileContents: string) {
+    if (originalError instanceof Error) {
+      super(originalError.message);
+    } else if (typeof originalError === 'string') {
+      super(originalError);
+    } else {
+      super('Error not of type string or Error');
+    }
+    this.fileContents = fileContents;
+    this.name = 'FormatterError';
+  }
+}
+
 async function writeFile(
   filePath: string,
   data: FileData,
-  originalPath: string
+  originalPath: string,
+  logger: Logger
 ): Promise<WriteFileResult> {
   // if file exists and we never overwrite, return false
   const { options, contents, formatter } = data;
@@ -114,11 +131,9 @@ async function writeFile(
   let formattedContents = contents;
   if (formatter) {
     try {
-      formattedContents = await formatter.format(contents, filePath);
+      formattedContents = await formatter.format(contents, filePath, logger);
     } catch (err) {
-      console.error(`Error formatting ${filePath}\n`, err);
-      console.log(`File dump:\n${contents}`);
-      throw err;
+      throw new FormatterError(err, contents);
     }
   }
 
@@ -174,7 +189,8 @@ function getNodePrefix(): string {
 export async function writeGeneratorOutput(
   output: GeneratorOutput,
   outputDirectory: string,
-  cleanDirectory?: string
+  cleanDirectory?: string,
+  logger: Logger = console
 ): Promise<void> {
   // write files
   const filenames = Object.keys(output.files);
@@ -183,107 +199,126 @@ export async function writeGeneratorOutput(
     result: WriteFileResult
   ): result is ModifiedWriteFileResult => result.type === 'modified';
 
-  const fileResults = await Promise.all(
-    filenames.map((filename) =>
-      writeFile(
-        path.join(outputDirectory, filename),
-        output.files[filename],
-        filename
+  try {
+    const fileResults = await Promise.all(
+      filenames.map((filename) =>
+        writeFile(
+          path.join(outputDirectory, filename),
+          output.files[filename],
+          filename,
+          logger
+        )
       )
-    )
-  );
+    );
 
-  const modifiedFiles = fileResults.filter(isModifiedFileResult);
-  const modifiedFilenames = modifiedFiles.map((result) => result.originalPath);
-  const conflictFilenames: string[] = modifiedFiles
-    .filter((result) => result.hasConflict)
-    .map((result) => result.originalPath);
+    const modifiedFiles = fileResults.filter(isModifiedFileResult);
+    const modifiedFilenames = modifiedFiles.map(
+      (result) => result.originalPath
+    );
+    const conflictFilenames: string[] = modifiedFiles
+      .filter((result) => result.hasConflict)
+      .map((result) => result.originalPath);
 
-  const writeLimit = pLimit(10);
+    const writeLimit = pLimit(10);
 
-  await Promise.all(
-    modifiedFiles.map((modifiedFile) =>
-      writeLimit(async () => {
-        await fs.ensureDir(path.dirname(modifiedFile.path));
-        if (modifiedFile.contents instanceof Buffer) {
-          await fs.writeFile(modifiedFile.path, modifiedFile.contents);
-        } else {
-          await fs.writeFile(modifiedFile.path, modifiedFile.contents, {
-            encoding: 'utf-8',
-          });
-        }
-      })
-    )
-  );
-
-  // Write clean directory
-  if (cleanDirectory) {
     await Promise.all(
-      fileResults.map((fileResult) =>
+      modifiedFiles.map((modifiedFile) =>
         writeLimit(async () => {
-          const cleanPath = path.join(cleanDirectory, fileResult.originalPath);
-          await fs.ensureDir(path.dirname(cleanPath));
-          if (fileResult.cleanContents instanceof Buffer) {
-            await fs.writeFile(cleanPath, fileResult.cleanContents);
+          await fs.ensureDir(path.dirname(modifiedFile.path));
+          if (modifiedFile.contents instanceof Buffer) {
+            await fs.writeFile(modifiedFile.path, modifiedFile.contents);
           } else {
-            await fs.writeFile(cleanPath, fileResult.cleanContents, {
+            await fs.writeFile(modifiedFile.path, modifiedFile.contents, {
               encoding: 'utf-8',
             });
           }
         })
       )
     );
-  }
 
-  if (conflictFilenames.length) {
-    logToConsole(
-      chalk.red(
-        `Conflicts occurred while writing files:\n${conflictFilenames.join(
-          '\n'
-        )}`
-      )
-    );
-    if (output.postWriteCommands.length) {
-      logToConsole(`\nOnce resolved, please run the following commands:`);
+    // Write clean directory
+    if (cleanDirectory) {
+      await Promise.all(
+        fileResults.map((fileResult) =>
+          writeLimit(async () => {
+            const cleanPath = path.join(
+              cleanDirectory,
+              fileResult.originalPath
+            );
+            await fs.ensureDir(path.dirname(cleanPath));
+            if (fileResult.cleanContents instanceof Buffer) {
+              await fs.writeFile(cleanPath, fileResult.cleanContents);
+            } else {
+              await fs.writeFile(cleanPath, fileResult.cleanContents, {
+                encoding: 'utf-8',
+              });
+            }
+          })
+        )
+      );
     }
-  }
 
-  // run post write commands
+    if (conflictFilenames.length) {
+      logger.log(
+        chalk.red(
+          `Conflicts occurred while writing files:\n${conflictFilenames.join(
+            '\n'
+          )}`
+        )
+      );
+      if (output.postWriteCommands.length) {
+        logger.log(`\nOnce resolved, please run the following commands:`);
+        for (const command of output.postWriteCommands) {
+          logger.log(`  ${command.command}`);
+        }
+        return;
+      }
+    }
 
-  // Volta and Yarn prepend their own PATHs to Node which can
-  // bugger up node resolution. This forces it to run normally again
-  const nodePrefix = getNodePrefix();
-  const NODE_COMMANDS = ['node', 'yarn', 'npm'];
+    // run post write commands
 
-  for (const command of output.postWriteCommands) {
-    const { onlyIfChanged = [], workingDirectory = '' } = command.options || {};
-    const changedList = Array.isArray(onlyIfChanged)
-      ? onlyIfChanged
-      : [onlyIfChanged];
+    // Volta and Yarn prepend their own PATHs to Node which can
+    // bugger up node resolution. This forces it to run normally again
+    const nodePrefix = getNodePrefix();
+    const NODE_COMMANDS = ['node', 'yarn', 'npm'];
 
-    if (
-      command.options?.onlyIfChanged == null ||
-      changedList.some((file) => modifiedFilenames.includes(file))
-    ) {
-      const commandString = NODE_COMMANDS.includes(
-        command.command.split(' ')[0]
-      )
-        ? `${nodePrefix}${command.command}`
-        : command.command;
+    for (const command of output.postWriteCommands) {
+      const { onlyIfChanged = [], workingDirectory = '' } =
+        command.options || {};
+      const changedList = Array.isArray(onlyIfChanged)
+        ? onlyIfChanged
+        : [onlyIfChanged];
 
-      if (conflictFilenames.length) {
-        logToConsole(command.command);
-      } else {
-        logToConsole(`Running ${commandString}...`);
-        try {
-          await exec(commandString, {
-            cwd: path.join(outputDirectory, workingDirectory),
-          });
-        } catch (err) {
-          console.error(chalk.red(`Unable to run ${commandString}`));
-          console.error(err);
+      if (
+        command.options?.onlyIfChanged == null ||
+        changedList.some((file) => modifiedFilenames.includes(file))
+      ) {
+        const commandString = NODE_COMMANDS.includes(
+          command.command.split(' ')[0]
+        )
+          ? `${nodePrefix}${command.command}`
+          : command.command;
+
+        if (conflictFilenames.length) {
+          logger.log(command.command);
+        } else {
+          logger.log(`Running ${commandString}...`);
+          try {
+            await exec(commandString, {
+              cwd: path.join(outputDirectory, workingDirectory),
+            });
+          } catch (err) {
+            logger.error(chalk.red(`Unable to run ${commandString}`));
+            logger.error(getErrorMessage(err));
+          }
         }
       }
     }
+  } catch (err) {
+    if (err instanceof FormatterError) {
+      logger.error(`Error formatting file: ${err.message}`);
+      logger.log(`File Dump:\n${err.fileContents}`);
+    }
+    throw err;
   }
 }

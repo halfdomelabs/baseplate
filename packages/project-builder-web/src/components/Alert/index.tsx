@@ -32,7 +32,7 @@ function Alert({ type, icon, className, children }: Props): JSX.Element {
   return (
     <div
       className={classNames(
-        'flex items-center p-4 rounded-lg',
+        'flex items-center rounded-lg p-4',
         alertClasses,
         className
       )}

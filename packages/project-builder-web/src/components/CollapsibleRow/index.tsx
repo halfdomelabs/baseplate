@@ -22,14 +22,14 @@ function CollapsibleRow({
   return (
     <div className={classNames('', className)}>
       {!isOpen ? (
-        <div className="flex flex-row space-x-4 items-center">
+        <div className="flex flex-row items-center space-x-4">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
           {collapsedContents}
           <LinkButton onClick={onRemove}>Remove</LinkButton>
         </div>
       ) : (
         <div className="space-y-4 border border-gray-200">
-          <div className="space-x-4 flex flex-row">
+          <div className="flex flex-row space-x-4">
             <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
             <LinkButton onClick={onRemove}>Remove</LinkButton>
           </div>

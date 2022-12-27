@@ -1,3 +1,4 @@
+import { createEventedLogger } from '@src/utils';
 import { createProviderType } from '../provider';
 import {
   buildTaskDependencyMap,
@@ -10,6 +11,8 @@ import {
 
 const providerOne = createProviderType('providerOne');
 const providerTwo = createProviderType('providerTwo');
+
+const testLogger = createEventedLogger({ noConsole: true });
 
 describe('buildEntryDependencyMap', () => {
   it('should resolve basic dependency map', () => {
@@ -24,7 +27,12 @@ describe('buildEntryDependencyMap', () => {
       [providerOne.name]: 'parentId#main',
     };
 
-    const dependencyMap = buildTaskDependencyMap(entry, parentProviders, {});
+    const dependencyMap = buildTaskDependencyMap(
+      entry,
+      parentProviders,
+      {},
+      testLogger
+    );
     expect(dependencyMap).toEqual({
       dependency: { id: 'parentId#main', options: {} },
       optionalDependency: null,
@@ -42,7 +50,12 @@ describe('buildEntryDependencyMap', () => {
       [providerOne.name]: 'parentId#main',
     };
 
-    const dependencyMap = buildTaskDependencyMap(entry, parentProviders, {});
+    const dependencyMap = buildTaskDependencyMap(
+      entry,
+      parentProviders,
+      {},
+      testLogger
+    );
     expect(dependencyMap).toEqual({ dependency: null });
   });
 
@@ -59,7 +72,12 @@ describe('buildEntryDependencyMap', () => {
       }),
     };
 
-    const dependencyMap = buildTaskDependencyMap(entry, {}, taskMap);
+    const dependencyMap = buildTaskDependencyMap(
+      entry,
+      {},
+      taskMap,
+      testLogger
+    );
     expect(dependencyMap).toEqual({
       referenceDependency: {
         id: 'dependent#main',
@@ -81,9 +99,9 @@ describe('buildEntryDependencyMap', () => {
       }),
     };
 
-    expect(() => buildTaskDependencyMap(entry, {}, taskMap)).toThrow(
-      'Could not resolve'
-    );
+    expect(() =>
+      buildTaskDependencyMap(entry, {}, taskMap, testLogger)
+    ).toThrow('Could not resolve');
   });
 });
 
@@ -91,7 +109,12 @@ describe('buildEntryDependencyMapRecursive', () => {
   it('should generate dependency map of an empty entry', () => {
     const entry = buildTestGeneratorEntry({ id: 'root' });
 
-    const dependencyMap = buildEntryDependencyMapRecursive(entry, {}, {});
+    const dependencyMap = buildEntryDependencyMapRecursive(
+      entry,
+      {},
+      {},
+      testLogger
+    );
     expect(dependencyMap).toEqual({});
   });
 
@@ -112,7 +135,8 @@ describe('buildEntryDependencyMapRecursive', () => {
     const dependencyMap = buildEntryDependencyMapRecursive(
       entry,
       { [providerOne.name]: 'parentId#main' },
-      {}
+      {},
+      testLogger
     );
     expect(dependencyMap).toEqual({
       'root#main': { dep: { id: 'parentId#main', options: {} } },
@@ -144,7 +168,8 @@ describe('buildEntryDependencyMapRecursive', () => {
     const dependencyMap = buildEntryDependencyMapRecursive(
       entry,
       { [providerOne.name]: 'parentId' },
-      {}
+      {},
+      testLogger
     );
     expect(dependencyMap).toEqual({
       'root#main': {},
@@ -180,7 +205,12 @@ describe('buildEntryDependencyMapRecursive', () => {
       {}
     );
 
-    const dependencyMap = buildEntryDependencyMapRecursive(entry, {}, {});
+    const dependencyMap = buildEntryDependencyMapRecursive(
+      entry,
+      {},
+      {},
+      testLogger
+    );
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child#main': {},
@@ -217,9 +247,9 @@ describe('buildEntryDependencyMapRecursive', () => {
       ],
     });
 
-    expect(() => buildEntryDependencyMapRecursive(entry, {}, {})).toThrow(
-      'Duplicate hoisted provider'
-    );
+    expect(() =>
+      buildEntryDependencyMapRecursive(entry, {}, {}, testLogger)
+    ).toThrow('Duplicate hoisted provider');
   });
 
   it('should throw if multiple peer providers exist with same provider export', () => {
@@ -246,8 +276,8 @@ describe('buildEntryDependencyMapRecursive', () => {
       { exports: { provider: providerOne } }
     );
 
-    expect(() => buildEntryDependencyMapRecursive(entry, {}, {})).toThrow(
-      'Duplicate provider'
-    );
+    expect(() =>
+      buildEntryDependencyMapRecursive(entry, {}, {}, testLogger)
+    ).toThrow('Duplicate provider');
   });
 });

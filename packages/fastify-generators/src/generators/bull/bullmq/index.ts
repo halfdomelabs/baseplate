@@ -10,6 +10,7 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
+import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis';
 import { loggerServiceProvider } from '@src/generators/core/logger-service';
 
@@ -29,13 +30,31 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
     fastifyRedis: fastifyRedisProvider,
     node: nodeProvider,
     typescript: typescriptProvider,
+    fastifyOutput: fastifyOutputProvider,
   },
   exports: {
     bullMq: bullMqProvider,
   },
-  run({ errorHandlerService, loggerService, fastifyRedis, node, typescript }) {
+  run({
+    errorHandlerService,
+    loggerService,
+    fastifyRedis,
+    node,
+    typescript,
+    fastifyOutput,
+  }) {
     node.addPackages({
       bullmq: '2.1.2',
+    });
+
+    node.addDevPackages({
+      nodemon: '2.0.20',
+    });
+
+    // we need to use nodemon instead of ts-node-dev because BullMQ workers can fork the process which causes issues with ts-node-dev
+    node.addScripts({
+      'dev:workers': `nodemon --transpile-only ${fastifyOutput.getDevLoaderString()} ./scripts/run-workers.ts | pino-pretty -t`,
+      'run:workers': 'yarn run:script ./scripts/run-workers.ts',
     });
 
     return {

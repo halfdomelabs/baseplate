@@ -76,12 +76,12 @@ Sidebar.ButtonItem = function SidebarButton({
     <li className={className}>
       <button
         onClick={onClick}
-        className="flex w-full items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+        className="flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
         type="button"
       >
         {Icon ? (
           <>
-            <Icon className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+            <Icon className="h-6 w-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
             <span className="ml-3">{children}</span>
           </>
         ) : (
@@ -113,13 +113,13 @@ Sidebar.LinkItem = function SidebarLink({
       <Link
         to={to}
         className={classNames(
-          ' flex items-center p-2 text-base text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 no-underline',
+          ' flex items-center rounded-lg p-2 text-base text-gray-900 no-underline hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
           match ? 'font-semibold' : 'font-normal'
         )}
       >
         {Icon ? (
           <>
-            <Icon className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
+            <Icon className="h-6 w-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
             <span className="ml-3">{children}</span>
           </>
         ) : (
@@ -147,11 +147,11 @@ Sidebar.Dropdown = function SidebarDropdown({
     <Disclosure as="li" className={className}>
       {({ open }) => (
         <>
-          <Disclosure.Button className="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
+          <Disclosure.Button className="group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
             {Icon ? (
               <>
-                <Icon className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
-                <span className="flex-1 ml-3 text-left whitespace-nowrap">
+                <Icon className="h-6 w-6 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
+                <span className="ml-3 flex-1 whitespace-nowrap text-left">
                   {label}
                 </span>
               </>
@@ -159,12 +159,12 @@ Sidebar.Dropdown = function SidebarDropdown({
               <span>{label}</span>
             )}
             {open ? (
-              <MdKeyboardArrowUp className="w-6 h-6" />
+              <MdKeyboardArrowUp className="h-6 w-6" />
             ) : (
-              <MdKeyboardArrowDown className="w-6 h-6" />
+              <MdKeyboardArrowDown className="h-6 w-6" />
             )}
           </Disclosure.Button>
-          <Disclosure.Panel as="ul" className="py-2 space-y-2">
+          <Disclosure.Panel as="ul" className="space-y-2 py-2">
             {children}
           </Disclosure.Panel>
         </>
@@ -194,7 +194,7 @@ Sidebar.DropdownLinkItem = function SidebarDropdownLinkItem({
       <Link
         to={to}
         className={classNames(
-          'flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
+          'group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
           withParentIcon ? 'pl-11' : 'pl-5',
           match ? 'font-semibold' : 'font-normal'
         )}

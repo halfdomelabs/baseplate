@@ -1,5 +1,11 @@
 import { program } from 'commander';
-import { buildProjectForDirectory, buildToCleanFolder } from './runner';
+import {
+  buildProjectForDirectory,
+  BuildProjectForDirectoryOptions,
+  buildToCleanFolder,
+} from './runner';
+import { startWebServer } from './server';
+import { logger } from './services/logger';
 
 async function runMain(): Promise<void> {
   program.version('0.0.1');
@@ -7,7 +13,9 @@ async function runMain(): Promise<void> {
     .command('generate <directory>')
     .description('Builds project from project.json in baseplate/ directory')
     .option('--regen', 'Force regeneration of all files')
-    .action(buildProjectForDirectory);
+    .action((directory: string, options: BuildProjectForDirectoryOptions) =>
+      buildProjectForDirectory(directory, options)
+    );
 
   program
     .command('buildClean <directory>')
@@ -16,7 +24,14 @@ async function runMain(): Promise<void> {
     )
     .action(buildToCleanFolder);
 
+  program
+    .command('serve <directories...>')
+    .description('Starts the project builder web service')
+    .option('--no-browser', 'Do not start browser')
+    .option('--port <number>', 'Port to listen on', parseInt)
+    .action(startWebServer);
+
   await program.parseAsync(process.argv);
 }
 
-runMain().catch((err) => console.error(err));
+runMain().catch((err) => logger.error(err));
