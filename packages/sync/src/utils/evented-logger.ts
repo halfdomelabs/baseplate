@@ -25,23 +25,23 @@ export function createEventedLogger({
   return {
     log(message) {
       eventEmitter.emit('log', message);
-      if (noConsole) console.log(message);
+      if (!noConsole) console.log(message);
     },
     error(message) {
       eventEmitter.emit('error', message);
-      if (noConsole) console.error(message);
+      if (!noConsole) console.error(message);
     },
     warn(message) {
       eventEmitter.emit('log', message);
-      if (noConsole) console.warn(message);
+      if (!noConsole) console.warn(message);
     },
     info(message) {
       eventEmitter.emit('log', message);
-      if (noConsole) console.info(message);
+      if (!noConsole) console.info(message);
     },
     debug(message) {
       eventEmitter.emit('log', message);
-      if (noConsole) console.debug(message);
+      if (!noConsole) console.debug(message);
     },
     onLog(listener) {
       return eventEmitter.on('log', listener);
