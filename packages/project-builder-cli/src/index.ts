@@ -25,10 +25,15 @@ async function runMain(): Promise<void> {
     .action(buildToCleanFolder);
 
   program
-    .command('serve <directories...>')
+    .command('serve')
     .description('Starts the project builder web service')
     .option('--no-browser', 'Do not start browser')
     .option('--port <number>', 'Port to listen on', parseInt)
+    .argument(
+      '[directories...]',
+      'Directories to serve',
+      process.env.PROJECT_DIRECTORIES?.split(',') || ['.']
+    )
     .action(startWebServer);
 
   await program.parseAsync(process.argv);
