@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { ProjectConfig } from '@baseplate/project-builder-lib';
 import { FastifyInstance } from 'fastify';
 import { logger } from '@src/services/logger';
+import { HttpError, NotFoundError } from '@src/utils/http-errors';
 import { FilePayload, ProjectBuilderApi } from './api';
 
 interface ConnectMessage {
@@ -110,10 +111,39 @@ export async function baseplatePlugin(
   function getApi(id: string): ProjectBuilderApi {
     const api = apis.find((a) => a.id === id);
     if (!api) {
-      throw new Error(`No project with id ${id}`);
+      throw new NotFoundError(`No project with id ${id}`);
     }
     return api;
   }
+
+  fastify.setErrorHandler(async (error, request, reply) => {
+    console.error(error);
+
+    if (error instanceof HttpError) {
+      await reply.code(error.statusCode).send({
+        ...error.extraData,
+        message: error.message,
+        code: error.code,
+        statusCode: error.statusCode,
+        reqId: request.id as string,
+      });
+    } else if (error.statusCode && error.statusCode < 500) {
+      await reply.code(error.statusCode).send({
+        message: error.message,
+        code: error.code,
+        statusCode: error.statusCode,
+        reqId: request.id as string,
+      });
+    } else {
+      await reply.code(500).send({
+        message: error?.message,
+        code: 'INTERNAL_SERVER_ERROR',
+        statusCode: error.statusCode,
+        reqId: request.id as string,
+        stack: error?.stack,
+      });
+    }
+  });
 
   fastify.addSchema({
     $id: 'apiIdSchema',
@@ -184,68 +214,79 @@ export async function baseplatePlugin(
       connection.socket.send(JSON.stringify(message));
     }
     connection.socket.on('message', (rawData) => {
-      const message = JSON.parse(rawData.toString()) as ClientWebsocketMessage;
+      try {
+        const message = JSON.parse(
+          rawData.toString()
+        ) as ClientWebsocketMessage;
 
-      const handleSubscribe = (msg: SubscribeMessage): void => {
-        if (!isAuthenticated) {
-          sendWebsocketMessage({
-            type: 'error',
-            message: `Not Authenticated`,
-          });
-        }
-        if (unsubscribe) {
-          unsubscribe();
-        }
-        const unsubscribeProjectJsonChanged = getApi(msg.id).on(
-          'project-json-changed',
-          (payload) => {
-            sendWebsocketMessage({
-              type: 'project-json-changed',
-              file: payload,
-              id: msg.id,
-            });
-          }
-        );
-        const unsubscribeConsoleEmitted = getApi(msg.id).on(
-          'command-console-emitted',
-          (payload) => {
-            sendWebsocketMessage({
-              type: 'command-console-emitted',
-              message: payload.message,
-            });
-          }
-        );
-        unsubscribe = () => {
-          unsubscribeProjectJsonChanged();
-          unsubscribeConsoleEmitted();
-        };
-      };
-
-      switch (message.type) {
-        case 'connect':
-          if (csrfToken !== message.csrfKey) {
+        const handleSubscribe = (msg: SubscribeMessage): void => {
+          if (!isAuthenticated) {
             sendWebsocketMessage({
               type: 'error',
-              message: `Invalid CSRF token`,
+              message: `Not Authenticated`,
             });
-            logger.error(`Invalid CSRF token: ${message.csrfKey}`);
-            connection.socket.close(403);
-            break;
           }
-          isAuthenticated = true;
-          sendWebsocketMessage({ type: 'connected' });
-          break;
-        case 'subscribe':
-          handleSubscribe(message);
-          break;
-        default:
-          sendWebsocketMessage({
-            type: 'error',
-            message: `Unknown websocket message type: ${
-              (message as { type: string }).type
-            }`,
-          });
-          break;
+          if (unsubscribe) {
+            unsubscribe();
+          }
+          const unsubscribeProjectJsonChanged = getApi(msg.id).on(
+            'project-json-changed',
+            (payload) => {
+              sendWebsocketMessage({
+                type: 'project-json-changed',
+                file: payload,
+                id: msg.id,
+              });
+            }
+          );
+          const unsubscribeConsoleEmitted = getApi(msg.id).on(
+            'command-console-emitted',
+            (payload) => {
+              sendWebsocketMessage({
+                type: 'command-console-emitted',
+                message: payload.message,
+              });
+            }
+          );
+          unsubscribe = () => {
+            unsubscribeProjectJsonChanged();
+            unsubscribeConsoleEmitted();
+          };
+        };
+
+        switch (message.type) {
+          case 'connect':
+            if (csrfToken !== message.csrfKey) {
+              sendWebsocketMessage({
+                type: 'error',
+                message: `Invalid CSRF token`,
+              });
+              logger.error(`Invalid CSRF token: ${message.csrfKey}`);
+              connection.socket.close(403);
+              break;
+            }
+            isAuthenticated = true;
+            sendWebsocketMessage({ type: 'connected' });
+            break;
+          case 'subscribe':
+            handleSubscribe(message);
+            break;
+          default:
+            sendWebsocketMessage({
+              type: 'error',
+              message: `Unknown websocket message type: ${
+                (message as { type: string }).type
+              }`,
+            });
+            break;
+        }
+      } catch (err) {
+        console.error(err);
+        sendWebsocketMessage({
+          type: 'error',
+          message: err instanceof Error ? err.message : JSON.stringify(err),
+        });
+        connection.socket.close();
       }
     });
 

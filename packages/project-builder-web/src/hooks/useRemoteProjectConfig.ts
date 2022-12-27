@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   downloadProjectConfig,
@@ -27,7 +28,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   const [error, setError] = useState<Error>();
   const [loaded, setLoaded] = useState(false);
 
-  const [projectId] = useProjectIdState();
+  const [projectId, setProjectId] = useProjectIdState();
 
   const isSavingRef = useRef(false);
   const lastSavedValueRef = useRef<string | null>(null);
@@ -69,12 +70,17 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
 
       setLoaded(true);
     } catch (err) {
+      if (err instanceof AxiosError && err.response?.status === 404) {
+        toast.error(`Project not found: ${projectId || ''}`);
+        setProjectId(null);
+        return;
+      }
       setError(err as Error);
       toast.error(
         `Error downloading project config: ${(err as Error).message}`
       );
     }
-  }, [toast, projectId, updateConfig]);
+  }, [toast, projectId, setProjectId, updateConfig]);
 
   useEffect(() => {
     downloadConfig().catch((err) => console.error(err));

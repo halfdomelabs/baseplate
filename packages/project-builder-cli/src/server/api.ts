@@ -5,6 +5,7 @@ import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { buildProjectForDirectory } from '@src/runner';
 import { logger } from '@src/services/logger';
+import { expandPathWithTilde } from '@src/utils/path';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter';
 
 export interface FilePayload {
@@ -45,7 +46,9 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
     super();
 
     this.directory = directory;
-    this.projectJsonPath = path.join(directory, 'baseplate/project.json');
+    this.projectJsonPath = expandPathWithTilde(
+      path.join(directory, 'baseplate/project.json')
+    );
     this.id = id;
 
     this.logger = createEventedLogger();
@@ -67,7 +70,9 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
     const fileExists = await fs.pathExists(this.projectJsonPath);
     if (!fileExists) {
       throw new Error(
-        `Could not find project.json file at ${this.projectJsonPath}`
+        `Could not find project.json file at ${path.resolve(
+          this.projectJsonPath
+        )}`
       );
     }
 

@@ -6,11 +6,14 @@ import {
 } from '@baseplate/project-builder-lib';
 import { Logger } from '@baseplate/sync';
 import fs from 'fs-extra';
+import { expandPathWithTilde } from '@src/utils/path';
 import { generateCleanAppForDirectory, generateForDirectory } from '../sync';
 import { writeApplicationFiles } from '../writer';
 
 async function loadProjectJson(directory: string): Promise<ProjectConfig> {
-  const projectJsonPath = path.join(directory, 'baseplate/project.json');
+  const projectJsonPath = expandPathWithTilde(
+    path.join(directory, 'baseplate/project.json')
+  );
   const fileExists = await fs.pathExists(projectJsonPath);
 
   if (!fileExists) {

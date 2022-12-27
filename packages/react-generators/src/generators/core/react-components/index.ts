@@ -28,6 +28,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'AlertIcon' },
   { name: 'BackButton' },
   { name: 'Button' },
+  { name: 'ButtonGroup' },
   { name: 'Card' },
   { name: 'CheckedInput' },
   { name: 'ErrorableLoader' },
