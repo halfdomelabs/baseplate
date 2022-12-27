@@ -57,7 +57,11 @@ describe('writeGeneratorOutput', () => {
       '/root/file.txt': 'hi',
       '/root/formatted.txt': 'formatted-output',
     });
-    expect(formatFunction).toHaveBeenCalledWith('hello', '/root/formatted.txt');
+    expect(formatFunction).toHaveBeenCalledWith(
+      'hello',
+      '/root/formatted.txt',
+      testLogger
+    );
   });
 
   it('should perform 3-way merge', async () => {
