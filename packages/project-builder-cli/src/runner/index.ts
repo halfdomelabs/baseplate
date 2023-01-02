@@ -33,7 +33,7 @@ export async function buildProjectForDirectory(
   options: BuildProjectForDirectoryOptions,
   logger: Logger = console
 ): Promise<void> {
-  const resolvedDirectory = path.resolve(process.cwd(), directory);
+  const resolvedDirectory = expandPathWithTilde(directory);
   // load project.json file
   const projectConfig = await loadProjectJson(resolvedDirectory);
 
