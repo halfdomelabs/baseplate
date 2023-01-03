@@ -40,6 +40,17 @@ interface Props {
   accept?: Record<string, string[]>;
 }
 
+function truncateFilenameWithExtension(filename: string, length = 20): string {
+  if (filename.length < length) {
+    return filename;
+  }
+  const extension = filename.includes('.')
+    ? filename.split('.').pop()?.slice(0, 5) || ''
+    : '';
+  const truncatedFilename = filename.slice(0, length - extension.length - 1);
+  return `${truncatedFilename}...${extension}`;
+}
+
 const FileInput = function FileInput({
   className,
   disabled,
@@ -142,7 +153,7 @@ const FileInput = function FileInput({
                     />
                   </a>
                 )}
-                <div className="text-lg font-medium">
+                <div className="font-medium">
                   {value.hostedUrl ? (
                     <a
                       href={value.hostedUrl}
@@ -150,10 +161,10 @@ const FileInput = function FileInput({
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {value.name}
+                      {truncateFilenameWithExtension(value.name)}
                     </a>
                   ) : (
-                    value.name
+                    truncateFilenameWithExtension(value.name)
                   )}
                 </div>
               </div>
@@ -217,7 +228,7 @@ const FileInput = function FileInput({
                   />
                   <MdUploadFile className="h-6 w-6" />
                   <div className="text-lg font-medium">
-                    {placeholder || 'Select a file for upload'}
+                    {placeholder || 'Select a file'}
                   </div>
                 </div>
               );

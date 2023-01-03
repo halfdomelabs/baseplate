@@ -44,6 +44,11 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
     );
     reactComponents.registerComponent({ name: 'EmbeddedObjectInput' });
 
+    const [, descriptionListPath] = makeImportAndFilePath(
+      `${reactComponents.getComponentsFolder()}/DescriptionList/index.tsx`
+    );
+    reactComponents.registerComponent({ name: 'DescriptionList' });
+
     return {
       getProviders: () => ({
         adminComponents: {
@@ -67,6 +72,12 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
         },
       }),
       build: async (builder) => {
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'DescriptionList/index.tsx',
+            destination: descriptionListPath,
+          })
+        );
         await builder.apply(
           typescript.createCopyAction({
             source: 'EmbeddedListInput/index.tsx',

@@ -1,5 +1,5 @@
 // @ts-nocheck
-
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import classNames from 'classnames';
 import {
   Control,
@@ -51,7 +51,7 @@ function CheckedInput({
   return (
     <input
       className={classNames(
-        'w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600',
+        'h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500',
         className
       )}
       {...inputProps}
@@ -62,16 +62,32 @@ function CheckedInput({
 interface CheckedInputLabelledProps extends Props {
   label?: string;
   error?: React.ReactNode;
+  horizontalLabel?: boolean;
 }
 
 CheckedInput.Labelled = function SelectInputLabelled({
   label,
   className,
   error,
+  horizontalLabel,
   ...rest
 }: CheckedInputLabelledProps): JSX.Element {
+  if (horizontalLabel) {
+    return (
+      <div>
+        <label className={classNames('flex items-center', className)}>
+          <CheckedInput {...rest} />
+          {label && (
+            <div className="ml-2 w-full py-3 text-sm font-medium text-gray-900">
+              {label}
+            </div>
+          )}
+        </label>
+        {error && <FormError>{error}</FormError>}
+      </div>
+    );
+  }
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={classNames('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <CheckedInput {...rest} />
@@ -80,15 +96,17 @@ CheckedInput.Labelled = function SelectInputLabelled({
   );
 };
 
-interface CheckedInputLabelledControllerProps<T>
+export interface CheckedInputLabelledControllerProps<T>
   extends Omit<CheckedInputLabelledProps, 'register'> {
   control: Control<T>;
   name: FieldPath<T>;
+  noError?: boolean;
 }
 
 CheckedInput.LabelledController = function CheckedInputLabelledController<T>({
   control,
   name,
+  noError,
   ...rest
 }: CheckedInputLabelledControllerProps<T>): JSX.Element {
   const { errors } = useFormState({ control, name });
@@ -97,7 +115,7 @@ CheckedInput.LabelledController = function CheckedInputLabelledController<T>({
   return (
     <CheckedInput.Labelled
       register={control.register(name)}
-      error={error?.message}
+      error={noError ? undefined : error?.message}
       {...rest}
     />
   );
