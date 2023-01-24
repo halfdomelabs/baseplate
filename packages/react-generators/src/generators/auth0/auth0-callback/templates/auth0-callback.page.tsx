@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { OAuthError, useAuth0 } from '@auth0/auth0-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, Button, Card, Spinner } from '%react-components';
 import { useLogOut } from '%auth-hooks/useLogOut';
@@ -25,8 +25,14 @@ function Auth0CallbackPage(): JSX.Element {
 
   const { handleRedirectCallback } = useAuth0();
   const [error, setError] = useState<string | null>(null);
+  // https://github.com/auth0/auth0-react/pull/355
+  const didHandleRedirect = useRef(false);
 
   useEffect(() => {
+    if (didHandleRedirect.current) {
+      return;
+    }
+    didHandleRedirect.current = true;
     handleRedirectCallback()
       .then(({ appState }: { appState?: { returnTo?: string } }) => {
         navigate(appState?.returnTo || '/');

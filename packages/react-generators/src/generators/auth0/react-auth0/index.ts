@@ -62,6 +62,7 @@ const ReactAuth0Generator = createGeneratorWithChildren({
         clientId={config.REACT_APP_AUTH0_CLIENT_ID}
         audience={config.REACT_APP_AUTH0_AUDIENCE}
         redirectUri={${redirectUri}}
+        skipRedirectCallback
       >${contents}</Auth0Provider>`,
         [
           `import {Auth0Provider} from '@auth0/auth0-react';`,

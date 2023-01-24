@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import format from 'date-fns/format';
+import { format, parseISO } from 'date-fns';
 import {
   FocusEventHandler,
   forwardRef,
@@ -66,7 +66,7 @@ function ReactDatePickerInput({
   showTimeSelect,
   isClearable,
 }: Props): JSX.Element {
-  const selectedDate = useMemo(() => (value ? new Date(value) : null), [value]);
+  const selectedDate = useMemo(() => (value ? parseISO(value) : null), [value]);
   return (
     <DatePicker
       className={className}

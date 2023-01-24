@@ -51,7 +51,8 @@ function CheckedInput({
   return (
     <input
       className={classNames(
-        'h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500',
+        'h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500',
+        { rounded: type === 'checkbox' },
         className
       )}
       {...inputProps}
@@ -75,7 +76,9 @@ CheckedInput.Labelled = function SelectInputLabelled({
   if (horizontalLabel) {
     return (
       <div>
-        <label className={classNames('flex items-center', className)}>
+        <label
+          className={classNames('flex cursor-pointer items-center', className)}
+        >
           <CheckedInput {...rest} />
           {label && (
             <div className="ml-2 w-full py-3 text-sm font-medium text-gray-900">
