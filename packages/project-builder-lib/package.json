@@ -31,7 +31,7 @@
     "nanoid-dictionary": "^4.3.0",
     "path-browserify": "^1.0.1",
     "ramda": "^0.28.0",
-    "zod": "^3.17.3"
+    "zod": "^3.20.2"
   },
   "engines": {
     "node": "^16.0.0",

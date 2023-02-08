@@ -25,7 +25,7 @@ export const projectConfigSchema = z.object({
   name: z.string().min(1),
   version: z.string().min(1),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
-  portBase: z.number(),
+  portBase: z.coerce.number().finite(),
   apps: z.array(appSchema),
   features: z.array(
     z.object({

@@ -29,8 +29,9 @@ export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
   adminCrudForeignDisplaySchema,
 ]);
 
-export const adminCrudDisplayTypes =
-  adminCrudDisplaySchema.validDiscriminatorValues as string[];
+export const adminCrudDisplayTypes = Object.keys(
+  adminCrudDisplaySchema.optionsMap
+);
 
 export type AdminCrudDisplayConfig = z.infer<typeof adminCrudDisplaySchema>;
 
