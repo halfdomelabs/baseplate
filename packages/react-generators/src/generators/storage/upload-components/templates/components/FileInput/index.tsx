@@ -236,7 +236,7 @@ const FileInput = function FileInput({
           </div>
         );
       })()}
-      {error && (
+      {!!error && (
         <FormError>
           {formatError(error, 'Sorry, we could not upload the file.')}
         </FormError>
