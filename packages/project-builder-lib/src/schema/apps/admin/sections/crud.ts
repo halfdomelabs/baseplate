@@ -122,8 +122,7 @@ export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudPasswordInputSchema,
 ]);
 
-export const adminCrudInputTypes =
-  adminCrudInputSchema.validDiscriminatorValues as string[];
+export const adminCrudInputTypes = Object.keys(adminCrudInputSchema.optionsMap);
 
 export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 
