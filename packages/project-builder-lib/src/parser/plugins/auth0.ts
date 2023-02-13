@@ -1,4 +1,8 @@
-import { ParserPlugin, PluginMergeModelFieldInput } from '../types';
+import {
+  ParserPlugin,
+  PluginMergeModelFieldInput,
+  PluginMergeModelRelationInput,
+} from '../types';
 
 export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -42,6 +46,45 @@ export const Auth0Plugin: ParserPlugin = {
       feature: auth.accountsFeaturePath,
       model: {
         fields: userFields,
+      },
+    });
+
+    const userRoleFields: PluginMergeModelFieldInput[] = [
+      {
+        name: 'userId',
+        type: 'uuid',
+      },
+      {
+        name: 'role',
+        type: 'string',
+      },
+    ];
+
+    const userRoleRelations: PluginMergeModelRelationInput[] = [
+      {
+        name: 'user',
+        references: [{ local: 'userId', foreign: 'id' }],
+        modelName: auth.userModel,
+        foreignRelationName: 'roles',
+        relationshipType: 'oneToMany',
+        isOptional: false,
+        onDelete: 'Cascade',
+        onUpdate: 'Restrict',
+        isLocked: true,
+      },
+    ];
+
+    if (!auth.userRoleModel) {
+      throw new Error(`User role model required`);
+    }
+
+    hooks.mergeModel({
+      name: auth.userRoleModel,
+      feature: auth.accountsFeaturePath,
+      model: {
+        fields: userRoleFields,
+        relations: userRoleRelations,
+        primaryKeys: ['userId', 'role'],
       },
     });
 

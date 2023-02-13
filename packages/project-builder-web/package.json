@@ -51,7 +51,7 @@
     "sort-keys": "^5.0.0",
     "use-persisted-state": "^0.3.3",
     "web-vitals": "^2.1.0",
-    "zod": "^3.17.3"
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",

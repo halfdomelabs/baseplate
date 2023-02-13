@@ -29,8 +29,9 @@ export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
   adminCrudForeignDisplaySchema,
 ]);
 
-export const adminCrudDisplayTypes =
-  adminCrudDisplaySchema.validDiscriminatorValues as string[];
+export const adminCrudDisplayTypes = Object.keys(
+  adminCrudDisplaySchema.optionsMap
+);
 
 export type AdminCrudDisplayConfig = z.infer<typeof adminCrudDisplaySchema>;
 
@@ -121,8 +122,7 @@ export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudPasswordInputSchema,
 ]);
 
-export const adminCrudInputTypes =
-  adminCrudInputSchema.validDiscriminatorValues as string[];
+export const adminCrudInputTypes = Object.keys(adminCrudInputSchema.optionsMap);
 
 export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 

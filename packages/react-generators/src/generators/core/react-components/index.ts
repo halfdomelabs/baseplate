@@ -102,7 +102,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         'date-fns': '2.29.3',
       });
       node.addDevPackages({
-        '@types/react-datepicker': '4.4.2',
+        '@types/react-datepicker': '4.8.0',
       });
     }
 
