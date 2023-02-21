@@ -2,13 +2,13 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "nx": "15.7.2"
   },
   "scripts": {
-    "watch": "lerna run watch --parallel",
-    "lint": "lerna run lint --no-bail",
-    "build": "lerna run build",
-    "test": "lerna run test --no-bail --parallel"
+    "watch": "nx run-many --target=watch --parallel=100 --output-style=stream",
+    "lint": "nx run-many --target=lint",
+    "build": "nx run-many --nx-bail --target=build",
+    "test": "nx run-many --target=test"
   },
   "workspaces": [
     "packages/*"

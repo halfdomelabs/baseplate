@@ -15,17 +15,17 @@
     "@types/semver": "^7.3.9",
     "concurrently": "^7.0.0",
     "del": "^6.0.0",
-    "jest": "^27.4.7",
-    "ts-jest": "^27.1.3",
-    "tsc-alias": "^1.5.0",
-    "typescript": "^4.5.4"
+    "jest": "^28.1.0",
+    "ts-jest": "^28.0.2",
+    "tsc-alias": "^1.8.2",
+    "typescript": "~4.7.4"
   },
   "scripts": {
     "build": "concurrently yarn:build:*",
     "build:tsc": "rm -rf ./lib && tsc && tsc-alias",
     "build:templates": "gulp buildTemplates",
     "watch": "concurrently yarn:watch:*",
-    "watch:tsc": "tsc --watch & tsc-alias --watch",
+    "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
     "watch:templates": "gulp watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "test": "jest"
