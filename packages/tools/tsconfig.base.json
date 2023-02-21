@@ -11,6 +11,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "sourceMap": true,
+    "declaration": true,
     "declarationMap": true
   },
   "exclude": ["**/node_modules", "**/dist", "**/lib", "**/*.test.ts"]
