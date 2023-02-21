@@ -23,7 +23,6 @@
     "start": "ts-node --transpile-only -r dotenv/config -r tsconfig-paths/register dist/index.js",
     "dev": "ts-node-dev --rs --transpile-only -r dotenv/config -r tsconfig-paths/register --respawn src",
     "build": "tsc && tsc-alias",
-    "watch": "tsc --watch & tsc-alias --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
   },
   "dependencies": {

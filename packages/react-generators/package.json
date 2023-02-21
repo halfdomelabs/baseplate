@@ -22,7 +22,7 @@
     "build:tsc": "rm -rf ./lib && tsc && tsc-alias",
     "build:templates": "gulp buildTemplates",
     "watch": "concurrently yarn:watch:*",
-    "watch:tsc": "tsc --watch & tsc-alias --watch",
+    "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
     "watch:templates": "gulp watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src"
   },

@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "rm -rf ./lib && tsc && tsc-alias",
-    "watch": "tsc --watch & tsc-alias --watch",
+    "watch": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "test": "jest"
   },
