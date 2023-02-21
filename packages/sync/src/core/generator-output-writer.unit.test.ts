@@ -90,6 +90,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
+      {},
       testLogger
     );
     expect(vol.toJSON()).toEqual({
