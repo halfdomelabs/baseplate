@@ -89,7 +89,6 @@ describe('writeGeneratorOutput', () => {
         postWriteCommands: [],
       },
       '/root',
-      undefined,
       {},
       testLogger
     );
