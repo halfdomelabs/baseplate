@@ -89,7 +89,7 @@ describe('writeGeneratorOutput', () => {
         postWriteCommands: [],
       },
       '/root',
-      undefined,
+      {},
       testLogger
     );
     expect(vol.toJSON()).toEqual({

@@ -31,6 +31,10 @@ async function getGeneratorEngine(): Promise<GeneratorEngine> {
   return cachedEngine;
 }
 
+interface BuildResultFile {
+  failedCommands?: string[];
+}
+
 export async function generateForDirectory(
   baseDirectory: string,
   appEntry: AppEntry,
@@ -52,7 +56,7 @@ export async function generateForDirectory(
   const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
 
   if (!cleanDirectoryExists) {
-    await engine.writeOutput(output, projectDirectory, cleanDirectory);
+    await engine.writeOutput(output, projectDirectory, { cleanDirectory });
   } else {
     logger.log(
       'Detected project clean folder. Attempting 3-way mediocre-merge...'
@@ -102,12 +106,38 @@ export async function generateForDirectory(
         ),
       };
 
-      await engine.writeOutput(
+      // look for previous build result
+      const buildResultPath = path.join(
+        projectDirectory,
+        'baseplate/.build_result.json'
+      );
+
+      const buildResultExists = await fs.pathExists(buildResultPath);
+      const oldBuildResult: BuildResultFile = buildResultExists
+        ? ((await fs.readJSON(buildResultPath)) as BuildResultFile)
+        : {};
+
+      const writeOutput = await engine.writeOutput(
         augmentedOutput,
         projectDirectory,
-        cleanTmpDirectory,
+        {
+          cleanDirectory: cleanTmpDirectory,
+          rerunCommands: oldBuildResult.failedCommands,
+        },
         logger
       );
+
+      if (buildResultExists) {
+        await fs.rm(buildResultPath);
+      }
+
+      if (writeOutput.failedCommands) {
+        // write failed commands to a temporary file
+        const buildResult: BuildResultFile = {
+          failedCommands: writeOutput.failedCommands,
+        };
+        await fs.writeJSON(buildResultPath, buildResult, { spaces: 2 });
+      }
 
       // swap out clean directory with clean_tmp
       await fs.rm(cleanDirectory, { recursive: true });

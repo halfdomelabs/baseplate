@@ -186,12 +186,23 @@ function getNodePrefix(): string {
   return '';
 }
 
+export interface GeneratorWriteOptions {
+  cleanDirectory?: string;
+  rerunCommands?: string[];
+}
+
+export interface GeneratorWriteResult {
+  conflictFilenames: string[];
+  failedCommands: string[];
+}
+
 export async function writeGeneratorOutput(
   output: GeneratorOutput,
   outputDirectory: string,
-  cleanDirectory?: string,
+  options?: GeneratorWriteOptions,
   logger: Logger = console
-): Promise<void> {
+): Promise<GeneratorWriteResult> {
+  const { cleanDirectory, rerunCommands = [] } = options || {};
   // write files
   const filenames = Object.keys(output.files);
 
@@ -267,12 +278,17 @@ export async function writeGeneratorOutput(
         )
       );
       if (output.postWriteCommands.length) {
-        logger.log(`\nOnce resolved, please run the following commands:`);
+        logger.log(
+          `\nOnce resolved, please re-run the generator or run the following commands:`
+        );
         for (const command of output.postWriteCommands) {
           logger.log(`  ${command.command}`);
         }
-        return;
       }
+      return {
+        conflictFilenames,
+        failedCommands: output.postWriteCommands.map((c) => c.command),
+      };
     }
 
     // run post write commands
@@ -281,6 +297,8 @@ export async function writeGeneratorOutput(
     // bugger up node resolution. This forces it to run normally again
     const nodePrefix = getNodePrefix();
     const NODE_COMMANDS = ['node', 'yarn', 'npm'];
+
+    const failedCommands: string[] = [];
 
     for (const command of output.postWriteCommands) {
       const { onlyIfChanged = [], workingDirectory = '' } =
@@ -291,7 +309,8 @@ export async function writeGeneratorOutput(
 
       if (
         command.options?.onlyIfChanged == null ||
-        changedList.some((file) => modifiedFilenames.includes(file))
+        changedList.some((file) => modifiedFilenames.includes(file)) ||
+        rerunCommands.includes(command.command)
       ) {
         const commandString = NODE_COMMANDS.includes(
           command.command.split(' ')[0]
@@ -299,21 +318,23 @@ export async function writeGeneratorOutput(
           ? `${nodePrefix}${command.command}`
           : command.command;
 
-        if (conflictFilenames.length) {
-          logger.log(command.command);
-        } else {
-          logger.log(`Running ${commandString}...`);
-          try {
-            await exec(commandString, {
-              cwd: path.join(outputDirectory, workingDirectory),
-            });
-          } catch (err) {
-            logger.error(chalk.red(`Unable to run ${commandString}`));
-            logger.error(getErrorMessage(err));
-          }
+        logger.log(`Running ${commandString}...`);
+        try {
+          await exec(commandString, {
+            cwd: path.join(outputDirectory, workingDirectory),
+          });
+        } catch (err) {
+          logger.error(chalk.red(`Unable to run ${commandString}`));
+          logger.error(getErrorMessage(err));
+          failedCommands.push(command.command);
         }
       }
     }
+
+    return {
+      conflictFilenames: [],
+      failedCommands,
+    };
   } catch (err) {
     if (err instanceof FormatterError) {
       logger.error(`Error formatting file: ${err.message}`);

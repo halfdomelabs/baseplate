@@ -35,7 +35,8 @@ const NodeGitIgnoreGenerator = createGeneratorWithChildren({
       'yarn-debug.log*',
       'yarn-error.log*',
       '',
-      '.baseplate/.clean_tmp',
+      'baseplate/.clean_tmp',
+      'baseplate/.build_result.json',
     ];
     return {
       getProviders: () => ({

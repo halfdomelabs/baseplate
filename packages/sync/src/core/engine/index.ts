@@ -1,7 +1,11 @@
 import path from 'path';
 import { Logger } from '@src/utils/evented-logger';
 import { GeneratorOutput } from '../generator-output';
-import { writeGeneratorOutput } from '../generator-output-writer';
+import {
+  GeneratorWriteOptions,
+  GeneratorWriteResult,
+  writeGeneratorOutput,
+} from '../generator-output-writer';
 import { GeneratorConfigMap } from '../loader';
 import { loadDescriptorFromFile } from './descriptor-loader';
 import { buildGeneratorEntry, GeneratorEntry } from './generator-builder';
@@ -46,9 +50,9 @@ export class GeneratorEngine {
   async writeOutput(
     output: GeneratorOutput,
     outputDirectory: string,
-    cleanDirectory?: string,
+    options?: GeneratorWriteOptions,
     logger: Logger = console
-  ): Promise<void> {
-    await writeGeneratorOutput(output, outputDirectory, cleanDirectory, logger);
+  ): Promise<GeneratorWriteResult> {
+    return writeGeneratorOutput(output, outputDirectory, options, logger);
   }
 }
