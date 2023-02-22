@@ -54,7 +54,7 @@
     "sort-keys": "^5.0.0",
     "use-persisted-state": "^0.3.3",
     "web-vitals": "^2.1.0",
-    "zod": "^3.20.2"
+    "zod": "^3.20.6"
   },
   "devDependencies": {
     "@types/use-persisted-state": "^0.3.1",
