@@ -91,13 +91,17 @@ export function buildFastify(
         generator: '@baseplate/fastify/prisma/prisma-utils',
         peerProvider: true,
       },
-      $nexus: {
-        generator: '@baseplate/fastify/nexus/nexus',
+      $yoga: {
+        generator: '@baseplate/fastify/yoga/yoga-plugin',
         enableSubscriptions: app.enableSubscriptions,
         peerProvider: true,
       },
+      $nexus: {
+        generator: '@baseplate/fastify/nexus/nexus',
+        peerProvider: true,
+      },
       $yogaSentry: {
-        generator: '@baseplate/fastify/nexus/yoga-sentry',
+        generator: '@baseplate/fastify/yoga/yoga-sentry',
       },
       $modules: [
         ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),

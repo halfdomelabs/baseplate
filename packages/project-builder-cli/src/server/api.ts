@@ -135,7 +135,9 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
         id: this.id,
         message: chalk.red(
           `Error building project: ${
-            err instanceof Error ? err.message : 'Unknown error'
+            err instanceof Error
+              ? `${err.message}${err.stack ? `\n${err.stack}` : ''}`
+              : 'Unknown error'
           }`
         ),
       });
