@@ -15,6 +15,10 @@ export function resolveModule(module: string): string {
  *
  * @param module Name of module to load
  */
-export function getModuleDefault<T>(module: string): T {
-  return require(module)?.default as T;
+export function getModuleDefault<T>(module: string): T | null {
+  try {
+    return require(module)?.default as T;
+  } catch (err) {
+    return null;
+  }
 }
