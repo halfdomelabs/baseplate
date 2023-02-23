@@ -252,7 +252,7 @@ const NexusGenerator = createGeneratorWithTasks({
           prettier,
           tsUtils,
           rootModuleImport,
-          yogaPluginSetup,
+          // yogaPluginSetup,
         },
         { setupTask: { configMap, schemaFiles } }
       ) {
@@ -329,7 +329,7 @@ const NexusGenerator = createGeneratorWithTasks({
               }
             );
 
-            yogaPluginSetup.getConfig().set('schema', schemaExpression);
+            // yogaPluginSetup.getConfig().set('schema', schemaExpression);
 
             await builder.apply(
               typescript.createCopyAction({
@@ -338,14 +338,14 @@ const NexusGenerator = createGeneratorWithTasks({
               })
             );
 
-            builder.addPostWriteCommand('yarn nexusgen', {
-              onlyIfChanged: [
-                ...schemaFiles,
-                'src/plugins/graphql/index.ts',
-                'src/plugins/graphql/missing-type-plugin.ts',
-                'src/utils/nexus.ts',
-              ],
-            });
+            // builder.addPostWriteCommand('yarn nexusgen', {
+            //   onlyIfChanged: [
+            //     ...schemaFiles,
+            //     'src/plugins/graphql/index.ts',
+            //     'src/plugins/graphql/missing-type-plugin.ts',
+            //     'src/utils/nexus.ts',
+            //   ],
+            // });
           },
         };
       },

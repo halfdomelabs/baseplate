@@ -100,6 +100,10 @@ export function buildFastify(
         generator: '@baseplate/fastify/nexus/nexus',
         peerProvider: true,
       },
+      $pothos: {
+        generator: '@baseplate/fastify/pothos/pothos',
+        peerProvider: true,
+      },
       $yogaSentry: {
         generator: '@baseplate/fastify/yoga/yoga-sentry',
       },

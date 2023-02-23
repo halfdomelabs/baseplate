@@ -495,12 +495,18 @@ export const TypescriptCodeUtils = {
     );
   },
   mergeBlocksAsInterfaceContent(
-    obj: Record<string, TypescriptCodeExpression>
+    obj: Record<string, TypescriptCodeExpression | string | undefined>
   ): TypescriptCodeBlock {
     const keys = Object.keys(obj);
     const expressions = Object.values(obj);
     const mergedBlock = keys
-      .map((key) => `${key}: ${obj[key].content};`)
+      .filter((key) => obj[key] != null)
+      .map(
+        (key) =>
+          `${key}: ${
+            normalizeTypescriptCodeExpression(obj[key] || '').content
+          };`
+      )
       .join('\n');
     return new TypescriptCodeBlock(
       mergedBlock,

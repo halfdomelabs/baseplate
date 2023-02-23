@@ -25,6 +25,7 @@ export const rootModuleProvider =
 
 export interface RootModuleImport {
   getRootModule: () => TypescriptCodeExpression;
+  getRootModuleImport: () => string;
 }
 
 export const rootModuleImportProvider = createProviderType<RootModuleImport>(
@@ -93,6 +94,7 @@ const RootModuleGenerator = createGeneratorWithTasks({
                     'RootModule',
                     "import { RootModule } from '@/src/modules'"
                   ),
+                getRootModuleImport: () => `@/src/modules`,
               },
             };
           },

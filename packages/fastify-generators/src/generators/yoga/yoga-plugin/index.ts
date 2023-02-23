@@ -20,7 +20,6 @@ import { fastifyRedisProvider } from '@src/generators/core/fastify-redis';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { loggerServiceProvider } from '@src/generators/core/logger-service';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
-import { rootModuleImportProvider } from '@src/generators/core/root-module';
 
 const descriptorSchema = z.object({
   enableSubscriptions: z.boolean().optional(),
@@ -30,6 +29,7 @@ export interface YogaPluginConfig {
   envelopPlugins: TypescriptCodeExpression[];
   postSchemaBlocks: TypescriptCodeBlock[];
   schema: TypescriptCodeExpression;
+  customImports: TypescriptCodeBlock[];
 }
 
 export interface YogaPluginSetupProvider {
@@ -57,6 +57,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           {
             envelopPlugins: [],
             postSchemaBlocks: [],
+            customImports: [],
             schema: new TypescriptCodeExpression(
               `new GraphQLSchema({})`,
               `import { GraphQLSchema } from 'graphql';`
@@ -124,7 +125,6 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         configService: configServiceProvider,
         errorHandlerService: errorHandlerServiceProvider,
         requestServiceContext: requestServiceContextProvider,
-        rootModuleImport: rootModuleImportProvider,
         loggerService: loggerServiceProvider,
       },
       exports: {
@@ -136,7 +136,6 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           typescript,
           configService,
           requestServiceContext,
-          rootModuleImport,
           loggerService,
           errorHandlerService,
         },
@@ -159,34 +158,36 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           '@types/ws': '8.5.3',
         });
 
-        const pluginFile = typescript.createTemplate(
-          {
-            SCHEMA: { type: 'code-expression' },
-            ROOT_MODULE: { type: 'code-expression' },
-            ENVELOP_PLUGINS: { type: 'code-expression' },
-            GRAPHQL_HANDLER: { type: 'code-block' },
-          },
-          {
-            importMappers: [
-              errorHandlerService,
-              configService,
-              requestServiceContext,
-              loggerService,
-            ],
-          }
-        );
-
-        pluginFile.addCodeExpression(
-          'ROOT_MODULE',
-          rootModuleImport.getRootModule()
-        );
-
         return {
           getProviders() {
             return { yogaPlugin: { getConfig: () => configMap } };
           },
           async build(builder) {
             const config = configMap.value();
+
+            const pluginFile = typescript.createTemplate(
+              {
+                SCHEMA: { type: 'code-expression' },
+                ROOT_MODULE: { type: 'code-expression' },
+                ENVELOP_PLUGINS: { type: 'code-expression' },
+                GRAPHQL_HANDLER: { type: 'code-block' },
+                POST_SCHEMA_BLOCKS: TypescriptCodeUtils.mergeBlocks(
+                  config.postSchemaBlocks,
+                  '\n\n'
+                ),
+                CUSTOM_IMPORTS: TypescriptCodeUtils.mergeBlocks(
+                  config.customImports
+                ),
+              },
+              {
+                importMappers: [
+                  errorHandlerService,
+                  configService,
+                  requestServiceContext,
+                  loggerService,
+                ],
+              }
+            );
 
             pluginFile.addCodeExpression('SCHEMA', config.schema);
 

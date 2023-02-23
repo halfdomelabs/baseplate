@@ -11,9 +11,13 @@ import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError } from 'graphql';
 
+CUSTOM_IMPORTS;
+
 const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
 
 const schema = SCHEMA;
+
+POST_SCHEMA_BLOCKS;
 
 export const graphqlPlugin = fp(async (fastify) => {
   const graphQLServer = createServer<{
