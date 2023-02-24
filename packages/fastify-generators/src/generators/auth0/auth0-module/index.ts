@@ -76,7 +76,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
       `${appModule.getModuleFolder()}/plugins/auth0-plugin.ts`
     );
 
-    const [, authServicePath] = makeImportAndFilePath(
+    const [authServiceImport, authServicePath] = makeImportAndFilePath(
       `${appModule.getModuleFolder()}/services/auth-service.ts`
     );
 
@@ -154,13 +154,21 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
           getImportMap: () => ({
             '%auth-service': {
               path: authServicePath,
-              allowedImports: ['createAuthInfoFromRequest'],
+              allowedImports: [
+                'createAuthInfoFromRequest',
+                'createAuthInfoFromAuthorization',
+              ],
             },
           }),
           getAuthInfoCreator(request, token) {
             return TypescriptCodeUtils.formatExpression(
               `await createAuthInfoFromAuthorization(REQUEST, TOKEN)`,
-              { REQUEST: request, TOKEN: token }
+              { REQUEST: request, TOKEN: token },
+              {
+                importText: [
+                  `import { createAuthInfoFromAuthorization } from '${authServiceImport}'`,
+                ],
+              }
             );
           },
         },

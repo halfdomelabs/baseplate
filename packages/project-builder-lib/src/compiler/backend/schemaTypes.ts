@@ -5,6 +5,32 @@ import { ModelConfig } from '../../schema/models';
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
   const { schema } = model || {};
   const {
+    exposedFields = [],
+    exposedForeignRelations = [],
+    exposedLocalRelations = [],
+  } = schema || {};
+
+  return {
+    name: `${model.name}Types`,
+    generator: '@baseplate/fastify/pothos/pothos-types-file',
+    modelName: model.name,
+    children: {
+      $objectType: {
+        generator: '@baseplate/fastify/pothos/pothos-prisma-object',
+        modelName: model.name,
+        exposedFields: [
+          ...exposedFields,
+          ...exposedForeignRelations,
+          ...exposedLocalRelations,
+        ],
+      },
+    },
+  };
+}
+
+function buildNexusQuerySchemaTypeForModel(model: ModelConfig): unknown {
+  const { schema } = model || {};
+  const {
     authorize,
     buildQuery,
     exposedFields = [],
@@ -108,6 +134,9 @@ export function buildSchemaTypesForFeature(
     ...models.flatMap((model) => [
       model.schema?.buildObjectType || model.schema?.buildQuery
         ? buildQuerySchemaTypeForModel(model)
+        : undefined,
+      model.schema?.buildObjectType || model.schema?.buildQuery
+        ? buildNexusQuerySchemaTypeForModel(model)
         : undefined,
       model.schema?.buildMutations
         ? buildMutationSchemaTypeForModel(feature, model)

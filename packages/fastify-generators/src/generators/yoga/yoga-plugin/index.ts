@@ -307,6 +307,15 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                 })
               );
 
+              console.log(
+                authServiceImport.getAuthInfoCreator(
+                  TypescriptCodeUtils.createExpression('ctx.extra.request'),
+                  TypescriptCodeUtils.createExpression(
+                    `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`
+                  )
+                )
+              );
+
               const websocketFile = typescript.createTemplate(
                 {
                   AUTH_INFO_CREATOR: authServiceImport.getAuthInfoCreator(

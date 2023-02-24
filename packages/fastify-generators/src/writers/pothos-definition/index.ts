@@ -1,4 +1,5 @@
 import {
+  quot,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -9,15 +10,67 @@ import {
   ServiceOutputDtoNestedField,
   ServiceOutputDtoScalarField,
 } from '@src/types/serviceOutput';
-import { lowerCaseFirst } from '@src/utils/case';
+import { lowerCaseFirst, upperCaseFirst } from '@src/utils/case';
 import { PothosScalarConfig } from './scalars';
+
+export interface PothosTypeReferences {
+  scalars: Record<ScalarFieldType, PothosScalarConfig>;
+  enums?: Record<string, TypescriptCodeExpression>;
+  inputTypes?: Record<string, TypescriptCodeExpression>;
+  objectTypes?: Record<string, TypescriptCodeExpression>;
+}
 
 export interface PothosDefinitionWriterOptions {
   builder: string;
-  lookupScalar: (name: ScalarFieldType) => PothosScalarConfig;
-  lookupEnum: (name: string) => TypescriptCodeExpression;
-  lookupInputType: (name: string) => TypescriptCodeExpression;
-  lookupObjectType: (name: string) => TypescriptCodeExpression;
+  typeReferences: PothosTypeReferences;
+}
+
+function getObjectTypeFromOptions(
+  options: PothosDefinitionWriterOptions,
+  name: string
+): TypescriptCodeExpression {
+  const { objectTypes = {} } = options.typeReferences;
+  const objectType = objectTypes[name];
+  if (!objectType) {
+    throw new Error(`Could not find Pothos object type ${name}`);
+  }
+  return objectType;
+}
+
+function getInputTypeFromOptions(
+  options: PothosDefinitionWriterOptions,
+  name: string
+): TypescriptCodeExpression {
+  const { inputTypes = {} } = options.typeReferences;
+  const inputType = inputTypes[name];
+  if (!inputType) {
+    throw new Error(`Could not find Pothos input type ${name}`);
+  }
+  return inputType;
+}
+
+function getScalarTypeFromOptions(
+  options: PothosDefinitionWriterOptions,
+  name: ScalarFieldType
+): PothosScalarConfig {
+  const { scalars } = options.typeReferences;
+  const scalar = scalars[name];
+  if (!scalar) {
+    throw new Error(`Could not find Pothos scalar ${name}`);
+  }
+  return scalar;
+}
+
+function getEnumTypeFromOptions(
+  options: PothosDefinitionWriterOptions,
+  name: string
+): TypescriptCodeExpression {
+  const { enums = {} } = options.typeReferences;
+  const val = enums[name];
+  if (!val) {
+    throw new Error(`Could not find Pothos enum ${name}`);
+  }
+  return val;
 }
 
 export function writePothosObjectTypeFieldFromDtoNestedField(
@@ -25,7 +78,10 @@ export function writePothosObjectTypeFieldFromDtoNestedField(
   resolver: TypescriptCodeExpression,
   options: PothosDefinitionWriterOptions
 ): TypescriptCodeExpression {
-  const typeExpression = options.lookupObjectType(field.nestedType.name);
+  const typeExpression = getObjectTypeFromOptions(
+    options,
+    field.nestedType.name
+  );
 
   return TypescriptCodeUtils.mergeExpressionsAsObject({
     type: field.isList
@@ -36,11 +92,13 @@ export function writePothosObjectTypeFieldFromDtoNestedField(
   }).wrap((contents) => `${options.builder}.field(${contents})`);
 }
 
-export function writePothosDefinitionFromDtoScalarField(
+export function writePothosFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: PothosDefinitionWriterOptions
+  options: PothosDefinitionWriterOptions,
+  isExposed?: boolean
 ): TypescriptCodeExpression {
-  const { pothosMethod, name: scalarName } = options.lookupScalar(
+  const { pothosMethod, name: scalarName } = getScalarTypeFromOptions(
+    options,
     field.scalarType
   );
 
@@ -56,23 +114,44 @@ export function writePothosDefinitionFromDtoScalarField(
 
   const scalarType =
     field.scalarType === 'enum'
-      ? options.lookupEnum(field.enumType?.name || '')
-      : new TypescriptCodeExpression(scalarName);
+      ? getEnumTypeFromOptions(options, field.enumType?.name || '')
+      : new TypescriptCodeExpression(quot(scalarName));
   const scalarTypeWithList = field.isList
     ? scalarType.wrap((contents) => `[${contents}]`)
     : scalarType;
 
+  const pothosMethodName = (() => {
+    if (pothosMethodWithId) {
+      const methodName = `${pothosMethodWithId}${field.isList ? 'List' : ''}`;
+      return isExposed
+        ? `expose${upperCaseFirst(methodName === 'id' ? 'ID' : methodName)}`
+        : methodName;
+    }
+    return isExposed ? 'expose' : 'field';
+  })();
+
+  const fieldOptions = {
+    type: pothosMethodWithId ? undefined : scalarTypeWithList,
+    nullable: field.isOptional ? 'true' : undefined,
+  };
+  const hasFieldOptions = Object.values(fieldOptions).some(
+    (a) => a !== undefined
+  );
+
+  const args: string[] = [];
+  if (isExposed) {
+    args.push(`'${field.name}'`);
+  }
+  if (hasFieldOptions) {
+    args.push('OPTIONS');
+  }
+
   return TypescriptCodeUtils.formatExpression(
-    `BUILDER.POTHOS_METHOD(ARGUMENTS)`,
+    `BUILDER.POTHOS_METHOD(${args.join(', ')})`,
     {
       BUILDER: options.builder,
-      POTHOS_METHOD: pothosMethodWithId
-        ? `${pothosMethodWithId}${field.isList ? 'List' : ''}`
-        : 'field',
-      ARGUMENTS: TypescriptCodeUtils.mergeExpressionsAsObject({
-        type: pothosMethodWithId ? undefined : scalarTypeWithList,
-        nullable: field.isOptional ? 'false' : undefined,
-      }),
+      POTHOS_METHOD: pothosMethodName,
+      OPTIONS: TypescriptCodeUtils.mergeExpressionsAsObject(fieldOptions),
     }
   );
 }
@@ -81,7 +160,10 @@ function writePothosInputDefinitionFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosDefinitionWriterOptions
 ): TypescriptCodeExpression {
-  const typeExpression = options.lookupInputType(field.nestedType.name);
+  const typeExpression = getInputTypeFromOptions(
+    options,
+    field.nestedType.name
+  );
 
   return TypescriptCodeUtils.mergeExpressionsAsObject({
     type: field.isList
@@ -107,7 +189,7 @@ export function writePothosInputDefinitionFromDtoFields(
 ): InputDefinition {
   const inputDefinitions = fields.map((field) => {
     if (field.type === 'nested') {
-      if (options.lookupInputType(field.nestedType.name)) {
+      if (getInputTypeFromOptions(options, field.nestedType.name)) {
         return {
           name: field.name,
           definition: writePothosInputDefinitionFromDtoNestedField(
@@ -136,7 +218,7 @@ export function writePothosInputDefinitionFromDtoFields(
     }
     return {
       name: field.name,
-      definition: writePothosDefinitionFromDtoScalarField(field, options),
+      definition: writePothosFieldFromDtoScalarField(field, options),
       childInputDefinitions: [],
     };
   });
