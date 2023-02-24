@@ -128,6 +128,9 @@ export function buildFastify(
         generator: '@baseplate/fastify/pothos/pothos',
         peerProvider: true,
       },
+      $pothosPrisma: {
+        generator: '@baseplate/fastify/pothos/pothos-prisma',
+      },
       $yogaSentry: {
         generator: '@baseplate/fastify/yoga/yoga-sentry',
       },
