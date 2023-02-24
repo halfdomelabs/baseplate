@@ -351,10 +351,6 @@ export function writeImportDeclarations(
       writer.write('\n');
     }
   });
-
-  if (fileDirectory === 'src') {
-    console.log(fileDirectory, writer.toString());
-  }
 }
 
 export function getImportDeclarationEntries(

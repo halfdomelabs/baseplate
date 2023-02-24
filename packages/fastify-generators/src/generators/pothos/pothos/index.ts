@@ -9,7 +9,6 @@ import {
   typescriptProvider,
 } from '@baseplate/core-generators';
 import {
-  copyDirectoryAction,
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
@@ -20,30 +19,33 @@ import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
 import { rootModuleImportProvider } from '@src/generators/core/root-module';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin';
+import { PothosScalarConfig } from '@src/writers/pothos-definition/scalars';
 
 const descriptorSchema = z.object({});
 
-interface PothosCustomScalar {
-  name: string;
+interface PothosScalarConfigWithTypes extends PothosScalarConfig {
   inputType: string;
   outputType: string;
 }
 
 export interface PothosGeneratorConfig {
   pothosPlugins: TypescriptCodeExpression[];
-  customScalars: PothosCustomScalar[];
+  customScalars: PothosScalarConfigWithTypes[];
   schemaTypeOptions: { key: string; value: TypescriptCodeExpression }[];
   schemaBuilderOptions: { key: string; value: TypescriptCodeExpression }[];
 }
 
-export interface PothosSetupProvider {
+export interface PothosSetupProvider extends ImportMapper {
   getConfig: () => NonOverwriteableMap<PothosGeneratorConfig>;
+  registerSchemaFile: (filePath: string) => void;
 }
 
 export const pothosSetupProvider =
   createProviderType<PothosSetupProvider>('pothos-setup');
 
-export type PothosSchemaProvider = ImportMapper;
+export interface PothosSchemaProvider extends ImportMapper {
+  registerSchemaFile: (filePath: string) => void;
+}
 
 export const pothosSchemaProvider =
   createProviderType<PothosSchemaProvider>('pothos-schema');
@@ -70,15 +72,26 @@ const PothosGenerator = createGeneratorWithTasks({
 
         // TODO: Make type options/builder options
 
+        const schemaFiles: string[] = [];
+
         return {
           getProviders() {
             return {
               pothosSetup: {
                 getConfig: () => config,
+                getImportMap: () => ({
+                  '%pothos': {
+                    path: '@/src/plugins/graphql/builder',
+                    allowedImports: ['builder'],
+                  },
+                }),
+                registerSchemaFile: (filePath) => {
+                  schemaFiles.push(filePath);
+                },
               },
             };
           },
-          build: () => ({ config }),
+          build: () => ({ config, schemaFiles }),
         };
       },
     });
@@ -87,19 +100,21 @@ const PothosGenerator = createGeneratorWithTasks({
       name: 'schema',
       dependencies: {},
       exports: { pothosSchema: pothosSchemaProvider },
-      run() {
-        const schemaFiles: string[] = [];
-
+      taskDependencies: { setupTask },
+      run(deps, { setupTask: { schemaFiles } }) {
         return {
           getProviders() {
             return {
               pothosSchema: {
                 getImportMap: () => ({
-                  '%pothos-builder': {
+                  '%pothos': {
                     path: '@/src/plugins/graphql/builder',
                     allowedImports: ['builder'],
                   },
                 }),
+                registerSchemaFile(filePath) {
+                  schemaFiles.push(filePath);
+                },
               },
             };
           },
@@ -215,21 +230,16 @@ const PothosGenerator = createGeneratorWithTasks({
 
             const schemaExpression = TypescriptCodeUtils.createExpression(
               `builder.toSchema()`,
-              [`import { builder } from '${builderImport}';`]
+              [
+                `import { builder } from '${builderImport}';`,
+                `import '%root-module';`,
+              ],
+              { importMappers: [rootModuleImport] }
             );
 
             const yogaConfig = yogaPluginSetup.getConfig();
 
             yogaConfig.set('schema', schemaExpression);
-
-            yogaConfig.appendUnique('customImports', [
-              TypescriptCodeUtils.createBlock(
-                `import '${typescript.resolveModule(
-                  rootModuleImport.getRootModuleImport(),
-                  'src/plugins/graphql'
-                )}';`
-              ),
-            ]);
 
             yogaConfig.appendUnique('postSchemaBlocks', [
               TypescriptCodeUtils.createBlock(
@@ -251,9 +261,16 @@ const PothosGenerator = createGeneratorWithTasks({
             ]);
 
             await builder.apply(
-              copyDirectoryAction({
-                source: 'FieldWithInputPayloadPlugin',
-                destination: 'src/plugins/graphql/FieldWithInputPayloadPlugin',
+              typescript.createCopyFilesAction({
+                sourceBaseDirectory: 'FieldWithInputPayloadPlugin',
+                destinationBaseDirectory:
+                  'src/plugins/graphql/FieldWithInputPayloadPlugin',
+                paths: [
+                  'global-types.ts',
+                  'index.ts',
+                  'schema-builder.ts',
+                  'types.ts',
+                ],
               })
             );
 

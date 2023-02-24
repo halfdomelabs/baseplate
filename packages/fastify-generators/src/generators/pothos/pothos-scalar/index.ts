@@ -1,4 +1,5 @@
 import {
+  makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeExpression,
   typescriptProvider,
@@ -8,31 +9,31 @@ import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { ScalarFieldType } from '@src/types/fieldTypes';
-import { nexusSetupProvider } from '../nexus';
+import { pothosSetupProvider } from '../pothos';
 
-interface NexusScalarConfig {
+interface PothosScalarConfig {
   name: string;
   scalar: ScalarFieldType;
   templatePath: string;
   export: string;
-  nexusMethod: string;
-  sourceType: string;
+  inputType: string;
+  outputType: string;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
 }
 
-const createNexusScalarMap = <T extends Record<string, NexusScalarConfig>>(
+const createPothosScalarMap = <T extends Record<string, PothosScalarConfig>>(
   t: T
 ): T => t;
 
-const scalarConfigMap = createNexusScalarMap({
+const scalarConfigMap = createPothosScalarMap({
   dateTime: {
     name: 'DateTime',
     scalar: 'dateTime',
     templatePath: 'date-time.ts',
     export: 'DateTimeScalar',
-    nexusMethod: 'dateTime',
-    sourceType: 'Date',
+    inputType: 'Date',
+    outputType: 'Date | string',
     dependencies: {},
     devDependencies: {},
   },
@@ -41,8 +42,8 @@ const scalarConfigMap = createNexusScalarMap({
     scalar: 'date',
     templatePath: 'date.ts',
     export: 'DateScalar',
-    nexusMethod: 'date',
-    sourceType: 'Date',
+    inputType: 'Date',
+    outputType: 'Date | string',
     dependencies: {},
     devDependencies: {},
   },
@@ -51,7 +52,8 @@ const scalarConfigMap = createNexusScalarMap({
     scalar: 'uuid',
     templatePath: 'uuid.ts',
     export: 'UuidScalar',
-    nexusMethod: 'uuid',
+    inputType: 'string',
+    outputType: 'string',
     sourceType: 'string',
     dependencies: {
       uuid: '9.0.0',
@@ -70,42 +72,35 @@ const descriptorSchema = z.object({
   ),
 });
 
-const NexusScalarGenerator = createGeneratorWithChildren({
+const PothosScalarGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     appModule: appModuleProvider,
-    nexusSetup: nexusSetupProvider,
+    pothosSetup: pothosSetupProvider,
     node: nodeProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
   },
   createGenerator(
     { type },
-    { appModule, nexusSetup, node, errorHandlerService, typescript }
+    { appModule, pothosSetup, node, errorHandlerService, typescript }
   ) {
     const scalarConfig = scalarConfigMap[type];
-    const scalarPath = `${appModule.getModuleFolder()}/scalars/${
-      scalarConfig.templatePath
-    }`;
-    appModule.registerFieldEntry(
-      'schemaTypes',
-      new TypescriptCodeExpression(
-        scalarConfig.export,
-        `import {${scalarConfig.export}} from '@/${scalarPath.replace(
-          /\.ts$/,
-          ''
-        )}'`
-      )
+    const [scalarImport, scalarPath] = makeImportAndFilePath(
+      `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`
     );
-    const { name, scalar, nexusMethod, sourceType } = scalarConfig;
-    nexusSetup.addScalarField({
-      name,
-      scalar,
-      nexusMethod,
-      sourceType,
-    });
-    nexusSetup.registerSchemaFile(scalarPath);
+    appModule.addModuleImport(scalarImport);
+
+    const { name, scalar, inputType, outputType } = scalarConfig;
+
+    const config = pothosSetup.getConfig();
+
+    config.appendUnique('customScalars', [
+      { name, scalar, inputType, outputType },
+    ]);
+
+    pothosSetup.registerSchemaFile(scalarPath);
 
     if (scalarConfig.dependencies) {
       node.addPackages(scalarConfig.dependencies);
@@ -121,7 +116,7 @@ const NexusScalarGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: scalarConfig.templatePath,
             destination: scalarPath,
-            importMappers: [errorHandlerService],
+            importMappers: [pothosSetup, errorHandlerService],
           })
         );
       },
@@ -129,4 +124,4 @@ const NexusScalarGenerator = createGeneratorWithChildren({
   },
 });
 
-export default NexusScalarGenerator;
+export default PothosScalarGenerator;

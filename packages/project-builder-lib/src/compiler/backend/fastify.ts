@@ -19,6 +19,30 @@ export function buildFastify(
       $schemaTypes: [
         {
           name: 'UuidScalar',
+          generator: '@baseplate/fastify/pothos/pothos-scalar',
+          type: 'uuid',
+        },
+        {
+          name: 'DateTimeScalar',
+          generator: '@baseplate/fastify/pothos/pothos-scalar',
+          type: 'dateTime',
+        },
+        {
+          name: 'DateScalar',
+          generator: '@baseplate/fastify/pothos/pothos-scalar',
+          type: 'date',
+        },
+      ],
+    },
+  });
+
+  builder.addDescriptor('graphql-nexus/root.json', {
+    name: 'graphqlNexus',
+    generator: '@baseplate/fastify/core/app-module',
+    children: {
+      $schemaTypes: [
+        {
+          name: 'UuidScalar',
           generator: '@baseplate/fastify/nexus/nexus-scalar',
           type: 'uuid',
         },
@@ -110,6 +134,7 @@ export function buildFastify(
       $modules: [
         ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
         'graphql/root',
+        'graphql-nexus/root',
       ],
       $stripe: !app.enableStripe
         ? undefined
