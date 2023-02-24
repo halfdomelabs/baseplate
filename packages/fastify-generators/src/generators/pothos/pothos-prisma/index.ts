@@ -14,14 +14,12 @@ import { pothosSetupProvider } from '../pothos';
 
 const descriptorSchema = z.object({});
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
 export type PothosPrismaProvider = unknown;
 
 export const pothosPrismaProvider =
   createProviderType<PothosPrismaProvider>('pothos-prisma');
 
-const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
+const createMainTask = createTaskConfigBuilder(() => ({
   name: 'main',
   dependencies: {
     node: nodeProvider,

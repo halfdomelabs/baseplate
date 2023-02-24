@@ -19,6 +19,7 @@ import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
 import { rootModuleImportProvider } from '@src/generators/core/root-module';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin';
+import { PothosEnumConfig } from '@src/writers/pothos-definition/enums';
 import { PothosScalarConfig } from '@src/writers/pothos-definition/scalars';
 
 const descriptorSchema = z.object({});
@@ -33,6 +34,7 @@ export interface PothosGeneratorConfig {
   customScalars: PothosScalarConfigWithTypes[];
   schemaTypeOptions: { key: string; value: TypescriptCodeExpression }[];
   schemaBuilderOptions: { key: string; value: TypescriptCodeExpression }[];
+  pothosEnums: PothosEnumConfig[];
 }
 
 export interface PothosSetupProvider extends ImportMapper {
@@ -68,6 +70,7 @@ const PothosGenerator = createGeneratorWithTasks({
           schemaTypeOptions: [],
           customScalars: [],
           schemaBuilderOptions: [],
+          pothosEnums: [],
         });
 
         // TODO: Make type options/builder options

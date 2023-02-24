@@ -80,11 +80,11 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
   return [
     {
       name: `Enums`,
-      generator: '@baseplate/fastify/nexus/nexus-types-file',
+      generator: '@baseplate/fastify/pothos/pothos-enums-file',
       children: {
         $enums: enums.map((enumConfig) => ({
           name: enumConfig.name,
-          generator: '@baseplate/fastify/nexus/nexus-prisma-enum',
+          generator: '@baseplate/fastify/pothos/pothos-prisma-enum',
           enumName: enumConfig.name,
         })),
       },

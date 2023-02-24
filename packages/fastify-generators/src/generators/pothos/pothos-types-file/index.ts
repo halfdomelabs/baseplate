@@ -29,6 +29,7 @@ interface PothosType {
 }
 
 export interface PothosTypesFileProvider {
+  getBuilder: () => string;
   registerType(type: PothosType): void;
 }
 
@@ -61,6 +62,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
       return {
         getProviders: () => ({
           pothosTypes: {
+            getBuilder: () => 'builder',
             registerType(type) {
               const { name: typeName } = type;
               if (typeName) {
@@ -86,6 +88,11 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
               orderedTypes.map((t) => t.block),
               '\n\n'
             ),
+          });
+
+          typesFile.addCodeAddition({
+            importText: [`import {builder} from '%pothos'`],
+            importMappers: [pothosSchema],
           });
 
           await builder.apply(
