@@ -108,10 +108,18 @@ export const AuthPlugin: ParserPlugin = {
         generator: '@baseplate/fastify/auth/auth',
         peerProvider: true,
       },
+      $authContext: {
+        generator: '@baseplate/fastify/auth/auth-context',
+        peerProvider: true,
+        authInfoRef: `${auth.authFeaturePath}/root:$auth.service`,
+      },
       $nexusAuth: {
         generator: '@baseplate/fastify/nexus/nexus-auth',
         peerProvider: true,
-        authInfoRef: `${auth.authFeaturePath}/root:$auth.service`,
+      },
+      $pothosAuth: {
+        generator: '@baseplate/fastify/pothos/pothos-auth',
+        peerProvider: true,
       },
     });
 
