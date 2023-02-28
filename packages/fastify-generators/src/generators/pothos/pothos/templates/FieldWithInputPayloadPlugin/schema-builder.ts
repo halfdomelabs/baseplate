@@ -70,6 +70,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
 
     if (inputRef) {
       this.builder.inputType(inputName, {
+        description: `Input type for ${config.name} mutation`,
         fields: () => input,
       } as never);
 
@@ -78,6 +79,7 @@ rootBuilderProto.fieldWithInputPayload = function fieldWithInputPayload({
 
     this.builder.objectType(payloadRef, {
       name: payloadName,
+      description: `Payload type for ${config.name} mutation`,
       fields: payloadFields,
     });
 

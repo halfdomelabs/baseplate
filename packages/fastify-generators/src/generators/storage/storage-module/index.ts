@@ -200,7 +200,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                 )
               );
               pothosSchema.registerSchemaFile(
-                path.join(moduleFolder, `schema/${file}.ts`)
+                path.join(moduleFolder, `${file}.ts`)
               );
 
               const fileObjectRef = fileObjectType.getTypeReference();
