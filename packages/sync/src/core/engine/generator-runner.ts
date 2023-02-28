@@ -42,6 +42,15 @@ export async function executeGeneratorEntry(
 
         const resolvedDependencies = R.mapObjIndexed((dependency, key) => {
           const dependencyId = dependencyMap[taskId][key]?.id;
+
+          if (
+            taskId ===
+            'accounts/users/root:$schemaTypes.UserQueries.findQuery#main'
+          ) {
+            console.log('fafaf');
+            console.log(providerMapById);
+          }
+
           const provider =
             dependencyId == null
               ? null

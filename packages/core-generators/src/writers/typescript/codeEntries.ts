@@ -420,6 +420,9 @@ export const TypescriptCodeUtils = {
         if (content.startsWith(`function ${key}`)) {
           return `${content.replace(/^function /, '')}`;
         }
+        if (content.startsWith(`async function ${key}`)) {
+          return `${content.replace(/^async function /, 'async ')}`;
+        }
         if (content.endsWith('*/')) {
           const comment = content
             .substring(content.lastIndexOf('/*') + 2)

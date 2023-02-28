@@ -15,7 +15,7 @@ import { appModuleProvider } from '@src/generators/core/root-module';
 import { pothosSchemaProvider } from '../pothos';
 
 const descriptorSchema = z.object({
-  name: z.string().min(1),
+  fileName: z.string().min(1),
   categoryOrder: z.array(z.string()).optional(),
 });
 
@@ -29,6 +29,7 @@ interface PothosType {
 
 export interface PothosTypesFileProvider {
   getBuilder: () => string;
+  getModuleName: () => string;
   registerType(type: PothosType): void;
 }
 
@@ -36,7 +37,7 @@ export const pothosTypesFileProvider =
   createProviderType<PothosTypesFileProvider>('pothos-types-file');
 
 export const createPothosTypesFileTask = createTaskConfigBuilder(
-  ({ name, categoryOrder }: Config) => ({
+  ({ fileName, categoryOrder }: Config) => ({
     name: 'pothos-types-file',
     dependencies: {
       appModule: appModuleProvider,
@@ -48,7 +49,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
     },
     run({ appModule, typescript, pothosSchema }) {
       const [typesImport, typesPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/schema/${name}.ts`
+        `${appModule.getModuleFolder()}/schema/${fileName}.ts`
       );
 
       appModule.addModuleImport(typesImport);
@@ -62,6 +63,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
         getProviders: () => ({
           pothosTypes: {
             getBuilder: () => 'builder',
+            getModuleName: () => typesImport,
             registerType(type) {
               const { name: typeName } = type;
               if (typeName) {

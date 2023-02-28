@@ -15,12 +15,17 @@ import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { serviceContextProvider } from '@src/generators/core/service-context';
-import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
+import {
+  pothosSchemaProvider,
+  pothosSetupProvider,
+} from '@src/generators/pothos/pothos';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { prismaUtilsProvider } from '@src/generators/prisma/prisma-utils';
+import { pothosTypeOutputProvider } from '@src/providers/pothos-type';
 
 const descriptorSchema = z.object({
   fileModel: z.string().min(1),
+  fileObjectTypeRef: z.string().min(1),
   s3Adapters: z.array(
     z.object({
       name: z.string().min(1),
@@ -49,7 +54,31 @@ export const storageModuleProvider = createProviderType<StorageModuleProvider>(
 const StorageModuleGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  buildTasks(taskBuilder, { fileModel, s3Adapters, categories = [] }) {
+  buildTasks(
+    taskBuilder,
+    { fileModel, s3Adapters, categories = [], fileObjectTypeRef }
+  ) {
+    taskBuilder.addTask({
+      name: 'setup-file-input-schema',
+      dependencies: {
+        appModule: appModuleProvider,
+        pothosSetup: pothosSetupProvider,
+      },
+      run({ pothosSetup, appModule }) {
+        const moduleFolder = appModule.getModuleFolder();
+        pothosSetup.getTypeReferences().addInputType({
+          typeName: 'FileUploadInput',
+          exportName: 'fileUploadInputInputType',
+          moduleName: path.join(
+            moduleFolder,
+            'schema/file-upload.input-type.ts'
+          ),
+        });
+
+        return {};
+      },
+    });
+
     taskBuilder.addTask({
       name: 'main',
       dependencies: {
@@ -87,24 +116,28 @@ const StorageModuleGenerator = createGeneratorWithTasks({
       dependencies: {
         node: nodeProvider,
         typescript: typescriptProvider,
-        nexusSchema: nexusSchemaProvider,
+        pothosSchema: pothosSchemaProvider,
         appModule: appModuleProvider,
         serviceContext: serviceContextProvider,
         errorHandlerService: errorHandlerServiceProvider,
         prismaOutput: prismaOutputProvider,
         configService: configServiceProvider,
         prismaUtils: prismaUtilsProvider,
+        fileObjectType: pothosTypeOutputProvider
+          .dependency()
+          .reference(fileObjectTypeRef),
       },
       run({
         node,
         typescript,
         appModule,
-        nexusSchema,
+        pothosSchema,
         serviceContext,
         errorHandlerService,
         prismaOutput,
         configService,
         prismaUtils,
+        fileObjectType,
       }) {
         const moduleFolder = appModule.getModuleFolder();
         const [, validatorPath] = makeImportAndFilePath(
@@ -166,24 +199,33 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                   `import * as ${name} from '@/${moduleFolder}/${file}'`
                 )
               );
-              nexusSchema.registerSchemaFile(
+              pothosSchema.registerSchemaFile(
                 path.join(moduleFolder, `schema/${file}.ts`)
               );
+
+              const fileObjectRef = fileObjectType.getTypeReference();
 
               await builder.apply(
                 typescript.createCopyAction({
                   source: `${file}.ts`,
                   destination: path.join(moduleFolder, `${file}.ts`),
-                  importMappers: [nexusSchema],
+                  importMappers: [pothosSchema],
+                  replacements: {
+                    FILE_OBJECT_MODULE: fileObjectRef.moduleName,
+                    FILE_OBJECT_TYPE: fileObjectRef.exportName,
+                  },
                 })
               );
             }
 
             await Promise.all([
-              registerSchemaFile('fileUploadInput', 'schema/file-upload-input'),
+              registerSchemaFile(
+                'fileUploadInput',
+                'schema/file-upload.input-type'
+              ),
               registerSchemaFile(
                 'presignedMutations',
-                'schema/presigned-mutations'
+                'schema/presigned.mutations'
               ),
             ]);
 

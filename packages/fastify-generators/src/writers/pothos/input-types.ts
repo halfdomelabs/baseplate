@@ -38,24 +38,40 @@ export function writePothosInputFieldFromDtoNestedField(
   };
 }
 
+export function writePothosInputFieldsFromDtoFields(
+  fields: ServiceOutputDtoField[],
+  options: PothosWriterOptions
+): PothosExpressionWithChildren {
+  const pothosFields: PothosExpressionWithChildren[] = fields.map((field) => {
+    if (field.type === 'scalar') {
+      return {
+        expression: writePothosInputFieldFromDtoScalarField(field, options),
+      };
+    }
+    return writePothosInputFieldFromDtoNestedField(field, options);
+  });
+
+  return {
+    expression: TypescriptCodeUtils.mergeExpressionsAsObject(
+      Object.fromEntries(
+        pothosFields.map((field, i) => [fields[i].name, field.expression])
+      ),
+      { wrapWithParenthesis: true }
+    ),
+    childDefinitions: pothosFields
+      .flatMap((field) => field.childDefinitions)
+      .filter(notEmpty),
+  };
+}
+
 export function writePothosInputDefinitionFromDtoFields(
   name: string,
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions
 ): PothosTypeDefinitionWithChildren {
-  const pothosFields: PothosExpressionWithChildren[] = fields.map((field) => {
-    if (field.type === 'scalar') {
-      return {
-        expression: writePothosInputFieldFromDtoScalarField(field, {
-          ...options,
-          fieldBuilder: 't',
-        }),
-      };
-    }
-    return writePothosInputFieldFromDtoNestedField(field, {
-      ...options,
-      fieldBuilder: 't',
-    });
+  const pothosFields = writePothosInputFieldsFromDtoFields(fields, {
+    ...options,
+    fieldBuilder: 't',
   });
 
   const exportName = `${lowerCaseFirst(name)}InputType`;
@@ -68,12 +84,7 @@ export function writePothosInputDefinitionFromDtoFields(
       EXPORT_NAME: exportName,
       BUILDER: options.schemaBuilder,
       NAME: quot(name),
-      FIELDS: TypescriptCodeUtils.mergeExpressionsAsObject(
-        Object.fromEntries(
-          pothosFields.map((field, i) => [fields[i].name, field.expression])
-        ),
-        { wrapWithParenthesis: true }
-      ),
+      FIELDS: pothosFields.expression,
     }
   );
 
@@ -81,9 +92,7 @@ export function writePothosInputDefinitionFromDtoFields(
     name,
     exportName,
     definition,
-    childDefinitions: pothosFields
-      .flatMap((field) => field.childDefinitions)
-      .filter(notEmpty),
+    childDefinitions: pothosFields.childDefinitions,
   };
 }
 
@@ -91,6 +100,9 @@ export function getPothosTypeForNestedInput(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions
 ): PothosExpressionWithChildren {
+  if (field.isPrismaType) {
+    throw new Error(`Prisma types are not supported in input fields`);
+  }
   const { name, fields } = field.nestedType;
   const inputType = options.typeReferences.getInputType(name);
 
@@ -111,6 +123,6 @@ export function getPothosTypeForNestedInput(
       TypescriptCodeUtils.createExpression(inputDefinition.exportName),
       field.isList
     ),
-    childDefinitions: [inputDefinition, ...(childDefinitions || [])],
+    childDefinitions: [...(childDefinitions || []), inputDefinition],
   };
 }

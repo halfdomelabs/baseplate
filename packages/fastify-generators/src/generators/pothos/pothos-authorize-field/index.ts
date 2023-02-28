@@ -3,7 +3,7 @@ import {
   createTaskConfigBuilder,
 } from '@baseplate/sync';
 import { z } from 'zod';
-import { pothosTypeProvider } from '@src/providers/pothos-type';
+import { pothosFieldProvider } from '@src/providers/pothos-field';
 import {
   pothosAuthorizeConfigSchema,
   pothosAuthProvider,
@@ -17,10 +17,10 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
   name: 'main',
   dependencies: {
     pothosAuth: pothosAuthProvider,
-    pothosType: pothosTypeProvider,
+    pothosType: pothosFieldProvider,
   },
   run({ pothosAuth, pothosType }) {
-    pothosType.addCustomField({
+    pothosType.addCustomOption({
       name: 'authorize',
       value: pothosAuth.formatAuthorizeConfig(descriptor),
     });

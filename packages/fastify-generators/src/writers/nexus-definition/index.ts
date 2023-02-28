@@ -125,6 +125,10 @@ export function writeNexusInputDefinitionFromDtoFields(
           childInputDefinitions: [],
         };
       }
+
+      if (field.isPrismaType) {
+        throw new Error(`Prisma types not support in input types.`);
+      }
       const { definition: childDefinition, childInputDefinitions } =
         writeNexusInputDefinitionFromDtoFields(
           field.nestedType.fields,

@@ -5,28 +5,37 @@ import { createPothosTypesFileTask } from '../pothos-types-file';
 const descriptorSchema = z.object({
   fileName: z.string().min(1),
   modelName: z.string().min(1),
+  objectTypeRef: z.string().min(1),
+  crudServiceRef: z.string().min(1),
 });
 
-const PothosPrismaQueryFileGenerator = createGeneratorWithTasks({
+const PothosPrismaCrudFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: (descriptor) => {
     const sharedValues = {
+      generator: '@baseplate/fastify/pothos/pothos-prisma-crud-mutation',
       modelName: descriptor.modelName,
+      objectTypeRef: descriptor.objectTypeRef,
+      crudServiceRef: descriptor.crudServiceRef,
     };
     return {
-      findQuery: {
+      create: {
         defaultDescriptor: {
           ...sharedValues,
-          generator: '@baseplate/fastify/pothos/pothos-prisma-find-query',
+          type: 'create',
         },
-        defaultToNullIfEmpty: true,
       },
-      listQuery: {
+      update: {
         defaultDescriptor: {
           ...sharedValues,
-          generator: '@baseplate/fastify/pothos/pothos-prisma-list-query',
+          type: 'update',
         },
-        defaultToNullIfEmpty: true,
+      },
+      delete: {
+        defaultDescriptor: {
+          ...sharedValues,
+          type: 'delete',
+        },
       },
     };
   },
@@ -34,10 +43,9 @@ const PothosPrismaQueryFileGenerator = createGeneratorWithTasks({
     taskBuilder.addTask(
       createPothosTypesFileTask({
         fileName,
-        categoryOrder: ['find-query', 'list-query'],
       })
     );
   },
 });
 
-export default PothosPrismaQueryFileGenerator;
+export default PothosPrismaCrudFileGenerator;

@@ -1,14 +1,11 @@
-import { TypescriptCodeExpression } from '@baseplate/core-generators';
 import { createProviderType } from '@baseplate/sync';
+import { PothosTypeReference } from '@src/writers/pothos';
 
-export interface PothosCustomField {
-  name: string;
-  value: TypescriptCodeExpression;
+export interface PothosTypeOutputProvider {
+  getTypeReference(): PothosTypeReference;
 }
 
-export interface PothosTypeProvider {
-  addCustomField(field: PothosCustomField): void;
-}
-
-export const pothosTypeProvider =
-  createProviderType<PothosTypeProvider>('pothos-type');
+export const pothosTypeOutputProvider =
+  createProviderType<PothosTypeOutputProvider>('pothos-type-output', {
+    isReadOnly: true,
+  });

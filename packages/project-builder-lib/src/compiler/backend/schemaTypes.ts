@@ -15,7 +15,8 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
 
   return [
     {
-      name: `${paramCase(model.name)}.object-type`,
+      name: `${model.name}ObjectType`,
+      fileName: `${paramCase(model.name)}.object-type`,
       generator: '@baseplate/fastify/pothos/pothos-types-file',
       children: {
         $objectType: {
@@ -32,7 +33,8 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
     !buildQuery
       ? undefined
       : {
-          name: `${paramCase(model.name)}.queries`,
+          name: `${model.name}PothosQueries`,
+          fileName: `${paramCase(model.name)}.queries`,
           generator: '@baseplate/fastify/pothos/pothos-prisma-query-file',
           modelName: model.name,
           children: {
@@ -102,6 +104,36 @@ function buildMutationSchemaTypeForModel(
   const { authorize } = graphql || {};
 
   return {
+    name: `${model.name}PothosMutations`,
+    fileName: `${paramCase(model.name)}.mutations`,
+    generator: '@baseplate/fastify/pothos/pothos-prisma-crud-file',
+    modelName: model.name,
+    objectTypeRef: `${feature}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
+    crudServiceRef: `${feature}/root:$services.${model.name}Service`,
+    children: {
+      create: model.service?.create?.fields?.length
+        ? {
+            children: { authorize: { roles: authorize?.create } },
+          }
+        : null,
+      update: {
+        children: { authorize: { roles: authorize?.update } },
+      },
+      delete: {
+        children: { authorize: { roles: authorize?.delete } },
+      },
+    },
+  };
+}
+
+function buildNexusMutationSchemaTypeForModel(
+  feature: string,
+  model: ModelConfig
+): unknown {
+  const { schema: graphql } = model || {};
+  const { authorize } = graphql || {};
+
+  return {
     name: `${model.name}Mutations`,
     generator: '@baseplate/fastify/nexus/nexus-prisma-crud-file',
     modelName: model.name,
@@ -163,6 +195,9 @@ export function buildSchemaTypesForFeature(
         : undefined,
       model.schema?.buildMutations
         ? buildMutationSchemaTypeForModel(feature, model)
+        : undefined,
+      model.schema?.buildMutations
+        ? buildNexusMutationSchemaTypeForModel(feature, model)
         : undefined,
     ]),
     ...buildEnumSchema(enums),

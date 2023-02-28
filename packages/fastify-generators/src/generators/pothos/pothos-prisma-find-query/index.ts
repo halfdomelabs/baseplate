@@ -10,7 +10,7 @@ import {
 import { z } from 'zod';
 import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { pothosTypeProvider } from '@src/providers/pothos-type';
+import { pothosFieldProvider } from '@src/providers/pothos-field';
 import { lowerCaseFirst } from '@src/utils/case';
 import { quot } from '@src/utils/string';
 import {
@@ -34,7 +34,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
     pothosSchema: pothosSchemaProvider,
   },
   exports: {
-    pothosType: pothosTypeProvider,
+    pothosField: pothosFieldProvider,
   },
   run({ prismaOutput, pothosSchema, pothosTypesFile }) {
     const modelOutput = prismaOutput.getPrismaModel(modelName);
@@ -61,8 +61,8 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
 
     return {
       getProviders: () => ({
-        pothosType: {
-          addCustomField(field) {
+        pothosField: {
+          addCustomOption(field) {
             customFields.set(field.name, field.value);
           },
         },

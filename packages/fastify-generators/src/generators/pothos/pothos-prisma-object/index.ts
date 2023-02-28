@@ -6,6 +6,7 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+import { pothosTypeOutputProvider } from '@src/providers/pothos-type';
 import { prismaToServiceOutputDto } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
 import { writePothosExposeFieldFromDtoScalarField } from '@src/writers/pothos';
@@ -34,17 +35,25 @@ const createMainTask = createTaskConfigBuilder(
     },
     exports: {
       pothosPrismaObject: pothosPrismaObjectProvider,
+      pothosTypeOutput: pothosTypeOutputProvider,
     },
     run({ prismaOutput, pothosTypeFile, pothosSchema }) {
+      const model = prismaOutput.getPrismaModel(modelName);
+
+      const exportName = `${lowerCaseFirst(model.name)}ObjectType`;
+
       return {
         getProviders: () => ({
           pothosPrismaObject: {},
+          pothosTypeOutput: {
+            getTypeReference: () => ({
+              typeName: model.name,
+              exportName,
+              moduleName: pothosTypeFile.getModuleName(),
+            }),
+          },
         }),
         build: () => {
-          const model = prismaOutput.getPrismaModel(modelName);
-
-          const exportName = `${lowerCaseFirst(model.name)}ObjectType`;
-
           const outputDto = prismaToServiceOutputDto(model, (enumName) =>
             prismaOutput.getServiceEnum(enumName)
           );

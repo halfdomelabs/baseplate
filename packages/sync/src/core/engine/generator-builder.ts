@@ -144,6 +144,13 @@ export async function buildGeneratorEntry(
   );
   const childGenerators = childGeneratorEntryArrays.flat();
 
+  const childIds = childGenerators.map((g) => g.id);
+  if (childIds.length !== new Set(childIds).size) {
+    throw new Error(
+      `Duplicate child generator IDs found in ${id}: ${childIds.join(', ')}`
+    );
+  }
+
   return {
     id,
     generatorConfig,

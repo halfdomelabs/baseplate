@@ -2,6 +2,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@baseplate/core-generators';
+import * as R from 'ramda';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import {
   INBUILT_POTHOS_SCALARS,
@@ -25,6 +26,16 @@ export function getExpressionFromPothosTypeReference(
 }
 
 // TODO: Make immutable / freezable
+
+export function safeMerge<T>(
+  itemOne: Record<string, T>,
+  itemTwo: Record<string, T>
+): Record<string, T> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return R.mergeWithKey((key) => {
+    throw new Error(`Cannot merge key ${key} because it already exists.`);
+  })(itemOne, itemTwo);
+}
 
 export class PothosTypeReferenceContainer {
   public constructor(
@@ -72,6 +83,17 @@ export class PothosTypeReferenceContainer {
     this.objectTypes[config.typeName] = config;
   }
 
+  public cloneWithObjectType(
+    config: PothosTypeReference
+  ): PothosTypeReferenceContainer {
+    return new PothosTypeReferenceContainer(
+      this.customScalars,
+      this.pothosEnums,
+      this.inputTypes,
+      safeMerge(this.objectTypes, { [config.typeName]: config })
+    );
+  }
+
   public getScalar(name: ScalarFieldType): PothosScalarConfig {
     const scalar = this.customScalars[name];
     if (!scalar) {
@@ -100,6 +122,17 @@ export class PothosTypeReferenceContainer {
 
   public getCustomScalars(): PothosCustomScalarConfig[] {
     return Object.values(this.customScalars);
+  }
+
+  public merge(
+    other: PothosTypeReferenceContainer
+  ): PothosTypeReferenceContainer {
+    return new PothosTypeReferenceContainer(
+      safeMerge(this.customScalars, other.customScalars),
+      safeMerge(this.pothosEnums, other.pothosEnums),
+      safeMerge(this.inputTypes, other.inputTypes),
+      safeMerge(this.objectTypes, other.objectTypes)
+    );
   }
 }
 

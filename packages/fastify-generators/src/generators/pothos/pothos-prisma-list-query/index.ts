@@ -10,7 +10,7 @@ import {
 import inflection from 'inflection';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { pothosTypeProvider } from '@src/providers/pothos-type';
+import { pothosFieldProvider } from '@src/providers/pothos-field';
 import { lowerCaseFirst } from '@src/utils/case';
 import { quot } from '@src/utils/string';
 import { pothosTypesFileProvider } from '../pothos-types-file';
@@ -28,7 +28,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
     pothosTypesFile: pothosTypesFileProvider,
   },
   exports: {
-    pothosType: pothosTypeProvider,
+    pothosField: pothosFieldProvider,
   },
   run({ prismaOutput, pothosTypesFile }) {
     const modelOutput = prismaOutput.getPrismaModel(modelName);
@@ -47,8 +47,8 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
 
     return {
       getProviders: () => ({
-        pothosType: {
-          addCustomField(field) {
+        pothosField: {
+          addCustomOption(field) {
             customFields.set(field.name, field.value);
           },
         },

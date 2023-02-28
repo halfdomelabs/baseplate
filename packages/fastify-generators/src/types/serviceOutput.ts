@@ -8,6 +8,8 @@ import {
   PrismaOutputScalarField,
 } from './prismaOutput';
 
+// TODO: Rename ServiceOutput to Service since it's both inputs and outputs
+
 interface ServiceOutputDtoBaseField {
   name: string;
   type: string;
@@ -33,9 +35,24 @@ export interface ServiceOutputDtoScalarField extends ServiceOutputDtoBaseField {
   isId?: boolean;
 }
 
-export interface ServiceOutputDtoNestedField extends ServiceOutputDtoBaseField {
+export type ServiceOutputDtoNestedField =
+  | ServiceOutputDtoNestedFieldWithoutPrisma
+  | ServiceOutputDtoNestedFieldWithPrisma;
+
+export interface ServiceOutputDtoNestedFieldWithoutPrisma
+  extends ServiceOutputDtoBaseField {
   type: 'nested';
+  isPrismaType?: false;
   nestedType: ServiceOutputDto;
+  typescriptType?: TypescriptCodeExpression;
+  schemaFieldName?: string;
+}
+
+export interface ServiceOutputDtoNestedFieldWithPrisma
+  extends ServiceOutputDtoBaseField {
+  type: 'nested';
+  isPrismaType: true;
+  nestedType: Omit<ServiceOutputDto, 'fields'>;
   typescriptType?: TypescriptCodeExpression;
   schemaFieldName?: string;
 }
@@ -86,9 +103,9 @@ export function nestedPrismaFieldToServiceField(
     isOptional: field.isOptional,
     isNullable: field.isOptional,
     isList: field.isList,
+    isPrismaType: true,
     nestedType: {
       name: field.modelType,
-      fields: [], // TODO IMPORTANT: Fix this - we need to re-do the typings here
     },
   };
 }
