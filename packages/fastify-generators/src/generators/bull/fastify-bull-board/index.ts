@@ -14,7 +14,6 @@ import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { appModuleProvider } from '@src/generators/core/root-module';
-import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
 import { pothosSchemaProvider } from '@src/generators/pothos/pothos';
 
 const descriptorSchema = z.object({});

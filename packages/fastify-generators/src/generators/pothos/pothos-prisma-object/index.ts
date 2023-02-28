@@ -1,6 +1,11 @@
-import { quot, TypescriptCodeUtils } from '@baseplate/core-generators';
+import {
+  quot,
+  TypescriptCodeExpression,
+  TypescriptCodeUtils,
+} from '@baseplate/core-generators';
 import {
   createGeneratorWithTasks,
+  createNonOverwriteableMap,
   createProviderType,
   createTaskConfigBuilder,
 } from '@baseplate/sync';
@@ -20,7 +25,9 @@ const descriptorSchema = z.object({
 
 type Descriptor = z.infer<typeof descriptorSchema>;
 
-export type PothosPrismaObjectProvider = unknown;
+export interface PothosPrismaObjectProvider {
+  addCustomField: (name: string, expression: TypescriptCodeExpression) => void;
+}
 
 export const pothosPrismaObjectProvider =
   createProviderType<PothosPrismaObjectProvider>('pothos-prisma-object');
@@ -42,9 +49,17 @@ const createMainTask = createTaskConfigBuilder(
 
       const exportName = `${lowerCaseFirst(model.name)}ObjectType`;
 
+      const customFields = createNonOverwriteableMap<
+        Record<string, TypescriptCodeExpression>
+      >({});
+
       return {
         getProviders: () => ({
-          pothosPrismaObject: {},
+          pothosPrismaObject: {
+            addCustomField: (name, expression) => {
+              customFields.set(name, expression);
+            },
+          },
           pothosTypeOutput: {
             getTypeReference: () => ({
               typeName: model.name,
@@ -95,14 +110,15 @@ const createMainTask = createTaskConfigBuilder(
               OBJECT_TYPE_EXPORT: exportName,
               BUILDER: pothosTypeFile.getBuilder(),
               MODEL_NAME: quot(model.name),
-              FIELDS: TypescriptCodeUtils.mergeExpressionsAsObject(
-                Object.fromEntries(
+              FIELDS: TypescriptCodeUtils.mergeExpressionsAsObject({
+                ...Object.fromEntries(
                   fieldDefinitions.map((fieldDefinition) => [
                     fieldDefinition.name,
                     fieldDefinition.expression,
                   ])
-                )
-              ),
+                ),
+                ...customFields.value(),
+              }),
             }
           );
 

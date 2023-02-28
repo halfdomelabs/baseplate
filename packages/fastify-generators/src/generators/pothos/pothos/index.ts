@@ -156,6 +156,7 @@ const PothosGenerator = createGeneratorWithTasks({
         node.addPackages({
           '@pothos/core': '3.27.0',
           '@pothos/plugin-simple-objects': '3.6.7',
+          '@pothos/plugin-relay': '3.37.0',
         });
 
         // ignore prettier for schema.graphql
@@ -206,6 +207,10 @@ const PothosGenerator = createGeneratorWithTasks({
                 `SimpleObjectsPlugin`,
                 `import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';`
               ),
+              TypescriptCodeUtils.createExpression(
+                `RelayPlugin`,
+                `import RelayPlugin from '@pothos/plugin-relay';`
+              ),
             ];
 
             const schemaOptions = TypescriptCodeUtils.mergeExpressionsAsObject({
@@ -213,6 +218,10 @@ const PothosGenerator = createGeneratorWithTasks({
                 ...DEFAULT_PLUGINS,
                 ...config.pothosPlugins,
               ]),
+              relayOptions: TypescriptCodeUtils.mergeExpressionsAsObject({
+                clientMutationId: "'omit'",
+                cursorType: "'String'",
+              }),
               ...Object.fromEntries(
                 config.schemaBuilderOptions.map((option) => [
                   option.key,

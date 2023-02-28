@@ -90,6 +90,9 @@ const StorageModuleGenerator = createGeneratorWithTasks({
         const [validatorImport] = makeImportAndFilePath(
           `${moduleFolder}/services/validate-upload-input.ts`
         );
+        const [adaptersImport] = makeImportAndFilePath(
+          `${moduleFolder}/constants/adapters.ts`
+        );
 
         return {
           getProviders: () => ({
@@ -102,6 +105,10 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                       'FileUploadInput',
                       'validateFileUploadInput',
                     ],
+                  },
+                  '%storage-module/adapter-constants': {
+                    path: adaptersImport,
+                    allowedImports: ['STORAGE_ADAPTERS', 'StorageAdapterKey'],
                   },
                 };
               },
@@ -188,10 +195,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
               })
             );
             // Copy schema
-            async function registerSchemaFile(
-              name: string,
-              file: string
-            ): Promise<void> {
+            async function registerSchemaFile(file: string): Promise<void> {
               appModule.addModuleImport(`@/${moduleFolder}/${file}`);
               pothosSchema.registerSchemaFile(
                 path.join(moduleFolder, `${file}.ts`)
@@ -212,14 +216,9 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             }
 
             await Promise.all([
-              registerSchemaFile(
-                'fileUploadInput',
-                'schema/file-upload.input-type'
-              ),
-              registerSchemaFile(
-                'presignedMutations',
-                'schema/presigned.mutations'
-              ),
+              registerSchemaFile('schema/file-upload.input-type'),
+              registerSchemaFile('schema/hosted-url.field'),
+              registerSchemaFile('schema/presigned.mutations'),
             ]);
 
             // Copy services

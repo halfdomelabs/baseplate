@@ -6,6 +6,7 @@ import {
   InputFieldMap,
   SchemaTypes,
   TypeParam,
+  InputShapeFromFields,
 } from '@pothos/core';
 import type {
   AuthorizeRolePluginOptions,
@@ -43,7 +44,11 @@ declare global {
       ResolveShape,
       ResolveReturnShape
     > {
-      authorize?: AuthorizeRoleRuleOption<ParentShape, Args, Types>;
+      authorize?: AuthorizeRoleRuleOption<
+        ParentShape,
+        InputShapeFromFields<Args>,
+        Types
+      >;
     }
   }
 }

@@ -8,3 +8,4 @@ export const builder = new SchemaBuilder<{ SCHEMA_TYPE_OPTIONS }>(
 
 builder.queryType();
 builder.mutationType();
+builder.subscriptionType();
