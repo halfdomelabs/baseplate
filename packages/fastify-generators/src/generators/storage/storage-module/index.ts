@@ -69,10 +69,10 @@ const StorageModuleGenerator = createGeneratorWithTasks({
         pothosSetup.getTypeReferences().addInputType({
           typeName: 'FileUploadInput',
           exportName: 'fileUploadInputInputType',
-          moduleName: path.join(
+          moduleName: `@/${path.join(
             moduleFolder,
-            'schema/file-upload.input-type.ts'
-          ),
+            'schema/file-upload.input-type'
+          )}`,
         });
 
         return {};
@@ -192,19 +192,12 @@ const StorageModuleGenerator = createGeneratorWithTasks({
               name: string,
               file: string
             ): Promise<void> {
-              appModule.registerFieldEntry(
-                'schemaTypes',
-                new TypescriptCodeExpression(
-                  name,
-                  `import * as ${name} from '@/${moduleFolder}/${file}'`
-                )
-              );
+              appModule.addModuleImport(`@/${moduleFolder}/${file}`);
               pothosSchema.registerSchemaFile(
                 path.join(moduleFolder, `${file}.ts`)
               );
 
               const fileObjectRef = fileObjectType.getTypeReference();
-
               await builder.apply(
                 typescript.createCopyAction({
                   source: `${file}.ts`,

@@ -1,9 +1,9 @@
 // @ts-nocheck
 
 import { bullBoardPlugin } from './plugins/bull-board';
-import * as AuthenticateBullBoardMutations from './schema/authenticate-bull-board';
+
+import './schema/authenticate.mutations';
 
 export const bullBoardModule = {
-  schemaTypes: [AuthenticateBullBoardMutations],
   plugins: [bullBoardPlugin],
 };
