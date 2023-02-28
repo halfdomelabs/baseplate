@@ -80,7 +80,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
         );
 
         pothosTypesFile.registerType({
-          category: 'find-query',
+          category: 'list-query',
           block,
         });
       },
