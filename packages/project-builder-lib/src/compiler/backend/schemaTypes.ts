@@ -1,31 +1,54 @@
+import { paramCase } from 'change-case';
 import { ParsedProjectConfig } from '@src/parser';
 import { EnumConfig } from '@src/schema/models/enums';
 import { ModelConfig } from '../../schema/models';
 
-function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
+function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
   const { schema } = model || {};
   const {
+    authorize,
+    buildQuery,
     exposedFields = [],
     exposedForeignRelations = [],
     exposedLocalRelations = [],
   } = schema || {};
 
-  return {
-    name: `${model.name}Types`,
-    generator: '@baseplate/fastify/pothos/pothos-types-file',
-    modelName: model.name,
-    children: {
-      $objectType: {
-        generator: '@baseplate/fastify/pothos/pothos-prisma-object',
-        modelName: model.name,
-        exposedFields: [
-          ...exposedFields,
-          ...exposedForeignRelations,
-          ...exposedLocalRelations,
-        ],
+  return [
+    {
+      name: `${paramCase(model.name)}.object-type`,
+      generator: '@baseplate/fastify/pothos/pothos-types-file',
+      children: {
+        $objectType: {
+          generator: '@baseplate/fastify/pothos/pothos-prisma-object',
+          modelName: model.name,
+          exposedFields: [
+            ...exposedFields,
+            ...exposedForeignRelations,
+            ...exposedLocalRelations,
+          ],
+        },
       },
     },
-  };
+    !buildQuery
+      ? undefined
+      : {
+          name: `${paramCase(model.name)}.queries`,
+          generator: '@baseplate/fastify/pothos/pothos-prisma-query-file',
+          modelName: model.name,
+          children: {
+            findQuery: {
+              children: {
+                authorize: { roles: authorize?.read },
+              },
+            },
+            listQuery: {
+              children: {
+                authorize: { roles: authorize?.read },
+              },
+            },
+          },
+        },
+  ];
 }
 
 function buildNexusQuerySchemaTypeForModel(model: ModelConfig): unknown {
@@ -132,9 +155,9 @@ export function buildSchemaTypesForFeature(
 
   return [
     ...models.flatMap((model) => [
-      model.schema?.buildObjectType || model.schema?.buildQuery
+      ...(model.schema?.buildObjectType || model.schema?.buildQuery
         ? buildQuerySchemaTypeForModel(model)
-        : undefined,
+        : []),
       model.schema?.buildObjectType || model.schema?.buildQuery
         ? buildNexusQuerySchemaTypeForModel(model)
         : undefined,

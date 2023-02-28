@@ -19,12 +19,18 @@ const descriptorSchema = z.object({
 
 type Descriptor = z.infer<typeof descriptorSchema>;
 
-export interface AuthorizeConfig {
+export const pothosAuthorizeConfigSchema = z.object({
+  roles: z.array(z.string().min(1)),
+});
+
+export interface PothosAuthorizeConfig {
   roles: string[];
 }
 
 export interface PothosAuthProvider {
-  formatAuthorizeConfig(config: AuthorizeConfig): TypescriptCodeExpression;
+  formatAuthorizeConfig(
+    config: PothosAuthorizeConfig
+  ): TypescriptCodeExpression;
 }
 
 export const pothosAuthProvider =
@@ -39,20 +45,8 @@ const createMainTask = createTaskConfigBuilder(
       errorHandlerService: errorHandlerServiceProvider,
       typescript: typescriptProvider,
     },
-    exports: {
-      pothosAuth: pothosAuthProvider,
-    },
     run({ pothosSetup, errorHandlerService, typescript, auth }) {
       return {
-        getProviders: () => ({
-          pothosAuth: {
-            formatAuthorizeConfig: (config) =>
-              // TODO: Validate roles
-              TypescriptCodeUtils.createExpression(
-                JSON.stringify(config.roles)
-              ),
-          },
-        }),
         build: async (builder) => {
           await builder.apply(
             typescript.createCopyFilesAction({
@@ -103,6 +97,26 @@ const PothosAuthGenerator = createGeneratorWithTasks({
   getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
+
+    taskBuilder.addTask({
+      name: 'auth-formatter',
+      exports: {
+        pothosAuth: pothosAuthProvider,
+      },
+      run() {
+        return {
+          getProviders: () => ({
+            pothosAuth: {
+              formatAuthorizeConfig: (config) =>
+                // TODO: Validate roles
+                TypescriptCodeUtils.createExpression(
+                  JSON.stringify(config.roles)
+                ),
+            },
+          }),
+        };
+      },
+    });
   },
 });
 

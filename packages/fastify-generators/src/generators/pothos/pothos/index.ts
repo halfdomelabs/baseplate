@@ -19,32 +19,20 @@ import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
 import { rootModuleImportProvider } from '@src/generators/core/root-module';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin';
-import { ScalarFieldType } from '@src/types/fieldTypes';
-import { PothosTypeReferences } from '@src/writers/pothos-definition';
-import { PothosEnumConfig } from '@src/writers/pothos-definition/enums';
-import {
-  DEFAULT_POTHOS_SCALAR_CONFIG,
-  PothosScalarConfig,
-} from '@src/writers/pothos-definition/scalars';
+import { PothosTypeReferenceContainer } from '@src/writers/pothos';
 
 const descriptorSchema = z.object({});
 
-interface PothosScalarConfigWithTypes extends PothosScalarConfig {
-  inputType: string;
-  outputType: string;
-}
-
 export interface PothosGeneratorConfig {
   pothosPlugins: TypescriptCodeExpression[];
-  customScalars: PothosScalarConfigWithTypes[];
   schemaTypeOptions: { key: string; value: TypescriptCodeExpression }[];
   schemaBuilderOptions: { key: string; value: TypescriptCodeExpression }[];
-  pothosEnums: PothosEnumConfig[];
 }
 
 export interface PothosSetupProvider extends ImportMapper {
   getConfig: () => NonOverwriteableMap<PothosGeneratorConfig>;
   registerSchemaFile: (filePath: string) => void;
+  getTypeReferences(): PothosTypeReferenceContainer;
 }
 
 export const pothosSetupProvider =
@@ -52,7 +40,7 @@ export const pothosSetupProvider =
 
 export interface PothosSchemaProvider extends ImportMapper {
   registerSchemaFile: (filePath: string) => void;
-  getTypeReferences: () => PothosTypeReferences;
+  getTypeReferences: () => PothosTypeReferenceContainer;
 }
 
 export const pothosSchemaProvider =
@@ -74,10 +62,10 @@ const PothosGenerator = createGeneratorWithTasks({
         const config = createNonOverwriteableMap<PothosGeneratorConfig>({
           pothosPlugins: [],
           schemaTypeOptions: [],
-          customScalars: [],
           schemaBuilderOptions: [],
-          pothosEnums: [],
         });
+
+        const pothosTypes = new PothosTypeReferenceContainer();
 
         // TODO: Make type options/builder options
 
@@ -97,10 +85,11 @@ const PothosGenerator = createGeneratorWithTasks({
                 registerSchemaFile: (filePath) => {
                   schemaFiles.push(filePath);
                 },
+                getTypeReferences: () => pothosTypes,
               },
             };
           },
-          build: () => ({ config, schemaFiles }),
+          build: () => ({ config, schemaFiles, pothosTypes }),
         };
       },
     });
@@ -110,31 +99,7 @@ const PothosGenerator = createGeneratorWithTasks({
       dependencies: {},
       exports: { pothosSchema: pothosSchemaProvider },
       taskDependencies: { setupTask },
-      run(deps, { setupTask: { config, schemaFiles } }) {
-        const configMap = config.value();
-        const { customScalars, pothosEnums } = configMap;
-
-        const scalarMap = createNonOverwriteableMap<
-          Record<ScalarFieldType, PothosScalarConfig>
-        >(DEFAULT_POTHOS_SCALAR_CONFIG, {
-          defaultsOverwriteable: true,
-          name: 'pothos-scalars',
-        });
-
-        customScalars.forEach((scalar) => {
-          scalarMap.set(scalar.scalar, scalar);
-        });
-
-        const typeReferences: PothosTypeReferences = {
-          scalars: scalarMap.value(),
-          enums: Object.fromEntries(
-            pothosEnums.map((pothosEnum) => [
-              pothosEnum.name,
-              pothosEnum.expression,
-            ])
-          ),
-        };
-
+      run(deps, { setupTask: { schemaFiles, pothosTypes } }) {
         return {
           getProviders() {
             return {
@@ -149,7 +114,7 @@ const PothosGenerator = createGeneratorWithTasks({
                   schemaFiles.push(filePath);
                 },
                 getTypeReferences() {
-                  return typeReferences;
+                  return pothosTypes;
                 },
               },
             };
@@ -183,7 +148,10 @@ const PothosGenerator = createGeneratorWithTasks({
           rootModuleImport,
           yogaPluginSetup,
         },
-        { setupTask: { config: configMap }, schemaTask: { schemaFiles } }
+        {
+          setupTask: { config: configMap, pothosTypes },
+          schemaTask: { schemaFiles },
+        }
       ) {
         node.addPackages({
           '@pothos/core': '3.27.0',
@@ -200,6 +168,8 @@ const PothosGenerator = createGeneratorWithTasks({
           async build(builder) {
             const config = configMap.value();
 
+            const customScalars = pothosTypes.getCustomScalars();
+
             const schemaTypeOptions =
               TypescriptCodeUtils.mergeBlocksAsInterfaceContent({
                 Context: TypescriptCodeUtils.createExpression(
@@ -207,10 +177,10 @@ const PothosGenerator = createGeneratorWithTasks({
                   `import { RequestServiceContext } from '%request-service-context'`,
                   { importMappers: [requestServiceContext] }
                 ),
-                Scalars: config.customScalars?.length
+                Scalars: customScalars.length
                   ? TypescriptCodeUtils.mergeExpressionsAsObject(
                       Object.fromEntries(
-                        config.customScalars.map((scalar) => [
+                        customScalars.map((scalar) => [
                           scalar.name,
                           TypescriptCodeUtils.createExpression(
                             `{ Input: ${scalar.inputType}, Output: ${scalar.outputType} }`

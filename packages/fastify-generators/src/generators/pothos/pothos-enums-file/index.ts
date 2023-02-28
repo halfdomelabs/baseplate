@@ -62,12 +62,10 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
             getBuilder: () => 'builder',
             registerEnum(pothosEnum) {
               enums.push(pothosEnum);
-              pothosSetup.getConfig().append('pothosEnums', {
-                name: pothosEnum.name,
-                expression: TypescriptCodeUtils.createExpression(
-                  pothosEnum.exportName,
-                  `import { ${pothosEnum.exportName} } from '${typesImport}`
-                ),
+              pothosSetup.getTypeReferences().addPothosEnum({
+                typeName: pothosEnum.name,
+                exportName: pothosEnum.exportName,
+                moduleName: typesImport,
               });
             },
           },

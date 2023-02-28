@@ -9,7 +9,6 @@ import {
   createProviderType,
   createTaskConfigBuilder,
 } from '@baseplate/sync';
-import { paramCase } from 'change-case';
 import R from 'ramda';
 import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';
@@ -49,7 +48,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
     },
     run({ appModule, typescript, pothosSchema }) {
       const [typesImport, typesPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/schema/${paramCase(name)}.ts`
+        `${appModule.getModuleFolder()}/schema/${name}.ts`
       );
 
       appModule.addModuleImport(typesImport);

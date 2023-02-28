@@ -1,10 +1,12 @@
 import {
   makeImportAndFilePath,
   nodeProvider,
-  TypescriptCodeExpression,
   typescriptProvider,
 } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import {
+  createGeneratorWithTasks,
+  createTaskConfigBuilder,
+} from '@baseplate/sync';
 import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
@@ -72,9 +74,10 @@ const descriptorSchema = z.object({
   ),
 });
 
-const PothosScalarGenerator = createGeneratorWithChildren({
-  descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+type Descriptor = z.infer<typeof descriptorSchema>;
+
+const createMainTask = createTaskConfigBuilder(({ type }: Descriptor) => ({
+  name: 'main',
   dependencies: {
     appModule: appModuleProvider,
     pothosSetup: pothosSetupProvider,
@@ -82,10 +85,7 @@ const PothosScalarGenerator = createGeneratorWithChildren({
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
   },
-  createGenerator(
-    { type },
-    { appModule, pothosSetup, node, errorHandlerService, typescript }
-  ) {
+  run({ appModule, pothosSetup, node, errorHandlerService, typescript }) {
     const scalarConfig = scalarConfigMap[type];
     const [scalarImport, scalarPath] = makeImportAndFilePath(
       `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`
@@ -94,11 +94,9 @@ const PothosScalarGenerator = createGeneratorWithChildren({
 
     const { name, scalar, inputType, outputType } = scalarConfig;
 
-    const config = pothosSetup.getConfig();
-
-    config.appendUnique('customScalars', [
-      { name, scalar, inputType, outputType },
-    ]);
+    pothosSetup
+      .getTypeReferences()
+      .addCustomScalar({ name, scalar, inputType, outputType });
 
     pothosSetup.registerSchemaFile(scalarPath);
 
@@ -121,6 +119,14 @@ const PothosScalarGenerator = createGeneratorWithChildren({
         );
       },
     };
+  },
+}));
+
+const PothosScalarGenerator = createGeneratorWithTasks({
+  descriptorSchema,
+  getDefaultChildGenerators: () => ({}),
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask(createMainTask(descriptor));
   },
 });
 

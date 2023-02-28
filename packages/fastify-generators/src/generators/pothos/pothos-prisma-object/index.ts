@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { prismaToServiceOutputDto } from '@src/types/serviceOutput';
 import { lowerCaseFirst } from '@src/utils/case';
-import { writePothosFieldFromDtoScalarField } from '@src/writers/pothos-definition';
+import { writePothosExposeFieldFromDtoScalarField } from '@src/writers/pothos';
 import { pothosSchemaProvider } from '../pothos';
 import { pothosTypesFileProvider } from '../pothos-types-file';
 
@@ -68,14 +68,11 @@ const createMainTask = createTaskConfigBuilder(
               name: field.name,
               expression:
                 field.type === 'scalar'
-                  ? writePothosFieldFromDtoScalarField(
-                      field,
-                      {
-                        builder: 't',
-                        typeReferences,
-                      },
-                      true
-                    )
+                  ? writePothosExposeFieldFromDtoScalarField(field, {
+                      schemaBuilder: 'builder',
+                      fieldBuilder: 't',
+                      typeReferences,
+                    })
                   : `t.relation('${field.name}'${
                       field.isNullable ? ', { nullable: true }' : ''
                     })`,

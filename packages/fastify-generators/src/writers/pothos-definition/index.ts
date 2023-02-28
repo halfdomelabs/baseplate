@@ -11,67 +11,7 @@ import {
   ServiceOutputDtoScalarField,
 } from '@src/types/serviceOutput';
 import { lowerCaseFirst, upperCaseFirst } from '@src/utils/case';
-import { PothosScalarConfig } from './scalars';
-
-export interface PothosTypeReferences {
-  scalars: Record<ScalarFieldType, PothosScalarConfig>;
-  enums?: Record<string, TypescriptCodeExpression>;
-  inputTypes?: Record<string, TypescriptCodeExpression>;
-  objectTypes?: Record<string, TypescriptCodeExpression>;
-}
-
-export interface PothosDefinitionWriterOptions {
-  builder: string;
-  typeReferences: PothosTypeReferences;
-}
-
-function getObjectTypeFromOptions(
-  options: PothosDefinitionWriterOptions,
-  name: string
-): TypescriptCodeExpression {
-  const { objectTypes = {} } = options.typeReferences;
-  const objectType = objectTypes[name];
-  if (!objectType) {
-    throw new Error(`Could not find Pothos object type ${name}`);
-  }
-  return objectType;
-}
-
-function getInputTypeFromOptions(
-  options: PothosDefinitionWriterOptions,
-  name: string
-): TypescriptCodeExpression {
-  const { inputTypes = {} } = options.typeReferences;
-  const inputType = inputTypes[name];
-  if (!inputType) {
-    throw new Error(`Could not find Pothos input type ${name}`);
-  }
-  return inputType;
-}
-
-function getScalarTypeFromOptions(
-  options: PothosDefinitionWriterOptions,
-  name: ScalarFieldType
-): PothosScalarConfig {
-  const { scalars } = options.typeReferences;
-  const scalar = scalars[name];
-  if (!scalar) {
-    throw new Error(`Could not find Pothos scalar ${name}`);
-  }
-  return scalar;
-}
-
-function getEnumTypeFromOptions(
-  options: PothosDefinitionWriterOptions,
-  name: string
-): TypescriptCodeExpression {
-  const { enums = {} } = options.typeReferences;
-  const val = enums[name];
-  if (!val) {
-    throw new Error(`Could not find Pothos enum ${name}`);
-  }
-  return val;
-}
+import { PothosScalarConfig } from '../pothos/scalars';
 
 export function writePothosObjectTypeFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,

@@ -6,7 +6,13 @@ export interface PothosScalarConfig {
   pothosMethod?: string | null;
 }
 
-export const DEFAULT_POTHOS_SCALAR_CONFIG: Record<
+export interface PothosCustomScalarConfig
+  extends Omit<PothosScalarConfig, 'pothosMethod'> {
+  inputType: string;
+  outputType: string;
+}
+
+export const INBUILT_POTHOS_SCALARS: Record<
   ScalarFieldType,
   PothosScalarConfig
 > = {
