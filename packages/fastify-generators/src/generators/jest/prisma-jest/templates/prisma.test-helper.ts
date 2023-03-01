@@ -16,6 +16,9 @@ beforeEach(() => {
 
   // mock $transaction
   prismaMock.$transaction.mockImplementation((promises) =>
-    Promise.all(promises)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    typeof promises === 'function'
+      ? promises(prismaMock)
+      : Promise.all(promises)
   );
 });

@@ -3,7 +3,7 @@
 import { ServiceContext } from '%service-context';
 import { UpsertPayload } from './embedded-types';
 import { DataPipeOutput } from '../data-pipes';
-import { PrismaPromise } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 // Create Helpers
 
@@ -67,7 +67,7 @@ interface OneToOneUpsertPipeInput<DataInput> {
   context?: undefined;
   getWhereUnique?: undefined;
   parentId?: undefined;
-  deleteRelation: () => PrismaPromise<unknown>;
+  deleteRelation: () => Prisma.PrismaPromise<unknown>;
 }
 
 interface OneToOneUpsertPipeInputWithTransform<
@@ -89,7 +89,7 @@ interface OneToOneUpsertPipeInputWithTransform<
   context: ServiceContext;
   getWhereUnique: (input: DataInput) => WhereUniqueInput | undefined;
   parentId?: ParentId;
-  deleteRelation: () => PrismaPromise<unknown>;
+  deleteRelation: () => Prisma.PrismaPromise<unknown>;
 }
 
 export async function createOneToOneUpsertData<
