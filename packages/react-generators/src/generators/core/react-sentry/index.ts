@@ -35,8 +35,8 @@ const ReactSentryGenerator = createGeneratorWithChildren({
     );
 
     node.addPackages({
-      '@sentry/react': '7.7.0',
-      '@sentry/tracing': '7.7.0',
+      '@sentry/react': '7.40.0',
+      '@sentry/tracing': '7.40.0',
     });
 
     reactError.addErrorReporter(

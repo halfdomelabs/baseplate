@@ -6,6 +6,6 @@ export function useLogOut(): () => void {
   const { logout } = useAuth0();
 
   return () => {
-    logout({ returnTo: window.location.origin });
+    logout({ logoutParams: { returnTo: window.location.origin } });
   };
 }

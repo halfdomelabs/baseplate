@@ -11,9 +11,11 @@ function SignupPage(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
 
   const redirectToSignup = useCallback((): void => {
-    loginWithRedirect({ screen_hint: 'signup' }).catch((err) => {
-      setError(logAndFormatError(err));
-    });
+    loginWithRedirect({ authorizationParams: { screen_hint: 'signup' } }).catch(
+      (err) => {
+        setError(logAndFormatError(err));
+      }
+    );
   }, [loginWithRedirect]);
 
   useEffect(() => {
