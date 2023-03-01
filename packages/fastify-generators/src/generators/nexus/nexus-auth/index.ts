@@ -9,15 +9,12 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { authProvider } from '@src/generators/auth/auth';
-import { authInfoImportProvider } from '@src/generators/auth/auth-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
-import { serviceContextSetupProvider } from '@src/generators/core/service-context';
 import { nexusSetupProvider } from '../nexus';
 
 const descriptorSchema = z.object({
   requireOnRootFields: z.boolean().default(true),
-  authInfoRef: z.string().min(1),
 });
 
 export const authorizeConfigSchema = z.object({
@@ -42,17 +39,11 @@ const NexusAuthGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     nexusSetup: nexusSetupProvider,
-    serviceContextSetup: serviceContextSetupProvider,
     requestServiceContextSetup: requestServiceContextSetupProvider,
     auth: authProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
-    authInfoImport: authInfoImportProvider,
   },
-  populateDependencies: (deps, { authInfoRef }) => ({
-    ...deps,
-    authInfoImport: deps.authInfoImport.dependency().reference(authInfoRef),
-  }),
   exports: {
     nexusAuth: nexusAuthProvider,
   },
@@ -63,8 +54,6 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       errorHandlerService,
       typescript,
       auth,
-      authInfoImport,
-      serviceContextSetup,
       requestServiceContextSetup,
     }
   ) {
@@ -113,38 +102,6 @@ const NexusAuthGenerator = createGeneratorWithChildren({
           ),
         },
       ]);
-
-    const authInfoType = TypescriptCodeUtils.createExpression(
-      'AuthInfo',
-      'import { AuthInfo } from "%auth-info";',
-      {
-        importMappers: [authInfoImport],
-      }
-    );
-
-    serviceContextSetup.addContextField('auth', {
-      type: authInfoType,
-      value: TypescriptCodeUtils.createExpression('auth'),
-      contextArg: [
-        {
-          name: 'auth',
-          type: authInfoType,
-          // TODO: Figure out how to allow role service to inject test default here
-          testDefault: TypescriptCodeUtils.createExpression(
-            'createAuthInfoFromUser(null, ["system"])',
-            'import { createAuthInfoFromUser } from "%auth-info";',
-            { importMappers: [authInfoImport] }
-          ),
-        },
-      ],
-    });
-
-    requestServiceContextSetup.addContextPassthrough({
-      name: 'auth',
-      creator(req) {
-        return TypescriptCodeUtils.createExpression(`${req}.auth`);
-      },
-    });
 
     return {
       getProviders: () => ({

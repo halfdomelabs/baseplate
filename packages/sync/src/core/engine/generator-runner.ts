@@ -42,6 +42,7 @@ export async function executeGeneratorEntry(
 
         const resolvedDependencies = R.mapObjIndexed((dependency, key) => {
           const dependencyId = dependencyMap[taskId][key]?.id;
+
           const provider =
             dependencyId == null
               ? null

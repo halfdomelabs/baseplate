@@ -26,6 +26,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "change-case": "^4.1.2",
     "inflection": "^1.13.2",
     "nanoid": "^3.1.30",
     "nanoid-dictionary": "^4.3.0",

@@ -1,8 +1,9 @@
+import { paramCase } from 'change-case';
 import { ParsedProjectConfig } from '@src/parser';
 import { EnumConfig } from '@src/schema/models/enums';
 import { ModelConfig } from '../../schema/models';
 
-function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
+function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
   const { schema } = model || {};
   const {
     authorize,
@@ -12,37 +13,44 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown {
     exposedLocalRelations = [],
   } = schema || {};
 
-  return {
-    name: `${model.name}Queries`,
-    generator: '@baseplate/fastify/nexus/nexus-prisma-query-file',
-    modelName: model.name,
-    children: {
-      objectType: {
-        generator: '@baseplate/fastify/nexus/nexus-prisma-object',
-        exposedFields: [
-          ...exposedFields,
-          ...exposedForeignRelations,
-          ...exposedLocalRelations,
-        ],
+  return [
+    {
+      name: `${model.name}ObjectType`,
+      fileName: `${paramCase(model.name)}.object-type`,
+      generator: '@baseplate/fastify/pothos/pothos-types-file',
+      children: {
+        $objectType: {
+          generator: '@baseplate/fastify/pothos/pothos-prisma-object',
+          modelName: model.name,
+          exposedFields: [
+            ...exposedFields,
+            ...exposedForeignRelations,
+            ...exposedLocalRelations,
+          ],
+        },
       },
-      ...(!buildQuery
-        ? {}
-        : {
+    },
+    !buildQuery
+      ? undefined
+      : {
+          name: `${model.name}PothosQueries`,
+          fileName: `${paramCase(model.name)}.queries`,
+          generator: '@baseplate/fastify/pothos/pothos-prisma-query-file',
+          modelName: model.name,
+          children: {
             findQuery: {
-              generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
               children: {
                 authorize: { roles: authorize?.read },
               },
             },
             listQuery: {
-              generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
               children: {
                 authorize: { roles: authorize?.read },
               },
             },
-          }),
-    },
-  };
+          },
+        },
+  ];
 }
 
 function buildMutationSchemaTypeForModel(
@@ -53,9 +61,11 @@ function buildMutationSchemaTypeForModel(
   const { authorize } = graphql || {};
 
   return {
-    name: `${model.name}Mutations`,
-    generator: '@baseplate/fastify/nexus/nexus-prisma-crud-file',
+    name: `${model.name}PothosMutations`,
+    fileName: `${paramCase(model.name)}.mutations`,
+    generator: '@baseplate/fastify/pothos/pothos-prisma-crud-file',
     modelName: model.name,
+    objectTypeRef: `${feature}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
     crudServiceRef: `${feature}/root:$services.${model.name}Service`,
     children: {
       create: model.service?.create?.fields?.length
@@ -80,11 +90,11 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
   return [
     {
       name: `Enums`,
-      generator: '@baseplate/fastify/nexus/nexus-types-file',
+      generator: '@baseplate/fastify/pothos/pothos-enums-file',
       children: {
         $enums: enums.map((enumConfig) => ({
           name: enumConfig.name,
-          generator: '@baseplate/fastify/nexus/nexus-prisma-enum',
+          generator: '@baseplate/fastify/pothos/pothos-prisma-enum',
           enumName: enumConfig.name,
         })),
       },
@@ -106,9 +116,9 @@ export function buildSchemaTypesForFeature(
 
   return [
     ...models.flatMap((model) => [
-      model.schema?.buildObjectType || model.schema?.buildQuery
+      ...(model.schema?.buildObjectType || model.schema?.buildQuery
         ? buildQuerySchemaTypeForModel(model)
-        : undefined,
+        : []),
       model.schema?.buildMutations
         ? buildMutationSchemaTypeForModel(feature, model)
         : undefined,

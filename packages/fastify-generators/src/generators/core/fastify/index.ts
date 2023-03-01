@@ -24,7 +24,7 @@ export interface FastifyGeneratorConfig {
   /**
    * Loaders to register when running in dev
    */
-  devLoaders?: string[];
+  devLoaders: string[];
 }
 
 export interface FastifyProvider {

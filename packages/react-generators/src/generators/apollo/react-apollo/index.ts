@@ -251,6 +251,14 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           ).replace(/;$/, '');
 
           websocketOptions.merge({
+            connectionParams:
+              TypescriptCodeUtils.createExpression(`async () => {
+              const accessToken = await getAccessToken();
+              if (!accessToken) {
+                return {};
+              }
+              return { authorization: \`Bearer \${accessToken}\` };
+            }`),
             url: TypescriptCodeUtils.createExpression(`getWsUrl()`, undefined, {
               headerBlocks: [TypescriptCodeUtils.createBlock(getWsUrlTemplate)],
             }),

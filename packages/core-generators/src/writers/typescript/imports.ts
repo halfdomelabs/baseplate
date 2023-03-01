@@ -70,19 +70,28 @@ export function resolveModule(
     : relativePathImport;
 }
 
-function importDeclarationToImportEntry(
+function resolveImportDeclaration(
   declaration: ImportDeclarationEntry,
   directory: string,
   options?: ResolveModuleOptions
-): ImportEntry[] {
-  const importEntries: ImportEntry[] = [];
-  const entryDefaults = {
-    isTypeOnly: declaration.isTypeOnly,
+): ImportDeclarationEntry {
+  return {
+    ...declaration,
     moduleSpecifier: resolveModule(
       declaration.moduleSpecifier,
       directory,
       options
     ),
+  };
+}
+
+function importDeclarationToImportEntries(
+  declaration: ImportDeclarationEntry
+): ImportEntry[] {
+  const importEntries: ImportEntry[] = [];
+  const entryDefaults = {
+    isTypeOnly: declaration.isTypeOnly,
+    moduleSpecifier: declaration.moduleSpecifier,
   };
 
   if (declaration.defaultImport) {
@@ -129,18 +138,19 @@ export function writeImportDeclaration(
     );
   }
   writer.write('import');
-  writer.conditionalWrite(isTypeOnly, ' type');
-  if (namespaceImport) {
-    writer.write(` * as ${namespaceImport}`);
-  }
-  if (defaultImport) {
-    writer.write(` ${defaultImport}`);
-  }
-  if (hasNamedImports) {
-    writer.conditionalWrite(!!defaultImport, ',');
-    // sort named imports
-    writer.write(' ');
-    writer.inlineBlock(() => {
+  if (namespaceImport || defaultImport || hasNamedImports) {
+    writer.conditionalWrite(isTypeOnly, ' type');
+    if (namespaceImport) {
+      writer.write(` * as ${namespaceImport}`);
+    }
+    if (defaultImport) {
+      writer.write(` ${defaultImport}`);
+    }
+    if (hasNamedImports) {
+      writer.conditionalWrite(!!defaultImport, ',');
+      // sort named imports
+      writer.write(' ');
+      writer.write('{');
       namedImports.forEach((namedImport, i) => {
         writer.conditionalWrite(i !== 0, ',');
         writer.write(` ${namedImport.name}`);
@@ -148,9 +158,11 @@ export function writeImportDeclaration(
           writer.write(` as ${namedImport.alias}`);
         }
       });
-    });
+      writer.write(' }');
+    }
+    writer.write(' from');
   }
-  writer.write(' from ');
+  writer.write(' ');
   writer.quote(moduleSpecifier);
   writer.write(';\n');
 }
@@ -196,6 +208,15 @@ function writeImportDeclarationsForModule(
   importEntries: ImportEntry[],
   moduleSpecifier: string
 ): void {
+  // handle file-only imports
+  if (!importEntries.length) {
+    writeImportDeclaration(
+      writer,
+      importEntryToImportDeclaration([], false, moduleSpecifier)
+    );
+    return;
+  }
+
   // separate out type-only and normal imports with normal imports taking precedence
   const importsByName = R.groupBy(R.prop('name'), importEntries);
 
@@ -286,43 +307,63 @@ export function writeImportDeclarations(
   const mappedImports = imports.map((importDeclaration) =>
     resolveImportFromImportMap(importDeclaration, importMap)
   );
-
-  const resolvedImports = R.flatten(
-    mappedImports.map((i) =>
-      importDeclarationToImportEntry(i, fileDirectory, options)
-    )
+  const resolvedImports = mappedImports.map((i) =>
+    resolveImportDeclaration(i, fileDirectory, options)
+  );
+  const resolvedImportEntries = R.flatten(
+    resolvedImports.map((i) => importDeclarationToImportEntries(i))
   );
   // merge all imports together
-  const importsByModule = R.groupBy((i) => i.moduleSpecifier, resolvedImports);
-  const modules = Object.keys(importsByModule);
+  const importsByModule = R.groupBy(
+    (i) => i.moduleSpecifier,
+    resolvedImportEntries
+  );
 
-  // follow https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
-  const sortedModules = sortByImportOrder(modules, {});
+  // split out imports that have import entries vs. just a module specifier
+  // e.g. the order should look like:
+  // import { React } from 'react;
+  //
+  // import './index.css';
 
-  sortedModules.forEach((moduleSpecifier) => {
-    const importEntries = importsByModule[moduleSpecifier];
-    writeImportDeclarationsForModule(writer, importEntries, moduleSpecifier);
+  const allModules = R.uniq(resolvedImports.map((i) => i.moduleSpecifier));
+  const modulesWithImportEntries = allModules.filter(
+    (moduleSpecifier) => importsByModule[moduleSpecifier]?.length > 0
+  );
+  const modulesWithoutImportEntries = allModules.filter(
+    (moduleSpecifier) => !importsByModule[moduleSpecifier]?.length
+  );
+
+  const moduleGroupings = [
+    modulesWithImportEntries,
+    modulesWithoutImportEntries,
+  ];
+
+  moduleGroupings.forEach((modules, i) => {
+    // follow https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
+    const sortedModules = sortByImportOrder(modules, {});
+
+    sortedModules.forEach((moduleSpecifier) => {
+      const importEntries = importsByModule[moduleSpecifier] || [];
+      writeImportDeclarationsForModule(writer, importEntries, moduleSpecifier);
+    });
+
+    if (moduleGroupings[i + 1]?.length) {
+      writer.write('\n');
+    }
   });
 }
 
 export function getImportDeclarationEntries(
   file: SourceFile
 ): ImportDeclarationEntry[] {
-  return file
-    .getImportDeclarations()
-    .filter(
-      (declaration) =>
-        declaration.getImportClause() ||
-        !declaration.getModuleSpecifierValue().endsWith('.css')
-    )
-    .map((declaration) => ({
-      isTypeOnly: declaration.isTypeOnly(),
-      defaultImport: declaration.getDefaultImport()?.getText(),
-      namespaceImport: declaration.getNamespaceImport()?.getText(),
-      namedImports: declaration.getNamedImports().map((namedImport) => ({
-        name: namedImport.getName(),
-        alias: namedImport.getAliasNode()?.getText(),
-      })),
-      moduleSpecifier: declaration.getModuleSpecifier().getLiteralValue(),
-    }));
+  return file.getImportDeclarations().map((declaration) => ({
+    isTypeOnly: declaration.isTypeOnly(),
+    defaultImport: declaration.getDefaultImport()?.getText(),
+    namespaceImport: declaration.getNamespaceImport()?.getText(),
+    namedImports: declaration.getNamedImports().map((namedImport) => ({
+      name: namedImport.getName(),
+      alias: namedImport.getAliasNode()?.getText(),
+    })),
+    moduleSpecifier: declaration.getModuleSpecifier().getLiteralValue(),
+  }));
 }

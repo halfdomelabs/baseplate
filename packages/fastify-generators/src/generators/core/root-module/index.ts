@@ -1,4 +1,5 @@
 import {
+  ImportMapper,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -23,8 +24,9 @@ export interface RootModuleProvider {
 export const rootModuleProvider =
   createProviderType<RootModuleProvider>('root-module');
 
-export interface RootModuleImport {
+export interface RootModuleImport extends ImportMapper {
   getRootModule: () => TypescriptCodeExpression;
+  getRootModuleImport: () => string;
 }
 
 export const rootModuleImportProvider = createProviderType<RootModuleImport>(
@@ -36,6 +38,7 @@ export const rootModuleImportProvider = createProviderType<RootModuleImport>(
 
 export interface AppModuleProvider {
   getModuleFolder(): string;
+  addModuleImport: (name: string) => void;
   registerFieldEntry: (
     name: 'children' | string,
     type: TypescriptCodeExpression
@@ -93,6 +96,13 @@ const RootModuleGenerator = createGeneratorWithTasks({
                     'RootModule',
                     "import { RootModule } from '@/src/modules'"
                   ),
+                getRootModuleImport: () => `@/src/modules`,
+                getImportMap: () => ({
+                  '%root-module': {
+                    path: '@/src/modules',
+                    allowedImports: ['RootModule'],
+                  },
+                }),
               },
             };
           },
@@ -109,6 +119,7 @@ const RootModuleGenerator = createGeneratorWithTasks({
         const rootModuleEntries = createNonOverwriteableMap<
           Record<string, TypescriptCodeExpression[]>
         >({}, { name: 'root-module-entries' });
+        const moduleImports: string[] = [];
 
         return {
           getProviders: () => ({
@@ -118,6 +129,9 @@ const RootModuleGenerator = createGeneratorWithTasks({
                 'children',
                 ...Object.keys(moduleFieldMap.value()),
               ],
+              addModuleImport(name) {
+                moduleImports.push(name);
+              },
               registerFieldEntry: (name, type) => {
                 if (name !== 'children' && !moduleFieldMap.get(name)) {
                   throw new Error(`Unknown field entry: ${name}`);
@@ -158,6 +172,10 @@ const RootModuleGenerator = createGeneratorWithTasks({
                 return { name, field };
               }
             );
+
+            moduleHelper.addCodeAddition({
+              importText: moduleImports.map((name) => `import '${name}'`),
+            });
 
             moduleHelper.addCodeBlock(
               'MODULE_FIELDS',

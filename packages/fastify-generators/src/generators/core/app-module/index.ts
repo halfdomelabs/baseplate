@@ -36,6 +36,7 @@ const AppModuleGenerator = createGeneratorWithChildren({
       Record<string, TypescriptCodeExpression[]>
     >({}, { name: 'app-module-entries' });
     const validFields = appModule.getValidFields();
+    const moduleImports: string[] = [];
 
     appModule.registerFieldEntry(
       'children',
@@ -50,6 +51,9 @@ const AppModuleGenerator = createGeneratorWithChildren({
         appModule: {
           getModuleFolder: () => moduleFolder,
           getValidFields: () => validFields,
+          addModuleImport(name) {
+            moduleImports.push(name);
+          },
           registerFieldEntry: (name, type) => {
             if (!validFields.includes(name)) {
               throw new Error(`Unknown field entry: ${name}`);
@@ -72,6 +76,10 @@ const AppModuleGenerator = createGeneratorWithChildren({
             )
           )
         );
+
+        indexFile.addCodeAddition({
+          importText: moduleImports.map((name) => `import '${name}'`),
+        });
 
         const moduleFolderIndex = path.join(moduleFolder, 'index.ts');
         await builder.apply(

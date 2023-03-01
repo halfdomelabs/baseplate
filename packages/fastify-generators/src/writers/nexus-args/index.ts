@@ -43,6 +43,9 @@ export function writeNexusArgFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: NexusDefinitionWriterOptions
 ): ArgOutput {
+  if (field.isPrismaType) {
+    throw new Error(`Prisma types not support in input types.`);
+  }
   const importTexts: string[] = [];
   let output = `'${field.nestedType.name}Input'`;
   if (field.isList) {

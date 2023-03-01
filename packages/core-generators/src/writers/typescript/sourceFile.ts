@@ -144,6 +144,8 @@ export abstract class TypescriptSourceContent<
 
   protected hasCodeGenerated = false;
 
+  protected codeAdditions: TypescriptCodeEntryOptions[] = [];
+
   protected codeBlocks: Record<string, TypescriptCodeBlock[]>;
 
   protected codeWrappers: Record<string, TypescriptCodeWrapper[]>;
@@ -199,6 +201,12 @@ export abstract class TypescriptSourceContent<
     if (this.hasCodeGenerated) {
       throw new Error('Cannot modify code entries once generated');
     }
+  }
+
+  addCodeAddition(entry: TypescriptCodeEntryOptions): this {
+    this.checkNotGenerated();
+    this.codeAdditions.push(entry);
+    return this;
   }
 
   addCodeBlock<K extends keyof T & string>(
@@ -330,12 +338,14 @@ export abstract class TypescriptSourceContent<
   }
 
   protected getCodeEntriesWithDefaults(): {
+    codeAdditions: TypescriptCodeEntryOptions[];
     codeBlocks: Record<string, TypescriptCodeBlock[]>;
     codeWrappers: Record<string, TypescriptCodeWrapper[]>;
     codeExpressions: Record<string, TypescriptCodeExpression[]>;
     stringReplacements: Record<string, TypescriptStringReplacement[]>;
   } {
     return {
+      codeAdditions: this.codeAdditions,
       codeBlocks: R.mapObjIndexed((value, key) => {
         const configEntry = this.config[key];
         if (configEntry.type !== 'code-block') {
@@ -523,6 +533,7 @@ export class TypescriptSourceBlock<
           Object.values(entriesWithDefault.codeExpressions),
           Object.values(entriesWithDefault.stringReplacements),
           this.blockOptions,
+          entriesWithDefault.codeAdditions,
         ].flat(2)
       )
     );
@@ -581,6 +592,7 @@ export class TypescriptSourceFile<
         Object.values(entriesWithDefault.codeWrappers),
         Object.values(entriesWithDefault.codeExpressions),
         Object.values(entriesWithDefault.stringReplacements),
+        entriesWithDefault.codeAdditions.map((options) => ({ options })),
       ]);
 
       const headerBlocks = providedEntries.flatMap(
@@ -609,14 +621,7 @@ export class TypescriptSourceFile<
         ...(this.sourceFileOptions.importMappers || []),
       ];
 
-      file
-        .getImportDeclarations()
-        .filter(
-          (declaration) =>
-            declaration.getImportClause() ||
-            !declaration.getModuleSpecifierValue().endsWith('.css')
-        )
-        .forEach((i) => i.remove());
+      file.getImportDeclarations().forEach((i) => i.remove());
 
       if (headerBlocks.length) {
         const deduplicatedHeaderBlocks = R.uniqWith(

@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import R from 'ramda';
 
+type ArrayKeys<T> = {
+  [K in keyof T]: T[K] extends Array<unknown> ? K : never;
+}[keyof T];
+
+interface Foo {
+  test: string;
+  arr: string[];
+}
+
 export interface NonOverwriteableMap<T extends object> {
   /**
    * Set a value in the map
@@ -10,12 +19,25 @@ export interface NonOverwriteableMap<T extends object> {
    */
   set<Key extends keyof T>(key: Key, value: T[Key]): this;
   /**
-   * Appends a value to an array uniquely in the map
+   * Appends a value to an array in the map
    *
    * @param key Key of value in map
    * @param value Array of values to append
    */
-  appendUnique<Key extends keyof T>(key: Key, value: T[Key]): this;
+  append<Key extends ArrayKeys<T>>(
+    key: Key,
+    value: T[Key] extends Array<infer U> ? U : never
+  ): this;
+  /**
+   * Appends an array of values to an array uniquely in the map
+   *
+   * @param key Key of value in map
+   * @param value Array of values to append
+   */
+  appendUnique<Key extends ArrayKeys<T>>(
+    key: Key,
+    value: T[Key] | (T[Key] extends Array<infer U> ? U : never)
+  ): this;
   /**
    * Gets a value from the map
    *
@@ -84,10 +106,22 @@ export function createNonOverwriteableMap<T extends object>(
       }) as Partial<T>;
       return this;
     },
-    appendUnique(key, value) {
-      if (!Array.isArray(value)) {
-        throw new Error('appendUnique only works on arrays');
+    append(key, value) {
+      const arrValue = Array.isArray(value) ? value : [value];
+      const existingValue = overrideValues[key] || [];
+      if (!Array.isArray(existingValue)) {
+        throw new Error(
+          `Field ${key.toString()} is not array and cannot be appended to in ${name}`
+        );
       }
+      overrideValues = {
+        ...overrideValues,
+        [key]: [...existingValue, ...arrValue],
+      };
+      return this;
+    },
+    appendUnique(key, value) {
+      const arrValue = Array.isArray(value) ? value : [value];
       const existingValue = overrideValues[key];
       if (existingValue) {
         if (!Array.isArray(existingValue)) {
@@ -97,12 +131,12 @@ export function createNonOverwriteableMap<T extends object>(
         }
         overrideValues = {
           ...overrideValues,
-          [key]: R.uniq([...existingValue, ...value]),
+          [key]: R.uniq([...existingValue, ...arrValue]),
         };
       } else {
         overrideValues = {
           ...overrideValues,
-          [key]: value,
+          [key]: arrValue,
         };
       }
       return this;

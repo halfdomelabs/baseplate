@@ -10,23 +10,23 @@ import {
 import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry';
-import { nexusSetupProvider } from '../nexus';
+import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin';
 
 const descriptorSchema = z.object({});
 
 const createMainTask = createTaskConfigBuilder(() => ({
   name: 'main',
   dependencies: {
-    nexusSetup: nexusSetupProvider,
+    yogaPluginSetup: yogaPluginSetupProvider,
     fastifySentry: fastifySentryProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
   },
-  run({ fastifySentry, nexusSetup, typescript, errorHandlerService }) {
+  run({ fastifySentry, yogaPluginSetup, typescript, errorHandlerService }) {
     const [pluginImport, pluginPath] = makeImportAndFilePath(
       'src/plugins/graphql/useSentry.ts'
     );
-    nexusSetup.getConfig().appendUnique('envelopPlugins', [
+    yogaPluginSetup.getConfig().appendUnique('envelopPlugins', [
       new TypescriptCodeExpression(
         `useSentry({
             configureScope: (args, scope) => configureSentryScope(scope),

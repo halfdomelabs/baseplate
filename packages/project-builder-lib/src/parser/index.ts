@@ -316,6 +316,15 @@ export class ParsedProjectConfig {
       throw new Error(`Field ${fieldName} not found in model ${modelName}`);
     }
 
+    const nullishSuffix = field.isOptional ? '.nullish()' : '';
+
+    if (field.type === 'int') {
+      return `z.number().or(z.string()).pipe(z.coerce.number().finite().int())${nullishSuffix}`;
+    }
+    if (field.type === 'float') {
+      return `z.number().or(z.string()).pipe(z.coerce.number().finite())${nullishSuffix}`;
+    }
+
     function getModelValidator(modelField: ParsedModelField): string {
       switch (modelField.type) {
         case 'boolean':
@@ -335,23 +344,9 @@ export class ParsedProjectConfig {
       }
     }
 
-    const validator = `z.${getModelValidator(field)}${
-      field.isOptional ? '.nullish()' : ''
-    }`;
+    const validator = `z.${getModelValidator(field)}${nullishSuffix}`;
     if (!preProcess) {
       return validator;
-    }
-    if (field.type === 'int') {
-      return `z.preprocess(
-        (a) => (a != null ? parseInt(a as string, 10) : undefined),
-        ${validator}
-      )`;
-    }
-    if (field.type === 'float') {
-      return `z.preprocess(
-        (a) => (a != null ? parseFloat(a as string) : undefined),
-        ${validator}
-      )`;
     }
     return validator;
   }

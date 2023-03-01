@@ -10,24 +10,14 @@ import AltairFastify from 'altair-fastify-plugin';
 import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError } from 'graphql';
-import { makeSchema } from 'nexus';
-import path, { join } from 'path';
+
+CUSTOM_IMPORTS;
 
 const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
 
-const schema = makeSchema({
-  types: ROOT_MODULE.schemaTypes,
-  outputs: {
-    typegen: join(__dirname, '../..', 'nexus-typegen.ts'),
-    schema: join(__dirname, '../../..', 'schema.graphql'),
-  },
-  plugins: NEXUS_PLUGINS,
-  contextType: {
-    module: path.join(__dirname, '../../..', 'CONTEXT_PATH'),
-    export: 'RequestServiceContext',
-  },
-  shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
-});
+const schema = SCHEMA;
+
+POST_SCHEMA_BLOCKS;
 
 export const graphqlPlugin = fp(async (fastify) => {
   const graphQLServer = createServer<{

@@ -8,6 +8,7 @@ import {
   writeJsonAction,
   createProviderType,
 } from '@baseplate/sync';
+import _ from 'lodash';
 import Piscina from 'piscina';
 import requireResolve from 'resolve';
 import { z } from 'zod';
@@ -163,7 +164,12 @@ const PrettierGenerator = createGeneratorWithChildren({
           })
         );
 
-        builder.writeFile('.prettierignore', `${prettierIgnore.join('\n')}\n`);
+        const prettierIgnoreSorted = _.uniq(_.sortBy(prettierIgnore));
+
+        builder.writeFile(
+          '.prettierignore',
+          `${prettierIgnoreSorted.join('\n')}\n`
+        );
       },
     };
   },

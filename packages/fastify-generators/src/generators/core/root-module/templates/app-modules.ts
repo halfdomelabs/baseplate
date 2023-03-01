@@ -1,6 +1,4 @@
 // @ts-nocheck
-import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';
-
 export interface AppModule {
   children?: AppModule[];
   MODULE_FIELDS;

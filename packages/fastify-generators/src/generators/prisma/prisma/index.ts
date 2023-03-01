@@ -21,6 +21,7 @@ import {
   createPrismaSchemaGeneratorBlock,
   PrismaSchemaFile,
 } from '@src/writers/prisma-schema/schema';
+import { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(5432),
@@ -28,6 +29,7 @@ const descriptorSchema = z.object({
 });
 
 export interface PrismaSchemaProvider {
+  addPrismaGenerator(generator: PrismaGeneratorBlock): void;
   addPrismaModel(model: PrismaModelBlockWriter): void;
   addPrismaEnum(block: PrismaOutputEnum): void;
 }
@@ -123,6 +125,9 @@ const PrismaGenerator = createGeneratorWithTasks({
         return {
           getProviders: () => ({
             prismaSchema: {
+              addPrismaGenerator: (generator) => {
+                schemaFile.addGeneratorBlock(generator);
+              },
               addPrismaModel: (model) => {
                 schemaFile.addModelWriter(model);
               },

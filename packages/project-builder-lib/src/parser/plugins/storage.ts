@@ -130,6 +130,7 @@ export const StoragePlugin: ParserPlugin = {
     hooks.addFeatureChildren(storage.featurePath, {
       $storage: {
         generator: '@baseplate/fastify/storage/storage-module',
+        fileObjectTypeRef: `${storage.featurePath}/root:$schemaTypes.${storage.fileModel}ObjectType.$objectType`,
         fileModel: storage.fileModel,
         s3Adapters: storage.s3Adapters,
         categories: storage.categories,

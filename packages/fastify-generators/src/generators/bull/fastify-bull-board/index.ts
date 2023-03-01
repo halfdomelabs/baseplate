@@ -14,7 +14,7 @@ import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server';
 import { appModuleProvider } from '@src/generators/core/root-module';
-import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
+import { pothosSchemaProvider } from '@src/generators/pothos/pothos';
 
 const descriptorSchema = z.object({});
 
@@ -32,7 +32,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     typescript: typescriptProvider,
     errorHandlerService: errorHandlerServiceProvider,
     redis: fastifyRedisProvider,
-    nexusSchema: nexusSchemaProvider,
+    pothosSchema: pothosSchemaProvider,
     appModule: appModuleProvider,
   },
   exports: {
@@ -43,13 +43,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
     typescript,
     errorHandlerService,
     redis,
-    nexusSchema,
+    pothosSchema,
     appModule,
   }) {
     const queuesToTrack: TypescriptCodeExpression[] = [];
 
-    nexusSchema.registerSchemaFile(
-      `${appModule.getModuleFolder()}/schema/authenticate-bull-board.ts`
+    pothosSchema.registerSchemaFile(
+      `${appModule.getModuleFolder()}/schema/authenticate.mutations.ts`
     );
 
     node.addPackages({
@@ -71,7 +71,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
         },
       }),
       build: async (builder) => {
-        const importMappers = [errorHandlerService, redis, nexusSchema];
+        const importMappers = [errorHandlerService, redis, pothosSchema];
         const pluginFile = typescript.createTemplate(
           {
             QUEUES_TO_TRACK:
@@ -101,7 +101,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
           typescript.createCopyFilesAction({
             destinationBaseDirectory: moduleFolder,
             paths: [
-              'schema/authenticate-bull-board.ts',
+              'schema/authenticate.mutations.ts',
               'services/auth.service.ts',
               'index.ts',
             ],

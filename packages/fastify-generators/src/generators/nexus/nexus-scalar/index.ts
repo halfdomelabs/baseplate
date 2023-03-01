@@ -54,10 +54,10 @@ const scalarConfigMap = createNexusScalarMap({
     nexusMethod: 'uuid',
     sourceType: 'string',
     dependencies: {
-      uuid: '^8.3.2',
+      uuid: '9.0.0',
     },
     devDependencies: {
-      '@types/uuid': '^8.3.4',
+      '@types/uuid': '9.0.1',
     },
   },
 });

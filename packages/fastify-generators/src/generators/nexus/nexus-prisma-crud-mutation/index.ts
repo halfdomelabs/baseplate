@@ -49,6 +49,9 @@ function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,
   tsUtils: TsUtilsProvider
 ): TypescriptCodeExpression {
+  if (arg.isPrismaType) {
+    throw new Error(`Prisma types are not supported in nested fields`);
+  }
   const { fields } = arg.nestedType;
   const nestedFields = fields.filter(
     (f): f is ServiceOutputDtoNestedField => f.type === 'nested'
@@ -112,6 +115,9 @@ function convertNestedArgForCall(
   arg: ServiceOutputDtoNestedField,
   tsUtils: TsUtilsProvider
 ): TypescriptCodeExpression {
+  if (arg.isPrismaType) {
+    throw new Error(`Prisma types are not supported in nested fields`);
+  }
   const { fields } = arg.nestedType;
   const nonNullableOptionalFields = fields.filter(
     (f) => f.isOptional && !f.isNullable

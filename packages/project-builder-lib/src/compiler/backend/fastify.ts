@@ -19,17 +19,17 @@ export function buildFastify(
       $schemaTypes: [
         {
           name: 'UuidScalar',
-          generator: '@baseplate/fastify/nexus/nexus-scalar',
+          generator: '@baseplate/fastify/pothos/pothos-scalar',
           type: 'uuid',
         },
         {
           name: 'DateTimeScalar',
-          generator: '@baseplate/fastify/nexus/nexus-scalar',
+          generator: '@baseplate/fastify/pothos/pothos-scalar',
           type: 'dateTime',
         },
         {
           name: 'DateScalar',
-          generator: '@baseplate/fastify/nexus/nexus-scalar',
+          generator: '@baseplate/fastify/pothos/pothos-scalar',
           type: 'date',
         },
       ],
@@ -91,13 +91,20 @@ export function buildFastify(
         generator: '@baseplate/fastify/prisma/prisma-utils',
         peerProvider: true,
       },
-      $nexus: {
-        generator: '@baseplate/fastify/nexus/nexus',
+      $yoga: {
+        generator: '@baseplate/fastify/yoga/yoga-plugin',
         enableSubscriptions: app.enableSubscriptions,
         peerProvider: true,
       },
+      $pothos: {
+        generator: '@baseplate/fastify/pothos/pothos',
+        peerProvider: true,
+      },
+      $pothosPrisma: {
+        generator: '@baseplate/fastify/pothos/pothos-prisma',
+      },
       $yogaSentry: {
-        generator: '@baseplate/fastify/nexus/yoga-sentry',
+        generator: '@baseplate/fastify/yoga/yoga-sentry',
       },
       $modules: [
         ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
