@@ -8,6 +8,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
+  TypescriptStringReplacement,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithTasks,
@@ -239,6 +240,11 @@ const PothosGenerator = createGeneratorWithTasks({
             const builderFile = typescript.createTemplate({
               SCHEMA_TYPE_OPTIONS: schemaTypeOptions,
               SCHEMA_BUILDER_OPTIONS: schemaOptions,
+              'SUBSCRIPTION_TYPE;': new TypescriptStringReplacement(
+                yogaPluginSetup.isSubscriptionEnabled()
+                  ? `builder.subscriptionType();`
+                  : ''
+              ),
             });
             await builder.apply(
               builderFile.renderToAction('builder.ts', builderPath)

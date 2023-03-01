@@ -34,6 +34,7 @@ export interface YogaPluginConfig {
 
 export interface YogaPluginSetupProvider {
   getConfig(): NonOverwriteableMap<YogaPluginConfig>;
+  isSubscriptionEnabled(): boolean;
 }
 export const yogaPluginSetupProvider =
   createProviderType<YogaPluginSetupProvider>('yoga-plugin-setup');
@@ -87,6 +88,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             return {
               yogaPluginSetup: {
                 getConfig: () => configMap,
+                isSubscriptionEnabled: () => enableSubscriptions,
               },
             };
           },
