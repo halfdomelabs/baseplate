@@ -138,11 +138,10 @@ const createMainTask = createTaskConfigBuilder(
           };
 
           const block = TypescriptCodeUtils.formatBlock(
-            `export const EXPORT_NAME = BUILDER.mutationField(NAME, (t) =>
+            `BUILDER.mutationField(NAME, (t) =>
             t.fieldWithInputPayload(OPTIONS)
           );`,
             {
-              EXPORT_NAME: `${mutationName}Mutation`,
               BUILDER: 'builder',
               NAME: quot(mutationName),
               OPTIONS:

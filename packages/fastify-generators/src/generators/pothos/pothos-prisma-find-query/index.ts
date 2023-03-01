@@ -97,7 +97,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
         };
 
         const block = TypescriptCodeUtils.formatBlock(
-          `export const QUERY_EXPORT = BUILDER.queryField(QUERY_NAME, (t) => 
+          `BUILDER.queryField(QUERY_NAME, (t) => 
           t.prismaField(OPTIONS)
         );`,
           {
