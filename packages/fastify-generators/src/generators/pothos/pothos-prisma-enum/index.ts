@@ -5,6 +5,7 @@ import {
 } from '@baseplate/sync';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+import { lowerCaseFirst } from '@src/utils/case';
 import { pothosEnumsFileProvider } from '../pothos-enums-file';
 
 const descriptorSchema = z.object({
@@ -21,7 +22,7 @@ const createMainTask = createTaskConfigBuilder(({ enumName }: Descriptor) => ({
   },
   run({ prismaOutput, pothosEnumsFile }) {
     const enumBlock = prismaOutput.getServiceEnum(enumName);
-    const exportName = `${enumName}Enum`;
+    const exportName = `${lowerCaseFirst(enumName)}Enum`;
 
     const pothosBlock = TypescriptCodeUtils.formatBlock(
       `export const ENUM_TYPE_EXPORT = BUILDER.enumType(ENUM_NAME, ENUM_OPTIONS);`,

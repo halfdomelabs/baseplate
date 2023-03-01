@@ -34,6 +34,7 @@ export interface YogaPluginConfig {
 
 export interface YogaPluginSetupProvider {
   getConfig(): NonOverwriteableMap<YogaPluginConfig>;
+  isSubscriptionEnabled(): boolean;
 }
 export const yogaPluginSetupProvider =
   createProviderType<YogaPluginSetupProvider>('yoga-plugin-setup');
@@ -87,6 +88,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             return {
               yogaPluginSetup: {
                 getConfig: () => configMap,
+                isSubscriptionEnabled: () => !!enableSubscriptions,
               },
             };
           },
@@ -143,7 +145,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
       ) {
         node.addPackages({
           'altair-fastify-plugin': '4.6.4',
-          graphql: '^16.3.0',
+          graphql: '16.6.0',
           '@envelop/core': '2.6.0',
           '@envelop/disable-introspection': '3.6.0',
           '@graphql-yoga/node': '2.13.12',

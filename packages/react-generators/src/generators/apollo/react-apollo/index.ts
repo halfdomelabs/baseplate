@@ -97,7 +97,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
 
     node.addPackages({
       '@apollo/client': '3.7.0',
-      graphql: '^16.3.0',
+      graphql: '16.6.0',
     });
 
     if (enableSubscriptions) {

@@ -4,9 +4,11 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   prettierProvider,
+  tsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
+  TypescriptStringReplacement,
 } from '@baseplate/core-generators';
 import {
   createGeneratorWithTasks,
@@ -134,6 +136,7 @@ const PothosGenerator = createGeneratorWithTasks({
         prettier: prettierProvider,
         rootModuleImport: rootModuleImportProvider,
         yogaPluginSetup: yogaPluginSetupProvider,
+        tsUtils: tsUtilsProvider,
       },
       taskDependencies: { setupTask, schemaTask },
       exports: {
@@ -147,6 +150,7 @@ const PothosGenerator = createGeneratorWithTasks({
           prettier,
           rootModuleImport,
           yogaPluginSetup,
+          tsUtils,
         },
         {
           setupTask: { config: configMap, pothosTypes },
@@ -236,6 +240,11 @@ const PothosGenerator = createGeneratorWithTasks({
             const builderFile = typescript.createTemplate({
               SCHEMA_TYPE_OPTIONS: schemaTypeOptions,
               SCHEMA_BUILDER_OPTIONS: schemaOptions,
+              'SUBSCRIPTION_TYPE;': new TypescriptStringReplacement(
+                yogaPluginSetup.isSubscriptionEnabled()
+                  ? `builder.subscriptionType();`
+                  : ''
+              ),
             });
             await builder.apply(
               builderFile.renderToAction('builder.ts', builderPath)
@@ -284,6 +293,7 @@ const PothosGenerator = createGeneratorWithTasks({
                   'schema-builder.ts',
                   'types.ts',
                 ],
+                importMappers: [tsUtils],
               })
             );
 

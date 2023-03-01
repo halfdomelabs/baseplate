@@ -51,7 +51,11 @@ export function resolveModule(
   const relativePathImport = (() => {
     const relativePath = path.relative(directory, absolutePath);
 
-    return relativePath.startsWith('.') ? relativePath : `./${relativePath}`;
+    return relativePath.startsWith('./') ||
+      relativePath.startsWith('../') ||
+      ['.', '..'].includes(relativePath)
+      ? relativePath
+      : `./${relativePath}`;
   })();
 
   const typescriptPathImport = (() => {
