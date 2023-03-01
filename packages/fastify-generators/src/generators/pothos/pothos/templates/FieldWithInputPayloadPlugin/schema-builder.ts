@@ -7,7 +7,7 @@ import {
   SchemaTypes,
   FieldRef,
 } from '@pothos/core';
-import { capitalizeString } from '@src/utils/string';
+import { capitalizeString } from '%ts-utils/string';
 
 const rootBuilderProto: PothosSchemaTypes.RootFieldBuilder<
   SchemaTypes,

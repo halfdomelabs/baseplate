@@ -4,6 +4,7 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   prettierProvider,
+  tsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -134,6 +135,7 @@ const PothosGenerator = createGeneratorWithTasks({
         prettier: prettierProvider,
         rootModuleImport: rootModuleImportProvider,
         yogaPluginSetup: yogaPluginSetupProvider,
+        tsUtils: tsUtilsProvider,
       },
       taskDependencies: { setupTask, schemaTask },
       exports: {
@@ -147,6 +149,7 @@ const PothosGenerator = createGeneratorWithTasks({
           prettier,
           rootModuleImport,
           yogaPluginSetup,
+          tsUtils,
         },
         {
           setupTask: { config: configMap, pothosTypes },
@@ -284,6 +287,7 @@ const PothosGenerator = createGeneratorWithTasks({
                   'schema-builder.ts',
                   'types.ts',
                 ],
+                importMappers: [tsUtils],
               })
             );
 
