@@ -57,23 +57,23 @@ const EslintGenerator = createGeneratorWithChildren({
 
         const airbnbPackage: Record<string, string> = config.react
           ? {
-              'eslint-config-airbnb': '^19.0.4',
-              'eslint-plugin-jsx-a11y': '^6.5.1',
-              'eslint-plugin-react': '^7.28.0',
-              'eslint-plugin-react-hooks': '^4.3.0',
+              'eslint-config-airbnb': '19.0.4',
+              'eslint-plugin-jsx-a11y': '6.7.1',
+              'eslint-plugin-react': '7.32.2',
+              'eslint-plugin-react-hooks': '4.6.0',
             }
-          : { 'eslint-config-airbnb-base': '^15.0.0' };
+          : { 'eslint-config-airbnb-base': '15.0.0' };
 
         node.addDevPackages({
-          '@typescript-eslint/eslint-plugin': '^5.9.0',
-          '@typescript-eslint/parser': '^5.9.0',
-          eslint: '^8.6.0',
+          '@typescript-eslint/eslint-plugin': '5.54.0',
+          '@typescript-eslint/parser': '5.54.0',
+          eslint: '8.35.0',
           ...airbnbPackage,
-          'eslint-config-airbnb-typescript': '^16.1.0',
-          'eslint-config-prettier': '^8.3.0',
-          'eslint-import-resolver-typescript': '^2.5.0',
-          'eslint-plugin-import': '^2.25.4',
-          'eslint-plugin-jest': '^25.3.4',
+          'eslint-config-airbnb-typescript': '17.0.0',
+          'eslint-config-prettier': '8.6.0',
+          'eslint-import-resolver-typescript': '3.5.3',
+          'eslint-plugin-import': '2.27.5',
+          'eslint-plugin-jest': '27.2.1',
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
 
