@@ -88,7 +88,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             return {
               yogaPluginSetup: {
                 getConfig: () => configMap,
-                isSubscriptionEnabled: () => enableSubscriptions,
+                isSubscriptionEnabled: () => !!enableSubscriptions,
               },
             };
           },
