@@ -29,7 +29,7 @@ const ReactAuth0Generator = createGeneratorWithChildren({
   },
   createGenerator({ callbackPath }, { node, reactConfig, reactApp }) {
     node.addPackages({
-      '@auth0/auth0-react': '~1.10.1',
+      '@auth0/auth0-react': '2.0.1',
     });
 
     reactConfig.getConfigMap().set('REACT_APP_AUTH0_DOMAIN', {
@@ -60,8 +60,10 @@ const ReactAuth0Generator = createGeneratorWithChildren({
         (contents) => `<Auth0Provider
         domain={config.REACT_APP_AUTH0_DOMAIN}
         clientId={config.REACT_APP_AUTH0_CLIENT_ID}
-        audience={config.REACT_APP_AUTH0_AUDIENCE}
-        redirectUri={${redirectUri}}
+        authorizationParams={{
+          redirect_uri: ${redirectUri},
+          audience: config.REACT_APP_AUTH0_AUDIENCE,
+        }}
         skipRedirectCallback
       >${contents}</Auth0Provider>`,
         [

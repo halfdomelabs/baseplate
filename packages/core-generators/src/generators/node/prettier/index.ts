@@ -50,7 +50,7 @@ const PARSEABLE_EXTENSIONS = [
   '.yaml',
 ];
 
-const PRETTIER_VERSION = '^2.5.1';
+const PRETTIER_VERSION = '2.8.4';
 
 interface ResolveError extends Error {
   code?: string;

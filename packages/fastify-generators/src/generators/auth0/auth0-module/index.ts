@@ -65,10 +65,10 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
 
     if (includeManagement) {
       node.addPackages({
-        auth0: '2.42.0',
+        auth0: '3.2.0',
       });
       node.addDevPackages({
-        '@types/auth0': '2.35.2',
+        '@types/auth0': '2.35.9',
       });
     }
 

@@ -55,11 +55,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
     node.addPackages({
       '@bull-board/api': '4.3.2',
       '@bull-board/fastify': '4.3.2',
+      ms: '2.1.3',
     });
 
     // required for bull-board to compile
     node.addDevPackages({
       '@types/redis-info': '3.0.0',
+      '@types/ms': '0.7.31',
     });
 
     return {
