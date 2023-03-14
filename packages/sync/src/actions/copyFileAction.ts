@@ -20,7 +20,7 @@ function applyReplacements(
   );
 }
 
-export const copyFileAction = createBuilderActionCreator(
+export const copyFileAction = createBuilderActionCreator<[Options]>(
   (options: Options) => async (builder) => {
     const { destination, source, shouldFormat, neverOverwrite, replacements } =
       options;

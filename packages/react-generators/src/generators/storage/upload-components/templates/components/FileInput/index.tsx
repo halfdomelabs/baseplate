@@ -8,6 +8,7 @@ import {
   Control,
   FieldError,
   FieldPath,
+  FieldValues,
   get,
   useController,
 } from 'react-hook-form';
@@ -266,16 +267,15 @@ FileInput.Labelled = function FileInputLabelled({
   );
 };
 
-interface FileInputControllerProps<T> extends FileInputLabelledProps {
+interface FileInputControllerProps<T extends FieldValues>
+  extends FileInputLabelledProps {
   control: Control<T>;
   name: FieldPath<T>;
 }
 
-FileInput.LabelledController = function FileInputController<T>({
-  control,
-  name,
-  ...rest
-}: FileInputControllerProps<T>): JSX.Element {
+FileInput.LabelledController = function FileInputController<
+  T extends FieldValues
+>({ control, name, ...rest }: FileInputControllerProps<T>): JSX.Element {
   const {
     field: { value, onChange },
     formState: { errors },

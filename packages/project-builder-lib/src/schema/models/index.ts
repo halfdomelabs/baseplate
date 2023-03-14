@@ -8,6 +8,8 @@ import {
   transformerSchema,
 } from './transformers';
 
+export * from './enums';
+
 export const modelScalarFieldSchema = z.object({
   uid: z.string().default(randomUid),
   name: z.string().min(1),
@@ -180,7 +182,7 @@ function buildModelServiceReferences(
   config: ProjectConfig,
   modelName: string,
   service: ModelServiceConfig,
-  builder: ReferencesBuilder<ModelServiceConfig | undefined>
+  builder: ReferencesBuilder<ModelServiceConfig>
 ): void {
   builder
     .addReferences('create.fields.*', {
@@ -215,7 +217,7 @@ function buildModelServiceReferences(
 function buildModelSchemaReferences(
   modelName: string,
   schema: ModelSchemaConfig,
-  builder: ReferencesBuilder<ModelSchemaConfig | undefined>
+  builder: ReferencesBuilder<ModelSchemaConfig>
 ): void {
   builder
     .addReferences('exposedFields.*', {

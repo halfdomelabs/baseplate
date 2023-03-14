@@ -1,6 +1,11 @@
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
-import { Control, FieldPath, useController } from 'react-hook-form';
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  useController,
+} from 'react-hook-form';
 import Button from '../Button';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -86,14 +91,14 @@ SelectArrayInput.Labelled = function SelectArrayInputLabelled({
   );
 };
 
-interface SelectArrayInputLabelledControllerProps<T>
+interface SelectArrayInputLabelledControllerProps<T extends FieldValues>
   extends Omit<SelectArrayInputLabelledProps, 'onChange' | 'value'> {
   control: Control<T>;
   name: FieldPath<T>;
 }
 
 SelectArrayInput.LabelledController =
-  function SelectArrayInputLabelledController<T>({
+  function SelectArrayInputLabelledController<T extends FieldValues>({
     name,
     control,
     ...rest

@@ -32,7 +32,7 @@ export type StorageConfig = z.infer<typeof storageSchema>;
 
 export function buildStorageReferences(
   config: StorageConfig,
-  builder: ReferencesBuilder<StorageConfig | undefined>
+  builder: ReferencesBuilder<StorageConfig>
 ): void {
   config.s3Adapters?.forEach((adapter) => {
     builder.addReferenceable({

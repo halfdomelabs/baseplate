@@ -9,7 +9,7 @@ interface Options {
   shouldFormat?: boolean;
 }
 
-export const copyDirectoryAction = createBuilderActionCreator(
+export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
   (options: Options) => async (builder) => {
     const { destination, source, shouldFormat } = options;
 

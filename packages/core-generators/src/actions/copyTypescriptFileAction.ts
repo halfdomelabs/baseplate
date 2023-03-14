@@ -29,38 +29,38 @@ function formatImports(
   return file.renderToText(source, destination);
 }
 
-export const copyTypescriptFileAction = createBuilderActionCreator(
-  (options: CopyTypescriptFileOptions) => async (builder) => {
-    const { destination, source, replacements = {}, neverOverwrite } = options;
+export const copyTypescriptFileAction = createBuilderActionCreator<
+  [CopyTypescriptFileOptions]
+>((options: CopyTypescriptFileOptions) => async (builder) => {
+  const { destination, source, replacements = {}, neverOverwrite } = options;
 
-    const templatePath = path.join(
-      builder.generatorBaseDirectory,
-      'templates',
-      source
-    );
+  const templatePath = path.join(
+    builder.generatorBaseDirectory,
+    'templates',
+    source
+  );
 
-    const fileContents = await fs.readFile(templatePath, 'utf8');
-    // strip any ts-nocheck from header
-    const strippedContents = fileContents.replace(/^\/\/ @ts-nocheck\n/, '');
-    // process any replacement
-    const replacedContents = Object.entries(replacements).reduce(
-      (str, [key, value]) => str.replace(new RegExp(key, 'g'), value),
-      strippedContents
-    );
+  const fileContents = await fs.readFile(templatePath, 'utf8');
+  // strip any ts-nocheck from header
+  const strippedContents = fileContents.replace(/^\/\/ @ts-nocheck\n/, '');
+  // process any replacement
+  const replacedContents = Object.entries(replacements).reduce(
+    (str, [key, value]) => str.replace(new RegExp(key, 'g'), value),
+    strippedContents
+  );
 
-    const destinationPath = destination || source;
+  const destinationPath = destination || source;
 
-    const fullPath = builder.resolvePath(destinationPath);
+  const fullPath = builder.resolvePath(destinationPath);
 
-    // apply any wrappers if needed
-    const needsParsing = options.importMappers || options.pathMappings;
-    const formattedContents = needsParsing
-      ? formatImports(replacedContents, fullPath, options)
-      : replacedContents;
+  // apply any wrappers if needed
+  const needsParsing = options.importMappers || options.pathMappings;
+  const formattedContents = needsParsing
+    ? formatImports(replacedContents, fullPath, options)
+    : replacedContents;
 
-    builder.writeFile(destinationPath, formattedContents, {
-      shouldFormat: true,
-      neverOverwrite,
-    });
-  }
-);
+  builder.writeFile(destinationPath, formattedContents, {
+    shouldFormat: true,
+    neverOverwrite,
+  });
+});

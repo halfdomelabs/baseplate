@@ -6,7 +6,7 @@ interface Options {
   noFormat?: boolean;
 }
 
-export const writeJsonAction = createBuilderActionCreator(
+export const writeJsonAction = createBuilderActionCreator<[Options]>(
   (options: Options) => (builder) => {
     const { destination, contents, noFormat } = options;
 

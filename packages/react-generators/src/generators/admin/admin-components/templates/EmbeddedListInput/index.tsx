@@ -7,6 +7,7 @@ import {
   Control,
   FieldPath,
   FieldPathValue,
+  FieldValues,
   useController,
   DefaultValues,
 } from 'react-hook-form';
@@ -135,7 +136,7 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
 };
 
 interface EmbeddedListInputLabelledControllerProps<
-  FormType,
+  FormType extends FieldValues,
   FormPath extends FieldPath<FormType>
 > extends Omit<
     EmbeddedListInputLabelledProps<
@@ -155,7 +156,7 @@ interface EmbeddedListInputLabelledControllerProps<
 
 EmbeddedListInput.LabelledController =
   function EmbeddedListInputLabelledController<
-    FormType,
+    FormType extends FieldValues,
     FormPath extends FieldPath<FormType>
   >({
     className,
