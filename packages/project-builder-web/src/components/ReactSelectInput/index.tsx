@@ -1,5 +1,10 @@
 import classNames from 'classnames';
-import { Control, FieldPath, useController } from 'react-hook-form';
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  useController,
+} from 'react-hook-form';
 import Select from 'react-select';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -33,7 +38,7 @@ function ReactSelectInput({
   );
 }
 
-interface ReactSelectInputControllerProps<T>
+interface ReactSelectInputControllerProps<T extends FieldValues>
   extends Omit<Props, 'onChange' | 'onBlur' | 'value'> {
   label?: string;
   className?: string;
@@ -41,7 +46,9 @@ interface ReactSelectInputControllerProps<T>
   name: FieldPath<T>;
 }
 
-ReactSelectInput.LabelledController = function ReactSelectInputController<T>({
+ReactSelectInput.LabelledController = function ReactSelectInputController<
+  T extends FieldValues
+>({
   label,
   className,
   name,

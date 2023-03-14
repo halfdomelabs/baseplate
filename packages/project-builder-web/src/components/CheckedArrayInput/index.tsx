@@ -1,5 +1,10 @@
 import classNames from 'classnames';
-import { Control, FieldPath, useController } from 'react-hook-form';
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  useController,
+} from 'react-hook-form';
 import CheckedInput from '../CheckedInput';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -62,14 +67,14 @@ CheckedArrayInput.Labelled = function CheckedArrayInputLabelled({
   );
 };
 
-interface CheckedArrayInputLabelledControllerProps<T>
+interface CheckedArrayInputLabelledControllerProps<T extends FieldValues>
   extends Omit<CheckedArrayInputLabelledProps, 'onChange' | 'value'> {
   control: Control<T>;
   name: FieldPath<T>;
 }
 
 CheckedArrayInput.LabelledController =
-  function CheckedArrayInputLabelledController<T>({
+  function CheckedArrayInputLabelledController<T extends FieldValues>({
     name,
     control,
     ...rest

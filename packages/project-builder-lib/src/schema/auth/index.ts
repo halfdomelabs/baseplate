@@ -49,7 +49,7 @@ export type AuthConfig = z.infer<typeof authSchema>;
 
 export function buildAuthReferences(
   config: AuthConfig,
-  builder: ReferencesBuilder<AuthConfig | undefined>
+  builder: ReferencesBuilder<AuthConfig>
 ): void {
   config.roles.forEach((role) => {
     builder.addReferenceable({

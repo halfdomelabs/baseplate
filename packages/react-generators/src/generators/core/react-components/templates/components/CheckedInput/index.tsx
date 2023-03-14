@@ -5,6 +5,7 @@ import {
   Control,
   FieldError,
   FieldPath,
+  FieldValues,
   get,
   UseFormRegisterReturn,
   useFormState,
@@ -99,14 +100,16 @@ CheckedInput.Labelled = function SelectInputLabelled({
   );
 };
 
-export interface CheckedInputLabelledControllerProps<T>
+export interface CheckedInputLabelledControllerProps<T extends FieldValues>
   extends Omit<CheckedInputLabelledProps, 'register'> {
   control: Control<T>;
   name: FieldPath<T>;
   noError?: boolean;
 }
 
-CheckedInput.LabelledController = function CheckedInputLabelledController<T>({
+CheckedInput.LabelledController = function CheckedInputLabelledController<
+  T extends FieldValues
+>({
   control,
   name,
   noError,

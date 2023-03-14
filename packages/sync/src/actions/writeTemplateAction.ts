@@ -10,7 +10,7 @@ interface Options {
   noFormat?: boolean;
 }
 
-export const writeTemplateAction = createBuilderActionCreator(
+export const writeTemplateAction = createBuilderActionCreator<[Options]>(
   (options: Options) => async (builder) => {
     const { destination, template, data, noFormat } = options;
 

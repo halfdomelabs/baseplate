@@ -3,6 +3,7 @@ import {
   Control,
   FieldError,
   FieldPath,
+  FieldValues,
   get,
   UseFormRegisterReturn,
   useFormState,
@@ -80,17 +81,15 @@ SelectInput.Labelled = function SelectInputLabelled({
   );
 };
 
-interface SelectInputLabelledController<T>
+interface SelectInputLabelledController<T extends FieldValues>
   extends Omit<SelectInputLabelledProps, 'register'> {
   control: Control<T>;
   name: FieldPath<T>;
 }
 
-SelectInput.LabelledController = function SelectInputController<T>({
-  name,
-  control,
-  ...rest
-}: SelectInputLabelledController<T>): JSX.Element {
+SelectInput.LabelledController = function SelectInputController<
+  T extends FieldValues
+>({ name, control, ...rest }: SelectInputLabelledController<T>): JSX.Element {
   const { errors } = useFormState({ name, control });
   const error = get(errors, name) as FieldError | undefined;
 

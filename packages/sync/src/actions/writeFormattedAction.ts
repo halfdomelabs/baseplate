@@ -6,7 +6,7 @@ interface Options {
   neverOverwrite?: boolean;
 }
 
-export const writeFormattedAction = createBuilderActionCreator(
+export const writeFormattedAction = createBuilderActionCreator<[Options]>(
   (options: Options) => (builder) => {
     const { destination, contents, neverOverwrite } = options;
 

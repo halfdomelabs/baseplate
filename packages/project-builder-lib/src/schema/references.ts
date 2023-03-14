@@ -5,6 +5,7 @@ import {
   GlobFieldPath,
   GlobFieldPathValue,
 } from '@src/types/path';
+import { FieldValues } from '@src/types/path/eager';
 import { notEmpty } from '@src/utils/array';
 
 export const REFERENCEABLE_CATEGORIES = [
@@ -99,7 +100,7 @@ export function walkGlobPathRecursive(
   }
 }
 
-export class ReferencesBuilder<T> {
+export class ReferencesBuilder<T extends FieldValues> {
   private baseObject: T;
 
   private references: ObjectReferenceEntry[] = [];
@@ -124,9 +125,16 @@ export class ReferencesBuilder<T> {
 
   public withPrefix<Prefix extends FieldPath<T>>(
     prefix: Prefix
-  ): ReferencesBuilder<FieldPathValue<T, Prefix>> {
+  ): ReferencesBuilder<Exclude<FieldPathValue<T, Prefix>, undefined>> {
+    const newObject = R.path(pathToParts(prefix), this.baseObject);
+    if (newObject === undefined) {
+      throw new Error(`Could not find prefix ${prefix} in object`);
+    }
     return new ReferencesBuilder(
-      R.path(pathToParts(prefix), this.baseObject) as FieldPathValue<T, Prefix>,
+      R.path(pathToParts(prefix), this.baseObject) as Exclude<
+        FieldPathValue<T, Prefix>,
+        undefined
+      >,
       prefix,
       this
     );
