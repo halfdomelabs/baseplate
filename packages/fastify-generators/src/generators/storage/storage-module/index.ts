@@ -393,6 +393,11 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             //     destination: 'src/@types/dom.ts',
             //   })
             // );
+
+            adapters.url = TypescriptCodeUtils.createExpression(
+              'createUrlAdapter()',
+              `import { createS3Adapter } from '../adapters';`
+            );
           },
         };
       },

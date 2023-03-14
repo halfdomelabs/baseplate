@@ -194,6 +194,7 @@ const PothosGenerator = createGeneratorWithTasks({
                       )
                     )
                   : undefined,
+                DefaultEdgesNullability: 'false',
                 ...Object.fromEntries(
                   config.schemaTypeOptions.map((option) => [
                     option.key,
@@ -225,6 +226,7 @@ const PothosGenerator = createGeneratorWithTasks({
               relayOptions: TypescriptCodeUtils.mergeExpressionsAsObject({
                 clientMutationId: "'omit'",
                 cursorType: "'String'",
+                edgesFieldOptions: '{ nullable: false }',
               }),
               ...Object.fromEntries(
                 config.schemaBuilderOptions.map((option) => [
