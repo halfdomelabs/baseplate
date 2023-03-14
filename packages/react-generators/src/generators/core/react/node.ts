@@ -15,8 +15,8 @@ export function setupReactNode(node: NodeProvider): void {
     'web-vitals': '^2.1.0',
   });
   node.addScripts({
-    start: 'react-scripts start',
-    build: 'react-scripts build',
+    start: 'DISABLE_ESLINT_PLUGIN=true react-scripts start',
+    build: 'DISABLE_ESLINT_PLUGIN=true react-scripts build',
     test: 'react-scripts test',
     eject: 'react-scripts eject',
   });
