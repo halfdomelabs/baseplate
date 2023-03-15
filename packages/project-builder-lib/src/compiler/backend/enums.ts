@@ -1,5 +1,5 @@
-import { ParsedProjectConfig } from '@src/parser';
-import { EnumConfig } from '@src/schema/models/enums';
+import { ParsedProjectConfig } from '@src/parser/index.js';
+import { EnumConfig } from '@src/schema/models/enums.js';
 
 function buildEnum(enumConfig: EnumConfig): unknown {
   return {

@@ -1,5 +1,5 @@
-import { notEmpty } from '@src/utils/array';
-import { ParserPlugin, PluginMergeModelFieldInput } from '../types';
+import { notEmpty } from '@src/utils/array.js';
+import { ParserPlugin, PluginMergeModelFieldInput } from '../types.js';
 
 export const StoragePlugin: ParserPlugin = {
   name: 'StoragePlugin',

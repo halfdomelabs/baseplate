@@ -78,7 +78,7 @@ export abstract class TypescriptCodeContents extends TypescriptCodeEntry {
 }
 
 export class TypescriptStringReplacement extends TypescriptCodeContents {
-  type: 'string-replacement' = 'string-replacement';
+  type = 'string-replacement' as const;
 
   constructor(
     content: string,
@@ -90,7 +90,7 @@ export class TypescriptStringReplacement extends TypescriptCodeContents {
 }
 
 export class TypescriptCodeBlock extends TypescriptCodeContents {
-  type: 'code-block' = 'code-block';
+  type = 'code-block' as const;
 
   constructor(
     content: string,
@@ -139,7 +139,7 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
 }
 
 export class TypescriptCodeExpression extends TypescriptCodeContents {
-  type: 'code-expression' = 'code-expression';
+  type = 'code-expression' as const;
 
   constructor(
     content: string,
@@ -188,7 +188,7 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
 export type TypescriptCodeWrapperFunction = (contents: string) => string;
 
 export class TypescriptCodeWrapper extends TypescriptCodeEntry {
-  type: 'code-wrapper' = 'code-wrapper';
+  type = 'code-wrapper' as const;
 
   wrap: TypescriptCodeWrapperFunction;
 

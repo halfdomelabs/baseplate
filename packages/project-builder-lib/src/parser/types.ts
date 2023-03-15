@@ -2,8 +2,8 @@ import {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-} from '@src/schema/models';
-import { ProjectConfig } from '../schema';
+} from '@src/schema/models/index.js';
+import { ProjectConfig } from '../schema/index.js';
 
 export interface ParsedModelField extends ModelScalarFieldConfig {
   isLocked?: boolean;

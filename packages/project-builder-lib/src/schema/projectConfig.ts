@@ -1,17 +1,21 @@
 import { z } from 'zod';
-import { randomUid } from '@src/utils/randomUid';
-import { buildWebAppReferences, WebAppConfig, webAppSchema } from './apps';
+import { randomUid } from '@src/utils/randomUid.js';
 import {
   AdminAppConfig,
   adminAppSchema,
   buildAdminAppReferences,
-} from './apps/admin';
-import { backendAppSchema } from './apps/backend';
-import { authSchema, buildAuthReferences } from './auth';
-import { buildModelReferences, modelSchema } from './models';
-import { buildEnumReferences, enumSchema } from './models/enums';
-import { GetReferencesFunction, ReferencesBuilder } from './references';
-import { buildStorageReferences, storageSchema } from './storage';
+} from './apps/admin/index.js';
+import { backendAppSchema } from './apps/backend/index.js';
+import {
+  buildWebAppReferences,
+  WebAppConfig,
+  webAppSchema,
+} from './apps/index.js';
+import { authSchema, buildAuthReferences } from './auth/index.js';
+import { buildEnumReferences, enumSchema } from './models/enums.js';
+import { buildModelReferences, modelSchema } from './models/index.js';
+import { GetReferencesFunction, ReferencesBuilder } from './references.js';
+import { buildStorageReferences, storageSchema } from './storage/index.js';
 
 export const appSchema = z.discriminatedUnion('type', [
   backendAppSchema,

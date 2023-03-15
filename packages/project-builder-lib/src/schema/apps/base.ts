@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { randomUid } from '../../utils/randomUid';
+import { randomUid } from '../../utils/randomUid.js';
 
 export const baseAppValidators = {
   uid: z.string().default(randomUid),

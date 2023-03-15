@@ -1,7 +1,7 @@
-import { BackendAppConfig } from '@src/schema';
-import { AppEntryBuilder } from '../appEntryBuilder';
-import { buildFeature } from './feature';
-import { getPostgresSettings, getRedisSettings } from './utils';
+import { BackendAppConfig } from '@src/schema/index.js';
+import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { buildFeature } from './feature.js';
+import { getPostgresSettings, getRedisSettings } from './utils.js';
 
 export function buildFastify(
   builder: AppEntryBuilder,

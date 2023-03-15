@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client", "vite-plugin-svgr/client"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -19,5 +20,6 @@
     "typeRoots": ["./node_modules/@types", "./src/types/"]
   },
   "include": ["src"],
-  "exclude": ["**/node_modules", "**/dist", "**/lib"]
+  "exclude": ["**/node_modules", "**/dist", "**/lib"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

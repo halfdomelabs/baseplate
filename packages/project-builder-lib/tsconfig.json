@@ -1,7 +1,7 @@
 {
-  "extends": "@baseplate/tools/tsconfig.base.json",
+  "extends": "@baseplate/tools/tsconfig.esm.json",
   "compilerOptions": {
-    "outDir": "lib",
+    "outDir": "lib/esm",
     "declaration": true,
     "baseUrl": ".",
     "paths": {

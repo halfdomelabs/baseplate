@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { randomUid } from '@src/utils/randomUid';
+import { randomUid } from '@src/utils/randomUid.js';
 
 export const baseAdminSectionValidators = {
   uid: z.string().default(randomUid),

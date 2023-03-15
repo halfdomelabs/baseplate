@@ -1,2 +1,2 @@
-export * from './base';
-export * from './crud';
+export * from './base.js';
+export * from './crud.js';
