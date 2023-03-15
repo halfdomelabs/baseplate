@@ -1,12 +1,12 @@
-import R from 'ramda';
+import * as R from 'ramda';
+import { FieldValues } from '@src/types/path/eager.js';
 import {
   FieldPath,
   FieldPathValue,
   GlobFieldPath,
   GlobFieldPathValue,
-} from '@src/types/path';
-import { FieldValues } from '@src/types/path/eager';
-import { notEmpty } from '@src/utils/array';
+} from '@src/types/path/index.js';
+import { notEmpty } from '@src/utils/array.js';
 
 export const REFERENCEABLE_CATEGORIES = [
   'feature',
@@ -126,18 +126,14 @@ export class ReferencesBuilder<T extends FieldValues> {
   public withPrefix<Prefix extends FieldPath<T>>(
     prefix: Prefix
   ): ReferencesBuilder<Exclude<FieldPathValue<T, Prefix>, undefined>> {
-    const newObject = R.path(pathToParts(prefix), this.baseObject);
+    const newObject: FieldPathValue<T, Prefix> | undefined = R.path(
+      pathToParts(prefix),
+      this.baseObject
+    );
     if (newObject === undefined) {
       throw new Error(`Could not find prefix ${prefix} in object`);
     }
-    return new ReferencesBuilder(
-      R.path(pathToParts(prefix), this.baseObject) as Exclude<
-        FieldPathValue<T, Prefix>,
-        undefined
-      >,
-      prefix,
-      this
-    );
+    return new ReferencesBuilder(newObject, prefix, this);
   }
 
   public addReference<Path extends FieldPath<T>>(

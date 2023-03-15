@@ -1,10 +1,10 @@
-import { ParsedProjectConfig } from '@src/parser';
+import { ParsedProjectConfig } from '@src/parser/index.js';
 import {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ModelUniqueConstraintConfig,
-} from '../../schema/models';
+} from '../../schema/models/index.js';
 
 function buildScalarField(field: ModelScalarFieldConfig): unknown {
   const { options = {} } = field;

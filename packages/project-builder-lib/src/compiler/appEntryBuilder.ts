@@ -1,7 +1,7 @@
-import { ParsedProjectConfig } from '@src/parser';
-import { BaseAppConfig, ProjectConfig } from '../schema';
-import { AppEntry, FileEntry } from '../types/files';
-import { stripObject } from '../utils/strip';
+import { ParsedProjectConfig } from '@src/parser/index.js';
+import { BaseAppConfig, ProjectConfig } from '../schema/index.js';
+import { AppEntry, FileEntry } from '../types/files.js';
+import { stripObject } from '../utils/strip.js';
 
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public parsedProject: ParsedProjectConfig;

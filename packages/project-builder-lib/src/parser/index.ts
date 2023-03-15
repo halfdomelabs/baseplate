@@ -1,22 +1,22 @@
-import R from 'ramda';
+import * as R from 'ramda';
 import {
   AppConfig,
   ProjectConfig,
   projectConfigSchema,
   getProjectConfigReferences,
-} from '@src/schema';
-import { EnumConfig } from '@src/schema/models/enums';
+} from '@src/schema/index.js';
+import { EnumConfig } from '@src/schema/models/enums.js';
 import {
   REFERENCEABLE_CATEGORIES,
   ObjectReferenceEntry,
   GetReferencesResult,
-} from '@src/schema/references';
-import { deepMergeRightUniq, safeMerge } from '@src/utils/merge';
-import { randomUid } from '../utils/randomUid';
-import { AuthPlugin } from './plugins/auth';
-import { Auth0Plugin } from './plugins/auth0';
-import { StoragePlugin } from './plugins/storage';
-import { ParsedModel, ParsedModelField, ParsedRelationField } from './types';
+} from '@src/schema/references.js';
+import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
+import { randomUid } from '../utils/randomUid.js';
+import { AuthPlugin } from './plugins/auth.js';
+import { Auth0Plugin } from './plugins/auth0.js';
+import { StoragePlugin } from './plugins/storage.js';
+import { ParsedModel, ParsedModelField, ParsedRelationField } from './types.js';
 
 const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
 

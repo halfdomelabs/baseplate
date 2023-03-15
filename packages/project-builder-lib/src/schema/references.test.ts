@@ -2,7 +2,7 @@ import {
   fixReferenceRenames,
   ReferencesBuilder,
   GetReferencesResult,
-} from './references';
+} from './references.js';
 
 describe('fixReferenceRenames', () => {
   it('renames references', () => {

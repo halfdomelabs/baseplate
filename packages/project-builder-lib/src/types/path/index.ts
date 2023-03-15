@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-export { PathString } from './common';
+export { PathString } from './common.js';
 export {
   ArrayPath,
   FieldArrayPath,
@@ -39,4 +39,4 @@ export {
   GlobPath,
   GlobFieldPathValue,
   GlobPathValue,
-} from './eager';
+} from './eager.js';

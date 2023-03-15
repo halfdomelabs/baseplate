@@ -1,5 +1,4 @@
-import { randomUid } from '@baseplate/project-builder-lib';
-import { EnumConfig } from '@baseplate/project-builder-lib/lib/schema/models/enums';
+import { randomUid, EnumConfig } from '@baseplate/project-builder-lib';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button } from 'src/components';

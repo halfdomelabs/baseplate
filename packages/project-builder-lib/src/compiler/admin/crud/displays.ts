@@ -1,10 +1,10 @@
-import { AppEntryBuilder } from '@src/compiler/appEntryBuilder';
+import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
 import {
   AdminAppConfig,
   AdminCrudDisplayConfig,
   AdminCrudForeignDisplayConfig,
   AdminCrudTextDisplayConfig,
-} from '@src/schema';
+} from '@src/schema/index.js';
 
 function compileAdminCrudForeignDisplay(
   field: AdminCrudForeignDisplayConfig,

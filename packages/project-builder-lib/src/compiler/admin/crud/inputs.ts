@@ -1,4 +1,4 @@
-import { AppEntryBuilder } from '@src/compiler/appEntryBuilder';
+import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
 import {
   AdminAppConfig,
   AdminCrudEmbeddedInputConfig,
@@ -10,7 +10,7 @@ import {
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
   ModelScalarFieldConfig,
-} from '@src/schema';
+} from '@src/schema/index.js';
 
 function compileAdminEnumInput(
   field: AdminCrudEnumInputConfig,

@@ -1,10 +1,10 @@
-import { ParsedProjectConfig } from '@src/parser';
-import { ParsedModel } from '@src/parser/types';
+import { ParsedProjectConfig } from '@src/parser/index.js';
+import { ParsedModel } from '@src/parser/types.js';
 import {
   EmbeddedRelationTransformerConfig,
   FileTransformerConfig,
   TransformerConfig,
-} from '@src/schema/models/transformers';
+} from '@src/schema/models/transformers.js';
 
 function buildEmbeddedRelationTransformer(
   transformer: EmbeddedRelationTransformerConfig,

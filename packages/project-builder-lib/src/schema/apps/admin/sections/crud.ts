@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { ReferencesBuilder } from '@src/schema/references';
-import { randomUid } from '@src/utils/randomUid';
-import { baseAdminSectionValidators } from './base';
+import { ReferencesBuilder } from '@src/schema/references.js';
+import { randomUid } from '@src/utils/randomUid.js';
+import { baseAdminSectionValidators } from './base.js';
 
 // Table Columns
 export const adminCrudForeignDisplaySchema = z.object({

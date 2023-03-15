@@ -1,12 +1,12 @@
 import { capitalize } from 'inflection';
 import { relative } from 'path-browserify';
-import { BackendAppConfig, ProjectConfig } from '@src/schema';
-import { AdminAppConfig } from '@src/schema/apps/admin';
-import { AppEntry } from '@src/types/files';
-import { dasherizeCamel, titleizeCamel } from '@src/utils/case';
-import { AppEntryBuilder } from '../appEntryBuilder';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth';
-import { compileAdminFeatures } from './sections';
+import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
+import { BackendAppConfig, ProjectConfig } from '@src/schema/index.js';
+import { AppEntry } from '@src/types/files.js';
+import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
+import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
+import { compileAdminFeatures } from './sections.js';
 
 export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
   return (

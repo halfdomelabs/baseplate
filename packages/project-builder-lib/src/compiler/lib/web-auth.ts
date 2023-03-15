@@ -1,5 +1,5 @@
-import { AppConfig } from '@src/schema';
-import { AppEntryBuilder } from '../appEntryBuilder';
+import { AppConfig } from '@src/schema/index.js';
+import { AppEntryBuilder } from '../appEntryBuilder.js';
 
 export function compileAuthFeatures(
   builder: AppEntryBuilder<AppConfig>

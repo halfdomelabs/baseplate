@@ -1,14 +1,14 @@
 import { z } from 'zod';
-import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes';
-import { randomUid } from '@src/utils/randomUid';
-import type { ProjectConfig } from '../projectConfig';
-import { ReferencesBuilder } from '../references';
+import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
+import { randomUid } from '@src/utils/randomUid.js';
+import type { ProjectConfig } from '../projectConfig.js';
+import { ReferencesBuilder } from '../references.js';
 import {
   buildServiceTransformerReferences,
   transformerSchema,
-} from './transformers';
+} from './transformers.js';
 
-export * from './enums';
+export * from './enums.js';
 
 export const modelScalarFieldSchema = z.object({
   uid: z.string().default(randomUid),

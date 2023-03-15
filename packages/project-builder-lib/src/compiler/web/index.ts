@@ -1,8 +1,8 @@
 import { relative } from 'path-browserify';
-import { ProjectConfig, WebAppConfig } from '@src/schema';
-import { AppEntry } from '@src/types/files';
-import { AppEntryBuilder } from '../appEntryBuilder';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth';
+import { ProjectConfig, WebAppConfig } from '@src/schema/index.js';
+import { AppEntry } from '@src/types/files.js';
+import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;

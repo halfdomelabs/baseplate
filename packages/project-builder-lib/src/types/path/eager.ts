@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-import { ArrayKey, IsTuple, TupleKeys } from './common';
+import { ArrayKey, IsTuple, TupleKeys } from './common.js';
 
 export type Primitive =
   | null

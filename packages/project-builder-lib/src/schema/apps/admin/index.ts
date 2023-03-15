@@ -1,2 +1,2 @@
-export * from './app';
-export * from './sections';
+export * from './app.js';
+export * from './sections/index.js';

@@ -2,7 +2,7 @@ import {
   ParserPlugin,
   PluginMergeModelFieldInput,
   PluginMergeModelRelationInput,
-} from '../types';
+} from '../types.js';
 
 export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',

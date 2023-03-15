@@ -1,4 +1,4 @@
-import { ProjectConfig } from '@src/schema';
+import { ProjectConfig } from '@src/schema/index.js';
 
 export function getPostgresSettings(projectConfig: ProjectConfig): {
   config: {
