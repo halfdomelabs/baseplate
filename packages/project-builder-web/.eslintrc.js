@@ -14,7 +14,7 @@ module.exports = {
     'prettier',
   ],
   parserOptions: {
-    project: ['./tsconfig.json'],
+    project: ['./tsconfig.json', './tsconfig.node.json'],
   },
   rules: {
     '@typescript-eslint/explicit-function-return-type': [
@@ -54,6 +54,7 @@ module.exports = {
           '**/*.test.ts',
           'src/tests/**/*.ts',
           '**/setupTests.ts',
+          'vite.config.ts',
         ],
       },
     ],

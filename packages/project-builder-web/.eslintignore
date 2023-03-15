@@ -3,6 +3,6 @@
 /lib
 /node_modules
 .eslintrc.js
-postcs.config.js
+postcss.config.js
 tailwind.config.js
 src/setupProxy.js

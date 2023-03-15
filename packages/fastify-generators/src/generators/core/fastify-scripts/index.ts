@@ -46,7 +46,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
       build: async (builder) => {
         await builder.apply(
           copyFileAction({
-            source: 'tsconfig.json',
+            source: 'tsconfig.tpl.json',
             destination: 'scripts/tsconfig.json',
           })
         );
