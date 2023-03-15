@@ -48,6 +48,7 @@ export function generateConfig({
       ],
       'import/prefer-default-export': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
+      'no-underscore-dangle': ['error', { allow: ['__typename'] }],
       'import/order': [
         'error',
         {
@@ -68,6 +69,7 @@ export function generateConfig({
           devDependencies: [
             '**/*.test.ts',
             'src/tests/**/*.ts',
+            'scripts/**/*.ts',
             ...(react ? ['**/setupTests.ts'] : []),
           ],
         },
@@ -81,6 +83,14 @@ export function generateConfig({
       ...reactRules,
       ...extraRules,
     },
+    overrides: [
+      {
+        files: ['scripts/*'],
+        rules: {
+          'no-console': 'off',
+        },
+      },
+    ],
     env: {
       node: true,
       browser: false,
