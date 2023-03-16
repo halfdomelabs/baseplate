@@ -73,7 +73,7 @@ const EslintGenerator = createGeneratorWithChildren({
           ...airbnbPackage,
           'eslint-config-airbnb-typescript': '17.0.0',
           'eslint-config-prettier': '8.6.0',
-          'eslint-import-resolver-typescript': '3.5.3',
+          'eslint-import-resolver-typescript': '3.4.2',
           'eslint-plugin-import': '2.27.5',
           ...(config.disableJest
             ? {}

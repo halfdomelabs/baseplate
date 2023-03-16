@@ -23,7 +23,7 @@ const typescriptRules = {
 
 const typescriptSettings = {
   'import/resolver': {
-    typescript: true,
+    typescript: {},
   },
 };
 
