@@ -7,12 +7,12 @@ import {
   createProviderType,
   createTaskConfigBuilder,
 } from '@baseplate/sync';
+import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { reactConfigProvider } from '@src/generators/core/react-config';
 import { reactErrorProvider } from '@src/generators/core/react-error';
 import { reactRoutesProvider } from '@src/providers/routes';
-import { z } from 'zod';
 
 const descriptorSchema = z.object({
   bullBoardUrl: z.string().min(1),
