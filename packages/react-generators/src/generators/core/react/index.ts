@@ -3,6 +3,7 @@ import {
   eslintProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
+  quot,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -221,6 +222,9 @@ const ReactGenerator = createGeneratorWithChildren({
             server: TypescriptCodeUtils.mergeExpressionsAsObject(
               viteServerOptions.value()
             ),
+            build: TypescriptCodeUtils.mergeExpressionsAsObject({
+              outDir: quot('build'),
+            }),
           }),
         });
 

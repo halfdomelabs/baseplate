@@ -23,7 +23,7 @@ const typescriptRules = {
 
 const typescriptSettings = {
   'import/resolver': {
-    typescript: {}, // this loads <rootdir>/tsconfig.json to eslint
+    typescript: true,
   },
 };
 
