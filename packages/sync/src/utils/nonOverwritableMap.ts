@@ -5,11 +5,6 @@ type ArrayKeys<T> = {
   [K in keyof T]: T[K] extends Array<unknown> ? K : never;
 }[keyof T];
 
-interface Foo {
-  test: string;
-  arr: string[];
-}
-
 export interface NonOverwriteableMap<T extends object> {
   /**
    * Set a value in the map

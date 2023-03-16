@@ -43,13 +43,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
       '@datadog/browser-logs': '4.19.1',
     });
 
-    reactConfig.getConfigMap().set('REACT_APP_DATADOG_CLIENT_TOKEN', {
+    reactConfig.getConfigMap().set('VITE_DATADOG_CLIENT_TOKEN', {
       comment: 'Client token for Datadog logging (optional)',
       validator: TypescriptCodeUtils.createExpression('z.string().optional()'),
       devValue: '',
     });
 
-    reactConfig.getConfigMap().set('REACT_APP_DATADOG_SITE', {
+    reactConfig.getConfigMap().set('VITE_DATADOG_SITE', {
       comment: 'Site for Datadog logging (optional, defaults to datadoghq.com)',
       validator: TypescriptCodeUtils.createExpression('z.string().optional()'),
       devValue: '',

@@ -3,6 +3,8 @@ import {
   eslintProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
+  TypescriptCodeExpression,
+  TypescriptCodeUtils,
   typescriptProvider,
   TypescriptSourceFile,
 } from '@baseplate/core-generators';
@@ -11,10 +13,11 @@ import {
   copyFileAction,
   writeTemplateAction,
   createProviderType,
+  createNonOverwriteableMap,
 } from '@baseplate/sync';
 import { z } from 'zod';
 
-import { setupReactNode } from './node';
+import { setupViteNode } from './node';
 
 const descriptorSchema = z.object({
   title: z.string().default('React App'),
@@ -30,6 +33,8 @@ const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
 export type ReactProvider = {
   getSrcFolder(): string;
   getIndexFile(): TypescriptSourceFile<typeof INDEX_FILE_CONFIG>;
+  addVitePlugin(plugin: TypescriptCodeExpression): void;
+  addServerOption(key: string, value: TypescriptCodeExpression): void;
 };
 
 export const reactProvider = createProviderType<ReactProvider>('react');
@@ -107,7 +112,7 @@ const ReactGenerator = createGeneratorWithChildren({
   }),
   createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
     const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
-    setupReactNode(node);
+    setupViteNode(node);
 
     nodeGitIgnore.addExclusions([
       '# production',
@@ -121,7 +126,35 @@ const ReactGenerator = createGeneratorWithChildren({
       '.env.production.local',
     ]);
 
-    eslint?.getConfig().set('react', true);
+    eslint?.getConfig().set('react', true).set('disableJest', true);
+
+    const vitePlugins: TypescriptCodeExpression[] = [
+      TypescriptCodeUtils.createExpression(
+        `react()`,
+        `import react from '@vitejs/plugin-react';`
+      ),
+      TypescriptCodeUtils.createExpression(
+        `viteTsconfigPaths()`,
+        `import viteTsconfigPaths from 'vite-tsconfig-paths';`
+      ),
+      TypescriptCodeUtils.createExpression(
+        `svgrPlugin()`,
+        `import svgrPlugin from 'vite-plugin-svgr';`
+      ),
+    ];
+
+    const viteServerOptions = createNonOverwriteableMap<
+      Record<string, TypescriptCodeExpression>
+    >({
+      port: TypescriptCodeUtils.createExpression(
+        'envVars.PORT ? parseInt(envVars.PORT, 10) : 3000'
+      ),
+      watch: TypescriptCodeUtils.createExpression(
+        JSON.stringify({
+          ignored: ['**/baseplate/.clean/**', '**/baseplate/.clean_tmp/**'],
+        })
+      ),
+    });
 
     return {
       getProviders: () => ({
@@ -131,6 +164,12 @@ const ReactGenerator = createGeneratorWithChildren({
           },
           getIndexFile() {
             return indexFile;
+          },
+          addVitePlugin(plugin) {
+            vitePlugins.push(plugin);
+          },
+          addServerOption(key, value) {
+            viteServerOptions.set(key, value);
           },
         },
       }),
@@ -147,7 +186,7 @@ const ReactGenerator = createGeneratorWithChildren({
           )
         );
 
-        const staticFiles = ['src/react-app-env.d.ts', 'src/setupTests.ts'];
+        const staticFiles = ['src/vite-env.d.ts'];
 
         await Promise.all(
           staticFiles.map((file) =>
@@ -167,14 +206,25 @@ const ReactGenerator = createGeneratorWithChildren({
 
         await builder.apply(
           writeTemplateAction({
-            template: 'public/index.html.ejs',
-            destination: 'public/index.html',
+            template: 'index.html.ejs',
+            destination: 'index.html',
             data: {
               title: descriptor.title,
               description: descriptor.description,
             },
           })
         );
+
+        const viteConfig = new TypescriptSourceFile({
+          CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject({
+            plugins: TypescriptCodeUtils.mergeExpressionsAsArray(vitePlugins),
+            server: TypescriptCodeUtils.mergeExpressionsAsObject(
+              viteServerOptions.value()
+            ),
+          }),
+        });
+
+        await builder.apply(viteConfig.renderToAction('vite.config.ts'));
       },
     };
   },

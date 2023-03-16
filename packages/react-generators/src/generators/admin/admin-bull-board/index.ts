@@ -69,7 +69,7 @@ const createMainTask = createTaskConfigBuilder(
             ),
           });
 
-          reactConfig.getConfigMap().set('REACT_APP_BULL_BOARD_BASE', {
+          reactConfig.getConfigMap().set('VITE_BULL_BOARD_BASE', {
             comment: 'Base path for bull-board site',
             validator:
               TypescriptCodeUtils.createExpression('z.string().min(1)'),

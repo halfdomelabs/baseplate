@@ -32,19 +32,19 @@ const ReactAuth0Generator = createGeneratorWithChildren({
       '@auth0/auth0-react': '2.0.1',
     });
 
-    reactConfig.getConfigMap().set('REACT_APP_AUTH0_DOMAIN', {
+    reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {
       comment: 'Auth0 Domain',
       validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
       devValue: 'domain.auth0.com',
     });
 
-    reactConfig.getConfigMap().set('REACT_APP_AUTH0_CLIENT_ID', {
+    reactConfig.getConfigMap().set('VITE_AUTH0_CLIENT_ID', {
       comment: 'Auth0 Client ID',
       validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
       devValue: 'AUTH0_CLIENT_ID',
     });
 
-    reactConfig.getConfigMap().set('REACT_APP_AUTH0_AUDIENCE', {
+    reactConfig.getConfigMap().set('VITE_AUTH0_AUDIENCE', {
       comment: 'Auth0 Audience',
       validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
       devValue: 'AUTH0_AUDIENCE',
@@ -58,11 +58,11 @@ const ReactAuth0Generator = createGeneratorWithChildren({
       'react-auth0',
       TypescriptCodeUtils.createWrapper(
         (contents) => `<Auth0Provider
-        domain={config.REACT_APP_AUTH0_DOMAIN}
-        clientId={config.REACT_APP_AUTH0_CLIENT_ID}
+        domain={config.VITE_AUTH0_DOMAIN}
+        clientId={config.VITE_AUTH0_CLIENT_ID}
         authorizationParams={{
           redirect_uri: ${redirectUri},
-          audience: config.REACT_APP_AUTH0_AUDIENCE,
+          audience: config.VITE_AUTH0_AUDIENCE,
         }}
         skipRedirectCallback
       >${contents}</Auth0Provider>`,

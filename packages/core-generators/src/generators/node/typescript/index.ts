@@ -32,12 +32,15 @@ import { nodeProvider } from '../node';
 // CompilerOptions which would have to be done manually
 export type TypescriptCompilerOptions = Record<string, unknown>;
 
+export type TypescriptConfigReference = { path: string };
+
 export interface TypescriptConfigProvider {
   setTypescriptVersion(version: string): void;
   setTypescriptCompilerOptions(json: TypescriptCompilerOptions): void;
   getCompilerOptions(): CompilerOptions;
   addInclude(path: string): void;
   addExclude(path: string): void;
+  addReference(reference: TypescriptConfigReference): void;
 }
 
 export const typescriptConfigProvider =
@@ -73,6 +76,7 @@ interface TypescriptConfig {
   compilerOptions: TypescriptCompilerOptions;
   include: string[];
   exclude: string[];
+  references: TypescriptConfigReference[];
 }
 
 const TYPESCRIPT_VERSION = '^4.5.4';
@@ -96,6 +100,7 @@ const DEFAULT_CONFIG: TypescriptConfig = {
   },
   include: ['src'],
   exclude: ['**/node_modules', '**/dist', '**/lib'],
+  references: [],
 };
 
 const TypescriptGenerator = createGeneratorWithTasks({
@@ -144,6 +149,9 @@ const TypescriptGenerator = createGeneratorWithTasks({
               },
               addExclude(path) {
                 config.appendUnique('exclude', [path]);
+              },
+              addReference(reference) {
+                config.appendUnique('references', [reference]);
               },
             },
           }),
@@ -237,14 +245,19 @@ const TypescriptGenerator = createGeneratorWithTasks({
             };
           },
           async build(builder) {
-            const { compilerOptions, include, exclude, version } =
+            const { compilerOptions, include, exclude, version, references } =
               config.value();
             node.addDevPackage('typescript', version);
 
             await builder.apply(
               writeJsonAction({
                 destination: 'tsconfig.json',
-                contents: { compilerOptions, include, exclude },
+                contents: {
+                  compilerOptions,
+                  include,
+                  exclude,
+                  references: references.length ? references : undefined,
+                },
               })
             );
           },

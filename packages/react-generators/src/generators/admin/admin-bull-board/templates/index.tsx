@@ -24,7 +24,7 @@ function BullBoardPage(): JSX.Element {
       const codeInput = document.createElement('input');
 
       form.method = 'POST';
-      form.action = `${config.REACT_APP_BULL_BOARD_BASE}/bull-board/auth`;
+      form.action = `${config.VITE_BULL_BOARD_BASE}/bull-board/auth`;
 
       codeInput.value = code;
       codeInput.name = 'code';

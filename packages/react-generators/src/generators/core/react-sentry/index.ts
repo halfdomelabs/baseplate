@@ -45,7 +45,7 @@ const ReactSentryGenerator = createGeneratorWithChildren({
       ])
     );
 
-    reactConfig.getConfigMap().set('REACT_APP_SENTRY_DSN', {
+    reactConfig.getConfigMap().set('VITE_SENTRY_DSN', {
       comment: 'DSN for Sentry (optional)',
       validator: TypescriptCodeUtils.createExpression('z.string().optional()'),
       devValue: '',
