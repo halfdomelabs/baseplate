@@ -35,6 +35,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     const srcFolder = react.getSrcFolder();
 
     node.addDevPackages({
+      autoprefixer: '10.4.14',
       tailwindcss: '3.2.4',
       'prettier-plugin-tailwindcss': '0.2.1',
       '@tailwindcss/forms': '0.5.3',
@@ -42,7 +43,10 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
 
     eslint
       .getConfig()
-      .appendUnique('eslintIgnore', ['postcs.config.js', 'tailwind.config.js']);
+      .appendUnique('eslintIgnore', [
+        'postcss.config.js',
+        'tailwind.config.js',
+      ]);
 
     react.getIndexFile().addCodeBlock('IMPORTS', "import './index.css'");
 
@@ -77,6 +81,13 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
           copyFileAction({
             source: 'tailwind.config.js',
             destination: 'tailwind.config.js',
+            shouldFormat: true,
+          })
+        );
+        await builder.apply(
+          copyFileAction({
+            source: 'postcss.config.js',
+            destination: 'postcss.config.js',
             shouldFormat: true,
           })
         );

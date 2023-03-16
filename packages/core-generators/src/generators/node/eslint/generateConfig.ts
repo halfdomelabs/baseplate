@@ -4,12 +4,14 @@ interface EslintConfig {
   extraTsconfigProjects?: string[];
   extraRules?: Linter.RulesRecord;
   react?: boolean;
+  disableJest?: boolean;
 }
 
 export function generateConfig({
   extraTsconfigProjects = [],
   extraRules = {},
   react,
+  disableJest,
 }: EslintConfig): Linter.Config {
   const baseExtends = react
     ? [
@@ -34,8 +36,7 @@ export function generateConfig({
       'plugin:@typescript-eslint/recommended-requiring-type-checking',
       'plugin:import/recommended',
       'plugin:import/typescript',
-      'plugin:jest/recommended',
-      'plugin:jest/style',
+      ...(disableJest ? [] : ['plugin:jest/recommended', 'plugin:jest/style']),
       'prettier',
     ],
     parserOptions: {
@@ -70,7 +71,7 @@ export function generateConfig({
             '**/*.test.ts',
             'src/tests/**/*.ts',
             'scripts/**/*.ts',
-            ...(react ? ['**/setupTests.ts'] : []),
+            ...(react ? ['vite.config.ts'] : []),
           ],
         },
       ],
@@ -94,7 +95,7 @@ export function generateConfig({
     env: {
       node: true,
       browser: false,
-      jest: true,
+      ...(disableJest ? {} : { jest: true }),
     },
     settings: {
       'import/resolver': {

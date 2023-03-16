@@ -4,12 +4,12 @@ import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import { config } from '%react-config';
 
-const SENTRY_ENABLED = !!config.REACT_APP_SENTRY_DSN;
+const SENTRY_ENABLED = !!config.VITE_SENTRY_DSN;
 
 if (SENTRY_ENABLED) {
   Sentry.init({
-    dsn: config.REACT_APP_SENTRY_DSN,
-    environment: config.REACT_APP_ENVIRONMENT,
+    dsn: config.VITE_SENTRY_DSN,
+    environment: config.VITE_ENVIRONMENT,
     integrations: [new BrowserTracing()],
 
     // Set tracesSampleRate to 1.0 to capture 100%

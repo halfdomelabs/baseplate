@@ -1,24 +1,24 @@
 import { NodeProvider } from '@baseplate/core-generators';
 
-export function setupReactNode(node: NodeProvider): void {
+export function setupViteNode(node: NodeProvider): void {
   const nodeVersion = node.getNodeVersion().split('.')[0];
   node.addPackages({
+    react: '18.2.0',
+    'react-dom': '18.2.0',
+  });
+  node.addDevPackages({
     '@types/node': `^${nodeVersion}.0.0`,
     '@types/react': '18.0.27',
     '@types/react-dom': '18.0.10',
-    '@testing-library/jest-dom': '5.16.5',
-    '@testing-library/react': '13.4.0',
-    '@testing-library/user-event': '14.4.3',
-    react: '18.2.0',
-    'react-dom': '18.2.0',
-    'react-scripts': '5.0.1',
-    'web-vitals': '^2.1.0',
+    '@vitejs/plugin-react': '3.1.0',
+    vite: '4.1.4',
+    'vite-plugin-svgr': '2.4.0',
+    'vite-tsconfig-paths': '4.0.7',
   });
   node.addScripts({
-    start: 'DISABLE_ESLINT_PLUGIN=true react-scripts start',
-    build: 'DISABLE_ESLINT_PLUGIN=true react-scripts build',
-    test: 'react-scripts test',
-    eject: 'react-scripts eject',
+    dev: 'vite',
+    build: 'tsc && vite build',
+    preview: 'vite preview',
   });
   node.mergeExtraProperties({
     browserslist: {

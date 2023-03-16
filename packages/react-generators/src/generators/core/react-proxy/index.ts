@@ -1,10 +1,10 @@
-import { eslintProvider, nodeProvider } from '@baseplate/core-generators';
+import { TypescriptCodeUtils } from '@baseplate/core-generators';
 import {
-  copyFileAction,
   createGeneratorWithChildren,
   createProviderType,
 } from '@baseplate/sync';
 import { z } from 'zod';
+import { reactProvider } from '../react';
 import { reactConfigProvider } from '../react-config';
 
 const descriptorSchema = z.object({
@@ -22,17 +22,14 @@ const ReactProxyGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    node: nodeProvider,
     reactConfig: reactConfigProvider,
-    eslint: eslintProvider,
+    react: reactProvider,
   },
   exports: {
     reactProxy: reactProxyProvider,
   },
-  createGenerator({ devBackendHost }, { node, eslint, reactConfig }) {
-    node.addPackages({ 'http-proxy-middleware': '^2.0.4' });
+  createGenerator({ devBackendHost }, { react, reactConfig }) {
     reactConfig.addEnvVar('DEV_BACKEND_HOST', devBackendHost);
-    eslint.getConfig().appendUnique('eslintIgnore', ['src/setupProxy.js']);
     let enableWebsocket = false;
     return {
       getProviders: () => ({
@@ -42,16 +39,21 @@ const ReactProxyGenerator = createGeneratorWithChildren({
           },
         },
       }),
-      build: async (builder) => {
-        await builder.apply(
-          copyFileAction({
-            source: 'setupProxy.js',
-            destination: 'src/setupProxy.js',
-            shouldFormat: true,
-            replacements: {
-              'WS_OPTION,': enableWebsocket ? 'ws:true' : '',
-            },
-          })
+      build: () => {
+        react.addServerOption(
+          'proxy',
+          TypescriptCodeUtils.createExpression(
+            `envVars.DEV_BACKEND_HOST
+          ? {
+              '/api': {
+                target: envVars.DEV_BACKEND_HOST,
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\\/api/, ''),
+                ${enableWebsocket ? 'ws: true,' : ''}
+              },
+            }
+          : undefined`
+          )
         );
       },
     };

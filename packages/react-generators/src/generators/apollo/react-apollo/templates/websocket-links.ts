@@ -2,20 +2,20 @@
 
 // GET_WS_URL:START
 function getWsUrl(): string {
-  if (config.REACT_APP_GRAPH_WS_API_ENDPOINT) {
-    return config.REACT_APP_GRAPH_WS_API_ENDPOINT;
+  if (config.VITE_GRAPH_WS_API_ENDPOINT) {
+    return config.VITE_GRAPH_WS_API_ENDPOINT;
   }
   // handle case where API endpoint includes domain, e.g. http://localhost/api/graphql
-  if (config.REACT_APP_GRAPH_API_ENDPOINT.includes('http')) {
-    return config.REACT_APP_GRAPH_API_ENDPOINT.replace(
-      'https://',
-      'wss://'
-    ).replace('http://', 'ws://');
+  if (config.VITE_GRAPH_API_ENDPOINT.includes('http')) {
+    return config.VITE_GRAPH_API_ENDPOINT.replace('https://', 'wss://').replace(
+      'http://',
+      'ws://'
+    );
   }
   // handle relative API endpoint, e.g. /api/graphql
   const { protocol, host } = window.location;
   const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
-  return `${wsProtocol}//${host}${config.REACT_APP_GRAPH_API_ENDPOINT}`;
+  return `${wsProtocol}//${host}${config.VITE_GRAPH_API_ENDPOINT}`;
 }
 // GET_WS_URL:END
 

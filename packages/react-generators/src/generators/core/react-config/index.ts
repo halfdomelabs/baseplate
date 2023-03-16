@@ -47,7 +47,7 @@ const ReactConfigGenerator = createGeneratorWithChildren({
       Record<string, ConfigEntry>
     >(
       {
-        REACT_APP_ENVIRONMENT: {
+        VITE_ENVIRONMENT: {
           comment: 'Environment the app is running in',
           validator: TypescriptCodeUtils.createExpression(
             `z.enum(['development', 'test', 'staging', 'production'])`,

@@ -12,6 +12,7 @@ interface EslintConfig {
   react?: boolean;
   eslintIgnore: string[];
   extraTsconfigProjects: string[];
+  disableJest?: boolean;
 }
 
 export interface EslintProvider {
@@ -53,6 +54,7 @@ const EslintGenerator = createGeneratorWithChildren({
         const eslintConfig = generateConfig({
           react: config.react,
           extraTsconfigProjects: config.extraTsconfigProjects,
+          disableJest: config.disableJest,
         });
 
         const airbnbPackage: Record<string, string> = config.react
@@ -73,7 +75,11 @@ const EslintGenerator = createGeneratorWithChildren({
           'eslint-config-prettier': '8.6.0',
           'eslint-import-resolver-typescript': '3.5.3',
           'eslint-plugin-import': '2.27.5',
-          'eslint-plugin-jest': '27.2.1',
+          ...(config.disableJest
+            ? {}
+            : {
+                'eslint-plugin-jest': '27.2.1',
+              }),
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
 

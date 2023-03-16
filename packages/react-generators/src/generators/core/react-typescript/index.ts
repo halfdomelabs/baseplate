@@ -1,5 +1,8 @@
-import { typescriptConfigProvider } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import {
+  eslintProvider,
+  typescriptConfigProvider,
+} from '@baseplate/core-generators';
+import { createGeneratorWithChildren, writeJsonAction } from '@baseplate/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});
@@ -9,12 +12,14 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     typescriptConfig: typescriptConfigProvider,
+    eslint: eslintProvider,
   },
-  createGenerator(descriptor, { typescriptConfig }) {
+  createGenerator(descriptor, { typescriptConfig, eslint }) {
     typescriptConfig.setTypescriptVersion('4.8.4');
     typescriptConfig.setTypescriptCompilerOptions({
-      target: 'es5',
+      target: 'ESNext',
       lib: ['dom', 'dom.iterable', 'esnext'],
+      types: ['vite/client', 'vite-plugin-svgr/client'],
       allowJs: true,
       skipLibCheck: true,
       esModuleInterop: true,
@@ -31,8 +36,29 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
       baseUrl: './',
     });
     typescriptConfig.addInclude('src');
+    typescriptConfig.addReference({
+      path: './tsconfig.node.json',
+    });
+    eslint
+      .getConfig()
+      .appendUnique('extraTsconfigProjects', './tsconfig.node.json');
     return {
-      build: async () => {},
+      build: async (builder) => {
+        await builder.apply(
+          writeJsonAction({
+            destination: 'tsconfig.node.json',
+            contents: {
+              compilerOptions: {
+                composite: true,
+                module: 'ESNext',
+                moduleResolution: 'Node',
+                allowSyntheticDefaultImports: true,
+              },
+              include: ['vite.config.ts'],
+            },
+          })
+        );
+      },
     };
   },
 });

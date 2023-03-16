@@ -117,14 +117,14 @@ const ReactApolloGenerator = createGeneratorWithChildren({
       generate: 'graphql-codegen --config codegen.yml',
     });
 
-    reactConfig.getConfigMap().set('REACT_APP_GRAPH_API_ENDPOINT', {
+    reactConfig.getConfigMap().set('VITE_GRAPH_API_ENDPOINT', {
       comment: 'URL for the GraphQL API endpoint',
       validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
       devValue: devApiEndpoint,
     });
 
     if (enableSubscriptions) {
-      reactConfig.getConfigMap().set('REACT_APP_GRAPH_WS_API_ENDPOINT', {
+      reactConfig.getConfigMap().set('VITE_GRAPH_WS_API_ENDPOINT', {
         comment: 'URL for the GraphQL web socket API endpoint (optional)',
         validator: TypescriptCodeUtils.createExpression('z.string()'),
         devValue: '',
@@ -186,7 +186,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           },
           getApiEndpointExpression() {
             return new TypescriptCodeExpression(
-              'config.REACT_APP_GRAPH_API_ENDPOINT',
+              'config.VITE_GRAPH_API_ENDPOINT',
               'import { config } from "%react-config";',
               { importMappers: [reactConfig] }
             );
@@ -227,7 +227,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           httpOnly: true,
           bodyExpression: new TypescriptCodeBlock(
             `const httpLink = new HttpLink({
-              uri: config.REACT_APP_GRAPH_API_ENDPOINT,
+              uri: config.VITE_GRAPH_API_ENDPOINT,
             });`,
             [
               `import { HttpLink } from '@apollo/client';`,
