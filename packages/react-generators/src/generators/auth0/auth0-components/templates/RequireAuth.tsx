@@ -13,7 +13,7 @@ function RequireAuth({ children }: Props): JSX.Element {
 
 export default withAuthenticationRequired(RequireAuth, {
   onRedirecting: () => (
-    <div className="h-full flex items-center justify-center">
+    <div className="flex h-full items-center justify-center">
       <Spinner size="large" />
     </div>
   ),

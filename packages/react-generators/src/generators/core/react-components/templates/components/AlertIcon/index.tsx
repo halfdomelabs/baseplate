@@ -53,12 +53,12 @@ function AlertIcon({ className, type }: Props): JSX.Element {
   return (
     <div
       className={classNames(
-        'inline-flex flex-shrink-0 justify-center items-center w-8 h-8 rounded-lg',
+        'inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
         colorClasses,
         className
       )}
     >
-      <Icon className="w-5 h-5" />
+      <Icon className="h-5 w-5" />
     </div>
   );
 }

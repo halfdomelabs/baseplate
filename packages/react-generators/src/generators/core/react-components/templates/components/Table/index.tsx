@@ -12,7 +12,7 @@ function Table({ className, children }: Props): JSX.Element {
   return (
     <div className={classNames('flex flex-col', className)}>
       <div className="overflow-x-auto sm:-mx-2 lg:-mx-4">
-        <div className="inline-block py-2 min-w-full sm:px-2 lg:px-4">
+        <div className="inline-block min-w-full py-2 sm:px-2 lg:px-4">
           <div className="overflow-hidden shadow-md sm:rounded-lg">
             <table className="min-w-full">{children}</table>
           </div>
@@ -63,7 +63,7 @@ Table.HeadCell = function TableHeadCell({
     <th
       scope="col"
       className={classNames(
-        'py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-700 uppercase dark:text-gray-400',
+        'py-3 px-6 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
         className
       )}
     >
@@ -96,7 +96,7 @@ Table.Row = function TableRow({
   return (
     <tr
       className={classNames(
-        'bg-white border-b dark:bg-gray-800 dark:border-gray-700',
+        'border-b bg-white dark:border-gray-700 dark:bg-gray-800',
         className
       )}
     >
@@ -117,7 +117,7 @@ Table.Cell = function TableCell({
   return (
     <td
       className={classNames(
-        'py-4 px-6 text-sm text-gray-500 whitespace-nowrap dark:text-gray-400',
+        'whitespace-nowrap py-4 px-6 text-sm text-gray-500 dark:text-gray-400',
         className
       )}
     >

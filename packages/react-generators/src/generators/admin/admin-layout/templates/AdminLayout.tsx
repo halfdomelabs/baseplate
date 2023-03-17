@@ -14,7 +14,7 @@ function AdminLayout({ className }: Props): JSX.Element {
   const logOut = useLogOut();
 
   return (
-    <div className={classNames('h-full items-stretch flex', className)}>
+    <div className={classNames('flex h-full items-stretch', className)}>
       <Sidebar className="flex-none">
         <Sidebar.Header className="mb-4 space-y-2">
           <h1>Admin Dashboard</h1>

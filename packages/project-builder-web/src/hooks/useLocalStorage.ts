@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 const ALLOWED_KEYS = ['saved-app-config'] as const;
 
 export function useLocalStorage(
-  key: typeof ALLOWED_KEYS[number]
+  key: (typeof ALLOWED_KEYS)[number]
 ): [string, (value: string) => void] {
   if (!ALLOWED_KEYS.includes(key)) {
     throw new Error(

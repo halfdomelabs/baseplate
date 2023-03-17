@@ -145,10 +145,10 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
     optional?: boolean;
     dbName?: string;
     enumType?: string;
-    typeOptions?: typeof PRISMA_SCALAR_FIELD_TYPES[T] extends {
+    typeOptions?: (typeof PRISMA_SCALAR_FIELD_TYPES)[T] extends {
       optionsSchema: z.ZodType;
     }
-      ? z.infer<typeof PRISMA_SCALAR_FIELD_TYPES[T]['optionsSchema']>
+      ? z.infer<(typeof PRISMA_SCALAR_FIELD_TYPES)[T]['optionsSchema']>
       : unknown;
   }
 ): PrismaModelField {
