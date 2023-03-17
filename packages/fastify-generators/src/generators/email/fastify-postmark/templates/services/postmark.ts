@@ -26,7 +26,7 @@ export type PostmarkTemplateKey = keyof typeof POSTMARK_TEMPLATES;
 
 interface RenderAndSendTemplateInput<TemplateKey extends PostmarkTemplateKey> {
   templateKey: TemplateKey;
-  data: z.infer<typeof POSTMARK_TEMPLATES[TemplateKey]['schema']>;
+  data: z.infer<(typeof POSTMARK_TEMPLATES)[TemplateKey]['schema']>;
   from?: string;
   to: string;
 }

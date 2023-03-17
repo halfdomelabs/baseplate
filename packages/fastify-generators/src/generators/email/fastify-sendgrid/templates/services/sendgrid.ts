@@ -38,7 +38,7 @@ export type SendgridTemplateKey = keyof typeof SENDGRID_TEMPLATES;
 
 interface RenderAndSendTemplateInput<TemplateKey extends SendgridTemplateKey> {
   templateKey: TemplateKey;
-  data: z.infer<typeof SENDGRID_TEMPLATES[TemplateKey]['schema']>;
+  data: z.infer<(typeof SENDGRID_TEMPLATES)[TemplateKey]['schema']>;
   from?: string;
   to: string;
 }

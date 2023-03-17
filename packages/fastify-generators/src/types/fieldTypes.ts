@@ -11,7 +11,7 @@ export const SCALAR_FIELD_TYPES = [
   'enum',
 ] as const;
 
-export type ScalarFieldType = typeof SCALAR_FIELD_TYPES[number];
+export type ScalarFieldType = (typeof SCALAR_FIELD_TYPES)[number];
 
 interface ScalarFieldTypeInfo {
   typescriptType: string;

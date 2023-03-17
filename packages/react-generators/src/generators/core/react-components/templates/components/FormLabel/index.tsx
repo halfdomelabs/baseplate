@@ -10,7 +10,7 @@ function FormLabel({ className, children }: Props): JSX.Element {
   return (
     <div
       className={classNames(
-        'text-sm mb-2 font-semibold text-gray-900 dark:text-gray-300',
+        'mb-2 text-sm font-semibold text-gray-900 dark:text-gray-300',
         className
       )}
     >

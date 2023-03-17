@@ -37,7 +37,7 @@ export interface ObjectReferenceEntry {
   path: string;
 }
 
-export type ReferenceableCategory = typeof REFERENCEABLE_CATEGORIES[number];
+export type ReferenceableCategory = (typeof REFERENCEABLE_CATEGORIES)[number];
 
 export interface GetReferencesResult {
   referenceables: ObjectReferenceableEntry[];

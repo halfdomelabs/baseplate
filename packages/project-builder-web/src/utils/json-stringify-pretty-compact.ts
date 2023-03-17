@@ -47,7 +47,7 @@ interface StringifyOptions {
   objectMargins?: boolean;
 }
 
-function get<Type, Key extends keyof Type>(
+function get<Type extends object, Key extends keyof Type>(
   options: Type,
   name: Key,
   defaultValue: Type[Key]

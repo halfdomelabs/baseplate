@@ -32,11 +32,11 @@ function Spinner({
     <svg
       role="status"
       className={classNames(
-        'w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600',
+        'h-8 w-8 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600',
         {
-          'w-4 h-4': size === 'small',
-          'w-8 h-8': size === 'medium',
-          'w-10 h-10': size === 'large',
+          'h-4 w-4': size === 'small',
+          'h-8 w-8': size === 'medium',
+          'h-10 w-10': size === 'large',
           'mx-auto': center,
         },
         className
