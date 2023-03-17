@@ -40,7 +40,7 @@
     "is-core-module": "^2.8.1",
     "lodash": "^4.17.21",
     "piscina": "^3.2.0",
-    "prettier": "^2.5.1",
+    "prettier": "^2.8.4",
     "ramda": "^0.28.0",
     "resolve": "^1.21.0",
     "semver": "^7.3.5",
