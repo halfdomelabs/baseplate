@@ -17,7 +17,9 @@
     "start": "tsc && node dist/index.js",
     "dev": "ts-node-dev --rs --respawn src",
     "build": "tsc",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "prettier:check": "prettier --check .",
+    "prettier:format": "prettier -w ."
   },
   "dependencies": {
     "@baseplate/core-generators": "^0.0.1",

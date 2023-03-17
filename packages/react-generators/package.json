@@ -24,7 +24,9 @@
     "watch": "concurrently yarn:watch:*",
     "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
     "watch:templates": "gulp watchTemplates",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
+    "prettier:check": "prettier --check .",
+    "prettier:format": "prettier -w ."
   },
   "dependencies": {
     "@baseplate/core-generators": "^0.0.1",

@@ -7,6 +7,8 @@
   "scripts": {
     "watch": "nx run-many --target=watch --parallel=100 --output-style=stream",
     "lint": "nx run-many --target=lint",
+    "prettier:check": "nx run-many --target=prettier:check",
+    "prettier:format": "nx run-many --target=prettier:format",
     "build": "nx run-many --nx-bail --target=build",
     "test": "nx run-many --target=test"
   },

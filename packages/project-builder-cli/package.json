@@ -23,7 +23,9 @@
     "start": "ts-node --transpile-only -r dotenv/config -r tsconfig-paths/register dist/index.js",
     "dev": "ts-node-dev --rs --transpile-only -r dotenv/config -r tsconfig-paths/register --respawn src",
     "build": "tsc && tsc-alias",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./"
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "prettier:check": "prettier --check .",
+    "prettier:format": "prettier -w ."
   },
   "dependencies": {
     "@baseplate/core-generators": "^0.0.1",

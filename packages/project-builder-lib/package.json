@@ -43,7 +43,9 @@
     "watch:esm": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
     "watch:cjs": "tsc -p tsconfig.cjs.json --preserveWatchOutput --watch & tsc-alias -p tsconfig.cjs.json --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
-    "test": "jest"
+    "test": "jest",
+    "prettier:check": "prettier --check .",
+    "prettier:format": "prettier -w ."
   },
   "dependencies": {
     "change-case": "^4.1.2",
