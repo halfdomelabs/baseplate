@@ -133,7 +133,7 @@ export async function executeGeneratorEntry(
       generatorOutputs.map((output) => output.files)
     ),
     postWriteCommands: R.flatten(
-      R.reverse(generatorOutputs.map((output) => output.postWriteCommands))
+      generatorOutputs.map((output) => output.postWriteCommands)
     ),
   };
 

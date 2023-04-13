@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ReferencesBuilder } from '@src/schema/references.js';
+import { notEmpty } from '@src/utils/array.js';
 import { randomUid } from '@src/utils/randomUid.js';
 import { baseAdminSectionValidators } from './base.js';
 
@@ -29,7 +30,15 @@ export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
   adminCrudForeignDisplaySchema,
 ]);
 
-export const adminCrudDisplayTypes = Object.keys(
+function primitiveMapToKeys<T extends Record<string, unknown>>(
+  map: Map<T[keyof T], unknown>
+): (keyof T)[] {
+  return Array.from(map.keys())
+    .map((m) => m?.valueOf() as keyof T)
+    .filter(notEmpty);
+}
+
+export const adminCrudDisplayTypes = primitiveMapToKeys(
   adminCrudDisplaySchema.optionsMap
 );
 
@@ -122,7 +131,9 @@ export const adminCrudInputSchema = z.discriminatedUnion('type', [
   adminCrudPasswordInputSchema,
 ]);
 
-export const adminCrudInputTypes = Object.keys(adminCrudInputSchema.optionsMap);
+export const adminCrudInputTypes = primitiveMapToKeys(
+  adminCrudInputSchema.optionsMap
+);
 
 export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 

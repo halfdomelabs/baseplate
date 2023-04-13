@@ -167,6 +167,9 @@ function buildModelRelationFieldReferences(
     name: field.foreignRelationName,
   });
 
+  builder.addReferences('modelName', {
+    category: 'model',
+  });
   builder.addReferences('references.*.foreign', {
     category: 'modelField',
     generateKey: (name) => `${field.modelName}#${name}`,

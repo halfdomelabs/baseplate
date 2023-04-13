@@ -7,6 +7,7 @@ import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
+import { underscoreToTitleCase } from 'src/utils/casing';
 
 interface Props {
   config: EnumConfig | undefined;
@@ -14,7 +15,7 @@ interface Props {
 }
 
 function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
-  const { control, handleSubmit, reset } = useResettableForm({
+  const { control, handleSubmit, reset, watch, setValue } = useResettableForm({
     defaultValues: config,
     resolver: zodResolver(enumSchema),
   });
@@ -40,6 +41,8 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
     control,
     name: 'values',
   });
+
+  const values = watch('values');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -72,6 +75,14 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
               label="Value Friendly Name, e.g. Active"
               control={control}
               name={`values.${i}.friendlyName`}
+              onFocus={() => {
+                if (!values[i].friendlyName && values[i].name) {
+                  setValue(
+                    `values.${i}.friendlyName`,
+                    underscoreToTitleCase(values[i].name)
+                  );
+                }
+              }}
             />
             <Button color="light" type="button" onClick={() => removeValue(i)}>
               Remove

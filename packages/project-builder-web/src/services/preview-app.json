@@ -1,0 +1,1149 @@
+{
+  "apps": [
+    {
+      "allowedRoles": ["admin"],
+      "name": "admin",
+      "packageLocation": "packages/admin",
+      "sections": [
+        {
+          "disableCreate": false,
+          "embeddedForms": [],
+          "feature": "todos",
+          "form": {
+            "fields": [
+              {
+                "label": "Full Name",
+                "modelField": "name",
+                "type": "text",
+                "validation": "z.string().min(1)"
+              },
+              {
+                "defaultLabel": "option.id",
+                "label": "Owner",
+                "labelExpression": "name",
+                "localRelationName": "owner",
+                "type": "foreign",
+                "valueExpression": "id"
+              },
+              { "label": "Status", "modelField": "status", "type": "enum" },
+              {
+                "label": "Cover Photo",
+                "modelRelation": "coverPhoto",
+                "type": "file"
+              },
+              {
+                "label": "Created At",
+                "modelField": "createdAt",
+                "type": "text",
+                "validation": ""
+              }
+            ]
+          },
+          "icon": "BsCardChecklist",
+          "modelName": "TodoList",
+          "name": "TodoList",
+          "table": {
+            "columns": [
+              {
+                "display": { "modelField": "ownerId", "type": "text" },
+                "label": "Owner ID"
+              },
+              {
+                "display": { "modelField": "name", "type": "text" },
+                "label": "Name"
+              }
+            ]
+          },
+          "type": "crud",
+          "uid": "VuanUxgD2Rt_"
+        },
+        {
+          "disableCreate": true,
+          "embeddedForms": [
+            {
+              "form": {
+                "fields": [
+                  {
+                    "label": "Stripe Customer ID",
+                    "modelField": "stripeCustomerId",
+                    "type": "text",
+                    "validation": ""
+                  }
+                ]
+              },
+              "id": "koHZa3SChNjF",
+              "modelName": "Customer",
+              "name": "customer",
+              "type": "object"
+            },
+            {
+              "form": {
+                "fields": [
+                  {
+                    "label": "Role",
+                    "modelField": "role",
+                    "type": "text",
+                    "validation": ""
+                  }
+                ]
+              },
+              "id": "F78Xht0ptyeZ",
+              "modelName": "UserRole",
+              "name": "roles",
+              "table": {
+                "columns": [
+                  {
+                    "display": { "modelField": "role", "type": "text" },
+                    "label": "Role"
+                  }
+                ]
+              },
+              "type": "list"
+            }
+          ],
+          "feature": "accounts/users",
+          "form": {
+            "fields": [
+              {
+                "label": "Name",
+                "modelField": "name",
+                "type": "text",
+                "validation": "z.string().nullish()"
+              },
+              {
+                "label": "Email",
+                "modelField": "email",
+                "type": "text",
+                "validation": "z.string().email().min(1)"
+              },
+              {
+                "embeddedFormName": "customer",
+                "label": "Customer",
+                "modelRelation": "customer",
+                "type": "embedded"
+              },
+              {
+                "embeddedFormName": "roles",
+                "label": "Roles",
+                "modelRelation": "roles",
+                "type": "embedded"
+              },
+              { "label": "Password", "type": "password" }
+            ]
+          },
+          "icon": "FaUserAlt",
+          "modelName": "User",
+          "name": "User",
+          "table": {
+            "columns": [
+              {
+                "display": { "modelField": "name", "type": "text" },
+                "label": "Name"
+              },
+              {
+                "display": { "modelField": "email", "type": "text" },
+                "label": "Email"
+              }
+            ]
+          },
+          "type": "crud",
+          "uid": "tRhhDTE8ZKBw"
+        }
+      ],
+      "type": "admin",
+      "uid": "VYxJMmh4T9DR"
+    },
+    {
+      "enableBullQueue": true,
+      "enablePostmark": true,
+      "enableRedis": true,
+      "enableSendgrid": true,
+      "enableStripe": true,
+      "enableSubscriptions": true,
+      "name": "backend",
+      "packageLocation": "",
+      "type": "backend",
+      "uid": "HQP7ad3ALJ2I"
+    },
+    {
+      "allowedRoles": ["user"],
+      "description": "An app for cool todoers",
+      "enableSubscriptions": true,
+      "includeAuth": true,
+      "includeUploadComponents": false,
+      "name": "web",
+      "packageLocation": "packages/web",
+      "title": "Todoer App",
+      "type": "web",
+      "uid": "4uIAHqzVSL48"
+    }
+  ],
+  "auth": {
+    "accountsFeaturePath": "accounts/users",
+    "authFeaturePath": "accounts/auth",
+    "passwordProvider": true,
+    "roles": [
+      {
+        "comment": "Anonymous role for unauthenticated users",
+        "inherits": [],
+        "name": "anonymous",
+        "uid": "ZsD2KmXlrGHE"
+      },
+      {
+        "comment": "Role for authenticated users",
+        "inherits": ["anonymous"],
+        "name": "user",
+        "uid": "gXI_6zsDITx2"
+      },
+      {
+        "comment": "Administrative role",
+        "inherits": ["user"],
+        "name": "admin",
+        "uid": "khgMLrppRfL3"
+      },
+      {
+        "comment": "Role for jobs/tests without a user",
+        "name": "system",
+        "uid": "3xp5hcHsx7dR"
+      }
+    ],
+    "useAuth0": true,
+    "userModel": "User",
+    "userRoleModel": "UserRole"
+  },
+  "enums": [
+    {
+      "feature": "todos",
+      "isExposed": true,
+      "name": "TodoListStatus",
+      "uid": "AGa4i5YSuagN",
+      "values": [
+        { "friendlyName": "Active", "name": "ACTIVE", "uid": "0UG9KplkDicn" },
+        {
+          "friendlyName": "Inactive",
+          "name": "INACTIVE",
+          "uid": "4yaRlMHqW7qT"
+        }
+      ]
+    }
+  ],
+  "features": [
+    { "name": "accounts", "uid": "u_p4vVFztHrW" },
+    { "name": "accounts/auth", "uid": "ti5ki5lqJW0h" },
+    { "name": "accounts/users", "uid": "h_hZWeguTd3V" },
+    { "name": "storage", "uid": "abPt0GBHgYCy" },
+    { "name": "todos", "uid": "OFTlgazwKQoo" }
+  ],
+  "models": [
+    {
+      "feature": "accounts/users",
+      "model": {
+        "fields": [
+          {
+            "isId": true,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid",
+            "uid": "uKYFuQ5frhvv"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "stripeCustomerId",
+            "type": "string",
+            "uid": "pHmOKNeHTjOD"
+          }
+        ],
+        "relations": [
+          {
+            "foreignRelationName": "customer",
+            "isOptional": false,
+            "modelName": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "id" }],
+            "relationshipType": "oneToOne",
+            "uid": "jQMH6w6TBbZQ"
+          }
+        ]
+      },
+      "name": "Customer",
+      "schema": {
+        "authorize": {},
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": false,
+        "exposedFields": ["stripeCustomerId", "id"],
+        "exposedLocalRelations": ["user"]
+      },
+      "uid": "NP5gdtuJ_kHO"
+    },
+    {
+      "feature": "storage",
+      "model": {
+        "fields": [
+          {
+            "isId": true,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid",
+            "uid": "N56qML4OxA7G"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "category",
+            "options": { "default": "" },
+            "type": "string",
+            "uid": "6ZcBtPmwJxhp"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "adapter",
+            "options": { "default": "" },
+            "type": "string",
+            "uid": "50j8FZC1skgi"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "path",
+            "options": { "default": "" },
+            "type": "string",
+            "uid": "q7ybUs4oVzfy"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "mimeType",
+            "options": { "default": "" },
+            "type": "string",
+            "uid": "Nebixto2fQzg"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "size",
+            "options": { "default": "" },
+            "type": "int",
+            "uid": "5qgBMujEdEH0"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "name",
+            "options": { "default": "" },
+            "type": "string",
+            "uid": "D9XuxeCrEsTT"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "shouldDelete",
+            "options": { "default": "" },
+            "type": "boolean",
+            "uid": "pScJKC9eBBCN"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "isUsed",
+            "options": { "default": "" },
+            "type": "boolean",
+            "uid": "O9vjcwIDbF7Y"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "uploaderId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid",
+            "uid": "vu81gNHmNPj1"
+          },
+          {
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime",
+            "uid": "qC5yiKs31l2E"
+          },
+          {
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime",
+            "uid": "ETaOMbxxDF5j"
+          }
+        ],
+        "relations": [
+          {
+            "foreignRelationName": "files",
+            "isOptional": true,
+            "modelName": "User",
+            "name": "uploader",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "uploaderId" }],
+            "relationshipType": "oneToMany",
+            "uid": "tdoyntCRk8Yi"
+          }
+        ]
+      },
+      "name": "File",
+      "schema": {
+        "authorize": { "read": ["user", "admin"] },
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": true,
+        "exposedFields": [
+          "name",
+          "id",
+          "category",
+          "updatedAt",
+          "createdAt",
+          "mimeType"
+        ],
+        "exposedLocalRelations": ["uploader"]
+      },
+      "uid": "TMQWikl5gzJf"
+    },
+    {
+      "feature": "todos",
+      "model": {
+        "fields": [
+          {
+            "isId": true,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid",
+            "uid": "qyf7hm9Neg33"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "todoListId",
+            "options": { "genUuid": false },
+            "type": "uuid",
+            "uid": "Knd48BFGLO4X"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "position",
+            "type": "int",
+            "uid": "NA_XhPvo3Kv6"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "text",
+            "type": "string",
+            "uid": "0u4aj84oZXkE"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "done",
+            "type": "boolean",
+            "uid": "Kp8CUdlYznQI"
+          },
+          {
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime",
+            "uid": "gOmZc6L9161q"
+          },
+          {
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime",
+            "uid": "tQiLWo7XDcbp"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "assigneeId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid",
+            "uid": "whpPCTTJ5WO7"
+          }
+        ],
+        "relations": [
+          {
+            "foreignRelationName": "todoItems",
+            "isOptional": false,
+            "modelName": "TodoList",
+            "name": "todoList",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "todoListId" }],
+            "relationshipType": "oneToMany",
+            "uid": "jZVrGe_MOeoK"
+          },
+          {
+            "foreignRelationName": "assignedItems",
+            "isOptional": true,
+            "modelName": "User",
+            "name": "assignee",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "assigneeId" }],
+            "relationshipType": "oneToMany",
+            "uid": "FvY5fTKQOPeT"
+          }
+        ]
+      },
+      "name": "TodoItem",
+      "schema": {
+        "authorize": {
+          "create": ["user"],
+          "delete": ["user"],
+          "read": ["user"],
+          "update": ["user"]
+        },
+        "buildMutations": true,
+        "buildObjectType": true,
+        "buildQuery": true,
+        "exposedFields": [
+          "id",
+          "todoListId",
+          "position",
+          "text",
+          "done",
+          "updatedAt",
+          "createdAt"
+        ],
+        "exposedForeignRelations": ["attachments"],
+        "exposedLocalRelations": ["todoList"]
+      },
+      "service": {
+        "build": true,
+        "create": {
+          "fields": ["todoListId", "position", "text", "done", "assigneeId"],
+          "transformerNames": ["attachments"]
+        },
+        "delete": { "disabled": false },
+        "transformers": [
+          {
+            "embeddedFieldNames": ["position", "url", "id"],
+            "embeddedTransformerNames": ["tags"],
+            "name": "attachments",
+            "type": "embeddedRelation",
+            "uid": "KeiDOKD0dS8Y"
+          }
+        ],
+        "update": {
+          "fields": ["todoListId", "position", "text", "done", "assigneeId"],
+          "transformerNames": ["attachments"]
+        }
+      },
+      "uid": "OmAjI05klbWo"
+    },
+    {
+      "feature": "todos",
+      "model": {
+        "fields": [
+          {
+            "isId": true,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid",
+            "uid": "y8Unr_jjdnak"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "todoItemId",
+            "options": { "genUuid": false },
+            "type": "uuid",
+            "uid": "M5XqG7JOd_cK"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "position",
+            "type": "int",
+            "uid": "qnWLk_NXcx51"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "url",
+            "type": "string",
+            "uid": "j3_G1XcC3Rt2"
+          },
+          {
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime",
+            "uid": "gQaDHuCd6CAS"
+          },
+          {
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime",
+            "uid": "vvOZdvWFdl7W"
+          }
+        ],
+        "relations": [
+          {
+            "foreignRelationName": "attachments",
+            "isOptional": false,
+            "modelName": "TodoItem",
+            "name": "todoItem",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "todoItemId" }],
+            "relationshipType": "oneToMany",
+            "uid": "eqsfnSRBW5j_"
+          }
+        ]
+      },
+      "name": "TodoItemAttachment",
+      "schema": {
+        "authorize": {},
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": false,
+        "exposedFields": [
+          "id",
+          "todoItemId",
+          "position",
+          "url",
+          "updatedAt",
+          "createdAt"
+        ],
+        "exposedForeignRelations": ["tags"],
+        "exposedLocalRelations": ["todoItem"]
+      },
+      "service": {
+        "build": true,
+        "create": { "transformerNames": [] },
+        "delete": { "disabled": true },
+        "transformers": [
+          {
+            "embeddedFieldNames": ["tag"],
+            "name": "tags",
+            "type": "embeddedRelation",
+            "uid": "Gt4hCI2iy8Au"
+          }
+        ],
+        "update": { "transformerNames": [] }
+      },
+      "uid": "XoHWaL4MgWXI"
+    },
+    {
+      "feature": "todos",
+      "model": {
+        "fields": [
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "todoItemAttachmentId",
+            "type": "uuid",
+            "uid": "wM1CllN0K3By"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "tag",
+            "type": "string",
+            "uid": "Szd304ktXm2t"
+          }
+        ],
+        "primaryKeys": ["todoItemAttachmentId", "tag"],
+        "relations": [
+          {
+            "foreignRelationName": "tags",
+            "isOptional": false,
+            "modelName": "TodoItemAttachment",
+            "name": "todoItemAttachment",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [
+              { "foreign": "id", "local": "todoItemAttachmentId" }
+            ],
+            "relationshipType": "oneToMany",
+            "uid": "LLEO4A0TFlvj"
+          }
+        ]
+      },
+      "name": "TodoItemAttachmentTag",
+      "schema": {
+        "authorize": {
+          "create": ["user"],
+          "delete": ["user"],
+          "read": ["user"],
+          "update": ["user"]
+        },
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": false,
+        "exposedFields": ["todoItemAttachmentId", "tag"],
+        "exposedLocalRelations": ["todoItemAttachment"]
+      },
+      "service": { "build": false },
+      "uid": "znYXZWUdlRbc"
+    },
+    {
+      "feature": "todos",
+      "model": {
+        "fields": [
+          {
+            "isId": true,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid",
+            "uid": "IOXfpU9IXJHk"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "ownerId",
+            "options": { "genUuid": false },
+            "type": "uuid",
+            "uid": "rYTjki2jHvWt"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "position",
+            "type": "int",
+            "uid": "fLiUnnH_JuWN"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "name",
+            "type": "string",
+            "uid": "kXoRlHlZvElr"
+          },
+          {
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime",
+            "uid": "w65HJjYPjTGG"
+          },
+          {
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime",
+            "uid": "KeLjDr5m5doO"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "status",
+            "options": { "default": "", "enumType": "TodoListStatus" },
+            "type": "enum",
+            "uid": "9zmfL72UNTgV"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "coverPhotoId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid",
+            "uid": "7e8Y5pzdZrzQ"
+          }
+        ],
+        "relations": [
+          {
+            "foreignRelationName": "todoLists",
+            "isOptional": false,
+            "modelName": "User",
+            "name": "owner",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "ownerId" }],
+            "relationshipType": "oneToMany",
+            "uid": "2BfiZVoQTlfH"
+          },
+          {
+            "foreignRelationName": "todoListCoverPhoto",
+            "isOptional": true,
+            "modelName": "File",
+            "name": "coverPhoto",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "coverPhotoId" }],
+            "relationshipType": "oneToMany",
+            "uid": "yEGRIuMdmEXf"
+          }
+        ],
+        "uniqueConstraints": [
+          {
+            "fields": [{ "name": "ownerId" }, { "name": "name" }],
+            "name": "ownerId_name",
+            "uid": "Z2LxJWMknAl9"
+          }
+        ]
+      },
+      "name": "TodoList",
+      "schema": {
+        "authorize": {
+          "create": ["user"],
+          "delete": ["user"],
+          "read": ["user"],
+          "update": ["user"]
+        },
+        "buildMutations": true,
+        "buildObjectType": true,
+        "buildQuery": true,
+        "exposedFields": [
+          "id",
+          "ownerId",
+          "position",
+          "name",
+          "updatedAt",
+          "createdAt",
+          "status"
+        ],
+        "exposedForeignRelations": [],
+        "exposedLocalRelations": ["owner", "coverPhoto"]
+      },
+      "service": {
+        "build": true,
+        "create": {
+          "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "transformerNames": ["coverPhoto"]
+        },
+        "delete": { "disabled": false },
+        "transformers": [
+          { "name": "coverPhoto", "type": "file", "uid": "k83AJaLdTzBs" }
+        ],
+        "update": {
+          "fields": ["position", "name", "ownerId", "status", "createdAt"],
+          "transformerNames": ["coverPhoto"]
+        }
+      },
+      "uid": "nke4pyKpDR0A"
+    },
+    {
+      "feature": "accounts/users",
+      "model": {
+        "fields": [
+          {
+            "isId": true,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid",
+            "uid": "OZ6_HyDwtmzz"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "name",
+            "type": "string",
+            "uid": "i1mM77XzkKen"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": true,
+            "name": "email",
+            "type": "string",
+            "uid": "NTtnSUGHNUKv"
+          },
+          {
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime",
+            "uid": "5H6JcWlh_bRf"
+          },
+          {
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime",
+            "uid": "eytlgaahlxxu"
+          },
+          {
+            "isOptional": true,
+            "name": "tokensNotBefore",
+            "type": "dateTime",
+            "uid": "cZFqwylLkO9P"
+          },
+          {
+            "isOptional": true,
+            "name": "passwordHash",
+            "type": "string",
+            "uid": "6DUXaLlSsXaI"
+          },
+          {
+            "isOptional": true,
+            "name": "auth0Id",
+            "type": "string",
+            "uid": "dD_ULccRVY3w"
+          }
+        ],
+        "relations": []
+      },
+      "name": "User",
+      "schema": {
+        "authorize": {
+          "create": ["admin"],
+          "delete": ["admin"],
+          "read": ["user"],
+          "update": ["admin"]
+        },
+        "buildMutations": true,
+        "buildObjectType": true,
+        "buildQuery": true,
+        "exposedFields": ["id", "name", "email", "updatedAt", "createdAt"],
+        "exposedForeignRelations": [
+          "roles",
+          "todoLists",
+          "userProfile",
+          "customer"
+        ]
+      },
+      "service": {
+        "build": true,
+        "create": {
+          "fields": ["name", "email"],
+          "transformerNames": ["roles", "customer", "userProfile"]
+        },
+        "delete": { "disabled": false },
+        "transformers": [
+          {
+            "embeddedFieldNames": ["role"],
+            "name": "roles",
+            "type": "embeddedRelation",
+            "uid": "puMrGeE1tCfo"
+          },
+          {
+            "embeddedFieldNames": ["stripeCustomerId"],
+            "name": "customer",
+            "type": "embeddedRelation",
+            "uid": "MLJL1BUfkwIj"
+          },
+          {
+            "embeddedFieldNames": ["id", "bio", "birthDay"],
+            "embeddedTransformerNames": ["avatar"],
+            "name": "userProfile",
+            "type": "embeddedRelation",
+            "uid": "Z_7Z5RD1EIOX"
+          }
+        ],
+        "update": {
+          "fields": ["name", "email"],
+          "transformerNames": ["roles", "customer", "userProfile"]
+        }
+      },
+      "uid": "c1yt5BUof2bL"
+    },
+    {
+      "feature": "accounts/users",
+      "model": {
+        "fields": [
+          {
+            "isId": true,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid",
+            "uid": "nqyxh3BuQaBY"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": true,
+            "name": "userId",
+            "options": { "genUuid": false },
+            "type": "uuid",
+            "uid": "_RT9m_UxdmQ4"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "bio",
+            "type": "string",
+            "uid": "tmDF6bmUNsMW"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "birthDay",
+            "type": "date",
+            "uid": "UTlp2DyM6BcU"
+          },
+          {
+            "isId": false,
+            "isOptional": true,
+            "isUnique": false,
+            "name": "avatarId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid",
+            "uid": "7gEF6W5Go1df"
+          }
+        ],
+        "relations": [
+          {
+            "foreignRelationName": "userProfile",
+            "isOptional": false,
+            "modelName": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "userId" }],
+            "relationshipType": "oneToOne",
+            "uid": "PCoDlBx4ad9l"
+          },
+          {
+            "foreignRelationName": "userProfileAvatar",
+            "isOptional": true,
+            "modelName": "File",
+            "name": "avatar",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "avatarId" }],
+            "relationshipType": "oneToMany",
+            "uid": "04tGY8UssXvR"
+          }
+        ]
+      },
+      "name": "UserProfile",
+      "schema": {
+        "authorize": {},
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": false,
+        "exposedFields": ["id", "userId", "bio", "birthDay", "avatarId"],
+        "exposedLocalRelations": ["user", "avatar"]
+      },
+      "service": {
+        "build": true,
+        "create": {},
+        "delete": { "disabled": false },
+        "transformers": [
+          { "name": "avatar", "type": "file", "uid": "ylQisLMQHzYW" }
+        ],
+        "update": {}
+      },
+      "uid": "D8bME94D20L2"
+    },
+    {
+      "feature": "accounts/users",
+      "model": {
+        "fields": [
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "userId",
+            "options": { "genUuid": false },
+            "type": "uuid",
+            "uid": "OD6Qy_wL3bpW"
+          },
+          {
+            "isId": false,
+            "isOptional": false,
+            "isUnique": false,
+            "name": "role",
+            "type": "string",
+            "uid": "OcJvSUm6xYMQ"
+          },
+          {
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime",
+            "uid": "jb56Nz81waQJ"
+          },
+          {
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime",
+            "uid": "ywyQXtwXLUFL"
+          }
+        ],
+        "primaryKeys": ["userId", "role"],
+        "relations": [
+          {
+            "foreignRelationName": "roles",
+            "isOptional": false,
+            "modelName": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "userId" }],
+            "relationshipType": "oneToMany",
+            "uid": "gOqZcoKeYoyF"
+          }
+        ]
+      },
+      "name": "UserRole",
+      "schema": {
+        "authorize": {},
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": false,
+        "exposedFields": ["userId", "role", "updatedAt", "createdAt"],
+        "exposedLocalRelations": ["user"]
+      },
+      "service": {},
+      "uid": "LKYn3UFYS4TJ"
+    }
+  ],
+  "name": "todoer",
+  "portBase": 6000,
+  "storage": {
+    "categories": [
+      {
+        "defaultAdapter": "uploads",
+        "maxFileSize": 10,
+        "name": "userProfileAvatar",
+        "uid": "XlREfGBAd8aS",
+        "uploadRoles": ["user"],
+        "usedByRelation": "userProfileAvatar"
+      },
+      {
+        "defaultAdapter": "uploads",
+        "maxFileSize": 10,
+        "name": "todoListCoverPhoto",
+        "uid": "7LLcXze_oCGN",
+        "uploadRoles": ["user"],
+        "usedByRelation": "todoListCoverPhoto"
+      }
+    ],
+    "featurePath": "storage",
+    "fileModel": "File",
+    "s3Adapters": [
+      {
+        "bucketConfigVar": "AWS_UPLOADS_BUCKET",
+        "hostedUrlConfigVar": "AWS_UPLOADS_URL",
+        "name": "uploads",
+        "uid": "nzCz8K4N5Z0y"
+      }
+    ]
+  },
+  "version": "0.1.0"
+}

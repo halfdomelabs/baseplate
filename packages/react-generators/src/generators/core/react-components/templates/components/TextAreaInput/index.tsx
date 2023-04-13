@@ -5,6 +5,7 @@ import {
   Control,
   FieldError,
   FieldPath,
+  FieldValues,
   get,
   UseFormRegisterReturn,
   useFormState,
@@ -77,16 +78,15 @@ TextAreaInput.Labelled = function TextInputLabelled({
   );
 };
 
-interface TextInputControllerProps<T> extends TextInputLabelledProps {
+interface TextInputControllerProps<T extends FieldValues>
+  extends TextInputLabelledProps {
   control: Control<T>;
   name: FieldPath<T>;
 }
 
-TextAreaInput.LabelledController = function TextInputController<T>({
-  control,
-  name,
-  ...rest
-}: TextInputControllerProps<T>): JSX.Element {
+TextAreaInput.LabelledController = function TextInputController<
+  T extends FieldValues
+>({ control, name, ...rest }: TextInputControllerProps<T>): JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 
