@@ -129,9 +129,9 @@ describe('executeGeneratorEntry', () => {
         },
       },
       postWriteCommands: [
-        { command: 'simple command', options: undefined },
         { command: 'nested command', options: { workingDirectory: '/nested' } },
         { command: 'nested command 2', options: undefined },
+        { command: 'simple command', options: undefined },
       ],
     });
     expect(simpleProvider.hello).toHaveBeenCalled();

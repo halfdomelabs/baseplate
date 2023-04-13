@@ -21,6 +21,7 @@ interface Props {
   register?: UseFormRegisterReturn;
   onChange?: (value: string) => void;
   onBlur?: () => void;
+  onFocus?: () => void;
   value?: string;
 }
 
@@ -33,6 +34,7 @@ const TextInput = function TextInput({
   onChange,
   onBlur,
   value,
+  onFocus,
   register,
 }: Props): JSX.Element {
   const inputProps: InputHTMLAttributes<HTMLInputElement> = {
@@ -42,6 +44,7 @@ const TextInput = function TextInput({
     type,
     onChange: onChange && ((e) => onChange(e.target.value)),
     onBlur,
+    onFocus,
     value,
     ...register,
   };

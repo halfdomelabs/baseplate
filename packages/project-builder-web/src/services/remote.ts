@@ -1,12 +1,18 @@
+import { ProjectConfig } from '@baseplate/project-builder-lib';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { TypedEventEmitterBase } from 'src/utils/typed-event-emitter';
+import { config as envConfig } from './config';
+
+import PREVIEW_APP from './preview-app.json';
 
 const URL_BASE = undefined;
 
 const axiosClient = axios.create();
 
 let csrfToken: string | undefined;
+
+const IS_PREVIEW = envConfig.VITE_PREVIEW_MODE;
 
 async function getCsrfToken(): Promise<string> {
   const response = await axios.get<{ csrfToken: string }>('/api/auth');
@@ -46,6 +52,15 @@ export interface Project {
 }
 
 export async function getProjects(): Promise<Project[]> {
+  if (IS_PREVIEW) {
+    return [
+      {
+        id: 'preview-project',
+        name: 'Preview Project',
+        directory: '~/preview-project',
+      },
+    ];
+  }
   const response = await axiosClient.get<Project[]>('/api/projects');
   return response.data;
 }
@@ -58,6 +73,12 @@ export interface FilePayload {
 export async function downloadProjectConfig(
   id: string
 ): Promise<FilePayload | null> {
+  if (IS_PREVIEW) {
+    return {
+      lastModifiedAt: new Date().toISOString(),
+      contents: JSON.stringify(PREVIEW_APP as ProjectConfig),
+    };
+  }
   const response = await axiosClient.get<{ file: FilePayload | null }>(
     `/api/project-json/${id}`,
     { baseURL: URL_BASE }
@@ -73,6 +94,9 @@ export async function uploadProjectConfig(
   id: string,
   contents: FilePayload
 ): Promise<WriteResult> {
+  if (IS_PREVIEW) {
+    return { type: 'success', lastModifiedAt: new Date().toISOString() };
+  }
   const response = await axiosClient.post<WriteResult>(
     `/api/project-json/${id}`,
     contents,
@@ -85,6 +109,9 @@ export async function uploadProjectConfig(
 }
 
 export async function startSync(id: string): Promise<void> {
+  if (IS_PREVIEW) {
+    return;
+  }
   await axiosClient.post(`/api/start-sync/${id}`, undefined, {
     baseURL: URL_BASE,
   });
@@ -135,10 +162,14 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
   error: Error;
   message: ServerWebsocketMessage;
 }> {
-  private socket: ReconnectingWebSocket;
+  private socket?: ReconnectingWebSocket;
 
   constructor() {
     super();
+    if (IS_PREVIEW) {
+      return;
+    }
+
     const websocketUrl = `${
       (window.location.protocol === 'https:' ? 'wss://' : 'ws://') +
       window.location.host
@@ -189,10 +220,16 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
   }
 
   sendMessage(message: ClientWebsocketMessage): void {
+    if (!this.socket) {
+      return;
+    }
     this.socket.send(JSON.stringify(message));
   }
 
   subscribe(id: string): void {
+    if (!this.socket) {
+      return;
+    }
     this.socket.send(
       JSON.stringify({
         type: 'subscribe',
@@ -202,6 +239,9 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
   }
 
   close(): void {
+    if (!this.socket) {
+      return;
+    }
     this.socket.close();
   }
 }

@@ -34,7 +34,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     sectionId &&
     appConfig.sections?.find((section) => section.uid === sectionId);
 
-  const { control, handleSubmit, watch, formState, reset } =
+  const { control, handleSubmit, watch, reset } =
     useResettableForm<AdminSectionConfig>({
       defaultValues: existingSection || { type: 'crud' },
       resolver: zodResolver(adminSectionSchema),
@@ -43,11 +43,6 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   useEffect(() => {
     reset(existingSection || { type: 'crud' });
   }, [reset, existingSection]);
-
-  // TODO: Remove
-  if (Object.keys(formState.errors).length) {
-    console.log(formState.errors);
-  }
 
   const type = watch('type');
 

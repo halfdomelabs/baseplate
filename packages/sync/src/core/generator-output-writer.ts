@@ -269,6 +269,19 @@ export async function writeGeneratorOutput(
       );
     }
 
+    const runnableCommands = output.postWriteCommands.filter((command) => {
+      const { onlyIfChanged = [] } = command.options || {};
+      const changedList = Array.isArray(onlyIfChanged)
+        ? onlyIfChanged
+        : [onlyIfChanged];
+
+      return (
+        command.options?.onlyIfChanged == null ||
+        changedList.some((file) => modifiedFilenames.includes(file)) ||
+        rerunCommands.includes(command.command)
+      );
+    });
+
     if (conflictFilenames.length) {
       logger.log(
         chalk.red(
@@ -277,17 +290,17 @@ export async function writeGeneratorOutput(
           )}`
         )
       );
-      if (output.postWriteCommands.length) {
+      if (runnableCommands.length) {
         logger.log(
           `\nOnce resolved, please re-run the generator or run the following commands:`
         );
-        for (const command of output.postWriteCommands) {
+        for (const command of runnableCommands) {
           logger.log(`  ${command.command}`);
         }
       }
       return {
         conflictFilenames,
-        failedCommands: output.postWriteCommands.map((c) => c.command),
+        failedCommands: runnableCommands.map((c) => c.command),
       };
     }
 
@@ -300,34 +313,24 @@ export async function writeGeneratorOutput(
 
     const failedCommands: string[] = [];
 
-    for (const command of output.postWriteCommands) {
-      const { onlyIfChanged = [], workingDirectory = '' } =
-        command.options || {};
-      const changedList = Array.isArray(onlyIfChanged)
-        ? onlyIfChanged
-        : [onlyIfChanged];
+    for (const command of runnableCommands) {
+      const { workingDirectory = '' } = command.options || {};
 
-      if (
-        command.options?.onlyIfChanged == null ||
-        changedList.some((file) => modifiedFilenames.includes(file)) ||
-        rerunCommands.includes(command.command)
-      ) {
-        const commandString = NODE_COMMANDS.includes(
-          command.command.split(' ')[0]
-        )
-          ? `${nodePrefix}${command.command}`
-          : command.command;
+      const commandString = NODE_COMMANDS.includes(
+        command.command.split(' ')[0]
+      )
+        ? `${nodePrefix}${command.command}`
+        : command.command;
 
-        logger.log(`Running ${commandString}...`);
-        try {
-          await exec(commandString, {
-            cwd: path.join(outputDirectory, workingDirectory),
-          });
-        } catch (err) {
-          logger.error(chalk.red(`Unable to run ${commandString}`));
-          logger.error(getErrorMessage(err));
-          failedCommands.push(command.command);
-        }
+      logger.log(`Running ${commandString}...`);
+      try {
+        await exec(commandString, {
+          cwd: path.join(outputDirectory, workingDirectory),
+        });
+      } catch (err) {
+        logger.error(chalk.red(`Unable to run ${commandString}`));
+        logger.error(getErrorMessage(err));
+        failedCommands.push(command.command);
       }
     }
 
