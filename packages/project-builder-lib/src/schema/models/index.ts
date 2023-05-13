@@ -10,27 +10,40 @@ import {
 
 export * from './enums.js';
 
-export const modelScalarFieldSchema = z.object({
-  uid: z.string().default(randomUid),
-  name: z.string().min(1),
-  type: z.enum(SCALAR_FIELD_TYPES),
-  isId: z.boolean().optional(),
-  isOptional: z.boolean().optional(),
-  isUnique: z.boolean().optional(),
-  options: z
-    .object({
-      // string options
-      default: z.string().optional(),
-      // uuid options
-      genUuid: z.boolean().optional(),
-      // date options
-      updatedAt: z.boolean().optional(),
-      defaultToNow: z.boolean().optional(),
-      // enum options
-      enumType: z.string().optional(),
-    })
-    .optional(),
-});
+export const modelScalarFieldSchema = z
+  .object({
+    uid: z.string().default(randomUid),
+    name: z.string().min(1),
+    type: z.enum(SCALAR_FIELD_TYPES),
+    isId: z.boolean().optional(),
+    isOptional: z.boolean().optional(),
+    isUnique: z.boolean().optional(),
+    options: z
+      .object({
+        // string options
+        default: z.string().optional(),
+        // uuid options
+        genUuid: z.boolean().optional(),
+        // date options
+        updatedAt: z.boolean().optional(),
+        defaultToNow: z.boolean().optional(),
+        // enum options
+        enumType: z.string().optional(),
+      })
+      .optional(),
+  })
+  .transform((value) => {
+    if (value.type !== 'enum' && value.options?.enumType) {
+      return {
+        ...value,
+        options: {
+          ...value.options,
+          enumType: undefined,
+        },
+      };
+    }
+    return value;
+  });
 
 export type ModelScalarFieldConfig = z.infer<typeof modelScalarFieldSchema>;
 

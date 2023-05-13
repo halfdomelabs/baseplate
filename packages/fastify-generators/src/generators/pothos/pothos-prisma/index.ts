@@ -35,7 +35,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
         pothosPrisma: {},
       }),
       build: () => {
-        node.addPackages({ '@pothos/plugin-prisma': '3.40.1' });
+        node.addPackages({ '@pothos/plugin-prisma': '3.44.0' });
 
         pothosSetup
           .getConfig()

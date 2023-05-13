@@ -161,12 +161,14 @@ function ModelFieldForm({
       }
     });
     watchedUniqueConstraints?.forEach((constraint, constraintIdx) => {
-      if (constraint.name === watchedField.name) {
-        formProps.setValue(
-          `model.uniqueConstraints.${constraintIdx}.name`,
-          name
-        );
-      }
+      constraint.fields?.forEach((constraintField, fieldIdx) => {
+        if (constraintField.name === watchedField.name) {
+          formProps.setValue(
+            `model.uniqueConstraints.${constraintIdx}.fields.${fieldIdx}.name`,
+            name
+          );
+        }
+      });
     });
     nameField.onChange(name);
   };
@@ -194,7 +196,7 @@ function ModelFieldForm({
             onChange={handleNameChange}
             onBlur={nameField.onBlur}
             value={nameField.value}
-            error={errors.model?.fields?.[idx].name?.message}
+            error={errors.model?.fields?.[idx]?.name?.message}
           />
           <SelectInput.Labelled
             label="Type"
