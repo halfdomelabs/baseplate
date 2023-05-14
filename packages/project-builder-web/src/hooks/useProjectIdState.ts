@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import useLocalStorageState from 'use-local-storage-state';
 
 export function useProjectIdState(): [
@@ -6,5 +7,11 @@ export function useProjectIdState(): [
 ] {
   const [value, setValue, { removeItem }] =
     useLocalStorageState<string>('projectId');
-  return [value, (val) => (val ? setValue(val) : removeItem())];
+  return [
+    value,
+    useCallback(
+      (val) => (val ? setValue(val) : removeItem()),
+      [setValue, removeItem]
+    ),
+  ];
 }
