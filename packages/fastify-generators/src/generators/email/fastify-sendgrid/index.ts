@@ -1,4 +1,7 @@
-import { nodeProvider, typescriptProvider } from '@halfdomelabs/core-generators';
+import {
+  nodeProvider,
+  typescriptProvider,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,

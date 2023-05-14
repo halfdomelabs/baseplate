@@ -5,7 +5,10 @@ import {
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGeneratorWithTasks,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';

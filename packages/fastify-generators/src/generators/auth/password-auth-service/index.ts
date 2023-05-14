@@ -1,4 +1,7 @@
-import { ImportMapper, typescriptProvider } from '@halfdomelabs/core-generators';
+import {
+  ImportMapper,
+  typescriptProvider,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,

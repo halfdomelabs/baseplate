@@ -2,7 +2,10 @@ import {
   eslintProvider,
   typescriptConfigProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren, writeJsonAction } from '@halfdomelabs/sync';
+import {
+  createGeneratorWithChildren,
+  writeJsonAction,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});

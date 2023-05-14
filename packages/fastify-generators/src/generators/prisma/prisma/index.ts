@@ -7,7 +7,10 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGeneratorWithTasks,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { formatSchema } from '@prisma/internals';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';

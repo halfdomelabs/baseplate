@@ -2,7 +2,10 @@ import {
   makeImportAndFilePath,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { copyFileAction, createGeneratorWithChildren } from '@halfdomelabs/sync';
+import {
+  copyFileAction,
+  createGeneratorWithChildren,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks';
 import { reactApolloProvider } from '../../apollo/react-apollo';
