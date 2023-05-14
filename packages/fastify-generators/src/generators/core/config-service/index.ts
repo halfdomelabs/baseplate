@@ -7,13 +7,13 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import R from 'ramda';
 import { z } from 'zod';
 import { fastifyProvider } from '../fastify';

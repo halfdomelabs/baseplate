@@ -1,8 +1,8 @@
-import { quot, TypescriptCodeUtils } from '@baseplate/core-generators';
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service';

@@ -1,14 +1,14 @@
 {
-  "name": "@baseplate/react-generators",
-  "version": "0.0.1",
+  "name": "@halfdomelabs/react-generators",
+  "version": "0.1.0",
   "description": "React Generators for Baseplate",
   "main": "lib/index.js",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/core-generators",
+  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/core-generators",
   "author": "Kingston Tam",
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "@baseplate/tools": "^0.0.1",
+    "@halfdomelabs/tools": "^0.1.0",
     "@types/lodash": "^4.14.182",
     "@types/ramda": "^0.27.34",
     "@types/toposort": "^2.0.3",
@@ -29,8 +29,8 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@baseplate/core-generators": "^0.0.1",
-    "@baseplate/sync": "^0.0.1",
+    "@halfdomelabs/core-generators": "^0.1.0",
+    "@halfdomelabs/sync": "^0.1.0",
     "@types/resolve": "^1.20.1",
     "gulp": "^4.0.2",
     "inflection": "^1.13.2",

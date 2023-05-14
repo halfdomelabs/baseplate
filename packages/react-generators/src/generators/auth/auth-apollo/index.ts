@@ -1,8 +1,8 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactApolloSetupProvider } from '../../apollo/react-apollo';
 import { authServiceProvider } from '../auth-service';

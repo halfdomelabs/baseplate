@@ -1,14 +1,14 @@
 {
-  "name": "@baseplate/core-generators",
-  "version": "0.0.1",
+  "name": "@halfdomelabs/core-generators",
+  "version": "0.1.0",
   "description": "Core generators for Baseplate",
   "main": "lib/index.js",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/core-generators",
+  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/core-generators",
   "author": "Kingston Tam",
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "@baseplate/tools": "^0.0.1",
+    "@halfdomelabs/tools": "^0.1.0",
     "@types/is-core-module": "^2.2.0",
     "@types/jest": "^27.4.0",
     "@types/lodash": "^4.14.191",
@@ -34,7 +34,7 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@baseplate/sync": "^0.0.1",
+    "@halfdomelabs/sync": "^0.1.0",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.1",
     "fs-extra": "^10.0.0",

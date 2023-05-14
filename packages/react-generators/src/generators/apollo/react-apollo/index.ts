@@ -8,13 +8,13 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
   writeTemplateAction,
   createNonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
@@ -70,7 +70,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({
     errorLink: {
       defaultDescriptor: {
-        generator: '@baseplate/react/apollo/apollo-error-link',
+        generator: '@halfdomelabs/react/apollo/apollo-error-link',
       },
     },
   }),

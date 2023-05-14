@@ -3,12 +3,12 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { paramCase } from 'change-case';
 import { z } from 'zod';
 import { ServiceOutputMethod } from '@src/types/serviceOutput';

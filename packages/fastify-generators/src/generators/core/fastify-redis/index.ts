@@ -6,12 +6,12 @@ import {
   nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { configServiceProvider } from '../config-service';
 import { fastifyHealthCheckProvider } from '../fastify-health-check';

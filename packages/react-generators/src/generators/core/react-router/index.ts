@@ -4,11 +4,11 @@ import {
   TypescriptCodeUtils,
   TypescriptCodeWrapper,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import {
   ReactRouteLayout,
@@ -40,7 +40,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     },
     notFoundHandler: {
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-not-found-handler',
+        generator: '@halfdomelabs/react/core/react-not-found-handler',
         peerProvider: true,
       },
     },

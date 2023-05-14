@@ -1,12 +1,12 @@
 import {
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { reactComponentsProvider } from '@src/generators/core/react-components';

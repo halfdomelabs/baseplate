@@ -2,11 +2,11 @@ import {
   jestProvider,
   nodeProvider,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({

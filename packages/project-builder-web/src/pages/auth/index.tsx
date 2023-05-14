@@ -2,7 +2,7 @@ import {
   AuthConfig,
   authSchema,
   AUTH_DEFAULT_ROLES,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Alert, Button } from 'src/components';

@@ -1,5 +1,5 @@
 import path from 'path';
-import { FileEntry, AppEntry } from '@baseplate/project-builder-lib';
+import { FileEntry, AppEntry } from '@halfdomelabs/project-builder-lib';
 import fs from 'fs-extra';
 import globby from 'globby';
 import stringify from 'json-stringify-pretty-compact';

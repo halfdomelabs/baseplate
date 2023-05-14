@@ -1,4 +1,7 @@
-import { AdminAppConfig, adminAppSchema } from '@baseplate/project-builder-lib';
+import {
+  AdminAppConfig,
+  adminAppSchema,
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import { Button, TextInput } from 'src/components';

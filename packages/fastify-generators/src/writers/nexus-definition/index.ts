@@ -1,7 +1,7 @@
 import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import {
   ServiceOutputDtoField,

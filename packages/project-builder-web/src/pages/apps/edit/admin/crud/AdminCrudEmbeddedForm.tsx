@@ -1,7 +1,7 @@
 import {
   AdminCrudEmbeddedFormConfig,
   adminCrudEmbeddedFormSchema,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Control } from 'react-hook-form';
 import {

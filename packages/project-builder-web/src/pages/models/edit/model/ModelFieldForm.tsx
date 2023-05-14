@@ -2,7 +2,7 @@ import {
   ModelConfig,
   ModelScalarFieldConfig,
   SCALAR_FIELD_TYPES,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
 import {

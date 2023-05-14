@@ -91,16 +91,16 @@ export const Auth0Plugin: ParserPlugin = {
     // add global auth providers
     hooks.addFastifyChildren({
       $auth: {
-        generator: '@baseplate/fastify/auth/auth',
+        generator: '@halfdomelabs/fastify/auth/auth',
         peerProvider: true,
       },
       $authContext: {
-        generator: '@baseplate/fastify/auth/auth-context',
+        generator: '@halfdomelabs/fastify/auth/auth-context',
         peerProvider: true,
         authInfoRef: `${auth.authFeaturePath}/root:$auth0`,
       },
       $pothosAuth: {
-        generator: '@baseplate/fastify/pothos/pothos-auth',
+        generator: '@halfdomelabs/fastify/pothos/pothos-auth',
         peerProvider: true,
       },
     });
@@ -110,18 +110,18 @@ export const Auth0Plugin: ParserPlugin = {
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $roleService: {
         name: 'AuthRoleService',
-        generator: '@baseplate/fastify/core/service-file',
+        generator: '@halfdomelabs/fastify/core/service-file',
         peerProvider: true,
         children: {
           $roles: {
-            generator: '@baseplate/fastify/auth/role-service',
+            generator: '@halfdomelabs/fastify/auth/role-service',
             roles: auth.roles,
             peerProvider: true,
           },
         },
       },
       $auth0: {
-        generator: '@baseplate/fastify/auth0/auth0-module',
+        generator: '@halfdomelabs/fastify/auth0/auth0-module',
         userModelName: auth.userModel,
         includeManagement: true,
       },

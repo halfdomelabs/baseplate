@@ -2,12 +2,12 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authProvider } from '@src/generators/auth/auth';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';

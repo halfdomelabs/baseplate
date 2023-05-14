@@ -1,5 +1,5 @@
 {
-  "name": "project-builder-web",
+  "name": "@halfdomelabs/project-builder-web",
   "description": "Web interface for constructing project builder JSON",
   "license": "UNLICENSED",
   "version": "0.1.0",
@@ -25,7 +25,7 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@baseplate/project-builder-lib": "^0.1.0",
+    "@halfdomelabs/project-builder-lib": "^0.1.0",
     "@headlessui/react": "^1.6.6",
     "@hookform/resolvers": "^2.8.8",
     "@popperjs/core": "^2.11.5",

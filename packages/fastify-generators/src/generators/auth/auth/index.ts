@@ -1,10 +1,10 @@
-import { ImportEntry, ImportMapper } from '@baseplate/core-generators';
+import { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});

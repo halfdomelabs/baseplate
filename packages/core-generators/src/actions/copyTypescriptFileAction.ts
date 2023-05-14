@@ -1,5 +1,5 @@
 import path from 'path';
-import { createBuilderActionCreator } from '@baseplate/sync';
+import { createBuilderActionCreator } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
 import { ImportMapper } from '../providers';
 import { PathMapEntry, TypescriptSourceFile } from '../writers';

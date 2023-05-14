@@ -1,8 +1,8 @@
 {
-  "name": "@baseplate/tools",
-  "version": "0.0.1",
+  "name": "@halfdomelabs/tools",
+  "version": "0.1.0",
   "description": "Shared dev configurations for Baseplate projects",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/tools",
+  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/tools",
   "author": "Kingston Tam",
   "license": "UNLICENSED",
   "private": true,

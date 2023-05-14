@@ -8,8 +8,8 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithTasks, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authInfoImportProvider } from '@src/generators/auth/auth-service';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';

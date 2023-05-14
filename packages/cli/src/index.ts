@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 
-import { GeneratorEngine, loadGeneratorsForModule } from '@baseplate/sync';
+import { resolve } from 'path';
+import { GeneratorEngine, loadGeneratorsForModule } from '@halfdomelabs/sync';
 import { program } from 'commander';
 import R from 'ramda';
 
 const GENERATOR_MODULES = [
-  '@baseplate/core-generators',
-  '@baseplate/fastify-generators',
-  '@baseplate/react-generators',
+  '@halfdomelabs/core-generators',
+  '@halfdomelabs/fastify-generators',
+  '@halfdomelabs/react-generators',
 ];
 
 async function generateForDirectory(directory: string): Promise<void> {
@@ -24,8 +25,16 @@ async function generateForDirectory(directory: string): Promise<void> {
   console.log('Project successfully generated!');
 }
 
+async function getVersion(): Promise<string> {
+  const packageJson = (await import(
+    resolve(__dirname, '../package.json')
+  )) as Record<string, string>;
+  return packageJson?.version;
+}
+
 async function runMain(): Promise<void> {
-  program.version('0.0.1');
+  const version = await getVersion();
+  program.version(version || 'unknown');
   program
     .command('generate <directory>')
     .description('Generates code for a given directory')

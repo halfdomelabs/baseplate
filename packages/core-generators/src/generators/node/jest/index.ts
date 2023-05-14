@@ -3,7 +3,7 @@ import {
   createGeneratorWithChildren,
   NonOverwriteableMap,
   createNonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { quot } from '@src/utils/string';
 import { TypescriptCodeBlock, TypescriptCodeUtils } from '@src/writers';

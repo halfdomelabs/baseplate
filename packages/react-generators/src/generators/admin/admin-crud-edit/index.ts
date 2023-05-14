@@ -4,8 +4,8 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
-} from '@baseplate/core-generators';
-import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithTasks, createProviderType } from '@halfdomelabs/sync';
 import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';
@@ -51,7 +51,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
     embeddedForms: {
       isMultiple: true,
       defaultDescriptor: {
-        generator: '@baseplate/react/admin/admin-crud-embedded-form',
+        generator: '@halfdomelabs/react/admin/admin-crud-embedded-form',
       },
     },
   }),

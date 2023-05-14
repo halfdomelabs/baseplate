@@ -2,7 +2,7 @@ import {
   ProjectConfig,
   FixReferenceRenamesOptions,
   ParsedProjectConfig,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import React from 'react';
 
 export interface UseProjectConfigResult {

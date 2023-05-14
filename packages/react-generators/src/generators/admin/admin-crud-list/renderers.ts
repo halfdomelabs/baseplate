@@ -1,7 +1,7 @@
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import { z } from 'zod';
 import { GraphQLField } from '@src/writers/graphql';
 

@@ -3,8 +3,8 @@ import {
   nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify';
 import { reactConfigProvider } from '../react-config';

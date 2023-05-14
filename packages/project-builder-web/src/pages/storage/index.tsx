@@ -1,4 +1,7 @@
-import { StorageConfig, storageSchema } from '@baseplate/project-builder-lib';
+import {
+  StorageConfig,
+  storageSchema,
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { Alert, Button } from 'src/components';

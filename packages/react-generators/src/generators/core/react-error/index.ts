@@ -3,11 +3,11 @@ import {
   makeImportAndFilePath,
   TypescriptCodeBlock,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactLoggerProvider } from '../react-logger';
 

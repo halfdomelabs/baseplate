@@ -5,12 +5,12 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptSourceFile,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { configServiceProvider } from '../config-service';
 import { fastifyServerProvider } from '../fastify-server';

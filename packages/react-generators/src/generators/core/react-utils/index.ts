@@ -1,9 +1,9 @@
-import { ImportMapper, typescriptProvider } from '@baseplate/core-generators';
+import { ImportMapper, typescriptProvider } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});

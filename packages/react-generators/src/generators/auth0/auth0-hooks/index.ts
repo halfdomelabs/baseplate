@@ -1,8 +1,8 @@
 import {
   makeImportAndFilePath,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { copyFileAction, createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { copyFileAction, createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks';
 import { reactApolloProvider } from '../../apollo/react-apollo';

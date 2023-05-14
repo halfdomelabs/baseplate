@@ -3,12 +3,12 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
   copyFileAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';

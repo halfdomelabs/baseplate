@@ -1,4 +1,4 @@
-import { BaseAppConfig } from '@baseplate/project-builder-lib';
+import { BaseAppConfig } from '@halfdomelabs/project-builder-lib';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, NotFoundCard } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';

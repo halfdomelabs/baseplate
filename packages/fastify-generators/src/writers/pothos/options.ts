@@ -1,7 +1,7 @@
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
 import { ScalarFieldType } from '@src/types/fieldTypes';
 import {

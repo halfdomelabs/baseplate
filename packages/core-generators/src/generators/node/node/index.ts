@@ -3,7 +3,7 @@ import {
   createGeneratorWithChildren,
   createNonOverwriteableMap,
   writeJsonAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
@@ -52,35 +52,35 @@ const NodeGenerator = createGeneratorWithChildren({
     prettier: {
       provider: 'formatter',
       defaultDescriptor: {
-        generator: '@baseplate/core/node/prettier',
+        generator: '@halfdomelabs/core/node/prettier',
         peerProvider: true,
       },
     },
     typescript: {
       provider: 'typescript',
       defaultDescriptor: {
-        generator: '@baseplate/core/node/typescript',
+        generator: '@halfdomelabs/core/node/typescript',
         peerProvider: true,
       },
     },
     gitIgnore: {
       provider: 'node-git-ignore',
       defaultDescriptor: {
-        generator: '@baseplate/core/node/node-git-ignore',
+        generator: '@halfdomelabs/core/node/node-git-ignore',
         peerProvider: true,
       },
     },
     eslint: {
       provider: 'eslint',
       defaultDescriptor: {
-        generator: '@baseplate/core/node/eslint',
+        generator: '@halfdomelabs/core/node/eslint',
         peerProvider: true,
       },
     },
     tsUtils: {
       provider: 'ts-utils',
       defaultDescriptor: {
-        generator: '@baseplate/core/node/ts-utils',
+        generator: '@halfdomelabs/core/node/ts-utils',
         peerProvider: true,
       },
     },
@@ -88,7 +88,7 @@ const NodeGenerator = createGeneratorWithChildren({
       provider: 'jest',
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/core/node/jest',
+        generator: '@halfdomelabs/core/node/jest',
         peerProvider: true,
       },
     },

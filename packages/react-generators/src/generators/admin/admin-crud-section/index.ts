@@ -1,7 +1,7 @@
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -19,21 +19,21 @@ const AdminCrudSectionGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: ({ modelName, disableCreate }) => ({
     edit: {
       defaultDescriptor: {
-        generator: '@baseplate/react/admin/admin-crud-edit',
+        generator: '@halfdomelabs/react/admin/admin-crud-edit',
         modelName,
         disableCreate,
       },
     },
     list: {
       defaultDescriptor: {
-        generator: '@baseplate/react/admin/admin-crud-list',
+        generator: '@halfdomelabs/react/admin/admin-crud-list',
         modelName,
         disableCreate,
       },
     },
     queries: {
       defaultDescriptor: {
-        generator: '@baseplate/react/admin/admin-crud-queries',
+        generator: '@halfdomelabs/react/admin/admin-crud-queries',
         modelName,
         peerProvider: true,
       },

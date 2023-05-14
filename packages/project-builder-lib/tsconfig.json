@@ -1,5 +1,5 @@
 {
-  "extends": "@baseplate/tools/tsconfig.esm.json",
+  "extends": "@halfdomelabs/tools/tsconfig.esm.json",
   "compilerOptions": {
     "outDir": "lib/esm",
     "declaration": true,

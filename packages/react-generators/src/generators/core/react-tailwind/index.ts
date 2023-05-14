@@ -1,11 +1,11 @@
 import path from 'path';
-import { eslintProvider, nodeProvider } from '@baseplate/core-generators';
+import { eslintProvider, nodeProvider } from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
   writeTemplateAction,
   copyFileAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactProvider } from '../react';
 

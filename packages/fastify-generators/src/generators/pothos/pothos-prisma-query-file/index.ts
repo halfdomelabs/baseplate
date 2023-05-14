@@ -1,4 +1,4 @@
-import { createGeneratorWithTasks } from '@baseplate/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { createPothosTypesFileTask } from '../pothos-types-file';
 
@@ -17,14 +17,14 @@ const PothosPrismaQueryFileGenerator = createGeneratorWithTasks({
       findQuery: {
         defaultDescriptor: {
           ...sharedValues,
-          generator: '@baseplate/fastify/pothos/pothos-prisma-find-query',
+          generator: '@halfdomelabs/fastify/pothos/pothos-prisma-find-query',
         },
         defaultToNullIfEmpty: true,
       },
       listQuery: {
         defaultDescriptor: {
           ...sharedValues,
-          generator: '@baseplate/fastify/pothos/pothos-prisma-list-query',
+          generator: '@halfdomelabs/fastify/pothos/pothos-prisma-list-query',
         },
         defaultToNullIfEmpty: true,
       },

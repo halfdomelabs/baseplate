@@ -1,4 +1,4 @@
-import { NodeProvider } from '@baseplate/core-generators';
+import { NodeProvider } from '@halfdomelabs/core-generators';
 
 export function setupViteNode(node: NodeProvider): void {
   const nodeVersion = node.getNodeVersion().split('.')[0];

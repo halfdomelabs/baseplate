@@ -1,4 +1,4 @@
-import { quot, TypescriptCodeUtils } from '@baseplate/core-generators';
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,

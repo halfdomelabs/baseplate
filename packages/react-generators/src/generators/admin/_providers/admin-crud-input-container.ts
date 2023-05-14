@@ -1,8 +1,8 @@
 import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-} from '@baseplate/core-generators';
-import { createProviderType } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createProviderType } from '@halfdomelabs/sync';
 import { GraphQLField } from '@src/writers/graphql';
 import { AdminCrudDataDependency } from '../_utils/data-loaders';
 

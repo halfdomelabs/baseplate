@@ -2,8 +2,8 @@ import {
   makeImportAndFilePath,
   TypescriptCodeExpression,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus';

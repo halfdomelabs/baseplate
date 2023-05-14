@@ -1,4 +1,4 @@
-import { ParsedModel } from '@baseplate/project-builder-lib';
+import { ParsedModel } from '@halfdomelabs/project-builder-lib';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
 import { Sidebar } from 'src/components';

@@ -1,4 +1,4 @@
-import { AdminAppConfig } from '@baseplate/project-builder-lib';
+import { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';

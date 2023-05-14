@@ -11,7 +11,7 @@ export function buildDocker(
 ): unknown {
   return {
     name: 'docker',
-    generator: '@baseplate/core/docker/docker-compose',
+    generator: '@halfdomelabs/core/docker/docker-compose',
     postgres: getPostgresSettings(projectConfig).config,
     ...(app.enableRedis
       ? { redis: getRedisSettings(projectConfig).config }
@@ -28,7 +28,7 @@ export function compileBackend(
   const parsedProject = new ParsedProjectConfig(projectConfig);
 
   appBuilder.addDescriptor('root.json', {
-    generator: '@baseplate/core/node/node',
+    generator: '@halfdomelabs/core/node/node',
     name: `${projectConfig.name}-${app.name}`,
     description: `Backend app for ${projectConfig.name}`,
     version: projectConfig.version,
@@ -39,7 +39,7 @@ export function compileBackend(
         buildFastify(appBuilder, app),
       ],
       jest: {
-        generator: '@baseplate/core/node/jest',
+        generator: '@halfdomelabs/core/node/jest',
       },
     },
   });

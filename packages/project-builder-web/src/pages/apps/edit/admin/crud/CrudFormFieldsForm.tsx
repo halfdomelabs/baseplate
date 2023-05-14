@@ -2,7 +2,7 @@ import {
   AdminCrudSectionConfig,
   adminCrudInputTypes,
   FileTransformerConfig,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 import { Button, SelectInput, TextInput } from 'src/components';

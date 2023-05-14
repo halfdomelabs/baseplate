@@ -1,12 +1,12 @@
 import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactRouterProvider } from '@src/generators/core/react-router';
 import { authHooksProvider } from '../auth-hooks';

@@ -1,4 +1,4 @@
-import { ModelConfig } from '@baseplate/project-builder-lib';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { Alert, Button } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';

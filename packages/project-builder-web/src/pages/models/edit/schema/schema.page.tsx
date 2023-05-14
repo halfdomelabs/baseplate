@@ -1,4 +1,4 @@
-import { ModelConfig } from '@baseplate/project-builder-lib';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useMemo } from 'react';
 import { Alert, Button } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';

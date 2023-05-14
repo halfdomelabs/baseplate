@@ -1,1 +1,1 @@
-module.exports = require('@baseplate/tools/eslintrc.ts');
+module.exports = require('@halfdomelabs/tools/eslintrc.ts');

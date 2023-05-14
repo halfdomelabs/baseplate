@@ -1,5 +1,5 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactErrorProvider } from '../../core/react-error';
 import { reactLoggerProvider } from '../../core/react-logger';

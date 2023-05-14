@@ -2,8 +2,8 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
   TypescriptSourceBlock,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { prismaToServiceOutputDto } from '@src/types/serviceOutput';

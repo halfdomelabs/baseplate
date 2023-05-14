@@ -1,7 +1,7 @@
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import R from 'ramda';
 import {
   ServiceOutputDtoField,

@@ -1,9 +1,9 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { mergeGraphQLFields } from '@src/writers/graphql';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container';

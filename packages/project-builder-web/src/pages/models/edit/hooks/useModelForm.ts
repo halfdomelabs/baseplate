@@ -2,7 +2,7 @@ import {
   ModelConfig,
   modelSchema,
   randomUid,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useCallback, useEffect } from 'react';

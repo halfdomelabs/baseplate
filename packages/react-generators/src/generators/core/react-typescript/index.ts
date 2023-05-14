@@ -1,8 +1,8 @@
 import {
   eslintProvider,
   typescriptConfigProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren, writeJsonAction } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren, writeJsonAction } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});

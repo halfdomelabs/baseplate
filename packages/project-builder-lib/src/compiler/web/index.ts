@@ -23,7 +23,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
 
   return {
     name: 'react',
-    generator: '@baseplate/react/core/react',
+    generator: '@halfdomelabs/react/core/react',
     title: appConfig.title,
     description: appConfig.description,
     children: {
@@ -37,36 +37,36 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
         },
       },
       $tailwind: {
-        generator: '@baseplate/react/core/react-tailwind',
+        generator: '@halfdomelabs/react/core/react-tailwind',
       },
       proxy: {
         // TODO: Extract out logic
         devBackendHost: `http://localhost:${projectConfig.portBase + 1}`,
       },
       $sentry: {
-        generator: '@baseplate/react/core/react-sentry',
+        generator: '@halfdomelabs/react/core/react-sentry',
       },
       $apollo: {
-        generator: '@baseplate/react/apollo/react-apollo',
+        generator: '@halfdomelabs/react/apollo/react-apollo',
         devApiEndpoint: '/api/graphql',
         schemaLocation: `${backendRelativePath}/schema.graphql`,
         enableSubscriptions: appConfig.enableSubscriptions,
         peerProvider: true,
       },
       $apolloError: {
-        generator: '@baseplate/react/apollo/apollo-error',
+        generator: '@halfdomelabs/react/apollo/apollo-error',
         peerProvider: true,
       },
       $uploadComponents:
         projectConfig.storage && appConfig.includeUploadComponents
           ? {
-              generator: '@baseplate/react/storage/upload-components',
+              generator: '@halfdomelabs/react/storage/upload-components',
               peerProvider: true,
               fileModelName: projectConfig.storage.fileModel,
             }
           : undefined,
       $datadogLogger: appConfig.enableDatadog
-        ? { generator: '@baseplate/react/core/react-datadog' }
+        ? { generator: '@halfdomelabs/react/core/react-datadog' }
         : undefined,
       ...compileAuthFeatures(builder),
     },
@@ -80,7 +80,7 @@ export function compileWeb(
   const appBuilder = new AppEntryBuilder(projectConfig, app);
 
   appBuilder.addDescriptor('root.json', {
-    generator: '@baseplate/core/node/node',
+    generator: '@halfdomelabs/core/node/node',
     name: `${projectConfig.name}-${app.name}`,
     description: `Web app for ${projectConfig.name}`,
     version: projectConfig.version,

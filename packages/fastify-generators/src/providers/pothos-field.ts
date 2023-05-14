@@ -1,5 +1,5 @@
-import { TypescriptCodeExpression } from '@baseplate/core-generators';
-import { createProviderType } from '@baseplate/sync';
+import { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import { createProviderType } from '@halfdomelabs/sync';
 
 export interface PothosCustomOption {
   name: string;

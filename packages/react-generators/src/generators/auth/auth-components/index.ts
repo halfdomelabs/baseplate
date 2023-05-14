@@ -2,11 +2,11 @@ import {
   ImportMapper,
   makeImportAndFilePath,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { authHooksProvider } from '../auth-hooks';

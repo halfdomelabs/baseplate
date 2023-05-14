@@ -105,16 +105,16 @@ export const AuthPlugin: ParserPlugin = {
     // add global auth providers
     hooks.addFastifyChildren({
       $auth: {
-        generator: '@baseplate/fastify/auth/auth',
+        generator: '@halfdomelabs/fastify/auth/auth',
         peerProvider: true,
       },
       $authContext: {
-        generator: '@baseplate/fastify/auth/auth-context',
+        generator: '@halfdomelabs/fastify/auth/auth-context',
         peerProvider: true,
         authInfoRef: `${auth.authFeaturePath}/root:$auth.service`,
       },
       $pothosAuth: {
-        generator: '@baseplate/fastify/pothos/pothos-auth',
+        generator: '@halfdomelabs/fastify/pothos/pothos-auth',
         peerProvider: true,
       },
     });
@@ -126,20 +126,20 @@ export const AuthPlugin: ParserPlugin = {
     ]);
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $auth: {
-        generator: '@baseplate/fastify/auth/auth-module',
+        generator: '@halfdomelabs/fastify/auth/auth-module',
         userModelName: auth.userModel,
         children: {
           roleService: {
             name: 'AuthRoleService',
-            generator: '@baseplate/fastify/core/service-file',
+            generator: '@halfdomelabs/fastify/core/service-file',
             peerProvider: true,
             children: {
               $roles: {
-                generator: '@baseplate/fastify/auth/role-service',
+                generator: '@halfdomelabs/fastify/auth/role-service',
                 roles: auth.roles,
                 children: {
                   $authRoles: {
-                    generator: '@baseplate/fastify/auth/auth-roles',
+                    generator: '@halfdomelabs/fastify/auth/auth-roles',
                     userRoleModelName: auth.userRoleModel,
                   },
                 },
@@ -153,12 +153,12 @@ export const AuthPlugin: ParserPlugin = {
         : {
             $passwordAuthService: {
               name: 'PasswordAuthService',
-              generator: '@baseplate/fastify/auth/password-auth-service',
+              generator: '@halfdomelabs/fastify/auth/password-auth-service',
               peerProvider: true,
             },
             $passwordAuthMutations: {
               name: 'PasswordAuthMutations',
-              generator: '@baseplate/fastify/auth/password-auth-mutations',
+              generator: '@halfdomelabs/fastify/auth/password-auth-mutations',
             },
           }),
     });
@@ -166,7 +166,7 @@ export const AuthPlugin: ParserPlugin = {
     hooks.addFeatureChildren(auth.accountsFeaturePath, {
       $hasherService: {
         name: 'HasherService',
-        generator: '@baseplate/fastify/auth/password-hasher-service',
+        generator: '@halfdomelabs/fastify/auth/password-hasher-service',
       },
     });
   },

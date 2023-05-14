@@ -1,7 +1,7 @@
 import {
   NodeProvider,
   TypescriptConfigProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 
 export function setupFastifyTypescript(
   node: NodeProvider,

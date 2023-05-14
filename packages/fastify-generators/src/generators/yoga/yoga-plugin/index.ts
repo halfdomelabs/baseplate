@@ -5,13 +5,13 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authServiceImportProvider } from '@src/generators/auth/auth-service';
 import { configServiceProvider } from '@src/generators/core/config-service';

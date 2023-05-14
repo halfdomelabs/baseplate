@@ -1,8 +1,8 @@
-import { nodeProvider, TypescriptCodeUtils } from '@baseplate/core-generators';
+import { nodeProvider, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactAppProvider } from '@src/generators/core/react-app';
 import { reactConfigProvider } from '@src/generators/core/react-config';

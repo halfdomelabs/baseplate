@@ -1,20 +1,20 @@
 import path from 'path';
-import { AppEntry } from '@baseplate/project-builder-lib';
+import { AppEntry } from '@halfdomelabs/project-builder-lib';
 import {
   FileData,
   GeneratorEngine,
   loadGeneratorsForModule,
   Logger,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import globby from 'globby';
 import R from 'ramda';
 
 const GENERATOR_MODULES = [
-  '@baseplate/core-generators',
-  '@baseplate/fastify-generators',
-  '@baseplate/react-generators',
+  '@halfdomelabs/core-generators',
+  '@halfdomelabs/fastify-generators',
+  '@halfdomelabs/react-generators',
 ];
 
 let cachedEngine: GeneratorEngine;

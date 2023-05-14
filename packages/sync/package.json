@@ -1,14 +1,14 @@
 {
-  "name": "@baseplate/sync",
-  "version": "0.0.1",
+  "name": "@halfdomelabs/sync",
+  "version": "0.1.0",
   "description": "Library for syncing Baseplate descriptions",
   "main": "lib/index.js",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/sync",
+  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/sync",
   "author": "Kingston Tam",
   "license": "UNLICENSED",
   "private": true,
   "devDependencies": {
-    "@baseplate/tools": "^0.0.1",
+    "@halfdomelabs/tools": "^0.1.0",
     "@types/ejs": "^3.1.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.4.0",

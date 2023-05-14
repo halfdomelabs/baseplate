@@ -6,11 +6,11 @@ import {
   projectProvider,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { fastifyJestProvider } from '../fastify-jest';

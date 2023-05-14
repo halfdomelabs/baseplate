@@ -3,12 +3,12 @@ import {
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
   copyFileAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { apolloErrorProvider } from '@src/generators/apollo/apollo-error';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';

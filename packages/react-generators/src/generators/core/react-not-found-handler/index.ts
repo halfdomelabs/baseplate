@@ -2,11 +2,11 @@ import {
   makeImportAndFilePath,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { ReactRoute, reactRoutesProvider } from '@src/providers/routes';
 import { reactComponentsProvider } from '../react-components';

@@ -1,9 +1,9 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
 import { serviceContextSetupProvider } from '@src/generators/core/service-context';

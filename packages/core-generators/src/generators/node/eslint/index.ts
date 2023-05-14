@@ -4,7 +4,7 @@ import {
   createGeneratorWithChildren,
   NonOverwriteableMap,
   createNonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { nodeProvider } from '../node';
 import { generateConfig } from './generateConfig';
 

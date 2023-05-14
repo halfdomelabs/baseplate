@@ -2,8 +2,8 @@ import {
   makeImportAndFilePath,
   TypescriptCodeExpression,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks';
 import { reactComponentsProvider } from '@src/generators/core/react-components';

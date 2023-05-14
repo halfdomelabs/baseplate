@@ -1,9 +1,9 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-display-container';

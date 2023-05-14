@@ -4,7 +4,7 @@ import { EnumConfig } from '@src/schema/models/enums.js';
 function buildEnum(enumConfig: EnumConfig): unknown {
   return {
     name: enumConfig.name,
-    generator: '@baseplate/fastify/prisma/prisma-enum',
+    generator: '@halfdomelabs/fastify/prisma/prisma-enum',
     values: enumConfig.values.map((value) => ({
       name: value.name,
     })),

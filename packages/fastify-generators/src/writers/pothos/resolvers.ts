@@ -2,7 +2,7 @@ import {
   TsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import { singularize } from 'inflection';
 import {
   ServiceOutputDtoField,

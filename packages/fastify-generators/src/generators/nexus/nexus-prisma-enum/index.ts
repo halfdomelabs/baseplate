@@ -1,5 +1,5 @@
-import { quot, TypescriptCodeUtils } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { nexusTypesFileProvider } from '../nexus-types-file';

@@ -1,10 +1,10 @@
-import { eslintProvider, nodeProvider } from '@baseplate/core-generators';
+import { eslintProvider, nodeProvider } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { fastifyOutputProvider } from '../fastify';
 

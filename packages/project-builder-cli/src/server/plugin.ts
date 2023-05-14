@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { ProjectConfig } from '@baseplate/project-builder-lib';
+import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { FastifyInstance } from 'fastify';
 import { logger } from '@src/services/logger';
 import { HttpError, NotFoundError } from '@src/utils/http-errors';

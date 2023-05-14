@@ -1,4 +1,4 @@
-import { createProviderType } from '@baseplate/sync';
+import { createProviderType } from '@halfdomelabs/sync';
 import { AdminCrudDisplay } from '../_utils/data-display';
 
 export interface AdminCrudDisplayContainer {

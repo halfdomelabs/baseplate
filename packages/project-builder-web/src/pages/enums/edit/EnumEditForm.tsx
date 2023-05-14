@@ -1,4 +1,4 @@
-import { EnumConfig, enumSchema } from '@baseplate/project-builder-lib';
+import { EnumConfig, enumSchema } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';

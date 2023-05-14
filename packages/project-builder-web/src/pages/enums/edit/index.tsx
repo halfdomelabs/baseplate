@@ -1,4 +1,4 @@
-import { randomUid, EnumConfig } from '@baseplate/project-builder-lib';
+import { randomUid, EnumConfig } from '@halfdomelabs/project-builder-lib';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button } from 'src/components';

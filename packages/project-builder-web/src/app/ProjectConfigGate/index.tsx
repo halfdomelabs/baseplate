@@ -4,7 +4,7 @@ import {
   ParsedProjectConfig,
   ProjectConfig,
   projectConfigSchema,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import produce from 'immer';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, ErrorableLoader } from 'src/components';

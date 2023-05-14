@@ -8,13 +8,13 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';

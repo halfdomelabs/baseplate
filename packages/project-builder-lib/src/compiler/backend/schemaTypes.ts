@@ -17,10 +17,10 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
     {
       name: `${model.name}ObjectType`,
       fileName: `${paramCase(model.name)}.object-type`,
-      generator: '@baseplate/fastify/pothos/pothos-types-file',
+      generator: '@halfdomelabs/fastify/pothos/pothos-types-file',
       children: {
         $objectType: {
-          generator: '@baseplate/fastify/pothos/pothos-prisma-object',
+          generator: '@halfdomelabs/fastify/pothos/pothos-prisma-object',
           modelName: model.name,
           exposedFields: [
             ...exposedFields,
@@ -35,7 +35,7 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
       : {
           name: `${model.name}PothosQueries`,
           fileName: `${paramCase(model.name)}.queries`,
-          generator: '@baseplate/fastify/pothos/pothos-prisma-query-file',
+          generator: '@halfdomelabs/fastify/pothos/pothos-prisma-query-file',
           modelName: model.name,
           children: {
             findQuery: {
@@ -63,7 +63,7 @@ function buildMutationSchemaTypeForModel(
   return {
     name: `${model.name}PothosMutations`,
     fileName: `${paramCase(model.name)}.mutations`,
-    generator: '@baseplate/fastify/pothos/pothos-prisma-crud-file',
+    generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-file',
     modelName: model.name,
     objectTypeRef: `${feature}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
     crudServiceRef: `${feature}/root:$services.${model.name}Service`,
@@ -90,11 +90,11 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
   return [
     {
       name: `Enums`,
-      generator: '@baseplate/fastify/pothos/pothos-enums-file',
+      generator: '@halfdomelabs/fastify/pothos/pothos-enums-file',
       children: {
         $enums: enums.map((enumConfig) => ({
           name: enumConfig.name,
-          generator: '@baseplate/fastify/pothos/pothos-prisma-enum',
+          generator: '@halfdomelabs/fastify/pothos/pothos-prisma-enum',
           enumName: enumConfig.name,
         })),
       },

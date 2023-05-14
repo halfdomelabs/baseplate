@@ -72,7 +72,7 @@ function buildModel(
 ): unknown {
   return {
     name: model.name,
-    generator: '@baseplate/fastify/prisma/prisma-model',
+    generator: '@halfdomelabs/fastify/prisma/prisma-model',
     children: {
       fields: model.model.fields?.map(buildScalarField),
       relations: model.model.relations?.map((r) =>

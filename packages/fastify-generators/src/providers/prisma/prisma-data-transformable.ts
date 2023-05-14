@@ -1,7 +1,7 @@
 import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput';
 
 export interface PrismaDataTransformInputField {

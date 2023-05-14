@@ -1,8 +1,8 @@
 import {
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import {
   ReactRoute,

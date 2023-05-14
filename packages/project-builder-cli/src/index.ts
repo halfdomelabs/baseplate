@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { program } from 'commander';
 import {
   buildProjectForDirectory,
@@ -7,8 +8,16 @@ import {
 import { startWebServer } from './server';
 import { logger } from './services/logger';
 
+async function getVersion(): Promise<string> {
+  const packageJson = (await import(
+    resolve(__dirname, '../package.json')
+  )) as Record<string, string>;
+  return packageJson?.version;
+}
+
 async function runMain(): Promise<void> {
-  program.version('0.0.1');
+  const version = await getVersion();
+  program.version(version || 'unknown');
   program
     .command('generate <directory>')
     .description('Builds project from project.json in baseplate/ directory')

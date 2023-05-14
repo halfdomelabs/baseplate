@@ -1,8 +1,8 @@
-import { ImportMapper, typescriptProvider } from '@baseplate/core-generators';
+import { ImportMapper, typescriptProvider } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { appModuleProvider } from '@src/generators/core/root-module';
