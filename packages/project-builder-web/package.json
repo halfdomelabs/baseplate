@@ -4,7 +4,10 @@
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
   "version": "0.1.0",
-  "private": true,
+  "files": [
+    "LICENSE",
+    "dist/**/*"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",

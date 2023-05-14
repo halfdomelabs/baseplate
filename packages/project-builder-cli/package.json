@@ -6,7 +6,13 @@
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/project-builder-cli",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
-  "private": true,
+  "files": [
+    "LICENSE",
+    "dist/**/*"
+  ],
+  "bin": {
+    "baseplate": "./dist/index.js"
+  },
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",
     "@types/ramda": "^0.27.64",

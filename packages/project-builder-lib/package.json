@@ -5,6 +5,10 @@
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "types": "lib/cjs/index.d.ts",
+  "files": [
+    "LICENSE",
+    "lib/**/*"
+  ],
   "exports": {
     ".": {
       "import": {
@@ -21,7 +25,6 @@
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/project-builder-lib",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
-  "private": true,
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",
     "@types/jest": "^27.4.0",

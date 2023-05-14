@@ -6,7 +6,10 @@
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/sync",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
-  "private": true,
+  "files": [
+    "LICENSE",
+    "lib/**/*"
+  ],
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",
     "@types/ejs": "^3.1.0",

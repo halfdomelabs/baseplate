@@ -6,7 +6,10 @@
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/cli",
   "author": "Kingston Tam",
   "license": "SEE LICENSE IN LICENSE",
-  "private": true,
+  "files": [
+    "LICENSE",
+    "dist/**/*"
+  ],
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",
     "@types/ramda": "^0.27.64",

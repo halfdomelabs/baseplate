@@ -6,7 +6,11 @@
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/core-generators",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
-  "private": true,
+  "files": [
+    "LICENSE",
+    "generator.json",
+    "lib/**/*"
+  ],
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",
     "@types/lodash": "^4.14.182",
