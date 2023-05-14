@@ -1,6 +1,8 @@
 {
   "name": "root",
   "private": true,
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "nx": "15.7.2"
   },

@@ -4,8 +4,8 @@
   "description": "Full-stack CLI builder using Baseplate generators",
   "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/project-builder-cli",
-  "author": "Kingston Tam",
-  "license": "UNLICENSED",
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
   "private": true,
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "Shared dev configurations for Baseplate projects",
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/tools",
-  "author": "Kingston Tam",
-  "license": "UNLICENSED",
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
   "private": true,
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.54.0",

@@ -19,8 +19,8 @@
     }
   },
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/project-builder-lib",
-  "author": "Kingston Tam",
-  "license": "UNLICENSED",
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
   "private": true,
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",

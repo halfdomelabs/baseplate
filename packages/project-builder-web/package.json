@@ -1,7 +1,8 @@
 {
   "name": "@halfdomelabs/project-builder-web",
   "description": "Web interface for constructing project builder JSON",
-  "license": "UNLICENSED",
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
   "version": "0.1.0",
   "private": true,
   "browserslist": {

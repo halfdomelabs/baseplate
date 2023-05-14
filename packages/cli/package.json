@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/cli",
   "author": "Kingston Tam",
-  "license": "UNLICENSED",
+  "license": "SEE LICENSE IN LICENSE",
   "private": true,
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",
