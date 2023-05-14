@@ -51,7 +51,7 @@
     "react-select": "5.7.0",
     "reconnecting-websocket": "^4.4.0",
     "sort-keys": "^5.0.0",
-    "use-persisted-state": "^0.3.3",
+    "use-local-storage-state": "^18.3.2",
     "web-vitals": "^2.1.0",
     "zod": "^3.20.6"
   },

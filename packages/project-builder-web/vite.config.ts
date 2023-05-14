@@ -21,5 +21,8 @@ export default defineConfig(({ mode }) => {
           }
         : undefined,
     },
+    build: {
+      sourcemap: true,
+    },
   };
 });

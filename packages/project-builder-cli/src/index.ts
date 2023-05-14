@@ -32,10 +32,14 @@ async function runMain(): Promise<void> {
       'Writes a clean project from project.json in baseplate/ directory to sub-apps'
     )
     .action(buildToCleanFolder);
-
   program
     .command('serve')
     .description('Starts the project builder web service')
+    .option(
+      '--browser',
+      'Opens browser with project builder web service',
+      !process.env.NO_BROWSER || process.env.NO_BROWSER === 'false'
+    )
     .option('--no-browser', 'Do not start browser')
     .option('--port <number>', 'Port to listen on', parseInt)
     .argument(

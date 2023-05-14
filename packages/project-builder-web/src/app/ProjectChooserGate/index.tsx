@@ -6,7 +6,7 @@ interface Props {
 }
 
 function ProjectChooserGate({ children }: Props): JSX.Element {
-  const [projectId] = useProjectIdState(null);
+  const [projectId] = useProjectIdState();
 
   if (!projectId) {
     return <ProjectChooserModal onClose={() => {}} isOpen />;

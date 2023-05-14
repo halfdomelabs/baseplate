@@ -10,6 +10,7 @@
   "devDependencies": {
     "@halfdomelabs/tools": "^0.1.0",
     "@types/ramda": "^0.27.64",
+    "@types/resolve": "^1.20.2",
     "@types/ws": "^8.5.3",
     "@types/yup": "^0.29.13",
     "dotenv": "^16.0.3",
@@ -28,14 +29,15 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "^0.1.0",
-    "@halfdomelabs/fastify-generators": "^0.1.0",
-    "@halfdomelabs/project-builder-lib": "^0.1.0",
-    "@halfdomelabs/react-generators": "^0.1.0",
-    "@halfdomelabs/sync": "^0.1.0",
     "@fastify/helmet": "^10.1.0",
     "@fastify/static": "^6.5.0",
     "@fastify/websocket": "^7.1.0",
+    "@halfdomelabs/core-generators": "^0.1.0",
+    "@halfdomelabs/fastify-generators": "^0.1.0",
+    "@halfdomelabs/project-builder-lib": "^0.1.0",
+    "@halfdomelabs/project-builder-web": "^0.1.0",
+    "@halfdomelabs/react-generators": "^0.1.0",
+    "@halfdomelabs/sync": "^0.1.0",
     "chalk": "4.1.2",
     "chokidar": "^3.5.3",
     "commander": "^8.3.0",
@@ -47,6 +49,7 @@
     "pino": "8.1.0",
     "pino-pretty": "8.1.0",
     "ramda": "^0.28.0",
+    "resolve": "^1.22.2",
     "sort-keys": "^5.0.0"
   },
   "engines": {
