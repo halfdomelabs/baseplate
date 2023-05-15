@@ -10,4 +10,4 @@
 '@halfdomelabs/cli': minor
 ---
 
-Rename packages from @baseplate to @halfdomelabs
+Prepare Baseplate packages for release
