@@ -22,11 +22,12 @@
       "default": "./lib/cjs/index.js"
     }
   },
-  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/project-builder-lib",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
-    "access": "restricted"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "^0.2.0",
