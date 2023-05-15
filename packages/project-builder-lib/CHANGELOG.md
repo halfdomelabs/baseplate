@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.2.1
+
+### Patch Changes
+
+- 37d7c50: Fixed generation to replace references to @baseplate
+
 ## 0.2.0
 
 ### Minor Changes
