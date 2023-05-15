@@ -12,7 +12,8 @@
   },
   "files": [
     "LICENSE",
-    "dist/**/*"
+    "dist/**/*",
+    "scripts/**/*"
   ],
   "bin": {
     "baseplate": "./scripts/baseplate.js"
