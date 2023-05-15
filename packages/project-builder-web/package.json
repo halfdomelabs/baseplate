@@ -6,7 +6,7 @@
   "publishConfig": {
     "access": "restricted"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "files": [
     "LICENSE",
     "dist/**/*"
@@ -33,7 +33,7 @@
     "release": "yarn publish --non-interactive"
   },
   "dependencies": {
-    "@halfdomelabs/project-builder-lib": "^0.1.0",
+    "@halfdomelabs/project-builder-lib": "^0.2.0",
     "@headlessui/react": "^1.6.6",
     "@hookform/resolvers": "^2.8.8",
     "@popperjs/core": "^2.11.5",
