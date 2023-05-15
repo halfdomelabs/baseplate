@@ -16,7 +16,7 @@
     "lib/**/*"
   ],
   "devDependencies": {
-    "@halfdomelabs/tools": "^0.2.0",
+    "@halfdomelabs/tools": "0.2.0",
     "@types/is-core-module": "^2.2.0",
     "@types/jest": "^27.4.0",
     "@types/lodash": "^4.14.191",
@@ -43,7 +43,7 @@
     "release": "yarn publish --non-interactive"
   },
   "dependencies": {
-    "@halfdomelabs/sync": "^0.2.0",
+    "@halfdomelabs/sync": "0.2.0",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.1",
     "fs-extra": "^10.0.0",
