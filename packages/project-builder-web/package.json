@@ -29,7 +29,8 @@
     "serve": "vite preview",
     "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:format": "prettier -w .",
+    "release": "yarn publish --non-interactive"
   },
   "dependencies": {
     "@halfdomelabs/project-builder-lib": "^0.1.0",

@@ -35,7 +35,8 @@
     "build": "tsc && tsc-alias",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:format": "prettier -w .",
+    "release": "yarn publish --non-interactive"
   },
   "dependencies": {
     "@fastify/helmet": "^10.1.0",

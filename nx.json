@@ -16,6 +16,9 @@
         "{projectRoot}/build"
       ]
     },
+    "release": {
+      "dependsOn": ["build"]
+    },
     "lint": {
       "dependsOn": ["^build"]
     },

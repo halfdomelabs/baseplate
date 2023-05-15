@@ -38,7 +38,8 @@
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "test": "jest",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:format": "prettier -w .",
+    "release": "yarn publish --non-interactive"
   },
   "dependencies": {
     "@halfdomelabs/sync": "^0.1.0",

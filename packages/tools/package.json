@@ -8,6 +8,9 @@
   "publishConfig": {
     "access": "restricted"
   },
+  "scripts": {
+    "release": "yarn publish --non-interactive"
+  },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.54.0",
     "@typescript-eslint/parser": "5.54.0",
