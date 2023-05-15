@@ -2,7 +2,7 @@ import {
   ModelConfig,
   ModelRelationFieldConfig,
   REFERENTIAL_ACTIONS,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';

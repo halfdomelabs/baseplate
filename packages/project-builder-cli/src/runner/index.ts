@@ -3,8 +3,8 @@ import {
   compileApplications,
   ProjectConfig,
   projectConfigSchema,
-} from '@baseplate/project-builder-lib';
-import { Logger } from '@baseplate/sync';
+} from '@halfdomelabs/project-builder-lib';
+import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
 import { expandPathWithTilde } from '@src/utils/path';
 import { generateCleanAppForDirectory, generateForDirectory } from '../sync';

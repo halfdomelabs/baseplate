@@ -1,7 +1,7 @@
 import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import { GraphQLField } from '@src/writers/graphql';
 import { AdminCrudDataDependency } from './data-loaders';
 

@@ -1,5 +1,5 @@
-import { TypescriptSourceBlock } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import { TypescriptSourceBlock } from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
@@ -35,7 +35,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
     authorize: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/nexus/nexus-authorize-field',
+        generator: '@halfdomelabs/fastify/nexus/nexus-authorize-field',
       },
     },
   }),

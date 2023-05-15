@@ -8,14 +8,14 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptSourceFile,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   copyFileAction,
   writeTemplateAction,
   createProviderType,
   createNonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { setupViteNode } from './node';
@@ -54,59 +54,59 @@ const ReactGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({
     typescript: {
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-typescript',
+        generator: '@halfdomelabs/react/core/react-typescript',
       },
     },
     app: {
       provider: 'react-app',
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-app',
+        generator: '@halfdomelabs/react/core/react-app',
         peerProvider: true,
       },
     },
     router: {
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-router',
+        generator: '@halfdomelabs/react/core/react-router',
         peerProvider: true,
       },
     },
     logger: {
       provider: 'react-logger',
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-logger',
+        generator: '@halfdomelabs/react/core/react-logger',
         peerProvider: true,
       },
     },
     components: {
       provider: 'react-components',
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-components',
+        generator: '@halfdomelabs/react/core/react-components',
         peerProvider: true,
       },
     },
     config: {
       provider: 'react-config',
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-config',
+        generator: '@halfdomelabs/react/core/react-config',
         peerProvider: true,
       },
     },
     proxy: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-proxy',
+        generator: '@halfdomelabs/react/core/react-proxy',
         peerProvider: true,
       },
     },
     error: {
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-error',
+        generator: '@halfdomelabs/react/core/react-error',
         peerProvider: true,
       },
     },
     utils: {
       defaultDescriptor: {
-        generator: '@baseplate/react/core/react-utils',
+        generator: '@halfdomelabs/react/core/react-utils',
         peerProvider: true,
       },
     },

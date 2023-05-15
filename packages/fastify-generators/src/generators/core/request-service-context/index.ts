@@ -5,12 +5,12 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import R from 'ramda';
 import { z } from 'zod';
 import { notEmpty } from '@src/utils/array';

@@ -6,7 +6,7 @@ import {
   createProviderType,
   WriteFileOptions,
   writeJsonAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { CompilerOptions, ts } from 'ts-morph';
 import {
   copyTypescriptFilesAction,

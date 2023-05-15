@@ -1,7 +1,7 @@
 import {
   createGeneratorWithTasks,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { pothosFieldProvider } from '@src/providers/pothos-field';
 import {

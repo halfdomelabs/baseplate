@@ -1,4 +1,4 @@
-import { createGeneratorWithTasks } from '@baseplate/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { createNexusTypesFileTask } from '../nexus-types-file';
 
@@ -17,21 +17,21 @@ const NexusPrismaQueryFileGenerator = createGeneratorWithTasks({
       objectType: {
         defaultDescriptor: {
           ...sharedValues,
-          generator: '@baseplate/fastify/nexus/nexus-prisma-object',
+          generator: '@halfdomelabs/fastify/nexus/nexus-prisma-object',
         },
         defaultToNullIfEmpty: true,
       },
       findQuery: {
         defaultDescriptor: {
           ...sharedValues,
-          generator: '@baseplate/fastify/nexus/nexus-prisma-find-query',
+          generator: '@halfdomelabs/fastify/nexus/nexus-prisma-find-query',
         },
         defaultToNullIfEmpty: true,
       },
       listQuery: {
         defaultDescriptor: {
           ...sharedValues,
-          generator: '@baseplate/fastify/nexus/nexus-prisma-list-query',
+          generator: '@halfdomelabs/fastify/nexus/nexus-prisma-list-query',
         },
         defaultToNullIfEmpty: true,
       },

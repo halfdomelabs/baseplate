@@ -19,7 +19,7 @@ export function buildFeature(
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,
-    generator: '@baseplate/fastify/core/app-module',
+    generator: '@halfdomelabs/fastify/core/app-module',
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featurePath),
     children: {
       $enums: buildEnumsForFeature(featurePath, parsedProject),

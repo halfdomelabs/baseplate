@@ -2,11 +2,11 @@ import {
   makeImportAndFilePath,
   TypescriptCodeExpression,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry';

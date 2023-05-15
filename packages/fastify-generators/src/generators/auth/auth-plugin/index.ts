@@ -3,8 +3,8 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithTasks } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { loggerServiceSetupProvider } from '@src/generators/core/logger-service';
 import { appModuleProvider } from '@src/generators/core/root-module';

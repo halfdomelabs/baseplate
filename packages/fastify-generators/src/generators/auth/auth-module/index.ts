@@ -1,7 +1,7 @@
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 /**
@@ -23,19 +23,19 @@ const AuthModuleGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: (descriptor) => ({
     service: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/auth/auth-service',
+        generator: '@halfdomelabs/fastify/auth/auth-service',
         userModelName: descriptor.userModelName,
         peerProvider: true,
       },
     },
     authMutations: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/auth/auth-mutations',
+        generator: '@halfdomelabs/fastify/auth/auth-mutations',
       },
     },
     authPlugin: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/auth/auth-plugin',
+        generator: '@halfdomelabs/fastify/auth/auth-plugin',
         peerProvider: true,
       },
     },

@@ -8,8 +8,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
-} from '@baseplate/core-generators';
-import { createGeneratorWithTasks, createProviderType } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import {
+  createGeneratorWithTasks,
+  createProviderType,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';

@@ -1,4 +1,4 @@
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { nexusTypeProvider } from '@src/providers/nexus-type';
 import { authorizeConfigSchema, nexusAuthProvider } from '../nexus-auth';
 

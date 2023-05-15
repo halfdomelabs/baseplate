@@ -5,13 +5,13 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import R from 'ramda';
 import { z } from 'zod';
 import { configServiceProvider } from '../config-service';

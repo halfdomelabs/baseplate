@@ -1,4 +1,4 @@
-import { projectConfigSchema } from '@baseplate/project-builder-lib';
+import { projectConfigSchema } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useFieldArray } from 'react-hook-form';

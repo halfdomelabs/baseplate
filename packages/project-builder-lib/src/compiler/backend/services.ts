@@ -31,7 +31,7 @@ function buildEmbeddedRelationTransformer(
   }
 
   return {
-    generator: '@baseplate/fastify/prisma/embedded-relation-transformer',
+    generator: '@halfdomelabs/fastify/prisma/embedded-relation-transformer',
     foreignCrudServiceRef: !transformer.embeddedTransformerNames
       ? undefined
       : `${foreignModel.feature}/root:$services.${foreignModel.name}Service.$crud`,
@@ -65,7 +65,7 @@ function buildFileTransformer(
   }
 
   return {
-    generator: '@baseplate/fastify/storage/prisma-file-transformer',
+    generator: '@halfdomelabs/fastify/storage/prisma-file-transformer',
     category: category.name,
     name,
   };
@@ -86,7 +86,7 @@ function buildTransformer(
     case 'password':
       return {
         name: transformer.name,
-        generator: '@baseplate/fastify/auth/prisma-password-transformer',
+        generator: '@halfdomelabs/fastify/auth/prisma-password-transformer',
       };
     case 'file':
       return buildFileTransformer(transformer, model, parsedProject);
@@ -108,11 +108,11 @@ function buildServiceForModel(
 
   return {
     name: `${model.name}Service`,
-    generator: '@baseplate/fastify/core/service-file',
+    generator: '@halfdomelabs/fastify/core/service-file',
     methodOrder: ['create', 'update', 'delete'],
     children: {
       $crud: {
-        generator: '@baseplate/fastify/prisma/prisma-crud-service',
+        generator: '@halfdomelabs/fastify/prisma/prisma-crud-service',
         modelName: model.name,
         children: {
           transformers: service.transformers?.map((transfomer) =>

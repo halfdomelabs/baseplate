@@ -1,4 +1,4 @@
-import { ModelConfig } from '@baseplate/project-builder-lib';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { UseFormReturn } from 'react-hook-form';
 import SelectArrayInput from 'src/components/SelectArrayInput';

@@ -1,7 +1,7 @@
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -19,13 +19,13 @@ const AuthPagesGenerator = createGeneratorWithChildren({
     layout: {
       defaultDescriptor: {
         name: 'AuthLayout',
-        generator: '@baseplate/react/auth/auth-layout',
+        generator: '@halfdomelabs/react/auth/auth-layout',
       },
     },
     login: {
       defaultDescriptor: {
         name: 'Login',
-        generator: '@baseplate/react/auth/auth-login-page',
+        generator: '@halfdomelabs/react/auth/auth-login-page',
       },
     },
   }),

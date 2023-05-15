@@ -1,5 +1,5 @@
-import { quot, TypescriptCodeUtils } from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container';

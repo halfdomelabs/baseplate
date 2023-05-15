@@ -1,5 +1,5 @@
 import path from 'path';
-import { createEventedLogger, EventedLogger } from '@baseplate/sync';
+import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';

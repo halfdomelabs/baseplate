@@ -1,3 +1,4 @@
+import { resolve } from 'path';
 import { program } from 'commander';
 import {
   buildProjectForDirectory,
@@ -7,8 +8,16 @@ import {
 import { startWebServer } from './server';
 import { logger } from './services/logger';
 
+async function getVersion(): Promise<string> {
+  const packageJson = (await import(
+    resolve(__dirname, '../package.json')
+  )) as Record<string, string>;
+  return packageJson?.version;
+}
+
 async function runMain(): Promise<void> {
-  program.version('0.0.1');
+  const version = await getVersion();
+  program.version(version || 'unknown');
   program
     .command('generate <directory>')
     .description('Builds project from project.json in baseplate/ directory')
@@ -23,10 +32,14 @@ async function runMain(): Promise<void> {
       'Writes a clean project from project.json in baseplate/ directory to sub-apps'
     )
     .action(buildToCleanFolder);
-
   program
     .command('serve')
     .description('Starts the project builder web service')
+    .option(
+      '--browser',
+      'Opens browser with project builder web service',
+      !process.env.NO_BROWSER || process.env.NO_BROWSER === 'false'
+    )
     .option('--no-browser', 'Do not start browser')
     .option('--port <number>', 'Port to listen on', parseInt)
     .argument(

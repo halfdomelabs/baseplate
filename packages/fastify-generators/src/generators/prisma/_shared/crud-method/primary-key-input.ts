@@ -2,7 +2,7 @@ import {
   quot,
   TypescriptCodeBlock,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import { getScalarFieldTypeInfo } from '@src/types/fieldTypes';
 import { PrismaOutputModel } from '@src/types/prismaOutput';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput';

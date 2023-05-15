@@ -1,7 +1,7 @@
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { copyTypescriptFileAction } from '../../../actions';
 import { ImportMapper } from '../../../providers';

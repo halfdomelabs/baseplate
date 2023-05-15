@@ -3,13 +3,13 @@ import {
   TypescriptCodeUtils,
   TypescriptCodeWrapper,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createOrderedList,
   createProviderType,
   OrderedList,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactProvider } from '../react';
 

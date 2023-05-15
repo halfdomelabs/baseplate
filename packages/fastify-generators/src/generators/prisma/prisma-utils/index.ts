@@ -2,11 +2,11 @@ import {
   ImportMapper,
   tsUtilsProvider,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { serviceContextProvider } from '@src/generators/core/service-context';
 import { prismaOutputProvider } from '../prisma';

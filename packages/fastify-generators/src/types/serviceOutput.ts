@@ -1,6 +1,6 @@
 // standard typings of service output
 
-import { TypescriptCodeExpression } from '@baseplate/core-generators';
+import { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import { ScalarFieldType } from './fieldTypes';
 import {
   PrismaOutputModel,

@@ -33,7 +33,7 @@ function compileAdminCrudEmbeddedForm(
       isList: true,
       children: {
         columns: form.table?.columns.map((c) => ({
-          generator: '@baseplate/react/admin/admin-crud-column',
+          generator: '@halfdomelabs/react/admin/admin-crud-column',
           name: c.label,
           label: c.label,
           children: {
@@ -73,10 +73,10 @@ export function compileAdminCrudSection(
   const crudSectionId = `${parentId}.${sectionName}.$section`;
   return {
     name: sectionName,
-    generator: '@baseplate/react/core/react-routes',
+    generator: '@halfdomelabs/react/core/react-routes',
     children: {
       $section: {
-        generator: '@baseplate/react/admin/admin-crud-section',
+        generator: '@halfdomelabs/react/admin/admin-crud-section',
         modelName: crudSection.modelName,
         disableCreate: crudSection.disableCreate,
         children: {

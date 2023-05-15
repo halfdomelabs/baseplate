@@ -2,11 +2,11 @@ import {
   copyTypescriptFileAction,
   ImportMapper,
   nodeProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';
 

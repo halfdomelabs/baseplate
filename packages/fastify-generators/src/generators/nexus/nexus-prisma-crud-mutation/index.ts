@@ -4,8 +4,8 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   TypescriptSourceBlock,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { singularize } from 'inflection';
 import { z } from 'zod';
 import { serviceFileOutputProvider } from '@src/generators/core/service-file';
@@ -161,7 +161,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
     authorize: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/nexus/nexus-authorize-field',
+        generator: '@halfdomelabs/fastify/nexus/nexus-authorize-field',
       },
     },
   }),

@@ -2,7 +2,7 @@ import {
   quot,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import { ServiceOutputDtoScalarField } from '@src/types/serviceOutput';
 import {
   getExpressionFromPothosTypeReference,

@@ -1,12 +1,12 @@
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
@@ -123,7 +123,7 @@ const PothosPrismaFindQueryGenerator = createGeneratorWithTasks({
     authorize: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/pothos/pothos-authorize-field',
+        generator: '@halfdomelabs/fastify/pothos/pothos-authorize-field',
       },
     },
   }),

@@ -2,7 +2,7 @@
 /* eslint-disable max-classes-per-file */
 
 import path from 'path';
-import { BuilderAction, writeFormattedAction } from '@baseplate/sync';
+import { BuilderAction, writeFormattedAction } from '@halfdomelabs/sync';
 import R from 'ramda';
 import {
   CallExpression,

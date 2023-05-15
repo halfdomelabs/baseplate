@@ -1,4 +1,4 @@
-import { ProjectConfig } from '@baseplate/project-builder-lib';
+import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { TypedEventEmitterBase } from 'src/utils/typed-event-emitter';

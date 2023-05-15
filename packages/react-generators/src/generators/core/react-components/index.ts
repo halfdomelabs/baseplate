@@ -5,12 +5,12 @@ import {
   nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
   writeFormattedAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { reactProvider } from '../react';
 import { reactAppProvider } from '../react-app';

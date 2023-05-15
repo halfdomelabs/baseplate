@@ -40,7 +40,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
 
   return {
     name: 'react',
-    generator: '@baseplate/react/core/react',
+    generator: '@halfdomelabs/react/core/react',
     title: `${capitalize(projectConfig.name)} Admin Dashboard`,
     children: {
       router: {
@@ -49,14 +49,14 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
             compileAuthPages(builder, appConfig.allowedRoles),
             {
               name: 'home',
-              generator: '@baseplate/react/admin/admin-home',
+              generator: '@halfdomelabs/react/admin/admin-home',
             },
             ...compileAdminFeatures(builder),
             ...(backendApp.enableBullQueue
               ? [
                   {
                     name: 'bull-board',
-                    generator: '@baseplate/react/admin/admin-bull-board',
+                    generator: '@halfdomelabs/react/admin/admin-bull-board',
                     bullBoardUrl: `http://localhost:${
                       projectConfig.portBase + 1
                     }`,
@@ -70,7 +70,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         includeDatePicker: true,
       },
       $tailwind: {
-        generator: '@baseplate/react/core/react-tailwind',
+        generator: '@halfdomelabs/react/core/react-tailwind',
         peerProvider: true,
       },
       proxy: {
@@ -78,7 +78,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         devBackendHost: `http://localhost:${projectConfig.portBase + 1}`,
       },
       $adminLayout: {
-        generator: '@baseplate/react/admin/admin-layout',
+        generator: '@halfdomelabs/react/admin/admin-layout',
         links: [
           { type: 'link', label: 'Home', icon: 'MdHome', path: '/' },
           ...buildNavigationLinks(appConfig),
@@ -95,25 +95,25 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         ],
       },
       $adminComponents: {
-        generator: '@baseplate/react/admin/admin-components',
+        generator: '@halfdomelabs/react/admin/admin-components',
         peerProvider: true,
       },
       $sentry: {
-        generator: '@baseplate/react/core/react-sentry',
+        generator: '@halfdomelabs/react/core/react-sentry',
       },
       $apollo: {
-        generator: '@baseplate/react/apollo/react-apollo',
+        generator: '@halfdomelabs/react/apollo/react-apollo',
         devApiEndpoint: '/api/graphql',
         schemaLocation: `${backendRelativePath}/schema.graphql`,
         peerProvider: true,
       },
       $apolloError: {
-        generator: '@baseplate/react/apollo/apollo-error',
+        generator: '@halfdomelabs/react/apollo/apollo-error',
         peerProvider: true,
       },
       $uploadComponents: projectConfig.storage
         ? {
-            generator: '@baseplate/react/storage/upload-components',
+            generator: '@halfdomelabs/react/storage/upload-components',
             peerProvider: true,
             fileModelName: projectConfig.storage.fileModel,
           }
@@ -130,7 +130,7 @@ export function compileAdmin(
   const appBuilder = new AppEntryBuilder(projectConfig, app);
 
   appBuilder.addDescriptor('root.json', {
-    generator: '@baseplate/core/node/node',
+    generator: '@halfdomelabs/core/node/node',
     name: `${projectConfig.name}-${app.name}`,
     description: `Admin web app for ${projectConfig.name}`,
     version: projectConfig.version,

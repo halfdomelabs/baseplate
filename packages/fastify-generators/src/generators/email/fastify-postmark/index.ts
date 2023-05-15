@@ -1,9 +1,12 @@
-import { nodeProvider, typescriptProvider } from '@baseplate/core-generators';
+import {
+  nodeProvider,
+  typescriptProvider,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 

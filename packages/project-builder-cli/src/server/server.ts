@@ -3,6 +3,7 @@ import fastifyHelmet from '@fastify/helmet';
 import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
 import Fastify, { FastifyInstance } from 'fastify';
+import { sync as resolve } from 'resolve';
 import { logger } from '@src/services/logger';
 import { baseplatePlugin } from './plugin';
 
@@ -13,9 +14,20 @@ export async function buildServer(
 
   await fastify.register(fastifyHelmet);
 
-  await fastify.register(fastifyStaticPlugin, {
-    root: path.join(__dirname, '../../../project-builder-web/build'),
-  });
+  try {
+    const projectBuilderWebDir = path.dirname(
+      resolve('@halfdomelabs/project-builder-web/package.json')
+    );
+
+    await fastify.register(fastifyStaticPlugin, {
+      root: path.join(projectBuilderWebDir, 'dist'),
+    });
+  } catch (err) {
+    console.error(
+      `Unable to find project-builder-web package to host website.`
+    );
+    throw err;
+  }
 
   await fastify.register(fastifyWebsocketPlugin);
 

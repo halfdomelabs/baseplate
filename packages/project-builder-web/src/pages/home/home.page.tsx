@@ -1,4 +1,4 @@
-import { ProjectConfig } from '@baseplate/project-builder-lib';
+import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { useMemo, useState } from 'react';
 import { Button } from 'src/components';
 import TextAreaInput from 'src/components/TextAreaInput';

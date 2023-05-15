@@ -7,7 +7,7 @@ import {
   createGeneratorWithChildren,
   writeJsonAction,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import _ from 'lodash';
 import Piscina from 'piscina';
 import requireResolve from 'resolve';

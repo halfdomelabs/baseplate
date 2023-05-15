@@ -1,4 +1,4 @@
-import { TypescriptCodeUtils } from '@baseplate/core-generators';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { pluralize } from 'inflection';
 import { ReactApolloProvider } from '@src/generators/apollo/react-apollo';
 import { lowerCaseFirst } from '@src/utils/case';

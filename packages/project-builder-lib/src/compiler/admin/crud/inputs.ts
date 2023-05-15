@@ -34,7 +34,7 @@ function compileAdminEnumInput(
   }
   return {
     name: field.modelField,
-    generator: '@baseplate/react/admin/admin-crud-enum-input',
+    generator: '@halfdomelabs/react/admin/admin-crud-enum-input',
     modelField: field.modelField,
     label: field.label,
     isOptional: fieldConfig.isOptional,
@@ -69,7 +69,7 @@ function compileAdminForeignInput(
 
   return {
     name: field.localRelationName,
-    generator: '@baseplate/react/admin/admin-crud-foreign-input',
+    generator: '@halfdomelabs/react/admin/admin-crud-foreign-input',
     label: field.label,
     localRelationName: field.localRelationName,
     isOptional: relation.isOptional,
@@ -111,7 +111,7 @@ function compileAdminCrudTextInput(
   }
   return {
     name: field.modelField,
-    generator: '@baseplate/react/admin/admin-crud-text-input',
+    generator: '@halfdomelabs/react/admin/admin-crud-text-input',
     label: field.label,
     modelField: field.modelField,
     type: getInputType(fieldConfig),
@@ -153,7 +153,7 @@ function compileAdminCrudFileInput(
 
   return {
     name: field.modelRelation,
-    generator: '@baseplate/react/admin/admin-crud-file-input',
+    generator: '@halfdomelabs/react/admin/admin-crud-file-input',
     label: field.label,
     isOptional: relation.isOptional,
     category: category.name,
@@ -169,7 +169,7 @@ function compileAdminCrudEmbeddedInput(
 ): unknown {
   return {
     name: field.modelRelation,
-    generator: '@baseplate/react/admin/admin-crud-embedded-input',
+    generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
     label: field.label,
     modelRelation: field.modelRelation,
     embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
@@ -194,7 +194,7 @@ function compileAdminCrudEmbeddedLocalInput(
 
   return {
     name: field.localRelation,
-    generator: '@baseplate/react/admin/admin-crud-embedded-input',
+    generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
     label: field.label,
     modelRelation: field.localRelation,
     isRequired: !localRelation.isOptional,
@@ -207,7 +207,7 @@ function compileAdminCrudPasswordInput(
 ): unknown {
   return {
     name: 'password',
-    generator: '@baseplate/react/admin/admin-crud-password-input',
+    generator: '@halfdomelabs/react/admin/admin-crud-password-input',
     label: field.label,
   };
 }

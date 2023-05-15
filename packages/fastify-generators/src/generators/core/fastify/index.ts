@@ -2,13 +2,13 @@ import {
   nodeGitIgnoreProvider,
   nodeProvider,
   typescriptConfigProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { setupFastifyTypescript } from './setupFastifyTypescript';
 
@@ -46,86 +46,86 @@ const FastifyGenerator = createGeneratorWithTasks({
     logger: {
       provider: 'logger-service',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/logger-service',
+        generator: '@halfdomelabs/fastify/core/logger-service',
         peerProvider: true,
       },
     },
     rootModule: {
       provider: 'root-module',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/root-module',
+        generator: '@halfdomelabs/fastify/core/root-module',
         peerProvider: true,
       },
     },
     errorHandler: {
       provider: 'error-handler-service',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/error-handler-service',
+        generator: '@halfdomelabs/fastify/core/error-handler-service',
         peerProvider: true,
       },
     },
     config: {
       provider: 'config-service',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/config-service',
+        generator: '@halfdomelabs/fastify/core/config-service',
         peerProvider: true,
       },
     },
     server: {
       provider: 'fastify-server',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/fastify-server',
+        generator: '@halfdomelabs/fastify/core/fastify-server',
         peerProvider: true,
       },
     },
     healthCheck: {
       provider: 'fastify-health-check',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/fastify-health-check',
+        generator: '@halfdomelabs/fastify/core/fastify-health-check',
         peerProvider: true,
       },
     },
     requestContext: {
       provider: 'request-context',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/request-context',
+        generator: '@halfdomelabs/fastify/core/request-context',
         peerProvider: true,
       },
     },
     gracefulShutdown: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/fastify-graceful-shutdown',
+        generator: '@halfdomelabs/fastify/core/fastify-graceful-shutdown',
       },
     },
     jest: {
       provider: 'fastify-jest',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/jest/fastify-jest',
+        generator: '@halfdomelabs/fastify/jest/fastify-jest',
         peerProvider: true,
       },
     },
     serviceContext: {
       provider: 'service-context',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/service-context',
+        generator: '@halfdomelabs/fastify/core/service-context',
         peerProvider: true,
       },
     },
     requestServiceContext: {
       provider: 'request-service-context',
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/request-service-context',
+        generator: '@halfdomelabs/fastify/core/request-service-context',
         peerProvider: true,
       },
     },
     cookies: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/fastify-cookie-context',
+        generator: '@halfdomelabs/fastify/core/fastify-cookie-context',
       },
     },
     scripts: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/core/fastify-scripts',
+        generator: '@halfdomelabs/fastify/core/fastify-scripts',
       },
     },
   }),

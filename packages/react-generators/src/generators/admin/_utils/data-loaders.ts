@@ -1,4 +1,4 @@
-import { TypescriptCodeExpression } from '@baseplate/core-generators';
+import { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import {
   GraphQLFragment,
   GraphQLRoot,

@@ -1,5 +1,5 @@
 import path from 'path';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { projectProvider } from '../../../providers';
 import { generatePostgresDockerCompose } from './postgres';

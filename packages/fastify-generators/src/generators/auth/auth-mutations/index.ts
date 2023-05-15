@@ -2,11 +2,11 @@ import {
   ImportMapper,
   TypescriptCodeExpression,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context';

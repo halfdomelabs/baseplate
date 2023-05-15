@@ -2,7 +2,7 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import R from 'ramda';
 import { PrismaOutputProvider } from '@src/generators/prisma/prisma';
 import {

@@ -1,4 +1,7 @@
-import { AuthConfig, AUTH_DEFAULT_ROLES } from '@baseplate/project-builder-lib';
+import {
+  AuthConfig,
+  AUTH_DEFAULT_ROLES,
+} from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useEffect } from 'react';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';

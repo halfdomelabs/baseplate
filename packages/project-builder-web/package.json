@@ -1,9 +1,16 @@
 {
-  "name": "project-builder-web",
+  "name": "@halfdomelabs/project-builder-web",
   "description": "Web interface for constructing project builder JSON",
-  "license": "UNLICENSED",
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "version": "0.1.0",
-  "private": true,
+  "files": [
+    "LICENSE",
+    "dist/**/*"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",
@@ -22,10 +29,11 @@
     "serve": "vite preview",
     "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:format": "prettier -w .",
+    "release": "yarn publish --non-interactive"
   },
   "dependencies": {
-    "@baseplate/project-builder-lib": "^0.1.0",
+    "@halfdomelabs/project-builder-lib": "^0.1.0",
     "@headlessui/react": "^1.6.6",
     "@hookform/resolvers": "^2.8.8",
     "@popperjs/core": "^2.11.5",
@@ -51,7 +59,7 @@
     "react-select": "5.7.0",
     "reconnecting-websocket": "^4.4.0",
     "sort-keys": "^5.0.0",
-    "use-persisted-state": "^0.3.3",
+    "use-local-storage-state": "^18.3.2",
     "web-vitals": "^2.1.0",
     "zod": "^3.20.6"
   },

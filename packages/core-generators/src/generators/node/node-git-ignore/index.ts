@@ -2,7 +2,7 @@ import {
   createGeneratorWithChildren,
   createProviderType,
   writeFormattedAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({

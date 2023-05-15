@@ -1,11 +1,16 @@
 {
-  "name": "@baseplate/tools",
-  "version": "0.0.1",
+  "name": "@halfdomelabs/tools",
+  "version": "0.1.0",
   "description": "Shared dev configurations for Baseplate projects",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/tools",
-  "author": "Kingston Tam",
-  "license": "UNLICENSED",
-  "private": true,
+  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/tools",
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "scripts": {
+    "release": "yarn publish --non-interactive"
+  },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.54.0",
     "@typescript-eslint/parser": "5.54.0",

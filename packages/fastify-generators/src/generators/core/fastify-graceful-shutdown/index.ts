@@ -2,8 +2,8 @@ import {
   makeImportAndFilePath,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { errorHandlerServiceProvider } from '../error-handler-service';
 import { fastifyServerProvider } from '../fastify-server';

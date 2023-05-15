@@ -2,12 +2,12 @@ import * as path from 'path';
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
   writeFormattedAction,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo';

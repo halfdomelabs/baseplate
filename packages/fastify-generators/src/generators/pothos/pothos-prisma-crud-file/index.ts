@@ -1,4 +1,4 @@
-import { createGeneratorWithTasks } from '@baseplate/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { createPothosTypesFileTask } from '../pothos-types-file';
 
@@ -13,7 +13,7 @@ const PothosPrismaCrudFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: (descriptor) => {
     const sharedValues = {
-      generator: '@baseplate/fastify/pothos/pothos-prisma-crud-mutation',
+      generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-mutation',
       modelName: descriptor.modelName,
       objectTypeRef: descriptor.objectTypeRef,
       crudServiceRef: descriptor.crudServiceRef,

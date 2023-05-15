@@ -1,7 +1,7 @@
 import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 
 interface ReactComponent {
   name: string;

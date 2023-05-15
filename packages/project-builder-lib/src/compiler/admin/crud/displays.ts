@@ -29,7 +29,7 @@ function compileAdminCrudForeignDisplay(
   const localField = relation.references[0].local;
   return {
     name: field.localRelationName,
-    generator: '@baseplate/react/admin/admin-crud-foreign-display',
+    generator: '@halfdomelabs/react/admin/admin-crud-foreign-display',
     isOptional: relation.isOptional,
     localField,
     foreignModelName: relation.modelName,
@@ -54,7 +54,7 @@ function compileAdminCrudTextDisplay(
   }
   return {
     name: field.modelField,
-    generator: '@baseplate/react/admin/admin-crud-text-display',
+    generator: '@halfdomelabs/react/admin/admin-crud-text-display',
     modelField: field.modelField,
   };
 }

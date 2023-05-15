@@ -3,12 +3,12 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import R from 'ramda';
 import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module';

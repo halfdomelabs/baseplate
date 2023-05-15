@@ -14,22 +14,22 @@ export function buildFastify(
   // add graphql scalars
   builder.addDescriptor('graphql/root.json', {
     name: 'graphql',
-    generator: '@baseplate/fastify/core/app-module',
+    generator: '@halfdomelabs/fastify/core/app-module',
     children: {
       $schemaTypes: [
         {
           name: 'UuidScalar',
-          generator: '@baseplate/fastify/pothos/pothos-scalar',
+          generator: '@halfdomelabs/fastify/pothos/pothos-scalar',
           type: 'uuid',
         },
         {
           name: 'DateTimeScalar',
-          generator: '@baseplate/fastify/pothos/pothos-scalar',
+          generator: '@halfdomelabs/fastify/pothos/pothos-scalar',
           type: 'dateTime',
         },
         {
           name: 'DateScalar',
-          generator: '@baseplate/fastify/pothos/pothos-scalar',
+          generator: '@halfdomelabs/fastify/pothos/pothos-scalar',
           type: 'date',
         },
       ],
@@ -38,19 +38,19 @@ export function buildFastify(
 
   return {
     name: 'fastify',
-    generator: '@baseplate/fastify/core/fastify',
+    generator: '@halfdomelabs/fastify/core/fastify',
     children: {
       server: {
         defaultPort: projectConfig.portBase + 1,
       },
       $sentry: {
-        generator: '@baseplate/fastify/core/fastify-sentry',
+        generator: '@halfdomelabs/fastify/core/fastify-sentry',
         peerProvider: true,
       },
       $redis: !app.enableRedis
         ? undefined
         : {
-            generator: '@baseplate/fastify/core/fastify-redis',
+            generator: '@halfdomelabs/fastify/core/fastify-redis',
             peerProvider: true,
             defaultUrl: getRedisSettings(projectConfig).url,
           },
@@ -58,53 +58,53 @@ export function buildFastify(
         ? {}
         : {
             $bull: {
-              generator: '@baseplate/fastify/bull/bullmq',
+              generator: '@halfdomelabs/fastify/bull/bullmq',
               peerProvider: true,
             },
             $bullBoard: {
-              generator: '@baseplate/fastify/bull/fastify-bull-board',
+              generator: '@halfdomelabs/fastify/bull/fastify-bull-board',
               peerProvider: true,
             },
           }),
       $postmark: !app.enablePostmark
         ? undefined
         : {
-            generator: '@baseplate/fastify/email/fastify-postmark',
+            generator: '@halfdomelabs/fastify/email/fastify-postmark',
             peerProvider: true,
           },
       $sendgrid: !app.enableSendgrid
         ? undefined
         : {
-            generator: '@baseplate/fastify/email/fastify-sendgrid',
+            generator: '@halfdomelabs/fastify/email/fastify-sendgrid',
             peerProvider: true,
           },
       $prisma: {
-        generator: '@baseplate/fastify/prisma/prisma',
+        generator: '@halfdomelabs/fastify/prisma/prisma',
         peerProvider: true,
         defaultDatabaseUrl: getPostgresSettings(projectConfig).url,
       },
       $prismaJest: {
-        generator: '@baseplate/fastify/jest/prisma-jest',
+        generator: '@halfdomelabs/fastify/jest/prisma-jest',
         peerProvider: true,
       },
       $prismaUtils: {
-        generator: '@baseplate/fastify/prisma/prisma-utils',
+        generator: '@halfdomelabs/fastify/prisma/prisma-utils',
         peerProvider: true,
       },
       $yoga: {
-        generator: '@baseplate/fastify/yoga/yoga-plugin',
+        generator: '@halfdomelabs/fastify/yoga/yoga-plugin',
         enableSubscriptions: app.enableSubscriptions,
         peerProvider: true,
       },
       $pothos: {
-        generator: '@baseplate/fastify/pothos/pothos',
+        generator: '@halfdomelabs/fastify/pothos/pothos',
         peerProvider: true,
       },
       $pothosPrisma: {
-        generator: '@baseplate/fastify/pothos/pothos-prisma',
+        generator: '@halfdomelabs/fastify/pothos/pothos-prisma',
       },
       $yogaSentry: {
-        generator: '@baseplate/fastify/yoga/yoga-sentry',
+        generator: '@halfdomelabs/fastify/yoga/yoga-sentry',
       },
       $modules: [
         ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
@@ -113,7 +113,7 @@ export function buildFastify(
       $stripe: !app.enableStripe
         ? undefined
         : {
-            generator: '@baseplate/fastify/stripe/fastify-stripe',
+            generator: '@halfdomelabs/fastify/stripe/fastify-stripe',
             peerProvider: true,
           },
       ...parsedProject.fastifyChildren,

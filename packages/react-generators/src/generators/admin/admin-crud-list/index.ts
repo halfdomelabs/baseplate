@@ -4,8 +4,8 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';
@@ -35,7 +35,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
     columns: {
       isMultiple: true,
       defaultDescriptor: {
-        generator: '@baseplate/react/admin/admin-crud-column',
+        generator: '@halfdomelabs/react/admin/admin-crud-column',
       },
     },
   }),

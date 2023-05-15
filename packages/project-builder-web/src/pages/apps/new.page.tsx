@@ -2,7 +2,7 @@ import {
   AppConfig,
   baseAppSchema,
   randomUid,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useForm } from 'react-hook-form';

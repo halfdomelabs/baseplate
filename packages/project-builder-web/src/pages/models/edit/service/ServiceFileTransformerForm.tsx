@@ -1,4 +1,4 @@
-import { ModelConfig } from '@baseplate/project-builder-lib';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { Control } from 'react-hook-form';
 import { LinkButton, SelectInput } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';

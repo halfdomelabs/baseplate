@@ -3,11 +3,11 @@ import {
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authComponentsProvider } from '@src/generators/auth/auth-components';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks';

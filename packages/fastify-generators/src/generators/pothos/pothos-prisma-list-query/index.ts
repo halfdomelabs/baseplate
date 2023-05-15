@@ -1,12 +1,12 @@
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import inflection from 'inflection';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
@@ -94,7 +94,7 @@ const PothosPrismaListQueryGenerator = createGeneratorWithTasks({
     authorize: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/pothos/pothos-authorize-field',
+        generator: '@halfdomelabs/fastify/pothos/pothos-authorize-field',
       },
     },
   }),

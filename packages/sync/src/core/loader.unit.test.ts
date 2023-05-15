@@ -39,16 +39,16 @@ describe('loadGeneratorsForModule', () => {
     mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorTwo);
 
     const generator = await loadGeneratorsForModule(
-      '@baseplate/test-generators'
+      '@halfdomelabs/test-generators'
     );
 
     expect(generator).toEqual({
-      '@baseplate/test/generatorOne': {
+      '@halfdomelabs/test/generatorOne': {
         ...mockGeneratorOne,
         configBaseDirectory:
           '/modules/test-generators/lib/generators/generatorOne',
       },
-      '@baseplate/test/generatorTwo': {
+      '@halfdomelabs/test/generatorTwo': {
         ...mockGeneratorTwo,
         configBaseDirectory:
           '/modules/test-generators/lib/generators/generatorTwo',
@@ -56,7 +56,7 @@ describe('loadGeneratorsForModule', () => {
     });
 
     expect(mockedRequireUtils.resolveModule).toHaveBeenCalledWith(
-      '@baseplate/test-generators/package.json'
+      '@halfdomelabs/test-generators/package.json'
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
       '/modules/test-generators/lib/generators/generatorOne'
@@ -98,16 +98,16 @@ describe('loadGeneratorsForModule', () => {
     mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorTwo);
 
     const generator = await loadGeneratorsForModule(
-      '@baseplate/test-generators'
+      '@halfdomelabs/test-generators'
     );
 
     expect(generator).toEqual({
-      '@baseplate/test/one/generatorOne': {
+      '@halfdomelabs/test/one/generatorOne': {
         ...mockGeneratorOne,
         configBaseDirectory:
           '/modules/test-generators/dist/generators/one/generatorOne',
       },
-      '@baseplate/test/two/generatorTwo': {
+      '@halfdomelabs/test/two/generatorTwo': {
         ...mockGeneratorTwo,
         configBaseDirectory:
           '/modules/test-generators/dist/generators/two/generatorTwo',
@@ -115,7 +115,7 @@ describe('loadGeneratorsForModule', () => {
     });
 
     expect(mockedRequireUtils.resolveModule).toHaveBeenCalledWith(
-      '@baseplate/test-generators/package.json'
+      '@halfdomelabs/test-generators/package.json'
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
       '/modules/test-generators/dist/generators/one/generatorOne'

@@ -10,7 +10,7 @@ interface Props {
 }
 
 function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
-  const [projectId, setProjectId] = useProjectIdState(null);
+  const [projectId, setProjectId] = useProjectIdState();
   const [projects, setProjects] = useState<Project[]>();
   const [error, setError] = useState<Error | null>(null);
 

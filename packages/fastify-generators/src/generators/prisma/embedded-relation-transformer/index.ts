@@ -3,8 +3,8 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import R from 'ramda';
 import { z } from 'zod';
 import { serviceContextProvider } from '@src/generators/core/service-context';

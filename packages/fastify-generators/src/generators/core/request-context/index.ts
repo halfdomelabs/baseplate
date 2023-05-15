@@ -3,13 +3,13 @@ import {
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   NonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { fastifyServerProvider } from '../fastify-server';
 import { loggerServiceSetupProvider } from '../logger-service';

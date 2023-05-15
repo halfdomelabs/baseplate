@@ -5,12 +5,12 @@ import {
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify';
 import { reactConfigProvider } from '../react-config';

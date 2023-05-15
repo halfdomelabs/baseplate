@@ -1,4 +1,4 @@
-import { createGeneratorWithTasks } from '@baseplate/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { createNexusTypesFileTask } from '../nexus-types-file';
 
@@ -12,7 +12,7 @@ const NexusPrismaCrudFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: (descriptor) => {
     const sharedValues = {
-      generator: '@baseplate/fastify/nexus/nexus-prisma-crud-mutation',
+      generator: '@halfdomelabs/fastify/nexus/nexus-prisma-crud-mutation',
       modelName: descriptor.modelName,
       crudServiceRef: descriptor.crudServiceRef,
     };

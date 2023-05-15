@@ -1,4 +1,4 @@
-const sharedConfig = require('@baseplate/tools/jest.config.ts');
+const sharedConfig = require('@halfdomelabs/tools/jest.config.ts');
 
 module.exports = {
   ...sharedConfig,

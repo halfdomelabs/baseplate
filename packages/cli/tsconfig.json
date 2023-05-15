@@ -1,5 +1,5 @@
 {
-  "extends": "@baseplate/tools/tsconfig.base.json",
+  "extends": "@halfdomelabs/tools/tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist"
   },

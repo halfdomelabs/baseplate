@@ -3,7 +3,7 @@ import {
   createGeneratorWithChildren,
   NonOverwriteableMap,
   createNonOverwriteableMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
 import {
@@ -38,31 +38,31 @@ const PrismaModelGenerator = createGeneratorWithChildren({
     fields: {
       isMultiple: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-field',
+        generator: '@halfdomelabs/fastify/prisma/prisma-field',
       },
     },
     relations: {
       isMultiple: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-relation-field',
+        generator: '@halfdomelabs/fastify/prisma/prisma-relation-field',
       },
     },
     primaryKey: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-model-id',
+        generator: '@halfdomelabs/fastify/prisma/prisma-model-id',
       },
     },
     indicies: {
       isMultiple: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-model-index',
+        generator: '@halfdomelabs/fastify/prisma/prisma-model-index',
       },
     },
     uniqueConstraints: {
       isMultiple: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-model-unique',
+        generator: '@halfdomelabs/fastify/prisma/prisma-model-unique',
       },
     },
     generatedFields: {

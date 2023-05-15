@@ -1,8 +1,8 @@
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
-import { createGeneratorWithChildren } from '@baseplate/sync';
+} from '@halfdomelabs/core-generators';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { serviceContextProvider } from '@src/generators/core/service-context';
 import { serviceFileProvider } from '@src/generators/core/service-file';

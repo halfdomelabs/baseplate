@@ -3,12 +3,12 @@ import {
   tsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createTaskConfigBuilder,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { serviceFileOutputProvider } from '@src/generators/core/service-file';
 import { pothosFieldProvider } from '@src/providers/pothos-field';
@@ -165,7 +165,7 @@ const PothosPrismaCrudMutationGenerator = createGeneratorWithTasks({
     authorize: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@baseplate/fastify/pothos/pothos-authorize-field',
+        generator: '@halfdomelabs/fastify/pothos/pothos-authorize-field',
       },
     },
   }),

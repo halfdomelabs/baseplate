@@ -2,7 +2,7 @@ import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 import { PrismaDataTransformerFactory } from '@src/providers/prisma/prisma-data-transformable';
 
@@ -32,14 +32,14 @@ const PrismaCrudServiceGenerator = createGeneratorWithTasks({
   getDefaultChildGenerators: ({ modelName }) => ({
     create: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-crud-create',
+        generator: '@halfdomelabs/fastify/prisma/prisma-crud-create',
         name: 'create',
         modelName,
       },
     },
     update: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-crud-update',
+        generator: '@halfdomelabs/fastify/prisma/prisma-crud-update',
         name: 'update',
         type: 'update',
         modelName,
@@ -47,7 +47,7 @@ const PrismaCrudServiceGenerator = createGeneratorWithTasks({
     },
     delete: {
       defaultDescriptor: {
-        generator: '@baseplate/fastify/prisma/prisma-crud-delete',
+        generator: '@halfdomelabs/fastify/prisma/prisma-crud-delete',
         name: 'delete',
         modelName,
       },

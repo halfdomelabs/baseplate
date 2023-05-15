@@ -3,7 +3,7 @@ import {
   AdminSectionConfig,
   adminSectionSchema,
   randomUid,
-} from '@baseplate/project-builder-lib';
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import _ from 'lodash';

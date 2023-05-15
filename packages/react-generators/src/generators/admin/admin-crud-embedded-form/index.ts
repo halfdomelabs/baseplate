@@ -5,13 +5,13 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
-} from '@baseplate/core-generators';
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
   InferTaskBuilderMap,
-} from '@baseplate/sync';
+} from '@halfdomelabs/sync';
 import _ from 'lodash';
 import { z } from 'zod';
 import { reactComponentsProvider } from '@src/generators/core/react-components';

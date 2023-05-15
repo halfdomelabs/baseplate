@@ -1,14 +1,21 @@
 {
-  "name": "@baseplate/fastify-generators",
-  "version": "0.0.1",
+  "name": "@halfdomelabs/fastify-generators",
+  "version": "0.1.0",
   "description": "Fastify generators for Baseplate",
   "main": "lib/index.js",
-  "repository": "https://github.com/kingston/baseplate/tree/master/packages/fastify-generators",
-  "author": "Kingston Tam",
-  "license": "UNLICENSED",
-  "private": true,
+  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/fastify-generators",
+  "author": "Half Dome Labs LLC",
+  "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "files": [
+    "LICENSE",
+    "generator.json",
+    "lib/**/*"
+  ],
   "devDependencies": {
-    "@baseplate/tools": "^0.0.1",
+    "@halfdomelabs/tools": "^0.1.0",
     "@types/inflection": "^1.13.0",
     "@types/ramda": "^0.27.64",
     "@types/semver": "^7.3.9",
@@ -26,11 +33,12 @@
     "watch:templates": "gulp watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:format": "prettier -w .",
+    "release": "yarn publish --non-interactive"
   },
   "dependencies": {
-    "@baseplate/core-generators": "^0.0.1",
-    "@baseplate/sync": "^0.0.1",
+    "@halfdomelabs/core-generators": "^0.1.0",
+    "@halfdomelabs/sync": "^0.1.0",
     "@prisma/internals": "4.0.0",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.1",

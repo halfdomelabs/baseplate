@@ -1,4 +1,4 @@
-import { createProviderType } from '@baseplate/sync';
+import { createProviderType } from '@halfdomelabs/sync';
 
 export interface ProjectProvider {
   getProjectName(): string;

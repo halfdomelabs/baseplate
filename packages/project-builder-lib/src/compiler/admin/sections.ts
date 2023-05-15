@@ -57,7 +57,7 @@ function compileAdminFeatureRecursive(
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,
-    generator: '@baseplate/react/core/react-routes',
+    generator: '@halfdomelabs/react/core/react-routes',
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featurePath),
     // add admin layout to any root features
     layoutKey: featurePath.includes('/') ? undefined : 'admin',
