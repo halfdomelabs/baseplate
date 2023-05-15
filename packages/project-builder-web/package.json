@@ -3,6 +3,9 @@
   "description": "Web interface for constructing project builder JSON",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "version": "0.1.0",
   "files": [
     "LICENSE",

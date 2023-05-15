@@ -5,6 +5,9 @@
   "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/tools",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "5.54.0",
     "@typescript-eslint/parser": "5.54.0",
