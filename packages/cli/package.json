@@ -3,11 +3,12 @@
   "version": "0.2.0",
   "description": "Command line tool for syncing Baseplate descriptions",
   "main": "dist/index.js",
-  "repository": "https://github.com/halfdomelabs/baseplate/tree/master/packages/cli",
+  "repository": "https://github.com/halfdomelabs/baseplate",
   "author": "Kingston Tam",
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
-    "access": "restricted"
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com"
   },
   "files": [
     "LICENSE",
