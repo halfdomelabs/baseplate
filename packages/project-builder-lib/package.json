@@ -30,7 +30,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "^0.2.0",
+    "@halfdomelabs/tools": "0.2.0",
     "@types/jest": "^27.4.0",
     "@types/nanoid-dictionary": "^4.2.0",
     "@types/path-browserify": "^1.0.0",
