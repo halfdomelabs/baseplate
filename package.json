@@ -13,7 +13,7 @@
     "prettier:format": "nx run-many --target=prettier:format",
     "build": "nx run-many --nx-bail --target=build",
     "test": "nx run-many --target=test",
-    "release": "nx run-many --target=release"
+    "release": "yarn build && yarn changeset publish"
   },
   "workspaces": [
     "packages/*"
