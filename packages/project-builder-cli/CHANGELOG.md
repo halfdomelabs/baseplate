@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.2.2
+
+### Patch Changes
+
+- 82075c4: Add scripts to files
+
 ## 0.2.1
 
 ### Patch Changes
