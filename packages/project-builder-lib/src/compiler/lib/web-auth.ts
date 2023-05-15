@@ -7,23 +7,23 @@ export function compileAuthFeatures(
   if (builder.projectConfig.auth?.useAuth0) {
     return {
       $auth: {
-        generator: '@baseplate/react/auth0/react-auth0',
+        generator: '@halfdomelabs/react/auth0/react-auth0',
         peerProvider: true,
         callbackPath: 'auth/auth0-callback',
       },
       $authHooks: {
-        generator: '@baseplate/react/auth0/auth0-hooks',
+        generator: '@halfdomelabs/react/auth0/auth0-hooks',
         peerProvider: true,
       },
       $authIdentify: {
-        generator: '@baseplate/react/auth/auth-identify',
+        generator: '@halfdomelabs/react/auth/auth-identify',
         peerProvider: true,
       },
       $authApollo: {
-        generator: '@baseplate/react/auth0/auth0-apollo',
+        generator: '@halfdomelabs/react/auth0/auth0-apollo',
       },
       $authComponents: {
-        generator: '@baseplate/react/auth0/auth0-components',
+        generator: '@halfdomelabs/react/auth0/auth0-components',
         loginPath: '/auth/login',
         peerProvider: true,
       },
@@ -31,22 +31,22 @@ export function compileAuthFeatures(
   }
   return {
     $authService: {
-      generator: '@baseplate/react/auth/auth-service',
+      generator: '@halfdomelabs/react/auth/auth-service',
       peerProvider: true,
     },
     $authHooks: {
-      generator: '@baseplate/react/auth/auth-hooks',
+      generator: '@halfdomelabs/react/auth/auth-hooks',
       peerProvider: true,
     },
     $authIdentify: {
-      generator: '@baseplate/react/auth/auth-identify',
+      generator: '@halfdomelabs/react/auth/auth-identify',
       peerProvider: true,
     },
     $authApollo: {
-      generator: '@baseplate/react/auth/auth-apollo',
+      generator: '@halfdomelabs/react/auth/auth-apollo',
     },
     $authComponents: {
-      generator: '@baseplate/react/auth/auth-components',
+      generator: '@halfdomelabs/react/auth/auth-components',
       loginPath: '/auth/login',
       peerProvider: true,
     },
@@ -60,10 +60,10 @@ export function compileAuthPages(
   if (builder.projectConfig.auth?.useAuth0) {
     builder.addDescriptor('auth/root.json', {
       name: 'auth',
-      generator: '@baseplate/react/core/react-routes',
+      generator: '@halfdomelabs/react/core/react-routes',
       children: {
         $auth: {
-          generator: '@baseplate/react/auth0/auth0-callback',
+          generator: '@halfdomelabs/react/auth0/auth0-callback',
         },
       },
     });
@@ -73,10 +73,10 @@ export function compileAuthPages(
 
   builder.addDescriptor('auth/root.json', {
     name: 'auth',
-    generator: '@baseplate/react/core/react-routes',
+    generator: '@halfdomelabs/react/core/react-routes',
     children: {
       $auth: {
-        generator: '@baseplate/react/auth/auth-pages',
+        generator: '@halfdomelabs/react/auth/auth-pages',
         children: {
           login: {
             allowedRoles,
