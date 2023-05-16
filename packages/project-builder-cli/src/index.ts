@@ -1,3 +1,4 @@
+import { promises } from 'fs';
 import { resolve } from 'path';
 import { program } from 'commander';
 import {
@@ -9,9 +10,9 @@ import { startWebServer } from './server';
 import { logger } from './services/logger';
 
 async function getVersion(): Promise<string> {
-  const packageJson = (await import(
-    resolve(__dirname, '../package.json')
-  )) as Record<string, string>;
+  const packageJson = JSON.parse(
+    await promises.readFile(resolve(__dirname, '../package.json'), 'utf8')
+  ) as Record<string, string>;
   return packageJson?.version;
 }
 
