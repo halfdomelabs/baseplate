@@ -2,6 +2,7 @@
 
 import { FastifyRequest } from 'fastify';
 import { AuthInfo, createAuthInfoFromUser, UserInfo } from '../utils/auth-info';
+import { populateAuthRoles } from '%role-service';
 
 const USER_ID_CLAIM = 'https://app.com/user_id';
 const EMAIL_CLAIM = 'https://app.com/email';
@@ -73,7 +74,7 @@ export async function createAuthInfoFromRequest(
     return createAuthInfoFromUser(null, ['anonymous']);
   }
 
-  const roles = AUTH_ROLE_SERVICE.populateAuthRoles(user?.roles);
+  const roles = populateAuthRoles(user?.roles);
 
   return createAuthInfoFromUser(user, roles);
 }

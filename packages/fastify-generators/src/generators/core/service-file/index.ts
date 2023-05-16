@@ -1,6 +1,7 @@
 import path from 'path';
 import {
-  TypescriptCodeExpression,
+  makeImportAndFilePath,
+  TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -13,21 +14,20 @@ import { paramCase } from 'change-case';
 import { z } from 'zod';
 import { ServiceOutputMethod } from '@src/types/serviceOutput';
 import { notEmpty } from '@src/utils/array';
-import { lowerCaseFirst } from '@src/utils/case';
 import { appModuleProvider } from '../root-module';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
   methodOrder: z.array(z.string()).optional(),
+  fileName: z.string().optional(),
 });
 
 export interface ServiceFileProvider {
   getServiceImport: () => string;
-  getServiceExpression: () => TypescriptCodeExpression;
-  getServiceName: () => string;
+  getServicePath: () => string;
   registerMethod(
     key: string,
-    expression: TypescriptCodeExpression,
+    block: TypescriptCodeBlock,
     outputMethod?: ServiceOutputMethod
   ): void;
 }
@@ -55,7 +55,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
       exports: { serviceFile: serviceFileProvider },
       run({ appModule, typescript }) {
         const methodMap = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
+          Record<string, TypescriptCodeBlock>
         >({}, { name: 'prisma-crud-service-method-map' });
         const outputMap = createNonOverwriteableMap<
           Record<string, ServiceOutputMethod>
@@ -64,30 +64,20 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
           appModule.getModuleFolder(),
           'services'
         );
-        const servicesImport = path.join(
-          servicesFolder,
-          `${paramCase(descriptor.name)}`
+        const [servicesImport, servicesPath] = makeImportAndFilePath(
+          path.join(
+            servicesFolder,
+            `${descriptor.fileName || paramCase(descriptor.name)}.ts`
+          )
         );
-        const servicesPath = `${servicesImport}.ts`;
-        const servicesFile = typescript.createTemplate({
-          METHODS: { type: 'code-expression' },
-          SERVICE_NAME: { type: 'code-expression' },
-        });
-        const serviceName = lowerCaseFirst(descriptor.name);
 
         return {
           getProviders: () => ({
             serviceFile: {
-              getServiceImport: () => `@/${servicesImport}`,
-              getServiceExpression() {
-                return new TypescriptCodeExpression(
-                  serviceName,
-                  `import { ${serviceName} } from '@/${servicesImport}';`
-                );
-              },
-              getServiceName: () => serviceName,
-              registerMethod(key, expression, outputMethod) {
-                methodMap.set(key, expression);
+              getServiceImport: () => servicesImport,
+              getServicePath: () => servicesPath,
+              registerMethod(key, block, outputMethod) {
+                methodMap.set(key, block);
                 if (outputMethod) {
                   outputMap.set(key, outputMethod);
                 }
@@ -104,19 +94,13 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
                 .map((key) => methods[key]),
             ];
 
-            servicesFile.addCodeEntries({
-              SERVICE_NAME: serviceName,
-              METHODS: TypescriptCodeUtils.mergeExpressions(
-                orderedMethods,
-                ',\n\n'
-              ).wrap((c) => `{${c}}`),
+            const servicesFile = typescript.createTemplate({
+              METHODS: TypescriptCodeUtils.mergeBlocks(orderedMethods, '\n\n'),
             });
+
             if (Object.keys(methodMap.value()).length) {
               await builder.apply(
-                servicesFile.renderToActionFromText(
-                  'export const SERVICE_NAME = METHODS;',
-                  servicesPath
-                )
+                servicesFile.renderToActionFromText('METHODS;', servicesPath)
               );
             }
             return { outputMap };

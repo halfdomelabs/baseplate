@@ -1,4 +1,5 @@
 import {
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
@@ -16,10 +17,10 @@ import {
 } from '@src/types/serviceOutput';
 import {
   getDataInputTypeBlock,
+  getDataMethodContextRequired,
   getDataMethodDataExpressions,
   getDataMethodDataType,
   PrismaDataMethodOptions,
-  getDataMethodContextRequired,
   wrapWithApplyDataPipe,
 } from '../_shared/crud-method/data-method';
 import { prismaOutputProvider } from '../prisma';
@@ -59,9 +60,7 @@ function getMethodDefinition(
   };
 }
 
-function getMethodExpression(
-  options: PrismaDataMethodOptions
-): TypescriptCodeExpression {
+function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
   const { name, modelName, prismaOutput, serviceContext, prismaUtils } =
     options;
 
@@ -86,9 +85,9 @@ function getMethodExpression(
     }
   );
 
-  return TypescriptCodeUtils.formatExpression(
+  return TypescriptCodeUtils.formatBlock(
     `
-async METHOD_NAME(data: CREATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
+export async function METHOD_NAME(data: CREATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
   return OPERATION;
@@ -131,9 +130,13 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
     }
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
-    const serviceMethodExpression = serviceFile
-      .getServiceExpression()
-      .append(`.${name}`);
+
+    const methodName = `${name}${modelName}`;
+
+    const serviceMethodExpression = TypescriptCodeUtils.createExpression(
+      methodName,
+      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`
+    );
     const transformerOption: PrismaDataTransformerOptions = {
       operationType: 'create',
     };
@@ -148,7 +151,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
       getProviders: () => ({}),
       build: () => {
         const methodOptions: PrismaDataMethodOptions = {
-          name,
+          name: methodName,
           modelName,
           prismaFieldNames: prismaFields,
           prismaOutput,
@@ -163,7 +166,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
 
         serviceFile.registerMethod(
           name,
-          getMethodExpression(methodOptions),
+          getMethodBlock(methodOptions),
           getMethodDefinition(serviceMethodExpression, methodOptions)
         );
       },

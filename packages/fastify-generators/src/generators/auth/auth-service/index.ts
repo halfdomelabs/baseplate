@@ -30,9 +30,7 @@ const descriptorSchema = z.object({
   userModelIdField: z.string().default('id'),
 });
 
-export interface AuthServiceProvider extends ImportMapper {
-  getServiceExpression(): TypescriptCodeExpression;
-}
+export type AuthServiceProvider = ImportMapper;
 
 export const authServiceProvider =
   createProviderType<AuthServiceProvider>('auth-service');
@@ -274,11 +272,6 @@ const AuthServiceGenerator = createGeneratorWithTasks({
         return {
           getProviders: () => ({
             authService: {
-              getServiceExpression: () =>
-                new TypescriptCodeExpression(
-                  'authService',
-                  `import { authService } from '${authServiceImport}'`
-                ),
               getImportMap: () => importMap,
             },
             authServiceImport: {

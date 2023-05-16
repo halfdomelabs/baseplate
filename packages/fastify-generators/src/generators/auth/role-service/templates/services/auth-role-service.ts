@@ -24,17 +24,15 @@ function getInheritedRoles(role: AuthRole): AuthRole[] {
 }
 // HEADER:END
 
-export const authRoleService = {
-  // BODY:START
-  populateAuthRoles(roles?: string[] | null): AuthRole[] {
-    if (!roles) {
-      return ['anonymous'];
-    }
-    const availableRoles = (roles as AuthRole[])
-      .filter((role) => AUTH_ROLE_CONFIG[role])
-      .flatMap((role) => [role, ...getInheritedRoles(role)]);
+// BODY:START
+export function populateAuthRoles(roles?: string[] | null): AuthRole[] {
+  if (!roles) {
+    return ['anonymous'];
+  }
+  const availableRoles = (roles as AuthRole[])
+    .filter((role) => AUTH_ROLE_CONFIG[role])
+    .flatMap((role) => [role, ...getInheritedRoles(role)]);
 
-    return availableRoles;
-  },
-  // BODY:END
-};
+  return availableRoles;
+}
+// BODY:END
