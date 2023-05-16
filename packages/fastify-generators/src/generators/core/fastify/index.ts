@@ -176,7 +176,7 @@ const FastifyGenerator = createGeneratorWithTasks({
             // add scripts
             const { devOutputFormatter, devLoaders } = config.value();
             const devRegister = formatDevLoaders(devLoaders || []);
-            const devCommand = `ts-node-dev --rs --transpile-only --respawn ${devRegister} src${
+            const devCommand = `node-dev --respawn ${devRegister} src/index.ts${
               devOutputFormatter ? ` | ${devOutputFormatter}` : ''
             }`;
             node.addScripts({
