@@ -26,14 +26,14 @@
     "@types/ws": "^8.5.3",
     "dotenv": "^16.0.3",
     "node-dev": "^8.0.0",
-    "ts-node": "^10.9.1",
-    "tsc-alias": "^1.8.2",
-    "tsconfig-paths": "^4.1.2",
+    "ts-node": "10.9.1",
+    "tsc-alias": "1.8.6",
+    "tsconfig-paths": "4.2.0",
     "typescript": "4.9.5"
   },
   "scripts": {
     "start": "ts-node -r dotenv/config -r tsconfig-paths/register ./src",
-    "dev": "node-dev -r dotenv/config -r tsconfig-paths/register --respawn ./src/index.ts",
+    "dev": "node-dev --respawn -r dotenv/config -r tsconfig-paths/register ./src/index.ts",
     "build": "tsc && tsc-alias",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",

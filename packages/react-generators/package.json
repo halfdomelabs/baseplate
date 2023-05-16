@@ -22,7 +22,7 @@
     "@types/toposort": "^2.0.3",
     "concurrently": "^7.0.0",
     "del": "^6.0.0",
-    "tsc-alias": "^1.8.2",
+    "tsc-alias": "1.8.6",
     "typescript": "4.9.5"
   },
   "scripts": {

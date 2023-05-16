@@ -1,4 +1,5 @@
 import {
+  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
@@ -67,9 +68,7 @@ function getMethodDefinition(
   };
 }
 
-function getMethodExpression(
-  options: PrismaDataMethodOptions
-): TypescriptCodeExpression {
+function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
   const { name, modelName, prismaOutput, serviceContext, prismaUtils } =
     options;
 
@@ -98,9 +97,9 @@ function getMethodExpression(
     }
   );
 
-  return TypescriptCodeUtils.formatExpression(
+  return TypescriptCodeUtils.formatBlock(
     `
-async METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
+export async function METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
   return OPERATION;
@@ -147,9 +146,12 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
     }
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
-    const serviceMethodExpression = serviceFile
-      .getServiceExpression()
-      .append(`.${name}`);
+    const methodName = `${name}${modelName}`;
+
+    const serviceMethodExpression = TypescriptCodeUtils.createExpression(
+      methodName,
+      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`
+    );
     const transformerOption: PrismaDataTransformerOptions = {
       operationType: 'update',
     };
@@ -166,7 +168,7 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
         const model = prismaOutput.getPrismaModel(modelName);
         const primaryKey = getPrimaryKeyExpressions(model);
         const methodOptions: PrismaDataMethodOptions = {
-          name,
+          name: methodName,
           modelName,
           prismaFieldNames: prismaFields,
           prismaOutput,
@@ -181,7 +183,7 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
 
         serviceFile.registerMethod(
           name,
-          getMethodExpression(methodOptions),
+          getMethodBlock(methodOptions),
           getMethodDefinition(serviceMethodExpression, methodOptions)
         );
       },

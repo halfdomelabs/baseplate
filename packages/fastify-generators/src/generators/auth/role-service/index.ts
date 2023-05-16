@@ -2,7 +2,6 @@ import {
   ImportEntry,
   ImportMapper,
   TypescriptCodeBlock,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptSourceBlock,
@@ -43,7 +42,6 @@ const descriptorSchema = z.object({
 
 export interface RoleServiceProvider extends ImportMapper {
   addHeaderBlock(block: TypescriptCodeBlock): void;
-  getServiceExpression(): TypescriptCodeExpression;
   getServiceImport(): string;
 }
 
@@ -98,11 +96,7 @@ const RoleServiceGenerator = createGeneratorWithChildren({
 
     const roleServiceImport: ImportEntry = {
       path: serviceFile.getServiceImport(),
-      allowedImports: [
-        'AUTH_ROLE_CONFIG',
-        'AuthRole',
-        serviceFile.getServiceName(),
-      ],
+      allowedImports: ['AUTH_ROLE_CONFIG', 'AuthRole', 'populateAuthRoles'],
     };
 
     authSetup.getConfig().set('roleServiceImport', roleServiceImport);
@@ -116,7 +110,6 @@ const RoleServiceGenerator = createGeneratorWithChildren({
           addHeaderBlock(block) {
             customHeaderBlocks.push(block);
           },
-          getServiceExpression: () => serviceFile.getServiceExpression(),
           getServiceImport: () => serviceFile.getServiceImport(),
         },
       }),
@@ -131,7 +124,7 @@ const RoleServiceGenerator = createGeneratorWithChildren({
 
         serviceFile.registerMethod(
           'populateAuthRoles',
-          TypescriptCodeUtils.createExpression(
+          TypescriptCodeUtils.createBlock(
             TypescriptCodeUtils.extractTemplateSnippet(template, 'BODY'),
             undefined,
             {

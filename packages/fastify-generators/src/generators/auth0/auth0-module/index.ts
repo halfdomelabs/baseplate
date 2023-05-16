@@ -186,7 +186,6 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
         const serviceFile = typescript.createTemplate(
           {
             USER_MODEL: prismaOutput.getPrismaModelExpression(userModelName),
-            AUTH_ROLE_SERVICE: roleService.getServiceExpression(),
           },
           { importMappers: [configService, roleService] }
         );

@@ -48,11 +48,14 @@ const AuthRolesGenerator = createGeneratorWithChildren({
         where: { userId: user.id },
       });
       
-      const roles = ROLES_SERVICE.populateAuthRoles(userRoles.map(r => r.role));`,
+      const roles = populateAuthRoles(userRoles.map(r => r.role));`,
         {
           USER_ROLE_MODEL:
             prismaOutput.getPrismaModelExpression(userRoleModelName),
-          ROLES_SERVICE: roleService.getServiceExpression(),
+        },
+        {
+          importText: ["import { populateAuthRoles } from '%role-service'"],
+          importMappers: [roleService],
         }
       );
 
