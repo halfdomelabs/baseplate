@@ -7,6 +7,7 @@ import {
   WriteFileOptions,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import R from 'ramda';
 import { CompilerOptions, ts } from 'ts-morph';
 import {
   copyTypescriptFilesAction,
@@ -41,6 +42,7 @@ export interface TypescriptConfigProvider {
   addInclude(path: string): void;
   addExclude(path: string): void;
   addReference(reference: TypescriptConfigReference): void;
+  addExtraSection(section: Record<string, unknown>): void;
 }
 
 export const typescriptConfigProvider =
@@ -77,6 +79,7 @@ interface TypescriptConfig {
   include: string[];
   exclude: string[];
   references: TypescriptConfigReference[];
+  extraSections: Record<string, unknown>[];
 }
 
 const TYPESCRIPT_VERSION = '^4.5.4';
@@ -101,6 +104,7 @@ const DEFAULT_CONFIG: TypescriptConfig = {
   include: ['src'],
   exclude: ['**/node_modules', '**/dist', '**/lib'],
   references: [],
+  extraSections: [],
 };
 
 const TypescriptGenerator = createGeneratorWithTasks({
@@ -152,6 +156,9 @@ const TypescriptGenerator = createGeneratorWithTasks({
               },
               addReference(reference) {
                 config.appendUnique('references', [reference]);
+              },
+              addExtraSection(section) {
+                config.appendUnique('extraSections', [section]);
               },
             },
           }),
@@ -245,8 +252,14 @@ const TypescriptGenerator = createGeneratorWithTasks({
             };
           },
           async build(builder) {
-            const { compilerOptions, include, exclude, version, references } =
-              config.value();
+            const {
+              compilerOptions,
+              include,
+              exclude,
+              version,
+              references,
+              extraSections,
+            } = config.value();
             node.addDevPackage('typescript', version);
 
             await builder.apply(
@@ -257,6 +270,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
                   include,
                   exclude,
                   references: references.length ? references : undefined,
+                  ...R.mergeAll(extraSections),
                 },
               })
             );
