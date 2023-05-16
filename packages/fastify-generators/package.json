@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/fastify-generators",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Fastify generators for Baseplate",
   "main": "lib/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -38,8 +38,8 @@
     "release": "yarn publish --non-interactive"
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "0.2.0",
-    "@halfdomelabs/sync": "0.2.0",
+    "@halfdomelabs/core-generators": "0.2.1",
+    "@halfdomelabs/sync": "0.2.1",
     "@prisma/internals": "4.0.0",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.1",

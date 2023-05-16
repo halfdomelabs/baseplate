@@ -1,5 +1,21 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.2.3
+
+### Patch Changes
+
+- ec0218a: Upgrade tsc-alias tooling
+- Updated dependencies [e594b75]
+- Updated dependencies [ec0218a]
+- Updated dependencies [ec0218a]
+- Updated dependencies [e594b75]
+  - @halfdomelabs/fastify-generators@0.3.0
+  - @halfdomelabs/project-builder-lib@0.2.2
+  - @halfdomelabs/react-generators@0.2.1
+  - @halfdomelabs/core-generators@0.2.1
+  - @halfdomelabs/sync@0.2.1
+  - @halfdomelabs/project-builder-web@0.2.2
+
 ## 0.2.2
 
 ### Patch Changes
