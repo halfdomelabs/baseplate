@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-web
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [ec0218a]
+  - @halfdomelabs/project-builder-lib@0.2.2
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/core-generators",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Core generators for Baseplate",
   "main": "lib/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -43,7 +43,7 @@
     "release": "yarn publish --non-interactive"
   },
   "dependencies": {
-    "@halfdomelabs/sync": "0.2.0",
+    "@halfdomelabs/sync": "0.2.1",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.1",
     "fs-extra": "^10.0.0",

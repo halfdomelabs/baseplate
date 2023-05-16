@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.2.2
+
+### Patch Changes
+
+- ec0218a: Upgrade tsc-alias tooling
+
 ## 0.2.1
 
 ### Patch Changes
