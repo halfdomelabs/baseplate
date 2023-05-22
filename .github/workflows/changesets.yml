@@ -44,7 +44,7 @@ jobs:
         with:
           payload: |
             {
-              "content": "A new version of ${GITHUB_REPOSITORY} has been released!",
+              "content": "A new version of ${GITHUB_REPOSITORY} has been released!"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
