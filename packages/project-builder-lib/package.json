@@ -26,8 +26,7 @@
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "restricted"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "0.2.0",
