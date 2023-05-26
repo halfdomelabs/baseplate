@@ -11,9 +11,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: Production
     permissions:
       contents: write
-      packages: write
       pull-requests: write
     steps:
       - name: Checkout Repo
