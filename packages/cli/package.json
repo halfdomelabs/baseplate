@@ -7,8 +7,7 @@
   "author": "Kingston Tam",
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
-    "access": "restricted",
-    "registry": "https://npm.pkg.github.com"
+    "access": "restricted"
   },
   "files": [
     "LICENSE",
