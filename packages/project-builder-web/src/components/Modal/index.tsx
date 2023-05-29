@@ -141,7 +141,7 @@ Modal.Footer = function ModalFooter({
   return (
     <div
       className={classNames(
-        'flex items-center justify-end space-x-2 rounded-b bg-gray-50 p-4',
+        'flex items-center justify-end space-x-4 rounded-b bg-gray-50 p-4',
         className
       )}
     >
