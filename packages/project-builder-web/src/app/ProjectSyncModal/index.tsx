@@ -41,6 +41,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
           <Console />
         </Modal.Body>
         <Modal.Footer>
+          <Button onClick={startSyncProject}>Retry</Button>
           <Button color="light" onClick={() => setIsOpen(false)}>
             Close
           </Button>
