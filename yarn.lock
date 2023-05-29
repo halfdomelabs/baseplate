@@ -10579,18 +10579,6 @@ tsc-alias@1.8.6:
     normalize-path "^3.0.0"
     plimit-lit "^1.2.6"
 
-tsc-alias@^1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/tsc-alias/-/tsc-alias-1.8.2.tgz#3cd24bba7333a5e05cb7db3ac206d7bcec079630"
-  integrity sha512-ukBkcNekOgwtnSWYLD5QsMX3yQWg7JviAs8zg3qJGgu4LGtY3tsV4G6vnqvOXIDkbC+XL9vbhObWSpRA5/6wbg==
-  dependencies:
-    chokidar "^3.5.3"
-    commander "^9.0.0"
-    globby "^11.0.4"
-    mylas "^2.1.9"
-    normalize-path "^3.0.0"
-    plimit-lit "^1.2.6"
-
 tsconfck@^2.0.1:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/tsconfck/-/tsconfck-2.1.0.tgz#18fec442fcc11d439f9a4cb0f48af042079e9492"
