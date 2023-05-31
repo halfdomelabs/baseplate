@@ -1,5 +1,6 @@
 ---
 '@halfdomelabs/project-builder-cli': minor
+'@halfdomelabs/project-builder-lib': minor
 '@halfdomelabs/project-builder-web': minor
 ---
 
