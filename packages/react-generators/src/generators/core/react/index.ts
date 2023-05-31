@@ -110,6 +110,12 @@ const ReactGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    errorBoundary: {
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-error-boundary',
+        peerProvider: true,
+      },
+    },
   }),
   createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
     const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
