@@ -1,5 +1,3 @@
-import { promises } from 'fs';
-import { resolve } from 'path';
 import { program } from 'commander';
 import {
   buildProjectForDirectory,
@@ -8,16 +6,10 @@ import {
 } from './runner';
 import { startWebServer } from './server';
 import { logger } from './services/logger';
-
-async function getVersion(): Promise<string> {
-  const packageJson = JSON.parse(
-    await promises.readFile(resolve(__dirname, '../package.json'), 'utf8')
-  ) as Record<string, string>;
-  return packageJson?.version;
-}
+import { getPackageVersion } from './utils/version';
 
 async function runMain(): Promise<void> {
-  const version = await getVersion();
+  const version = await getPackageVersion();
   program.version(version || 'unknown');
   program
     .command('generate <directory>')
@@ -42,7 +34,12 @@ async function runMain(): Promise<void> {
       !process.env.NO_BROWSER || process.env.NO_BROWSER === 'false'
     )
     .option('--no-browser', 'Do not start browser')
-    .option('--port <number>', 'Port to listen on', parseInt)
+    .option(
+      '--port <number>',
+      'Port to listen on',
+      parseInt,
+      process.env.PORT ? parseInt(process.env.PORT, 10) : undefined
+    )
     .argument(
       '[directories...]',
       'Directories to serve',

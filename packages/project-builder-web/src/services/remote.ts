@@ -65,6 +65,16 @@ export async function getProjects(): Promise<Project[]> {
   return response.data;
 }
 
+export async function getVersion(): Promise<string> {
+  if (IS_PREVIEW) {
+    return 'preview';
+  }
+  const response = await axiosClient.get<{ cliVersion: string }>(
+    '/api/version'
+  );
+  return response.data.cliVersion;
+}
+
 export interface FilePayload {
   contents: string;
   lastModifiedAt: string;

@@ -3,6 +3,7 @@ import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { FastifyInstance } from 'fastify';
 import { logger } from '@src/services/logger';
 import { HttpError, NotFoundError } from '@src/utils/http-errors';
+import { getPackageVersion } from '@src/utils/version';
 import { FilePayload, ProjectBuilderApi } from './api';
 
 interface ConnectMessage {
@@ -152,6 +153,13 @@ export async function baseplatePlugin(
       id: { type: 'string' },
     },
     required: ['id'],
+  });
+
+  fastify.get('/api/version', {
+    handler: async () => {
+      const cliVersion = await getPackageVersion();
+      return { cliVersion };
+    },
   });
 
   fastify.get<{

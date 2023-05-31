@@ -7,15 +7,19 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import produce from 'immer';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, ErrorableLoader } from 'src/components';
+import semver from 'semver';
+import { Alert, Button, ErrorableLoader } from 'src/components';
+import { useClientVersion } from 'src/hooks/useClientVersion';
 import {
   ProjectConfigContext,
   UseProjectConfigResult,
 } from 'src/hooks/useProjectConfig';
+import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useRemoteProjectConfig } from 'src/hooks/useRemoteProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { WebsocketClientContext } from 'src/hooks/useWebsocketClient';
 import { formatError } from 'src/services/error-formatter';
+import { logError } from 'src/services/error-logger';
 import { prettyStableStringify } from 'src/utils/json';
 
 interface Props {
@@ -32,6 +36,17 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
     projectId,
     websocketClient,
   } = useRemoteProjectConfig();
+  const [, setProjectId] = useProjectIdState();
+  const { version: cliVersion, refreshVersion } = useClientVersion();
+
+  // refresh version when we reconnect to websocket client
+  useEffect(
+    () =>
+      websocketClient?.on('connected', () => {
+        refreshVersion().catch((err) => logError(err));
+      }),
+    [websocketClient, refreshVersion]
+  );
 
   const [configError, setConfigError] = useState<Error | null>(null);
 
@@ -91,6 +106,7 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
           const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
           setParsedProject(parsedConfig);
           const exportedProjectConfig = parsedConfig.exportToProjectConfig();
+          exportedProjectConfig.cliVersion = cliVersion;
           saveRemoteConfig(prettyStableStringify(exportedProjectConfig));
         },
         setConfig: (newConfig) => {
@@ -107,11 +123,12 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
           const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
           setParsedProject(parsedConfig);
           const exportedProjectConfig = parsedConfig.exportToProjectConfig();
+          exportedProjectConfig.cliVersion = cliVersion;
           saveRemoteConfig(prettyStableStringify(exportedProjectConfig));
         },
         externalChangeCounter,
       },
-    [parsedProject, saveRemoteConfig, externalChangeCounter]
+    [parsedProject, saveRemoteConfig, externalChangeCounter, cliVersion]
   );
 
   const websocketClientResult = useMemo(
@@ -129,8 +146,27 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
 
   if (!result) {
     return (
-      <div className="mt-16 flex items-center justify-center">
+      <div className="mt-16 flex flex-col items-center justify-center space-y-4">
         <Alert type="error">No Project Config found!</Alert>
+        <Button onClick={() => setProjectId(null)}>Switch Project</Button>
+      </div>
+    );
+  }
+
+  if (
+    result.config.cliVersion &&
+    cliVersion &&
+    cliVersion !== 'preview' &&
+    semver.gt(result.config.cliVersion, cliVersion)
+  ) {
+    return (
+      <div className="mt-16 flex flex-col items-center justify-center space-y-4">
+        <Alert type="error">
+          This project requires a newer version of the client (
+          {result.config.cliVersion}). Please run yarn install or upgrade your
+          client.
+        </Alert>
+        <Button onClick={() => setProjectId(null)}>Switch Project</Button>
       </div>
     );
   }
