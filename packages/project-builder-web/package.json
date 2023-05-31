@@ -9,7 +9,8 @@
   "version": "0.2.2",
   "files": [
     "LICENSE",
-    "dist/**/*"
+    "dist/**/*",
+    "CHANGELOG"
   ],
   "browserslist": {
     "production": [

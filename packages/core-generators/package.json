@@ -12,7 +12,8 @@
   "files": [
     "LICENSE",
     "generator.json",
-    "lib/**/*"
+    "lib/**/*",
+    "CHANGELOG"
   ],
   "devDependencies": {
     "@halfdomelabs/tools": "0.2.0",
