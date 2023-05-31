@@ -41,11 +41,12 @@
   "dependencies": {
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
-    "classnames": "^2.3.1",
+    "clsx": "^1.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
     "@typescript-eslint/eslint-plugin": "5.54.0",
     "@typescript-eslint/parser": "5.54.0",
     "autoprefixer": "10.4.14",
