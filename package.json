@@ -4,6 +4,7 @@
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
+    "check-dependency-version-consistency": "^4.1.0",
     "nx": "15.7.2"
   },
   "scripts": {

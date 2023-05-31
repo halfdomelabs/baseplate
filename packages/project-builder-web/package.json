@@ -61,7 +61,7 @@
     "react-select": "5.7.0",
     "reconnecting-websocket": "^4.4.0",
     "semver": "^7.5.1",
-    "sort-keys": "^5.0.0",
+    "sort-keys": "^4.2.0",
     "use-local-storage-state": "^18.3.2",
     "web-vitals": "^2.1.0",
     "zod": "^3.20.6"
