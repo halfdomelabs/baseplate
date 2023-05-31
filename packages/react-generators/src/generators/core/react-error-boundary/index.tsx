@@ -51,8 +51,7 @@ const createMainTask = createTaskConfigBuilder(
 
           reactApp.setErrorBoundary(
             TypescriptCodeUtils.createWrapper(
-              (contents) => `
-            <ErrorBoundary>${contents}</ErrorBoundary>`,
+              (contents) => `<ErrorBoundary>${contents}</ErrorBoundary>`,
               `import {ErrorBoundary} from '${errorBoundaryImport}';`
             )
           );
