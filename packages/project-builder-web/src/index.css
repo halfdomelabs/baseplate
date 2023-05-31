@@ -1,14 +1,6 @@
 @tailwind base;
 
 @layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-serif;
-  }
   h1 {
     @apply text-2xl;
   }
@@ -33,5 +25,5 @@ body,
 }
 
 body {
-  @apply bg-slate-100 font-sans text-gray-800;
+  @apply font-body bg-slate-100 text-gray-800;
 }

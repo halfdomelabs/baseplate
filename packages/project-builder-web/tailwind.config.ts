@@ -1,7 +1,8 @@
 import path from 'path';
+import type { Config } from 'tailwindcss';
 
 module.exports = {
-  preset: require('@halfdomelabs/ui-components/tailwind-base'),
+  presets: [require('@halfdomelabs/ui-components/tailwind-base')],
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     path.join(
@@ -9,4 +10,4 @@ module.exports = {
       '**/*.{js,jsx,ts,tsx}'
     ),
   ],
-};
+} satisfies Config;
