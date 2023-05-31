@@ -3,18 +3,20 @@
  * @param {object} options - The options for creating the ESLint configuration.
  * @param {boolean} options.react - Indicates whether the configuration should include React rules.
  * @param {boolean} options.typescript - Indicates whether the configuration should include TypeScript rules.
+ * @param {boolean} options.hasTsConfigNode - Indicates whether the configuration should include tsconfig.node.json.
  * @returns {object} The generated ESLint configuration.
  */
 module.exports = function createEslintConfig(options) {
   const typescript = options.typescript || false;
   const react = options.react || false;
+  const hasTsConfigNode = options.hasTsConfigNode || false;
 
   const additionalOptions = typescript
     ? {
         parserOptions: {
           project: [
             './tsconfig.json',
-            ...(react ? ['./tsconfig.node.json'] : []),
+            ...(hasTsConfigNode ? ['./tsconfig.node.json'] : []),
           ],
         },
         settings: {
@@ -60,6 +62,7 @@ module.exports = function createEslintConfig(options) {
             'plugin:import/typescript',
           ]
         : [...baseConfigs, 'plugin:import/recommended']),
+      'plugin:vitest/recommended',
       'plugin:jest/recommended',
       'plugin:jest/style',
       'prettier',

@@ -2,7 +2,7 @@
 /dist
 /lib
 /node_modules
-.eslintrc.js
-postcss.config.js
+.eslintrc.cjs
+postcss.config.cjs
 tailwind.config.ts
 src/setupProxy.js
