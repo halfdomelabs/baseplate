@@ -11,7 +11,8 @@
   },
   "files": [
     "LICENSE",
-    "lib/**/*"
+    "lib/**/*",
+    "CHANGELOG"
   ],
   "devDependencies": {
     "@halfdomelabs/tools": "0.2.0",

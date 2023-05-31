@@ -28,6 +28,7 @@ export type AppConfig = z.infer<typeof appSchema>;
 export const projectConfigSchema = z.object({
   name: z.string().min(1),
   version: z.string().min(1),
+  cliVersion: z.string().nullish().default('0.2.3'),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
   portBase: z.coerce.number().finite(),
   apps: z.array(appSchema),

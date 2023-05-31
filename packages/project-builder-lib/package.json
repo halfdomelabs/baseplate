@@ -7,7 +7,8 @@
   "types": "lib/cjs/index.d.ts",
   "files": [
     "LICENSE",
-    "lib/**/*"
+    "lib/**/*",
+    "CHANGELOG"
   ],
   "exports": {
     ".": {
