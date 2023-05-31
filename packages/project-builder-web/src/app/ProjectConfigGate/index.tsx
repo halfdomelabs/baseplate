@@ -163,8 +163,8 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
       <div className="mt-16 flex flex-col items-center justify-center space-y-4">
         <Alert type="error">
           This project requires a newer version of the client (
-          {result.config.cliVersion}). Please run yarn install or upgrade your
-          client.
+          {result.config.cliVersion}). Please run upgrade your client e.g. by
+          running yarn install.
         </Alert>
         <Button onClick={() => setProjectId(null)}>Switch Project</Button>
       </div>
