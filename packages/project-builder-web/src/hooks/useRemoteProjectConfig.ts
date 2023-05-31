@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { logError } from 'src/services/error-logger';
 import {
   downloadProjectConfig,
   FilePayload,
@@ -83,7 +84,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   }, [toast, projectId, setProjectId, updateConfig]);
 
   useEffect(() => {
-    downloadConfig().catch((err) => console.error(err));
+    downloadConfig().catch((err) => logError(err));
   }, [downloadConfig]);
 
   const pendingSaveContents = useRef<string | null>();
@@ -136,7 +137,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
             saveValue(pendingSaveContents.current, newLastModifiedAt);
           }
           if (shouldTriggerRefetch.current) {
-            downloadConfig().catch((err) => console.error(err));
+            downloadConfig().catch((err) => logError(err));
           }
         });
     },

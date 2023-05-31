@@ -26,8 +26,8 @@ function EditAppPage(): JSX.Element {
       return;
     }
     try {
-      setConfigAndFixReferences((oldConfig) => {
-        oldConfig.apps = oldConfig.apps.filter((a) => a.uid !== id);
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.apps = draftConfig.apps.filter((a) => a.uid !== id);
       });
       toast.success(`Successfully deleted app!`);
       navigate('/apps/new');

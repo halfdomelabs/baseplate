@@ -26,8 +26,8 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
   const toast = useToast();
 
   function onSubmit(data: BackendAppConfig): void {
-    setConfigAndFixReferences((oldConfig) => {
-      oldConfig.apps = oldConfig.apps.map((app) =>
+    setConfigAndFixReferences((draftConfig) => {
+      draftConfig.apps = draftConfig.apps.map((app) =>
         app.uid === appConfig.uid ? data : app
       );
     });

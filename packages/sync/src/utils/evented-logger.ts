@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { createTypedEventEmitter } from './typed-event-emitter';
 
 export interface Logger {

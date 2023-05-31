@@ -9,6 +9,7 @@ import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
+import { logError } from 'src/services/error-logger';
 
 const validationSchema = projectConfigSchema.pick({
   name: true,
@@ -35,15 +36,15 @@ function GeneralPage(): JSX.Element {
 
   const onSubmit = (data: FormData): void => {
     try {
-      setConfigAndFixReferences((oldConfig) => {
-        oldConfig.name = data.name;
-        oldConfig.version = data.version;
-        oldConfig.portBase = data.portBase;
-        oldConfig.features = _.sortBy(data.features, (f) => f.name);
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.name = data.name;
+        draftConfig.version = data.version;
+        draftConfig.portBase = data.portBase;
+        draftConfig.features = _.sortBy(data.features, (f) => f.name);
       });
       toast.success('Successfully saved configuration!');
     } catch (err) {
-      console.error(err);
+      logError(err);
       setError(formatError(err));
     }
   };

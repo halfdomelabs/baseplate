@@ -1,4 +1,18 @@
 {
+  "namedInputs": {
+    "sharedGlobals": [
+      "{workspaceRoot}/nx.json",
+      "{workspaceRoot}/package.json"
+    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.test.ts",
+      "!{projectRoot}/**/*.md",
+      "!{projectRoot}/jest.config.ts",
+      "!{projectRoot}/.eslintrc.js"
+    ]
+  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx/tasks-runners/default",
@@ -10,6 +24,7 @@
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
+      "inputs": ["production", "^production"],
       "outputs": [
         "{projectRoot}/lib",
         "{projectRoot}/dist",
@@ -17,12 +32,15 @@
       ]
     },
     "release": {
+      "inputs": ["production", "^production"],
       "dependsOn": ["build"]
     },
     "lint": {
+      "inputs": ["default", "^production"],
       "dependsOn": ["^build"]
     },
     "test": {
+      "inputs": ["default", "^production"],
       "dependsOn": ["build"]
     }
   },

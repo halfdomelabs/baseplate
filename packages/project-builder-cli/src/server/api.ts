@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { buildProjectForDirectory } from '@src/runner';
+import { logError } from '@src/services/error-logger';
 import { logger } from '@src/services/logger';
 import { expandPathWithTilde } from '@src/utils/path';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter';
@@ -130,7 +131,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
       await buildProjectForDirectory(this.directory, {}, this.logger);
     } catch (err) {
-      console.error(err);
+      logError(err);
       this.emit('command-console-emitted', {
         id: this.id,
         message: chalk.red(

@@ -27,8 +27,8 @@ function EnumEditPage(): JSX.Element {
       )
     ) {
       try {
-        setConfig((oldConfig) => {
-          oldConfig.enums = oldConfig.enums?.filter((m) => m.uid !== id);
+        setConfig((draftConfig) => {
+          draftConfig.enums = draftConfig.enums?.filter((m) => m.uid !== id);
         });
         navigate('..');
       } catch (err) {
@@ -40,10 +40,10 @@ function EnumEditPage(): JSX.Element {
   const handleSubmit = (config: EnumConfig): void => {
     try {
       const uid = config.uid || randomUid();
-      setConfigAndFixReferences((oldConfig) => {
-        oldConfig.enums = _.sortBy(
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.enums = _.sortBy(
           [
-            ...(oldConfig.enums?.filter((m) => m.uid !== id) || []),
+            ...(draftConfig.enums?.filter((m) => m.uid !== id) || []),
             { ...config, uid },
           ],
           (c) => c.name

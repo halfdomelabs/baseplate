@@ -13,6 +13,7 @@ import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
+import { logError } from 'src/services/error-logger';
 import RoleEditorForm from './RoleEditorForm';
 
 function AuthPage(): JSX.Element {
@@ -32,12 +33,12 @@ function AuthPage(): JSX.Element {
 
   const onSubmit = (data: AuthConfig): void => {
     try {
-      setConfigAndFixReferences((oldConfig) => {
-        oldConfig.auth = data;
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.auth = data;
       });
       toast.success('Successfully saved configuration!');
     } catch (err) {
-      console.error(err);
+      logError(err);
       setError(formatError(err));
     }
   };
@@ -45,8 +46,8 @@ function AuthPage(): JSX.Element {
   const [isAuthEnabled, setIsAuthEnabled] = useState(!!config.auth);
 
   const disableAuth = (): void => {
-    setConfig((newConfig) => {
-      newConfig.auth = undefined;
+    setConfig((draftConfig) => {
+      draftConfig.auth = undefined;
     });
     reset({});
     setIsAuthEnabled(false);

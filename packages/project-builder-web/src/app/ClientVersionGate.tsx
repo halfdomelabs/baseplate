@@ -4,6 +4,7 @@ import {
   ClientVersionContext,
   UseClientVersionResult,
 } from 'src/hooks/useClientVersion';
+import { logError } from 'src/services/error-logger';
 import { getVersion } from 'src/services/remote';
 
 interface ClientVersionGateProps {
@@ -22,7 +23,7 @@ export function ClientVersionGate({
         setClientVersion(version);
       })
       .catch((err) => {
-        console.error(err);
+        logError(err);
         setError(err as Error);
       });
   }, []);

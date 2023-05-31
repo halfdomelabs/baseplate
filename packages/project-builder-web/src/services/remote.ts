@@ -3,6 +3,8 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { TypedEventEmitterBase } from 'src/utils/typed-event-emitter';
 import { config as envConfig } from './config';
+import { logError } from './error-logger';
+import { logger } from './logger';
 
 import PREVIEW_APP from './preview-app.json';
 
@@ -193,7 +195,7 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
         switch (message.type) {
           case 'connected':
             this.emit('connected', null);
-            console.log(`Websocket connection successfully established!`);
+            logger.info(`Websocket connection successfully established!`);
             break;
           case 'command-console-emitted':
           case 'project-json-changed':
@@ -201,12 +203,15 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
             break;
           case 'error':
             this.emit('error', new Error(message.message));
-            console.error(`Error from websocket: ${message.message}`);
+            logError(new Error(`Error from websocket: ${message.message}`));
             break;
           default:
-            console.error(
-              'Unknown message type',
-              (message as { type: string }).type
+            logError(
+              new Error(
+                `Unknown message type from websocket ${
+                  (message as { type: string }).type
+                }`
+              )
             );
             break;
         }

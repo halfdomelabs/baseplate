@@ -25,8 +25,8 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
   const { parsedProject } = useProjectConfig();
 
   function onSubmit(data: WebAppConfig): void {
-    setConfigAndFixReferences((oldConfig) => {
-      oldConfig.apps = oldConfig.apps.map((app) =>
+    setConfigAndFixReferences((draftConfig) => {
+      draftConfig.apps = draftConfig.apps.map((app) =>
         app.uid === appConfig.uid ? data : app
       );
     });

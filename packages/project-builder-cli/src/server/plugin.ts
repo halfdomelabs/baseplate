@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { FastifyInstance } from 'fastify';
+import { logError } from '@src/services/error-logger';
 import { logger } from '@src/services/logger';
 import { HttpError, NotFoundError } from '@src/utils/http-errors';
 import { getPackageVersion } from '@src/utils/version';
@@ -63,7 +64,7 @@ export async function baseplatePlugin(
     })
   );
 
-  console.log(
+  logger.info(
     `Loaded projects:\n${apis
       .map((api) => `${api.directory}: ${api.id}`)
       .join('\n')}`
@@ -118,7 +119,7 @@ export async function baseplatePlugin(
   }
 
   fastify.setErrorHandler(async (error, request, reply) => {
-    console.error(error);
+    logError(error);
 
     if (error instanceof HttpError) {
       await reply.code(error.statusCode).send({
@@ -184,7 +185,7 @@ export async function baseplatePlugin(
       const { id } = req.params;
       const api = getApi(id);
 
-      api.buildProject().catch((err) => console.error(err));
+      api.buildProject().catch((err) => logError(err));
 
       return { success: true };
     },
@@ -289,7 +290,7 @@ export async function baseplatePlugin(
             break;
         }
       } catch (err) {
-        console.error(err);
+        logError(err);
         sendWebsocketMessage({
           type: 'error',
           message: err instanceof Error ? err.message : JSON.stringify(err),

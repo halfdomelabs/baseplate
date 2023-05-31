@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { ErrorableLoader, LinkButton, Table } from 'src/components';
 import Modal from 'src/components/Modal';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
+import { logError } from 'src/services/error-logger';
 import { getProjects, Project } from 'src/services/remote';
 
 interface Props {
@@ -20,7 +21,7 @@ function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
         setProjects(data);
       })
       .catch((err) => {
-        console.error(err);
+        logError(err);
         setError(err as Error);
       });
   }, []);

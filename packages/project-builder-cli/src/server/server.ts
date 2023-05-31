@@ -4,6 +4,7 @@ import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
 import Fastify, { FastifyInstance } from 'fastify';
 import { sync as resolve } from 'resolve';
+import { logError } from '@src/services/error-logger';
 import { logger } from '@src/services/logger';
 import { baseplatePlugin } from './plugin';
 
@@ -23,9 +24,7 @@ export async function buildServer(
       root: path.join(projectBuilderWebDir, 'dist'),
     });
   } catch (err) {
-    console.error(
-      `Unable to find project-builder-web package to host website.`
-    );
+    logError(`Unable to find project-builder-web package to host website.`);
     throw err;
   }
 
