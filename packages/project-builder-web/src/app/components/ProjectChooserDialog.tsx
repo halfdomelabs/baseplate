@@ -1,16 +1,19 @@
+import { ErrorableLoader, Dialog } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
-import { ErrorableLoader, LinkButton, Table } from 'src/components';
-import Modal from 'src/components/Modal';
+import { LinkButton, Table } from 'src/components';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { logError } from 'src/services/error-logger';
 import { getProjects, Project } from 'src/services/remote';
 
-interface Props {
+interface ProjectChooserDialogProps {
   onClose: () => void;
   isOpen?: boolean;
 }
 
-function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
+export function ProjectChooserDialog({
+  onClose,
+  isOpen,
+}: ProjectChooserDialogProps): JSX.Element {
   const [projectId, setProjectId] = useProjectIdState();
   const [projects, setProjects] = useState<Project[]>();
   const [error, setError] = useState<Error | null>(null);
@@ -31,9 +34,9 @@ function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
   }
 
   return (
-    <Modal width="base" onClose={onClose} isOpen={isOpen}>
-      <Modal.Header>Pick Project</Modal.Header>
-      <Modal.Body>
+    <Dialog size="lg" onClose={onClose} isOpen={isOpen}>
+      <Dialog.Header onClose={onClose}>Pick Project</Dialog.Header>
+      <Dialog.Body>
         <Table>
           <Table.Head>
             <Table.HeadRow>
@@ -67,9 +70,7 @@ function ProjectChooserModal({ onClose, isOpen }: Props): JSX.Element {
             ))}
           </Table.Body>
         </Table>
-      </Modal.Body>
-    </Modal>
+      </Dialog.Body>
+    </Dialog>
   );
 }
-
-export default ProjectChooserModal;

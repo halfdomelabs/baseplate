@@ -10,7 +10,7 @@ type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
 /**
  * Sizes for the Button component
  */
-type ButtonSize = 'small' | 'medium' | 'large';
+type ButtonSize = 'icon' | 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
   /**
@@ -20,7 +20,7 @@ export interface ButtonProps {
   /**
    * Content of the button
    */
-  children: React.ReactNode;
+  children?: React.ReactNode;
   /**
    * Event handler for button click
    */
@@ -83,9 +83,10 @@ function getButtonVariantClass(
 
 function getButtonSizeClass(size: ButtonSize): string {
   return clsx(
-    size === 'small' && 'rounded px-2.5 py-1.5 text-xs',
-    size === 'medium' && 'rounded-md px-4 py-2 text-sm',
-    size === 'large' && 'rounded-lg px-6 py-3 text-base'
+    size === 'icon' && 'rounded-full p-2.5 text-lg',
+    size === 'sm' && 'rounded px-2.5 py-1.5 text-xs',
+    size === 'md' && 'rounded-md px-4 py-2 text-sm',
+    size === 'lg' && 'rounded-lg px-6 py-3 text-base'
   );
 }
 
@@ -100,7 +101,7 @@ function ButtonFn(
     className,
     children,
     disabled,
-    size = 'medium',
+    size = 'md',
     variant = 'primary',
     type = 'button',
     onClick,
@@ -125,7 +126,7 @@ function ButtonFn(
       {IconBefore || IconAfter ? (
         <div className="flex items-center justify-center space-x-2">
           {IconBefore && <IconBefore />}
-          <div>{children}</div>
+          {children && <div>{children}</div>}
           {IconAfter && <IconAfter />}
         </div>
       ) : (

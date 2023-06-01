@@ -1,19 +1,19 @@
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
-import ProjectChooserModal from '../ProjectChooserModal';
+import { ProjectChooserDialog } from './ProjectChooserDialog';
 
-interface Props {
+interface ProjectChooserGateProps {
   children: React.ReactNode;
 }
 
-function ProjectChooserGate({ children }: Props): JSX.Element {
+export function ProjectChooserGate({
+  children,
+}: ProjectChooserGateProps): JSX.Element {
   const [projectId] = useProjectIdState();
 
   if (!projectId) {
-    return <ProjectChooserModal onClose={() => {}} isOpen />;
+    return <ProjectChooserDialog onClose={() => {}} isOpen />;
   }
 
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{children}</>;
 }
-
-export default ProjectChooserGate;

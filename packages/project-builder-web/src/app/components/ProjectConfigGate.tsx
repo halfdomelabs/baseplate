@@ -22,11 +22,13 @@ import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 import { prettyStableStringify } from 'src/utils/json';
 
-interface Props {
+interface ProjectConfigGateProps {
   children?: React.ReactNode;
 }
 
-function ProjectConfigGate({ children }: Props): JSX.Element {
+export function ProjectConfigGate({
+  children,
+}: ProjectConfigGateProps): JSX.Element {
   const {
     value: remoteConfig,
     loaded,
@@ -179,5 +181,3 @@ function ProjectConfigGate({ children }: Props): JSX.Element {
     </WebsocketClientContext.Provider>
   );
 }
-
-export default ProjectConfigGate;

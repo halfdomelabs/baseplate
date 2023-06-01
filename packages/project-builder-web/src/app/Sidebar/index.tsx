@@ -7,8 +7,8 @@ import {
   MdPeople,
   MdSettings,
 } from 'react-icons/md';
-import ProjectChooserModal from 'src/app/ProjectChooserModal';
-import ProjectSyncModal from 'src/app/ProjectSyncModal';
+import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
+import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { LinkButton, Sidebar } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
@@ -18,7 +18,7 @@ function AppSidebar(): JSX.Element {
 
   return (
     <>
-      <ProjectChooserModal
+      <ProjectChooserDialog
         onClose={() => setShowProjectChooserModal(false)}
         isOpen={showProjectChooserModal}
       />

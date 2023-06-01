@@ -6,7 +6,7 @@ import {
 } from 'react-error-boundary';
 import { logError } from 'src/services/error-logger';
 
-interface Props {
+interface ErrorBoundaryProps {
   children?: React.ReactNode;
   /**
    * The label for the reset button (defaults to "Reload Page")
@@ -49,7 +49,7 @@ export function ErrorBoundary({
   children,
   resetButtonLabel,
   onReset,
-}: Props): JSX.Element {
+}: ErrorBoundaryProps): JSX.Element {
   return (
     <ReactErrorBoundary
       fallback={
