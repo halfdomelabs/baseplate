@@ -1,6 +1,6 @@
+import { Button } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { Button } from 'src/components';
 import Console from 'src/components/Console';
 import Modal from 'src/components/Modal';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
@@ -28,7 +28,6 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   return (
     <div className={classNames('', className)}>
       <Button
-        size="small"
         onClick={() => {
           startSyncProject();
         }}
@@ -41,10 +40,12 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
           <Console />
         </Modal.Body>
         <Modal.Footer>
-          <Button color="light" onClick={startSyncProject}>
+          <Button variant="secondary" onClick={startSyncProject}>
             Retry
           </Button>
-          <Button onClick={() => setIsOpen(false)}>Close</Button>
+          <Button variant="secondary" onClick={() => setIsOpen(false)}>
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

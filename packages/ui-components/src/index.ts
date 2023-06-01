@@ -1,1 +1,1 @@
-export const TEST = 'test';
+export * from './components/index.js';

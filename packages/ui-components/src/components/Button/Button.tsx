@@ -104,7 +104,7 @@ export function Button(props: ButtonProps): JSX.Element {
   return (
     <button
       className={clsx(
-        'rounded-lg border-2 text-center font-semibold transition-colors focus:outline-2 focus:outline-offset-4 focus:outline-transparent focus:ring-4 focus:ring-opacity-80 disabled:cursor-not-allowed dark:focus:outline-transparent',
+        'rounded-lg border-2 text-center font-medium transition-colors focus:outline-2 focus:outline-offset-4 focus:outline-transparent focus:ring-4 focus:ring-opacity-80 disabled:cursor-not-allowed dark:focus:outline-transparent',
         getButtonVariantClass(variant, disabled),
         getButtonSizeClass(size),
         className
