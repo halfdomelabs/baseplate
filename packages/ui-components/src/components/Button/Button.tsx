@@ -57,33 +57,35 @@ function getButtonVariantClass(
 ): string {
   if (isDisabled) {
     return clsx(
+      color !== 'tertiary' && 'shadow',
       color === 'primary' &&
-        'border-transparent bg-primary-400 text-white dark:bg-primary-950',
+        'border-transparent bg-primary-400 text-secondary-50 dark:bg-primary-800 dark:text-secondary-400',
       color === 'secondary' &&
-        'border-secondary-300 bg-transparent text-secondary-500 dark:border-secondary-700 dark:text-secondary-400',
+        'border-secondary-300 bg-secondary-50 text-secondary-500 dark:border-secondary-700 dark:bg-secondary-900 dark:text-secondary-400',
       color === 'tertiary' &&
         'border-transparent bg-transparent text-secondary-500 dark:border-transparent dark:text-secondary-400'
     );
   }
   return clsx(
+    color !== 'tertiary' && 'shadow',
     color === 'primary' &&
-      'border-transparent bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-200 active:bg-primary-900',
+      'border-transparent bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800',
     color === 'secondary' &&
-      'border-secondary-300 bg-transparent text-secondary-900 hover:bg-secondary-100 focus:ring-secondary-200 active:bg-secondary-200',
+      'border-secondary-300 bg-black bg-opacity-0 text-secondary-900 hover:bg-opacity-5 active:bg-opacity-10',
     color === 'secondary' &&
-      'dark:border-secondary-700 dark:bg-transparent dark:text-white dark:hover:bg-secondary-900 dark:focus:ring-secondary-800 dark:focus:active:bg-secondary-800',
+      'dark:border-secondary-700 dark:bg-white dark:bg-opacity-0 dark:text-white dark:hover:bg-opacity-10 dark:active:bg-opacity-[0.15]',
     color === 'tertiary' &&
-      'border-transparent bg-transparent text-secondary-900 hover:border-secondary-300 focus:ring-secondary-200 active:bg-secondary-200',
+      'border-transparent bg-black bg-opacity-0 text-secondary-900 hover:bg-opacity-5 active:bg-opacity-10',
     color === 'tertiary' &&
-      'dark:border-transparent dark:bg-transparent dark:text-white dark:hover:border-secondary-900 dark:focus:ring-secondary-800 dark:active:bg-secondary-800'
+      'dark:border-transparent dark:bg-white dark:bg-opacity-0 dark:text-white dark:hover:bg-opacity-10 dark:active:bg-opacity-[0.15]'
   );
 }
 
 function getButtonSizeClass(size: ButtonSize): string {
   return clsx(
-    size === 'small' && 'px-2 py-1 text-xs',
-    size === 'medium' && 'px-4 py-2 text-sm',
-    size === 'large' && 'px-6 py-3 text-base'
+    size === 'small' && 'rounded px-2.5 py-1.5 text-xs',
+    size === 'medium' && 'rounded-md px-4 py-2 text-sm',
+    size === 'large' && 'rounded-lg px-6 py-3 text-base'
   );
 }
 
@@ -108,7 +110,7 @@ function ButtonFn(
   return (
     <button
       className={clsx(
-        'rounded-lg border-2 text-center font-medium transition-colors focus:outline-2 focus:outline-offset-4 focus:outline-transparent focus:ring-4 focus:ring-opacity-80 disabled:cursor-not-allowed dark:focus:outline-transparent',
+        'border text-center font-medium  transition-colors focus:outline-1 focus:outline-offset-4 focus:outline-primary-700 disabled:cursor-not-allowed dark:focus:outline-transparent',
         getButtonVariantClass(variant, disabled),
         getButtonSizeClass(size),
         className
