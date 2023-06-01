@@ -11,7 +11,7 @@ export function ProjectChooserGate({
   const [projectId] = useProjectIdState();
 
   if (!projectId) {
-    return <ProjectChooserDialog onClose={() => {}} isOpen />;
+    return <ProjectChooserDialog isOpen />;
   }
 
   // eslint-disable-next-line react/jsx-no-useless-fragment

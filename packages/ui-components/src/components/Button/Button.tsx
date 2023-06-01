@@ -75,15 +75,15 @@ function getButtonVariantClass(
     color === 'secondary' &&
       'dark:border-secondary-700 dark:bg-white dark:bg-opacity-0 dark:text-white dark:hover:bg-opacity-10 dark:active:bg-opacity-[0.15]',
     color === 'tertiary' &&
-      'border-transparent bg-black bg-opacity-0 text-secondary-900 hover:bg-opacity-5 active:bg-opacity-10',
+      'border-transparent bg-black bg-opacity-0 text-secondary-600 hover:bg-opacity-5 active:bg-opacity-10 active:text-black',
     color === 'tertiary' &&
-      'dark:border-transparent dark:bg-white dark:bg-opacity-0 dark:text-white dark:hover:bg-opacity-10 dark:active:bg-opacity-[0.15]'
+      'dark:border-transparent dark:bg-white dark:bg-opacity-0 dark:text-secondary-200 dark:hover:bg-opacity-10 dark:active:bg-opacity-[0.15] dark:active:text-white'
   );
 }
 
 function getButtonSizeClass(size: ButtonSize): string {
   return clsx(
-    size === 'icon' && 'rounded-full p-2.5 text-lg',
+    size === 'icon' && 'rounded-lg p-2.5 text-lg',
     size === 'sm' && 'rounded px-2.5 py-1.5 text-xs',
     size === 'md' && 'rounded-md px-4 py-2 text-sm',
     size === 'lg' && 'rounded-lg px-6 py-3 text-base'

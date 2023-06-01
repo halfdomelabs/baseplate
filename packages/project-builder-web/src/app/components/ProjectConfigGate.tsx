@@ -40,6 +40,7 @@ export function ProjectConfigGate({
   } = useRemoteProjectConfig();
   const [, setProjectId] = useProjectIdState();
   const { version: cliVersion, refreshVersion } = useClientVersion();
+  const toast = useToast();
 
   // refresh version when we reconnect to websocket client
   useEffect(
@@ -49,10 +50,7 @@ export function ProjectConfigGate({
       }),
     [websocketClient, refreshVersion]
   );
-
   const [configError, setConfigError] = useState<Error | null>(null);
-
-  const toast = useToast();
 
   const [parsedProject, setParsedProject] = useState<
     ParsedProjectConfig | null | undefined

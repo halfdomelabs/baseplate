@@ -22,16 +22,19 @@ function DialogContainer(
       <Button onClick={() => setIsOpen(true)}>Open Dialog</Button>
       <Dialog {...args} isOpen={isOpen} onClose={() => setIsOpen(false)}>
         <Dialog.Header onClose={() => setIsOpen(false)}>
-          Dialog Title
+          <h3>Confirm Delete</h3>
         </Dialog.Header>
         <Dialog.Body>
-          <p>Dialog body</p>
+          <p>
+            Are you sure you want to delete this file? This could indeed be a
+            terrible idea.
+          </p>
         </Dialog.Body>
         <Dialog.Footer>
           <Button variant="secondary" onClick={() => setIsOpen(false)}>
-            Close
+            Cancel
           </Button>
-          <Button onClick={() => setIsOpen(false)}>Do Action</Button>
+          <Button onClick={() => setIsOpen(false)}>Delete File</Button>
         </Dialog.Footer>
       </Dialog>
     </div>

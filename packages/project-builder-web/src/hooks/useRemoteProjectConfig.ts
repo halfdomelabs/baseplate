@@ -39,6 +39,8 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
 
+  const loadedProjectId = useRef<string>();
+
   useEffect(() => {
     setFile(null);
     setError(undefined);
@@ -70,6 +72,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       updateConfig(payload);
 
       setLoaded(true);
+      loadedProjectId.current = projectId;
     } catch (err) {
       if (err instanceof AxiosError && err.response?.status === 404) {
         toast.error(`Project not found: ${projectId || ''}`);
@@ -184,7 +187,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   return {
     value: file?.contents,
     error,
-    loaded,
+    loaded: loaded && projectId === loadedProjectId.current,
     saveValue,
     externalChangeCounter,
     projectId,

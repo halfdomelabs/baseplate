@@ -51,7 +51,7 @@ Table.HeadRow = function TableHeadRow({
 
 interface TableHeadCellProps {
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 Table.HeadCell = function TableHeadCell({
@@ -62,7 +62,7 @@ Table.HeadCell = function TableHeadCell({
     <th
       scope="col"
       className={classNames(
-        'py-3 px-6 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
+        'px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
         className
       )}
     >
@@ -116,7 +116,7 @@ Table.Cell = function TableCell({
   return (
     <td
       className={classNames(
-        'whitespace-nowrap py-4 px-6 text-sm text-gray-500 dark:text-gray-400',
+        'whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400',
         className
       )}
     >

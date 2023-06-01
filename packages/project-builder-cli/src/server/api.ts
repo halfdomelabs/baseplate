@@ -113,9 +113,13 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
   }
 
   public async writeConfig(payload: FilePayload): Promise<WriteResult> {
-    const lastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
-    if (lastModifiedAt !== payload.lastModifiedAt) {
-      return { type: 'modified-more-recently' };
+    if (await fs.pathExists(this.projectJsonPath)) {
+      const lastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
+      if (lastModifiedAt !== payload.lastModifiedAt) {
+        return { type: 'modified-more-recently' };
+      }
+    } else {
+      await fs.ensureDir(path.dirname(this.projectJsonPath));
     }
     await fs.promises.writeFile(this.projectJsonPath, payload.contents, 'utf8');
     const newLastModifiedAt = await getLastModifiedTime(this.projectJsonPath);

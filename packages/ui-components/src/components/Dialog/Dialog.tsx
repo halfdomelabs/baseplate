@@ -1,13 +1,13 @@
 import { Dialog as HeadlessDialog, Transition } from '@headlessui/react';
 import { clsx } from 'clsx';
 import { Fragment } from 'react';
-import { HiOutlineXMark } from 'react-icons/hi2';
+import { HiXMark } from 'react-icons/hi2';
 import { Button } from '../Button/Button.js';
 
 /**
  * Represents the size options for the Dialog component.
  */
-type DialogSize = 'sm' | 'md' | 'lg';
+type DialogSize = 'sm' | 'md' | 'lg' | 'xl';
 
 /**
  * Represents the props for the Dialog component.
@@ -39,7 +39,8 @@ function getDialogSizeClass(size: DialogSize): string {
   return clsx(
     size === 'sm' && 'w-72',
     size === 'md' && 'w-72 md:w-[30rem]',
-    size === 'lg' && 'w-72 md:w-[40rem]'
+    size === 'lg' && 'w-72 md:w-[40rem]',
+    size === 'xl' && 'w-72 md:w-[50rem]'
   );
 }
 
@@ -55,7 +56,7 @@ export function Dialog({
 }: DialogProps): JSX.Element {
   return (
     <Transition show={isOpen} as={Fragment}>
-      <HeadlessDialog open={isOpen} onClose={onClose} className="relative z-50">
+      <HeadlessDialog onClose={onClose} className="relative z-50">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -66,7 +67,7 @@ export function Dialog({
           leaveTo="opacity-0"
         >
           <div
-            className="fixed inset-0 bg-black/30 dark:bg-white/30"
+            className="fixed inset-0 bg-black/10 dark:bg-white/10"
             aria-hidden="true"
           />
         </Transition.Child>
@@ -82,7 +83,7 @@ export function Dialog({
           >
             <HeadlessDialog.Panel
               className={clsx(
-                'max-h-full overflow-y-auto rounded-lg bg-white shadow-lg dark:bg-black',
+                'max-h-full overflow-y-auto rounded-lg bg-white shadow-xl dark:bg-secondary-900',
                 getDialogSizeClass(size),
                 className
               )}
@@ -110,18 +111,16 @@ Dialog.Header = function DialogHeader({
   return (
     <div
       className={clsx(
-        'mx-4 flex items-center justify-between rounded-t-lg border-b border-secondary-200 py-4 dark:border-secondary-700',
+        'flex items-center justify-between rounded-t-lg px-4 pt-4',
         className
       )}
     >
-      <HeadlessDialog.Title>
-        <h2>{children}</h2>
-      </HeadlessDialog.Title>
+      <HeadlessDialog.Title>{children}</HeadlessDialog.Title>
       {onClose && (
         <Button
           onClick={onClose}
           variant="tertiary"
-          iconBefore={HiOutlineXMark}
+          iconBefore={HiXMark}
           size="icon"
         />
       )}
@@ -138,7 +137,7 @@ Dialog.Body = function DialogBody({
   className,
   children,
 }: DialogBodyProps): JSX.Element {
-  return <div className={clsx('p-4', className)}>{children}</div>;
+  return <div className={clsx('px-4 pb-4 pt-2', className)}>{children}</div>;
 };
 
 interface DialogFooterProps {
@@ -153,7 +152,7 @@ Dialog.Footer = function DialogFooter({
   return (
     <div
       className={clsx(
-        'flex items-center justify-end space-x-4 rounded-b-lg p-4',
+        'flex items-center justify-end space-x-4 rounded-b-lg border-t border-secondary-200 bg-secondary-50 p-4 dark:border-secondary-600 dark:bg-secondary-800',
         className
       )}
     >

@@ -6,7 +6,7 @@ import { logError } from 'src/services/error-logger';
 import { getProjects, Project } from 'src/services/remote';
 
 interface ProjectChooserDialogProps {
-  onClose: () => void;
+  onClose?: () => void;
   isOpen?: boolean;
 }
 
@@ -34,7 +34,7 @@ export function ProjectChooserDialog({
   }
 
   return (
-    <Dialog size="lg" onClose={onClose} isOpen={isOpen}>
+    <Dialog size="lg" onClose={onClose || (() => {})} isOpen={isOpen}>
       <Dialog.Header onClose={onClose}>Pick Project</Dialog.Header>
       <Dialog.Body>
         <Table>
@@ -42,7 +42,7 @@ export function ProjectChooserDialog({
             <Table.HeadRow>
               <Table.HeadCell>Name</Table.HeadCell>
               <Table.HeadCell>Directory</Table.HeadCell>
-              <Table.HeadCell>Actions</Table.HeadCell>
+              <Table.HeadCell />
             </Table.HeadRow>
           </Table.Head>
           <Table.Body>
@@ -59,7 +59,9 @@ export function ProjectChooserDialog({
                     <LinkButton
                       onClick={() => {
                         setProjectId(project.id);
-                        onClose();
+                        if (onClose) {
+                          onClose();
+                        }
                       }}
                     >
                       Select
