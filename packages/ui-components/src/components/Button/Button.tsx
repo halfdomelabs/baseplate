@@ -12,7 +12,7 @@ type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
  */
 type ButtonSize = 'small' | 'medium' | 'large';
 
-interface ButtonProps {
+export interface ButtonProps {
   /**
    * Optional class name to be applied to the button
    */

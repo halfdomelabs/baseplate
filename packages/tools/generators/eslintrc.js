@@ -4,6 +4,7 @@
  * @param {boolean} options.react - Indicates whether the configuration should include React rules.
  * @param {boolean} options.storybook - Indicates whether the configuration should include Storybook rules.
  * @param {boolean} options.typescript - Indicates whether the configuration should include TypeScript rules.
+ * @param {boolean} options.mdx - Indicates whether the configuration should include MDX rules.
  * @param {string[]} options.additionalTsConfigs - Additional TypeScript configuration files to include.
  * @returns {object} The generated ESLint configuration.
  */
@@ -12,30 +13,7 @@ module.exports = function createEslintConfig(options) {
   const react = options.react || false;
   const storybook = options.storybook || false;
   const additionalTsConfigs = options.additionalTsConfigs || [];
-
-  const additionalOptions = typescript
-    ? {
-        parserOptions: {
-          project: ['./tsconfig.json', ...additionalTsConfigs],
-        },
-        settings: {
-          'import/resolver': {
-            typescript: {},
-          },
-        },
-      }
-    : {};
-
-  const typescriptRules = {
-    '@typescript-eslint/explicit-function-return-type': [
-      'error',
-      { allowExpressions: true, allowTypedFunctionExpressions: true },
-    ],
-    '@typescript-eslint/no-misused-promises': [
-      'error',
-      { checksVoidReturn: false },
-    ],
-  };
+  const mdx = options.mdx || false;
 
   const reactRules = {
     'react/require-default-props': 'off',
@@ -46,29 +24,65 @@ module.exports = function createEslintConfig(options) {
     ? ['airbnb', 'airbnb/hooks', 'plugin:react/jsx-runtime']
     : ['airbnb-base'];
 
-  return {
-    root: true,
-    ignorePatterns: ['.eslintrc.js'],
-    extends: [
-      ...(typescript
-        ? [
-            ...baseConfigs,
+  const typescriptOverrides = typescript
+    ? [
+        {
+          files: ['*.tsx', '*.ts'],
+          extends: [
             react ? 'airbnb-typescript' : 'airbnb-typescript/base',
             'plugin:@typescript-eslint/eslint-recommended',
             'plugin:@typescript-eslint/recommended',
             'plugin:@typescript-eslint/recommended-requiring-type-checking',
-            'plugin:import/recommended',
-            'plugin:import/typescript',
-            ...(storybook ? ['plugin:storybook/recommended'] : []),
-          ]
-        : [...baseConfigs, 'plugin:import/recommended']),
+          ],
+          rules: {
+            '@typescript-eslint/explicit-function-return-type': [
+              'error',
+              { allowExpressions: true, allowTypedFunctionExpressions: true },
+            ],
+            '@typescript-eslint/no-misused-promises': [
+              'error',
+              { checksVoidReturn: false },
+            ],
+          },
+          parserOptions: {
+            project: ['./tsconfig.json', ...additionalTsConfigs],
+          },
+          settings: {
+            'import/resolver': {
+              typescript: {},
+            },
+          },
+        },
+      ]
+    : [];
+
+  const mdxOverrides = mdx
+    ? [
+        {
+          files: ['*.mdx'],
+          extends: 'plugin:mdx/recommended',
+          rules: {
+            'react/jsx-filename-extension': [
+              'error',
+              { extensions: ['.jsx', '.tsx', '.mdx'] },
+            ],
+          },
+        },
+      ]
+    : [];
+
+  return {
+    root: true,
+    ignorePatterns: ['.eslintrc.js'],
+    extends: [
+      ...baseConfigs,
+      'plugin:import/recommended',
+      ...(storybook ? ['plugin:storybook/recommended'] : []),
       'plugin:vitest/recommended',
       'plugin:jest/recommended',
       'plugin:jest/style',
-      'prettier',
     ],
     rules: {
-      ...(typescript ? typescriptRules : {}),
       ...(react ? reactRules : {}),
       'import/prefer-default-export': 'off',
       'class-methods-use-this': 'off',
@@ -94,6 +108,8 @@ module.exports = function createEslintConfig(options) {
         {
           devDependencies: [
             '**/*.test.ts',
+            '**/*.stories.ts',
+            '**/*.mdx',
             'src/tests/**/*.ts',
             '**/__mocks__/*.ts',
             '**/setupTests.ts',
@@ -102,11 +118,19 @@ module.exports = function createEslintConfig(options) {
         },
       ],
     },
+    overrides: [
+      ...typescriptOverrides,
+      ...mdxOverrides,
+      // make sure prettier is always applied last
+      {
+        files: ['*'],
+        extends: ['prettier'],
+      },
+    ],
     env: {
       node: true,
       browser: react,
       jest: true,
     },
-    ...additionalOptions,
   };
 };

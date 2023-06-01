@@ -42,7 +42,6 @@ const iconSelect = {
 };
 
 const meta = {
-  title: 'Button',
   component: Button,
   tags: ['autodocs'],
   argTypes: {

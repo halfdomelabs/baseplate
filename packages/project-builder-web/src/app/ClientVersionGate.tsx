@@ -1,5 +1,5 @@
+import { ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useMemo, useState, useRef } from 'react';
-import { ErrorableLoader } from 'src/components';
 import {
   ClientVersionContext,
   UseClientVersionResult,
