@@ -5,7 +5,7 @@ import colors from 'tailwindcss/colors';
 
 export default {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
-  darkMode: 'class',
+  darkMode: ['class'],
   theme: {
     fontFamily: {
       body: ['Open Sans', ...defaultTheme.fontFamily.sans],
@@ -13,6 +13,7 @@ export default {
     extend: {
       colors: {
         primary: colors.blue,
+        secondary: colors.gray,
       },
     },
   },

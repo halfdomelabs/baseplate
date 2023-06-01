@@ -11,6 +11,7 @@ yarn-error.log*
 
 # production
 /lib
+/storybook-static
 
 # misc
 .DS_Store

@@ -2,6 +2,7 @@
  * Creates an ESLint configuration based on the given options.
  * @param {object} options - The options for creating the ESLint configuration.
  * @param {boolean} options.react - Indicates whether the configuration should include React rules.
+ * @param {boolean} options.storybook - Indicates whether the configuration should include Storybook rules.
  * @param {boolean} options.typescript - Indicates whether the configuration should include TypeScript rules.
  * @param {string[]} options.additionalTsConfigs - Additional TypeScript configuration files to include.
  * @returns {object} The generated ESLint configuration.
@@ -9,6 +10,7 @@
 module.exports = function createEslintConfig(options) {
   const typescript = options.typescript || false;
   const react = options.react || false;
+  const storybook = options.storybook || false;
   const additionalTsConfigs = options.additionalTsConfigs || [];
 
   const additionalOptions = typescript
@@ -57,6 +59,7 @@ module.exports = function createEslintConfig(options) {
             'plugin:@typescript-eslint/recommended-requiring-type-checking',
             'plugin:import/recommended',
             'plugin:import/typescript',
+            ...(storybook ? ['plugin:storybook/recommended'] : []),
           ]
         : [...baseConfigs, 'plugin:import/recommended']),
       'plugin:vitest/recommended',
