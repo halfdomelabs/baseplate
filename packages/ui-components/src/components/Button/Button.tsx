@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import { ForwardedRef, forwardRef } from 'react';
 import { IconType } from 'react-icons';
 
 /**
@@ -89,7 +90,10 @@ function getButtonSizeClass(size: ButtonSize): string {
 /**
  * Primary UI component for user interaction
  */
-export function Button(props: ButtonProps): JSX.Element {
+function ButtonFn(
+  props: ButtonProps,
+  ref: ForwardedRef<HTMLButtonElement>
+): JSX.Element {
   const {
     className,
     children,
@@ -114,6 +118,7 @@ export function Button(props: ButtonProps): JSX.Element {
       // a type is being provided but eslint doesn't know
       // eslint-disable-next-line react/button-has-type
       type={type}
+      ref={ref}
     >
       {IconBefore || IconAfter ? (
         <div className="flex items-center justify-center space-x-2">
@@ -127,3 +132,5 @@ export function Button(props: ButtonProps): JSX.Element {
     </button>
   );
 }
+
+export const Button = forwardRef(ButtonFn);
