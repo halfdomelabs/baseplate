@@ -137,7 +137,7 @@ EmbeddedObjectInput.LabelledController =
         {...rest}
         error={error?.message}
         onChange={field.onChange}
-        value={field.value as FieldPathValue<FormType, FormPath>}
+        value={field.value}
       />
     );
   };
