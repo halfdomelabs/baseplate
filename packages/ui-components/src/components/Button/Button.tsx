@@ -93,7 +93,7 @@ function getButtonSizeClass(size: ButtonSize): string {
 /**
  * Primary UI component for user interaction
  */
-function ButtonFn(
+function ButtonInner(
   props: ButtonProps,
   ref: ForwardedRef<HTMLButtonElement>
 ): JSX.Element {
@@ -136,4 +136,4 @@ function ButtonFn(
   );
 }
 
-export const Button = forwardRef(ButtonFn);
+export const Button = forwardRef(ButtonInner);

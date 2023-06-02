@@ -40,10 +40,11 @@ function HomePage(): JSX.Element {
                   name: 'test-app',
                   version: '0.1.0',
                   cliVersion: '0.2.3',
-                  portBase: 4000,
+                  portOffset: 4000,
                   apps: [],
                   features: [],
                   models: [],
+                  isInitialized: true,
                 } as ProjectConfig,
                 undefined,
                 2
@@ -56,7 +57,7 @@ function HomePage(): JSX.Element {
         <Button onClick={handleImport}>Import Config</Button>
       </div>
       <TextAreaInput
-        className="h-96 font-mono"
+        className="font-mono h-96"
         placeholder="Paste your configuration here"
         value={value}
         onTextChange={(text) => setValue(text)}

@@ -8,6 +8,7 @@ import { logError } from '@src/services/error-logger';
 import { logger } from '@src/services/logger';
 import { expandPathWithTilde } from '@src/utils/path';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter';
+import { getPackageVersion } from '@src/utils/version';
 
 export interface FilePayload {
   contents: string;
@@ -25,6 +26,18 @@ function getLastModifiedTime(filePath: string): Promise<string> {
 export interface CommandConsoleEmittedPayload {
   id: string;
   message: string;
+}
+
+function getFirstNonBaseplateParentFolder(filePath: string): string | null {
+  const segments = path.dirname(filePath).split(path.sep);
+
+  for (let i = segments.length - 1; i >= 0; i--) {
+    if (segments[i] !== 'baseplate') {
+      return segments[i];
+    }
+  }
+
+  return null;
 }
 
 export class ProjectBuilderApi extends TypedEventEmitterBase<{
@@ -70,11 +83,20 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
   public async init(): Promise<void> {
     const fileExists = await fs.pathExists(this.projectJsonPath);
     if (!fileExists) {
-      throw new Error(
-        `Could not find project.json file at ${path.resolve(
-          this.projectJsonPath
-        )}`
-      );
+      const version = await getPackageVersion();
+
+      if (!fileExists) {
+        // auto-create a simple project.json file
+        logger.info(
+          `project.json not found. Creating project.json file in ${this.projectJsonPath}`
+        );
+        const starterName =
+          getFirstNonBaseplateParentFolder(this.projectJsonPath) || 'project';
+        await fs.writeJson(this.projectJsonPath, {
+          name: starterName,
+          cliVerison: version,
+        });
+      }
     }
 
     this.watcher = chokidar.watch(this.projectJsonPath, {

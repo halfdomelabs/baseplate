@@ -1,13 +1,14 @@
 import {
   ProjectConfig,
+  ProjectConfigInput,
   FixReferenceRenamesOptions,
   ParsedProjectConfig,
 } from '@halfdomelabs/project-builder-lib';
 import React from 'react';
 
 export type SetOrTransformConfig =
-  | ProjectConfig
-  | ((draftConfig: ProjectConfig) => void);
+  | ProjectConfigInput
+  | ((draftConfig: ProjectConfigInput) => void);
 
 export interface SetProjectConfigOptions {
   fixReferences?: boolean | FixReferenceRenamesOptions;

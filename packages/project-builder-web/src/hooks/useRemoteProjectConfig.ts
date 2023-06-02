@@ -14,7 +14,11 @@ interface UseRemoteProjectConfigResult {
   value?: string | null;
   error?: Error;
   loaded: boolean;
-  saveValue: (newValue: string) => void;
+  saveValue: (
+    newValue: string,
+    lastModifiedAt?: string,
+    successCallback?: () => void
+  ) => void;
   /**
    * External change counter gets incremented every time the remote config
    * gets updated externally
@@ -92,7 +96,11 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   const pendingSaveContents = useRef<string | null>();
 
   const saveValue = useCallback(
-    (contents: string, lastModifiedAt?: string) => {
+    (
+      contents: string,
+      lastModifiedAt?: string,
+      successCallback?: () => void
+    ) => {
       if (!projectId) {
         throw new Error('No project ID');
       }
@@ -124,6 +132,9 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
               lastModifiedAt: result.lastModifiedAt,
             });
             newLastModifiedAt = result.lastModifiedAt;
+            if (successCallback) {
+              successCallback();
+            }
           } else {
             throw new Error('Unexpected result type');
           }

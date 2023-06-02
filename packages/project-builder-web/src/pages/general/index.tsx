@@ -14,11 +14,11 @@ import { logError } from 'src/services/error-logger';
 const validationSchema = projectConfigSchema.pick({
   name: true,
   version: true,
-  portBase: true,
+  portOffset: true,
   features: true,
 });
 
-type FormData = z.infer<typeof validationSchema>;
+type FormData = z.input<typeof validationSchema>;
 
 function GeneralPage(): JSX.Element {
   const { config, setConfigAndFixReferences } = useProjectConfig();
@@ -29,7 +29,12 @@ function GeneralPage(): JSX.Element {
     formState: { errors },
   } = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
-    defaultValues: _.pick(config, ['name', 'version', 'portBase', 'features']),
+    defaultValues: _.pick(config, [
+      'name',
+      'version',
+      'portOffset',
+      'features',
+    ]),
   });
   const { status, setError } = useStatus();
   const toast = useToast();
@@ -39,7 +44,7 @@ function GeneralPage(): JSX.Element {
       setConfigAndFixReferences((draftConfig) => {
         draftConfig.name = data.name;
         draftConfig.version = data.version;
-        draftConfig.portBase = data.portBase;
+        draftConfig.portOffset = data.portOffset;
         draftConfig.features = _.sortBy(data.features, (f) => f.name);
       });
       toast.success('Successfully saved configuration!');
@@ -70,8 +75,8 @@ function GeneralPage(): JSX.Element {
       />
       <TextInput.Labelled
         label="Port Base (e.g. 4000)"
-        register={register('portBase')}
-        error={errors.portBase?.message}
+        register={register('portOffset')}
+        error={errors.portOffset?.message}
       />
       <h2>Features</h2>
       {fields.map((field, idx) => {

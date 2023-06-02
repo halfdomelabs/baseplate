@@ -41,7 +41,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
       },
       proxy: {
         // TODO: Extract out logic
-        devBackendHost: `http://localhost:${projectConfig.portBase + 1}`,
+        devBackendHost: `http://localhost:${projectConfig.portOffset + 1}`,
       },
       $sentry: {
         generator: '@halfdomelabs/react/core/react-sentry',

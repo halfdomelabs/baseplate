@@ -58,7 +58,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
                     name: 'bull-board',
                     generator: '@halfdomelabs/react/admin/admin-bull-board',
                     bullBoardUrl: `http://localhost:${
-                      projectConfig.portBase + 1
+                      projectConfig.portOffset + 1
                     }`,
                   },
                 ]
@@ -75,7 +75,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
       },
       proxy: {
         // TODO: Extract out logic
-        devBackendHost: `http://localhost:${projectConfig.portBase + 1}`,
+        devBackendHost: `http://localhost:${projectConfig.portOffset + 1}`,
       },
       $adminLayout: {
         generator: '@halfdomelabs/react/admin/admin-layout',

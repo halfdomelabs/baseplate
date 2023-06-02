@@ -27,22 +27,27 @@ export type AppConfig = z.infer<typeof appSchema>;
 
 export const projectConfigSchema = z.object({
   name: z.string().min(1),
-  version: z.string().min(1),
+  version: z.string().min(1).default('1.0.0'),
   cliVersion: z.string().nullish().default('0.2.3'),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
-  portBase: z.coerce.number().finite(),
-  apps: z.array(appSchema),
-  features: z.array(
-    z.object({
-      uid: z.string().default(randomUid),
-      name: z.string().min(1),
-    })
-  ),
-  models: z.array(modelSchema),
+  portOffset: z.coerce.number().int().finite().default(3000),
+  apps: z.array(appSchema).default([]),
+  features: z
+    .array(
+      z.object({
+        uid: z.string().default(randomUid),
+        name: z.string().min(1),
+      })
+    )
+    .default([]),
+  models: z.array(modelSchema).default([]),
   enums: z.array(enumSchema).optional(),
   auth: authSchema.optional(),
   storage: storageSchema.optional(),
+  isInitialized: z.boolean().default(false),
 });
+
+export type ProjectConfigInput = z.input<typeof projectConfigSchema>;
 
 export type ProjectConfig = z.infer<typeof projectConfigSchema>;
 

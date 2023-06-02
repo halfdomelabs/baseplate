@@ -21,11 +21,13 @@ import {
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
 import { useRemoteProjectConfig } from 'src/hooks/useRemoteProjectConfig';
+import { useToast } from 'src/hooks/useToast';
 import { WebsocketClientContext } from 'src/hooks/useWebsocketClient';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 import { formatZodError, UserVisibleError } from 'src/utils/error';
 import { prettyStableStringify } from 'src/utils/json';
+import { NewProjectCard } from './NewProjectCard';
 
 interface ProjectConfigGateProps {
   children?: React.ReactNode;
@@ -46,6 +48,7 @@ export function ProjectConfigGate({
   const { projects } = useProjects();
   const [, setProjectId] = useProjectIdState();
   const { version: cliVersion, refreshVersion } = useClientVersion();
+  const toast = useToast();
 
   const selectedProject = projects.find((p) => p.id === projectId);
 
@@ -82,11 +85,14 @@ export function ProjectConfigGate({
       // validate config
       const validatedConfig = projectConfigSchema.parse(projectConfig);
       const project = new ParsedProjectConfig(validatedConfig);
-      savedConfigRef.current = {
-        project,
-        externalChangeCounter,
-        projectId,
-      };
+      // only save config if project is initialized
+      if (projectConfig.isInitialized) {
+        savedConfigRef.current = {
+          project,
+          externalChangeCounter,
+          projectId,
+        };
+      }
       return { parsedProject: project };
     } catch (err) {
       if (err instanceof SyntaxError) {
@@ -127,18 +133,18 @@ export function ProjectConfigGate({
           ? produce(oldProjectConfig, newConfig)
           : newConfig;
 
+      // TODO: Figure out better validation technique as we're validating twice
+      const validatedProjectConfig =
+        projectConfigSchema.parse(newProjectConfig);
+
       if (fixReferences) {
         newProjectConfig = fixReferenceRenames(
           oldProjectConfig,
-          newProjectConfig,
+          validatedProjectConfig,
           getProjectConfigReferences,
           typeof fixReferences === 'boolean' ? undefined : fixReferences
         );
       }
-
-      // TODO: Figure out better validation technique as we're validating twice
-      const validatedProjectConfig =
-        projectConfigSchema.parse(newProjectConfig);
 
       const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
       parsedConfig.projectConfig.cliVersion = cliVersion;
@@ -197,15 +203,21 @@ export function ProjectConfigGate({
     );
   }
 
-  if (!result) {
+  if (!result || !result.parsedProject.projectConfig.isInitialized) {
     return (
-      <div className="mt-16 flex flex-col items-center justify-center space-y-4">
-        <Alert type="error">No Project Config found!</Alert>
-        {projects.length > 0 && (
-          <Button variant="secondary" onClick={() => setProjectId(null)}>
-            Switch Project
-          </Button>
-        )}
+      <div className="flex h-full items-center justify-center">
+        <NewProjectCard
+          existingProjectName={result?.parsedProject.projectConfig.name}
+          saveProject={(projectConfig) =>
+            saveRemoteConfig(
+              prettyStableStringify(projectConfig),
+              undefined,
+              () => {
+                toast.success('Successfully created project!');
+              }
+            )
+          }
+        />
       </div>
     );
   }

@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  @apply bg-background-200;
+}
+
+.animate-fade-in-and-grow {
+  opacity: 0.5;
+  transform: scale(0.8);
+  animation: fadeAndGrow 400ms cubic-bezier(0.42, 0, 0.58, 1) forwards;
+}
+
+@keyframes fadeAndGrow {
+  0% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

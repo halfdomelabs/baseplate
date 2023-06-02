@@ -6,6 +6,7 @@ function Typography(): JSX.Element {
       <h1>Heading 1</h1>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam</p>
       <h2>Heading 2</h2>
+      <p className="subheading">A subheading is here</p>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam</p>
       <h3>Heading 3</h3>
       <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam</p>
@@ -16,6 +17,9 @@ function Typography(): JSX.Element {
         laudantium odit quos ut fuga reiciendis, voluptate est expedita dolores,
         vero aut minus autem cupiditate consectetur quibusdam quas nesciunt
         sapiente?
+      </p>
+      <p className="subtext">
+        Some subtext goes here. Lorem ipsum dolor sit amet consectetur.
       </p>
       <div>
         <a href="https://www.google.com">I am a link!</a>
