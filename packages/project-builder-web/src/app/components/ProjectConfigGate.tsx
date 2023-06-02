@@ -49,6 +49,7 @@ export function ProjectConfigGate({
     websocketClient,
     projectId,
     externalChangeCounter,
+    downloadConfig,
   } = useRemoteProjectConfig();
   const { projects } = useProjects();
   const [, setProjectId] = useProjectIdState();
@@ -211,9 +212,18 @@ export function ProjectConfigGate({
         }
         header="Failed to load project config"
         actions={
-          projects.length > 1 && (
-            <Button onClick={() => setProjectId(null)}>Switch Project</Button>
-          )
+          <div className="flex flex-col space-y-4">
+            <Button
+              onClick={() => downloadConfig().catch((err) => logError(err))}
+            >
+              Try Again
+            </Button>
+            {projects.length > 1 && (
+              <Button variant="secondary" onClick={() => setProjectId(null)}>
+                Switch Project
+              </Button>
+            )}
+          </div>
         }
       />
     );
@@ -257,15 +267,22 @@ export function ProjectConfigGate({
       <ErrorDisplay
         header="Upgrade your Baseplate client"
         actions={
-          projects.length > 0 && (
-            <Button onClick={() => setProjectId(null)}>Switch Project</Button>
-          )
+          <div className="flex flex-col space-y-4">
+            <Button onClick={() => window.location.reload()}>
+              Refresh Page
+            </Button>
+            {projects.length > 1 && (
+              <Button variant="secondary" onClick={() => setProjectId(null)}>
+                Switch Project
+              </Button>
+            )}
+          </div>
         }
         error={
           <>
             This project requires a newer version of the client (
             {result.config.cliVersion}). Please upgrade your client by running{' '}
-            <pre className="inline">yarn install</pre>.
+            <strong>yarn install</strong>.
           </>
         }
       />

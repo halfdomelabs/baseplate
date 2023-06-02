@@ -26,6 +26,7 @@ interface UseRemoteProjectConfigResult {
   externalChangeCounter: number;
   websocketClient?: ProjectWebsocketClient;
   projectId?: string | null;
+  downloadConfig: () => Promise<void>;
 }
 
 export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
@@ -70,6 +71,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       if (!projectId) {
         throw new Error('No project ID');
       }
+      setError(undefined);
       shouldTriggerRefetch.current = false;
       const payload = await downloadProjectConfig(projectId);
       updateConfig(payload);
@@ -202,5 +204,6 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     externalChangeCounter,
     projectId,
     websocketClient,
+    downloadConfig,
   };
 }
