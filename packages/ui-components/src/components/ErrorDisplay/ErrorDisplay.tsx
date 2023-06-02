@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
 import { COMPONENT_STRINGS } from '@src/constants/strings.js';
 
@@ -35,7 +36,7 @@ export function ErrorDisplay({
         </div>
         <h1>{header || COMPONENT_STRINGS.genericErrorHeader}</h1>
         <p className="text-base">
-          {typeof error === 'string'
+          {typeof error === 'string' || React.isValidElement(error)
             ? error
             : COMPONENT_STRINGS.genericErrorContent}
         </p>

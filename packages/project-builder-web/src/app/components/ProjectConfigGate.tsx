@@ -4,13 +4,17 @@ import {
   ParsedProjectConfig,
   ProjectConfig,
   projectConfigSchema,
+  runSchemaMigrations,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, ErrorableLoader } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  ErrorableLoader,
+  ErrorDisplay,
+} from '@halfdomelabs/ui-components';
 import produce from 'immer';
 import { useEffect, useMemo, useRef } from 'react';
 import semver from 'semver';
 import { ZodError } from 'zod';
-import { Alert } from 'src/components';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import {
   ProjectConfigContext,
@@ -25,6 +29,7 @@ import { useToast } from 'src/hooks/useToast';
 import { WebsocketClientContext } from 'src/hooks/useWebsocketClient';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
+import { logger } from 'src/services/logger';
 import { formatZodError, UserVisibleError } from 'src/utils/error';
 import { prettyStableStringify } from 'src/utils/json';
 import { NewProjectCard } from './NewProjectCard';
@@ -82,8 +87,18 @@ export function ProjectConfigGate({
     }
     try {
       const projectConfig = JSON.parse(remoteConfig) as ProjectConfig;
+      // migrate config
+      const { newConfig: migratedProjectConfig, appliedMigrations } =
+        runSchemaMigrations(projectConfig);
+      if (appliedMigrations.length) {
+        logger.log(
+          `Applied migrations:\n${appliedMigrations
+            .map((m) => `${m.version}: ${m.description}`)
+            .join('\n')}`
+        );
+      }
       // validate config
-      const validatedConfig = projectConfigSchema.parse(projectConfig);
+      const validatedConfig = projectConfigSchema.parse(migratedProjectConfig);
       const project = new ParsedProjectConfig(validatedConfig);
       // only save config if project is initialized
       if (projectConfig.isInitialized) {
@@ -127,6 +142,7 @@ export function ProjectConfigGate({
           'Cannot set config when project config is not yet loaded'
         );
       }
+
       const oldProjectConfig = parsedProject.exportToProjectConfig();
       let newProjectConfig =
         typeof newConfig === 'function'
@@ -207,16 +223,25 @@ export function ProjectConfigGate({
     return (
       <div className="flex h-full items-center justify-center">
         <NewProjectCard
-          existingProjectName={result?.parsedProject.projectConfig.name}
-          saveProject={(projectConfig) =>
+          existingProject={result?.parsedProject.projectConfig}
+          saveProject={(data) => {
+            const oldProjectConfig =
+              result?.parsedProject.exportToProjectConfig() || {};
+            const newProjectConfig = {
+              ...oldProjectConfig,
+              ...data,
+              isInitialized: true,
+            };
             saveRemoteConfig(
-              prettyStableStringify(projectConfig),
+              prettyStableStringify(
+                projectConfigSchema.parse(newProjectConfig)
+              ),
               undefined,
               () => {
                 toast.success('Successfully created project!');
               }
-            )
-          }
+            );
+          }}
         />
       </div>
     );
@@ -229,16 +254,21 @@ export function ProjectConfigGate({
     semver.gt(result.config.cliVersion, cliVersion)
   ) {
     return (
-      <div className="mt-16 flex flex-col items-center justify-center space-y-4">
-        <Alert type="error">
-          This project requires a newer version of the client (
-          {result.config.cliVersion}). Please run upgrade your client e.g. by
-          running yarn install.
-        </Alert>
-        {projects.length > 0 && (
-          <Button onClick={() => setProjectId(null)}>Switch Project</Button>
-        )}
-      </div>
+      <ErrorDisplay
+        header="Upgrade your Baseplate client"
+        actions={
+          projects.length > 0 && (
+            <Button onClick={() => setProjectId(null)}>Switch Project</Button>
+          )
+        }
+        error={
+          <>
+            This project requires a newer version of the client (
+            {result.config.cliVersion}). Please upgrade your client by running{' '}
+            <pre className="inline">yarn install</pre>.
+          </>
+        }
+      />
     );
   }
 

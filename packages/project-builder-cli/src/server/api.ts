@@ -1,4 +1,5 @@
 import path from 'path';
+import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
@@ -31,7 +32,7 @@ export interface CommandConsoleEmittedPayload {
 function getFirstNonBaseplateParentFolder(filePath: string): string | null {
   const segments = path.dirname(filePath).split(path.sep);
 
-  for (let i = segments.length - 1; i >= 0; i--) {
+  for (let i = segments.length - 1; i >= 0; i -= 1) {
     if (segments[i] !== 'baseplate') {
       return segments[i];
     }
@@ -95,6 +96,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
         await fs.writeJson(this.projectJsonPath, {
           name: starterName,
           cliVerison: version,
+          schemaVersion: getLatestMigrationVersion(),
         });
       }
     }

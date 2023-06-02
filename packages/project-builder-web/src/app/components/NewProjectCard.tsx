@@ -1,4 +1,4 @@
-import { projectConfigSchema } from '@halfdomelabs/project-builder-lib';
+import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { Button, Card, TextInput } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -26,31 +26,21 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 interface NewProjectCardProps {
-  existingProjectName?: string;
-  saveProject: (projectConfig: z.input<typeof projectConfigSchema>) => void;
+  existingProject?: ProjectConfig;
+  saveProject: (data: FormData) => void;
 }
 
 export function NewProjectCard({
-  existingProjectName,
+  existingProject,
   saveProject,
 }: NewProjectCardProps): JSX.Element {
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
-      name: existingProjectName,
-      portOffset: 3000,
+      name: existingProject?.name,
+      portOffset: existingProject?.portOffset || 3000,
     },
     resolver: zodResolver(schema),
   });
-
-  const onSubmit = (data: FormData): void => {
-    saveProject(
-      projectConfigSchema.parse({
-        name: data.name,
-        portOffset: data.portOffset,
-        isInitialized: true,
-      })
-    );
-  };
 
   return (
     <Card className="animate-fade-in-and-grow w-[20rem] sm:w-[30rem]">
@@ -65,7 +55,7 @@ export function NewProjectCard({
           <p className="subheading text-center">Let&apos;s get you set up!</p>
         </div>
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(saveProject)}
           className="flex flex-col space-y-4"
         >
           <TextInput.LabelledController

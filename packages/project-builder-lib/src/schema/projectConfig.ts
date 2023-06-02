@@ -45,6 +45,7 @@ export const projectConfigSchema = z.object({
   auth: authSchema.optional(),
   storage: storageSchema.optional(),
   isInitialized: z.boolean().default(false),
+  schemaVersion: z.number().nullish(),
 });
 
 export type ProjectConfigInput = z.input<typeof projectConfigSchema>;
