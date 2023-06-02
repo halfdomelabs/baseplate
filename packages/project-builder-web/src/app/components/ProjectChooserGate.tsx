@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { ErrorableLoader } from '@halfdomelabs/ui-components';
+import { useState } from 'react';
 import { useMount } from 'src/hooks/useMount';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
@@ -14,8 +15,8 @@ export function ProjectChooserGate({
   children,
 }: ProjectChooserGateProps): JSX.Element {
   const [projectId, setProjectId] = useProjectIdState();
-
-  const { setProjects } = useProjects();
+  const [error, setError] = useState(null);
+  const { projectsLoaded, setProjects } = useProjects();
 
   useMount(() => {
     getProjects()
@@ -27,8 +28,13 @@ export function ProjectChooserGate({
       })
       .catch((err) => {
         logError(err);
+        setError(error);
       });
   });
+
+  if (!projectId && !projectsLoaded) {
+    return <ErrorableLoader error={error} />;
+  }
 
   if (!projectId) {
     return <ProjectChooserDialog isOpen />;
