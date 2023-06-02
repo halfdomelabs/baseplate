@@ -83,7 +83,7 @@ export function Dialog({
           >
             <HeadlessDialog.Panel
               className={clsx(
-                'max-h-full overflow-y-auto rounded-lg bg-white shadow-xl dark:bg-secondary-900',
+                'max-h-full overflow-y-auto rounded-lg bg-white shadow-xl dark:bg-background-900',
                 getDialogSizeClass(size),
                 className
               )}
@@ -152,7 +152,7 @@ Dialog.Footer = function DialogFooter({
   return (
     <div
       className={clsx(
-        'flex items-center justify-end space-x-4 rounded-b-lg border-t border-secondary-200 bg-secondary-50 p-4 dark:border-secondary-600 dark:bg-secondary-800',
+        'flex items-center justify-end space-x-4 rounded-b-lg border-t border-secondary-200 bg-secondary-50 p-4 dark:border-background-600 dark:bg-background-800',
         className
       )}
     >

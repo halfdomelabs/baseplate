@@ -31,7 +31,7 @@ export function ErrorDisplay({
     <div className={clsx('flex h-full items-center justify-center', className)}>
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
-          <MdOutlineErrorOutline className="h-20 w-20 text-secondary-300 dark:text-secondary-700" />
+          <MdOutlineErrorOutline className="h-20 w-20 text-foreground-300 dark:text-foreground-700" />
         </div>
         <h1>{header || COMPONENT_STRINGS.genericErrorHeader}</h1>
         <p className="text-base">

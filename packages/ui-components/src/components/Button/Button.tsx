@@ -59,31 +59,31 @@ function getButtonVariantClass(
     return clsx(
       color !== 'tertiary' && 'shadow',
       color === 'primary' &&
-        'border-transparent bg-primary-400 text-secondary-50 dark:bg-primary-800 dark:text-secondary-400',
+        'border-transparent bg-primary-400 text-foreground-50 dark:bg-primary-800 dark:text-foreground-400',
       color === 'secondary' &&
-        'border-secondary-300 bg-secondary-50 text-secondary-500 dark:border-secondary-700 dark:bg-secondary-900 dark:text-secondary-400',
+        'border-secondary-300 bg-secondary-50 text-foreground-500 dark:border-secondary-700 dark:bg-foreground-900 dark:text-foreground-400',
       color === 'tertiary' &&
-        'border-transparent bg-transparent text-secondary-500 dark:border-transparent dark:text-secondary-400'
+        'border-transparent bg-transparent text-foreground-500 dark:border-transparent dark:text-foreground-400'
     );
   }
   return clsx(
     color !== 'tertiary' && 'shadow',
     color === 'primary' &&
-      'border-transparent bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800',
+      'border-transparent bg-primary-600 text-white hover:bg-primary-700 active:text-foreground-200',
     color === 'secondary' &&
-      'border-secondary-300 bg-black bg-opacity-0 text-secondary-900 hover:bg-opacity-5 active:bg-opacity-10',
+      'border-secondary-300 bg-black bg-opacity-0 text-foreground-700 hover:bg-opacity-5 active:text-foreground-900',
     color === 'secondary' &&
-      'dark:border-secondary-700 dark:bg-white dark:bg-opacity-0 dark:text-white dark:hover:bg-opacity-10 dark:active:bg-opacity-[0.15]',
+      'dark:border-secondary-700 dark:bg-white dark:bg-opacity-0 dark:text-foreground-200 dark:hover:bg-opacity-10 dark:active:text-foreground-400',
     color === 'tertiary' &&
-      'border-transparent bg-black bg-opacity-0 text-secondary-600 hover:bg-opacity-5 active:bg-opacity-10 active:text-black',
+      'border-transparent bg-black bg-opacity-0 text-foreground-700 hover:bg-opacity-5 active:text-black',
     color === 'tertiary' &&
-      'dark:border-transparent dark:bg-white dark:bg-opacity-0 dark:text-secondary-200 dark:hover:bg-opacity-10 dark:active:bg-opacity-[0.15] dark:active:text-white'
+      'dark:border-transparent dark:bg-white dark:bg-opacity-0 dark:text-foreground-200 dark:hover:bg-opacity-10 dark:active:text-white'
   );
 }
 
 function getButtonSizeClass(size: ButtonSize): string {
   return clsx(
-    size === 'icon' && 'rounded-lg p-2.5 text-lg',
+    size === 'icon' && 'rounded-lg p-1 text-lg',
     size === 'sm' && 'rounded px-2.5 py-1.5 text-xs',
     size === 'md' && 'rounded-md px-4 py-2 text-sm',
     size === 'lg' && 'rounded-lg px-6 py-3 text-base'

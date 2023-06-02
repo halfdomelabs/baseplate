@@ -3,15 +3,13 @@ import { clsx } from 'clsx';
 interface CardProps {
   className?: string;
   children: React.ReactNode;
-  padding?: boolean;
 }
 
-export function Card({ className, padding, children }: CardProps): JSX.Element {
+export function Card({ className, children }: CardProps): JSX.Element {
   return (
     <div
       className={clsx(
-        'max-w-sm rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800',
-        { 'sm:p-6 lg:p-8': padding },
+        'rounded-lg border border-background-200 bg-white shadow dark:border-background-700 dark:bg-background-900',
         className
       )}
     >
@@ -19,3 +17,15 @@ export function Card({ className, padding, children }: CardProps): JSX.Element {
     </div>
   );
 }
+
+interface CardBodyProps {
+  className?: string;
+  children: React.ReactNode;
+}
+
+Card.Body = function CardBody({
+  className,
+  children,
+}: CardBodyProps): JSX.Element {
+  return <div className={clsx('p-4', className)}>{children}</div>;
+};
