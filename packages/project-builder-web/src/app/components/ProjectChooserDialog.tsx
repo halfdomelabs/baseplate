@@ -1,7 +1,11 @@
-import { ErrorableLoader, Dialog } from '@halfdomelabs/ui-components';
+import {
+  ErrorableLoader,
+  Dialog,
+  Table,
+  LinkButton,
+} from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LinkButton, Table } from 'src/components';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';

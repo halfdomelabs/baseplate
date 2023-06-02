@@ -27,8 +27,9 @@ h4 {
   @apply text-base;
 }
 
-a {
-  @apply text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300;
+a,
+.link {
+  @apply font-semibold text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300;
 }
 
 html,

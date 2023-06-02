@@ -59,7 +59,7 @@ function getButtonVariantClass(
     return clsx(
       color !== 'tertiary' && 'shadow',
       color === 'primary' &&
-        'border-transparent bg-primary-400 text-foreground-50 dark:bg-primary-800 dark:text-foreground-400',
+        'border-transparent bg-primary-500 text-foreground-50 dark:bg-primary-800 dark:text-foreground-400',
       color === 'secondary' &&
         'border-secondary-300 bg-secondary-50 text-foreground-500 dark:border-secondary-700 dark:bg-foreground-900 dark:text-foreground-400',
       color === 'tertiary' &&
@@ -69,7 +69,7 @@ function getButtonVariantClass(
   return clsx(
     color !== 'tertiary' && 'shadow',
     color === 'primary' &&
-      'border-transparent bg-primary-600 text-white hover:bg-primary-700 active:text-foreground-200',
+      'border-transparent bg-primary-700 text-white hover:bg-primary-800 active:text-foreground-200',
     color === 'secondary' &&
       'border-secondary-300 bg-black bg-opacity-0 text-foreground-700 hover:bg-opacity-5 active:text-foreground-900',
     color === 'secondary' &&
@@ -111,7 +111,7 @@ function ButtonFn(
   return (
     <button
       className={clsx(
-        'border text-center font-medium  transition-colors focus:outline-1 focus:outline-offset-4 focus:outline-primary-700 disabled:cursor-not-allowed dark:focus:outline-transparent',
+        'border text-center font-medium  transition-colors focus:outline-1 focus:outline-offset-4 focus:outline-primary-700 dark:focus:outline-transparent',
         getButtonVariantClass(variant, disabled),
         getButtonSizeClass(size),
         className

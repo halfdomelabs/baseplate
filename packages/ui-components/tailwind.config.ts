@@ -12,7 +12,7 @@ export default {
     },
     extend: {
       colors: {
-        primary: colors.indigo,
+        primary: colors.blue,
         secondary: colors.gray,
         foreground: colors.slate,
         background: colors.slate,
