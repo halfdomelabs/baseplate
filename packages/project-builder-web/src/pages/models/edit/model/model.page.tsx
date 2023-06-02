@@ -1,3 +1,4 @@
+import { randomUid } from '@halfdomelabs/project-builder-lib';
 import { useFieldArray } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, LinkButton, TextInput } from 'src/components';
@@ -88,6 +89,7 @@ function ModelEditModelPage(): JSX.Element {
           <Dropdown.ButtonItem
             onClick={() =>
               appendField({
+                uid: randomUid(),
                 name: 'id',
                 type: 'uuid',
                 isId: true,
@@ -103,6 +105,7 @@ function ModelEditModelPage(): JSX.Element {
             onClick={() =>
               appendField([
                 {
+                  uid: randomUid(),
                   name: 'updatedAt',
                   type: 'dateTime',
                   options: {
@@ -111,6 +114,7 @@ function ModelEditModelPage(): JSX.Element {
                   },
                 },
                 {
+                  uid: randomUid(),
                   name: 'createdAt',
                   type: 'dateTime',
                   options: {
@@ -127,6 +131,7 @@ function ModelEditModelPage(): JSX.Element {
           color="light"
           onClick={() =>
             appendField({
+              uid: randomUid(),
               name: '',
               type: 'string',
             })
@@ -152,12 +157,15 @@ function ModelEditModelPage(): JSX.Element {
       <LinkButton
         onClick={() =>
           appendRelation({
+            uid: randomUid(),
+            name: '',
             references: [{ local: '', foreign: '' }],
             modelName: '',
             relationshipType: 'oneToMany',
             isOptional: false,
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
+            foreignRelationName: '',
           })
         }
       >

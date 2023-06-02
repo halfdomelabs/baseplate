@@ -8,7 +8,7 @@ import React from 'react';
 
 export type SetOrTransformConfig =
   | ProjectConfigInput
-  | ((draftConfig: ProjectConfigInput) => void);
+  | ((draftConfig: ProjectConfig) => void);
 
 export interface SetProjectConfigOptions {
   fixReferences?: boolean | FixReferenceRenamesOptions;

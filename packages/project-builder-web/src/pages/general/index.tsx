@@ -1,4 +1,7 @@
-import { projectConfigSchema } from '@halfdomelabs/project-builder-lib';
+import {
+  projectConfigSchema,
+  randomUid,
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useFieldArray } from 'react-hook-form';
@@ -18,7 +21,7 @@ const validationSchema = projectConfigSchema.pick({
   features: true,
 });
 
-type FormData = z.input<typeof validationSchema>;
+type FormData = z.infer<typeof validationSchema>;
 
 function GeneralPage(): JSX.Element {
   const { config, setConfigAndFixReferences } = useProjectConfig();
@@ -94,7 +97,9 @@ function GeneralPage(): JSX.Element {
         );
       })}
       <div>
-        <Button onClick={() => append({ name: '' })}>Add Feature</Button>
+        <Button onClick={() => append({ uid: randomUid(), name: '' })}>
+          Add Feature
+        </Button>
       </div>
       <div>
         <Button type="submit">Save</Button>

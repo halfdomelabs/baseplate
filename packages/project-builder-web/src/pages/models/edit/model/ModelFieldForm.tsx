@@ -202,7 +202,7 @@ function ModelFieldForm({
             label="Type"
             options={typeOptions}
             register={register(`model.fields.${idx}.type`)}
-            error={errors.model?.fields?.[idx].name?.message}
+            error={errors.model?.fields?.[idx]?.name?.message}
           />
           {watchedField.type === 'enum' && (
             <ReactSelectInput.LabelledController
@@ -226,23 +226,23 @@ function ModelFieldForm({
             <CheckedInput.Labelled
               label="ID"
               register={register(`model.fields.${idx}.isId`)}
-              error={errors.model?.fields?.[idx].isId?.message}
+              error={errors.model?.fields?.[idx]?.isId?.message}
             />
             <CheckedInput.Labelled
               label="Optional"
               register={register(`model.fields.${idx}.isOptional`)}
-              error={errors.model?.fields?.[idx].isOptional?.message}
+              error={errors.model?.fields?.[idx]?.isOptional?.message}
             />
             <CheckedInput.Labelled
               label="Unique"
               register={register(`model.fields.${idx}.isUnique`)}
-              error={errors.model?.fields?.[idx].isUnique?.message}
+              error={errors.model?.fields?.[idx]?.isUnique?.message}
             />
             {watchedField.type === 'uuid' && (
               <CheckedInput.Labelled
                 label="Auto-Generate UUID"
                 register={register(`model.fields.${idx}.options.genUuid`)}
-                error={errors.model?.fields?.[idx].options?.genUuid?.message}
+                error={errors.model?.fields?.[idx]?.options?.genUuid?.message}
               />
             )}
             {(watchedField.type === 'dateTime' ||
@@ -254,7 +254,7 @@ function ModelFieldForm({
                     `model.fields.${idx}.options.defaultToNow`
                   )}
                   error={
-                    errors.model?.fields?.[idx].options?.defaultToNow?.message
+                    errors.model?.fields?.[idx]?.options?.defaultToNow?.message
                   }
                 />
                 {watchedField.type !== 'date' && (
@@ -262,7 +262,7 @@ function ModelFieldForm({
                     label="Updated At"
                     register={register(`model.fields.${idx}.options.updatedAt`)}
                     error={
-                      errors.model?.fields?.[idx].options?.updatedAt?.message
+                      errors.model?.fields?.[idx]?.options?.updatedAt?.message
                     }
                   />
                 )}

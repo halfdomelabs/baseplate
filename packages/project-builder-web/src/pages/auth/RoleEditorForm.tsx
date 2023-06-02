@@ -1,6 +1,7 @@
 import {
   AuthConfig,
   AUTH_DEFAULT_ROLES,
+  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useEffect } from 'react';
@@ -73,7 +74,11 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
         </div>
       ))}
 
-      <Button onClick={() => append({})}>Add Role</Button>
+      <Button
+        onClick={() => append({ uid: randomUid(), name: '', comment: '' })}
+      >
+        Add Role
+      </Button>
     </div>
   );
 }

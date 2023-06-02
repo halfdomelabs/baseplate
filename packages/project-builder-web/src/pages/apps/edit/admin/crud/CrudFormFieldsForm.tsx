@@ -232,7 +232,11 @@ function CrudFormFieldsForm({
           />
         </CollapsibleRow>
       ))}
-      <Button onClick={() => append({ type: 'text' })}>Add Field</Button>
+      <Button
+        onClick={() => append({ type: 'text', modelField: '', label: '' })}
+      >
+        Add Field
+      </Button>
     </div>
   );
 }

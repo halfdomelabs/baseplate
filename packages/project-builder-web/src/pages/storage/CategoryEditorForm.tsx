@@ -1,4 +1,4 @@
-import { StorageConfig } from '@halfdomelabs/project-builder-lib';
+import { randomUid, StorageConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
@@ -85,7 +85,19 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
         </div>
       ))}
 
-      <Button onClick={() => append({})}>Add Category</Button>
+      <Button
+        onClick={() =>
+          append({
+            uid: randomUid(),
+            name: '',
+            defaultAdapter: '',
+            usedByRelation: '',
+            uploadRoles: [],
+          })
+        }
+      >
+        Add Category
+      </Button>
     </div>
   );
 }

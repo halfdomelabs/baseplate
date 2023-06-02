@@ -1,4 +1,4 @@
-import { StorageConfig } from '@halfdomelabs/project-builder-lib';
+import { randomUid, StorageConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
@@ -40,7 +40,13 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
         </div>
       ))}
 
-      <Button onClick={() => append({})}>Add Adapter</Button>
+      <Button
+        onClick={() =>
+          append({ uid: randomUid(), name: '', bucketConfigVar: '' })
+        }
+      >
+        Add Adapter
+      </Button>
     </div>
   );
 }
