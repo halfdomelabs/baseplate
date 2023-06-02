@@ -21,7 +21,7 @@ function EnumsPage(): JSX.Element {
             New Enum
           </Sidebar.LinkItem>
           {sortedEnums.map((enumBlock) => (
-            <Sidebar.LinkItem to={`edit/${enumBlock.uid}`}>
+            <Sidebar.LinkItem key={enumBlock.uid} to={`edit/${enumBlock.uid}`}>
               {enumBlock.name}
             </Sidebar.LinkItem>
           ))}

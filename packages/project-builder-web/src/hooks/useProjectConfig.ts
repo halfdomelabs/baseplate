@@ -5,15 +5,24 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import React from 'react';
 
+export type SetOrTransformConfig =
+  | ProjectConfig
+  | ((draftConfig: ProjectConfig) => void);
+
+export interface SetProjectConfigOptions {
+  fixReferences?: boolean | FixReferenceRenamesOptions;
+}
+
 export interface UseProjectConfigResult {
   config: ProjectConfig;
   parsedProject: ParsedProjectConfig;
   setConfigAndFixReferences: (
-    transformer: (originalConfig: ProjectConfig) => void,
+    configOrTransform: SetOrTransformConfig,
     options?: FixReferenceRenamesOptions
   ) => void;
   setConfig: (
-    config: ProjectConfig | ((originalConfig: ProjectConfig) => void)
+    configOrTransform: SetOrTransformConfig,
+    options?: SetProjectConfigOptions
   ) => void;
   externalChangeCounter: number;
 }

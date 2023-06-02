@@ -38,7 +38,6 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   const toast = useToast();
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
-
   const loadedProjectId = useRef<string>();
 
   useEffect(() => {

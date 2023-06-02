@@ -1,9 +1,11 @@
 import { ErrorableLoader, Dialog } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LinkButton, Table } from 'src/components';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
+import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
-import { getProjects, Project } from 'src/services/remote';
+import { getProjects } from 'src/services/remote';
 
 interface ProjectChooserDialogProps {
   onClose?: () => void;
@@ -15,8 +17,9 @@ export function ProjectChooserDialog({
   isOpen,
 }: ProjectChooserDialogProps): JSX.Element {
   const [projectId, setProjectId] = useProjectIdState();
-  const [projects, setProjects] = useState<Project[]>();
   const [error, setError] = useState<Error | null>(null);
+  const { projects, setProjects } = useProjects();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getProjects()
@@ -27,7 +30,7 @@ export function ProjectChooserDialog({
         logError(err);
         setError(err as Error);
       });
-  }, []);
+  }, [setProjects, setProjectId]);
 
   if (!projects) {
     return <ErrorableLoader error={error} />;
@@ -59,6 +62,7 @@ export function ProjectChooserDialog({
                     <LinkButton
                       onClick={() => {
                         setProjectId(project.id);
+                        navigate('/');
                         if (onClose) {
                           onClose();
                         }

@@ -10,6 +10,14 @@ interface ErrorableLoaderProps {
    * Error to be displayed (if a string is passed, it will be displayed as-is, otherwise a generic error message will be displayed)
    */
   error?: unknown;
+  /**
+   * Header to be displayed (if not passed, a generic error header will be displayed)
+   */
+  header?: string;
+  /**
+   * Optional actions to be displayed below the error message
+   */
+  actions?: React.ReactNode;
 }
 
 /**
@@ -18,9 +26,11 @@ interface ErrorableLoaderProps {
 export function ErrorableLoader({
   className,
   error,
+  header,
+  actions,
 }: ErrorableLoaderProps): JSX.Element {
   if (!error) {
     return <Loader className={className} />;
   }
-  return <ErrorDisplay error={error} />;
+  return <ErrorDisplay header={header} error={error} actions={actions} />;
 }
