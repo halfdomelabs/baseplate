@@ -11,6 +11,7 @@
   },
   "files": [
     "LICENSE",
+    "CHANGELOG",
     "dist/**/*",
     "scripts/**/*"
   ],

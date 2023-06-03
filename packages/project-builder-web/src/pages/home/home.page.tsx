@@ -39,6 +39,7 @@ function HomePage(): JSX.Element {
                 {
                   name: 'test-app',
                   version: '0.1.0',
+                  cliVersion: '0.2.3',
                   portBase: 4000,
                   apps: [],
                   features: [],
