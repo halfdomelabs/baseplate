@@ -1,45 +1,41 @@
-import React, { ErrorInfo, ReactNode } from 'react';
+import {
+  ErrorBoundary as ReactErrorBoundary,
+  FallbackProps,
+} from 'react-error-boundary';
+import { Button, Card } from '%react-components';
+import { logError } from '%react-error/logger';
 
-interface ErrorBoundaryProps {
-  children: ReactNode;
+interface Props {
+  children?: React.ReactNode;
 }
 
-interface ErrorBoundaryState {
-  hasError: boolean;
-  error: Error | null;
+function ErrorBoundaryFallback({
+  resetErrorBoundary,
+}: FallbackProps): JSX.Element {
+  return (
+    <div className="flex h-full items-center justify-center">
+      <Card padding className="flex flex-col items-center space-y-4">
+        <div className="text-xl font-bold">Unexpected Error</div>
+        <p className="text-center text-gray-600">
+          Sorry, we encountered an error while showing this page. Please try
+          again.
+        </p>
+        <Button onClick={() => resetErrorBoundary()}>Reload Page</Button>
+      </Card>
+    </div>
+  );
 }
 
-export class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = {
-      hasError: false,
-      error: null,
-    };
-  }
-
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // You can log the error here or send it to an error reporting service
-    console.error('Error caught by error boundary:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div>
-          <h2>HEADING_NAME</h2>
-          <p>Please try again later.</p>
-        </div>
-      );
-    }
-
-    return this.props.children;
-  }
+export function ErrorBoundary({ children }: Props): JSX.Element {
+  return (
+    <ReactErrorBoundary
+      FallbackComponent={ErrorBoundaryFallback}
+      onError={(err) => logError(err)}
+      onReset={() => {
+        window.location.reload();
+      }}
+    >
+      {children}
+    </ReactErrorBoundary>
+  );
 }
