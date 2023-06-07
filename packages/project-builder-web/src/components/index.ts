@@ -7,7 +7,7 @@ export { default as ErrorableLoader } from './ErrorableLoader';
 export { default as FormLabel } from './FormLabel';
 export { default as LinkButton } from './LinkButton';
 export { default as ListGroup } from './ListGroup';
-export { default as NotFoundCard } from './NotFoundCard';
+export * from './NotFoundCard';
 export { default as SelectInput } from './SelectInput';
 export { default as Sidebar } from './Sidebar';
 export { default as Spinner } from './Spinner';

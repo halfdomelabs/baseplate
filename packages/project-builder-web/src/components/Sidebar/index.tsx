@@ -16,7 +16,7 @@ function Sidebar({ className, children }: Props): JSX.Element {
       className={classNames('w-64 overflow-y-auto bg-gray-50', className)}
       aria-label="Sidebar"
     >
-      <div className="py-4 px-3 dark:bg-gray-800">{children}</div>
+      <div className="px-3 py-4 dark:bg-gray-800">{children}</div>
     </aside>
   );
 }
@@ -111,7 +111,7 @@ Sidebar.LinkItem = function SidebarLink({
       <Link
         to={to}
         className={classNames(
-          ' flex items-center rounded-lg p-2 text-base text-gray-900 no-underline hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
+          'flex items-center rounded-lg p-2 text-base text-gray-900 no-underline hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
           match ? 'font-semibold' : 'font-normal'
         )}
       >

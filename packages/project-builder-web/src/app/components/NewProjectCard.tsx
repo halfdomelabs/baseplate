@@ -68,7 +68,7 @@ export function NewProjectCard({
           <TextInput.LabelledController
             name="portOffset"
             label="Port Offset"
-            subtext="A multiple of 1000, e.g. 3000"
+            subtext="Multiple of 1000, e.g. 4000. This will offset the ports used by the project, e.g. API at 4001, database at 4432, to avoid conflicts with other projects."
             control={control}
             registerOptions={{ valueAsNumber: true }}
           />

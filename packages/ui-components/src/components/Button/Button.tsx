@@ -1,6 +1,6 @@
 import { clsx } from 'clsx';
 import { ForwardedRef, forwardRef } from 'react';
-import { IconType } from 'react-icons';
+import { IconElement } from '@src/types/react.js';
 
 /**
  * Variant styles for the Button component
@@ -44,11 +44,15 @@ export interface ButtonProps {
   /**
    * Icon to be rendered before the button content
    */
-  iconBefore?: IconType;
+  iconBefore?: IconElement;
   /**
    * Icon to be rendered after the button content
    */
-  iconAfter?: IconType;
+  iconAfter?: IconElement;
+  /**
+   * Title attribute of the button
+   */
+  title?: string;
 }
 
 function getButtonVariantClass(
@@ -107,6 +111,7 @@ function ButtonInner(
     onClick,
     iconBefore: IconBefore,
     iconAfter: IconAfter,
+    title,
   } = props;
   return (
     <button
@@ -122,6 +127,7 @@ function ButtonInner(
       // eslint-disable-next-line react/button-has-type
       type={type}
       ref={ref}
+      title={title}
     >
       {IconBefore || IconAfter ? (
         <div className="flex items-center justify-center space-x-2">

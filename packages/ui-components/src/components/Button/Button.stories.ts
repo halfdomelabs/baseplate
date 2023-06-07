@@ -1,45 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import {
-  HiOutlineChevronDown,
-  HiOutlineChevronUp,
-  HiOutlineChevronRight,
-  HiOutlineChevronLeft,
-  HiHome,
-  HiCog6Tooth,
-  HiPlus,
-  HiPower,
-} from 'react-icons/hi2';
+import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
 import { Button } from './Button.js';
-
-const ICONS = {
-  None: undefined,
-  HiOutlineChevronDown,
-  HiOutlineChevronUp,
-  HiOutlineChevronRight,
-  HiOutlineChevronLeft,
-  HiHome,
-  HiCog6Tooth,
-  HiPlus,
-  HiPower,
-};
-
-const iconSelect = {
-  options: Object.keys(ICONS),
-  mapping: ICONS,
-  control: {
-    type: 'select',
-    labels: {
-      HiOutlineChevronDown: 'Down',
-      HiOutlineChevronUp: 'Up',
-      HiOutlineChevronRight: 'Right',
-      HiOutlineChevronLeft: 'Left',
-      HiHome: 'Home',
-      HiCog6Tooth: 'Settings',
-      HiPlus: 'Plus',
-      HiPower: 'Power',
-    },
-  },
-};
 
 const meta = {
   component: Button,
@@ -54,8 +15,8 @@ const meta = {
       defaultValue: 'Click Me',
     },
     onClick: { table: { disable: true } },
-    iconBefore: iconSelect,
-    iconAfter: iconSelect,
+    iconBefore: STORYBOOK_ICON_SELECT,
+    iconAfter: STORYBOOK_ICON_SELECT,
   },
   args: {
     children: 'Click Me',

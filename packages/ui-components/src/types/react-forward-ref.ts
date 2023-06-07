@@ -1,3 +1,7 @@
+/**
+ * This allows us to use forwardRef with generic types.
+ * https://fettblog.eu/typescript-react-generic-forward-refs/
+ */
 declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/ban-types
   function forwardRef<T, P = {}>(

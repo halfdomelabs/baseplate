@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-background-200;
+  @apply bg-background-100;
 }
 
 .animate-fade-in-and-grow {
