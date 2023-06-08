@@ -16,7 +16,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
       ...config
     }: ProjectConfig & { portBase: number }) => ({
       ...config,
-      portOffset: portBase,
+      portOffset: config.portOffset || portBase,
     }),
   },
 ];
