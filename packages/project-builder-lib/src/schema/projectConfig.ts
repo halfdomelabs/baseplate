@@ -26,11 +26,25 @@ export const appSchema = z.discriminatedUnion('type', [
 export type AppConfig = z.infer<typeof appSchema>;
 
 export const projectConfigSchema = z.object({
-  name: z.string().min(1),
+  name: z
+    .string()
+    .min(1)
+    .regex(
+      /^[a-z0-9-]+$/i,
+      'A project name should be all lowercase letters, numbers, and dashes, e.g. my-project'
+    ),
   version: z.string().min(1).default('1.0.0'),
   cliVersion: z.string().nullish().default('0.2.3'),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
-  portOffset: z.coerce.number().int().finite().default(3000),
+  portOffset: z
+    .number()
+    .min(1000)
+    .max(60000)
+    .int()
+    .refine(
+      (portOffset) => portOffset % 1000 === 0,
+      'Port offset must be a multiple of 1000, e.g. 1000, 2000, 3000, etc.'
+    ),
   apps: z.array(appSchema).default([]),
   features: z
     .array(

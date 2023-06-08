@@ -35,7 +35,7 @@ function ModelListPage(): JSX.Element {
         <Link to="new">create a new one</Link>.
       </p>
       <p>
-        <Link to="/enums">
+        <Link to="/models/enums">
           <Button variant="secondary">Manage Enums</Button>
         </Link>
       </p>

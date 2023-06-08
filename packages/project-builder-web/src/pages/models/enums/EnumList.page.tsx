@@ -15,7 +15,7 @@ function EnumListPage(): JSX.Element {
         header="No Enums"
         subtitle="Create an enum to get started"
         actions={
-          <Link to="/enums/new" className="inline-block">
+          <Link to="/models/enums/new" className="inline-block">
             <Button>New Enum</Button>
           </Link>
         }

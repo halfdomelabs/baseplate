@@ -1,26 +1,15 @@
-import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  ProjectConfig,
+  projectConfigSchema,
+} from '@halfdomelabs/project-builder-lib';
 import { Button, Card, TextInput } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const schema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .regex(
-      /^[a-z0-9-]+$/i,
-      'A project name should be all lowercase letters, numbers, and dashes, e.g. my-project'
-    ),
-  portOffset: z
-    .number()
-    .min(1000)
-    .max(60000)
-    .int()
-    .refine(
-      (portOffset) => portOffset % 1000 === 0,
-      'Port offset must be a multiple of 1000, e.g. 1000, 2000, 3000, etc.'
-    ),
+const schema = projectConfigSchema.pick({
+  name: true,
+  portOffset: true,
 });
 
 type FormData = z.infer<typeof schema>;

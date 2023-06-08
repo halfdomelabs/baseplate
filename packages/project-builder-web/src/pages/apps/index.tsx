@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import NotFoundPage from '../NotFound.page';
-import AppsLayout from './components/AppsLayout.page';
+import AppsLayout from './AppsLayout.page';
 import EditAppPage from './edit.page';
 import { AppsListPage } from './list.page';
 import NewAppPage from './new.page';

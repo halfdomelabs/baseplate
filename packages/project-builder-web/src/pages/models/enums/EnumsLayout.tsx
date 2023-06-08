@@ -2,7 +2,7 @@ import { Button, SidebarLayout, TextInput } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
-import { MdClear } from 'react-icons/md';
+import { MdArrowBack, MdClear } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
@@ -26,12 +26,16 @@ export function EnumsLayout(): JSX.Element {
         className="flex h-full max-w-sm flex-col space-y-4"
         width="auto"
       >
-        <Link to="/models">Back to Models</Link>
+        <Link to="/models">
+          <Button variant="tertiary" size="sm" iconBefore={MdArrowBack}>
+            Back to Models
+          </Button>
+        </Link>
         <div className="flex items-center justify-between space-x-4">
           <Link to="/enums">
             <h2>Enums</h2>
           </Link>
-          <Link to="/enums/new" className="inline-block">
+          <Link to="/models/enums/new" className="inline-block">
             <Button variant="secondary">New Enum</Button>
           </Link>
         </div>
@@ -60,7 +64,7 @@ export function EnumsLayout(): JSX.Element {
             {sortedEnums.map((item) => (
               <li key={item.uid}>
                 <NavLink
-                  to={`/enums/edit/${item.uid}`}
+                  to={`/models/enums/edit/${item.uid}`}
                   className={({ isActive }) =>
                     clsx(
                       'block w-full p-2 text-sm hover:bg-background-100 dark:hover:bg-background-700',

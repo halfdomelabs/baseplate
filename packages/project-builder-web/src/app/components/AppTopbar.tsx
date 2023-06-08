@@ -35,13 +35,18 @@ export function AppTopbar(): JSX.Element {
           <NavigationLink as={NavLink} to="/models" icon={HiDatabase}>
             Models
           </NavigationLink>
-          <NavigationLink as={NavLink} to="/settings" icon={HiCollection}>
+          <NavigationLink as={NavLink} to="/features" icon={HiCollection}>
             Features
           </NavigationLink>
         </div>
       </div>
       <div className="flex items-center space-x-4">
-        <NavigationLink as={Link} to="/settings" icon={MdSettings} />
+        <NavigationLink
+          as={NavLink}
+          to="/settings"
+          icon={MdSettings}
+          title="Project Settings"
+        />
         {projects.length > 1 && (
           <NavigationLink
             as="button"
