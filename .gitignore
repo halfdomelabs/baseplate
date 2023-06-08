@@ -109,3 +109,4 @@ dist
 playground
 
 .DS_Store
+.vercel
