@@ -1,38 +1,70 @@
+import { ErrorDisplay, Button } from '%react-components';
+
+import { useContext } from 'react';
 import {
   ErrorBoundary as ReactErrorBoundary,
-  FallbackProps,
+  ErrorBoundaryContext,
 } from 'react-error-boundary';
-import { Button, Card } from '%react-components';
-import { logError } from '%react-error/logger';
+import { logError } from 'src/services/error-logger';
 
-interface Props {
+interface ErrorBoundaryProps {
   children?: React.ReactNode;
+  /**
+   * The label for the reset button (defaults to "Reload Page")
+   */
+  resetButtonLabel?: string;
+  /**
+   * Called when the user clicks the reset button.
+   */
+  onReset?: () => void;
 }
 
 function ErrorBoundaryFallback({
-  resetErrorBoundary,
-}: FallbackProps): JSX.Element {
+  resetButtonLabel,
+}: {
+  resetButtonLabel: string;
+}): JSX.Element {
+  const {
+    resetErrorBoundary,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    error,
+  }: {
+    resetErrorBoundary: () => void;
+    error: unknown;
+  } = useContext(ErrorBoundaryContext) || {
+    resetErrorBoundary: () => {},
+    error: undefined,
+  };
   return (
-    <div className="flex h-full items-center justify-center">
-      <Card padding className="flex flex-col items-center space-y-4">
-        <div className="text-xl font-bold">Unexpected Error</div>
-        <p className="text-center text-gray-600">
-          Sorry, we encountered an error while showing this page. Please try
-          again.
-        </p>
-        <Button onClick={() => resetErrorBoundary()}>Reload Page</Button>
-      </Card>
-    </div>
+    <ErrorDisplay
+      error={error}
+      actions={<Button onClick={resetErrorBoundary}>{resetButtonLabel}</Button>}
+    />
   );
 }
 
-export function ErrorBoundary({ children }: Props): JSX.Element {
+/**
+ * A wrapper for React Error Boundary that displays a generic error message and a button to reset the error state.
+ */
+export function ErrorBoundary({
+  children,
+  resetButtonLabel,
+  onReset,
+}: ErrorBoundaryProps): JSX.Element {
   return (
     <ReactErrorBoundary
-      FallbackComponent={ErrorBoundaryFallback}
+      fallback={
+        <ErrorBoundaryFallback
+          resetButtonLabel={resetButtonLabel || 'Reload Page'}
+        />
+      }
       onError={(err) => logError(err)}
       onReset={() => {
-        window.location.reload();
+        if (onReset) {
+          onReset();
+        } else {
+          window.location.reload();
+        }
       }}
     >
       {children}
