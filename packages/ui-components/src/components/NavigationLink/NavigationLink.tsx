@@ -5,7 +5,7 @@ import { IconElement } from '@src/types/react.js';
 interface NavigationLinkProps<T extends ElementType> {
   className?: string;
   icon?: IconElement;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   isActive?: boolean;
   as?: T;
 }
@@ -32,9 +32,11 @@ export function NavigationLink<T extends ElementType = 'a'>({
       {Icon && (
         <Icon className="h-4 w-4 text-secondary-400 dark:text-secondary-600" />
       )}
-      <div className={isActive ? 'font-semibold' : 'font-normal'}>
-        {children}
-      </div>
+      {children && (
+        <div className={isActive ? 'font-semibold' : 'font-normal'}>
+          {children}
+        </div>
+      )}
     </As>
   );
 }

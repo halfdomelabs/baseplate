@@ -1,8 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
-import AppSidebar from 'src/app/Sidebar';
 import { AppTopbar } from 'src/app/components/AppTopbar';
 import { AppLayout } from 'src/components/AppLayout/AppLayout';
-import { Layout } from '../components';
 import NotFoundPage from './NotFound.page';
 import AppsPages from './apps';
 import AuthPage from './auth';
@@ -21,11 +19,9 @@ function PagesRoot(): JSX.Element {
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/storage" element={<StoragePage />} />
         <Route path="/apps/*" element={<AppsPages />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Route>
-      <Route element={<Layout noPadding sidebar={<AppSidebar />} />}>
         <Route path="/models/*" element={<ModelsPage />} />
         <Route path="/enums/*" element={<EnumsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
   );
