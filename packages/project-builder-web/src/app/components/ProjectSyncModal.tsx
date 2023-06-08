@@ -1,9 +1,8 @@
-import { Button } from '@halfdomelabs/ui-components';
+import { Button, Dialog } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { MdSync } from 'react-icons/md';
 import Console from 'src/components/Console';
-import Modal from 'src/components/Modal';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -37,20 +36,22 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
       >
         Sync
       </Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
-        <Modal.Header>Sync Project</Modal.Header>
-        <Modal.Body>
+      <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} size="xl">
+        <Dialog.Header onClose={() => setIsOpen(false)}>
+          Sync Project
+        </Dialog.Header>
+        <Dialog.Body>
           <Console />
-        </Modal.Body>
-        <Modal.Footer>
+        </Dialog.Body>
+        <Dialog.Footer>
           <Button variant="secondary" onClick={startSyncProject}>
             Retry
           </Button>
           <Button variant="secondary" onClick={() => setIsOpen(false)}>
             Close
           </Button>
-        </Modal.Footer>
-      </Modal>
+        </Dialog.Footer>
+      </Dialog>
     </div>
   );
 }
