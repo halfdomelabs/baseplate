@@ -4,7 +4,7 @@ import {
   SidebarLayout,
 } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 function AppsLayout(): JSX.Element {
@@ -28,7 +28,7 @@ function AppsLayout(): JSX.Element {
           {sortedApps.map((app) => (
             <li key={app.uid}>
               <NavigationLink
-                as={Link}
+                as={NavLink}
                 to={`/apps/edit/${app.uid}`}
                 className="w-full"
               >

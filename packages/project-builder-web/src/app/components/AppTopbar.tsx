@@ -2,7 +2,7 @@ import { NavigationLink } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { HiCollection, HiDatabase, HiSwitchHorizontal } from 'react-icons/hi';
 import { MdApps, MdSettings } from 'react-icons/md';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -29,13 +29,13 @@ export function AppTopbar(): JSX.Element {
         </div>
         <div className="flex items-center space-x-4">
           <ProjectSyncModal />
-          <NavigationLink as={Link} to="/apps" icon={MdApps}>
+          <NavigationLink as={NavLink} to="/apps" icon={MdApps}>
             Apps
           </NavigationLink>
-          <NavigationLink as={Link} to="/models" icon={HiDatabase}>
+          <NavigationLink as={NavLink} to="/models" icon={HiDatabase}>
             Models
           </NavigationLink>
-          <NavigationLink as={Link} to="/settings" icon={HiCollection}>
+          <NavigationLink as={NavLink} to="/settings" icon={HiCollection}>
             Features
           </NavigationLink>
         </div>
