@@ -3,80 +3,144 @@ import {
   Control,
   FieldPath,
   FieldValues,
+  PathValue,
   useController,
 } from 'react-hook-form';
-import Select from 'react-select';
+import Select, { InputProps, GroupBase, components } from 'react-select';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 
-interface Props {
+interface Props<ValueType = string> {
   className?: string;
-  options: { label: string; value: string }[];
-  onChange: (newValue?: string) => void;
+  options: { label: string; value: ValueType }[];
+  onChange: (newValue?: ValueType) => void;
   onBlur?: () => void;
-  value: string;
+  value: ValueType;
+  fixedPosition?: boolean;
 }
 
-function ReactSelectInput({
+/**
+ * we need to clear the box shadow since @tailwindcss/forms adds a ring
+ * to all input type text
+ *
+ * https://github.com/JedWatson/react-select/issues/4686
+ */
+function Input<
+  OptionType = unknown,
+  IsMultiType extends boolean = boolean,
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
+>(props: InputProps<OptionType, IsMultiType, GroupType>): JSX.Element {
+  return <components.Input {...props} inputClassName="focus:ring-0" />;
+}
+
+function ReactSelectInput<ValueType>({
   className,
   onChange,
   onBlur,
   options,
   value,
-}: Props): JSX.Element {
+  fixedPosition,
+}: Props<ValueType>): JSX.Element {
   const selectedOption = options.find((option) => option.value === value);
+
+  const fixedPositionProps = fixedPosition
+    ? {
+        styles: {
+          menuPortal: (base: Record<string, unknown>) => ({
+            ...base,
+            zIndex: 9999,
+          }),
+        },
+        menuPosition: 'fixed' as const,
+        menuPortalTarget: document.body,
+      }
+    : {};
+
   return (
     <Select
       className={classNames('shadow-sm', className)}
       onChange={(newValue) => {
         onChange(newValue?.value);
       }}
+      isMulti={false}
       onBlur={onBlur}
       value={selectedOption}
       options={options}
+      components={{ Input }}
+      {...fixedPositionProps}
     />
   );
 }
 
-interface ReactSelectInputControllerProps<T extends FieldValues>
-  extends Omit<Props, 'onChange' | 'onBlur' | 'value'> {
-  label?: string;
+interface ReactSelectInputLabelledProps<ValueType = string>
+  extends Props<ValueType> {
+  label?: React.ReactNode;
+  error?: React.ReactNode;
+}
+
+ReactSelectInput.Labelled = function ReactSelectInputLabelled({
+  label,
+  className,
+  error,
+  ...rest
+}: ReactSelectInputLabelledProps): JSX.Element {
+  return (
+    <div className={className}>
+      {label && <FormLabel>{label}</FormLabel>}
+      <ReactSelectInput {...rest} />
+      {error && <FormError>{error}</FormError>}
+    </div>
+  );
+};
+
+interface ReactSelectInputLabelledControllerProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> extends Omit<
+    ReactSelectInputLabelledProps<PathValue<TFieldValues, TFieldName>>,
+    'onChange' | 'onBlur' | 'value' | 'error'
+  > {
   className?: string;
-  control: Control<T>;
-  name: FieldPath<T>;
+  control: Control<TFieldValues>;
+  name: TFieldName;
+  emptyAsNull?: boolean;
 }
 
 ReactSelectInput.LabelledController = function ReactSelectInputController<
-  T extends FieldValues
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >({
-  label,
   className,
   name,
   control,
+  emptyAsNull,
   ...rest
-}: ReactSelectInputControllerProps<T>): JSX.Element {
+}: ReactSelectInputLabelledControllerProps<
+  TFieldValues,
+  TFieldName
+>): JSX.Element {
   const {
     field,
     fieldState: { error },
-    // TODO: Figure out field hack
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } = useController<any>({
+  } = useController({
     name,
     control,
   });
 
   return (
-    <div className={className}>
-      {label && <FormLabel>{label}</FormLabel>}
-      <ReactSelectInput
-        {...rest}
-        onChange={field.onChange}
-        onBlur={field.onBlur}
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        value={field.value}
-      />
-      {error && <FormError>{error.message}</FormError>}
-    </div>
+    <ReactSelectInput.Labelled
+      {...rest}
+      error={error?.message}
+      onChange={(val) => {
+        if (!val && emptyAsNull) {
+          field.onChange(null);
+        } else {
+          field.onChange(val);
+        }
+      }}
+      onBlur={field.onBlur}
+      value={field.value as string}
+    />
   );
 };
 

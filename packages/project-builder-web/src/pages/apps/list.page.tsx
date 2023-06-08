@@ -27,7 +27,7 @@ export function AppsListPage(): JSX.Element {
 
   return (
     <div className="space-y-4">
-      <h1>Your Apps</h1>
+      <h1>Apps</h1>
       <p>
         These are the apps that are defined in your project. You can edit them
         here.

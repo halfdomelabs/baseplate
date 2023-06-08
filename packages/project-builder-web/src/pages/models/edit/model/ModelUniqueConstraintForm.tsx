@@ -42,7 +42,7 @@ function ModelUniqueConstraintForm({
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
           <div>
             <strong>
-              {watchedField.fields.length
+              {watchedField?.fields?.length
                 ? watchedField.fields.map((f) => f.name).join(', ')
                 : 'No Fields'}
             </strong>

@@ -22,3 +22,9 @@ body {
     transform: scale(1);
   }
 }
+
+html,
+body,
+#root {
+  height: 100vh;
+}

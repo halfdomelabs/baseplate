@@ -12,7 +12,7 @@ export function AppLayout({ className, topbar }: AppLayoutProps): JSX.Element {
       className={classNames('flex h-full flex-col items-stretch', className)}
     >
       {topbar}
-      <div className={classNames('flex flex-auto flex-col overflow-auto')}>
+      <div className={classNames('flex flex-auto overflow-auto')}>
         <Outlet />
       </div>
     </div>

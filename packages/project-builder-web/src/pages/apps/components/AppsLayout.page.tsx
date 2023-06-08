@@ -16,12 +16,14 @@ function AppsLayout(): JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar className="space-y-4" width="sm">
-        <h2>Apps</h2>
-        <Link to="/apps/new" className="inline-block">
-          <Button variant="secondary" size="sm">
-            New App
-          </Button>
-        </Link>
+        <div className="flex items-center justify-between space-x-4">
+          <Link to="/apps">
+            <h2>Apps</h2>
+          </Link>
+          <Link to="/apps/new" className="inline-block">
+            <Button variant="secondary">New App</Button>
+          </Link>
+        </div>
         <ul className="space-y-2">
           {sortedApps.map((app) => (
             <li key={app.uid}>

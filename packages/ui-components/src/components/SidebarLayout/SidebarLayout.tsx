@@ -15,7 +15,7 @@ export function SidebarLayout({
 interface SidebarLayoutSidebarProps {
   className?: string;
   children: React.ReactNode;
-  width?: 'sm' | 'md' | 'lg';
+  width?: 'sm' | 'md' | 'lg' | 'auto';
 }
 
 SidebarLayout.Sidebar = function SidebarLayoutSidebar({
@@ -50,5 +50,9 @@ SidebarLayout.Content = function SidebarLayoutContent({
   className,
   children,
 }: SidebarLayoutContentProps): JSX.Element {
-  return <div className={clsx('flex-auto', className)}>{children}</div>;
+  return (
+    <div className={clsx('flex-auto overflow-y-auto', className)}>
+      {children}
+    </div>
+  );
 };
