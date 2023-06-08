@@ -8,5 +8,6 @@ export * from './FormLabel/FormLabel.js';
 export * from './LinkButton/LinkButton.js';
 export * from './Loader/Loader.js';
 export * from './NavigationLink/NavigationLink.js';
+export * from './SidebarLayout/SidebarLayout.js';
 export * from './Table/Table.js';
 export * from './TextInput/TextInput.js';

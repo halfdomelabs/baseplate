@@ -16,11 +16,11 @@ function HomePage(): JSX.Element {
         <Card>
           <Card.Body className="space-y-2">
             <h2>Features</h2>
-            <p>
+            <p className="instruction-text">
               Baseplate comes with a number of features that you can enable or
               disable, such as email and authentication.
             </p>
-            <Link className="block" to="/features">
+            <Link className="inline-block" to="/features">
               <Button>Configure Features</Button>
             </Link>
           </Card.Body>
@@ -28,11 +28,11 @@ function HomePage(): JSX.Element {
         <Card>
           <Card.Body className="space-y-2">
             <h2>Models</h2>
-            <p>
+            <p className="instruction-text">
               Models are the core of your app. They define the data that your
               app will store and manipulate.
             </p>
-            <Link className="block" to="/models">
+            <Link className="inline-block" to="/models">
               <Button>Configure Models</Button>
             </Link>
           </Card.Body>
@@ -40,12 +40,12 @@ function HomePage(): JSX.Element {
         <Card>
           <Card.Body className="space-y-2">
             <h2>Apps & Repositories</h2>
-            <p>
+            <p className="instruction-text">
               Each app represents a separate application that can be run, e.g.
               backend, frontend, mobile app, etc. You can also configure how the
               apps are organized into repositories, e.g. monorepos.
             </p>
-            <Link className="block" to="/apps">
+            <Link className="inline-block" to="/apps">
               <Button>Configure Apps</Button>
             </Link>
           </Card.Body>

@@ -35,6 +35,10 @@ h4 {
   @apply text-xs text-foreground-500 dark:text-foreground-400;
 }
 
+.instruction-text {
+  @apply text-foreground-500 dark:text-foreground-400;
+}
+
 a,
 .link {
   @apply font-semibold text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300;

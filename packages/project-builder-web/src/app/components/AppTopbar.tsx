@@ -15,7 +15,7 @@ export function AppTopbar(): JSX.Element {
   const { projects } = useProjects();
 
   return (
-    <div className="flex items-center justify-between border-b border-foreground-200 bg-white p-4">
+    <div className="flex items-center justify-between border-b border-foreground-200 bg-white p-4 dark:bg-background-800">
       <ProjectChooserDialog
         onClose={() => setShowProjectChooserModal(false)}
         isOpen={showProjectChooserModal}
