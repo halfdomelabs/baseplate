@@ -1,6 +1,7 @@
 export * from './Button/Button.js';
 export * from './Card/Card.js';
 export * from './Dialog/Dialog.js';
+export * from './EmptyDisplay/EmptyDisplay.js';
 export * from './ErrorDisplay/ErrorDisplay.js';
 export * from './ErrorableLoader/ErrorableLoader.js';
 export * from './FormError/FormError.js';

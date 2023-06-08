@@ -18,7 +18,9 @@ function AppsLayout(): JSX.Element {
       <SidebarLayout.Sidebar className="space-y-4" width="sm">
         <h2>Apps</h2>
         <Link to="/apps/new" className="inline-block">
-          <Button>New App</Button>
+          <Button variant="secondary" size="sm">
+            New App
+          </Button>
         </Link>
         <ul className="space-y-2">
           {sortedApps.map((app) => (
