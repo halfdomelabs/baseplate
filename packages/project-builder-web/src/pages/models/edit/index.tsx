@@ -24,8 +24,8 @@ function ModelEditPage(): JSX.Element {
       )
     ) {
       try {
-        setConfig((oldConfig) => {
-          oldConfig.models = oldConfig.models?.filter((m) => m.uid !== id);
+        setConfig((draftConfig) => {
+          draftConfig.models = draftConfig.models?.filter((m) => m.uid !== id);
         });
         navigate('..');
       } catch (err) {

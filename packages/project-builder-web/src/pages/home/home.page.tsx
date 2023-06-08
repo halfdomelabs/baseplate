@@ -1,66 +1,56 @@
-import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
-import { useMemo, useState } from 'react';
-import { Button } from 'src/components';
-import TextAreaInput from 'src/components/TextAreaInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useToast } from 'src/hooks/useToast';
-import { formatError } from 'src/services/error-formatter';
-import { prettyStableStringify } from 'src/utils/json';
+import { Button, Card } from '@halfdomelabs/ui-components';
+import { Link } from 'react-router-dom';
 
 function HomePage(): JSX.Element {
-  const { config, setConfig } = useProjectConfig();
-  const initialValue = useMemo(() => prettyStableStringify(config), [config]);
-  const [value, setValue] = useState(initialValue);
-  const toast = useToast();
-
-  const handleImport = (): void => {
-    try {
-      setConfig(JSON.parse(value) as ProjectConfig);
-      toast.success('Successfully imported config!');
-    } catch (err) {
-      toast.error(`Error importing config: ${formatError(err)}`);
-    }
-  };
-
   return (
-    <div className="space-y-4">
-      <h1>Welcome to the Baseplate App Builder!</h1>
-      <p>
-        This app builder allows you to configure an app using Baseplate quickly
-        using the options on the left.
-      </p>
-      <h2>Import/Export Configuration</h2>
-      <div className="flex flex-row space-x-4">
-        <Button
-          color="light"
-          onClick={() =>
-            setValue(
-              JSON.stringify(
-                {
-                  name: 'test-app',
-                  version: '0.1.0',
-                  cliVersion: '0.2.3',
-                  portBase: 4000,
-                  apps: [],
-                  features: [],
-                  models: [],
-                } as ProjectConfig,
-                undefined,
-                2
-              )
-            )
-          }
-        >
-          Reset
-        </Button>
-        <Button onClick={handleImport}>Import Config</Button>
+    <div className="flex-1 bg-white">
+      <div className="mx-auto w-[40rem] space-y-4 p-4">
+        <div className="space-y-2">
+          <h1>Baseplate Project Builder</h1>
+          <p>
+            When you&apos;ve set everything up, just click the{' '}
+            <strong>Sync</strong> button and Baseplate will sync the project
+            configuration to your codebase.
+          </p>
+        </div>
+        <Card>
+          <Card.Body className="space-y-2">
+            <h2>Features</h2>
+            <p className="instruction-text">
+              Baseplate comes with a number of features that you can enable or
+              disable, such as email and authentication.
+            </p>
+            <Link className="inline-block" to="/features">
+              <Button>Configure Features</Button>
+            </Link>
+          </Card.Body>
+        </Card>
+        <Card>
+          <Card.Body className="space-y-2">
+            <h2>Models</h2>
+            <p className="instruction-text">
+              Models are the core of your app. They define the data that your
+              app will store and manipulate.
+            </p>
+            <Link className="inline-block" to="/models">
+              <Button>Configure Models</Button>
+            </Link>
+          </Card.Body>
+        </Card>
+        <Card>
+          <Card.Body className="space-y-2">
+            <h2>Apps & Repositories</h2>
+            <p className="instruction-text">
+              Each app represents a separate application that can be run, e.g.
+              backend, frontend, mobile app, etc. You can also configure how the
+              apps are organized into repositories, e.g. monorepos.
+            </p>
+            <Link className="inline-block" to="/apps">
+              <Button>Configure Apps</Button>
+            </Link>
+          </Card.Body>
+        </Card>
       </div>
-      <TextAreaInput
-        className="h-96 font-mono"
-        placeholder="Paste your configuration here"
-        value={value}
-        onTextChange={(text) => setValue(text)}
-      />
     </div>
   );
 }

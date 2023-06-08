@@ -1,0 +1,9 @@
+/coverage
+/dist
+/lib
+/storybook-static
+/node_modules
+.eslintrc.cjs
+postcss.config.cjs
+tailwind.config.ts
+src/setupProxy.js

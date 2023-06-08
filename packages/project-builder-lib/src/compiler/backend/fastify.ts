@@ -41,7 +41,7 @@ export function buildFastify(
     generator: '@halfdomelabs/fastify/core/fastify',
     children: {
       server: {
-        defaultPort: projectConfig.portBase + 1,
+        defaultPort: projectConfig.portOffset + 1,
       },
       $sentry: {
         generator: '@halfdomelabs/fastify/core/fastify-sentry',

@@ -7,7 +7,7 @@ export function getPostgresSettings(projectConfig: ProjectConfig): {
   };
   url: string;
 } {
-  const port = projectConfig.portBase + 432;
+  const port = projectConfig.portOffset + 432;
   const password = `${projectConfig.name}-backend-password`;
   return {
     config: { port, password },
@@ -22,7 +22,7 @@ export function getRedisSettings(projectConfig: ProjectConfig): {
   };
   url: string;
 } {
-  const port = projectConfig.portBase + 379;
+  const port = projectConfig.portOffset + 379;
   const password = `${projectConfig.name}-backend-password`;
   return {
     config: { port, password },

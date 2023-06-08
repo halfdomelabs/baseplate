@@ -1,12 +1,15 @@
 import path from 'path';
+import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import { buildProjectForDirectory } from '@src/runner';
+import { logError } from '@src/services/error-logger';
 import { logger } from '@src/services/logger';
 import { expandPathWithTilde } from '@src/utils/path';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter';
+import { getPackageVersion } from '@src/utils/version';
 
 export interface FilePayload {
   contents: string;
@@ -24,6 +27,18 @@ function getLastModifiedTime(filePath: string): Promise<string> {
 export interface CommandConsoleEmittedPayload {
   id: string;
   message: string;
+}
+
+function getFirstNonBaseplateParentFolder(filePath: string): string | null {
+  const segments = path.dirname(filePath).split(path.sep);
+
+  for (let i = segments.length - 1; i >= 0; i -= 1) {
+    if (segments[i] !== 'baseplate') {
+      return segments[i];
+    }
+  }
+
+  return null;
 }
 
 export class ProjectBuilderApi extends TypedEventEmitterBase<{
@@ -69,11 +84,21 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
   public async init(): Promise<void> {
     const fileExists = await fs.pathExists(this.projectJsonPath);
     if (!fileExists) {
-      throw new Error(
-        `Could not find project.json file at ${path.resolve(
-          this.projectJsonPath
-        )}`
-      );
+      const version = await getPackageVersion();
+
+      if (!fileExists) {
+        // auto-create a simple project.json file
+        logger.info(
+          `project.json not found. Creating project.json file in ${this.projectJsonPath}`
+        );
+        const starterName =
+          getFirstNonBaseplateParentFolder(this.projectJsonPath) || 'project';
+        await fs.writeJson(this.projectJsonPath, {
+          name: starterName,
+          cliVerison: version,
+          schemaVersion: getLatestMigrationVersion(),
+        });
+      }
     }
 
     this.watcher = chokidar.watch(this.projectJsonPath, {
@@ -112,9 +137,13 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
   }
 
   public async writeConfig(payload: FilePayload): Promise<WriteResult> {
-    const lastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
-    if (lastModifiedAt !== payload.lastModifiedAt) {
-      return { type: 'modified-more-recently' };
+    if (await fs.pathExists(this.projectJsonPath)) {
+      const lastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
+      if (lastModifiedAt !== payload.lastModifiedAt) {
+        return { type: 'modified-more-recently' };
+      }
+    } else {
+      await fs.ensureDir(path.dirname(this.projectJsonPath));
     }
     await fs.promises.writeFile(this.projectJsonPath, payload.contents, 'utf8');
     const newLastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
@@ -130,7 +159,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
       await buildProjectForDirectory(this.directory, {}, this.logger);
     } catch (err) {
-      console.error(err);
+      logError(err);
       this.emit('command-console-emitted', {
         id: this.id,
         message: chalk.red(

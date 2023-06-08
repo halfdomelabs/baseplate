@@ -36,9 +36,9 @@ function NewAppPage(): JSX.Element {
 
   const onSubmit = (data: AppConfig): void => {
     try {
-      setConfigAndFixReferences((oldConfig) => {
-        const newApps = [...oldConfig.apps, data];
-        oldConfig.apps = _.sortBy(newApps, 'name');
+      setConfigAndFixReferences((draftConfig) => {
+        const newApps = [...draftConfig.apps, data];
+        draftConfig.apps = _.sortBy(newApps, 'name');
       });
       navigate(`../edit/${data.uid}`);
       toast.success('Sucessfully created app!');

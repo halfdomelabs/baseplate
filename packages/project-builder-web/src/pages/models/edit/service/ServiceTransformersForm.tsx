@@ -1,4 +1,4 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { LinkButton } from 'src/components';
@@ -72,18 +72,29 @@ function ServiceEmbeddedRelationsForm({
       <Dropdown buttonLabel="Add Transformer">
         {!fields.some((f) => f.type === 'password') && (
           <Dropdown.ButtonItem
-            onClick={() => append({ name: 'password', type: 'password' })}
+            onClick={() =>
+              append({ uid: randomUid(), name: 'password', type: 'password' })
+            }
           >
             Password
           </Dropdown.ButtonItem>
         )}
         {parsedProject.projectConfig.storage && (
-          <Dropdown.ButtonItem onClick={() => append({ type: 'file' })}>
+          <Dropdown.ButtonItem
+            onClick={() => append({ uid: randomUid(), name: '', type: 'file' })}
+          >
             File
           </Dropdown.ButtonItem>
         )}
         <Dropdown.ButtonItem
-          onClick={() => append({ type: 'embeddedRelation' })}
+          onClick={() =>
+            append({
+              uid: randomUid(),
+              name: '',
+              type: 'embeddedRelation',
+              embeddedFieldNames: [],
+            })
+          }
         >
           Embedded Relation
         </Dropdown.ButtonItem>

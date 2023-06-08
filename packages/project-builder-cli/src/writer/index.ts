@@ -3,6 +3,8 @@ import { FileEntry, AppEntry } from '@halfdomelabs/project-builder-lib';
 import fs from 'fs-extra';
 import globby from 'globby';
 import stringify from 'json-stringify-pretty-compact';
+import { logError } from '@src/services/error-logger';
+import { logger } from '@src/services/logger';
 import { notEmpty } from '../utils/array';
 
 /**
@@ -54,10 +56,10 @@ async function writeAppFiles(
 
     return anyModified.some((m) => m);
   } catch (err) {
-    console.error(
+    logger.error(
       `Error writing out app ${app.name}: ${(err as Error).message}`
     );
-    console.error(err);
+    logError(err);
     throw err;
   }
 }

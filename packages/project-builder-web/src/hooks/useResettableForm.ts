@@ -32,7 +32,7 @@ export function useResettableForm<
       !_.isEqual(oldValues.current.oldDefaultValues, props?.defaultValues) &&
       oldValues.current.externalChangeCounter !== externalChangeCounter
     ) {
-      reset(props?.defaultValues);
+      reset(props?.defaultValues as TFieldValues);
       if (isDirty) {
         toast.warning('Contents were updated externally so form was reset!');
       }

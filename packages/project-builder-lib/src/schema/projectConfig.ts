@@ -26,23 +26,43 @@ export const appSchema = z.discriminatedUnion('type', [
 export type AppConfig = z.infer<typeof appSchema>;
 
 export const projectConfigSchema = z.object({
-  name: z.string().min(1),
-  version: z.string().min(1),
+  name: z
+    .string()
+    .min(1)
+    .regex(
+      /^[a-z0-9-]+$/i,
+      'A project name should be all lowercase letters, numbers, and dashes, e.g. my-project'
+    ),
+  version: z.string().min(1).default('1.0.0'),
   cliVersion: z.string().nullish().default('0.2.3'),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
-  portBase: z.coerce.number().finite(),
-  apps: z.array(appSchema),
-  features: z.array(
-    z.object({
-      uid: z.string().default(randomUid),
-      name: z.string().min(1),
-    })
-  ),
-  models: z.array(modelSchema),
+  portOffset: z
+    .number()
+    .min(1000)
+    .max(60000)
+    .int()
+    .refine(
+      (portOffset) => portOffset % 1000 === 0,
+      'Port offset must be a multiple of 1000, e.g. 1000, 2000, 3000, etc.'
+    ),
+  apps: z.array(appSchema).default([]),
+  features: z
+    .array(
+      z.object({
+        uid: z.string().default(randomUid),
+        name: z.string().min(1),
+      })
+    )
+    .default([]),
+  models: z.array(modelSchema).default([]),
   enums: z.array(enumSchema).optional(),
   auth: authSchema.optional(),
   storage: storageSchema.optional(),
+  isInitialized: z.boolean().default(false),
+  schemaVersion: z.number().nullish(),
 });
+
+export type ProjectConfigInput = z.input<typeof projectConfigSchema>;
 
 export type ProjectConfig = z.infer<typeof projectConfigSchema>;
 

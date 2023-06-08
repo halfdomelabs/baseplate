@@ -1,0 +1,36 @@
+import { ErrorDisplay } from '../ErrorDisplay/ErrorDisplay.js';
+import { Loader } from '../Loader/Loader.js';
+
+interface ErrorableLoaderProps {
+  /**
+   * Optional class name to be applied to the loader or error div
+   */
+  className?: string;
+  /**
+   * Error to be displayed (if a string is passed, it will be displayed as-is, otherwise a generic error message will be displayed)
+   */
+  error?: unknown;
+  /**
+   * Header to be displayed (if not passed, a generic error header will be displayed)
+   */
+  header?: string;
+  /**
+   * Optional actions to be displayed below the error message
+   */
+  actions?: React.ReactNode;
+}
+
+/**
+ * Renders a loader component that can display an error message.
+ */
+export function ErrorableLoader({
+  className,
+  error,
+  header,
+  actions,
+}: ErrorableLoaderProps): JSX.Element {
+  if (!error) {
+    return <Loader className={className} />;
+  }
+  return <ErrorDisplay header={header} error={error} actions={actions} />;
+}

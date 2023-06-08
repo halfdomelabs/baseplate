@@ -67,14 +67,12 @@ const stringOrChar =
 
 function prettify(
   str: string,
-  options?: {
+  options: {
     addMargin?: boolean;
     addObjectMargin?: boolean;
     addArrayMargin?: boolean;
-  }
+  } = {}
 ): string {
-  options = options || {};
-
   const tokens: Record<string, string> = {
     '{': '{',
     '}': '}',
@@ -99,8 +97,10 @@ function prettify(
   );
 }
 
-export function stringify(rootObj: unknown, options: StringifyOptions): string {
-  options = options || {};
+export function stringify(
+  rootObj: unknown,
+  options: StringifyOptions = {}
+): string {
   const indent = JSON.stringify([1], null, get(options, 'indent', 2)).slice(
     2,
     -3
@@ -117,6 +117,7 @@ export function stringify(rootObj: unknown, options: StringifyOptions): string {
       typeof obj === 'object' &&
       typeof (obj as { toJSON: unknown }).toJSON === 'function'
     ) {
+      // eslint-disable-next-line no-param-reassign
       obj = (obj as { toJSON: () => void }).toJSON();
     }
 

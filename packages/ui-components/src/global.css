@@ -1,0 +1,59 @@
+body {
+  @apply font-body text-foreground-700 dark:bg-background-900 dark:text-foreground-300;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-semibold text-foreground-900 dark:text-foreground-200;
+}
+
+h1 {
+  @apply text-2xl;
+}
+
+h2 {
+  @apply text-xl;
+}
+
+.subheading {
+  @apply text-lg text-foreground-500 dark:text-foreground-400;
+}
+
+h3 {
+  @apply text-lg;
+}
+
+h4 {
+  @apply text-base;
+}
+
+.subtext {
+  @apply text-xs text-foreground-500 dark:text-foreground-400;
+}
+
+.instruction-text {
+  @apply text-foreground-500 dark:text-foreground-400;
+}
+
+a,
+.link {
+  @apply font-semibold text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300;
+}
+
+.animate-in {
+  opacity: 0.5;
+  animation: fadeIn 150ms cubic-bezier(0.42, 0, 0.58, 1) forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}

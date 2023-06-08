@@ -42,7 +42,7 @@ function ModelUniqueConstraintFieldsField({
           <LinkButton onClick={() => remove(idx)}>Remove</LinkButton>
         </div>
       ))}
-      <Button onClick={() => append({})}>Add Field</Button>
+      <Button onClick={() => append({ name: '' })}>Add Field</Button>
     </div>
   );
 }

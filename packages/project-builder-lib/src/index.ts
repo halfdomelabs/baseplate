@@ -5,3 +5,4 @@ export * from './schema/index.js';
 export * from './types/files.js';
 export * from './types/fieldTypes.js';
 export * from './utils/randomUid.js';
+export * from './migrations/index.js';

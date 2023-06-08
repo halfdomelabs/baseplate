@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { logError } from 'src/services/error-logger';
 import {
   downloadProjectConfig,
   FilePayload,
@@ -13,7 +14,11 @@ interface UseRemoteProjectConfigResult {
   value?: string | null;
   error?: Error;
   loaded: boolean;
-  saveValue: (newValue: string) => void;
+  saveValue: (
+    newValue: string,
+    lastModifiedAt?: string,
+    successCallback?: () => void
+  ) => void;
   /**
    * External change counter gets incremented every time the remote config
    * gets updated externally
@@ -21,6 +26,7 @@ interface UseRemoteProjectConfigResult {
   externalChangeCounter: number;
   websocketClient?: ProjectWebsocketClient;
   projectId?: string | null;
+  downloadConfig: () => Promise<void>;
 }
 
 export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
@@ -37,6 +43,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   const toast = useToast();
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
+  const loadedProjectId = useRef<string>();
 
   useEffect(() => {
     setFile(null);
@@ -64,11 +71,13 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       if (!projectId) {
         throw new Error('No project ID');
       }
+      setError(undefined);
       shouldTriggerRefetch.current = false;
       const payload = await downloadProjectConfig(projectId);
       updateConfig(payload);
 
       setLoaded(true);
+      loadedProjectId.current = projectId;
     } catch (err) {
       if (err instanceof AxiosError && err.response?.status === 404) {
         toast.error(`Project not found: ${projectId || ''}`);
@@ -83,13 +92,17 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   }, [toast, projectId, setProjectId, updateConfig]);
 
   useEffect(() => {
-    downloadConfig().catch((err) => console.error(err));
+    downloadConfig().catch((err) => logError(err));
   }, [downloadConfig]);
 
   const pendingSaveContents = useRef<string | null>();
 
   const saveValue = useCallback(
-    (contents: string, lastModifiedAt?: string) => {
+    (
+      contents: string,
+      lastModifiedAt?: string,
+      successCallback?: () => void
+    ) => {
       if (!projectId) {
         throw new Error('No project ID');
       }
@@ -121,6 +134,9 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
               lastModifiedAt: result.lastModifiedAt,
             });
             newLastModifiedAt = result.lastModifiedAt;
+            if (successCallback) {
+              successCallback();
+            }
           } else {
             throw new Error('Unexpected result type');
           }
@@ -136,7 +152,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
             saveValue(pendingSaveContents.current, newLastModifiedAt);
           }
           if (shouldTriggerRefetch.current) {
-            downloadConfig().catch((err) => console.error(err));
+            downloadConfig().catch((err) => logError(err));
           }
         });
     },
@@ -183,10 +199,11 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
   return {
     value: file?.contents,
     error,
-    loaded,
+    loaded: loaded && projectId === loadedProjectId.current,
     saveValue,
     externalChangeCounter,
     projectId,
     websocketClient,
+    downloadConfig,
   };
 }

@@ -61,7 +61,16 @@ function ModelRelationReferencesForm({
           <LinkButton onClick={() => remove(idx)}>Remove</LinkButton>
         </div>
       ))}
-      <Button onClick={() => append({})}>Add Reference</Button>
+      <Button
+        onClick={() =>
+          append({
+            foreign: '',
+            local: '',
+          })
+        }
+      >
+        Add Reference
+      </Button>
     </div>
   );
 }

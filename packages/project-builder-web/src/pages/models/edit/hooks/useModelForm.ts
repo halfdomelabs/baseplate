@@ -51,10 +51,10 @@ export function useModelForm({
       try {
         const newUid = data.uid || randomUid();
         setConfigAndFixReferences(
-          (oldConfig) => {
-            oldConfig.models = _.sortBy(
+          (draftConfig) => {
+            draftConfig.models = _.sortBy(
               [
-                ...(oldConfig.models?.filter((m) => m.uid !== id) || []),
+                ...(draftConfig.models?.filter((m) => m.uid !== id) || []),
                 {
                   ...data,
                   uid: newUid,

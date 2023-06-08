@@ -1,11 +1,9 @@
 import {
   adminCrudDisplayTypes,
   AdminCrudSectionConfig,
-  adminCrudTableColumnSchema,
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
-import { z } from 'zod';
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -22,13 +20,11 @@ interface Props {
 
 function ColumnForm({
   idx,
-  field,
   control,
   fieldOptions,
   localRelationOptions,
 }: {
   idx: number;
-  field: z.infer<typeof adminCrudTableColumnSchema>;
   control: Control<AdminCrudTableConfig>;
   fieldOptions: { label: string; value: string }[];
   localRelationOptions: { label: string; value: string }[];
@@ -121,7 +117,6 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
           <ColumnForm
             key={field.id}
             idx={idx}
-            field={field}
             control={control}
             fieldOptions={fieldOptions}
             localRelationOptions={localRelationOptions}
@@ -129,7 +124,9 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
         </CollapsibleRow>
       ))}
       <Button
-        onClick={() => append({ display: { type: 'text', modelField: '' } })}
+        onClick={() =>
+          append({ display: { type: 'text', modelField: '' }, label: '' })
+        }
       >
         Add Column
       </Button>

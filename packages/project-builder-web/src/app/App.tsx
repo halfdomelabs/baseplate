@@ -2,9 +2,9 @@ import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
 import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
 import PagesRoot from '../pages';
-import { ClientVersionGate } from './ClientVersionGate';
-import ProjectChooserGate from './ProjectChooserGate';
-import ProjectConfigGate from './ProjectConfigGate';
+import { ClientVersionGate } from './components/ClientVersionGate';
+import { ProjectChooserGate } from './components/ProjectChooserGate';
+import { ProjectConfigGate } from './components/ProjectConfigGate';
 
 function App(): JSX.Element {
   return (

@@ -1,5 +1,7 @@
+import { UserVisibleError } from 'src/utils/error';
+
 function getFormattedErrorSuffix(error: unknown): string {
-  if (error instanceof Error) {
+  if (error instanceof UserVisibleError) {
     return error.message;
   }
   return 'Please try again later.';
