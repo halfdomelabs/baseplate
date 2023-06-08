@@ -1,5 +1,5 @@
 body {
-  @apply font-body text-sm text-foreground-700 dark:bg-background-900 dark:text-foreground-300;
+  @apply font-body text-foreground-700 dark:bg-background-900 dark:text-foreground-300;
 }
 
 h1,
