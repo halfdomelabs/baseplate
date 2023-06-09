@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { randomUid } from '@src/utils/randomUid.js';
+import { DASHED_NAME } from '@src/utils/validations.js';
 import {
   AdminAppConfig,
   adminAppSchema,
@@ -26,14 +27,9 @@ export const appSchema = z.discriminatedUnion('type', [
 export type AppConfig = z.infer<typeof appSchema>;
 
 export const projectConfigSchema = z.object({
-  name: z
-    .string()
-    .min(1)
-    .regex(
-      /^[a-z0-9-]+$/i,
-      'A project name should be all lowercase letters, numbers, and dashes, e.g. my-project'
-    ),
-  version: z.string().min(1).default('1.0.0'),
+  name: DASHED_NAME,
+  packageScope: DASHED_NAME.optional(),
+  version: z.string().min(1).default('0.1.0'),
   cliVersion: z.string().nullish().default('0.2.3'),
   // port to base the app ports on for development (e.g. 8000 => 8432 for DB)
   portOffset: z

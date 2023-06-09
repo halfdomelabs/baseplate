@@ -79,9 +79,14 @@ export function compileWeb(
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(projectConfig, app);
 
+  const packageName = projectConfig.packageScope
+    ? `@${projectConfig.packageScope}/${app.name}`
+    : `${projectConfig.name}-${app.name}`;
+
   appBuilder.addDescriptor('root.json', {
     generator: '@halfdomelabs/core/node/node',
     name: `${projectConfig.name}-${app.name}`,
+    packageName,
     description: `Web app for ${projectConfig.name}`,
     version: projectConfig.version,
     children: {

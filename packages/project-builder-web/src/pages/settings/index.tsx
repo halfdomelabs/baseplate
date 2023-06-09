@@ -13,6 +13,7 @@ const validationSchema = projectConfigSchema.pick({
   name: true,
   version: true,
   portOffset: true,
+  packageScope: true,
 });
 
 type FormData = z.infer<typeof validationSchema>;
@@ -25,7 +26,7 @@ function SettingsPage(): JSX.Element {
       'name',
       'version',
       'portOffset',
-      'features',
+      'packageScope',
     ]),
   });
   const toast = useToast();
@@ -33,9 +34,7 @@ function SettingsPage(): JSX.Element {
   const onSubmit = (data: FormData): void => {
     try {
       setConfigAndFixReferences((draftConfig) => {
-        draftConfig.name = data.name;
-        draftConfig.version = data.version;
-        draftConfig.portOffset = data.portOffset;
+        Object.assign(draftConfig, data);
       });
       toast.success('Successfully saved configuration!');
     } catch (err) {
@@ -67,6 +66,15 @@ function SettingsPage(): JSX.Element {
           name="version"
           subtext="Default package version for new apps"
           control={control}
+        />
+        <TextInput.LabelledController
+          label="Package Scope"
+          name="packageScope"
+          subtext="The scope for packages in this project, e.g. my-project will result in @my-project/app-name"
+          control={control}
+          registerOptions={{
+            setValueAs: (value: string) => value || undefined,
+          }}
         />
         <div>
           <Button type="submit">Save</Button>

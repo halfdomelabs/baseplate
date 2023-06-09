@@ -36,14 +36,19 @@ function EditAppPage(): JSX.Element {
     }
   };
 
+  const { packageScope } = parsedProject.projectConfig;
+
   return (
     <div className="space-y-4">
-      <h1>
-        Edit {app.name} ({app.type} app)
-      </h1>
-      <Button color="light" onClick={handleDelete}>
-        Delete
-      </Button>
+      <div className="flex items-center justify-between space-x-4">
+        <div>
+          <h2>{packageScope ? `@${packageScope}/${app.name}` : app.name}</h2>
+          <p className="text-base text-foreground-600">{app.type} app</p>
+        </div>
+        <Button color="light" onClick={handleDelete}>
+          Delete
+        </Button>
+      </div>
       <div>
         {(() => {
           switch (app.type) {
