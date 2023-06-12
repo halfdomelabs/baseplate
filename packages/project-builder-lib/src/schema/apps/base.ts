@@ -1,9 +1,10 @@
 import { z } from 'zod';
+import { DASHED_NAME } from '@src/utils/validations.js';
 import { randomUid } from '../../utils/randomUid.js';
 
 export const baseAppValidators = {
   uid: z.string().default(randomUid),
-  name: z.string().min(1),
+  name: DASHED_NAME,
   type: z.string(),
   packageLocation: z.string().optional(),
 } as const;

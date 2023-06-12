@@ -12,6 +12,7 @@ import { projectProvider } from '../../../providers';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
+  packageName: z.string().optional(),
   description: z.string().optional(),
   license: z.string().default('UNLICENSED'),
   version: z.string().default('0.1.0'),
@@ -185,7 +186,7 @@ const NodeGenerator = createGeneratorWithChildren({
             ).map((d) => ({ [d.name]: d.version }))
           );
         const packageJson = {
-          name: descriptor.name,
+          name: descriptor.packageName || descriptor.name,
           description: descriptor.description,
           license: descriptor.license,
           version: descriptor.version,

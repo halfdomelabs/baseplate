@@ -27,9 +27,14 @@ export function compileBackend(
 
   const parsedProject = new ParsedProjectConfig(projectConfig);
 
+  const packageName = projectConfig.packageScope
+    ? `@${projectConfig.packageScope}/${app.name}`
+    : `${projectConfig.name}-${app.name}`;
+
   appBuilder.addDescriptor('root.json', {
     generator: '@halfdomelabs/core/node/node',
     name: `${projectConfig.name}-${app.name}`,
+    packageName,
     description: `Backend app for ${projectConfig.name}`,
     version: projectConfig.version,
     hoistedProviders: parsedProject.globalHoistedProviders,
