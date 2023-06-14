@@ -31,12 +31,34 @@ h4 {
   @apply text-base;
 }
 
-.subtext {
-  @apply text-xs text-foreground-500 dark:text-foreground-400;
+.popover-background {
+  @apply bg-white dark:bg-background-900;
+}
+
+.border-normal {
+  @apply border border-background-200 dark:border-background-700;
+}
+
+.text-secondary {
+  @apply text-foreground-500 dark:text-foreground-400;
+}
+
+.ux-input {
+  @apply w-full rounded-lg border p-2.5 text-sm;
+  @apply border-background-300 bg-white placeholder-foreground-500 focus:border-primary-500 focus:ring-primary-500;
+  @apply dark:border-background-600 dark:bg-background-900 dark:placeholder-foreground-500 dark:focus:border-primary-800 dark:focus:ring-primary-800;
+}
+
+.label-text {
+  @apply text-sm font-semibold text-foreground-900 dark:text-foreground-200;
+}
+
+.description-text {
+  @apply text-secondary text-xs;
 }
 
 .instruction-text {
-  @apply text-foreground-500 dark:text-foreground-400;
+  @apply text-secondary;
 }
 
 a,

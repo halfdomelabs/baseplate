@@ -4,7 +4,12 @@ import { TextInput } from './TextInput.js';
 const meta = {
   component: TextInput,
   tags: ['autodocs'],
-  argTypes: {},
+  argTypes: {
+    label: { control: { type: 'text' } },
+    error: { control: { type: 'text' } },
+    description: { control: { type: 'text' } },
+    placeholder: { control: { type: 'text' } },
+  },
 } satisfies Meta<typeof TextInput>;
 
 export default meta;
@@ -13,5 +18,13 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     placeholder: 'Enter your name',
+  },
+};
+
+export const Labelled: Story = {
+  args: {
+    label: 'Email address',
+    description: 'We will never share your email with anyone else.',
+    placeholder: 'foo@example.com',
   },
 };

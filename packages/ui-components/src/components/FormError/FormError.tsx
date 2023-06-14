@@ -21,7 +21,7 @@ export function FormError({
   return (
     <div
       className={clsx(
-        'animate-in mt-2 text-xs text-red-600 dark:text-red-700',
+        'animate-in text-xs text-red-600 dark:text-red-700',
         className
       )}
     >

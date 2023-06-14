@@ -42,7 +42,7 @@ export function AppsListPage(): JSX.Element {
               <h3>
                 {app.name} ({app.type})
               </h3>
-              <p className="subtext">{app.packageLocation}</p>
+              <p className="description-text">{app.packageLocation}</p>
             </div>
             <Link to={`/apps/edit/${app.uid}`} className="inline-block">
               <Button variant="secondary">Edit</Button>

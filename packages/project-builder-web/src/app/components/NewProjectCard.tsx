@@ -47,17 +47,17 @@ export function NewProjectCard({
           onSubmit={handleSubmit(saveProject)}
           className="flex flex-col space-y-4"
         >
-          <TextInput.LabelledController
+          <TextInput.Controller
             name="name"
             label="Project Name"
-            subtext="Lowercase letters and dashes, e.g. my-project"
+            description="Lowercase letters and dashes, e.g. my-project"
             control={control}
             placeholder="e.g. my-project"
           />
-          <TextInput.LabelledController
+          <TextInput.Controller
             name="portOffset"
             label="Port Offset"
-            subtext="Multiple of 1000, e.g. 4000. This will offset the ports used by the project, e.g. API at 4001, database at 4432, to avoid conflicts with other projects."
+            description="Multiple of 1000, e.g. 4000. This will offset the ports used by the project, e.g. API at 4001, database at 4432, to avoid conflicts with other projects."
             control={control}
             registerOptions={{ valueAsNumber: true }}
           />

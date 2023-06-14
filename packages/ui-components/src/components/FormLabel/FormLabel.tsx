@@ -9,6 +9,10 @@ interface FormLabelProps {
    * The label to show
    */
   children: React.ReactNode;
+  /**
+   * The `htmlFor` attribute to apply to the label
+   */
+  htmlFor?: string;
 }
 
 /**
@@ -17,15 +21,11 @@ interface FormLabelProps {
 export function FormLabel({
   className,
   children,
+  htmlFor,
 }: FormLabelProps): JSX.Element {
   return (
-    <div
-      className={clsx(
-        'mb-2 text-sm font-semibold text-foreground-900 dark:text-foreground-300',
-        className
-      )}
-    >
+    <label className={clsx('label-text', className)} htmlFor={htmlFor}>
       {children}
-    </div>
+    </label>
   );
 }
