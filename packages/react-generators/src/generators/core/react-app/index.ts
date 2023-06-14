@@ -18,6 +18,7 @@ const descriptorSchema = z.object({
 });
 
 export type ReactAppProvider = {
+  setErrorBoundary(errorBoundary: TypescriptCodeWrapper): void;
   getRenderWrappers(): OrderedList<TypescriptCodeWrapper>;
   setRenderRoot(root: TypescriptCodeExpression): void;
   addRenderSibling(sibling: TypescriptCodeExpression): void;
@@ -37,6 +38,7 @@ const ReactAppGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { react, typescript }) {
     const renderWrappers = createOrderedList<TypescriptCodeWrapper>();
+    let errorBoundary: TypescriptCodeWrapper | undefined;
     let renderRoot: TypescriptCodeExpression =
       TypescriptCodeUtils.createExpression('<div />');
     const renderSiblings: TypescriptCodeExpression[] = [];
@@ -66,6 +68,12 @@ const ReactAppGenerator = createGeneratorWithChildren({
           setRenderRoot(root) {
             renderRoot = root;
           },
+          setErrorBoundary(wrapper: TypescriptCodeWrapper) {
+            if (errorBoundary) {
+              throw new Error('Error boundary already set');
+            }
+            errorBoundary = wrapper;
+          },
           addRenderSibling(sibling) {
             renderSiblings.push(sibling);
           },
@@ -78,7 +86,10 @@ const ReactAppGenerator = createGeneratorWithChildren({
         );
 
         appFile.addCodeEntries({
-          RENDER_WRAPPERS: renderWrappers.getItems(),
+          RENDER_WRAPPERS: TypescriptCodeUtils.mergeWrappers([
+            ...(errorBoundary ? [errorBoundary] : []),
+            ...renderWrappers.getItems(),
+          ]),
           RENDER_ROOT: rootWithSiblings,
         });
 

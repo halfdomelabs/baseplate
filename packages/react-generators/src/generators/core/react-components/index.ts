@@ -31,6 +31,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'ButtonGroup' },
   { name: 'Card' },
   { name: 'CheckedInput' },
+  { name: 'ErrorDisplay' },
   { name: 'ErrorableLoader' },
   { name: 'FormError' },
   { name: 'FormLabel' },
