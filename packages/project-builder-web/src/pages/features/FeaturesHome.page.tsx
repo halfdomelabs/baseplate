@@ -23,12 +23,7 @@ type FormData = z.infer<typeof validationSchema>;
 
 export function FeaturesHomePage(): JSX.Element {
   const { config, setConfigAndFixReferences } = useProjectConfig();
-  const {
-    register,
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useResettableForm<FormData>({
+  const { handleSubmit, control } = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: _.pick(config, ['features']),
   });
@@ -72,9 +67,9 @@ export function FeaturesHomePage(): JSX.Element {
             const { id } = field;
             return (
               <div key={id} className="flex flex-row space-x-4">
-                <TextInput.Labelled
-                  register={register(`features.${idx}.name`)}
-                  error={errors.features?.[idx]?.name?.message}
+                <TextInput.Controller
+                  control={control}
+                  name={`features.${idx}.name`}
                 />
                 <Button
                   variant="tertiary"

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { FormSubtext } from './FormSubtext.js';
+import { FormDescription } from './FormDescription.js';
 
 const meta = {
-  component: FormSubtext,
+  component: FormDescription,
   tags: ['autodocs'],
   argTypes: {
     children: {
@@ -11,7 +11,7 @@ const meta = {
       },
     },
   },
-} satisfies Meta<typeof FormSubtext>;
+} satisfies Meta<typeof FormDescription>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -60,7 +60,7 @@ function ModelEditModelPage(): JSX.Element {
     <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
       <Alert.WithStatus status={status} />
       <TextInput.LabelledController
-        label="Name (e.g. User)"
+        label="Name"
         control={control}
         name="name"
       />

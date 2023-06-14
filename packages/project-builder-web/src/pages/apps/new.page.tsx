@@ -3,19 +3,22 @@ import {
   baseAppSchema,
   randomUid,
 } from '@halfdomelabs/project-builder-lib';
+import {
+  Button,
+  Card,
+  SelectInput,
+  TextInput,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Button, SelectInput, TextInput } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function NewAppPage(): JSX.Element {
   const { setConfigAndFixReferences } = useProjectConfig();
-  const { status, setError } = useStatus();
   const navigate = useNavigate();
   const formProps = useForm<AppConfig>({
     resolver: zodResolver(baseAppSchema),
@@ -41,30 +44,34 @@ function NewAppPage(): JSX.Element {
         draftConfig.apps = _.sortBy(newApps, 'name');
       });
       navigate(`../edit/${data.uid}`);
-      toast.success('Sucessfully created app!');
+      toast.success(`Sucessfully created ${data.name}!`);
     } catch (err) {
-      setError(formatError(err));
+      toast.error(formatError(err));
     }
   };
 
   return (
     <div className="space-y-4">
-      <h1>Create App</h1>
-      <Alert.WithStatus status={status} />
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <TextInput.LabelledController
-          label="Name"
-          control={control}
-          name="name"
-        />
-        <SelectInput.LabelledController
-          label="Type"
-          control={control}
-          name="type"
-          options={appTypeOptions}
-        />
-        <Button type="submit">Create</Button>
-      </form>
+      <h1>New App</h1>
+      <Card>
+        <Card.Body>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <TextInput.Controller
+              label="Name"
+              control={control}
+              name="name"
+              description="The name of the app, such as 'backend' or 'web'"
+            />
+            <SelectInput.Controller
+              label="Type"
+              control={control}
+              name="type"
+              options={appTypeOptions}
+            />
+            <Button type="submit">Create</Button>
+          </form>
+        </Card.Body>
+      </Card>
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   InputHTMLAttributes,
   ForwardedRef,
   forwardRef,
+  useId,
 } from 'react';
 import {
   Control,
@@ -18,11 +19,12 @@ import {
   RegisterOptions,
   FieldValues,
 } from 'react-hook-form';
+import { LabellableComponent } from '@src/types/form.js';
+import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 import { FormLabel } from '../FormLabel/FormLabel.js';
-import { FormSubtext } from '../FormSubtext/FormSubtext.js';
 
-export interface TextInputProps {
+export interface TextInputProps extends LabellableComponent {
   className?: string;
   disabled?: boolean;
   placeholder?: string;
@@ -51,6 +53,9 @@ function TextInputFn(
     onKeyDown,
     value,
     register,
+    label,
+    error,
+    description,
   }: TextInputProps,
   ref: ForwardedRef<HTMLInputElement>
 ): JSX.Element {
@@ -67,18 +72,34 @@ function TextInputFn(
     value,
     ...register,
   };
-  return (
+
+  const addWrapper = label || error || description;
+
+  const id = useId();
+
+  const inputComponent = (
     <input
-      className={clsx(
-        'block w-full rounded-lg border p-2.5 text-sm',
-        'border-background-300 bg-white placeholder-foreground-500 focus:border-primary-500 focus:ring-primary-500',
-        'dark:border-background-600 dark:bg-background-900 dark:placeholder-foreground-500 dark:focus:border-primary-700 dark:focus:ring-primary-700',
-        className
-      )}
+      className={clsx('ux-input', addWrapper ? null : className)}
+      id={id}
       ref={ref}
       {...inputProps}
     />
   );
+
+  if (addWrapper) {
+    return (
+      <div className={clsx('space-y-2', className)}>
+        {label && <FormLabel htmlFor={id}>{label}</FormLabel>}
+        {inputComponent}
+        {error ? (
+          <FormError>{error}</FormError>
+        ) : (
+          description && <FormDescription>{description}</FormDescription>
+        )}
+      </div>
+    );
+  }
+  return inputComponent;
 }
 
 /**
@@ -86,42 +107,16 @@ function TextInputFn(
  */
 const TextInputRoot = forwardRef(TextInputFn);
 
-export interface TextInputLabelledProps extends TextInputProps {
-  label?: React.ReactNode;
-  error?: React.ReactNode;
-  subtext?: React.ReactNode;
-}
-
-function TextInputLabelledFn(
-  { label, className, error, subtext, ...rest }: TextInputLabelledProps,
-  ref: ForwardedRef<HTMLInputElement>
-): JSX.Element {
-  return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
-    <label className={clsx('block', className)}>
-      {label && <FormLabel>{label}</FormLabel>}
-      <TextInputRoot ref={ref} {...rest} />
-      {error ? (
-        <FormError>{error}</FormError>
-      ) : (
-        subtext && <FormSubtext>{subtext}</FormSubtext>
-      )}
-    </label>
-  );
-}
-
-export const TextInputLabelled = forwardRef(TextInputLabelledFn);
-
-export interface TextInputLabelledControllerProps<
+export interface TextInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends TextInputLabelledProps {
+> extends TextInputProps {
   control: Control<TFieldValues>;
   name: TFieldName;
   registerOptions?: RegisterOptions<TFieldValues, TFieldName>;
 }
 
-function TextInputLabelledControllerFn<
+function TextInputControllerFn<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >(
@@ -130,14 +125,14 @@ function TextInputLabelledControllerFn<
     name,
     registerOptions,
     ...rest
-  }: TextInputLabelledControllerProps<TFieldValues, TFieldName>,
+  }: TextInputControllerProps<TFieldValues, TFieldName>,
   ref: ForwardedRef<HTMLInputElement>
 ): JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 
   return (
-    <TextInputLabelled
+    <TextInputRoot
       register={control.register(name, registerOptions)}
       error={error?.message}
       ref={ref}
@@ -146,11 +141,8 @@ function TextInputLabelledControllerFn<
   );
 }
 
-export const TextInputLabelledController = forwardRef(
-  TextInputLabelledControllerFn
-);
+export const TextInputController = forwardRef(TextInputControllerFn);
 
 export const TextInput = Object.assign(TextInputRoot, {
-  Labelled: TextInputLabelled,
-  LabelledController: TextInputLabelledController,
+  Controller: TextInputController,
 });

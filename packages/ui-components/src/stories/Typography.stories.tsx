@@ -18,8 +18,8 @@ function Typography(): JSX.Element {
         vero aut minus autem cupiditate consectetur quibusdam quas nesciunt
         sapiente?
       </p>
-      <p className="subtext">
-        Some subtext goes here. Lorem ipsum dolor sit amet consectetur.
+      <p className="description-text">
+        Some description goes here. Lorem ipsum dolor sit amet consectetur.
       </p>
       <div>
         <a href="https://www.google.com">I am a link!</a>

@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
 import tailwindForms from '@tailwindcss/forms';
 import colors from 'tailwindcss/colors';
+import headlessUi from '@headlessui/tailwindcss';
 
 export default {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
@@ -16,8 +17,9 @@ export default {
         secondary: colors.gray,
         foreground: colors.slate,
         background: colors.slate,
+        error: colors.red,
       },
     },
   },
-  plugins: [tailwindForms],
+  plugins: [tailwindForms, headlessUi],
 } satisfies Config;
