@@ -1,6 +1,7 @@
 import {
   copyTypescriptFileAction,
   ImportMapper,
+  makeImportAndFilePath,
   nodeProvider,
   projectProvider,
   TypescriptCodeExpression,
@@ -16,6 +17,7 @@ import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service';
 import { fastifyOutputProvider } from '@src/generators/core/fastify';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check';
+import { serviceContextProvider } from '@src/generators/core/service-context';
 import { PrismaOutputEnum, PrismaOutputModel } from '@src/types/prismaOutput';
 import { ServiceOutputEnum } from '@src/types/serviceOutput';
 import { PrismaModelBlockWriter } from '@src/writers/prisma-schema';
@@ -51,6 +53,13 @@ export interface PrismaOutputProvider extends ImportMapper {
 
 export const prismaOutputProvider =
   createProviderType<PrismaOutputProvider>('prisma-output');
+
+export type PrismaCrudServiceTypesProvider = ImportMapper;
+
+export const prismaCrudServiceTypesProvider =
+  createProviderType<PrismaCrudServiceTypesProvider>(
+    'prisma-crud-service-types'
+  );
 
 const PrismaGenerator = createGeneratorWithTasks({
   descriptorSchema,
@@ -178,6 +187,43 @@ const PrismaGenerator = createGeneratorWithTasks({
             );
 
             return { schemaFile };
+          },
+        };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'crud-service-types',
+      dependencies: {
+        typescript: typescriptProvider,
+        serviceContext: serviceContextProvider,
+      },
+      exports: {
+        prismaCrudServiceTypes: prismaCrudServiceTypesProvider,
+      },
+      run({ serviceContext, typescript }) {
+        const [typesImport, typesPath] = makeImportAndFilePath(
+          'src/types/crud-service-types.ts'
+        );
+        return {
+          getProviders: () => ({
+            prismaCrudServiceTypes: {
+              getImportMap: () => ({
+                '%prisma-crud-service-types': {
+                  path: typesImport,
+                  allowedImports: ['CreateServiceInput', 'UpdateServiceInput'],
+                },
+              }),
+            },
+          }),
+          async build(builder) {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'types/crud-service-types.ts',
+                destination: typesPath,
+                importMappers: [serviceContext],
+              })
+            );
           },
         };
       },
