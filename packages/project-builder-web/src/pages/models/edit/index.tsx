@@ -1,7 +1,8 @@
+import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import { Alert, Button, NavigationTabs } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useStatus } from 'src/hooks/useStatus';
+import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
@@ -10,27 +11,22 @@ import ModelEditServicePage from './service/service.page';
 function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
   const { parsedProject, setConfig } = useProjectConfig();
-  const { status, setError } = useStatus();
   const navigate = useNavigate();
+  const { requestConfirm } = useConfirmDialog();
+  const toast = useToast();
 
   const isNew = !id;
 
   const model = parsedProject.getModels().find((m) => m.uid === id);
 
   const handleDelete = (): void => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete ${model?.name || 'model'}?`
-      )
-    ) {
-      try {
-        setConfig((draftConfig) => {
-          draftConfig.models = draftConfig.models?.filter((m) => m.uid !== id);
-        });
-        navigate('..');
-      } catch (err) {
-        setError(formatError(err));
-      }
+    try {
+      setConfig((draftConfig) => {
+        draftConfig.models = draftConfig.models?.filter((m) => m.uid !== id);
+      });
+      navigate('..');
+    } catch (err) {
+      toast.error(formatError(err));
     }
   };
 
@@ -42,13 +38,7 @@ function ModelEditPage(): JSX.Element {
     <div className="space-y-4">
       <div className="flex flex-row space-x-8">
         <h1>{model?.name || 'New Model'}</h1>
-        {!isNew && (
-          <Button color="light" onClick={handleDelete}>
-            Delete
-          </Button>
-        )}
       </div>
-      <Alert.WithStatus status={status} />
       {isNew ? (
         <ModelEditModelPage />
       ) : (
@@ -66,6 +56,23 @@ function ModelEditPage(): JSX.Element {
             </Routes>
           </div>
         </>
+      )}
+      {!isNew && (
+        <Button
+          color="light"
+          onClick={() => {
+            requestConfirm({
+              title: 'Confirm delete',
+              message: `Are you sure you want to delete ${
+                model?.name || 'the model'
+              }?`,
+              confirmText: 'Delete',
+              onSubmit: handleDelete,
+            });
+          }}
+        >
+          Delete Model
+        </Button>
       )}
     </div>
   );

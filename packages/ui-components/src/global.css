@@ -35,8 +35,12 @@ h4 {
   @apply bg-white dark:bg-background-900;
 }
 
+.border-color {
+  @apply border-background-200 dark:border-background-700;
+}
+
 .border-normal {
-  @apply border border-background-200 dark:border-background-700;
+  @apply border-color border;
 }
 
 .text-secondary {

@@ -1,5 +1,7 @@
 export * from './Button/Button.js';
 export * from './Card/Card.js';
+export * from './ComboboxInput/ComboboxInput.js';
+export * from './ConfirmDialogPopper/ConfirmDialogPopper.js';
 export * from './Dialog/Dialog.js';
 export * from './EmptyDisplay/EmptyDisplay.js';
 export * from './ErrorDisplay/ErrorDisplay.js';
@@ -13,4 +15,5 @@ export * from './NavigationLink/NavigationLink.js';
 export * from './SelectInput/SelectInput.js';
 export * from './SidebarLayout/SidebarLayout.js';
 export * from './Table/Table.js';
+export * from './Tabs/Tabs.js';
 export * from './TextInput/TextInput.js';
