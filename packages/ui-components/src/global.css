@@ -44,7 +44,7 @@ h4 {
 }
 
 .ux-input {
-  @apply w-full rounded-lg border p-2.5 text-sm;
+  @apply w-full rounded-lg border text-sm;
   @apply border-background-300 bg-white placeholder-foreground-500 focus:border-primary-500 focus:ring-primary-500;
   @apply dark:border-background-600 dark:bg-background-900 dark:placeholder-foreground-500 dark:focus:border-primary-800 dark:focus:ring-primary-800;
 }

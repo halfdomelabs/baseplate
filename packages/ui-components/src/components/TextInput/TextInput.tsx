@@ -79,7 +79,7 @@ function TextInputFn(
 
   const inputComponent = (
     <input
-      className={clsx('ux-input', addWrapper ? null : className)}
+      className={clsx('ux-input', 'p-2.5', addWrapper ? null : className)}
       id={id}
       ref={ref}
       {...inputProps}

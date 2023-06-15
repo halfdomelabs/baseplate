@@ -1,7 +1,7 @@
-import { Listbox, Transition } from '@headlessui/react';
+import { Combobox, Transition } from '@headlessui/react';
 import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import {
   Control,
   FieldPath,
@@ -10,13 +10,15 @@ import {
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
 import { Modifier, usePopper } from 'react-popper';
+import { COMPONENT_STRINGS } from '@src/constants/strings.js';
 import { LabellableComponent } from '@src/types/form.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 
 type OptionToStringFunc<OptionType> = (value: OptionType) => string;
 
-export interface SelectInputPropsBase<OptionType> extends LabellableComponent {
+export interface ComboboxInputPropsBase<OptionType>
+  extends LabellableComponent {
   options: OptionType[];
   className?: string;
   name?: string;
@@ -39,13 +41,13 @@ type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
         getOptionValue: OptionToStringFunc<OptionType>;
       });
 
-export type SelectInputProps<OptionType> = SelectInputPropsBase<OptionType> &
-  AddOptionRequiredFields<OptionType>;
+export type ComboboxInputProps<OptionType> =
+  ComboboxInputPropsBase<OptionType> & AddOptionRequiredFields<OptionType>;
 
 /**
  * An accessible stylable select component.
  */
-export function SelectInput<OptionType>({
+export function ComboboxInput<OptionType>({
   className,
   options,
   name,
@@ -58,11 +60,12 @@ export function SelectInput<OptionType>({
   label,
   error,
   description,
-}: SelectInputProps<OptionType>): JSX.Element {
+}: ComboboxInputProps<OptionType>): JSX.Element {
   const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>();
+    useState<HTMLInputElement | null>();
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
+  const [filter, setFilter] = useState('');
 
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
@@ -91,6 +94,7 @@ export function SelectInput<OptionType>({
   });
 
   const handleChange = (newValue?: string): void => {
+    setFilter('');
     if (onChange) {
       if (!newValue) {
         onChange(null);
@@ -100,12 +104,18 @@ export function SelectInput<OptionType>({
     }
   };
 
+  const filteredOptions = options.filter((option) =>
+    getOptionLabel(option).toLowerCase().includes(filter.toLowerCase())
+  );
+
   const selectedOption = options.find(
     (option) => getOptionValue(option) === value
   );
 
+  const inputId = useId();
+
   return (
-    <Listbox
+    <Combobox
       value={value}
       onChange={handleChange}
       name={name}
@@ -113,17 +123,31 @@ export function SelectInput<OptionType>({
       as="div"
       className={clsx('space-y-2', className)}
     >
-      {label && <Listbox.Label className="label-text">{label}</Listbox.Label>}
+      {label && <Combobox.Label className="label-text">{label}</Combobox.Label>}
       <div>
-        <Listbox.Button
-          ref={setReferenceElement}
-          className="ux-input flex items-center justify-between p-2.5"
-        >
-          <div className={!selectedOption ? 'text-secondary' : ''}>
-            {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}
-          </div>
-          <HiChevronDown className="h-4 w-4" />
-        </Listbox.Button>
+        <div className="relative">
+          {!filter && (
+            <label
+              className={clsx(
+                'absolute left-0 right-10 top-1/2 -translate-y-1/2 transform p-2.5',
+                !selectedOption ? 'text-secondary' : ''
+              )}
+              htmlFor={inputId}
+            >
+              {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}
+            </label>
+          )}
+          <Combobox.Input
+            ref={setReferenceElement}
+            className="ux-input flex items-center justify-between p-2.5 pr-10"
+            onChange={(e) => setFilter(e.target.value)}
+            displayValue={() => ''}
+            id={inputId}
+          />
+          <Combobox.Button className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 transform">
+            <HiChevronDown className="h-4 w-4" />
+          </Combobox.Button>
+        </div>
         <div
           ref={popperElementRef}
           style={styles.popper}
@@ -139,17 +163,22 @@ export function SelectInput<OptionType>({
             beforeEnter={() => setPopperElement(popperElementRef.current)}
             afterLeave={() => setPopperElement(null)}
           >
-            <Listbox.Options className="popover-background border-normal rounded p-2 shadow">
-              {options.map((option) => (
-                <Listbox.Option
+            <Combobox.Options className="popover-background border-normal rounded p-2 shadow">
+              {!filteredOptions.length && (
+                <div className="text-secondary p-2 text-sm">
+                  {COMPONENT_STRINGS.noOptions}
+                </div>
+              )}
+              {filteredOptions.map((option) => (
+                <Combobox.Option
                   className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
                   key={getOptionValue(option)}
                   value={getOptionValue(option)}
                 >
                   {getOptionLabel(option)}
-                </Listbox.Option>
+                </Combobox.Option>
               ))}
-            </Listbox.Options>
+            </Combobox.Options>
           </Transition>
         </div>
       </div>
@@ -158,27 +187,27 @@ export function SelectInput<OptionType>({
       ) : (
         description && <FormDescription>{description}</FormDescription>
       )}
-    </Listbox>
+    </Combobox>
   );
 }
 
-interface SelectInputControllerPropsBase<
+interface ComboboxInputControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<SelectInputPropsBase<OptionType>, 'register'> {
+> extends Omit<ComboboxInputPropsBase<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
 
-type SelectInputControllerProps<
+type ComboboxInputControllerProps<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> = SelectInputControllerPropsBase<OptionType, TFieldValues, TFieldName> &
+> = ComboboxInputControllerPropsBase<OptionType, TFieldValues, TFieldName> &
   AddOptionRequiredFields<OptionType>;
 
-SelectInput.Controller = function SelectInputController<
+ComboboxInput.Controller = function ComboboxInputController<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
@@ -186,7 +215,7 @@ SelectInput.Controller = function SelectInputController<
   name,
   control,
   ...rest
-}: SelectInputControllerProps<
+}: ComboboxInputControllerProps<
   OptionType,
   TFieldValues,
   TFieldName
@@ -199,10 +228,10 @@ SelectInput.Controller = function SelectInputController<
     control,
   });
 
-  const restProps = rest as SelectInputProps<OptionType>;
+  const restProps = rest as ComboboxInputProps<OptionType>;
 
   return (
-    <SelectInput
+    <ComboboxInput
       onChange={(value) => field.onChange(value)}
       value={field.value}
       error={error?.message}
