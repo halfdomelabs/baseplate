@@ -18,22 +18,23 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
-
-      - name: Setup Node.js 18.x
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 18.16.0
+          cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
           scope: '@halfdomelabs'
-
       - name: Install Dependencies
-        run: yarn
+        run: pnpm install --frozen-lockfile
 
       - name: Create Release Pull Request or Publish to NPM
         id: changesets
         uses: changesets/action@v1
         with:
-          publish: yarn release
+          publish: pnpm publish -r
           title: 'chore: Version Packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

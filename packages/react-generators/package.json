@@ -16,7 +16,9 @@
     "CHANGELOG"
   ],
   "devDependencies": {
-    "@halfdomelabs/tools": "0.2.0",
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/inflection": "^1.13.0",
+    "@types/node": "^18.0.0",
     "@types/lodash": "^4.14.191",
     "@types/ramda": "^0.27.64",
     "@types/toposort": "^2.0.3",
@@ -26,20 +28,19 @@
     "typescript": "4.9.5"
   },
   "scripts": {
-    "build": "concurrently yarn:build:*",
-    "build:tsc": "rm -rf ./lib && tsc && tsc-alias",
+    "build": "concurrently pnpm:build:*",
+    "build:tsc": "tsc && tsc-alias",
     "build:templates": "gulp buildTemplates",
-    "watch": "concurrently yarn:watch:*",
+    "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
     "watch:templates": "gulp watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w .",
-    "release": "yarn publish --non-interactive"
+    "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "0.2.1",
-    "@halfdomelabs/sync": "0.2.1",
+    "@halfdomelabs/core-generators": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*",
     "@types/resolve": "^1.20.2",
     "gulp": "^4.0.2",
     "inflection": "^1.13.2",
@@ -50,11 +51,9 @@
     "zod": "^3.20.6"
   },
   "engines": {
-    "node": "^18.0.0",
-    "yarn": "^1.22.17"
+    "node": "^18.0.0"
   },
   "volta": {
-    "node": "18.16.0",
-    "yarn": "1.22.17"
+    "node": "18.16.0"
   }
 }
