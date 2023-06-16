@@ -16,7 +16,7 @@
     "CHANGELOG"
   ],
   "devDependencies": {
-    "@halfdomelabs/tools": "0.2.0",
+    "@halfdomelabs/tools": "workspace:*",
     "@types/inflection": "^1.13.0",
     "@types/ramda": "^0.27.64",
     "@types/semver": "^7.5.0",
@@ -37,8 +37,8 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "0.2.1",
-    "@halfdomelabs/sync": "0.2.1",
+    "@halfdomelabs/core-generators": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*",
     "@prisma/internals": "4.0.0",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.2",

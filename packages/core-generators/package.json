@@ -16,7 +16,7 @@
     "CHANGELOG"
   ],
   "devDependencies": {
-    "@halfdomelabs/tools": "0.2.0",
+    "@halfdomelabs/tools": "workspace:*",
     "@types/fs-extra": "^9.0.13",
     "@types/is-core-module": "^2.2.0",
     "@types/jest": "^27.4.0",
@@ -43,7 +43,7 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/sync": "0.2.1",
+    "@halfdomelabs/sync": "workspace:*",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.2",
     "fs-extra": "^10.0.1",

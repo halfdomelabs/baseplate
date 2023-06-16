@@ -15,7 +15,7 @@
     "CHANGELOG"
   ],
   "devDependencies": {
-    "@halfdomelabs/tools": "0.2.0",
+    "@halfdomelabs/tools": "workspace:*",
     "@swc/core": "^1.3.58",
     "@types/node": "^18.0.0",
     "@types/ramda": "^0.27.64",
@@ -31,10 +31,10 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "0.2.1",
-    "@halfdomelabs/fastify-generators": "0.3.0",
-    "@halfdomelabs/react-generators": "0.2.1",
-    "@halfdomelabs/sync": "0.2.1",
+    "@halfdomelabs/core-generators": "workspace:*",
+    "@halfdomelabs/fastify-generators": "workspace:*",
+    "@halfdomelabs/react-generators": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*",
     "commander": "^8.3.0",
     "ramda": "^0.28.0"
   },

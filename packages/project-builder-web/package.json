@@ -33,7 +33,7 @@
     "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/project-builder-lib": "0.2.2",
+    "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/ui-components": "0.1.0",
     "@headlessui/react": "1.7.14",
     "@hookform/resolvers": "^2.8.8",

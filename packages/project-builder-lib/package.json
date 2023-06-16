@@ -30,7 +30,7 @@
     "access": "restricted"
   },
   "devDependencies": {
-    "@halfdomelabs/tools": "0.2.0",
+    "@halfdomelabs/tools": "workspace:*",
     "@types/inflection": "^1.13.0",
     "@types/jest": "^27.4.0",
     "@types/nanoid-dictionary": "^4.2.0",
