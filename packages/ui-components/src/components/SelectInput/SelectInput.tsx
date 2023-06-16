@@ -63,7 +63,6 @@ export function SelectInput<OptionType>({
   const [referenceElement, setReferenceElement] =
     useState<HTMLButtonElement | null>();
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
-  console.log(value, options);
 
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
