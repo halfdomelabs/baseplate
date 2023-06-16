@@ -31,7 +31,7 @@
     ]
   },
   "scripts": {
-    "build": "yarn build:lib && yarn build:storybook",
+    "build": "yarn build:lib",
     "build:lib": "rm -rf ./lib && tsc -p tsconfig.build.json && tsc-alias",
     "build:storybook": "storybook build",
     "watch": "tsc --preserveWatchOutput --watch -p tsconfig.build.json & tsc-alias --watch",
@@ -93,11 +93,11 @@
     "vitest": "^0.31.3"
   },
   "engines": {
-    "node": "^16.0.0",
+    "node": "^18.0.0",
     "yarn": "^1.22.17"
   },
   "volta": {
-    "node": "16.15.0",
+    "node": "18.16.0",
     "yarn": "1.22.17"
   },
   "type": "module",
@@ -114,6 +114,18 @@
         "outputs": [
           "{projectRoot}/lib",
           "{projectRoot}/tailwind.config.js"
+        ]
+      },
+      "build:storybook": {
+        "dependsOn": [
+          "^build"
+        ],
+        "inputs": [
+          "default",
+          "^production"
+        ],
+        "outputs": [
+          "{projectRoot}/storybook-static"
         ]
       }
     }
