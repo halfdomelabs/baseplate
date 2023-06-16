@@ -17,6 +17,7 @@
   "devDependencies": {
     "@halfdomelabs/tools": "0.2.0",
     "@swc/core": "^1.3.58",
+    "@types/node": "^18.0.0",
     "@types/ramda": "^0.27.64",
     "node-dev": "^8.0.0",
     "typescript": "4.9.5"
@@ -38,11 +39,9 @@
     "ramda": "^0.28.0"
   },
   "engines": {
-    "node": "^18.0.0",
-    "yarn": "^1.22.17"
+    "node": "^18.0.0"
   },
   "volta": {
-    "node": "18.16.0",
-    "yarn": "1.22.17"
+    "node": "18.16.0"
   }
 }

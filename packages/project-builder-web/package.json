@@ -30,8 +30,7 @@
     "serve": "vite preview",
     "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w .",
-    "release": "yarn publish --non-interactive"
+    "prettier:format": "prettier -w ."
   },
   "dependencies": {
     "@halfdomelabs/project-builder-lib": "0.2.2",
@@ -42,7 +41,7 @@
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "13.4.0",
     "@testing-library/user-event": "14.4.3",
-    "@types/node": "^16.0.0",
+    "@types/node": "^18.0.0",
     "@types/react": "18.0.27",
     "@types/react-dom": "18.0.10",
     "ansi-to-react": "^6.1.6",
@@ -70,6 +69,8 @@
     "zustand": "^4.3.8"
   },
   "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/lodash": "^4.14.191",
     "@types/semver": "^7.5.0",
     "@types/use-persisted-state": "^0.3.1",
     "@typescript-eslint/eslint-plugin": "5.54.0",
@@ -96,11 +97,9 @@
     "vite-tsconfig-paths": "^4.0.7"
   },
   "engines": {
-    "node": "^18.0.0",
-    "yarn": "^1.22.17"
+    "node": "^18.0.0"
   },
   "volta": {
-    "node": "18.16.0",
-    "yarn": "1.22.17"
+    "node": "18.16.0"
   }
 }

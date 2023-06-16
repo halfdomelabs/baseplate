@@ -8,24 +8,22 @@
     "nx": "15.7.2"
   },
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "watch": "nx run-many --target=watch --parallel=100 --output-style=stream",
     "lint": "nx run-many --target=lint",
     "prettier:check": "nx run-many --target=prettier:check",
     "prettier:format": "nx run-many --target=prettier:format",
-    "build": "nx run-many --nx-bail --target=build",
+    "build": "nx run-many --target=build",
     "test": "nx run-many --target=test",
-    "release": "yarn build && yarn changeset publish",
-    "dev:serve": "nx run @halfdomelabs/project-builder-cli:dev:serve",
-    "serve": "nx run @halfdomelabs/project-builder-cli:start serve"
+    "release": "pnpm build && pnpm changeset publish",
+    "dev:serve": "nx run project-builder-cli:dev:serve",
+    "serve": "nx run project-builder-cli:start serve"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "volta": {
-    "node": "18.16.0",
-    "yarn": "1.22.17"
+    "node": "18.16.0"
   },
   "dependencies": {
     "@changesets/cli": "^2.26.1"
-  }
+  },
+  "packageManager": "pnpm@8.6.2"
 }
