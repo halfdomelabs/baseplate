@@ -10,11 +10,12 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "watch": "nx run-many --target=watch --parallel=100 --output-style=stream",
-    "lint": "nx run-many --target=lint",
-    "prettier:check": "nx run-many --target=prettier:check",
-    "prettier:format": "nx run-many --target=prettier:format",
+    "lint": "nx affected --target=lint",
+    "prettier:check": "nx affected --target=prettier:check",
+    "prettier:format": "nx affected --target=prettier:format",
     "build": "nx run-many --target=build",
-    "test": "nx run-many --target=test",
+    "build:affected": "nx affected --target=build",
+    "test": "nx affected --target=test",
     "release": "pnpm build && pnpm changeset publish",
     "dev:serve": "nx run project-builder-cli:dev:serve",
     "serve": "nx run project-builder-cli:start serve"

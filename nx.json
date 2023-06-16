@@ -1,5 +1,8 @@
 {
   "npmScope": "halfdomelabs",
+  "affected": {
+    "defaultBase": "main"
+  },
   "namedInputs": {
     "sharedGlobals": [
       "{workspaceRoot}/nx.json",
