@@ -63,6 +63,7 @@ export function SelectInput<OptionType>({
   const [referenceElement, setReferenceElement] =
     useState<HTMLButtonElement | null>();
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
+  console.log(value, options);
 
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
@@ -117,7 +118,7 @@ export function SelectInput<OptionType>({
       <div>
         <Listbox.Button
           ref={setReferenceElement}
-          className="ux-input flex items-center justify-between p-2.5"
+          className="ux-input flex items-center justify-between space-x-2 p-2.5"
         >
           <div className={!selectedOption ? 'text-secondary' : ''}>
             {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}

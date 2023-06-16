@@ -1,13 +1,13 @@
 import { randomUid } from '@halfdomelabs/project-builder-lib';
 import { useFieldArray } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { Alert, Button, LinkButton, TextInput } from 'src/components';
+import { Alert, Button, LinkButton } from 'src/components';
 import Dropdown from 'src/components/Dropdown';
-import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useModelForm } from '../hooks/useModelForm';
 import ModelFieldForm from './ModelFieldForm';
+import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
@@ -31,13 +31,6 @@ function ModelEditModelPage(): JSX.Element {
     ? parsedProject.getModels().find((m) => m.uid === id)
     : undefined;
 
-  const featureOptions = (parsedProject.projectConfig.features || []).map(
-    (f) => ({
-      label: f.name,
-      value: f.name,
-    })
-  );
-
   const {
     fields: fieldFields,
     remove: removeField,
@@ -57,19 +50,9 @@ function ModelEditModelPage(): JSX.Element {
   });
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-4xl space-y-4">
       <Alert.WithStatus status={status} />
-      <TextInput.LabelledController
-        label="Name"
-        control={control}
-        name="name"
-      />
-      <ReactSelectInput.LabelledController
-        label="Feature"
-        control={control}
-        name="feature"
-        options={featureOptions}
-      />
+      <ModelGeneralForm control={control} />
       <h3>Fields</h3>
       {fieldFields.map((field, i) => (
         <div key={field.id}>

@@ -29,7 +29,7 @@ Tabs.List = function TabsList({
   return (
     <Tab.List
       as="div"
-      className={clsx('border-color mb-4 border-b', className)}
+      className={clsx('border-color mb-4 border-b px-2', className)}
     >
       <ul className="-mb-px flex flex-wrap">{children}</ul>
     </Tab.List>

@@ -1,6 +1,6 @@
-import { useConfirmDialog } from '@halfdomelabs/ui-components';
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
-import { Alert, Button, NavigationTabs } from 'src/components';
+import { Button, Tabs, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { useNavigate, useParams } from 'react-router-dom';
+import { NotFoundCard } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -31,7 +31,7 @@ function ModelEditPage(): JSX.Element {
   };
 
   if (!model && id) {
-    return <Alert type="error">Unable to find model {id}</Alert>;
+    return <NotFoundCard />;
   }
 
   return (
@@ -42,24 +42,28 @@ function ModelEditPage(): JSX.Element {
       {isNew ? (
         <ModelEditModelPage />
       ) : (
-        <>
-          <NavigationTabs>
-            <NavigationTabs.Tab to="">Model</NavigationTabs.Tab>
-            <NavigationTabs.Tab to="service">Services</NavigationTabs.Tab>
-            <NavigationTabs.Tab to="schema">Schema</NavigationTabs.Tab>
-          </NavigationTabs>
-          <div className="bg-slate-200 p-4">
-            <Routes>
-              <Route index element={<ModelEditModelPage />} />
-              <Route path="service" element={<ModelEditServicePage />} />
-              <Route path="schema" element={<ModelEditSchemaPage />} />
-            </Routes>
-          </div>
-        </>
+        <Tabs>
+          <Tabs.List>
+            <Tabs.Tab>General</Tabs.Tab>
+            <Tabs.Tab>Service</Tabs.Tab>
+            <Tabs.Tab>Schema</Tabs.Tab>
+          </Tabs.List>
+          <Tabs.Panels>
+            <Tabs.Panel>
+              <ModelEditModelPage />
+            </Tabs.Panel>
+            <Tabs.Panel>
+              <ModelEditServicePage />
+            </Tabs.Panel>
+            <Tabs.Panel>
+              <ModelEditSchemaPage />
+            </Tabs.Panel>
+          </Tabs.Panels>
+        </Tabs>
       )}
       {!isNew && (
         <Button
-          color="light"
+          variant="secondary"
           onClick={() => {
             requestConfirm({
               title: 'Confirm delete',
