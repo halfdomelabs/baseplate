@@ -11,6 +11,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
+        with:
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v3.0.2
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.4
       - name: Setup Node.js
@@ -21,5 +26,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
-      - run: pnpm build
+      - run: pnpm build:affected
       - run: pnpm test
