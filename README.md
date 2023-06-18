@@ -23,8 +23,8 @@ Currently, Baseplate focuses on backend and administrative UIs, capable of gener
 ```bash
 git clone https://github.com/halfdomelabs/baseplate.git
 cd baseplate
-yarn install
-yarn build
+pnpm install
+pnpm build
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ yarn build
 To start using Baseplate, run the following command in your terminal:
 
 ```bash
-yarn serve
+pnpm serve
 ```
 
 The server will start on localhost:3230 (or your chosen port).

@@ -16,7 +16,8 @@
     "CHANGELOG"
   ],
   "devDependencies": {
-    "@halfdomelabs/tools": "0.2.0",
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/fs-extra": "^9.0.13",
     "@types/is-core-module": "^2.2.0",
     "@types/jest": "^27.4.0",
     "@types/lodash": "^4.14.191",
@@ -30,20 +31,19 @@
     "typescript": "4.9.5"
   },
   "scripts": {
-    "build": "concurrently yarn:build:*",
-    "build:tsc": "rm -rf ./lib && tsc && tsc-alias",
+    "build": "concurrently pnpm:build:*",
+    "build:tsc": "tsc && tsc-alias",
     "build:templates": "gulp buildTemplates",
-    "watch": "concurrently yarn:watch:*",
+    "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
     "watch:templates": "gulp watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "test": "jest",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w .",
-    "release": "yarn publish --non-interactive"
+    "prettier:format": "prettier -w ."
   },
   "dependencies": {
-    "@halfdomelabs/sync": "0.2.1",
+    "@halfdomelabs/sync": "workspace:*",
     "@types/eslint": "^8.2.2",
     "@types/resolve": "^1.20.2",
     "fs-extra": "^10.0.1",
@@ -59,11 +59,9 @@
     "zod": "^3.20.6"
   },
   "engines": {
-    "node": "^16.0.0",
-    "yarn": "^1.22.17"
+    "node": "^18.0.0"
   },
   "volta": {
-    "node": "16.15.0",
-    "yarn": "1.22.17"
+    "node": "18.16.0"
   }
 }
