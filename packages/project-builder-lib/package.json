@@ -33,7 +33,6 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/inflection": "^1.13.0",
     "@types/jest": "^27.4.0",
-    "@types/nanoid-dictionary": "^4.2.0",
     "@types/path-browserify": "^1.0.0",
     "@types/ramda": "^0.27.64",
     "jest": "29.5.0",
@@ -56,9 +55,8 @@
   },
   "dependencies": {
     "change-case": "^4.1.2",
-    "inflection": "^1.13.2",
+    "inflection": "2.0.1",
     "nanoid": "^3.1.30",
-    "nanoid-dictionary": "^4.3.0",
     "path-browserify": "^1.0.1",
     "ramda": "^0.28.0",
     "zod": "^3.20.6"

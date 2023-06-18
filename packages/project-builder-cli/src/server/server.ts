@@ -2,25 +2,25 @@ import path from 'path';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
-import Fastify, { FastifyInstance } from 'fastify';
+import { fastify, FastifyInstance } from 'fastify';
 import { sync as resolve } from 'resolve';
-import { logError } from '@src/services/error-logger';
-import { logger } from '@src/services/logger';
-import { baseplatePlugin } from './plugin';
+import { logError } from '@src/services/error-logger.js';
+import { logger } from '@src/services/logger.js';
+import { baseplatePlugin } from './plugin.js';
 
 export async function buildServer(
   directories: string[]
 ): Promise<FastifyInstance> {
-  const fastify = Fastify({ forceCloseConnections: true, logger });
+  const server = fastify({ forceCloseConnections: true, logger });
 
-  await fastify.register(fastifyHelmet);
+  await server.register(fastifyHelmet);
 
   try {
     const projectBuilderWebDir = path.dirname(
       resolve('@halfdomelabs/project-builder-web/package.json')
     );
 
-    await fastify.register(fastifyStaticPlugin, {
+    await server.register(fastifyStaticPlugin, {
       root: path.join(projectBuilderWebDir, 'dist'),
     });
   } catch (err) {
@@ -28,9 +28,9 @@ export async function buildServer(
     throw err;
   }
 
-  await fastify.register(fastifyWebsocketPlugin);
+  await server.register(fastifyWebsocketPlugin);
 
-  await fastify.register(baseplatePlugin, { directories });
+  await server.register(baseplatePlugin, { directories });
 
-  return fastify;
+  return server;
 }

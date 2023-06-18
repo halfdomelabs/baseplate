@@ -3,9 +3,9 @@ import { FileEntry, AppEntry } from '@halfdomelabs/project-builder-lib';
 import fs from 'fs-extra';
 import globby from 'globby';
 import stringify from 'json-stringify-pretty-compact';
-import { logError } from '@src/services/error-logger';
-import { logger } from '@src/services/logger';
-import { notEmpty } from '../utils/array';
+import { logError } from '@src/services/error-logger.js';
+import { logger } from '@src/services/logger.js';
+import { notEmpty } from '../utils/array.js';
 
 /**
  * Writes a file entry and returns if the file contents have changed

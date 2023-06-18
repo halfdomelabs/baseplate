@@ -1,6 +1,6 @@
 import open from 'open';
-import { logger } from '@src/services/logger';
-import { buildServer } from './server';
+import { logger } from '@src/services/logger.js';
+import { buildServer } from './server.js';
 
 interface WebServerOptions {
   browser: boolean;
