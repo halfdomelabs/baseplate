@@ -1,19 +1,23 @@
 import { promises as fs } from 'fs';
-import * as path from 'path';
+import { pkgUp } from 'pkg-up';
 
-let cachedVersion: string | null = null;
+let cachedVersion: string | undefined | null;
 
 export async function getPackageVersion(): Promise<string | null> {
-  if (!cachedVersion) {
+  if (cachedVersion === undefined) {
     // Construct the path to the package.json file.
-    const packageJsonPath = path.join(__dirname, '../../package.json');
+    const packageJsonPath = await pkgUp();
 
-    // Read the package.json file.
-    const fileContent = await fs.readFile(packageJsonPath, 'utf8');
-    const packageJson = JSON.parse(fileContent) as { version: string };
+    if (!packageJsonPath) {
+      cachedVersion = null;
+    } else {
+      // Read the package.json file.
+      const fileContent = await fs.readFile(packageJsonPath, 'utf8');
+      const packageJson = JSON.parse(fileContent) as { version: string };
 
-    // Return the version.
-    cachedVersion = packageJson.version || null;
+      // Return the version.
+      cachedVersion = packageJson.version || null;
+    }
   }
 
   return cachedVersion;

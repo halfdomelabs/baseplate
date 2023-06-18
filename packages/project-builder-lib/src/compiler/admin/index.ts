@@ -1,5 +1,5 @@
+import path from 'path';
 import { capitalize } from 'inflection';
-import { relative } from 'path-browserify';
 import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
 import { BackendAppConfig, ProjectConfig } from '@src/schema/index.js';
 import { AppEntry } from '@src/types/files.js';
@@ -33,7 +33,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
   const backendApp = backendApps[0];
 
   // TODO: Extract out logic
-  const backendRelativePath = relative(
+  const backendRelativePath = path.relative(
     appConfig.packageLocation || `packages/${appConfig.name}`,
     backendApp.packageLocation || `packages/${backendApp.name}`
   );

@@ -1,4 +1,4 @@
-import { relative } from 'path-browserify';
+import path from 'path';
 import { ProjectConfig, WebAppConfig } from '@src/schema/index.js';
 import { AppEntry } from '@src/types/files.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
@@ -16,7 +16,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const backendApp = backendApps[0];
 
   // TODO: Extract out logic
-  const backendRelativePath = relative(
+  const backendRelativePath = path.relative(
     appConfig.packageLocation || `packages/${appConfig.name}`,
     backendApp.packageLocation || `packages/${backendApp.name}`
   );

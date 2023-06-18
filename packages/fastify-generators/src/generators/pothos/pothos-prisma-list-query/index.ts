@@ -7,7 +7,7 @@ import {
   createNonOverwriteableMap,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
-import inflection from 'inflection';
+import { pluralize } from 'inflection';
 import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma';
 import { pothosFieldProvider } from '@src/providers/pothos-field';
@@ -39,7 +39,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
       throw new Error(`Model ${modelName} does not have an ID field`);
     }
 
-    const queryName = inflection.pluralize(lowerCaseFirst(modelName));
+    const queryName = pluralize(lowerCaseFirst(modelName));
 
     const customFields = createNonOverwriteableMap<
       Record<string, TypescriptCodeExpression>

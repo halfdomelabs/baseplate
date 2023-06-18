@@ -17,7 +17,6 @@
   ],
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/inflection": "^1.13.0",
     "@types/node": "^18.0.0",
     "@types/lodash": "^4.14.191",
     "@types/ramda": "^0.27.64",
