@@ -4,13 +4,6 @@
 /* eslint-disable import/no-dynamic-require */
 
 /**
- * Simple wrapper for require.resolve for easier unit testing
- */
-export function resolveModule(module: string): string {
-  return require.resolve(module);
-}
-
-/**
  * Simple function to load a module dynamically
  *
  * @param module Name of module to load
