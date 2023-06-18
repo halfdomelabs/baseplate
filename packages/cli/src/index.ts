@@ -1,9 +1,10 @@
 /* eslint-disable no-console */
 
-import { resolve } from 'path';
+import path from 'path';
 import { GeneratorEngine, loadGeneratorsForModule } from '@halfdomelabs/sync';
 import { program } from 'commander';
 import R from 'ramda';
+import resolve from 'resolve';
 
 const GENERATOR_MODULES = [
   '@halfdomelabs/core-generators',
@@ -11,13 +12,50 @@ const GENERATOR_MODULES = [
   '@halfdomelabs/react-generators',
 ];
 
-async function generateForDirectory(directory: string): Promise<void> {
-  const generators = await Promise.all(
-    GENERATOR_MODULES.map(loadGeneratorsForModule)
-  );
-  const generatorMap = R.mergeAll(generators);
+const resolveAsync = (moduleName: string): Promise<string> =>
+  new Promise((resolvePromise, rejectPromise) => {
+    resolve(moduleName, (err, resolvedPath) => {
+      if (!resolvedPath) {
+        rejectPromise(
+          new Error(
+            `Could not resolve module ${moduleName} from ${process.cwd()}`
+          )
+        );
+      } else if (err) {
+        rejectPromise(err);
+      } else {
+        resolvePromise(resolvedPath);
+      }
+    });
+  });
 
-  const engine = new GeneratorEngine(generatorMap);
+let cachedEngine: GeneratorEngine;
+async function getGeneratorEngine(): Promise<GeneratorEngine> {
+  if (!cachedEngine) {
+    const resolvedGeneratorPaths = await Promise.all(
+      GENERATOR_MODULES.map(
+        async (moduleName): Promise<[string, string]> => [
+          moduleName,
+          path.dirname(
+            await resolveAsync(path.join(moduleName, 'package.json'))
+          ),
+        ]
+      )
+    );
+    const generators = await Promise.all(
+      resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
+        loadGeneratorsForModule(moduleName, modulePath)
+      )
+    );
+    const generatorMap = R.mergeAll(generators);
+
+    cachedEngine = new GeneratorEngine(generatorMap);
+  }
+  return cachedEngine;
+}
+
+async function generateForDirectory(directory: string): Promise<void> {
+  const engine = await getGeneratorEngine();
   const project = await engine.loadProject(directory);
   const output = await engine.build(project);
   console.log('Project built! Writing output....');
@@ -27,7 +65,7 @@ async function generateForDirectory(directory: string): Promise<void> {
 
 async function getVersion(): Promise<string> {
   const packageJson = (await import(
-    resolve(__dirname, '../package.json')
+    path.resolve(__dirname, '../package.json')
   )) as Record<string, string>;
   return packageJson?.version;
 }
