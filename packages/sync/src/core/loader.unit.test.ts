@@ -14,9 +14,6 @@ beforeEach(() => {
 
 describe('loadGeneratorsForModule', () => {
   it('loads a set of generators from a folder', async () => {
-    mockedRequireUtils.resolveModule.mockReturnValueOnce(
-      '/modules/test-generators/package.json'
-    );
     vol.fromJSON(
       {
         '/modules/test-generators/lib/generators/generatorOne/index.ts': 'a();',
@@ -39,7 +36,8 @@ describe('loadGeneratorsForModule', () => {
     mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorTwo);
 
     const generator = await loadGeneratorsForModule(
-      '@halfdomelabs/test-generators'
+      '@halfdomelabs/test-generators',
+      '/modules/test-generators'
     );
 
     expect(generator).toEqual({
@@ -55,9 +53,6 @@ describe('loadGeneratorsForModule', () => {
       },
     });
 
-    expect(mockedRequireUtils.resolveModule).toHaveBeenCalledWith(
-      '@halfdomelabs/test-generators/package.json'
-    );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
       '/modules/test-generators/lib/generators/generatorOne'
     );
@@ -67,9 +62,6 @@ describe('loadGeneratorsForModule', () => {
   });
 
   it('loads a set of generators with right glob patterns and different base', async () => {
-    mockedRequireUtils.resolveModule.mockReturnValueOnce(
-      '/modules/test-generators/package.json'
-    );
     vol.fromJSON(
       {
         '/modules/test-generators/dist/generators/one/generatorOne/index.ts':
@@ -98,7 +90,8 @@ describe('loadGeneratorsForModule', () => {
     mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorTwo);
 
     const generator = await loadGeneratorsForModule(
-      '@halfdomelabs/test-generators'
+      '@halfdomelabs/test-generators',
+      '/modules/test-generators'
     );
 
     expect(generator).toEqual({
@@ -114,9 +107,6 @@ describe('loadGeneratorsForModule', () => {
       },
     });
 
-    expect(mockedRequireUtils.resolveModule).toHaveBeenCalledWith(
-      '@halfdomelabs/test-generators/package.json'
-    );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
       '/modules/test-generators/dist/generators/one/generatorOne'
     );
