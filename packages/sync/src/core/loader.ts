@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import globby from 'globby';
 import R from 'ramda';
 import { z } from 'zod';
-import { getModuleDefault, resolveModule } from '../utils/require';
+import { getModuleDefault } from '../utils/require';
 import { GeneratorConfig } from './generator';
 
 export interface GeneratorConfigWithLocation extends GeneratorConfig {
@@ -25,10 +25,9 @@ const GENERATOR_LOADER_CONFIG_SCHEMA = z.object({
 });
 
 export async function loadGeneratorsForModule(
-  module: string
+  moduleName: string,
+  modulePath: string
 ): Promise<GeneratorConfigMap> {
-  const modulePath = path.dirname(resolveModule(`${module}/package.json`));
-
   // look for a generator.json in the root of the module
   const moduleConfigPath = path.join(modulePath, 'generator.json');
   const moduleConfigExists = await fs.pathExists(moduleConfigPath);
@@ -69,7 +68,7 @@ export async function loadGeneratorsForModule(
           `Generator function lacks a parseDescriptor function: ${generatorFolder}`
         );
       }
-      const name = `${module.replace(/-generators$/, '')}/${folder}`;
+      const name = `${moduleName.replace(/-generators$/, '')}/${folder}`;
 
       return {
         [name]: {
