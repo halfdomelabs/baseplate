@@ -63,18 +63,24 @@ interface ResolveError extends Error {
 
 const require = createRequire(import.meta.url);
 
-function resolveModule(name: string, fullPath: string): Promise<string | null> {
+function resolveModule(
+  name: string,
+  fullPath: string
+): Promise<{ modulePath: string; version: string | undefined } | undefined> {
   const basedir = path.dirname(fullPath);
   return new Promise((resolve, reject) => {
-    requireResolve(name, { basedir }, (err, resolved): void => {
-      if (err) {
+    requireResolve(name, { basedir }, (err, resolved, meta): void => {
+      if (err || !resolved) {
         const resolveError: ResolveError = err as ResolveError;
-        if (resolveError.code === 'MODULE_NOT_FOUND') {
-          return resolve(null);
+        if (resolveError.code === 'MODULE_NOT_FOUND' || !resolved) {
+          return resolve(undefined);
         }
         return reject(err);
       }
-      return resolve(resolved || null);
+      return resolve({
+        modulePath: resolved,
+        version: meta?.version,
+      });
     });
   });
 }
@@ -112,27 +118,31 @@ const PrettierGenerator = createGeneratorWithChildren({
               }
               if (!prettierModulePromise) {
                 prettierModulePromise = (async () => {
-                  const prettierLibPath = await resolveModule(
-                    'prettier',
-                    fullPath
-                  );
-                  if (!prettierLibPath) {
+                  const result = await resolveModule('prettier', fullPath);
+                  if (!result) {
                     logger.log(
                       'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.'
                     );
+                    // use cached version of prettier if available
+                    return prettier;
+                  }
+                  if (result.version === prettier.version) {
                     return prettier;
                   }
                   // eslint-disable-next-line import/no-dynamic-require
-                  return require(prettierLibPath) as PrettierModule;
+                  return require(result.modulePath) as PrettierModule;
                 })();
               }
 
               const prettierModule = await prettierModulePromise;
-
-              return prettierModule.format(input, {
+              const timeStart = Date.now();
+              const output = prettierModule.format(input, {
                 ...prettierConfig,
                 filepath: fullPath,
               });
+              const timeEnd = Date.now();
+              console.log(`Formatted ${fullPath} in ${timeEnd - timeStart}ms`);
+              return output;
             },
           },
           prettier: {

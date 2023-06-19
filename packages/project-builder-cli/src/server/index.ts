@@ -17,11 +17,12 @@ export async function startWebServer(
     await server.listen({ port });
   } catch (err) {
     if (
-      err &&
+      err instanceof Error &&
       typeof err === 'object' &&
       'code' in err &&
-      err.code !== 'EADDRINUSE'
+      err.code === 'EADDRINUSE'
     ) {
+      logger.info('Port in use - retrying in 100ms...');
       // wait a bit and try again since it could be tsx restarting
       await new Promise((resolve) => {
         setTimeout(resolve, 100);
