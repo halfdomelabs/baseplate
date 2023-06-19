@@ -12,6 +12,7 @@ import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
+import { logger } from 'src/services/logger';
 
 const NEW_MODEL = {
   name: '',
@@ -19,12 +20,14 @@ const NEW_MODEL = {
 
 interface UseModelFormOptions {
   ignoredReferences?: string[];
-  setError: (error: string) => void;
+  setError?: (error: string) => void;
+  onSubmitSuccess?: () => void;
 }
 
 export function useModelForm({
   setError,
   ignoredReferences,
+  onSubmitSuccess,
 }: UseModelFormOptions): {
   form: UseFormReturn<ModelConfig>;
   onFormSubmit: (data: ModelConfig) => void;
@@ -69,8 +72,16 @@ export function useModelForm({
         if (!id || model?.name !== data.name) {
           navigate(`../edit/${newUid}`);
         }
+        if (onSubmitSuccess) {
+          onSubmitSuccess();
+        }
       } catch (err) {
-        setError(formatError(err));
+        logger.error(err);
+        if (setError) {
+          setError(formatError(err));
+        } else {
+          toast.error(formatError(err));
+        }
       }
     },
     [

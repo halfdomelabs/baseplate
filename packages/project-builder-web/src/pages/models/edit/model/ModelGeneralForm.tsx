@@ -23,21 +23,20 @@ export function ModelGeneralForm({
 
   return (
     <div className={clsx('', className)}>
-      <div className="flex w-full space-x-4">
+      <div className="space-y-4">
         <TextInput.Controller
-          className="flex-1"
           label="Name"
           description="The name of the model (PascalCase)"
           control={control}
           name="name"
         />
         <SelectInput.Controller
-          className="flex-1"
           label="Feature"
           description="The feature this model belongs to"
           control={control}
           name="feature"
           options={featureOptions}
+          fixed
         />
       </div>
     </div>

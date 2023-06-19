@@ -1,9 +1,17 @@
-import { Button, Tabs, useConfirmDialog } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dialog,
+  Tabs,
+  useConfirmDialog,
+} from '@halfdomelabs/ui-components';
+import { useState } from 'react';
+import { MdEdit } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
 import { NotFoundCard } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
+import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
 import ModelEditServicePage from './service/service.page';
@@ -30,15 +38,39 @@ function ModelEditPage(): JSX.Element {
     }
   };
 
+  const [showNameModal, setShowNameModal] = useState(false);
+
   if (!model && id) {
     return <NotFoundCard />;
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-row space-x-8">
-        <h1>{model?.name || 'New Model'}</h1>
-      </div>
+      {model ? (
+        <div className="flex flex-col items-start">
+          <button
+            className="group flex items-center space-x-2 hover:cursor-pointer"
+            onClick={() => {
+              setShowNameModal(true);
+            }}
+            type="button"
+          >
+            <h1>{model.name}</h1>
+            <MdEdit className="invisible h-4 w-4 group-hover:visible" />
+          </button>
+          {model?.feature && (
+            <div className="description-text">{model.feature}</div>
+          )}
+          <ModelGeneralEditDialog
+            isOpen={showNameModal}
+            onClose={() => {
+              setShowNameModal(false);
+            }}
+          />
+        </div>
+      ) : (
+        <h1>New Model</h1>
+      )}
       {isNew ? (
         <ModelEditModelPage />
       ) : (

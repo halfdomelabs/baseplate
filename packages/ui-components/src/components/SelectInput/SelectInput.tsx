@@ -1,7 +1,7 @@
-import { Listbox, Transition } from '@headlessui/react';
+import { Listbox, Transition, Portal } from '@headlessui/react';
 import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { useMemo, useRef, useState } from 'react';
+import { Fragment, useMemo, useRef, useState } from 'react';
 import {
   Control,
   FieldPath,
@@ -26,6 +26,7 @@ export interface SelectInputPropsBase<OptionType> extends LabellableComponent {
   getOptionLabel?: OptionToStringFunc<OptionType>;
   getOptionValue?: OptionToStringFunc<OptionType>;
   noValueLabel?: string;
+  fixed?: boolean;
 }
 
 type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
@@ -58,6 +59,7 @@ export function SelectInput<OptionType>({
   label,
   error,
   description,
+  fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
   const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] =
@@ -88,6 +90,7 @@ export function SelectInput<OptionType>({
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
     modifiers,
+    strategy: fixed ? 'fixed' : undefined,
   });
 
   const handleChange = (newValue?: string): void => {
@@ -103,6 +106,8 @@ export function SelectInput<OptionType>({
   const selectedOption = options.find(
     (option) => getOptionValue(option) === value
   );
+
+  const PortalWrapper = fixed ? Portal : Fragment;
 
   return (
     <Listbox
@@ -124,34 +129,36 @@ export function SelectInput<OptionType>({
           </div>
           <HiChevronDown className="h-4 w-4" />
         </Listbox.Button>
-        <div
-          ref={popperElementRef}
-          style={styles.popper}
-          {...attributes.popper}
-        >
-          <Transition
-            enter="ease-out duration-100"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-100"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-            beforeEnter={() => setPopperElement(popperElementRef.current)}
-            afterLeave={() => setPopperElement(null)}
+        <PortalWrapper>
+          <div
+            ref={popperElementRef}
+            style={styles.popper}
+            {...attributes.popper}
           >
-            <Listbox.Options className="popover-background border-normal rounded p-2 shadow">
-              {options.map((option) => (
-                <Listbox.Option
-                  className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
-                  key={getOptionValue(option)}
-                  value={getOptionValue(option)}
-                >
-                  {getOptionLabel(option)}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Transition>
-        </div>
+            <Transition
+              enter="ease-out duration-100"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-100"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+              beforeEnter={() => setPopperElement(popperElementRef.current)}
+              afterLeave={() => setPopperElement(null)}
+            >
+              <Listbox.Options className="popover-background border-normal rounded p-2 shadow">
+                {options.map((option) => (
+                  <Listbox.Option
+                    className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
+                    key={getOptionValue(option)}
+                    value={getOptionValue(option)}
+                  >
+                    {getOptionLabel(option)}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
+          </div>
+        </PortalWrapper>
       </div>
       {error ? (
         <FormError>{error}</FormError>

@@ -52,8 +52,8 @@ function ModelEditModelPage(): JSX.Element {
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-4xl space-y-4">
       <Alert.WithStatus status={status} />
-      <ModelGeneralForm control={control} />
-      <h3>Fields</h3>
+      {!id && <ModelGeneralForm control={control} />}
+      <h2>Fields</h2>
       {fieldFields.map((field, i) => (
         <div key={field.id}>
           <div className="flex flex-row space-x-4">
