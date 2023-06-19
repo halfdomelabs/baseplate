@@ -27,10 +27,5 @@ export default defineConfig(({ mode }) => {
     build: {
       sourcemap: true,
     },
-    resolve: {
-      alias: {
-        path: 'path-browserify',
-      },
-    },
   };
 });

@@ -1,7 +1,10 @@
-import path from 'path';
 import { capitalize } from 'inflection';
 import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
-import { BackendAppConfig, ProjectConfig } from '@src/schema/index.js';
+import { ProjectConfig } from '@src/schema/index.js';
+import {
+  getBackendApp,
+  getBackendRelativePath,
+} from '@src/schema-utils/backend-app.js';
 import { AppEntry } from '@src/types/files.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
@@ -22,21 +25,8 @@ export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
 export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
 
-  const backendApps = projectConfig.apps.filter(
-    (a): a is BackendAppConfig => a.type === 'backend'
-  );
-
-  if (backendApps.length > 1 || !backendApps.length) {
-    throw new Error(`Only one backend app is supported and must exist`);
-  }
-
-  const backendApp = backendApps[0];
-
-  // TODO: Extract out logic
-  const backendRelativePath = path.relative(
-    appConfig.packageLocation || `packages/${appConfig.name}`,
-    backendApp.packageLocation || `packages/${backendApp.name}`
-  );
+  const backendApp = getBackendApp(projectConfig);
+  const backendRelativePath = getBackendRelativePath(appConfig, backendApp);
 
   return {
     name: 'react',
