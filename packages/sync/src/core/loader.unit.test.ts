@@ -16,11 +16,17 @@ describe('loadGeneratorsForModule', () => {
   it('loads a set of generators from a folder', async () => {
     vol.fromJSON(
       {
-        '/modules/test-generators/lib/generators/generatorOne/index.ts': 'a();',
-        '/modules/test-generators/lib/generators/generatorTwo/index.ts': 'a();',
-        '/modules/test-generators/lib/generators/_ignored/index.ts': 'a();',
-        '/modules/test-generators/lib/generators/index.ts': 'a();',
-        '/modules/test-generators/lib/random/foo.yml': 'test',
+        '/modules/test-generators/dist/generators/generatorOne/index.ts':
+          'a();',
+        '/modules/test-generators/dist/generators/generatorTwo/index.ts':
+          'a();',
+        '/modules/test-generators/dist/generators/_ignored/index.ts': 'a();',
+        '/modules/test-generators/dist/generators/index.ts': 'a();',
+        '/modules/test-generators/dist/random/foo.yml': 'test',
+        '/modules/test-generators/generator.json': JSON.stringify({
+          generatorBaseDirectory: 'dist/generators',
+          generatorPatterns: ['*'],
+        }),
       },
       '/modules/test-generators'
     );
@@ -44,20 +50,20 @@ describe('loadGeneratorsForModule', () => {
       '@halfdomelabs/test/generatorOne': {
         ...mockGeneratorOne,
         configBaseDirectory:
-          '/modules/test-generators/lib/generators/generatorOne',
+          '/modules/test-generators/dist/generators/generatorOne',
       },
       '@halfdomelabs/test/generatorTwo': {
         ...mockGeneratorTwo,
         configBaseDirectory:
-          '/modules/test-generators/lib/generators/generatorTwo',
+          '/modules/test-generators/dist/generators/generatorTwo',
       },
     });
 
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/lib/generators/generatorOne'
+      '/modules/test-generators/dist/generators/generatorOne'
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/lib/generators/generatorTwo'
+      '/modules/test-generators/dist/generators/generatorTwo'
     );
   });
 

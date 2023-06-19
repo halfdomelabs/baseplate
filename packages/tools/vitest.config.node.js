@@ -3,4 +3,7 @@ const { defineConfig } = require('vitest/config');
 
 module.exports = defineConfig({
   plugins: [tsconfigPaths()],
+  test: {
+    watch: false,
+  },
 });
