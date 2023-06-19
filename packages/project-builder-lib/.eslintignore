@@ -2,5 +2,6 @@
 /dist
 /lib
 /node_modules
-jest.config.cjs
 .eslintrc.cjs
+vitest.config.ts
+LICENSE
