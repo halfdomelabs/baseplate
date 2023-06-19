@@ -2,7 +2,7 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { ReactComponentsProvider } from '@src/generators/core/react-components';
+import { ReactComponentsProvider } from '@src/generators/core/react-components/index.js';
 
 export interface DataLoader {
   loader: TypescriptCodeBlock;

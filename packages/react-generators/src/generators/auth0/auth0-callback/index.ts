@@ -5,10 +5,10 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authHooksProvider } from '@src/generators/auth/auth-hooks';
-import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { reactErrorProvider } from '@src/generators/core/react-error';
-import { reactRoutesProvider } from '@src/providers/routes';
+import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
 
 const descriptorSchema = z.object({});
 
