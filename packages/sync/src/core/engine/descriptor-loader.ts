@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
-import { getErrorMessage } from '@src/utils/errors';
-import { baseDescriptorSchema, BaseGeneratorDescriptor } from '../descriptor';
+import { getErrorMessage } from '@src/utils/errors.js';
+import { baseDescriptorSchema, BaseGeneratorDescriptor } from '../descriptor.js';
 
 export async function loadDescriptorFromFile(
   filePath: string

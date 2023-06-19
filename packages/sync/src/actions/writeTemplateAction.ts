@@ -1,7 +1,7 @@
+import fs from 'fs/promises';
 import path from 'path';
 import ejs from 'ejs';
-import fs from 'fs-extra';
-import { createBuilderActionCreator } from '../core';
+import { createBuilderActionCreator } from '../core/index.js';
 
 interface Options {
   destination: string;

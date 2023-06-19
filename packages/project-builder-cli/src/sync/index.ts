@@ -8,7 +8,7 @@ import {
 } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import globby from 'globby';
+import { globby } from 'globby';
 import { packageDirectory } from 'pkg-dir';
 import * as R from 'ramda';
 import { resolveModule } from '@src/utils/resolve.js';

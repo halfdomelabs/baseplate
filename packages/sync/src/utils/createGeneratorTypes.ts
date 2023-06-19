@@ -1,4 +1,4 @@
-import { BaseGeneratorDescriptor } from '../core';
+import { BaseGeneratorDescriptor } from '../core/index.js';
 
 export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
   children?: Record<

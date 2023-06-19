@@ -1,24 +1,22 @@
-import childProcess from 'child_process';
+import fs from 'fs/promises';
 import path from 'path';
-import { promisify } from 'util';
 import chalk from 'chalk';
-import fs from 'fs-extra';
 import pLimit from 'p-limit';
 import * as R from 'ramda';
-import { getErrorMessage } from '@src/utils/errors';
-import { Logger } from '@src/utils/evented-logger';
-import { mergeStrings } from '@src/utils/merge';
-import { FileData, GeneratorOutput } from './generator-output';
-
-const exec = promisify(childProcess.exec);
+import { getErrorMessage } from '@src/utils/errors.js';
+import { Logger } from '@src/utils/evented-logger.js';
+import { ExecError, executeCommand } from '@src/utils/exec.js';
+import { ensureDir, pathExists } from '@src/utils/fs.js';
+import { mergeStrings } from '@src/utils/merge.js';
+import { FileData, GeneratorOutput } from './generator-output.js';
 
 async function mergeContents(
   newContents: string,
   filePath: string,
   cleanContents?: string
 ): Promise<{ contents: string; hasConflict: boolean } | null> {
-  const pathExists = await fs.pathExists(filePath);
-  if (!pathExists) {
+  const doesPathExist = await pathExists(filePath);
+  if (!doesPathExist) {
     return { contents: newContents, hasConflict: false };
   }
   const existingContents = await fs.readFile(filePath, 'utf8');
@@ -104,7 +102,7 @@ async function writeFile(
       throw new Error(`Cannot format Buffer contents for ${filePath}`);
     }
     if (options?.neverOverwrite) {
-      const fileExists = await fs.pathExists(filePath);
+      const fileExists = await pathExists(filePath);
       if (fileExists) {
         return { type: 'skipped', cleanContents: contents, originalPath };
       }
@@ -112,8 +110,8 @@ async function writeFile(
 
     // we don't attempt 3-way merge on Buffer contents
 
-    const pathExists = await fs.pathExists(filePath);
-    if (pathExists) {
+    const doesPathExist = await pathExists(filePath);
+    if (doesPathExist) {
       const existingContents = await fs.readFile(filePath);
       if (contents.equals(existingContents)) {
         return { type: 'skipped', cleanContents: contents, originalPath };
@@ -138,7 +136,7 @@ async function writeFile(
   }
 
   if (options?.neverOverwrite) {
-    const fileExists = await fs.pathExists(filePath);
+    const fileExists = await pathExists(filePath);
     if (fileExists) {
       return {
         type: 'skipped',
@@ -235,7 +233,7 @@ export async function writeGeneratorOutput(
     await Promise.all(
       modifiedFiles.map((modifiedFile) =>
         writeLimit(async () => {
-          await fs.ensureDir(path.dirname(modifiedFile.path));
+          await ensureDir(path.dirname(modifiedFile.path));
           if (modifiedFile.contents instanceof Buffer) {
             await fs.writeFile(modifiedFile.path, modifiedFile.contents);
           } else {
@@ -256,7 +254,7 @@ export async function writeGeneratorOutput(
               cleanDirectory,
               fileResult.originalPath
             );
-            await fs.ensureDir(path.dirname(cleanPath));
+            await ensureDir(path.dirname(cleanPath));
             if (fileResult.cleanContents instanceof Buffer) {
               await fs.writeFile(cleanPath, fileResult.cleanContents);
             } else {
@@ -324,12 +322,16 @@ export async function writeGeneratorOutput(
 
       logger.log(`Running ${commandString}...`);
       try {
-        await exec(commandString, {
+        await executeCommand(commandString, {
           cwd: path.join(outputDirectory, workingDirectory),
         });
       } catch (err) {
         logger.error(chalk.red(`Unable to run ${commandString}`));
-        logger.error(getErrorMessage(err));
+        if (err instanceof ExecError) {
+          logger.error(err.stderr);
+        } else {
+          logger.error(getErrorMessage(err));
+        }
         failedCommands.push(command.command);
       }
     }

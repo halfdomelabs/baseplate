@@ -72,9 +72,10 @@ function resolveModule(name: string, fullPath: string): Promise<string | null> {
   });
 }
 
+const formatterFile = new URL('formatter.js', import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const piscina = new Piscina({
-  filename: path.resolve(__dirname, 'formatter'),
+  filename: formatterFile.toString(),
 });
 
 const PrettierGenerator = createGeneratorWithChildren({

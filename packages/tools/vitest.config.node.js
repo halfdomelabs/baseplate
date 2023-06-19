@@ -5,5 +5,10 @@ module.exports = defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     watch: false,
+    root: './src',
+    deps: {
+      inline: ['globby'],
+    },
+    mockReset: true,
   },
 });

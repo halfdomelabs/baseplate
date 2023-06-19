@@ -1,3 +1,4 @@
+import { createRequire } from 'module';
 import {
   copyTypescriptFileAction,
   ImportMapper,
@@ -11,12 +12,15 @@ import {
   createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
-import { formatSchema } from '@prisma/internals';
+import type { formatSchema } from '@prisma/internals';
 import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';
-import { PrismaOutputEnum, PrismaOutputModel } from '@src/types/prismaOutput.js';
+import {
+  PrismaOutputEnum,
+  PrismaOutputModel,
+} from '@src/types/prismaOutput.js';
 import { ServiceOutputEnum } from '@src/types/serviceOutput.js';
 import { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js';
 import {
@@ -51,6 +55,8 @@ export interface PrismaOutputProvider extends ImportMapper {
 
 export const prismaOutputProvider =
   createProviderType<PrismaOutputProvider>('prisma-output');
+
+const internalRequire = createRequire(import.meta.url);
 
 const PrismaGenerator = createGeneratorWithTasks({
   descriptorSchema,
@@ -141,9 +147,12 @@ const PrismaGenerator = createGeneratorWithTasks({
           }),
           build: async (builder) => {
             const schemaText = schemaFile.toText();
-            const formattedSchemaText = (await formatSchema({
+            const { formatSchema: format } = internalRequire(
+              '@prisma/internals'
+            ) as { formatSchema: typeof formatSchema };
+            const formattedSchemaText = await format({
               schema: schemaText,
-            })) as string;
+            });
             builder.writeFile(
               'prisma/schema.prisma',
               `${formattedSchemaText.trimEnd()}\n`

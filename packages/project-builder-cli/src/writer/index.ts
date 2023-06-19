@@ -1,7 +1,7 @@
 import path from 'path';
 import { FileEntry, AppEntry } from '@halfdomelabs/project-builder-lib';
 import fs from 'fs-extra';
-import globby from 'globby';
+import { globby } from 'globby';
 import stringify from 'json-stringify-pretty-compact';
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';

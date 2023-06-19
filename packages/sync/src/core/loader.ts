@@ -1,10 +1,10 @@
 import path from 'path';
-import fs from 'fs-extra';
-import globby from 'globby';
+import multimatch from 'multimatch';
 import * as R from 'ramda';
 import { z } from 'zod';
-import { getModuleDefault } from '../utils/require';
-import { GeneratorConfig } from './generator';
+import { listDirectories, pathExists, readJSON } from '@src/utils/fs.js';
+import { getModuleDefault } from '../utils/require.js';
+import { GeneratorConfig } from './generator.js';
 
 export interface GeneratorConfigWithLocation extends GeneratorConfig {
   /**
@@ -30,9 +30,9 @@ export async function loadGeneratorsForModule(
 ): Promise<GeneratorConfigMap> {
   // look for a generator.json in the root of the module
   const moduleConfigPath = path.join(modulePath, 'generator.json');
-  const moduleConfigExists = await fs.pathExists(moduleConfigPath);
+  const moduleConfigExists = await pathExists(moduleConfigPath);
   const generatorLoaderConfig = moduleConfigExists
-    ? ((await fs.readJSON(moduleConfigPath)) as unknown)
+    ? await readJSON(moduleConfigPath)
     : {};
 
   const validatedConfig = GENERATOR_LOADER_CONFIG_SCHEMA.parse(
@@ -44,38 +44,46 @@ export async function loadGeneratorsForModule(
     validatedConfig.generatorBaseDirectory
   );
 
-  const matchedGenerators = await globby(validatedConfig.generatorPatterns, {
-    cwd: generatorsDirectory,
-    onlyDirectories: true,
-  });
+  const possibleDirectories = await listDirectories(generatorsDirectory);
+  const matchedGenerators = multimatch(
+    possibleDirectories.map((directory) =>
+      directory.slice(generatorsDirectory.length + 1)
+    ),
+    validatedConfig.generatorPatterns
+  );
 
-  const generators = matchedGenerators
-    .filter((folder) => !path.basename(folder).startsWith('_'))
-    .map((folder) => {
-      const generatorFolder = path.join(generatorsDirectory, folder);
-      const generator = getModuleDefault<GeneratorConfig>(generatorFolder);
-      if (!generator) {
-        // assume there is no generator
-        return {};
-      }
-      if (!generator.createGenerator) {
-        throw new Error(
-          `Generator function lacks a createGenerator function: ${generatorFolder}`
+  const generators = await Promise.all(
+    matchedGenerators
+      .filter((folder) => !path.basename(folder).startsWith('_'))
+      .map(async (folder) => {
+        const generatorFolder = path.join(generatorsDirectory, folder);
+        const generator = await getModuleDefault<GeneratorConfig>(
+          generatorFolder
         );
-      }
-      if (!generator.parseDescriptor) {
-        throw new Error(
-          `Generator function lacks a parseDescriptor function: ${generatorFolder}`
-        );
-      }
-      const name = `${moduleName.replace(/-generators$/, '')}/${folder}`;
+        if (!generator) {
+          // assume there is no generator
+          return {};
+        }
+        if (!generator.createGenerator) {
+          throw new Error(
+            `Generator function lacks a createGenerator function: ${generatorFolder}`
+          );
+        }
+        if (!generator.parseDescriptor) {
+          throw new Error(
+            `Generator function lacks a parseDescriptor function: ${generatorFolder}`
+          );
+        }
+        const name = `${moduleName.replace(/-generators$/, '')}/${folder}`;
 
-      return {
-        [name]: {
-          ...generator,
-          configBaseDirectory: generatorFolder,
-        },
-      };
-    });
+        return {
+          [name]: {
+            ...generator,
+            configBaseDirectory: generatorFolder,
+          },
+        };
+      })
+  );
+
   return R.mergeAll(generators);
 }

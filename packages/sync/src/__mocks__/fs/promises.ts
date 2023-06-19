@@ -1,3 +1,3 @@
 import { fs } from 'memfs';
 
-export default fs;
+export default fs.promises;
