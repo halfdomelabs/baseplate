@@ -31,7 +31,7 @@ export function ConfirmDialogPopper(): JSX.Element {
       onClose={() => setConfirmOptions(undefined)}
     >
       <Dialog.Header onClose={() => setConfirmOptions(undefined)}>
-        <h3>{textOptions.current?.title}</h3>
+        {textOptions.current?.title}
       </Dialog.Header>
       <Dialog.Body>
         <p>{textOptions.current?.message}</p>

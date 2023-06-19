@@ -1,9 +1,4 @@
-import {
-  Button,
-  Dialog,
-  Tabs,
-  useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+import { Button, Tabs, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -76,7 +71,7 @@ function ModelEditPage(): JSX.Element {
       ) : (
         <Tabs>
           <Tabs.List>
-            <Tabs.Tab>General</Tabs.Tab>
+            <Tabs.Tab>Fields</Tabs.Tab>
             <Tabs.Tab>Service</Tabs.Tab>
             <Tabs.Tab>Schema</Tabs.Tab>
           </Tabs.List>
