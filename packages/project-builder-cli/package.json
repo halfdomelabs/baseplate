@@ -33,7 +33,7 @@
   },
   "scripts": {
     "start": "tsx -r dotenv/config ./src",
-    "dev": "tsx watch -r dotenv/config ./src/index.ts",
+    "dev": "tsx watch -r dotenv/config ./src",
     "dev:serve": "pnpm dev serve",
     "build": "tsc && tsc-alias",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",

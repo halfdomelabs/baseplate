@@ -1,5 +1,5 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.base.json",
+  "extends": "@halfdomelabs/tools/tsconfig.esm.json",
   "compilerOptions": {
     "outDir": "dist"
   },
