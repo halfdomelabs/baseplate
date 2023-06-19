@@ -11,7 +11,7 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({

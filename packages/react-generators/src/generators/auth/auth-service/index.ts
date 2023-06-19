@@ -10,8 +10,8 @@ import {
   copyFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactUtilsProvider } from '@src/generators/core/react-utils';
-import { reactApolloSetupProvider } from '../../apollo/react-apollo';
+import { reactUtilsProvider } from '@src/generators/core/react-utils/index.js';
+import { reactApolloSetupProvider } from '../../apollo/react-apollo/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

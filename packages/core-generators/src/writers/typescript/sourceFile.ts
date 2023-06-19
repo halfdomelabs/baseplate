@@ -3,7 +3,7 @@
 
 import path from 'path';
 import { BuilderAction, writeFormattedAction } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import {
   CallExpression,
   ExportDeclaration,
@@ -12,8 +12,8 @@ import {
   SourceFile,
   SyntaxKind,
 } from 'ts-morph';
-import { ImportMapper } from '../../providers';
-import { notEmpty } from '../../utils/array';
+import { ImportMapper } from '../../providers/index.js';
+import { notEmpty } from '../../utils/array.js';
 import {
   TypescriptCodeUtils,
   TypescriptCodeBlock,
@@ -29,13 +29,13 @@ import {
   normalizeTypescriptCodeWrappers,
   normalizeTypescriptCodeExpression,
   normalizeTypescriptStringReplacement,
-} from './codeEntries';
+} from './codeEntries.js';
 import {
   getImportDeclarationEntries,
   resolveModule,
   writeImportDeclarations,
   PathMapEntry,
-} from './imports';
+} from './imports.js';
 
 interface TypescriptCodeBlockConfig {
   type: 'code-block';

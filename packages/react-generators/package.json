@@ -2,7 +2,7 @@
   "name": "@halfdomelabs/react-generators",
   "version": "0.2.1",
   "description": "React Generators for Baseplate",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
@@ -12,12 +12,11 @@
   "files": [
     "LICENSE",
     "generator.json",
-    "lib/**/*",
+    "dist/**/*",
     "CHANGELOG"
   ],
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/inflection": "^1.13.0",
     "@types/node": "^18.0.0",
     "@types/lodash": "^4.14.191",
     "@types/ramda": "^0.27.64",
@@ -30,10 +29,10 @@
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:tsc": "tsc && tsc-alias",
-    "build:templates": "gulp buildTemplates",
+    "build:templates": "gulp -f gulpfile.cjs buildTemplates",
     "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
-    "watch:templates": "gulp watchTemplates",
+    "watch:templates": "gulp -f gulpfile.cjs watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
     "prettier:format": "prettier -w ."
@@ -43,7 +42,7 @@
     "@halfdomelabs/sync": "workspace:*",
     "@types/resolve": "^1.20.2",
     "gulp": "^4.0.2",
-    "inflection": "^1.13.2",
+    "inflection": "2.0.1",
     "lodash": "^4.17.21",
     "ramda": "^0.28.0",
     "resolve": "^1.22.2",
@@ -55,5 +54,6 @@
   },
   "volta": {
     "node": "18.16.0"
-  }
+  },
+  "type": "module"
 }

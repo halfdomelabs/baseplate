@@ -2,17 +2,17 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import R from 'ramda';
+import * as R from 'ramda';
 import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
   ServiceOutputDtoScalarField,
-} from '@src/types/serviceOutput';
+} from '@src/types/serviceOutput.js';
 import {
   ChildInputDefinition,
   NexusDefinitionWriterOptions,
   writeNexusInputDefinitionFromDtoFields,
-} from '../nexus-definition';
+} from '../nexus-definition/index.js';
 
 export interface ArgOutput {
   expression: TypescriptCodeExpression;

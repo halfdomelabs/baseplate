@@ -3,8 +3,8 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import R from 'ramda';
-import { ReactRouteLayout, ReactRoute } from '@src/providers/routes';
+import * as R from 'ramda';
+import { ReactRouteLayout, ReactRoute } from '@src/providers/routes.js';
 
 export function renderRoutes(
   routes: ReactRoute[],

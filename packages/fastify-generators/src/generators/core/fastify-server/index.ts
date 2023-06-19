@@ -12,11 +12,11 @@ import {
   createProviderType,
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
-import { configServiceProvider } from '../config-service';
-import { loggerServiceProvider } from '../logger-service';
-import { rootModuleProvider } from '../root-module';
+import { configServiceProvider } from '../config-service/index.js';
+import { loggerServiceProvider } from '../logger-service/index.js';
+import { rootModuleProvider } from '../root-module/index.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(7001),

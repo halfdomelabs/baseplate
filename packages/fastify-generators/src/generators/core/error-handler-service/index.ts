@@ -12,9 +12,9 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { configServiceProvider } from '../config-service';
-import { fastifyServerProvider } from '../fastify-server';
-import { loggerServiceProvider } from '../logger-service';
+import { configServiceProvider } from '../config-service/index.js';
+import { fastifyServerProvider } from '../fastify-server/index.js';
+import { loggerServiceProvider } from '../logger-service/index.js';
 
 const descriptorSchema = z.object({});
 

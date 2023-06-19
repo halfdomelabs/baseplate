@@ -4,12 +4,12 @@ import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
-import { buildProjectForDirectory } from '@src/runner';
-import { logError } from '@src/services/error-logger';
-import { logger } from '@src/services/logger';
-import { expandPathWithTilde } from '@src/utils/path';
-import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter';
-import { getPackageVersion } from '@src/utils/version';
+import { buildProjectForDirectory } from '@src/runner/index.js';
+import { logError } from '@src/services/error-logger.js';
+import { logger } from '@src/services/logger.js';
+import { expandPathWithTilde } from '@src/utils/path.js';
+import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter.js';
+import { getPackageVersion } from '@src/utils/version.js';
 
 export interface FilePayload {
   contents: string;

@@ -8,11 +8,11 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
-import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { reactConfigProvider } from '@src/generators/core/react-config';
-import { reactErrorProvider } from '@src/generators/core/react-error';
-import { reactRoutesProvider } from '@src/providers/routes';
+import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactConfigProvider } from '@src/generators/core/react-config/index.js';
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
 
 const descriptorSchema = z.object({
   bullBoardUrl: z.string().min(1),

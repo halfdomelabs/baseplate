@@ -5,8 +5,8 @@ import {
   NonOverwriteableMap,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import { nodeProvider } from '../node';
-import { generateConfig } from './generateConfig';
+import { nodeProvider } from '../node/index.js';
+import { generateConfig } from './generateConfig.js';
 
 interface EslintConfig {
   react?: boolean;

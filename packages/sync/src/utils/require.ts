@@ -1,24 +1,13 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
-
-/**
- * Simple wrapper for require.resolve for easier unit testing
- */
-export function resolveModule(module: string): string {
-  return require.resolve(module);
-}
+import path from 'path';
 
 /**
  * Simple function to load a module dynamically
  *
  * @param module Name of module to load
  */
-export function getModuleDefault<T>(module: string): T | null {
-  try {
-    return require(module)?.default as T;
-  } catch (err) {
-    return null;
-  }
+export async function getModuleDefault<T>(module: string): Promise<T | null> {
+  const importedModule = (await import(path.join(module, 'index.js'))) as {
+    default: T;
+  };
+  return importedModule?.default;
 }

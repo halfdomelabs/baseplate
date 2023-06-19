@@ -12,12 +12,12 @@ import { z } from 'zod';
 import {
   authInfoImportProvider,
   authServiceImportProvider,
-} from '@src/generators/auth/auth-service';
-import { roleServiceProvider } from '@src/generators/auth/role-service';
-import { configServiceProvider } from '@src/generators/core/config-service';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
+} from '@src/generators/auth/auth-service/index.js';
+import { roleServiceProvider } from '@src/generators/auth/role-service/index.js';
+import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 
 const descriptorSchema = z.object({
   userModelName: z.string().min(1),

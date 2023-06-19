@@ -1,11 +1,12 @@
-import { formatterProvider } from '@src/providers';
-import { createEventedLogger } from '@src/utils';
-import { ProviderDependencyMap, ProviderExportMap } from '../generator';
-import { GeneratorOutputBuilder } from '../generator-output';
-import { Provider, createProviderType } from '../provider';
-import { GeneratorEntry } from './generator-builder';
-import { executeGeneratorEntry } from './generator-runner';
-import { buildTestGeneratorEntry } from './tests/factories.test-helper';
+import { describe, expect, it, vi } from 'vitest';
+import { formatterProvider } from '@src/providers/index.js';
+import { createEventedLogger } from '@src/utils/index.js';
+import { GeneratorOutputBuilder } from '../generator-output.js';
+import { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
+import { createProviderType, Provider } from '../provider.js';
+import { GeneratorEntry } from './generator-builder.js';
+import { executeGeneratorEntry } from './generator-runner.js';
+import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
 
 const logger = createEventedLogger({ noConsole: true });
 
@@ -83,9 +84,9 @@ describe('executeGeneratorEntry', () => {
   });
 
   it('generates a nested entry', async () => {
-    const formatter = { format: jest.fn() };
+    const formatter = { format: vi.fn() };
     const simpleProviderType = createProviderType('simple');
-    const simpleProvider = { hello: jest.fn() };
+    const simpleProvider = { hello: vi.fn() };
     const entry = buildGeneratorEntry({
       id: 'root',
       exportMap: {

@@ -4,11 +4,11 @@ import {
   createNonOverwriteableMap,
   writeJsonAction,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
 import { z } from 'zod';
-import { projectProvider } from '../../../providers';
+import { projectProvider } from '../../../providers/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

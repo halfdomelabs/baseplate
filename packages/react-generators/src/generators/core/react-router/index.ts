@@ -15,11 +15,11 @@ import {
   reactRoutesProvider,
   ReactRoute,
   reactRoutesReadOnlyProvider,
-} from '@src/providers/routes';
-import { notEmpty } from '@src/utils/array';
-import { renderRoutes } from '../_shared/routes/renderRoutes';
-import { reactProvider } from '../react';
-import { reactAppProvider } from '../react-app';
+} from '@src/providers/routes.js';
+import { notEmpty } from '@src/utils/array.js';
+import { renderRoutes } from '../_shared/routes/renderRoutes.js';
+import { reactProvider } from '../react/index.js';
+import { reactAppProvider } from '../react-app/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

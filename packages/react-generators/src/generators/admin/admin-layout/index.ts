@@ -9,11 +9,11 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authComponentsProvider } from '@src/generators/auth/auth-components';
-import { authHooksProvider } from '@src/generators/auth/auth-hooks';
-import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { reactTailwindProvider } from '@src/generators/core/react-tailwind';
-import { reactRoutesProvider } from '@src/providers/routes';
+import { authComponentsProvider } from '@src/generators/auth/auth-components/index.js';
+import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactTailwindProvider } from '@src/generators/core/react-tailwind/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
 
 const linkItemSchema = z.object({
   type: z.literal('link'),

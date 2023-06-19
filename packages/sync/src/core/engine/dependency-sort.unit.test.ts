@@ -1,6 +1,7 @@
-import { createProviderType } from '../provider';
-import { getSortedRunSteps } from './dependency-sort';
-import { buildTestGeneratorTaskEntry } from './tests/factories.test-helper';
+import { describe, expect, it } from 'vitest';
+import { createProviderType } from '../provider.js';
+import { getSortedRunSteps } from './dependency-sort.js';
+import { buildTestGeneratorTaskEntry } from './tests/factories.test-helper.js';
 
 describe('getSortedRunSteps', () => {
   it('sorts an empty list', () => {

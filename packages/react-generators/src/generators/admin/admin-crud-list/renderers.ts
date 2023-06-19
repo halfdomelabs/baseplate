@@ -3,7 +3,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { z } from 'zod';
-import { GraphQLField } from '@src/writers/graphql';
+import { GraphQLField } from '@src/writers/graphql/index.js';
 
 export const adminCrudTextRendererSchema = z.object({
   type: z.literal('text'),

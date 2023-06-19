@@ -1,8 +1,8 @@
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
-import { ScalarFieldType } from '@src/types/fieldTypes';
-import { doubleQuot } from '@src/utils/string';
-import { PrismaModelAttribute, PrismaModelField } from './model-writer';
+import { ScalarFieldType } from '@src/types/fieldTypes.js';
+import { doubleQuot } from '@src/utils/string.js';
+import { PrismaModelAttribute, PrismaModelField } from './model-writer.js';
 
 export interface PrismaFieldTypeConfig<
   Schema extends z.ZodType = z.AnyZodObject

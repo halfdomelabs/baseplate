@@ -1,5 +1,8 @@
-import { relative } from 'path-browserify';
 import { ProjectConfig, WebAppConfig } from '@src/schema/index.js';
+import {
+  getBackendApp,
+  getBackendRelativePath,
+} from '@src/schema-utils/index.js';
 import { AppEntry } from '@src/types/files.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
@@ -7,19 +10,8 @@ import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
 
-  const backendApps = projectConfig.apps.filter((a) => a.type === 'backend');
-
-  if (backendApps.length > 1 || !backendApps.length) {
-    throw new Error(`Only one backend app is supported and must exist`);
-  }
-
-  const backendApp = backendApps[0];
-
-  // TODO: Extract out logic
-  const backendRelativePath = relative(
-    appConfig.packageLocation || `packages/${appConfig.name}`,
-    backendApp.packageLocation || `packages/${backendApp.name}`
-  );
+  const backendApp = getBackendApp(projectConfig);
+  const backendRelativePath = getBackendRelativePath(appConfig, backendApp);
 
   return {
     name: 'react',

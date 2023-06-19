@@ -12,9 +12,9 @@ import {
 } from '@halfdomelabs/sync';
 import { paramCase } from 'change-case';
 import { z } from 'zod';
-import { ServiceOutputMethod } from '@src/types/serviceOutput';
-import { notEmpty } from '@src/utils/array';
-import { appModuleProvider } from '../root-module';
+import { ServiceOutputMethod } from '@src/types/serviceOutput.js';
+import { notEmpty } from '@src/utils/array.js';
+import { appModuleProvider } from '../root-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

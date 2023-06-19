@@ -8,8 +8,10 @@ import {
 } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import globby from 'globby';
-import R from 'ramda';
+import { globby } from 'globby';
+import { packageDirectory } from 'pkg-dir';
+import * as R from 'ramda';
+import { resolveModule } from '@src/utils/resolve.js';
 
 const GENERATOR_MODULES = [
   '@halfdomelabs/core-generators',
@@ -21,8 +23,20 @@ let cachedEngine: GeneratorEngine;
 
 async function getGeneratorEngine(): Promise<GeneratorEngine> {
   if (!cachedEngine) {
+    const resolvedGeneratorPaths = await Promise.all(
+      GENERATOR_MODULES.map(
+        async (moduleName): Promise<[string, string]> => [
+          moduleName,
+          (await packageDirectory({
+            cwd: resolveModule(moduleName),
+          })) || '',
+        ]
+      )
+    );
     const generators = await Promise.all(
-      GENERATOR_MODULES.map(loadGeneratorsForModule)
+      resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
+        loadGeneratorsForModule(moduleName, modulePath)
+      )
     );
     const generatorMap = R.mergeAll(generators);
 

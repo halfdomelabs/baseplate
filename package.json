@@ -5,7 +5,8 @@
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "check-dependency-version-consistency": "^4.1.0",
-    "nx": "15.7.2"
+    "nx": "15.7.2",
+    "typescript": "4.9.5"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",

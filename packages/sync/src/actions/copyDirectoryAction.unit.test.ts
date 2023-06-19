@@ -1,15 +1,17 @@
 import { vol } from 'memfs';
-import { OutputBuilder } from '../core';
-import { copyDirectoryAction } from './copyDirectoryAction';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { OutputBuilder } from '../core/index.js';
+import { copyDirectoryAction } from './copyDirectoryAction.js';
 
-jest.mock('fs');
+vi.mock('fs');
+vi.mock('fs/promises');
 
 beforeEach(() => {
   vol.reset();
 });
 
 describe('copyDirectoryAction', () => {
-  const formatter = { format: jest.fn() };
+  const formatter = { format: vi.fn() };
   it('should copy an empty directory', async () => {
     await vol.promises.mkdir('/generator/templates', { recursive: true });
 

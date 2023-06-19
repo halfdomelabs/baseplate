@@ -1,1 +1,1 @@
-export * from './copyTypescriptFileAction';
+export * from './copyTypescriptFileAction.js';

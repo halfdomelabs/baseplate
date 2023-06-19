@@ -8,7 +8,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { configServiceProvider } from '@src/generators/core/config-service';
+import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 
 const descriptorSchema = z.object({});
 

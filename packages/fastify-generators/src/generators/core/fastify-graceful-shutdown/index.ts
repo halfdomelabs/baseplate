@@ -5,9 +5,9 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { errorHandlerServiceProvider } from '../error-handler-service';
-import { fastifyServerProvider } from '../fastify-server';
-import { loggerServiceProvider } from '../logger-service';
+import { errorHandlerServiceProvider } from '../error-handler-service/index.js';
+import { fastifyServerProvider } from '../fastify-server/index.js';
+import { loggerServiceProvider } from '../logger-service/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

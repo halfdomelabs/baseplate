@@ -19,12 +19,12 @@
     "@swc/core": "^1.3.58",
     "@types/node": "^18.0.0",
     "@types/ramda": "^0.27.64",
-    "node-dev": "^8.0.0",
+    "tsx": "^3.12.7",
     "typescript": "4.9.5"
   },
   "scripts": {
-    "start": "tsc && node dist/index.js",
-    "dev": "node-dev --respawn ./src/index.ts",
+    "start": "tsx ./src",
+    "dev": "tsx watch ./src",
     "build": "tsc",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
@@ -36,6 +36,9 @@
     "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
     "commander": "^8.3.0",
+    "import-meta-resolve": "^3.0.0",
+    "pkg-dir": "^7.0.0",
+    "pkg-up": "^4.0.0",
     "ramda": "^0.28.0"
   },
   "engines": {
@@ -43,5 +46,6 @@
   },
   "volta": {
     "node": "18.16.0"
-  }
+  },
+  "type": "module"
 }

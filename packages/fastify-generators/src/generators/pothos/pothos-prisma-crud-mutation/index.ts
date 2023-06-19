@@ -10,17 +10,17 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { serviceFileOutputProvider } from '@src/generators/core/service-file';
-import { pothosFieldProvider } from '@src/providers/pothos-field';
-import { pothosTypeOutputProvider } from '@src/providers/pothos-type';
-import { lowerCaseFirst } from '@src/utils/case';
+import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
+import { pothosFieldProvider } from '@src/providers/pothos-field.js';
+import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   writePothosInputFieldsFromDtoFields,
   writePothosSimpleObjectFieldsFromDtoFields,
-} from '@src/writers/pothos';
-import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers';
-import { pothosSchemaProvider } from '../pothos';
-import { pothosTypesFileProvider } from '../pothos-types-file';
+} from '@src/writers/pothos/index.js';
+import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
+import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

@@ -7,12 +7,12 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { authProvider } from '../auth';
-import { authServiceImportProvider } from '../auth-service';
-import { passwordHasherServiceProvider } from '../password-hasher-service';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { authProvider } from '../auth/index.js';
+import { authServiceImportProvider } from '../auth-service/index.js';
+import { passwordHasherServiceProvider } from '../password-hasher-service/index.js';
 
 const descriptorSchema = z.object({});
 

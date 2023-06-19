@@ -8,7 +8,7 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { appModuleProvider } from '@src/generators/core/root-module';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

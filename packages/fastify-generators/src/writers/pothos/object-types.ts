@@ -2,19 +2,19 @@ import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
-} from '@src/types/serviceOutput';
-import { notEmpty } from '@src/utils/array';
-import { lowerCaseFirst } from '@src/utils/case';
+} from '@src/types/serviceOutput.js';
+import { notEmpty } from '@src/utils/array.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   PothosExpressionWithChildren,
   PothosTypeDefinitionWithChildren,
-} from './definitions';
-import { wrapPothosTypeWithList, writePothosFieldOptions } from './helpers';
+} from './definitions.js';
+import { wrapPothosTypeWithList, writePothosFieldOptions } from './helpers.js';
 import {
   getExpressionFromPothosTypeReference,
   PothosWriterOptions,
-} from './options';
-import { writePothosObjectFieldFromDtoScalarField } from './scalar-fields';
+} from './options.js';
+import { writePothosObjectFieldFromDtoScalarField } from './scalar-fields.js';
 
 export function writeSimplePothosObjectFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,

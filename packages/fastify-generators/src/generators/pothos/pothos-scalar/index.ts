@@ -8,10 +8,10 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { ScalarFieldType } from '@src/types/fieldTypes';
-import { pothosSetupProvider } from '../pothos';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { ScalarFieldType } from '@src/types/fieldTypes.js';
+import { pothosSetupProvider } from '../pothos/index.js';
 
 interface PothosScalarConfig {
   name: string;

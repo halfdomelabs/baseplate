@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { createTypedEventEmitter } from './typed-event-emitter';
+import { createTypedEventEmitter } from './typed-event-emitter.js';
 
 export interface Logger {
   log(message: string): void;

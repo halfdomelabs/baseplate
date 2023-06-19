@@ -4,8 +4,8 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { apolloErrorProvider } from '@src/generators/apollo/apollo-error';
-import { reactApolloSetupProvider } from '@src/generators/apollo/react-apollo';
+import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/index.js';
+import { reactApolloSetupProvider } from '@src/generators/apollo/react-apollo/index.js';
 
 const descriptorSchema = z.object({});
 

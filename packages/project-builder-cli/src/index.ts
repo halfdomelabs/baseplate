@@ -3,10 +3,10 @@ import {
   buildProjectForDirectory,
   BuildProjectForDirectoryOptions,
   buildToCleanFolder,
-} from './runner';
-import { startWebServer } from './server';
-import { logger } from './services/logger';
-import { getPackageVersion } from './utils/version';
+} from './runner/index.js';
+import { startWebServer } from './server/index.js';
+import { logger } from './services/logger.js';
+import { getPackageVersion } from './utils/version.js';
 
 async function runMain(): Promise<void> {
   const version = await getPackageVersion();

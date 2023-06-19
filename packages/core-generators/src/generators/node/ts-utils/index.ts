@@ -3,8 +3,8 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { copyTypescriptFileAction } from '../../../actions';
-import { ImportMapper } from '../../../providers';
+import { copyTypescriptFileAction } from '../../../actions/index.js';
+import { ImportMapper } from '../../../providers/index.js';
 
 const descriptorSchema = z.object({});
 

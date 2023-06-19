@@ -107,6 +107,7 @@ module.exports = function createEslintConfig(options) {
         'error',
         {
           devDependencies: [
+            '**/*.test-helper.ts',
             '**/*.test.ts',
             '**/*.stories.ts',
             '**/*.mdx',
