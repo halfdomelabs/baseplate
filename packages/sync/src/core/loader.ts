@@ -18,8 +18,8 @@ export type GeneratorConfigMap = Record<string, GeneratorConfigWithLocation>;
 // Generator modules have the ability to add a generator.json to the root to specify
 // where the loader should look for generators
 const GENERATOR_LOADER_CONFIG_SCHEMA = z.object({
-  // the base directory to look for generators, defaults to the lib/generators folder
-  generatorBaseDirectory: z.string().default('lib/generators'),
+  // the base directory to look for generators, defaults to the dist/generators folder
+  generatorBaseDirectory: z.string().default('dist/generators'),
   // glob patterns to match generators
   generatorPatterns: z.array(z.string()).default(['*']),
 });

@@ -7,15 +7,15 @@
     "access": "restricted"
   },
   "version": "0.1.0",
-  "main": "./lib/index.js",
+  "main": "./dist/index.js",
   "exports": {
-    ".": "./lib/index.js",
+    ".": "./dist/index.js",
     "./tailwind-base": "./tailwind.config.ts",
     "./global.css": "./src/global.css"
   },
   "files": [
     "LICENSE",
-    "lib/**/*",
+    "dist/**/*",
     "CHANGELOG"
   ],
   "browserslist": {
@@ -111,7 +111,7 @@
           "^production"
         ],
         "outputs": [
-          "{projectRoot}/lib",
+          "{projectRoot}/dist",
           "{projectRoot}/tailwind.config.js"
         ]
       },

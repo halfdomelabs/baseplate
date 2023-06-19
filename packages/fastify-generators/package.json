@@ -2,7 +2,7 @@
   "name": "@halfdomelabs/fastify-generators",
   "version": "0.3.0",
   "description": "Fastify generators for Baseplate",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
@@ -12,7 +12,7 @@
   "files": [
     "LICENSE",
     "generator.json",
-    "lib/**/*",
+    "dist/**/*",
     "CHANGELOG"
   ],
   "devDependencies": {
