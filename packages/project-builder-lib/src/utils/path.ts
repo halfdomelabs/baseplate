@@ -1,9 +1,16 @@
+function cleanAndSplitPath(path: string): string[] {
+  return path
+    .replace(/^\./, '')
+    .split('/')
+    .filter((segment) => segment !== '');
+}
+
 /**
  * Computes the relative path from one path to another.
  */
 export function computeRelativePath(fromPath: string, toPath: string): string {
-  const fromSegments = fromPath.split('/');
-  const toSegments = toPath.split('/');
+  const fromSegments = cleanAndSplitPath(fromPath);
+  const toSegments = cleanAndSplitPath(toPath);
 
   // Remove the common segments from the beginning
   while (

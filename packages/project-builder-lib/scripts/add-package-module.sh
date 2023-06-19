@@ -1,12 +1,12 @@
 #!/bin/sh
 
-cat >lib/cjs/package.json <<!EOF
+cat >dist/cjs/package.json <<!EOF
 {
     "type": "commonjs"
 }
 !EOF
 
-cat >lib/esm/package.json <<!EOF
+cat >dist/esm/package.json <<!EOF
 {
     "type": "module"
 }
