@@ -22,10 +22,10 @@ export async function startWebServer(
       'code' in err &&
       err.code === 'EADDRINUSE'
     ) {
-      logger.info('Port in use - retrying in 100ms...');
+      logger.info('Port in use - retrying in 500ms...');
       // wait a bit and try again since it could be tsx restarting
       await new Promise((resolve) => {
-        setTimeout(resolve, 100);
+        setTimeout(resolve, 500);
       });
       await server.listen({ port });
     } else {

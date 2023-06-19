@@ -135,14 +135,10 @@ const PrettierGenerator = createGeneratorWithChildren({
               }
 
               const prettierModule = await prettierModulePromise;
-              const timeStart = Date.now();
-              const output = prettierModule.format(input, {
+              return prettierModule.format(input, {
                 ...prettierConfig,
                 filepath: fullPath,
               });
-              const timeEnd = Date.now();
-              console.log(`Formatted ${fullPath} in ${timeEnd - timeStart}ms`);
-              return output;
             },
           },
           prettier: {
