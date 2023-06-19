@@ -1,18 +1,18 @@
 import { TypescriptSourceBlock } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { nexusTypeProvider } from '@src/providers/nexus-type';
-import { lowerCaseFirst } from '@src/utils/case';
-import { quot } from '@src/utils/string';
-import { writeNexusArgsFromDtoFields } from '@src/writers/nexus-args';
+import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { nexusTypeProvider } from '@src/providers/nexus-type.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
+import { quot } from '@src/utils/string.js';
+import { writeNexusArgsFromDtoFields } from '@src/writers/nexus-args/index.js';
 import {
   NexusDefinitionWriterOptions,
   writeChildInputDefinition,
-} from '@src/writers/nexus-definition';
-import { nexusSchemaProvider } from '../nexus';
-import { nexusTypesFileProvider } from '../nexus-types-file';
+} from '@src/writers/nexus-definition/index.js';
+import { nexusSchemaProvider } from '../nexus/index.js';
+import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

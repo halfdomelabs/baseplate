@@ -8,9 +8,9 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { authInfoProvider } from '../auth-service';
-import { roleServiceProvider } from '../role-service';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { authInfoProvider } from '../auth-service/index.js';
+import { roleServiceProvider } from '../role-service/index.js';
 
 const descriptorSchema = z.object({
   userRoleModelName: z.string().min(1),

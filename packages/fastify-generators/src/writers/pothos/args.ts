@@ -7,14 +7,14 @@ import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
   ServiceOutputDtoScalarField,
-} from '@src/types/serviceOutput';
-import { PothosTypeDefinition } from './definitions';
+} from '@src/types/serviceOutput.js';
+import { PothosTypeDefinition } from './definitions.js';
 import {
   getPothosMethodAndTypeForScalar,
   writePothosFieldOptions,
-} from './helpers';
-import { getPothosTypeForNestedInput } from './input-types';
-import { PothosWriterOptions } from './options';
+} from './helpers.js';
+import { getPothosTypeForNestedInput } from './input-types.js';
+import { PothosWriterOptions } from './options.js';
 
 export interface PothosArgOutput {
   expression: TypescriptCodeExpression;

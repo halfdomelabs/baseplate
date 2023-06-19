@@ -13,9 +13,9 @@ import {
 } from '@halfdomelabs/sync';
 import R from 'ramda';
 import { z } from 'zod';
-import { notEmpty } from '@src/utils/array';
-import { requestContextProvider } from '../request-context';
-import { serviceContextSetupProvider } from '../service-context';
+import { notEmpty } from '@src/utils/array.js';
+import { requestContextProvider } from '../request-context/index.js';
+import { serviceContextSetupProvider } from '../service-context/index.js';
 
 const descriptorSchema = z.object({});
 

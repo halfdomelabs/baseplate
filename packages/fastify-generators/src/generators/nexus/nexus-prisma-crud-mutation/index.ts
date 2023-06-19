@@ -8,19 +8,19 @@ import {
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { singularize } from 'inflection';
 import { z } from 'zod';
-import { serviceFileOutputProvider } from '@src/generators/core/service-file';
-import { nexusTypeProvider } from '@src/providers/nexus-type';
+import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
+import { nexusTypeProvider } from '@src/providers/nexus-type.js';
 import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
-} from '@src/types/serviceOutput';
-import { lowerCaseFirst } from '@src/utils/case';
+} from '@src/types/serviceOutput.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   writeChildInputDefinition,
   writeNexusInputDefinitionFromDtoFields,
-} from '@src/writers/nexus-definition';
-import { nexusSchemaProvider } from '../nexus';
-import { nexusTypesFileProvider } from '../nexus-types-file';
+} from '@src/writers/nexus-definition/index.js';
+import { nexusSchemaProvider } from '../nexus/index.js';
+import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

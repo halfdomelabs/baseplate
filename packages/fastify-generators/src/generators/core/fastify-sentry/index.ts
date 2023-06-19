@@ -14,15 +14,15 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authInfoImportProvider } from '@src/generators/auth/auth-service';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { configServiceProvider } from '../config-service';
+import { authInfoImportProvider } from '@src/generators/auth/auth-service/index.js';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { configServiceProvider } from '../config-service/index.js';
 import {
   errorHandlerServiceProvider,
   errorHandlerServiceSetupProvider,
-} from '../error-handler-service';
-import { fastifyServerProvider } from '../fastify-server';
-import { requestContextProvider } from '../request-context';
+} from '../error-handler-service/index.js';
+import { fastifyServerProvider } from '../fastify-server/index.js';
+import { requestContextProvider } from '../request-context/index.js';
 
 const descriptorSchema = z.object({});
 

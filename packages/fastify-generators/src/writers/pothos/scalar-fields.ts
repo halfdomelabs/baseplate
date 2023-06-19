@@ -3,13 +3,13 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { ServiceOutputDtoScalarField } from '@src/types/serviceOutput';
-import { upperCaseFirst } from '@src/utils/case';
+import { ServiceOutputDtoScalarField } from '@src/types/serviceOutput.js';
+import { upperCaseFirst } from '@src/utils/case.js';
 import {
   getPothosMethodAndTypeForScalar,
   writePothosFieldOptions,
-} from './helpers';
-import { PothosWriterOptions } from './options';
+} from './helpers.js';
+import { PothosWriterOptions } from './options.js';
 
 export function writePothosInputFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,

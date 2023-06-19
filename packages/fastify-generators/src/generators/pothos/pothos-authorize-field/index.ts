@@ -3,11 +3,11 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { pothosFieldProvider } from '@src/providers/pothos-field';
+import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import {
   pothosAuthorizeConfigSchema,
   pothosAuthProvider,
-} from '../pothos-auth';
+} from '../pothos-auth/index.js';
 
 const descriptorSchema = pothosAuthorizeConfigSchema;
 

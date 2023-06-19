@@ -12,8 +12,8 @@ import {
 import { paramCase } from 'change-case';
 import R from 'ramda';
 import { z } from 'zod';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { pothosSetupProvider } from '../pothos';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { pothosSetupProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

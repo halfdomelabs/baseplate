@@ -1,6 +1,6 @@
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
-import { nexusTypeProvider } from '@src/providers/nexus-type';
-import { authorizeConfigSchema, nexusAuthProvider } from '../nexus-auth';
+import { nexusTypeProvider } from '@src/providers/nexus-type.js';
+import { authorizeConfigSchema, nexusAuthProvider } from '../nexus-auth/index.js';
 
 const descriptorSchema = authorizeConfigSchema;
 

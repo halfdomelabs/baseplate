@@ -16,7 +16,7 @@ import {
 } from '@halfdomelabs/sync';
 import R from 'ramda';
 import { z } from 'zod';
-import { fastifyProvider } from '../fastify';
+import { fastifyProvider } from '../fastify/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

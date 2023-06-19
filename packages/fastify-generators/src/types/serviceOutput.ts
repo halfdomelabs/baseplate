@@ -1,12 +1,12 @@
 // standard typings of service output
 
 import { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
-import { ScalarFieldType } from './fieldTypes';
+import { ScalarFieldType } from './fieldTypes.js';
 import {
   PrismaOutputModel,
   PrismaOutputRelationField,
   PrismaOutputScalarField,
-} from './prismaOutput';
+} from './prismaOutput.js';
 
 // TODO: Rename ServiceOutput to Service since it's both inputs and outputs
 

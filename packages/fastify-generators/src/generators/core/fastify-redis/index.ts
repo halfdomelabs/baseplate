@@ -13,8 +13,8 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { configServiceProvider } from '../config-service';
-import { fastifyHealthCheckProvider } from '../fastify-health-check';
+import { configServiceProvider } from '../config-service/index.js';
+import { fastifyHealthCheckProvider } from '../fastify-health-check/index.js';
 
 const descriptorSchema = z.object({
   defaultUrl: z.string().min(1),

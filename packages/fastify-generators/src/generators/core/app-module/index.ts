@@ -11,7 +11,7 @@ import {
 import { paramCase } from 'change-case';
 import R from 'ramda';
 import { z } from 'zod';
-import { appModuleProvider } from '../root-module';
+import { appModuleProvider } from '../root-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

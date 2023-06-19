@@ -8,16 +8,16 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { serviceFileProvider } from '@src/generators/core/service-file';
+import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
 import {
   prismaToServiceOutputDto,
   ServiceOutputMethod,
-} from '@src/types/serviceOutput';
+} from '@src/types/serviceOutput.js';
 import {
   getPrimaryKeyDefinition,
   getPrimaryKeyExpressions,
-} from '../_shared/crud-method/primary-key-input';
-import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
+} from '../_shared/crud-method/primary-key-input.js';
+import { PrismaOutputProvider, prismaOutputProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

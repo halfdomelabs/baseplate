@@ -1,8 +1,8 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { nexusTypesFileProvider } from '../nexus-types-file';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
 
 const descriptorSchema = z.object({
   enumName: z.string().min(1),

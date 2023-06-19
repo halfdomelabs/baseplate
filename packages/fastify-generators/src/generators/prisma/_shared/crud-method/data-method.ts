@@ -4,21 +4,21 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import R from 'ramda';
-import { ServiceContextProvider } from '@src/generators/core/service-context';
+import { ServiceContextProvider } from '@src/generators/core/service-context/index.js';
 import {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
-} from '@src/providers/prisma/prisma-data-transformable';
-import { getScalarFieldTypeInfo } from '@src/types/fieldTypes';
+} from '@src/providers/prisma/prisma-data-transformable.js';
+import { getScalarFieldTypeInfo } from '@src/types/fieldTypes.js';
 import {
   PrismaOutputRelationField,
   PrismaOutputScalarField,
-} from '@src/types/prismaOutput';
-import { ServiceOutputDto } from '@src/types/serviceOutput';
-import { notEmpty } from '@src/utils/array';
-import { upperCaseFirst } from '@src/utils/case';
-import { PrismaOutputProvider } from '../../prisma';
-import { PrismaUtilsProvider } from '../../prisma-utils';
+} from '@src/types/prismaOutput.js';
+import { ServiceOutputDto } from '@src/types/serviceOutput.js';
+import { notEmpty } from '@src/utils/array.js';
+import { upperCaseFirst } from '@src/utils/case.js';
+import { PrismaOutputProvider } from '../../prisma/index.js';
+import { PrismaUtilsProvider } from '../../prisma-utils/index.js';
 
 export interface PrismaDataMethodOptions {
   name: string;

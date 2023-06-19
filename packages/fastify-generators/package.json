@@ -27,10 +27,10 @@
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:tsc": "tsc && tsc-alias",
-    "build:templates": "gulp buildTemplates",
+    "build:templates": "gulp -f gulpfile.cjs buildTemplates",
     "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
-    "watch:templates": "gulp watchTemplates",
+    "watch:templates": "gulp -f gulpfile.cjs watchTemplates",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
     "prettier:format": "prettier -w ."
@@ -56,5 +56,6 @@
   },
   "volta": {
     "node": "18.16.0"
-  }
+  },
+  "type": "module"
 }
