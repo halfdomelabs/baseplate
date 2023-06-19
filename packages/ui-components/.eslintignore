@@ -7,3 +7,4 @@
 postcss.config.cjs
 tailwind.config.ts
 src/setupProxy.js
+vitest.config.ts
