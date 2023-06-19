@@ -14,30 +14,30 @@ import {
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
 import { z } from 'zod';
-import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { reactErrorProvider } from '@src/generators/core/react-error';
-import { notEmpty } from '@src/utils/array';
-import { upperCaseFirst } from '@src/utils/case';
-import { GraphQLField } from '@src/writers/graphql';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { notEmpty } from '@src/utils/array.js';
+import { upperCaseFirst } from '@src/utils/case.js';
+import { GraphQLField } from '@src/writers/graphql/index.js';
 import {
   AdminCrudColumn,
   adminCrudColumnContainerProvider,
-} from '../_providers/admin-crud-column-container';
+} from '../_providers/admin-crud-column-container.js';
 import {
   AdminCrudInput,
   adminCrudInputContainerProvider,
   AdminCrudInputValidation,
-} from '../_providers/admin-crud-input-container';
+} from '../_providers/admin-crud-input-container.js';
 import {
   AdminCrudDataDependency,
   getPassthroughExtraProps,
   mergeAdminCrudDataDependencies,
-} from '../_utils/data-loaders';
+} from '../_utils/data-loaders.js';
 import {
   adminComponentsProvider,
   AdminComponentsProvider,
-} from '../admin-components';
-import { adminCrudEditProvider } from '../admin-crud-edit';
+} from '../admin-components/index.js';
+import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
 
 const descriptorSchema = z.object({
   name: z.string(),

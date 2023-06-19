@@ -4,11 +4,11 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service';
-import { prismaUtilsProvider } from '@src/generators/prisma/prisma-utils';
-import { PrismaOutputRelationField } from '@src/types/prismaOutput';
-import { storageModuleProvider } from '../storage-module';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service/index.js';
+import { prismaUtilsProvider } from '@src/generators/prisma/prisma-utils/index.js';
+import { PrismaOutputRelationField } from '@src/types/prismaOutput.js';
+import { storageModuleProvider } from '../storage-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string(),

@@ -3,8 +3,10 @@
 import path from 'path';
 import { GeneratorEngine, loadGeneratorsForModule } from '@halfdomelabs/sync';
 import { program } from 'commander';
-import R from 'ramda';
-import resolve from 'resolve';
+import { packageDirectory } from 'pkg-dir';
+import * as R from 'ramda';
+import { resolveModule } from './resolve.js';
+import { getPackageVersion } from './version.js';
 
 const GENERATOR_MODULES = [
   '@halfdomelabs/core-generators',
@@ -12,33 +14,17 @@ const GENERATOR_MODULES = [
   '@halfdomelabs/react-generators',
 ];
 
-const resolveAsync = (moduleName: string): Promise<string> =>
-  new Promise((resolvePromise, rejectPromise) => {
-    resolve(moduleName, (err, resolvedPath) => {
-      if (!resolvedPath) {
-        rejectPromise(
-          new Error(
-            `Could not resolve module ${moduleName} from ${process.cwd()}`
-          )
-        );
-      } else if (err) {
-        rejectPromise(err);
-      } else {
-        resolvePromise(resolvedPath);
-      }
-    });
-  });
-
 let cachedEngine: GeneratorEngine;
+
 async function getGeneratorEngine(): Promise<GeneratorEngine> {
   if (!cachedEngine) {
     const resolvedGeneratorPaths = await Promise.all(
       GENERATOR_MODULES.map(
         async (moduleName): Promise<[string, string]> => [
           moduleName,
-          path.dirname(
-            await resolveAsync(path.join(moduleName, 'package.json'))
-          ),
+          (await packageDirectory({
+            cwd: resolveModule(moduleName),
+          })) || '',
         ]
       )
     );
@@ -63,15 +49,8 @@ async function generateForDirectory(directory: string): Promise<void> {
   console.log('Project successfully generated!');
 }
 
-async function getVersion(): Promise<string> {
-  const packageJson = (await import(
-    path.resolve(__dirname, '../package.json')
-  )) as Record<string, string>;
-  return packageJson?.version;
-}
-
 async function runMain(): Promise<void> {
-  const version = await getVersion();
+  const version = (await getPackageVersion()) || '0.0.0';
   program.version(version || 'unknown');
   program
     .command('generate <directory>')

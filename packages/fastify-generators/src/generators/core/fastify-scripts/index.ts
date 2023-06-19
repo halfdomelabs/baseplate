@@ -6,7 +6,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { fastifyOutputProvider } from '../fastify';
+import { fastifyOutputProvider } from '../fastify/index.js';
 
 const descriptorSchema = z.object({});
 

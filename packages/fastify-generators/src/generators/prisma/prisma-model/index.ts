@@ -10,8 +10,8 @@ import {
   PrismaModelAttribute,
   PrismaModelBlockWriter,
   PrismaModelField,
-} from '@src/writers/prisma-schema';
-import { prismaSchemaProvider } from '../prisma';
+} from '@src/writers/prisma-schema/index.js';
+import { prismaSchemaProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

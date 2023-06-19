@@ -1,4 +1,4 @@
-import R from 'ramda';
+import * as R from 'ramda';
 
 /**
  * A provider is a dictionary of functions that allow a generator

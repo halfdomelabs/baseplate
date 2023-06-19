@@ -8,9 +8,9 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { reactRoutesProvider } from '@src/providers/routes';
-import { writeReactComponent } from '@src/writers/component';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
+import { writeReactComponent } from '@src/writers/component/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

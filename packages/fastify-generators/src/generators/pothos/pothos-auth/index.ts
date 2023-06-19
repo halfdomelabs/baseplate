@@ -9,9 +9,9 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authProvider } from '@src/generators/auth/auth';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { pothosSetupProvider } from '../pothos';
+import { authProvider } from '@src/generators/auth/auth/index.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { pothosSetupProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   requireOnRootFields: z.boolean().default(true),

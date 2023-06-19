@@ -5,32 +5,35 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
-import { serviceContextProvider } from '@src/generators/core/service-context';
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
 import {
   PrismaDataTransformer,
   PrismaDataTransformerOptions,
   PrismaDataTransformInputField,
-} from '@src/providers/prisma/prisma-data-transformable';
+} from '@src/providers/prisma/prisma-data-transformable.js';
 import {
   PrismaOutputModel,
   PrismaOutputRelationField,
-} from '@src/types/prismaOutput';
-import { notEmpty } from '@src/utils/array';
-import { upperCaseFirst } from '@src/utils/case';
+} from '@src/types/prismaOutput.js';
+import { notEmpty } from '@src/utils/array.js';
+import { upperCaseFirst } from '@src/utils/case.js';
 import {
   getDataInputTypeBlock,
   getDataMethodDataExpressions,
   getDataMethodDataType,
   PrismaDataMethodOptions,
-} from '../_shared/crud-method/data-method';
-import { PrismaOutputProvider, prismaOutputProvider } from '../prisma';
+} from '../_shared/crud-method/data-method.js';
+import { PrismaOutputProvider, prismaOutputProvider } from '../prisma/index.js';
 import {
   prismaCrudServiceProvider,
   prismaCrudServiceSetupProvider,
-} from '../prisma-crud-service';
-import { PrismaUtilsProvider, prismaUtilsProvider } from '../prisma-utils';
+} from '../prisma-crud-service/index.js';
+import {
+  PrismaUtilsProvider,
+  prismaUtilsProvider,
+} from '../prisma-utils/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

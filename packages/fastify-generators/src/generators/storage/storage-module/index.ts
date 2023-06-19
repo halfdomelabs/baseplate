@@ -14,17 +14,17 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { configServiceProvider } from '@src/generators/core/config-service';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { serviceContextProvider } from '@src/generators/core/service-context';
+import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
 import {
   pothosSchemaProvider,
   pothosSetupProvider,
-} from '@src/generators/pothos/pothos';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { prismaUtilsProvider } from '@src/generators/prisma/prisma-utils';
-import { pothosTypeOutputProvider } from '@src/providers/pothos-type';
+} from '@src/generators/pothos/pothos/index.js';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { prismaUtilsProvider } from '@src/generators/prisma/prisma-utils/index.js';
+import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
 
 const descriptorSchema = z.object({
   fileModel: z.string().min(1),

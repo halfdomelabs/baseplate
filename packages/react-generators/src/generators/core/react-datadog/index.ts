@@ -12,8 +12,8 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authIdentifyProvider } from '@src/generators/auth/auth-identify';
-import { reactConfigProvider } from '../react-config';
+import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
+import { reactConfigProvider } from '../react-config/index.js';
 
 const descriptorSchema = z.object({});
 

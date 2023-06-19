@@ -1,21 +1,16 @@
-import childProcess from 'child_process';
 import { vol } from 'memfs';
-import { FormatterProvider } from '@src/providers';
-import { createEventedLogger } from '../utils';
-import { writeGeneratorOutput } from './generator-output-writer';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { FormatterProvider } from '@src/providers/index.js';
+import { executeCommand } from '../utils/exec.js';
+import { createEventedLogger } from '../utils/index.js';
+import { writeGeneratorOutput } from './generator-output-writer.js';
 
-jest.mock('fs');
+vi.mock('fs');
+vi.mock('fs/promises');
 
-jest.mock('child_process');
+vi.mock('../utils/exec.js');
 
-const mockedChildProcess = jest.mocked(childProcess);
-
-// tricky to properly mock exec
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-mockedChildProcess.exec.mockImplementation((...args): any => {
-  (args[args.length - 1] as unknown as () => void)();
-});
+const mockedExecuteCommand = vi.mocked(executeCommand);
 
 beforeEach(() => {
   vol.reset();
@@ -37,7 +32,7 @@ describe('writeGeneratorOutput', () => {
   });
 
   it('should write files only', async () => {
-    const formatFunction = jest.fn().mockResolvedValue('formatted-output');
+    const formatFunction = vi.fn().mockResolvedValue('formatted-output');
     const testFormatter: FormatterProvider = {
       format: formatFunction,
     };
@@ -210,9 +205,9 @@ describe('writeGeneratorOutput', () => {
     );
     expect(vol.toJSON()).toEqual({});
 
-    expect(mockedChildProcess.exec.mock.calls[0][0]).toBe('yarn install');
-    expect(mockedChildProcess.exec.mock.calls[1][0]).toBe('custom');
-    expect(mockedChildProcess.exec.mock.calls[1][1]).toMatchObject({
+    expect(mockedExecuteCommand.mock.calls[0][0]).toBe('yarn install');
+    expect(mockedExecuteCommand.mock.calls[1][0]).toBe('custom');
+    expect(mockedExecuteCommand.mock.calls[1][1]).toMatchObject({
       cwd: '/root/folder',
     });
   });
@@ -246,8 +241,8 @@ describe('writeGeneratorOutput', () => {
       '/root/file2.txt': 'hello',
     });
 
-    expect(mockedChildProcess.exec.mock.calls[0][0]).toBe('custom');
-    expect(mockedChildProcess.exec).toHaveBeenCalledTimes(1);
+    expect(mockedExecuteCommand.mock.calls[0][0]).toBe('custom');
+    expect(mockedExecuteCommand).toHaveBeenCalledTimes(1);
   });
 
   it('should run post-write commands only on modified binary files', async () => {
@@ -272,6 +267,6 @@ describe('writeGeneratorOutput', () => {
       '/root/file.txt': 'binary-data',
     });
 
-    expect(mockedChildProcess.exec).toHaveBeenCalledTimes(0);
+    expect(mockedExecuteCommand).toHaveBeenCalledTimes(0);
   });
 });

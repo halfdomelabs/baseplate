@@ -18,7 +18,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { setupViteNode } from './node';
+import { setupViteNode } from './node.js';
 
 const descriptorSchema = z.object({
   title: z.string().default('React App'),

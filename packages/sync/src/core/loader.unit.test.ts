@@ -1,12 +1,15 @@
 import { vol } from 'memfs';
-import * as requireUtils from '../utils/require';
-import { GeneratorConfig } from './generator';
-import { loadGeneratorsForModule } from './loader';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import * as requireUtils from '../utils/require.js';
+import { GeneratorConfig } from './generator.js';
+import { loadGeneratorsForModule } from './loader.js';
 
-jest.mock('fs');
-jest.mock('../utils/require');
+vi.mock('fs');
+vi.mock('fs/promises');
+vi.mock('node:fs');
+vi.mock('../utils/require');
 
-const mockedRequireUtils = jest.mocked(requireUtils);
+const mockedRequireUtils = vi.mocked(requireUtils);
 
 beforeEach(() => {
   vol.reset();
@@ -16,24 +19,30 @@ describe('loadGeneratorsForModule', () => {
   it('loads a set of generators from a folder', async () => {
     vol.fromJSON(
       {
-        '/modules/test-generators/lib/generators/generatorOne/index.ts': 'a();',
-        '/modules/test-generators/lib/generators/generatorTwo/index.ts': 'a();',
-        '/modules/test-generators/lib/generators/_ignored/index.ts': 'a();',
-        '/modules/test-generators/lib/generators/index.ts': 'a();',
-        '/modules/test-generators/lib/random/foo.yml': 'test',
+        '/modules/test-generators/dist/generators/generatorOne/index.ts':
+          'a();',
+        '/modules/test-generators/dist/generators/generatorTwo/index.ts':
+          'a();',
+        '/modules/test-generators/dist/generators/_ignored/index.ts': 'a();',
+        '/modules/test-generators/dist/generators/index.ts': 'a();',
+        '/modules/test-generators/dist/random/foo.yml': 'test',
+        '/modules/test-generators/generator.json': JSON.stringify({
+          generatorBaseDirectory: 'dist/generators',
+          generatorPatterns: ['*'],
+        }),
       },
       '/modules/test-generators'
     );
     const mockGeneratorOne: GeneratorConfig = {
-      parseDescriptor: jest.fn(),
-      createGenerator: jest.fn(),
+      parseDescriptor: vi.fn(),
+      createGenerator: vi.fn(),
     };
     const mockGeneratorTwo: GeneratorConfig = {
-      parseDescriptor: jest.fn(),
-      createGenerator: jest.fn(),
+      parseDescriptor: vi.fn(),
+      createGenerator: vi.fn(),
     };
-    mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorOne);
-    mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorTwo);
+    mockedRequireUtils.getModuleDefault.mockResolvedValueOnce(mockGeneratorOne);
+    mockedRequireUtils.getModuleDefault.mockResolvedValueOnce(mockGeneratorTwo);
 
     const generator = await loadGeneratorsForModule(
       '@halfdomelabs/test-generators',
@@ -44,20 +53,20 @@ describe('loadGeneratorsForModule', () => {
       '@halfdomelabs/test/generatorOne': {
         ...mockGeneratorOne,
         configBaseDirectory:
-          '/modules/test-generators/lib/generators/generatorOne',
+          '/modules/test-generators/dist/generators/generatorOne',
       },
       '@halfdomelabs/test/generatorTwo': {
         ...mockGeneratorTwo,
         configBaseDirectory:
-          '/modules/test-generators/lib/generators/generatorTwo',
+          '/modules/test-generators/dist/generators/generatorTwo',
       },
     });
 
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/lib/generators/generatorOne'
+      '/modules/test-generators/dist/generators/generatorOne'
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/lib/generators/generatorTwo'
+      '/modules/test-generators/dist/generators/generatorTwo'
     );
   });
 
@@ -79,15 +88,15 @@ describe('loadGeneratorsForModule', () => {
       '/modules/test-generators'
     );
     const mockGeneratorOne: GeneratorConfig = {
-      parseDescriptor: jest.fn(),
-      createGenerator: jest.fn(),
+      parseDescriptor: vi.fn(),
+      createGenerator: vi.fn(),
     };
     const mockGeneratorTwo: GeneratorConfig = {
-      parseDescriptor: jest.fn(),
-      createGenerator: jest.fn(),
+      parseDescriptor: vi.fn(),
+      createGenerator: vi.fn(),
     };
-    mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorOne);
-    mockedRequireUtils.getModuleDefault.mockReturnValueOnce(mockGeneratorTwo);
+    mockedRequireUtils.getModuleDefault.mockResolvedValueOnce(mockGeneratorOne);
+    mockedRequireUtils.getModuleDefault.mockResolvedValueOnce(mockGeneratorTwo);
 
     const generator = await loadGeneratorsForModule(
       '@halfdomelabs/test-generators',

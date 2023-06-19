@@ -9,10 +9,10 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { fastifyOutputProvider } from '@src/generators/core/fastify';
-import { fastifyRedisProvider } from '@src/generators/core/fastify-redis';
-import { loggerServiceProvider } from '@src/generators/core/logger-service';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
+import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
+import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
 
 const descriptorSchema = z.object({});
 

@@ -6,8 +6,8 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { fastifyServerProvider } from '@src/generators/core/fastify-server';
-import { requestServiceContextSetupProvider } from '../request-service-context';
+import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
+import { requestServiceContextSetupProvider } from '../request-service-context/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

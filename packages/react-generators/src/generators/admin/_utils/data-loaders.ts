@@ -3,8 +3,8 @@ import {
   GraphQLFragment,
   GraphQLRoot,
   mergeGraphQLFragments,
-} from '@src/writers/graphql';
-import { DataLoader } from '../_providers/admin-loader';
+} from '@src/writers/graphql/index.js';
+import { DataLoader } from '../_providers/admin-loader.js';
 
 export interface AdminCrudDataDependency {
   propName: string;

@@ -1,3 +1,3 @@
-export * from './imports';
-export * from './codeEntries';
-export * from './sourceFile';
+export * from './imports.js';
+export * from './codeEntries.js';
+export * from './sourceFile.js';

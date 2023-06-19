@@ -1,13 +1,14 @@
-import { createEventedLogger } from '@src/utils';
-import { ProviderDependencyMap, ProviderExportMap } from '../generator';
-import { GeneratorConfigMap } from '../loader';
-import { createProviderType } from '../provider';
-import { loadDescriptorFromFile } from './descriptor-loader';
-import { buildGeneratorEntry, getGeneratorId } from './generator-builder';
+import { describe, expect, it, vi } from 'vitest';
+import { createEventedLogger } from '@src/utils/index.js';
+import { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
+import { GeneratorConfigMap } from '../loader.js';
+import { createProviderType } from '../provider.js';
+import { loadDescriptorFromFile } from './descriptor-loader.js';
+import { buildGeneratorEntry, getGeneratorId } from './generator-builder.js';
 
-jest.mock('./descriptor-loader');
+vi.mock('./descriptor-loader');
 
-const mockedLoad = jest.mocked(loadDescriptorFromFile);
+const mockedLoad = vi.mocked(loadDescriptorFromFile);
 
 describe('getGeneratorId', () => {
   const DESCRIPTOR = { generator: 'foobar' };
@@ -60,7 +61,7 @@ describe('buildGeneratorEntry', () => {
           dependencies: simpleDependencies,
           exports: simpleExports,
           taskDependencies: [],
-          run: jest.fn(),
+          run: vi.fn(),
         },
       ],
       configBaseDirectory: '/simple',

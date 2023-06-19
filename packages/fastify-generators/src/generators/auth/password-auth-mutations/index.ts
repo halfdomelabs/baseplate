@@ -5,12 +5,12 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { authProvider } from '../auth';
-import { authMutationsProvider } from '../auth-mutations';
-import { passwordAuthServiceProvider } from '../password-auth-service';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { nexusSchemaProvider } from '@src/generators/nexus/nexus/index.js';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { authProvider } from '../auth/index.js';
+import { authMutationsProvider } from '../auth-mutations/index.js';
+import { passwordAuthServiceProvider } from '../password-auth-service/index.js';
 
 const descriptorSchema = z.object({});
 

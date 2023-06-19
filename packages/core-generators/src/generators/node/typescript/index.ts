@@ -7,27 +7,27 @@ import {
   WriteFileOptions,
   writeJsonAction,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { CompilerOptions, ts } from 'ts-morph';
 import {
   copyTypescriptFilesAction,
   CopyTypescriptFilesOptions,
-} from '@src/actions/copyTypescriptFilesAction';
+} from '@src/actions/copyTypescriptFilesAction.js';
 import {
   copyTypescriptFileAction,
   CopyTypescriptFileOptions,
-} from '../../../actions';
-import { TypescriptCodeBlock } from '../../../writers';
+} from '../../../actions/index.js';
+import { TypescriptCodeBlock } from '../../../writers/index.js';
 import {
   PathMapEntry,
   resolveModule,
-} from '../../../writers/typescript/imports';
+} from '../../../writers/typescript/imports.js';
 import {
   TypescriptSourceFile,
   TypescriptSourceFileOptions,
   TypescriptTemplateConfigOrEntry,
-} from '../../../writers/typescript/sourceFile';
-import { nodeProvider } from '../node';
+} from '../../../writers/typescript/sourceFile.js';
+import { nodeProvider } from '../node/index.js';
 
 // can use CompilerOptions from Typescript but it requires awkwardly serializing
 // CompilerOptions which would have to be done manually

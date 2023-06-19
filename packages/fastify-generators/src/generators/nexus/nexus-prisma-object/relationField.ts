@@ -3,17 +3,17 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import R from 'ramda';
-import { PrismaOutputProvider } from '@src/generators/prisma/prisma';
+import * as R from 'ramda';
+import { PrismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import {
   PrismaOutputModel,
   PrismaOutputRelationField,
-} from '@src/types/prismaOutput';
-import { ServiceOutputDtoNestedField } from '@src/types/serviceOutput';
+} from '@src/types/prismaOutput.js';
+import { ServiceOutputDtoNestedField } from '@src/types/serviceOutput.js';
 import {
   NexusDefinitionWriterOptions,
   writeNexusObjectTypeFieldFromDtoNestedField,
-} from '@src/writers/nexus-definition';
+} from '@src/writers/nexus-definition/index.js';
 
 interface RelationFieldWriterContext {
   prismaOutput: PrismaOutputProvider;

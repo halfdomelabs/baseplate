@@ -1,8 +1,8 @@
 import path from 'path';
 import { createBuilderActionCreator } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
-import { ImportMapper } from '../providers';
-import { PathMapEntry, TypescriptSourceFile } from '../writers';
+import { ImportMapper } from '../providers/index.js';
+import { PathMapEntry, TypescriptSourceFile } from '../writers/index.js';
 
 export interface CopyTypescriptFileOptions {
   destination?: string;

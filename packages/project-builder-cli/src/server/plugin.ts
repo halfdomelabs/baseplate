@@ -1,11 +1,11 @@
 import crypto from 'crypto';
 import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { FastifyInstance } from 'fastify';
-import { logError } from '@src/services/error-logger';
-import { logger } from '@src/services/logger';
-import { HttpError, NotFoundError } from '@src/utils/http-errors';
-import { getPackageVersion } from '@src/utils/version';
-import { FilePayload, ProjectBuilderApi } from './api';
+import { logError } from '@src/services/error-logger.js';
+import { logger } from '@src/services/logger.js';
+import { HttpError, NotFoundError } from '@src/utils/http-errors.js';
+import { getPackageVersion } from '@src/utils/version.js';
+import { FilePayload, ProjectBuilderApi } from './api.js';
 
 interface ConnectMessage {
   type: 'connect';

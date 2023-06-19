@@ -9,13 +9,13 @@ const TEMPLATE_GLOBS = [
 function cleanTemplates() {
   return del(
     TEMPLATE_GLOBS.map((glob) =>
-      glob.replace('src/generators', 'lib/generators')
+      glob.replace('src/generators', 'dist/generators')
     )
   );
 }
 
 function buildTemplates() {
-  return gulp.src(TEMPLATE_GLOBS).pipe(gulp.dest('lib/generators/'));
+  return gulp.src(TEMPLATE_GLOBS).pipe(gulp.dest('dist/generators/'));
 }
 
 exports.cleanTemplates = cleanTemplates;

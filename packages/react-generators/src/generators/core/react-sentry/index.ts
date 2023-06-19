@@ -6,9 +6,9 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authIdentifyProvider } from '@src/generators/auth/auth-identify';
-import { reactConfigProvider } from '../react-config';
-import { reactErrorProvider } from '../react-error';
+import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
+import { reactConfigProvider } from '../react-config/index.js';
+import { reactErrorProvider } from '../react-error/index.js';
 
 const descriptorSchema = z.object({});
 

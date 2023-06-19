@@ -1,5 +1,5 @@
-import { createProviderType } from '../core/provider';
-import { Logger } from '../utils/evented-logger';
+import { createProviderType } from '../core/provider.js';
+import { Logger } from '../utils/evented-logger.js';
 
 export interface FormatterProvider {
   format: (

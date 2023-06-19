@@ -8,9 +8,10 @@ import {
 } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import globby from 'globby';
-import R from 'ramda';
-import resolve from 'resolve';
+import { globby } from 'globby';
+import { packageDirectory } from 'pkg-dir';
+import * as R from 'ramda';
+import { resolveModule } from '@src/utils/resolve.js';
 
 const GENERATOR_MODULES = [
   '@halfdomelabs/core-generators',
@@ -20,32 +21,15 @@ const GENERATOR_MODULES = [
 
 let cachedEngine: GeneratorEngine;
 
-const resolveAsync = (moduleName: string): Promise<string> =>
-  new Promise((resolvePromise, rejectPromise) => {
-    resolve(moduleName, (err, resolvedPath) => {
-      if (!resolvedPath) {
-        rejectPromise(
-          new Error(
-            `Could not resolve module ${moduleName} from ${process.cwd()}`
-          )
-        );
-      } else if (err) {
-        rejectPromise(err);
-      } else {
-        resolvePromise(resolvedPath);
-      }
-    });
-  });
-
 async function getGeneratorEngine(): Promise<GeneratorEngine> {
   if (!cachedEngine) {
     const resolvedGeneratorPaths = await Promise.all(
       GENERATOR_MODULES.map(
         async (moduleName): Promise<[string, string]> => [
           moduleName,
-          path.dirname(
-            await resolveAsync(path.join(moduleName, 'package.json'))
-          ),
+          (await packageDirectory({
+            cwd: resolveModule(moduleName),
+          })) || '',
         ]
       )
     );

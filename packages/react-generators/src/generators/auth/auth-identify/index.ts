@@ -8,8 +8,8 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactRouterProvider } from '@src/generators/core/react-router';
-import { authHooksProvider } from '../auth-hooks';
+import { reactRouterProvider } from '@src/generators/core/react-router/index.js';
+import { authHooksProvider } from '../auth-hooks/index.js';
 
 const descriptorSchema = z.object({});
 

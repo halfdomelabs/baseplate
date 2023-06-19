@@ -7,13 +7,13 @@ import {
   createNonOverwriteableMap,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
-import inflection from 'inflection';
+import { pluralize } from 'inflection';
 import { z } from 'zod';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { pothosFieldProvider } from '@src/providers/pothos-field';
-import { lowerCaseFirst } from '@src/utils/case';
-import { quot } from '@src/utils/string';
-import { pothosTypesFileProvider } from '../pothos-types-file';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { pothosFieldProvider } from '@src/providers/pothos-field.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
+import { quot } from '@src/utils/string.js';
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -39,7 +39,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
       throw new Error(`Model ${modelName} does not have an ID field`);
     }
 
-    const queryName = inflection.pluralize(lowerCaseFirst(modelName));
+    const queryName = pluralize(lowerCaseFirst(modelName));
 
     const customFields = createNonOverwriteableMap<
       Record<string, TypescriptCodeExpression>

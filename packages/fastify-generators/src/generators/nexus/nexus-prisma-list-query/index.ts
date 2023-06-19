@@ -2,10 +2,10 @@ import { TypescriptSourceBlock } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import inflection from 'inflection';
 import { z } from 'zod';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { nexusTypeProvider } from '@src/providers/nexus-type';
-import { lowerCaseFirst } from '@src/utils/case';
-import { nexusTypesFileProvider } from '../nexus-types-file';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { nexusTypeProvider } from '@src/providers/nexus-type.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
+import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

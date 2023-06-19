@@ -10,11 +10,11 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { fastifyRedisProvider } from '@src/generators/core/fastify-redis';
-import { fastifyServerProvider } from '@src/generators/core/fastify-server';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { pothosSchemaProvider } from '@src/generators/pothos/pothos';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
+import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { pothosSchemaProvider } from '@src/generators/pothos/pothos/index.js';
 
 const descriptorSchema = z.object({});
 

@@ -1,4 +1,6 @@
-import { GeneratorEntry, GeneratorTaskEntry } from '../generator-builder';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { vi } from 'vitest';
+import { GeneratorEntry, GeneratorTaskEntry } from '../generator-builder.js';
 
 let lastGeneratorId = 100;
 let lastTaskId = 100;
@@ -17,7 +19,7 @@ export function buildTestGeneratorTaskEntry(
       exports: {},
       dependencies: {},
       taskDependencies: [],
-      run: jest.fn(),
+      run: vi.fn(),
     },
     generatorBaseDirectory: '/',
     generatorName: 'test-generator',
@@ -48,7 +50,7 @@ export function buildTestGeneratorEntry(
     generatorConfig: {
       configBaseDirectory: '/',
       createGenerator: () => tasks.map((t) => t.task),
-      parseDescriptor: jest.fn(),
+      parseDescriptor: vi.fn(),
     },
     children: [],
     tasks,

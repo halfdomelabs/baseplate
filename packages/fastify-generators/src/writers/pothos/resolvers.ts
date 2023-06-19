@@ -7,7 +7,7 @@ import { singularize } from 'inflection';
 import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
-} from '@src/types/serviceOutput';
+} from '@src/types/serviceOutput.js';
 
 function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,

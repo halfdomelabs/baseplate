@@ -4,8 +4,8 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactProvider } from '../react';
-import { reactConfigProvider } from '../react-config';
+import { reactProvider } from '../react/index.js';
+import { reactConfigProvider } from '../react-config/index.js';
 
 const descriptorSchema = z.object({
   devBackendHost: z.string().min(1),

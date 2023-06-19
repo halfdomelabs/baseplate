@@ -5,9 +5,9 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context';
-import { serviceContextSetupProvider } from '@src/generators/core/service-context';
-import { authInfoImportProvider } from '../auth-service';
+import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context/index.js';
+import { serviceContextSetupProvider } from '@src/generators/core/service-context/index.js';
+import { authInfoImportProvider } from '../auth-service/index.js';
 
 const descriptorSchema = z.object({
   authInfoRef: z.string().min(1),

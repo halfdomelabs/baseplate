@@ -8,9 +8,9 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authHooksProvider } from '@src/generators/auth/auth-hooks';
-import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { reactRoutesProvider } from '@src/providers/routes';
+import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

@@ -1,1 +1,1 @@
-export { reactProvider, ReactProvider } from './generators/core/react';
+export { reactProvider, ReactProvider } from './generators/core/react/index.js';

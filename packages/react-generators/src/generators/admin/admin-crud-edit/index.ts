@@ -12,20 +12,20 @@ import {
 import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';
-import { reactComponentsProvider } from '@src/generators/core/react-components';
-import { reactErrorProvider } from '@src/generators/core/react-error';
-import { reactRoutesProvider } from '@src/providers/routes';
-import { notEmpty } from '@src/utils/array';
-import { lowerCaseFirst, titleizeCamel } from '@src/utils/case';
-import { createRouteElement } from '@src/utils/routes';
-import { mergeGraphQLFields } from '@src/writers/graphql';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
+import { notEmpty } from '@src/utils/array.js';
+import { lowerCaseFirst, titleizeCamel } from '@src/utils/case.js';
+import { createRouteElement } from '@src/utils/routes.js';
+import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
 import {
   AdminCrudInput,
   adminCrudInputContainerProvider,
-} from '../_providers/admin-crud-input-container';
-import { DataLoader, printDataLoaders } from '../_providers/admin-loader';
-import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders';
-import { adminCrudQueriesProvider } from '../admin-crud-queries';
+} from '../_providers/admin-crud-input-container.js';
+import { DataLoader, printDataLoaders } from '../_providers/admin-loader.js';
+import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
+import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string(),

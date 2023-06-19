@@ -1,6 +1,6 @@
-import { ScalarFieldType } from '@src/types/fieldTypes';
-import { PrismaOutputModel } from '@src/types/prismaOutput';
-import { PrismaModelBlock } from './types';
+import { ScalarFieldType } from '@src/types/fieldTypes.js';
+import { PrismaOutputModel } from '@src/types/prismaOutput.js';
+import { PrismaModelBlock } from './types.js';
 
 interface ModelBlockOptions {
   name: string;

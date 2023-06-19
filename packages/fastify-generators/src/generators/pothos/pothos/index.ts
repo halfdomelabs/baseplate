@@ -17,11 +17,11 @@ import {
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { fastifyOutputProvider } from '@src/generators/core/fastify';
-import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
-import { rootModuleImportProvider } from '@src/generators/core/root-module';
-import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin';
-import { PothosTypeReferenceContainer } from '@src/writers/pothos';
+import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
+import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
+import { rootModuleImportProvider } from '@src/generators/core/root-module/index.js';
+import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
+import { PothosTypeReferenceContainer } from '@src/writers/pothos/index.js';
 
 const descriptorSchema = z.object({});
 

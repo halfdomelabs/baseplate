@@ -8,8 +8,8 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { ReactRoute, reactRoutesProvider } from '@src/providers/routes';
-import { reactComponentsProvider } from '../react-components';
+import { ReactRoute, reactRoutesProvider } from '@src/providers/routes.js';
+import { reactComponentsProvider } from '../react-components/index.js';
 
 const descriptorSchema = z.object({
   layoutKey: z.string().optional(),

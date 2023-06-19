@@ -16,19 +16,19 @@ import {
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { fastifyOutputProvider } from '@src/generators/core/fastify';
-import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
+import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
+import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
 import {
   rootModuleImportProvider,
   rootModuleProvider,
-} from '@src/generators/core/root-module';
-import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin';
-import { ScalarFieldType } from '@src/types/fieldTypes';
-import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition';
+} from '@src/generators/core/root-module/index.js';
+import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
+import { ScalarFieldType } from '@src/types/fieldTypes.js';
+import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition/index.js';
 import {
   DEFAULT_NEXUS_SCALAR_CONFIG,
   NexusScalarConfig,
-} from '@src/writers/nexus-definition/scalars';
+} from '@src/writers/nexus-definition/scalars.js';
 
 const descriptorSchema = z.object({
   enableSubscriptions: z.boolean().optional(),
