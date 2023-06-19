@@ -1,5 +1,9 @@
 import * as R from 'ramda';
-import { ProviderType, ProviderDependency, ProviderExport } from '../provider.js';
+import {
+  ProviderType,
+  ProviderDependency,
+  ProviderExport,
+} from '../provider.js';
 import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder.js';
 
 /**

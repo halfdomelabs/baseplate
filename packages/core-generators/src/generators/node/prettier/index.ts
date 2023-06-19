@@ -1,6 +1,7 @@
 // because we manually require
 /* eslint-disable import/no-import-module-exports */
 
+import { createRequire } from 'module';
 import path from 'path';
 import {
   formatterProvider,
@@ -9,7 +10,7 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
-import { Piscina } from 'piscina';
+import prettier from 'prettier';
 import requireResolve from 'resolve';
 import { z } from 'zod';
 import { nodeProvider } from '../node/index.js';
@@ -52,9 +53,15 @@ const PARSEABLE_EXTENSIONS = [
 
 const PRETTIER_VERSION = '2.8.4';
 
+interface PrettierModule {
+  format(input: string, config: Record<string, unknown>): string;
+}
+
 interface ResolveError extends Error {
   code?: string;
 }
+
+const require = createRequire(import.meta.url);
 
 function resolveModule(name: string, fullPath: string): Promise<string | null> {
   const basedir = path.dirname(fullPath);
@@ -71,12 +78,6 @@ function resolveModule(name: string, fullPath: string): Promise<string | null> {
     });
   });
 }
-
-const formatterFile = new URL('formatter.js', import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-const piscina = new Piscina({
-  filename: formatterFile.toString(),
-});
 
 const PrettierGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -101,7 +102,7 @@ const PrettierGenerator = createGeneratorWithChildren({
     ];
     return {
       getProviders: () => {
-        let prettierLibPathPromise: Promise<string | null> | undefined;
+        let prettierModulePromise: Promise<PrettierModule> | undefined;
 
         return {
           formatter: {
@@ -109,8 +110,8 @@ const PrettierGenerator = createGeneratorWithChildren({
               if (!PARSEABLE_EXTENSIONS.includes(path.extname(fullPath))) {
                 return input;
               }
-              if (!prettierLibPathPromise) {
-                prettierLibPathPromise = (async () => {
+              if (!prettierModulePromise) {
+                prettierModulePromise = (async () => {
                   const prettierLibPath = await resolveModule(
                     'prettier',
                     fullPath
@@ -119,28 +120,18 @@ const PrettierGenerator = createGeneratorWithChildren({
                     logger.log(
                       'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.'
                     );
-                    return null;
+                    return prettier;
                   }
-                  return prettierLibPath;
+                  // eslint-disable-next-line import/no-dynamic-require
+                  return require(prettierLibPath) as PrettierModule;
                 })();
               }
 
-              const prettierLibPath = await prettierLibPathPromise;
+              const prettierModule = await prettierModulePromise;
 
-              // no prettier lib found
-              if (!prettierLibPath) {
-                return input;
-              }
-
-              // run in separate worker thread to avoid issues with caching modules and triggering restarts of process while developing
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-              return piscina.run({
-                prettierLibPath,
-                input,
-                config: {
-                  ...prettierConfig,
-                  filepath: fullPath,
-                },
+              return prettierModule.format(input, {
+                ...prettierConfig,
+                filepath: fullPath,
               });
             },
           },
