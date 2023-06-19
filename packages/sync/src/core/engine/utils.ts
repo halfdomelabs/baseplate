@@ -1,4 +1,4 @@
-import R from 'ramda';
+import * as R from 'ramda';
 import { ProviderType, ProviderDependency, ProviderExport } from '../provider';
 import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder';
 

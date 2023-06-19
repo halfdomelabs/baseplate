@@ -1,4 +1,5 @@
-import { resolveModule } from './imports';
+import { describe, it, expect } from 'vitest';
+import { resolveModule } from './imports.js';
 
 describe('resolveModule', () => {
   it('does not alter normal module import', () => {

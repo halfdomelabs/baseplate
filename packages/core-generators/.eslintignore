@@ -2,7 +2,7 @@
 /dist
 /lib
 /node_modules
-jest.config.js
-gulpfile.js
+gulpfile.cjs
+.eslintrc.cjs
 templates/
-.eslintrc.js
+vite.config.ts

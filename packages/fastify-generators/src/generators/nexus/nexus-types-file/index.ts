@@ -10,7 +10,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { paramCase } from 'change-case';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { nexusSchemaProvider } from '../nexus/index.js';

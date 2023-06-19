@@ -2,7 +2,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import R from 'ramda';
+import * as R from 'ramda';
 import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,

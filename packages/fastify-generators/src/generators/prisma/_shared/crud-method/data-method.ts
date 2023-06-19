@@ -3,7 +3,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import R from 'ramda';
+import * as R from 'ramda';
 import { ServiceContextProvider } from '@src/generators/core/service-context/index.js';
 import {
   PrismaDataTransformer,

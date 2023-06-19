@@ -9,10 +9,10 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
-import Piscina from 'piscina';
+import { Piscina } from 'piscina';
 import requireResolve from 'resolve';
 import { z } from 'zod';
-import { nodeProvider } from '../node';
+import { nodeProvider } from '../node/index.js';
 
 const descriptorSchema = z.object({
   tabWidth: z.number().default(2),
@@ -72,6 +72,7 @@ function resolveModule(name: string, fullPath: string): Promise<string | null> {
   });
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const piscina = new Piscina({
   filename: path.resolve(__dirname, 'formatter'),
 });
@@ -131,6 +132,7 @@ const PrettierGenerator = createGeneratorWithChildren({
               }
 
               // run in separate worker thread to avoid issues with caching modules and triggering restarts of process while developing
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
               return piscina.run({
                 prettierLibPath,
                 input,

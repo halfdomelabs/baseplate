@@ -1,7 +1,10 @@
 /* eslint-disable max-classes-per-file */
 import indentString from 'indent-string';
-import R from 'ramda';
-import { PrismaOutputEnum, PrismaOutputModel } from '@src/types/prismaOutput.js';
+import * as R from 'ramda';
+import {
+  PrismaOutputEnum,
+  PrismaOutputModel,
+} from '@src/types/prismaOutput.js';
 import { PrismaModelBlockWriter } from './model-writer.js';
 import {
   PrismaDatasourceBlock,

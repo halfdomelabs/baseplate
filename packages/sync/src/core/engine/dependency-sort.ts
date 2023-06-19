@@ -1,4 +1,4 @@
-import R from 'ramda';
+import * as R from 'ramda';
 import toposort from 'toposort';
 import { notEmpty } from '@src/utils/arrays';
 import { ProviderExportMap } from '../generator';

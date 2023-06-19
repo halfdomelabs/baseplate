@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import R from 'ramda';
+import * as R from 'ramda';
 
 type ArrayKeys<T> = {
   [K in keyof T]: T[K] extends Array<unknown> ? K : never;

@@ -5,7 +5,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
 import {
@@ -30,7 +30,10 @@ import {
   prismaCrudServiceProvider,
   prismaCrudServiceSetupProvider,
 } from '../prisma-crud-service/index.js';
-import { PrismaUtilsProvider, prismaUtilsProvider } from '../prisma-utils/index.js';
+import {
+  PrismaUtilsProvider,
+  prismaUtilsProvider,
+} from '../prisma-utils/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

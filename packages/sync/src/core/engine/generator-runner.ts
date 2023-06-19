@@ -1,4 +1,4 @@
-import R from 'ramda';
+import * as R from 'ramda';
 import { FormatterProvider } from '@src/providers';
 import { Logger } from '@src/utils/evented-logger';
 import { GeneratorTaskInstance } from '../generator';

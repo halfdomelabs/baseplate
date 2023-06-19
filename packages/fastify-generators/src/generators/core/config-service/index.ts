@@ -14,7 +14,7 @@ import {
   createProviderType,
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 import { fastifyProvider } from '../fastify/index.js';
 

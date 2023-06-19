@@ -12,7 +12,7 @@ import {
   createProviderType,
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 import { configServiceProvider } from '../config-service/index.js';
 import { loggerServiceProvider } from '../logger-service/index.js';

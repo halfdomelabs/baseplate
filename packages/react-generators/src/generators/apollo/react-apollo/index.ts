@@ -15,7 +15,7 @@ import {
   writeTemplateAction,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';

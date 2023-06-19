@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import pLimit from 'p-limit';
-import R from 'ramda';
+import * as R from 'ramda';
 import { getErrorMessage } from '@src/utils/errors';
 import { Logger } from '@src/utils/evented-logger';
 import { mergeStrings } from '@src/utils/merge';

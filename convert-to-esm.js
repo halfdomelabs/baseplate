@@ -37,7 +37,7 @@ async function processFile(file, rootDir) {
   const data = await fs.promises.readFile(file, 'utf8');
 
   const regex =
-    /^import\s+?(?:(?:(?:[\w*\s{},]*)\s+from\s+?)|)(?:(?:'([^']+)'|"([^"]+)"))[\s]*?(?:;|$|)/gm;
+    /^[ei][xm]port\s+?(?:(?:(?:[\w*\s{},]*)\s+from\s+?)|)(?:(?:'([^']+)'|"([^"]+)"))[\s]*?(?:;|$|)/gm;
   const resolvedData = data.replace(
     regex,
     (match, singleQuotePath, doubleQuotePath) => {

@@ -10,7 +10,7 @@ import {
   createGeneratorWithChildren,
   createProviderType,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { serviceFileProvider } from '@src/generators/core/service-file/index.js';

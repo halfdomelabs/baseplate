@@ -4,10 +4,10 @@
 /* eslint-disable max-classes-per-file */
 // specifies a block of code
 
-import R from 'ramda';
-import { ImportMapper } from '../../providers';
-import { notEmpty, notString } from '../../utils/array';
-import { ImportDeclarationEntry } from './imports';
+import * as R from 'ramda';
+import { ImportMapper } from '../../providers/index.js';
+import { notEmpty, notString } from '../../utils/array.js';
+import { ImportDeclarationEntry } from './imports.js';
 
 export interface TypescriptCodeEntryOptions {
   imports?: ImportDeclarationEntry[];

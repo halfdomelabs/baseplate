@@ -3,7 +3,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import R from 'ramda';
+import * as R from 'ramda';
 import { PrismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import {
   PrismaOutputModel,

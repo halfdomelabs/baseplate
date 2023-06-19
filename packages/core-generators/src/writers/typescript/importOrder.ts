@@ -5,7 +5,7 @@
 
 import { isAbsolute as nodeIsAbsolute } from 'path';
 import isCoreModule from 'is-core-module';
-import R from 'ramda';
+import * as R from 'ramda';
 
 const DEFAULT_SORT_ORDER = [
   'builtin',

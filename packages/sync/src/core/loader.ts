@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import globby from 'globby';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 import { getModuleDefault } from '../utils/require';
 import { GeneratorConfig } from './generator';

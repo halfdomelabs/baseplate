@@ -9,7 +9,7 @@ import {
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { paramCase } from 'change-case';
-import R from 'ramda';
+import * as R from 'ramda';
 import { z } from 'zod';
 import { appModuleProvider } from '../root-module/index.js';
 

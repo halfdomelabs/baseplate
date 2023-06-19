@@ -95,8 +95,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       piscina:
-        specifier: ^3.2.0
-        version: 3.2.0
+        specifier: 4.0.0
+        version: 4.0.0
       ramda:
         specifier: ^0.28.0
         version: 0.28.0
@@ -125,9 +125,6 @@ importers:
       '@types/is-core-module':
         specifier: ^2.2.0
         version: 2.2.0
-      '@types/jest':
-        specifier: ^27.4.0
-        version: 27.4.0
       '@types/lodash':
         specifier: ^4.14.191
         version: 4.14.191
@@ -155,6 +152,9 @@ importers:
       typescript:
         specifier: 4.9.5
         version: 4.9.5
+      vitest:
+        specifier: 0.32.2
+        version: 0.32.2(less@4.1.3)
 
   packages/fastify-generators:
     dependencies:
@@ -14253,8 +14253,8 @@ packages:
     engines: {node: '>= 6'}
     dev: true
 
-  /piscina@3.2.0:
-    resolution: {integrity: sha512-yn/jMdHRw+q2ZJhFhyqsmANcbF6V2QwmD84c6xRau+QpQOmtrBCoRGdvTfeuFDYXB5W2m6MfLkjkvQa9lUSmIA==}
+  /piscina@4.0.0:
+    resolution: {integrity: sha512-641nAmJS4k4iqpNUqfggqUBUMmlw0ZoM5VZKdQkV2e970Inn3Tk9kroCc1wpsYLD07vCwpys5iY0d3xI/9WkTg==}
     dependencies:
       eventemitter-asyncresource: 1.0.0
       hdr-histogram-js: 2.0.3

@@ -1,4 +1,4 @@
-import R from 'ramda';
+import * as R from 'ramda';
 import { Logger } from '@src/utils/evented-logger';
 import { ProviderDependencyOptions } from '../provider';
 import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder';
