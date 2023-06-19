@@ -58,7 +58,7 @@ function Console({ className }: Props): JSX.Element {
   return (
     <code
       className={classNames(
-        'block h-72 w-full overflow-y-scroll whitespace-pre-wrap border border-gray-200 bg-slate-900 p-4 font-mono text-sm text-neutral-400 shadow-inner',
+        'block h-72 w-full overflow-y-scroll whitespace-pre-wrap border border-gray-200 bg-slate-900 p-4 text-sm text-neutral-400 shadow-inner',
         className
       )}
       ref={codeRef}
