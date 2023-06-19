@@ -1,7 +1,7 @@
 {
   "extends": "@halfdomelabs/tools/tsconfig.esm.json",
   "compilerOptions": {
-    "outDir": "lib/esm",
+    "outDir": "dist",
     "declaration": true,
     "baseUrl": ".",
     "paths": {

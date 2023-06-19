@@ -8,12 +8,12 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { configServiceProvider } from '@src/generators/core/config-service';
-import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
-import { appModuleProvider } from '@src/generators/core/root-module';
-import { nexusSchemaProvider } from '@src/generators/nexus/nexus';
-import { nexusAuthProvider } from '@src/generators/nexus/nexus-auth';
-import { authServiceImportProvider } from '../auth-service';
+import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+import { nexusSchemaProvider } from '@src/generators/nexus/nexus/index.js';
+import { nexusAuthProvider } from '@src/generators/nexus/nexus-auth/index.js';
+import { authServiceImportProvider } from '../auth-service/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

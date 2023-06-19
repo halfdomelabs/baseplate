@@ -3,3 +3,4 @@
 /lib
 /node_modules
 tailwind.config.ts
+prettier.config.js

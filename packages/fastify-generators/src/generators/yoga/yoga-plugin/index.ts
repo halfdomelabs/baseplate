@@ -13,13 +13,13 @@ import {
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authServiceImportProvider } from '@src/generators/auth/auth-service';
-import { configServiceProvider } from '@src/generators/core/config-service';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service';
-import { fastifyRedisProvider } from '@src/generators/core/fastify-redis';
-import { fastifyServerProvider } from '@src/generators/core/fastify-server';
-import { loggerServiceProvider } from '@src/generators/core/logger-service';
-import { requestServiceContextProvider } from '@src/generators/core/request-service-context';
+import { authServiceImportProvider } from '@src/generators/auth/auth-service/index.js';
+import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
+import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
+import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
+import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
 
 const descriptorSchema = z.object({
   enableSubscriptions: z.boolean().optional(),

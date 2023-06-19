@@ -12,8 +12,8 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { fastifyJestProvider } from '../fastify-jest';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { fastifyJestProvider } from '../fastify-jest/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

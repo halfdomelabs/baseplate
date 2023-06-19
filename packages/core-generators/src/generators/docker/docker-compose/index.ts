@@ -1,10 +1,10 @@
 import path from 'path';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { projectProvider } from '../../../providers';
-import { generatePostgresDockerCompose } from './postgres';
-import { generateRedisDockerCompose } from './redis';
-import { DockerComposeOutput } from './types';
+import { projectProvider } from '../../../providers/index.js';
+import { generatePostgresDockerCompose } from './postgres.js';
+import { generateRedisDockerCompose } from './redis.js';
+import { DockerComposeOutput } from './types.js';
 
 const descriptorSchema = z.object({
   projectName: z.string().optional(),

@@ -10,9 +10,9 @@ import {
 } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo';
-import { reactRoutesProvider } from '@src/providers/routes';
-import { lowerCaseFirst } from '@src/utils/case';
+import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   areFieldsIdentical,
   GraphQLField,
@@ -21,7 +21,7 @@ import {
   mergeGraphQLFragments,
   renderGraphQLFragment,
   renderGraphQLRoot,
-} from '@src/writers/graphql';
+} from '@src/writers/graphql/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string(),

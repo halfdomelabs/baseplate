@@ -1,7 +1,7 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-display-container';
+import { adminCrudDisplayContainerProvider } from '../_providers/admin-crud-display-container.js';
 
 const descriptorSchema = z.object({
   modelField: z.string().min(1),

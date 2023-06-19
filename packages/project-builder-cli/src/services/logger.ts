@@ -1,6 +1,6 @@
-import Pino from 'pino';
+import { pino } from 'pino';
 
-export const logger = Pino({
+export const logger = pino({
   transport: {
     target: 'pino-pretty',
     options: {

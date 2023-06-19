@@ -1,12 +1,12 @@
-import { Logger } from '../utils/evented-logger';
-import { BaseGeneratorDescriptor } from './descriptor';
-import { GeneratorOutputBuilder } from './generator-output';
+import { Logger } from '../utils/evented-logger.js';
+import { BaseGeneratorDescriptor } from './descriptor.js';
+import { GeneratorOutputBuilder } from './generator-output.js';
 import {
   Provider,
   ProviderDependency,
   ProviderType,
   ProviderExport,
-} from './provider';
+} from './provider.js';
 
 /**
  * An instance of a generator that has providers for other

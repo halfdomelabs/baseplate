@@ -10,7 +10,7 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactProvider } from '../react';
+import { reactProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

@@ -1,4 +1,5 @@
-import { createProviderType } from './provider';
+import { describe, expect, it } from 'vitest';
+import { createProviderType } from './provider.js';
 
 interface TestProvider {
   test: (hello: string) => string;

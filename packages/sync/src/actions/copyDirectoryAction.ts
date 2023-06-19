@@ -1,7 +1,7 @@
+import fs from 'fs/promises';
 import path from 'path';
-import fs from 'fs-extra';
-import recursive from 'recursive-readdir';
-import { createBuilderActionCreator } from '../core';
+import { readDirectoryRecursive } from '@src/utils/fs.js';
+import { createBuilderActionCreator } from '../core/index.js';
 
 interface Options {
   destination: string;
@@ -20,7 +20,7 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
     );
 
     // read all files in directory
-    const files = await recursive(templatePath);
+    const files = await readDirectoryRecursive(templatePath);
 
     await Promise.all(
       files.map(async (file) => {

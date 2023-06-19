@@ -4,7 +4,7 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { PrismaDataTransformerFactory } from '@src/providers/prisma/prisma-data-transformable';
+import { PrismaDataTransformerFactory } from '@src/providers/prisma/prisma-data-transformable.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

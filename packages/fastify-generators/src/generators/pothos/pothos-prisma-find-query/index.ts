@@ -8,17 +8,17 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma';
-import { pothosFieldProvider } from '@src/providers/pothos-field';
-import { lowerCaseFirst } from '@src/utils/case';
-import { quot } from '@src/utils/string';
+import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
+import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { pothosFieldProvider } from '@src/providers/pothos-field.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
+import { quot } from '@src/utils/string.js';
 import {
   PothosWriterOptions,
   writePothosArgsFromDtoFields,
-} from '@src/writers/pothos';
-import { pothosSchemaProvider } from '../pothos';
-import { pothosTypesFileProvider } from '../pothos-types-file';
+} from '@src/writers/pothos/index.js';
+import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

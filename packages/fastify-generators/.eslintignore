@@ -3,6 +3,6 @@
 /lib
 /node_modules
 jest.config.js
-gulpfile.js
+gulpfile.cjs
 templates/
-.eslintrc.js
+.eslintrc.cjs

@@ -1,13 +1,14 @@
 import { promises as fs } from 'fs';
-import { loadDescriptorFromFile } from './descriptor-loader';
+import { describe, expect, it, vi } from 'vitest';
+import { loadDescriptorFromFile } from './descriptor-loader.js';
 
-jest.mock('fs', () => ({
+vi.mock('fs', () => ({
   promises: {
-    readFile: jest.fn(),
+    readFile: vi.fn(),
   },
 }));
 
-const mockedFs = jest.mocked(fs);
+const mockedFs = vi.mocked(fs);
 
 describe('loadDescriptorFromFile', () => {
   it('loads simple descriptor', async () => {

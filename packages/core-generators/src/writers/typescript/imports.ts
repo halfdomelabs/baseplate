@@ -1,8 +1,8 @@
 import path from 'path';
-import R from 'ramda';
+import * as R from 'ramda';
 import { CodeBlockWriter, SourceFile } from 'ts-morph';
-import { ImportMap, ImportMapper } from '../../providers';
-import { sortByImportOrder } from './importOrder';
+import { ImportMap, ImportMapper } from '../../providers/index.js';
+import { sortByImportOrder } from './importOrder.js';
 
 export interface NamedImportEntry {
   name: string;

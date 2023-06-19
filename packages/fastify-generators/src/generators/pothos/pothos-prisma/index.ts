@@ -11,9 +11,9 @@ import { z } from 'zod';
 import {
   prismaOutputProvider,
   prismaSchemaProvider,
-} from '@src/generators/prisma/prisma';
-import { createPrismaSchemaGeneratorBlock } from '@src/writers/prisma-schema';
-import { pothosSetupProvider } from '../pothos';
+} from '@src/generators/prisma/prisma/index.js';
+import { createPrismaSchemaGeneratorBlock } from '@src/writers/prisma-schema/index.js';
+import { pothosSetupProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({});
 

@@ -1,9 +1,9 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactErrorProvider } from '../../core/react-error';
-import { reactLoggerProvider } from '../../core/react-logger';
-import { reactApolloSetupProvider } from '../react-apollo';
+import { reactErrorProvider } from '../../core/react-error/index.js';
+import { reactLoggerProvider } from '../../core/react-logger/index.js';
+import { reactApolloSetupProvider } from '../react-apollo/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

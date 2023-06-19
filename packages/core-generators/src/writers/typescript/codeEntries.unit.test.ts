@@ -1,8 +1,9 @@
+import { describe, it, expect } from 'vitest';
 import {
   mergeCodeEntryOptions,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-} from './codeEntries';
+} from './codeEntries.js';
 
 describe('mergeCodeEntryOptions', () => {
   it('should merge relevant expressions', () => {

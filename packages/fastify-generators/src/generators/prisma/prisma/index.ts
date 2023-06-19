@@ -1,3 +1,4 @@
+import { createRequire } from 'module';
 import {
   copyTypescriptFileAction,
   ImportMapper,
@@ -11,20 +12,23 @@ import {
   createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
-import { formatSchema } from '@prisma/internals';
+import type { formatSchema } from '@prisma/internals';
 import { z } from 'zod';
-import { configServiceProvider } from '@src/generators/core/config-service';
-import { fastifyOutputProvider } from '@src/generators/core/fastify';
-import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check';
-import { PrismaOutputEnum, PrismaOutputModel } from '@src/types/prismaOutput';
-import { ServiceOutputEnum } from '@src/types/serviceOutput';
-import { PrismaModelBlockWriter } from '@src/writers/prisma-schema';
+import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
+import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';
+import {
+  PrismaOutputEnum,
+  PrismaOutputModel,
+} from '@src/types/prismaOutput.js';
+import { ServiceOutputEnum } from '@src/types/serviceOutput.js';
+import { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js';
 import {
   createPrismaSchemaDatasourceBlock,
   createPrismaSchemaGeneratorBlock,
   PrismaSchemaFile,
-} from '@src/writers/prisma-schema/schema';
-import { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types';
+} from '@src/writers/prisma-schema/schema.js';
+import { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(5432),
@@ -51,6 +55,8 @@ export interface PrismaOutputProvider extends ImportMapper {
 
 export const prismaOutputProvider =
   createProviderType<PrismaOutputProvider>('prisma-output');
+
+const internalRequire = createRequire(import.meta.url);
 
 const PrismaGenerator = createGeneratorWithTasks({
   descriptorSchema,
@@ -141,9 +147,12 @@ const PrismaGenerator = createGeneratorWithTasks({
           }),
           build: async (builder) => {
             const schemaText = schemaFile.toText();
-            const formattedSchemaText = (await formatSchema({
+            const { formatSchema: format } = internalRequire(
+              '@prisma/internals'
+            ) as { formatSchema: typeof formatSchema };
+            const formattedSchemaText = await format({
               schema: schemaText,
-            })) as string;
+            });
             builder.writeFile(
               'prisma/schema.prisma',
               `${formattedSchemaText.trimEnd()}\n`

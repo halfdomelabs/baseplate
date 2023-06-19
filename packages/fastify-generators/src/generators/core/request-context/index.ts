@@ -11,8 +11,8 @@ import {
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { fastifyServerProvider } from '../fastify-server';
-import { loggerServiceSetupProvider } from '../logger-service';
+import { fastifyServerProvider } from '../fastify-server/index.js';
+import { loggerServiceSetupProvider } from '../logger-service/index.js';
 
 const descriptorSchema = z.object({});
 

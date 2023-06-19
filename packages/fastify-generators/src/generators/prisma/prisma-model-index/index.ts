@@ -1,6 +1,6 @@
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { prismaModelProvider } from '../prisma-model';
+import { prismaModelProvider } from '../prisma-model/index.js';
 
 const descriptorSchema = z.object({
   fields: z.array(z.string().min(1)),

@@ -7,8 +7,8 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactAppProvider } from '@src/generators/core/react-app';
-import { reactConfigProvider } from '@src/generators/core/react-config';
+import { reactAppProvider } from '@src/generators/core/react-app/index.js';
+import { reactConfigProvider } from '@src/generators/core/react-config/index.js';
 
 const descriptorSchema = z.object({
   callbackPath: z.string().optional(),

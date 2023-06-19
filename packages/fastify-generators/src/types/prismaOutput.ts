@@ -1,4 +1,4 @@
-import { ScalarFieldType } from './fieldTypes';
+import { ScalarFieldType } from './fieldTypes.js';
 
 // A standardized Prisma model for use in other generators
 interface PrismaOutputBaseField {

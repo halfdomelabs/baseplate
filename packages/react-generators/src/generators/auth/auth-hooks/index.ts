@@ -10,11 +10,11 @@ import {
   copyFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactApolloProvider } from '../../apollo/react-apollo';
-import { reactComponentsProvider } from '../../core/react-components';
-import { reactErrorProvider } from '../../core/react-error';
-import { reactLoggerProvider } from '../../core/react-logger';
-import { authServiceProvider } from '../auth-service';
+import { reactApolloProvider } from '../../apollo/react-apollo/index.js';
+import { reactComponentsProvider } from '../../core/react-components/index.js';
+import { reactErrorProvider } from '../../core/react-error/index.js';
+import { reactLoggerProvider } from '../../core/react-logger/index.js';
+import { authServiceProvider } from '../auth-service/index.js';
 
 const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),

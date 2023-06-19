@@ -1,2 +1,2 @@
-export * from './project';
-export * from './importMapper';
+export * from './project.js';
+export * from './importMapper.js';

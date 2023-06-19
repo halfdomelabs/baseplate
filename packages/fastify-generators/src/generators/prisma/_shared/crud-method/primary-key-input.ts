@@ -3,9 +3,9 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { getScalarFieldTypeInfo } from '@src/types/fieldTypes';
-import { PrismaOutputModel } from '@src/types/prismaOutput';
-import { ServiceOutputDtoField } from '@src/types/serviceOutput';
+import { getScalarFieldTypeInfo } from '@src/types/fieldTypes.js';
+import { PrismaOutputModel } from '@src/types/prismaOutput.js';
+import { ServiceOutputDtoField } from '@src/types/serviceOutput.js';
 
 interface PrimaryKeyOutput {
   argument: string;

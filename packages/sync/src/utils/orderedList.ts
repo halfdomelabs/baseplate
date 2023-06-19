@@ -1,5 +1,5 @@
 import toposort from 'toposort';
-import { notEmpty } from './arrays';
+import { notEmpty } from './arrays.js';
 
 interface OrderRule {
   comesBefore?: string | string[];

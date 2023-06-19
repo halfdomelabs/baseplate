@@ -15,13 +15,13 @@ import {
   writeTemplateAction,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import R from 'ramda';
+import * as R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
-import { reactProxyProvider } from '@src/generators/core/react-proxy';
-import { notEmpty } from '../../../utils/array';
-import { reactAppProvider } from '../../core/react-app';
-import { reactConfigProvider } from '../../core/react-config';
+import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
+import { notEmpty } from '../../../utils/array.js';
+import { reactAppProvider } from '../../core/react-app/index.js';
+import { reactConfigProvider } from '../../core/react-config/index.js';
 
 const descriptorSchema = z.object({
   devApiEndpoint: z.string().min(1),
