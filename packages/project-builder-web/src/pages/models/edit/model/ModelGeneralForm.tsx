@@ -1,5 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { SelectInput, TextInput } from '@halfdomelabs/ui-components';
+import { ComboboxInput, TextInput } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -30,7 +30,7 @@ export function ModelGeneralForm({
           control={control}
           name="name"
         />
-        <SelectInput.Controller
+        <ComboboxInput.Controller
           label="Feature"
           description="The feature this model belongs to"
           control={control}

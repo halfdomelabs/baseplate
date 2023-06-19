@@ -1,7 +1,7 @@
-import { Combobox, Transition } from '@headlessui/react';
+import { Combobox, Transition, Portal } from '@headlessui/react';
 import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { useId, useMemo, useRef, useState } from 'react';
+import { useId, useMemo, useRef, useState, Fragment } from 'react';
 import {
   Control,
   FieldPath,
@@ -28,6 +28,7 @@ export interface ComboboxInputPropsBase<OptionType>
   getOptionLabel?: OptionToStringFunc<OptionType>;
   getOptionValue?: OptionToStringFunc<OptionType>;
   noValueLabel?: string;
+  fixed?: boolean;
 }
 
 type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
@@ -60,6 +61,7 @@ export function ComboboxInput<OptionType>({
   label,
   error,
   description,
+  fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
   const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] =
@@ -91,6 +93,7 @@ export function ComboboxInput<OptionType>({
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
     modifiers,
+    strategy: fixed ? 'fixed' : undefined,
   });
 
   const handleChange = (newValue?: string): void => {
@@ -114,6 +117,7 @@ export function ComboboxInput<OptionType>({
 
   const inputId = useId();
 
+  const PortalWrapper = fixed ? Portal : Fragment;
   return (
     <Combobox
       value={value}
@@ -125,11 +129,11 @@ export function ComboboxInput<OptionType>({
     >
       {label && <Combobox.Label className="label-text">{label}</Combobox.Label>}
       <div>
-        <div className="relative">
+        <Combobox.Button className="relative w-full">
           {!filter && (
             <label
               className={clsx(
-                'absolute left-0 right-10 top-1/2 -translate-y-1/2 transform p-2.5',
+                'absolute left-0 right-10 top-1/2 -translate-y-1/2 transform p-2.5 text-left',
                 !selectedOption ? 'text-secondary' : ''
               )}
               htmlFor={inputId}
@@ -144,43 +148,45 @@ export function ComboboxInput<OptionType>({
             displayValue={() => ''}
             id={inputId}
           />
-          <Combobox.Button className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 transform">
+          <div className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 transform">
             <HiChevronDown className="h-4 w-4" />
-          </Combobox.Button>
-        </div>
-        <div
-          ref={popperElementRef}
-          style={styles.popper}
-          {...attributes.popper}
-        >
-          <Transition
-            enter="ease-out duration-100"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-100"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-            beforeEnter={() => setPopperElement(popperElementRef.current)}
-            afterLeave={() => setPopperElement(null)}
+          </div>
+        </Combobox.Button>
+        <PortalWrapper>
+          <div
+            ref={popperElementRef}
+            style={styles.popper}
+            {...attributes.popper}
           >
-            <Combobox.Options className="popover-background border-normal rounded p-2 shadow">
-              {!filteredOptions.length && (
-                <div className="text-secondary p-2 text-sm">
-                  {COMPONENT_STRINGS.noOptions}
-                </div>
-              )}
-              {filteredOptions.map((option) => (
-                <Combobox.Option
-                  className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
-                  key={getOptionValue(option)}
-                  value={getOptionValue(option)}
-                >
-                  {getOptionLabel(option)}
-                </Combobox.Option>
-              ))}
-            </Combobox.Options>
-          </Transition>
-        </div>
+            <Transition
+              enter="ease-out duration-100"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-100"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+              beforeEnter={() => setPopperElement(popperElementRef.current)}
+              afterLeave={() => setPopperElement(null)}
+            >
+              <Combobox.Options className="popover-background border-normal rounded p-2 shadow">
+                {!filteredOptions.length && (
+                  <div className="text-secondary p-2 text-sm">
+                    {COMPONENT_STRINGS.noOptions}
+                  </div>
+                )}
+                {filteredOptions.map((option) => (
+                  <Combobox.Option
+                    className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
+                    key={getOptionValue(option)}
+                    value={getOptionValue(option)}
+                  >
+                    {getOptionLabel(option)}
+                  </Combobox.Option>
+                ))}
+              </Combobox.Options>
+            </Transition>
+          </div>
+        </PortalWrapper>
       </div>
       {error ? (
         <FormError>{error}</FormError>
