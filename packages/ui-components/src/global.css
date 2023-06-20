@@ -53,6 +53,10 @@ h4 {
   @apply dark:border-background-600 dark:bg-background-900 dark:placeholder-foreground-500 dark:focus:border-primary-800 dark:focus:ring-primary-800;
 }
 
+.ux-input:disabled {
+  @apply bg-background-100 dark:bg-background-700;
+}
+
 .label-text {
   @apply text-sm font-semibold text-foreground-900 dark:text-foreground-200;
 }

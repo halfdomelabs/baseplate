@@ -3,17 +3,16 @@ import { clsx } from 'clsx';
 import { Fragment, useMemo, useRef, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 import { Modifier, usePopper } from 'react-popper';
-import { Button } from '../Button/Button.js';
+import { Button, ButtonProps } from '../Button/Button.js';
 
-export interface DropdownProps {
+export interface DropdownProps
+  extends Pick<ButtonProps, 'variant' | 'disabled' | 'size'> {
   className?: string;
   buttonClassName?: string;
   children: React.ReactNode;
   buttonLabel?: string;
   fixed?: boolean;
   noButtonBorder?: boolean;
-  variant?: 'primary' | 'secondary' | 'tertiary';
-  disabled?: boolean;
 }
 
 export function Dropdown({
@@ -24,6 +23,7 @@ export function Dropdown({
   noButtonBorder,
   variant,
   disabled,
+  size,
 }: DropdownProps): JSX.Element {
   const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] =
@@ -56,6 +56,7 @@ export function Dropdown({
             iconAfter={MdExpandMore}
             variant={variant}
             disabled={disabled}
+            size={size}
           >
             {buttonLabel}
           </Menu.Button>

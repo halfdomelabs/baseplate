@@ -5,6 +5,7 @@ import { Control, useWatch } from 'react-hook-form';
 import { HiOutlineTrash } from 'react-icons/hi';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
+import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 
 interface Props {
@@ -124,12 +125,7 @@ function ModelFieldForm({
         <ModelFieldTypeInput control={control} idx={idx} />
       </td>
       <td>
-        {['string', 'int', 'float', 'boolean'].includes(watchedField.type) && (
-          <TextInput.Controller
-            control={control}
-            name={`model.fields.${idx}.options.default`}
-          />
-        )}
+        <ModelFieldDefaultValueInput control={control} idx={idx} />
       </td>
       <td>
         <ToggleInput.Controller
@@ -157,36 +153,6 @@ function ModelFieldForm({
           size="icon"
         />
       </td>
-      {/* <div className="flex flex-row space-x-4">
-          {watchedField.type === 'uuid' && (
-            <CheckedInput.Labelled
-              label="Auto-Generate UUID"
-              register={register(`model.fields.${idx}.options.genUuid`)}
-              error={errors.model?.fields?.[idx]?.options?.genUuid?.message}
-            />
-          )}
-          {(watchedField.type === 'dateTime' ||
-            watchedField.type === 'date') && (
-            <>
-              <CheckedInput.Labelled
-                label="Default to Now"
-                register={register(`model.fields.${idx}.options.defaultToNow`)}
-                error={
-                  errors.model?.fields?.[idx]?.options?.defaultToNow?.message
-                }
-              />
-              {watchedField.type !== 'date' && (
-                <CheckedInput.Labelled
-                  label="Updated At"
-                  register={register(`model.fields.${idx}.options.updatedAt`)}
-                  error={
-                    errors.model?.fields?.[idx]?.options?.updatedAt?.message
-                  }
-                />
-              )}
-            </>
-          )}
-        </div> */}
     </tr>
   );
 }
