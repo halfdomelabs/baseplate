@@ -1,3 +1,4 @@
+import { ConfirmDialogPopper } from '@halfdomelabs/ui-components';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
 import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
@@ -17,6 +18,7 @@ function App(): JSX.Element {
             </ProjectConfigGate>
           </ProjectChooserGate>
           <Toaster />
+          <ConfirmDialogPopper />
         </ClientVersionGate>
       </BrowserRouter>
     </ErrorBoundary>

@@ -28,6 +28,10 @@ export async function buildServer(
     await server.register(fastifyStaticPlugin, {
       root: path.join(projectBuilderWebDir, 'dist'),
     });
+
+    server.setNotFoundHandler(async (request, reply) =>
+      reply.sendFile('index.html')
+    );
   } catch (err) {
     logError(`Unable to find project-builder-web package to host website.`);
     throw err;

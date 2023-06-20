@@ -53,15 +53,20 @@ export interface ButtonProps {
    * Title attribute of the button
    */
   title?: string;
+  /**
+   * Indicates if the button should not add a border/rounded edges (useful for button gorups)
+   */
+  noBorder?: boolean;
 }
 
 function getButtonVariantClass(
   color: ButtonVariant,
-  isDisabled?: boolean
+  isDisabled?: boolean,
+  noBorder?: boolean
 ): string {
   if (isDisabled) {
     return clsx(
-      color !== 'tertiary' && 'shadow',
+      color !== 'tertiary' && !noBorder && 'shadow',
       color === 'primary' &&
         'border-transparent bg-primary-500 text-foreground-50 dark:bg-primary-800 dark:text-foreground-400',
       color === 'secondary' &&
@@ -71,7 +76,7 @@ function getButtonVariantClass(
     );
   }
   return clsx(
-    color !== 'tertiary' && 'shadow',
+    color !== 'tertiary' && !noBorder && 'shadow',
     color === 'primary' &&
       'border-transparent bg-primary-700 text-white hover:bg-primary-800 active:text-foreground-200',
     color === 'secondary' &&
@@ -85,12 +90,16 @@ function getButtonVariantClass(
   );
 }
 
-function getButtonSizeClass(size: ButtonSize): string {
+function getButtonSizeClass(size: ButtonSize, noBorder?: boolean): string {
   return clsx(
-    size === 'icon' && 'rounded-lg p-1 text-lg',
-    size === 'sm' && 'rounded px-2.5 py-1.5 text-xs',
-    size === 'md' && 'rounded-md px-4 py-2 text-sm',
-    size === 'lg' && 'rounded-lg px-6 py-3 text-base'
+    size === 'icon' && !noBorder && 'rounded-lg',
+    size === 'icon' && 'p-1 text-lg',
+    size === 'sm' && !noBorder && 'rounded',
+    size === 'sm' && 'px-2.5 py-1.5 text-xs',
+    size === 'md' && !noBorder && 'rounded-md',
+    size === 'md' && 'px-4 py-2 text-sm',
+    size === 'lg' && !noBorder && 'rounded-lg',
+    size === 'lg' && 'px-6 py-3 text-base'
   );
 }
 
@@ -98,10 +107,7 @@ function getButtonSizeClass(size: ButtonSize): string {
  * Primary UI component for user interaction
  */
 function ButtonInner(
-  props: ButtonProps,
-  ref: ForwardedRef<HTMLButtonElement>
-): JSX.Element {
-  const {
+  {
     className,
     children,
     disabled,
@@ -112,13 +118,17 @@ function ButtonInner(
     iconBefore: IconBefore,
     iconAfter: IconAfter,
     title,
-  } = props;
+    noBorder,
+  }: ButtonProps,
+  ref: ForwardedRef<HTMLButtonElement>
+): JSX.Element {
   return (
     <button
       className={clsx(
-        'border text-center font-medium  transition-colors focus:outline-1 focus:outline-offset-4 focus:outline-primary-700 dark:focus:outline-transparent',
-        getButtonVariantClass(variant, disabled),
-        getButtonSizeClass(size),
+        noBorder ? '' : 'border',
+        'text-center font-medium  transition-colors focus:outline-1 focus:outline-offset-4 focus:outline-primary-700 dark:focus:outline-transparent',
+        getButtonVariantClass(variant, disabled, noBorder),
+        getButtonSizeClass(size, noBorder),
         className
       )}
       disabled={disabled}
