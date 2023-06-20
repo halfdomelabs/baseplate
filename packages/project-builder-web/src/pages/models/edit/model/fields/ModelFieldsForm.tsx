@@ -27,7 +27,10 @@ export function TableHeader({
   width?: string;
 }): JSX.Element {
   return (
-    <th className={clsx('text-sm font-semibold', className)} style={{ width }}>
+    <th
+      className={clsx('bg-white p-2 text-sm font-semibold', className)}
+      style={{ width }}
+    >
       {children}
     </th>
   );
@@ -108,8 +111,8 @@ export function ModelFieldsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {!fields.length ? undefined : (
-        <table className="-m-2 w-full table-fixed border-separate border-spacing-2">
-          <thead>
+        <table className="-m-2 w-full table-fixed border-separate border-spacing-2 bg-white">
+          <thead className="sticky -top-4 z-10 bg-white">
             <tr className="text-left">
               <TableHeader width="20%">Name</TableHeader>
               <TableHeader width="20%">Type</TableHeader>
