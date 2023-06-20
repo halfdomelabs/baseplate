@@ -77,11 +77,7 @@ export function ModelFieldDefaultValueInput({
     if (defaultToNow || updatedAt) {
       return (
         <div className="flex items-center space-x-1">
-          <TextInput
-            placeholder="NULL"
-            disabled
-            value={updatedAt ? 'Last Updated' : 'Now'}
-          />
+          <TextInput disabled value={updatedAt ? 'Last Updated' : 'Now'} />
           <Button
             title="Reset"
             onClick={() =>
@@ -101,6 +97,7 @@ export function ModelFieldDefaultValueInput({
     return (
       <div className="flex items-center space-x-1">
         <TextInput.Controller
+          placeholder="NULL"
           control={control}
           name={`model.fields.${idx}.options.default`}
         />
