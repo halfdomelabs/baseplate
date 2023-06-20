@@ -1,11 +1,13 @@
 import {
+  fixReferenceRenames,
+  getProjectConfigReferences,
   ModelConfig,
   modelSchema,
   randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -14,24 +16,41 @@ import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logger } from 'src/services/logger';
 
-const NEW_MODEL = {
-  name: '',
-};
-
 interface UseModelFormOptions {
-  ignoredReferences?: string[];
+  // References that are managed by the caller and should not be fixed when submitting the form.
+  controlledReferences?: string[];
   setError?: (error: string) => void;
   onSubmitSuccess?: () => void;
 }
 
+function createNewModel(): Partial<ModelConfig> {
+  return {
+    name: '',
+    model: {
+      fields: [
+        {
+          uid: randomUid(),
+          name: 'id',
+          type: 'uuid',
+          isId: true,
+          options: {
+            genUuid: true,
+          },
+        },
+      ],
+    },
+  };
+}
+
 export function useModelForm({
   setError,
-  ignoredReferences,
+  controlledReferences,
   onSubmitSuccess,
 }: UseModelFormOptions): {
   form: UseFormReturn<ModelConfig>;
   onFormSubmit: (data: ModelConfig) => void;
   originalModel?: ModelConfig;
+  fixControlledReferences: () => void;
 } {
   const { id } = useParams<'id'>();
   const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
@@ -39,14 +58,17 @@ export function useModelForm({
   const navigate = useNavigate();
   const model = parsedProject.getModels().find((m) => m.uid === id);
 
+  // memoize it to keep the same UID when resetting
+  const newModel = useMemo(() => createNewModel(), []);
+
   const form = useResettableForm<ModelConfig>({
     resolver: zodResolver(modelSchema),
-    defaultValues: model || NEW_MODEL,
+    defaultValues: model || newModel,
   });
-  const { reset } = form;
+  const { reset, getValues, setValue } = form;
 
   useEffect(() => {
-    reset(model || NEW_MODEL);
+    reset(model || createNewModel());
   }, [model, reset]);
 
   const onFormSubmit = useCallback(
@@ -66,7 +88,7 @@ export function useModelForm({
               (m) => m.name
             );
           },
-          { ignoredReferences }
+          { ignoredReferences: controlledReferences }
         );
         toast.success('Successfully saved model!');
         if (!id || model?.name !== data.name) {
@@ -91,9 +113,39 @@ export function useModelForm({
       model,
       setError,
       setConfigAndFixReferences,
-      ignoredReferences,
+      onSubmitSuccess,
+      controlledReferences,
     ]
   );
 
-  return { form, onFormSubmit, originalModel: model };
+  const fixControlledReferences = useCallback(() => {
+    const config = parsedProject.projectConfig;
+    // add latest model to config
+    const updatedModel = getValues();
+    const updatedConfig = {
+      ...config,
+      models: [...config.models.filter((m) => m.uid !== id), updatedModel],
+    };
+    const fixedConfig = fixReferenceRenames(
+      config,
+      updatedConfig,
+      getProjectConfigReferences,
+      {
+        whitelistReferences: controlledReferences,
+      }
+    );
+    const fixedModel = fixedConfig.models?.find((m) => m.uid === id);
+    if (!fixedModel) {
+      return;
+    }
+    Object.keys(fixedModel).forEach((key) => {
+      const modelKey = key as keyof ModelConfig;
+      if (_.isEqual(fixedModel[modelKey], updatedModel[modelKey])) {
+        return;
+      }
+      setValue(modelKey, fixedModel[modelKey]);
+    });
+  }, [parsedProject, getValues, setValue, controlledReferences, id]);
+
+  return { form, onFormSubmit, originalModel: model, fixControlledReferences };
 }

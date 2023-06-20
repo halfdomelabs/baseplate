@@ -133,7 +133,7 @@ export function ComboboxInput<OptionType>({
           {!filter && (
             <label
               className={clsx(
-                'absolute left-0 right-10 top-1/2 -translate-y-1/2 transform p-2.5 text-left',
+                'absolute left-0 right-10 top-1/2 -translate-y-1/2 transform p-2.5 text-left text-sm',
                 !selectedOption ? 'text-secondary' : ''
               )}
               htmlFor={inputId}
@@ -148,14 +148,13 @@ export function ComboboxInput<OptionType>({
             displayValue={() => ''}
             id={inputId}
           />
-          <div className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 transform">
-            <HiChevronDown className="h-4 w-4" />
-          </div>
+          <HiChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
         </Combobox.Button>
         <PortalWrapper>
           <div
             ref={popperElementRef}
             style={styles.popper}
+            className="z-10"
             {...attributes.popper}
           >
             <Transition
@@ -168,7 +167,7 @@ export function ComboboxInput<OptionType>({
               beforeEnter={() => setPopperElement(popperElementRef.current)}
               afterLeave={() => setPopperElement(null)}
             >
-              <Combobox.Options className="popover-background border-normal rounded p-2 shadow">
+              <Combobox.Options className="popover-background border-normal max-h-16 overflow-y-auto rounded p-2 shadow">
                 {!filteredOptions.length && (
                   <div className="text-secondary p-2 text-sm">
                     {COMPONENT_STRINGS.noOptions}
@@ -176,7 +175,14 @@ export function ComboboxInput<OptionType>({
                 )}
                 {filteredOptions.map((option) => (
                   <Combobox.Option
-                    className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
+                    className={({ selected }) =>
+                      clsx(
+                        'cursor-pointer rounded p-2 text-sm',
+                        selected
+                          ? 'bg-primary-500 text-white dark:bg-primary-600 dark:text-white'
+                          : 'hover:bg-background-200 dark:hover:bg-background-700'
+                      )
+                    }
                     key={getOptionValue(option)}
                     value={getOptionValue(option)}
                   >

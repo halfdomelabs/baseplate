@@ -2,11 +2,10 @@ import { randomUid } from '@halfdomelabs/project-builder-lib';
 import { useFieldArray } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, LinkButton } from 'src/components';
-import Dropdown from 'src/components/Dropdown';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useModelForm } from '../hooks/useModelForm';
-import ModelFieldForm from './ModelFieldForm';
+import { ModelFieldsForm } from './ModelFieldsForm';
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
@@ -14,9 +13,9 @@ import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 
 function ModelEditModelPage(): JSX.Element {
   const { status, setError } = useStatus();
-  const { form, onFormSubmit } = useModelForm({
+  const { form, onFormSubmit, fixControlledReferences } = useModelForm({
     setError,
-    ignoredReferences: [
+    controlledReferences: [
       'modelPrimaryKey',
       'modelLocalRelation',
       'modelUniqueConstraint',
@@ -32,15 +31,6 @@ function ModelEditModelPage(): JSX.Element {
     : undefined;
 
   const {
-    fields: fieldFields,
-    remove: removeField,
-    append: appendField,
-  } = useFieldArray({
-    control,
-    name: 'model.fields',
-  });
-
-  const {
     fields: relationFields,
     remove: removeRelation,
     append: appendRelation,
@@ -50,79 +40,15 @@ function ModelEditModelPage(): JSX.Element {
   });
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-4xl space-y-4">
+    <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-5xl space-y-4">
       <Alert.WithStatus status={status} />
-      {!id && <ModelGeneralForm control={control} />}
-      <h2>Fields</h2>
-      {fieldFields.map((field, i) => (
-        <div key={field.id}>
-          <div className="flex flex-row space-x-4">
-            <ModelFieldForm
-              formProps={form}
-              idx={i}
-              field={field}
-              onRemove={removeField}
-              originalModel={originalModel}
-            />
-          </div>
-        </div>
-      ))}
-      <div className="flex flex-row space-x-4">
-        <Dropdown buttonLabel="Add Common Fields">
-          <Dropdown.ButtonItem
-            onClick={() =>
-              appendField({
-                uid: randomUid(),
-                name: 'id',
-                type: 'uuid',
-                isId: true,
-                options: {
-                  genUuid: true,
-                },
-              })
-            }
-          >
-            id (uuid)
-          </Dropdown.ButtonItem>
-          <Dropdown.ButtonItem
-            onClick={() =>
-              appendField([
-                {
-                  uid: randomUid(),
-                  name: 'updatedAt',
-                  type: 'dateTime',
-                  options: {
-                    updatedAt: true,
-                    defaultToNow: true,
-                  },
-                },
-                {
-                  uid: randomUid(),
-                  name: 'createdAt',
-                  type: 'dateTime',
-                  options: {
-                    defaultToNow: true,
-                  },
-                },
-              ])
-            }
-          >
-            Timestamps
-          </Dropdown.ButtonItem>
-        </Dropdown>
-        <Button
-          color="light"
-          onClick={() =>
-            appendField({
-              uid: randomUid(),
-              name: '',
-              type: 'string',
-            })
-          }
-        >
-          Add Field
-        </Button>
-      </div>
+      {!id && <ModelGeneralForm control={control} horizontal />}
+      {!id && <h2>Fields</h2>}
+      <ModelFieldsForm
+        control={control}
+        fixReferences={fixControlledReferences}
+        originalModel={originalModel}
+      />
       <h3>Relations</h3>
       {relationFields.map((field, i) => (
         <div key={field.id}>

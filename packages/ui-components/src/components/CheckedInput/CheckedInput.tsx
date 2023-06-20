@@ -11,9 +11,9 @@ import {
   useFormState,
 } from 'react-hook-form';
 import { LabellableComponent } from '@src/types/form.js';
+import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 import { FormLabel } from '../FormLabel/FormLabel.js';
-import { FormDescription } from '../index.js';
 
 interface CheckedInputLabelWrapperProps extends LabellableComponent {
   className?: string;

@@ -16,7 +16,9 @@
   "files": [
     "LICENSE",
     "dist/**/*",
-    "CHANGELOG"
+    "CHANGELOG",
+    "tailwind.config.ts",
+    "./src/global.css"
   ],
   "browserslist": {
     "production": [

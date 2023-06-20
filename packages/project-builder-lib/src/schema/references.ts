@@ -225,6 +225,7 @@ export class ReferencesBuilder<T extends FieldValues> {
 }
 
 export interface FixReferenceRenamesOptions {
+  whitelistReferences?: string[];
   ignoredReferences?: string[];
 }
 
@@ -260,6 +261,12 @@ export function fixReferenceRenames<T>(
           !options?.ignoredReferences ||
           !r.referenceType ||
           !options?.ignoredReferences.includes(r.referenceType)
+      )
+      .filter(
+        (r) =>
+          !options?.whitelistReferences ||
+          !r.referenceType ||
+          options?.whitelistReferences.includes(r.referenceType)
       );
 
     return referencesToRename.reduce((priorConfig, entry) => {

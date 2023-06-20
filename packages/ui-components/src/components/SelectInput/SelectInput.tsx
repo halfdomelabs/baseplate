@@ -87,6 +87,7 @@ export function SelectInput<OptionType>({
     ],
     []
   );
+
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
     placement: 'bottom-start',
     modifiers,
@@ -122,17 +123,18 @@ export function SelectInput<OptionType>({
       <div>
         <Listbox.Button
           ref={setReferenceElement}
-          className="ux-input flex items-center justify-between space-x-2 p-2.5"
+          className="ux-input relative flex items-center justify-between p-2.5 pr-10"
         >
           <div className={!selectedOption ? 'text-secondary' : ''}>
             {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}
           </div>
-          <HiChevronDown className="h-4 w-4" />
+          <HiChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
         </Listbox.Button>
         <PortalWrapper>
           <div
             ref={popperElementRef}
             style={styles.popper}
+            className="z-10"
             {...attributes.popper}
           >
             <Transition
@@ -145,10 +147,17 @@ export function SelectInput<OptionType>({
               beforeEnter={() => setPopperElement(popperElementRef.current)}
               afterLeave={() => setPopperElement(null)}
             >
-              <Listbox.Options className="popover-background border-normal rounded p-2 shadow">
+              <Listbox.Options className="popover-background border-normal z-10 max-h-64 overflow-y-auto rounded p-2 shadow">
                 {options.map((option) => (
                   <Listbox.Option
-                    className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
+                    className={({ selected }) =>
+                      clsx(
+                        'cursor-pointer rounded p-2 text-sm',
+                        selected
+                          ? 'bg-primary-500 text-white dark:bg-primary-600 dark:text-white'
+                          : 'hover:bg-background-200 dark:hover:bg-background-700'
+                      )
+                    }
                     key={getOptionValue(option)}
                     value={getOptionValue(option)}
                   >
