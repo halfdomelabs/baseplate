@@ -8,7 +8,6 @@ import {
 import CheckedInput from '../CheckedInput';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
-import LinkButton from '../LinkButton';
 
 interface Props {
   className?: string;
@@ -24,7 +23,7 @@ function CheckedArrayInput({
   value: values = [],
 }: Props): JSX.Element {
   return (
-    <div className={classNames('flex flex-row space-x-4', className)}>
+    <div className={classNames('flex flex-row flex-wrap gap-4', className)}>
       {options.map((option) => (
         <CheckedInput.Labelled
           key={option.value}
@@ -38,11 +37,6 @@ function CheckedArrayInput({
           }}
         />
       ))}
-      {options.length > 4 && (
-        <LinkButton onClick={() => onChange(options.map((o) => o.value))}>
-          Select All
-        </LinkButton>
-      )}
     </div>
   );
 }
