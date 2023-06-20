@@ -1,12 +1,12 @@
 export const SCALAR_FIELD_TYPES = [
   'string',
+  'uuid',
   'int',
+  'boolean',
+  'dateTime',
   'float',
   'decimal',
-  'boolean',
   'json',
-  'uuid',
-  'dateTime',
   'date',
   'enum',
 ] as const;

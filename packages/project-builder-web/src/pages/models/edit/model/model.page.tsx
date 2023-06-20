@@ -5,11 +5,11 @@ import { Alert, Button, LinkButton } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useModelForm } from '../hooks/useModelForm';
-import { ModelFieldsForm } from './ModelFieldsForm';
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
+import { ModelFieldsForm } from './fields/ModelFieldsForm';
 
 function ModelEditModelPage(): JSX.Element {
   const { status, setError } = useStatus();

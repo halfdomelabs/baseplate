@@ -147,7 +147,7 @@ export function SelectInput<OptionType>({
               beforeEnter={() => setPopperElement(popperElementRef.current)}
               afterLeave={() => setPopperElement(null)}
             >
-              <Listbox.Options className="popover-background border-normal z-10 max-h-64 overflow-y-auto rounded p-2 shadow">
+              <Listbox.Options className="popover-background border-normal z-10 max-h-72 overflow-y-auto rounded p-2 shadow">
                 {options.map((option) => (
                   <Listbox.Option
                     className={({ selected }) =>

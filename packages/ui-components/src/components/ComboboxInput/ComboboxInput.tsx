@@ -27,6 +27,10 @@ export interface ComboboxInputPropsBase<OptionType>
   value?: string | null;
   getOptionLabel?: OptionToStringFunc<OptionType>;
   getOptionValue?: OptionToStringFunc<OptionType>;
+  renderOption?: (
+    option: OptionType,
+    state: { selected: boolean }
+  ) => JSX.Element;
   noValueLabel?: string;
   fixed?: boolean;
 }
@@ -58,6 +62,7 @@ export function ComboboxInput<OptionType>({
   noValueLabel = ' ',
   getOptionLabel = (option: OptionType) => (option as { label: string }).label,
   getOptionValue = (option: OptionType) => (option as { value: string }).value,
+  renderOption,
   label,
   error,
   description,
@@ -167,7 +172,7 @@ export function ComboboxInput<OptionType>({
               beforeEnter={() => setPopperElement(popperElementRef.current)}
               afterLeave={() => setPopperElement(null)}
             >
-              <Combobox.Options className="popover-background border-normal max-h-16 overflow-y-auto rounded p-2 shadow">
+              <Combobox.Options className="popover-background border-normal max-h-72 overflow-y-auto rounded p-2 shadow">
                 {!filteredOptions.length && (
                   <div className="text-secondary p-2 text-sm">
                     {COMPONENT_STRINGS.noOptions}
@@ -186,7 +191,13 @@ export function ComboboxInput<OptionType>({
                     key={getOptionValue(option)}
                     value={getOptionValue(option)}
                   >
-                    {getOptionLabel(option)}
+                    {({ selected }) =>
+                      renderOption ? (
+                        renderOption(option, { selected })
+                      ) : (
+                        <>{getOptionLabel(option)}</>
+                      )
+                    }
                   </Combobox.Option>
                 ))}
               </Combobox.Options>

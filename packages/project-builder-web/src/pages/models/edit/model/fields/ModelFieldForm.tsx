@@ -1,19 +1,11 @@
-import {
-  ModelConfig,
-  SCALAR_FIELD_TYPES,
-} from '@halfdomelabs/project-builder-lib';
-import {
-  Button,
-  ComboboxInput,
-  SelectInput,
-  TextInput,
-  ToggleInput,
-} from '@halfdomelabs/ui-components';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { Button, TextInput, ToggleInput } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 import { HiOutlineTrash } from 'react-icons/hi';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
+import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 
 interface Props {
   className?: string;
@@ -52,18 +44,8 @@ function ModelFieldForm({
     control,
   });
 
-  const typeOptions = SCALAR_FIELD_TYPES.map((type) => ({
-    label: type,
-    value: type,
-  }));
-
   const { parsedProject } = useProjectConfig();
   const toast = useToast();
-
-  const enumOptions = parsedProject.getEnums().map((config) => ({
-    label: config.name,
-    value: config.name,
-  }));
 
   function handleRemove(): void {
     // check for references
@@ -139,20 +121,7 @@ function ModelFieldForm({
         />
       </td>
       <td>
-        <div className="space-y-2">
-          <SelectInput.Controller
-            name={`model.fields.${idx}.type`}
-            control={control}
-            options={typeOptions}
-          />
-          {watchedField.type === 'enum' && (
-            <ComboboxInput.Controller
-              control={control}
-              options={enumOptions}
-              name={`model.fields.${idx}.options.enumType`}
-            />
-          )}
-        </div>
+        <ModelFieldTypeInput control={control} idx={idx} />
       </td>
       <td>
         {['string', 'int', 'float', 'boolean'].includes(watchedField.type) && (
