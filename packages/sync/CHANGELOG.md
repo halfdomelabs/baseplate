@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.3.1
+
+### Patch Changes
+
+- c6893a5: Switch to execa for running commands instead of child_process
+
 ## 0.3.0
 
 ### Minor Changes
