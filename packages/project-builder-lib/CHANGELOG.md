@@ -1,5 +1,13 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.3.0
+
+### Minor Changes
+
+- dcd86ed: Switch all packages to ESM
+- f7cb616: Switch to pnpm for package management
+- d8d6b89: Shows error if opening project.json from newer client and refresh page when cli is upgraded
+
 ## 0.2.2
 
 ### Patch Changes
