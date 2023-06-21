@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-web
 
+## 0.3.1
+
+### Patch Changes
+
+- 3f45e59: Fix changeset release process to build app before releasing
+- Updated dependencies [3f45e59]
+  - @halfdomelabs/project-builder-lib@0.3.1
+  - @halfdomelabs/ui-components@0.2.1
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.2.1
+
+### Patch Changes
+
+- 3f45e59: Fix changeset release process to build app before releasing
+
 ## 0.2.0
 
 ### Minor Changes
