@@ -378,7 +378,7 @@ importers:
         specifier: workspace:*
         version: link:../project-builder-lib
       '@halfdomelabs/ui-components':
-        specifier: 0.1.0
+        specifier: 0.2.0
         version: link:../ui-components
       '@headlessui/react':
         specifier: 1.7.14
