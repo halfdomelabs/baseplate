@@ -1,4 +1,4 @@
-import { exec, ExecOptions } from 'child_process';
+import { execaCommand } from 'execa';
 
 export class ExecError extends Error {
   constructor(message: string, public readonly stderr: string) {
@@ -6,21 +6,18 @@ export class ExecError extends Error {
   }
 }
 
+export interface ExecOptions {
+  cwd?: string;
+}
+
 export async function executeCommand(
   command: string,
   options: ExecOptions
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    exec(command, options, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-      if (stderr) {
-        reject(new ExecError('Received stderr', stderr));
-        return;
-      }
-      resolve(stdout.trim());
-    });
+  const result = await execaCommand(command, {
+    cwd: options.cwd,
+    stdio: 'inherit',
   });
+
+  return result.all || '';
 }

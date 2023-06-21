@@ -37,7 +37,7 @@
     "build:lib": "tsc -p tsconfig.build.json && tsc-alias",
     "build:storybook": "storybook build",
     "watch": "tsc --preserveWatchOutput --watch -p tsconfig.build.json & tsc-alias --watch",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx,.md,.mdx ./",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx,.mdx ./",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "prettier:check": "prettier --check .",
