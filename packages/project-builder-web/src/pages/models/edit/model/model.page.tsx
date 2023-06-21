@@ -1,5 +1,8 @@
-import { randomUid } from '@halfdomelabs/project-builder-lib';
-import { useFieldArray } from 'react-hook-form';
+import {
+  ModelRelationFieldConfig,
+  randomUid,
+} from '@halfdomelabs/project-builder-lib';
+import { useController } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, LinkButton } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -31,16 +34,25 @@ function ModelEditModelPage(): JSX.Element {
     : undefined;
 
   const {
-    fields: relationFields,
-    remove: removeRelation,
-    append: appendRelation,
-  } = useFieldArray({
-    control,
+    field: { value: relationFields = [], onChange: relationOnChange },
+  } = useController({
     name: 'model.relations',
+    control,
   });
 
+  const removeRelation = (idx: number): void => {
+    relationOnChange(relationFields.filter((_, i) => i !== idx));
+  };
+
+  const appendRelation = (relation: ModelRelationFieldConfig): void => {
+    relationOnChange([...relationFields, relation]);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-5xl space-y-4">
+    <form
+      onSubmit={handleSubmit(onFormSubmit)}
+      className="min-w-[700px] max-w-6xl space-y-4"
+    >
       <Alert.WithStatus status={status} />
       {!id && <ModelGeneralForm control={control} horizontal />}
       {!id && <h2>Fields</h2>}
@@ -49,9 +61,15 @@ function ModelEditModelPage(): JSX.Element {
         fixReferences={fixControlledReferences}
         originalModel={originalModel}
       />
-      <h3>Relations</h3>
+      <div>
+        <h2>Relations</h2>
+        <div className="description-text">
+          You can modify the relations individually if you have more complex
+          relations, e.g. relations over more than one field
+        </div>
+      </div>
       {relationFields.map((field, i) => (
-        <div key={field.id}>
+        <div key={field.uid}>
           <div className="flex flex-row space-x-4">
             <ModelRelationForm
               formProps={form}

@@ -23,7 +23,7 @@ export interface ComboboxInputPropsBase<OptionType>
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(value: string | number | null): void;
+  onChange?(value: string | null): void;
   value?: string | null;
   getOptionLabel?: OptionToStringFunc<OptionType>;
   getOptionValue?: OptionToStringFunc<OptionType>;
@@ -96,7 +96,7 @@ export function ComboboxInput<OptionType>({
     []
   );
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-start',
+    placement: 'bottom-end',
     modifiers,
     strategy: fixed ? 'fixed' : undefined,
   });
@@ -138,7 +138,7 @@ export function ComboboxInput<OptionType>({
           {!filter && (
             <label
               className={clsx(
-                'absolute left-0 right-10 top-1/2 -translate-y-1/2 transform p-2.5 text-left text-sm',
+                'absolute left-0 right-6 top-1/2 -translate-y-1/2 transform overflow-hidden text-ellipsis p-2.5 text-left text-sm',
                 !selectedOption ? 'text-secondary' : ''
               )}
               htmlFor={inputId}
@@ -148,7 +148,7 @@ export function ComboboxInput<OptionType>({
           )}
           <Combobox.Input
             ref={setReferenceElement}
-            className="ux-input flex items-center justify-between p-2.5 pr-10"
+            className="ux-input flex items-center justify-between p-2.5 pr-8"
             onChange={(e) => setFilter(e.target.value)}
             displayValue={() => ''}
             id={inputId}
@@ -237,6 +237,7 @@ ComboboxInput.Controller = function ComboboxInputController<
 >({
   name,
   control,
+  onChange,
   ...rest
 }: ComboboxInputControllerProps<
   OptionType,
@@ -251,11 +252,18 @@ ComboboxInput.Controller = function ComboboxInputController<
     control,
   });
 
+  const handleChange = (newValue: string): void => {
+    if (onChange) {
+      onChange(newValue);
+    }
+    field.onChange(newValue);
+  };
+
   const restProps = rest as ComboboxInputProps<OptionType>;
 
   return (
     <ComboboxInput
-      onChange={(value) => field.onChange(value)}
+      onChange={handleChange}
       value={field.value}
       error={error?.message}
       {...restProps}

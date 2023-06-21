@@ -1,3 +1,4 @@
+export * from './Badge/Badge.js';
 export * from './Button/Button.js';
 export * from './ButtonGroup/ButtonGroup.js';
 export * from './Card/Card.js';

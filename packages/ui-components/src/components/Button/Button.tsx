@@ -57,6 +57,7 @@ export interface ButtonProps {
    * Indicates if the button should not add a border/rounded edges (useful for button gorups)
    */
   noBorder?: boolean;
+  formId?: string;
 }
 
 function getButtonVariantClass(
@@ -119,6 +120,7 @@ function ButtonInner(
     iconAfter: IconAfter,
     title,
     noBorder,
+    formId,
   }: ButtonProps,
   ref: ForwardedRef<HTMLButtonElement>
 ): JSX.Element {
@@ -138,6 +140,7 @@ function ButtonInner(
       type={type}
       ref={ref}
       title={title}
+      form={formId}
     >
       {IconBefore || IconAfter ? (
         <div className="flex items-center justify-center space-x-2">

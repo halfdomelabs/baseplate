@@ -108,36 +108,41 @@ export function ModelFieldsForm({
     return autoFields;
   }, [fields, appendField]);
 
+  const gridClassNames = clsx(
+    'grid grid-cols-[repeat(3,1fr)_repeat(3,60px)_100px_80px] gap-2'
+  );
+
   return (
     <div className={clsx('space-y-4', className)}>
       {!fields.length ? undefined : (
-        <table className="-m-2 w-full table-fixed border-separate border-spacing-2 bg-white">
-          <thead className="sticky -top-4 z-10 bg-white">
-            <tr className="text-left">
-              <TableHeader width="20%">Name</TableHeader>
-              <TableHeader width="20%">Type</TableHeader>
-              <TableHeader width="20%">Default Value</TableHeader>
-              <TableHeader width="10%">Primary</TableHeader>
-              <TableHeader width="10%">Optional</TableHeader>
-              <TableHeader width="10%">Unique</TableHeader>
-              <TableHeader width="10%" className="sr-only">
-                Actions
-              </TableHeader>
-            </tr>
-          </thead>
-          <tbody>
-            {fieldFields.map((field, i) => (
-              <ModelFieldForm
-                key={field.id}
-                control={control}
-                idx={i}
-                onRemove={removeField}
-                fixReferences={fixReferences}
-                originalModel={originalModel}
-              />
-            ))}
-          </tbody>
-        </table>
+        <div className="-m-2 flex w-full flex-col gap-2 bg-white p-2">
+          <div
+            className={clsx(
+              gridClassNames,
+              'sticky -top-4 z-10 bg-white py-2 text-sm font-semibold'
+            )}
+          >
+            <div>Name</div>
+            <div>Type</div>
+            <div>Default Value</div>
+            <div>Primary</div>
+            <div>Optional</div>
+            <div>Unique</div>
+            <div className="sr-only">Tags</div>
+            <div className="sr-only">Actions</div>
+          </div>
+          {fieldFields.map((field, i) => (
+            <ModelFieldForm
+              className={gridClassNames}
+              key={field.id}
+              control={control}
+              idx={i}
+              onRemove={removeField}
+              fixReferences={fixReferences}
+              originalModel={originalModel}
+            />
+          ))}
+        </div>
       )}
       <div className="flex flex-row space-x-4">
         <ButtonGroup>

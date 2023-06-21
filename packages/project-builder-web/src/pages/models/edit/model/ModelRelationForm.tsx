@@ -5,7 +5,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn } from 'react-hook-form';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -17,7 +17,7 @@ interface Props {
   className?: string;
   formProps: UseFormReturn<ModelConfig>;
   idx: number;
-  field: FieldArrayWithId<ModelConfig, 'model.relations', 'id'>;
+  field: ModelRelationFieldConfig;
   onRemove: (idx: number) => void;
   originalModel?: ModelConfig;
 }
@@ -96,6 +96,10 @@ function ModelRelationForm({
     label: type.name,
     value: type.name,
   }));
+
+  if (!watchedField) {
+    return <div />;
+  }
 
   const attrString = formatFieldAttributes(watchedField);
   const relationErrors = errors.model?.relations?.[idx];

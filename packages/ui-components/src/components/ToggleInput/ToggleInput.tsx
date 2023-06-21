@@ -33,7 +33,7 @@ function ToggleInputLabelWrapper({
   htmlFor,
 }: ToggleInputLabelWrapperProps): JSX.Element {
   return (
-    <div className={clsx('flex flex-col space-y-2', className)}>
+    <div className={clsx('flex flex-col items-start space-y-2', className)}>
       {horizontalLabel ? (
         <label
           htmlFor={htmlFor}
@@ -47,8 +47,8 @@ function ToggleInputLabelWrapper({
           className="relative inline-flex cursor-pointer flex-col items-start"
           htmlFor={htmlFor}
         >
-          {label && <div className="label-text">{label}</div>}
-          <div className="relative mt-2">{children}</div>
+          {label && <div className="label-text mb-2">{label}</div>}
+          <div className="relative">{children}</div>
         </label>
       )}
       {error ? (

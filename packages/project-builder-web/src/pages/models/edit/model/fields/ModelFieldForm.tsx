@@ -1,11 +1,20 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { Button, TextInput, ToggleInput } from '@halfdomelabs/ui-components';
+import {
+  Badge,
+  Button,
+  Dropdown,
+  TextInput,
+  ToggleInput,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
+import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
-import { HiOutlineTrash } from 'react-icons/hi';
+import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
+import { TbRelationOneToOne, TbRelationOneToMany } from 'react-icons/tb';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
+import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 
 interface Props {
@@ -112,48 +121,84 @@ function ModelFieldForm({
     onRemove(idx);
   }
 
+  const modelFieldRelation = watchedRelations?.find(
+    (r) =>
+      r.references.length === 1 && r.references[0].local === watchedField.name
+  );
+
+  const [isRelationFormOpen, setIsRelationFormOpen] = useState(false);
+
   return (
-    <tr className={clsx(className)}>
-      <td>
+    <div className={clsx('items-center', className)}>
+      <div>
         <TextInput.Controller
           control={control}
           name={`model.fields.${idx}.name`}
           onBlur={() => fixReferences()}
         />
-      </td>
-      <td>
+      </div>
+      <div>
         <ModelFieldTypeInput control={control} idx={idx} />
-      </td>
-      <td>
+      </div>
+      <div className="mr-4">
         <ModelFieldDefaultValueInput control={control} idx={idx} />
-      </td>
-      <td>
+      </div>
+      <div>
         <ToggleInput.Controller
           control={control}
           name={`model.fields.${idx}.isId`}
         />
-      </td>
-      <td>
+      </div>
+      <div>
         <ToggleInput.Controller
           control={control}
           name={`model.fields.${idx}.isOptional`}
         />
-      </td>
-      <td>
+      </div>
+      <div>
         <ToggleInput.Controller
           control={control}
           name={`model.fields.${idx}.isUnique`}
         />
-      </td>
-      <td>
-        <Button
-          variant="tertiary"
-          iconBefore={HiOutlineTrash}
-          onClick={() => handleRemove()}
-          size="icon"
+      </div>
+      <div>
+        {modelFieldRelation && (
+          <Badge
+            className="max-w-[100px]"
+            color="primary"
+            icon={
+              modelFieldRelation.relationshipType === 'oneToOne'
+                ? TbRelationOneToOne
+                : TbRelationOneToMany
+            }
+            onClick={() => setIsRelationFormOpen(true)}
+          >
+            {modelFieldRelation.modelName}
+          </Badge>
+        )}
+        <ModalRelationsModal
+          isOpen={isRelationFormOpen}
+          onClose={() => setIsRelationFormOpen(false)}
+          fieldIdx={idx}
+          control={control}
         />
-      </td>
-    </tr>
+      </div>
+      <div>
+        <div className="space-x-4">
+          <Dropdown variant="tertiary" iconAfter={HiDotsVertical} size="icon">
+            <Dropdown.ButtonItem onClick={() => setIsRelationFormOpen(true)}>
+              {modelFieldRelation ? 'Edit' : 'Add'} Relation
+            </Dropdown.ButtonItem>
+          </Dropdown>
+          <Button
+            variant="tertiary"
+            iconBefore={HiOutlineTrash}
+            onClick={() => handleRemove()}
+            size="icon"
+          />
+        </div>
+      </div>
+    </div>
   );
 }
 
