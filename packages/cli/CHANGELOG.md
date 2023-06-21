@@ -1,5 +1,16 @@
 # @halfdomelabs/cli
 
+## 0.4.2
+
+### Patch Changes
+
+- 3f45e59: Fix changeset release process to build app before releasing
+- Updated dependencies [3f45e59]
+  - @halfdomelabs/core-generators@0.4.1
+  - @halfdomelabs/fastify-generators@0.4.2
+  - @halfdomelabs/react-generators@0.3.2
+  - @halfdomelabs/sync@0.3.2
+
 ## 0.4.1
 
 ### Patch Changes

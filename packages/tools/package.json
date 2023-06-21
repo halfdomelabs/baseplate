@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/tools",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Shared dev configurations for Baseplate projects",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "author": "Half Dome Labs LLC",
