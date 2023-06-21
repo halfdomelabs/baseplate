@@ -118,39 +118,39 @@ function ModelFieldForm({
   }
 
   return (
-    <tr className={clsx(className)}>
-      <td>
+    <div className={clsx('items-center', className)}>
+      <div>
         <TextInput.Controller
           control={control}
           name={`model.fields.${idx}.name`}
           onBlur={() => fixReferences()}
         />
-      </td>
-      <td>
+      </div>
+      <div>
         <ModelFieldTypeInput control={control} idx={idx} />
-      </td>
-      <td>
+      </div>
+      <div className="mr-4">
         <ModelFieldDefaultValueInput control={control} idx={idx} />
-      </td>
-      <td>
+      </div>
+      <div>
         <ToggleInput.Controller
           control={control}
           name={`model.fields.${idx}.isId`}
         />
-      </td>
-      <td>
+      </div>
+      <div>
         <ToggleInput.Controller
           control={control}
           name={`model.fields.${idx}.isOptional`}
         />
-      </td>
-      <td>
+      </div>
+      <div>
         <ToggleInput.Controller
           control={control}
           name={`model.fields.${idx}.isUnique`}
         />
-      </td>
-      <td>
+      </div>
+      <div>
         <div className="space-x-4">
           <Dropdown variant="tertiary" iconAfter={HiDotsVertical} size="icon">
             <Dropdown.ButtonItem>Add Relation</Dropdown.ButtonItem>
@@ -162,8 +162,8 @@ function ModelFieldForm({
             size="icon"
           />
         </div>
-      </td>
-    </tr>
+      </div>
+    </div>
   );
 }
 

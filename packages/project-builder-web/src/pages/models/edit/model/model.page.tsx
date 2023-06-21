@@ -40,7 +40,10 @@ function ModelEditModelPage(): JSX.Element {
   });
 
   return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="max-w-5xl space-y-4">
+    <form
+      onSubmit={handleSubmit(onFormSubmit)}
+      className="min-w-[700px] max-w-5xl space-y-4"
+    >
       <Alert.WithStatus status={status} />
       {!id && <ModelGeneralForm control={control} horizontal />}
       {!id && <h2>Fields</h2>}
