@@ -42,7 +42,7 @@ function ModelEditModelPage(): JSX.Element {
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="min-w-[700px] max-w-5xl space-y-4"
+      className="min-w-[700px] max-w-6xl space-y-4"
     >
       <Alert.WithStatus status={status} />
       {!id && <ModelGeneralForm control={control} horizontal />}
@@ -52,7 +52,13 @@ function ModelEditModelPage(): JSX.Element {
         fixReferences={fixControlledReferences}
         originalModel={originalModel}
       />
-      <h3>Relations</h3>
+      <div>
+        <h2>Relations</h2>
+        <div className="description-text">
+          You can modify the relations individually if you have more complex
+          relations, e.g. relations over more than one field
+        </div>
+      </div>
       {relationFields.map((field, i) => (
         <div key={field.id}>
           <div className="flex flex-row space-x-4">

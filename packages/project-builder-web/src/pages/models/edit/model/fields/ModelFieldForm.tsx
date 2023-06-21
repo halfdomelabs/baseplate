@@ -1,5 +1,6 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import {
+  Badge,
   Button,
   Dropdown,
   TextInput,
@@ -8,6 +9,7 @@ import {
 import clsx from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
+import { TbRelationOneToOne, TbRelationOneToMany } from 'react-icons/tb';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
@@ -117,6 +119,12 @@ function ModelFieldForm({
     onRemove(idx);
   }
 
+  const modelFieldRelation = watchedRelations?.find(
+    (r) =>
+      r.references.length === 1 &&
+      r.references[0].local.includes(watchedField.name)
+  );
+
   return (
     <div className={clsx('items-center', className)}>
       <div>
@@ -149,6 +157,21 @@ function ModelFieldForm({
           control={control}
           name={`model.fields.${idx}.isUnique`}
         />
+      </div>
+      <div>
+        {modelFieldRelation && (
+          <Badge
+            className="max-w-[100px]"
+            color="primary"
+            icon={
+              modelFieldRelation.relationshipType === 'oneToOne'
+                ? TbRelationOneToOne
+                : TbRelationOneToMany
+            }
+          >
+            {modelFieldRelation.modelName}
+          </Badge>
+        )}
       </div>
       <div>
         <div className="space-x-4">

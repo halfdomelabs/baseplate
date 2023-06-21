@@ -109,7 +109,7 @@ export function ModelFieldsForm({
   }, [fields, appendField]);
 
   const gridClassNames = clsx(
-    'grid grid-cols-[repeat(3,1fr)_repeat(3,60px)_100px] gap-2'
+    'grid grid-cols-[repeat(3,1fr)_repeat(3,60px)_100px_80px] gap-2'
   );
 
   return (
@@ -128,6 +128,7 @@ export function ModelFieldsForm({
             <div>Primary</div>
             <div>Optional</div>
             <div>Unique</div>
+            <div className="sr-only">Tags</div>
             <div className="sr-only">Actions</div>
           </div>
           {fieldFields.map((field, i) => (
