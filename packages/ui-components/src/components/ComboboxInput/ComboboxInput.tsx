@@ -23,7 +23,7 @@ export interface ComboboxInputPropsBase<OptionType>
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(value: string | number | null): void;
+  onChange?(value: string | null): void;
   value?: string | null;
   getOptionLabel?: OptionToStringFunc<OptionType>;
   getOptionValue?: OptionToStringFunc<OptionType>;
@@ -237,6 +237,7 @@ ComboboxInput.Controller = function ComboboxInputController<
 >({
   name,
   control,
+  onChange,
   ...rest
 }: ComboboxInputControllerProps<
   OptionType,
@@ -251,11 +252,18 @@ ComboboxInput.Controller = function ComboboxInputController<
     control,
   });
 
+  const handleChange = (newValue: string): void => {
+    if (onChange) {
+      onChange(newValue);
+    }
+    field.onChange(newValue);
+  };
+
   const restProps = rest as ComboboxInputProps<OptionType>;
 
   return (
     <ComboboxInput
-      onChange={(value) => field.onChange(value)}
+      onChange={handleChange}
       value={field.value}
       error={error?.message}
       {...restProps}

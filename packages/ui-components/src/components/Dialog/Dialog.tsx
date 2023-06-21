@@ -143,16 +143,19 @@ Dialog.Body = function DialogBody({
 interface DialogFooterProps {
   className?: string;
   children: React.ReactNode;
+  fullWidth?: boolean;
 }
 
 Dialog.Footer = function DialogFooter({
   className,
   children,
+  fullWidth,
 }: DialogFooterProps): JSX.Element {
   return (
     <div
       className={clsx(
-        'flex items-center justify-end space-x-4 rounded-b-lg border-t border-secondary-200 bg-secondary-50 p-4 dark:border-background-600 dark:bg-background-800',
+        'flex items-center space-x-4 rounded-b-lg border-t border-secondary-200 bg-secondary-50 p-4 dark:border-background-600 dark:bg-background-800',
+        !fullWidth && 'justify-end', 
         className
       )}
     >

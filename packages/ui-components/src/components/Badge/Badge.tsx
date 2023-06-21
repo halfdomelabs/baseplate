@@ -1,13 +1,12 @@
 import { clsx } from 'clsx';
 import { MdClose } from 'react-icons/md';
 import { IconElement } from '@src/types/react.js';
-import { Button } from '../Button/Button.js';
 
 type BadgeColor = 'primary' | 'secondary';
 
 interface BadgeProps {
   className?: string;
-  children?: React.ReactNode;
+  children?: string;
   icon?: IconElement;
   color?: BadgeColor;
   onClick?: () => void;
@@ -41,11 +40,14 @@ export function Badge({
           getBadgeColorClass(color, !!onClick),
           className
         )}
+        onClick={onClick}
         disabled={!onClick}
         type="button"
       >
         {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
-        <div className="overflow-hidden text-ellipsis">{children}</div>
+        <div className="overflow-hidden text-ellipsis" title={children}>
+          {children}
+        </div>
       </button>
       {onClose && (
         <button

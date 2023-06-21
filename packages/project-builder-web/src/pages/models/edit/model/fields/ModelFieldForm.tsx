@@ -7,12 +7,14 @@ import {
   ToggleInput,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
+import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 import { TbRelationOneToOne, TbRelationOneToMany } from 'react-icons/tb';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
+import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 
 interface Props {
@@ -121,9 +123,10 @@ function ModelFieldForm({
 
   const modelFieldRelation = watchedRelations?.find(
     (r) =>
-      r.references.length === 1 &&
-      r.references[0].local.includes(watchedField.name)
+      r.references.length === 1 && r.references[0].local === watchedField.name
   );
+
+  const [isRelationFormOpen, setIsRelationFormOpen] = useState(false);
 
   return (
     <div className={clsx('items-center', className)}>
@@ -168,15 +171,24 @@ function ModelFieldForm({
                 ? TbRelationOneToOne
                 : TbRelationOneToMany
             }
+            onClick={() => setIsRelationFormOpen(true)}
           >
             {modelFieldRelation.modelName}
           </Badge>
         )}
+        <ModalRelationsModal
+          isOpen={isRelationFormOpen}
+          onClose={() => setIsRelationFormOpen(false)}
+          fieldIdx={idx}
+          control={control}
+        />
       </div>
       <div>
         <div className="space-x-4">
           <Dropdown variant="tertiary" iconAfter={HiDotsVertical} size="icon">
-            <Dropdown.ButtonItem>Add Relation</Dropdown.ButtonItem>
+            <Dropdown.ButtonItem onClick={() => setIsRelationFormOpen(true)}>
+              {modelFieldRelation ? 'Edit' : 'Add'} Relation
+            </Dropdown.ButtonItem>
           </Dropdown>
           <Button
             variant="tertiary"

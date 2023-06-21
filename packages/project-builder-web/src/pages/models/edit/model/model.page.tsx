@@ -1,5 +1,8 @@
-import { randomUid } from '@halfdomelabs/project-builder-lib';
-import { useFieldArray } from 'react-hook-form';
+import {
+  ModelRelationFieldConfig,
+  randomUid,
+} from '@halfdomelabs/project-builder-lib';
+import { useController } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { Alert, Button, LinkButton } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -31,13 +34,19 @@ function ModelEditModelPage(): JSX.Element {
     : undefined;
 
   const {
-    fields: relationFields,
-    remove: removeRelation,
-    append: appendRelation,
-  } = useFieldArray({
-    control,
+    field: { value: relationFields = [], onChange: relationOnChange },
+  } = useController({
     name: 'model.relations',
+    control,
   });
+
+  const removeRelation = (idx: number): void => {
+    relationOnChange(relationFields.filter((_, i) => i !== idx));
+  };
+
+  const appendRelation = (relation: ModelRelationFieldConfig): void => {
+    relationOnChange([...relationFields, relation]);
+  };
 
   return (
     <form
@@ -60,7 +69,7 @@ function ModelEditModelPage(): JSX.Element {
         </div>
       </div>
       {relationFields.map((field, i) => (
-        <div key={field.id}>
+        <div key={field.uid}>
           <div className="flex flex-row space-x-4">
             <ModelRelationForm
               formProps={form}
