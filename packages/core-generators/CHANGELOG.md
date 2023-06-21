@@ -1,5 +1,17 @@
 # @halfdomelabs/core-generators
 
+## 0.4.0
+
+### Minor Changes
+
+- c6893a5: Upgrade to Node 18.16 from Node 16.10
+
+### Patch Changes
+
+- c6893a5: Add --non-interactive to yarn install to fix yarn installation failures
+- Updated dependencies [c6893a5]
+  - @halfdomelabs/sync@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
