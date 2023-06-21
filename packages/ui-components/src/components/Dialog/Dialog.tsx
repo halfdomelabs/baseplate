@@ -155,7 +155,7 @@ Dialog.Footer = function DialogFooter({
     <div
       className={clsx(
         'flex items-center space-x-4 rounded-b-lg border-t border-secondary-200 bg-secondary-50 p-4 dark:border-background-600 dark:bg-background-800',
-        !fullWidth && 'justify-end', 
+        !fullWidth && 'justify-end',
         className
       )}
     >
