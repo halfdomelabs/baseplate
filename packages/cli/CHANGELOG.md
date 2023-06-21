@@ -1,5 +1,23 @@
 # @halfdomelabs/cli
 
+## 0.4.0
+
+### Minor Changes
+
+- dcd86ed: Switch all packages to ESM
+- f7cb616: Switch to pnpm for package management
+
+### Patch Changes
+
+- Updated dependencies [dcd86ed]
+- Updated dependencies [4cd9061]
+- Updated dependencies [dcd86ed]
+- Updated dependencies [f7cb616]
+  - @halfdomelabs/fastify-generators@0.4.0
+  - @halfdomelabs/react-generators@0.3.0
+  - @halfdomelabs/core-generators@0.3.0
+  - @halfdomelabs/sync@0.3.0
+
 ## 0.3.0
 
 ### Minor Changes

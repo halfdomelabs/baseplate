@@ -1,5 +1,31 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.3.0
+
+### Minor Changes
+
+- dcd86ed: Switch all packages to ESM
+- f7cb616: Switch to pnpm for package management
+- d8d6b89: Shows error if opening project.json from newer client and refresh page when cli is upgraded
+
+### Patch Changes
+
+- Updated dependencies [f43b2c3]
+- Updated dependencies [dcd86ed]
+- Updated dependencies [4cd9061]
+- Updated dependencies [dcd86ed]
+- Updated dependencies [16c4d68]
+- Updated dependencies [f7cb616]
+- Updated dependencies [d8d6b89]
+- Updated dependencies [483215a]
+- Updated dependencies [206f2ab]
+  - @halfdomelabs/project-builder-web@0.3.0
+  - @halfdomelabs/project-builder-lib@0.3.0
+  - @halfdomelabs/fastify-generators@0.4.0
+  - @halfdomelabs/react-generators@0.3.0
+  - @halfdomelabs/core-generators@0.3.0
+  - @halfdomelabs/sync@0.3.0
+
 ## 0.2.3
 
 ### Patch Changes

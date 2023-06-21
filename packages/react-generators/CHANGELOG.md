@@ -1,5 +1,21 @@
 # @halfdomelabs/react-generators
 
+## 0.3.0
+
+### Minor Changes
+
+- dcd86ed: Switch all packages to ESM
+- 4cd9061: Adds ErrorBoundary wrapper
+- f7cb616: Switch to pnpm for package management
+
+### Patch Changes
+
+- Updated dependencies [dcd86ed]
+- Updated dependencies [dcd86ed]
+- Updated dependencies [f7cb616]
+  - @halfdomelabs/core-generators@0.3.0
+  - @halfdomelabs/sync@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes
