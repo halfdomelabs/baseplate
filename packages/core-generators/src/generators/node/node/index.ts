@@ -18,7 +18,7 @@ const descriptorSchema = z.object({
   version: z.string().default('0.1.0'),
   private: z.boolean().default(true),
   path: z.string().default(''),
-  nodeVersion: z.string().default('16.10.0'),
+  nodeVersion: z.string().default('18.16.0'),
   yarnVersion: z.string().default('1.22.19'),
 });
 
@@ -215,7 +215,7 @@ const NodeGenerator = createGeneratorWithChildren({
           })
         );
 
-        builder.addPostWriteCommand('yarn install', {
+        builder.addPostWriteCommand('yarn install --non-interactive', {
           workingDirectory: '/',
           onlyIfChanged: ['package.json'],
         });

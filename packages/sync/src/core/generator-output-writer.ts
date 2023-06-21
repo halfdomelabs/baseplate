@@ -174,16 +174,6 @@ async function writeFile(
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 
-function getNodePrefix(): string {
-  if (process.env.NODE_ENV === 'test') {
-    return '';
-  }
-  if (process.env.VOLTA_HOME) {
-    return 'volta run ';
-  }
-  return '';
-}
-
 export interface GeneratorWriteOptions {
   cleanDirectory?: string;
   rerunCommands?: string[];
@@ -302,23 +292,12 @@ export async function writeGeneratorOutput(
       };
     }
 
-    // run post write commands
-
-    // Volta and Yarn prepend their own PATHs to Node which can
-    // bugger up node resolution. This forces it to run normally again
-    const nodePrefix = getNodePrefix();
-    const NODE_COMMANDS = ['node', 'yarn', 'npm'];
-
     const failedCommands: string[] = [];
 
     for (const command of runnableCommands) {
       const { workingDirectory = '' } = command.options || {};
 
-      const commandString = NODE_COMMANDS.includes(
-        command.command.split(' ')[0]
-      )
-        ? `${nodePrefix}${command.command}`
-        : command.command;
+      const commandString = command.command;
 
       logger.log(`Running ${commandString}...`);
       try {
