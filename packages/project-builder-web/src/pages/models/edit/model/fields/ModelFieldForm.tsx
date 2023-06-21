@@ -1,8 +1,13 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { Button, TextInput, ToggleInput } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  Dropdown,
+  TextInput,
+  ToggleInput,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
-import { HiOutlineTrash } from 'react-icons/hi';
+import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
@@ -146,12 +151,17 @@ function ModelFieldForm({
         />
       </td>
       <td>
-        <Button
-          variant="tertiary"
-          iconBefore={HiOutlineTrash}
-          onClick={() => handleRemove()}
-          size="icon"
-        />
+        <div className="space-x-4">
+          <Dropdown variant="tertiary" iconAfter={HiDotsVertical} size="icon">
+            <Dropdown.ButtonItem>Add Relation</Dropdown.ButtonItem>
+          </Dropdown>
+          <Button
+            variant="tertiary"
+            iconBefore={HiOutlineTrash}
+            onClick={() => handleRemove()}
+            size="icon"
+          />
+        </div>
       </td>
     </tr>
   );

@@ -6,7 +6,7 @@ import { Modifier, usePopper } from 'react-popper';
 import { Button, ButtonProps } from '../Button/Button.js';
 
 export interface DropdownProps
-  extends Pick<ButtonProps, 'variant' | 'disabled' | 'size'> {
+  extends Pick<ButtonProps, 'variant' | 'disabled' | 'size' | 'iconAfter'> {
   className?: string;
   buttonClassName?: string;
   children: React.ReactNode;
@@ -24,6 +24,7 @@ export function Dropdown({
   variant,
   disabled,
   size,
+  iconAfter,
 }: DropdownProps): JSX.Element {
   const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] =
@@ -53,7 +54,7 @@ export function Dropdown({
             ref={setReferenceElement}
             as={Button}
             className={clsx(className)}
-            iconAfter={MdExpandMore}
+            iconAfter={iconAfter || MdExpandMore}
             variant={variant}
             disabled={disabled}
             size={size}
@@ -64,6 +65,7 @@ export function Dropdown({
             <div
               ref={popperElementRef}
               style={styles.popper}
+              className="z-10"
               {...attributes.popper}
             >
               <Transition

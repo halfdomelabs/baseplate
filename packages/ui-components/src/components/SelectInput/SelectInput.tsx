@@ -89,7 +89,7 @@ export function SelectInput<OptionType>({
   );
 
   const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-start',
+    placement: 'bottom-end',
     modifiers,
     strategy: fixed ? 'fixed' : undefined,
   });

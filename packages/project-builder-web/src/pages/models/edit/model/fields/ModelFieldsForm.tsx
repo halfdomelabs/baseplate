@@ -111,7 +111,7 @@ export function ModelFieldsForm({
   return (
     <div className={clsx('space-y-4', className)}>
       {!fields.length ? undefined : (
-        <table className="-m-2 w-full table-fixed border-separate border-spacing-2 bg-white">
+        <table className="-m-2 w-full min-w-[720px] table-fixed border-separate border-spacing-2 bg-white">
           <thead className="sticky -top-4 z-10 bg-white">
             <tr className="text-left">
               <TableHeader width="20%">Name</TableHeader>
