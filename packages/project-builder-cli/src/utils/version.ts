@@ -6,7 +6,9 @@ let cachedVersion: string | undefined | null;
 export async function getPackageVersion(): Promise<string | null> {
   if (cachedVersion === undefined) {
     // Construct the path to the package.json file.
-    const packageJsonPath = await pkgUp();
+    const packageJsonPath = await pkgUp({
+      cwd: import.meta.url.replace(/^file:\/\/\//, ''),
+    });
 
     if (!packageJsonPath) {
       cachedVersion = null;
