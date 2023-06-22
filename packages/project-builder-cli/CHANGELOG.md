@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.3.5
+
+### Patch Changes
+
+- aec2ed8: Use fileURLToPath instead of replacing file:// URL
+
 ## 0.3.4
 
 ### Patch Changes
