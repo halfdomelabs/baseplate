@@ -1,5 +1,11 @@
 # @halfdomelabs/cli
 
+## 0.4.4
+
+### Patch Changes
+
+- aec2ed8: Use fileURLToPath instead of replacing file:// URL
+
 ## 0.4.3
 
 ### Patch Changes
