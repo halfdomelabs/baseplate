@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.3.3
+
+### Patch Changes
+
+- ce57ca0: Don't write files that match their clean version
+- Updated dependencies [ce57ca0]
+  - @halfdomelabs/sync@0.3.3
+  - @halfdomelabs/core-generators@0.4.2
+  - @halfdomelabs/fastify-generators@0.4.3
+  - @halfdomelabs/react-generators@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes
