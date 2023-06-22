@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { resolve } from 'import-meta-resolve';
 
 export function resolveModule(moduleName: string): string {
@@ -5,5 +6,5 @@ export function resolveModule(moduleName: string): string {
   if (!moduleUrl.startsWith('file://')) {
     throw new Error(`Unable to resolve module ${moduleName} to a file`);
   }
-  return moduleUrl.slice('file://'.length);
+  return fileURLToPath(moduleUrl);
 }
