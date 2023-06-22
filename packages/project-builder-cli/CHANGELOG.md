@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.3.4
+
+### Patch Changes
+
+- ac69a8e: Pull cli version from cli package vs. CWD
+
 ## 0.3.3
 
 ### Patch Changes
