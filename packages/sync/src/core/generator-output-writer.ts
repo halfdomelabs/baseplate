@@ -15,6 +15,11 @@ async function mergeContents(
   filePath: string,
   cleanContents?: string
 ): Promise<{ contents: string; hasConflict: boolean } | null> {
+  if (cleanContents === newContents) {
+    // don't write if content has not changed
+    return null;
+  }
+
   const doesPathExist = await pathExists(filePath);
   if (!doesPathExist) {
     return { contents: newContents, hasConflict: false };
@@ -45,10 +50,7 @@ async function mergeContents(
     } catch (err) {
       throw new Error(`Error parsing JSON: ${filePath}`);
     }
-  } else if (
-    existingContents === newContents ||
-    cleanContents === newContents
-  ) {
+  } else if (existingContents === newContents) {
     return null;
   }
 
@@ -109,6 +111,9 @@ async function writeFile(
     }
 
     // we don't attempt 3-way merge on Buffer contents
+    if (options?.cleanContents && contents.equals(options?.cleanContents)) {
+      return { type: 'skipped', cleanContents: contents, originalPath };
+    }
 
     const doesPathExist = await pathExists(filePath);
     if (doesPathExist) {
@@ -117,6 +122,7 @@ async function writeFile(
         return { type: 'skipped', cleanContents: contents, originalPath };
       }
     }
+
     return {
       type: 'modified',
       path: filePath,
@@ -153,7 +159,7 @@ async function writeFile(
   const mergeResult = await mergeContents(
     formattedContents,
     filePath,
-    cleanContents
+    cleanContents?.toString('utf8')
   );
   // if there's no merge result, existing contents matches new contents so no modification is required
   if (!mergeResult) {
