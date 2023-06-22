@@ -71,13 +71,17 @@ describe('writeGeneratorOutput', () => {
           'file.txt': {
             contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
             options: {
-              cleanContents: ['hello', 'hi', 'something', 'bye'].join('\n'),
+              cleanContents: Buffer.from(
+                ['hello', 'hi', 'something', 'bye'].join('\n')
+              ),
             },
           },
           'file2.txt': {
             contents: ['123', '456', '789', '012'].join('\n'),
             options: {
-              cleanContents: ['123', '456', '789', '012'].join('\n'),
+              cleanContents: Buffer.from(
+                ['123', '456', '789', '012'].join('\n')
+              ),
             },
           },
         },
@@ -104,7 +108,9 @@ describe('writeGeneratorOutput', () => {
           'file.txt': {
             contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
             options: {
-              cleanContents: ['hello', 'hola', 'something', 'bye'].join('\n'),
+              cleanContents: Buffer.from(
+                ['hello', 'hola', 'something', 'bye'].join('\n')
+              ),
             },
           },
         },
@@ -222,7 +228,10 @@ describe('writeGeneratorOutput', () => {
       {
         files: {
           'file.txt': { contents: 'hi' },
-          'file2.txt': { contents: 'hello', options: { cleanContents: 'hi2' } },
+          'file2.txt': {
+            contents: 'hello',
+            options: { cleanContents: Buffer.from('hi2') },
+          },
         },
         postWriteCommands: [
           {

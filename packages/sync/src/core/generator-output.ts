@@ -14,7 +14,7 @@ export interface WriteFileOptions {
   /**
    * Contents of the clean file (such that the diff will be merged into the existing file)
    */
-  cleanContents?: string;
+  cleanContents?: Buffer;
 }
 
 export interface PostWriteCommandOptions {
