@@ -8,8 +8,8 @@ import {
   useFieldArray,
   useWatch,
 } from 'react-hook-form';
-import ModelFieldForm from './ModelFieldForm';
 import { SortableList } from 'src/components/SortableList';
+import ModelFieldForm from './ModelFieldForm';
 
 interface ModelFieldsFormProps {
   className?: string;
