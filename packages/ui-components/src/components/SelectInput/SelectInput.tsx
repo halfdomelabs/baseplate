@@ -1,7 +1,7 @@
 import { Listbox, Transition, Portal } from '@headlessui/react';
 import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { Fragment, useMemo, useRef, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 import {
   Control,
   FieldPath,
@@ -10,6 +10,7 @@ import {
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
 import { Modifier, usePopper } from 'react-popper';
+import { useDropdown } from '@src/hooks/useDropdown.js';
 import { LabellableComponent } from '@src/types/form.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
@@ -61,10 +62,15 @@ export function SelectInput<OptionType>({
   description,
   fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>();
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
+  const {
+    popperElement,
+    popperElementRef,
+    referenceElement,
+    setReferenceElement,
+    setPopperElement,
+  } = useDropdown<HTMLButtonElement>({
+    fixed,
+  });
 
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(

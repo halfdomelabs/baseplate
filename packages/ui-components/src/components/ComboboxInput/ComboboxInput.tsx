@@ -1,7 +1,7 @@
 import { Combobox, Transition, Portal } from '@headlessui/react';
 import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { useId, useMemo, useRef, useState, Fragment } from 'react';
+import { useId, useMemo, useState, Fragment } from 'react';
 import {
   Control,
   FieldPath,
@@ -11,6 +11,7 @@ import {
 import { HiChevronDown } from 'react-icons/hi2';
 import { Modifier, usePopper } from 'react-popper';
 import { COMPONENT_STRINGS } from '@src/constants/strings.js';
+import { useDropdown } from '@src/hooks/useDropdown.js';
 import { LabellableComponent } from '@src/types/form.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
@@ -68,10 +69,16 @@ export function ComboboxInput<OptionType>({
   description,
   fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLInputElement | null>();
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
+  const {
+    popperElementRef,
+    referenceElement,
+    setReferenceElement,
+    popperElement,
+    setPopperElement,
+  } = useDropdown<HTMLInputElement>({
+    fixed,
+  });
+
   const [filter, setFilter] = useState('');
 
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211

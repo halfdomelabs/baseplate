@@ -3,6 +3,7 @@ import { clsx } from 'clsx';
 import { Fragment, useMemo, useRef, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 import { Modifier, usePopper } from 'react-popper';
+import { useDropdown } from '@src/hooks/useDropdown.js';
 import { Button, ButtonProps } from '../Button/Button.js';
 
 export interface DropdownProps
@@ -26,10 +27,15 @@ export function Dropdown({
   size,
   iconAfter,
 }: DropdownProps): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>();
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
+  const {
+    referenceElement,
+    popperElementRef,
+    popperElement,
+    setReferenceElement,
+    setPopperElement,
+  } = useDropdown<HTMLButtonElement>({
+    fixed,
+  });
 
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
