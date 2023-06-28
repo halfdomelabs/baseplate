@@ -69,28 +69,6 @@ export function ComboboxInput<OptionType>({
   description,
   fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
-  // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
-  const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
-    () => [
-      { name: 'offset', options: { offset: [0, 8] } },
-      {
-        name: 'sameWidth',
-        enabled: true,
-        phase: 'beforeWrite' as ModifierPhases,
-        requires: ['computeStyles'],
-        fn({ state: draftState }) {
-          draftState.styles.popper.minWidth = `${draftState.rects.reference.width}px`;
-        },
-        effect({ state: draftState }) {
-          draftState.elements.popper.style.minWidth = `${
-            (draftState.elements.reference as HTMLDivElement).offsetWidth
-          }px`;
-        },
-      },
-    ],
-    []
-  );
-
   const {
     popperElementRef,
     setReferenceElement,
@@ -99,7 +77,6 @@ export function ComboboxInput<OptionType>({
     attributes,
   } = useDropdown<HTMLInputElement>({
     fixed,
-    modifiers,
   });
 
   const [filter, setFilter] = useState('');

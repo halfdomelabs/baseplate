@@ -1,7 +1,6 @@
 import { Listbox, Transition, Portal } from '@headlessui/react';
-import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { Fragment, useMemo } from 'react';
+import { Fragment } from 'react';
 import {
   Control,
   FieldPath,
@@ -9,7 +8,6 @@ import {
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
-import { Modifier } from 'react-popper';
 import { useDropdown } from '@src/hooks/useDropdown.js';
 import { LabellableComponent } from '@src/types/form.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
@@ -62,27 +60,6 @@ export function SelectInput<OptionType>({
   description,
   fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
-  // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
-  const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
-    () => [
-      { name: 'offset', options: { offset: [0, 8] } },
-      {
-        name: 'sameWidth',
-        enabled: true,
-        phase: 'beforeWrite' as ModifierPhases,
-        requires: ['computeStyles'],
-        fn({ state: draftState }) {
-          draftState.styles.popper.minWidth = `${draftState.rects.reference.width}px`;
-        },
-        effect({ state: draftState }) {
-          draftState.elements.popper.style.minWidth = `${
-            (draftState.elements.reference as HTMLDivElement).offsetWidth
-          }px`;
-        },
-      },
-    ],
-    []
-  );
   const {
     popperElementRef,
     setReferenceElement,
@@ -91,7 +68,6 @@ export function SelectInput<OptionType>({
     attributes,
   } = useDropdown<HTMLButtonElement>({
     fixed,
-    modifiers,
   });
 
   const handleChange = (newValue?: string): void => {
