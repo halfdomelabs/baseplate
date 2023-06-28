@@ -5,12 +5,30 @@ import {
   MutableRefObject,
   SetStateAction,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 import { Modifier, usePopper } from 'react-popper';
 
+type PopperProps =
+  | MutableRefObject<HTMLDivElement | null>
+  | {
+      [key: string]: CSSProperties | string;
+    };
+
+interface TransitionProps {
+  beforeEnter: () => void;
+  afterLeave: () => void;
+  enter: string;
+  enterFrom: string;
+  enterTo: string;
+  leave: string;
+  leaveFrom: string;
+  leaveTo: string;
+}
+
 interface UseDropdownResult<T> {
+  popperProps: Record<string, PopperProps>;
+  transitionProps: TransitionProps;
   attributes: {
     [key: string]:
       | {
@@ -18,8 +36,6 @@ interface UseDropdownResult<T> {
         }
       | undefined;
   };
-  popperElement: HTMLDivElement | null | undefined;
-  popperElementRef: MutableRefObject<HTMLDivElement | null>;
   referenceElement: T | null | undefined;
   setReferenceElement: Dispatch<SetStateAction<T | null | undefined>>;
   setPopperElement: (
@@ -31,6 +47,7 @@ interface UseDropdownResult<T> {
 }
 
 interface UseDropdownProps {
+  popperElementRef: MutableRefObject<HTMLDivElement | null>;
   modifiers?: Modifier<'offset' | 'sameWidth'>[];
   fixed?: boolean;
 }
@@ -38,8 +55,8 @@ interface UseDropdownProps {
 export function useDropdown<T extends VirtualElement>({
   modifiers,
   fixed,
+  popperElementRef,
 }: UseDropdownProps): UseDropdownResult<T> {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<T | null>();
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
 
@@ -72,11 +89,24 @@ export function useDropdown<T extends VirtualElement>({
 
   return {
     attributes,
-    popperElement,
-    popperElementRef,
     referenceElement,
     setReferenceElement,
     setPopperElement,
     styles,
+    popperProps: {
+      ref: popperElementRef,
+      style: styles,
+      ...attributes,
+    },
+    transitionProps: {
+      beforeEnter: () => setPopperElement(popperElementRef.current),
+      afterLeave: () => setPopperElement(null),
+      enter: 'ease-out duration-100',
+      enterFrom: 'opacity-0 scale-95',
+      enterTo: 'opacity-100 scale-100',
+      leave: 'ease-in duration-100',
+      leaveFrom: 'opacity-100 scale-100',
+      leaveTo: 'opacity-0 scale-95',
+    },
   };
 }

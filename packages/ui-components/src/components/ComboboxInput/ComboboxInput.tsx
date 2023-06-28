@@ -1,7 +1,6 @@
 import { Combobox, Transition, Portal } from '@headlessui/react';
-import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { useId, useMemo, useState, Fragment } from 'react';
+import { useId, useState, Fragment, useRef } from 'react';
 import {
   Control,
   FieldPath,
@@ -9,7 +8,6 @@ import {
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
-import { Modifier } from 'react-popper';
 import { COMPONENT_STRINGS } from '@src/constants/strings.js';
 import { useDropdown } from '@src/hooks/useDropdown.js';
 import { LabellableComponent } from '@src/types/form.js';
@@ -69,15 +67,13 @@ export function ComboboxInput<OptionType>({
   description,
   fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
-  const {
-    popperElementRef,
-    setReferenceElement,
-    setPopperElement,
-    styles,
-    attributes,
-  } = useDropdown<HTMLInputElement>({
-    fixed,
-  });
+  const popperElementRef = useRef<HTMLDivElement | null>(null);
+
+  const { setReferenceElement, popperProps, transitionProps } =
+    useDropdown<HTMLInputElement>({
+      fixed,
+      popperElementRef,
+    });
 
   const [filter, setFilter] = useState('');
 
@@ -137,20 +133,22 @@ export function ComboboxInput<OptionType>({
         </Combobox.Button>
         <PortalWrapper>
           <div
-            ref={popperElementRef}
-            style={styles.popper}
+            {...popperProps}
+            // ref={popperElementRef}
+            // style={styles.popper}
             className="z-10"
-            {...attributes.popper}
+            // {...attributes.popper}
           >
             <Transition
-              enter="ease-out duration-100"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-100"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-              beforeEnter={() => setPopperElement(popperElementRef.current)}
-              afterLeave={() => setPopperElement(null)}
+              // enter="ease-out duration-100"
+              // enterFrom="opacity-0 scale-95"
+              // enterTo="opacity-100 scale-100"
+              // leave="ease-in duration-100"
+              // leaveFrom="opacity-100 scale-100"
+              // leaveTo="opacity-0 scale-95"
+              {...transitionProps}
+              // beforeEnter={() => setPopperElement(popperElementRef.current)}
+              // afterLeave={() => setPopperElement(null)}
             >
               <Combobox.Options className="popover-background border-normal max-h-72 overflow-y-auto rounded p-2 shadow">
                 {!filteredOptions.length && (

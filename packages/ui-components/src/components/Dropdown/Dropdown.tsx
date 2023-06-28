@@ -33,11 +33,11 @@ export function Dropdown({
     []
   );
   const {
+    popperProps,
+    transitionProps,
     popperElementRef,
     setReferenceElement,
     setPopperElement,
-    styles,
-    attributes,
   } = useDropdown<HTMLButtonElement>({
     fixed,
     modifiers,
@@ -63,21 +63,23 @@ export function Dropdown({
           </Menu.Button>
           <PortalWrapper>
             <div
-              ref={popperElementRef}
-              style={styles.popper}
+              {...popperProps}
+              // ref={popperElementRef}
+              // style={styles.popper}
               className="z-10"
-              {...attributes.popper}
+              // {...attributes.popper}
             >
               <Transition
                 show={open}
-                enter="ease-out duration-100"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-100"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-                beforeEnter={() => setPopperElement(popperElementRef.current)}
-                afterLeave={() => setPopperElement(null)}
+                // enter="ease-out duration-100"
+                // enterFrom="opacity-0 scale-95"
+                // enterTo="opacity-100 scale-100"
+                // leave="ease-in duration-100"
+                // leaveFrom="opacity-100 scale-100"
+                // leaveTo="opacity-0 scale-95"
+                {...transitionProps}
+                // beforeEnter={() => setPopperElement(popperElementRef.current)}
+                // afterLeave={() => setPopperElement(null)}
               >
                 <Menu.Items
                   as="ul"

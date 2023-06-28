@@ -61,11 +61,11 @@ export function SelectInput<OptionType>({
   fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
   const {
+    popperProps,
+    transitionProps,
     popperElementRef,
     setReferenceElement,
     setPopperElement,
-    styles,
-    attributes,
   } = useDropdown<HTMLButtonElement>({
     fixed,
   });
@@ -108,20 +108,22 @@ export function SelectInput<OptionType>({
         </Listbox.Button>
         <PortalWrapper>
           <div
-            ref={popperElementRef}
-            style={styles.popper}
+            {...popperProps}
+            // ref={popperElementRef}
+            // style={styles.popper}
             className="z-10"
-            {...attributes.popper}
+            // {...attributes.popper}
           >
             <Transition
-              enter="ease-out duration-100"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-100"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-              beforeEnter={() => setPopperElement(popperElementRef.current)}
-              afterLeave={() => setPopperElement(null)}
+              // enter="ease-out duration-100"
+              // enterFrom="opacity-0 scale-95"
+              // enterTo="opacity-100 scale-100"
+              // leave="ease-in duration-100"
+              // leaveFrom="opacity-100 scale-100"
+              // leaveTo="opacity-0 scale-95"
+              {...transitionProps}
+              // beforeEnter={() => setPopperElement(popperElementRef.current)}
+              // afterLeave={() => setPopperElement(null)}
             >
               <Listbox.Options className="popover-background border-normal z-10 max-h-72 overflow-y-auto rounded p-2 shadow">
                 {options.map((option) => (
