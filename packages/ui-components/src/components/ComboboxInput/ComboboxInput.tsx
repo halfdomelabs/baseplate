@@ -9,7 +9,7 @@ import {
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
-import { Modifier, usePopper } from 'react-popper';
+import { Modifier } from 'react-popper';
 import { COMPONENT_STRINGS } from '@src/constants/strings.js';
 import { useDropdown } from '@src/hooks/useDropdown.js';
 import { LabellableComponent } from '@src/types/form.js';
@@ -69,18 +69,6 @@ export function ComboboxInput<OptionType>({
   description,
   fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
-  const {
-    popperElementRef,
-    referenceElement,
-    setReferenceElement,
-    popperElement,
-    setPopperElement,
-  } = useDropdown<HTMLInputElement>({
-    fixed,
-  });
-
-  const [filter, setFilter] = useState('');
-
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
     () => [
@@ -102,11 +90,19 @@ export function ComboboxInput<OptionType>({
     ],
     []
   );
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-end',
+
+  const {
+    popperElementRef,
+    setReferenceElement,
+    setPopperElement,
+    styles,
+    attributes,
+  } = useDropdown<HTMLInputElement>({
+    fixed,
     modifiers,
-    strategy: fixed ? 'fixed' : undefined,
   });
+
+  const [filter, setFilter] = useState('');
 
   const handleChange = (newValue?: string): void => {
     setFilter('');

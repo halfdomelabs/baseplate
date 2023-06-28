@@ -1,4 +1,4 @@
-import { ModifierPhases } from '@popperjs/core/index.js';
+import { ModifierPhases, VirtualElement } from '@popperjs/core/index.js';
 import {
   CSSProperties,
   Dispatch,
@@ -32,14 +32,11 @@ interface UseDropdownResult<T> {
 
 interface UseDropdownProps {
   useSameWidthModifier?: boolean;
-  modifiers?: {
-    offset?: Modifier<'offset'>;
-    sameWidth?: Modifier<'sameWidth'>;
-  };
+  modifiers: Modifier<'offset' | 'sameWidth'>[];
   fixed?: boolean;
 }
 
-export function useDropdown<T>({
+export function useDropdown<T extends VirtualElement>({
   useSameWidthModifier,
   modifiers,
   fixed,
@@ -48,13 +45,19 @@ export function useDropdown<T>({
   const [referenceElement, setReferenceElement] = useState<T | null>();
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
 
+  const { styles, attributes } = usePopper(referenceElement, popperElement, {
+    placement: 'bottom-end',
+    modifiers,
+    strategy: fixed ? 'fixed' : undefined,
+  });
+
   return {
-    // attributes,
+    attributes,
     popperElement,
     popperElementRef,
     referenceElement,
     setReferenceElement,
     setPopperElement,
-    // styles,
+    styles,
   };
 }

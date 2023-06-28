@@ -1,8 +1,8 @@
 import { Menu, Portal, Transition } from '@headlessui/react';
 import { clsx } from 'clsx';
-import { Fragment, useMemo, useRef, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 import { MdExpandMore } from 'react-icons/md';
-import { Modifier, usePopper } from 'react-popper';
+import { Modifier } from 'react-popper';
 import { useDropdown } from '@src/hooks/useDropdown.js';
 import { Button, ButtonProps } from '../Button/Button.js';
 
@@ -27,26 +27,20 @@ export function Dropdown({
   size,
   iconAfter,
 }: DropdownProps): JSX.Element {
-  const {
-    referenceElement,
-    popperElementRef,
-    popperElement,
-    setReferenceElement,
-    setPopperElement,
-  } = useDropdown<HTMLButtonElement>({
-    fixed,
-  });
-
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
     () => [{ name: 'offset', options: { offset: [0, 4] } }],
     []
   );
-
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-end',
+  const {
+    popperElementRef,
+    setReferenceElement,
+    setPopperElement,
+    styles,
+    attributes,
+  } = useDropdown<HTMLButtonElement>({
+    fixed,
     modifiers,
-    strategy: fixed ? 'fixed' : undefined,
   });
 
   const PortalWrapper = fixed ? Portal : Fragment;

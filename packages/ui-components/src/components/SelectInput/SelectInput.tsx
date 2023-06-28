@@ -9,7 +9,7 @@ import {
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
-import { Modifier, usePopper } from 'react-popper';
+import { Modifier } from 'react-popper';
 import { useDropdown } from '@src/hooks/useDropdown.js';
 import { LabellableComponent } from '@src/types/form.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
@@ -62,16 +62,6 @@ export function SelectInput<OptionType>({
   description,
   fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
-  const {
-    popperElement,
-    popperElementRef,
-    referenceElement,
-    setReferenceElement,
-    setPopperElement,
-  } = useDropdown<HTMLButtonElement>({
-    fixed,
-  });
-
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
     () => [
@@ -93,11 +83,15 @@ export function SelectInput<OptionType>({
     ],
     []
   );
-
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-end',
+  const {
+    popperElementRef,
+    setReferenceElement,
+    setPopperElement,
+    styles,
+    attributes,
+  } = useDropdown<HTMLButtonElement>({
+    fixed,
     modifiers,
-    strategy: fixed ? 'fixed' : undefined,
   });
 
   const handleChange = (newValue?: string): void => {
