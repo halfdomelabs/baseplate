@@ -1,6 +1,6 @@
 import { Combobox, Transition, Portal } from '@headlessui/react';
 import { clsx } from 'clsx';
-import { useId, useState, Fragment, useRef } from 'react';
+import { useId, useState, Fragment } from 'react';
 import {
   Control,
   FieldPath,
@@ -67,12 +67,9 @@ export function ComboboxInput<OptionType>({
   description,
   fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-
-  const { setReferenceElement, popperProps, transitionProps } =
+  const { setReferenceElement, transitionProps, popperProps } =
     useDropdown<HTMLInputElement>({
       fixed,
-      popperElementRef,
     });
 
   const [filter, setFilter] = useState('');
@@ -132,24 +129,8 @@ export function ComboboxInput<OptionType>({
           <HiChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
         </Combobox.Button>
         <PortalWrapper>
-          <div
-            {...popperProps}
-            // ref={popperElementRef}
-            // style={styles.popper}
-            className="z-10"
-            // {...attributes.popper}
-          >
-            <Transition
-              // enter="ease-out duration-100"
-              // enterFrom="opacity-0 scale-95"
-              // enterTo="opacity-100 scale-100"
-              // leave="ease-in duration-100"
-              // leaveFrom="opacity-100 scale-100"
-              // leaveTo="opacity-0 scale-95"
-              {...transitionProps}
-              // beforeEnter={() => setPopperElement(popperElementRef.current)}
-              // afterLeave={() => setPopperElement(null)}
-            >
+          <div {...popperProps} className="z-10">
+            <Transition {...transitionProps}>
               <Combobox.Options className="popover-background border-normal max-h-72 overflow-y-auto rounded p-2 shadow">
                 {!filteredOptions.length && (
                   <div className="text-secondary p-2 text-sm">

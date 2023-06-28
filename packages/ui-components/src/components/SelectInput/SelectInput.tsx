@@ -60,15 +60,10 @@ export function SelectInput<OptionType>({
   description,
   fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
-  const {
-    popperProps,
-    transitionProps,
-    popperElementRef,
-    setReferenceElement,
-    setPopperElement,
-  } = useDropdown<HTMLButtonElement>({
-    fixed,
-  });
+  const { popperProps, transitionProps, setReferenceElement } =
+    useDropdown<HTMLButtonElement>({
+      fixed,
+    });
 
   const handleChange = (newValue?: string): void => {
     if (onChange) {
@@ -107,24 +102,8 @@ export function SelectInput<OptionType>({
           <HiChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
         </Listbox.Button>
         <PortalWrapper>
-          <div
-            {...popperProps}
-            // ref={popperElementRef}
-            // style={styles.popper}
-            className="z-10"
-            // {...attributes.popper}
-          >
-            <Transition
-              // enter="ease-out duration-100"
-              // enterFrom="opacity-0 scale-95"
-              // enterTo="opacity-100 scale-100"
-              // leave="ease-in duration-100"
-              // leaveFrom="opacity-100 scale-100"
-              // leaveTo="opacity-0 scale-95"
-              {...transitionProps}
-              // beforeEnter={() => setPopperElement(popperElementRef.current)}
-              // afterLeave={() => setPopperElement(null)}
-            >
+          <div {...popperProps} className="z-10">
+            <Transition {...transitionProps}>
               <Listbox.Options className="popover-background border-normal z-10 max-h-72 overflow-y-auto rounded p-2 shadow">
                 {options.map((option) => (
                   <Listbox.Option

@@ -32,16 +32,11 @@ export function Dropdown({
     () => [{ name: 'offset', options: { offset: [0, 4] } }],
     []
   );
-  const {
-    popperProps,
-    transitionProps,
-    popperElementRef,
-    setReferenceElement,
-    setPopperElement,
-  } = useDropdown<HTMLButtonElement>({
-    fixed,
-    modifiers,
-  });
+  const { popperProps, transitionProps, setReferenceElement } =
+    useDropdown<HTMLButtonElement>({
+      fixed,
+      modifiers,
+    });
 
   const PortalWrapper = fixed ? Portal : Fragment;
 
@@ -62,25 +57,8 @@ export function Dropdown({
             {buttonLabel}
           </Menu.Button>
           <PortalWrapper>
-            <div
-              {...popperProps}
-              // ref={popperElementRef}
-              // style={styles.popper}
-              className="z-10"
-              // {...attributes.popper}
-            >
-              <Transition
-                show={open}
-                // enter="ease-out duration-100"
-                // enterFrom="opacity-0 scale-95"
-                // enterTo="opacity-100 scale-100"
-                // leave="ease-in duration-100"
-                // leaveFrom="opacity-100 scale-100"
-                // leaveTo="opacity-0 scale-95"
-                {...transitionProps}
-                // beforeEnter={() => setPopperElement(popperElementRef.current)}
-                // afterLeave={() => setPopperElement(null)}
-              >
+            <div {...popperProps} className="z-10">
+              <Transition show={open} {...transitionProps}>
                 <Menu.Items
                   as="ul"
                   className="popover-background border-normal min-w-[150px] rounded p-2 shadow"

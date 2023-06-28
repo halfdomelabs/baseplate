@@ -5,15 +5,18 @@ import {
   MutableRefObject,
   SetStateAction,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Modifier, usePopper } from 'react-popper';
 
 type PopperProps =
   | MutableRefObject<HTMLDivElement | null>
+  | CSSProperties
   | {
-      [key: string]: CSSProperties | string;
-    };
+      [key: string]: string;
+    }
+  | undefined;
 
 interface TransitionProps {
   beforeEnter: () => void;
@@ -29,25 +32,10 @@ interface TransitionProps {
 interface UseDropdownResult<T> {
   popperProps: Record<string, PopperProps>;
   transitionProps: TransitionProps;
-  attributes: {
-    [key: string]:
-      | {
-          [key: string]: string;
-        }
-      | undefined;
-  };
-  referenceElement: T | null | undefined;
   setReferenceElement: Dispatch<SetStateAction<T | null | undefined>>;
-  setPopperElement: (
-    value: SetStateAction<HTMLDivElement | null | undefined>
-  ) => void;
-  styles: {
-    [key: string]: CSSProperties;
-  };
 }
 
 interface UseDropdownProps {
-  popperElementRef: MutableRefObject<HTMLDivElement | null>;
   modifiers?: Modifier<'offset' | 'sameWidth'>[];
   fixed?: boolean;
 }
@@ -55,8 +43,8 @@ interface UseDropdownProps {
 export function useDropdown<T extends VirtualElement>({
   modifiers,
   fixed,
-  popperElementRef,
 }: UseDropdownProps): UseDropdownResult<T> {
+  const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] = useState<T | null>();
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
 
@@ -88,14 +76,10 @@ export function useDropdown<T extends VirtualElement>({
   });
 
   return {
-    attributes,
-    referenceElement,
     setReferenceElement,
-    setPopperElement,
-    styles,
     popperProps: {
       ref: popperElementRef,
-      style: styles,
+      style: styles.popper,
       ...attributes,
     },
     transitionProps: {
