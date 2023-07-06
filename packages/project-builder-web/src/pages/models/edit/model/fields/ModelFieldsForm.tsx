@@ -2,7 +2,13 @@ import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
 import { ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
-import { Control, useFieldArray, useWatch } from 'react-hook-form';
+import {
+  Control,
+  FieldArrayWithId,
+  useFieldArray,
+  useWatch,
+} from 'react-hook-form';
+import { SortableList } from 'src/components/SortableList';
 import ModelFieldForm from './ModelFieldForm';
 
 interface ModelFieldsFormProps {
@@ -46,6 +52,7 @@ export function ModelFieldsForm({
     fields: fieldFields,
     remove: removeField,
     append: appendField,
+    move: sortFields,
   } = useFieldArray({
     control,
     name: 'model.fields',
@@ -112,6 +119,21 @@ export function ModelFieldsForm({
     'grid grid-cols-[repeat(3,1fr)_repeat(3,60px)_100px_80px] gap-2'
   );
 
+  const fieldListItems = fieldFields.map((f: FieldArrayWithId, i: number) => ({
+    id: f.id,
+    element: (
+      <ModelFieldForm
+        className={gridClassNames}
+        key={f.id}
+        control={control}
+        idx={i}
+        onRemove={removeField}
+        fixReferences={fixReferences}
+        originalModel={originalModel}
+      />
+    ),
+  }));
+
   return (
     <div className={clsx('space-y-4', className)}>
       {!fields.length ? undefined : (
@@ -131,17 +153,7 @@ export function ModelFieldsForm({
             <div className="sr-only">Tags</div>
             <div className="sr-only">Actions</div>
           </div>
-          {fieldFields.map((field, i) => (
-            <ModelFieldForm
-              className={gridClassNames}
-              key={field.id}
-              control={control}
-              idx={i}
-              onRemove={removeField}
-              fixReferences={fixReferences}
-              originalModel={originalModel}
-            />
-          ))}
+          <SortableList listItems={fieldListItems} sortItems={sortFields} />
         </div>
       )}
       <div className="flex flex-row space-x-4">
