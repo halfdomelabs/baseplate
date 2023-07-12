@@ -40,7 +40,7 @@ function ModelEditPage(): JSX.Element {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" key={id}>
       {model ? (
         <div className="flex flex-col items-start">
           <button
