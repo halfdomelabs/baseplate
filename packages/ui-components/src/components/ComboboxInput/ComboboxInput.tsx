@@ -10,40 +10,20 @@ import {
 import { HiChevronDown } from 'react-icons/hi2';
 import { COMPONENT_STRINGS } from '@src/constants/strings.js';
 import { useDropdown } from '@src/hooks/useDropdown.js';
-import { LabellableComponent } from '@src/types/form.js';
+import {
+  AddOptionRequiredFields,
+  DropdownPropsBase,
+} from '@src/types/dropdown.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 
-type OptionToStringFunc<OptionType> = (value: OptionType) => string;
-
-export interface ComboboxInputPropsBase<OptionType>
-  extends LabellableComponent {
-  options: OptionType[];
-  className?: string;
-  name?: string;
-  disabled?: boolean;
-  onChange?(value: string | null): void;
-  value?: string | null;
-  getOptionLabel?: OptionToStringFunc<OptionType>;
-  getOptionValue?: OptionToStringFunc<OptionType>;
-  renderOption?: (
-    option: OptionType,
-    state: { selected: boolean }
-  ) => JSX.Element;
-  noValueLabel?: string;
-  fixed?: boolean;
-}
-
-type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
-  ? unknown
-  : {
-      getOptionLabel: OptionToStringFunc<OptionType>;
-    }) &
-  (OptionType extends { value: string | number }
-    ? unknown
-    : {
-        getOptionValue: OptionToStringFunc<OptionType>;
-      });
+export type ComboboxInputPropsBase<OptionType> =
+  DropdownPropsBase<OptionType> & {
+    renderOption?: (
+      option: OptionType,
+      state: { selected: boolean }
+    ) => JSX.Element;
+  };
 
 export type ComboboxInputProps<OptionType> =
   ComboboxInputPropsBase<OptionType> & AddOptionRequiredFields<OptionType>;
@@ -67,12 +47,12 @@ export function ComboboxInput<OptionType>({
   description,
   fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
-  const { setReferenceElement, transitionProps, popperProps } =
+  const [filter, setFilter] = useState('');
+
+  const { popperProps, transitionProps, setReferenceElement } =
     useDropdown<HTMLInputElement>({
       fixed,
     });
-
-  const [filter, setFilter] = useState('');
 
   const handleChange = (newValue?: string): void => {
     setFilter('');
@@ -116,7 +96,7 @@ export function ComboboxInput<OptionType>({
               )}
               htmlFor={inputId}
             >
-              {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}
+              {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}{' '}
             </label>
           )}
           <Combobox.Input

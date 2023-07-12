@@ -9,37 +9,14 @@ import {
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
 import { useDropdown } from '@src/hooks/useDropdown.js';
-import { LabellableComponent } from '@src/types/form.js';
+import {
+  AddOptionRequiredFields,
+  DropdownPropsBase,
+} from '@src/types/dropdown.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 
-type OptionToStringFunc<OptionType> = (value: OptionType) => string;
-
-export interface SelectInputPropsBase<OptionType> extends LabellableComponent {
-  options: OptionType[];
-  className?: string;
-  name?: string;
-  disabled?: boolean;
-  onChange?(value: string | number | null): void;
-  value?: string | null;
-  getOptionLabel?: OptionToStringFunc<OptionType>;
-  getOptionValue?: OptionToStringFunc<OptionType>;
-  noValueLabel?: string;
-  fixed?: boolean;
-}
-
-type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
-  ? unknown
-  : {
-      getOptionLabel: OptionToStringFunc<OptionType>;
-    }) &
-  (OptionType extends { value: string | number }
-    ? unknown
-    : {
-        getOptionValue: OptionToStringFunc<OptionType>;
-      });
-
-export type SelectInputProps<OptionType> = SelectInputPropsBase<OptionType> &
+export type SelectInputProps<OptionType> = DropdownPropsBase<OptionType> &
   AddOptionRequiredFields<OptionType>;
 
 /**
@@ -139,7 +116,7 @@ interface SelectInputControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<SelectInputPropsBase<OptionType>, 'register'> {
+> extends Omit<DropdownPropsBase<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
