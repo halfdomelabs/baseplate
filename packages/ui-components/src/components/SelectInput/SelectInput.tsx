@@ -6,6 +6,7 @@ import {
   Control,
   FieldPath,
   FieldValues,
+  PathValue,
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
@@ -219,7 +220,9 @@ SelectInput.Controller = function SelectInputController<
 
   return (
     <SelectInput
-      onChange={(value) => field.onChange(value)}
+      onChange={(value) =>
+        field.onChange(value as PathValue<TFieldValues, TFieldName>)
+      }
       value={field.value}
       error={error?.message}
       {...restProps}

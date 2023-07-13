@@ -6,6 +6,7 @@ import {
   Control,
   FieldPath,
   FieldValues,
+  PathValue,
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
@@ -256,7 +257,7 @@ ComboboxInput.Controller = function ComboboxInputController<
     if (onChange) {
       onChange(newValue);
     }
-    field.onChange(newValue);
+    field.onChange(newValue as PathValue<TFieldValues, TFieldName>);
   };
 
   const restProps = rest as ComboboxInputProps<OptionType>;

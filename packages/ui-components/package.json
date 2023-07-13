@@ -45,14 +45,14 @@
     "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
-    "@headlessui/react": "1.7.14",
+    "@headlessui/react": "1.7.15",
     "@popperjs/core": "^2.11.8",
-    "@types/react": "18.0.27",
-    "@types/react-dom": "18.0.10",
+    "@types/react": "18.2.15",
+    "@types/react-dom": "18.2.7",
     "clsx": "^1.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-hook-form": "7.44.3",
+    "react-hook-form": "7.45.0",
     "react-icons": "4.10.1",
     "react-popper": "^2.3.0",
     "zustand": "^4.3.8"

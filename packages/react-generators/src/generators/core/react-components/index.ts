@@ -80,13 +80,13 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
   ) {
     const srcFolder = react.getSrcFolder();
     node.addPackages({
-      '@headlessui/react': '1.6.6',
+      '@headlessui/react': '1.7.15',
       '@hookform/resolvers': '3.1.1',
       classnames: '^2.3.1',
-      'react-hook-form': '7.30.0',
-      'react-hot-toast': '^2.2.0',
+      'react-hook-form': '7.45.0',
+      'react-hot-toast': '2.4.1',
       'react-icons': '4.10.1',
-      'react-select': '5.7.0',
+      'react-select': '5.7.4',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useStatus.ts`
@@ -99,11 +99,11 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     if (includeDatePicker) {
       coreReactComponents.push({ name: 'ReactDatePickerInput' });
       node.addPackages({
-        'react-datepicker': '4.8.0',
-        'date-fns': '2.29.3',
+        'react-datepicker': '4.16.0',
+        'date-fns': '2.30.0',
       });
       node.addDevPackages({
-        '@types/react-datepicker': '4.8.0',
+        '@types/react-datepicker': '4.11.2',
       });
     }
 

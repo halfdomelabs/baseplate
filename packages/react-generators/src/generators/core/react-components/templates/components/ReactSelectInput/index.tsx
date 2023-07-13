@@ -135,9 +135,9 @@ ReactSelectInput.LabelledController = function ReactSelectInputController<
       error={error?.message}
       onChange={(val) => {
         if (!val && emptyAsNull) {
-          field.onChange(null);
+          field.onChange(null as FieldPathValue<TFieldValues, TFieldName>);
         } else {
-          field.onChange(val);
+          field.onChange(val as FieldPathValue<TFieldValues, TFieldName>);
         }
       }}
       onBlur={field.onBlur}
