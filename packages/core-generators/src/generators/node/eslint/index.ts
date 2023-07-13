@@ -67,13 +67,13 @@ const EslintGenerator = createGeneratorWithChildren({
           : { 'eslint-config-airbnb-base': '15.0.0' };
 
         node.addDevPackages({
-          '@typescript-eslint/eslint-plugin': '5.54.0',
-          '@typescript-eslint/parser': '5.54.0',
-          eslint: '8.35.0',
+          '@typescript-eslint/eslint-plugin': '5.62.0',
+          '@typescript-eslint/parser': '5.62.0',
+          eslint: '8.44.0',
           ...airbnbPackage,
           'eslint-config-airbnb-typescript': '17.0.0',
           'eslint-config-prettier': '8.6.0',
-          'eslint-import-resolver-typescript': '3.4.2',
+          'eslint-import-resolver-typescript': '3.5.5',
           'eslint-plugin-import': '2.27.5',
           ...(config.disableJest
             ? {}

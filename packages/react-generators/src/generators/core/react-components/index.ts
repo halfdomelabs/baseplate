@@ -81,7 +81,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     const srcFolder = react.getSrcFolder();
     node.addPackages({
       '@headlessui/react': '1.6.6',
-      '@hookform/resolvers': '^2.8.8',
+      '@hookform/resolvers': '3.1.1',
       classnames: '^2.3.1',
       'react-hook-form': '7.30.0',
       'react-hot-toast': '^2.2.0',

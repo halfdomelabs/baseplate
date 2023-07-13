@@ -1,23 +1,22 @@
 import { clsx } from 'clsx';
 import {
-  MouseEventHandler,
-  KeyboardEventHandler,
   FocusEventHandler,
+  ForwardedRef,
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
-  ForwardedRef,
-  forwardRef,
+  KeyboardEventHandler,
+  MouseEventHandler,
   useId,
 } from 'react';
 import {
   Control,
   FieldError,
   FieldPath,
-  get,
-  UseFormRegisterReturn,
-  useFormState,
-  RegisterOptions,
   FieldValues,
+  RegisterOptions,
+  UseFormRegisterReturn,
+  get,
+  useFormState,
 } from 'react-hook-form';
 import { LabellableComponent } from '@src/types/form.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
