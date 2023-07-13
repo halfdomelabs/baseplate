@@ -12,6 +12,7 @@ import {
   ChangeHandler,
   Control,
   FieldPath,
+  FieldPathValue,
   FieldValues,
   RefCallBack,
   useController,
@@ -159,7 +160,7 @@ ReactDatePickerInput.LabelledController =
         {...rest}
         error={error?.message}
         onChange={(val) => {
-          field.onChange(val);
+          field.onChange(val as FieldPathValue<TFieldValues, TFieldName>);
         }}
         onBlur={field.onBlur}
         value={field.value as string}

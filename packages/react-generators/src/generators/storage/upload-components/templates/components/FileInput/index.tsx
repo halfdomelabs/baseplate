@@ -8,6 +8,7 @@ import {
   Control,
   FieldError,
   FieldPath,
+  FieldPathValue,
   FieldValues,
   get,
   useController,
@@ -267,15 +268,22 @@ FileInput.Labelled = function FileInputLabelled({
   );
 };
 
-interface FileInputControllerProps<T extends FieldValues>
-  extends FileInputLabelledProps {
-  control: Control<T>;
-  name: FieldPath<T>;
+interface FileInputControllerProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> extends Omit<FileInputLabelledProps, 'onChange' | 'value' | 'error'> {
+  control: Control<TFieldValues>;
+  name: TFieldName;
 }
 
 FileInput.LabelledController = function FileInputController<
-  T extends FieldValues
->({ control, name, ...rest }: FileInputControllerProps<T>): JSX.Element {
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+>({
+  control,
+  name,
+  ...rest
+}: FileInputControllerProps<TFieldValues, TFieldName>): JSX.Element {
   const {
     field: { value, onChange },
     formState: { errors },
@@ -289,7 +297,9 @@ FileInput.LabelledController = function FileInputController<
 
   return (
     <FileInput.Labelled
-      onChange={(newValue) => onChange(newValue)}
+      onChange={(newValue) =>
+        onChange(newValue as FieldPathValue<TFieldValues, TFieldName>)
+      }
       value={validatedValue}
       error={error?.message}
       {...rest}

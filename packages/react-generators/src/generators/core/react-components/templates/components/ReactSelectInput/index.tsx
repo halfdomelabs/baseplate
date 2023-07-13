@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import {
   Control,
   FieldPath,
+  FieldPathValue,
   FieldValues,
   PathValue,
   useController,
