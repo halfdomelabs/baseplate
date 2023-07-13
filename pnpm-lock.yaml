@@ -113,8 +113,8 @@ importers:
         specifier: ^13.0.3
         version: 13.0.3
       zod:
-        specifier: ^3.20.6
-        version: 3.20.6
+        specifier: 3.21.4
+        version: 3.21.4
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -198,8 +198,8 @@ importers:
         specifier: ^13.0.3
         version: 13.0.3
       zod:
-        specifier: ^3.20.6
-        version: 3.20.6
+        specifier: 3.21.4
+        version: 3.21.4
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -347,8 +347,8 @@ importers:
         specifier: ^0.28.0
         version: 0.28.0
       zod:
-        specifier: ^3.20.6
-        version: 3.20.6
+        specifier: 3.21.4
+        version: 3.21.4
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -486,8 +486,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.4
       zod:
-        specifier: ^3.20.6
-        version: 3.20.6
+        specifier: 3.21.4
+        version: 3.21.4
       zustand:
         specifier: ^4.3.8
         version: 4.3.8(immer@9.0.12)(react@18.2.0)
@@ -601,8 +601,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       zod:
-        specifier: ^3.20.6
-        version: 3.20.6
+        specifier: 3.21.4
+        version: 3.21.4
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -662,8 +662,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       zod:
-        specifier: ^3.20.6
-        version: 3.20.6
+        specifier: 3.21.4
+        version: 3.21.4
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -17879,8 +17879,8 @@ packages:
       readable-stream: 3.6.2
     dev: false
 
-  /zod@3.20.6:
-    resolution: {integrity: sha512-oyu0m54SGCtzh6EClBVqDDlAYRz4jrVtKwQ7ZnsEmMI9HnzuZFj8QFwAY1M5uniIYACdGvv0PBWPF2kO0aNofA==}
+  /zod@3.21.4:
+    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
   /zustand@4.3.8(immer@9.0.12)(react@18.2.0):

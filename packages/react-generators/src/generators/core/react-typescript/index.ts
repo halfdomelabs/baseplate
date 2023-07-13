@@ -33,8 +33,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
       isolatedModules: true,
       noEmit: true,
       jsx: 'react-jsx',
-      noUnusedLocals: true,
-      noUnusedParameters: true,
+      strict: true,
       noFallthroughCasesInSwitch: true,
       baseUrl: './',
     });

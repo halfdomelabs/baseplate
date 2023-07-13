@@ -69,7 +69,7 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
         const additionalVerifications: TypescriptCodeBlock[] = [];
 
         node.addPackages({
-          zod: '3.20.6',
+          zod: '3.21.4',
         });
 
         node.addDevPackages({
