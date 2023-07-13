@@ -63,7 +63,7 @@ function EnumEditPage(): JSX.Element {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" key={id}>
       <div className="flex flex-row space-x-8">
         <h1>{enumBlock?.name || 'New Enum'}</h1>
         {!isNew && (
