@@ -72,13 +72,13 @@ const EslintGenerator = createGeneratorWithChildren({
           eslint: '8.44.0',
           ...airbnbPackage,
           'eslint-config-airbnb-typescript': '17.0.0',
-          'eslint-config-prettier': '8.6.0',
+          'eslint-config-prettier': '8.8.0',
           'eslint-import-resolver-typescript': '3.5.5',
           'eslint-plugin-import': '2.27.5',
           ...(config.disableJest
             ? {}
             : {
-                'eslint-plugin-jest': '27.2.1',
+                'eslint-plugin-jest': '27.2.3',
               }),
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
