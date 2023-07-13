@@ -20,6 +20,7 @@ import {
   FieldValues,
 } from 'react-hook-form';
 import { LabellableComponent } from '@src/types/form.js';
+import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 import { FormLabel } from '../FormLabel/FormLabel.js';
@@ -105,7 +106,7 @@ function TextInputFn(
 /**
  * A text input field.
  */
-const TextInputRoot = forwardRef(TextInputFn);
+const TextInputRoot = genericForwardRef(TextInputFn);
 
 export interface TextInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -141,7 +142,7 @@ function TextInputControllerFn<
   );
 }
 
-export const TextInputController = forwardRef(TextInputControllerFn);
+export const TextInputController = genericForwardRef(TextInputControllerFn);
 
 export const TextInput = Object.assign(TextInputRoot, {
   Controller: TextInputController,

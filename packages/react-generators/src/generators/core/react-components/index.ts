@@ -85,7 +85,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       classnames: '^2.3.1',
       'react-hook-form': '7.30.0',
       'react-hot-toast': '^2.2.0',
-      'react-icons': '^4.3.1',
+      'react-icons': '4.10.1',
       'react-select': '5.7.0',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(

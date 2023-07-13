@@ -1,16 +1,17 @@
 import { clsx } from 'clsx';
-import { ForwardedRef, forwardRef, useId } from 'react';
+import { ForwardedRef, useId } from 'react';
 import {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   RegisterOptions,
   UseFormRegisterReturn,
+  get,
   useFormState,
 } from 'react-hook-form';
 import { LabellableComponent } from '@src/types/form.js';
+import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 import { FormLabel } from '../FormLabel/FormLabel.js';
@@ -125,7 +126,7 @@ function CheckedInputFn(
 /**
  * A text input field.
  */
-const CheckedInputRoot = forwardRef(CheckedInputFn);
+const CheckedInputRoot = genericForwardRef(CheckedInputFn);
 
 export interface CheckedInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -160,7 +161,7 @@ function CheckedInputControllerFn<
   );
 }
 
-const CheckedInputController = forwardRef(CheckedInputControllerFn);
+const CheckedInputController = genericForwardRef(CheckedInputControllerFn);
 
 export const CheckedInput = Object.assign(CheckedInputRoot, {
   Controller: CheckedInputController,
