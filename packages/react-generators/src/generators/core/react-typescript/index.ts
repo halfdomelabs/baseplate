@@ -18,7 +18,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
     eslint: eslintProvider,
   },
   createGenerator(descriptor, { typescriptConfig, eslint }) {
-    typescriptConfig.setTypescriptVersion('4.8.4');
+    typescriptConfig.setTypescriptVersion('5.0.4');
     typescriptConfig.setTypescriptCompilerOptions({
       target: 'ESNext',
       lib: ['dom', 'dom.iterable', 'esnext'],
