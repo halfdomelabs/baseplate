@@ -44,8 +44,8 @@ const PrismaJestGenerator = createGeneratorWithChildren({
     { node, jest, project, typescript, prismaOutput }
   ) {
     node.addDevPackages({
-      'jest-mock-extended': '^2.0.6',
-      'pg-connection-string': '^2.5.0',
+      'jest-mock-extended': '3.0.4',
+      'pg-connection-string': '2.6.1',
     });
 
     const [dbHelperImport, dbHelperPath] = makeImportAndFilePath(

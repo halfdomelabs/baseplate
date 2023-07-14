@@ -20,7 +20,7 @@
     "@types/ramda": "^0.27.64",
     "@types/toposort": "^2.0.3",
     "memfs": "3.5.3",
-    "tsc-alias": "1.8.6",
+    "tsc-alias": "1.8.7",
     "typescript": "5.0.4",
     "vitest": "0.32.2"
   },

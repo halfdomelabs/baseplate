@@ -44,7 +44,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
     fastifyOutput,
   }) {
     node.addPackages({
-      bullmq: '2.1.2',
+      bullmq: '4.2.1',
     });
 
     node.addScripts({

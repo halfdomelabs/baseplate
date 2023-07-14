@@ -144,8 +144,8 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         { setupTask: { configMap } }
       ) {
         node.addPackages({
-          'altair-fastify-plugin': '5.0.16',
-          graphql: '16.6.0',
+          'altair-fastify-plugin': '5.0.28',
+          graphql: '16.7.1',
           '@envelop/core': '4.0.0',
           '@envelop/disable-introspection': '5.0.0',
           'graphql-yoga': '4.0.3',
@@ -251,7 +251,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         },
         run({ node, fastifyServer }) {
           node.addPackages({
-            '@fastify/websocket': '7.0.1',
+            '@fastify/websocket': '8.1.0',
           });
 
           fastifyServer.registerPlugin({

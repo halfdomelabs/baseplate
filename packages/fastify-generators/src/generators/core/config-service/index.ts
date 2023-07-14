@@ -73,7 +73,7 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
         });
 
         node.addDevPackages({
-          dotenv: '^10.0.0',
+          dotenv: '16.3.1',
         });
 
         nodeGitIgnore.addExclusions(['/.env', '/.*.env']);
