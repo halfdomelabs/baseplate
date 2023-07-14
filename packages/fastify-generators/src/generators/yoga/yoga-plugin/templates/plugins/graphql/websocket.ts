@@ -1,15 +1,16 @@
 // @ts-nocheck
 
 import { WebsocketHandler } from '@fastify/websocket';
-import { YogaNodeServerInstance } from '@graphql-yoga/node';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ExecutionArgs, ExecutionResult } from 'graphql';
 import { CloseCode } from 'graphql-ws';
 import { makeHandler } from 'graphql-ws/lib/use/@fastify/websocket';
-import { logError } from '%error-logger';
-import { logger } from '%logger-service';
-import { HttpError } from '%http-errors';
-import { createContextFromRequest } from '%request-service-context';
+import { YogaServerInstance } from 'graphql-yoga';
+import { createAuthInfoFromAuthorization } from '@src/modules/accounts/auth/services/auth-service';
+import { logError } from '@src/services/error-logger';
+import { logger } from '@src/services/logger';
+import { HttpError } from '@src/utils/http-errors';
+import { createContextFromRequest } from '@src/utils/request-service-context';
 
 interface RootValueWithExecutor {
   execute: (args: ExecutionArgs) => Promise<ExecutionResult>;
@@ -17,15 +18,13 @@ interface RootValueWithExecutor {
 }
 
 export function getGraphqlWsHandler(
-  graphQLServer: YogaNodeServerInstance<
+  graphQLServer: YogaServerInstance<
     {
       request: FastifyRequest;
       reply: FastifyReply;
     },
-    // fixes type error
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    any,
-    unknown
+    any
   >
 ): WebsocketHandler {
   return makeHandler({
@@ -34,7 +33,12 @@ export function getGraphqlWsHandler(
       try {
         // attach auth info to request
         const authorizationHeader = ctx.connectionParams?.authorization;
-        const authInfo = AUTH_INFO_CREATOR;
+        const authInfo = await createAuthInfoFromAuthorization(
+          ctx.extra.request,
+          typeof authorizationHeader === 'string'
+            ? authorizationHeader
+            : undefined
+        );
         ctx.extra.request.auth = authInfo;
 
         // set expiry for socket based on auth token expiry
@@ -83,12 +87,20 @@ export function getGraphqlWsHandler(
       (args.rootValue as RootValueWithExecutor).subscribe(args),
     onSubscribe: (ctx, msg) => {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { schema, execute, subscribe, parse, validate } =
-          graphQLServer.getEnveloped(ctx);
+          graphQLServer.getEnveloped({
+            ...ctx,
+            req: ctx.extra.request,
+            socket: ctx.extra.socket,
+            params: msg.payload,
+          });
 
         const args = {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           schema,
           operationName: msg.payload.operationName,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           document: parse(msg.payload.query),
           variableValues: msg.payload.variables,
           contextValue: createContextFromRequest(ctx.extra.request),
@@ -98,7 +110,9 @@ export function getGraphqlWsHandler(
           },
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const errors = validate(args.schema, args.document);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
         if (errors.length) return errors;
         return args;
       } catch (err) {

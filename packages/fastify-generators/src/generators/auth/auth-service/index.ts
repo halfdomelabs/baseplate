@@ -92,7 +92,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
         authInfoImport: authInfoImportProvider,
       },
       run({ appModule, typescript, errorHandler, node }) {
-        node.addPackages({ '@fastify/request-context': '4.0.0' });
+        node.addPackages({ '@fastify/request-context': '5.0.0' });
 
         const authFields = createNonOverwriteableMap<Record<string, AuthField>>(
           {

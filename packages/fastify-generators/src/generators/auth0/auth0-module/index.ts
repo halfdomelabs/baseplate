@@ -59,16 +59,16 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
     }
   ) {
     node.addPackages({
-      'fastify-auth0-verify': '0.8.0',
-      '@fastify/request-context': '4.0.0',
+      'fastify-auth0-verify': '1.2.0',
+      '@fastify/request-context': '5.0.0',
     });
 
     if (includeManagement) {
       node.addPackages({
-        auth0: '3.2.0',
+        auth0: '3.5.0',
       });
       node.addDevPackages({
-        '@types/auth0': '2.35.9',
+        '@types/auth0': '3.3.3',
       });
     }
 

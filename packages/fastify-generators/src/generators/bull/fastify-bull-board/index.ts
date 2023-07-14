@@ -53,8 +53,8 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@bull-board/api': '4.3.2',
-      '@bull-board/fastify': '4.3.2',
+      '@bull-board/api': '5.6.0',
+      '@bull-board/fastify': '5.6.0',
       ms: '2.1.3',
     });
 
@@ -129,7 +129,7 @@ const FastifyBullBoardGenerator = createGeneratorWithTasks({
       },
       run({ node, fastifyServer }) {
         node.addPackages({
-          '@fastify/formbody': '7.3.0',
+          '@fastify/formbody': '7.4.0',
         });
 
         fastifyServer.registerPlugin({

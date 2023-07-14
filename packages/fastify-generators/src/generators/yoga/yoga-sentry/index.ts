@@ -35,7 +35,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
                 error instanceof GraphQLError ? error.originalError || error : error
               ),
             eventIdKey: null,
-            trackRootResolversOnly: true,
           })`,
         [
           `import { useSentry } from '${pluginImport}'`,
