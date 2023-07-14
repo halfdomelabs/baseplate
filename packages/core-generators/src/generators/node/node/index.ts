@@ -7,9 +7,9 @@ import {
 import * as R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
+import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 import { projectProvider } from '../../../providers/index.js';
-import sortPackageJson from 'sort-package-json';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

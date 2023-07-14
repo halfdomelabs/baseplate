@@ -1,8 +1,44 @@
+import jsonPatch from 'fast-json-patch';
 import { merge, diffComm } from 'node-diff3';
 
 type CommonCommResult = { common: string[] };
 type DiffCommResult = { buffer1: string[]; buffer2: string[] };
 type CommResult = CommonCommResult | DiffCommResult;
+
+/**
+ * Attempts a 3-way merge between to JSON strings
+ */
+export function attemptMergeJson(
+  existingContents: string,
+  newContents: string,
+  originalContents: string
+): string | null {
+  try {
+    const originalJson = JSON.parse(originalContents) as Record<
+      string,
+      unknown
+    >;
+    const newJson = JSON.parse(newContents) as Record<string, unknown>;
+    const existingJson = JSON.parse(existingContents) as Record<
+      string,
+      unknown
+    >;
+    const diff = jsonPatch.compare(originalJson, newJson, true);
+
+    if (diff.length === 0) {
+      return existingContents;
+    }
+
+    return JSON.stringify(
+      jsonPatch.applyPatch(existingJson, diff, true, false).newDocument,
+      null,
+      2
+    );
+  } catch (e) {
+    // default to merge strings method if patching fails
+    return null;
+  }
+}
 
 /**
  * Performs 2-way or 3-way merge between 3 strings
