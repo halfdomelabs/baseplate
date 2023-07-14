@@ -9,6 +9,7 @@ import semver from 'semver';
 import sortKeys from 'sort-keys';
 import { z } from 'zod';
 import { projectProvider } from '../../../providers/index.js';
+import sortPackageJson from 'sort-package-json';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -212,6 +213,7 @@ const NodeGenerator = createGeneratorWithChildren({
           writeJsonAction({
             destination: 'package.json',
             contents: packageJson,
+            preformat: (contents) => sortPackageJson(contents),
           })
         );
 

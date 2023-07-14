@@ -133,6 +133,17 @@ async function writeFile(
   }
 
   let formattedContents = contents;
+
+  if (options?.preformat) {
+    try {
+      formattedContents = await Promise.resolve(
+        options.preformat(contents, filePath, logger)
+      );
+    } catch (err) {
+      throw new FormatterError(err, contents);
+    }
+  }
+
   if (formatter) {
     try {
       formattedContents = await formatter.format(contents, filePath, logger);
