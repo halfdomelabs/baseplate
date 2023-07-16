@@ -30,11 +30,6 @@ interface UseUploadResult {
   cancelUpload: () => void;
 }
 
-interface AxiosUploadProgressEvent {
-  loaded: number;
-  total: number;
-}
-
 /**
  * Enables single file uploading
  */
@@ -92,8 +87,10 @@ export function useUpload<FileMetadata>({
           data: formData,
           signal: abortController.signal,
           onUploadProgress: trackProgress
-            ? (event: AxiosUploadProgressEvent) => {
-                setProgress(event.loaded / event.total);
+            ? (event) => {
+                if (event.progress) {
+                  setProgress(event.progress);
+                }
               }
             : undefined,
         });
