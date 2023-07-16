@@ -413,7 +413,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           )
         );
 
-        builder.addPostWriteCommand('yarn generate', {
+        builder.addPostWriteCommand('yarn generate', 'generation', {
           onlyIfChanged: [...gqlFiles, 'codegen.yml'],
         });
       },

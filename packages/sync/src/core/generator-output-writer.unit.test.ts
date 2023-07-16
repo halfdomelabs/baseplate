@@ -196,13 +196,22 @@ describe('writeGeneratorOutput', () => {
     expect(vol.toJSON()).toEqual({ '/root/file.txt': 'hi' });
   });
 
-  it('should run post-write commands', async () => {
+  it('should run post-write commands in correct order', async () => {
     await writeGeneratorOutput(
       {
         files: {},
         postWriteCommands: [
-          { command: 'yarn install' },
-          { command: 'custom', options: { workingDirectory: '/folder' } },
+          {
+            command: 'custom-script',
+            options: { workingDirectory: '/folder' },
+            commandType: 'script',
+          },
+          {
+            command: 'custom',
+            options: { workingDirectory: '/folder' },
+            commandType: 'generation',
+          },
+          { command: 'yarn install', commandType: 'dependencies' },
         ],
       },
       '/root',
@@ -216,6 +225,7 @@ describe('writeGeneratorOutput', () => {
     expect(mockedExecuteCommand.mock.calls[1][1]).toMatchObject({
       cwd: '/root/folder',
     });
+    expect(mockedExecuteCommand.mock.calls[2][0]).toBe('custom-script');
   });
 
   it('should run post-write commands only on modified files', async () => {
@@ -237,8 +247,13 @@ describe('writeGeneratorOutput', () => {
           {
             command: 'yarn install',
             options: { onlyIfChanged: ['file.txt'] },
+            commandType: 'dependencies',
           },
-          { command: 'custom', options: { onlyIfChanged: ['file2.txt'] } },
+          {
+            command: 'custom',
+            options: { onlyIfChanged: ['file2.txt'] },
+            commandType: 'script',
+          },
         ],
       },
       '/root',
@@ -265,7 +280,11 @@ describe('writeGeneratorOutput', () => {
           'file.txt': { contents: Buffer.from('binary-data', 'utf8') },
         },
         postWriteCommands: [
-          { command: 'yarn install', options: { onlyIfChanged: ['file.txt'] } },
+          {
+            command: 'yarn install',
+            options: { onlyIfChanged: ['file.txt'] },
+            commandType: 'dependencies',
+          },
         ],
       },
       '/root',

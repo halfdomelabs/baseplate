@@ -674,6 +674,9 @@ importers:
       '@types/ejs':
         specifier: ^3.1.0
         version: 3.1.0
+      '@types/lodash':
+        specifier: 4.14.194
+        version: 4.14.194
       '@types/ramda':
         specifier: ^0.27.64
         version: 0.27.64

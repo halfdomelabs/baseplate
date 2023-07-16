@@ -299,7 +299,7 @@ const PothosGenerator = createGeneratorWithTasks({
               })
             );
 
-            builder.addPostWriteCommand('yarn generate:schema', {
+            builder.addPostWriteCommand('yarn generate:schema', 'generation', {
               onlyIfChanged: [
                 ...schemaFiles,
                 'src/plugins/graphql/index.ts',

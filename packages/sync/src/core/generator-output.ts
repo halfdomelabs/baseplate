@@ -24,6 +24,22 @@ export interface WriteFileOptions {
   preformat?: FormatFunction;
 }
 
+/**
+ * The type of post write command to run which specifies the order in which it is run
+ *
+ * (dependencies, generation, script)
+ */
+type PostWriteCommandType = 'dependencies' | 'generation' | 'script';
+
+export const POST_WRITE_COMMAND_TYPE_PRIORITY: Record<
+  PostWriteCommandType,
+  number
+> = {
+  dependencies: 0,
+  generation: 1,
+  script: 2,
+};
+
 export interface PostWriteCommandOptions {
   /**
    * Only run command if the provided files were changed
@@ -49,7 +65,11 @@ export interface GeneratorOutputBuilder {
     options?: WriteFileOptions
   ): void;
   readTemplate(templatePath: string): Promise<string>;
-  addPostWriteCommand(command: string, options?: PostWriteCommandOptions): void;
+  addPostWriteCommand(
+    command: string,
+    commandType: PostWriteCommandType,
+    options?: PostWriteCommandOptions
+  ): void;
   apply(action: BuilderAction): Promise<void>;
   /**
    * Resolves a path with the given base directory
@@ -84,8 +104,9 @@ export interface FileData {
   options?: WriteFileOptions;
 }
 
-interface PostWriteCommand {
+export interface PostWriteCommand {
   command: string;
+  commandType: PostWriteCommandType;
   options?: PostWriteCommandOptions;
 }
 
@@ -150,9 +171,10 @@ export class OutputBuilder implements GeneratorOutputBuilder {
 
   addPostWriteCommand(
     command: string,
+    commandType: PostWriteCommandType,
     options?: PostWriteCommandOptions
   ): void {
-    this.output.postWriteCommands.push({ command, options });
+    this.output.postWriteCommands.push({ command, commandType, options });
   }
 
   async apply(action: BuilderAction): Promise<void> {
