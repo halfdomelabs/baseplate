@@ -5,7 +5,7 @@
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "check-dependency-version-consistency": "^4.1.0",
-    "nx": "15.7.2",
+    "nx": "16.5.2",
     "typescript": "5.0.4"
   },
   "scripts": {
