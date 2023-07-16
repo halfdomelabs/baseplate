@@ -286,13 +286,6 @@ export async function writeGeneratorOutput(
       );
     }
 
-    console.log(
-      _.sortBy(
-        output.postWriteCommands,
-        (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType]
-      )
-    );
-
     const runnableCommands = output.postWriteCommands.filter((command) => {
       const { onlyIfChanged = [] } = command.options || {};
       const changedList = Array.isArray(onlyIfChanged)
