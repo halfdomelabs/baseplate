@@ -163,7 +163,9 @@ EmbeddedListInput.LabelledController =
       <EmbeddedListInput.Labelled
         {...rest}
         error={error?.message}
-        onChange={field.onChange}
+        onChange={(value) =>
+          field.onChange(value as FieldPathValue<FormType, FormPath>)
+        }
         value={
           field.value as (FieldPathValue<
             FormType,

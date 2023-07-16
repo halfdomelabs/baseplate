@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
-import { ForwardedRef, forwardRef } from 'react';
+import { ForwardedRef } from 'react';
 import { IconElement } from '@src/types/react.js';
+import { genericForwardRef } from '@src/utils/generic-forward-ref';
 
 /**
  * Variant styles for the Button component
@@ -155,4 +156,4 @@ function ButtonInner(
   );
 }
 
-export const Button = forwardRef(ButtonInner);
+export const Button = genericForwardRef(ButtonInner);

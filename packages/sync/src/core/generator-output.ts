@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
-import { FormatterProvider } from '../providers/index.js';
+import { FormatFunction, FormatterProvider } from '../providers/index.js';
 
 export interface WriteFileOptions {
   /**
@@ -15,6 +15,13 @@ export interface WriteFileOptions {
    * Contents of the clean file (such that the diff will be merged into the existing file)
    */
   cleanContents?: Buffer;
+  /**
+   * Preformat the contents before formatting with the default formatting, e.g. sorting JSON keys
+   *
+   * @param contents Contents of the file
+   * @returns Preformatted contents
+   */
+  preformat?: FormatFunction;
 }
 
 export interface PostWriteCommandOptions {

@@ -24,7 +24,9 @@ export function createWorker<DataType>(
   });
 
   worker.on('failed', (job, err) => {
-    logger.info(`${job.queueName}: Failed ${job.name} (${err.message})`);
+    if (job) {
+      logger.info(`${job.queueName}: Failed ${job.name} (${err.message})`);
+    }
     logError(err);
   });
 

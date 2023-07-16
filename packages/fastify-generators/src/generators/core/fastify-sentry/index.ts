@@ -116,14 +116,13 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         });
 
         node.addPackages({
-          '@sentry/node': '7.40.0',
-          '@sentry/tracing': '7.40.0',
+          '@sentry/node': '7.58.1',
           lodash: '4.17.21',
         });
 
         node.addDevPackages({
-          '@sentry/types': '7.40.0',
-          '@types/lodash': '4.14.182',
+          '@sentry/types': '7.58.1',
+          '@types/lodash': '4.14.194',
         });
 
         configService.getConfigEntries().merge({
@@ -239,9 +238,9 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       run({ fastifySentry, prismaOutput }) {
         fastifySentry.addSentryIntegration(
           TypescriptCodeUtils.createExpression(
-            `new Tracing.Integrations.Prisma({ client: prisma })`,
+            `new Sentry.Integrations.Prisma({ client: prisma })`,
             [
-              `import * as Tracing from '@sentry/tracing';`,
+              `import * as Sentry from '@sentry/node';`,
               `import { prisma } from '%prisma-service';`,
             ],
             { importMappers: [prismaOutput] }

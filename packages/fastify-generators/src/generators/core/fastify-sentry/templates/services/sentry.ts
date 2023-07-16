@@ -7,8 +7,6 @@ import { FastifyRequest } from 'fastify';
 import { requestContext } from '@fastify/request-context';
 import _ from 'lodash';
 
-import '@sentry/tracing';
-
 const SENTRY_ENABLED = !!CONFIG.SENTRY_DSN;
 
 const IGNORED_TRANSACTION_PATHS = ['/graphql', '/healthz'];

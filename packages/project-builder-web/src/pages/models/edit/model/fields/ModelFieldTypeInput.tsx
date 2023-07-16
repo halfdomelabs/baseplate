@@ -111,7 +111,7 @@ export function ModelFieldTypeInput({
       onEnumTypeChange(enumName);
       onTypeChange('enum');
     } else {
-      onTypeChange(value);
+      onTypeChange(value as ScalarFieldType);
     }
   };
 

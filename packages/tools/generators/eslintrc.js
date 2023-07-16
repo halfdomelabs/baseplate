@@ -79,8 +79,6 @@ module.exports = function createEslintConfig(options) {
       'plugin:import/recommended',
       ...(storybook ? ['plugin:storybook/recommended'] : []),
       'plugin:vitest/recommended',
-      'plugin:jest/recommended',
-      'plugin:jest/style',
     ],
     rules: {
       ...(react ? reactRules : {}),
@@ -131,7 +129,6 @@ module.exports = function createEslintConfig(options) {
     env: {
       node: true,
       browser: react,
-      jest: true,
     },
   };
 };

@@ -7,6 +7,7 @@ import {
 import * as R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
+import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 import { projectProvider } from '../../../providers/index.js';
 
@@ -212,6 +213,7 @@ const NodeGenerator = createGeneratorWithChildren({
           writeJsonAction({
             destination: 'package.json',
             contents: packageJson,
+            preformat: (contents) => sortPackageJson(contents),
           })
         );
 

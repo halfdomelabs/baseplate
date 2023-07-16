@@ -2,7 +2,7 @@
 import * as domain from 'domain';
 import { URL } from 'url';
 import * as Sentry from '@sentry/node';
-import { extractTraceparentData } from '@sentry/tracing';
+import { extractTraceparentData } from '@sentry/node';
 import type { TraceparentData, Transaction } from '@sentry/types';
 import { FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';

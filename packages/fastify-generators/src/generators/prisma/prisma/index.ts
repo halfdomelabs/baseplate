@@ -82,11 +82,11 @@ const PrismaGenerator = createGeneratorWithTasks({
         typescript,
       }) {
         node.addDevPackages({
-          prisma: '4.11.0',
+          prisma: '4.16.2',
         });
 
         node.addPackages({
-          '@prisma/client': '4.11.0',
+          '@prisma/client': '4.16.2',
         });
 
         node.mergeExtraProperties({

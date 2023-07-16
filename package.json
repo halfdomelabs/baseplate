@@ -1,12 +1,12 @@
 {
-  "name": "root",
+  "name": "@halfdomelabs/root",
   "private": true,
   "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
     "check-dependency-version-consistency": "^4.1.0",
-    "nx": "15.7.2",
-    "typescript": "4.9.5"
+    "nx": "16.5.2",
+    "typescript": "5.0.4"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
@@ -18,8 +18,8 @@
     "build:affected": "nx affected --target=build",
     "test": "nx affected --target=test",
     "release": "pnpm build && pnpm changeset publish",
-    "dev:serve": "nx run project-builder-cli:dev:serve",
-    "serve": "nx run project-builder-cli:start serve"
+    "dev:serve": "nx run @halfdomelabs/project-builder-cli:dev:serve",
+    "serve": "nx run @halfdomelabs/project-builder-cli:start serve"
   },
   "volta": {
     "node": "18.16.0"
@@ -27,5 +27,5 @@
   "dependencies": {
     "@changesets/cli": "^2.26.1"
   },
-  "packageManager": "pnpm@8.6.2"
+  "packageManager": "pnpm@8.6.7"
 }

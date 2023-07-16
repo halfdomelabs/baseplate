@@ -2,17 +2,17 @@ import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
 import pLimit from 'p-limit';
-import * as R from 'ramda';
 import { getErrorMessage } from '@src/utils/errors.js';
 import { Logger } from '@src/utils/evented-logger.js';
 import { ExecError, executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
-import { mergeStrings } from '@src/utils/merge.js';
+import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
 import { FileData, GeneratorOutput } from './generator-output.js';
 
 async function mergeContents(
   newContents: string,
   filePath: string,
+  formatContents: (contents: string) => Promise<string>,
   cleanContents?: string
 ): Promise<{ contents: string; hasConflict: boolean } | null> {
   if (cleanContents === newContents) {
@@ -35,23 +35,21 @@ async function mergeContents(
 
   // we will skip writing the file if the contents are unchanged from before or the
   // new contents matches the existing contents
-
-  // TODO: HACK: Can create an option for this in the future
-  // Necessary because package.json files are not formatted using a provided formatter
-  if (filePath.endsWith('/package.json')) {
-    try {
-      if (
-        R.equals(JSON.parse(existingContents), JSON.parse(newContents)) ||
-        (cleanContents &&
-          R.equals(JSON.parse(cleanContents), JSON.parse(newContents)))
-      ) {
-        return null;
-      }
-    } catch (err) {
-      throw new Error(`Error parsing JSON: ${filePath}`);
-    }
-  } else if (existingContents === newContents) {
+  if (existingContents === newContents) {
     return null;
+  }
+
+  // if the file is JSON, attempt a patch diff to avoid messy 3-way diff
+  if (filePath.endsWith('.json') && cleanContents) {
+    const mergedContents = attemptMergeJson(
+      existingContents,
+      newContents,
+      cleanContents
+    );
+    if (mergedContents) {
+      const formattedMergedContents = await formatContents(mergedContents);
+      return { contents: formattedMergedContents, hasConflict: false };
+    }
   }
 
   return mergeStrings(existingContents, newContents, cleanContents);
@@ -132,14 +130,33 @@ async function writeFile(
     };
   }
 
-  let formattedContents = contents;
-  if (formatter) {
-    try {
-      formattedContents = await formatter.format(contents, filePath, logger);
-    } catch (err) {
-      throw new FormatterError(err, contents);
+  async function formatContents(contentsToFormat: string): Promise<string> {
+    let formattedContents = contentsToFormat;
+    if (options?.preformat) {
+      try {
+        formattedContents = await Promise.resolve(
+          options.preformat(formattedContents, filePath, logger)
+        );
+      } catch (err) {
+        throw new FormatterError(err, formattedContents);
+      }
     }
+
+    if (formatter) {
+      try {
+        formattedContents = await formatter.format(
+          formattedContents,
+          filePath,
+          logger
+        );
+      } catch (err) {
+        throw new FormatterError(err, formattedContents);
+      }
+    }
+    return formattedContents;
   }
+
+  const formattedContents = await formatContents(contents);
 
   if (options?.neverOverwrite) {
     const fileExists = await pathExists(filePath);
@@ -159,6 +176,7 @@ async function writeFile(
   const mergeResult = await mergeContents(
     formattedContents,
     filePath,
+    formatContents,
     cleanContents?.toString('utf8')
   );
   // if there's no merge result, existing contents matches new contents so no modification is required

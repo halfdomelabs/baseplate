@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { createPubSub, PubSub } from '@graphql-yoga/node';
+import { createPubSub, PubSub } from 'graphql-yoga';
 import { createRedisEventTarget } from '@graphql-yoga/redis-event-target';
 import { createRedisClient } from '%fastify-redis';
 
