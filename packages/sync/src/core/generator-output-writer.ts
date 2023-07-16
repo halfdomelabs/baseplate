@@ -1,13 +1,18 @@
 import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
+import _ from 'lodash';
 import pLimit from 'p-limit';
 import { getErrorMessage } from '@src/utils/errors.js';
 import { Logger } from '@src/utils/evented-logger.js';
 import { ExecError, executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
-import { FileData, GeneratorOutput } from './generator-output.js';
+import {
+  FileData,
+  GeneratorOutput,
+  POST_WRITE_COMMAND_TYPE_PRIORITY,
+} from './generator-output.js';
 
 async function mergeContents(
   newContents: string,
@@ -294,6 +299,11 @@ export async function writeGeneratorOutput(
       );
     });
 
+    const orderedCommands = _.sortBy(
+      runnableCommands,
+      (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType]
+    );
+
     if (conflictFilenames.length) {
       logger.log(
         chalk.red(
@@ -302,23 +312,23 @@ export async function writeGeneratorOutput(
           )}`
         )
       );
-      if (runnableCommands.length) {
+      if (orderedCommands.length) {
         logger.log(
           `\nOnce resolved, please re-run the generator or run the following commands:`
         );
-        for (const command of runnableCommands) {
+        for (const command of orderedCommands) {
           logger.log(`  ${command.command}`);
         }
       }
       return {
         conflictFilenames,
-        failedCommands: runnableCommands.map((c) => c.command),
+        failedCommands: orderedCommands.map((c) => c.command),
       };
     }
 
     const failedCommands: string[] = [];
 
-    for (const command of runnableCommands) {
+    for (const command of orderedCommands) {
       const { workingDirectory = '' } = command.options || {};
 
       const commandString = command.command;

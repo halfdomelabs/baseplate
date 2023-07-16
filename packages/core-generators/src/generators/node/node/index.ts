@@ -217,20 +217,28 @@ const NodeGenerator = createGeneratorWithChildren({
           })
         );
 
-        builder.addPostWriteCommand('yarn install --non-interactive', {
-          workingDirectory: '/',
-          onlyIfChanged: ['package.json'],
-        });
+        builder.addPostWriteCommand(
+          'yarn install --non-interactive',
+          'dependencies',
+          {
+            workingDirectory: '/',
+            onlyIfChanged: ['package.json'],
+          }
+        );
 
         const allDependencies = R.mergeRight(
           packageJson.dependencies,
           packageJson.devDependencies
         );
         if (Object.keys(allDependencies).includes('prettier')) {
-          builder.addPostWriteCommand('yarn prettier --write package.json', {
-            workingDirectory: '/',
-            onlyIfChanged: ['package.json'],
-          });
+          builder.addPostWriteCommand(
+            'yarn prettier --write package.json',
+            'dependencies',
+            {
+              workingDirectory: '/',
+              onlyIfChanged: ['package.json'],
+            }
+          );
         }
       },
     };

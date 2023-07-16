@@ -68,7 +68,7 @@ describe('executeGeneratorEntry', () => {
     const entry = buildGeneratorEntry({
       build: (builder) => {
         builder.writeFile('/simple/file.txt', 'simple');
-        builder.addPostWriteCommand('simple command');
+        builder.addPostWriteCommand('simple command', 'script');
       },
     });
     const result = await executeGeneratorEntry(entry, logger);
@@ -79,7 +79,13 @@ describe('executeGeneratorEntry', () => {
           formatter: undefined,
         },
       },
-      postWriteCommands: [{ command: 'simple command' }],
+      postWriteCommands: [
+        {
+          command: 'simple command',
+          commandType: 'script',
+          options: undefined,
+        },
+      ],
     });
   });
 
@@ -96,7 +102,7 @@ describe('executeGeneratorEntry', () => {
       exports: { formatter, simpleExp: simpleProvider },
       build: (builder) => {
         builder.writeFile('/simple/file.txt', 'simple');
-        builder.addPostWriteCommand('simple command');
+        builder.addPostWriteCommand('simple command', 'script');
       },
       children: [
         buildGeneratorEntry({
@@ -107,10 +113,10 @@ describe('executeGeneratorEntry', () => {
             builder.writeFile('/nested/file.txt', 'nested', {
               shouldFormat: true,
             });
-            builder.addPostWriteCommand('nested command', {
+            builder.addPostWriteCommand('nested command', 'script', {
               workingDirectory: '/nested',
             });
-            builder.addPostWriteCommand('nested command 2');
+            builder.addPostWriteCommand('nested command 2', 'script');
           },
         }),
       ],
@@ -130,9 +136,21 @@ describe('executeGeneratorEntry', () => {
         },
       },
       postWriteCommands: [
-        { command: 'nested command', options: { workingDirectory: '/nested' } },
-        { command: 'nested command 2', options: undefined },
-        { command: 'simple command', options: undefined },
+        {
+          command: 'nested command',
+          commandType: 'script',
+          options: { workingDirectory: '/nested' },
+        },
+        {
+          command: 'nested command 2',
+          commandType: 'script',
+          options: undefined,
+        },
+        {
+          command: 'simple command',
+          commandType: 'script',
+          options: undefined,
+        },
       ],
     });
     expect(simpleProvider.hello).toHaveBeenCalled();
