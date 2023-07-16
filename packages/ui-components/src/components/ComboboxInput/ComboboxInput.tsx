@@ -1,7 +1,6 @@
 import { Combobox, Transition, Portal } from '@headlessui/react';
-import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { useId, useMemo, useRef, useState, Fragment } from 'react';
+import { useId, useState, Fragment } from 'react';
 import {
   Control,
   FieldPath,
@@ -10,42 +9,22 @@ import {
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
-import { Modifier, usePopper } from 'react-popper';
 import { COMPONENT_STRINGS } from '@src/constants/strings.js';
-import { LabellableComponent } from '@src/types/form.js';
+import { useDropdown } from '@src/hooks/useDropdown.js';
+import {
+  AddOptionRequiredFields,
+  DropdownPropsBase,
+} from '@src/types/dropdown.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 
-type OptionToStringFunc<OptionType> = (value: OptionType) => string;
-
-export interface ComboboxInputPropsBase<OptionType>
-  extends LabellableComponent {
-  options: OptionType[];
-  className?: string;
-  name?: string;
-  disabled?: boolean;
-  onChange?(value: string | null): void;
-  value?: string | null;
-  getOptionLabel?: OptionToStringFunc<OptionType>;
-  getOptionValue?: OptionToStringFunc<OptionType>;
-  renderOption?: (
-    option: OptionType,
-    state: { selected: boolean }
-  ) => JSX.Element;
-  noValueLabel?: string;
-  fixed?: boolean;
-}
-
-type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
-  ? unknown
-  : {
-      getOptionLabel: OptionToStringFunc<OptionType>;
-    }) &
-  (OptionType extends { value: string | number }
-    ? unknown
-    : {
-        getOptionValue: OptionToStringFunc<OptionType>;
-      });
+export type ComboboxInputPropsBase<OptionType> =
+  DropdownPropsBase<OptionType> & {
+    renderOption?: (
+      option: OptionType,
+      state: { selected: boolean }
+    ) => JSX.Element;
+  };
 
 export type ComboboxInputProps<OptionType> =
   ComboboxInputPropsBase<OptionType> & AddOptionRequiredFields<OptionType>;
@@ -69,38 +48,12 @@ export function ComboboxInput<OptionType>({
   description,
   fixed,
 }: ComboboxInputProps<OptionType>): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLInputElement | null>();
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
   const [filter, setFilter] = useState('');
 
-  // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
-  const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
-    () => [
-      { name: 'offset', options: { offset: [0, 8] } },
-      {
-        name: 'sameWidth',
-        enabled: true,
-        phase: 'beforeWrite' as ModifierPhases,
-        requires: ['computeStyles'],
-        fn({ state: draftState }) {
-          draftState.styles.popper.minWidth = `${draftState.rects.reference.width}px`;
-        },
-        effect({ state: draftState }) {
-          draftState.elements.popper.style.minWidth = `${
-            (draftState.elements.reference as HTMLDivElement).offsetWidth
-          }px`;
-        },
-      },
-    ],
-    []
-  );
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-end',
-    modifiers,
-    strategy: fixed ? 'fixed' : undefined,
-  });
+  const { popperProps, transitionProps, setReferenceElement } =
+    useDropdown<HTMLInputElement>({
+      fixed,
+    });
 
   const handleChange = (newValue?: string): void => {
     setFilter('');
@@ -144,7 +97,7 @@ export function ComboboxInput<OptionType>({
               )}
               htmlFor={inputId}
             >
-              {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}
+              {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}{' '}
             </label>
           )}
           <Combobox.Input
@@ -157,22 +110,8 @@ export function ComboboxInput<OptionType>({
           <HiChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
         </Combobox.Button>
         <PortalWrapper>
-          <div
-            ref={popperElementRef}
-            style={styles.popper}
-            className="z-10"
-            {...attributes.popper}
-          >
-            <Transition
-              enter="ease-out duration-100"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-100"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-              beforeEnter={() => setPopperElement(popperElementRef.current)}
-              afterLeave={() => setPopperElement(null)}
-            >
+          <div {...popperProps} className="z-10">
+            <Transition {...transitionProps}>
               <Combobox.Options className="popover-background border-normal max-h-72 overflow-y-auto rounded p-2 shadow">
                 {!filteredOptions.length && (
                   <div className="text-secondary p-2 text-sm">

@@ -1,8 +1,9 @@
 import { Menu, Portal, Transition } from '@headlessui/react';
 import { clsx } from 'clsx';
-import { Fragment, useMemo, useRef, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 import { MdExpandMore } from 'react-icons/md';
-import { Modifier, usePopper } from 'react-popper';
+import { Modifier } from 'react-popper';
+import { useDropdown } from '@src/hooks/useDropdown.js';
 import { Button, ButtonProps } from '../Button/Button.js';
 
 export interface DropdownProps
@@ -26,22 +27,16 @@ export function Dropdown({
   size,
   iconAfter,
 }: DropdownProps): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>();
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
-
   // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
   const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
     () => [{ name: 'offset', options: { offset: [0, 4] } }],
     []
   );
-
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-end',
-    modifiers,
-    strategy: fixed ? 'fixed' : undefined,
-  });
+  const { popperProps, transitionProps, setReferenceElement } =
+    useDropdown<HTMLButtonElement>({
+      fixed,
+      modifiers,
+    });
 
   const PortalWrapper = fixed ? Portal : Fragment;
 
@@ -62,23 +57,8 @@ export function Dropdown({
             {buttonLabel}
           </Menu.Button>
           <PortalWrapper>
-            <div
-              ref={popperElementRef}
-              style={styles.popper}
-              className="z-10"
-              {...attributes.popper}
-            >
-              <Transition
-                show={open}
-                enter="ease-out duration-100"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-100"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-                beforeEnter={() => setPopperElement(popperElementRef.current)}
-                afterLeave={() => setPopperElement(null)}
-              >
+            <div {...popperProps} className="z-10">
+              <Transition show={open} {...transitionProps}>
                 <Menu.Items
                   as="ul"
                   className="popover-background border-normal min-w-[150px] rounded p-2 shadow"

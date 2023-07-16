@@ -1,7 +1,6 @@
 import { Listbox, Transition, Portal } from '@headlessui/react';
-import { ModifierPhases } from '@popperjs/core/index.js';
 import { clsx } from 'clsx';
-import { Fragment, useMemo, useRef, useState } from 'react';
+import { Fragment } from 'react';
 import {
   Control,
   FieldPath,
@@ -10,38 +9,15 @@ import {
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
-import { Modifier, usePopper } from 'react-popper';
-import { LabellableComponent } from '@src/types/form.js';
+import { useDropdown } from '@src/hooks/useDropdown.js';
+import {
+  AddOptionRequiredFields,
+  DropdownPropsBase,
+} from '@src/types/dropdown.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 
-type OptionToStringFunc<OptionType> = (value: OptionType) => string;
-
-export interface SelectInputPropsBase<OptionType> extends LabellableComponent {
-  options: OptionType[];
-  className?: string;
-  name?: string;
-  disabled?: boolean;
-  onChange?(value: string | number | null): void;
-  value?: string | null;
-  getOptionLabel?: OptionToStringFunc<OptionType>;
-  getOptionValue?: OptionToStringFunc<OptionType>;
-  noValueLabel?: string;
-  fixed?: boolean;
-}
-
-type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
-  ? unknown
-  : {
-      getOptionLabel: OptionToStringFunc<OptionType>;
-    }) &
-  (OptionType extends { value: string | number }
-    ? unknown
-    : {
-        getOptionValue: OptionToStringFunc<OptionType>;
-      });
-
-export type SelectInputProps<OptionType> = SelectInputPropsBase<OptionType> &
+export type SelectInputProps<OptionType> = DropdownPropsBase<OptionType> &
   AddOptionRequiredFields<OptionType>;
 
 /**
@@ -62,38 +38,10 @@ export function SelectInput<OptionType>({
   description,
   fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>();
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
-
-  // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
-  const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
-    () => [
-      { name: 'offset', options: { offset: [0, 8] } },
-      {
-        name: 'sameWidth',
-        enabled: true,
-        phase: 'beforeWrite' as ModifierPhases,
-        requires: ['computeStyles'],
-        fn({ state: draftState }) {
-          draftState.styles.popper.minWidth = `${draftState.rects.reference.width}px`;
-        },
-        effect({ state: draftState }) {
-          draftState.elements.popper.style.minWidth = `${
-            (draftState.elements.reference as HTMLDivElement).offsetWidth
-          }px`;
-        },
-      },
-    ],
-    []
-  );
-
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-end',
-    modifiers,
-    strategy: fixed ? 'fixed' : undefined,
-  });
+  const { popperProps, transitionProps, setReferenceElement } =
+    useDropdown<HTMLButtonElement>({
+      fixed,
+    });
 
   const handleChange = (newValue?: string): void => {
     if (onChange) {
@@ -132,22 +80,8 @@ export function SelectInput<OptionType>({
           <HiChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
         </Listbox.Button>
         <PortalWrapper>
-          <div
-            ref={popperElementRef}
-            style={styles.popper}
-            className="z-10"
-            {...attributes.popper}
-          >
-            <Transition
-              enter="ease-out duration-100"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-100"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-              beforeEnter={() => setPopperElement(popperElementRef.current)}
-              afterLeave={() => setPopperElement(null)}
-            >
+          <div {...popperProps} className="z-10">
+            <Transition {...transitionProps}>
               <Listbox.Options className="popover-background border-normal z-10 max-h-72 overflow-y-auto rounded p-2 shadow">
                 {options.map((option) => (
                   <Listbox.Option
@@ -183,7 +117,7 @@ interface SelectInputControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<SelectInputPropsBase<OptionType>, 'register'> {
+> extends Omit<DropdownPropsBase<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
