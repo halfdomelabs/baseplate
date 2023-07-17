@@ -7,8 +7,5 @@
       "@src/*": ["src/*"]
     }
   },
-  "include": ["src/**/*"],
-  "ts-node": {
-    "swc": true
-  }
+  "include": ["src/**/*"]
 }

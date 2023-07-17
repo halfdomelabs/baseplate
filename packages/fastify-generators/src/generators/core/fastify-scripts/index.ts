@@ -32,8 +32,8 @@ const createMainTask = createTaskConfigBuilder(() => ({
       .getConfig()
       .appendUnique('extraTsconfigProjects', ['./scripts/tsconfig.json']);
     node.addScripts({
-      'run:script': `ts-node ${fastifyOutput.getDevLoaderString()}`,
-      'dev:script': `node-dev --respawn ${fastifyOutput.getDevLoaderString()}`,
+      'run:script': `tsx ${fastifyOutput.getDevLoaderString()}`,
+      'dev:script': `tsx watch --respawn ${fastifyOutput.getDevLoaderString()}`,
     });
     return {
       getProviders: () => ({

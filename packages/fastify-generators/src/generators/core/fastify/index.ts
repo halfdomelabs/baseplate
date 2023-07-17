@@ -153,7 +153,7 @@ const FastifyGenerator = createGeneratorWithTasks({
       },
       run({ node, nodeGitIgnore }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
-          { devLoaders: ['tsconfig-paths/register'] },
+          { devLoaders: [] },
           { name: 'fastify-config', mergeArraysUniquely: true }
         );
 
@@ -176,7 +176,7 @@ const FastifyGenerator = createGeneratorWithTasks({
             // add scripts
             const { devOutputFormatter, devLoaders } = config.value();
             const devRegister = formatDevLoaders(devLoaders || []);
-            const devCommand = `node-dev --respawn ${devRegister} src/index.ts${
+            const devCommand = `tsx watch ${devRegister} src/index.ts${
               devOutputFormatter ? ` | ${devOutputFormatter}` : ''
             }`;
             node.addScripts({

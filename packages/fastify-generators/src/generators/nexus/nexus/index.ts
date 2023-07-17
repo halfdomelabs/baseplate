@@ -362,7 +362,7 @@ const NexusGenerator = createGeneratorWithTasks({
         // add script to generate types
         node.addScript(
           'nexusgen',
-          `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
+          `tsx --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
         );
         return {};
       },
