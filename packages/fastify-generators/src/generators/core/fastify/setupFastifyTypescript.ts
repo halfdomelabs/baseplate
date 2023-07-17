@@ -26,17 +26,9 @@ export function setupFastifyTypescript(
     resolveJsonModule: true,
     sourceMap: true,
   });
-  typescriptConfig.addExtraSection({
-    'ts-node': {
-      swc: true,
-    },
-  });
 
   node.addDevPackages({
     'tsc-alias': '1.8.7',
-    'tsconfig-paths': '4.2.0',
-    'node-dev': '8.0.0',
-    'ts-node': '10.9.1',
-    '@swc/core': '1.3.58',
+    tsx: '3.12.0',
   });
 }

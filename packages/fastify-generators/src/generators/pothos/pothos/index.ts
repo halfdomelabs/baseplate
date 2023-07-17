@@ -322,7 +322,7 @@ const PothosGenerator = createGeneratorWithTasks({
         // add script to generate types
         node.addScript(
           'generate:schema',
-          `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --exit-after-generate-schema`
+          `tsx ${fastifyOutput.getDevLoaderString()} src --exit-after-generate-schema`
         );
         return {};
       },

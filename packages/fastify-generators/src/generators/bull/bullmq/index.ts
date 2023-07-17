@@ -48,7 +48,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
     });
 
     node.addScripts({
-      'dev:workers': `node-dev ${fastifyOutput.getDevLoaderString()} ./scripts/run-workers.ts | pino-pretty -t`,
+      'dev:workers': `tsx ${fastifyOutput.getDevLoaderString()} ./scripts/run-workers.ts | pino-pretty -t`,
       'run:workers': 'yarn run:script ./scripts/run-workers.ts',
     });
 
