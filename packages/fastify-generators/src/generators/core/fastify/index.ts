@@ -176,7 +176,7 @@ const FastifyGenerator = createGeneratorWithTasks({
             // add scripts
             const { devOutputFormatter, devLoaders } = config.value();
             const devRegister = formatDevLoaders(devLoaders || []);
-            const devCommand = `tsx watch ${devRegister} src/index.ts${
+            const devCommand = `tsx watch --clear-screen=false ${devRegister} src/index.ts${
               devOutputFormatter ? ` | ${devOutputFormatter}` : ''
             }`;
             node.addScripts({
