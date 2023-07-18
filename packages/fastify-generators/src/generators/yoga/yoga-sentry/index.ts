@@ -52,7 +52,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
           typescript.createCopyAction({
             source: 'useSentry.ts',
             destination: pluginPath,
-            importMappers: [errorHandlerService],
+            importMappers: [errorHandlerService, fastifySentry],
           })
         );
       },

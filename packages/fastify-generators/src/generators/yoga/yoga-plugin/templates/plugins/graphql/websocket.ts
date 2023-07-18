@@ -20,7 +20,7 @@ interface RootValueWithExecutor {
 export function getGraphqlWsHandler(
   graphQLServer: YogaServerInstance<
     {
-      request: FastifyRequest;
+      req: FastifyRequest;
       reply: FastifyReply;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -30,7 +30,7 @@ if (SENTRY_ENABLED) {
   });
 }
 
-const SENSITIVE_HEADERS = ['authorization'];
+const SENSITIVE_HEADERS = ['authorization', 'cookie'];
 
 // filters headers that are sensitive or not strings
 function filterHeaders(
@@ -42,6 +42,10 @@ function filterHeaders(
       .filter((key) => !SENSITIVE_HEADERS.includes(key))
       .map((key) => [key, headers[key] as string])
   );
+}
+
+export function isSentryEnabled(): boolean {
+  return SENTRY_ENABLED;
 }
 
 export function getUrlQueryString(url: string): string {
