@@ -1,5 +1,26 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.4.0
+
+### Minor Changes
+
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+
+### Patch Changes
+
+- Updated dependencies [a81b46f]
+- Updated dependencies [c9c6d57]
+- Updated dependencies [0027b3d]
+- Updated dependencies [8b575b8]
+- Updated dependencies [ba3f678]
+- Updated dependencies [97b8e6a]
+  - @halfdomelabs/project-builder-web@0.4.0
+  - @halfdomelabs/project-builder-lib@0.4.0
+  - @halfdomelabs/fastify-generators@0.5.0
+  - @halfdomelabs/react-generators@0.4.0
+  - @halfdomelabs/core-generators@0.5.0
+  - @halfdomelabs/sync@0.4.0
+
 ## 0.3.5
 
 ### Patch Changes

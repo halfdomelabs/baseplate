@@ -1,5 +1,12 @@
 # @halfdomelabs/ui-components
 
+## 0.3.0
+
+### Minor Changes
+
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+- 5f80999: Refactors ComboboxInput, SelectInput, and Dropdown to share logic between them in anticipation of further refactoring
+
 ## 0.2.1
 
 ### Patch Changes

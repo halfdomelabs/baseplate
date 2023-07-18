@@ -1,5 +1,21 @@
 # @halfdomelabs/project-builder-web
 
+## 0.4.0
+
+### Minor Changes
+
+- a81b46f: Adds new drag and drop sortable list feature
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+
+### Patch Changes
+
+- c9c6d57: Fix changing the model/enum from a new one
+- 8b575b8: Fix renaming references failing
+- Updated dependencies [0027b3d]
+- Updated dependencies [5f80999]
+  - @halfdomelabs/project-builder-lib@0.4.0
+  - @halfdomelabs/ui-components@0.3.0
+
 ## 0.3.1
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @halfdomelabs/sync
 
+## 0.4.0
+
+### Minor Changes
+
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+
+### Patch Changes
+
+- ba3f678: Add ability to order post write commands so yarn install runs first
+
 ## 0.3.3
 
 ### Patch Changes

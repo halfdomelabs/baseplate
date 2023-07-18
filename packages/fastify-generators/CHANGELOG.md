@@ -1,5 +1,19 @@
 # @halfdomelabs/fastify-generators
 
+## 0.5.0
+
+### Minor Changes
+
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+- 97b8e6a: Use tsx instead of node-dev
+
+### Patch Changes
+
+- Updated dependencies [0027b3d]
+- Updated dependencies [ba3f678]
+  - @halfdomelabs/core-generators@0.5.0
+  - @halfdomelabs/sync@0.4.0
+
 ## 0.4.3
 
 ### Patch Changes

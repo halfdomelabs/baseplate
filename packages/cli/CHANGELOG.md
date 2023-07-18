@@ -1,5 +1,21 @@
 # @halfdomelabs/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+
+### Patch Changes
+
+- Updated dependencies [0027b3d]
+- Updated dependencies [ba3f678]
+- Updated dependencies [97b8e6a]
+  - @halfdomelabs/fastify-generators@0.5.0
+  - @halfdomelabs/react-generators@0.4.0
+  - @halfdomelabs/core-generators@0.5.0
+  - @halfdomelabs/sync@0.4.0
+
 ## 0.4.4
 
 ### Patch Changes

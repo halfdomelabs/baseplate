@@ -1,5 +1,18 @@
 # @halfdomelabs/react-generators
 
+## 0.4.0
+
+### Minor Changes
+
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+
+### Patch Changes
+
+- Updated dependencies [0027b3d]
+- Updated dependencies [ba3f678]
+  - @halfdomelabs/core-generators@0.5.0
+  - @halfdomelabs/sync@0.4.0
+
 ## 0.3.3
 
 ### Patch Changes

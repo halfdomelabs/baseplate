@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.4.0
+
+### Minor Changes
+
+- 0027b3d: Upgrade generated dependencies to get latest and greatest
+
 ## 0.3.1
 
 ### Patch Changes
