@@ -21,11 +21,11 @@ POST_SCHEMA_BLOCKS;
 
 export const graphqlPlugin = fp(async (fastify) => {
   const graphQLServer = createYoga<{
-    request: FastifyRequest;
+    req: FastifyRequest;
     reply: FastifyReply;
   }>({
     logging: logger,
-    context: ({ request, reply }) => createContextFromRequest(request, reply),
+    context: ({ req, reply }) => createContextFromRequest(req, reply),
     schema,
     maskedErrors: {
       isDev: IS_DEVELOPMENT,
@@ -71,7 +71,7 @@ export const graphqlPlugin = fp(async (fastify) => {
 
   const httpHandler: RouteHandlerMethod = async (request, reply) => {
     const response = await graphQLServer.handleNodeRequest(request, {
-      request,
+      req: request,
       reply,
     });
 

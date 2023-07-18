@@ -18,6 +18,7 @@ import {
   print,
 } from 'graphql';
 import { logger } from '@src/services/logger';
+import { isSentryEnabled } from '%fastify-sentry/service';
 import { HttpError } from '@src/utils/http-errors';
 
 // Copied from https://github.com/n1ru4l/envelop/blob/main/packages/plugins/sentry/src/index.ts
@@ -102,6 +103,10 @@ interface TypedExecutionArgs extends ExecutionArgs {
 }
 
 export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
+  if (!isSentryEnabled()) {
+    return {};
+  }
+
   function pick<K extends keyof SentryPluginOptions>(
     key: K,
     defaultValue: NonNullable<SentryPluginOptions[K]>
@@ -252,7 +257,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
                   if (err.originalError instanceof HttpError) {
                     rootSpan.setHttpStatus(err.originalError.statusCode);
                   } else {
-                    rootSpan.setStatus('unknown');
+                    rootSpan.setStatus('internal_error');
                   }
 
                   const errorPath = (err.path ?? [])

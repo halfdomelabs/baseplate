@@ -147,6 +147,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
               'extractSentryRequestData',
               'configureSentryScope',
               'logErrorToSentry',
+              'isSentryEnabled',
             ],
           },
           '%fastify-sentry/logger': {
@@ -218,7 +219,6 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       if (userData) {
         scope.setUser({
           id: userData.id,
-          email: userData.email,
           ip_address: requestData?.ip,
         });
       }`
