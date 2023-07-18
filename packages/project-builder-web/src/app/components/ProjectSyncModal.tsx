@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import { MdSync } from 'react-icons/md';
 import Console from 'src/components/Console';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -16,11 +17,14 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [projectId] = useProjectIdState();
   const toast = useToast();
+  const { config, setConfig } = useProjectConfig();
 
   const startSyncProject = (): void => {
     if (!projectId) {
       return;
     }
+    // save config when syncing to ensure any migrations/cli versions are set
+    setConfig(config);
     startSync(projectId).catch((err) => toast.error(formatError(err)));
     setIsOpen(true);
   };
