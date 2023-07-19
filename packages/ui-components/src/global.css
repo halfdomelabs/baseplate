@@ -35,8 +35,12 @@ h4 {
   @apply bg-white dark:bg-background-900;
 }
 
+.border-color {
+  @apply border-background-200 dark:border-background-700;
+}
+
 .border-normal {
-  @apply border border-background-200 dark:border-background-700;
+  @apply border-color border;
 }
 
 .text-secondary {
@@ -44,9 +48,13 @@ h4 {
 }
 
 .ux-input {
-  @apply w-full rounded-lg border p-2.5 text-sm;
+  @apply w-full rounded-lg border text-sm;
   @apply border-background-300 bg-white placeholder-foreground-500 focus:border-primary-500 focus:ring-primary-500;
   @apply dark:border-background-600 dark:bg-background-900 dark:placeholder-foreground-500 dark:focus:border-primary-800 dark:focus:ring-primary-800;
+}
+
+.ux-input:disabled {
+  @apply bg-background-100 dark:bg-background-700;
 }
 
 .label-text {

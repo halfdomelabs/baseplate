@@ -1,45 +1,23 @@
-import { Listbox, Transition } from '@headlessui/react';
-import { ModifierPhases } from '@popperjs/core/index.js';
+import { Listbox, Transition, Portal } from '@headlessui/react';
 import { clsx } from 'clsx';
-import { useMemo, useRef, useState } from 'react';
+import { Fragment } from 'react';
 import {
   Control,
   FieldPath,
   FieldValues,
+  PathValue,
   useController,
 } from 'react-hook-form';
 import { HiChevronDown } from 'react-icons/hi2';
-import { Modifier, usePopper } from 'react-popper';
-import { LabellableComponent } from '@src/types/form.js';
+import { useDropdown } from '@src/hooks/useDropdown.js';
+import {
+  AddOptionRequiredFields,
+  DropdownPropsBase,
+} from '@src/types/dropdown.js';
 import { FormDescription } from '../FormDescription/FormDescription.js';
 import { FormError } from '../FormError/FormError.js';
 
-type OptionToStringFunc<OptionType> = (value: OptionType) => string;
-
-export interface SelectInputPropsBase<OptionType> extends LabellableComponent {
-  options: OptionType[];
-  className?: string;
-  name?: string;
-  disabled?: boolean;
-  onChange?(value: string | number | null): void;
-  value?: string | null;
-  getOptionLabel?: OptionToStringFunc<OptionType>;
-  getOptionValue?: OptionToStringFunc<OptionType>;
-  noValueLabel?: string;
-}
-
-type AddOptionRequiredFields<OptionType> = (OptionType extends { label: string }
-  ? unknown
-  : {
-      getOptionLabel: OptionToStringFunc<OptionType>;
-    }) &
-  (OptionType extends { value: string | number }
-    ? unknown
-    : {
-        getOptionValue: OptionToStringFunc<OptionType>;
-      });
-
-export type SelectInputProps<OptionType> = SelectInputPropsBase<OptionType> &
+export type SelectInputProps<OptionType> = DropdownPropsBase<OptionType> &
   AddOptionRequiredFields<OptionType>;
 
 /**
@@ -58,37 +36,12 @@ export function SelectInput<OptionType>({
   label,
   error,
   description,
+  fixed,
 }: SelectInputProps<OptionType>): JSX.Element {
-  const popperElementRef = useRef<HTMLDivElement | null>(null);
-  const [referenceElement, setReferenceElement] =
-    useState<HTMLButtonElement | null>();
-  const [popperElement, setPopperElement] = useState<HTMLDivElement | null>();
-
-  // adapted from https://github.com/floating-ui/floating-ui/issues/794#issuecomment-824220211
-  const modifiers: Modifier<'offset' | 'sameWidth'>[] = useMemo(
-    () => [
-      { name: 'offset', options: { offset: [0, 8] } },
-      {
-        name: 'sameWidth',
-        enabled: true,
-        phase: 'beforeWrite' as ModifierPhases,
-        requires: ['computeStyles'],
-        fn({ state: draftState }) {
-          draftState.styles.popper.minWidth = `${draftState.rects.reference.width}px`;
-        },
-        effect({ state: draftState }) {
-          draftState.elements.popper.style.minWidth = `${
-            (draftState.elements.reference as HTMLDivElement).offsetWidth
-          }px`;
-        },
-      },
-    ],
-    []
-  );
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'bottom-start',
-    modifiers,
-  });
+  const { popperProps, transitionProps, setReferenceElement } =
+    useDropdown<HTMLButtonElement>({
+      fixed,
+    });
 
   const handleChange = (newValue?: string): void => {
     if (onChange) {
@@ -104,6 +57,8 @@ export function SelectInput<OptionType>({
     (option) => getOptionValue(option) === value
   );
 
+  const PortalWrapper = fixed ? Portal : Fragment;
+
   return (
     <Listbox
       value={value}
@@ -117,41 +72,37 @@ export function SelectInput<OptionType>({
       <div>
         <Listbox.Button
           ref={setReferenceElement}
-          className="ux-input flex items-center justify-between"
+          className="ux-input relative flex items-center justify-between p-2.5 pr-10"
         >
           <div className={!selectedOption ? 'text-secondary' : ''}>
             {selectedOption ? getOptionLabel(selectedOption) : noValueLabel}
           </div>
-          <HiChevronDown className="h-4 w-4" />
+          <HiChevronDown className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 transform" />
         </Listbox.Button>
-        <div
-          ref={popperElementRef}
-          style={styles.popper}
-          {...attributes.popper}
-        >
-          <Transition
-            enter="ease-out duration-100"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-100"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-            beforeEnter={() => setPopperElement(popperElementRef.current)}
-            afterLeave={() => setPopperElement(null)}
-          >
-            <Listbox.Options className="popover-background border-normal rounded p-2 shadow">
-              {options.map((option) => (
-                <Listbox.Option
-                  className="cursor-pointer rounded p-2 text-sm hover:bg-background-200 ui-selected:bg-primary-500 ui-selected:text-white dark:hover:bg-background-700 dark:ui-selected:bg-primary-600 dark:ui-selected:text-white"
-                  key={getOptionValue(option)}
-                  value={getOptionValue(option)}
-                >
-                  {getOptionLabel(option)}
-                </Listbox.Option>
-              ))}
-            </Listbox.Options>
-          </Transition>
-        </div>
+        <PortalWrapper>
+          <div {...popperProps} className="z-10">
+            <Transition {...transitionProps}>
+              <Listbox.Options className="popover-background border-normal z-10 max-h-72 overflow-y-auto rounded p-2 shadow">
+                {options.map((option) => (
+                  <Listbox.Option
+                    className={({ selected }) =>
+                      clsx(
+                        'cursor-pointer rounded p-2 text-sm',
+                        selected
+                          ? 'bg-primary-500 text-white dark:bg-primary-600 dark:text-white'
+                          : 'hover:bg-background-200 dark:hover:bg-background-700'
+                      )
+                    }
+                    key={getOptionValue(option)}
+                    value={getOptionValue(option)}
+                  >
+                    {getOptionLabel(option)}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Transition>
+          </div>
+        </PortalWrapper>
       </div>
       {error ? (
         <FormError>{error}</FormError>
@@ -166,7 +117,7 @@ interface SelectInputControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
-> extends Omit<SelectInputPropsBase<OptionType>, 'register'> {
+> extends Omit<DropdownPropsBase<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
@@ -203,7 +154,9 @@ SelectInput.Controller = function SelectInputController<
 
   return (
     <SelectInput
-      onChange={(value) => field.onChange(value)}
+      onChange={(value) =>
+        field.onChange(value as PathValue<TFieldValues, TFieldName>)
+      }
       value={field.value}
       error={error?.message}
       {...restProps}

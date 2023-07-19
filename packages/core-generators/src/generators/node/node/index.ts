@@ -7,6 +7,7 @@ import {
 import * as R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
+import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 import { projectProvider } from '../../../providers/index.js';
 
@@ -18,7 +19,7 @@ const descriptorSchema = z.object({
   version: z.string().default('0.1.0'),
   private: z.boolean().default(true),
   path: z.string().default(''),
-  nodeVersion: z.string().default('16.10.0'),
+  nodeVersion: z.string().default('18.16.0'),
   yarnVersion: z.string().default('1.22.19'),
 });
 
@@ -212,23 +213,32 @@ const NodeGenerator = createGeneratorWithChildren({
           writeJsonAction({
             destination: 'package.json',
             contents: packageJson,
+            preformat: (contents) => sortPackageJson(contents),
           })
         );
 
-        builder.addPostWriteCommand('yarn install', {
-          workingDirectory: '/',
-          onlyIfChanged: ['package.json'],
-        });
+        builder.addPostWriteCommand(
+          'yarn install --non-interactive',
+          'dependencies',
+          {
+            workingDirectory: '/',
+            onlyIfChanged: ['package.json'],
+          }
+        );
 
         const allDependencies = R.mergeRight(
           packageJson.dependencies,
           packageJson.devDependencies
         );
         if (Object.keys(allDependencies).includes('prettier')) {
-          builder.addPostWriteCommand('yarn prettier --write package.json', {
-            workingDirectory: '/',
-            onlyIfChanged: ['package.json'],
-          });
+          builder.addPostWriteCommand(
+            'yarn prettier --write package.json',
+            'dependencies',
+            {
+              workingDirectory: '/',
+              onlyIfChanged: ['package.json'],
+            }
+          );
         }
       },
     };

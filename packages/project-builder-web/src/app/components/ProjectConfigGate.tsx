@@ -145,17 +145,16 @@ export function ProjectConfigGate({
       }
 
       const oldProjectConfig = parsedProject.exportToProjectConfig();
-      let newProjectConfig =
+      const newProjectConfig =
         typeof newConfig === 'function'
           ? produce(oldProjectConfig, newConfig)
           : newConfig;
 
       // TODO: Figure out better validation technique as we're validating twice
-      const validatedProjectConfig =
-        projectConfigSchema.parse(newProjectConfig);
+      let validatedProjectConfig = projectConfigSchema.parse(newProjectConfig);
 
       if (fixReferences) {
-        newProjectConfig = fixReferenceRenames(
+        validatedProjectConfig = fixReferenceRenames(
           oldProjectConfig,
           validatedProjectConfig,
           getProjectConfigReferences,

@@ -3,4 +3,5 @@ module.exports = require('@halfdomelabs/tools/generators/eslintrc')({
   react: true,
   storybook: true,
   mdx: true,
+  additionalTsConfigs: ['./tsconfig.eslint.json'],
 });

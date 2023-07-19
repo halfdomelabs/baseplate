@@ -96,25 +96,25 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     const gqlFiles: string[] = [];
 
     node.addPackages({
-      '@apollo/client': '3.7.0',
-      graphql: '16.6.0',
+      '@apollo/client': '3.7.17',
+      graphql: '16.7.1',
     });
 
     if (enableSubscriptions) {
       node.addPackages({
-        'graphql-ws': '5.10.1',
+        'graphql-ws': '5.14.0',
       });
     }
 
     node.addDevPackages({
-      '@graphql-codegen/cli': '2.6.2',
-      '@graphql-codegen/typescript': '2.4.8',
-      '@graphql-codegen/typescript-operations': '2.3.5',
-      '@graphql-codegen/typescript-react-apollo': '3.2.11',
+      '@graphql-codegen/cli': '4.0.1',
+      '@graphql-codegen/typescript': '4.0.1',
+      '@graphql-codegen/typescript-operations': '4.0.1',
+      '@graphql-codegen/typescript-react-apollo': '3.3.7',
     });
 
     node.addScripts({
-      generate: 'graphql-codegen --config codegen.yml',
+      generate: 'graphql-codegen',
     });
 
     reactConfig.getConfigMap().set('VITE_GRAPH_API_ENDPOINT', {
@@ -413,7 +413,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           )
         );
 
-        builder.addPostWriteCommand('yarn generate', {
+        builder.addPostWriteCommand('yarn generate', 'generation', {
           onlyIfChanged: [...gqlFiles, 'codegen.yml'],
         });
       },

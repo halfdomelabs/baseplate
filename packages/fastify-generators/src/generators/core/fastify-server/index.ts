@@ -68,10 +68,10 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     const plugins: FastifyServerPlugin[] = [];
 
     node.addPackages({
-      fastify: '4.5.3',
-      '@fastify/helmet': '10.0.0',
-      'fastify-plugin': '4.2.1',
-      nanoid: '^3.1.30',
+      fastify: '4.19.2',
+      '@fastify/helmet': '11.0.0',
+      'fastify-plugin': '4.5.0',
+      nanoid: '3.3.6',
     });
 
     plugins.push({

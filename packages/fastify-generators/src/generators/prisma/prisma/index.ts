@@ -91,16 +91,16 @@ const PrismaGenerator = createGeneratorWithTasks({
         typescript,
       }) {
         node.addDevPackages({
-          prisma: '4.11.0',
+          prisma: '4.16.2',
         });
 
         node.addPackages({
-          '@prisma/client': '4.11.0',
+          '@prisma/client': '4.16.2',
         });
 
         node.mergeExtraProperties({
           prisma: {
-            seed: `ts-node ${fastifyOutput.getDevLoaderString()} src/prisma/seed.ts`,
+            seed: `tsx ${fastifyOutput.getDevLoaderString()} src/prisma/seed.ts`,
           },
         });
 
@@ -167,7 +167,7 @@ const PrismaGenerator = createGeneratorWithTasks({
               `${formattedSchemaText.trimEnd()}\n`
             );
 
-            builder.addPostWriteCommand('yarn prisma generate', {
+            builder.addPostWriteCommand('yarn prisma generate', 'generation', {
               onlyIfChanged: ['prisma/schema.prisma'],
             });
 

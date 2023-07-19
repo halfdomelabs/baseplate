@@ -1,22 +1,25 @@
 // @ts-nocheck
 
 import {
-  EnvelopError,
+  getDocumentString,
   handleStreamOrSingleExecutionResult,
+  isOriginalGraphQLError,
   OnExecuteDoneHookResultOnNextHook,
-  OnResolverCalledHook,
-  Plugin,
+  type Plugin,
 } from '@envelop/core';
 import * as Sentry from '@sentry/node';
-import type { Span, TraceparentData } from '@sentry/types';
+import type { Primitive, Span, TraceparentData } from '@sentry/types';
 import {
+  DocumentNode,
   ExecutionArgs,
   GraphQLError,
   Kind,
   OperationDefinitionNode,
   print,
 } from 'graphql';
-import { HttpError } from '%http-errors';
+import { logger } from '@src/services/logger';
+import { isSentryEnabled } from '%fastify-sentry/service';
+import { HttpError } from '@src/utils/http-errors';
 
 // Copied from https://github.com/n1ru4l/envelop/blob/main/packages/plugins/sentry/src/index.ts
 // Modified to allow reporting status of Sentry transactions
@@ -34,11 +37,6 @@ export type SentryPluginOptions = {
    * @default false
    */
   renameTransaction?: boolean;
-  /**
-   * Creates a Span for every resolve function
-   * @default true
-   */
-  trackResolvers?: boolean;
   /**
    * Adds result of each resolver and operation to Span's data (available under "result")
    * @default false
@@ -62,7 +60,7 @@ export type SentryPluginOptions = {
   /**
    * Adds custom tags to every Transaction.
    */
-  appendTags?: (args: ExecutionArgs) => Record<string, unknown>;
+  appendTags?: (args: ExecutionArgs) => Record<string, Primitive>;
   /**
    * Callback to set context information onto the scope.
    */
@@ -92,28 +90,23 @@ export type SentryPluginOptions = {
   skip?: (args: ExecutionArgs) => boolean;
   /**
    * Indicates whether or not to skip Sentry exception reporting for a given error.
-   * By default, this plugin skips all `EnvelopError` errors and does not report it to Sentry.
+   * By default, this plugin skips all `GraphQLError` errors and does not report it to Sentry.
    */
   skipError?: (args: Error) => boolean;
-  /**
-   * Indicates whether or not to track root level resolvers.
-   */
-  trackRootResolversOnly?: boolean;
 };
 
-export function defaultSkipError(error: Error): boolean {
-  return error instanceof EnvelopError;
+export const defaultSkipError = isOriginalGraphQLError;
+
+interface TypedExecutionArgs extends ExecutionArgs {
+  document: DocumentNode;
+  operationName?: string;
 }
 
-const sentryTracingSymbol = Symbol('sentryTracing');
-
-type SentryTracingContext = {
-  rootSpan: Span | undefined;
-  opName: string;
-  operationType: string;
-};
-
 export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
+  if (!isSentryEnabled()) {
+    return {};
+  }
+
   function pick<K extends keyof SentryPluginOptions>(
     key: K,
     defaultValue: NonNullable<SentryPluginOptions[K]>
@@ -122,100 +115,46 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
   }
 
   const startTransaction = pick('startTransaction', true);
-  const trackResolvers = pick('trackResolvers', true);
-  const includeResolverArgs = pick('includeResolverArgs', false);
   const includeRawResult = pick('includeRawResult', false);
   const includeExecuteVariables = pick('includeExecuteVariables', false);
   const renameTransaction = pick('renameTransaction', false);
   const skipOperation = pick('skip', () => false);
   const skipError = pick('skipError', defaultSkipError);
-  const trackRootResolversOnly = pick('trackRootResolversOnly', false);
 
-  function addEventId(err: GraphQLError, eventId: string): GraphQLError {
-    if (options.eventIdKey === null) {
-      return err;
+  const eventIdKey = options.eventIdKey === null ? null : 'sentryEventId';
+
+  function addEventId(err: GraphQLError, eventId: string | null): GraphQLError {
+    if (eventIdKey !== null && eventId !== null) {
+      // eslint-disable-next-line no-param-reassign
+      err.extensions[eventIdKey] = eventId;
     }
-    const eventIdKey = options.eventIdKey ?? 'sentryEventId';
 
-    return new GraphQLError(
-      err.message,
-      err.nodes,
-      err.source,
-      err.positions,
-      err.path,
-      undefined,
-      {
-        ...err.extensions,
-        [eventIdKey]: eventId,
-      }
-    );
+    return err;
   }
 
-  const onResolverCalled: OnResolverCalledHook | undefined = trackResolvers
-    ? ({ args: resolversArgs, info, context }) => {
-        const sentryTracingContext = context[sentryTracingSymbol];
-        if (!sentryTracingContext) {
-          return () => {};
-        }
-        const { rootSpan } = sentryTracingContext as SentryTracingContext;
-        if (rootSpan) {
-          const { fieldName, returnType, parentType } = info;
-
-          if (
-            trackRootResolversOnly &&
-            !['Query', 'Mutation', 'Subscription'].includes(parentType.name)
-          ) {
-            return () => {};
-          }
-
-          const parent = rootSpan;
-          const tags: Record<string, string> = {
-            fieldName,
-            parentType: parentType.toString(),
-            returnType: returnType.toString(),
-          };
-
-          if (includeResolverArgs) {
-            tags.args = JSON.stringify(resolversArgs || {});
-          }
-
-          const childSpan = parent.startChild({
-            description: `${parentType.name}.${fieldName}`,
-            op: 'db.graphql.yoga',
-            tags,
-          });
-
-          return ({ result }) => {
-            if (includeRawResult) {
-              childSpan.setData('result', result);
-            }
-
-            childSpan.finish();
-          };
-        }
-
-        return () => {};
-      }
-    : undefined;
-
   return {
-    onResolverCalled,
-    onExecute({ args, extendContext }) {
-      if (skipOperation(args)) {
-        return {};
+    onExecute({ args }) {
+      const typedArgs = args as TypedExecutionArgs;
+      if (skipOperation(typedArgs)) {
+        return undefined;
       }
 
-      const rootOperation = args.document.definitions.find(
-        (o) => o.kind === Kind.OPERATION_DEFINITION
-      ) as OperationDefinitionNode;
+      const rootOperation = typedArgs.document.definitions.find(
+        (o): o is OperationDefinitionNode =>
+          o.kind === Kind.OPERATION_DEFINITION
+      );
+      if (!rootOperation) {
+        return undefined;
+      }
       const operationType = rootOperation.operation;
-      const document = print(args.document);
+
+      const document = getDocumentString(typedArgs.document, print);
+
       const opName =
-        args.operationName ||
+        typedArgs.operationName ||
         rootOperation.name?.value ||
         'Anonymous Operation';
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const addedTags: Record<string, any> =
+      const addedTags: Record<string, Primitive> =
         (options.appendTags && options.appendTags(args)) || {};
       const traceparentData =
         (options.traceparentData && options.traceparentData(args)) || {};
@@ -225,7 +164,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
         : opName;
       const op = options.operationName
         ? options.operationName(args)
-        : 'db.graphql.yoga';
+        : 'execute';
       const tags = {
         operationName: opName,
         operation: operationType,
@@ -237,7 +176,6 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
       if (startTransaction) {
         rootSpan = Sentry.startTransaction({
           name: transactionName,
-          description: 'execute',
           op,
           tags,
           ...traceparentData,
@@ -250,10 +188,6 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
           ];
           throw new Error(error.join('\n'));
         }
-
-        // set current scope to rootSpan
-        const scope = Sentry.getCurrentHub().getScope();
-        scope?.setSpan(rootSpan);
       } else {
         const scope = Sentry.getCurrentHub().getScope();
         const parentSpan = scope?.getSpan();
@@ -263,15 +197,14 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
           tags,
         });
 
-        if (!span || !scope) {
-          // eslint-disable-next-line no-console
-          console.warn(
+        if (!span) {
+          logger.warn(
             [
-              `Flag "startTransaction" is enabled but Sentry failed to find a transaction.`,
+              `Flag "startTransaction" is disabled but Sentry failed to find a transaction.`,
               `Try to create a transaction before GraphQL execution phase is started.`,
             ].join('\n')
           );
-          return {};
+          return undefined;
         }
 
         rootSpan = span;
@@ -281,22 +214,12 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
         }
       }
 
+      Sentry.configureScope((scope) => scope.setSpan(rootSpan));
+
       rootSpan.setData('document', document);
 
       if (options.configureScope) {
-        Sentry.configureScope(
-          (scope) =>
-            options.configureScope && options.configureScope(args, scope)
-        );
-      }
-
-      if (onResolverCalled) {
-        const sentryContext: SentryTracingContext = {
-          rootSpan,
-          opName,
-          operationType,
-        };
-        extendContext({ [sentryTracingSymbol]: sentryContext });
+        Sentry.configureScope((scope) => options.configureScope?.(args, scope));
       }
 
       return {
@@ -326,18 +249,23 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
                   scope.setExtra('variables', args.variableValues);
                 }
 
-                const errors = result.errors?.map((err) => {
-                  if (skipError(err)) {
+                const errors = result.errors?.map((err: GraphQLError) => {
+                  if (skipError(err) === true) {
                     return err;
                   }
 
                   if (err.originalError instanceof HttpError) {
                     rootSpan.setHttpStatus(err.originalError.statusCode);
                   } else {
-                    rootSpan.setStatus('unknown');
+                    rootSpan.setStatus('internal_error');
                   }
 
-                  const errorPath = (err.path ?? []).join(' > ');
+                  const errorPath = (err.path ?? [])
+                    .map((v: string | number) =>
+                      typeof v === 'number' ? '$index' : v
+                    )
+                    .join(' > ');
+
                   if (errorPath) {
                     scope.addBreadcrumb({
                       category: 'execution-path',
@@ -346,18 +274,8 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
                     });
                   }
 
-                  // Map index values in list to $index for better grouping of events.
-                  const errorPathWithIndex = (err.path ?? [])
-                    .map((v) => (typeof v === 'number' ? '$index' : v))
-                    .join(' > ');
-
-                  const eventId = Sentry.captureException(err, {
-                    fingerprint: [
-                      'graphql',
-                      errorPathWithIndex,
-                      opName,
-                      operationType,
-                    ],
+                  const eventId = Sentry.captureException(err.originalError, {
+                    fingerprint: ['graphql', errorPath, opName, operationType],
                     contexts: {
                       GraphQL: {
                         operationName: opName,

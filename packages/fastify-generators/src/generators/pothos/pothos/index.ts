@@ -158,9 +158,9 @@ const PothosGenerator = createGeneratorWithTasks({
         }
       ) {
         node.addPackages({
-          '@pothos/core': '3.27.0',
-          '@pothos/plugin-simple-objects': '3.6.7',
-          '@pothos/plugin-relay': '3.37.0',
+          '@pothos/core': '3.30.0',
+          '@pothos/plugin-simple-objects': '3.7.0',
+          '@pothos/plugin-relay': '3.42.0',
         });
 
         // ignore prettier for schema.graphql
@@ -299,7 +299,7 @@ const PothosGenerator = createGeneratorWithTasks({
               })
             );
 
-            builder.addPostWriteCommand('yarn generate:schema', {
+            builder.addPostWriteCommand('yarn generate:schema', 'generation', {
               onlyIfChanged: [
                 ...schemaFiles,
                 'src/plugins/graphql/index.ts',
@@ -322,7 +322,7 @@ const PothosGenerator = createGeneratorWithTasks({
         // add script to generate types
         node.addScript(
           'generate:schema',
-          `ts-node --transpile-only ${fastifyOutput.getDevLoaderString()} src --exit-after-generate-schema`
+          `tsx ${fastifyOutput.getDevLoaderString()} src --exit-after-generate-schema`
         );
         return {};
       },

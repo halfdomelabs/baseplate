@@ -36,8 +36,8 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
 
     node.addDevPackages({
       autoprefixer: '10.4.14',
-      tailwindcss: '3.2.4',
-      'prettier-plugin-tailwindcss': '0.2.1',
+      tailwindcss: '3.3.2',
+      'prettier-plugin-tailwindcss': '0.3.0',
       '@tailwindcss/forms': '0.5.3',
     });
 

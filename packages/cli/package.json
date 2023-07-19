@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/cli",
-  "version": "0.3.0",
+  "version": "0.5.1",
   "description": "Command line tool for syncing Baseplate descriptions",
   "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
@@ -20,7 +20,7 @@
     "@types/node": "^18.0.0",
     "@types/ramda": "^0.27.64",
     "tsx": "^3.12.7",
-    "typescript": "4.9.5"
+    "typescript": "5.0.4"
   },
   "scripts": {
     "start": "tsx ./src",

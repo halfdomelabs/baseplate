@@ -69,11 +69,11 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
         const additionalVerifications: TypescriptCodeBlock[] = [];
 
         node.addPackages({
-          zod: '3.20.6',
+          zod: '3.21.4',
         });
 
         node.addDevPackages({
-          dotenv: '^10.0.0',
+          dotenv: '16.3.1',
         });
 
         nodeGitIgnore.addExclusions(['/.env', '/.*.env']);

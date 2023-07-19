@@ -32,7 +32,7 @@ const ReactAuth0Generator = createGeneratorWithChildren({
   },
   createGenerator({ callbackPath }, { node, reactConfig, reactApp }) {
     node.addPackages({
-      '@auth0/auth0-react': '2.0.1',
+      '@auth0/auth0-react': '2.1.1',
     });
 
     reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {

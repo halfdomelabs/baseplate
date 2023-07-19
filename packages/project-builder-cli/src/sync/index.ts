@@ -83,12 +83,11 @@ export async function generateForDirectory(
     try {
       // load clean directory contents
       const files = await globby('**/*', { cwd: cleanDirectory, dot: true });
-      const cleanProjectFiles: { filePath: string; contents: string }[] =
+      const cleanProjectFiles: { filePath: string; contents: Buffer }[] =
         await Promise.all(
           files.map(async (filePath) => {
             const contents = await fs.readFile(
-              path.join(cleanDirectory, filePath),
-              'utf8'
+              path.join(cleanDirectory, filePath)
             );
             return {
               filePath,
@@ -169,9 +168,8 @@ export async function generateForDirectory(
           if (!pathExists) {
             return;
           }
-          // TODO: Support binary support for files here
-          const existingContents = await fs.readFile(pathToDelete, 'utf-8');
-          if (existingContents === file.contents) {
+          const existingContents = await fs.readFile(pathToDelete);
+          if (existingContents.equals(file.contents)) {
             logger.log(`Deleting ${file.filePath}...`);
             await fs.remove(pathToDelete);
           } else {

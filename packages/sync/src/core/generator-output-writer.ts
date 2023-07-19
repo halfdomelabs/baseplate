@@ -1,20 +1,30 @@
 import fs from 'fs/promises';
 import path from 'path';
 import chalk from 'chalk';
+import _ from 'lodash';
 import pLimit from 'p-limit';
-import * as R from 'ramda';
 import { getErrorMessage } from '@src/utils/errors.js';
 import { Logger } from '@src/utils/evented-logger.js';
 import { ExecError, executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
-import { mergeStrings } from '@src/utils/merge.js';
-import { FileData, GeneratorOutput } from './generator-output.js';
+import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
+import {
+  FileData,
+  GeneratorOutput,
+  POST_WRITE_COMMAND_TYPE_PRIORITY,
+} from './generator-output.js';
 
 async function mergeContents(
   newContents: string,
   filePath: string,
+  formatContents: (contents: string) => Promise<string>,
   cleanContents?: string
 ): Promise<{ contents: string; hasConflict: boolean } | null> {
+  if (cleanContents === newContents) {
+    // don't write if content has not changed
+    return null;
+  }
+
   const doesPathExist = await pathExists(filePath);
   if (!doesPathExist) {
     return { contents: newContents, hasConflict: false };
@@ -30,26 +40,21 @@ async function mergeContents(
 
   // we will skip writing the file if the contents are unchanged from before or the
   // new contents matches the existing contents
-
-  // TODO: HACK: Can create an option for this in the future
-  // Necessary because package.json files are not formatted using a provided formatter
-  if (filePath.endsWith('/package.json')) {
-    try {
-      if (
-        R.equals(JSON.parse(existingContents), JSON.parse(newContents)) ||
-        (cleanContents &&
-          R.equals(JSON.parse(cleanContents), JSON.parse(newContents)))
-      ) {
-        return null;
-      }
-    } catch (err) {
-      throw new Error(`Error parsing JSON: ${filePath}`);
-    }
-  } else if (
-    existingContents === newContents ||
-    cleanContents === newContents
-  ) {
+  if (existingContents === newContents) {
     return null;
+  }
+
+  // if the file is JSON, attempt a patch diff to avoid messy 3-way diff
+  if (filePath.endsWith('.json') && cleanContents) {
+    const mergedContents = attemptMergeJson(
+      existingContents,
+      newContents,
+      cleanContents
+    );
+    if (mergedContents) {
+      const formattedMergedContents = await formatContents(mergedContents);
+      return { contents: formattedMergedContents, hasConflict: false };
+    }
   }
 
   return mergeStrings(existingContents, newContents, cleanContents);
@@ -109,6 +114,9 @@ async function writeFile(
     }
 
     // we don't attempt 3-way merge on Buffer contents
+    if (options?.cleanContents && contents.equals(options?.cleanContents)) {
+      return { type: 'skipped', cleanContents: contents, originalPath };
+    }
 
     const doesPathExist = await pathExists(filePath);
     if (doesPathExist) {
@@ -117,6 +125,7 @@ async function writeFile(
         return { type: 'skipped', cleanContents: contents, originalPath };
       }
     }
+
     return {
       type: 'modified',
       path: filePath,
@@ -126,14 +135,33 @@ async function writeFile(
     };
   }
 
-  let formattedContents = contents;
-  if (formatter) {
-    try {
-      formattedContents = await formatter.format(contents, filePath, logger);
-    } catch (err) {
-      throw new FormatterError(err, contents);
+  async function formatContents(contentsToFormat: string): Promise<string> {
+    let formattedContents = contentsToFormat;
+    if (options?.preformat) {
+      try {
+        formattedContents = await Promise.resolve(
+          options.preformat(formattedContents, filePath, logger)
+        );
+      } catch (err) {
+        throw new FormatterError(err, formattedContents);
+      }
     }
+
+    if (formatter) {
+      try {
+        formattedContents = await formatter.format(
+          formattedContents,
+          filePath,
+          logger
+        );
+      } catch (err) {
+        throw new FormatterError(err, formattedContents);
+      }
+    }
+    return formattedContents;
   }
+
+  const formattedContents = await formatContents(contents);
 
   if (options?.neverOverwrite) {
     const fileExists = await pathExists(filePath);
@@ -153,7 +181,8 @@ async function writeFile(
   const mergeResult = await mergeContents(
     formattedContents,
     filePath,
-    cleanContents
+    formatContents,
+    cleanContents?.toString('utf8')
   );
   // if there's no merge result, existing contents matches new contents so no modification is required
   if (!mergeResult) {
@@ -173,16 +202,6 @@ async function writeFile(
 
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-
-function getNodePrefix(): string {
-  if (process.env.NODE_ENV === 'test') {
-    return '';
-  }
-  if (process.env.VOLTA_HOME) {
-    return 'volta run ';
-  }
-  return '';
-}
 
 export interface GeneratorWriteOptions {
   cleanDirectory?: string;
@@ -280,6 +299,11 @@ export async function writeGeneratorOutput(
       );
     });
 
+    const orderedCommands = _.sortBy(
+      runnableCommands,
+      (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType]
+    );
+
     if (conflictFilenames.length) {
       logger.log(
         chalk.red(
@@ -288,37 +312,26 @@ export async function writeGeneratorOutput(
           )}`
         )
       );
-      if (runnableCommands.length) {
+      if (orderedCommands.length) {
         logger.log(
           `\nOnce resolved, please re-run the generator or run the following commands:`
         );
-        for (const command of runnableCommands) {
+        for (const command of orderedCommands) {
           logger.log(`  ${command.command}`);
         }
       }
       return {
         conflictFilenames,
-        failedCommands: runnableCommands.map((c) => c.command),
+        failedCommands: orderedCommands.map((c) => c.command),
       };
     }
 
-    // run post write commands
-
-    // Volta and Yarn prepend their own PATHs to Node which can
-    // bugger up node resolution. This forces it to run normally again
-    const nodePrefix = getNodePrefix();
-    const NODE_COMMANDS = ['node', 'yarn', 'npm'];
-
     const failedCommands: string[] = [];
 
-    for (const command of runnableCommands) {
+    for (const command of orderedCommands) {
       const { workingDirectory = '' } = command.options || {};
 
-      const commandString = NODE_COMMANDS.includes(
-        command.command.split(' ')[0]
-      )
-        ? `${nodePrefix}${command.command}`
-        : command.command;
+      const commandString = command.command;
 
       logger.log(`Running ${commandString}...`);
       try {

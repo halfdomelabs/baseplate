@@ -3,6 +3,7 @@ import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 import { randomUid } from '@src/utils/randomUid.js';
 import type { ProjectConfig } from '../projectConfig.js';
 import { ReferencesBuilder } from '../references.js';
+import { VALIDATORS } from '../utils/validation.js';
 import {
   buildServiceTransformerReferences,
   transformerSchema,
@@ -57,7 +58,7 @@ export const REFERENTIAL_ACTIONS = [
 
 export const modelRelationFieldSchema = z.object({
   uid: z.string().default(randomUid),
-  name: z.string().min(1),
+  name: VALIDATORS.CAMEL_CASE_STRING,
   references: z.array(
     z.object({
       local: z.string().min(1),
@@ -130,7 +131,7 @@ export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
 
 export const modelSchema = z.object({
   uid: z.string().default(randomUid),
-  name: z.string().min(1),
+  name: VALIDATORS.PASCAL_CASE_STRING,
   feature: z.string().min(1),
   model: z.object({
     fields: z.array(modelScalarFieldSchema),

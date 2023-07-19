@@ -1,7 +1,7 @@
 // @ts-nocheck
 import {
   requestContext,
-  fastifyRequestContextPlugin,
+  fastifyRequestContext,
 } from '@fastify/request-context';
 import { FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
@@ -27,7 +27,7 @@ declare module 'fastify' {
 }
 
 export const requestContextPlugin = fp(async (fastify) => {
-  await fastify.register(fastifyRequestContextPlugin);
+  await fastify.register(fastifyRequestContext);
 
   fastify.decorateRequest('reqInfo', null);
 

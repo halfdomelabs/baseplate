@@ -35,7 +35,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
                 error instanceof GraphQLError ? error.originalError || error : error
               ),
             eventIdKey: null,
-            trackRootResolversOnly: true,
           })`,
         [
           `import { useSentry } from '${pluginImport}'`,
@@ -53,7 +52,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
           typescript.createCopyAction({
             source: 'useSentry.ts',
             destination: pluginPath,
-            importMappers: [errorHandlerService],
+            importMappers: [errorHandlerService, fastifySentry],
           })
         );
       },

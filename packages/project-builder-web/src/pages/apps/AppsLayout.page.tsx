@@ -38,8 +38,10 @@ function AppsLayout(): JSX.Element {
           ))}
         </ul>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="max-w-3xl p-4">
-        <Outlet />
+      <SidebarLayout.Content className=" p-4">
+        <div className="max-w-3xl">
+          <Outlet />
+        </div>
       </SidebarLayout.Content>
     </SidebarLayout>
   );

@@ -1,15 +1,9 @@
 // @ts-nocheck
-import * as domain from 'domain';
-import { URL } from 'url';
 import * as Sentry from '@sentry/node';
-import { extractTraceparentData } from '@sentry/tracing';
 import type { TraceparentData, Transaction } from '@sentry/types';
 import { FastifyRequest } from 'fastify';
 import fp from 'fastify-plugin';
-import {
-  extractSentryRequestData,
-  getUrlQueryString,
-} from '../services/sentry';
+import { extractSentryRequestData, isSentryEnabled } from '../services/sentry';
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -18,35 +12,42 @@ declare module 'fastify' {
 }
 
 function getTransactionName(request: FastifyRequest): string {
-  const parsedUrl = new URL(request.url, 'http://a');
-  return `${request.method} ${parsedUrl.pathname}`;
+  return `${request.method} ${request.routerPath}`;
 }
 
 export const sentryPlugin = fp(async (fastify) => {
   fastify.decorateRequest('sentryTransaction', null);
 
-  fastify.addHook('onRequest', (req, reply, done) => {
-    // create domain for request (like handler in Sentry Express handler)
-    // Domain is deprecated but still used by Sentry
-    // See https://github.com/getsentry/sentry-javascript/issues/4633
-    const local = domain.create();
-    local.on('error', done);
-    local.run(() => {
-      let traceparentData: TraceparentData | undefined;
-      if (typeof req.headers['sentry-trace'] === 'string') {
-        traceparentData = extractTraceparentData(req.headers['sentry-trace']);
-      }
-      req.sentryTransaction = Sentry.startTransaction(
-        {
-          name: getTransactionName(req),
-          op: 'http.server',
-          ...traceparentData,
-        },
-        { request: extractSentryRequestData(req) }
-      );
+  if (!isSentryEnabled()) {
+    return;
+  }
 
-      done();
+  fastify.addHook('onRequest', (req, reply, done) => {
+    let traceparentData: TraceparentData | undefined;
+    if (typeof req.headers['sentry-trace'] === 'string') {
+      traceparentData = Sentry.extractTraceparentData(
+        req.headers['sentry-trace']
+      );
+    }
+
+    const requestData = extractSentryRequestData(req);
+    const transaction = Sentry.startTransaction(
+      {
+        name: getTransactionName(req),
+        op: 'http.server',
+        ...traceparentData,
+      },
+      { request: requestData }
+    );
+    req.sentryTransaction = transaction;
+
+    Sentry.getCurrentHub().configureScope((scope) => {
+      transaction.setData('url', requestData.url);
+      transaction.setData('query', requestData.query_string);
+      scope.setSpan(transaction);
     });
+
+    done();
   });
 
   fastify.addHook('onResponse', async (req, reply) => {
@@ -55,8 +56,6 @@ export const sentryPlugin = fp(async (fastify) => {
     }
     setImmediate(() => {
       const transaction = req.sentryTransaction;
-      transaction.setData('url', req.url);
-      transaction.setData('query', getUrlQueryString(req.url));
       transaction.setHttpStatus(reply.statusCode);
       transaction.finish();
     });

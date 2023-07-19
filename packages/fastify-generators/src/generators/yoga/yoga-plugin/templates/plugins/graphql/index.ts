@@ -4,7 +4,7 @@ import { config } from '%config';
 import { HttpError } from '%http-errors';
 import { createContextFromRequest } from '%request-service-context';
 import { requestContext } from '@fastify/request-context';
-import { createServer } from '@graphql-yoga/node';
+import { createYoga } from 'graphql-yoga';
 import { logger } from '%logger-service';
 import AltairFastify from 'altair-fastify-plugin';
 import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
@@ -20,16 +20,16 @@ const schema = SCHEMA;
 POST_SCHEMA_BLOCKS;
 
 export const graphqlPlugin = fp(async (fastify) => {
-  const graphQLServer = createServer<{
-    request: FastifyRequest;
+  const graphQLServer = createYoga<{
+    req: FastifyRequest;
     reply: FastifyReply;
   }>({
     logging: logger,
-    context: ({ request, reply }) => createContextFromRequest(request, reply),
+    context: ({ req, reply }) => createContextFromRequest(req, reply),
     schema,
     maskedErrors: {
       isDev: IS_DEVELOPMENT,
-      formatError: (error, message, isDev) => {
+      maskError: (error, message, isDev) => {
         if (!(error instanceof GraphQLError)) {
           return new GraphQLError(message);
         }
@@ -70,8 +70,8 @@ export const graphqlPlugin = fp(async (fastify) => {
   });
 
   const httpHandler: RouteHandlerMethod = async (request, reply) => {
-    const response = await graphQLServer.handleIncomingMessage(request, {
-      request,
+    const response = await graphQLServer.handleNodeRequest(request, {
+      req: request,
       reply,
     });
 

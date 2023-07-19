@@ -44,11 +44,11 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
     fastifyOutput,
   }) {
     node.addPackages({
-      bullmq: '2.1.2',
+      bullmq: '4.2.1',
     });
 
     node.addScripts({
-      'dev:workers': `node-dev ${fastifyOutput.getDevLoaderString()} ./scripts/run-workers.ts | pino-pretty -t`,
+      'dev:workers': `tsx watch --clear-screen=false ${fastifyOutput.getDevLoaderString()} ./scripts/run-workers.ts | pino-pretty -t`,
       'run:workers': 'yarn run:script ./scripts/run-workers.ts',
     });
 

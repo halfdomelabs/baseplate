@@ -26,7 +26,7 @@ SidebarLayout.Sidebar = function SidebarLayoutSidebar({
   return (
     <aside
       className={clsx(
-        'flex-shrink-0 overflow-y-auto border-r border-foreground-200 bg-white p-4 dark:border-foreground-600 dark:bg-background-800',
+        'flex-shrink-0 overflow-y-auto border-r border-foreground-200 bg-background-100 p-4 dark:border-foreground-600 dark:bg-background-600',
         {
           'w-64': width === 'sm',
           'w-72': width === 'md',
@@ -51,7 +51,12 @@ SidebarLayout.Content = function SidebarLayoutContent({
   children,
 }: SidebarLayoutContentProps): JSX.Element {
   return (
-    <div className={clsx('flex-auto overflow-y-auto', className)}>
+    <div
+      className={clsx(
+        'w-full flex-auto overflow-y-auto bg-background-50 dark:bg-background-800',
+        className
+      )}
+    >
       {children}
     </div>
   );
