@@ -98,6 +98,11 @@ const PrismaGenerator = createGeneratorWithTasks({
           '@prisma/client': '4.16.2',
         });
 
+        // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
+        node.addScripts({
+          postinstall: 'prisma generate',
+        });
+
         node.mergeExtraProperties({
           prisma: {
             seed: `tsx ${fastifyOutput.getDevLoaderString()} src/prisma/seed.ts`,
