@@ -202,43 +202,6 @@ const PrismaGenerator = createGeneratorWithTasks({
     });
 
     taskBuilder.addTask({
-      name: 'crud-service-types',
-      dependencies: {
-        typescript: typescriptProvider,
-        serviceContext: serviceContextProvider,
-      },
-      exports: {
-        prismaCrudServiceTypes: prismaCrudServiceTypesProvider,
-      },
-      run({ serviceContext, typescript }) {
-        const [typesImport, typesPath] = makeImportAndFilePath(
-          'src/types/crud-service-types.ts'
-        );
-        return {
-          getProviders: () => ({
-            prismaCrudServiceTypes: {
-              getImportMap: () => ({
-                '%prisma-crud-service-types': {
-                  path: typesImport,
-                  allowedImports: ['CreateServiceInput', 'UpdateServiceInput'],
-                },
-              }),
-            },
-          }),
-          async build(builder) {
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'types/crud-service-types.ts',
-                destination: typesPath,
-                importMappers: [serviceContext],
-              })
-            );
-          },
-        };
-      },
-    });
-
-    taskBuilder.addTask({
       name: 'output',
       exports: { prismaOutput: prismaOutputProvider },
       taskDependencies: { schemaTask },

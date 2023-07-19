@@ -23,3 +23,13 @@ export interface UpdateServiceInput<
   context: Context;
   query?: Query;
 }
+
+export interface DeleteServiceInput<
+  PrimaryKey,
+  Query,
+  Context extends ServiceContext = ServiceContext
+> {
+  id: PrimaryKey;
+  context: Context;
+  query?: Query;
+}
