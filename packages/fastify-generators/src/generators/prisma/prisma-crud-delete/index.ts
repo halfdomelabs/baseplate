@@ -18,6 +18,10 @@ import {
   getPrimaryKeyExpressions,
 } from '../_shared/crud-method/primary-key-input.js';
 import { PrismaOutputProvider, prismaOutputProvider } from '../prisma/index.js';
+import {
+  PrismaUtilsProvider,
+  prismaUtilsProvider,
+} from '../prisma-utils/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -29,6 +33,7 @@ interface PrismaDeleteMethodOptions {
   descriptor: z.infer<typeof descriptorSchema>;
   prismaOutput: PrismaOutputProvider;
   methodExpression: TypescriptCodeExpression;
+  prismaUtils: PrismaUtilsProvider;
 }
 
 export type PrismaDeleteMethodProvider = unknown;
@@ -58,6 +63,7 @@ function getMethodBlock({
   methodName,
   descriptor: { modelName },
   prismaOutput,
+  prismaUtils,
 }: PrismaDeleteMethodOptions): TypescriptCodeBlock {
   const modelType = TypescriptCodeUtils.createExpression(
     modelName,
@@ -69,19 +75,25 @@ function getMethodBlock({
 
   return TypescriptCodeUtils.formatBlock(
     `
-export async function OPERATION_NAME(ID_ARGUMENT): Promise<MODEL_TYPE> {
-return PRISMA_MODEL.delete({ where: WHERE_CLAUSE });
+export async function OPERATION_NAME({ id, query }: DeleteServiceInput<PRIMARY_KEY_TYPE, QUERY_ARGS>): Promise<MODEL_TYPE> {
+return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
 }
 `.trim(),
     {
       OPERATION_NAME: methodName,
       MODEL_TYPE: modelType,
-      ID_ARGUMENT: primaryKey.argument,
+      PRIMARY_KEY_TYPE: primaryKey.argumentType,
+      QUERY_ARGS: `Prisma.${modelName}Args`,
       WHERE_CLAUSE: primaryKey.whereClause,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
     },
     {
       headerBlocks: primaryKey.headerTypeBlock && [primaryKey.headerTypeBlock],
+      importText: [
+        "import { DeleteServiceInput } from '%prisma-utils/crudServiceTypes';",
+        "import { Prisma } from '@prisma/client';",
+      ],
+      importMappers: [prismaUtils],
     }
   );
 }
@@ -92,11 +104,12 @@ const PrismaCrudDeleteGenerator = createGeneratorWithChildren({
   dependencies: {
     prismaOutput: prismaOutputProvider,
     serviceFile: serviceFileProvider,
+    prismaUtils: prismaUtilsProvider,
   },
   exports: {
     prismaDeleteMethod: prismaDeleteMethodProvider,
   },
-  createGenerator(descriptor, { prismaOutput, serviceFile }) {
+  createGenerator(descriptor, { prismaOutput, serviceFile, prismaUtils }) {
     const { name, modelName } = descriptor;
 
     const methodName = `${name}${modelName}`;
@@ -111,6 +124,7 @@ const PrismaCrudDeleteGenerator = createGeneratorWithChildren({
       descriptor,
       prismaOutput,
       methodExpression,
+      prismaUtils,
     };
 
     serviceFile.registerMethod(

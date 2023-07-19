@@ -61,8 +61,7 @@ function getMethodDefinition(
 }
 
 function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
-  const { name, modelName, prismaOutput, serviceContext, prismaUtils } =
-    options;
+  const { name, modelName, prismaOutput, prismaUtils } = options;
 
   const createInputTypeName = `${modelName}CreateData`;
 
@@ -81,13 +80,14 @@ function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
       CREATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
         data: createExpression,
+        '...': 'query',
       }),
     }
   );
 
   return TypescriptCodeUtils.formatBlock(
     `
-export async function METHOD_NAME(data: CREATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
+export async function METHOD_NAME({ data, query, EXTRA_ARGS }: CreateServiceInput<CREATE_INPUT_TYPE_NAME, QUERY_ARGS>): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
   return OPERATION;
@@ -97,14 +97,18 @@ export async function METHOD_NAME(data: CREATE_INPUT_TYPE_NAME, CONTEXT): Promis
       METHOD_NAME: name,
       CREATE_INPUT_TYPE_NAME: createInputTypeName,
       MODEL_TYPE: modelType,
-      CONTEXT: contextRequired
-        ? serviceContext.getServiceContextType().prepend(`context: `)
-        : '',
+      EXTRA_ARGS: contextRequired ? 'context' : '',
+      QUERY_ARGS: `Prisma.${modelName}Args`,
       FUNCTION_BODY: functionBody,
       OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
     },
     {
       headerBlocks: [typeHeaderBlock],
+      importText: [
+        "import { CreateServiceInput } from '%prisma-utils/crudServiceTypes';",
+        "import { Prisma } from '@prisma/client';",
+      ],
+      importMappers: [prismaUtils],
     }
   );
 }

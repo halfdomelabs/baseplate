@@ -69,8 +69,7 @@ function getMethodDefinition(
 }
 
 function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
-  const { name, modelName, prismaOutput, serviceContext, prismaUtils } =
-    options;
+  const { name, modelName, prismaOutput, prismaUtils } = options;
 
   const updateInputTypeName = `${modelName}UpdateData`;
 
@@ -93,13 +92,14 @@ function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
       UPDATE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
         where: primaryKey.whereClause,
         data: updateExpression,
+        '...': 'query',
       }),
     }
   );
 
   return TypescriptCodeUtils.formatBlock(
     `
-export async function METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME, CONTEXT): Promise<MODEL_TYPE> {
+export async function METHOD_NAME({ id, data, query, EXTRA_ARGS }: UpdateServiceInput<PRIMARY_KEY_TYPE, UPDATE_INPUT_TYPE_NAME, QUERY_ARGS>): Promise<MODEL_TYPE> {
   FUNCTION_BODY
 
   return OPERATION;
@@ -109,18 +109,22 @@ export async function METHOD_NAME(ID_ARGUMENT, data: UPDATE_INPUT_TYPE_NAME, CON
       METHOD_NAME: name,
       UPDATE_INPUT_TYPE_NAME: updateInputTypeName,
       MODEL_TYPE: modelType,
-      ID_ARGUMENT: primaryKey.argument,
+      PRIMARY_KEY_TYPE: primaryKey.argumentType,
+      QUERY_ARGS: `Prisma.${modelName}Args`,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
       FUNCTION_BODY: functionBody,
       OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
-      CONTEXT: contextRequired
-        ? serviceContext.getServiceContextType().prepend(`context: `)
-        : '',
+      EXTRA_ARGS: contextRequired ? 'context' : '',
     },
     {
       headerBlocks: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
         notEmpty
       ),
+      importText: [
+        "import { UpdateServiceInput } from '%prisma-utils/crudServiceTypes';",
+        "import { Prisma } from '@prisma/client';",
+      ],
+      importMappers: [prismaUtils],
     }
   );
 }
