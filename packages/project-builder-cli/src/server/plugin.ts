@@ -3,6 +3,7 @@ import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { FastifyInstance } from 'fastify';
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
+import { getGeneratorEngine } from '@src/sync/index.js';
 import { HttpError, NotFoundError } from '@src/utils/http-errors.js';
 import { getPackageVersion } from '@src/utils/version.js';
 import { FilePayload, ProjectBuilderApi } from './api.js';
@@ -309,4 +310,9 @@ export async function baseplatePlugin(
   fastify.addHook('onClose', () => {
     apis.map((api) => api.close());
   });
+
+  // pre-warm up generator engine so syncing is faster on first request
+  setTimeout(() => {
+    getGeneratorEngine().catch((err) => logError(err));
+  }, 500);
 }
