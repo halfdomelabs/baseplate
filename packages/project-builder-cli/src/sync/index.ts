@@ -19,30 +19,32 @@ const GENERATOR_MODULES = [
   '@halfdomelabs/react-generators',
 ];
 
-let cachedEngine: GeneratorEngine;
+let cachedEnginePromise: Promise<GeneratorEngine> | undefined;
 
-async function getGeneratorEngine(): Promise<GeneratorEngine> {
-  if (!cachedEngine) {
-    const resolvedGeneratorPaths = await Promise.all(
-      GENERATOR_MODULES.map(
-        async (moduleName): Promise<[string, string]> => [
-          moduleName,
-          (await packageDirectory({
-            cwd: resolveModule(moduleName),
-          })) || '',
-        ]
-      )
-    );
-    const generators = await Promise.all(
-      resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
-        loadGeneratorsForModule(moduleName, modulePath)
-      )
-    );
-    const generatorMap = R.mergeAll(generators);
+export async function getGeneratorEngine(): Promise<GeneratorEngine> {
+  if (!cachedEnginePromise) {
+    cachedEnginePromise = (async () => {
+      const resolvedGeneratorPaths = await Promise.all(
+        GENERATOR_MODULES.map(
+          async (moduleName): Promise<[string, string]> => [
+            moduleName,
+            (await packageDirectory({
+              cwd: resolveModule(moduleName),
+            })) || '',
+          ]
+        )
+      );
+      const generators = await Promise.all(
+        resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
+          loadGeneratorsForModule(moduleName, modulePath)
+        )
+      );
+      const generatorMap = R.mergeAll(generators);
 
-    cachedEngine = new GeneratorEngine(generatorMap);
+      return new GeneratorEngine(generatorMap);
+    })();
   }
-  return cachedEngine;
+  return cachedEnginePromise;
 }
 
 interface BuildResultFile {
