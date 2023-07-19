@@ -1,5 +1,11 @@
 # @halfdomelabs/fastify-generators
 
+## 0.5.1
+
+### Patch Changes
+
+- 7fdeeb5: Fix up a lint error with latest generation
+
 ## 0.5.0
 
 ### Minor Changes
