@@ -54,11 +54,20 @@ function getMethodDefinition(
     name,
     expression: serviceMethodExpression,
     arguments: [
-      idArgument,
       {
-        name: 'data',
         type: 'nested',
-        nestedType: dataType,
+        name: 'input',
+        nestedType: {
+          name: 'UpdateServiceInput',
+          fields: [
+            idArgument,
+            {
+              name: 'data',
+              type: 'nested',
+              nestedType: dataType,
+            },
+          ],
+        },
       },
     ],
     requiresContext: contextRequired,

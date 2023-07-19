@@ -48,9 +48,18 @@ function getMethodDefinition(
     expression: serviceMethodExpression,
     arguments: [
       {
-        name: 'data',
         type: 'nested',
-        nestedType: dataType,
+        name: 'input',
+        nestedType: {
+          name: 'CreateServiceInput',
+          fields: [
+            {
+              name: 'data',
+              type: 'nested',
+              nestedType: dataType,
+            },
+          ],
+        },
       },
     ],
     requiresContext: hasContext,

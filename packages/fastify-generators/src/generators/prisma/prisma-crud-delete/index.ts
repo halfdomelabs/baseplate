@@ -52,7 +52,16 @@ function getMethodDefinition({
   return {
     name: methodName,
     expression: methodExpression,
-    arguments: [idArgument],
+    arguments: [
+      {
+        type: 'nested',
+        name: 'input',
+        nestedType: {
+          name: 'DeleteServiceInput',
+          fields: [idArgument],
+        },
+      },
+    ],
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
       prismaOutput.getServiceEnum(enumName)
     ),
