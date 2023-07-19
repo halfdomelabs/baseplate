@@ -2,6 +2,7 @@ import { createRequire } from 'module';
 import {
   copyTypescriptFileAction,
   ImportMapper,
+  makeImportAndFilePath,
   nodeProvider,
   projectProvider,
   TypescriptCodeExpression,
@@ -17,6 +18,7 @@ import { z } from 'zod';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
 import {
   PrismaOutputEnum,
   PrismaOutputModel,
@@ -55,6 +57,13 @@ export interface PrismaOutputProvider extends ImportMapper {
 
 export const prismaOutputProvider =
   createProviderType<PrismaOutputProvider>('prisma-output');
+
+export type PrismaCrudServiceTypesProvider = ImportMapper;
+
+export const prismaCrudServiceTypesProvider =
+  createProviderType<PrismaCrudServiceTypesProvider>(
+    'prisma-crud-service-types'
+  );
 
 const internalRequire = createRequire(import.meta.url);
 

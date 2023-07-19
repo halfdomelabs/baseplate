@@ -9,11 +9,7 @@ import {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
 } from '@src/providers/prisma/prisma-data-transformable.js';
-import { getScalarFieldTypeInfo } from '@src/types/fieldTypes.js';
-import {
-  PrismaOutputRelationField,
-  PrismaOutputScalarField,
-} from '@src/types/prismaOutput.js';
+import { PrismaOutputRelationField } from '@src/types/prismaOutput.js';
 import { ServiceOutputDto } from '@src/types/serviceOutput.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
@@ -25,7 +21,7 @@ export interface PrismaDataMethodOptions {
   modelName: string;
   prismaFieldNames: string[];
   prismaOutput: PrismaOutputProvider;
-  operationName: string;
+  operationName: 'create' | 'update';
   operationType: 'create' | 'upsert' | 'update';
   whereUniqueExpression: string | null;
   // optionally check parent ID matches existing item
@@ -133,14 +129,18 @@ export function getDataInputTypeBlock(
     (transformer) => transformer.inputFields
   );
 
+  let prismaDataInput = `Prisma.${modelName}UncheckedCreateInput`;
+  prismaDataInput =
+    operationName === 'create'
+      ? prismaDataInput
+      : `Partial<${prismaDataInput}>`;
+
   if (!transformerInputs.length) {
     return TypescriptCodeUtils.formatBlock(
-      `type DATA_INPUT_TYPE_NAME = Pick<Prisma.PRISMA_DATA_INPUT, PRISMA_FIELDS>;`,
+      `type DATA_INPUT_TYPE_NAME = Pick<PRISMA_DATA_INPUT, PRISMA_FIELDS>;`,
       {
         DATA_INPUT_TYPE_NAME: dataInputTypeName,
-        PRISMA_DATA_INPUT: `${modelName}Unchecked${upperCaseFirst(
-          operationName
-        )}Input`,
+        PRISMA_DATA_INPUT: prismaDataInput,
         PRISMA_FIELDS: prismaFieldSelection,
       },
       { importText: [`import {Prisma} from '@prisma/client'`] }
@@ -155,14 +155,12 @@ export function getDataInputTypeBlock(
   );
 
   return TypescriptCodeUtils.formatBlock(
-    `interface DATA_INPUT_TYPE_NAME extends Pick<Prisma.PRISMA_DATA_INPUT, PRISMA_FIELDS> {
+    `interface DATA_INPUT_TYPE_NAME extends Pick<PRISMA_DATA_INPUT, PRISMA_FIELDS> {
   CUSTOM_FIELDS
 }`,
     {
       DATA_INPUT_TYPE_NAME: dataInputTypeName,
-      PRISMA_DATA_INPUT: `${modelName}Unchecked${upperCaseFirst(
-        operationName
-      )}Input`,
+      PRISMA_DATA_INPUT: prismaDataInput,
       PRISMA_FIELDS: prismaFieldSelection,
       CUSTOM_FIELDS:
         TypescriptCodeUtils.mergeBlocksAsInterfaceContent(customFields),
@@ -261,19 +259,7 @@ export function getDataMethodDataExpressions({
               );
             }
             const localField = relationScalarFields[idx];
-            // slightly awkward cast since update data might not be just a string
-            const localFieldScalarType = getScalarFieldTypeInfo(
-              (
-                outputModel.fields.find(
-                  (f) => f.name === localField
-                ) as PrismaOutputScalarField
-              ).scalarType
-            );
-            const castSuffix =
-              operationType === 'update'
-                ? ` as ${localFieldScalarType.typescriptType}`
-                : '';
-            return [idField, `${localField}${castSuffix}`];
+            return [idField, localField];
           })
         )
       );

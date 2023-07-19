@@ -25,7 +25,11 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
     }
     // save config when syncing to ensure any migrations/cli versions are set
     setConfig(config);
-    startSync(projectId).catch((err) => toast.error(formatError(err)));
+    // TODO: this is a hack to ensure we don't attempt to read from the file while we write to it
+
+    setTimeout(() => {
+      startSync(projectId).catch((err) => toast.error(formatError(err)));
+    }, 300);
     setIsOpen(true);
   };
 

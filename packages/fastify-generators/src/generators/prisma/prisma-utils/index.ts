@@ -43,6 +43,10 @@ const UTIL_CONFIG_MAP: Record<string, UtilConfig> = {
     file: 'prisma-relations.ts',
     exports: ['createPrismaDisconnectOrConnectData'],
   },
+  crudServiceTypes: {
+    file: 'crud-service-types.ts',
+    exports: ['CreateServiceInput', 'UpdateServiceInput', 'DeleteServiceInput'],
+  },
 };
 
 export type PrismaUtilsProvider = ImportMapper;

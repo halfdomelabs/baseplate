@@ -64,8 +64,33 @@ const createMainTask = createTaskConfigBuilder(
         Record<string, TypescriptCodeExpression>
       >({});
 
+      // unwrap input object arguments
+      const unwrappedArguments = serviceOutput.arguments
+        .map((arg) => {
+          if (
+            arg.name === 'input' &&
+            arg.type === 'nested' &&
+            !arg.isPrismaType
+          ) {
+            return arg.nestedType.fields;
+          }
+          return [arg];
+        })
+        .flat();
+
+      const inputArgument = serviceOutput.arguments[0];
+
+      if (
+        !inputArgument ||
+        inputArgument.name !== 'input' ||
+        inputArgument.type !== 'nested' ||
+        inputArgument.isPrismaType
+      ) {
+        throw new Error('Expected input argument to be a nested object');
+      }
+
       const inputFields = writePothosInputFieldsFromDtoFields(
-        serviceOutput.arguments,
+        inputArgument.nestedType.fields,
         {
           typeReferences,
           schemaBuilder: 'builder',
@@ -109,10 +134,12 @@ const createMainTask = createTaskConfigBuilder(
             }
           );
 
-          const argNames = serviceOutput.arguments.map((arg) => arg.name);
+          const argNames = inputArgument.nestedType.fields.map(
+            (arg) => arg.name
+          );
 
           const resolveFunction = TypescriptCodeUtils.formatExpression(
-            `async (root, { input: INPUT_PARTS }, CONTEXT) => {
+            `async (root, { input: INPUT_PARTS }, context, info) => {
               const RETURN_FIELD_NAME = await SERVICE_CALL(SERVICE_ARGUMENTS);
               return { RETURN_FIELD_NAME };
             }`,
@@ -121,12 +148,26 @@ const createMainTask = createTaskConfigBuilder(
               CONTEXT: serviceOutput.requiresContext ? 'context' : '',
               RETURN_FIELD_NAME: returnFieldName,
               SERVICE_CALL: serviceOutput.expression,
-              SERVICE_ARGUMENTS: TypescriptCodeUtils.mergeExpressions(
-                serviceOutput.arguments.map((arg) =>
-                  writeValueFromPothosArg(arg, tsUtils)
+              SERVICE_ARGUMENTS: TypescriptCodeUtils.mergeExpressionsAsObject({
+                ...Object.fromEntries(
+                  unwrappedArguments.map((arg) => [
+                    arg.name,
+                    writeValueFromPothosArg(arg, tsUtils),
+                  ])
                 ),
-                ', '
-              ).append(serviceOutput.requiresContext ? ', context' : ''),
+                context: 'context',
+                query: TypescriptCodeUtils.formatExpression(
+                  'queryFromInfo({ context, info, path: PATH })',
+                  {
+                    PATH: `['${returnFieldName}']`,
+                  },
+                  {
+                    importText: [
+                      `import { queryFromInfo } from '@pothos/plugin-prisma';`,
+                    ],
+                  }
+                ),
+              }),
             }
           );
 
