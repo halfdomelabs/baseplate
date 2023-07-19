@@ -3,7 +3,12 @@
 import { performance } from 'perf_hooks';
 import { Plugin, handleStreamOrSingleExecutionResult } from '@envelop/core';
 import type { OnExecuteDoneHookResultOnNextHookPayload } from '@envelop/types';
-import { DocumentNode, Kind, OperationDefinitionNode } from 'graphql';
+import {
+  DocumentNode,
+  GraphQLError,
+  Kind,
+  OperationDefinitionNode,
+} from 'graphql';
 import { logger } from '%logger-service';
 
 function getOperationType(document: DocumentNode): string | undefined {
@@ -23,23 +28,29 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
     { args, result }: OnExecuteDoneHookResultOnNextHookPayload<unknown>,
     startTime?: number
   ): void {
-    const operationType = getOperationType(args.document);
+    const typedArgs = args as {
+      document: DocumentNode;
+      operationName: string;
+    };
+    const operationType = getOperationType(typedArgs.document);
     const endTime = performance.now();
 
     const errors = result.errors || [];
 
-    errors.forEach((error) => logger.error(error.originalError || error));
+    errors.forEach((error: GraphQLError) =>
+      logger.error(error.originalError || error)
+    );
 
     if (operationType !== 'subscription' || logSubscriptionExecution) {
       logger.info(
         {
           operationType,
-          operationName: args.operationName,
+          operationName: typedArgs.operationName,
           executionTime: startTime && endTime - startTime,
           success: !errors?.length,
         },
         `executed graphql ${operationType || 'query'} (${
-          args.operationName || 'Anonymous Operation'
+          typedArgs.operationName || 'Anonymous Operation'
         })`
       );
     }
@@ -57,7 +68,7 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
     onValidate() {
       return ({ result, valid }) => {
         if (!valid) {
-          result.forEach((error) => logger.error(error.message));
+          result.forEach((error: Error) => logger.error(error.message));
         }
       };
     },
@@ -71,7 +82,7 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
         },
       };
     },
-    onSubscribe({ args }) {
+    onSubscribe({ args }: { args: { operationName?: string } }) {
       logger.info(
         { operationName: args.operationName },
         `graphql subscription started (${
