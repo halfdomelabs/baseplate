@@ -40,7 +40,7 @@ export async function createTestDatabase(databaseUrl: string): Promise<string> {
 
   const testDatabaseUrl = replaceDatabase(databaseUrl, TEST_DATABASE_NAME);
 
-  execSync('yarn prisma migrate deploy', {
+  execSync('pnpm prisma migrate deploy', {
     cwd: path.resolve(__dirname, '../../../'),
     env: {
       ...process.env,

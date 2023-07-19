@@ -281,7 +281,7 @@ export function ProjectConfigGate({
           <>
             This project requires a newer version of the client (
             {result.config.cliVersion}). Please upgrade your client by running{' '}
-            <strong>yarn install</strong>.
+            <strong>pnpm install</strong>.
           </>
         }
       />

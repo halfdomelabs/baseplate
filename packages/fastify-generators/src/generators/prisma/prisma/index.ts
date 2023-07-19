@@ -167,7 +167,7 @@ const PrismaGenerator = createGeneratorWithTasks({
               `${formattedSchemaText.trimEnd()}\n`
             );
 
-            builder.addPostWriteCommand('yarn prisma generate', 'generation', {
+            builder.addPostWriteCommand('pnpm prisma generate', 'generation', {
               onlyIfChanged: ['prisma/schema.prisma'],
             });
 
