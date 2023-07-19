@@ -209,6 +209,7 @@ const NodeGenerator = createGeneratorWithChildren({
           volta: {
             node: descriptor.nodeVersion,
           },
+          packageManager: `pnpm@${descriptor.pnpmVersion}`,
         };
 
         await builder.apply(
