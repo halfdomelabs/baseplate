@@ -338,7 +338,7 @@ const NexusGenerator = createGeneratorWithTasks({
               })
             );
 
-            // builder.addPostWriteCommand('yarn nexusgen', {
+            // builder.addPostWriteCommand('pnpm nexusgen', {
             //   onlyIfChanged: [
             //     ...schemaFiles,
             //     'src/plugins/graphql/index.ts',

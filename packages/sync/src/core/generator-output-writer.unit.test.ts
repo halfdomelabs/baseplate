@@ -211,7 +211,7 @@ describe('writeGeneratorOutput', () => {
             options: { workingDirectory: '/folder' },
             commandType: 'generation',
           },
-          { command: 'yarn install', commandType: 'dependencies' },
+          { command: 'pnpm install', commandType: 'dependencies' },
         ],
       },
       '/root',
@@ -220,7 +220,7 @@ describe('writeGeneratorOutput', () => {
     );
     expect(vol.toJSON()).toEqual({});
 
-    expect(mockedExecuteCommand.mock.calls[0][0]).toBe('yarn install');
+    expect(mockedExecuteCommand.mock.calls[0][0]).toBe('pnpm install');
     expect(mockedExecuteCommand.mock.calls[1][0]).toBe('custom');
     expect(mockedExecuteCommand.mock.calls[1][1]).toMatchObject({
       cwd: '/root/folder',
@@ -245,7 +245,7 @@ describe('writeGeneratorOutput', () => {
         },
         postWriteCommands: [
           {
-            command: 'yarn install',
+            command: 'pnpm install',
             options: { onlyIfChanged: ['file.txt'] },
             commandType: 'dependencies',
           },
@@ -281,7 +281,7 @@ describe('writeGeneratorOutput', () => {
         },
         postWriteCommands: [
           {
-            command: 'yarn install',
+            command: 'pnpm install',
             options: { onlyIfChanged: ['file.txt'] },
             commandType: 'dependencies',
           },

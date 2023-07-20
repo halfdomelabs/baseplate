@@ -88,7 +88,7 @@ const PothosPrismaGenerator = createGeneratorWithTasks({
         prismaSchema.addPrismaGenerator(
           createPrismaSchemaGeneratorBlock({
             name: 'pothos',
-            provider: 'yarn prisma-pothos-types',
+            provider: 'pnpm prisma-pothos-types',
           })
         );
         return {};

@@ -6,14 +6,14 @@ This project was bootstrapped with Baseplate.
 
 In the project directory, you can run:
 
-### `yarn dev`
+### `pnpm dev`
 
 Runs the app in the development mode.
 
-### `yarn build`
+### `pnpm build`
 
 Builds the app for production to the `build` folder.
 
-### `yarn serve`
+### `pnpm serve`
 
 Previews the production build.

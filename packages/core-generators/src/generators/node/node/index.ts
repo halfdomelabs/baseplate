@@ -20,7 +20,7 @@ const descriptorSchema = z.object({
   private: z.boolean().default(true),
   path: z.string().default(''),
   nodeVersion: z.string().default('18.16.0'),
-  yarnVersion: z.string().default('1.22.19'),
+  pnpmVersion: z.string().default('8.6.9'),
 });
 
 export interface NodeProvider {
@@ -102,7 +102,10 @@ const NodeGenerator = createGeneratorWithChildren({
   createGenerator: (descriptor) => {
     const dependencies: Record<string, NodeDependencyEntry> = {};
     const extraProperties = createNonOverwriteableMap({}, { name: 'node' });
-    const scripts = createNonOverwriteableMap({}, { name: 'node-scripts' });
+    const scripts = createNonOverwriteableMap(
+      { preinstall: 'npx only-allow pnpm' },
+      { name: 'node-scripts' }
+    );
 
     function mergeDependency(
       name: string,
@@ -198,14 +201,13 @@ const NodeGenerator = createGeneratorWithChildren({
           devDependencies: extractDependencies('dev'),
           engines: {
             node: `^${descriptor.nodeVersion}`,
-            // use major/minor version of Yarn
-            yarn: `^${semver.major(descriptor.yarnVersion)}.${semver.minor(
-              descriptor.yarnVersion
+            // use major/minor version of PNPM
+            pnpm: `^${semver.major(descriptor.pnpmVersion)}.${semver.minor(
+              descriptor.pnpmVersion
             )}.0`,
           },
           volta: {
             node: descriptor.nodeVersion,
-            yarn: descriptor.yarnVersion,
           },
         };
 
@@ -217,14 +219,16 @@ const NodeGenerator = createGeneratorWithChildren({
           })
         );
 
-        builder.addPostWriteCommand(
-          'yarn install --non-interactive',
-          'dependencies',
-          {
-            workingDirectory: '/',
-            onlyIfChanged: ['package.json'],
-          }
+        // write node version so .pnpm can use it
+        builder.writeFile(
+          '.npmrc',
+          `use-node-version=${descriptor.nodeVersion}`
         );
+
+        builder.addPostWriteCommand('pnpm install', 'dependencies', {
+          workingDirectory: '/',
+          onlyIfChanged: ['package.json'],
+        });
 
         const allDependencies = R.mergeRight(
           packageJson.dependencies,
@@ -232,7 +236,7 @@ const NodeGenerator = createGeneratorWithChildren({
         );
         if (Object.keys(allDependencies).includes('prettier')) {
           builder.addPostWriteCommand(
-            'yarn prettier --write package.json',
+            'pnpm prettier --write package.json',
             'dependencies',
             {
               workingDirectory: '/',
