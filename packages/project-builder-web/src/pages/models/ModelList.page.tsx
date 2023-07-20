@@ -34,11 +34,6 @@ function ModelListPage(): JSX.Element {
         Choose a model to edit from the sidebar or{' '}
         <Link to="new">create a new one</Link>.
       </p>
-      <p>
-        <Link to="/models/enums">
-          <Button variant="secondary">Manage Enums</Button>
-        </Link>
-      </p>
     </div>
   );
 }

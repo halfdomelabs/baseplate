@@ -18,6 +18,7 @@ export default {
         foreground: colors.slate,
         background: colors.slate,
         error: colors.red,
+        ring: '215 20.2% 65.1%',
       },
     },
   },

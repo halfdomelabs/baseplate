@@ -19,6 +19,7 @@ export * from './NavigationLink/NavigationLink.js';
 export * from './SelectInput/SelectInput.js';
 export * from './SidebarLayout/SidebarLayout.js';
 export * from './Table/Table.js';
-export * from './ToggleInput/ToggleInput.js';
 export * from './Tabs/Tabs.js';
+export * from './ToggleInput/ToggleInput.js';
+export * from './ToggleTabs/ToggleTabs.js';
 export * from './TextInput/TextInput.js';
