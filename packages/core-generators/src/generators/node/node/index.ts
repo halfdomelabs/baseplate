@@ -225,10 +225,15 @@ const NodeGenerator = createGeneratorWithChildren({
           `use-node-version=${descriptor.nodeVersion}`
         );
 
-        builder.addPostWriteCommand('pnpm install', 'dependencies', {
-          workingDirectory: '/',
-          onlyIfChanged: ['package.json'],
-        });
+        // we have to avoid the prompt otherwise generation will hang
+        // https://github.com/pnpm/pnpm/issues/6778
+        builder.addPostWriteCommand(
+          'pnpm install --config.confirmModulesPurge=false',
+          'dependencies',
+          {
+            workingDirectory: '/',
+          }
+        );
 
         const allDependencies = R.mergeRight(
           packageJson.dependencies,
