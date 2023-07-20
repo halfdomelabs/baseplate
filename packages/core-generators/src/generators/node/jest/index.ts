@@ -56,6 +56,7 @@ const JestGenerator = createGeneratorWithChildren({
     node.addDevPackages({
       jest: '^28.1.0',
       'ts-jest': '^28.0.2',
+      'ts-node': '10.9.1',
       '@types/jest': '^27.5.1',
     });
 
