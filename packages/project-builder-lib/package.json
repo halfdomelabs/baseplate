@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-lib",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Library for Project Builder using Baseplate generators",
   "main": "dist/index.js",
   "files": [

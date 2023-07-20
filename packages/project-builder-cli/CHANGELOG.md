@@ -1,5 +1,23 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.4.2
+
+### Patch Changes
+
+- 1c9e74b: Pre-warm up generator loading so it runs slightly faster on first-run
+- Updated dependencies [4673336]
+- Updated dependencies [154eaa9]
+- Updated dependencies [5a4673f]
+- Updated dependencies [08a2746]
+- Updated dependencies [66ff670]
+- Updated dependencies [4673336]
+  - @halfdomelabs/project-builder-web@0.5.0
+  - @halfdomelabs/project-builder-lib@0.5.0
+  - @halfdomelabs/fastify-generators@0.6.0
+  - @halfdomelabs/react-generators@0.5.0
+  - @halfdomelabs/core-generators@0.6.0
+  - @halfdomelabs/sync@0.5.0
+
 ## 0.4.1
 
 ### Patch Changes
