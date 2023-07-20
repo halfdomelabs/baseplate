@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.3.1
+
+### Patch Changes
+
+- 154eaa9: Add new tabbed interface between models/enums in UI
+
 ## 0.3.0
 
 ### Minor Changes

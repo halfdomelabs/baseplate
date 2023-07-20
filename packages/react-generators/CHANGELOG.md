@@ -1,5 +1,18 @@
 # @halfdomelabs/react-generators
 
+## 0.5.0
+
+### Minor Changes
+
+- 08a2746: Switch generation from yarn v1 to pnpm for faster build times (run pnpm import - https://medium.com/frontendweb/how-to-manage-multiple-nodejs-versions-with-pnpm-8bcce90abedb)
+
+### Patch Changes
+
+- Updated dependencies [08a2746]
+- Updated dependencies [66ff670]
+  - @halfdomelabs/core-generators@0.6.0
+  - @halfdomelabs/sync@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

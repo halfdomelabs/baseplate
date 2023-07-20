@@ -1,5 +1,17 @@
 # @halfdomelabs/core-generators
 
+## 0.6.0
+
+### Minor Changes
+
+- 08a2746: Switch generation from yarn v1 to pnpm for faster build times (run pnpm import - https://medium.com/frontendweb/how-to-manage-multiple-nodejs-versions-with-pnpm-8bcce90abedb)
+
+### Patch Changes
+
+- 66ff670: Add ts-node back into dependencies to make ts-jest work
+- Updated dependencies [08a2746]
+  - @halfdomelabs/sync@0.5.0
+
 ## 0.5.0
 
 ### Minor Changes

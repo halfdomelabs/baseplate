@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.5.0
+
+### Minor Changes
+
+- 5a4673f: Make auth0Id column unique instead of email to allow for multiple users with the same email
+
 ## 0.4.0
 
 ### Minor Changes

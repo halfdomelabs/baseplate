@@ -1,5 +1,20 @@
 # @halfdomelabs/project-builder-web
 
+## 0.5.0
+
+### Minor Changes
+
+- 08a2746: Switch generation from yarn v1 to pnpm for faster build times (run pnpm import - https://medium.com/frontendweb/how-to-manage-multiple-nodejs-versions-with-pnpm-8bcce90abedb)
+
+### Patch Changes
+
+- 4673336: Fix race condition with saving file and syncing
+- 154eaa9: Add new tabbed interface between models/enums in UI
+- Updated dependencies [154eaa9]
+- Updated dependencies [5a4673f]
+  - @halfdomelabs/ui-components@0.3.1
+  - @halfdomelabs/project-builder-lib@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes
