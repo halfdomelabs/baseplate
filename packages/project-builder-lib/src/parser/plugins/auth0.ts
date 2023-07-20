@@ -31,13 +31,14 @@ export const Auth0Plugin: ParserPlugin = {
         name: 'email',
         isLocked: true,
         type: 'string',
-        isUnique: true,
+        isUnique: false,
       },
       {
         name: 'auth0Id',
         isLocked: true,
         type: 'string',
         isOptional: true,
+        isUnique: true,
       },
     ];
 
