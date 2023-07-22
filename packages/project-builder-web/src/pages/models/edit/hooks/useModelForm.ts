@@ -57,6 +57,7 @@ export function useModelForm({
   const toast = useToast();
   const navigate = useNavigate();
   const model = parsedProject.getModels().find((m) => m.uid === id);
+  console.log('model in useModelForm', model);
 
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);

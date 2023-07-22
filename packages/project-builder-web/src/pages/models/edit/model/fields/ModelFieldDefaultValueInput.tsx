@@ -1,11 +1,22 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { Button, Dropdown, TextInput } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  ComboboxInput,
+  Dropdown,
+  TextInput,
+} from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
 import { HiOutlineX } from 'react-icons/hi';
 
 interface ModelFieldDefaultValueInputProps {
   control: Control<ModelConfig>;
   idx: number;
+}
+
+interface EnumValue {
+  uid: string;
+  name: string;
+  friendlyName: string;
 }
 
 export function ModelFieldDefaultValueInput({
@@ -30,6 +41,21 @@ export function ModelFieldDefaultValueInput({
         control={control}
         placeholder="NULL"
         name={`model.fields.${idx}.options.default`}
+      />
+    );
+  }
+  if (type === 'enum' && optionsValue?.enumValues) {
+    return (
+      <ComboboxInput.Controller
+        getOptionLabel={(option) => option}
+        getOptionValue={(option) => option}
+        control={control}
+        name={`model.fields.${idx}.options.default`}
+        label=""
+        description=""
+        options={(optionsValue.enumValues as EnumValue[]).map(
+          (value) => value.friendlyName
+        )}
       />
     );
   }

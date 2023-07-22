@@ -160,13 +160,13 @@ export function ModelFieldsForm({
         <ButtonGroup>
           <ButtonGroup.Button
             variant="secondary"
-            onClick={() =>
+            onClick={() => {
               appendField({
                 uid: randomUid(),
                 name: '',
                 type: 'string',
-              })
-            }
+              });
+            }}
           >
             Add Field
           </ButtonGroup.Button>

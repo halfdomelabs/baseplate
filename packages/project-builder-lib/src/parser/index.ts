@@ -140,7 +140,6 @@ function findMissingReferences(
     return missingKeys.flatMap((key) => referencesByKey[key]);
   });
 }
-
 export class ParsedProjectConfig {
   protected models: ParsedModel[];
 
@@ -158,8 +157,28 @@ export class ParsedProjectConfig {
   constructor(public projectConfig: ProjectConfig) {
     validateProjectConfig(projectConfig);
     const copiedProjectConfig = R.clone(projectConfig);
-    this.models = copiedProjectConfig.models || [];
+    this.models = (copiedProjectConfig.models || []).map((model) => {
+      const modelFields = model.model.fields.map((field) => {
+        const copiedField = R.clone(field);
+        if (copiedField.options && copiedField.type === 'enum') {
+          const enumType = (copiedProjectConfig.enums || []).find(
+            (e) => e.name === field.options?.enumType
+          );
+          copiedField.options.enumValues = enumType?.values;
+        }
+        return copiedField;
+      });
 
+      const copiedModel = {
+        ...model,
+        fields: modelFields,
+        model: {
+          ...model.model,
+          fields: modelFields,
+        },
+      };
+      return copiedModel;
+    });
     // run plugins
     PARSER_PLUGINS.forEach((plugin) =>
       plugin.run(projectConfig, {

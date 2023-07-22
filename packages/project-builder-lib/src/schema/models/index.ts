@@ -30,6 +30,15 @@ export const modelScalarFieldSchema = z
         defaultToNow: z.boolean().optional(),
         // enum options
         enumType: z.string().optional(),
+        enumValues: z
+          .array(
+            z.object({
+              friendlyName: z.string(),
+              name: z.string(),
+              uid: z.string(),
+            })
+          )
+          .optional(),
       })
       .optional(),
   })
@@ -40,6 +49,7 @@ export const modelScalarFieldSchema = z
         options: {
           ...value.options,
           enumType: undefined,
+          enumValues: [],
         },
       };
     }
