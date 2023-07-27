@@ -1,5 +1,14 @@
 # @halfdomelabs/react-generators
 
+## 0.5.1
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+- Updated dependencies [c4c38ec]
+  - @halfdomelabs/core-generators@0.6.1
+  - @halfdomelabs/sync@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes

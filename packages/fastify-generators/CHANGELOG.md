@@ -1,5 +1,15 @@
 # @halfdomelabs/fastify-generators
 
+## 0.6.1
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+- 29a2712: Fix service function generation to account non-id primary keys
+- Updated dependencies [c4c38ec]
+  - @halfdomelabs/core-generators@0.6.1
+  - @halfdomelabs/sync@0.5.1
+
 ## 0.6.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.4.1
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+
 ## 0.4.0
 
 ### Minor Changes

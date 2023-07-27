@@ -1,5 +1,19 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.4.3
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+- Updated dependencies [c4c38ec]
+- Updated dependencies [29a2712]
+  - @halfdomelabs/project-builder-lib@0.5.1
+  - @halfdomelabs/project-builder-web@0.5.1
+  - @halfdomelabs/fastify-generators@0.6.1
+  - @halfdomelabs/react-generators@0.5.1
+  - @halfdomelabs/core-generators@0.6.1
+  - @halfdomelabs/sync@0.5.1
+
 ## 0.4.2
 
 ### Patch Changes

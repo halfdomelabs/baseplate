@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-web
 
+## 0.5.1
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+- Updated dependencies [c4c38ec]
+  - @halfdomelabs/project-builder-lib@0.5.1
+  - @halfdomelabs/ui-components@0.3.2
+
 ## 0.5.0
 
 ### Minor Changes

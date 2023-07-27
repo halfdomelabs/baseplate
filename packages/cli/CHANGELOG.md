@@ -1,5 +1,17 @@
 # @halfdomelabs/cli
 
+## 0.5.3
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+- Updated dependencies [c4c38ec]
+- Updated dependencies [29a2712]
+  - @halfdomelabs/fastify-generators@0.6.1
+  - @halfdomelabs/react-generators@0.5.1
+  - @halfdomelabs/core-generators@0.6.1
+  - @halfdomelabs/sync@0.5.1
+
 ## 0.5.2
 
 ### Patch Changes

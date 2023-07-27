@@ -1,5 +1,13 @@
 # @halfdomelabs/core-generators
 
+## 0.6.1
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+- Updated dependencies [c4c38ec]
+  - @halfdomelabs/sync@0.5.1
+
 ## 0.6.0
 
 ### Minor Changes

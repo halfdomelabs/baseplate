@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.5.1
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+
 ## 0.5.0
 
 ### Minor Changes
