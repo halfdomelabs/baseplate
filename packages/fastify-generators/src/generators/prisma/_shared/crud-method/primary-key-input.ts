@@ -8,7 +8,7 @@ import { PrismaOutputModel } from '@src/types/prismaOutput.js';
 import { ServiceOutputDtoField } from '@src/types/serviceOutput.js';
 
 interface PrimaryKeyOutput {
-  argument: string;
+  argumentName: string;
   whereClause: string;
   headerTypeBlock?: TypescriptCodeBlock;
   argumentType: string;
@@ -87,7 +87,7 @@ export function getPrimaryKeyExpressions(
     ).typescriptType;
 
     return {
-      argument: `${idFieldName}: ${argumentType}`,
+      argumentName: idFieldName,
       whereClause: `{ ${idFieldName} }`,
       argumentType,
     };
@@ -108,7 +108,7 @@ export function getPrimaryKeyExpressions(
   );
 
   return {
-    argument: `${compoundUniqueName}: ${primaryKeyInputName}`,
+    argumentName: compoundUniqueName,
     whereClause: `{ ${compoundUniqueName} }`,
     headerTypeBlock,
     argumentType: primaryKeyInputName,

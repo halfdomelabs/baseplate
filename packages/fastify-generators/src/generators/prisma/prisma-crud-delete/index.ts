@@ -84,13 +84,17 @@ function getMethodBlock({
 
   return TypescriptCodeUtils.formatBlock(
     `
-export async function OPERATION_NAME({ id, query }: DeleteServiceInput<PRIMARY_KEY_TYPE, QUERY_ARGS>): Promise<MODEL_TYPE> {
+export async function OPERATION_NAME({ ID_ARG, query }: DeleteServiceInput<PRIMARY_KEY_TYPE, QUERY_ARGS>): Promise<MODEL_TYPE> {
 return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
 }
 `.trim(),
     {
       OPERATION_NAME: methodName,
       MODEL_TYPE: modelType,
+      ID_ARG:
+        primaryKey.argumentName === 'id'
+          ? 'id'
+          : `id : ${primaryKey.argumentName}`,
       PRIMARY_KEY_TYPE: primaryKey.argumentType,
       QUERY_ARGS: `Prisma.${modelName}Args`,
       WHERE_CLAUSE: primaryKey.whereClause,
