@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.3.2
+
+### Patch Changes
+
+- c4c38ec: Upgraded dependencies and remove gulp
+
 ## 0.3.1
 
 ### Patch Changes
