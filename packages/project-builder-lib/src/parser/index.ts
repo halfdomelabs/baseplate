@@ -120,7 +120,10 @@ function buildReferenceMap({
 > {
   const referencesByKey = REFERENCEABLE_CATEGORIES.map((category) => {
     const referenceEntries = references.filter((r) => r.category === category);
-    return R.groupBy(R.prop('key'), referenceEntries);
+    return R.groupBy(R.prop('key'), referenceEntries) as Record<
+      string,
+      ObjectReferenceEntry[]
+    >;
   });
   return R.zipObj(REFERENCEABLE_CATEGORIES, referencesByKey);
 }

@@ -1,4 +1,5 @@
 import path from 'path';
+import _ from 'lodash';
 import * as R from 'ramda';
 import { CodeBlockWriter, SourceFile } from 'ts-morph';
 import { ImportMap, ImportMapper } from '../../providers/index.js';
@@ -176,7 +177,7 @@ function importEntryToImportDeclaration(
   isTypeOnly: boolean,
   moduleSpecifier: string
 ): ImportDeclarationEntry {
-  const importsByName = R.groupBy(R.prop('name'), importEntries);
+  const importsByName = _.groupBy(importEntries, 'name');
 
   const importByName = R.mapObjIndexed((entries) => {
     const { name, alias } = entries[0];
@@ -222,7 +223,7 @@ function writeImportDeclarationsForModule(
   }
 
   // separate out type-only and normal imports with normal imports taking precedence
-  const importsByName = R.groupBy(R.prop('name'), importEntries);
+  const importsByName = _.groupBy(importEntries, 'name');
 
   const importsWithNameAndType = Object.keys(importsByName).map((name) => {
     const imports = importsByName[name];
@@ -318,9 +319,9 @@ export function writeImportDeclarations(
     resolvedImports.map((i) => importDeclarationToImportEntries(i))
   );
   // merge all imports together
-  const importsByModule = R.groupBy(
-    (i) => i.moduleSpecifier,
-    resolvedImportEntries
+  const importsByModule = _.groupBy(
+    resolvedImportEntries,
+    (i) => i.moduleSpecifier
   );
 
   // split out imports that have import entries vs. just a module specifier
@@ -331,7 +332,9 @@ export function writeImportDeclarations(
 
   const allModules = R.uniq(resolvedImports.map((i) => i.moduleSpecifier));
   const modulesWithImportEntries = allModules.filter(
-    (moduleSpecifier) => importsByModule[moduleSpecifier]?.length > 0
+    (moduleSpecifier) =>
+      importsByModule[moduleSpecifier] &&
+      importsByModule[moduleSpecifier].length > 0
   );
   const modulesWithoutImportEntries = allModules.filter(
     (moduleSpecifier) => !importsByModule[moduleSpecifier]?.length

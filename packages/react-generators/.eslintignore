@@ -3,7 +3,6 @@
 /lib
 /node_modules
 jest.config.js
-gulpfile.cjs
 templates/
 LICENSE
 .eslintrc.cjs

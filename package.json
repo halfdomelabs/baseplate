@@ -19,13 +19,15 @@
     "test": "nx affected --target=test",
     "release": "pnpm build && pnpm changeset publish",
     "dev:serve": "nx run @halfdomelabs/project-builder-cli:dev:serve",
-    "serve": "nx run @halfdomelabs/project-builder-cli:start serve"
+    "serve": "nx run @halfdomelabs/project-builder-cli:start serve",
+    "versions:check": "check-dependency-version-consistency .",
+    "versions:fix": "check-dependency-version-consistency . --fix"
   },
   "volta": {
     "node": "18.16.0"
   },
   "dependencies": {
-    "@changesets/cli": "^2.26.1"
+    "@changesets/cli": "^2.26.2"
   },
   "packageManager": "pnpm@8.6.9"
 }

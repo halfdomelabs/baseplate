@@ -3,6 +3,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
+import _ from 'lodash';
 import * as R from 'ramda';
 import { ReactRouteLayout, ReactRoute } from '@src/providers/routes.js';
 
@@ -11,9 +12,9 @@ export function renderRoutes(
   layouts: ReactRouteLayout[]
 ): TypescriptCodeExpression {
   // group routes by layout key
-  const routesByLayoutKey = R.groupBy(
-    (route) => route.layoutKey || 'no-layout',
-    routes
+  const routesByLayoutKey = _.groupBy(
+    routes,
+    (route) => route.layoutKey || 'no-layout'
   );
 
   const renderedRoutes = Object.keys(routesByLayoutKey).flatMap((layoutKey) => {
