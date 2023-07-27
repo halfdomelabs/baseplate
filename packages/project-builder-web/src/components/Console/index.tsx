@@ -1,4 +1,4 @@
-import Ansi from 'ansi-to-react';
+import Ansi from '@cocalc/ansi-to-react';
 import classNames from 'classnames';
 import { UIEventHandler, useEffect, useRef, useState } from 'react';
 import { useWebsocketClient } from 'src/hooks/useWebsocketClient';

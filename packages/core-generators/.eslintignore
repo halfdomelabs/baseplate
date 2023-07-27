@@ -2,7 +2,6 @@
 /dist
 /lib
 /node_modules
-gulpfile.cjs
 .eslintrc.cjs
 templates/
 vite.config.ts

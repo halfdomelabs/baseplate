@@ -232,6 +232,7 @@ const NodeGenerator = createGeneratorWithChildren({
           'dependencies',
           {
             workingDirectory: '/',
+            onlyIfChanged: ['package.json'],
           }
         );
 
