@@ -105,6 +105,7 @@ const PrettierGenerator = createGeneratorWithChildren({
       '/build',
       '/node_modules',
       '/baseplate',
+      'pnpm-lock.yaml',
     ];
     return {
       getProviders: () => {
