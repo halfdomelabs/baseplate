@@ -1,5 +1,12 @@
 # @halfdomelabs/cli
 
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies [8cca488]
+  - @halfdomelabs/fastify-generators@0.6.2
+
 ## 0.5.3
 
 ### Patch Changes
