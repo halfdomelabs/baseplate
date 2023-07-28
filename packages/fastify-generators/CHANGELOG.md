@@ -1,5 +1,11 @@
 # @halfdomelabs/fastify-generators
 
+## 0.6.2
+
+### Patch Changes
+
+- 8cca488: Fix mutation generation for compound IDs
+
 ## 0.6.1
 
 ### Patch Changes
