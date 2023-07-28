@@ -32,18 +32,17 @@ export function getPrimaryKeyDefinition(
     }
 
     return {
-      name: idFieldName,
+      name: 'id',
       type: 'scalar',
       scalarType: idField.scalarType,
     };
   }
 
   // handle multiple primary key case
-  const compoundUniqueName = idFields.join('_');
   const primaryKeyInputName = `${model.name}PrimaryKey`;
 
   return {
-    name: compoundUniqueName,
+    name: 'id',
     type: 'nested',
     nestedType: {
       name: primaryKeyInputName,
