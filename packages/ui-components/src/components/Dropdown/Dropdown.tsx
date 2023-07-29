@@ -1,3 +1,5 @@
+'use client';
+
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { clsx } from 'clsx';
 import React from 'react';
@@ -73,7 +75,7 @@ const Item = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={clsx(
-      'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'focus:bg-accent focus:text-accent-foreground relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-background-200 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 dark:hover:bg-background-700',
       inset && 'pl-8',
       className
     )}
@@ -151,7 +153,7 @@ const Separator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={clsx('bg-muted -mx-1 my-1 h-px', className)}
+    className={clsx('bg-muted -mx-1 my-1 h-px bg-gray-200', className)}
     {...props}
   />
 ));
