@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
-import { ForwardedRef } from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import { forwardRef } from 'react';
 import { IconElement } from '@src/types/react.js';
-import { genericForwardRef } from '@src/utils/generic-forward-ref';
 
 /**
  * Variant styles for the Button component
@@ -14,6 +14,7 @@ type ButtonVariant = 'primary' | 'secondary' | 'tertiary';
 type ButtonSize = 'icon' | 'sm' | 'md' | 'lg';
 
 export interface ButtonProps {
+  asChild?: boolean;
   /**
    * Optional class name to be applied to the button
    */
@@ -61,7 +62,7 @@ export interface ButtonProps {
   formId?: string;
 }
 
-function getButtonVariantClass(
+export function getButtonVariantClass(
   color: ButtonVariant,
   isDisabled?: boolean,
   noBorder?: boolean
@@ -92,7 +93,10 @@ function getButtonVariantClass(
   );
 }
 
-function getButtonSizeClass(size: ButtonSize, noBorder?: boolean): string {
+export function getButtonSizeClass(
+  size: ButtonSize,
+  noBorder?: boolean
+): string {
   return clsx(
     size === 'icon' && !noBorder && 'rounded-lg',
     size === 'icon' && 'p-1 text-lg',
@@ -105,55 +109,56 @@ function getButtonSizeClass(size: ButtonSize, noBorder?: boolean): string {
   );
 }
 
-/**
- * Primary UI component for user interaction
- */
-function ButtonInner(
-  {
-    className,
-    children,
-    disabled,
-    size = 'md',
-    variant = 'primary',
-    type = 'button',
-    onClick,
-    iconBefore: IconBefore,
-    iconAfter: IconAfter,
-    title,
-    noBorder,
-    formId,
-  }: ButtonProps,
-  ref: ForwardedRef<HTMLButtonElement>
-): JSX.Element {
-  return (
-    <button
-      className={clsx(
-        noBorder ? '' : 'border',
-        'text-center font-medium  transition-colors focus:outline-1 focus:outline-offset-4 focus:outline-primary-700 dark:focus:outline-transparent',
-        getButtonVariantClass(variant, disabled, noBorder),
-        getButtonSizeClass(size, noBorder),
-        className
-      )}
-      disabled={disabled}
-      onClick={onClick}
-      // a type is being provided but eslint doesn't know
-      // eslint-disable-next-line react/button-has-type
-      type={type}
-      ref={ref}
-      title={title}
-      form={formId}
-    >
-      {IconBefore || IconAfter ? (
-        <div className="flex items-center justify-center space-x-2">
-          {IconBefore && <IconBefore />}
-          {children && <div>{children}</div>}
-          {IconAfter && <IconAfter />}
-        </div>
-      ) : (
-        children
-      )}
-    </button>
-  );
-}
-
-export const Button = genericForwardRef(ButtonInner);
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      asChild,
+      className,
+      children,
+      disabled,
+      size = 'md',
+      variant = 'primary',
+      type = 'button',
+      onClick,
+      iconBefore: IconBefore,
+      iconAfter: IconAfter,
+      title,
+      noBorder,
+      formId,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = asChild ? Slot : 'button';
+    return (
+      <Comp
+        {...props}
+        className={clsx(
+          noBorder ? '' : 'border',
+          'text-center font-medium  transition-colors focus:outline-1 focus:outline-offset-4 focus:outline-primary-700 dark:focus:outline-transparent',
+          getButtonVariantClass(variant, disabled, noBorder),
+          getButtonSizeClass(size, noBorder),
+          className
+        )}
+        disabled={disabled}
+        onClick={onClick}
+        // a type is being provided but eslint doesn't know
+        // eslint-disable-next-line react/button-has-type
+        type={type}
+        ref={ref}
+        title={title}
+        form={formId}
+      >
+        {IconBefore || IconAfter ? (
+          <div className="flex items-center justify-center space-x-2">
+            {IconBefore && <IconBefore />}
+            {children && <div>{children}</div>}
+            {IconAfter && <IconAfter />}
+          </div>
+        ) : (
+          children
+        )}
+      </Comp>
+    );
+  }
+);

@@ -17,7 +17,35 @@ export const Default: Story = {
   render: () => (
     <div className="p-4">
       <Dropdown>
-        <Dropdown.Trigger>
+        <Dropdown.Trigger asChild>
+          <Button>Open</Button>
+        </Dropdown.Trigger>
+        <Dropdown.Content className="w-56">
+          <Dropdown.Group>
+            <Dropdown.Item>
+              <span>Profile</span>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <span>Billing</span>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <span>Settings</span>
+            </Dropdown.Item>
+            <Dropdown.Item>
+              <span>Keyboard shortcuts</span>
+            </Dropdown.Item>
+          </Dropdown.Group>
+        </Dropdown.Content>
+      </Dropdown>
+    </div>
+  ),
+};
+
+export const FullExample: Story = {
+  render: () => (
+    <div className="p-4">
+      <Dropdown>
+        <Dropdown.Trigger asChild>
           <Button>Open</Button>
         </Dropdown.Trigger>
         <Dropdown.Content className="w-56">
@@ -96,7 +124,7 @@ export const DropdownWithCheckboxes: Story = {
     return (
       <div className="p-4">
         <Dropdown>
-          <Dropdown.Trigger>
+          <Dropdown.Trigger asChild>
             <Button>Open</Button>
           </Dropdown.Trigger>
           <Dropdown.Content className="w-56">
@@ -135,7 +163,7 @@ export const DropdownWithRadioGroup: Story = {
     return (
       <div className="p-4">
         <Dropdown>
-          <Dropdown.Trigger>
+          <Dropdown.Trigger asChild>
             <Button>Open</Button>
           </Dropdown.Trigger>
           <Dropdown.Content className="w-56">
