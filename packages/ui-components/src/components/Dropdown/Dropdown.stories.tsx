@@ -115,68 +115,72 @@ export const FullExample: Story = {
 
 type Checked = DropdownMenuCheckboxItemProps['checked'];
 
-export const DropdownWithCheckboxes: Story = {
-  render: () => {
-    const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
-    const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
-    const [showPanel, setShowPanel] = useState<Checked>(false);
+function DropdownWithCheckboxesExample(): JSX.Element {
+  const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
+  const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
+  const [showPanel, setShowPanel] = useState<Checked>(false);
 
-    return (
-      <div className="p-4">
-        <Dropdown>
-          <Dropdown.Trigger asChild>
-            <Button>Open</Button>
-          </Dropdown.Trigger>
-          <Dropdown.Content className="w-56">
-            <Dropdown.Label>Appearance</Dropdown.Label>
-            <Dropdown.Separator />
-            <Dropdown.CheckboxItem
-              checked={showStatusBar}
-              onCheckedChange={setShowStatusBar}
-            >
-              Status Bar
-            </Dropdown.CheckboxItem>
-            <Dropdown.CheckboxItem
-              checked={showActivityBar}
-              onCheckedChange={setShowActivityBar}
-              disabled
-            >
-              Activity Bar
-            </Dropdown.CheckboxItem>
-            <Dropdown.CheckboxItem
-              checked={showPanel}
-              onCheckedChange={setShowPanel}
-            >
-              Panel
-            </Dropdown.CheckboxItem>
-          </Dropdown.Content>
-        </Dropdown>
-      </div>
-    );
-  },
+  return (
+    <div className="p-4">
+      <Dropdown>
+        <Dropdown.Trigger asChild>
+          <Button>Open</Button>
+        </Dropdown.Trigger>
+        <Dropdown.Content className="w-56">
+          <Dropdown.Label>Appearance</Dropdown.Label>
+          <Dropdown.Separator />
+          <Dropdown.CheckboxItem
+            checked={showStatusBar}
+            onCheckedChange={setShowStatusBar}
+          >
+            Status Bar
+          </Dropdown.CheckboxItem>
+          <Dropdown.CheckboxItem
+            checked={showActivityBar}
+            onCheckedChange={setShowActivityBar}
+            disabled
+          >
+            Activity Bar
+          </Dropdown.CheckboxItem>
+          <Dropdown.CheckboxItem
+            checked={showPanel}
+            onCheckedChange={setShowPanel}
+          >
+            Panel
+          </Dropdown.CheckboxItem>
+        </Dropdown.Content>
+      </Dropdown>
+    </div>
+  );
+}
+
+export const DropdownWithCheckboxes: Story = {
+  render: () => <DropdownWithCheckboxesExample />,
 };
 
-export const DropdownWithRadioGroup: Story = {
-  render: () => {
-    const [position, setPosition] = useState('bottom');
+function DropdownWithRadioGroupExample(): JSX.Element {
+  const [position, setPosition] = useState('bottom');
 
-    return (
-      <div className="p-4">
-        <Dropdown>
-          <Dropdown.Trigger asChild>
-            <Button>Open</Button>
-          </Dropdown.Trigger>
-          <Dropdown.Content className="w-56">
-            <Dropdown.Label>Panel Position</Dropdown.Label>
-            <Dropdown.Separator />
-            <Dropdown.RadioGroup value={position} onValueChange={setPosition}>
-              <Dropdown.RadioItem value="top">Top</Dropdown.RadioItem>
-              <Dropdown.RadioItem value="bottom">Bottom</Dropdown.RadioItem>
-              <Dropdown.RadioItem value="right">Right</Dropdown.RadioItem>
-            </Dropdown.RadioGroup>
-          </Dropdown.Content>
-        </Dropdown>
-      </div>
-    );
-  },
+  return (
+    <div className="p-4">
+      <Dropdown>
+        <Dropdown.Trigger asChild>
+          <Button>Open</Button>
+        </Dropdown.Trigger>
+        <Dropdown.Content className="w-56">
+          <Dropdown.Label>Panel Position</Dropdown.Label>
+          <Dropdown.Separator />
+          <Dropdown.RadioGroup value={position} onValueChange={setPosition}>
+            <Dropdown.RadioItem value="top">Top</Dropdown.RadioItem>
+            <Dropdown.RadioItem value="bottom">Bottom</Dropdown.RadioItem>
+            <Dropdown.RadioItem value="right">Right</Dropdown.RadioItem>
+          </Dropdown.RadioGroup>
+        </Dropdown.Content>
+      </Dropdown>
+    </div>
+  );
+}
+
+export const DropdownWithRadioGroup: Story = {
+  render: () => <DropdownWithRadioGroupExample />,
 };
