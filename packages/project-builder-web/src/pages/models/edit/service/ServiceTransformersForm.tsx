@@ -1,9 +1,8 @@
 import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
-import { Button } from '@halfdomelabs/ui-components';
+import { Button, Dropdown } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { LinkButton } from 'src/components';
-import Dropdown from 'src/components/Dropdown';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
 import ServiceFileTransformerForm from './ServiceFileTransformerForm';
