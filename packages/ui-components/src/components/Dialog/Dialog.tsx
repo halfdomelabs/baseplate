@@ -1,39 +1,141 @@
-import { Dialog as HeadlessDialog, Transition } from '@headlessui/react';
+'use client';
+
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { clsx } from 'clsx';
-import { Fragment } from 'react';
+import * as React from 'react';
 import { HiXMark } from 'react-icons/hi2';
-import { Button } from '../Button/Button.js';
 
-/**
- * Represents the size options for the Dialog component.
- */
-type DialogSize = 'sm' | 'md' | 'lg' | 'xl';
+const DialogTrigger = DialogPrimitive.Trigger;
+const DialogClose = DialogPrimitive.Close;
 
-/**
- * Represents the props for the Dialog component.
- */
-export interface DialogProps {
-  /**
-   * Additional CSS class name for the component.
-   */
-  className?: string;
-  /**
-   * Specifies whether the Dialog is open or closed.
-   */
-  isOpen?: boolean;
-  /**
-   * Callback function called when the Dialog is closed.
-   */
-  onClose(): void;
-  /**
-   * The content to be rendered inside the Dialog.
-   */
-  children: React.ReactNode;
-  /**
-   * The size of the Dialog.
-   */
-  size?: DialogSize;
+function DialogPortal({
+  className,
+  ...props
+}: DialogPrimitive.DialogPortalProps): JSX.Element {
+  return <DialogPrimitive.Portal className={clsx(className)} {...props} />;
 }
+DialogPortal.displayName = DialogPrimitive.Portal.displayName;
+
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay> & {
+    className?: string;
+  }
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={clsx(
+      'bg-background/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 backdrop-blur-sm',
+      className
+    )}
+    {...props}
+  />
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
+
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+    className?: string;
+  }
+>(({ className, children, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
+      ref={ref}
+      className={clsx(
+        'bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 shadow-lg sm:rounded-lg md:w-full',
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <DialogPrimitive.Close className="ring-offset-background data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+        <HiXMark className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </DialogPrimitive.Close>
+    </DialogPrimitive.Content>
+  </DialogPortal>
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
+
+function DialogHeader({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+}): JSX.Element {
+  return (
+    <div
+      className={clsx(
+        'flex flex-col space-y-1.5 text-center sm:text-left',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+DialogHeader.displayName = 'DialogHeader';
+
+function DialogFooter({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+}): JSX.Element {
+  return (
+    <div
+      className={clsx(
+        'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+DialogFooter.displayName = 'DialogFooter';
+
+const DialogTitle = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title> & {
+    className?: string;
+  }
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Title
+    ref={ref}
+    className={clsx(
+      'text-lg font-semibold leading-none tracking-tight',
+      className
+    )}
+    {...props}
+  />
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
+
+const DialogDescription = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Description>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description> & {
+    className?: string;
+  }
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Description
+    ref={ref}
+    className={clsx('text-muted-foreground text-sm', className)}
+    {...props}
+  />
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
+
+const DialogBody = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentPropsWithoutRef<'div'> & {
+    className?: string;
+  }
+>(({ children, className, ...props }, ref) => (
+  <div ref={ref} {...props} className={clsx('py-4', className)}>
+    {children}
+  </div>
+));
 
 function getDialogSizeClass(size: DialogSize): string {
   return clsx(
@@ -45,121 +147,61 @@ function getDialogSizeClass(size: DialogSize): string {
 }
 
 /**
- * A Dialog component that can be used to display content in a modal.
+ * Represents the size options for the Dialog component.
  */
+type DialogSize = 'sm' | 'md' | 'lg' | 'xl';
+
+export interface DialogProps extends Omit<DialogPrimitive.DialogProps, 'open'> {
+  /**
+   * Additional CSS class name for the component.
+   */
+  className?: string;
+  /**
+   * The content to be rendered inside the Dialog.
+   */
+  children: React.ReactNode;
+  /**
+   * state of the dialog window
+   */
+  isOpen?: boolean;
+  /**
+   * The size of the Dialog.
+   */
+  size?: DialogSize;
+  /**
+   * The element triggering the dialog box
+   */
+  trigger?: React.ReactNode;
+}
+
 export function Dialog({
   className,
-  isOpen,
-  onClose,
   children,
+  trigger,
   size = 'md',
+  isOpen,
+  onOpenChange,
+  ...rest
 }: DialogProps): JSX.Element {
   return (
-    <Transition show={isOpen} as={Fragment}>
-      <HeadlessDialog onClose={onClose} className="relative z-50">
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div
-            className="fixed inset-0 bg-black/10 dark:bg-white/10"
-            aria-hidden="true"
-          />
-        </Transition.Child>
-        <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0 scale-95"
-            enterTo="opacity-100 scale-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100 scale-100"
-            leaveTo="opacity-0 scale-95"
-          >
-            <HeadlessDialog.Panel
-              className={clsx(
-                'max-h-full overflow-y-auto rounded-lg bg-white shadow-xl dark:bg-background-900',
-                getDialogSizeClass(size),
-                className
-              )}
-            >
-              {children}
-            </HeadlessDialog.Panel>
-          </Transition.Child>
-        </div>
-      </HeadlessDialog>
-    </Transition>
+    <DialogPrimitive.Root {...rest} open={isOpen} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent
+        className={clsx(
+          'max-h-full overflow-y-auto rounded-lg bg-white shadow-xl dark:bg-background-900',
+          getDialogSizeClass(size),
+          className
+        )}
+      >
+        {children}
+      </DialogContent>
+    </DialogPrimitive.Root>
   );
 }
 
-interface DialogHeaderProps {
-  className?: string;
-  children: React.ReactNode;
-  onClose?: () => void;
-}
-
-Dialog.Header = function DialogHeader({
-  className,
-  children,
-  onClose,
-}: DialogHeaderProps): JSX.Element {
-  return (
-    <div
-      className={clsx(
-        'flex items-center justify-between rounded-t-lg px-4 pt-4',
-        className
-      )}
-    >
-      <HeadlessDialog.Title>{children}</HeadlessDialog.Title>
-      {onClose && (
-        <Button
-          onClick={onClose}
-          variant="tertiary"
-          iconBefore={HiXMark}
-          size="icon"
-        />
-      )}
-    </div>
-  );
-};
-
-interface DialogBodyProps {
-  className?: string;
-  children: React.ReactNode;
-}
-
-Dialog.Body = function DialogBody({
-  className,
-  children,
-}: DialogBodyProps): JSX.Element {
-  return <div className={clsx('px-4 pb-4 pt-2', className)}>{children}</div>;
-};
-
-interface DialogFooterProps {
-  className?: string;
-  children: React.ReactNode;
-  fullWidth?: boolean;
-}
-
-Dialog.Footer = function DialogFooter({
-  className,
-  children,
-  fullWidth,
-}: DialogFooterProps): JSX.Element {
-  return (
-    <div
-      className={clsx(
-        'flex items-center space-x-4 rounded-b-lg border-t border-secondary-200 bg-secondary-50 p-4 dark:border-background-600 dark:bg-background-800',
-        !fullWidth && 'justify-end',
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-};
+Dialog.Header = DialogHeader;
+Dialog.Body = DialogBody;
+Dialog.Close = DialogClose;
+Dialog.Footer = DialogFooter;
+Dialog.Title = DialogTitle;
+Dialog.Description = DialogDescription;

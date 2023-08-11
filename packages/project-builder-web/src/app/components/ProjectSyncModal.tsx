@@ -44,9 +44,9 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
       >
         Sync
       </Button>
-      <Dialog isOpen={isOpen} onClose={() => setIsOpen(false)} size="xl">
-        <Dialog.Header onClose={() => setIsOpen(false)}>
-          Sync Project
+      <Dialog isOpen={isOpen} onOpenChange={() => setIsOpen(false)} size="xl">
+        <Dialog.Header>
+          <Dialog.Title>Sync Project</Dialog.Title>
         </Dialog.Header>
         <Dialog.Body>
           <Console />

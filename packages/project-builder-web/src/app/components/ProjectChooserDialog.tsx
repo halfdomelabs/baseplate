@@ -41,8 +41,10 @@ export function ProjectChooserDialog({
   }
 
   return (
-    <Dialog size="lg" onClose={onClose || (() => {})} isOpen={isOpen}>
-      <Dialog.Header onClose={onClose}>Pick Project</Dialog.Header>
+    <Dialog size="lg" onOpenChange={onClose || (() => {})} isOpen={isOpen}>
+      <Dialog.Header>
+        <Dialog.Title>Pick Project</Dialog.Title>
+      </Dialog.Header>
       <Dialog.Body>
         <Table>
           <Table.Head>

@@ -111,8 +111,10 @@ export function ModelFieldRelationForm({
       }}
       id={formId}
     >
-      <Dialog.Header onClose={onClose}>
-        {existingRelation ? 'Edit Relation' : 'Add Relation'}
+      <Dialog.Header>
+        <Dialog.Title>
+          {existingRelation ? 'Edit Relation' : 'Add Relation'}
+        </Dialog.Title>
       </Dialog.Header>
       <Dialog.Body className="space-y-4">
         <ComboboxInput.Controller

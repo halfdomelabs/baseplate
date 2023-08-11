@@ -20,9 +20,11 @@ export function ModelGeneralEditDialog({
     },
   });
   return (
-    <Dialog isOpen={isOpen} onClose={onClose}>
+    <Dialog isOpen={isOpen} onOpenChange={onClose}>
       <form onSubmit={handleSubmit(onFormSubmit)}>
-        <Dialog.Header>Edit Model</Dialog.Header>
+        <Dialog.Header>
+          <Dialog.Title>Edit Model</Dialog.Title>
+        </Dialog.Header>
         <Dialog.Body>
           <ModelGeneralForm control={control} />
         </Dialog.Body>

@@ -38,7 +38,7 @@ function Modal({
 }: Props): JSX.Element {
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+      <Dialog isOpen={isOpen} onClose={onClose} className="relative z-50">
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
