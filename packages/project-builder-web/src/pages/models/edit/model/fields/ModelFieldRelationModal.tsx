@@ -107,7 +107,7 @@ export function ModalRelationsModal({
   };
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose}>
+    <Dialog isOpen={isOpen} onOpenChange={onClose}>
       <ModelFieldRelationForm
         existingRelation={modelFieldRelation}
         modelName={modelName}
