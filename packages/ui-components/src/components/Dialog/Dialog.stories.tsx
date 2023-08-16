@@ -12,7 +12,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function NewDialogContainer(
+function DialogContainer(
   args: Omit<DialogProps, 'children' | 'trigger'>
 ): JSX.Element {
   return (
@@ -39,7 +39,7 @@ function NewDialogContainer(
 
 export const Default: Story = {
   args: { children: null, size: 'md' },
-  render: (args) => <NewDialogContainer {...args} />,
+  render: (args) => <DialogContainer {...args} />,
 };
 
 function ControlledDialogContainer(
