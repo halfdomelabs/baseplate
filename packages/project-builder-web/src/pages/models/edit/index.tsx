@@ -69,23 +69,21 @@ function ModelEditPage(): JSX.Element {
       {isNew ? (
         <ModelEditModelPage />
       ) : (
-        <Tabs>
+        <Tabs defaultValue="fields">
           <Tabs.List>
-            <Tabs.Tab>Fields</Tabs.Tab>
-            <Tabs.Tab>Service</Tabs.Tab>
-            <Tabs.Tab>Schema</Tabs.Tab>
+            <Tabs.Trigger value="fields">Fields</Tabs.Trigger>
+            <Tabs.Trigger value="service">Service</Tabs.Trigger>
+            <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
           </Tabs.List>
-          <Tabs.Panels>
-            <Tabs.Panel>
-              <ModelEditModelPage />
-            </Tabs.Panel>
-            <Tabs.Panel>
-              <ModelEditServicePage />
-            </Tabs.Panel>
-            <Tabs.Panel>
-              <ModelEditSchemaPage />
-            </Tabs.Panel>
-          </Tabs.Panels>
+          <Tabs.Content value="fields">
+            <ModelEditModelPage />
+          </Tabs.Content>
+          <Tabs.Content value="service">
+            <ModelEditServicePage />
+          </Tabs.Content>
+          <Tabs.Content value="schema">
+            <ModelEditSchemaPage />
+          </Tabs.Content>
         </Tabs>
       )}
       {!isNew && (
