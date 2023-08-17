@@ -1,5 +1,5 @@
 body {
-  @apply font-body text-foreground-700 dark:bg-background-900 dark:text-foreground-300;
+  @apply dark:bg-background-900 font-body text-foreground-700 dark:text-foreground-300;
 }
 
 h1,
@@ -32,7 +32,7 @@ h4 {
 }
 
 .popover-background {
-  @apply bg-white dark:bg-background-900;
+  @apply dark:bg-background-900 bg-white;
 }
 
 .border-color {
@@ -62,7 +62,7 @@ h4 {
 }
 
 .description-text {
-  @apply text-secondary text-xs;
+  @apply text-xs text-secondary;
 }
 
 .instruction-text {

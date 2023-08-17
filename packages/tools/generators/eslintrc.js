@@ -113,6 +113,7 @@ module.exports = function createEslintConfig(options) {
             '**/__mocks__/*.ts',
             '**/setupTests.ts',
             'vite.config.ts',
+            'tailwind.config.ts',
           ],
         },
       ],

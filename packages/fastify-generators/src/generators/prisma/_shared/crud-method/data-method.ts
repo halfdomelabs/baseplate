@@ -88,7 +88,7 @@ export function getDataMethodDataType({
       ...prismaFields.map((field) => {
         if (field.type !== 'scalar') {
           throw new Error(
-            `Non-scalar fields not suppported in data method operation`
+            `Non-scalar fields not suppported in data method operation ${field.name} in ${modelName}`
           );
         }
         return {
