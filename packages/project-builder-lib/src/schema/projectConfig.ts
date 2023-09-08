@@ -17,6 +17,7 @@ import { buildEnumReferences, enumSchema } from './models/enums.js';
 import { buildModelReferences, modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { buildStorageReferences, storageSchema } from './storage/index.js';
+import { themeSchema } from './index.js';
 
 export const appSchema = z.discriminatedUnion('type', [
   backendAppSchema,
@@ -56,6 +57,7 @@ export const projectConfigSchema = z.object({
   storage: storageSchema.optional(),
   isInitialized: z.boolean().default(false),
   schemaVersion: z.number().nullish(),
+  theme: themeSchema.optional(),
 });
 
 export type ProjectConfigInput = z.input<typeof projectConfigSchema>;

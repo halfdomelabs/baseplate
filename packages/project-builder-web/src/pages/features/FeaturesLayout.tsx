@@ -1,4 +1,5 @@
 import { NavigationLink, SidebarLayout } from '@halfdomelabs/ui-components';
+import { FaPalette } from 'react-icons/fa';
 import { MdAttachFile, MdPeople } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
@@ -24,6 +25,14 @@ function FeaturesLayout(): JSX.Element {
           className="w-full"
         >
           Storage
+        </NavigationLink>
+        <NavigationLink
+          as={NavLink}
+          to="/features/theme"
+          icon={FaPalette}
+          className="w-full"
+        >
+          Theme
         </NavigationLink>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content className="p-4">
