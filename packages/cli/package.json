@@ -19,7 +19,7 @@
     "@types/node": "^18.0.0",
     "@types/ramda": "^0.29.3",
     "tsx": "^3.12.7",
-    "typescript": "5.0.4"
+    "typescript": "5.1.6"
   },
   "scripts": {
     "start": "tsx ./src",

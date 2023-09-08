@@ -146,7 +146,7 @@ export function createNonOverwriteableMap<T extends object>(
     value() {
       return finalMerge(defaults, overrideValues) as T;
     },
-    get(key) {
+    get<K extends keyof T>(key: keyof T): T[K] | undefined {
       const override = overrideValues[key];
       const def = defaults[key];
       if (
@@ -154,9 +154,7 @@ export function createNonOverwriteableMap<T extends object>(
         Array.isArray(override) &&
         Array.isArray(def)
       ) {
-        // TODO: Fix typing
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return R.uniq(def.concat(override)) as any;
+        return R.uniq([...def, ...override]) as T[K];
       }
       return override || def;
     },
