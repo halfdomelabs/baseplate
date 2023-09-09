@@ -59,6 +59,8 @@ const DatePickerTextInput = forwardRef<
   />
 ));
 
+DatePickerTextInput.displayName = 'DatePickerTextInput';
+
 function ReactDatePickerInput({
   className,
   onChange,
@@ -74,7 +76,7 @@ function ReactDatePickerInput({
       onChange={(date) =>
         onChange(
           date &&
-            (showTimeSelect ? date.toISOString() : format(date, 'yyyy-MM-dd'))
+            (showTimeSelect ? date.toISOString() : format(date, 'yyyy-MM-dd')),
         )
       }
       onBlur={onBlur}
@@ -124,7 +126,7 @@ ReactDatePickerInput.Labelled = function ReactDatePickerInputLabelled({
 
 interface ReactDatePickerInputLabelledControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<
     ReactDatePickerInputLabelledProps,
     'onChange' | 'onBlur' | 'value' | 'error'
@@ -137,7 +139,7 @@ interface ReactDatePickerInputLabelledControllerProps<
 ReactDatePickerInput.LabelledController =
   function ReactDatePickerInputController<
     TFieldValues extends FieldValues = FieldValues,
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   >({
     className,
     name,

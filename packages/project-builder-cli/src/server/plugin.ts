@@ -226,7 +226,8 @@ export async function baseplatePlugin(
     connection.socket.on('message', (rawData) => {
       try {
         const message = JSON.parse(
-          rawData.toString()
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string
+          rawData.toString('utf-8')
         ) as ClientWebsocketMessage;
 
         const handleSubscribe = (msg: SubscribeMessage): void => {

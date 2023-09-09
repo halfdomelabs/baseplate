@@ -9,9 +9,7 @@ import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder.js';
 /**
  * Converts a provider map to a list of provider names
  */
-export function providerMapToNames(map?: {
-  [key: string]: ProviderType | ProviderDependency | ProviderExport;
-}): string[] {
+export function providerMapToNames(map?: Record<string, ProviderType | ProviderDependency | ProviderExport>): string[] {
   if (!map) {
     return [];
   }

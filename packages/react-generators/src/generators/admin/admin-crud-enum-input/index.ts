@@ -67,9 +67,7 @@ const AdminCrudEnumInputGenerator = createGeneratorWithChildren({
       ],
     });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

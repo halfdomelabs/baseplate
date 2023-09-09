@@ -24,7 +24,7 @@ const descriptorSchema = z
     type: z.enum(
       Object.keys(prismaScalarFieldTypes) as [
         ScalarFieldType,
-        ...ScalarFieldType[]
+        ...ScalarFieldType[],
       ]
     ),
     options: z.object({}).catchall(z.any()).optional(),
@@ -85,7 +85,6 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaField: {},
       }),
-      build: () => {},
     };
   },
 });

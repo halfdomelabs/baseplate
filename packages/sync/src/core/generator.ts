@@ -13,10 +13,10 @@ import {
  * generators to consume and can then add its own files
  */
 export interface GeneratorTaskInstance<
-  ExportMap extends Record<string, unknown> = Record<string, Provider>
+  ExportMap extends Record<string, unknown> = Record<string, Provider>,
 > {
   getProviders?: () => ExportMap;
-  build: (builder: GeneratorOutputBuilder) => Promise<void> | void;
+  build?: (builder: GeneratorOutputBuilder) => Promise<void> | void;
 }
 
 export type ProviderExportMap<T = Record<string, Provider>> = {
@@ -50,7 +50,7 @@ export interface GeneratorTask<
   >,
   DependencyMap extends ProviderDependencyMap = ProviderDependencyMap<
     Record<string, Provider>
-  >
+  >,
 > {
   name: string;
   exports?: ExportMap;
@@ -65,7 +65,7 @@ export interface GeneratorTask<
  * Configuration of a generator
  */
 export interface GeneratorConfig<
-  Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor
+  Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor,
 > {
   /**
    * Parses descriptors and extracts out the structure of the generator
@@ -75,12 +75,10 @@ export interface GeneratorConfig<
     context: ParseDescriptorContext
   ) => {
     validatedDescriptor?: Descriptor;
-    children?: {
-      [key: string]:
-        | ChildDescriptorOrReference
-        | ChildDescriptorOrReference[]
-        | null;
-    };
+    children?: Record<
+      string,
+      ChildDescriptorOrReference | ChildDescriptorOrReference[] | null
+    >;
   };
   /**
    * Creates an instance of the generator with a given descriptor and
@@ -93,7 +91,7 @@ export interface GeneratorConfig<
  * Helper function for creating a generator config (for typing)
  */
 export function createGeneratorConfig<
-  Descriptor extends BaseGeneratorDescriptor
+  Descriptor extends BaseGeneratorDescriptor,
 >(config: GeneratorConfig<Descriptor>): GeneratorConfig<Descriptor> {
   return config;
 }

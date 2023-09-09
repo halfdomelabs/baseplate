@@ -5,7 +5,6 @@ import {
   prettierProvider,
   tsUtilsProvider,
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
@@ -247,14 +246,12 @@ const NexusGenerator = createGeneratorWithTasks({
         {
           node,
           typescript,
-          requestServiceContext,
           eslint,
           prettier,
           tsUtils,
-          rootModuleImport,
           // yogaPluginSetup,
         },
-        { setupTask: { configMap, schemaFiles } }
+        { setupTask: { configMap } }
       ) {
         node.addPackages({
           nexus: '1.3.0',
@@ -300,34 +297,34 @@ const NexusGenerator = createGeneratorWithTasks({
               utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts')
             );
 
-            const schemaExpression = TypescriptCodeUtils.formatExpression(
-              `makeSchema({
-                types: ROOT_MODULE.schemaTypes,
-                outputs: {
-                  typegen: join(__dirname, '../..', 'nexus-typegen.ts'),
-                  schema: join(__dirname, '../../..', 'schema.graphql'),
-                },
-                plugins: NEXUS_PLUGINS,
-                contextType: {
-                  module: join(__dirname, '../../..', 'CONTEXT_PATH'),
-                  export: 'RequestServiceContext',
-                },
-                shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
-              })`,
-              {
-                ROOT_MODULE: rootModuleImport.getRootModule(),
-                NEXUS_PLUGINS: TypescriptCodeUtils.mergeExpressionsAsArray(
-                  config.nexusPlugins
-                ),
-                CONTEXT_PATH: requestServiceContext.getContextPath(),
-              },
-              {
-                importText: [
-                  `import { makeSchema } from 'nexus';`,
-                  `import { join } from 'path';`,
-                ],
-              }
-            );
+            // const schemaExpression = TypescriptCodeUtils.formatExpression(
+            //   `makeSchema({
+            //     types: ROOT_MODULE.schemaTypes,
+            //     outputs: {
+            //       typegen: join(__dirname, '../..', 'nexus-typegen.ts'),
+            //       schema: join(__dirname, '../../..', 'schema.graphql'),
+            //     },
+            //     plugins: NEXUS_PLUGINS,
+            //     contextType: {
+            //       module: join(__dirname, '../../..', 'CONTEXT_PATH'),
+            //       export: 'RequestServiceContext',
+            //     },
+            //     shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
+            //   })`,
+            //   {
+            //     ROOT_MODULE: rootModuleImport.getRootModule(),
+            //     NEXUS_PLUGINS: TypescriptCodeUtils.mergeExpressionsAsArray(
+            //       config.nexusPlugins
+            //     ),
+            //     CONTEXT_PATH: requestServiceContext.getContextPath(),
+            //   },
+            //   {
+            //     importText: [
+            //       `import { makeSchema } from 'nexus';`,
+            //       `import { join } from 'path';`,
+            //     ],
+            //   }
+            // );
 
             // yogaPluginSetup.getConfig().set('schema', schemaExpression);
 

@@ -47,7 +47,6 @@ const FastifyJestGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         fastifyJest: {},
       }),
-      build: async () => {},
     };
   },
 });

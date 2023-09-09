@@ -29,8 +29,8 @@ export const Primary: Story = {
 export const PrimaryWithClose: Story = {
   args: {
     color: 'primary',
-    onClick: () => {},
-    onClose: () => {},
+    onClick: () => { /* no-op */ },
+    onClose: () => { /* no-op */ },
   },
 };
 

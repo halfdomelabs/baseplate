@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 
-import path from 'path';
 import { GeneratorEngine, loadGeneratorsForModule } from '@halfdomelabs/sync';
 import { program } from 'commander';
 import { packageDirectory } from 'pkg-dir';

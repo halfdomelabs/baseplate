@@ -18,13 +18,15 @@ import { nodeProvider } from '../node/index.js';
 const descriptorSchema = z.object({
   tabWidth: z.number().default(2),
   singleQuote: z.boolean().default(true),
-  trailingComma: z.string().default('es5'),
+  trailingComma: z.string().default('all'),
+  semi: z.boolean().default(true),
 });
 
 interface PrettierConfig {
   tabWidth: number;
   singleQuote: boolean;
   trailingComma: string;
+  semi: boolean;
 }
 
 export interface PrettierProvider {
@@ -51,10 +53,10 @@ const PARSEABLE_EXTENSIONS = [
   '.yaml',
 ];
 
-const PRETTIER_VERSION = '2.8.8';
+const PRETTIER_VERSION = '3.0.3';
 
 interface PrettierModule {
-  format(input: string, config: Record<string, unknown>): string;
+  format(input: string, config: Record<string, unknown>): Promise<string>;
 }
 
 interface ResolveError extends Error {
@@ -70,7 +72,7 @@ function resolveModule(
   const basedir = path.dirname(fullPath);
   return new Promise((resolve, reject) => {
     requireResolve(name, { basedir }, (err, resolved, meta): void => {
-      if (err || !resolved) {
+      if (err ?? !resolved) {
         const resolveError: ResolveError = err as ResolveError;
         if (resolveError.code === 'MODULE_NOT_FOUND' || !resolved) {
           return resolve(undefined);
@@ -97,6 +99,7 @@ const PrettierGenerator = createGeneratorWithChildren({
       tabWidth: descriptor.tabWidth,
       singleQuote: descriptor.singleQuote,
       trailingComma: descriptor.trailingComma,
+      semi: descriptor.semi,
     };
     const prettierIgnore: string[] = [
       '/coverage',

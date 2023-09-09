@@ -21,7 +21,7 @@ interface EmailTemplateConfiguration {
 
 // helper for making strongly-typed template configs
 function createTemplateConfig<
-  T extends Record<string, EmailTemplateConfiguration>
+  T extends Record<string, EmailTemplateConfiguration>,
 >(templateConfig: T): T {
   return templateConfig;
 }
@@ -44,7 +44,7 @@ interface RenderAndSendTemplateInput<TemplateKey extends SendgridTemplateKey> {
 }
 
 export async function renderAndSendTemplate<
-  TemplateKey extends SendgridTemplateKey
+  TemplateKey extends SendgridTemplateKey,
 >({
   templateKey,
   from,
@@ -60,7 +60,7 @@ export async function renderAndSendTemplate<
 
   await MailService.send({
     to,
-    from: from || {
+    from: from ?? {
       email: DEFAULT_FROM_EMAIL,
       name: DEFAULT_FROM_NAME,
     },
@@ -76,6 +76,6 @@ export async function renderAndSendTemplate<
   logger.info(
     `Successfully sent email to ${to} with template ${templateKey}! ${
       USE_EMAIL_SANDBOX ? '(Sandbox)' : ''
-    }`
+    }`,
   );
 }

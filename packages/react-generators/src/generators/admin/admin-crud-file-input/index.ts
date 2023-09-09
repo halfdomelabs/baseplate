@@ -50,9 +50,7 @@ const AdminCrudFileInputGenerator = createGeneratorWithChildren({
       ],
     });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

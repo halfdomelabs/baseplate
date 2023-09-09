@@ -117,7 +117,6 @@ const createMainTask = createTaskConfigBuilder(
         getProviders: () => ({
           adminCrudEmbeddedInput: {},
         }),
-        build: () => {},
       };
     },
   })

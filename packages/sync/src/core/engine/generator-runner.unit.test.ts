@@ -25,7 +25,9 @@ function buildGeneratorEntry(
 ): GeneratorEntry {
   const {
     id,
-    build = () => {},
+    build = () => {
+      /* empty */
+    },
     children = [],
     exports = {},
     dependencyMap = {},

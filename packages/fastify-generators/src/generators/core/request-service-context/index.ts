@@ -118,7 +118,7 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
                   ),
                 CONTEXT_BODY: TypescriptCodeUtils.mergeBlocks(
                   Object.values(contextFields)
-                    .map((f) => f.body && f.body('request', 'reply'))
+                    .map((f) => f.body?.('request', 'reply'))
                     .filter(notEmpty)
                 ),
                 CONTEXT_CREATOR: TypescriptCodeUtils.mergeExpressions(
@@ -172,7 +172,9 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
               getContextPath: () => contextPath,
             },
           }),
-          build: async () => {},
+          build: async () => {
+            // do nothing
+          },
         };
       },
     });

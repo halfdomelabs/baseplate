@@ -31,12 +31,12 @@ const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   HEADER: { type: 'code-block' },
 });
 
-export type ReactProvider = {
+export interface ReactProvider {
   getSrcFolder(): string;
   getIndexFile(): TypescriptSourceFile<typeof INDEX_FILE_CONFIG>;
   addVitePlugin(plugin: TypescriptCodeExpression): void;
   addServerOption(key: string, value: TypescriptCodeExpression): void;
-};
+}
 
 export const reactProvider = createProviderType<ReactProvider>('react');
 

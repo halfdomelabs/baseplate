@@ -42,9 +42,7 @@ const NexusPrismaEnumGenerator = createGeneratorWithChildren({
 
     nexusTypesFile.registerType({ block: nexusBlock });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

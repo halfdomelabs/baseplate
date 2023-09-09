@@ -46,9 +46,7 @@ const PrismaPasswordTransformerGenerator = createGeneratorWithChildren({
         isAsync: true,
       }),
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

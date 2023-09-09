@@ -24,7 +24,7 @@ interface UseUploadOptions<FileMetadata = never> {
 
 interface UseUploadResult {
   isUploading: boolean;
-  error: unknown | null;
+  error: unknown;
   progress: number;
   uploadFile: (file: File) => void;
   cancelUpload: () => void;
@@ -40,7 +40,7 @@ export function useUpload<FileMetadata>({
   trackProgress,
 }: UseUploadOptions<FileMetadata>): UseUploadResult {
   const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<unknown | null>(null);
+  const [error, setError] = useState<unknown>(null);
   const [progress, setProgress] = useState(0);
 
   const currentAbortController = useRef<AbortController | null>(null);
@@ -55,9 +55,10 @@ export function useUpload<FileMetadata>({
   }, []);
 
   const uploadFile = useCallback(
-    async (file: File): Promise<void> => {
+    (file: File) => {
       const abortController = new AbortController();
-      try {
+
+      const upload = async (): Promise<void> => {
         cancelUpload();
         currentAbortController.current = abortController;
 
@@ -106,16 +107,18 @@ export function useUpload<FileMetadata>({
         } else {
           throw new Error(`Unexpected response: ${response.statusText}`);
         }
-      } catch (err) {
+      };
+
+      upload().catch((err) => {
         setIsUploading(false);
         if (abortController.signal.aborted) {
           return;
         }
         if (onError) onError(err);
         setError(err);
-      }
+      });
     },
-    [cancelUpload, getUploadParameters, onError, onUploaded, trackProgress]
+    [cancelUpload, getUploadParameters, onError, onUploaded, trackProgress],
   );
 
   return {

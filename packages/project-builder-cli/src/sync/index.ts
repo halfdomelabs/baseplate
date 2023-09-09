@@ -183,7 +183,9 @@ export async function generateForDirectory(
       );
     } finally {
       // attempt to remove any temporary directory
-      await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {});
+      await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {
+        /* ignore errors */
+      });
     }
   }
 

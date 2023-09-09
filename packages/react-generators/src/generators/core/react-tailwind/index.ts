@@ -44,6 +44,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     eslint
       .getConfig()
       .appendUnique('eslintIgnore', [
+        'vite.config.ts',
         'postcss.config.js',
         'tailwind.config.js',
       ]);
@@ -74,7 +75,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
             data: {
               globalStyles: globalStyles.join('\n\n'),
             },
-          })
+          }),
         );
         // TODO: Dark mode not supported currently
         await builder.apply(
@@ -82,14 +83,14 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
             source: 'tailwind.config.js',
             destination: 'tailwind.config.js',
             shouldFormat: true,
-          })
+          }),
         );
         await builder.apply(
           copyFileAction({
             source: 'postcss.config.js',
             destination: 'postcss.config.js',
             shouldFormat: true,
-          })
+          }),
         );
       },
     };

@@ -82,7 +82,6 @@ const ReactAuth0Generator = createGeneratorWithChildren({
       getProviders: () => ({
         reactAuth0: {},
       }),
-      build: async () => {},
     };
   },
 });

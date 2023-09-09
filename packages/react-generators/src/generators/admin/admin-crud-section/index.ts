@@ -48,7 +48,6 @@ const AdminCrudSectionGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         adminCrudSection: {},
       }),
-      build: async () => {},
     };
   },
 });

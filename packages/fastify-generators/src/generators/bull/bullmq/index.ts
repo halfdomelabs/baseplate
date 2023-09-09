@@ -16,13 +16,11 @@ import { loggerServiceProvider } from '@src/generators/core/logger-service/index
 
 const descriptorSchema = z.object({});
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
 export type BullMqProvider = unknown;
 
 export const bullMqProvider = createProviderType<BullMqProvider>('bull-mq');
 
-const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
+const createMainTask = createTaskConfigBuilder(() => ({
   name: 'main',
   dependencies: {
     errorHandlerService: errorHandlerServiceProvider,

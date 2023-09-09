@@ -19,9 +19,7 @@ const NexusAuthorizeFieldGenerator = createGeneratorWithChildren({
       'authorize',
       nexusAuth.formatAuthorizeConfig(descriptor)
     );
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

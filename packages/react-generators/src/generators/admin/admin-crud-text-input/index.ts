@@ -51,9 +51,7 @@ const AdminCrudTextInputGenerator = createGeneratorWithChildren({
         },
       ],
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

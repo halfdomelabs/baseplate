@@ -71,7 +71,6 @@ const createMainTask = createTaskConfigBuilder(
         getProviders: () => ({
           adminCrudForeignDisplay: {},
         }),
-        build: async () => {},
       };
     },
   })

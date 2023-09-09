@@ -152,15 +152,13 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
 
             const envExampleFile = `${sortedConfigEntries
               .filter(([, { exampleValue }]) => exampleValue != null)
-              .map(
-                ([key, { exampleValue }]) => `${key}=${exampleValue as string}`
-              )
+              .map(([key, { exampleValue }]) => `${key}=${exampleValue}`)
               .join('\n')}\n`;
 
             const envFile = `${sortedConfigEntries
               .filter(
                 ([, { seedValue, exampleValue }]) =>
-                  (seedValue || exampleValue) != null
+                  (seedValue ?? exampleValue) != null
               )
               .map(
                 ([key, { seedValue, exampleValue }]) =>

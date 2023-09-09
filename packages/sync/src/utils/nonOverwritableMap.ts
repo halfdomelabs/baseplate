@@ -2,7 +2,7 @@
 import * as R from 'ramda';
 
 type ArrayKeys<T> = {
-  [K in keyof T]: T[K] extends Array<unknown> ? K : never;
+  [K in keyof T]: T[K] extends unknown[] ? K : never;
 }[keyof T];
 
 export interface NonOverwriteableMap<T extends object> {
@@ -21,7 +21,7 @@ export interface NonOverwriteableMap<T extends object> {
    */
   append<Key extends ArrayKeys<T>>(
     key: Key,
-    value: T[Key] extends Array<infer U> ? U : never
+    value: T[Key] extends (infer U)[] ? U : never
   ): this;
   /**
    * Appends an array of values to an array uniquely in the map
@@ -31,7 +31,7 @@ export interface NonOverwriteableMap<T extends object> {
    */
   appendUnique<Key extends ArrayKeys<T>>(
     key: Key,
-    value: T[Key] | (T[Key] extends Array<infer U> ? U : never)
+    value: T[Key] | (T[Key] extends (infer U)[] ? U : never)
   ): this;
   /**
    * Gets a value from the map

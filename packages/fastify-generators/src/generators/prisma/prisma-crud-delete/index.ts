@@ -150,7 +150,6 @@ const PrismaCrudDeleteGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaDeleteMethod: {},
       }),
-      build: async () => {},
     };
   },
 });

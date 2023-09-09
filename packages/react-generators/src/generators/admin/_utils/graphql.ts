@@ -14,5 +14,5 @@ export function convertExpressionToField(expression: string): GraphQLField {
       fields: prev ? [prev] : undefined,
     }),
     undefined as undefined | GraphQLField
-  ) as GraphQLField;
+  )!;
 }

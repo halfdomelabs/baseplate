@@ -7,8 +7,8 @@ const DATADOG_ENABLED = !!config.VITE_DATADOG_CLIENT_TOKEN;
 
 if (DATADOG_ENABLED) {
   datadogLogs.init({
-    clientToken: config.VITE_DATADOG_CLIENT_TOKEN || '',
-    site: config.VITE_DATADOG_SITE || 'datadoghq.com',
+    clientToken: config.VITE_DATADOG_CLIENT_TOKEN ?? '',
+    site: config.VITE_DATADOG_SITE ?? 'datadoghq.com',
     service: APP_NAME,
     env: config.VITE_ENVIRONMENT,
     forwardConsoleLogs: ['log', 'info', 'warn', 'error'],

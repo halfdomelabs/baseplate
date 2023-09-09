@@ -9,7 +9,7 @@ function getWsUrl(): string {
   if (config.VITE_GRAPH_API_ENDPOINT.includes('http')) {
     return config.VITE_GRAPH_API_ENDPOINT.replace('https://', 'wss://').replace(
       'http://',
-      'ws://'
+      'ws://',
     );
   }
   // handle relative API endpoint, e.g. /api/graphql
@@ -24,12 +24,12 @@ const splitLink = split(
   ({ query }) => {
     const definition = getMainDefinition(query);
     return (
-      definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
+      definition.kind === Kind.OPERATION_DEFINITION &&
+      definition.operation === OperationTypeNode.SUBSCRIPTION
     );
   },
   WS_LINK,
-  HTTP_LINK
+  HTTP_LINK,
 );
 // SPLIT_LINK:END
 

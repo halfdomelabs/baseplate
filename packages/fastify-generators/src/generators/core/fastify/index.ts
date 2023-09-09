@@ -205,7 +205,6 @@ const FastifyGenerator = createGeneratorWithTasks({
               },
             };
           },
-          build() {},
         };
       },
     });

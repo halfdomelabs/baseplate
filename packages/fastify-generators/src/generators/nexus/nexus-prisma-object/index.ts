@@ -100,9 +100,7 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
       category: 'object-type',
     });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

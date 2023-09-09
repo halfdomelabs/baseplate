@@ -21,9 +21,7 @@ const PrismaModelUniqueGenerator = createGeneratorWithChildren({
       name: '@@unique',
       args: [fields.map(({ name }) => name)],
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

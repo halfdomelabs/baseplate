@@ -46,9 +46,7 @@ const createMainTask = createTaskConfigBuilder(({ enumName }: Descriptor) => ({
       block: pothosBlock,
     });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 }));
 

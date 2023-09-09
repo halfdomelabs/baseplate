@@ -9,12 +9,12 @@ const TEST_DATABASE_NAME = 'TEST_DATABASE_NAME_VALUE';
 
 export function replaceDatabase(
   connectionString: string,
-  database: string
+  database: string,
 ): string {
-  const { host, user = '', password = '', port } = parse(connectionString);
+  const { host, user, password, port } = parse(connectionString);
 
-  return `postgresql://${user || ''}:${password || ''}@${host || ''}:${
-    port || 5432
+  return `postgresql://${user ?? ''}:${password ?? ''}@${host ?? ''}:${
+    port ? port : 5432
   }/${database}`;
 }
 
@@ -29,10 +29,10 @@ export async function createTestDatabase(databaseUrl: string): Promise<string> {
 
   try {
     await prismaClient.$executeRaw`DROP DATABASE IF EXISTS ${Prisma.raw(
-      TEST_DATABASE_NAME
+      TEST_DATABASE_NAME,
     )}`;
     await prismaClient.$executeRaw`CREATE DATABASE ${Prisma.raw(
-      TEST_DATABASE_NAME
+      TEST_DATABASE_NAME,
     )}`;
   } finally {
     await prismaClient.$disconnect();
@@ -51,12 +51,30 @@ export async function createTestDatabase(databaseUrl: string): Promise<string> {
   return testDatabaseUrl;
 }
 
+export async function createTestDatabaseFromTemplate(
+  databaseUrl: string,
+  templateDatabaseName: string,
+): Promise<string> {
+  const prismaClient = getTestPrisma(databaseUrl);
+  const newDatabaseName = `${templateDatabaseName}-${nanoid(8)}`;
+
+  try {
+    await prismaClient.$executeRaw`CREATE DATABASE ${Prisma.raw(
+      newDatabaseName,
+    )} WITH TEMPLATE ${Prisma.raw(templateDatabaseName)}`;
+  } finally {
+    await prismaClient.$disconnect();
+  }
+
+  return replaceDatabase(databaseUrl, newDatabaseName);
+}
+
 export async function destroyTestDatabase(databaseUrl: string): Promise<void> {
   const prismaClient = getTestPrisma(databaseUrl);
 
   try {
     await prismaClient.$executeRaw`DROP DATABASE IF EXISTS ${Prisma.raw(
-      TEST_DATABASE_NAME
+      TEST_DATABASE_NAME,
     )}`;
   } finally {
     await prismaClient.$disconnect();

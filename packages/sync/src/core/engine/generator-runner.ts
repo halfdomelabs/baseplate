@@ -57,7 +57,7 @@ export async function executeGeneratorEntry(
               `Could not resolve required dependency ${key} in ${taskId}`
             );
           }
-          return provider as Provider; // cheat Type system to prevent null from appearing
+          return provider!; // cheat Type system to prevent null from appearing
         }, dependencies);
 
         const taskInstance = task.run(resolvedDependencies);
@@ -105,7 +105,9 @@ export async function executeGeneratorEntry(
           formatter
         );
 
-        await Promise.resolve(generator.build(outputBuilder));
+        if (generator.build) {
+          await Promise.resolve(generator.build(outputBuilder));
+        }
 
         generatorOutputs.push(outputBuilder.output);
       } else {

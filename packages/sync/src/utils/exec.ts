@@ -1,5 +1,4 @@
 import { execaCommand } from 'execa';
-import _ from 'lodash';
 
 export class ExecError extends Error {
   constructor(message: string, public readonly stderr: string) {

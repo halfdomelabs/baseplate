@@ -93,7 +93,6 @@ const AuthRolesGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         authRoles: {},
       }),
-      build: async () => {},
     };
   },
 });

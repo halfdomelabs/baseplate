@@ -41,9 +41,7 @@ const PrismaTimestampFieldsGenerator = createGeneratorWithChildren({
         scalarType: 'dateTime',
       });
     }
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

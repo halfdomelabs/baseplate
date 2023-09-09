@@ -1,8 +1,8 @@
 import jsonPatch from 'fast-json-patch';
 import { merge, diffComm } from 'node-diff3';
 
-type CommonCommResult = { common: string[] };
-type DiffCommResult = { buffer1: string[]; buffer2: string[] };
+interface CommonCommResult { common: string[] }
+interface DiffCommResult { buffer1: string[]; buffer2: string[] }
 type CommResult = CommonCommResult | DiffCommResult;
 
 /**

@@ -14,10 +14,10 @@ export function useSession(): SessionData {
 
   const sessionData: SessionData = useMemo(
     () => ({
-      userId: (user?.[USER_ID_CLAIM] || null) as string | null,
+      userId: (user?.[USER_ID_CLAIM] ?? null) as string | null,
       isAuthenticated,
     }),
-    [user, isAuthenticated]
+    [user, isAuthenticated],
   );
   return sessionData;
 }

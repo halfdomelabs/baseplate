@@ -24,7 +24,7 @@ export interface ManagedRepeatableJobsConfig<DataType = unknown> {
  * ones that are missing.
  */
 export async function synchronizeRepeatableJobs(
-  configs: ManagedRepeatableJobsConfig[]
+  configs: ManagedRepeatableJobsConfig[],
 ): Promise<void> {
   logger.info(`Synchronizing repeatable jobs...`);
 
@@ -36,14 +36,14 @@ export async function synchronizeRepeatableJobs(
       await Promise.all(
         config.jobs.map(async (job) => {
           const existingJob = repeatableJobs.find(
-            (repeatableJob) => repeatableJob.name === job.name
+            (repeatableJob) => repeatableJob.name === job.name,
           );
           const jobHasIdenticalRepeat =
             existingJob &&
-            (existingJob?.pattern || '') ===
-              (job.pattern || String(job.every) || '') &&
-            (existingJob?.endDate || '') ===
-              ((job.endDate && new Date(job.endDate).getTime()) || '');
+            (existingJob?.pattern ?? '') ===
+              String(job.pattern ?? job.every ?? '') &&
+            (existingJob?.endDate ?? '') ===
+              ((job.endDate && new Date(job.endDate).getTime()) ?? '');
 
           // if job already exists and has identical repeat, do nothing
           if (jobHasIdenticalRepeat) {
@@ -53,7 +53,7 @@ export async function synchronizeRepeatableJobs(
           // if job already exists and has different repeat, remove it
           if (existingJob && !jobHasIdenticalRepeat) {
             logger.info(
-              `Removed duplicate repeatable job ${job.name} for queue ${queue.name}`
+              `Removed duplicate repeatable job ${job.name} for queue ${queue.name}`,
             );
             await queue.removeRepeatableByKey(existingJob.key);
           }
@@ -69,11 +69,11 @@ export async function synchronizeRepeatableJobs(
           });
 
           logger.info(
-            `Added repeatable job ${job.name} for queue ${queue.name}`
+            `Added repeatable job ${job.name} for queue ${queue.name}`,
           );
-        })
+        }),
       );
-    })
+    }),
   );
 
   logger.info(`Repeatable jobs synchronized!`);

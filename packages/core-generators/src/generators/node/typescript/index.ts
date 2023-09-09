@@ -33,7 +33,9 @@ import { nodeProvider } from '../node/index.js';
 // CompilerOptions which would have to be done manually
 export type TypescriptCompilerOptions = Record<string, unknown>;
 
-export type TypescriptConfigReference = { path: string };
+export interface TypescriptConfigReference {
+  path: string;
+}
 
 export interface TypescriptConfigProvider {
   setTypescriptVersion(version: string): void;
@@ -50,7 +52,7 @@ export const typescriptConfigProvider =
 
 export interface TypescriptProvider {
   createTemplate<
-    Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>
+    Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>,
   >(
     config: Config,
     options?: Omit<TypescriptSourceFileOptions, 'pathMappings'>

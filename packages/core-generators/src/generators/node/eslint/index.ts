@@ -31,13 +31,7 @@ const EslintGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node }) {
     const configMap = createNonOverwriteableMap<EslintConfig>(
       {
-        eslintIgnore: [
-          '/coverage',
-          '/dist',
-          '/lib',
-          '/node_modules',
-          '.eslintrc.js',
-        ],
+        eslintIgnore: ['/coverage', '/dist', '/lib', '/node_modules'],
         extraTsconfigProjects: [],
       },
       { name: 'eslint-config', mergeArraysUniquely: true }
@@ -57,24 +51,22 @@ const EslintGenerator = createGeneratorWithChildren({
           disableJest: config.disableJest,
         });
 
-        const airbnbPackage: Record<string, string> = config.react
+        const reactPackages: Record<string, string> = config.react
           ? {
-              'eslint-config-airbnb': '19.0.4',
               'eslint-plugin-jsx-a11y': '6.7.1',
-              'eslint-plugin-react': '7.32.2',
+              'eslint-plugin-react': '7.33.2',
               'eslint-plugin-react-hooks': '4.6.0',
             }
-          : { 'eslint-config-airbnb-base': '15.0.0' };
+          : {};
 
         node.addDevPackages({
-          '@typescript-eslint/eslint-plugin': '5.62.0',
-          '@typescript-eslint/parser': '5.62.0',
-          eslint: '8.44.0',
-          ...airbnbPackage,
-          'eslint-config-airbnb-typescript': '17.0.0',
-          'eslint-config-prettier': '8.8.0',
-          'eslint-import-resolver-typescript': '3.5.5',
-          'eslint-plugin-import': '2.27.5',
+          '@typescript-eslint/eslint-plugin': '6.6.0',
+          '@typescript-eslint/parser': '6.6.0',
+          eslint: '8.49.0',
+          ...reactPackages,
+          'eslint-config-prettier': '9.0.0',
+          'eslint-import-resolver-typescript': '3.6.0',
+          'eslint-plugin-import': '2.28.1',
           ...(config.disableJest
             ? {}
             : {

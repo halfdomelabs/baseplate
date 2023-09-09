@@ -11,7 +11,7 @@ export interface CopyTypescriptFilesOptions {
     | string
     | {
         path: string;
-        replacements?: { [key: string]: string };
+        replacements?: Record<string, string>;
         neverOverwrite?: boolean;
       }
   )[];

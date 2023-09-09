@@ -150,7 +150,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
             );
 
             const dataDependencies = mergeAdminCrudDataDependencies(
-              inputFields.flatMap((f) => f.dataDependencies || [])
+              inputFields.flatMap((f) => f.dataDependencies ?? [])
             );
 
             dataDependencies.forEach((dep) => {
@@ -214,17 +214,18 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
             );
 
             const inputLoaders = inputFields.flatMap(
-              (field) => field.dataDependencies?.map((d) => d.loader) || []
+              (field) => field.dataDependencies?.map((d) => d.loader) ?? []
             );
 
             const inputLoaderExtraProps = inputFields
-              .flatMap((field) =>
-                field.dataDependencies?.map(
-                  (d) =>
-                    `${d.propName}={${d.propLoaderValueGetter(
-                      d.loader.loaderValueName
-                    )}}`
-                )
+              .flatMap(
+                (field) =>
+                  field.dataDependencies?.map(
+                    (d) =>
+                      `${d.propName}={${d.propLoaderValueGetter(
+                        d.loader.loaderValueName
+                      )}}`
+                  )
               )
               .join(' ');
 
