@@ -79,7 +79,7 @@ export type TypescriptTemplateConfigOrEntry<T = Record<string, unknown>> = {
 };
 
 type TypescriptTemplateConfigFromEntry<
-  T extends TypescriptCodeConfig | TypescriptCodeEntry
+  T extends TypescriptCodeConfig | TypescriptCodeEntry,
 > = T extends TypescriptCodeConfig
   ? T
   : T extends TypescriptCodeBlock
@@ -96,7 +96,7 @@ type TypescriptTemplateConfig<
   T extends TypescriptTemplateConfigOrEntry = Record<
     string,
     TypescriptCodeConfig | TypescriptCodeEntry
-  >
+  >,
 > = {
   [K in keyof T]: TypescriptTemplateConfigFromEntry<T[K]>;
 };
@@ -123,7 +123,7 @@ type InferCodeEntries<T extends TypescriptTemplateConfigOrEntry> = {
 export function createTypescriptTemplateConfig<
   T extends TypescriptTemplateConfigOrEntry<
     Record<string, TypescriptCodeEntry | TypescriptCodeConfig>
-  >
+  >,
 >(config: T): T {
   return config;
 }
@@ -138,7 +138,7 @@ interface CodeEntriesContainer {
 export abstract class TypescriptSourceContent<
   T extends TypescriptTemplateConfigOrEntry<
     Record<string, TypescriptCodeEntry | TypescriptCodeConfig>
-  >
+  >,
 > {
   protected config: Record<string, TypescriptCodeConfig>;
 
@@ -180,20 +180,20 @@ export abstract class TypescriptSourceContent<
     this.config = config as TypescriptTemplateConfig<T>;
     const keys = Object.keys(config);
     this.codeBlocks = R.fromPairs(
-      keys.filter((k) => config[k].type === 'code-block').map((k) => [k, []])
+      keys.filter((k) => config[k].type === 'code-block').map((k) => [k, []]),
     );
     this.codeWrappers = R.fromPairs(
-      keys.filter((k) => config[k].type === 'code-wrapper').map((k) => [k, []])
+      keys.filter((k) => config[k].type === 'code-wrapper').map((k) => [k, []]),
     );
     this.codeExpressions = R.fromPairs(
       keys
         .filter((k) => config[k].type === 'code-expression')
-        .map((k) => [k, []])
+        .map((k) => [k, []]),
     );
     this.stringReplacements = R.fromPairs(
       keys
         .filter((k) => config[k].type === 'string-replacement')
-        .map((k) => [k, []])
+        .map((k) => [k, []]),
     );
   }
 
@@ -213,11 +213,11 @@ export abstract class TypescriptSourceContent<
     name: K,
     entry: T[K] extends TypescriptCodeBlockConfig
       ? TypescriptCodeBlock | string
-      : never
+      : never,
   ): this {
     this.checkNotGenerated();
     this.codeBlocks[name].push(
-      typeof entry === 'string' ? new TypescriptCodeBlock(entry) : entry
+      typeof entry === 'string' ? new TypescriptCodeBlock(entry) : entry,
     );
     return this;
   }
@@ -226,7 +226,7 @@ export abstract class TypescriptSourceContent<
     name: K,
     entry: T[K] extends TypescriptCodeWrapperConfig
       ? TypescriptCodeWrapper
-      : never
+      : never,
   ): this {
     this.checkNotGenerated();
     this.codeWrappers[name].push(entry);
@@ -237,11 +237,11 @@ export abstract class TypescriptSourceContent<
     name: K,
     entry: T[K] extends TypescriptCodeExpressionConfig
       ? TypescriptCodeExpression | string
-      : never
+      : never,
   ): this {
     this.checkNotGenerated();
     this.codeExpressions[name].push(
-      typeof entry === 'string' ? new TypescriptCodeExpression(entry) : entry
+      typeof entry === 'string' ? new TypescriptCodeExpression(entry) : entry,
     );
     return this;
   }
@@ -250,11 +250,13 @@ export abstract class TypescriptSourceContent<
     name: K,
     entry: T[K] extends TypescriptStringReplacementConfig
       ? TypescriptStringReplacement | string
-      : never
+      : never,
   ): this {
     this.checkNotGenerated();
     this.stringReplacements[name].push(
-      typeof entry === 'string' ? new TypescriptStringReplacement(entry) : entry
+      typeof entry === 'string'
+        ? new TypescriptStringReplacement(entry)
+        : entry,
     );
     return this;
   }
@@ -299,7 +301,7 @@ export abstract class TypescriptSourceContent<
 
   protected processFileReplacements(
     template: string,
-    stringReplacements: CodeEntriesContainer['stringReplacements']
+    stringReplacements: CodeEntriesContainer['stringReplacements'],
   ): string {
     // strip any ts-nocheck from header
     const strippedTemplate = template.replace(/^\/\/ @ts-nocheck\n/, '');
@@ -316,7 +318,7 @@ export abstract class TypescriptSourceContent<
       const replacementValue = values
         ? TypescriptCodeUtils.mergeStringReplacements(
             values,
-            config.multiple?.separator || ''
+            config.multiple?.separator || '',
           ).content
         : '';
       const transformedReplacement =
@@ -326,11 +328,11 @@ export abstract class TypescriptSourceContent<
       const searchKey = config.asSingleLineComment ? `// ${key}` : key;
       const newValue = prevValue.replace(
         new RegExp(searchKey, 'g'),
-        transformedReplacement || ''
+        transformedReplacement || '',
       );
       if (newValue === prevValue) {
         throw new Error(
-          `String replacement failed for ${key}: Could not find ${searchKey}`
+          `String replacement failed for ${key}: Could not find ${searchKey}`,
         );
       }
       return newValue;
@@ -387,7 +389,7 @@ export abstract class TypescriptSourceContent<
 
   protected renderIntoSourceFile(
     file: SourceFile,
-    entries: CodeEntriesContainer
+    entries: CodeEntriesContainer,
   ): SourceFile {
     const codeEntries = this.getCodeEntriesWithDefaults();
     const blockReplacements: {
@@ -412,7 +414,7 @@ export abstract class TypescriptSourceContent<
               ? ''
               : TypescriptCodeUtils.mergeBlocks(
                   codeEntries.codeBlocks[identifier],
-                  '\n\n'
+                  '\n\n',
                 ).content;
             blockReplacements.push({
               identifier: node as Identifier,
@@ -427,7 +429,7 @@ export abstract class TypescriptSourceContent<
               ? ''
               : TypescriptCodeUtils.mergeExpressions(
                   providedExpressions,
-                  configEntry.multiple?.separator || ''
+                  configEntry.multiple?.separator || '',
                 ).content;
             expressionReplacements.push({
               identifier: node as Identifier,
@@ -447,7 +449,7 @@ export abstract class TypescriptSourceContent<
       const parent = identifier.getParent();
       if (!ALLOWED_PARENTS.includes(parent.getKind())) {
         throw new Error(
-          'The parent was not of a syntax kind of Expression/Property'
+          'The parent was not of a syntax kind of Expression/Property',
         );
       }
       parent.replaceWithText(contents);
@@ -490,7 +492,7 @@ export abstract class TypescriptSourceContent<
     });
     wrapperReplacements.forEach(({ callExpression, wrap }) => {
       callExpression.replaceWithText(
-        wrap(callExpression.getArguments()[0].getFullText() || '')
+        wrap(callExpression.getArguments()[0].getFullText() || ''),
       );
     });
 
@@ -501,7 +503,7 @@ export abstract class TypescriptSourceContent<
 }
 
 export class TypescriptSourceBlock<
-  T extends TypescriptTemplateConfigOrEntry<any>
+  T extends TypescriptTemplateConfigOrEntry<any>,
 > extends TypescriptSourceContent<T> {
   protected blockOptions: TypescriptCodeEntryOptions;
 
@@ -517,7 +519,7 @@ export class TypescriptSourceBlock<
     // run through string replacements
     const replacedTemplate = this.processFileReplacements(
       template,
-      entriesWithDefault.stringReplacements
+      entriesWithDefault.stringReplacements,
     );
     const file = project.createSourceFile('/', replacedTemplate);
 
@@ -534,8 +536,8 @@ export class TypescriptSourceBlock<
           Object.values(entriesWithDefault.stringReplacements),
           this.blockOptions,
           entriesWithDefault.codeAdditions,
-        ].flat(2)
-      )
+        ].flat(2),
+      ),
     );
   }
 }
@@ -558,7 +560,7 @@ function unnestHeaderBlocks(block: TypescriptCodeBlock): TypescriptCodeBlock[] {
 }
 
 export class TypescriptSourceFile<
-  T extends TypescriptTemplateConfigOrEntry<any>
+  T extends TypescriptTemplateConfigOrEntry<any>,
 > extends TypescriptSourceContent<T> {
   protected sourceFileOptions: TypescriptSourceFileOptions;
 
@@ -577,12 +579,12 @@ export class TypescriptSourceFile<
     // run through string replacements
     const replacedTemplate = this.processFileReplacements(
       template,
-      entriesWithDefault.stringReplacements
+      entriesWithDefault.stringReplacements,
     );
 
     const file = project.createSourceFile(
       path.basename(destination),
-      replacedTemplate
+      replacedTemplate,
     );
 
     // insert manual imports
@@ -596,13 +598,13 @@ export class TypescriptSourceFile<
 
     const headerBlocks = providedEntries.flatMap(
       (e) =>
-        e?.options?.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) || []
+        e?.options?.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) || [],
     );
 
     const entries = [...providedEntries, ...headerBlocks];
 
     const importStrings = R.flatten(
-      entries.map((e) => e?.options?.importText).filter(notEmpty)
+      entries.map((e) => e?.options?.importText).filter(notEmpty),
     ).join('\n');
 
     file.insertText(0, importStrings);
@@ -627,12 +629,12 @@ export class TypescriptSourceFile<
         (a, b) =>
           a.options.headerKey === b.options.headerKey &&
           a.options.headerKey != null,
-        headerBlocks
+        headerBlocks,
       );
       file.insertText(0, (writer) => {
         writer.writeLine(
           TypescriptCodeUtils.mergeBlocks(deduplicatedHeaderBlocks, '\n\n')
-            .content
+            .content,
         );
         writer.writeLine('');
       });
@@ -659,8 +661,8 @@ export class TypescriptSourceFile<
             resolveModule(
               moduleSpecifier.getLiteralValue(),
               path.dirname(destination),
-              { pathMapEntries: this.sourceFileOptions.pathMappings }
-            )
+              { pathMapEntries: this.sourceFileOptions.pathMappings },
+            ),
           );
         }
       }
@@ -675,7 +677,7 @@ export class TypescriptSourceFile<
   renderToActionFromText(
     template: string,
     destination: string,
-    options?: FileWriteOptions
+    options?: FileWriteOptions,
   ): BuilderAction {
     return {
       execute: async (builder) => {
@@ -686,7 +688,7 @@ export class TypescriptSourceFile<
             destination,
             contents,
             ...options,
-          })
+          }),
         );
       },
     };
@@ -695,7 +697,7 @@ export class TypescriptSourceFile<
   renderToAction(
     templateFile: string,
     destination?: string,
-    options?: FileWriteOptions
+    options?: FileWriteOptions,
   ): BuilderAction {
     return {
       execute: async (builder) => {
@@ -707,7 +709,7 @@ export class TypescriptSourceFile<
             destination: destination || templateFile,
             contents,
             ...options,
-          })
+          }),
         );
       },
     };

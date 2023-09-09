@@ -33,11 +33,11 @@ const createMainTask = createTaskConfigBuilder(({ enumName }: Descriptor) => ({
         ENUM_OPTIONS: TypescriptCodeUtils.mergeExpressionsAsObject({
           values: TypescriptCodeUtils.mergeExpressionsAsObject(
             Object.fromEntries(
-              enumBlock.values.map((value) => [value.name, '{}'])
-            )
+              enumBlock.values.map((value) => [value.name, '{}']),
+            ),
           ),
         }),
-      }
+      },
     );
 
     pothosEnumsFile.registerEnum({

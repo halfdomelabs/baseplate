@@ -8,12 +8,12 @@ import { ReactRouteLayout, ReactRoute } from '@src/providers/routes.js';
 
 export function renderRoutes(
   routes: ReactRoute[],
-  layouts: ReactRouteLayout[]
+  layouts: ReactRouteLayout[],
 ): TypescriptCodeExpression {
   // group routes by layout key
   const routesByLayoutKey = _.groupBy(
     routes,
-    (route) => route.layoutKey || 'no-layout'
+    (route) => route.layoutKey || 'no-layout',
   );
 
   const renderedRoutes = Object.keys(routesByLayoutKey).flatMap((layoutKey) => {
@@ -37,9 +37,9 @@ export function renderRoutes(
             element: route.element,
             children: route.children,
           },
-          'import { Route } from "react-router-dom"'
-        )
-      )
+          'import { Route } from "react-router-dom"',
+        ),
+      ),
     );
     if (layout) {
       return TypescriptCodeUtils.mergeExpressionsAsJsxElement(
@@ -48,7 +48,7 @@ export function renderRoutes(
           element: layout.element,
           children: routeExpressions,
         },
-        'import { Route } from "react-router-dom"'
+        'import { Route } from "react-router-dom"',
       );
     }
     return routeExpressions;

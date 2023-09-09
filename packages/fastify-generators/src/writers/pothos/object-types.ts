@@ -18,7 +18,7 @@ import { writePothosObjectFieldFromDtoScalarField } from './scalar-fields.js';
 
 export function writeSimplePothosObjectFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
   // recursive call
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -40,7 +40,7 @@ export function writeSimplePothosObjectFieldFromDtoNestedField(
 
 export function writePothosSimpleObjectFieldsFromDtoFields(
   fields: ServiceOutputDtoField[],
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
   const pothosFields: PothosExpressionWithChildren[] = fields.map((field) => {
     if (field.type === 'scalar') {
@@ -54,9 +54,9 @@ export function writePothosSimpleObjectFieldsFromDtoFields(
   return {
     expression: TypescriptCodeUtils.mergeExpressionsAsObject(
       Object.fromEntries(
-        pothosFields.map((field, i) => [fields[i].name, field.expression])
+        pothosFields.map((field, i) => [fields[i].name, field.expression]),
       ),
-      { wrapWithParenthesis: true }
+      { wrapWithParenthesis: true },
     ),
     childDefinitions: pothosFields
       .flatMap((field) => field.childDefinitions)
@@ -67,7 +67,7 @@ export function writePothosSimpleObjectFieldsFromDtoFields(
 export function writePothosSimpleObjectDefinitionFromDtoFields(
   name: string,
   fields: ServiceOutputDtoField[],
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosTypeDefinitionWithChildren {
   const pothosFields = writePothosSimpleObjectFieldsFromDtoFields(fields, {
     ...options,
@@ -85,7 +85,7 @@ export function writePothosSimpleObjectDefinitionFromDtoFields(
       BUILDER: options.schemaBuilder,
       NAME: quot(name),
       FIELDS: pothosFields.expression,
-    }
+    },
   );
 
   return {
@@ -98,7 +98,7 @@ export function writePothosSimpleObjectDefinitionFromDtoFields(
 
 export function getPothosTypeForNestedObject(
   field: ServiceOutputDtoNestedField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
   const { name } = field.nestedType;
   const objectType = options.typeReferences.getObjectType(name);
@@ -107,7 +107,7 @@ export function getPothosTypeForNestedObject(
     return {
       expression: wrapPothosTypeWithList(
         getExpressionFromPothosTypeReference(objectType),
-        field.isList
+        field.isList,
       ),
     };
   }
@@ -124,7 +124,7 @@ export function getPothosTypeForNestedObject(
   return {
     expression: wrapPothosTypeWithList(
       TypescriptCodeUtils.createExpression(objectDefinition.exportName),
-      field.isList
+      field.isList,
     ),
     childDefinitions: [objectDefinition, ...(childDefinitions || [])],
   };

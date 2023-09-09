@@ -86,7 +86,7 @@ interface CheckedInputLabelledControllerProps<T extends FieldValues>
 }
 
 CheckedInput.LabelledController = function CheckedInputLabelledController<
-  T extends FieldValues
+  T extends FieldValues,
 >({
   control,
   name,

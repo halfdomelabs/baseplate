@@ -31,7 +31,7 @@ const scalarFieldTypeInfoMap: Record<ScalarFieldType, ScalarFieldTypeInfo> = {
 };
 
 export function getScalarFieldTypeInfo(
-  scalarFieldType: ScalarFieldType
+  scalarFieldType: ScalarFieldType,
 ): ScalarFieldTypeInfo {
   if (scalarFieldType === 'enum') {
     throw new Error(`Enum scalar type is not supported`);

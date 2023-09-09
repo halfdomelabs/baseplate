@@ -34,7 +34,7 @@ const descriptorSchema = z.object({
       name: z.string().min(1),
       bucketConfigVar: z.string().min(1),
       hostedUrlConfigVar: z.string().optional(),
-    })
+    }),
   ),
   categories: z.array(
     z.object({
@@ -43,7 +43,7 @@ const descriptorSchema = z.object({
       maxFileSize: z.number(),
       usedByRelation: z.string().min(1),
       uploadRoles: z.array(z.string().min(1)),
-    })
+    }),
   ),
 });
 
@@ -51,7 +51,7 @@ export type StorageModuleProvider = ImportMapper;
 
 export const storageModuleProvider = createProviderType<StorageModuleProvider>(
   'storage-module',
-  { isReadOnly: true }
+  { isReadOnly: true },
 );
 
 const StorageModuleGenerator = createGeneratorWithTasks({
@@ -59,7 +59,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
   getDefaultChildGenerators: () => ({}),
   buildTasks(
     taskBuilder,
-    { fileModel, s3Adapters, categories = [], fileObjectTypeRef }
+    { fileModel, s3Adapters, categories = [], fileObjectTypeRef },
   ) {
     taskBuilder.addTask({
       name: 'setup-file-input-schema',
@@ -74,7 +74,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
           exportName: 'fileUploadInputInputType',
           moduleName: `@/${path.join(
             moduleFolder,
-            'schema/file-upload.input-type'
+            'schema/file-upload.input-type',
           )}`,
         });
 
@@ -91,10 +91,10 @@ const StorageModuleGenerator = createGeneratorWithTasks({
       run({ appModule }) {
         const moduleFolder = appModule.getModuleFolder();
         const [validatorImport] = makeImportAndFilePath(
-          `${moduleFolder}/services/validate-upload-input.ts`
+          `${moduleFolder}/services/validate-upload-input.ts`,
         );
         const [adaptersImport] = makeImportAndFilePath(
-          `${moduleFolder}/constants/adapters.ts`
+          `${moduleFolder}/constants/adapters.ts`,
         );
 
         return {
@@ -151,7 +151,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
       }) {
         const moduleFolder = appModule.getModuleFolder();
         const [, validatorPath] = makeImportAndFilePath(
-          `${moduleFolder}/services/validate-upload-input.ts`
+          `${moduleFolder}/services/validate-upload-input.ts`,
         );
 
         node.addPackages({
@@ -195,13 +195,13 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                   'adapters/url.ts',
                   'adapters/types.ts',
                 ],
-              })
+              }),
             );
             // Copy schema
             async function registerSchemaFile(file: string): Promise<void> {
               appModule.addModuleImport(`@/${moduleFolder}/${file}`);
               pothosSchema.registerSchemaFile(
-                path.join(moduleFolder, `${file}.ts`)
+                path.join(moduleFolder, `${file}.ts`),
               );
 
               const fileObjectRef = fileObjectType.getTypeReference();
@@ -214,7 +214,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                     FILE_OBJECT_MODULE: fileObjectRef.moduleName,
                     FILE_OBJECT_TYPE: fileObjectRef.exportName,
                   },
-                })
+                }),
               );
             }
 
@@ -229,41 +229,41 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             const modelType = prismaOutput.getModelTypeExpression(fileModel);
             const createPresignedUploadUrlFile = typescript.createTemplate(
               { FILE_MODEL: model, FILE_MODEL_TYPE: modelType },
-              { importMappers: [errorHandlerService, serviceContext] }
+              { importMappers: [errorHandlerService, serviceContext] },
             );
             await builder.apply(
               createPresignedUploadUrlFile.renderToAction(
                 'services/create-presigned-upload-url.ts',
                 path.join(
                   moduleFolder,
-                  'services/create-presigned-upload-url.ts'
-                )
-              )
+                  'services/create-presigned-upload-url.ts',
+                ),
+              ),
             );
 
             const createPresignedDownloadUrlFile = typescript.createTemplate(
               { FILE_MODEL: model },
-              { importMappers: [errorHandlerService, serviceContext] }
+              { importMappers: [errorHandlerService, serviceContext] },
             );
             await builder.apply(
               createPresignedDownloadUrlFile.renderToAction(
                 'services/create-presigned-download-url.ts',
                 path.join(
                   moduleFolder,
-                  'services/create-presigned-download-url.ts'
-                )
-              )
+                  'services/create-presigned-download-url.ts',
+                ),
+              ),
             );
 
             const downloadFile = typescript.createTemplate(
               { FILE_MODEL: model, FILE_MODEL_TYPE: modelType },
-              { importMappers: [errorHandlerService, serviceContext] }
+              { importMappers: [errorHandlerService, serviceContext] },
             );
             await builder.apply(
               downloadFile.renderToAction(
                 'services/download-file.ts',
-                path.join(moduleFolder, 'services/download-file.ts')
-              )
+                path.join(moduleFolder, 'services/download-file.ts'),
+              ),
             );
 
             const validateUploadInputFile = typescript.createTemplate(
@@ -274,13 +274,13 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                   errorHandlerService,
                   serviceContext,
                 ],
-              }
+              },
             );
             await builder.apply(
               validateUploadInputFile.renderToAction(
                 'services/validate-upload-input.ts',
-                validatorPath
-              )
+                validatorPath,
+              ),
             );
 
             // Copy utils
@@ -298,7 +298,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                   },
                 ],
                 importMappers: [serviceContext, errorHandlerService],
-              })
+              }),
             );
 
             // Copy constants
@@ -333,7 +333,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                   [
                     `import { createS3Adapter } from '../adapters';`,
                     `import { config } from '%config';`,
-                  ]
+                  ],
                 );
             });
 
@@ -344,13 +344,13 @@ const StorageModuleGenerator = createGeneratorWithTasks({
               },
               {
                 importMappers: [configService],
-              }
+              },
             );
             await builder.apply(
               adaptersFile.renderToAction(
                 'constants/adapters.ts',
-                path.join(moduleFolder, 'constants/adapters.ts')
-              )
+                path.join(moduleFolder, 'constants/adapters.ts'),
+              ),
             );
 
             const categoriesList: TypescriptCodeExpression[] = categories.map(
@@ -359,16 +359,16 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                   name: quot(category.name),
                   authorizeUpload: category.uploadRoles?.length
                     ? TypescriptCodeUtils.mergeExpressionsAsArray(
-                        category.uploadRoles.map(quot)
+                        category.uploadRoles.map(quot),
                       ).wrap(
                         (contents) =>
-                          `({ auth }) => auth.hasSomeRole(${contents})`
+                          `({ auth }) => auth.hasSomeRole(${contents})`,
                       )
                     : undefined,
                   defaultAdapter: quot(category.defaultAdapter),
                   maxFileSize: `${category.maxFileSize} * MEGABYTE`,
                   usedByRelation: quot(category.usedByRelation),
-                })
+                }),
             );
 
             const categoriesFile = typescript.createTemplate(
@@ -376,17 +376,17 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                 CATEGORIES:
                   TypescriptCodeUtils.mergeExpressionsAsArray(categoriesList),
                 FILE_COUNT_OUTPUT_TYPE: new TypescriptStringReplacement(
-                  `${fileModel}CountOutputType`
+                  `${fileModel}CountOutputType`,
                 ),
                 FILE_MODEL_TYPE: modelType,
               },
-              { importMappers: [serviceContext] }
+              { importMappers: [serviceContext] },
             );
             await builder.apply(
               categoriesFile.renderToAction(
                 'constants/file-categories.ts',
-                path.join(moduleFolder, 'constants/file-categories.ts')
-              )
+                path.join(moduleFolder, 'constants/file-categories.ts'),
+              ),
             );
 
             // awkward AWS hack (https://stackoverflow.com/questions/66275648/aws-javascript-sdk-v3-typescript-doesnt-compile-due-to-error-ts2304-cannot-f/66275649#66275649)
@@ -399,7 +399,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
 
             adapters.url = TypescriptCodeUtils.createExpression(
               'createUrlAdapter()',
-              `import { createS3Adapter } from '../adapters';`
+              `import { createS3Adapter } from '../adapters';`,
             );
           },
         };

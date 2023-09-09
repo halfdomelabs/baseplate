@@ -71,7 +71,7 @@ const NodeGitIgnoreGenerator = createGeneratorWithChildren({
           writeFormattedAction({
             destination: '.gitignore',
             contents: `${exclusionLines.join('\n')}\n`,
-          })
+          }),
         );
       },
     };

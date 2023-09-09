@@ -50,7 +50,7 @@ export function buildServiceTransformerReferences(
   originalConfig: ProjectConfig,
   modelName: string,
   transformer: TransformerConfig,
-  builder: ReferencesBuilder<TransformerConfig>
+  builder: ReferencesBuilder<TransformerConfig>,
 ): void {
   builder.addReferenceable({
     category: 'modelTransformer',
@@ -66,17 +66,18 @@ export function buildServiceTransformerReferences(
     });
 
     const localRelationName = transformer.name;
-    const foreignModel = originalConfig.models?.find((model) =>
-      model.model.relations?.some(
-        (relation) =>
-          relation.modelName === modelName &&
-          relation.foreignRelationName === localRelationName
-      )
+    const foreignModel = originalConfig.models?.find(
+      (model) =>
+        model.model.relations?.some(
+          (relation) =>
+            relation.modelName === modelName &&
+            relation.foreignRelationName === localRelationName,
+        ),
     );
 
     if (!foreignModel) {
       throw new Error(
-        `Could not find model associated with embedded relation ${modelName}/${localRelationName}`
+        `Could not find model associated with embedded relation ${modelName}/${localRelationName}`,
       );
     }
 

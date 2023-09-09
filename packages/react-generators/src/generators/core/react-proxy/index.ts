@@ -52,8 +52,8 @@ const ReactProxyGenerator = createGeneratorWithChildren({
                 ${enableWebsocket ? 'ws: true,' : ''}
               },
             }
-          : undefined`
-          )
+          : undefined`,
+          ),
         );
       },
     };

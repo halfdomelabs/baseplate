@@ -16,7 +16,7 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
     const templatePath = path.join(
       builder.generatorBaseDirectory,
       'templates',
-      source
+      source,
     );
 
     // read all files in directory
@@ -36,7 +36,7 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
           const fileContents = await fs.readFile(file);
           builder.writeFile(destinationPath, fileContents);
         }
-      })
+      }),
     );
-  }
+  },
 );

@@ -56,7 +56,7 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
       typescript,
       authHooks,
       reactTailwind,
-    }
+    },
   ) {
     const adminLayout = typescript.createTemplate(
       {
@@ -64,7 +64,7 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
       },
       {
         importMappers: [reactComponents, authHooks],
-      }
+      },
     );
 
     function getIconImport(iconName: string): string {
@@ -79,11 +79,11 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
       TypescriptCodeUtils.mergeExpressionsAsJsxElement('Sidebar.LinkItem', {
         Icon: TypescriptCodeUtils.createExpression(
           link.icon,
-          `import { ${link.icon} } from '${getIconImport(link.icon)}';`
+          `import { ${link.icon} } from '${getIconImport(link.icon)}';`,
         ),
         to: quot(link.path),
         children: link.label,
-      })
+      }),
     );
 
     adminLayout.addCodeEntries({
@@ -91,7 +91,7 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
     });
 
     const [layoutImport, layoutPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/AdminLayout/index.tsx`
+      `${reactComponents.getComponentsFolder()}/AdminLayout/index.tsx`,
     );
 
     reactRoutes.registerLayout({
@@ -104,14 +104,14 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
         ],
         {
           importMappers: [authComponents],
-        }
+        },
       ),
     });
 
     reactTailwind.addGlobalStyle(
       `body {
         overscroll-behavior-y: none;
-      }`
+      }`,
     );
 
     return {
@@ -120,7 +120,7 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         await builder.apply(
-          adminLayout.renderToAction('AdminLayout.tsx', layoutPath)
+          adminLayout.renderToAction('AdminLayout.tsx', layoutPath),
         );
       },
     };

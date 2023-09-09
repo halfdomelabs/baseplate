@@ -34,13 +34,13 @@ const SENSITIVE_HEADERS = ['authorization', 'cookie'];
 
 // filters headers that are sensitive or not strings
 function filterHeaders(
-  headers: FastifyRequest['headers']
+  headers: FastifyRequest['headers'],
 ): Record<string, string> {
   return _.fromPairs(
     Object.keys(headers)
       .filter((key) => typeof headers[key] === 'string')
       .filter((key) => !SENSITIVE_HEADERS.includes(key))
-      .map((key) => [key, headers[key] as string])
+      .map((key) => [key, headers[key] as string]),
   );
 }
 
@@ -55,7 +55,7 @@ export function getUrlQueryString(url: string): string {
 }
 
 export function extractSentryRequestData(
-  request: FastifyRequest | REQUEST_INFO_TYPE
+  request: FastifyRequest | REQUEST_INFO_TYPE,
 ): ExtractedNodeRequestData {
   return {
     headers: filterHeaders(request.headers),

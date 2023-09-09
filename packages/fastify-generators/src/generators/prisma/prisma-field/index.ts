@@ -25,7 +25,7 @@ const descriptorSchema = z
       Object.keys(prismaScalarFieldTypes) as [
         ScalarFieldType,
         ...ScalarFieldType[],
-      ]
+      ],
     ),
     options: z.object({}).catchall(z.any()).optional(),
     id: z.boolean().optional(),

@@ -34,7 +34,7 @@ const EslintGenerator = createGeneratorWithChildren({
         eslintIgnore: ['/coverage', '/dist', '/lib', '/node_modules'],
         extraTsconfigProjects: [],
       },
-      { name: 'eslint-config', mergeArraysUniquely: true }
+      { name: 'eslint-config', mergeArraysUniquely: true },
     );
     return {
       getProviders: () => ({
@@ -81,15 +81,15 @@ const EslintGenerator = createGeneratorWithChildren({
             contents: `module.exports = ${JSON.stringify(
               eslintConfig,
               null,
-              2
+              2,
             )}`,
-          })
+          }),
         );
 
         // generate ignore file
         builder.writeFile(
           '.eslintignore',
-          `${config.eslintIgnore.join('\n')}\n`
+          `${config.eslintIgnore.join('\n')}\n`,
         );
       },
     };

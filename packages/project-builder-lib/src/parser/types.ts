@@ -37,12 +37,12 @@ export interface PluginHooks {
   addGlobalHoistedProviders: (providers: string | string[]) => void;
   addFeatureHoistedProviders: (
     featurePath: string,
-    providers: string | string[]
+    providers: string | string[],
   ) => void;
   addFastifyChildren: (children: Record<string, unknown>) => void;
   addFeatureChildren: (
     featurePath: string,
-    children: Record<string, unknown>
+    children: Record<string, unknown>,
   ) => void;
 }
 

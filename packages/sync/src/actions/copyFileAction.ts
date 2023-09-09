@@ -12,11 +12,11 @@ interface Options {
 
 function applyReplacements(
   contents: string,
-  replacements: Record<string, string>
+  replacements: Record<string, string>,
 ): string {
   return Object.keys(replacements).reduce(
     (value, key) => value.replace(new RegExp(key, 'g'), replacements[key]),
-    contents
+    contents,
   );
 }
 
@@ -28,14 +28,14 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
     const templatePath = path.join(
       builder.generatorBaseDirectory,
       'templates',
-      source
+      source,
     );
 
     if (shouldFormat || replacements) {
       const fileContents = await fs.readFile(templatePath, 'utf8');
       const replacedFileContents = applyReplacements(
         fileContents,
-        replacements || {}
+        replacements || {},
       );
       builder.writeFile(destination, replacedFileContents, {
         shouldFormat,
@@ -45,5 +45,5 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
       const fileContents = await fs.readFile(templatePath);
       builder.writeFile(destination, fileContents, { neverOverwrite });
     }
-  }
+  },
 );

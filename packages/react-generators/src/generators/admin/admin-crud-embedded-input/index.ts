@@ -23,7 +23,7 @@ export type AdminCrudEmbeddedInputProvider = unknown;
 
 export const adminCrudEmbeddedInputProvider =
   createProviderType<AdminCrudEmbeddedInputProvider>(
-    'admin-crud-embedded-input'
+    'admin-crud-embedded-input',
   );
 
 const createMainTask = createTaskConfigBuilder(
@@ -68,7 +68,7 @@ const createMainTask = createTaskConfigBuilder(
                   `import { EmbeddedObjectInput } from "%admin-components"`,
                 ],
                 importMappers: [adminComponents],
-              }
+              },
             )
           : TypescriptCodeUtils.formatExpression(
               `<EmbeddedListInput.LabelledController
@@ -94,7 +94,7 @@ const createMainTask = createTaskConfigBuilder(
                   `import { EmbeddedListInput } from "%admin-components"`,
                 ],
                 importMappers: [adminComponents],
-              }
+              },
             );
 
       adminCrudInputContainer.addInput({
@@ -106,7 +106,7 @@ const createMainTask = createTaskConfigBuilder(
           {
             key: modelRelation,
             expression: validationExpression.append(
-              isRequired ? '' : '.nullish()'
+              isRequired ? '' : '.nullish()',
             ),
           },
         ],
@@ -119,7 +119,7 @@ const createMainTask = createTaskConfigBuilder(
         }),
       };
     },
-  })
+  }),
 );
 
 const AdminCrudEmbeddedInputGenerator = createGeneratorWithTasks({

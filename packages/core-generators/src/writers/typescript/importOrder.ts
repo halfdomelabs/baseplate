@@ -112,10 +112,10 @@ function getImportType(name: string, settings: ImportSettings): string {
 
 export function sortByImportOrder(
   names: string[],
-  settings: ImportSettings
+  settings: ImportSettings,
 ): string[] {
   const importTypeSort = R.ascend((name: string) =>
-    DEFAULT_SORT_ORDER.indexOf(getImportType(name, settings))
+    DEFAULT_SORT_ORDER.indexOf(getImportType(name, settings)),
   );
   const nameSort = R.ascend(R.toLower);
   return R.sortWith([importTypeSort, nameSort], names);

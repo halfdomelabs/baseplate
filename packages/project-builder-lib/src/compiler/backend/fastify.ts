@@ -5,7 +5,7 @@ import { getPostgresSettings, getRedisSettings } from './utils.js';
 
 export function buildFastify(
   builder: AppEntryBuilder,
-  app: BackendAppConfig
+  app: BackendAppConfig,
 ): unknown {
   const { projectConfig, parsedProject } = builder;
   const rootFeatures =

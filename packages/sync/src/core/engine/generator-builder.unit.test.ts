@@ -33,14 +33,14 @@ describe('getGeneratorId', () => {
       { ...DESCRIPTOR, name: 'child' },
       'project',
       'bar',
-      true
+      true,
     );
     expect(id).toBe('project:bar.child');
   });
 
   it('throws if there is no name on a multiple child', () => {
     expect(() => getGeneratorId(DESCRIPTOR, 'foo', 'bar', true)).toThrow(
-      'must have a name'
+      'must have a name',
     );
   });
 });
@@ -110,7 +110,7 @@ describe('buildGeneratorEntry', () => {
     const entry = await buildGeneratorEntry(
       { generator: 'simple' },
       'project',
-      generatorContext
+      generatorContext,
     );
     expect(entry).toMatchObject({
       id: 'project',
@@ -131,7 +131,7 @@ describe('buildGeneratorEntry', () => {
     const entry = await buildGeneratorEntry(
       { generator: 'validatedDescriptor' },
       'project',
-      generatorContext
+      generatorContext,
     );
     expect(entry.descriptor).toMatchObject({
       name: 'hi',
@@ -143,7 +143,7 @@ describe('buildGeneratorEntry', () => {
     const entry = await buildGeneratorEntry(
       { generator: 'nested' },
       'project',
-      generatorContext
+      generatorContext,
     );
     expect(entry).toMatchObject({
       generatorConfig: generatorMap.nested,
@@ -169,7 +169,7 @@ describe('buildGeneratorEntry', () => {
     const entry = await buildGeneratorEntry(
       { generator: 'reference' },
       'project',
-      generatorContext
+      generatorContext,
     );
     expect(entry).toMatchObject({
       generatorConfig: generatorMap.reference,

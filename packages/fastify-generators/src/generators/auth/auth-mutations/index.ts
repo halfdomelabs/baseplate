@@ -23,7 +23,7 @@ export type AuthMutationsProvider = ImportMapper;
 
 export const authMutationsProvider = createProviderType<AuthMutationsProvider>(
   'auth-mutations',
-  { isReadOnly: true }
+  { isReadOnly: true },
 );
 
 const AuthMutationsGenerator = createGeneratorWithChildren({
@@ -51,7 +51,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
       configService,
       nexusAuth,
       requestServiceContext,
-    }
+    },
   ) {
     const appModuleFolder = appModule.getModuleFolder();
 
@@ -62,7 +62,7 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
       },
       {
         importMappers: [configService, authServiceImport, nexusSchema],
-      }
+      },
     );
 
     authMutationsFile.addCodeEntries({
@@ -73,14 +73,14 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
     });
 
     nexusSchema.registerSchemaFile(
-      `${appModuleFolder}/schema/auth-mutations.ts`
+      `${appModuleFolder}/schema/auth-mutations.ts`,
     );
     appModule.registerFieldEntry(
       'schemaTypes',
       new TypescriptCodeExpression(
         'authMutations',
-        `import * as authMutations from '@/${appModuleFolder}/schema/auth-mutations'`
-      )
+        `import * as authMutations from '@/${appModuleFolder}/schema/auth-mutations'`,
+      ),
     );
 
     return {
@@ -102,14 +102,14 @@ const AuthMutationsGenerator = createGeneratorWithChildren({
         builder.setBaseDirectory(appModule.getModuleFolder());
 
         await builder.apply(
-          authMutationsFile.renderToAction('schema/auth-mutations.ts')
+          authMutationsFile.renderToAction('schema/auth-mutations.ts'),
         );
 
         await builder.apply(
           typescript.createCopyAction({
             source: 'utils/refresh-tokens.ts',
             importMappers: [configService, nexusSchema, requestServiceContext],
-          })
+          }),
         );
       },
     };

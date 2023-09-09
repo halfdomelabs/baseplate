@@ -16,14 +16,14 @@ export interface CopyTypescriptFileOptions {
 function formatImports(
   source: string,
   destination: string,
-  options: CopyTypescriptFileOptions
+  options: CopyTypescriptFileOptions,
 ): string {
   const file = new TypescriptSourceFile(
     {},
     {
       pathMappings: options.pathMappings,
       importMappers: options.importMappers,
-    }
+    },
   );
 
   return file.renderToText(source, destination);
@@ -37,7 +37,7 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
   const templatePath = path.join(
     builder.generatorBaseDirectory,
     'templates',
-    source
+    source,
   );
 
   const fileContents = await fs.readFile(templatePath, 'utf8');
@@ -46,7 +46,7 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
   // process any replacement
   const replacedContents = Object.entries(replacements).reduce(
     (str, [key, value]) => str.replace(new RegExp(key, 'g'), value),
-    strippedContents
+    strippedContents,
   );
 
   const destinationPath = destination ?? source;

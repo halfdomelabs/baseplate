@@ -18,7 +18,7 @@ async function mergeContents(
   newContents: string,
   filePath: string,
   formatContents: (contents: string) => Promise<string>,
-  cleanContents?: string
+  cleanContents?: string,
 ): Promise<{ contents: string; hasConflict: boolean } | null> {
   if (cleanContents === newContents) {
     // don't write if content has not changed
@@ -49,7 +49,7 @@ async function mergeContents(
     const mergedContents = attemptMergeJson(
       existingContents,
       newContents,
-      cleanContents
+      cleanContents,
     );
     if (mergedContents) {
       const formattedMergedContents = await formatContents(mergedContents);
@@ -97,7 +97,7 @@ async function writeFile(
   filePath: string,
   data: FileData,
   originalPath: string,
-  logger: Logger
+  logger: Logger,
 ): Promise<WriteFileResult> {
   // if file exists and we never overwrite, return false
   const { options, contents, formatter } = data;
@@ -140,7 +140,7 @@ async function writeFile(
     if (options?.preformat) {
       try {
         formattedContents = await Promise.resolve(
-          options.preformat(formattedContents, filePath, logger)
+          options.preformat(formattedContents, filePath, logger),
         );
       } catch (err) {
         throw new FormatterError(err, formattedContents);
@@ -152,7 +152,7 @@ async function writeFile(
         formattedContents = await formatter.format(
           formattedContents,
           filePath,
-          logger
+          logger,
         );
       } catch (err) {
         throw new FormatterError(err, formattedContents);
@@ -182,7 +182,7 @@ async function writeFile(
     formattedContents,
     filePath,
     formatContents,
-    cleanContents?.toString('utf8')
+    cleanContents?.toString('utf8'),
   );
   // if there's no merge result, existing contents matches new contents so no modification is required
   if (!mergeResult) {
@@ -217,14 +217,14 @@ export async function writeGeneratorOutput(
   output: GeneratorOutput,
   outputDirectory: string,
   options?: GeneratorWriteOptions,
-  logger: Logger = console
+  logger: Logger = console,
 ): Promise<GeneratorWriteResult> {
   const { cleanDirectory, rerunCommands = [] } = options || {};
   // write files
   const filenames = Object.keys(output.files);
 
   const isModifiedFileResult = (
-    result: WriteFileResult
+    result: WriteFileResult,
   ): result is ModifiedWriteFileResult => result.type === 'modified';
 
   try {
@@ -234,14 +234,14 @@ export async function writeGeneratorOutput(
           path.join(outputDirectory, filename),
           output.files[filename],
           filename,
-          logger
-        )
-      )
+          logger,
+        ),
+      ),
     );
 
     const modifiedFiles = fileResults.filter(isModifiedFileResult);
     const modifiedFilenames = modifiedFiles.map(
-      (result) => result.originalPath
+      (result) => result.originalPath,
     );
     const conflictFilenames: string[] = modifiedFiles
       .filter((result) => result.hasConflict)
@@ -260,8 +260,8 @@ export async function writeGeneratorOutput(
               encoding: 'utf-8',
             });
           }
-        })
-      )
+        }),
+      ),
     );
 
     // Write clean directory
@@ -271,7 +271,7 @@ export async function writeGeneratorOutput(
           writeLimit(async () => {
             const cleanPath = path.join(
               cleanDirectory,
-              fileResult.originalPath
+              fileResult.originalPath,
             );
             await ensureDir(path.dirname(cleanPath));
             if (fileResult.cleanContents instanceof Buffer) {
@@ -281,8 +281,8 @@ export async function writeGeneratorOutput(
                 encoding: 'utf-8',
               });
             }
-          })
-        )
+          }),
+        ),
       );
     }
 
@@ -301,20 +301,20 @@ export async function writeGeneratorOutput(
 
     const orderedCommands = _.sortBy(
       runnableCommands,
-      (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType]
+      (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType],
     );
 
     if (conflictFilenames.length) {
       logger.log(
         chalk.red(
           `Conflicts occurred while writing files:\n${conflictFilenames.join(
-            '\n'
-          )}`
-        )
+            '\n',
+          )}`,
+        ),
       );
       if (orderedCommands.length) {
         logger.log(
-          `\nOnce resolved, please re-run the generator or run the following commands:`
+          `\nOnce resolved, please re-run the generator or run the following commands:`,
         );
         for (const command of orderedCommands) {
           logger.log(`  ${command.command}`);

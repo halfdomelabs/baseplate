@@ -56,7 +56,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
                   },
                 },
               }),
-              {}
+              {},
             ),
         },
       }),
@@ -72,7 +72,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
         Object.keys(usedTemplates).forEach(markDependenciesAsUsed);
         // Copy all the util files that were used
         const templateFiles = Object.keys(usedTemplates).map(
-          (key) => UTIL_CONFIG_MAP[key].file
+          (key) => UTIL_CONFIG_MAP[key].file,
         );
 
         await Promise.all(
@@ -81,9 +81,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
               typescript.createCopyAction({
                 source: file,
                 destination: `src/utils/${file}`,
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
       },
     };

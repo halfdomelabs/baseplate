@@ -35,17 +35,17 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
     });
 
     const [embeddedListImport, embeddedListPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/EmbeddedListInput/index.tsx`
+      `${reactComponents.getComponentsFolder()}/EmbeddedListInput/index.tsx`,
     );
     reactComponents.registerComponent({ name: 'EmbeddedListInput' });
 
     const [embeddedObjectImport, embeddedObjectPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/EmbeddedObjectInput/index.tsx`
+      `${reactComponents.getComponentsFolder()}/EmbeddedObjectInput/index.tsx`,
     );
     reactComponents.registerComponent({ name: 'EmbeddedObjectInput' });
 
     const [, descriptionListPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/DescriptionList/index.tsx`
+      `${reactComponents.getComponentsFolder()}/DescriptionList/index.tsx`,
     );
     reactComponents.registerComponent({ name: 'DescriptionList' });
 
@@ -76,19 +76,19 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'DescriptionList/index.tsx',
             destination: descriptionListPath,
-          })
+          }),
         );
         await builder.apply(
           typescript.createCopyAction({
             source: 'EmbeddedListInput/index.tsx',
             destination: embeddedListPath,
-          })
+          }),
         );
         await builder.apply(
           typescript.createCopyAction({
             source: 'EmbeddedObjectInput/index.tsx',
             destination: embeddedObjectPath,
-          })
+          }),
         );
       },
     };

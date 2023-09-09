@@ -8,7 +8,7 @@ export function runSchemaMigrations(config: ProjectConfig): {
   const schemaVersion = config.schemaVersion || 0;
 
   const unappliedMigrations = SCHEMA_MIGRATIONS.filter(
-    (m) => m.version > schemaVersion
+    (m) => m.version > schemaVersion,
   ).sort((a, b) => a.version - b.version);
 
   const newConfig = unappliedMigrations.reduce(
@@ -16,7 +16,7 @@ export function runSchemaMigrations(config: ProjectConfig): {
       ...migration.migrate(draftConfig),
       schemaVersion: migration.version,
     }),
-    config
+    config,
   );
 
   return { newConfig, appliedMigrations: unappliedMigrations };

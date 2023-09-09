@@ -56,7 +56,7 @@ export function walkGlobPathRecursive(
   object: unknown,
   callback: (object: unknown, path: string) => void,
   prefix: string,
-  remainingPath: string
+  remainingPath: string,
 ): void {
   if (object === null || object === undefined) {
     return;
@@ -73,7 +73,7 @@ export function walkGlobPathRecursive(
   if (currentPart === '*') {
     if (!Array.isArray(object)) {
       throw new Error(
-        `Did not find array when provided * in ${prefix} in ${prefix}.${remainingPath}`
+        `Did not find array when provided * in ${prefix} in ${prefix}.${remainingPath}`,
       );
     }
     object.forEach((item, idx) =>
@@ -81,13 +81,13 @@ export function walkGlobPathRecursive(
         item,
         callback,
         `${prefix ? `${prefix}.` : ''}${idx}`,
-        newRemainingPath
-      )
+        newRemainingPath,
+      ),
     );
   } else {
     if (typeof object !== 'object') {
       throw new Error(
-        `Found non-object when expected object (${prefix} in ${prefix}.${remainingPath})`
+        `Found non-object when expected object (${prefix} in ${prefix}.${remainingPath})`,
       );
     }
 
@@ -95,7 +95,7 @@ export function walkGlobPathRecursive(
       (object as Record<string, unknown>)[currentPart],
       callback,
       `${prefix ? `${prefix}.` : ''}${currentPart}`,
-      newRemainingPath
+      newRemainingPath,
     );
   }
 }
@@ -116,7 +116,7 @@ export class ReferencesBuilder<T extends FieldValues> {
     baseObject: T,
     prefix?: string,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    parentBuilder: ReferencesBuilder<any> | null = null
+    parentBuilder: ReferencesBuilder<any> | null = null,
   ) {
     this.baseObject = baseObject;
     this.prefix = prefix || '';
@@ -124,11 +124,11 @@ export class ReferencesBuilder<T extends FieldValues> {
   }
 
   public withPrefix<Prefix extends FieldPath<T>>(
-    prefix: Prefix
+    prefix: Prefix,
   ): ReferencesBuilder<Exclude<FieldPathValue<T, Prefix>, undefined>> {
     const newObject: FieldPathValue<T, Prefix> | undefined = R.path(
       pathToParts(prefix),
-      this.baseObject
+      this.baseObject,
     );
     if (newObject === undefined) {
       throw new Error(`Could not find prefix ${prefix} in object`);
@@ -143,12 +143,12 @@ export class ReferencesBuilder<T extends FieldValues> {
           key?: string;
           name?: string;
         }
-      : never
+      : never,
   ): ReferencesBuilder<T> {
     const name = reference.name || R.path(pathToParts(path), this.baseObject);
     if (!name) {
       throw new Error(
-        `Cannot find value of reference ${path} (${reference.category})`
+        `Cannot find value of reference ${path} (${reference.category})`,
       );
     }
     const fullPath = this.prefix ? `${this.prefix}.${path}` : path;
@@ -174,14 +174,14 @@ export class ReferencesBuilder<T extends FieldValues> {
       ? Omit<ObjectReferenceEntry, 'path' | 'key' | 'name'> & {
           generateKey?: (name: string) => string;
         }
-      : never
+      : never,
   ): ReferencesBuilder<T> {
     walkGlobPathRecursive(
       this.baseObject,
       (name, fullPath) => {
         if (typeof name !== 'string') {
           throw new Error(
-            `Found non-string when expected string (${fullPath})`
+            `Found non-string when expected string (${fullPath})`,
           );
         }
         const constructedReference = {
@@ -192,17 +192,17 @@ export class ReferencesBuilder<T extends FieldValues> {
           fullPath as FieldPath<T>,
           // tricky to hack in
           // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-          constructedReference as any
+          constructedReference as any,
         );
       },
       '',
-      path
+      path,
     );
     return this;
   }
 
   public addReferenceable(
-    referenceable: Omit<ObjectReferenceableEntry, 'key'> & { key?: string }
+    referenceable: Omit<ObjectReferenceableEntry, 'key'> & { key?: string },
   ): ReferencesBuilder<T> {
     const constructedReferenceable = {
       ...referenceable,
@@ -240,7 +240,7 @@ export function fixReferenceRenames<T>(
   oldConfig: T,
   newConfig: T,
   getReferences: GetReferencesFunction<T>,
-  options?: FixReferenceRenamesOptions
+  options?: FixReferenceRenamesOptions,
 ): T {
   // run fix repeatedly until we have no more renames (allows renames of references to references)
   let previousConfig = oldConfig;
@@ -249,24 +249,24 @@ export function fixReferenceRenames<T>(
   const renameReferences = (
     config: T,
     references: ObjectReferenceEntry[],
-    renameEntry: RenameEntry
+    renameEntry: RenameEntry,
   ): T => {
     // find references to rename
     const referencesToRename = references
       .filter(
-        (r) => r.category === renameEntry.category && r.key === renameEntry.key
+        (r) => r.category === renameEntry.category && r.key === renameEntry.key,
       )
       .filter(
         (r) =>
           !options?.ignoredReferences ||
           !r.referenceType ||
-          !options?.ignoredReferences.includes(r.referenceType)
+          !options?.ignoredReferences.includes(r.referenceType),
       )
       .filter(
         (r) =>
           !options?.whitelistReferences ||
           !r.referenceType ||
-          options?.whitelistReferences.includes(r.referenceType)
+          options?.whitelistReferences.includes(r.referenceType),
       );
 
     return referencesToRename.reduce((priorConfig, entry) => {
@@ -283,7 +283,7 @@ export function fixReferenceRenames<T>(
     const renamedReferenceables = newReferenceables
       .map((entry) => {
         const oldEntry = oldReferenceables.find(
-          (e) => e.id === entry.id && e.category === entry.category
+          (e) => e.id === entry.id && e.category === entry.category,
         );
         if (oldEntry && oldEntry.name !== entry.name) {
           return {
@@ -305,7 +305,7 @@ export function fixReferenceRenames<T>(
     currentConfig = renamedReferenceables.reduce(
       (priorConfig, renamedReferenceable) =>
         renameReferences(priorConfig, newReferences, renamedReferenceable),
-      currentConfig
+      currentConfig,
     );
   }
 

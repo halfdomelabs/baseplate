@@ -17,7 +17,7 @@ const PrismaPasswordTransformerGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { prismaCrudServiceSetup, passwordHasherService }
+    { prismaCrudServiceSetup, passwordHasherService },
   ) {
     prismaCrudServiceSetup.addTransformer('password', {
       buildTransformer: () => ({
@@ -39,7 +39,7 @@ const PrismaPasswordTransformerGenerator = createGeneratorWithChildren({
             transformer: TypescriptCodeUtils.createBlock(
               'const passwordHash = password == null ? password : (await hasherService.hash(password));',
               'import {hasherService} from "%password-hasher-service";',
-              { importMappers: [passwordHasherService] }
+              { importMappers: [passwordHasherService] },
             ),
           },
         ],

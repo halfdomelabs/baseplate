@@ -5,7 +5,7 @@ import { ServiceContext } from '%service-context';
 export interface CreateServiceInput<
   CreateData,
   Query,
-  Context extends ServiceContext = ServiceContext
+  Context extends ServiceContext = ServiceContext,
 > {
   data: CreateData;
   context: Context;
@@ -16,7 +16,7 @@ export interface UpdateServiceInput<
   PrimaryKey,
   UpdateData,
   Query,
-  Context extends ServiceContext = ServiceContext
+  Context extends ServiceContext = ServiceContext,
 > {
   id: PrimaryKey;
   data: UpdateData;
@@ -27,7 +27,7 @@ export interface UpdateServiceInput<
 export interface DeleteServiceInput<
   PrimaryKey,
   Query,
-  Context extends ServiceContext = ServiceContext
+  Context extends ServiceContext = ServiceContext,
 > {
   id: PrimaryKey;
   context: Context;

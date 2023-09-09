@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export async function readDirectoryRecursive(
-  directoryPath: string
+  directoryPath: string,
 ): Promise<string[]> {
   const files: string[] = await fs.readdir(directoryPath);
 
@@ -29,7 +29,7 @@ export async function readDirectoryRecursive(
 }
 
 export async function listDirectories(
-  directoryPath: string
+  directoryPath: string,
 ): Promise<string[]> {
   const entries = await fs.readdir(directoryPath, {
     withFileTypes: true,
@@ -40,7 +40,7 @@ export async function listDirectories(
     .map((entry) => path.join(directoryPath, entry.name));
 
   const subDirectories = await Promise.all(
-    directories.map((directory) => listDirectories(directory))
+    directories.map((directory) => listDirectories(directory)),
   );
 
   return directories.concat(subDirectories.flat());

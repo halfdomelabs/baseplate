@@ -21,7 +21,7 @@ export interface NonOverwriteableMap<T extends object> {
    */
   append<Key extends ArrayKeys<T>>(
     key: Key,
-    value: T[Key] extends (infer U)[] ? U : never
+    value: T[Key] extends (infer U)[] ? U : never,
   ): this;
   /**
    * Appends an array of values to an array uniquely in the map
@@ -31,7 +31,7 @@ export interface NonOverwriteableMap<T extends object> {
    */
   appendUnique<Key extends ArrayKeys<T>>(
     key: Key,
-    value: T[Key] | (T[Key] extends (infer U)[] ? U : never)
+    value: T[Key] | (T[Key] extends (infer U)[] ? U : never),
   ): this;
   /**
    * Gets a value from the map
@@ -72,7 +72,7 @@ interface NonOverwriteableMapConfig {
  */
 export function createNonOverwriteableMap<T extends object>(
   defaults: T,
-  options: NonOverwriteableMapConfig = {}
+  options: NonOverwriteableMapConfig = {},
 ): NonOverwriteableMap<T> {
   const {
     name = 'non-overwriteable map',
@@ -106,7 +106,7 @@ export function createNonOverwriteableMap<T extends object>(
       const existingValue = overrideValues[key] || [];
       if (!Array.isArray(existingValue)) {
         throw new Error(
-          `Field ${key.toString()} is not array and cannot be appended to in ${name}`
+          `Field ${key.toString()} is not array and cannot be appended to in ${name}`,
         );
       }
       overrideValues = {
@@ -121,7 +121,7 @@ export function createNonOverwriteableMap<T extends object>(
       if (existingValue) {
         if (!Array.isArray(existingValue)) {
           throw new Error(
-            `Field ${key.toString()} is not array and cannot be appended to in ${name}`
+            `Field ${key.toString()} is not array and cannot be appended to in ${name}`,
           );
         }
         overrideValues = {
@@ -139,7 +139,7 @@ export function createNonOverwriteableMap<T extends object>(
     merge(value) {
       overrideValues = nonOverwriteableMerge(
         overrideValues,
-        value
+        value,
       ) as Partial<T>;
       return this;
     },

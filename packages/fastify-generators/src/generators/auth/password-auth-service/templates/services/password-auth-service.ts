@@ -6,7 +6,7 @@ import { AuthPayload, loginUser } from '%auth-service';
 export const passwordAuthService = {
   async loginWithPassword(
     email: string,
-    password: string
+    password: string,
   ): Promise<AuthPayload> {
     const user = await USER_MODEL.findUnique({
       where: { email },

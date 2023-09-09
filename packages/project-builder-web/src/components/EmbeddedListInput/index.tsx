@@ -121,7 +121,7 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
 
 interface EmbeddedListInputLabelledControllerProps<
   FormType extends FieldValues,
-  FormPath extends FieldPath<FormType>
+  FormPath extends FieldPath<FormType>,
 > extends Omit<
     EmbeddedListInputLabelledProps<
       Exclude<
@@ -141,7 +141,7 @@ interface EmbeddedListInputLabelledControllerProps<
 EmbeddedListInput.LabelledController =
   function EmbeddedListInputLabelledController<
     FormType extends FieldValues,
-    FormPath extends FieldPath<FormType>
+    FormPath extends FieldPath<FormType>,
   >({
     className,
     control,

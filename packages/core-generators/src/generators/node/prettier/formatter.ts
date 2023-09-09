@@ -14,7 +14,7 @@ export default function format({
   config,
 }: FormatterInput): string {
   const prettierLib = module.require(
-    prettierLibPath || 'prettier'
+    prettierLibPath || 'prettier',
   ) as PrettierModule;
 
   return prettierLib.format(input, config);

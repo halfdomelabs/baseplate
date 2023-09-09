@@ -6,7 +6,7 @@ const descriptorSchema = z.object({
   fields: z.array(
     z.object({
       name: z.string().min(1),
-    })
+    }),
   ),
 });
 

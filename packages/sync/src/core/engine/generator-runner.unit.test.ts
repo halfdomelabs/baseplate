@@ -19,9 +19,9 @@ function buildGeneratorEntry(
     exports?: Record<string, Provider>;
     build?: (
       builder: GeneratorOutputBuilder,
-      deps: Record<string, Provider>
+      deps: Record<string, Provider>,
     ) => void;
-  } = {}
+  } = {},
 ): GeneratorEntry {
   const {
     id,
@@ -52,7 +52,7 @@ function buildGeneratorEntry(
           build: (builder) => build(builder, deps),
         }),
       },
-    }
+    },
   );
 }
 

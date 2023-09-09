@@ -67,7 +67,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             destinationBaseDirectory: 'src/services/bull',
             paths: ['index.ts', 'queue.ts', 'repeatable.ts', 'worker.ts'],
             importMappers,
-          })
+          }),
         );
 
         const workersFile = typescript.createTemplate(
@@ -76,14 +76,14 @@ const createMainTask = createTaskConfigBuilder(() => ({
           },
           {
             importMappers,
-          }
+          },
         );
 
         await builder.apply(
           workersFile.renderToAction(
             'scripts/run-workers.ts',
-            'scripts/run-workers.ts'
-          )
+            'scripts/run-workers.ts',
+          ),
         );
 
         const repeatJobsFile = typescript.createTemplate(
@@ -92,14 +92,14 @@ const createMainTask = createTaskConfigBuilder(() => ({
           },
           {
             importMappers,
-          }
+          },
         );
 
         await builder.apply(
           repeatJobsFile.renderToAction(
             'scripts/synchronize-repeat-jobs.ts',
-            'scripts/synchronize-repeat-jobs.ts'
-          )
+            'scripts/synchronize-repeat-jobs.ts',
+          ),
         );
       },
     };

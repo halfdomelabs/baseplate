@@ -11,11 +11,11 @@ import { resolveModule } from '@src/utils/resolve.js';
 import { baseplatePlugin } from './plugin.js';
 
 export async function buildServer(
-  directories: string[]
+  directories: string[],
 ): Promise<FastifyInstance> {
   const server = fastify({ forceCloseConnections: true, logger });
   const resolvedDirectories = directories.map((directory) =>
-    expandPathWithTilde(directory)
+    expandPathWithTilde(directory),
   );
 
   await server.register(fastifyHelmet);
@@ -34,7 +34,7 @@ export async function buildServer(
     });
 
     server.setNotFoundHandler(async (request, reply) =>
-      reply.sendFile('index.html')
+      reply.sendFile('index.html'),
     );
   } catch (err) {
     logError(`Unable to find project-builder-web package to host website.`);

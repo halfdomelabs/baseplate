@@ -53,11 +53,11 @@ const AuthLoginPageGenerator = createGeneratorWithChildren({
       reactError,
       apolloError,
       reactComponents,
-    }
+    },
   ) {
     const rootFolder = `${reactRoutes.getDirectoryBase()}/Login`;
     const [loginPageImport, loginPagePath] = makeImportAndFilePath(
-      `${rootFolder}/index.tsx`
+      `${rootFolder}/index.tsx`,
     );
     const loginPageFile = typescript.createTemplate(
       {
@@ -71,11 +71,11 @@ const AuthLoginPageGenerator = createGeneratorWithChildren({
           reactError,
           apolloError,
         ],
-      }
+      },
     );
     loginPageFile.addCodeEntries({
       ALLOWED_ROLES: TypescriptCodeUtils.mergeExpressionsAsArray(
-        allowedRoles.map(quot)
+        allowedRoles.map(quot),
       ),
     });
 
@@ -84,7 +84,7 @@ const AuthLoginPageGenerator = createGeneratorWithChildren({
       layoutKey: 'auth',
       element: TypescriptCodeUtils.createExpression(
         `<LoginPage />`,
-        `import LoginPage from '${loginPageImport}';`
+        `import LoginPage from '${loginPageImport}';`,
       ),
     });
 
@@ -97,7 +97,7 @@ const AuthLoginPageGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         await builder.apply(
-          loginPageFile.renderToAction('index.tsx', loginPagePath)
+          loginPageFile.renderToAction('index.tsx', loginPagePath),
         );
 
         const loginGqlPath = `${rootFolder}/login.gql`;
@@ -107,7 +107,7 @@ const AuthLoginPageGenerator = createGeneratorWithChildren({
             source: 'login.gql',
             destination: loginGqlPath,
             shouldFormat: true,
-          })
+          }),
         );
       },
     };

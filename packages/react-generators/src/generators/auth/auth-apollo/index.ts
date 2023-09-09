@@ -35,7 +35,7 @@ const AuthApolloGenerator = createGeneratorWithChildren({
         const linkTemplate = await builder.readTemplate('auth-link.ts');
         const authLink = TypescriptCodeUtils.extractTemplateSnippet(
           linkTemplate,
-          'AUTH_LINK'
+          'AUTH_LINK',
         );
 
         reactApolloSetup.addLink({
@@ -47,14 +47,14 @@ const AuthApolloGenerator = createGeneratorWithChildren({
               'import { setContext } from "@apollo/client/link/context"',
               'import { authService } from "%auth-service"',
             ],
-            { importMappers: [authService] }
+            { importMappers: [authService] },
           ),
           dependencies: [['refreshTokenLink', 'authLink']],
         });
 
         const refreshTokenLink = TypescriptCodeUtils.extractTemplateSnippet(
           linkTemplate,
-          'REFRESH_TOKEN_LINK'
+          'REFRESH_TOKEN_LINK',
         );
 
         reactApolloSetup.addLink({
@@ -67,7 +67,7 @@ const AuthApolloGenerator = createGeneratorWithChildren({
               'import { authService } from "%auth-service"',
               'import { ServerError } from "@apollo/client/link/utils";',
             ],
-            { importMappers: [authService] }
+            { importMappers: [authService] },
           ),
           dependencies: [['errorLink', 'refreshTokenLink']],
         });
@@ -83,8 +83,8 @@ const AuthApolloGenerator = createGeneratorWithChildren({
               },
           }`,
             'import { authService } from "%auth-service"',
-            { importMappers: [authService] }
-          )
+            { importMappers: [authService] },
+          ),
         );
 
         reactApolloSetup.addWebsocketOption(
@@ -99,8 +99,8 @@ const AuthApolloGenerator = createGeneratorWithChildren({
               return { authorization: \`Bearer \${accessToken}\` };
             }`,
             'import { authService } from "%auth-service"',
-            { importMappers: [authService] }
-          )
+            { importMappers: [authService] },
+          ),
         );
       },
     };

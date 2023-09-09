@@ -28,7 +28,7 @@ export interface ServiceFileProvider {
   registerMethod(
     key: string,
     block: TypescriptCodeBlock,
-    outputMethod?: ServiceOutputMethod
+    outputMethod?: ServiceOutputMethod,
   ): void;
 }
 
@@ -62,13 +62,13 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
         >({}, { name: 'prisma-crud-service-output-map' });
         const servicesFolder = path.join(
           appModule.getModuleFolder(),
-          'services'
+          'services',
         );
         const [servicesImport, servicesPath] = makeImportAndFilePath(
           path.join(
             servicesFolder,
-            `${descriptor.fileName || paramCase(descriptor.name)}.ts`
-          )
+            `${descriptor.fileName || paramCase(descriptor.name)}.ts`,
+          ),
         );
 
         return {
@@ -100,7 +100,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
 
             if (Object.keys(methodMap.value()).length) {
               await builder.apply(
-                servicesFile.renderToActionFromText('METHODS;', servicesPath)
+                servicesFile.renderToActionFromText('METHODS;', servicesPath),
               );
             }
             return { outputMap };

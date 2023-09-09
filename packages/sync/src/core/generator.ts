@@ -57,7 +57,7 @@ export interface GeneratorTask<
   dependencies?: DependencyMap;
   taskDependencies: string[];
   run: (
-    dependencies: InferDependencyProviderMap<DependencyMap>
+    dependencies: InferDependencyProviderMap<DependencyMap>,
   ) => GeneratorTaskInstance<InferExportProviderMap<ExportMap>>;
 }
 
@@ -72,7 +72,7 @@ export interface GeneratorConfig<
    */
   parseDescriptor: (
     descriptor: Descriptor,
-    context: ParseDescriptorContext
+    context: ParseDescriptorContext,
   ) => {
     validatedDescriptor?: Descriptor;
     children?: Record<

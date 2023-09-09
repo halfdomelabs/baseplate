@@ -48,7 +48,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
     },
     run({ appModule, typescript, pothosSetup }) {
       const [typesImport, typesPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/schema/${paramCase(name)}.ts`
+        `${appModule.getModuleFolder()}/schema/${paramCase(name)}.ts`,
       );
 
       appModule.addModuleImport(typesImport);
@@ -76,7 +76,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
           const enumsFile = typescript.createTemplate({
             TYPES: TypescriptCodeUtils.mergeBlocks(
               orderedTypes.map((t) => t.block),
-              '\n\n'
+              '\n\n',
             ),
           });
 
@@ -86,12 +86,12 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
           });
 
           await builder.apply(
-            enumsFile.renderToActionFromText('TYPES', typesPath)
+            enumsFile.renderToActionFromText('TYPES', typesPath),
           );
         },
       };
     },
-  })
+  }),
 );
 
 const PothosEnumsFileGenerator = createGeneratorWithTasks({

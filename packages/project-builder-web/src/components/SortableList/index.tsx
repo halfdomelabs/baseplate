@@ -10,7 +10,10 @@ import { Button } from '@halfdomelabs/ui-components';
 import { ReactNode } from 'react';
 import { RxDragHandleHorizontal } from 'react-icons/rx';
 
-interface SortableListItem { id: string; element: JSX.Element }
+interface SortableListItem {
+  id: string;
+  element: JSX.Element;
+}
 
 interface SortableItemProps {
   id: string;

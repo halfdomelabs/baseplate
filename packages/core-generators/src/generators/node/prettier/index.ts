@@ -67,7 +67,7 @@ const require = createRequire(import.meta.url);
 
 function resolveModule(
   name: string,
-  fullPath: string
+  fullPath: string,
 ): Promise<{ modulePath: string; version: string | undefined } | undefined> {
   const basedir = path.dirname(fullPath);
   return new Promise((resolve, reject) => {
@@ -125,7 +125,7 @@ const PrettierGenerator = createGeneratorWithChildren({
                   const result = await resolveModule('prettier', fullPath);
                   if (!result) {
                     logger.log(
-                      'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.'
+                      'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
                     );
                     // use cached version of prettier if available
                     return prettier;
@@ -165,14 +165,14 @@ const PrettierGenerator = createGeneratorWithChildren({
           writeJsonAction({
             destination: '.prettierrc',
             contents: prettierConfig,
-          })
+          }),
         );
 
         const prettierIgnoreSorted = _.uniq(_.sortBy(prettierIgnore));
 
         builder.writeFile(
           '.prettierignore',
-          `${prettierIgnoreSorted.join('\n')}\n`
+          `${prettierIgnoreSorted.join('\n')}\n`,
         );
       },
     };

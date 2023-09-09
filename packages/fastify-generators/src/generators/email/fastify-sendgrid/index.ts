@@ -50,7 +50,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             destinationBaseDirectory: 'src',
             paths: ['services/sendgrid.ts'],
             importMappers: [configService, loggerService],
-          })
+          }),
         );
       },
     };

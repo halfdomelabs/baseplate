@@ -6,7 +6,7 @@ let lastGeneratorId = 100;
 let lastTaskId = 100;
 
 export function buildTestGeneratorTaskEntry(
-  data?: Partial<GeneratorTaskEntry>
+  data?: Partial<GeneratorTaskEntry>,
 ): GeneratorTaskEntry {
   lastTaskId += 1;
   return {
@@ -29,7 +29,7 @@ export function buildTestGeneratorTaskEntry(
 
 export function buildTestGeneratorEntry(
   data?: Partial<GeneratorEntry>,
-  task?: Partial<GeneratorTaskEntry>
+  task?: Partial<GeneratorTaskEntry>,
 ): GeneratorEntry {
   lastGeneratorId += 1;
   const id = data?.id || lastGeneratorId.toString();

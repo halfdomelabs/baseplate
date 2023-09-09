@@ -12,7 +12,7 @@ const descriptorSchema = z.object({
     z.object({
       label: z.string().min(1),
       value: z.string().min(1),
-    })
+    }),
   ),
 });
 
@@ -25,7 +25,7 @@ const AdminCrudEnumInputGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { label, modelField, options, isOptional },
-    { adminCrudInputContainer, reactComponents }
+    { adminCrudInputContainer, reactComponents },
   ) {
     adminCrudInputContainer.addInput({
       content: TypescriptCodeUtils.createExpression(
@@ -45,14 +45,14 @@ const AdminCrudEnumInputGenerator = createGeneratorWithChildren({
                 .map(
                   (option) =>
                     `{ label: ${quot(option.label)}, value: ${quot(
-                      option.value
-                    )} }`
+                      option.value,
+                    )} }`,
                 )
                 .join(',\n')}
-            ];`
+            ];`,
             ),
           ],
-        }
+        },
       ),
       graphQLFields: [{ name: modelField }],
       validation: [
@@ -61,7 +61,7 @@ const AdminCrudEnumInputGenerator = createGeneratorWithChildren({
           expression: TypescriptCodeUtils.createExpression(
             `z.enum([${options.map((o) => `"${o.value}"`).join(', ')}])${
               isOptional ? '.nullish()' : ''
-            }`
+            }`,
           ),
         },
       ],

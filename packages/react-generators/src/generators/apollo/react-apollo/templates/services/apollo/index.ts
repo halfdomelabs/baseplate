@@ -4,7 +4,7 @@ import { ApolloClient, from, NormalizedCacheObject } from '@apollo/client';
 import { createApolloCache } from './cache';
 
 export function createApolloClient(
-  CREATE_ARGS
+  CREATE_ARGS,
 ): ApolloClient<NormalizedCacheObject> {
   LINK_BODIES;
 

@@ -26,7 +26,7 @@ describe('writeGeneratorOutput', () => {
       { files: {}, postWriteCommands: [] },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({});
   });
@@ -46,7 +46,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': 'hi',
@@ -55,7 +55,7 @@ describe('writeGeneratorOutput', () => {
     expect(formatFunction).toHaveBeenCalledWith(
       'hello',
       '/root/formatted.txt',
-      testLogger
+      testLogger,
     );
   });
 
@@ -72,7 +72,7 @@ describe('writeGeneratorOutput', () => {
             contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
             options: {
               cleanContents: Buffer.from(
-                ['hello', 'hi', 'something', 'bye'].join('\n')
+                ['hello', 'hi', 'something', 'bye'].join('\n'),
               ),
             },
           },
@@ -80,7 +80,7 @@ describe('writeGeneratorOutput', () => {
             contents: ['123', '456', '789', '012'].join('\n'),
             options: {
               cleanContents: Buffer.from(
-                ['123', '456', '789', '012'].join('\n')
+                ['123', '456', '789', '012'].join('\n'),
               ),
             },
           },
@@ -89,7 +89,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       {},
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': ['hello', 'bonjour', 'something', 'adios'].join('\n'),
@@ -109,7 +109,7 @@ describe('writeGeneratorOutput', () => {
             contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
             options: {
               cleanContents: Buffer.from(
-                ['hello', 'hola', 'something', 'bye'].join('\n')
+                ['hello', 'hola', 'something', 'bye'].join('\n'),
               ),
             },
           },
@@ -118,7 +118,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': [
@@ -150,7 +150,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': [
@@ -178,7 +178,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({ '/root/file.txt': 'hi' });
   });
@@ -191,7 +191,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({ '/root/file.txt': 'hi' });
   });
@@ -216,7 +216,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({});
 
@@ -258,7 +258,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': 'hi',
@@ -289,7 +289,7 @@ describe('writeGeneratorOutput', () => {
       },
       '/root',
       undefined,
-      testLogger
+      testLogger,
     );
     expect(vol.toJSON()).toEqual({
       '/root/file.txt': 'binary-data',

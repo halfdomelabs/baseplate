@@ -63,7 +63,7 @@ function getMethodDefinition({
       },
     ],
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
-      prismaOutput.getServiceEnum(enumName)
+      prismaOutput.getServiceEnum(enumName),
     ),
   };
 }
@@ -76,7 +76,7 @@ function getMethodBlock({
 }: PrismaDeleteMethodOptions): TypescriptCodeBlock {
   const modelType = TypescriptCodeUtils.createExpression(
     modelName,
-    `import {${modelName}} from '@prisma/client'`
+    `import {${modelName}} from '@prisma/client'`,
   );
 
   const model = prismaOutput.getPrismaModel(modelName);
@@ -107,7 +107,7 @@ return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
         "import { Prisma } from '@prisma/client';",
       ],
       importMappers: [prismaUtils],
-    }
+    },
   );
 }
 
@@ -129,7 +129,7 @@ const PrismaCrudDeleteGenerator = createGeneratorWithChildren({
 
     const methodExpression = TypescriptCodeUtils.createExpression(
       methodName,
-      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`
+      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
     );
 
     const methodOptions = {
@@ -143,7 +143,7 @@ const PrismaCrudDeleteGenerator = createGeneratorWithChildren({
     serviceFile.registerMethod(
       name,
       getMethodBlock(methodOptions),
-      getMethodDefinition(methodOptions)
+      getMethodDefinition(methodOptions),
     );
 
     return {

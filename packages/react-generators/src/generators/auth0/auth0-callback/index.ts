@@ -24,13 +24,13 @@ const Auth0CallbackGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { typescript, reactComponents, authHooks, reactError, reactRoutes }
+    { typescript, reactComponents, authHooks, reactError, reactRoutes },
   ) {
     const [callbackPageImport, callbackPagePath] = makeImportAndFilePath(
-      `${reactRoutes.getDirectoryBase()}/auth0-callback.page.tsx`
+      `${reactRoutes.getDirectoryBase()}/auth0-callback.page.tsx`,
     );
     const [signupPageImport, signupPagePath] = makeImportAndFilePath(
-      `${reactRoutes.getDirectoryBase()}/signup.page.tsx`
+      `${reactRoutes.getDirectoryBase()}/signup.page.tsx`,
     );
 
     return {
@@ -39,7 +39,7 @@ const Auth0CallbackGenerator = createGeneratorWithChildren({
           path: 'auth0-callback',
           element: new TypescriptCodeExpression(
             `<Auth0CallbackPage />`,
-            `import Auth0CallbackPage from '${callbackPageImport}'`
+            `import Auth0CallbackPage from '${callbackPageImport}'`,
           ),
         });
 
@@ -48,13 +48,13 @@ const Auth0CallbackGenerator = createGeneratorWithChildren({
             source: 'auth0-callback.page.tsx',
             destination: callbackPagePath,
             importMappers: [reactComponents, authHooks, reactError],
-          })
+          }),
         );
         reactRoutes.registerRoute({
           path: 'signup',
           element: new TypescriptCodeExpression(
             `<SignupPage />`,
-            `import SignupPage from '${signupPageImport}'`
+            `import SignupPage from '${signupPageImport}'`,
           ),
         });
 
@@ -63,7 +63,7 @@ const Auth0CallbackGenerator = createGeneratorWithChildren({
             source: 'signup.page.tsx',
             destination: signupPagePath,
             importMappers: [reactComponents, reactError],
-          })
+          }),
         );
       },
     };

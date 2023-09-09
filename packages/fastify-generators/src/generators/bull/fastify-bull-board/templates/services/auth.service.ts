@@ -26,7 +26,7 @@ function getAccessTokenKey(accessToken: string): string {
 }
 
 export async function authenticateBullBoardUser(
-  authCode: string
+  authCode: string,
 ): Promise<string> {
   const redis = getRedisClient();
   const authKey = getAuthKey(authCode);
@@ -47,7 +47,7 @@ export async function authenticateBullBoardUser(
 }
 
 export async function validateBullBoardAccessToken(
-  accessToken: string
+  accessToken: string,
 ): Promise<void> {
   const redis = getRedisClient();
   const accessTokenKey = getAccessTokenKey(accessToken);

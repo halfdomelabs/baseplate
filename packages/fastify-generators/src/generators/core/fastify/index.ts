@@ -154,7 +154,7 @@ const FastifyGenerator = createGeneratorWithTasks({
       run({ node, nodeGitIgnore }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
           { devLoaders: [] },
-          { name: 'fastify-config', mergeArraysUniquely: true }
+          { name: 'fastify-config', mergeArraysUniquely: true },
         );
 
         node.mergeExtraProperties({

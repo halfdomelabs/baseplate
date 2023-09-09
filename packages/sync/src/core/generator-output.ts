@@ -62,13 +62,13 @@ export interface GeneratorOutputBuilder {
   writeFile(
     filename: string,
     content: string | Buffer,
-    options?: WriteFileOptions
+    options?: WriteFileOptions,
   ): void;
   readTemplate(templatePath: string): Promise<string>;
   addPostWriteCommand(
     command: string,
     commandType: PostWriteCommandType,
-    options?: PostWriteCommandOptions
+    options?: PostWriteCommandOptions,
   ): void;
   apply(action: BuilderAction): Promise<void>;
   /**
@@ -91,7 +91,7 @@ export type BuilderActionCreator<T extends unknown[]> = (
 ) => BuilderAction;
 
 export function createBuilderActionCreator<T extends unknown[]>(
-  creator: (...args: T) => BuilderAction['execute']
+  creator: (...args: T) => BuilderAction['execute'],
 ): BuilderActionCreator<T> {
   return (...args) => ({
     execute: (builder) => creator(...args)(builder),
@@ -136,7 +136,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
     const fullPath = path.join(
       this.generatorBaseDirectory,
       'templates',
-      templatePath
+      templatePath,
     );
     return fs.readFile(fullPath, 'utf8');
   }
@@ -144,7 +144,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
   writeFile(
     filePath: string,
     contents: string | Buffer,
-    options?: WriteFileOptions
+    options?: WriteFileOptions,
   ): void {
     const fullPath = this.resolvePath(filePath);
     if (this.output.files[fullPath]) {
@@ -172,7 +172,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
   addPostWriteCommand(
     command: string,
     commandType: PostWriteCommandType,
-    options?: PostWriteCommandOptions
+    options?: PostWriteCommandOptions,
   ): void {
     this.output.postWriteCommands.push({ command, commandType, options });
   }

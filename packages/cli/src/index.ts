@@ -24,13 +24,13 @@ async function getGeneratorEngine(): Promise<GeneratorEngine> {
           (await packageDirectory({
             cwd: resolveModule(moduleName),
           })) || '',
-        ]
-      )
+        ],
+      ),
     );
     const generators = await Promise.all(
       resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
-        loadGeneratorsForModule(moduleName, modulePath)
-      )
+        loadGeneratorsForModule(moduleName, modulePath),
+      ),
     );
     const generatorMap = R.mergeAll(generators);
 

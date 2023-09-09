@@ -115,7 +115,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
 
 export function compileAdmin(
   projectConfig: ProjectConfig,
-  app: AdminAppConfig
+  app: AdminAppConfig,
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(projectConfig, app);
 

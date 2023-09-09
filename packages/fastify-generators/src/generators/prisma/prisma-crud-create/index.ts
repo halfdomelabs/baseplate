@@ -36,7 +36,7 @@ const descriptorSchema = z.object({
 
 function getMethodDefinition(
   serviceMethodExpression: TypescriptCodeExpression,
-  options: PrismaDataMethodOptions
+  options: PrismaDataMethodOptions,
 ): ServiceOutputMethod {
   const { name, modelName, prismaOutput } = options;
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
@@ -64,7 +64,7 @@ function getMethodDefinition(
     ],
     requiresContext: hasContext,
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
-      prismaOutput.getServiceEnum(enumName)
+      prismaOutput.getServiceEnum(enumName),
     ),
   };
 }
@@ -91,7 +91,7 @@ function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
         data: createExpression,
         '...': 'query',
       }),
-    }
+    },
   );
 
   return TypescriptCodeUtils.formatBlock(
@@ -118,7 +118,7 @@ export async function METHOD_NAME({ data, query, EXTRA_ARGS }: CreateServiceInpu
         "import { Prisma } from '@prisma/client';",
       ],
       importMappers: [prismaUtils],
-    }
+    },
   );
 }
 
@@ -140,7 +140,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
       crudPrismaService,
       serviceContext,
       prismaUtils,
-    }
+    },
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
 
@@ -148,7 +148,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
 
     const serviceMethodExpression = TypescriptCodeUtils.createExpression(
       methodName,
-      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`
+      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
     );
     const transformerOption: PrismaDataTransformerOptions = {
       operationType: 'create',
@@ -157,7 +157,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
       transformerNames?.map((transformerName) =>
         crudPrismaService
           .getTransformerByName(transformerName)
-          .buildTransformer(transformerOption)
+          .buildTransformer(transformerOption),
       ) || [];
 
     return {
@@ -180,7 +180,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
         serviceFile.registerMethod(
           name,
           getMethodBlock(methodOptions),
-          getMethodDefinition(serviceMethodExpression, methodOptions)
+          getMethodDefinition(serviceMethodExpression, methodOptions),
         );
       },
     };

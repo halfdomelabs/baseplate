@@ -26,22 +26,22 @@ const fieldDefTypes = printedGenTyping({
 
 export type FieldAuthorizeRuleFunction<
   TypeName extends string,
-  FieldName extends string
+  FieldName extends string,
 > = (
   root: SourceValue<TypeName>,
   args: ArgsValue<TypeName, FieldName>,
   context: GetGen<'context'>,
-  info: GraphQLResolveInfo
+  info: GraphQLResolveInfo,
 ) => boolean | Promise<boolean>;
 
 export type FieldAuthorizeRule<
   TypeName extends string,
-  FieldName extends string
+  FieldName extends string,
 > = AuthRole | FieldAuthorizeRuleFunction<TypeName, FieldName>;
 
 export type FieldAuthorizeRoleResolver<
   TypeName extends string,
-  FieldName extends string
+  FieldName extends string,
 > =
   | FieldAuthorizeRule<TypeName, FieldName>
   | FieldAuthorizeRule<TypeName, FieldName>[];
@@ -54,7 +54,7 @@ interface FieldAuthorizeRoleConfig {
 }
 
 export const fieldAuthorizeRolePlugin = (
-  authorizeConfig: FieldAuthorizeRoleConfig = {}
+  authorizeConfig: FieldAuthorizeRoleConfig = {},
 ): NexusPlugin => {
   const { requireOnRootFields } = authorizeConfig;
 
@@ -63,7 +63,7 @@ export const fieldAuthorizeRolePlugin = (
     root: unknown,
     args: Record<string, unknown>,
     context: RequestServiceContext,
-    info: GraphQLResolveInfo
+    info: GraphQLResolveInfo,
   ): Promise<void> {
     const rules = Array.isArray(authorize) ? authorize : [authorize];
 
@@ -77,7 +77,7 @@ export const fieldAuthorizeRolePlugin = (
 
     // try all rules and see if any match
     const results = await Promise.allSettled(
-      ruleFunctions.map((func) => func(root, args, context, info))
+      ruleFunctions.map((func) => func(root, args, context, info)),
     );
 
     // if any check passed, return success
@@ -88,7 +88,7 @@ export const fieldAuthorizeRolePlugin = (
     // if a check threw an unexpected error, throw that since it may mean
     // the authorization rule may have been valid but failed to run
     const unexpectedError = results.find(
-      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError)
+      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError),
     ) as PromiseRejectedResult;
 
     if (unexpectedError) {
@@ -105,7 +105,7 @@ export const fieldAuthorizeRolePlugin = (
     onCreateFieldResolver(
       config: CreateFieldResolverInfo<{
         authorize?: FieldAuthorizeRoleResolver<string, string>;
-      }>
+      }>,
     ) {
       const authorize = config.fieldConfig.extensions?.nexus?.config.authorize;
 
@@ -114,11 +114,11 @@ export const fieldAuthorizeRolePlugin = (
         if (
           requireOnRootFields &&
           ['Query', 'Mutation', 'Subscription'].includes(
-            config.parentTypeConfig.name
+            config.parentTypeConfig.name,
           )
         ) {
           throw new Error(
-            `Authorize configuration required on root-field ${config.fieldConfig.name}`
+            `Authorize configuration required on root-field ${config.fieldConfig.name}`,
           );
         }
         return undefined;
@@ -130,7 +130,7 @@ export const fieldAuthorizeRolePlugin = (
           root,
           args,
           ctx as RequestServiceContext,
-          info
+          info,
         );
 
         return next(root, args, ctx, info);
@@ -147,21 +147,21 @@ export const fieldAuthorizeRolePlugin = (
           root,
           args: Record<string, unknown>,
           context,
-          info
+          info,
         ) {
           await authorizeAccess(
             authorize,
             root,
             args,
             context as RequestServiceContext,
-            info
+            info,
           );
 
           return subscribe(
             root,
             args,
             context,
-            info
+            info,
           ) as AsyncIterableIterator<unknown>;
         };
       }

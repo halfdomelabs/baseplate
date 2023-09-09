@@ -73,9 +73,9 @@ const ReactAuth0Generator = createGeneratorWithChildren({
           `import {Auth0Provider} from '@auth0/auth0-react';`,
           `import {config} from '%react-config'`,
         ],
-        { importMappers: [reactConfig] }
+        { importMappers: [reactConfig] },
       ),
-      { comesAfter: 'react-apollo' }
+      { comesAfter: 'react-apollo' },
     );
 
     return {

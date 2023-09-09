@@ -25,16 +25,16 @@ export class GeneratorEngine {
    */
   async loadProject(
     directory: string,
-    logger: Logger = console
+    logger: Logger = console,
   ): Promise<GeneratorEntry> {
     const projectPath = path.join(directory, 'baseplate');
     const rootDescriptor = await loadDescriptorFromFile(
-      path.join(projectPath, 'root')
+      path.join(projectPath, 'root'),
     );
     const rootGeneratorEntry = await buildGeneratorEntry(
       rootDescriptor,
       'root',
-      { baseDirectory: projectPath, generatorMap: this.generators, logger }
+      { baseDirectory: projectPath, generatorMap: this.generators, logger },
     );
 
     return rootGeneratorEntry;
@@ -42,7 +42,7 @@ export class GeneratorEngine {
 
   async build(
     rootEntry: GeneratorEntry,
-    logger: Logger = console
+    logger: Logger = console,
   ): Promise<GeneratorOutput> {
     return executeGeneratorEntry(rootEntry, logger);
   }
@@ -51,7 +51,7 @@ export class GeneratorEngine {
     output: GeneratorOutput,
     outputDirectory: string,
     options?: GeneratorWriteOptions,
-    logger: Logger = console
+    logger: Logger = console,
   ): Promise<GeneratorWriteResult> {
     return writeGeneratorOutput(output, outputDirectory, options, logger);
   }

@@ -21,7 +21,7 @@ describe('resolveModule', () => {
     const resolvedModule = resolveModule(
       '@/src/hi/test',
       './src/hello/foo/dom',
-      { pathMapEntries: [{ from: 'src/hi', to: '@hi' }] }
+      { pathMapEntries: [{ from: 'src/hi', to: '@hi' }] },
     );
     expect(resolvedModule).toBe('@hi/test');
   });
@@ -39,7 +39,7 @@ describe('resolveModule', () => {
       './src/there/dom',
       {
         pathMapEntries: [{ from: 'src/hi', to: '@hi' }],
-      }
+      },
     );
     expect(resolvedModule).toBe('../../hello/test');
   });

@@ -6,7 +6,7 @@ import {
 } from '../descriptor.js';
 
 export async function loadDescriptorFromFile(
-  filePath: string
+  filePath: string,
 ): Promise<BaseGeneratorDescriptor> {
   try {
     const fileString = await fs.readFile(`${filePath}.json`, 'utf8');
@@ -19,7 +19,7 @@ export async function loadDescriptorFromFile(
     return data;
   } catch (err) {
     throw new Error(
-      `Unable to load descriptor file: ${filePath} (${getErrorMessage(err)})`
+      `Unable to load descriptor file: ${filePath} (${getErrorMessage(err)})`,
     );
   }
 }

@@ -8,7 +8,7 @@ import { FILE_CATEGORIES } from '../constants/file-categories';
 
 export async function downloadFile(
   fileIdOrFile: string | FILE_MODEL_TYPE,
-  context: ServiceContext
+  context: ServiceContext,
 ): Promise<Readable> {
   const file =
     typeof fileIdOrFile === 'string'
@@ -37,7 +37,7 @@ export async function downloadFile(
 
   if (!adapter.downloadFile) {
     throw new Error(
-      `Storage adapter ${file.adapter} does not support downloading`
+      `Storage adapter ${file.adapter} does not support downloading`,
     );
   }
 

@@ -76,7 +76,7 @@ export interface ServiceOutputMethod {
 
 export function scalarPrismaFieldToServiceField(
   field: PrismaOutputScalarField,
-  lookupEnum: (name: string) => ServiceOutputEnum
+  lookupEnum: (name: string) => ServiceOutputEnum,
 ): ServiceOutputDtoField {
   if (field.scalarType === 'enum' && !field.enumType) {
     throw new Error(`Enum field must have enum type.`);
@@ -95,7 +95,7 @@ export function scalarPrismaFieldToServiceField(
 }
 
 export function nestedPrismaFieldToServiceField(
-  field: PrismaOutputRelationField
+  field: PrismaOutputRelationField,
 ): ServiceOutputDtoNestedField {
   return {
     type: 'nested',
@@ -112,14 +112,14 @@ export function nestedPrismaFieldToServiceField(
 
 export function prismaToServiceOutputDto(
   model: PrismaOutputModel,
-  lookupEnum: (name: string) => ServiceOutputEnum
+  lookupEnum: (name: string) => ServiceOutputEnum,
 ): ServiceOutputDto {
   return {
     name: model.name,
     fields: model.fields.map((field) =>
       field.type === 'scalar'
         ? scalarPrismaFieldToServiceField(field, lookupEnum)
-        : nestedPrismaFieldToServiceField(field)
+        : nestedPrismaFieldToServiceField(field),
     ),
   };
 }

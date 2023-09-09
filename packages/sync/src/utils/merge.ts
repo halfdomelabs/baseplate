@@ -1,8 +1,13 @@
 import jsonPatch from 'fast-json-patch';
 import { merge, diffComm } from 'node-diff3';
 
-interface CommonCommResult { common: string[] }
-interface DiffCommResult { buffer1: string[]; buffer2: string[] }
+interface CommonCommResult {
+  common: string[];
+}
+interface DiffCommResult {
+  buffer1: string[];
+  buffer2: string[];
+}
 type CommResult = CommonCommResult | DiffCommResult;
 
 /**
@@ -11,7 +16,7 @@ type CommResult = CommonCommResult | DiffCommResult;
 export function attemptMergeJson(
   existingContents: string,
   newContents: string,
-  originalContents: string
+  originalContents: string,
 ): string | null {
   try {
     const originalJson = JSON.parse(originalContents) as Record<
@@ -32,7 +37,7 @@ export function attemptMergeJson(
     return JSON.stringify(
       jsonPatch.applyPatch(existingJson, diff, true, false).newDocument,
       null,
-      2
+      2,
     );
   } catch (e) {
     // default to merge strings method if patching fails
@@ -51,7 +56,7 @@ export function attemptMergeJson(
 export function mergeStrings(
   existingContents: string,
   newContents: string,
-  originalContents?: string
+  originalContents?: string,
 ): { contents: string; hasConflict: boolean } {
   // if nothing has changed, just return the original
   if (originalContents === newContents) {
@@ -74,7 +79,7 @@ export function mergeStrings(
   }
   const patch: CommResult[] = diffComm(
     existingContents.split('\n'),
-    newContents.split('\n')
+    newContents.split('\n'),
   );
 
   const isCommonCommResult = (r: CommResult): r is CommonCommResult =>

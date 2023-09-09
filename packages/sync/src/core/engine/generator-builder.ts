@@ -49,7 +49,7 @@ export function getGeneratorId(
   descriptorOrReference: BaseGeneratorDescriptor | string,
   baseId: string,
   childrenMapKey: string,
-  isMultiple: boolean
+  isMultiple: boolean,
 ): string {
   if (typeof descriptorOrReference === 'string') {
     return descriptorOrReference;
@@ -62,7 +62,7 @@ export function getGeneratorId(
   if (isMultiple) {
     if (!descriptorOrReference.name) {
       throw new Error(
-        `Array child generators must have a name in ${baseId} for ${childrenMapKey}`
+        `Array child generators must have a name in ${baseId} for ${childrenMapKey}`,
       );
     }
     arrayChildSuffix = `.${descriptorOrReference.name}`;
@@ -73,7 +73,7 @@ export function getGeneratorId(
 
 async function resolveDescriptorOrReference(
   descriptorOrReference: BaseGeneratorDescriptor | string,
-  baseDirectory: string
+  baseDirectory: string,
 ): Promise<BaseGeneratorDescriptor> {
   if (typeof descriptorOrReference === 'object') {
     return descriptorOrReference;
@@ -86,12 +86,12 @@ async function resolveDescriptorOrReference(
 export async function buildGeneratorEntry(
   descriptor: BaseGeneratorDescriptor,
   id: string,
-  context: GeneratorEntryBuilderContext
+  context: GeneratorEntryBuilderContext,
 ): Promise<GeneratorEntry> {
   const generatorConfig = context.generatorMap[descriptor.generator];
   if (!generatorConfig) {
     throw new Error(
-      `Generator ${descriptor.generator} not found in generator map`
+      `Generator ${descriptor.generator} not found in generator map`,
     );
   }
 
@@ -113,7 +113,7 @@ export async function buildGeneratorEntry(
         generatorBaseDirectory: generatorConfig.configBaseDirectory,
         dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
         generatorName: descriptor.generator,
-      })
+      }),
     );
 
   // recursively build children generator entries
@@ -128,26 +128,26 @@ export async function buildGeneratorEntry(
           .map(async (descriptorOrRef) => {
             const childDescriptor = await resolveDescriptorOrReference(
               descriptorOrRef,
-              context.baseDirectory
+              context.baseDirectory,
             );
             const childId = getGeneratorId(
               descriptorOrRef,
               id,
               key,
-              isMultiple
+              isMultiple,
             );
 
             return buildGeneratorEntry(childDescriptor, childId, context);
-          })
+          }),
       );
-    })
+    }),
   );
   const childGenerators = childGeneratorEntryArrays.flat();
 
   const childIds = childGenerators.map((g) => g.id);
   if (childIds.length !== new Set(childIds).size) {
     throw new Error(
-      `Duplicate child generator IDs found in ${id}: ${childIds.join(', ')}`
+      `Duplicate child generator IDs found in ${id}: ${childIds.join(', ')}`,
     );
   }
 

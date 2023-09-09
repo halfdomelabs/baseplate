@@ -60,7 +60,7 @@ export type PrismaCrudServiceTypesProvider = ImportMapper;
 
 export const prismaCrudServiceTypesProvider =
   createProviderType<PrismaCrudServiceTypesProvider>(
-    'prisma-crud-service-types'
+    'prisma-crud-service-types',
   );
 
 const internalRequire = createRequire(import.meta.url);
@@ -113,7 +113,7 @@ const PrismaGenerator = createGeneratorWithTasks({
           createPrismaSchemaGeneratorBlock({
             name: 'client',
             provider: 'prisma-client-js',
-          })
+          }),
         );
 
         schemaFile.setDatasourceBlock(
@@ -121,7 +121,7 @@ const PrismaGenerator = createGeneratorWithTasks({
             name: 'db',
             provider: 'postgresql',
             url: 'env("DATABASE_URL")',
-          })
+          }),
         );
 
         const defaultDatabaseUrl =
@@ -139,8 +139,8 @@ const PrismaGenerator = createGeneratorWithTasks({
         fastifyHealthCheck.addCheck(
           TypescriptCodeUtils.createBlock(
             '// check Prisma is operating\nawait prisma.$queryRaw`SELECT 1;`;',
-            "import { prisma } from '@/src/services/prisma'"
-          )
+            "import { prisma } from '@/src/services/prisma'",
+          ),
         );
 
         return {
@@ -160,14 +160,14 @@ const PrismaGenerator = createGeneratorWithTasks({
           build: async (builder) => {
             const schemaText = schemaFile.toText();
             const { formatSchema: format } = internalRequire(
-              '@prisma/internals'
+              '@prisma/internals',
             ) as { formatSchema: typeof formatSchema };
             const formattedSchemaText = await format({
               schema: schemaText,
             });
             builder.writeFile(
               'prisma/schema.prisma',
-              `${formattedSchemaText.trimEnd()}\n`
+              `${formattedSchemaText.trimEnd()}\n`,
             );
 
             builder.addPostWriteCommand('pnpm prisma generate', 'generation', {
@@ -178,7 +178,7 @@ const PrismaGenerator = createGeneratorWithTasks({
               copyTypescriptFileAction({
                 source: 'services/prisma.ts',
                 destination: 'src/services/prisma.ts',
-              })
+              }),
             );
 
             const seedFile = typescript.createTemplate({
@@ -188,14 +188,14 @@ const PrismaGenerator = createGeneratorWithTasks({
             seedFile.addCodeEntries({
               PRISMA_SERVICE: TypescriptCodeUtils.createExpression(
                 'prisma',
-                "import { prisma } from '@/src/services/prisma'"
+                "import { prisma } from '@/src/services/prisma'",
               ),
             });
 
             await builder.apply(
               seedFile.renderToAction('prisma/seed.ts', 'src/prisma/seed.ts', {
                 neverOverwrite: true,
-              })
+              }),
             );
 
             return { schemaFile };
@@ -222,7 +222,7 @@ const PrismaGenerator = createGeneratorWithTasks({
               getPrismaClient: () =>
                 TypescriptCodeUtils.createExpression(
                   'prisma',
-                  "import { prisma } from '@/src/services/prisma'"
+                  "import { prisma } from '@/src/services/prisma'",
                 ),
               getPrismaModel: (modelName) => {
                 const modelBlock = schemaFile.getModelBlock(modelName);
@@ -241,7 +241,7 @@ const PrismaGenerator = createGeneratorWithTasks({
                   values: block.values,
                   expression: TypescriptCodeUtils.createExpression(
                     block.name,
-                    `import { ${block.name} } from '@prisma/client'`
+                    `import { ${block.name} } from '@prisma/client'`,
                   ),
                 };
               },
@@ -250,13 +250,13 @@ const PrismaGenerator = createGeneratorWithTasks({
                   modelName.charAt(0).toLocaleLowerCase() + modelName.slice(1);
                 return TypescriptCodeUtils.createExpression(
                   `prisma.${modelExport}`,
-                  "import { prisma } from '@/src/services/prisma'"
+                  "import { prisma } from '@/src/services/prisma'",
                 );
               },
               getModelTypeExpression: (modelName) =>
                 TypescriptCodeUtils.createExpression(
                   modelName,
-                  `import { ${modelName} } from '@prisma/client'`
+                  `import { ${modelName} } from '@prisma/client'`,
                 ),
             },
           }),

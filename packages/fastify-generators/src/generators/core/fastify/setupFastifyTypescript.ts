@@ -5,7 +5,7 @@ import {
 
 export function setupFastifyTypescript(
   node: NodeProvider,
-  typescriptConfig: TypescriptConfigProvider
+  typescriptConfig: TypescriptConfigProvider,
 ): void {
   typescriptConfig.setTypescriptVersion('5.1.6');
   typescriptConfig.setTypescriptCompilerOptions({

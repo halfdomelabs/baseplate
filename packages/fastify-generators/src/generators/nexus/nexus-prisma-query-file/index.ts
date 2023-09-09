@@ -42,7 +42,7 @@ const NexusPrismaQueryFileGenerator = createGeneratorWithTasks({
       createNexusTypesFileTask({
         name,
         categoryOrder: ['object-type', 'find-query', 'list-query'],
-      })
+      }),
     );
   },
 });

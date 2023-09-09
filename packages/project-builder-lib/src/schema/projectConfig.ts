@@ -39,7 +39,7 @@ export const projectConfigSchema = z.object({
     .int()
     .refine(
       (portOffset) => portOffset % 1000 === 0,
-      'Port offset must be a multiple of 1000, e.g. 1000, 2000, 3000, etc.'
+      'Port offset must be a multiple of 1000, e.g. 1000, 2000, 3000, etc.',
     ),
   apps: z.array(appSchema).default([]),
   features: z
@@ -47,7 +47,7 @@ export const projectConfigSchema = z.object({
       z.object({
         uid: z.string().default(randomUid),
         name: z.string().min(1),
-      })
+      }),
     )
     .default([]),
   models: z.array(modelSchema).default([]),
@@ -78,13 +78,13 @@ export const getProjectConfigReferences: GetReferencesFunction<
     if (app.type === 'web') {
       buildWebAppReferences(
         app,
-        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<WebAppConfig>
+        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<WebAppConfig>,
       );
     }
     if (app.type === 'admin') {
       buildAdminAppReferences(
         app,
-        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<AdminAppConfig>
+        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<AdminAppConfig>,
       );
     }
   });

@@ -55,7 +55,7 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
 
 function buildMutationSchemaTypeForModel(
   feature: string,
-  model: ModelConfig
+  model: ModelConfig,
 ): unknown {
   const { schema: graphql } = model || {};
   const { authorize } = graphql || {};
@@ -104,7 +104,7 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
 
 export function buildSchemaTypesForFeature(
   feature: string,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   const models =
     parsedProject

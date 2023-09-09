@@ -58,7 +58,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
               },
               include: ['vite.config.ts'],
             },
-          })
+          }),
         );
       },
     };

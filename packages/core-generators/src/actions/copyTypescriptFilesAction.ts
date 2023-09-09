@@ -29,7 +29,7 @@ export const copyTypescriptFilesAction = createBuilderActionCreator(
     } = options;
 
     const normalizedPaths = paths.map((p) =>
-      typeof p === 'string' ? { path: p } : p
+      typeof p === 'string' ? { path: p } : p,
     );
 
     const actions = normalizedPaths.map((p) =>
@@ -39,11 +39,11 @@ export const copyTypescriptFilesAction = createBuilderActionCreator(
         replacements: p.replacements,
         neverOverwrite: p.neverOverwrite,
         ...rest,
-      })
+      }),
     );
 
     return async (builder) => {
       await Promise.all(actions.map((action) => builder.apply(action)));
     };
-  }
+  },
 );

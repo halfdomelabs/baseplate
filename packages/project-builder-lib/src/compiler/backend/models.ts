@@ -36,7 +36,7 @@ function buildRelationField(
     onDelete,
     onUpdate,
   }: ModelRelationFieldConfig,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   const model = parsedProject.getModels().find((m) => m.name === modelName);
   if (!model) {
@@ -68,7 +68,7 @@ function buildUniqueConstraint({
 
 function buildModel(
   model: ModelConfig,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   return {
     name: model.name,
@@ -76,13 +76,13 @@ function buildModel(
     children: {
       fields: model.model.fields?.map(buildScalarField),
       relations: model.model.relations?.map((r) =>
-        buildRelationField(r, parsedProject)
+        buildRelationField(r, parsedProject),
       ),
       primaryKey: {
         fields: model.model.primaryKeys,
       },
       uniqueConstraints: model.model.uniqueConstraints?.map(
-        buildUniqueConstraint
+        buildUniqueConstraint,
       ),
     },
   };
@@ -90,7 +90,7 @@ function buildModel(
 
 export function buildModelsForFeature(
   feature: string,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   const models =
     parsedProject.getModels().filter((m) => m.feature === feature) || [];

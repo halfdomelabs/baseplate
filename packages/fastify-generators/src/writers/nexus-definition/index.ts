@@ -19,7 +19,7 @@ export interface NexusDefinitionWriterOptions {
 export function writeNexusObjectTypeFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   resolver: TypescriptCodeExpression,
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): TypescriptCodeBlock {
   const components = [options.builder];
 
@@ -32,7 +32,7 @@ export function writeNexusObjectTypeFieldFromDtoNestedField(
   }
 
   components.push(
-    `.field("${field.name}", { type: '${field.nestedType.name}', resolve: RESOLVER })`
+    `.field("${field.name}", { type: '${field.nestedType.name}', resolve: RESOLVER })`,
   );
 
   const fieldStr = components.join('');
@@ -43,7 +43,7 @@ export function writeNexusObjectTypeFieldFromDtoNestedField(
 
 export function writeNexusDefinitionFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): string {
   const components = [options.builder];
 
@@ -68,7 +68,7 @@ export function writeNexusDefinitionFromDtoScalarField(
       throw new Error(`Field must have nexus type or be enum!`);
     }
     components.push(
-      `.field("${field.name}", { type: "${field.enumType.name}" })`
+      `.field("${field.name}", { type: "${field.enumType.name}" })`,
     );
   } else {
     components.push(`.${nexusMethodWithId}("${field.name}")`);
@@ -79,7 +79,7 @@ export function writeNexusDefinitionFromDtoScalarField(
 
 function writeNexusInputDefinitionFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): string {
   const components = [options.builder];
 
@@ -94,7 +94,7 @@ function writeNexusInputDefinitionFromDtoNestedField(
   components.push(
     `.field("${field.name}", { type: '${
       field.schemaFieldName || `${field.nestedType.name}Input`
-    }' })`
+    }' })`,
   );
 
   return components.join('');
@@ -112,7 +112,7 @@ interface InputDefinition {
 
 export function writeNexusInputDefinitionFromDtoFields(
   fields: ServiceOutputDtoField[],
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): InputDefinition {
   const inputDefinitions = fields.map((field) => {
     if (field.type === 'nested') {
@@ -120,7 +120,7 @@ export function writeNexusInputDefinitionFromDtoFields(
         return {
           definition: writeNexusInputDefinitionFromDtoNestedField(
             field,
-            options
+            options,
           ),
           childInputDefinitions: [],
         };
@@ -132,7 +132,7 @@ export function writeNexusInputDefinitionFromDtoFields(
       const { definition: childDefinition, childInputDefinitions } =
         writeNexusInputDefinitionFromDtoFields(
           field.nestedType.fields,
-          options
+          options,
         );
       return {
         definition: writeNexusInputDefinitionFromDtoNestedField(field, options),
@@ -151,18 +151,18 @@ export function writeNexusInputDefinitionFromDtoFields(
   return {
     definition: inputDefinitions.map((d) => d.definition).join('\n'),
     childInputDefinitions: inputDefinitions.flatMap(
-      (d) => d.childInputDefinitions
+      (d) => d.childInputDefinitions,
     ),
   };
 }
 
 export function writeScalarNexusDefinitionFromDtoFields(
   fields: ServiceOutputDtoField[],
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): string {
   return fields
     .filter(
-      (field): field is ServiceOutputDtoScalarField => field.type === 'scalar'
+      (field): field is ServiceOutputDtoScalarField => field.type === 'scalar',
     )
     .map((field) => writeNexusDefinitionFromDtoScalarField(field, options))
     .join('\n');
@@ -178,16 +178,16 @@ INPUT_PAYLOAD
 `.trim();
 
 export function writeChildInputDefinition(
-  child: ChildInputDefinition
+  child: ChildInputDefinition,
 ): TypescriptCodeBlock {
   const contents = CHILD_INPUT_TYPE_TEMPLATE.replace(
     'INPUT_TYPE_EXPORT',
-    `${lowerCaseFirst(child.name)}Input`
+    `${lowerCaseFirst(child.name)}Input`,
   )
     .replace('INPUT_TYPE_NAME', `${child.name}Input`)
     .replace('INPUT_PAYLOAD', child.definition);
   return new TypescriptCodeBlock(
     contents,
-    "import { inputObjectType } from 'nexus'"
+    "import { inputObjectType } from 'nexus'",
   );
 }

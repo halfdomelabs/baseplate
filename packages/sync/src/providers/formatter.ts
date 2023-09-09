@@ -4,7 +4,7 @@ import { Logger } from '../utils/evented-logger.js';
 export type FormatFunction = (
   input: string,
   fullPath: string,
-  logger: Logger
+  logger: Logger,
 ) => Promise<string> | string;
 
 export interface FormatterProvider {

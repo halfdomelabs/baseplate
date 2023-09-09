@@ -29,18 +29,18 @@ export function createOrderedList<T>(): OrderedList<T> {
     getItems() {
       const comesBeforeRules = items.flatMap((item) =>
         normalizeArray(item.orderRules?.comesBefore || []).map(
-          (rule): [string, string] => [rule, item.key]
-        )
+          (rule): [string, string] => [rule, item.key],
+        ),
       );
       const comesAfterRules = items.flatMap((item) =>
         normalizeArray(item.orderRules?.comesAfter || []).map(
-          (rule): [string, string] => [item.key, rule]
-        )
+          (rule): [string, string] => [item.key, rule],
+        ),
       );
       return toposort
         .array(
           items.map((item) => item.key),
-          [...comesBeforeRules, ...comesAfterRules]
+          [...comesBeforeRules, ...comesAfterRules],
         )
         .map((key) => items.find((item) => item.key === key)?.item)
         .filter(notEmpty);

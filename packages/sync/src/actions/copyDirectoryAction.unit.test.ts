@@ -18,7 +18,7 @@ describe('copyDirectoryAction', () => {
     const builder = new OutputBuilder('/generator');
 
     await copyDirectoryAction({ source: '/', destination: '/' }).execute(
-      builder
+      builder,
     );
 
     expect(builder.output.files).toEqual({});

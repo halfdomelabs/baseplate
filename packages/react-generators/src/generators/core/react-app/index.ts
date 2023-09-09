@@ -56,8 +56,8 @@ const ReactAppGenerator = createGeneratorWithChildren({
         'APP',
         TypescriptCodeUtils.createExpression(
           '<App />',
-          `import App from '@/${srcFolder}/app/App';`
-        )
+          `import App from '@/${srcFolder}/app/App';`,
+        ),
       );
     return {
       getProviders: () => ({
@@ -82,7 +82,7 @@ const ReactAppGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const rootWithSiblings = TypescriptCodeUtils.mergeExpressions(
           [renderRoot, ...renderSiblings],
-          '\n'
+          '\n',
         );
 
         appFile.addCodeEntries({

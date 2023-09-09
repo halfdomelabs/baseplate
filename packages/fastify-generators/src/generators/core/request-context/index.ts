@@ -42,8 +42,8 @@ const RequestContextGenerator = createGeneratorWithTasks({
           'reqId',
           TypescriptCodeUtils.createExpression(
             "requestContext.get('reqInfo')?.id",
-            "import { requestContext } from '@fastify/request-context';"
-          )
+            "import { requestContext } from '@fastify/request-context';",
+          ),
         );
 
         return {};
@@ -62,14 +62,14 @@ const RequestContextGenerator = createGeneratorWithTasks({
       run({ node, fastifyServer }) {
         const config = createNonOverwriteableMap(
           {},
-          { name: 'request-context-config' }
+          { name: 'request-context-config' },
         );
         node.addPackages({ '@fastify/request-context': '5.0.0' });
         fastifyServer.registerPlugin({
           name: 'requestContextPlugin',
           plugin: TypescriptCodeUtils.createExpression(
             'requestContextPlugin',
-            "import {requestContextPlugin} from '@/src/plugins/request-context"
+            "import {requestContextPlugin} from '@/src/plugins/request-context",
           ),
         });
         return {
@@ -79,7 +79,7 @@ const RequestContextGenerator = createGeneratorWithTasks({
               getRequestInfoType: () =>
                 TypescriptCodeUtils.createExpression(
                   'RequestInfo',
-                  "import type {RequestInfo} from '@/src/plugins/request-context'"
+                  "import type {RequestInfo} from '@/src/plugins/request-context'",
                 ),
             },
           }),
@@ -88,7 +88,7 @@ const RequestContextGenerator = createGeneratorWithTasks({
               copyTypescriptFileAction({
                 source: 'request-context.ts',
                 destination: 'src/plugins/request-context.ts',
-              })
+              }),
             );
           },
         };

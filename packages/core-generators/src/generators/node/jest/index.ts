@@ -50,7 +50,7 @@ const JestGenerator = createGeneratorWithChildren({
         customSetupBlocks: [],
         setupFilesAfterEnv: [],
       },
-      { name: 'jest-config', mergeArraysUniquely: true }
+      { name: 'jest-config', mergeArraysUniquely: true },
     );
 
     node.addDevPackages({
@@ -80,7 +80,7 @@ const JestGenerator = createGeneratorWithChildren({
           [
             "import { pathsToModuleNameMapper } from 'ts-jest'",
             "import { compilerOptions } from './tsconfig.json'",
-          ]
+          ],
         );
 
         const customSetupPath = 'src/tests/scripts/setup.ts';
@@ -92,7 +92,7 @@ const JestGenerator = createGeneratorWithChildren({
             CUSTOM_SETUP: config.customSetupBlocks,
           });
           await builder.apply(
-            customSetupFile.renderToAction('setup.ts', customSetupPath)
+            customSetupFile.renderToAction('setup.ts', customSetupPath),
           );
         }
 
@@ -110,12 +110,12 @@ const JestGenerator = createGeneratorWithChildren({
               }
             : {}),
           testPathIgnorePatterns: TypescriptCodeUtils.mergeExpressionsAsArray(
-            config.testPathIgnorePatterns.map((str) => quot(str))
+            config.testPathIgnorePatterns.map((str) => quot(str)),
           ),
           ...(config.setupFilesAfterEnv.length
             ? {
                 setupFilesAfterEnv: TypescriptCodeUtils.mergeExpressionsAsArray(
-                  config.setupFilesAfterEnv.map((str) => quot(str))
+                  config.setupFilesAfterEnv.map((str) => quot(str)),
                 ),
               }
             : {}),

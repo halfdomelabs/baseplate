@@ -23,7 +23,7 @@ const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
 function upsertItems<T>(
   items: T[] | undefined,
   existingItems: T[] | undefined,
-  keyFunction: (item: T) => string
+  keyFunction: (item: T) => string,
 ): T[] {
   if (!items || !existingItems) {
     if (items) {
@@ -62,14 +62,14 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
   const missingParentFeatures = features.filter(
     (feature) =>
       feature.includes('/') &&
-      !features.includes(feature.substring(0, feature.lastIndexOf('/')))
+      !features.includes(feature.substring(0, feature.lastIndexOf('/'))),
   );
 
   if (missingParentFeatures.length) {
     throw new Error(
       `Nested features must be a direct child of another feature. Features with missing parents: ${missingParentFeatures.join(
-        ', '
-      )}`
+        ', ',
+      )}`,
     );
   }
 
@@ -81,34 +81,34 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
         const foreignModel = models.find((m) => m.name === relation.modelName);
         if (!foreignModel) {
           throw new Error(
-            `Model ${model.name} has a relation to ${relation.modelName} but that model does not exist`
+            `Model ${model.name} has a relation to ${relation.modelName} but that model does not exist`,
           );
         }
         // verify types of fields match
         relation.references.forEach((reference) => {
           const foreignField = foreignModel.model.fields.find(
-            (f) => f.name === reference.foreign
+            (f) => f.name === reference.foreign,
           );
           if (!foreignField) {
             throw new Error(
-              `Could not find ${reference.foreign} on ${foreignModel.name}`
+              `Could not find ${reference.foreign} on ${foreignModel.name}`,
             );
           }
           const localField = model.model.fields.find(
-            (f) => f.name === reference.local
+            (f) => f.name === reference.local,
           );
           if (!localField) {
             throw new Error(
-              `Could not find ${reference.local} on ${model.name}`
+              `Could not find ${reference.local} on ${model.name}`,
             );
           }
           if (foreignField.type !== localField.type) {
             throw new Error(
-              `Field types do not match for ${reference.local} on ${model.name} and ${reference.foreign} on ${foreignModel.name}`
+              `Field types do not match for ${reference.local} on ${model.name} and ${reference.foreign} on ${foreignModel.name}`,
             );
           }
         });
-      }) || []
+      }) || [],
   );
 }
 
@@ -130,7 +130,7 @@ function buildReferenceMap({
 
 function findMissingReferences(
   { referenceables }: GetReferencesResult,
-  referenceMap: Record<string, Record<string, ObjectReferenceEntry[]>>
+  referenceMap: Record<string, Record<string, ObjectReferenceEntry[]>>,
 ): ObjectReferenceEntry[] {
   return REFERENCEABLE_CATEGORIES.flatMap((category) => {
     const availableKeys = referenceables.map(R.prop('key'));
@@ -138,7 +138,7 @@ function findMissingReferences(
     // make sure keys exist in referenceables
     const missingKeys = R.difference(
       Object.keys(referencesByKey),
-      availableKeys
+      availableKeys,
     );
     return missingKeys.flatMap((key) => referencesByKey[key]);
   });
@@ -184,7 +184,7 @@ export class ParsedProjectConfig {
         addFeatureChildren: (featurePath, children) => {
           this.featureChildren[featurePath] = safeMerge(
             this.featureChildren[featurePath],
-            children
+            children,
           );
         },
         mergeModel: (model) => {
@@ -213,7 +213,7 @@ export class ParsedProjectConfig {
           // merge model in
           if (existingModel.feature !== model.feature) {
             throw new Error(
-              `Model ${model.name} has conflicting feature paths in ${plugin.name}`
+              `Model ${model.name} has conflicting feature paths in ${plugin.name}`,
             );
           }
 
@@ -224,18 +224,18 @@ export class ParsedProjectConfig {
               fields: upsertItems(
                 model.model.fields,
                 existingModel.model.fields,
-                (i) => i.name
+                (i) => i.name,
               ),
               relations: upsertItems(
                 model.model.relations,
                 existingModel.model.relations,
-                (i) => i.name
+                (i) => i.name,
               ),
             },
             service: deepMergeRightUniq(existingModel.service, model.service),
           });
         },
-      })
+      }),
     );
 
     // augment project config
@@ -253,7 +253,7 @@ export class ParsedProjectConfig {
       throw new Error(
         `Missing keys in references: ${missingKeys
           .map((key) => `${key.key} (${key.path})`)
-          .join(', ')}`
+          .join(', ')}`,
       );
     }
   }
@@ -267,13 +267,13 @@ export class ParsedProjectConfig {
   }
 
   getModelForeignRelations(
-    modelName: string
+    modelName: string,
   ): { relation: ParsedRelationField; model: ParsedModel }[] {
     return this.models.flatMap(
       (m) =>
         m.model.relations
           ?.filter((relation) => relation.modelName === modelName)
-          .map((relation) => ({ relation, model: m })) || []
+          .map((relation) => ({ relation, model: m })) || [],
     );
   }
 
@@ -311,7 +311,7 @@ export class ParsedProjectConfig {
   getModelFieldValidation(
     modelName: string,
     fieldName: string,
-    preProcess?: boolean
+    preProcess?: boolean,
   ): string {
     const model = this.getModelByName(modelName);
     const field = model.model.fields.find((f) => f.name === fieldName);

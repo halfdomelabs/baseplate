@@ -43,7 +43,7 @@ const PothosPrismaCrudFileGenerator = createGeneratorWithTasks({
     taskBuilder.addTask(
       createPothosTypesFileTask({
         fileName,
-      })
+      }),
     );
   },
 });

@@ -47,14 +47,14 @@ export const MUTATION_EXPORT = createStandardMutation({
 
 function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,
-  tsUtils: TsUtilsProvider
+  tsUtils: TsUtilsProvider,
 ): TypescriptCodeExpression {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in nested fields`);
   }
   const { fields } = arg.nestedType;
   const nestedFields = fields.filter(
-    (f): f is ServiceOutputDtoNestedField => f.type === 'nested'
+    (f): f is ServiceOutputDtoNestedField => f.type === 'nested',
   );
 
   if (nestedFields.length) {
@@ -71,7 +71,7 @@ function buildNestedArgExpression(
               ? singularize(nestedField.name)
               : `${arg.name}.${nestedField.name}`,
           },
-          tsUtils
+          tsUtils,
         ),
       }))
       .filter((f) => f.expression.content.includes('restrictObjectNulls'));
@@ -94,17 +94,17 @@ function buildNestedArgExpression(
                       contents.trimStart().startsWith('{')
                         ? `(${contents})`
                         : contents
-                    })`
+                    })`,
                 );
               }
               return expression.wrap(
                 (contents) =>
-                  `${field.name}: ${arg.name}.${field.name} && ${contents}`
+                  `${field.name}: ${arg.name}.${field.name} && ${contents}`,
               );
             }),
-            ',\n'
+            ',\n',
           ),
-        }
+        },
       );
     }
   }
@@ -113,14 +113,14 @@ function buildNestedArgExpression(
 
 function convertNestedArgForCall(
   arg: ServiceOutputDtoNestedField,
-  tsUtils: TsUtilsProvider
+  tsUtils: TsUtilsProvider,
 ): TypescriptCodeExpression {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in nested fields`);
   }
   const { fields } = arg.nestedType;
   const nonNullableOptionalFields = fields.filter(
-    (f) => f.isOptional && !f.isNullable
+    (f) => f.isOptional && !f.isNullable,
   );
 
   const nestedArgExpression: TypescriptCodeExpression =
@@ -135,7 +135,7 @@ function convertNestedArgForCall(
       {
         importText: [`import {restrictObjectNulls} from '%ts-utils/nulls';`],
         importMappers: [tsUtils],
-      }
+      },
     );
   }
   return nestedArgExpression;
@@ -143,7 +143,7 @@ function convertNestedArgForCall(
 
 function convertArgForCall(
   arg: ServiceOutputDtoField,
-  tsUtils: TsUtilsProvider
+  tsUtils: TsUtilsProvider,
 ): TypescriptCodeExpression {
   // TODO: Handle convert all nulls
   if (arg.isOptional && !arg.isNullable) {
@@ -182,7 +182,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
   },
   createGenerator(
     { modelName, type },
-    { nexusSchema, nexusTypesFile, serviceFileOutput, tsUtils }
+    { nexusSchema, nexusTypesFile, serviceFileOutput, tsUtils },
   ) {
     const serviceOutput = serviceFileOutput.getServiceMethod(type);
 
@@ -207,7 +207,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
         importText: [
           `import { createStandardMutation } from '${nexusSchema.getUtilsImport()}';`,
         ],
-      }
+      },
     );
 
     const inputDefinitions = writeNexusInputDefinitionFromDtoFields(
@@ -215,7 +215,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       {
         builder: 't',
         lookupScalar: (scalar) => nexusSchema.getScalarConfig(scalar),
-      }
+      },
     );
 
     const argNames = serviceOutput.arguments.map((arg) => arg.name);
@@ -230,7 +230,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       SERVICE_CALL: serviceOutput.expression,
       SERVICE_ARGUMENTS: TypescriptCodeUtils.mergeExpressions(
         serviceOutput.arguments.map((arg) => convertArgForCall(arg, tsUtils)),
-        ', '
+        ', ',
       ).append(serviceOutput.requiresContext ? ', context' : ''),
       RETURN_FIELD_NAME: lowerCaseFirst(modelName),
     });
@@ -248,7 +248,7 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
           addCustomField(fieldName, fieldType) {
             objectTypeBlock.addStringReplacement(
               'CUSTOM_FIELDS',
-              fieldType.prepend(`${fieldName}: `).toStringReplacement()
+              fieldType.prepend(`${fieldName}: `).toStringReplacement(),
             );
           },
         },
@@ -259,8 +259,8 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
           block: objectTypeBlock.renderToBlock(
             MUTATION_TEMPLATE.replace(
               'RETURN_FIELD_NAME',
-              lowerCaseFirst(modelName)
-            )
+              lowerCaseFirst(modelName),
+            ),
           ),
         });
       },

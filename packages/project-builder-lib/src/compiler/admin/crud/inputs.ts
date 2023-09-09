@@ -15,11 +15,11 @@ import {
 function compileAdminEnumInput(
   field: AdminCrudEnumInputConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   const model = builder.parsedProject.getModelByName(modelName);
   const fieldConfig = model.model.fields.find(
-    (f) => f.name === field.modelField
+    (f) => f.name === field.modelField,
   );
   if (fieldConfig?.type !== 'enum') {
     throw new Error(`Admin enum input ${field.modelField} is not an enum`);
@@ -29,7 +29,7 @@ function compileAdminEnumInput(
     .find((e) => e.name === fieldConfig.options?.enumType);
   if (!enumBlock) {
     throw new Error(
-      `Could not find enum type ${fieldConfig.options?.enumType || ''}`
+      `Could not find enum type ${fieldConfig.options?.enumType || ''}`,
     );
   }
   return {
@@ -48,16 +48,16 @@ function compileAdminEnumInput(
 function compileAdminForeignInput(
   field: AdminCrudForeignInputConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   const model = builder.parsedProject.getModelByName(modelName);
   const relation = model.model.relations?.find(
-    (r) => r.name === field.localRelationName
+    (r) => r.name === field.localRelationName,
   );
 
   if (!relation) {
     throw new Error(
-      `Could not find relation ${field.localRelationName} in model ${modelName}`
+      `Could not find relation ${field.localRelationName} in model ${modelName}`,
     );
   }
 
@@ -98,15 +98,15 @@ function getInputType(fieldConfig: ModelScalarFieldConfig): string {
 function compileAdminCrudTextInput(
   field: AdminCrudTextInputConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   const model = builder.parsedProject.getModelByName(modelName);
   const fieldConfig = model.model.fields.find(
-    (f) => f.name === field.modelField
+    (f) => f.name === field.modelField,
   );
   if (!fieldConfig) {
     throw new Error(
-      `Field ${field.modelField} cannot be found in ${modelName}`
+      `Field ${field.modelField} cannot be found in ${modelName}`,
     );
   }
   return {
@@ -120,7 +120,7 @@ function compileAdminCrudTextInput(
       builder.parsedProject.getModelFieldValidation(
         modelName,
         field.modelField,
-        true
+        true,
       ),
   };
 }
@@ -128,26 +128,26 @@ function compileAdminCrudTextInput(
 function compileAdminCrudFileInput(
   field: AdminCrudFileInputConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   const model = builder.parsedProject.getModelByName(modelName);
   const relation = model.model.relations?.find(
-    (r) => r.name === field.modelRelation
+    (r) => r.name === field.modelRelation,
   );
 
   if (!relation) {
     throw new Error(
-      `Could not find relation ${field.modelRelation} in model ${modelName}`
+      `Could not find relation ${field.modelRelation} in model ${modelName}`,
     );
   }
 
   const category = builder.parsedProject.projectConfig.storage?.categories.find(
-    (c) => c.usedByRelation === relation.foreignRelationName
+    (c) => c.usedByRelation === relation.foreignRelationName,
   );
 
   if (!category) {
     throw new Error(
-      `Could not find category for relation ${relation.foreignRelationName}`
+      `Could not find category for relation ${relation.foreignRelationName}`,
     );
   }
 
@@ -165,7 +165,7 @@ function compileAdminCrudEmbeddedInput(
   field: AdminCrudEmbeddedInputConfig,
   modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
-  crudSectionId: string
+  crudSectionId: string,
 ): unknown {
   return {
     name: field.modelRelation,
@@ -180,7 +180,7 @@ function compileAdminCrudEmbeddedLocalInput(
   field: AdminCrudEmbeddedLocalInputConfig,
   modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
-  crudSectionId: string
+  crudSectionId: string,
 ): unknown {
   const localRelation = builder.parsedProject
     .getModelByName(modelName)
@@ -188,7 +188,7 @@ function compileAdminCrudEmbeddedLocalInput(
 
   if (!localRelation) {
     throw new Error(
-      `Could not find relation ${field.localRelation} in model ${modelName}`
+      `Could not find relation ${field.localRelation} in model ${modelName}`,
     );
   }
 
@@ -203,7 +203,7 @@ function compileAdminCrudEmbeddedLocalInput(
 }
 
 function compileAdminCrudPasswordInput(
-  field: AdminCrudPasswordInputConfig
+  field: AdminCrudPasswordInputConfig,
 ): unknown {
   return {
     name: 'password',
@@ -216,7 +216,7 @@ export function compileAdminCrudInput(
   field: AdminCrudInputConfig,
   modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
-  crudSectionId: string
+  crudSectionId: string,
 ): unknown {
   switch (field.type) {
     case 'foreign':
@@ -234,18 +234,18 @@ export function compileAdminCrudInput(
         field,
         modelName,
         builder,
-        crudSectionId
+        crudSectionId,
       );
     case 'embeddedLocal':
       return compileAdminCrudEmbeddedLocalInput(
         field,
         modelName,
         builder,
-        crudSectionId
+        crudSectionId,
       );
     default:
       throw new Error(
-        `Unknown admin crud input ${(field as { type: string }).type}`
+        `Unknown admin crud input ${(field as { type: string }).type}`,
       );
   }
 }

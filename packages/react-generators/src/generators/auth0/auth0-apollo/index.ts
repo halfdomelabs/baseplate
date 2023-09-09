@@ -28,15 +28,15 @@ const Auth0ApolloGenerator = createGeneratorWithChildren({
     reactApolloSetup.addCreateArg({
       name: 'getAccessToken',
       type: TypescriptCodeUtils.createExpression(
-        '() => Promise<string | undefined>'
+        '() => Promise<string | undefined>',
       ),
       creatorValue: TypescriptCodeUtils.createExpression(
-        'getAccessTokenSilently'
+        'getAccessTokenSilently',
       ),
       hookDependency: 'getAccessTokenSilently',
       renderBody: TypescriptCodeUtils.createBlock(
         'const { getAccessTokenSilently } = useAuth0();',
-        "import { useAuth0 } from '@auth0/auth0-react';"
+        "import { useAuth0 } from '@auth0/auth0-react';",
       ),
     });
 
@@ -48,7 +48,7 @@ const Auth0ApolloGenerator = createGeneratorWithChildren({
         const linkTemplate = await builder.readTemplate('auth-link.ts');
         const authLink = TypescriptCodeUtils.extractTemplateSnippet(
           linkTemplate,
-          'AUTH_LINK'
+          'AUTH_LINK',
         );
 
         reactApolloSetup.addLink({

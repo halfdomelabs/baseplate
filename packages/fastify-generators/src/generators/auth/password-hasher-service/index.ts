@@ -55,7 +55,7 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
         await builder.apply(
           copyTypescriptFileAction({
             source: 'services/hasher-service.ts',
-          })
+          }),
         );
       },
     };

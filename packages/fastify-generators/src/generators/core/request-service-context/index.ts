@@ -39,7 +39,7 @@ export interface RequestServiceContextSetupProvider extends ImportMapper {
 
 export const requestServiceContextSetupProvider =
   createProviderType<RequestServiceContextSetupProvider>(
-    'request-service-context-setup'
+    'request-service-context-setup',
   );
 
 export interface RequestServiceContextProvider extends ImportMapper {
@@ -81,7 +81,7 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
         });
 
         const [contextImport, contextPath] = makeImportAndFilePath(
-          'src/utils/request-service-context.ts'
+          'src/utils/request-service-context.ts',
         );
 
         const importMap = {
@@ -114,42 +114,42 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
               {
                 CONTEXT_FIELDS:
                   TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                    R.mapObjIndexed((field) => field.type, contextFields)
+                    R.mapObjIndexed((field) => field.type, contextFields),
                   ),
                 CONTEXT_BODY: TypescriptCodeUtils.mergeBlocks(
                   Object.values(contextFields)
                     .map((f) => f.body?.('request', 'reply'))
-                    .filter(notEmpty)
+                    .filter(notEmpty),
                 ),
                 CONTEXT_CREATOR: TypescriptCodeUtils.mergeExpressions(
                   [
                     TypescriptCodeUtils.mergeExpressionsAsObject(
                       R.mapObjIndexed(
                         (field) => field.creator('request', 'reply'),
-                        contextPassthroughs
-                      )
+                        contextPassthroughs,
+                      ),
                     ).wrap(
-                      (contents) => `...createServiceContext(${contents})`
+                      (contents) => `...createServiceContext(${contents})`,
                     ),
                     ...Object.values(contextFields).map((field) =>
                       field
                         .creator('request', 'reply')
-                        .wrap((contents) => `${field.name}: ${contents}`)
+                        .wrap((contents) => `${field.name}: ${contents}`),
                     ),
                   ],
-                  ',\n'
+                  ',\n',
                 ).wrap((contents) => `{${contents}}`),
               },
               {
                 importMappers: [serviceContextSetup],
-              }
+              },
             );
 
             await builder.apply(
               contextFile.renderToAction(
                 'request-service-context.ts',
-                contextPath
-              )
+                contextPath,
+              ),
             );
 
             return { importMap, contextPath };

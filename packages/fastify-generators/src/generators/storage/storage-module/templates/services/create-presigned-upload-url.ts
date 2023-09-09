@@ -15,16 +15,16 @@ export interface CreatePresignedUploadUrlPayload
 
 export async function createPresignedUploadUrl(
   input: CreatePresignedUploadUrlInput,
-  context: ServiceContext
+  context: ServiceContext,
 ): Promise<CreatePresignedUploadUrlPayload> {
   const { data, fileCategory, adapter } = await prepareUploadData(
     input,
-    context
+    context,
   );
 
   if (!adapter.createPresignedUploadUrl) {
     throw new BadRequestError(
-      `Adapter for ${fileCategory.name} does not support createPresignedUploadUrl`
+      `Adapter for ${fileCategory.name} does not support createPresignedUploadUrl`,
     );
   }
 

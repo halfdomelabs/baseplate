@@ -21,7 +21,7 @@ export interface ArgOutput {
 
 export function writeNexusArgFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): ArgOutput {
   const importTexts: string[] = [];
   let output = `'${options.lookupScalar(field.scalarType).name}'`;
@@ -41,7 +41,7 @@ export function writeNexusArgFromDtoScalarField(
 
 export function writeNexusArgFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): ArgOutput {
   if (field.isPrismaType) {
     throw new Error(`Prisma types not support in input types.`);
@@ -69,7 +69,7 @@ export function writeNexusArgFromDtoNestedField(
 
 export function writeNexusArgsFromDtoFields(
   fields: ServiceOutputDtoField[],
-  options: NexusDefinitionWriterOptions
+  options: NexusDefinitionWriterOptions,
 ): ArgOutput {
   const argOutputs = fields.map((field) => {
     if (field.type === 'nested') {
@@ -80,10 +80,10 @@ export function writeNexusArgsFromDtoFields(
   const argMap = R.mergeAll(argOutputs);
   return {
     expression: TypescriptCodeUtils.mergeExpressionsAsObject(
-      R.mapObjIndexed((val) => val.expression, argMap)
+      R.mapObjIndexed((val) => val.expression, argMap),
     ),
     childInputDefinitions: Object.values(argMap).flatMap(
-      (arg) => arg.childInputDefinitions
+      (arg) => arg.childInputDefinitions,
     ),
   };
 }

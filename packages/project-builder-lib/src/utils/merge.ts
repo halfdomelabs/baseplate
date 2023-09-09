@@ -4,7 +4,7 @@ type UnknownRecord = Record<string, unknown>;
 
 export function safeMerge(
   itemOne: UnknownRecord,
-  itemTwo: UnknownRecord
+  itemTwo: UnknownRecord,
 ): UnknownRecord {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return R.mergeWithKey((key) => {

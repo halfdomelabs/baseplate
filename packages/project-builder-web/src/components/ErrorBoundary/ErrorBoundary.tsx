@@ -31,7 +31,9 @@ function ErrorBoundaryFallback({
     resetErrorBoundary: () => void;
     error: unknown;
   } = useContext(ErrorBoundaryContext) ?? {
-    resetErrorBoundary: () => {/* dummy */},
+    resetErrorBoundary: () => {
+      /* dummy */
+    },
     error: undefined,
   };
   return (

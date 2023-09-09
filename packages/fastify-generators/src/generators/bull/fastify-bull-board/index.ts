@@ -49,7 +49,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     const queuesToTrack: TypescriptCodeExpression[] = [];
 
     pothosSchema.registerSchemaFile(
-      `${appModule.getModuleFolder()}/schema/authenticate.mutations.ts`
+      `${appModule.getModuleFolder()}/schema/authenticate.mutations.ts`,
     );
 
     node.addPackages({
@@ -79,7 +79,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             QUEUES_TO_TRACK:
               TypescriptCodeUtils.mergeExpressionsAsArray(queuesToTrack),
           },
-          { importMappers }
+          { importMappers },
         );
 
         const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
@@ -88,15 +88,15 @@ const createMainTask = createTaskConfigBuilder(() => ({
           'children',
           TypescriptCodeUtils.createExpression(
             'bullBoardModule',
-            `import { bullBoardModule } from '@/${moduleFolder}'`
-          )
+            `import { bullBoardModule } from '@/${moduleFolder}'`,
+          ),
         );
 
         await builder.apply(
           pluginFile.renderToAction(
             'plugins/bull-board.ts',
-            `${moduleFolder}/plugins/bull-board.ts`
-          )
+            `${moduleFolder}/plugins/bull-board.ts`,
+          ),
         );
 
         await builder.apply(
@@ -108,7 +108,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
               'index.ts',
             ],
             importMappers,
-          })
+          }),
         );
       },
     };
@@ -136,7 +136,7 @@ const FastifyBullBoardGenerator = createGeneratorWithTasks({
           name: 'formBodyPlugin',
           plugin: new TypescriptCodeExpression(
             'formBodyPlugin',
-            "import formBodyPlugin from '@fastify/formbody'"
+            "import formBodyPlugin from '@fastify/formbody'",
           ),
         });
 

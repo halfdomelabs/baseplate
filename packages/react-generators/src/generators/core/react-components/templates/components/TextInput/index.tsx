@@ -66,7 +66,7 @@ const TextInput = function TextInput({
     <input
       className={classNames(
         'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500',
-        className
+        className,
       )}
       {...inputProps}
     />
@@ -96,7 +96,7 @@ TextInput.Labelled = function TextInputLabelled({
 
 interface TextInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends TextInputLabelledProps {
   control: Control<TFieldValues>;
   name: TFieldName;
@@ -105,7 +105,7 @@ interface TextInputControllerProps<
 
 TextInput.LabelledController = function TextInputController<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,

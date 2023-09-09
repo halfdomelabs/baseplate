@@ -38,7 +38,7 @@ export const authServiceProvider =
 export interface AuthServiceImportProvider extends ImportMapper {
   getAuthInfoCreator(
     request: TypescriptCodeExpression,
-    token: TypescriptCodeExpression
+    token: TypescriptCodeExpression,
   ): TypescriptCodeExpression;
 }
 
@@ -77,7 +77,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
   getDefaultChildGenerators: () => ({}),
   buildTasks(
     taskBuilder,
-    { accessTokenExpiry, refreshTokenExpiry, userModelName, userModelIdField }
+    { accessTokenExpiry, refreshTokenExpiry, userModelName, userModelIdField },
   ) {
     const authInfoTask = taskBuilder.addTask({
       name: 'authInfo',
@@ -113,12 +113,12 @@ const AuthServiceGenerator = createGeneratorWithTasks({
 }
 `,
                 `import { UnauthorizedError } from '%http-errors';`,
-                { importMappers: [errorHandler] }
+                { importMappers: [errorHandler] },
               ),
               type: TypescriptCodeUtils.createExpression('() => UserInfo'),
             },
           },
-          { name: 'auth-field' }
+          { name: 'auth-field' },
         );
 
         const getImportMap = (): ImportMap => ({
@@ -149,20 +149,20 @@ const AuthServiceGenerator = createGeneratorWithTasks({
                 authValues
                   .flatMap((v) => v.extraCreateArgs || [])
                   .map((arg) =>
-                    arg.type.wrap((type) => `${arg.name}: ${type}`)
+                    arg.type.wrap((type) => `${arg.name}: ${type}`),
                   ),
-                ', '
+                ', ',
               ),
               AUTH_TYPE: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                R.mapObjIndexed((value) => value.type, authMap)
+                R.mapObjIndexed((value) => value.type, authMap),
               ),
               AUTH_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-                R.mapObjIndexed((value) => value.value, authMap)
+                R.mapObjIndexed((value) => value.value, authMap),
               ),
             });
 
             await builder.apply(
-              authInfoFile.renderToAction('utils/auth-info.ts')
+              authInfoFile.renderToAction('utils/auth-info.ts'),
             );
 
             return { authValues };
@@ -197,7 +197,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
           config,
           authSetup,
         },
-        { authInfo: { authValues } }
+        { authInfo: { authValues } },
       ) {
         const modulePath = appModule.getModuleFolder();
 
@@ -223,10 +223,10 @@ const AuthServiceGenerator = createGeneratorWithTasks({
             authValues
               .flatMap((v) => v.extraCreateArgs || [])
               .map((arg) => arg.name),
-            ', '
+            ', ',
           ),
           AUTH_INFO_CREATOR: TypescriptCodeUtils.mergeBlocks(
-            authValues.map((field) => field.creatorBody).filter(notEmpty)
+            authValues.map((field) => field.creatorBody).filter(notEmpty),
           ),
         });
 
@@ -247,7 +247,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
         authSetup.getConfig().set('userModelName', userModelName);
 
         const [authServiceImport] = makeImportAndFilePath(
-          `${modulePath}/services/auth-service`
+          `${modulePath}/services/auth-service`,
         );
 
         const importMap = {
@@ -279,7 +279,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
               getAuthInfoCreator(request, token) {
                 return token.wrap(
                   (t) => `await createAuthInfoFromAuthorization(${t})`,
-                  `import { createAuthInfoFromAuthorization } from '${authServiceImport}'`
+                  `import { createAuthInfoFromAuthorization } from '${authServiceImport}'`,
                 );
               },
             },
@@ -291,11 +291,11 @@ const AuthServiceGenerator = createGeneratorWithTasks({
               typescript.createCopyAction({
                 source: 'services/jwt-service.ts',
                 importMappers: [errorHandlerService, config],
-              })
+              }),
             );
 
             await builder.apply(
-              authServiceFile.renderToAction('services/auth-service.ts')
+              authServiceFile.renderToAction('services/auth-service.ts'),
             );
           },
         };

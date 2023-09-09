@@ -25,7 +25,7 @@ export function getGraphqlWsHandler(
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     any
-  >
+  >,
 ): WebsocketHandler {
   return makeHandler({
     execute: (args) => (args.rootValue as RootValueWithExecutor).execute(args),
@@ -37,7 +37,7 @@ export function getGraphqlWsHandler(
           ctx.extra.request,
           typeof authorizationHeader === 'string'
             ? authorizationHeader
-            : undefined
+            : undefined,
         );
         ctx.extra.request.auth = authInfo;
 
@@ -67,18 +67,18 @@ export function getGraphqlWsHandler(
         logger.error(
           `websocket connection failed: ${
             err instanceof Error ? err.message : typeof err
-          }`
+          }`,
         );
         if (err instanceof HttpError && httpToSocketErrorMap[err.statusCode]) {
           ctx.extra.connection.socket.close(
             httpToSocketErrorMap[err.statusCode],
-            err.code
+            err.code,
           );
         } else {
           logError(err);
           ctx.extra.connection.socket.close(
             CloseCode.InternalServerError,
-            'unknown-error'
+            'unknown-error',
           );
         }
       }

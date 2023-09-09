@@ -41,7 +41,7 @@ const NexusPrismaCrudFileGenerator = createGeneratorWithTasks({
     taskBuilder.addTask(
       createNexusTypesFileTask({
         name,
-      })
+      }),
     );
   },
 });

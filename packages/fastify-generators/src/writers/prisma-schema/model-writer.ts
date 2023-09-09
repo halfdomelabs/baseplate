@@ -28,7 +28,7 @@ function formatAttributeArgument(argument: string | string[]): string {
 }
 
 function formatAttributeArguments(
-  args: Exclude<PrismaModelAttribute['args'], undefined>
+  args: Exclude<PrismaModelAttribute['args'], undefined>,
 ): string {
   const argStrings =
     typeof args === 'string'
@@ -38,7 +38,7 @@ function formatAttributeArguments(
             return formatAttributeArgument(argument);
           }
           return Object.keys(argument).map(
-            (key) => `${key}: ${formatAttributeArgument(argument[key])}`
+            (key) => `${key}: ${formatAttributeArgument(argument[key])}`,
           );
         });
 
@@ -55,7 +55,7 @@ function formatAttribute({ args, name }: PrismaModelAttribute): string {
 
 function parseArguments(
   attribute: PrismaModelAttribute,
-  positionalArgumentNames: string[]
+  positionalArgumentNames: string[],
 ): Record<string, string | string[]> {
   if (!attribute.args) {
     return {};
@@ -67,14 +67,14 @@ function parseArguments(
         const argName = positionalArgumentNames[idx];
         if (!argName) {
           throw new Error(
-            `Must provide positional argument name for ${attribute.name}`
+            `Must provide positional argument name for ${attribute.name}`,
           );
         }
         return { ...argumentMap, [argName]: arg };
       }
       return { ...argumentMap, ...arg };
     },
-    {}
+    {},
   );
 }
 
@@ -104,8 +104,8 @@ export class PrismaModelBlockWriter {
   }
 
   private extractIdFields(): string[] | null {
-    const singleIdFields = this.fields.filter((field) =>
-      field.attributes?.some((attr) => attr.name === '@id')
+    const singleIdFields = this.fields.filter(
+      (field) => field.attributes?.some((attr) => attr.name === '@id'),
     );
     if (singleIdFields.length > 1) {
       throw new Error(`Model ${this.name} has more than one @id field`);
@@ -139,7 +139,7 @@ export class PrismaModelBlockWriter {
         };
         if (field.fieldType === 'relation') {
           const relationAttribute = field.attributes?.find(
-            (attr) => attr.name === '@relation'
+            (attr) => attr.name === '@relation',
           );
           const {
             name: relationName,

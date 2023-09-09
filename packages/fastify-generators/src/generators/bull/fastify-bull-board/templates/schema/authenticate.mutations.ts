@@ -13,5 +13,5 @@ builder.mutationField('createBullBoardAuthCode', (t) =>
       const code = await createBullBoardAuthCode();
       return { code };
     },
-  })
+  }),
 );

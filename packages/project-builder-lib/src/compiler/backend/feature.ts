@@ -6,7 +6,7 @@ import { buildServicesForFeature } from './services.js';
 
 export function buildFeature(
   featurePath: string,
-  builder: AppEntryBuilder
+  builder: AppEntryBuilder,
 ): unknown {
   const { projectConfig, parsedProject } = builder;
   const descriptorLocation = `${featurePath}/root`;
@@ -14,7 +14,7 @@ export function buildFeature(
   // find sub-features
   const subFeatures =
     projectConfig.features?.filter((f) =>
-      f.name.startsWith(`${featurePath}/`)
+      f.name.startsWith(`${featurePath}/`),
     ) || [];
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
@@ -27,7 +27,7 @@ export function buildFeature(
       $services: buildServicesForFeature(featurePath, parsedProject),
       $schemaTypes: buildSchemaTypesForFeature(featurePath, parsedProject),
       $submodules: subFeatures.map((subFeature) =>
-        buildFeature(subFeature.name, builder)
+        buildFeature(subFeature.name, builder),
       ),
       ...parsedProject.getFeatureChildren(featurePath),
     },

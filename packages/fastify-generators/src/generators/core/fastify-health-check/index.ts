@@ -37,7 +37,7 @@ const FastifyHealthCheckGenerator = createGeneratorWithChildren({
       name: 'healthCheckPlugin',
       plugin: new TypescriptCodeExpression(
         'healthCheckPlugin',
-        "import { healthCheckPlugin } from '@/src/plugins/health-check'"
+        "import { healthCheckPlugin } from '@/src/plugins/health-check'",
       ),
     });
 
@@ -66,21 +66,21 @@ const FastifyHealthCheckGenerator = createGeneratorWithChildren({
 
               return { success: true }
             }
-            `.trim()
-            )
+            `.trim(),
+            ),
           );
         } else {
           healthCheckPlugin.addCodeExpression(
             'CHECK',
-            new TypescriptCodeExpression('async () => ({ success: true })')
+            new TypescriptCodeExpression('async () => ({ success: true })'),
           );
         }
 
         await builder.apply(
           healthCheckPlugin.renderToAction(
             'health-check.ts',
-            'src/plugins/health-check.ts'
-          )
+            'src/plugins/health-check.ts',
+          ),
         );
       },
     };

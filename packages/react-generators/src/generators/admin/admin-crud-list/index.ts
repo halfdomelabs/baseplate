@@ -51,14 +51,14 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { modelName, disableCreate },
-    { typescript, adminCrudQueries, reactRoutes, reactComponents, reactError }
+    { typescript, adminCrudQueries, reactRoutes, reactComponents, reactError },
   ) {
     const columns: AdminCrudColumn[] = [];
     const [listPageImport, listPagePath] = makeImportAndFilePath(
-      `${reactRoutes.getDirectoryBase()}/list/index.page.tsx`
+      `${reactRoutes.getDirectoryBase()}/list/index.page.tsx`,
     );
     const [tableComponentImport, tableComponentPath] = makeImportAndFilePath(
-      `${reactRoutes.getDirectoryBase()}/list/${modelName}Table.tsx`
+      `${reactRoutes.getDirectoryBase()}/list/${modelName}Table.tsx`,
     );
     const tableComponentName = `${modelName}Table`;
 
@@ -74,7 +74,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         const dataDependencies = mergeAdminCrudDataDependencies(
-          columns.flatMap((c) => c.display.dataDependencies).filter(notEmpty)
+          columns.flatMap((c) => c.display.dataDependencies).filter(notEmpty),
         );
 
         dataDependencies.forEach((dep) => {
@@ -91,7 +91,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
         const listPageLoader: DataLoader = {
           loader: TypescriptCodeUtils.formatBlock(
             `const { data, error } = GET_ITEM_QUERY();`,
-            { GET_ITEM_QUERY: listInfo.hookExpression }
+            { GET_ITEM_QUERY: listInfo.hookExpression },
           ),
           loaderErrorName: 'error',
           loaderValueName: 'data',
@@ -99,21 +99,21 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
 
         const loaderOutput = printDataLoaders(
           [listPageLoader, ...inputLoaders],
-          reactComponents
+          reactComponents,
         );
 
         adminCrudQueries.setRowFields(
           mergeGraphQLFields([
             { name: 'id' },
             ...columns.flatMap((c) => c.display.graphQLFields),
-          ])
+          ]),
         );
         const tableLoaderExtraProps = dataDependencies
           .map(
             (d) =>
               `${d.propName}={${d.propLoaderValueGetter(
-                d.loader.loaderValueName
-              )}}`
+                d.loader.loaderValueName,
+              )}}`,
           )
           .join(' ');
 
@@ -122,16 +122,16 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
           {
             PAGE_NAME: new TypescriptStringReplacement(listPageComponentName),
             DELETE_FUNCTION: new TypescriptStringReplacement(
-              deleteInfo.fieldName
+              deleteInfo.fieldName,
             ),
             DELETE_MUTATION: deleteInfo.hookExpression,
             ROW_FRAGMENT_NAME: adminCrudQueries.getRowFragmentExpression(),
             PLURAL_MODEL: new TypescriptStringReplacement(
-              titleizeCamel(pluralize(modelName))
+              titleizeCamel(pluralize(modelName)),
             ),
             TABLE_COMPONENT: new TypescriptCodeExpression(
               `<${tableComponentName} deleteItem={handleDeleteItem} items={data.${listInfo.fieldName}} ${tableLoaderExtraProps} />`,
-              `import ${tableComponentName} from '${tableComponentImport}'`
+              `import ${tableComponentName} from '${tableComponentImport}'`,
             ),
             REFETCH_DOCUMENT: adminCrudQueries.getListDocumentExpression(),
             CREATE_BUTTON: disableCreate
@@ -147,7 +147,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
                     "import { Link } from 'react-router-dom';",
                     "import { Button, ErrorableLoader } from '%react-components';",
                   ],
-                  { importMappers: [reactComponents] }
+                  { importMappers: [reactComponents] },
                 ),
             DATA_LOADER: loaderOutput.loader,
             DATA_PARTS: new TypescriptCodeExpression(loaderOutput.dataParts),
@@ -155,11 +155,11 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
           },
           {
             importMappers: [reactComponents, reactError],
-          }
+          },
         );
 
         await builder.apply(
-          listPage.renderToAction('index.page.tsx', listPagePath)
+          listPage.renderToAction('index.page.tsx', listPagePath),
         );
         reactRoutes.registerRoute({
           index: true,
@@ -168,13 +168,13 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
 
         const headers = columns.map((column) =>
           TypescriptCodeUtils.createExpression(
-            `<Table.HeadCell>${column.label}</Table.HeadCell>`
-          )
+            `<Table.HeadCell>${column.label}</Table.HeadCell>`,
+          ),
         );
         const cells = columns.map((column) =>
           column.display
             .content('item')
-            .wrap((content) => `<Table.Cell>${content}</Table.Cell>`)
+            .wrap((content) => `<Table.Cell>${content}</Table.Cell>`),
         );
         const tableComponent = typescript.createTemplate(
           {
@@ -183,7 +183,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
             HEADERS: TypescriptCodeUtils.mergeExpressions(headers, '\n'),
             CELLS: TypescriptCodeUtils.mergeExpressions(cells, '\n'),
             PLURAL_MODEL: new TypescriptStringReplacement(
-              titleizeCamel(pluralize(modelName))
+              titleizeCamel(pluralize(modelName)),
             ),
             EXTRA_PROPS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
               _.fromPairs(
@@ -191,21 +191,21 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
                   (d): [string, TypescriptCodeExpression] => [
                     d.propName,
                     d.propType,
-                  ]
-                )
-              )
+                  ],
+                ),
+              ),
             ),
             'EXTRA_PROP_SPREAD,': new TypescriptStringReplacement(
-              dataDependencies.map((d) => d.propName).join(',\n')
+              dataDependencies.map((d) => d.propName).join(',\n'),
             ),
           },
           {
             importMappers: [reactComponents, reactError],
-          }
+          },
         );
 
         await builder.apply(
-          tableComponent.renderToAction('Table.tsx', tableComponentPath)
+          tableComponent.renderToAction('Table.tsx', tableComponentPath),
         );
       },
     };
