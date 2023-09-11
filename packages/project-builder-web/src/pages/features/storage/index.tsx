@@ -58,7 +58,7 @@ function StoragePage(): JSX.Element {
     config.features?.map((m) => ({
       label: m.name,
       value: m.name,
-    })) || [];
+    })) ?? [];
 
   return (
     <div className="space-y-4">

@@ -190,7 +190,7 @@ export function buildEntryDependencyMapRecursive(
 
   const hoistedProviders = buildHoistedProviderMap(
     entry,
-    entry.descriptor.hoistedProviders || [],
+    entry.descriptor.hoistedProviders ?? [],
   );
 
   const providerMap = {

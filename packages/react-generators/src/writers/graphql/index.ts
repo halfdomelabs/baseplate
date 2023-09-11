@@ -208,8 +208,8 @@ export function mergeGraphQLFields(fields: GraphQLField[]): GraphQLField[] {
           return {
             ...accumField,
             fields: mergeGraphQLFields([
-              ...(accumField.fields || []),
-              ...(field.fields || []),
+              ...(accumField.fields ?? []),
+              ...(field.fields ?? []),
             ]),
           };
         }
@@ -251,8 +251,8 @@ export function mergeGraphQLFragments(
         return {
           ...accumFrag,
           fields: mergeGraphQLFields([
-            ...(accumFrag.fields || []),
-            ...(frag.fields || []),
+            ...(accumFrag.fields ?? []),
+            ...(frag.fields ?? []),
           ]),
         };
       }

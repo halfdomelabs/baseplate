@@ -37,7 +37,7 @@ const descriptorSchema = z
     // TODO: Clean up
     const schema = prismaScalarFieldTypes[obj.type]?.optionsSchema;
     if (schema) {
-      const parseResult = schema.safeParse(obj.options || {});
+      const parseResult = schema.safeParse(obj.options);
       if (!parseResult.success) {
         ctx.addIssue(parseResult.error.errors[0]);
       }

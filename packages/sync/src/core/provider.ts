@@ -133,7 +133,7 @@ export function createProviderType<T>(
             options: {
               ...this.options,
               dependencies: [
-                ...(this.options.dependencies || []),
+                ...(this.options.dependencies ?? []),
                 ...dependencies,
               ],
             },

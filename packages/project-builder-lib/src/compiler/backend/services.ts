@@ -145,7 +145,7 @@ export function buildServicesForFeature(
   const models =
     parsedProjectConfig
       .getModels()
-      .filter((m) => m.feature === feature && m.service?.build) || [];
+      .filter((m) => m.feature === feature && m.service?.build) ?? [];
   return models.map((model) =>
     buildServiceForModel(model, parsedProjectConfig),
   );

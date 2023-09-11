@@ -56,7 +56,7 @@ function upsertItems<T>(
 }
 
 function validateProjectConfig(projectConfig: ProjectConfig): void {
-  const features = projectConfig.features?.map((f) => f.name) || [];
+  const features = projectConfig.features?.map((f) => f.name) ?? [];
 
   // validate features
   const missingParentFeatures = features.filter(
@@ -108,7 +108,7 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
             );
           }
         });
-      }) || [],
+      }) ?? [],
   );
 }
 
@@ -161,7 +161,7 @@ export class ParsedProjectConfig {
   constructor(public projectConfig: ProjectConfig) {
     validateProjectConfig(projectConfig);
     const copiedProjectConfig = R.clone(projectConfig);
-    this.models = copiedProjectConfig.models || [];
+    this.models = copiedProjectConfig.models ?? [];
 
     // run plugins
     PARSER_PLUGINS.forEach((plugin) =>
@@ -174,7 +174,7 @@ export class ParsedProjectConfig {
         },
         addFeatureHoistedProviders: (featurePath, providers) => {
           this.featureHoistedProviders[featurePath] = [
-            ...(this.featureHoistedProviders[featurePath] || []),
+            ...(this.featureHoistedProviders[featurePath] ?? []),
             ...(Array.isArray(providers) ? providers : [providers]),
           ];
         },
@@ -273,7 +273,7 @@ export class ParsedProjectConfig {
       (m) =>
         m.model.relations
           ?.filter((relation) => relation.modelName === modelName)
-          .map((relation) => ({ relation, model: m })) || [],
+          .map((relation) => ({ relation, model: m })) ?? [],
     );
   }
 
@@ -282,7 +282,7 @@ export class ParsedProjectConfig {
   }
 
   getEnums(): EnumConfig[] {
-    return this.projectConfig.enums || [];
+    return this.projectConfig.enums ?? [];
   }
 
   getModelByName(name: string): ParsedModel {
@@ -297,7 +297,7 @@ export class ParsedProjectConfig {
     const model = this.getModelByName(modelName);
     return model.model.primaryKeys?.length
       ? model.model.primaryKeys
-      : model.model.fields.filter((f) => f.isId).map((f) => f.name) || [];
+      : model.model.fields.filter((f) => f.isId).map((f) => f.name) ?? [];
   }
 
   exportToProjectConfig(): ProjectConfig {

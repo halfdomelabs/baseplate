@@ -93,7 +93,7 @@ const ServiceContextGenerator = createGeneratorWithTasks({
             const contextFields = contextFieldsMap.value();
 
             const contextArgs = Object.values(contextFields).flatMap(
-              (f) => f.contextArg || [],
+              (f) => f.contextArg ?? [],
             );
 
             const contextFile = typescript.createTemplate({

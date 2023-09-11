@@ -88,7 +88,7 @@ export const createNexusTypesFileTask = createTaskConfigBuilder(
         build: async (builder) => {
           const orderedTypes = R.sortBy((type) => {
             if (!type.category || !categoryOrder?.includes(type.category)) {
-              return (categoryOrder || []).length;
+              return (categoryOrder ?? []).length;
             }
             return categoryOrder.indexOf(type.category);
           }, types);

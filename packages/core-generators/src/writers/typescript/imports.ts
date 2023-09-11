@@ -279,7 +279,7 @@ function resolveImportFromImportMap(
     allowedImports,
     onImportUsed,
   } = mappedSpecifierEntry;
-  const namedImports = importDeclaration.namedImports?.map((i) => i.name) || [];
+  const namedImports = importDeclaration.namedImports?.map((i) => i.name) ?? [];
   if (!allowedImports.includes('*')) {
     const missingImport = namedImports.find((i) => !allowedImports.includes(i));
     if (missingImport) {

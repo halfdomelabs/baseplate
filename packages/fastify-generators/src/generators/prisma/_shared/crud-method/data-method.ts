@@ -216,7 +216,7 @@ export function getDataMethodDataExpressions({
 
   const relationTransformers = relationFields.map(
     (field): PrismaDataTransformer => {
-      const relationScalarFields = field.fields || [];
+      const relationScalarFields = field.fields ?? [];
       const missingFields = relationScalarFields.filter(
         (f) => !prismaFieldNames.includes(f),
       );
@@ -287,7 +287,7 @@ export function getDataMethodDataExpressions({
           relationScalarFields.map((f) => ({
             type: TypescriptCodeUtils.createExpression(''),
             dtoField: { name: f, type: 'scalar', scalarType: 'string' },
-          })) || [],
+          })) ?? [],
         outputFields: [
           {
             name: field.name,

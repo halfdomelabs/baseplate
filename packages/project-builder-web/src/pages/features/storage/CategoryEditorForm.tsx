@@ -23,7 +23,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
   const fileModel = useWatch({ control, name: 'fileModel' });
   const adapters = useWatch({ control, name: 's3Adapters' });
 
-  const adapterOptions = (adapters || []).map((adapter) => ({
+  const adapterOptions = (adapters ?? []).map((adapter) => ({
     label: adapter.name,
     value: adapter.name,
   }));
@@ -45,7 +45,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
     parsedProject.projectConfig.auth?.roles.map((role) => ({
       label: role.name,
       value: role.name,
-    })) || [];
+    })) ?? [];
 
   return (
     <div className={classNames('space-y-4', className)}>

@@ -69,10 +69,10 @@ export function createGeneratorWithChildren<
         ) as DescriptorWithChildren & z.infer<DescriptorSchema>;
         const { id } = context;
         const childGeneratorConfigs =
-          config.getDefaultChildGenerators?.(descriptor) || {};
+          config.getDefaultChildGenerators?.(descriptor) ?? {};
 
         // make sure descriptor children match context
-        const descriptorChildren = descriptor.children || {};
+        const descriptorChildren = descriptor.children ?? {};
         const invalidChild = Object.keys(descriptorChildren)
           .filter((key) => !key.startsWith('$'))
           .find((key) => !childGeneratorConfigs[key]);
@@ -107,8 +107,8 @@ export function createGeneratorWithChildren<
           }
 
           const mergedDescriptor = R.mergeRight(
-            defaultDescriptor || {},
-            descriptorChild || {},
+            defaultDescriptor ?? {},
+            descriptorChild ?? {},
           );
 
           const validatedChildDescriptor = baseDescriptorSchema
@@ -124,7 +124,7 @@ export function createGeneratorWithChildren<
           const { isMultiple } = value;
 
           if (isMultiple) {
-            const childArray = descriptorChildren[key] || [];
+            const childArray = descriptorChildren[key] ?? [];
             if (!Array.isArray(childArray)) {
               throw new Error(`${id} has invalid child ${key}. Must be array.`);
             }

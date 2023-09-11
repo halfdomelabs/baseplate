@@ -43,7 +43,7 @@ function EnumEditPage(): JSX.Element {
       setConfigAndFixReferences((draftConfig) => {
         draftConfig.enums = _.sortBy(
           [
-            ...(draftConfig.enums?.filter((m) => m.uid !== id) || []),
+            ...(draftConfig.enums?.filter((m) => m.uid !== id) ?? []),
             { ...config, uid },
           ],
           (c) => c.name

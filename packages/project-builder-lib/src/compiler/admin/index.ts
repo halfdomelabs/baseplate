@@ -18,7 +18,7 @@ export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
       label: titleizeCamel(section.name),
       icon: section.icon || 'MdHome',
       path: `${section.feature}/${dasherizeCamel(section.name)}`,
-    })) || []
+    })) ?? []
   );
 }
 

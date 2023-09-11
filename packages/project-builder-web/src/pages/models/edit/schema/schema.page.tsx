@@ -38,7 +38,7 @@ function ModelEditSchemaPage(): JSX.Element {
             .map((relation) => ({
               model,
               relation,
-            })) || []
+            })) ?? []
       ),
     [parsedProject, originalModel]
   );

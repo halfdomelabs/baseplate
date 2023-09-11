@@ -86,7 +86,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
           }),
           build: async (builder) => {
             const methods = methodMap.value();
-            const methodOrder = descriptor.methodOrder || [];
+            const methodOrder = descriptor.methodOrder ?? [];
             const orderedMethods = [
               ...methodOrder.map((key) => methods[key]).filter(notEmpty),
               ...Object.keys(methods)

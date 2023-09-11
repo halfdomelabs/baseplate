@@ -107,8 +107,8 @@ export async function buildGeneratorEntry(
     .map(
       (task): GeneratorTaskEntry => ({
         id: `${id}#${task.name}`,
-        dependencies: task.dependencies || {},
-        exports: task.exports || {},
+        dependencies: task.dependencies ?? {},
+        exports: task.exports ?? {},
         task,
         generatorBaseDirectory: generatorConfig.configBaseDirectory,
         dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),

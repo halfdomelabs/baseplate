@@ -93,7 +93,7 @@ export function buildModelsForFeature(
   parsedProject: ParsedProjectConfig,
 ): unknown {
   const models =
-    parsedProject.getModels().filter((m) => m.feature === feature) || [];
+    parsedProject.getModels().filter((m) => m.feature === feature) ?? [];
   if (!models.length) {
     return {};
   }

@@ -165,7 +165,7 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
     dbName = snakeCase(name),
     typeOptions,
     enumType,
-  } = options || {};
+  } = options ?? {};
   const attributes: PrismaModelAttribute[] = [];
 
   if (id) {

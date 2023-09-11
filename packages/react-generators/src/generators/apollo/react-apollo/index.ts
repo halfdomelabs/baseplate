@@ -217,7 +217,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
         const sortedLinks = toposort
           .array(
             links.map((link) => link.name),
-            links.flatMap((link) => link.dependencies || []),
+            links.flatMap((link) => link.dependencies ?? []),
           )
           .map((name) => links.find((link) => link.name === name))
           .filter(notEmpty);

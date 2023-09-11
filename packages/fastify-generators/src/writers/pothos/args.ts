@@ -84,7 +84,7 @@ export function writePothosArgsFromDtoFields(
       R.mapObjIndexed((val) => val.expression, argMap),
     ),
     childDefinitions: Object.values(argMap).flatMap(
-      (arg) => arg.childDefinitions || [],
+      (arg) => arg.childDefinitions ?? [],
     ),
   };
 }

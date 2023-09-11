@@ -79,7 +79,7 @@ export function useModelForm({
           (draftConfig) => {
             draftConfig.models = _.sortBy(
               [
-                ...(draftConfig.models?.filter((m) => m.uid !== id) || []),
+                ...(draftConfig.models?.filter((m) => m.uid !== id) ?? []),
                 {
                   ...data,
                   uid: newUid,

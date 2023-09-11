@@ -26,12 +26,12 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
     roles?.map((role) => ({
       label: role.name,
       value: role.name,
-    })) || [];
+    })) ?? [];
 
   useEffect(() => {
     // strip any bad inherits
     roles?.forEach((role, idx) => {
-      const inherits = role.inherits || [];
+      const inherits = role.inherits ?? [];
       const permittedInherits = inherits.filter((inherit) =>
         roles.find((r) => r.name === inherit)
       );

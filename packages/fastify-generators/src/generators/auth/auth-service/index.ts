@@ -147,7 +147,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
             const authInfoFile = typescript.createTemplate({
               EXTRA_ARGS: TypescriptCodeUtils.mergeExpressions(
                 authValues
-                  .flatMap((v) => v.extraCreateArgs || [])
+                  .flatMap((v) => v.extraCreateArgs ?? [])
                   .map((arg) =>
                     arg.type.wrap((type) => `${arg.name}: ${type}`),
                   ),
@@ -221,7 +221,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
           AUTH_USER_QUERY_PARMS: { type: 'code-expression' },
           EXTRA_ARGS: TypescriptCodeUtils.mergeExpressions(
             authValues
-              .flatMap((v) => v.extraCreateArgs || [])
+              .flatMap((v) => v.extraCreateArgs ?? [])
               .map((arg) => arg.name),
             ', ',
           ),

@@ -25,7 +25,7 @@ export const StoragePlugin: ParserPlugin = {
             if (!relation) throw new Error(`Relation not found for ${t.name}`);
             return relation.foreignRelationName;
           })
-          .filter(notEmpty) || [],
+          .filter(notEmpty) ?? [],
     );
 
     const invalidTransformer = transformerRelationNames.find(

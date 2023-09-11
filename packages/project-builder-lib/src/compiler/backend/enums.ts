@@ -16,7 +16,7 @@ export function buildEnumsForFeature(
   parsedProject: ParsedProjectConfig,
 ): unknown {
   const enums =
-    parsedProject.getEnums().filter((m) => m.feature === feature) || [];
+    parsedProject.getEnums().filter((m) => m.feature === feature) ?? [];
   if (!enums.length) {
     return undefined;
   }

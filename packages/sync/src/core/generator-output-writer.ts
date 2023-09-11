@@ -219,7 +219,7 @@ export async function writeGeneratorOutput(
   options?: GeneratorWriteOptions,
   logger: Logger = console,
 ): Promise<GeneratorWriteResult> {
-  const { cleanDirectory, rerunCommands = [] } = options || {};
+  const { cleanDirectory, rerunCommands = [] } = options ?? {};
   // write files
   const filenames = Object.keys(output.files);
 
@@ -287,7 +287,7 @@ export async function writeGeneratorOutput(
     }
 
     const runnableCommands = output.postWriteCommands.filter((command) => {
-      const { onlyIfChanged = [] } = command.options || {};
+      const { onlyIfChanged = [] } = command.options ?? {};
       const changedList = Array.isArray(onlyIfChanged)
         ? onlyIfChanged
         : [onlyIfChanged];
@@ -329,7 +329,7 @@ export async function writeGeneratorOutput(
     const failedCommands: string[] = [];
 
     for (const command of orderedCommands) {
-      const { workingDirectory = '' } = command.options || {};
+      const { workingDirectory = '' } = command.options ?? {};
 
       const commandString = command.command;
 

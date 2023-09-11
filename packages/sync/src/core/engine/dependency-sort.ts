@@ -38,7 +38,7 @@ function getExportInterdependencies(
         (dep.type === 'dependency' && dep.options.modifiedInBuild) || false;
 
       exportDependencies[key] = [
-        ...(exportDependencies[key] || []),
+        ...(exportDependencies[key] ?? []),
         { id: entryId, modifiedInBuild },
       ];
     });
@@ -64,7 +64,7 @@ function getExportInterdependencies(
               );
             }
             return foundExport;
-          }) || [],
+          }) ?? [],
       ),
     );
 
@@ -88,7 +88,7 @@ function getExportInterdependencies(
       const generatorsToExportRelationships = dependencies.flatMap(
         (dependency) => {
           const dependencyExportKey = `provider|${entry.id}#${dependency.name}`;
-          const generators = exportDependencies[dependencyExportKey] || [];
+          const generators = exportDependencies[dependencyExportKey] ?? [];
           return generators.map((generator): [string, string] => [
             generator.modifiedInBuild
               ? `build|${generator.id}`
@@ -100,7 +100,7 @@ function getExportInterdependencies(
 
       // create links between this export to the generators that depend on it
       const exportToGeneratorRelationships = (
-        exportDependencies[dependentExportKey] || []
+        exportDependencies[dependentExportKey] ?? []
       ).map((generator): [string, string] => [
         dependentExportKey,
         `init|${generator.id}`,

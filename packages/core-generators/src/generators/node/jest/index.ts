@@ -100,7 +100,7 @@ const JestGenerator = createGeneratorWithChildren({
           preset: quot('ts-jest'),
           testEnvironment: quot('node'),
           clearMocks: 'true',
-          moduleNameMapper: Object.keys(typescriptOptions.paths || {}).length
+          moduleNameMapper: Object.keys(typescriptOptions.paths ?? {}).length
             ? moduleNameMapper
             : undefined,
           roots: '["<rootDir>/src/"]',

@@ -296,7 +296,7 @@ export abstract class TypescriptSourceContent<
   }
 
   getCodeBlocks<K extends keyof T & string>(name: K): TypescriptCodeBlock[] {
-    return this.codeBlocks[name] || [];
+    return this.codeBlocks[name] ?? [];
   }
 
   protected processFileReplacements(
@@ -598,7 +598,7 @@ export class TypescriptSourceFile<
 
     const headerBlocks = providedEntries.flatMap(
       (e) =>
-        e?.options?.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) || [],
+        e?.options?.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) ?? [],
     );
 
     const entries = [...providedEntries, ...headerBlocks];
@@ -618,8 +618,8 @@ export class TypescriptSourceFile<
     ];
 
     const importMappers = [
-      ...entries.flatMap((e) => e?.options?.importMappers || []),
-      ...(this.sourceFileOptions.importMappers || []),
+      ...entries.flatMap((e) => e?.options?.importMappers ?? []),
+      ...(this.sourceFileOptions.importMappers ?? []),
     ];
 
     file.getImportDeclarations().forEach((i) => i.remove());

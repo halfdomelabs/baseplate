@@ -48,7 +48,7 @@ function EmbeddedListInput<InputType>({
     { idx?: number; data: DefaultValues<InputType> } | undefined
   >();
 
-  const definedValue = value || [];
+  const definedValue = value ?? [];
 
   const handleSubmit = (data: InputType): void => {
     if (valueToEdit?.idx === undefined) {

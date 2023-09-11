@@ -123,6 +123,6 @@ export function getPothosTypeForNestedInput(
       TypescriptCodeUtils.createExpression(inputDefinition.exportName),
       field.isList,
     ),
-    childDefinitions: [...(childDefinitions || []), inputDefinition],
+    childDefinitions: [...(childDefinitions ?? []), inputDefinition],
   };
 }

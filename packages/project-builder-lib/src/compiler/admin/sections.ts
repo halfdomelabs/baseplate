@@ -37,7 +37,7 @@ function compileAdminFeatureRecursive(
   const subFeatures =
     projectConfig.features?.filter((f) =>
       f.name.startsWith(`${featurePath}/`),
-    ) || [];
+    ) ?? [];
 
   const subDescriptors = subFeatures
     .flatMap((subFeature) =>
@@ -75,7 +75,7 @@ export function compileAdminFeatures(
 ): unknown[] {
   const { projectConfig } = builder;
   const rootFeatures =
-    projectConfig.features?.filter((f) => !f.name.includes('/')) || [];
+    projectConfig.features?.filter((f) => !f.name.includes('/')) ?? [];
 
   return rootFeatures.flatMap((feature) =>
     compileAdminFeatureRecursive(feature.name, builder),

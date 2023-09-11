@@ -63,7 +63,7 @@ function getResolverForField(
     WHERE_CLAUSE: TypescriptCodeUtils.mergeExpressionsAsObject(
       R.mergeAll(
         field.fields.map((localName, index) => ({
-          [(field.references || [])[index]]: localName,
+          [(field.references ?? [])[index]]: localName,
         })),
       ),
     ),

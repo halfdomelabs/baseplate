@@ -158,7 +158,7 @@ const PrismaCrudCreateGenerator = createGeneratorWithChildren({
         crudPrismaService
           .getTransformerByName(transformerName)
           .buildTransformer(transformerOption),
-      ) || [];
+      ) ?? [];
 
     return {
       getProviders: () => ({}),

@@ -221,7 +221,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       const embeddedTransformerFactories =
         embeddedTransformerNames
           ?.map((name) => foreignCrudService?.getTransformerByName(name))
-          .filter(notEmpty) || [];
+          .filter(notEmpty) ?? [];
 
       const embeddedFields = embeddedFieldNames.map((name) => {
         const field = foreignModel.fields.find((f) => f.name === name);
@@ -362,7 +362,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
 
       // finds the discriminator ID field in the input for 1:many relationships
       const getDiscriminatorIdField = (): string => {
-        const foreignIds = foreignModel?.idFields || [];
+        const foreignIds = foreignModel?.idFields ?? [];
         const discriminatorIdFields = foreignIds.filter((foreignId) =>
           embeddedFieldNames.includes(foreignId),
         );
@@ -387,7 +387,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         );
 
         // convert primary keys to where unique
-        const foreignIds = foreignModel?.idFields || [];
+        const foreignIds = foreignModel?.idFields ?? [];
         const primaryKeyFields = foreignIds.map(
           (
             idField,

@@ -206,12 +206,12 @@ const createMainTask = createTaskConfigBuilder(
       );
 
       const inputDataDependencies = inputFields.flatMap(
-        (f) => f.dataDependencies || [],
+        (f) => f.dataDependencies ?? [],
       );
 
       const tableName = `Embedded${capitalizedName}Table`;
       const tableDataDependencies = tableColumns.flatMap(
-        (f) => f.display.dataDependencies || [],
+        (f) => f.display.dataDependencies ?? [],
       );
 
       const allDataDependencies = mergeAdminCrudDataDependencies([

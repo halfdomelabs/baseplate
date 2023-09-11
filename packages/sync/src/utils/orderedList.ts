@@ -28,12 +28,12 @@ export function createOrderedList<T>(): OrderedList<T> {
     },
     getItems() {
       const comesBeforeRules = items.flatMap((item) =>
-        normalizeArray(item.orderRules?.comesBefore || []).map(
+        normalizeArray(item.orderRules?.comesBefore ?? []).map(
           (rule): [string, string] => [rule, item.key],
         ),
       );
       const comesAfterRules = items.flatMap((item) =>
-        normalizeArray(item.orderRules?.comesAfter || []).map(
+        normalizeArray(item.orderRules?.comesAfter ?? []).map(
           (rule): [string, string] => [item.key, rule],
         ),
       );

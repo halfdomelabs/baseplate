@@ -42,8 +42,8 @@ export function mergeAdminCrudDataDependencies(
         return {
           ...accumDep,
           graphFragments: mergeGraphQLFragments([
-            ...(accumDep.graphFragments || []),
-            ...(dep.graphFragments || []),
+            ...(accumDep.graphFragments ?? []),
+            ...(dep.graphFragments ?? []),
           ]),
         };
       }

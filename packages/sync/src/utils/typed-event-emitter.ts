@@ -30,12 +30,12 @@ export function createTypedEventEmitter<
       return () => {
         listenerMap.set(
           eventName,
-          listenerMap.get(eventName)?.filter((l) => l !== listener) || [],
+          listenerMap.get(eventName)?.filter((l) => l !== listener) ?? [],
         );
       };
     },
     emit(eventName, payload) {
-      const listeners = listenerMap.get(eventName) || [];
+      const listeners = listenerMap.get(eventName) ?? [];
       listeners.forEach((listener) => listener(payload));
     },
   };

@@ -17,7 +17,7 @@ function ModelPrimaryKeyForm({ className, formProps }: Props): JSX.Element {
     localFields?.map((f) => ({
       label: f.name,
       value: f.name,
-    })) || [];
+    })) ?? [];
 
   return (
     <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>

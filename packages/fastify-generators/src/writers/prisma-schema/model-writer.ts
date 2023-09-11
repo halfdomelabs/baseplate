@@ -79,7 +79,7 @@ function parseArguments(
 }
 
 function formatModel({ name, type, attributes }: PrismaModelField): string {
-  return [name, type, ...(attributes?.map(formatAttribute) || [])].join(' ');
+  return [name, type, ...(attributes?.map(formatAttribute) ?? [])].join(' ');
 }
 
 export class PrismaModelBlockWriter {

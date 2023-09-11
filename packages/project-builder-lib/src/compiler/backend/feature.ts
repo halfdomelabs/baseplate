@@ -15,7 +15,7 @@ export function buildFeature(
   const subFeatures =
     projectConfig.features?.filter((f) =>
       f.name.startsWith(`${featurePath}/`),
-    ) || [];
+    ) ?? [];
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,

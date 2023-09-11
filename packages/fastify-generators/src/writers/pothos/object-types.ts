@@ -126,6 +126,6 @@ export function getPothosTypeForNestedObject(
       TypescriptCodeUtils.createExpression(objectDefinition.exportName),
       field.isList,
     ),
-    childDefinitions: [objectDefinition, ...(childDefinitions || [])],
+    childDefinitions: [objectDefinition, ...(childDefinitions ?? [])],
   };
 }

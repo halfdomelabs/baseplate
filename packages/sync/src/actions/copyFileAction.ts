@@ -35,7 +35,7 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
       const fileContents = await fs.readFile(templatePath, 'utf8');
       const replacedFileContents = applyReplacements(
         fileContents,
-        replacements || {},
+        replacements ?? {},
       );
       builder.writeFile(destination, replacedFileContents, {
         shouldFormat,

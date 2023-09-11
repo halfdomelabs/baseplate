@@ -103,7 +103,7 @@ export function createNonOverwriteableMap<T extends object>(
     },
     append(key, value) {
       const arrValue = Array.isArray(value) ? value : [value];
-      const existingValue = overrideValues[key] || [];
+      const existingValue = overrideValues[key] ?? [];
       if (!Array.isArray(existingValue)) {
         throw new Error(
           `Field ${key.toString()} is not array and cannot be appended to in ${name}`,

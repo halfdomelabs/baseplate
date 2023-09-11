@@ -173,10 +173,10 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
         ) as DescriptorWithChildren & z.infer<DescriptorSchema>;
         const { id } = context;
         const childGeneratorConfigs =
-          config.getDefaultChildGenerators?.(descriptor) || {};
+          config.getDefaultChildGenerators?.(descriptor) ?? {};
 
         // make sure descriptor children match context
-        const descriptorChildren = descriptor.children || {};
+        const descriptorChildren = descriptor.children ?? {};
         const invalidChild = Object.keys(descriptorChildren)
           .filter((key) => !key.startsWith('$'))
           .find((key) => !childGeneratorConfigs[key]);
@@ -211,8 +211,8 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
           }
 
           const mergedDescriptor = R.mergeRight(
-            defaultDescriptor || {},
-            descriptorChild || {},
+            defaultDescriptor ?? {},
+            descriptorChild ?? {},
           );
 
           const validatedChildDescriptor = baseDescriptorSchema
@@ -228,7 +228,7 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
           const { isMultiple } = value;
 
           if (isMultiple) {
-            const childArray = descriptorChildren[key] || [];
+            const childArray = descriptorChildren[key] ?? [];
             if (!Array.isArray(childArray)) {
               throw new Error(`${id} has invalid child ${key}. Must be array.`);
             }
@@ -288,7 +288,7 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
       config.buildTasks(taskBuilder, descriptor);
 
       return tasks.map((task) => {
-        const taskDependencies = task.taskDependencies || {};
+        const taskDependencies = task.taskDependencies ?? {};
         return {
           name: task.name,
           dependencies: task.dependencies,

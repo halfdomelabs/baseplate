@@ -50,7 +50,7 @@ export function isAbsolute(name: string): boolean {
 export function isBuiltIn(name: string, settings: ImportSettings): boolean {
   if (!name) return false;
   const base = baseModule(name);
-  const extras = settings?.coreModules || [];
+  const extras = settings?.coreModules ?? [];
   return isCoreModule(base) || extras.indexOf(base) > -1;
 }
 

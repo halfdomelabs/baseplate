@@ -133,7 +133,7 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
   ): TypescriptCodeBlock {
     return new TypescriptCodeBlock(this.content, null, {
       ...this.options,
-      importMappers: [this.options.importMappers || [], mappers].flat(),
+      importMappers: [this.options.importMappers ?? [], mappers].flat(),
     });
   }
 }
