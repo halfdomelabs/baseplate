@@ -24,9 +24,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
       name: 'authorize',
       value: pothosAuth.formatAuthorizeConfig(descriptor),
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 }));
 

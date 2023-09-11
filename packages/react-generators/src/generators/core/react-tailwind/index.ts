@@ -37,13 +37,14 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     node.addDevPackages({
       autoprefixer: '10.4.14',
       tailwindcss: '3.3.2',
-      'prettier-plugin-tailwindcss': '0.3.0',
+      'prettier-plugin-tailwindcss': '0.5.4',
       '@tailwindcss/forms': '0.5.3',
     });
 
     eslint
       .getConfig()
       .appendUnique('eslintIgnore', [
+        'vite.config.ts',
         'postcss.config.js',
         'tailwind.config.js',
       ]);
@@ -74,7 +75,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
             data: {
               globalStyles: globalStyles.join('\n\n'),
             },
-          })
+          }),
         );
         // TODO: Dark mode not supported currently
         await builder.apply(
@@ -82,14 +83,14 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
             source: 'tailwind.config.js',
             destination: 'tailwind.config.js',
             shouldFormat: true,
-          })
+          }),
         );
         await builder.apply(
           copyFileAction({
             source: 'postcss.config.js',
             destination: 'postcss.config.js',
             shouldFormat: true,
-          })
+          }),
         );
       },
     };

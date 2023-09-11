@@ -48,7 +48,7 @@ type ServerWebsocketMessage =
 
 export async function baseplatePlugin(
   fastify: FastifyInstance,
-  { directories }: { directories: string[] }
+  { directories }: { directories: string[] },
 ): Promise<void> {
   const csrfToken = crypto.randomBytes(32).toString('hex');
   const apis = await Promise.all(
@@ -62,13 +62,13 @@ export async function baseplatePlugin(
       const api = new ProjectBuilderApi(directory, id);
       await api.init();
       return api;
-    })
+    }),
   );
 
   logger.info(
     `Loaded projects:\n${apis
       .map((api) => `${api.directory}: ${api.id}`)
-      .join('\n')}`
+      .join('\n')}`,
   );
 
   fastify.get('/api/auth', (req) => {
@@ -107,8 +107,8 @@ export async function baseplatePlugin(
           name: parsedContents.name,
           directory: api.directory,
         };
-      })
-    )
+      }),
+    ),
   );
 
   function getApi(id: string): ProjectBuilderApi {
@@ -226,7 +226,8 @@ export async function baseplatePlugin(
     connection.socket.on('message', (rawData) => {
       try {
         const message = JSON.parse(
-          rawData.toString()
+          // eslint-disable-next-line @typescript-eslint/no-base-to-string
+          rawData.toString('utf-8'),
         ) as ClientWebsocketMessage;
 
         const handleSubscribe = (msg: SubscribeMessage): void => {
@@ -247,7 +248,7 @@ export async function baseplatePlugin(
                 file: payload,
                 id: msg.id,
               });
-            }
+            },
           );
           const unsubscribeConsoleEmitted = getApi(msg.id).on(
             'command-console-emitted',
@@ -256,7 +257,7 @@ export async function baseplatePlugin(
                 type: 'command-console-emitted',
                 message: payload.message,
               });
-            }
+            },
           );
           unsubscribe = () => {
             unsubscribeProjectJsonChanged();

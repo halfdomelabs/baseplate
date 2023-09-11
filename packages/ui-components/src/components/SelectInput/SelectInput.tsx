@@ -116,7 +116,7 @@ export function SelectInput<OptionType>({
 interface SelectInputControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<DropdownPropsBase<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
@@ -125,14 +125,14 @@ interface SelectInputControllerPropsBase<
 type SelectInputControllerProps<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = SelectInputControllerPropsBase<OptionType, TFieldValues, TFieldName> &
   AddOptionRequiredFields<OptionType>;
 
 SelectInput.Controller = function SelectInputController<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   name,
   control,

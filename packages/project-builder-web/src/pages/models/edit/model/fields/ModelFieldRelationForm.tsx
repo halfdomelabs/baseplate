@@ -99,7 +99,7 @@ export function ModelFieldRelationForm({
       .map((f) => ({
         label: f.name,
         value: f.name,
-      })) || [];
+      })) ?? [];
 
   const formId = useId();
 

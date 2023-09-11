@@ -18,7 +18,7 @@ function Console({ className }: Props): JSX.Element {
 
   useEffect(() => {
     if (!websocketClient) {
-      return () => {};
+      return undefined;
     }
     const unsubscribe = websocketClient.on('message', (msg) => {
       if (msg.type === 'command-console-emitted') {

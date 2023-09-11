@@ -15,7 +15,7 @@ export interface DataPipeOutput<Output = unknown> {
 }
 
 export function mergePipeOperations(
-  outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[]
+  outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[],
 ): DataPipeOperations {
   const operations = outputs
     .map((o) => (o && 'data' in o ? o.operations : o))
@@ -23,10 +23,10 @@ export function mergePipeOperations(
 
   return {
     beforePrismaPromises: operations.flatMap(
-      (op) => op.beforePrismaPromises || []
+      (op) => op.beforePrismaPromises ?? [],
     ),
     afterPrismaPromises: operations.flatMap(
-      (op) => op.afterPrismaPromises || []
+      (op) => op.afterPrismaPromises ?? [],
     ),
   };
 }
@@ -42,10 +42,10 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
 };
 
 export async function applyDataPipeOutputToOperations<
-  Promises extends Prisma.PrismaPromise<unknown>[]
+  Promises extends Prisma.PrismaPromise<unknown>[],
 >(
   outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[],
-  operations: [...Promises]
+  operations: [...Promises],
 ): Promise<UnwrapTuple<Promises>> {
   const { beforePrismaPromises = [], afterPrismaPromises = [] } =
     mergePipeOperations(outputs);
@@ -57,13 +57,13 @@ export async function applyDataPipeOutputToOperations<
 
   return results.slice(
     beforePrismaPromises.length,
-    beforePrismaPromises.length + operations.length
+    beforePrismaPromises.length + operations.length,
   ) as UnwrapTuple<Promises>;
 }
 
 export async function applyDataPipeOutput<DataType>(
   outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[],
-  operation: Prisma.PrismaPromise<DataType>
+  operation: Prisma.PrismaPromise<DataType>,
 ): Promise<DataType> {
   const { beforePrismaPromises = [], afterPrismaPromises = [] } =
     mergePipeOperations(outputs);
@@ -77,7 +77,7 @@ export async function applyDataPipeOutput<DataType>(
 }
 
 export async function applyDataPipeOutputWithoutOperation(
-  outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[]
+  outputs: (DataPipeOutput | DataPipeOperations | undefined | null)[],
 ): Promise<void> {
   const { beforePrismaPromises = [], afterPrismaPromises = [] } =
     mergePipeOperations(outputs);

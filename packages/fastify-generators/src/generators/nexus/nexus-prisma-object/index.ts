@@ -41,7 +41,7 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { modelName, exposedFields },
-    { prismaOutput, nexusTypesFile, nexusSchema }
+    { prismaOutput, nexusTypesFile, nexusSchema },
   ) {
     const model = prismaOutput.getPrismaModel(modelName);
 
@@ -53,24 +53,24 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
       },
       {
         importText: ["import { objectType } from 'nexus';"],
-      }
+      },
     );
 
     objectTypeBlock.addCodeExpression(
       'OBJECT_TYPE_EXPORT',
-      `${lowerCaseFirst(model.name)}ObjectType`
+      `${lowerCaseFirst(model.name)}ObjectType`,
     );
     objectTypeBlock.addCodeExpression('MODEL_NAME', `'${model.name}'`);
 
     const outputDto = prismaToServiceOutputDto(model, (enumName) =>
-      prismaOutput.getServiceEnum(enumName)
+      prismaOutput.getServiceEnum(enumName),
     );
 
     const writerOptions = nexusSchema.getNexusWriterOptions();
 
     const missingField = exposedFields.find(
       (exposedFieldName) =>
-        !outputDto.fields.some((field) => field.name === exposedFieldName)
+        !outputDto.fields.some((field) => field.name === exposedFieldName),
     );
 
     if (missingField) {
@@ -82,7 +82,7 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
       .map((field) => {
         if (field.type === 'scalar') {
           return new TypescriptCodeBlock(
-            writeNexusDefinitionFromDtoScalarField(field, writerOptions)
+            writeNexusDefinitionFromDtoScalarField(field, writerOptions),
           );
         }
         return writeObjectTypeRelationField(field, model, {
@@ -92,7 +92,7 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
       });
     objectTypeBlock.addCodeBlock(
       'OBJECT_TYPE_DEFINITION',
-      TypescriptCodeUtils.mergeBlocks(fieldDefinitions, '\n')
+      TypescriptCodeUtils.mergeBlocks(fieldDefinitions, '\n'),
     );
 
     nexusTypesFile.registerType({
@@ -100,9 +100,7 @@ const NexusPrismaObjectGenerator = createGeneratorWithChildren({
       category: 'object-type',
     });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

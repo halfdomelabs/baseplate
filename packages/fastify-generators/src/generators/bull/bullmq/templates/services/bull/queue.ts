@@ -8,7 +8,7 @@ const managedQueues: Record<string, Queue> = {};
 
 export function getOrCreateManagedQueue<DataType>(
   queueName: string,
-  options?: QueueOptions
+  options?: QueueOptions,
 ): Queue<DataType> {
   if (managedQueues[queueName]) {
     return managedQueues[queueName] as Queue<DataType>;

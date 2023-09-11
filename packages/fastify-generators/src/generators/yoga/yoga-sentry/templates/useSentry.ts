@@ -24,7 +24,7 @@ import { HttpError } from '@src/utils/http-errors';
 // Copied from https://github.com/n1ru4l/envelop/blob/main/packages/plugins/sentry/src/index.ts
 // Modified to allow reporting status of Sentry transactions
 
-export type SentryPluginOptions = {
+export interface SentryPluginOptions {
   /**
    * Starts a new transaction for every GraphQL Operation.
    * When disabled, an already existing Transaction will be used.
@@ -93,7 +93,7 @@ export type SentryPluginOptions = {
    * By default, this plugin skips all `GraphQLError` errors and does not report it to Sentry.
    */
   skipError?: (args: Error) => boolean;
-};
+}
 
 export const defaultSkipError = isOriginalGraphQLError;
 
@@ -109,7 +109,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
 
   function pick<K extends keyof SentryPluginOptions>(
     key: K,
-    defaultValue: NonNullable<SentryPluginOptions[K]>
+    defaultValue: NonNullable<SentryPluginOptions[K]>,
   ): NonNullable<SentryPluginOptions[K]> {
     return options[key] ?? defaultValue;
   }
@@ -141,7 +141,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
 
       const rootOperation = typedArgs.document.definitions.find(
         (o): o is OperationDefinitionNode =>
-          o.kind === Kind.OPERATION_DEFINITION
+          o.kind === Kind.OPERATION_DEFINITION,
       );
       if (!rootOperation) {
         return undefined;
@@ -151,13 +151,12 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
       const document = getDocumentString(typedArgs.document, print);
 
       const opName =
-        typedArgs.operationName ||
-        rootOperation.name?.value ||
+        typedArgs.operationName ??
+        rootOperation.name?.value ??
         'Anonymous Operation';
       const addedTags: Record<string, Primitive> =
-        (options.appendTags && options.appendTags(args)) || {};
-      const traceparentData =
-        (options.traceparentData && options.traceparentData(args)) || {};
+        options.appendTags?.(args) ?? {};
+      const traceparentData = options.traceparentData?.(args) ?? {};
 
       const transactionName = options.transactionName
         ? options.transactionName(args)
@@ -202,7 +201,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
             [
               `Flag "startTransaction" is disabled but Sentry failed to find a transaction.`,
               `Try to create a transaction before GraphQL execution phase is started.`,
-            ].join('\n')
+            ].join('\n'),
           );
           return undefined;
         }
@@ -239,7 +238,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
                 scope.setTag('operationName', opName);
                 scope.setExtra('document', document);
 
-                scope.setTags(addedTags || {});
+                scope.setTags(addedTags ?? {});
 
                 if (includeRawResult) {
                   scope.setExtra('result', result);
@@ -262,7 +261,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
 
                   const errorPath = (err.path ?? [])
                     .map((v: string | number) =>
-                      typeof v === 'number' ? '$index' : v
+                      typeof v === 'number' ? '$index' : v,
                     )
                     .join(' > ');
 

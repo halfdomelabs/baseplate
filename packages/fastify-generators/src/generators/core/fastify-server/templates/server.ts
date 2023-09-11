@@ -3,7 +3,7 @@ import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
 import { nanoid } from 'nanoid';
 
 export async function buildServer(
-  options: FastifyServerOptions = {}
+  options: FastifyServerOptions = {},
 ): Promise<FastifyInstance> {
   const fastify = Fastify({
     genReqId: () => nanoid(),
@@ -17,10 +17,10 @@ export async function buildServer(
   PLUGINS;
 
   // register app plugins
-  const plugins = ROOT_MODULE.plugins || [];
+  const plugins = ROOT_MODULE.plugins ?? [];
   await plugins.reduce(
     (promise, plugin) => promise.then(() => fastify.register(plugin)),
-    Promise.resolve()
+    Promise.resolve(),
   );
 
   return fastify;

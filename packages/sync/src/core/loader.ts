@@ -26,7 +26,7 @@ const GENERATOR_LOADER_CONFIG_SCHEMA = z.object({
 
 export async function loadGeneratorsForModule(
   moduleName: string,
-  modulePath: string
+  modulePath: string,
 ): Promise<GeneratorConfigMap> {
   // look for a generator.json in the root of the module
   const moduleConfigPath = path.join(modulePath, 'generator.json');
@@ -36,20 +36,20 @@ export async function loadGeneratorsForModule(
     : {};
 
   const validatedConfig = GENERATOR_LOADER_CONFIG_SCHEMA.parse(
-    generatorLoaderConfig
+    generatorLoaderConfig,
   );
 
   const generatorsDirectory = path.join(
     modulePath,
-    validatedConfig.generatorBaseDirectory
+    validatedConfig.generatorBaseDirectory,
   );
 
   const possibleDirectories = await listDirectories(generatorsDirectory);
   const matchedGenerators = multimatch(
     possibleDirectories.map((directory) =>
-      directory.slice(generatorsDirectory.length + 1)
+      directory.slice(generatorsDirectory.length + 1),
     ),
-    validatedConfig.generatorPatterns
+    validatedConfig.generatorPatterns,
   );
 
   const generators = await Promise.all(
@@ -57,21 +57,20 @@ export async function loadGeneratorsForModule(
       .filter((folder) => !path.basename(folder).startsWith('_'))
       .map(async (folder) => {
         const generatorFolder = path.join(generatorsDirectory, folder);
-        const generator = await getModuleDefault<GeneratorConfig>(
-          generatorFolder
-        );
+        const generator =
+          await getModuleDefault<GeneratorConfig>(generatorFolder);
         if (!generator) {
           // assume there is no generator
           return {};
         }
         if (!generator.createGenerator) {
           throw new Error(
-            `Generator function lacks a createGenerator function: ${generatorFolder}`
+            `Generator function lacks a createGenerator function: ${generatorFolder}`,
           );
         }
         if (!generator.parseDescriptor) {
           throw new Error(
-            `Generator function lacks a parseDescriptor function: ${generatorFolder}`
+            `Generator function lacks a parseDescriptor function: ${generatorFolder}`,
           );
         }
         const name = `${moduleName.replace(/-generators$/, '')}/${folder}`;
@@ -82,7 +81,7 @@ export async function loadGeneratorsForModule(
             configBaseDirectory: generatorFolder,
           },
         };
-      })
+      }),
   );
 
   return R.mergeAll(generators);

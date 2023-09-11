@@ -2,6 +2,7 @@
 
 import { logError } from './error-logger';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getFormattedErrorSuffix(error: unknown): string {
   ERROR_FORMATTERS;
 
@@ -10,7 +11,7 @@ function getFormattedErrorSuffix(error: unknown): string {
 
 export function formatError(
   error: unknown,
-  context = 'Sorry, something went wrong.'
+  context = 'Sorry, something went wrong.',
 ): string {
   const suffix = getFormattedErrorSuffix(error);
   return `${context} ${suffix}`;

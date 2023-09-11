@@ -9,7 +9,7 @@ export function getMimeTypeFromContentType(contentType: string): string {
 
 export function validateFileExtensionWithMimeType(
   mimeType: string,
-  fileName: string
+  fileName: string,
 ): void {
   const extensions = mime.extensions[mimeType];
   if (!extensions) {
@@ -18,7 +18,7 @@ export function validateFileExtensionWithMimeType(
   const extension = extname(fileName).substring(1).toLowerCase();
   if (!extensions.includes(extension)) {
     throw new Error(
-      `File extension ${extension} does not match mime type ${mimeType}`
+      `File extension ${extension} does not match mime type ${mimeType}`,
     );
   }
 }

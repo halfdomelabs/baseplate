@@ -14,7 +14,7 @@ function SignupPage(): JSX.Element {
     loginWithRedirect({ authorizationParams: { screen_hint: 'signup' } }).catch(
       (err) => {
         setError(logAndFormatError(err));
-      }
+      },
     );
   }, [loginWithRedirect]);
 

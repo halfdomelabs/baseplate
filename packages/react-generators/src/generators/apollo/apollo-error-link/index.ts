@@ -25,7 +25,7 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
           // log query/subscription errors but not mutations since it should be handled by caller
           const definition = getMainDefinition(operation.query);
           const shouldLogErrors =
-            definition.kind === 'OperationDefinition' &&
+            definition.kind === Kind.OPERATION_DEFINITION &&
             ['query', 'subscription'].includes(definition.operation);
       
           if (!shouldLogErrors) {
@@ -37,8 +37,8 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
               const { message, path } = error;
               logger.error(
                 \`[GraphQL Error] Message: \${message}, Path: \${
-                  path?.join(',') || ''
-                }, Operation: \${operation.operationName || 'Anonymous'}\`
+                  path?.join(',') ?? ''
+                }, Operation: \${operation.operationName ?? 'Anonymous'}\`
               );
             });
       
@@ -64,7 +64,7 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
           'import { logger } from "%react-logger"',
           'import { onError } from "@apollo/client/link/error"',
           'import { getMainDefinition } from "@apollo/client/utilities"',
-          'import { GraphQLError } from "graphql";',
+          'import { GraphQLError, Kind } from "graphql";',
           'import { ServerError } from "@apollo/client/link/utils";',
         ],
         {
@@ -78,15 +78,13 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
   reqId?: string;
 }`,
               undefined,
-              { headerKey: 'ErrorExtensions' }
+              { headerKey: 'ErrorExtensions' },
             ),
           ],
-        }
+        },
       ),
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

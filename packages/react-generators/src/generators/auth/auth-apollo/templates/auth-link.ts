@@ -35,6 +35,6 @@ const refreshTokenLink = onError(
       return forward(operation);
     }
     return undefined;
-  }
+  },
 );
 // REFRESH_TOKEN_LINK:END

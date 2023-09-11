@@ -56,7 +56,7 @@ type PathImpl<K extends string | number, V> = V extends Primitive
  * Path<{foo: {bar: string}}> = 'foo' | 'foo.bar'
  * ```
  */
-export type Path<T> = T extends ReadonlyArray<infer V>
+export type Path<T> = T extends readonly (infer V)[]
   ? IsTuple<T> extends true
     ? {
         [K in TupleKeys<T>]-?: PathImpl<K & string, T[K]>;
@@ -77,7 +77,7 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
  */
 type ArrayPathImpl<K extends string | number, V> = V extends Primitive
   ? never
-  : V extends ReadonlyArray<infer U>
+  : V extends readonly (infer U)[]
   ? U extends Primitive
     ? never
     : `${K}` | `${K}.${ArrayPath<V>}`
@@ -92,7 +92,7 @@ type ArrayPathImpl<K extends string | number, V> = V extends Primitive
  * Path<{foo: {bar: string[], baz: number[]}}> = 'foo.bar' | 'foo.baz'
  * ```
  */
-export type ArrayPath<T> = T extends ReadonlyArray<infer V>
+export type ArrayPath<T> = T extends readonly (infer V)[]
   ? IsTuple<T> extends true
     ? {
         [K in TupleKeys<T>]-?: ArrayPathImpl<K & string, T[K]>;
@@ -125,14 +125,14 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
         ? PathValue<T[K], R>
         : never
       : K extends `${ArrayKey}`
-      ? T extends ReadonlyArray<infer V>
+      ? T extends readonly (infer V)[]
         ? PathValue<V, R & Path<V>>
         : never
       : never
     : P extends keyof T
     ? T[P]
     : P extends `${ArrayKey}`
-    ? T extends ReadonlyArray<infer V>
+    ? T extends readonly (infer V)[]
       ? V
       : never
     : never
@@ -143,7 +143,7 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
  */
 export type FieldPathValue<
   TFieldValues extends FieldValues,
-  TFieldPath extends FieldPath<TFieldValues>
+  TFieldPath extends FieldPath<TFieldValues>,
 > = PathValue<TFieldValues, TFieldPath>;
 
 /**
@@ -151,7 +151,7 @@ export type FieldPathValue<
  */
 export type FieldArrayPathValue<
   TFieldValues extends FieldValues,
-  TFieldArrayPath extends FieldArrayPath<TFieldValues>
+  TFieldArrayPath extends FieldArrayPath<TFieldValues>,
 > = PathValue<TFieldValues, TFieldArrayPath>;
 
 /**
@@ -166,7 +166,7 @@ export type FieldArrayPathValue<
  */
 export type FieldPathValues<
   TFieldValues extends FieldValues,
-  TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[]
+  TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[],
   // eslint-disable-next-line @typescript-eslint/ban-types
 > = {} & {
   [K in keyof TPath]: FieldPathValue<
@@ -193,7 +193,7 @@ type GlobPathImpl<K extends string | number, V> = V extends Primitive
  * Path<{foo: {bar: string}}> = 'foo' | 'foo.bar'
  * ```
  */
-export type GlobPath<T> = T extends ReadonlyArray<infer V>
+export type GlobPath<T> = T extends readonly (infer V)[]
   ? IsTuple<T> extends true
     ? {
         [K in TupleKeys<T>]-?: GlobPathImpl<K & string, T[K]>;
@@ -226,14 +226,14 @@ export type GlobPathValue<T, P extends GlobPath<T>> = T extends any
         ? GlobPathValue<T[K], R>
         : never
       : K extends `${ArrayKey}` | '*'
-      ? T extends ReadonlyArray<infer V>
+      ? T extends readonly (infer V)[]
         ? GlobPathValue<V, R & GlobPath<V>>
         : never
       : never
     : P extends keyof T
     ? T[P]
     : P extends `${ArrayKey}` | '*'
-    ? T extends ReadonlyArray<infer V>
+    ? T extends readonly (infer V)[]
       ? V
       : never
     : never
@@ -244,5 +244,5 @@ export type GlobPathValue<T, P extends GlobPath<T>> = T extends any
  */
 export type GlobFieldPathValue<
   TFieldValues extends FieldValues,
-  TFieldPath extends GlobFieldPath<TFieldValues>
+  TFieldPath extends GlobFieldPath<TFieldValues>,
 > = GlobPathValue<TFieldValues, TFieldPath>;

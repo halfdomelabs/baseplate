@@ -41,7 +41,7 @@ export function getDataMethodContextRequired({
 export function wrapWithApplyDataPipe(
   operation: TypescriptCodeExpression,
   pipeNames: string[],
-  prismaUtils: PrismaUtilsProvider
+  prismaUtils: PrismaUtilsProvider,
 ): TypescriptCodeExpression {
   if (!pipeNames.length) {
     return operation;
@@ -57,7 +57,7 @@ export function wrapWithApplyDataPipe(
         "import {applyDataPipeOutput} from '%prisma-utils/dataPipes'",
       ],
       importMappers: [prismaUtils],
-    }
+    },
   );
 }
 
@@ -74,13 +74,13 @@ export function getDataMethodDataType({
     const field = prismaDefinition.fields.find((f) => f.name === fieldName);
     if (!field) {
       throw new Error(
-        `Could not find field ${fieldName} in model ${modelName}`
+        `Could not find field ${fieldName} in model ${modelName}`,
       );
     }
     return field;
   });
   const transformerFields = transformers.flatMap((transformer) =>
-    transformer.inputFields.map((f) => f.dtoField)
+    transformer.inputFields.map((f) => f.dtoField),
   );
   return {
     name: `${modelName}${upperCaseFirst(operationName)}Data`,
@@ -88,7 +88,7 @@ export function getDataMethodDataType({
       ...prismaFields.map((field) => {
         if (field.type !== 'scalar') {
           throw new Error(
-            `Non-scalar fields not suppported in data method operation`
+            `Non-scalar fields not suppported in data method operation`,
           );
         }
         return {
@@ -119,14 +119,14 @@ export function getDataInputTypeBlock(
     prismaFieldNames,
     operationName,
     transformers,
-  }: Omit<PrismaDataMethodOptions, 'name'>
+  }: Omit<PrismaDataMethodOptions, 'name'>,
 ): TypescriptCodeBlock {
   const prismaFieldSelection = prismaFieldNames
     .map((field) => `'${field}'`)
     .join(' | ');
 
   const transformerInputs = transformers.flatMap(
-    (transformer) => transformer.inputFields
+    (transformer) => transformer.inputFields,
   );
 
   let prismaDataInput = `Prisma.${modelName}UncheckedCreateInput`;
@@ -143,15 +143,15 @@ export function getDataInputTypeBlock(
         PRISMA_DATA_INPUT: prismaDataInput,
         PRISMA_FIELDS: prismaFieldSelection,
       },
-      { importText: [`import {Prisma} from '@prisma/client'`] }
+      { importText: [`import {Prisma} from '@prisma/client'`] },
     );
   }
   const customFields = R.mergeAll(
     transformers.flatMap((transformer) =>
       transformer.inputFields.map((f) => ({
         [`${f.dtoField.name}${f.dtoField.isOptional ? '?' : ''}`]: f.type,
-      }))
-    )
+      })),
+    ),
   );
 
   return TypescriptCodeUtils.formatBlock(
@@ -165,7 +165,7 @@ export function getDataInputTypeBlock(
       CUSTOM_FIELDS:
         TypescriptCodeUtils.mergeBlocksAsInterfaceContent(customFields),
     },
-    { importText: [`import {Prisma} from '@prisma/client'`] }
+    { importText: [`import {Prisma} from '@prisma/client'`] },
   );
 }
 
@@ -210,21 +210,23 @@ export function getDataMethodDataExpressions({
       field.type === 'relation' &&
       !!field.fields &&
       field.fields?.some((relationScalarField) =>
-        prismaFieldNames.includes(relationScalarField)
-      )
+        prismaFieldNames.includes(relationScalarField),
+      ),
   );
 
   const relationTransformers = relationFields.map(
     (field): PrismaDataTransformer => {
-      const relationScalarFields = field.fields || [];
+      const relationScalarFields = field.fields ?? [];
       const missingFields = relationScalarFields.filter(
-        (f) => !prismaFieldNames.includes(f)
+        (f) => !prismaFieldNames.includes(f),
       );
       if (missingFields.length) {
         throw new Error(
           `Relation named ${
             field.name
-          } requires all fields as inputs (missing ${missingFields.join(', ')})`
+          } requires all fields as inputs (missing ${missingFields.join(
+            ', ',
+          )})`,
         );
       }
 
@@ -251,23 +253,23 @@ export function getDataMethodDataExpressions({
         R.fromPairs(
           foreignIdFields.map((idField): [string, string] => {
             const idx = field.references?.findIndex(
-              (refName) => refName === idField
+              (refName) => refName === idField,
             );
             if (idx == null || idx === -1) {
               throw new Error(
-                `Relation ${field.name} must have a reference to the primary key of ${field.modelType}`
+                `Relation ${field.name} must have a reference to the primary key of ${field.modelType}`,
               );
             }
             const localField = relationScalarFields[idx];
             return [idField, localField];
-          })
-        )
+          }),
+        ),
       );
 
       const uniqueWhere =
         foreignIdFields.length > 1
           ? uniqueWhereValue.wrap(
-              (contents) => `{ ${foreignIdFields.join('_')}: ${contents}}`
+              (contents) => `{ ${foreignIdFields.join('_')}: ${contents}}`,
             )
           : uniqueWhereValue;
 
@@ -277,7 +279,7 @@ export function getDataMethodDataExpressions({
           FIELD_NAME: field.name,
           TRANSFORMER_PREFIX: transformerPrefix,
           UNIQUE_WHERE: uniqueWhere,
-        }
+        },
       );
 
       return {
@@ -285,7 +287,7 @@ export function getDataMethodDataExpressions({
           relationScalarFields.map((f) => ({
             type: TypescriptCodeUtils.createExpression(''),
             dtoField: { name: f, type: 'scalar', scalarType: 'string' },
-          })) || [],
+          })) ?? [],
         outputFields: [
           {
             name: field.name,
@@ -298,20 +300,20 @@ export function getDataMethodDataExpressions({
               ? TypescriptCodeUtils.createExpression(
                   `createPrismaDisconnectOrConnectData(${field.name})`,
                   'import {createPrismaDisconnectOrConnectData} from "%prisma-utils/prismaRelations"',
-                  { importMappers: [prismaUtils] }
+                  { importMappers: [prismaUtils] },
                 )
               : undefined,
           },
         ],
         isAsync: false,
       };
-    }
+    },
   );
 
   const augmentedTransformers = [...transformers, ...relationTransformers];
 
   const customInputs = augmentedTransformers.flatMap((t) =>
-    t.inputFields.map((f) => f.dtoField.name)
+    t.inputFields.map((f) => f.dtoField.name),
   );
 
   const needsExistingItem =
@@ -332,8 +334,8 @@ const existingItem = OPTIONAL_WHERE
               ? `${whereUniqueExpression} && `
               : '',
           PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
-          WHERE_UNIQUE: whereUniqueExpression || '',
-        }
+          WHERE_UNIQUE: whereUniqueExpression ?? '',
+        },
       );
 
   const parentIdCheck =
@@ -360,15 +362,15 @@ TRANSFORMERS`,
         augmentedTransformers
           .flatMap((t) => t.outputFields.map((f) => f.transformer))
           .filter(notEmpty),
-        '\n\n'
+        '\n\n',
       ),
-    }
+    },
   );
 
   function createExpressionEntries(
     expressionExtractor: (
-      field: PrismaDataTransformOutputField
-    ) => TypescriptCodeExpression | string | undefined
+      field: PrismaDataTransformOutputField,
+    ) => TypescriptCodeExpression | string | undefined,
   ): TypescriptCodeExpression {
     const dataExpressionEntries = [
       ...augmentedTransformers.flatMap((t) =>
@@ -376,13 +378,13 @@ TRANSFORMERS`,
           f.name,
           expressionExtractor(f) ||
             (f.pipeOutputName ? `${f.pipeOutputName}.data` : f.name),
-        ])
+        ]),
       ),
       ['...', 'rest'] as [string, string],
     ];
 
     return TypescriptCodeUtils.mergeExpressionsAsObject(
-      R.fromPairs(dataExpressionEntries)
+      R.fromPairs(dataExpressionEntries),
     );
   }
 
@@ -395,7 +397,7 @@ TRANSFORMERS`,
     createExpression,
     updateExpression,
     dataPipeNames: transformers.flatMap((t) =>
-      t.outputFields.map((f) => f.pipeOutputName).filter(notEmpty)
+      t.outputFields.map((f) => f.pipeOutputName).filter(notEmpty),
     ),
   };
 }

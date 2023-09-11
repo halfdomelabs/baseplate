@@ -15,7 +15,7 @@ interface UseCurrentUserResult {
 export function useCurrentUser(): UseCurrentUserResult {
   const { userId } = useSession();
   const { data, loading, error } = useGetUserByIdQuery({
-    variables: { id: userId || '' },
+    variables: { id: userId ?? '' },
     skip: !userId,
   });
 
@@ -23,8 +23,8 @@ export function useCurrentUser(): UseCurrentUserResult {
     data && data.USER_QUERY === null ? new Error('No user found') : null;
 
   return {
-    user: data?.USER_QUERY || undefined,
+    user: data?.USER_QUERY ?? undefined,
     loading,
-    error: error || noUserError,
+    error: error ?? noUserError,
   };
 }

@@ -25,7 +25,7 @@ interface PothosScalarConfig {
 }
 
 const createPothosScalarMap = <T extends Record<string, PothosScalarConfig>>(
-  t: T
+  t: T,
 ): T => t;
 
 const scalarConfigMap = createPothosScalarMap({
@@ -70,7 +70,7 @@ type ScalarConfigKey = keyof typeof scalarConfigMap;
 
 const descriptorSchema = z.object({
   type: z.enum(
-    Object.keys(scalarConfigMap) as [ScalarConfigKey, ...ScalarConfigKey[]]
+    Object.keys(scalarConfigMap) as [ScalarConfigKey, ...ScalarConfigKey[]],
   ),
 });
 
@@ -88,7 +88,7 @@ const createMainTask = createTaskConfigBuilder(({ type }: Descriptor) => ({
   run({ appModule, pothosSetup, node, errorHandlerService, typescript }) {
     const scalarConfig = scalarConfigMap[type];
     const [scalarImport, scalarPath] = makeImportAndFilePath(
-      `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`
+      `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`,
     );
     appModule.addModuleImport(scalarImport);
 
@@ -115,7 +115,7 @@ const createMainTask = createTaskConfigBuilder(({ type }: Descriptor) => ({
             source: scalarConfig.templatePath,
             destination: scalarPath,
             importMappers: [pothosSetup, errorHandlerService],
-          })
+          }),
         );
       },
     };

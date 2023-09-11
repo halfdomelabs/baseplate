@@ -10,9 +10,7 @@ export interface ImportEntry {
  * Value: The path to resolve to
  * e.g. '%components' => {path: '@/src/components', allowedImports: ["Alert"]}
  */
-export interface ImportMap {
-  [key: string]: ImportEntry;
-}
+export type ImportMap = Record<string, ImportEntry>;
 
 export interface ImportMapper {
   getImportMap(): ImportMap;

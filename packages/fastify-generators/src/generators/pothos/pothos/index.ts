@@ -155,7 +155,7 @@ const PothosGenerator = createGeneratorWithTasks({
         {
           setupTask: { config: configMap, pothosTypes },
           schemaTask: { schemaFiles },
-        }
+        },
       ) {
         node.addPackages({
           '@pothos/core': '3.30.0',
@@ -180,7 +180,7 @@ const PothosGenerator = createGeneratorWithTasks({
                 Context: TypescriptCodeUtils.createExpression(
                   `RequestServiceContext`,
                   `import { RequestServiceContext } from '%request-service-context'`,
-                  { importMappers: [requestServiceContext] }
+                  { importMappers: [requestServiceContext] },
                 ),
                 Scalars: customScalars.length
                   ? TypescriptCodeUtils.mergeExpressionsAsObject(
@@ -188,10 +188,10 @@ const PothosGenerator = createGeneratorWithTasks({
                         customScalars.map((scalar) => [
                           scalar.name,
                           TypescriptCodeUtils.createExpression(
-                            `{ Input: ${scalar.inputType}, Output: ${scalar.outputType} }`
+                            `{ Input: ${scalar.inputType}, Output: ${scalar.outputType} }`,
                           ),
-                        ])
-                      )
+                        ]),
+                      ),
                     )
                   : undefined,
                 DefaultEdgesNullability: 'false',
@@ -199,22 +199,22 @@ const PothosGenerator = createGeneratorWithTasks({
                   config.schemaTypeOptions.map((option) => [
                     option.key,
                     option.value,
-                  ])
+                  ]),
                 ),
               });
 
             const DEFAULT_PLUGINS = [
               TypescriptCodeUtils.createExpression(
                 `pothosFieldWithInputPayloadPlugin`,
-                `import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin'`
+                `import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin'`,
               ),
               TypescriptCodeUtils.createExpression(
                 `SimpleObjectsPlugin`,
-                `import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';`
+                `import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';`,
               ),
               TypescriptCodeUtils.createExpression(
                 `RelayPlugin`,
-                `import RelayPlugin from '@pothos/plugin-relay';`
+                `import RelayPlugin from '@pothos/plugin-relay';`,
               ),
             ];
 
@@ -232,12 +232,12 @@ const PothosGenerator = createGeneratorWithTasks({
                 config.schemaBuilderOptions.map((option) => [
                   option.key,
                   option.value,
-                ])
+                ]),
               ),
             });
 
             const [builderImport, builderPath] = makeImportAndFilePath(
-              `src/plugins/graphql/builder.ts`
+              `src/plugins/graphql/builder.ts`,
             );
             const builderFile = typescript.createTemplate({
               SCHEMA_TYPE_OPTIONS: schemaTypeOptions,
@@ -245,11 +245,11 @@ const PothosGenerator = createGeneratorWithTasks({
               'SUBSCRIPTION_TYPE;': new TypescriptStringReplacement(
                 yogaPluginSetup.isSubscriptionEnabled()
                   ? `builder.subscriptionType();`
-                  : ''
+                  : '',
               ),
             });
             await builder.apply(
-              builderFile.renderToAction('builder.ts', builderPath)
+              builderFile.renderToAction('builder.ts', builderPath),
             );
 
             const schemaExpression = TypescriptCodeUtils.createExpression(
@@ -258,7 +258,7 @@ const PothosGenerator = createGeneratorWithTasks({
                 `import { builder } from '${builderImport}';`,
                 `import '%root-module';`,
               ],
-              { importMappers: [rootModuleImport] }
+              { importMappers: [rootModuleImport] },
             );
 
             const yogaConfig = yogaPluginSetup.getConfig();
@@ -280,7 +280,7 @@ const PothosGenerator = createGeneratorWithTasks({
                 [
                   `import { printSchema, lexicographicSortSchema } from 'graphql';`,
                   `import fs from 'fs';`,
-                ]
+                ],
               ),
             ]);
 
@@ -296,7 +296,7 @@ const PothosGenerator = createGeneratorWithTasks({
                   'types.ts',
                 ],
                 importMappers: [tsUtils],
-              })
+              }),
             );
 
             builder.addPostWriteCommand('pnpm generate:schema', 'generation', {
@@ -322,7 +322,7 @@ const PothosGenerator = createGeneratorWithTasks({
         // add script to generate types
         node.addScript(
           'generate:schema',
-          `tsx ${fastifyOutput.getDevLoaderString()} src --exit-after-generate-schema`
+          `tsx ${fastifyOutput.getDevLoaderString()} src --exit-after-generate-schema`,
         );
         return {};
       },

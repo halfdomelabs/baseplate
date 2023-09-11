@@ -23,7 +23,7 @@ interface RelationFieldWriterContext {
 function getResolverForField(
   field: PrismaOutputRelationField,
   model: PrismaOutputModel,
-  prismaOutput: PrismaOutputProvider
+  prismaOutput: PrismaOutputProvider,
 ): TypescriptCodeExpression {
   if (!field.fields || !field.references) {
     if (!model.idFields) {
@@ -63,9 +63,9 @@ function getResolverForField(
     WHERE_CLAUSE: TypescriptCodeUtils.mergeExpressionsAsObject(
       R.mergeAll(
         field.fields.map((localName, index) => ({
-          [(field.references || [])[index]]: localName,
-        }))
-      )
+          [(field.references ?? [])[index]]: localName,
+        })),
+      ),
     ),
     RELATION_NAME: field.name,
   });
@@ -74,19 +74,19 @@ function getResolverForField(
 export function writeObjectTypeRelationField(
   field: ServiceOutputDtoNestedField,
   model: PrismaOutputModel,
-  { prismaOutput, writerOptions }: RelationFieldWriterContext
+  { prismaOutput, writerOptions }: RelationFieldWriterContext,
 ): TypescriptCodeBlock {
   const prismaField = model.fields.find((f) => f.name === field.name);
 
   if (prismaField?.type !== 'relation') {
     throw new Error(
-      `Relation field ${field.name} not found in model ${model.name}`
+      `Relation field ${field.name} not found in model ${model.name}`,
     );
   }
 
   return writeNexusObjectTypeFieldFromDtoNestedField(
     field,
     getResolverForField(prismaField, model, prismaOutput),
-    writerOptions
+    writerOptions,
   );
 }

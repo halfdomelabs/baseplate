@@ -18,7 +18,7 @@ const AdminCrudTextInputGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { label, modelField },
-    { adminCrudInputContainer, reactComponents }
+    { adminCrudInputContainer, reactComponents },
   ) {
     adminCrudInputContainer.addInput({
       content: TypescriptCodeUtils.createExpression(
@@ -30,20 +30,22 @@ const AdminCrudTextInputGenerator = createGeneratorWithChildren({
           registerOptions={{ setValueAs: (val: string) => val === '' ? undefined : val }}
         />`,
         `import { TextInput } from "%react-components"`,
-        { importMappers: [reactComponents] }
+        { importMappers: [reactComponents] },
       ),
       graphQLFields: [],
       validation: [
         {
           key: modelField,
           expression: TypescriptCodeUtils.createExpression(
-            'z.string().nullish()'
+            'z.string().nullish()',
           ),
         },
       ],
     });
     return {
-      build: async () => {},
+      build: async () => {
+        /* empty */
+      },
     };
   },
 });

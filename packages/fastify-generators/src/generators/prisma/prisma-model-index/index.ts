@@ -17,9 +17,7 @@ const PrismaModelIndexGenerator = createGeneratorWithChildren({
       name: 'index',
       args: [fields],
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

@@ -19,8 +19,8 @@ const descriptorSchema = z.object({
   version: z.string().default('0.1.0'),
   private: z.boolean().default(true),
   path: z.string().default(''),
-  nodeVersion: z.string().default('18.16.0'),
-  pnpmVersion: z.string().default('8.6.9'),
+  nodeVersion: z.string().default('18.17.1'),
+  pnpmVersion: z.string().default('8.7.4'),
 });
 
 export interface NodeProvider {
@@ -104,13 +104,13 @@ const NodeGenerator = createGeneratorWithChildren({
     const extraProperties = createNonOverwriteableMap({}, { name: 'node' });
     const scripts = createNonOverwriteableMap(
       { preinstall: 'npx only-allow pnpm' },
-      { name: 'node-scripts' }
+      { name: 'node-scripts' },
     );
 
     function mergeDependency(
       name: string,
       version: string,
-      type: 'normal' | 'dev'
+      type: 'normal' | 'dev',
     ): void {
       const existingDependency = dependencies[name];
 
@@ -125,7 +125,7 @@ const NodeGenerator = createGeneratorWithChildren({
           newVersion = version;
         } else {
           throw new Error(
-            `Could not add different versions for dependency: ${name} (${oldVersion}, ${version})`
+            `Could not add different versions for dependency: ${name} (${oldVersion}, ${version})`,
           );
         }
         dependencies[name] = {
@@ -152,13 +152,13 @@ const NodeGenerator = createGeneratorWithChildren({
             addPackage,
             addPackages(packages) {
               Object.entries(packages).forEach(([name, version]) =>
-                addPackage(name, version)
+                addPackage(name, version),
               );
             },
             addDevPackage,
             addDevPackages(packages) {
               Object.entries(packages).forEach(([name, version]) =>
-                addDevPackage(name, version)
+                addDevPackage(name, version),
               );
             },
             mergeExtraProperties(props) {
@@ -181,13 +181,13 @@ const NodeGenerator = createGeneratorWithChildren({
       },
       build: async (builder) => {
         const extractDependencies = (
-          type: NodeDependencyType
+          type: NodeDependencyType,
         ): Record<string, string> =>
           R.mergeAll(
             R.sortBy(
               R.prop('name'),
-              Object.values(dependencies).filter((d) => d.type === type)
-            ).map((d) => ({ [d.name]: d.version }))
+              Object.values(dependencies).filter((d) => d.type === type),
+            ).map((d) => ({ [d.name]: d.version })),
           );
         const packageJson = {
           name: descriptor.packageName || descriptor.name,
@@ -203,7 +203,7 @@ const NodeGenerator = createGeneratorWithChildren({
             node: `^${descriptor.nodeVersion}`,
             // use major/minor version of PNPM
             pnpm: `^${semver.major(descriptor.pnpmVersion)}.${semver.minor(
-              descriptor.pnpmVersion
+              descriptor.pnpmVersion,
             )}.0`,
           },
           volta: {
@@ -216,13 +216,13 @@ const NodeGenerator = createGeneratorWithChildren({
             destination: 'package.json',
             contents: packageJson,
             preformat: (contents) => sortPackageJson(contents),
-          })
+          }),
         );
 
         // write node version so .pnpm can use it
         builder.writeFile(
           '.npmrc',
-          `use-node-version=${descriptor.nodeVersion}`
+          `use-node-version=${descriptor.nodeVersion}`,
         );
 
         // we have to avoid the prompt otherwise generation will hang
@@ -233,12 +233,12 @@ const NodeGenerator = createGeneratorWithChildren({
           {
             workingDirectory: '/',
             onlyIfChanged: ['package.json'],
-          }
+          },
         );
 
         const allDependencies = R.mergeRight(
           packageJson.dependencies,
-          packageJson.devDependencies
+          packageJson.devDependencies,
         );
         if (Object.keys(allDependencies).includes('prettier')) {
           builder.addPostWriteCommand(
@@ -247,7 +247,7 @@ const NodeGenerator = createGeneratorWithChildren({
             {
               workingDirectory: '/',
               onlyIfChanged: ['package.json'],
-            }
+            },
           );
         }
       },

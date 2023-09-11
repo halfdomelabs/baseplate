@@ -41,7 +41,7 @@ interface ResolveModuleOptions {
 export function resolveModule(
   moduleSpecifier: string,
   directory: string,
-  { pathMapEntries }: ResolveModuleOptions = {}
+  { pathMapEntries }: ResolveModuleOptions = {},
 ): string {
   // if not relative import, just return directly
   if (!moduleSpecifier.startsWith('@/')) {
@@ -61,7 +61,7 @@ export function resolveModule(
 
   const typescriptPathImport = (() => {
     const pathEntry = pathMapEntries?.find((map) =>
-      absolutePath.startsWith(map.from)
+      absolutePath.startsWith(map.from),
     );
     if (!pathEntry) {
       return null;
@@ -78,20 +78,20 @@ export function resolveModule(
 function resolveImportDeclaration(
   declaration: ImportDeclarationEntry,
   directory: string,
-  options?: ResolveModuleOptions
+  options?: ResolveModuleOptions,
 ): ImportDeclarationEntry {
   return {
     ...declaration,
     moduleSpecifier: resolveModule(
       declaration.moduleSpecifier,
       directory,
-      options
+      options,
     ),
   };
 }
 
 function importDeclarationToImportEntries(
-  declaration: ImportDeclarationEntry
+  declaration: ImportDeclarationEntry,
 ): ImportEntry[] {
   const importEntries: ImportEntry[] = [];
   const entryDefaults = {
@@ -119,7 +119,7 @@ function importDeclarationToImportEntries(
         ...entryDefaults,
         name: i.name,
         alias: i.alias,
-      }))
+      })),
     );
   }
   return importEntries;
@@ -127,7 +127,7 @@ function importDeclarationToImportEntries(
 
 export function writeImportDeclaration(
   writer: CodeBlockWriter,
-  importDeclaration: ImportDeclarationEntry
+  importDeclaration: ImportDeclarationEntry,
 ): void {
   const {
     namespaceImport,
@@ -139,7 +139,7 @@ export function writeImportDeclaration(
   const hasNamedImports = !!namedImports.length;
   if (namespaceImport && (defaultImport || hasNamedImports)) {
     throw new Error(
-      'Cannot have an import with both namespace and named/default imports!'
+      'Cannot have an import with both namespace and named/default imports!',
     );
   }
   writer.write('import');
@@ -175,7 +175,7 @@ export function writeImportDeclaration(
 function importEntryToImportDeclaration(
   importEntries: ImportEntry[],
   isTypeOnly: boolean,
-  moduleSpecifier: string
+  moduleSpecifier: string,
 ): ImportDeclarationEntry {
   const importsByName = _.groupBy(importEntries, 'name');
 
@@ -183,7 +183,7 @@ function importEntryToImportDeclaration(
     const { name, alias } = entries[0];
     if (entries.some((e) => e.alias !== alias)) {
       throw new Error(
-        `Every alias for ${name} in ${moduleSpecifier} must be the same`
+        `Every alias for ${name} in ${moduleSpecifier} must be the same`,
       );
     }
     return { name, alias };
@@ -211,13 +211,13 @@ function importEntryToImportDeclaration(
 function writeImportDeclarationsForModule(
   writer: CodeBlockWriter,
   importEntries: ImportEntry[],
-  moduleSpecifier: string
+  moduleSpecifier: string,
 ): void {
   // handle file-only imports
   if (!importEntries.length) {
     writeImportDeclaration(
       writer,
-      importEntryToImportDeclaration([], false, moduleSpecifier)
+      importEntryToImportDeclaration([], false, moduleSpecifier),
     );
     return;
   }
@@ -235,24 +235,24 @@ function writeImportDeclarationsForModule(
   const typeOnlyImports = R.flatten(
     importsWithNameAndType
       .filter((item) => item.isTypeOnly)
-      .map((item) => item.imports)
+      .map((item) => item.imports),
   );
   if (typeOnlyImports.length) {
     writeImportDeclaration(
       writer,
-      importEntryToImportDeclaration(typeOnlyImports, true, moduleSpecifier)
+      importEntryToImportDeclaration(typeOnlyImports, true, moduleSpecifier),
     );
   }
 
   const normalImports = R.flatten(
     importsWithNameAndType
       .filter((item) => !item.isTypeOnly)
-      .map((item) => item.imports)
+      .map((item) => item.imports),
   );
   if (normalImports.length) {
     writeImportDeclaration(
       writer,
-      importEntryToImportDeclaration(normalImports, false, moduleSpecifier)
+      importEntryToImportDeclaration(normalImports, false, moduleSpecifier),
     );
   }
 }
@@ -264,7 +264,7 @@ export function buildImportMap(importMappers: ImportMapper[]): ImportMap {
 
 function resolveImportFromImportMap(
   importDeclaration: ImportDeclarationEntry,
-  map: ImportMap
+  map: ImportMap,
 ): ImportDeclarationEntry {
   const { moduleSpecifier } = importDeclaration;
   if (!moduleSpecifier.startsWith('%')) {
@@ -279,12 +279,12 @@ function resolveImportFromImportMap(
     allowedImports,
     onImportUsed,
   } = mappedSpecifierEntry;
-  const namedImports = importDeclaration.namedImports?.map((i) => i.name) || [];
+  const namedImports = importDeclaration.namedImports?.map((i) => i.name) ?? [];
   if (!allowedImports.includes('*')) {
     const missingImport = namedImports.find((i) => !allowedImports.includes(i));
     if (missingImport) {
       throw new Error(
-        `${missingImport} is not exported from ${moduleSpecifier}`
+        `${missingImport} is not exported from ${moduleSpecifier}`,
       );
     }
   }
@@ -305,23 +305,23 @@ export function writeImportDeclarations(
   writer: CodeBlockWriter,
   imports: ImportDeclarationEntry[],
   fileDirectory: string,
-  options?: ResolveModuleOptions
+  options?: ResolveModuleOptions,
 ): void {
   // map out imports
   const importMap = buildImportMap(options?.importMappers || []);
   const mappedImports = imports.map((importDeclaration) =>
-    resolveImportFromImportMap(importDeclaration, importMap)
+    resolveImportFromImportMap(importDeclaration, importMap),
   );
   const resolvedImports = mappedImports.map((i) =>
-    resolveImportDeclaration(i, fileDirectory, options)
+    resolveImportDeclaration(i, fileDirectory, options),
   );
   const resolvedImportEntries = R.flatten(
-    resolvedImports.map((i) => importDeclarationToImportEntries(i))
+    resolvedImports.map((i) => importDeclarationToImportEntries(i)),
   );
   // merge all imports together
   const importsByModule = _.groupBy(
     resolvedImportEntries,
-    (i) => i.moduleSpecifier
+    (i) => i.moduleSpecifier,
   );
 
   // split out imports that have import entries vs. just a module specifier
@@ -334,10 +334,10 @@ export function writeImportDeclarations(
   const modulesWithImportEntries = allModules.filter(
     (moduleSpecifier) =>
       importsByModule[moduleSpecifier] &&
-      importsByModule[moduleSpecifier].length > 0
+      importsByModule[moduleSpecifier].length > 0,
   );
   const modulesWithoutImportEntries = allModules.filter(
-    (moduleSpecifier) => !importsByModule[moduleSpecifier]?.length
+    (moduleSpecifier) => !importsByModule[moduleSpecifier]?.length,
   );
 
   const moduleGroupings = [
@@ -361,7 +361,7 @@ export function writeImportDeclarations(
 }
 
 export function getImportDeclarationEntries(
-  file: SourceFile
+  file: SourceFile,
 ): ImportDeclarationEntry[] {
   return file.getImportDeclarations().map((declaration) => ({
     isTypeOnly: declaration.isTypeOnly(),

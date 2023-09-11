@@ -56,7 +56,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
       configService,
       appModule,
       errorHandlerService,
-    }
+    },
   ) {
     node.addPackages({
       'fastify-auth0-verify': '1.2.0',
@@ -73,23 +73,23 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
     }
 
     const [pluginImport, pluginPath] = makeImportAndFilePath(
-      `${appModule.getModuleFolder()}/plugins/auth0-plugin.ts`
+      `${appModule.getModuleFolder()}/plugins/auth0-plugin.ts`,
     );
 
     const [authServiceImport, authServicePath] = makeImportAndFilePath(
-      `${appModule.getModuleFolder()}/services/auth-service.ts`
+      `${appModule.getModuleFolder()}/services/auth-service.ts`,
     );
 
     const [authInfoImport, authInfoPath] = makeImportAndFilePath(
-      `${appModule.getModuleFolder()}/utils/auth-info.ts`
+      `${appModule.getModuleFolder()}/utils/auth-info.ts`,
     );
 
     appModule.registerFieldEntry(
       'plugins',
       TypescriptCodeUtils.createExpression(
         'auth0Plugin',
-        `import {auth0Plugin} from '${pluginImport}'`
-      )
+        `import {auth0Plugin} from '${pluginImport}'`,
+      ),
     );
 
     configService.getConfigEntries().set('AUTH0_DOMAIN', {
@@ -107,7 +107,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
     });
 
     const [, managementPath] = makeImportAndFilePath(
-      `${appModule.getModuleFolder()}/services/management.ts`
+      `${appModule.getModuleFolder()}/services/management.ts`,
     );
 
     if (includeManagement) {
@@ -168,7 +168,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
                 importText: [
                   `import { createAuthInfoFromAuthorization } from '${authServiceImport}'`,
                 ],
-              }
+              },
             );
           },
         },
@@ -176,34 +176,34 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const pluginFile = typescript.createTemplate(
           {},
-          { importMappers: [configService] }
+          { importMappers: [configService] },
         );
 
         await builder.apply(
-          pluginFile.renderToAction('plugins/auth0-plugin.ts', pluginPath)
+          pluginFile.renderToAction('plugins/auth0-plugin.ts', pluginPath),
         );
 
         const serviceFile = typescript.createTemplate(
           {
             USER_MODEL: prismaOutput.getPrismaModelExpression(userModelName),
           },
-          { importMappers: [configService, roleService] }
+          { importMappers: [configService, roleService] },
         );
 
         await builder.apply(
           serviceFile.renderToAction(
             'services/auth-service.ts',
-            authServicePath
-          )
+            authServicePath,
+          ),
         );
 
         const authInfoFile = typescript.createTemplate(
           {},
-          { importMappers: [roleService, errorHandlerService] }
+          { importMappers: [roleService, errorHandlerService] },
         );
 
         await builder.apply(
-          authInfoFile.renderToAction('utils/auth-info.ts', authInfoPath)
+          authInfoFile.renderToAction('utils/auth-info.ts', authInfoPath),
         );
 
         if (includeManagement) {
@@ -212,7 +212,7 @@ const Auth0ModuleGenerator = createGeneratorWithChildren({
               source: 'services/management.ts',
               destination: managementPath,
               importMappers: [configService],
-            })
+            }),
           );
         }
       },

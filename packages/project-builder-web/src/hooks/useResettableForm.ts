@@ -11,7 +11,7 @@ import { useToast } from './useToast';
 
 export function useResettableForm<
   TFieldValues extends FieldValues = FieldValues,
-  TContext = unknown
+  TContext = unknown,
 >(
   props?: UseFormProps<TFieldValues, TContext>
 ): UseFormReturn<TFieldValues, TContext> {

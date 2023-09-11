@@ -17,7 +17,7 @@ export interface PrismaCrudServiceSetupProvider {
 
 export const prismaCrudServiceSetupProvider =
   createProviderType<PrismaCrudServiceSetupProvider>(
-    'prisma-crud-service-setup'
+    'prisma-crud-service-setup',
   );
 
 export interface PrismaCrudServiceProvider {

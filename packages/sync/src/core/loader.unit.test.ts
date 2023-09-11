@@ -31,7 +31,7 @@ describe('loadGeneratorsForModule', () => {
           generatorPatterns: ['*'],
         }),
       },
-      '/modules/test-generators'
+      '/modules/test-generators',
     );
     const mockGeneratorOne: GeneratorConfig = {
       parseDescriptor: vi.fn(),
@@ -46,7 +46,7 @@ describe('loadGeneratorsForModule', () => {
 
     const generator = await loadGeneratorsForModule(
       '@halfdomelabs/test-generators',
-      '/modules/test-generators'
+      '/modules/test-generators',
     );
 
     expect(generator).toEqual({
@@ -63,10 +63,10 @@ describe('loadGeneratorsForModule', () => {
     });
 
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/dist/generators/generatorOne'
+      '/modules/test-generators/dist/generators/generatorOne',
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/dist/generators/generatorTwo'
+      '/modules/test-generators/dist/generators/generatorTwo',
     );
   });
 
@@ -85,7 +85,7 @@ describe('loadGeneratorsForModule', () => {
         }),
         '/modules/test-generators/dist/random/foo.yml': 'test',
       },
-      '/modules/test-generators'
+      '/modules/test-generators',
     );
     const mockGeneratorOne: GeneratorConfig = {
       parseDescriptor: vi.fn(),
@@ -100,7 +100,7 @@ describe('loadGeneratorsForModule', () => {
 
     const generator = await loadGeneratorsForModule(
       '@halfdomelabs/test-generators',
-      '/modules/test-generators'
+      '/modules/test-generators',
     );
 
     expect(generator).toEqual({
@@ -117,10 +117,10 @@ describe('loadGeneratorsForModule', () => {
     });
 
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/dist/generators/one/generatorOne'
+      '/modules/test-generators/dist/generators/one/generatorOne',
     );
     expect(mockedRequireUtils.getModuleDefault).toHaveBeenCalledWith(
-      '/modules/test-generators/dist/generators/two/generatorTwo'
+      '/modules/test-generators/dist/generators/two/generatorTwo',
     );
   });
 });

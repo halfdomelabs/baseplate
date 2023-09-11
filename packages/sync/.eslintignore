@@ -2,5 +2,5 @@
 /dist
 /lib
 /node_modules
-.eslintrc.cjs
+
 vitest.config.ts

@@ -35,7 +35,7 @@ const PothosPrismaQueryFileGenerator = createGeneratorWithTasks({
       createPothosTypesFileTask({
         fileName,
         categoryOrder: ['find-query', 'list-query'],
-      })
+      }),
     );
   },
 });

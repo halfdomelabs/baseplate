@@ -47,7 +47,7 @@ const descriptorSchema = z.object({
 function getForeignModelRelation(
   prismaOutput: PrismaOutputProvider,
   modelName: string,
-  localRelationName: string
+  localRelationName: string,
 ): {
   localModel: PrismaOutputModel;
   foreignModel: PrismaOutputModel;
@@ -56,12 +56,12 @@ function getForeignModelRelation(
 } {
   const localModel = prismaOutput.getPrismaModel(modelName);
   const localRelation = localModel.fields.find(
-    (f) => f.name === localRelationName
+    (f) => f.name === localRelationName,
   );
 
   if (!localRelation || localRelation.type !== 'relation') {
     throw new Error(
-      `${modelName}.${localRelationName} is not a relation field`
+      `${modelName}.${localRelationName} is not a relation field`,
     );
   }
 
@@ -72,12 +72,12 @@ function getForeignModelRelation(
       f.type === 'relation' &&
       (localRelation.relationName
         ? f.name === localRelation.relationName
-        : f.modelType === modelName)
+        : f.modelType === modelName),
   );
 
   if (!foreignRelation) {
     throw new Error(
-      `Could not find foreign relation on ${localRelation.modelType} for ${modelName}.${localRelationName}`
+      `Could not find foreign relation on ${localRelation.modelType} for ${modelName}.${localRelationName}`,
     );
   }
 
@@ -118,7 +118,7 @@ function createEmbeddedTransformFunction(options: {
   const outputPipeType = TypescriptCodeUtils.createExpression(
     `DataPipeOutput<${outputDataType}>`,
     "import { DataPipeOutput } from '%prisma-utils/dataPipes';",
-    { importMappers: [prismaUtils] }
+    { importMappers: [prismaUtils] },
   );
   const outputType = isAsync
     ? outputPipeType.wrap((contents) => `Promise<${contents}>`)
@@ -139,7 +139,7 @@ function createEmbeddedTransformFunction(options: {
       WHERE_UNIQUE_TYPE: whereUniqueType,
       DATA_RESULT: TypescriptCodeUtils.mergeExpressionsAsObject({
         data: TypescriptCodeUtils.mergeExpressionsAsObject({
-          where: isOneToOne ? undefined : 'whereUnique || {}',
+          where: isOneToOne ? undefined : 'whereUnique ?? {}',
           create: createExpression,
           update: updateExpression,
         }),
@@ -148,12 +148,12 @@ function createEmbeddedTransformFunction(options: {
           : TypescriptCodeUtils.createExpression(
               `mergePipeOperations([${dataPipeNames.join(', ')}])`,
               "import { mergePipeOperations } from '%prisma-utils/dataPipes';",
-              { importMappers: [prismaUtils] }
+              { importMappers: [prismaUtils] },
             ),
       }),
       OUTPUT_TYPE: outputType,
       CONTEXT_TYPE: serviceContextType,
-    }
+    },
   ).withHeaderKey(name);
 
   return {
@@ -191,7 +191,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       foreignCrudService,
       serviceContext,
       prismaUtils,
-    }
+    },
   ) {
     function buildTransformer({
       operationType,
@@ -204,14 +204,14 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
 
       if (localModel.idFields?.length !== 1) {
         throw new Error(
-          `${modelName} must have exactly one id field if used in an embedded relation`
+          `${modelName} must have exactly one id field if used in an embedded relation`,
         );
       }
       const localId = localModel.idFields[0];
 
       if (embeddedTransformerNames && !foreignCrudService) {
         throw new Error(
-          `Cannot use embedded transformers without a foreign crud service`
+          `Cannot use embedded transformers without a foreign crud service`,
         );
       }
 
@@ -221,29 +221,29 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       const embeddedTransformerFactories =
         embeddedTransformerNames
           ?.map((name) => foreignCrudService?.getTransformerByName(name))
-          .filter(notEmpty) || [];
+          .filter(notEmpty) ?? [];
 
       const embeddedFields = embeddedFieldNames.map((name) => {
         const field = foreignModel.fields.find((f) => f.name === name);
         if (!field) {
           throw new Error(
-            `Could not find field ${name} on ${foreignModel.name}`
+            `Could not find field ${name} on ${foreignModel.name}`,
           );
         }
         if (field.type !== 'scalar') {
           throw new Error(
-            `Field ${name} on ${foreignModel.name} is not a scalar`
+            `Field ${name} on ${foreignModel.name} is not a scalar`,
           );
         }
         return field;
       });
 
       const dataInputName = `${modelName}Embedded${upperCaseFirst(
-        localRelationName
+        localRelationName,
       )}Data`;
 
       const upsertTransformers = embeddedTransformerFactories.map((factory) =>
-        factory.buildTransformer({ operationType: 'upsert' })
+        factory.buildTransformer({ operationType: 'upsert' }),
       );
 
       // If we use the existing item, we should check that its ID is actually owned
@@ -251,12 +251,12 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       const getForeignRelationParentField = (): string => {
         // figure out which field is parent ID
         const foreignParentIdx = foreignRelation.references?.findIndex(
-          (reference) => reference === localId
+          (reference) => reference === localId,
         );
         // foreign parent ID is not in list
         if (foreignParentIdx == null || foreignParentIdx === -1) {
           throw new Error(
-            `Foreign reference must contain primary key of local model`
+            `Foreign reference must contain primary key of local model`,
           );
         }
         const foreignParentField = foreignRelation.fields?.[foreignParentIdx];
@@ -286,7 +286,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         ? undefined
         : createEmbeddedTransformFunction({
             name: `prepareUpsertEmbedded${upperCaseFirst(
-              localRelationName
+              localRelationName,
             )}Data`,
             inputDataType: dataInputName,
             outputDataType: `Prisma.${upperCaseFirst(foreignModel.name)}Upsert${
@@ -297,13 +297,13 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
             prismaUtils,
             serviceContextType: serviceContext.getServiceContextType(),
             whereUniqueType: `Prisma.${upperCaseFirst(
-              foreignModel.name
+              foreignModel.name,
             )}WhereUniqueInput`,
           });
 
       const dataInputType = getDataInputTypeBlock(
         dataInputName,
-        dataMethodOptions
+        dataMethodOptions,
       ).withHeaderKey(dataInputName);
       const dataMethodDataType = getDataMethodDataType(dataMethodOptions);
 
@@ -317,7 +317,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
           undefined,
           {
             headerBlocks: [dataInputType],
-          }
+          },
         ),
         dtoField: {
           name: inputName,
@@ -357,19 +357,19 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       const embeddedCallExpression = TypescriptCodeUtils.createExpression(
         embeddedCallName,
         `import { ${embeddedCallName} } from '${embeddedCallImport}'`,
-        { importMappers: [prismaUtils] }
+        { importMappers: [prismaUtils] },
       );
 
       // finds the discriminator ID field in the input for 1:many relationships
       const getDiscriminatorIdField = (): string => {
-        const foreignIds = foreignModel?.idFields || [];
+        const foreignIds = foreignModel?.idFields ?? [];
         const discriminatorIdFields = foreignIds.filter((foreignId) =>
-          embeddedFieldNames.includes(foreignId)
+          embeddedFieldNames.includes(foreignId),
         );
 
         if (discriminatorIdFields.length !== 1) {
           throw new Error(
-            `Expected 1 discriminator ID field for ${localRelationName}, found ${discriminatorIdFields.length}`
+            `Expected 1 discriminator ID field for ${localRelationName}, found ${discriminatorIdFields.length}`,
           );
         }
         return discriminatorIdFields[0];
@@ -381,16 +381,16 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       } => {
         const returnType = TypescriptCodeUtils.createExpression(
           `Prisma.${upperCaseFirst(
-            foreignModel.name
+            foreignModel.name,
           )}WhereUniqueInput | undefined`,
-          "import { Prisma } from '@prisma/client'"
+          "import { Prisma } from '@prisma/client'",
         );
 
         // convert primary keys to where unique
-        const foreignIds = foreignModel?.idFields || [];
+        const foreignIds = foreignModel?.idFields ?? [];
         const primaryKeyFields = foreignIds.map(
           (
-            idField
+            idField,
           ): {
             name: string;
             value: string;
@@ -400,13 +400,13 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
           } => {
             // check if ID field is in relation
             const idRelationIdx = foreignRelation.fields?.findIndex(
-              (relationField) => relationField === idField
+              (relationField) => relationField === idField,
             );
             if (idRelationIdx != null && idRelationIdx !== -1) {
               const localField = foreignRelation.references?.[idRelationIdx];
               if (!localField) {
                 throw new Error(
-                  `Could not find corresponding relation field for ${idField}`
+                  `Could not find corresponding relation field for ${idField}`,
                 );
               }
               // short-circuit case for updates
@@ -421,7 +421,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
             }
             // check if ID field is in input
             const embeddedField = embeddedFields.find(
-              (f) => f.name === idField
+              (f) => f.name === idField,
             );
             if (embeddedField) {
               return {
@@ -435,9 +435,9 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
               };
             }
             throw new Error(
-              `Could not find ID field ${idField} in either embedded object or relation for relation ${localRelationName} of ${modelName}`
+              `Could not find ID field ${idField} in either embedded object or relation for relation ${localRelationName} of ${modelName}`,
             );
-          }
+          },
         );
 
         const primaryKeyExpression =
@@ -446,9 +446,9 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
               primaryKeyFields.map((keyField): [string, string] => [
                 keyField.name,
                 keyField.value,
-              ])
+              ]),
             ),
-            { wrapWithParenthesis: true }
+            { wrapWithParenthesis: true },
           );
 
         const value =
@@ -457,13 +457,13 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
                 {
                   [foreignIds.join('_')]: primaryKeyExpression,
                 },
-                { wrapWithParenthesis: true }
+                { wrapWithParenthesis: true },
               )
             : primaryKeyExpression;
 
         const usesInput = primaryKeyFields.some((k) => k.usesInput);
         const needsExistingItem = primaryKeyFields.some(
-          (k) => k.needsExistingItem
+          (k) => k.needsExistingItem,
         );
 
         const requirementsList = [
@@ -472,7 +472,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
             : []),
           ...primaryKeyFields
             .map(
-              (f) => f.requiredInputField && `!input.${f.requiredInputField}`
+              (f) => f.requiredInputField && `!input.${f.requiredInputField}`,
             )
             .filter(notEmpty),
         ];
@@ -486,10 +486,10 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
               PREFIX: '',
               VALUE: requirementsList.length
                 ? value.prepend(
-                    `${requirementsList.join(' || ')} ? undefined : `
+                    `${requirementsList.join(' || ')} ? undefined : `,
                   )
                 : value,
-            }
+            },
           ),
           needsExistingItem,
         };
@@ -538,12 +538,12 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
                 '() => PRISMA_MODEL.deleteMany({ where: WHERE_ARGS })',
                 {
                   PRISMA_MODEL: prismaOutput.getPrismaModelExpression(
-                    foreignModel.name
+                    foreignModel.name,
                   ),
                   WHERE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
                     [parentField]: parentId,
                   }),
-                }
+                },
               ),
             };
 
@@ -569,7 +569,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
           EMBEDDED_CALL: embeddedCallExpression,
           ARGS: embeddedCallArgs.args,
         },
-        { headerBlocks: upsertFunction ? [upsertFunction.func] : [] }
+        { headerBlocks: upsertFunction ? [upsertFunction.func] : [] },
       );
 
       return {
@@ -592,9 +592,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       buildTransformer,
     });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

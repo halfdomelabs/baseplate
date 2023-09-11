@@ -94,7 +94,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
     function getGeneratedImport(name: string): TypescriptCodeExpression {
       return TypescriptCodeUtils.createExpression(
         name,
-        `import { ${name} } from '${reactApollo.getGeneratedFilePath()}'`
+        `import { ${name} } from '${reactApollo.getGeneratedFilePath()}'`,
       );
     }
 
@@ -132,21 +132,21 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
             config.generateCreate = true;
             return getHookInfo(
               `useCreate${modelName}Mutation`,
-              createFieldName
+              createFieldName,
             );
           },
           getUpdateHookInfo: () => {
             config.generateUpdate = true;
             return getHookInfo(
               `useUpdate${modelName}Mutation`,
-              updateFieldName
+              updateFieldName,
             );
           },
           getDeleteHookInfo: () => {
             config.generateDelete = true;
             return getHookInfo(
               `useDelete${modelName}Mutation`,
-              deleteFieldName
+              deleteFieldName,
             );
           },
           getListDocumentExpression: () =>
@@ -161,7 +161,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
                 throw new Error(
                   `Root ${
                     root.name || 'unnamed'
-                  } already exists with different fields`
+                  } already exists with different fields`,
                 );
               }
               return;
@@ -188,7 +188,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
               name: rowFragmentName,
               type: modelName,
               fields: config.rowFields,
-            })
+            }),
           );
 
           queries.push(
@@ -201,7 +201,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
                   fields: [{ type: 'spread', on: rowFragmentName }],
                 },
               ],
-            })
+            }),
           );
         }
 
@@ -211,7 +211,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
               name: editFragmentName,
               type: modelName,
               fields: config.formFields,
-            })
+            }),
           );
 
           queries.push(
@@ -228,7 +228,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
                   fields: [{ type: 'spread', on: editFragmentName }],
                 },
               ],
-            })
+            }),
           );
         }
 
@@ -236,7 +236,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
           mutationName: string,
           fieldName: string,
           inputType: string,
-          returnIdOnly?: boolean
+          returnIdOnly?: boolean,
         ): string {
           return renderGraphQLRoot({
             type: 'mutation',
@@ -271,8 +271,8 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
             createMutation(
               createMutationName,
               createFieldName,
-              `Create${modelName}Input`
-            )
+              `Create${modelName}Input`,
+            ),
           );
         }
 
@@ -281,8 +281,8 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
             createMutation(
               updateMutationName,
               updateFieldName,
-              `Update${modelName}Input`
-            )
+              `Update${modelName}Input`,
+            ),
           );
         }
 
@@ -292,22 +292,22 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
               deleteMutationName,
               deleteFieldName,
               `Delete${modelName}Input`,
-              true
-            )
+              true,
+            ),
           );
         }
 
         if (queries.length) {
           const filePath = path.join(
             reactRoutes.getDirectoryBase(),
-            'queries.gql'
+            'queries.gql',
           );
           reactApollo.registerGqlFile(filePath);
           await builder.apply(
             writeFormattedAction({
               destination: filePath,
               contents: queries.join('\n\n'),
-            })
+            }),
           );
         }
       },

@@ -26,7 +26,7 @@ export const sentryPlugin = fp(async (fastify) => {
     let traceparentData: TraceparentData | undefined;
     if (typeof req.headers['sentry-trace'] === 'string') {
       traceparentData = Sentry.extractTraceparentData(
-        req.headers['sentry-trace']
+        req.headers['sentry-trace'],
       );
     }
 
@@ -37,7 +37,7 @@ export const sentryPlugin = fp(async (fastify) => {
         op: 'http.server',
         ...traceparentData,
       },
-      { request: requestData }
+      { request: requestData },
     );
     req.sentryTransaction = transaction;
 

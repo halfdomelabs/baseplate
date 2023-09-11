@@ -38,7 +38,6 @@ const AuthPagesGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         authPages: {},
       }),
-      build: async () => {},
     };
   },
 });

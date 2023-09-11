@@ -23,6 +23,6 @@ export default NAME;
     {
       NAME: name,
       BODY: body,
-    }
+    },
   );
 }

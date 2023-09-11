@@ -62,7 +62,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
     this.directory = directory;
     this.projectJsonPath = expandPathWithTilde(
-      path.join(directory, 'baseplate/project.json')
+      path.join(directory, 'baseplate/project.json'),
     );
     this.id = id;
 
@@ -89,7 +89,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
       if (!fileExists) {
         // auto-create a simple project.json file
         logger.info(
-          `project.json not found. Creating project.json file in ${this.projectJsonPath}`
+          `project.json not found. Creating project.json file in ${this.projectJsonPath}`,
         );
         const starterName =
           getFirstNonBaseplateParentFolder(this.projectJsonPath) || 'project';
@@ -167,7 +167,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
             err instanceof Error
               ? `${err.message}${err.stack ? `\n${err.stack}` : ''}`
               : 'Unknown error'
-          }`
+          }`,
         ),
       });
       throw err;

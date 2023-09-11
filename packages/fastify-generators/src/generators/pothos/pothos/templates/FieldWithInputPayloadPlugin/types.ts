@@ -25,7 +25,7 @@ export type MutationWithInputPayloadOptions<
   InputFields extends Record<string, InputFieldRef<unknown, 'InputObject'>>,
   PayloadFields extends Record<string, FieldRef<unknown, 'Object'>>,
   ResolveShape,
-  ResolveReturnShape
+  ResolveReturnShape,
 > = Omit<
   FieldOptionsFromKind<
     Types,

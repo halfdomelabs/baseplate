@@ -29,7 +29,7 @@ export interface PothosAuthorizeConfig {
 
 export interface PothosAuthProvider {
   formatAuthorizeConfig(
-    config: PothosAuthorizeConfig
+    config: PothosAuthorizeConfig,
   ): TypescriptCodeExpression;
 }
 
@@ -55,11 +55,11 @@ const createMainTask = createTaskConfigBuilder(
                 'src/plugins/graphql/FieldAuthorizePlugin',
               paths: ['global-types.ts', 'index.ts', 'types.ts'],
               importMappers: [errorHandlerService],
-            })
+            }),
           );
 
           pothosSetup.registerSchemaFile(
-            `'@src/plugins/graphql/FieldAuthorizePlugin/index.ts`
+            `'@src/plugins/graphql/FieldAuthorizePlugin/index.ts`,
           );
 
           pothosSetup
@@ -68,15 +68,15 @@ const createMainTask = createTaskConfigBuilder(
               'pothosPlugins',
               TypescriptCodeUtils.createExpression(
                 `pothosAuthorizeByRolesPlugin`,
-                `import { pothosAuthorizeByRolesPlugin } from '@/src/plugins/graphql/FieldAuthorizePlugin';`
-              )
+                `import { pothosAuthorizeByRolesPlugin } from '@/src/plugins/graphql/FieldAuthorizePlugin';`,
+              ),
             )
             .appendUnique('schemaTypeOptions', {
               key: 'AuthRole',
               value: new TypescriptCodeExpression(
                 'AuthRole',
                 "import { AuthRole } from '%role-service';",
-                { importMappers: [auth] }
+                { importMappers: [auth] },
               ),
             })
             .append('schemaBuilderOptions', {
@@ -89,7 +89,7 @@ const createMainTask = createTaskConfigBuilder(
         },
       };
     },
-  })
+  }),
 );
 
 const PothosAuthGenerator = createGeneratorWithTasks({
@@ -110,7 +110,7 @@ const PothosAuthGenerator = createGeneratorWithTasks({
               formatAuthorizeConfig: (config) =>
                 // TODO: Validate roles
                 TypescriptCodeUtils.createExpression(
-                  JSON.stringify(config.roles)
+                  JSON.stringify(config.roles),
                 ),
             },
           }),

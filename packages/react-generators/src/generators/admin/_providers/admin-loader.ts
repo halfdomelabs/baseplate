@@ -12,7 +12,7 @@ export interface DataLoader {
 
 export function printDataLoaders(
   loaders: DataLoader[],
-  reactComponents: ReactComponentsProvider
+  reactComponents: ReactComponentsProvider,
 ): {
   loader: TypescriptCodeBlock;
   gate: TypescriptCodeBlock;
@@ -34,14 +34,14 @@ export function printDataLoaders(
 
   const errorParts = loaders
     .map((loader) => loader.loaderErrorName)
-    .join(' || ');
+    .join(' ?? ');
 
   return {
     dataParts,
     errorParts,
     loader: TypescriptCodeUtils.mergeBlocks(
       loaders.map((loader) => loader.loader),
-      '\n\n'
+      '\n\n',
     ),
     gate: TypescriptCodeUtils.formatBlock(
       `if (DATA_PARTS) {
@@ -54,7 +54,7 @@ export function printDataLoaders(
       {
         importText: [`import { ErrorableLoader } from '%react-components'`],
         importMappers: [reactComponents],
-      }
+      },
     ),
   };
 }

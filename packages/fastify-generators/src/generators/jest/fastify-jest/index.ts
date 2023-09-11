@@ -35,7 +35,7 @@ const FastifyJestGenerator = createGeneratorWithChildren({
       .appendUnique('customSetupBlocks', [
         TypescriptCodeUtils.createBlock(
           'config()',
-          "import { config } from 'dotenv'"
+          "import { config } from 'dotenv'",
         ),
       ]);
 
@@ -47,7 +47,6 @@ const FastifyJestGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         fastifyJest: {},
       }),
-      build: async () => {},
     };
   },
 });

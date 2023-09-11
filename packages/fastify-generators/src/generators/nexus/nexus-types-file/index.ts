@@ -48,15 +48,15 @@ export const createNexusTypesFileTask = createTaskConfigBuilder(
     },
     run({ appModule, typescript, nexusSchema }) {
       const typesPath = `${appModule.getModuleFolder()}/schema/${paramCase(
-        name
+        name,
       )}.ts`;
 
       appModule.registerFieldEntry(
         'schemaTypes',
         new TypescriptCodeExpression(
           name,
-          `import * as ${name} from '@/${typesPath.replace(/\.ts$/, '')}'`
-        )
+          `import * as ${name} from '@/${typesPath.replace(/\.ts$/, '')}'`,
+        ),
       );
 
       nexusSchema.registerSchemaFile(typesPath);
@@ -88,7 +88,7 @@ export const createNexusTypesFileTask = createTaskConfigBuilder(
         build: async (builder) => {
           const orderedTypes = R.sortBy((type) => {
             if (!type.category || !categoryOrder?.includes(type.category)) {
-              return (categoryOrder || []).length;
+              return (categoryOrder ?? []).length;
             }
             return categoryOrder.indexOf(type.category);
           }, types);
@@ -96,17 +96,17 @@ export const createNexusTypesFileTask = createTaskConfigBuilder(
           const typesFile = typescript.createTemplate({
             TYPES: TypescriptCodeUtils.mergeBlocks(
               orderedTypes.map((t) => t.block),
-              '\n\n'
+              '\n\n',
             ),
           });
 
           await builder.apply(
-            typesFile.renderToActionFromText('TYPES', typesPath)
+            typesFile.renderToActionFromText('TYPES', typesPath),
           );
         },
       };
     },
-  })
+  }),
 );
 
 const NexusTypesFileGenerator = createGeneratorWithTasks({

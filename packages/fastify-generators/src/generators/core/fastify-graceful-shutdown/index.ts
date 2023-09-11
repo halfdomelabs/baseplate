@@ -24,7 +24,7 @@ const FastifyGracefulShutdownGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { fastifyServer, errorHandlerService, loggerService, typescript }
+    { fastifyServer, errorHandlerService, loggerService, typescript },
   ) {
     const [gracefulShutdownImport, gracefulShutdownPath] =
       makeImportAndFilePath('src/plugins/graceful-shutdown.ts');
@@ -33,7 +33,7 @@ const FastifyGracefulShutdownGenerator = createGeneratorWithChildren({
       name: 'graceful-shutdown',
       plugin: TypescriptCodeUtils.createExpression(
         'gracefulShutdownPlugin',
-        `import { gracefulShutdownPlugin } from '${gracefulShutdownImport}'`
+        `import { gracefulShutdownPlugin } from '${gracefulShutdownImport}'`,
       ),
     });
 
@@ -44,7 +44,7 @@ const FastifyGracefulShutdownGenerator = createGeneratorWithChildren({
             source: 'graceful-shutdown.ts',
             destination: gracefulShutdownPath,
             importMappers: [loggerService, errorHandlerService],
-          })
+          }),
         );
       },
     };

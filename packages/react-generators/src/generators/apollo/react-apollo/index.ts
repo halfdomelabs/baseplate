@@ -89,7 +89,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { devApiEndpoint, schemaLocation, enableSubscriptions },
-    { node, reactConfig, typescript, reactApp, eslint, prettier, reactProxy }
+    { node, reactConfig, typescript, reactApp, eslint, prettier, reactProxy },
   ) {
     const apolloCreateArgs: ApolloCreateArg[] = [];
     const links: ApolloLink[] = [];
@@ -135,19 +135,19 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     const cachePath = 'src/services/apollo/cache.ts';
 
     const [clientImport, clientPath] = makeImportAndFilePath(
-      'src/services/apollo/index.ts'
+      'src/services/apollo/index.ts',
     );
 
     const [providerImport, providerPath] = makeImportAndFilePath(
-      'src/app/AppApolloProvider.tsx'
+      'src/app/AppApolloProvider.tsx',
     );
 
     reactApp.getRenderWrappers().addItem(
       'react-apollo',
       TypescriptCodeUtils.createWrapper(
         (contents) => `<AppApolloProvider>${contents}</AppApolloProvider>`,
-        [`import AppApolloProvider from '${providerImport}';`]
-      )
+        [`import AppApolloProvider from '${providerImport}';`],
+      ),
     );
 
     const importMap = {
@@ -188,7 +188,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
             return new TypescriptCodeExpression(
               'config.VITE_GRAPH_API_ENDPOINT',
               'import { config } from "%react-config";',
-              { importMappers: [reactConfig] }
+              { importMappers: [reactConfig] },
             );
           },
           registerGqlFile(filePath) {
@@ -217,7 +217,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
         const sortedLinks = toposort
           .array(
             links.map((link) => link.name),
-            links.flatMap((link) => link.dependencies || [])
+            links.flatMap((link) => link.dependencies ?? []),
           )
           .map((name) => links.find((link) => link.name === name))
           .filter(notEmpty);
@@ -233,21 +233,20 @@ const ReactApolloGenerator = createGeneratorWithChildren({
               `import { HttpLink } from '@apollo/client';`,
               `import { config } from '%react-config';`,
             ],
-            { importMappers: [reactConfig] }
+            { importMappers: [reactConfig] },
           ),
         });
 
         if (enableSubscriptions) {
-          const websocketTemplate = await builder.readTemplate(
-            'websocket-links.ts'
-          );
+          const websocketTemplate =
+            await builder.readTemplate('websocket-links.ts');
           const getWsUrlTemplate = TypescriptCodeUtils.extractTemplateSnippet(
             websocketTemplate,
-            'GET_WS_URL'
+            'GET_WS_URL',
           );
           const retryWaitTemplate = TypescriptCodeUtils.extractTemplateSnippet(
             websocketTemplate,
-            'RETRY_WAIT'
+            'RETRY_WAIT',
           ).replace(/;$/, '');
 
           websocketOptions.merge({
@@ -269,7 +268,7 @@ const ReactApolloGenerator = createGeneratorWithChildren({
           });
 
           const wsOptions = TypescriptCodeUtils.mergeExpressionsAsObject(
-            websocketOptions.value()
+            websocketOptions.value(),
           );
 
           sortedLinks.push({
@@ -283,30 +282,30 @@ const ReactApolloGenerator = createGeneratorWithChildren({
                   `import { GraphQLWsLink } from '@apollo/client/link/subscriptions';`,
                   `import { createClient } from 'graphql-ws';`,
                 ],
-              }
+              },
             ),
           });
 
           const splitLinkTemplate = TypescriptCodeUtils.extractTemplateSnippet(
             websocketTemplate,
-            'SPLIT_LINK'
+            'SPLIT_LINK',
           );
 
           const wsLinks = sortedLinks.filter((l) => l.wsOnly);
           const httpLinks = sortedLinks.filter((l) => l.httpOnly);
 
           const formatLinks = (
-            linksToFormat: ApolloLink[]
+            linksToFormat: ApolloLink[],
           ): TypescriptCodeExpression => {
             const linkNames = linksToFormat.map(
-              (link) => new TypescriptCodeExpression(link.name)
+              (link) => new TypescriptCodeExpression(link.name),
             );
             if (linkNames.length === 1) {
               return linkNames[0];
             }
             return TypescriptCodeUtils.mergeExpressionsAsArray(linkNames).wrap(
               (contents) => `from(${contents})`,
-              'import { from } from "@apollo/client";'
+              'import { from } from "@apollo/client";',
             );
           };
 
@@ -322,14 +321,15 @@ const ReactApolloGenerator = createGeneratorWithChildren({
                 importText: [
                   `import { split } from '@apollo/client';`,
                   `import { getMainDefinition } from '@apollo/client/utilities';`,
+                  `import { Kind, OperationTypeNode } from 'graphql';`,
                 ],
-              }
+              },
             ),
           });
         }
 
         await builder.apply(
-          cacheFile.renderToAction('services/apollo/cache.ts', cachePath)
+          cacheFile.renderToAction('services/apollo/cache.ts', cachePath),
         );
 
         const createArgNames = apolloCreateArgs
@@ -346,30 +346,30 @@ const ReactApolloGenerator = createGeneratorWithChildren({
                   headerBlocks: [
                     TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
                       R.fromPairs(
-                        apolloCreateArgs.map((arg) => [arg.name, arg.type])
-                      )
+                        apolloCreateArgs.map((arg) => [arg.name, arg.type]),
+                      ),
                     ).wrap(
                       (contents) =>
-                        `interface CreateApolloClientOptions {\n${contents}\n}`
+                        `interface CreateApolloClientOptions {\n${contents}\n}`,
                     ),
                   ],
-                }
+                },
               ),
           LINK_BODIES: TypescriptCodeUtils.mergeBlocks(
             sortedLinks.map((link) => link.bodyExpression),
-            '\n\n'
+            '\n\n',
           ),
           LINKS: TypescriptCodeUtils.mergeExpressionsAsArray(
             sortedLinks
               .filter((l) =>
-                enableSubscriptions ? !l.httpOnly && !l.wsOnly : true
+                enableSubscriptions ? !l.httpOnly && !l.wsOnly : true,
               )
-              .map((link) => new TypescriptCodeExpression(link.name))
+              .map((link) => new TypescriptCodeExpression(link.name)),
           ),
         });
 
         await builder.apply(
-          clientFile.renderToAction('services/apollo/index.ts', clientPath)
+          clientFile.renderToAction('services/apollo/index.ts', clientPath),
         );
 
         await builder.apply(
@@ -379,38 +379,38 @@ const ReactApolloGenerator = createGeneratorWithChildren({
             data: {
               SCHEMA_LOCATION: schemaLocation,
             },
-          })
+          }),
         );
 
         const apolloProviderFile = typescript.createTemplate(
           {
             RENDER_BODY: TypescriptCodeUtils.mergeBlocks(
-              apolloCreateArgs.map((arg) => arg.renderBody).filter(notEmpty)
+              apolloCreateArgs.map((arg) => arg.renderBody).filter(notEmpty),
             ),
             CREATE_ARG_VALUE: !apolloCreateArgs.length
               ? TypescriptCodeUtils.createExpression('')
               : TypescriptCodeUtils.mergeExpressionsAsObject(
                   R.fromPairs(
-                    apolloCreateArgs.map((arg) => [arg.name, arg.creatorValue])
-                  )
+                    apolloCreateArgs.map((arg) => [arg.name, arg.creatorValue]),
+                  ),
                 ),
             CREATE_ARGS: TypescriptCodeUtils.createExpression(
               apolloCreateArgs
                 .map((arg) => arg.hookDependency)
                 .filter(notEmpty)
-                .join(', ')
+                .join(', '),
             ),
           },
           {
             importMappers: [{ getImportMap: () => importMap }],
-          }
+          },
         );
 
         await builder.apply(
           apolloProviderFile.renderToAction(
             'app/AppApolloProvider.tsx',
-            providerPath
-          )
+            providerPath,
+          ),
         );
 
         builder.addPostWriteCommand('pnpm generate', 'generation', {

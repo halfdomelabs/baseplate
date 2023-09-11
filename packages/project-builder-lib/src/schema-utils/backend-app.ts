@@ -7,7 +7,7 @@ import { computeRelativePath } from '@src/utils/path.js';
 
 export function getBackendApp(projectConfig: ProjectConfig): BackendAppConfig {
   const backendApps = projectConfig.apps.filter(
-    (a): a is BackendAppConfig => a.type === 'backend'
+    (a): a is BackendAppConfig => a.type === 'backend',
   );
 
   if (backendApps.length > 1 || !backendApps.length) {
@@ -21,11 +21,11 @@ export function getBackendApp(projectConfig: ProjectConfig): BackendAppConfig {
 
 export function getBackendRelativePath(
   appConfig: AppConfig,
-  backendApp: BackendAppConfig
+  backendApp: BackendAppConfig,
 ): string {
   const backendRelativePath = computeRelativePath(
     appConfig.packageLocation || `packages/${appConfig.name}`,
-    backendApp.packageLocation || `packages/${backendApp.name}`
+    backendApp.packageLocation || `packages/${backendApp.name}`,
   );
 
   return backendRelativePath;

@@ -19,7 +19,7 @@ export const DateTimeScalar = builder.scalarType('DateTime', {
       return new Date(value).toISOString();
     }
     throw new BadRequestError(
-      'DateTime field must be provided as a Date object or string'
+      'DateTime field must be provided as a Date object or string',
     );
   },
   parseLiteral(ast) {

@@ -175,13 +175,13 @@ function CrudFormFieldsForm({
     model?.model.fields.map((field) => ({
       label: field.name,
       value: field.name,
-    })) || [];
+    })) ?? [];
 
   const localRelationOptions =
     model?.model.relations?.map((relation) => ({
       label: `${relation.name} (${relation.modelName})`,
       value: relation.name,
-    })) || [];
+    })) ?? [];
 
   const foreignRelationOptions = parsedProject
     .getModelForeignRelations(modelName)
@@ -196,7 +196,7 @@ function CrudFormFieldsForm({
       .map((transformer) => ({
         label: transformer.name,
         value: transformer.name,
-      })) || [];
+      })) ?? [];
 
   const enumFieldOptions =
     model?.model.fields
@@ -204,7 +204,7 @@ function CrudFormFieldsForm({
       .map((field) => ({
         label: field.name,
         value: field.name,
-      })) || [];
+      })) ?? [];
 
   return (
     <div className={classNames('space-y-4', className)}>

@@ -56,9 +56,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
                 [
                   "import {useCurrentUser} from '%auth-hooks/useCurrentUser'",
                   "import {useEffect} from 'react'",
-                ]
+                ],
               )
-              .withImportMappers(authHooks)
+              .withImportMappers(authHooks),
           );
         }
       },

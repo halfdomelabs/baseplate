@@ -16,13 +16,13 @@ async function runMain(): Promise<void> {
     .description('Builds project from project.json in baseplate/ directory')
     .option('--regen', 'Force regeneration of all files')
     .action((directory: string, options: BuildProjectForDirectoryOptions) =>
-      buildProjectForDirectory(directory, options)
+      buildProjectForDirectory(directory, options),
     );
 
   program
     .command('buildClean <directory>')
     .description(
-      'Writes a clean project from project.json in baseplate/ directory to sub-apps'
+      'Writes a clean project from project.json in baseplate/ directory to sub-apps',
     )
     .action(buildToCleanFolder);
   program
@@ -31,19 +31,19 @@ async function runMain(): Promise<void> {
     .option(
       '--browser',
       'Opens browser with project builder web service',
-      !process.env.NO_BROWSER || process.env.NO_BROWSER === 'false'
+      !process.env.NO_BROWSER || process.env.NO_BROWSER === 'false',
     )
     .option('--no-browser', 'Do not start browser')
     .option(
       '--port <number>',
       'Port to listen on',
       parseInt,
-      process.env.PORT ? parseInt(process.env.PORT, 10) : undefined
+      process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
     )
     .argument(
       '[directories...]',
       'Directories to serve',
-      process.env.PROJECT_DIRECTORIES?.split(',') || ['.']
+      process.env.PROJECT_DIRECTORIES?.split(',') || ['.'],
     )
     .action(startWebServer);
 

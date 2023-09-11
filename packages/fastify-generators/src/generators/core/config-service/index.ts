@@ -82,7 +82,7 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
           comment: 'Environment the app is running in',
           value: TypescriptCodeUtils.createExpression(
             `z.enum(['development', 'test', 'staging', 'production'])`,
-            "import { z } from 'zod'"
+            "import { z } from 'zod'",
           ),
           exampleValue: 'development',
         });
@@ -97,7 +97,7 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
               getConfigExpression: () =>
                 TypescriptCodeUtils.createExpression(
                   'config',
-                  "import { config } from '@/src/services/config'"
+                  "import { config } from '@/src/services/config'",
                 ),
               getImportMap: () => ({
                 '%config': {
@@ -116,7 +116,7 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
             const configEntriesObj = configEntries.value();
             const sortedConfigEntries = R.sortBy(
               (entry) => entry[0],
-              Object.entries(configEntriesObj)
+              Object.entries(configEntriesObj),
             );
             const configEntryKeys = Object.keys(configEntriesObj).sort();
             const mergedExpression = configEntryKeys
@@ -136,35 +136,33 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
                 `{\n${mergedExpression}\n}`,
                 null,
                 mergeCodeEntryOptions(
-                  Object.values(configEntriesObj).map((e) => e.value)
-                )
-              )
+                  Object.values(configEntriesObj).map((e) => e.value),
+                ),
+              ),
             );
 
             configFile.addCodeBlock(
               'ADDITIONAL_VERIFICATIONS',
-              TypescriptCodeUtils.mergeBlocks(additionalVerifications)
+              TypescriptCodeUtils.mergeBlocks(additionalVerifications),
             );
 
             await builder.apply(
-              configFile.renderToAction('config.ts', 'src/services/config.ts')
+              configFile.renderToAction('config.ts', 'src/services/config.ts'),
             );
 
             const envExampleFile = `${sortedConfigEntries
               .filter(([, { exampleValue }]) => exampleValue != null)
-              .map(
-                ([key, { exampleValue }]) => `${key}=${exampleValue as string}`
-              )
+              .map(([key, { exampleValue }]) => `${key}=${exampleValue}`)
               .join('\n')}\n`;
 
             const envFile = `${sortedConfigEntries
               .filter(
                 ([, { seedValue, exampleValue }]) =>
-                  (seedValue || exampleValue) != null
+                  (seedValue ?? exampleValue) != null,
               )
               .map(
                 ([key, { seedValue, exampleValue }]) =>
-                  `${key}=${seedValue ?? exampleValue ?? ''}`
+                  `${key}=${seedValue ?? exampleValue ?? ''}`,
               )
               .join('\n')}\n`;
 

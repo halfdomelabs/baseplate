@@ -34,12 +34,12 @@ const AuthRolesGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { userRoleModelName },
-    { authInfo, prismaOutput, roleService }
+    { authInfo, prismaOutput, roleService },
   ) {
     const authRolesType = TypescriptCodeUtils.createExpression(
       `AuthRole[]`,
       `import {AuthRole} from '%role-service'`,
-      { importMappers: [roleService] }
+      { importMappers: [roleService] },
     );
 
     const rolesCreatorBody: TypescriptCodeBlock =
@@ -56,7 +56,7 @@ const AuthRolesGenerator = createGeneratorWithChildren({
         {
           importText: ["import { populateAuthRoles } from '%role-service'"],
           importMappers: [roleService],
-        }
+        },
       );
 
     authInfo.registerAuthField({
@@ -70,12 +70,12 @@ const AuthRolesGenerator = createGeneratorWithChildren({
     authInfo.registerAuthField({
       key: 'hasSomeRole',
       value: new TypescriptCodeExpression(
-        '(possibleRoles) => roles.some((role) => possibleRoles.includes(role))'
+        '(possibleRoles) => roles.some((role) => possibleRoles.includes(role))',
       ),
       type: TypescriptCodeUtils.createExpression(
         `(possibleRoles: AuthRole[]) => boolean`,
         `import {AuthRole} from '%role-service'`,
-        { importMappers: [roleService] }
+        { importMappers: [roleService] },
       ),
     });
 
@@ -85,7 +85,7 @@ const AuthRolesGenerator = createGeneratorWithChildren({
       type: TypescriptCodeUtils.createExpression(
         `(role: AuthRole) => boolean`,
         `import {AuthRole} from '%role-service'`,
-        { importMappers: [roleService] }
+        { importMappers: [roleService] },
       ),
     });
 
@@ -93,7 +93,6 @@ const AuthRolesGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         authRoles: {},
       }),
-      build: async () => {},
     };
   },
 });

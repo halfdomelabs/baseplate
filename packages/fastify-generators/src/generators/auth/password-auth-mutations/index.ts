@@ -36,7 +36,7 @@ const PasswordAuthMutationsGenerator = createGeneratorWithChildren({
       prismaOutput,
       auth,
       appModule,
-    }
+    },
   ) {
     const moduleFolder = appModule.getModuleFolder();
     const { userModelName } = auth.getConfig();
@@ -50,18 +50,18 @@ const PasswordAuthMutationsGenerator = createGeneratorWithChildren({
       },
       {
         importMappers: [nexusSchema, passwordAuthService, authMutations],
-      }
+      },
     );
     const [importPath, filePath] = makeImportAndFilePath(
-      `${moduleFolder}/schema/password-auth-mutations.ts`
+      `${moduleFolder}/schema/password-auth-mutations.ts`,
     );
 
     appModule.registerFieldEntry(
       'schemaTypes',
       new TypescriptCodeExpression(
         'passwordAuthMutations',
-        `import * as passwordAuthMutations from '${importPath}';`
-      )
+        `import * as passwordAuthMutations from '${importPath}';`,
+      ),
     );
     nexusSchema.registerSchemaFile(filePath);
     mutationFile.addCodeEntries({
@@ -72,8 +72,8 @@ const PasswordAuthMutationsGenerator = createGeneratorWithChildren({
         await builder.apply(
           mutationFile.renderToAction(
             'schema/password-auth-mutations.ts',
-            filePath
-          )
+            filePath,
+          ),
         );
       },
     };

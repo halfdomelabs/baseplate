@@ -8,13 +8,13 @@ import { GeneratorTaskEntry } from './generator-builder.js';
 
 function normalizeExportMap(exportMap: ProviderExportMap): ProviderExport[] {
   return Object.values(exportMap).map((provider) =>
-    provider.type === 'type' ? provider.export() : provider
+    provider.type === 'type' ? provider.export() : provider,
   );
 }
 
 function getExportInterdependencies(
   entries: GeneratorTaskEntry[],
-  dependencyMap: EntryDependencyMap
+  dependencyMap: EntryDependencyMap,
 ): { nodes: string[]; edges: [string, string][] } {
   const entriesById = R.indexBy(R.prop('id'), entries);
 
@@ -38,7 +38,7 @@ function getExportInterdependencies(
         (dep.type === 'dependency' && dep.options.modifiedInBuild) || false;
 
       exportDependencies[key] = [
-        ...(exportDependencies[key] || []),
+        ...(exportDependencies[key] ?? []),
         { id: entryId, modifiedInBuild },
       ];
     });
@@ -48,7 +48,7 @@ function getExportInterdependencies(
   const edges = entries.flatMap((entry) => {
     const normalizedExports = normalizeExportMap(entry.exports);
     const exportsWithDependencies = normalizedExports.filter(
-      (e) => e.options.dependencies
+      (e) => e.options.dependencies,
     );
 
     const exportsThatAreDependencies = R.uniq(
@@ -56,16 +56,16 @@ function getExportInterdependencies(
         (exportWithDependency) =>
           exportWithDependency.options.dependencies?.map((dependency) => {
             const foundExport = normalizedExports.find(
-              (e) => e.name === dependency.name
+              (e) => e.name === dependency.name,
             );
             if (!foundExport) {
               throw new Error(
-                `Could not find export dependency ${exportWithDependency.name} in ${entry.id}`
+                `Could not find export dependency ${exportWithDependency.name} in ${entry.id}`,
               );
             }
             return foundExport;
-          }) || []
-      )
+          }) ?? [],
+      ),
     );
 
     const exportsInvolvingDependencies = R.uniq([
@@ -88,19 +88,19 @@ function getExportInterdependencies(
       const generatorsToExportRelationships = dependencies.flatMap(
         (dependency) => {
           const dependencyExportKey = `provider|${entry.id}#${dependency.name}`;
-          const generators = exportDependencies[dependencyExportKey] || [];
+          const generators = exportDependencies[dependencyExportKey] ?? [];
           return generators.map((generator): [string, string] => [
             generator.modifiedInBuild
               ? `build|${generator.id}`
               : `init|${generator.id}`,
             dependentExportKey,
           ]);
-        }
+        },
       );
 
       // create links between this export to the generators that depend on it
       const exportToGeneratorRelationships = (
-        exportDependencies[dependentExportKey] || []
+        exportDependencies[dependentExportKey] ?? []
       ).map((generator): [string, string] => [
         dependentExportKey,
         `init|${generator.id}`,
@@ -131,7 +131,7 @@ function getExportInterdependencies(
  */
 export function getSortedRunSteps(
   entries: GeneratorTaskEntry[],
-  dependencyMap: EntryDependencyMap
+  dependencyMap: EntryDependencyMap,
 ): string[] {
   const dependencyGraph = entries.flatMap((entry): [string, string][] => {
     const entryInit = `init|${entry.id}`;
@@ -166,7 +166,7 @@ export function getSortedRunSteps(
       ...entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]),
       ...interdependentNodes,
     ],
-    [...dependencyGraph, ...interdependentEdges]
+    [...dependencyGraph, ...interdependentEdges],
   );
 
   // filter out interdepenency nodes

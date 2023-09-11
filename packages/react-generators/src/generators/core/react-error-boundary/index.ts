@@ -38,7 +38,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
       'react-error-boundary': '4.0.10',
     });
     const [errorBoundaryImport, errorBoundaryPath] = makeImportAndFilePath(
-      'src/components/ErrorBoundary/index.tsx'
+      'src/components/ErrorBoundary/index.tsx',
     );
 
     return {
@@ -51,21 +51,21 @@ const createMainTask = createTaskConfigBuilder(() => ({
           {},
           {
             importMappers,
-          }
+          },
         );
 
         reactApp.setErrorBoundary(
           TypescriptCodeUtils.createWrapper(
             (contents) => `<ErrorBoundary>${contents}</ErrorBoundary>`,
-            `import {ErrorBoundary} from '${errorBoundaryImport}';`
-          )
+            `import {ErrorBoundary} from '${errorBoundaryImport}';`,
+          ),
         );
 
         await builder.apply(
           errorBoundaryFile.renderToAction(
             'error-boundary.tsx',
-            errorBoundaryPath
-          )
+            errorBoundaryPath,
+          ),
         );
       },
     };

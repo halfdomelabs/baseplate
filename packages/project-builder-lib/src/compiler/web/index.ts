@@ -67,7 +67,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
 
 export function compileWeb(
   projectConfig: ProjectConfig,
-  app: WebAppConfig
+  app: WebAppConfig,
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(projectConfig, app);
 

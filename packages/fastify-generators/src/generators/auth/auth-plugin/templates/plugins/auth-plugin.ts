@@ -21,7 +21,7 @@ export const authPlugin = fp(async (fastify) => {
 
   fastify.addHook('onRequest', async (req) => {
     const authInfo = await createAuthInfoFromAuthorization(
-      req.headers.authorization
+      req.headers.authorization,
     );
 
     req.auth = authInfo;

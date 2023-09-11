@@ -35,7 +35,7 @@ const descriptorSchema = z.object({
         name: z.string().min(1),
         comment: z.string().min(1),
         inherits: z.array(z.string().min(1)).optional(),
-      })
+      }),
     )
     .optional(),
 });
@@ -89,8 +89,8 @@ const RoleServiceGenerator = createGeneratorWithChildren({
               comment,
               inherits,
             },
-          }))
-        )
+          })),
+        ),
       ),
     });
 
@@ -117,7 +117,7 @@ const RoleServiceGenerator = createGeneratorWithChildren({
         builder.setBaseDirectory(appModule.getModuleFolder());
 
         const template = await builder.readTemplate(
-          'services/auth-role-service.ts'
+          'services/auth-role-service.ts',
         );
 
         headerBlock.addCodeEntries({ HEADER: customHeaderBlocks });
@@ -130,11 +130,14 @@ const RoleServiceGenerator = createGeneratorWithChildren({
             {
               headerBlocks: [
                 headerBlock.renderToBlock(
-                  TypescriptCodeUtils.extractTemplateSnippet(template, 'HEADER')
+                  TypescriptCodeUtils.extractTemplateSnippet(
+                    template,
+                    'HEADER',
+                  ),
                 ),
               ],
-            }
-          )
+            },
+          ),
         );
       },
     };

@@ -31,7 +31,7 @@ export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
 ]);
 
 function primitiveMapToKeys<T extends Record<string, unknown>>(
-  map: Map<T[keyof T], unknown>
+  map: Map<T[keyof T], unknown>,
 ): (keyof T)[] {
   return Array.from(map.keys())
     .map((m) => m?.valueOf() as keyof T)
@@ -39,7 +39,7 @@ function primitiveMapToKeys<T extends Record<string, unknown>>(
 }
 
 export const adminCrudDisplayTypes = primitiveMapToKeys(
-  adminCrudDisplaySchema.optionsMap
+  adminCrudDisplaySchema.optionsMap,
 );
 
 export type AdminCrudDisplayConfig = z.infer<typeof adminCrudDisplaySchema>;
@@ -132,7 +132,7 @@ export const adminCrudInputSchema = z.discriminatedUnion('type', [
 ]);
 
 export const adminCrudInputTypes = primitiveMapToKeys(
-  adminCrudInputSchema.optionsMap
+  adminCrudInputSchema.optionsMap,
 );
 
 export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
@@ -194,7 +194,7 @@ export type AdminCrudSectionConfig = z.infer<typeof adminCrudSectionSchema>;
 
 export function buildAdminCrudSectionReferences(
   config: AdminCrudSectionConfig,
-  builder: ReferencesBuilder<AdminCrudSectionConfig>
+  builder: ReferencesBuilder<AdminCrudSectionConfig>,
 ): void {
   builder.addReference('modelName', { category: 'model' });
 
@@ -215,7 +215,7 @@ export function buildAdminCrudSectionReferences(
         break;
       default:
         throw new Error(
-          `Unknown display type: ${(column.display as { type: string }).type}`
+          `Unknown display type: ${(column.display as { type: string }).type}`,
         );
     }
   });
@@ -272,7 +272,7 @@ export function buildAdminCrudSectionReferences(
         break;
       default:
         throw new Error(
-          `Unknown input type: ${(field as { type: string }).type}`
+          `Unknown input type: ${(field as { type: string }).type}`,
         );
     }
   });

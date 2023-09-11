@@ -74,7 +74,7 @@ const TsUtilsGenerator = createGeneratorWithChildren({
                   },
                 },
               }),
-              {}
+              {},
             ),
         },
       }),
@@ -90,7 +90,7 @@ const TsUtilsGenerator = createGeneratorWithChildren({
         Object.keys(usedTemplates).forEach(markDependenciesAsUsed);
         // Copy all the util files that were used
         const templateFiles = Object.keys(usedTemplates).map(
-          (key) => UTIL_CONFIG_MAP[key].file
+          (key) => UTIL_CONFIG_MAP[key].file,
         );
 
         await Promise.all(
@@ -99,9 +99,9 @@ const TsUtilsGenerator = createGeneratorWithChildren({
               copyTypescriptFileAction({
                 source: file,
                 destination: `src/utils/${file}`,
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
       },
     };

@@ -9,16 +9,16 @@ import {
 function compileAdminCrudForeignDisplay(
   field: AdminCrudForeignDisplayConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   const model = builder.parsedProject.getModelByName(modelName);
   const relation = model.model.relations?.find(
-    (r) => r.name === field.localRelationName
+    (r) => r.name === field.localRelationName,
   );
 
   if (!relation) {
     throw new Error(
-      `Could not find relation ${field.localRelationName} in model ${modelName}`
+      `Could not find relation ${field.localRelationName} in model ${modelName}`,
     );
   }
 
@@ -41,15 +41,15 @@ function compileAdminCrudForeignDisplay(
 function compileAdminCrudTextDisplay(
   field: AdminCrudTextDisplayConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   const model = builder.parsedProject.getModelByName(modelName);
   const fieldConfig = model.model.fields.find(
-    (f) => f.name === field.modelField
+    (f) => f.name === field.modelField,
   );
   if (!fieldConfig) {
     throw new Error(
-      `Field ${field.modelField} cannot be found in ${modelName}`
+      `Field ${field.modelField} cannot be found in ${modelName}`,
     );
   }
   return {
@@ -62,7 +62,7 @@ function compileAdminCrudTextDisplay(
 export function compileAdminCrudDisplay(
   field: AdminCrudDisplayConfig,
   modelName: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   switch (field.type) {
     case 'text':
@@ -71,7 +71,7 @@ export function compileAdminCrudDisplay(
       return compileAdminCrudForeignDisplay(field, modelName, builder);
     default:
       throw new Error(
-        `Unknown admin crud display ${(field as { type: string }).type}`
+        `Unknown admin crud display ${(field as { type: string }).type}`,
       );
   }
 }

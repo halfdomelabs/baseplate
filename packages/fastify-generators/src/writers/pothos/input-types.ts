@@ -18,7 +18,7 @@ import { writePothosInputFieldFromDtoScalarField } from './scalar-fields.js';
 
 export function writePothosInputFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
   // recursive call
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -40,7 +40,7 @@ export function writePothosInputFieldFromDtoNestedField(
 
 export function writePothosInputFieldsFromDtoFields(
   fields: ServiceOutputDtoField[],
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
   const pothosFields: PothosExpressionWithChildren[] = fields.map((field) => {
     if (field.type === 'scalar') {
@@ -54,9 +54,9 @@ export function writePothosInputFieldsFromDtoFields(
   return {
     expression: TypescriptCodeUtils.mergeExpressionsAsObject(
       Object.fromEntries(
-        pothosFields.map((field, i) => [fields[i].name, field.expression])
+        pothosFields.map((field, i) => [fields[i].name, field.expression]),
       ),
-      { wrapWithParenthesis: true }
+      { wrapWithParenthesis: true },
     ),
     childDefinitions: pothosFields
       .flatMap((field) => field.childDefinitions)
@@ -67,7 +67,7 @@ export function writePothosInputFieldsFromDtoFields(
 export function writePothosInputDefinitionFromDtoFields(
   name: string,
   fields: ServiceOutputDtoField[],
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosTypeDefinitionWithChildren {
   const pothosFields = writePothosInputFieldsFromDtoFields(fields, {
     ...options,
@@ -85,7 +85,7 @@ export function writePothosInputDefinitionFromDtoFields(
       BUILDER: options.schemaBuilder,
       NAME: quot(name),
       FIELDS: pothosFields.expression,
-    }
+    },
   );
 
   return {
@@ -98,7 +98,7 @@ export function writePothosInputDefinitionFromDtoFields(
 
 export function getPothosTypeForNestedInput(
   field: ServiceOutputDtoNestedField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
   if (field.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
@@ -110,7 +110,7 @@ export function getPothosTypeForNestedInput(
     return {
       expression: wrapPothosTypeWithList(
         getExpressionFromPothosTypeReference(inputType),
-        field.isList
+        field.isList,
       ),
     };
   }
@@ -121,8 +121,8 @@ export function getPothosTypeForNestedInput(
   return {
     expression: wrapPothosTypeWithList(
       TypescriptCodeUtils.createExpression(inputDefinition.exportName),
-      field.isList
+      field.isList,
     ),
-    childDefinitions: [...(childDefinitions || []), inputDefinition],
+    childDefinitions: [...(childDefinitions ?? []), inputDefinition],
   };
 }

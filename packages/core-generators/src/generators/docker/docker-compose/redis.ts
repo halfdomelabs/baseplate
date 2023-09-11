@@ -6,7 +6,7 @@ interface PostgresConfig {
 }
 
 export function generateRedisDockerCompose(
-  config: PostgresConfig
+  config: PostgresConfig,
 ): DockerComposeOutput {
   return {
     services: [

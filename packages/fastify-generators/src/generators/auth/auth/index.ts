@@ -41,7 +41,7 @@ const AuthGenerator = createGeneratorWithTasks({
       run() {
         const config = createNonOverwriteableMap<AuthGeneratorConfig>(
           {},
-          { name: 'auth-config' }
+          { name: 'auth-config' },
         );
         return {
           getProviders: () => ({

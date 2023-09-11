@@ -29,13 +29,13 @@ const Auth0HooksGenerator = createGeneratorWithChildren({
 
     const hookFolder = 'src/hooks';
     const [useCurrentUserImport, useCurrentUserPath] = makeImportAndFilePath(
-      `${hookFolder}/useCurrentUser.ts`
+      `${hookFolder}/useCurrentUser.ts`,
     );
     const [useLogOutImport, useLogOutPath] = makeImportAndFilePath(
-      `${hookFolder}/useLogOut.ts`
+      `${hookFolder}/useLogOut.ts`,
     );
     const [useSessionImport, useSessionPath] = makeImportAndFilePath(
-      `${hookFolder}/useSession.ts`
+      `${hookFolder}/useSession.ts`,
     );
     const [useRequiredUserIdImport, useRequiredUserIdPath] =
       makeImportAndFilePath(`${hookFolder}/useRequiredUserId.ts`);
@@ -75,7 +75,7 @@ const Auth0HooksGenerator = createGeneratorWithChildren({
               USER_QUERY: userQueryName,
             },
             importMappers: [reactApollo],
-          })
+          }),
         );
 
         await builder.apply(
@@ -87,7 +87,7 @@ const Auth0HooksGenerator = createGeneratorWithChildren({
               CURRENT_USER_FIELDS: currentUserFields.join('\n'),
               USER_QUERY: userQueryName,
             },
-          })
+          }),
         );
         reactApollo.registerGqlFile(`${hookFolder}/useCurrentUser.gql`);
 
@@ -95,21 +95,21 @@ const Auth0HooksGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'hooks/useLogOut.ts',
             destination: useLogOutPath,
-          })
+          }),
         );
 
         await builder.apply(
           typescript.createCopyAction({
             source: 'hooks/useSession.ts',
             destination: useSessionPath,
-          })
+          }),
         );
 
         await builder.apply(
           typescript.createCopyAction({
             source: 'hooks/useRequiredUserId.ts',
             destination: useRequiredUserIdPath,
-          })
+          }),
         );
       },
     };

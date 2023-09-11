@@ -23,7 +23,7 @@ export type AdminCrudForeignDisplayProvider = unknown;
 
 export const adminCrudForeignDisplayProvider =
   createProviderType<AdminCrudForeignDisplayProvider>(
-    'admin-crud-foreign-display'
+    'admin-crud-foreign-display',
   );
 
 const createMainTask = createTaskConfigBuilder(
@@ -71,10 +71,9 @@ const createMainTask = createTaskConfigBuilder(
         getProviders: () => ({
           adminCrudForeignDisplay: {},
         }),
-        build: async () => {},
       };
     },
-  })
+  }),
 );
 
 const AdminCrudForeignDisplayGenerator = createGeneratorWithTasks({

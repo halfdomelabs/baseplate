@@ -16,13 +16,11 @@ import { loggerServiceProvider } from '@src/generators/core/logger-service/index
 
 const descriptorSchema = z.object({});
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
 export type BullMqProvider = unknown;
 
 export const bullMqProvider = createProviderType<BullMqProvider>('bull-mq');
 
-const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
+const createMainTask = createTaskConfigBuilder(() => ({
   name: 'main',
   dependencies: {
     errorHandlerService: errorHandlerServiceProvider,
@@ -69,7 +67,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
             destinationBaseDirectory: 'src/services/bull',
             paths: ['index.ts', 'queue.ts', 'repeatable.ts', 'worker.ts'],
             importMappers,
-          })
+          }),
         );
 
         const workersFile = typescript.createTemplate(
@@ -78,14 +76,14 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
           },
           {
             importMappers,
-          }
+          },
         );
 
         await builder.apply(
           workersFile.renderToAction(
             'scripts/run-workers.ts',
-            'scripts/run-workers.ts'
-          )
+            'scripts/run-workers.ts',
+          ),
         );
 
         const repeatJobsFile = typescript.createTemplate(
@@ -94,14 +92,14 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
           },
           {
             importMappers,
-          }
+          },
         );
 
         await builder.apply(
           repeatJobsFile.renderToAction(
             'scripts/synchronize-repeat-jobs.ts',
-            'scripts/synchronize-repeat-jobs.ts'
-          )
+            'scripts/synchronize-repeat-jobs.ts',
+          ),
         );
       },
     };

@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 
-import path from 'path';
 import { GeneratorEngine, loadGeneratorsForModule } from '@halfdomelabs/sync';
 import { program } from 'commander';
 import { packageDirectory } from 'pkg-dir';
@@ -25,13 +24,13 @@ async function getGeneratorEngine(): Promise<GeneratorEngine> {
           (await packageDirectory({
             cwd: resolveModule(moduleName),
           })) || '',
-        ]
-      )
+        ],
+      ),
     );
     const generators = await Promise.all(
       resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
-        loadGeneratorsForModule(moduleName, modulePath)
-      )
+        loadGeneratorsForModule(moduleName, modulePath),
+      ),
     );
     const generatorMap = R.mergeAll(generators);
 

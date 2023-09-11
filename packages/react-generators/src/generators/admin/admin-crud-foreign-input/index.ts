@@ -38,7 +38,7 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
       defaultLabel,
       nullLabel,
     },
-    { adminCrudInputContainer, reactComponents, reactApollo }
+    { adminCrudInputContainer, reactComponents, reactApollo },
   ) {
     const optionsName = `${localRelationName}Options`;
     const modelName = adminCrudInputContainer.getModelName();
@@ -54,10 +54,10 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
     const optionsCreator = TypescriptCodeUtils.createExpression(
       `${propName}.map((option) => ({
         label: option.${labelExpression}${
-        defaultLabel ? ` || ${defaultLabel}` : ''
-      },
+          defaultLabel ? ` ?? ${defaultLabel}` : ''
+        },
         value: option.${valueExpression},
-      }))`
+      }))`,
     );
 
     adminCrudInputContainer.addInput({
@@ -70,14 +70,14 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
           ${adminCrudInputContainer.isInModal() ? 'fixedPosition' : ''}
         />`,
         'import { ReactSelectInput } from "%react-components"',
-        { importMappers: [reactComponents] }
+        { importMappers: [reactComponents] },
       ),
       graphQLFields: [{ name: localField }],
       validation: [
         {
           key: localField,
           expression: TypescriptCodeUtils.createExpression(
-            `z.string().uuid()${isOptional ? '.nullish()' : ''}`
+            `z.string().uuid()${isOptional ? '.nullish()' : ''}`,
           ),
         },
       ],
@@ -93,14 +93,12 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
                   `[
               { label: ${quot(nullLabel)}, value: null },
               ...${contents}
-            ]`
+            ]`,
               ),
-        }
+        },
       ),
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

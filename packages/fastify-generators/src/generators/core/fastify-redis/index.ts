@@ -26,7 +26,7 @@ export type FastifyRedisProvider = ImportMapper;
 
 export const fastifyRedisProvider = createProviderType<FastifyRedisProvider>(
   'fastify-redis',
-  { isReadOnly: true }
+  { isReadOnly: true },
 );
 
 const createMainTask = createTaskConfigBuilder(
@@ -47,7 +47,7 @@ const createMainTask = createTaskConfigBuilder(
       node.addDevPackages({ 'ioredis-mock': '8.7.0' });
 
       const [redisImport, redisPath] = makeImportAndFilePath(
-        `src/services/redis.ts`
+        `src/services/redis.ts`,
       );
 
       const importMap: ImportMap = {
@@ -68,8 +68,8 @@ const createMainTask = createTaskConfigBuilder(
           const redisClient = getRedisClient();
           await redisClient.ping();`,
           "import { getRedisClient } from '%fastify-redis'",
-          { importMappers: [{ getImportMap: () => importMap }] }
-        )
+          { importMappers: [{ getImportMap: () => importMap }] },
+        ),
       );
 
       return {
@@ -94,7 +94,7 @@ const createMainTask = createTaskConfigBuilder(
               typescript.createCopyAction({
                 source: 'mock-redis.ts',
                 destination: 'src/tests/scripts/mock-redis.ts',
-              })
+              }),
             );
             jest
               .getConfig()
@@ -105,7 +105,7 @@ const createMainTask = createTaskConfigBuilder(
         },
       };
     },
-  })
+  }),
 );
 
 const FastifyRedisGenerator = createGeneratorWithTasks({

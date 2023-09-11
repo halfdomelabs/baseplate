@@ -61,25 +61,25 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             customImports: [],
             schema: new TypescriptCodeExpression(
               `new GraphQLSchema({})`,
-              `import { GraphQLSchema } from 'graphql';`
+              `import { GraphQLSchema } from 'graphql';`,
             ),
           },
           {
             defaultsOverwriteable: true,
-          }
+          },
         );
 
         configMap.appendUnique('envelopPlugins', [
           new TypescriptCodeExpression(
             'useGraphLogger()',
-            "import { useGraphLogger } from './useGraphLogger'"
+            "import { useGraphLogger } from './useGraphLogger'",
           ),
         ]);
 
         configMap.appendUnique('envelopPlugins', [
           new TypescriptCodeExpression(
             'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
-            "import { useDisableIntrospection } from '@envelop/disable-introspection';"
+            "import { useDisableIntrospection } from '@envelop/disable-introspection';",
           ),
         ]);
 
@@ -110,7 +110,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           name: 'graphqlPlugin',
           plugin: new TypescriptCodeExpression(
             'graphqlPlugin',
-            "import { graphqlPlugin } from '@/src/plugins/graphql'"
+            "import { graphqlPlugin } from '@/src/plugins/graphql'",
           ),
         });
 
@@ -141,7 +141,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           loggerService,
           errorHandlerService,
         },
-        { setupTask: { configMap } }
+        { setupTask: { configMap } },
       ) {
         node.addPackages({
           'altair-fastify-plugin': '5.0.28',
@@ -175,10 +175,10 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                 GRAPHQL_HANDLER: { type: 'code-block' },
                 POST_SCHEMA_BLOCKS: TypescriptCodeUtils.mergeBlocks(
                   config.postSchemaBlocks,
-                  '\n\n'
+                  '\n\n',
                 ),
                 CUSTOM_IMPORTS: TypescriptCodeUtils.mergeBlocks(
-                  config.customImports
+                  config.customImports,
                 ),
               },
               {
@@ -188,14 +188,16 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                   requestServiceContext,
                   loggerService,
                 ],
-              }
+              },
             );
 
             pluginFile.addCodeExpression('SCHEMA', config.schema);
 
             pluginFile.addCodeExpression(
               'ENVELOP_PLUGINS',
-              TypescriptCodeUtils.mergeExpressionsAsArray(config.envelopPlugins)
+              TypescriptCodeUtils.mergeExpressionsAsArray(
+                config.envelopPlugins,
+              ),
             );
 
             pluginFile.addCodeBlock(
@@ -214,20 +216,20 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                   method: ['POST', 'OPTIONS'],
                   handler: httpHandler,
                 });`,
-                    "import { getGraphqlWsHandler } from './websocket';"
+                    "import { getGraphqlWsHandler } from './websocket';",
                   )
                 : `fastify.route({
               url: '/graphql',
               method: ['GET', 'POST', 'OPTIONS'],
               handler: httpHandler,
-            });`
+            });`,
             );
 
             await builder.apply(
               pluginFile.renderToAction(
                 'plugins/graphql/index.ts',
-                'src/plugins/graphql/index.ts'
-              )
+                'src/plugins/graphql/index.ts',
+              ),
             );
 
             await builder.apply(
@@ -235,7 +237,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                 source: 'plugins/graphql/useGraphLogger.ts',
                 destination: 'src/plugins/graphql/useGraphLogger.ts',
                 importMappers: [loggerService],
-              })
+              }),
             );
           },
         };
@@ -258,7 +260,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             name: 'websocketPlugin',
             plugin: TypescriptCodeUtils.createExpression(
               'websocketPlugin',
-              "import websocketPlugin from '@fastify/websocket';"
+              "import websocketPlugin from '@fastify/websocket';",
             ),
             orderPriority: 'EARLY',
           });
@@ -293,10 +295,10 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           });
 
           const [, pubsubPath] = makeImportAndFilePath(
-            'src/plugins/graphql/pubsub.ts'
+            'src/plugins/graphql/pubsub.ts',
           );
           const [, websocketPath] = makeImportAndFilePath(
-            'src/plugins/graphql/websocket.ts'
+            'src/plugins/graphql/websocket.ts',
           );
 
           return {
@@ -306,7 +308,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                   source: 'plugins/graphql/pubsub.ts',
                   destination: pubsubPath,
                   importMappers: [fastifyRedis],
-                })
+                }),
               );
 
               const websocketFile = typescript.createTemplate(
@@ -314,8 +316,8 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                   AUTH_INFO_CREATOR: authServiceImport.getAuthInfoCreator(
                     TypescriptCodeUtils.createExpression('ctx.extra.request'),
                     TypescriptCodeUtils.createExpression(
-                      `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`
-                    )
+                      `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`,
+                    ),
                   ),
                 },
                 {
@@ -324,14 +326,14 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                     loggerService,
                     requestServiceContext,
                   ],
-                }
+                },
               );
 
               await builder.apply(
                 websocketFile.renderToAction(
                   'plugins/graphql/websocket.ts',
-                  websocketPath
-                )
+                  websocketPath,
+                ),
               );
             },
           };

@@ -9,7 +9,7 @@ function parseDateString(value: string): Date {
   // timezones can be very wonky so we expect only a simple YYYY-MM-DD string
   if (!DATE_REGEX.test(value)) {
     throw new BadRequestError(
-      'Date field must be provided as a string with format YYYY-MM-DD'
+      'Date field must be provided as a string with format YYYY-MM-DD',
     );
   }
   // this ensures that we will always be using UTC timezone
@@ -39,7 +39,7 @@ export const DateScalar = scalarType({
       return formatDateString(new Date(value));
     }
     throw new BadRequestError(
-      'DateTime field must be provided as a Date object or string'
+      'DateTime field must be provided as a Date object or string',
     );
   },
   parseLiteral(ast) {

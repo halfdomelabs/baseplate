@@ -48,7 +48,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             destinationBaseDirectory: 'src',
             paths: ['services/postmark.ts'],
             importMappers: [configService],
-          })
+          }),
         );
       },
     };

@@ -23,7 +23,7 @@ const FastifyCookieContextGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { node, fastifyServer, requestServiceContextSetup }
+    { node, fastifyServer, requestServiceContextSetup },
   ) {
     node.addPackages({
       '@fastify/cookie': '8.3.0',
@@ -33,7 +33,7 @@ const FastifyCookieContextGenerator = createGeneratorWithChildren({
       name: 'cookies',
       plugin: new TypescriptCodeExpression(
         'fastifyCookie',
-        "import fastifyCookie from '@fastify/cookie'"
+        "import fastifyCookie from '@fastify/cookie'",
       ),
     });
 
@@ -49,7 +49,7 @@ interface CookieStore {
   clear(name: string): void;
 }
 `,
-            "import { CookieSerializeOptions } from '@fastify/cookie';"
+            "import { CookieSerializeOptions } from '@fastify/cookie';",
           ),
         ],
       }),
@@ -63,22 +63,20 @@ interface CookieStore {
           }
           return ${reply};
         }
-      `
+      `,
         ),
       creator: (req) =>
         new TypescriptCodeExpression(
           `
 {
   get: (name) => ${req}.cookies[name],
-  set: (name, value, options) => getReply().setCookie(name, value, options),
-  clear: (name) => getReply().clearCookie(name),
+  set: (name, value, options) => void getReply().setCookie(name, value, options),
+  clear: (name) => void getReply().clearCookie(name),
 }
-`
+`,
         ),
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

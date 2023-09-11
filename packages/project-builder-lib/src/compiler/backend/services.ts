@@ -9,24 +9,25 @@ import {
 function buildEmbeddedRelationTransformer(
   transformer: EmbeddedRelationTransformerConfig,
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   const { type, ...config } = transformer;
 
   // find foreign relation
   const foreignModel = parsedProject
     .getModels()
-    .find((m) =>
-      m.model.relations?.some(
-        (r) =>
-          r.foreignRelationName === transformer.name &&
-          r.modelName === model.name
-      )
+    .find(
+      (m) =>
+        m.model.relations?.some(
+          (r) =>
+            r.foreignRelationName === transformer.name &&
+            r.modelName === model.name,
+        ),
     );
 
   if (!foreignModel) {
     throw new Error(
-      `Could not find relation ${transformer.name} for embedded relation transformer`
+      `Could not find relation ${transformer.name} for embedded relation transformer`,
     );
   }
 
@@ -42,12 +43,12 @@ function buildEmbeddedRelationTransformer(
 function buildFileTransformer(
   transformer: FileTransformerConfig,
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   const { name } = transformer;
 
   const foreignRelation = model.model.relations?.find(
-    (relation) => relation.name === name
+    (relation) => relation.name === name,
   );
 
   if (!foreignRelation) {
@@ -55,12 +56,12 @@ function buildFileTransformer(
   }
 
   const category = parsedProject.projectConfig.storage?.categories.find(
-    (c) => c.usedByRelation === foreignRelation.foreignRelationName
+    (c) => c.usedByRelation === foreignRelation.foreignRelationName,
   );
 
   if (!category) {
     throw new Error(
-      `Could not find category for relation ${foreignRelation.name}`
+      `Could not find category for relation ${foreignRelation.name}`,
     );
   }
 
@@ -74,14 +75,14 @@ function buildFileTransformer(
 function buildTransformer(
   transformer: TransformerConfig,
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   switch (transformer.type) {
     case 'embeddedRelation':
       return buildEmbeddedRelationTransformer(
         transformer,
         model,
-        parsedProject
+        parsedProject,
       );
     case 'password':
       return {
@@ -92,14 +93,14 @@ function buildTransformer(
       return buildFileTransformer(transformer, model, parsedProject);
     default:
       throw new Error(
-        `Unknown transformer type: ${(transformer as { type: string }).type}`
+        `Unknown transformer type: ${(transformer as { type: string }).type}`,
       );
   }
 }
 
 function buildServiceForModel(
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   const { service } = model;
   if (!service) {
@@ -116,7 +117,7 @@ function buildServiceForModel(
         modelName: model.name,
         children: {
           transformers: service.transformers?.map((transfomer) =>
-            buildTransformer(transfomer, model, parsedProject)
+            buildTransformer(transfomer, model, parsedProject),
           ),
           create: service.create?.fields?.length
             ? {
@@ -139,13 +140,13 @@ function buildServiceForModel(
 
 export function buildServicesForFeature(
   feature: string,
-  parsedProjectConfig: ParsedProjectConfig
+  parsedProjectConfig: ParsedProjectConfig,
 ): unknown {
   const models =
     parsedProjectConfig
       .getModels()
-      .filter((m) => m.feature === feature && m.service?.build) || [];
+      .filter((m) => m.feature === feature && m.service?.build) ?? [];
   return models.map((model) =>
-    buildServiceForModel(model, parsedProjectConfig)
+    buildServiceForModel(model, parsedProjectConfig),
   );
 }

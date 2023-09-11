@@ -16,7 +16,7 @@ interface PothosFieldOptions {
 }
 
 export function writePothosFieldOptions(
-  fieldOptions: PothosFieldOptions
+  fieldOptions: PothosFieldOptions,
 ): TypescriptCodeExpression | undefined {
   const formattedFieldOptions = {
     required: fieldOptions.required ? 'true' : undefined,
@@ -25,7 +25,7 @@ export function writePothosFieldOptions(
   };
 
   const hasFieldOptions = Object.values(formattedFieldOptions).some(
-    (a) => a !== undefined
+    (a) => a !== undefined,
   );
 
   return hasFieldOptions
@@ -35,20 +35,20 @@ export function writePothosFieldOptions(
 
 export function wrapPothosTypeWithList(
   expression: TypescriptCodeExpression,
-  isList?: boolean
+  isList?: boolean,
 ): TypescriptCodeExpression {
   return isList ? expression.wrap((contents) => `[${contents}]`) : expression;
 }
 
 export function getPothosMethodAndTypeForScalar(
   field: ServiceOutputDtoScalarField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): {
   methodName?: string | undefined;
   type?: TypescriptCodeExpression | undefined;
 } {
   const { pothosMethod, name: scalarName } = options.typeReferences.getScalar(
-    field.scalarType
+    field.scalarType,
   );
 
   // prefer use of .id instead of .uuid for IDs
@@ -65,9 +65,9 @@ export function getPothosMethodAndTypeForScalar(
     return {
       type: wrapPothosTypeWithList(
         getExpressionFromPothosTypeReference(
-          options.typeReferences.getEnum(field.enumType.name)
+          options.typeReferences.getEnum(field.enumType.name),
         ),
-        field.isList
+        field.isList,
       ),
     };
   }
@@ -85,7 +85,7 @@ export function getPothosMethodAndTypeForScalar(
   // ex: t.field({type: "Uuid"});
   return {
     type: wrapPothosTypeWithList(
-      new TypescriptCodeExpression(quot(scalarName))
+      new TypescriptCodeExpression(quot(scalarName)),
     ),
   };
 }

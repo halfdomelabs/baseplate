@@ -17,7 +17,5 @@ export interface ChildGeneratorConfig {
    * Whether to default to null if no config is provided.
    */
   defaultToNullIfEmpty?: boolean;
-  defaultDescriptor?: BaseGeneratorDescriptor & {
-    [key: string]: unknown;
-  };
+  defaultDescriptor?: BaseGeneratorDescriptor & Record<string, unknown>;
 }

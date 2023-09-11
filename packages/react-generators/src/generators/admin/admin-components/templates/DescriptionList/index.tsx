@@ -14,7 +14,7 @@ function DescriptionList({ className, children }: Props): JSX.Element {
     <dl
       className={classNames(
         'grid md:grid-cols-[minmax(100px,_1fr)_2fr]',
-        className
+        className,
       )}
     >
       {children}

@@ -13,11 +13,11 @@ import { PothosWriterOptions } from './options.js';
 
 export function writePothosInputFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): TypescriptCodeExpression {
   const { methodName = 'field', type } = getPothosMethodAndTypeForScalar(
     field,
-    options
+    options,
   );
 
   const fieldOptions = writePothosFieldOptions({
@@ -31,17 +31,17 @@ export function writePothosInputFieldFromDtoScalarField(
       BUILDER: options.fieldBuilder,
       POTHOS_METHOD: methodName,
       OPTIONS: fieldOptions || '',
-    }
+    },
   );
 }
 
 export function writePothosObjectFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): TypescriptCodeExpression {
   const { methodName = 'field', type } = getPothosMethodAndTypeForScalar(
     field,
-    options
+    options,
   );
   const fieldOptions = writePothosFieldOptions({
     nullable: field.isOptional,
@@ -54,13 +54,13 @@ export function writePothosObjectFieldFromDtoScalarField(
       BUILDER: options.fieldBuilder,
       POTHOS_METHOD: methodName,
       OPTIONS: fieldOptions || '',
-    }
+    },
   );
 }
 
 export function writePothosExposeFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): TypescriptCodeExpression {
   const { methodName, type } = getPothosMethodAndTypeForScalar(field, options);
   const fieldOptions = writePothosFieldOptions({
@@ -80,6 +80,6 @@ export function writePothosExposeFieldFromDtoScalarField(
       FIELD_NAME: quot(field.name),
       POTHOS_METHOD: exposeMethodName,
       OPTIONS: fieldOptions || '',
-    }
+    },
   );
 }

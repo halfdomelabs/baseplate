@@ -5,11 +5,11 @@ import { getPostgresSettings, getRedisSettings } from './utils.js';
 
 export function buildFastify(
   builder: AppEntryBuilder,
-  app: BackendAppConfig
+  app: BackendAppConfig,
 ): unknown {
   const { projectConfig, parsedProject } = builder;
   const rootFeatures =
-    projectConfig.features?.filter((f) => !f.name.includes('/')) || [];
+    projectConfig.features?.filter((f) => !f.name.includes('/')) ?? [];
 
   // add graphql scalars
   builder.addDescriptor('graphql/root.json', {

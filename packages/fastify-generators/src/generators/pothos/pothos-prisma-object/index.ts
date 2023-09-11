@@ -70,19 +70,21 @@ const createMainTask = createTaskConfigBuilder(
         }),
         build: () => {
           const outputDto = prismaToServiceOutputDto(model, (enumName) =>
-            prismaOutput.getServiceEnum(enumName)
+            prismaOutput.getServiceEnum(enumName),
           );
 
           const typeReferences = pothosSchema.getTypeReferences();
 
           const missingField = exposedFields.find(
             (exposedFieldName) =>
-              !outputDto.fields.some((field) => field.name === exposedFieldName)
+              !outputDto.fields.some(
+                (field) => field.name === exposedFieldName,
+              ),
           );
 
           if (missingField) {
             throw new Error(
-              `Field ${missingField} not found in model ${model.name}`
+              `Field ${missingField} not found in model ${model.name}`,
             );
           }
 
@@ -115,11 +117,11 @@ const createMainTask = createTaskConfigBuilder(
                   fieldDefinitions.map((fieldDefinition) => [
                     fieldDefinition.name,
                     fieldDefinition.expression,
-                  ])
+                  ]),
                 ),
                 ...customFields.value(),
               }),
-            }
+            },
           );
 
           pothosTypeFile.registerType({
@@ -129,7 +131,7 @@ const createMainTask = createTaskConfigBuilder(
         },
       };
     },
-  })
+  }),
 );
 
 const PothosPrismaObjectGenerator = createGeneratorWithTasks({

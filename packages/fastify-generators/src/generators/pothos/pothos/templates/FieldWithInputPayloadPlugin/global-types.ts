@@ -35,7 +35,7 @@ declare global {
       Args extends InputFieldMap,
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       ResolveShape,
-      ResolveReturnShape
+      ResolveReturnShape,
     > {
       PayloadObject: Omit<
         ObjectFieldOptions<
@@ -53,7 +53,7 @@ declare global {
     export interface RootFieldBuilder<
       Types extends SchemaTypes,
       ParentShape,
-      Kind extends FieldKind = FieldKind
+      Kind extends FieldKind = FieldKind,
     > {
       input: InputFieldBuilder<Types, 'InputObject'>;
       payload: RootFieldBuilder<Types, unknown, 'PayloadObject'>;
@@ -69,7 +69,7 @@ declare global {
         ResolveShape,
         ResolveReturnShape,
         // eslint-disable-next-line @typescript-eslint/ban-types
-        Args extends Record<string, InputFieldRef<unknown, 'Arg'>> = {}
+        Args extends Record<string, InputFieldRef<unknown, 'Arg'>> = {},
       >(
         options: MutationWithInputPayloadOptions<
           Types,
@@ -80,7 +80,7 @@ declare global {
           PayloadFields,
           ResolveShape,
           ResolveReturnShape
-        >
+        >,
       ) => FieldRef<
         ShapeFromTypeParam<
           Types,

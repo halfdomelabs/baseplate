@@ -235,7 +235,7 @@ export function ProjectConfigGate({
           existingProject={result?.parsedProject.projectConfig}
           saveProject={(data) => {
             const oldProjectConfig =
-              result?.parsedProject.exportToProjectConfig() || {};
+              result?.parsedProject.exportToProjectConfig() ?? {};
             const newProjectConfig = {
               ...oldProjectConfig,
               ...data,

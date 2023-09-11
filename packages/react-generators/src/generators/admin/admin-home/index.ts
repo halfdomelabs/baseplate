@@ -35,16 +35,16 @@ const AdminHomeGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { authHooks, reactComponents, reactRoutes, typescript }
+    { authHooks, reactComponents, reactRoutes, typescript },
   ) {
     const [pageImport, pagePath] = makeImportAndFilePath(
-      `${reactRoutes.getDirectoryBase()}/Home/index.tsx`
+      `${reactRoutes.getDirectoryBase()}/Home/index.tsx`,
     );
     reactRoutes.registerRoute({
       index: true,
       element: TypescriptCodeUtils.createExpression(
         `<Home />`,
-        `import Home from '${pageImport}';`
+        `import Home from '${pageImport}';`,
       ),
       layoutKey: 'admin',
     });
@@ -59,7 +59,7 @@ const AdminHomeGenerator = createGeneratorWithChildren({
             source: 'Home.page.tsx',
             destination: pagePath,
             importMappers: [authHooks, reactComponents],
-          })
+          }),
         );
       },
     };

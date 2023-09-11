@@ -5,7 +5,7 @@
  * See https://github.com/prisma/prisma/issues/5044
  */
 export function createPrismaDisconnectOrConnectData<UniqueWhere>(
-  data?: { connect: UniqueWhere } | null
+  data?: { connect: UniqueWhere } | null,
 ):
   | {
       disconnect?: boolean;

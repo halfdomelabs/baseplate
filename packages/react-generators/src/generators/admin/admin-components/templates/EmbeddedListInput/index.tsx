@@ -51,14 +51,16 @@ function EmbeddedListInput<InputType>({
     { idx?: number; data: DefaultValues<InputType> } | undefined
   >();
 
-  const definedValue = value || [];
+  const definedValue = value ?? [];
 
   const handleSubmit = (data: InputType): void => {
     if (valueToEdit?.idx === undefined) {
       onChange([...definedValue, data]);
     } else {
       onChange(
-        definedValue.map((item, idx) => (idx === valueToEdit.idx ? data : item))
+        definedValue.map((item, idx) =>
+          idx === valueToEdit.idx ? data : item,
+        ),
       );
     }
     setValueToEdit(undefined);
@@ -69,8 +71,8 @@ function EmbeddedListInput<InputType>({
   // so since we rarely update items, we just re-assign a random ID every time
   // the values change
   const valueWithIds = useMemo(
-    () => (value || []).map((item) => ({ id: nanoid(), ...item })),
-    [value]
+    () => (value ?? []).map((item) => ({ id: nanoid(), ...item })),
+    [value],
   );
 
   return (
@@ -100,7 +102,7 @@ function EmbeddedListInput<InputType>({
         width="large"
       >
         <Modal.Header onClose={() => setValueToEdit(undefined)}>
-          Edit {itemName || 'Item'}
+          Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
           {renderForm({
@@ -137,7 +139,7 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
 
 interface EmbeddedListInputLabelledControllerProps<
   FormType extends FieldValues,
-  FormPath extends FieldPath<FormType>
+  FormPath extends FieldPath<FormType>,
 > extends Omit<
     EmbeddedListInputLabelledProps<
       Exclude<
@@ -157,7 +159,7 @@ interface EmbeddedListInputLabelledControllerProps<
 EmbeddedListInput.LabelledController =
   function EmbeddedListInputLabelledController<
     FormType extends FieldValues,
-    FormPath extends FieldPath<FormType>
+    FormPath extends FieldPath<FormType>,
   >({
     className,
     control,
