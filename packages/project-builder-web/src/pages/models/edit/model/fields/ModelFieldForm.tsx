@@ -185,10 +185,21 @@ function ModelFieldForm({
       </div>
       <div>
         <div className="space-x-4">
-          <Dropdown variant="tertiary" iconAfter={HiDotsVertical} size="icon">
-            <Dropdown.ButtonItem onClick={() => setIsRelationFormOpen(true)}>
-              {modelFieldRelation ? 'Edit' : 'Add'} Relation
-            </Dropdown.ButtonItem>
+          <Dropdown>
+            <Dropdown.Trigger asChild>
+              <Button
+                variant="tertiary"
+                iconAfter={HiDotsVertical}
+                size="icon"
+              />
+            </Dropdown.Trigger>
+            <Dropdown.Content>
+              <Dropdown.Group>
+                <Dropdown.Item onSelect={() => setIsRelationFormOpen(true)}>
+                  {modelFieldRelation ? 'Edit' : 'Add'} Relation
+                </Dropdown.Item>
+              </Dropdown.Group>
+            </Dropdown.Content>
           </Dropdown>
           <Button
             variant="tertiary"

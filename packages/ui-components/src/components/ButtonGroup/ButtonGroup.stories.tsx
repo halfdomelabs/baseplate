@@ -34,8 +34,8 @@ export const Secondary: Story = {
           Remove Something
         </ButtonGroup.Button>
         <ButtonGroup.Dropdown variant="secondary">
-          <Dropdown.ButtonItem>Admin</Dropdown.ButtonItem>
-          <Dropdown.ButtonItem>User</Dropdown.ButtonItem>
+          <Dropdown.Item>Admin</Dropdown.Item>
+          <Dropdown.Item>User</Dropdown.Item>
         </ButtonGroup.Dropdown>
       </>
     ),
