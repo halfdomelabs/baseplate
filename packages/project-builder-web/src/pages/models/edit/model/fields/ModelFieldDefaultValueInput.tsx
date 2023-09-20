@@ -119,6 +119,7 @@ export function ModelFieldDefaultValueInput({
                   onOptionsChange({
                     ...optionsValue,
                     defaultToNow: true,
+                    updatedAt: false,
                   })
                 }
               >
