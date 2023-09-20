@@ -49,7 +49,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { modelName, objectTypeName },
-    { prismaOutput, nexusTypesFile, nexusSchema }
+    { prismaOutput, nexusTypesFile, nexusSchema },
   ) {
     const modelOutput = prismaOutput.getPrismaModel(modelName);
 
@@ -76,7 +76,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
       },
       {
         importText: ["import { queryField, nonNull } from 'nexus';"],
-      }
+      },
     );
 
     const primaryKeyDefinition = getPrimaryKeyDefinition(modelOutput);
@@ -90,7 +90,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
 
     const nexusArgs = writeNexusArgsFromDtoFields(
       [primaryKeyDefinition],
-      writerOptions
+      writerOptions,
     );
 
     nexusArgs.childInputDefinitions.forEach((child) => {
@@ -116,7 +116,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
           addCustomField(fieldName, fieldType) {
             objectTypeBlock.addStringReplacement(
               'CUSTOM_FIELDS',
-              fieldType.prepend(`${fieldName}: `).toStringReplacement()
+              fieldType.prepend(`${fieldName}: `).toStringReplacement(),
             );
           },
         },

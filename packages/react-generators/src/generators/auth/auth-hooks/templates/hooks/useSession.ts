@@ -15,7 +15,7 @@ export function useSession(): SessionData {
       getCurrentValue: () => authService.getUserId(),
       subscribe: (callback) => authService.onUserIdChanged(() => callback()),
     }),
-    []
+    [],
   );
   const userId = useSubscription(userIdSubscription);
   const sessionData: SessionData = useMemo(
@@ -23,7 +23,7 @@ export function useSession(): SessionData {
       userId,
       isAuthenticated: !!userId,
     }),
-    [userId]
+    [userId],
   );
   return sessionData;
 }

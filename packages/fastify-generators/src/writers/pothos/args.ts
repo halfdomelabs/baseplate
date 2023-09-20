@@ -23,11 +23,11 @@ export interface PothosArgOutput {
 
 function writePothosArgFromDtoScalarField(
   field: ServiceOutputDtoScalarField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosArgOutput {
   const { methodName = 'arg', type } = getPothosMethodAndTypeForScalar(
     field,
-    options
+    options,
   );
   const argOptions = writePothosFieldOptions({
     required: !field.isOptional,
@@ -41,7 +41,7 @@ function writePothosArgFromDtoScalarField(
         BUILDER: options.fieldBuilder,
         METHOD: methodName,
         OPTIONS: argOptions || '',
-      }
+      },
     ),
     childDefinitions: [],
   };
@@ -49,7 +49,7 @@ function writePothosArgFromDtoScalarField(
 
 function writePothosArgFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosArgOutput {
   const pothosType = getPothosTypeForNestedInput(field, options);
   const argOptions = writePothosFieldOptions({
@@ -62,7 +62,7 @@ function writePothosArgFromDtoNestedField(
     {
       BUILDER: options.fieldBuilder,
       OPTIONS: argOptions || '',
-    }
+    },
   );
 
   return { expression, childDefinitions: pothosType.childDefinitions };
@@ -70,7 +70,7 @@ function writePothosArgFromDtoNestedField(
 
 export function writePothosArgsFromDtoFields(
   fields: ServiceOutputDtoField[],
-  options: PothosWriterOptions
+  options: PothosWriterOptions,
 ): PothosArgOutput {
   const argOutputs = fields.map((field) => {
     if (field.type === 'nested') {
@@ -81,10 +81,10 @@ export function writePothosArgsFromDtoFields(
   const argMap = R.mergeAll(argOutputs);
   return {
     expression: TypescriptCodeUtils.mergeExpressionsAsObject(
-      R.mapObjIndexed((val) => val.expression, argMap)
+      R.mapObjIndexed((val) => val.expression, argMap),
     ),
     childDefinitions: Object.values(argMap).flatMap(
-      (arg) => arg.childDefinitions || []
+      (arg) => arg.childDefinitions ?? [],
     ),
   };
 }

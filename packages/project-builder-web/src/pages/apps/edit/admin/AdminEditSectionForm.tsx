@@ -57,7 +57,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
           throw new Error('Cannot add a section to a non-admin app');
         }
 
-        adminApp.sections = (adminApp.sections || []).filter(
+        adminApp.sections = (adminApp.sections ?? []).filter(
           (section) => !sectionId || section.uid !== sectionId
         );
       });
@@ -79,7 +79,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
 
         adminApp.sections = _.sortBy(
           [
-            ...(adminApp.sections || []).filter(
+            ...(adminApp.sections ?? []).filter(
               (section) => !sectionId || section.uid !== sectionId
             ),
             { ...data, uid },

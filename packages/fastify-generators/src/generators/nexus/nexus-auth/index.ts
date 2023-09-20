@@ -31,7 +31,7 @@ export interface NexusAuthProvider {
 
 export const nexusAuthProvider = createProviderType<NexusAuthProvider>(
   'nexus-auth',
-  { isReadOnly: true }
+  { isReadOnly: true },
 );
 
 const NexusAuthGenerator = createGeneratorWithChildren({
@@ -55,7 +55,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       typescript,
       auth,
       requestServiceContextSetup,
-    }
+    },
   ) {
     const nexusAuthorizePluginFile = typescript.createTemplate(
       {
@@ -68,7 +68,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
           nexusSetup,
           requestServiceContextSetup,
         ],
-      }
+      },
     );
 
     // TODO: Figure out how to resolve this properly
@@ -77,7 +77,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
     });
 
     nexusSetup.registerSchemaFile(
-      `'@src/plugins/graphql/nexus-authorize-role.ts`
+      `'@src/plugins/graphql/nexus-authorize-role.ts`,
     );
 
     const args = requireOnRootFields
@@ -89,7 +89,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       .appendUnique('nexusPlugins', [
         TypescriptCodeUtils.createExpression(
           `fieldAuthorizeRolePlugin(${args})`,
-          `import { fieldAuthorizeRolePlugin } from '@/src/plugins/graphql/nexus-authorize-role';`
+          `import { fieldAuthorizeRolePlugin } from '@/src/plugins/graphql/nexus-authorize-role';`,
         ),
       ])
       .appendUnique('mutationFields', [
@@ -98,7 +98,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
           isOptional: true,
           type: new TypescriptCodeExpression(
             "FieldAuthorizeRoleResolver<'Mutation', FieldName>",
-            "import { FieldAuthorizeRoleResolver } from '@/src/plugins/graphql/nexus-authorize-role';"
+            "import { FieldAuthorizeRoleResolver } from '@/src/plugins/graphql/nexus-authorize-role';",
           ),
         },
       ]);
@@ -115,8 +115,8 @@ const NexusAuthGenerator = createGeneratorWithChildren({
         await builder.apply(
           nexusAuthorizePluginFile.renderToAction(
             'plugins/nexus-authorize-role.ts',
-            'src/plugins/graphql/nexus-authorize-role.ts'
-          )
+            'src/plugins/graphql/nexus-authorize-role.ts',
+          ),
         );
       },
     };

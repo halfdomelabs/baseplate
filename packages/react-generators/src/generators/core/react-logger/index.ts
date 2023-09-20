@@ -44,7 +44,7 @@ const ReactLoggerGenerator = createGeneratorWithChildren({
           getLoggerExpression: () =>
             TypescriptCodeUtils.createExpression(
               'logger',
-              `import { logger  } from "@/${react.getSrcFolder()}/services/logger";`
+              `import { logger  } from "@/${react.getSrcFolder()}/services/logger";`,
             ),
           getImportMap: () => ({
             '%react-logger': {
@@ -60,7 +60,7 @@ const ReactLoggerGenerator = createGeneratorWithChildren({
           copyTypescriptFileAction({
             source: 'logger.ts',
             destination: 'services/logger.ts',
-          })
+          }),
         );
       },
     };

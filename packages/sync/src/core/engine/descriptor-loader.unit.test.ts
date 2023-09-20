@@ -25,7 +25,7 @@ describe('loadDescriptorFromFile', () => {
     mockedFs.readFile.mockResolvedValue(JSON.stringify(descriptor));
 
     await expect(loadDescriptorFromFile('/path/to/file')).rejects.toThrow(
-      'Unable to load descriptor file'
+      'Unable to load descriptor file',
     );
   });
 });

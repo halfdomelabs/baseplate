@@ -19,6 +19,6 @@ beforeEach(() => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     typeof promises === 'function'
       ? promises(prismaMock)
-      : Promise.all(promises)
+      : Promise.all(promises),
   );
 });

@@ -21,7 +21,7 @@ const Auth0ComponentsGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { reactComponents, typescript }) {
     const [, requireAuthPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`
+      `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`,
     );
     reactComponents.registerComponent({ name: 'RequireAuth' });
 
@@ -41,7 +41,7 @@ const Auth0ComponentsGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'RequireAuth.tsx',
             destination: requireAuthPath,
-          })
+          }),
         );
       },
     };

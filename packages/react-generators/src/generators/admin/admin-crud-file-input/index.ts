@@ -20,7 +20,7 @@ const AdminCrudFileInputGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { label, modelRelation, isOptional, category },
-    { adminCrudInputContainer, uploadComponents }
+    { adminCrudInputContainer, uploadComponents },
   ) {
     adminCrudInputContainer.addInput({
       content: TypescriptCodeUtils.createExpression(
@@ -33,7 +33,7 @@ const AdminCrudFileInputGenerator = createGeneratorWithChildren({
         'import { FileInput } from "%upload-components/file-input"',
         {
           importMappers: [uploadComponents],
-        }
+        },
       ),
       graphQLFields: [
         { name: modelRelation, fields: [{ type: 'spread', on: 'FileInput' }] },
@@ -44,15 +44,13 @@ const AdminCrudFileInputGenerator = createGeneratorWithChildren({
           expression: TypescriptCodeUtils.createExpression(
             `z.object({ id: z.string(), name: z.string().nullish() })${
               isOptional ? '.nullish()' : ''
-            }`
+            }`,
           ),
         },
       ],
     });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

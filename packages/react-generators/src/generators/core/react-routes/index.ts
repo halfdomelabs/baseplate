@@ -36,7 +36,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { name, layoutKey, isPassthrough },
-    { reactRoutes, typescript, reactNotFound }
+    { reactRoutes, typescript, reactNotFound },
   ) {
     const routes: ReactRoute[] = [];
     const layouts: ReactRouteLayout[] = [];
@@ -77,7 +77,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
               path:
                 route.path &&
                 `${reactRoutes.getRoutePrefix()}/${pathName}/${route.path}`,
-            })
+            }),
           );
           layouts.forEach((layout) => reactRoutes.registerLayout(layout));
         } else {
@@ -109,15 +109,15 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
             layoutKey,
             element: TypescriptCodeUtils.createExpression(
               `<${componentName} />`,
-              `import ${componentName} from "@/${directoryBase}"`
+              `import ${componentName} from "@/${directoryBase}"`,
             ),
           });
 
           await builder.apply(
             pagesRootFile.renderToAction(
               'index.tsx',
-              `${directoryBase}/index.tsx`
-            )
+              `${directoryBase}/index.tsx`,
+            ),
           );
         }
       },

@@ -12,10 +12,10 @@ import { NormalizeTypes } from './normalizeTypes';
  */
 export function restrictObjectNulls<
   ObjectType extends Record<string, unknown>,
-  NonNullKeys extends keyof ObjectType
+  NonNullKeys extends keyof ObjectType,
 >(
   object: ObjectType,
-  nonNullKeys: NonNullKeys[]
+  nonNullKeys: NonNullKeys[],
 ): NormalizeTypes<
   ObjectType & { [K in NonNullKeys]: Exclude<ObjectType[K], null> }
 > {

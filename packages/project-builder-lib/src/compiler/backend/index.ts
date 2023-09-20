@@ -7,7 +7,7 @@ import { getPostgresSettings, getRedisSettings } from './utils.js';
 
 export function buildDocker(
   projectConfig: ProjectConfig,
-  app: BackendAppConfig
+  app: BackendAppConfig,
 ): unknown {
   return {
     name: 'docker',
@@ -21,7 +21,7 @@ export function buildDocker(
 
 export function compileBackend(
   projectConfig: ProjectConfig,
-  app: BackendAppConfig
+  app: BackendAppConfig,
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(projectConfig, app);
 

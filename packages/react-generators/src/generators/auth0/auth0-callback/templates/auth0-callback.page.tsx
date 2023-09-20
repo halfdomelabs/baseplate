@@ -35,7 +35,7 @@ function Auth0CallbackPage(): JSX.Element {
     didHandleRedirect.current = true;
     handleRedirectCallback()
       .then(({ appState }: { appState?: { returnTo?: string } }) => {
-        navigate(appState?.returnTo || '/', { replace: true });
+        navigate(appState?.returnTo ?? '/', { replace: true });
       })
       .catch((err) => {
         setError(formatAndReportAuthError(err));

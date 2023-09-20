@@ -156,7 +156,7 @@ describe('getSortedRunSteps', () => {
         entryTwo: { dep: { id: 'entryOne' }, dep2: { id: 'entryOne' } },
       };
       expect(() => getSortedRunSteps(entries, dependencyGraphOne)).toThrow(
-        'Cyclic dependency'
+        'Cyclic dependency',
       );
     });
   });
@@ -291,7 +291,7 @@ describe('getSortedRunSteps', () => {
         },
       };
       expect(() => getSortedRunSteps(entries, dependencyGraphOne)).toThrow(
-        'Cyclic dependency'
+        'Cyclic dependency',
       );
     });
   });

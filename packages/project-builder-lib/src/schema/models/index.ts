@@ -63,7 +63,7 @@ export const modelRelationFieldSchema = z.object({
     z.object({
       local: z.string().min(1),
       foreign: z.string().min(1),
-    })
+    }),
   ),
   modelName: z.string().min(1),
   foreignRelationName: z.string().min(1),
@@ -148,7 +148,7 @@ export type ModelConfig = z.infer<typeof modelSchema>;
 function buildModelScalarFieldReferences(
   modelName: string,
   field: ModelScalarFieldConfig,
-  builder: ReferencesBuilder<ModelScalarFieldConfig>
+  builder: ReferencesBuilder<ModelScalarFieldConfig>,
 ): void {
   builder.addReferenceable({
     category: 'modelField',
@@ -166,7 +166,7 @@ function buildModelScalarFieldReferences(
 function buildModelRelationFieldReferences(
   modelName: string,
   field: ModelRelationFieldConfig,
-  builder: ReferencesBuilder<ModelRelationFieldConfig>
+  builder: ReferencesBuilder<ModelRelationFieldConfig>,
 ): void {
   builder.addReferenceable({
     category: 'modelLocalRelation',
@@ -199,7 +199,7 @@ function buildModelServiceReferences(
   config: ProjectConfig,
   modelName: string,
   service: ModelServiceConfig,
-  builder: ReferencesBuilder<ModelServiceConfig>
+  builder: ReferencesBuilder<ModelServiceConfig>,
 ): void {
   builder
     .addReferences('create.fields.*', {
@@ -226,15 +226,15 @@ function buildModelServiceReferences(
       config,
       modelName,
       transformer,
-      builder.withPrefix(`transformers.${idx}`)
-    )
+      builder.withPrefix(`transformers.${idx}`),
+    ),
   );
 }
 
 function buildModelSchemaReferences(
   modelName: string,
   schema: ModelSchemaConfig,
-  builder: ReferencesBuilder<ModelSchemaConfig>
+  builder: ReferencesBuilder<ModelSchemaConfig>,
 ): void {
   builder
     .addReferences('exposedFields.*', {
@@ -260,7 +260,7 @@ function buildModelSchemaReferences(
 export function buildModelReferences(
   config: ProjectConfig,
   model: ModelConfig,
-  builder: ReferencesBuilder<ModelConfig>
+  builder: ReferencesBuilder<ModelConfig>,
 ): void {
   builder.addReferenceable({
     category: 'model',
@@ -275,7 +275,7 @@ export function buildModelReferences(
       referenceType: 'modelPrimaryKey',
       category: 'modelField',
       key: `${model.name}#${primaryKey}`,
-    })
+    }),
   );
 
   model.model.uniqueConstraints?.forEach((constraint, idx) => {
@@ -294,16 +294,16 @@ export function buildModelReferences(
     buildModelScalarFieldReferences(
       model.name,
       field,
-      builder.withPrefix(`model.fields.${idx}`)
-    )
+      builder.withPrefix(`model.fields.${idx}`),
+    ),
   );
 
   model.model.relations?.forEach((relation, idx) =>
     buildModelRelationFieldReferences(
       model.name,
       relation,
-      builder.withPrefix(`model.relations.${idx}`)
-    )
+      builder.withPrefix(`model.relations.${idx}`),
+    ),
   );
 
   if (model.service) {
@@ -311,7 +311,7 @@ export function buildModelReferences(
       config,
       model.name,
       model.service,
-      builder.withPrefix('service')
+      builder.withPrefix('service'),
     );
   }
 
@@ -319,7 +319,7 @@ export function buildModelReferences(
     buildModelSchemaReferences(
       model.name,
       model.schema,
-      builder.withPrefix('schema')
+      builder.withPrefix('schema'),
     );
   }
 }

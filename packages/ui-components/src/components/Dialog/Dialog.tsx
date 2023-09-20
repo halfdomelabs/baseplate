@@ -137,6 +137,8 @@ const DialogBody = React.forwardRef<
   </div>
 ));
 
+DialogBody.displayName = 'DialogBody';
+
 function getDialogSizeClass(size: DialogSize): string {
   return clsx(
     size === 'sm' && 'w-72',

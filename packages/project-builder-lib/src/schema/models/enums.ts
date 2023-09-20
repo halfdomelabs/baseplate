@@ -22,7 +22,7 @@ export type EnumConfig = z.infer<typeof enumSchema>;
 
 export function buildEnumReferences(
   enumConfig: EnumConfig,
-  builder: ReferencesBuilder<EnumConfig>
+  builder: ReferencesBuilder<EnumConfig>,
 ): void {
   builder.addReference('feature', { category: 'feature' });
   builder.addReferenceable({

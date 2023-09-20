@@ -82,9 +82,7 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
       });
     }
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

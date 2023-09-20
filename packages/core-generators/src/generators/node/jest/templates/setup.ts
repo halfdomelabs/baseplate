@@ -6,7 +6,7 @@ import type { Config } from '@jest/types';
 /* eslint-disable no-console */
 
 export default async function setup(
-  globalConfig: Config.GlobalConfig
+  globalConfig: Config.GlobalConfig,
 ): Promise<void> {
   CUSTOM_SETUP;
 }

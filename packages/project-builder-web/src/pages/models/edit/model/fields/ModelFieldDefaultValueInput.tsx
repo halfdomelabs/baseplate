@@ -79,7 +79,7 @@ export function ModelFieldDefaultValueInput({
   }
 
   if (type === 'dateTime' || type === 'date') {
-    const { defaultToNow, updatedAt } = optionsValue || {};
+    const { defaultToNow, updatedAt } = optionsValue ?? {};
 
     if (defaultToNow || updatedAt) {
       return (

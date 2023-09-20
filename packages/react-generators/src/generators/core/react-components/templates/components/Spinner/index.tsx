@@ -39,7 +39,7 @@ function Spinner({
           'h-10 w-10': size === 'large',
           'mx-auto': center,
         },
-        className
+        className,
       )}
       viewBox="0 0 100 101"
       fill="none"

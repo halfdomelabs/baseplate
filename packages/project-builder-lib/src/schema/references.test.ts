@@ -33,7 +33,7 @@ describe('fixReferenceRenames', () => {
           category: 'modelField',
           id: field.id,
           name: field.name,
-        })
+        }),
       );
       builder.addReferences('model.goodFields.*', { category: 'modelField' });
       return builder.build();
@@ -42,7 +42,7 @@ describe('fixReferenceRenames', () => {
     const updatedObject = fixReferenceRenames(
       oldObject,
       newObject,
-      getReferences
+      getReferences,
     );
 
     expect(updatedObject.model.goodFields).toEqual(['test', 'test3']);
@@ -75,7 +75,7 @@ describe('fixReferenceRenames', () => {
           category: 'modelField',
           id: field.id,
           name: field.name,
-        })
+        }),
       );
       builder.addReferences('model.goodFields.*.name', {
         category: 'modelField',
@@ -86,7 +86,7 @@ describe('fixReferenceRenames', () => {
     const updatedObject = fixReferenceRenames(
       oldObject,
       newObject,
-      getReferences
+      getReferences,
     );
 
     expect(updatedObject.model.goodFields).toEqual([
@@ -124,7 +124,7 @@ describe('fixReferenceRenames', () => {
           category: 'modelField',
           id: field.id,
           name: field.name,
-        })
+        }),
       );
       config.model.fieldRef.forEach((fieldRef, i) => {
         builder
@@ -151,7 +151,7 @@ describe('fixReferenceRenames', () => {
     const updatedObject = fixReferenceRenames(
       oldObject,
       newObject,
-      getReferences
+      getReferences,
     );
 
     expect(updatedObject.model.fieldRef).toEqual([

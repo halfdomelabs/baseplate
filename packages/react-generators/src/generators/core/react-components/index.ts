@@ -76,7 +76,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { includeDatePicker },
-    { react, node, typescript, reactApp }
+    { react, node, typescript, reactApp },
   ) {
     const srcFolder = react.getSrcFolder();
     node.addPackages({
@@ -89,10 +89,10 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       'react-select': '5.7.4',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(
-      `${srcFolder}/hooks/useStatus.ts`
+      `${srcFolder}/hooks/useStatus.ts`,
     );
     const [useToastImport, useToastPath] = makeImportAndFilePath(
-      `${srcFolder}/hooks/useToast.tsx`
+      `${srcFolder}/hooks/useToast.tsx`,
     );
     const coreReactComponents = [...REACT_COMPONENTS];
 
@@ -113,8 +113,8 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     reactApp.addRenderSibling(
       TypescriptCodeUtils.createExpression(
         '<Toaster />',
-        "import { Toaster } from 'react-hot-toast';"
-      )
+        "import { Toaster } from 'react-hot-toast';",
+      ),
     );
 
     return {
@@ -146,15 +146,15 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
               copyTypescriptFileAction({
                 source: `components/${name}/index.tsx`,
                 destination: `${srcFolder}/components/${name}/index.tsx`,
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
         await builder.apply(
           copyTypescriptFileAction({
             source: 'hooks/useStatus.ts',
             destination: useStatusPath,
-          })
+          }),
         );
 
         await builder.apply(
@@ -164,7 +164,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
             replacements: {
               COMPONENT_FOLDER: `@/${srcFolder}/components`,
             },
-          })
+          }),
         );
 
         // build component index
@@ -176,7 +176,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
           writeFormattedAction({
             contents: componentIndex,
             destination: `${srcFolder}/components/index.ts`,
-          })
+          }),
         );
       },
     };

@@ -24,8 +24,8 @@ const descriptorSchema = z
     type: z.enum(
       Object.keys(prismaScalarFieldTypes) as [
         ScalarFieldType,
-        ...ScalarFieldType[]
-      ]
+        ...ScalarFieldType[],
+      ],
     ),
     options: z.object({}).catchall(z.any()).optional(),
     id: z.boolean().optional(),
@@ -37,7 +37,7 @@ const descriptorSchema = z
     // TODO: Clean up
     const schema = prismaScalarFieldTypes[obj.type]?.optionsSchema;
     if (schema) {
-      const parseResult = schema.safeParse(obj.options || {});
+      const parseResult = schema.safeParse(obj.options);
       if (!parseResult.success) {
         ctx.addIssue(parseResult.error.errors[0]);
       }
@@ -85,7 +85,6 @@ const PrismaFieldGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaField: {},
       }),
-      build: () => {},
     };
   },
 });

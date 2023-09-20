@@ -46,14 +46,14 @@ const createMainTask = createTaskConfigBuilder(() => ({
             'pothosPlugins',
             TypescriptCodeUtils.createExpression(
               `PrismaPlugin`,
-              `import PrismaPlugin from '@pothos/plugin-prisma';`
-            )
+              `import PrismaPlugin from '@pothos/plugin-prisma';`,
+            ),
           )
           .append('schemaTypeOptions', {
             key: 'PrismaTypes',
             value: TypescriptCodeUtils.createExpression(
               `PrismaTypes`,
-              `import type PrismaTypes from '@pothos/plugin-prisma/generated';`
+              `import type PrismaTypes from '@pothos/plugin-prisma/generated';`,
             ),
           })
           .append('schemaBuilderOptions', {
@@ -65,7 +65,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
                 filterConnectionTotalCount: true,
               }`,
               'import { prisma } from "%prisma-service"',
-              { importMappers: [prismaOutput] }
+              { importMappers: [prismaOutput] },
             ),
           });
       },
@@ -89,7 +89,7 @@ const PothosPrismaGenerator = createGeneratorWithTasks({
           createPrismaSchemaGeneratorBlock({
             name: 'pothos',
             provider: 'pnpm prisma-pothos-types',
-          })
+          }),
         );
         return {};
       },

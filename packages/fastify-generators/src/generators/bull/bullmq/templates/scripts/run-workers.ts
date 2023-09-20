@@ -24,20 +24,17 @@ try {
     })
     .catch(handleError);
 
-  const shutdownWorkers: NodeJS.SignalsListener = async (signal) => {
-    try {
-      setTimeout(() => {
-        logError(new Error('Shutdown timed out'));
-        process.exit(1);
-      }, TIMEOUT).unref();
+  const shutdownWorkers: NodeJS.SignalsListener = (signal): void => {
+    setTimeout(() => {
+      logError(new Error('Shutdown timed out'));
+      process.exit(1);
+    }, TIMEOUT).unref();
 
-      logger.info(`Received ${signal} signal. Shutting down...`);
+    logger.info(`Received ${signal} signal. Shutting down...`);
 
-      await Promise.all(workers.map((worker) => worker.close()));
-      process.exit(0);
-    } catch (err) {
-      handleError(err);
-    }
+    Promise.all(workers.map((worker) => worker.close()))
+      .then(() => process.exit(0))
+      .catch((err) => handleError(err));
   };
 
   process.on('SIGINT', shutdownWorkers);

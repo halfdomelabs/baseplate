@@ -30,7 +30,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
 
   const { parsedProject } = useProjectConfig();
 
-  const featureOptions = (parsedProject.projectConfig.features || []).map(
+  const featureOptions = (parsedProject.projectConfig.features ?? []).map(
     (f) => ({
       label: f.name,
       value: f.name,

@@ -15,7 +15,7 @@ interface CreatePresignedDownloadUrlPayload {
 
 export async function createPresignedDownloadUrl(
   { fileId }: CreatePresignedDownloadUrlInput,
-  context: ServiceContext
+  context: ServiceContext,
 ): Promise<CreatePresignedDownloadUrlPayload> {
   const file = await FILE_MODEL.findUniqueOrThrow({
     where: { id: fileId },
@@ -41,7 +41,7 @@ export async function createPresignedDownloadUrl(
 
   if (!adapter.createPresignedDownloadUrl) {
     throw new Error(
-      `Storage adapter ${file.adapter} does not support download URLs`
+      `Storage adapter ${file.adapter} does not support download URLs`,
     );
   }
 

@@ -29,7 +29,7 @@ const AdminCrudTextInputGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { label, modelField, validation, type },
-    { adminCrudInputContainer, reactComponents }
+    { adminCrudInputContainer, reactComponents },
   ) {
     const inputType = INPUT_TYPE_MAP[type];
     adminCrudInputContainer.addInput({
@@ -41,7 +41,7 @@ const AdminCrudTextInputGenerator = createGeneratorWithChildren({
           ${type === 'dateTime' ? 'showTimeSelect' : ''}
         />`,
         `import { ${inputType} } from "%react-components"`,
-        { importMappers: [reactComponents] }
+        { importMappers: [reactComponents] },
       ),
       graphQLFields: [{ name: modelField }],
       validation: [
@@ -51,9 +51,7 @@ const AdminCrudTextInputGenerator = createGeneratorWithChildren({
         },
       ],
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

@@ -24,7 +24,7 @@ export function useToast(): UseToastResult {
         </Toast>
       ));
     },
-    []
+    [],
   );
 
   return useMemo(
@@ -42,6 +42,6 @@ export function useToast(): UseToastResult {
         showToast(message, <AlertIcon type="info" />);
       },
     }),
-    [showToast]
+    [showToast],
   );
 }

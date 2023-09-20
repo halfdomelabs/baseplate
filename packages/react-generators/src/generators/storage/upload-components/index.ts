@@ -39,7 +39,7 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { fileModelName },
-    { node, reactError, typescript, reactComponents, reactApollo }
+    { node, reactError, typescript, reactComponents, reactApollo },
   ) {
     node.addPackages({
       axios: '1.4.0',
@@ -52,7 +52,7 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
     });
 
     const [hookImport, hookPath] = makeImportAndFilePath(
-      `src/hooks/useUpload.ts`
+      `src/hooks/useUpload.ts`,
     );
 
     const importMap = {
@@ -87,7 +87,7 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
               { getImportMap: () => importMap },
               reactApollo,
             ],
-          })
+          }),
         );
 
         await builder.apply(
@@ -98,14 +98,14 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
             replacements: {
               FILE_SCHEMA: capitalize(fileModelName),
             },
-          })
+          }),
         );
 
         await builder.apply(
           typescript.createCopyAction({
             source: 'hooks/useUpload.ts',
             destination: hookPath,
-          })
+          }),
         );
       },
     };

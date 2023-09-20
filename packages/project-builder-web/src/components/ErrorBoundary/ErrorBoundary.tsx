@@ -30,8 +30,10 @@ function ErrorBoundaryFallback({
   }: {
     resetErrorBoundary: () => void;
     error: unknown;
-  } = useContext(ErrorBoundaryContext) || {
-    resetErrorBoundary: () => {},
+  } = useContext(ErrorBoundaryContext) ?? {
+    resetErrorBoundary: () => {
+      /* dummy */
+    },
     error: undefined,
   };
   return (
@@ -54,7 +56,7 @@ export function ErrorBoundary({
     <ReactErrorBoundary
       fallback={
         <ErrorBoundaryFallback
-          resetButtonLabel={resetButtonLabel || 'Reload Page'}
+          resetButtonLabel={resetButtonLabel ?? 'Reload Page'}
         />
       }
       onError={(err) => logError(err)}

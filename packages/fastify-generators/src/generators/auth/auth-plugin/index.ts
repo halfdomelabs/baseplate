@@ -27,8 +27,8 @@ const AuthPluginGenerator = createGeneratorWithTasks({
           'userId',
           TypescriptCodeUtils.createExpression(
             "requestContext.get('user')?.id",
-            "import { requestContext } from '@fastify/request-context';"
-          )
+            "import { requestContext } from '@fastify/request-context';",
+          ),
         );
 
         return {};
@@ -51,8 +51,8 @@ const AuthPluginGenerator = createGeneratorWithTasks({
           'plugins',
           new TypescriptCodeExpression(
             'authPlugin',
-            `import {authPlugin} from '@/${appModule.getModuleFolder()}/plugins/auth-plugin'`
-          )
+            `import {authPlugin} from '@/${appModule.getModuleFolder()}/plugins/auth-plugin'`,
+          ),
         );
         return {
           getProviders: () => ({}),
@@ -63,11 +63,11 @@ const AuthPluginGenerator = createGeneratorWithTasks({
               typescript.createCopyAction({
                 source: 'plugins/auth-plugin.ts',
                 importMappers: [authInfoImport, authService],
-              })
+              }),
             );
 
             await builder.apply(
-              typescript.createCopyAction({ source: 'utils/headers.ts' })
+              typescript.createCopyAction({ source: 'utils/headers.ts' }),
             );
           },
         };

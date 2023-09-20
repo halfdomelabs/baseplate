@@ -40,7 +40,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { modelName, objectTypeName },
-    { prismaOutput, nexusTypesFile }
+    { prismaOutput, nexusTypesFile },
   ) {
     const objectTypeBlock = new TypescriptSourceBlock(
       {
@@ -56,7 +56,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
       },
       {
         importText: ["import { queryField, nonNull, list } from 'nexus';"],
-      }
+      },
     );
 
     const lowerFirstModelName = lowerCaseFirst(modelName);
@@ -74,7 +74,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
           addCustomField(fieldName, fieldType) {
             objectTypeBlock.addStringReplacement(
               'CUSTOM_FIELDS',
-              fieldType.prepend(`${fieldName}: `).toStringReplacement()
+              fieldType.prepend(`${fieldName}: `).toStringReplacement(),
             );
           },
         },

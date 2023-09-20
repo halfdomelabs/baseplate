@@ -154,7 +154,7 @@ const FastifyGenerator = createGeneratorWithTasks({
       run({ node, nodeGitIgnore }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
           { devLoaders: [] },
-          { name: 'fastify-config', mergeArraysUniquely: true }
+          { name: 'fastify-config', mergeArraysUniquely: true },
         );
 
         node.mergeExtraProperties({
@@ -164,7 +164,7 @@ const FastifyGenerator = createGeneratorWithTasks({
         nodeGitIgnore.addExclusions(['/dist']);
 
         const formatDevLoaders = (loaders: string[]): string =>
-          (loaders || []).map((loader) => `-r ${loader}`).join(' ');
+          (loaders ?? []).map((loader) => `-r ${loader}`).join(' ');
 
         return {
           getProviders: () => ({
@@ -175,7 +175,7 @@ const FastifyGenerator = createGeneratorWithTasks({
           build() {
             // add scripts
             const { devOutputFormatter, devLoaders } = config.value();
-            const devRegister = formatDevLoaders(devLoaders || []);
+            const devRegister = formatDevLoaders(devLoaders ?? []);
             const devCommand = `tsx watch --clear-screen=false ${devRegister} src/index.ts${
               devOutputFormatter ? ` | ${devOutputFormatter}` : ''
             }`;
@@ -201,11 +201,10 @@ const FastifyGenerator = createGeneratorWithTasks({
             return {
               fastifyOutput: {
                 getDevLoaderString: () =>
-                  formatDevLoaders(config.get('devLoaders') || []),
+                  formatDevLoaders(config.get('devLoaders') ?? []),
               },
             };
           },
-          build() {},
         };
       },
     });

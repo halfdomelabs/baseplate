@@ -41,17 +41,17 @@ const ReactErrorGenerator = createGeneratorWithChildren({
           default: '// no error reporters registered',
         },
       },
-      { importMappers: [reactLogger] }
+      { importMappers: [reactLogger] },
     );
     const [loggerImport, loggerPath] = makeImportAndFilePath(
-      'src/services/error-logger.ts'
+      'src/services/error-logger.ts',
     );
 
     const formatterFile = typescript.createTemplate({
       ERROR_FORMATTERS: { type: 'code-block' },
     });
     const [formatterImport, formatterPath] = makeImportAndFilePath(
-      'src/services/error-formatter.ts'
+      'src/services/error-formatter.ts',
     );
 
     return {
@@ -77,13 +77,13 @@ const ReactErrorGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         await builder.apply(
-          loggerFile.renderToAction('services/error-logger.ts', loggerPath)
+          loggerFile.renderToAction('services/error-logger.ts', loggerPath),
         );
         await builder.apply(
           formatterFile.renderToAction(
             'services/error-formatter.ts',
-            formatterPath
-          )
+            formatterPath,
+          ),
         );
       },
     };

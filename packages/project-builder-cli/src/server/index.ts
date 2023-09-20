@@ -9,7 +9,7 @@ interface WebServerOptions {
 
 export async function startWebServer(
   directories: string[],
-  { browser, port = 3230 }: WebServerOptions
+  { browser, port = 3230 }: WebServerOptions,
 ): Promise<void> {
   const server = await buildServer(directories);
 

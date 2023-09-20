@@ -11,7 +11,7 @@ export const storageSchema = z.object({
       name: z.string().min(1),
       bucketConfigVar: z.string().min(1),
       hostedUrlConfigVar: z.string().optional(),
-    })
+    }),
   ),
   categories: z.array(
     z.object({
@@ -20,11 +20,11 @@ export const storageSchema = z.object({
       defaultAdapter: z.string().min(1),
       maxFileSize: z.preprocess(
         (a) => a && parseInt(a as string, 10),
-        z.number().positive().optional()
+        z.number().positive().optional(),
       ),
       usedByRelation: z.string().min(1),
       uploadRoles: z.array(z.string().min(1)),
-    })
+    }),
   ),
 });
 
@@ -32,7 +32,7 @@ export type StorageConfig = z.infer<typeof storageSchema>;
 
 export function buildStorageReferences(
   config: StorageConfig,
-  builder: ReferencesBuilder<StorageConfig>
+  builder: ReferencesBuilder<StorageConfig>,
 ): void {
   config.s3Adapters?.forEach((adapter) => {
     builder.addReferenceable({

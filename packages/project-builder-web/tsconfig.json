@@ -23,7 +23,7 @@
 
     "baseUrl": "./",
     "types": ["vite/client", "vite-plugin-svgr/client"],
-    "typeRoots": ["./node_modules/@types", "./src/types/"]
+    "typeRoots": ["./node_modules/@types", "./src/types/", "./node_modules"]
   },
   "include": ["src"],
   "exclude": ["**/node_modules", "**/dist", "**/lib"],

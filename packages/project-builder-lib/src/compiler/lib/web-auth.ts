@@ -2,7 +2,7 @@ import { AppConfig } from '@src/schema/index.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 
 export function compileAuthFeatures(
-  builder: AppEntryBuilder<AppConfig>
+  builder: AppEntryBuilder<AppConfig>,
 ): Record<string, unknown> | null {
   if (builder.projectConfig.auth?.useAuth0) {
     return {
@@ -55,7 +55,7 @@ export function compileAuthFeatures(
 
 export function compileAuthPages(
   builder: AppEntryBuilder<AppConfig>,
-  allowedRoles: string[] = []
+  allowedRoles: string[] = [],
 ): unknown {
   if (builder.projectConfig.auth?.useAuth0) {
     builder.addDescriptor('auth/root.json', {

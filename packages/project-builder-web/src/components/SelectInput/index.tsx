@@ -88,7 +88,7 @@ interface SelectInputLabelledController<T extends FieldValues>
 }
 
 SelectInput.LabelledController = function SelectInputController<
-  T extends FieldValues
+  T extends FieldValues,
 >({ name, control, ...rest }: SelectInputLabelledController<T>): JSX.Element {
   const { errors } = useFormState({ name, control });
   const error = get(errors, name) as FieldError | undefined;

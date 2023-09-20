@@ -47,7 +47,7 @@ function truncateFilenameWithExtension(filename: string, length = 20): string {
     return filename;
   }
   const extension = filename.includes('.')
-    ? filename.split('.').pop()?.slice(0, 5) || ''
+    ? filename.split('.').pop()?.slice(0, 5) ?? ''
     : '';
   const truncatedFilename = filename.slice(0, length - extension.length - 1);
   return `${truncatedFilename}...${extension}`;
@@ -69,7 +69,7 @@ const FileInput = function FileInput({
   const { isUploading, error, progress, uploadFile, cancelUpload } =
     useUpload<FileUploadInput>({
       getUploadParameters: async (fileToUpload) => {
-        const contentType = fileToUpload.type || 'application/octet-stream';
+        const contentType = fileToUpload.type ?? 'application/octet-stream';
         const { data } = await createUploadUrl({
           variables: {
             input: {
@@ -87,7 +87,7 @@ const FileInput = function FileInput({
         const {
           createPresignedUploadUrl: { url, fields, method, file },
         } = data;
-        return { url, fields: fields || [], method, meta: file };
+        return { url, fields: fields ?? [], method, meta: file };
       },
       onUploaded: (file) => {
         const uploadedFile = file.meta;
@@ -110,7 +110,7 @@ const FileInput = function FileInput({
       const file = acceptedFiles[0];
       uploadFile(file);
     },
-    [uploadFile]
+    [uploadFile],
   );
 
   const isDraggable = !isUploading && !error && !disabled;
@@ -190,7 +190,7 @@ const FileInput = function FileInput({
               isDragActive
                 ? 'border-blue-300 text-blue-600'
                 : 'border-gray-300 text-gray-600',
-              { 'opacity-50': disabled, 'cursor-pointer': isDraggable }
+              { 'opacity-50': disabled, 'cursor-pointer': isDraggable },
             )}
           >
             {(() => {
@@ -230,7 +230,7 @@ const FileInput = function FileInput({
                   />
                   <MdUploadFile className="h-6 w-6" />
                   <div className="text-lg font-medium">
-                    {placeholder || 'Select a file'}
+                    {placeholder ?? 'Select a file'}
                   </div>
                 </div>
               );
@@ -270,7 +270,7 @@ FileInput.Labelled = function FileInputLabelled({
 
 interface FileInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<FileInputLabelledProps, 'onChange' | 'value' | 'error'> {
   control: Control<TFieldValues>;
   name: TFieldName;
@@ -278,7 +278,7 @@ interface FileInputControllerProps<
 
 FileInput.LabelledController = function FileInputController<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   control,
   name,

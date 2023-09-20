@@ -39,7 +39,7 @@ export interface LoggerServiceProvider extends ImportMapper {
 
 export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
   'logger-service',
-  { isReadOnly: true }
+  { isReadOnly: true },
 );
 
 const loggerServiceFileConfig = createTypescriptTemplateConfig({
@@ -92,7 +92,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
           getLogger() {
             return TypescriptCodeUtils.createExpression(
               'logger',
-              'import { logger } from "@/src/services/logger"'
+              'import { logger } from "@/src/services/logger"',
             );
           },
           getImportMap() {
@@ -111,7 +111,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
   level(level) {
     return { level };
   },
-}`
+}`,
         );
 
         if (Object.keys(mixins.value()).length) {
@@ -120,8 +120,8 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
             TypescriptCodeUtils.createWrapper(
               (expression) => `function mixin() {
               return ${expression};
-            }`
-            )
+            }`,
+            ),
           );
         }
 
@@ -129,11 +129,11 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
           'LOGGER_OPTIONS',
           Object.keys(loggerOptions).length
             ? TypescriptCodeUtils.mergeExpressionsAsObject(loggerOptions)
-            : TypescriptCodeUtils.createExpression('')
+            : TypescriptCodeUtils.createExpression(''),
         );
 
         await builder.apply(
-          loggerFile.renderToAction('logger.ts', 'src/services/logger.ts')
+          loggerFile.renderToAction('logger.ts', 'src/services/logger.ts'),
         );
       },
     };

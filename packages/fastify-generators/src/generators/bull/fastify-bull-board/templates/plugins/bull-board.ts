@@ -73,7 +73,7 @@ export const bullBoardPlugin: FastifyPluginAsync = async (fastify) => {
     },
   });
 
-  fastify.addHook('preHandler', async (request, reply) => {
+  fastify.addHook('preHandler', async (request) => {
     if (request.url.startsWith('/bull-board/auth')) {
       return;
     }

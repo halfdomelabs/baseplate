@@ -10,10 +10,10 @@ export const pothosFieldWithInputPayloadPlugin =
   'fieldWithInputPayload' as const;
 
 export class PothosFieldWithInputPayloadPlugin<
-  Types extends SchemaTypes
+  Types extends SchemaTypes,
 > extends BasePlugin<Types> {}
 
 SchemaBuilder.registerPlugin(
   pothosFieldWithInputPayloadPlugin,
-  PothosFieldWithInputPayloadPlugin
+  PothosFieldWithInputPayloadPlugin,
 );

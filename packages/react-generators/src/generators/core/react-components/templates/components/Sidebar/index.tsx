@@ -115,7 +115,7 @@ Sidebar.LinkItem = function SidebarLink({
         to={to}
         className={classNames(
           ' flex items-center rounded-lg p-2 text-base text-gray-900 no-underline hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
-          match ? 'font-semibold' : 'font-normal'
+          match ? 'font-semibold' : 'font-normal',
         )}
       >
         {Icon ? (
@@ -197,7 +197,7 @@ Sidebar.DropdownLinkItem = function SidebarDropdownLinkItem({
         className={classNames(
           'group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
           withParentIcon ? 'pl-11' : 'pl-5',
-          match ? 'font-semibold' : 'font-normal'
+          match ? 'font-semibold' : 'font-normal',
         )}
       >
         <span>{children}</span>

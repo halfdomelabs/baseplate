@@ -44,7 +44,7 @@ const createMainTask = createTaskConfigBuilder(
             'import { AuthInfo } from "%auth-info";',
             {
               importMappers: [authInfoImport],
-            }
+            },
           );
 
           serviceContextSetup.addContextField('auth', {
@@ -58,7 +58,7 @@ const createMainTask = createTaskConfigBuilder(
                 testDefault: TypescriptCodeUtils.createExpression(
                   'createAuthInfoFromUser(null, ["system"])',
                   'import { createAuthInfoFromUser } from "%auth-info";',
-                  { importMappers: [authInfoImport] }
+                  { importMappers: [authInfoImport] },
                 ),
               },
             ],
@@ -73,7 +73,7 @@ const createMainTask = createTaskConfigBuilder(
         },
       };
     },
-  })
+  }),
 );
 
 const AuthContextGenerator = createGeneratorWithTasks({

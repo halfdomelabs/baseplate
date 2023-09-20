@@ -33,16 +33,13 @@ export const rootModuleImportProvider = createProviderType<RootModuleImport>(
   'root-module-import',
   {
     isReadOnly: true,
-  }
+  },
 );
 
 export interface AppModuleProvider {
   getModuleFolder(): string;
   addModuleImport: (name: string) => void;
-  registerFieldEntry: (
-    name: 'children' | string,
-    type: TypescriptCodeExpression
-  ) => void;
+  registerFieldEntry: (name: string, type: TypescriptCodeExpression) => void;
   getValidFields(): string[];
 }
 
@@ -73,7 +70,7 @@ const RootModuleGenerator = createGeneratorWithTasks({
                 getRootModule: () =>
                   TypescriptCodeUtils.createExpression(
                     'RootModule',
-                    "import { RootModule } from '@/src/modules'"
+                    "import { RootModule } from '@/src/modules'",
                   ),
               },
             };
@@ -94,7 +91,7 @@ const RootModuleGenerator = createGeneratorWithTasks({
                 getRootModule: () =>
                   TypescriptCodeUtils.createExpression(
                     'RootModule',
-                    "import { RootModule } from '@/src/modules'"
+                    "import { RootModule } from '@/src/modules'",
                   ),
                 getRootModuleImport: () => `@/src/modules`,
                 getImportMap: () => ({
@@ -150,13 +147,13 @@ const RootModuleGenerator = createGeneratorWithTasks({
               TypescriptCodeUtils.mergeExpressionsAsObject(
                 R.mapObjIndexed(
                   (types) => TypescriptCodeUtils.mergeExpressionsAsArray(types),
-                  rootModuleEntries.value()
-                )
-              )
+                  rootModuleEntries.value(),
+                ),
+              ),
             );
 
             await builder.apply(
-              rootModule.renderToAction('index.ts', 'src/modules/index.ts')
+              rootModule.renderToAction('index.ts', 'src/modules/index.ts'),
             );
 
             const moduleHelper = typescript.createTemplate({
@@ -166,11 +163,9 @@ const RootModuleGenerator = createGeneratorWithTasks({
 
             const moduleFields = Object.keys(moduleFieldMap.value()).map(
               (name) => {
-                const field = moduleFieldMap.get(
-                  name
-                ) as TypescriptCodeExpression;
+                const field = moduleFieldMap.get(name)!;
                 return { name, field };
-              }
+              },
             );
 
             moduleHelper.addCodeAddition({
@@ -182,35 +177,35 @@ const RootModuleGenerator = createGeneratorWithTasks({
               TypescriptCodeUtils.mergeBlocks(
                 moduleFields.map(({ name, field }) => {
                   const wrapper = TypescriptCodeUtils.createWrapper(
-                    (contents) => `${name}?: ${contents}[]`
+                    (contents) => `${name}?: ${contents}[]`,
                   );
                   return TypescriptCodeUtils.toBlock(
-                    TypescriptCodeUtils.wrapExpression(field, wrapper)
+                    TypescriptCodeUtils.wrapExpression(field, wrapper),
                   );
-                })
-              )
+                }),
+              ),
             );
 
             const mergers = R.mergeAll(
               moduleFields.map(({ name }) => ({
                 [name]: TypescriptCodeUtils.createExpression(
-                  `[...(prev.${name} || []), ...(current.${name} || [])]`
+                  `[...(prev.${name} ?? []), ...(current.${name} ?? [])]`,
                 ),
-              }))
+              })),
             );
 
             moduleHelper.addCodeExpression(
               'MODULE_MERGER',
               TypescriptCodeUtils.mergeExpressionsAsObject(mergers, {
                 wrapWithParenthesis: true,
-              })
+              }),
             );
 
             await builder.apply(
               moduleHelper.renderToAction(
                 'app-modules.ts',
-                'src/utils/app-modules.ts'
-              )
+                'src/utils/app-modules.ts',
+              ),
             );
           },
         };

@@ -50,7 +50,7 @@ const TextAreaInput = function TextInput({
     <textarea
       className={classNames(
         'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500',
-        className
+        className,
       )}
       {...inputProps}
     />
@@ -85,7 +85,7 @@ interface TextInputControllerProps<T extends FieldValues>
 }
 
 TextAreaInput.LabelledController = function TextInputController<
-  T extends FieldValues
+  T extends FieldValues,
 >({ control, name, ...rest }: TextInputControllerProps<T>): JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;

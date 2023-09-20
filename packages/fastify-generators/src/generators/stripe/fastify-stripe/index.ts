@@ -45,7 +45,7 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
       errorHandlerService,
       loggerService,
       fastifyServer,
-    }
+    },
   ) {
     node.addPackages({
       stripe: '12.13.0',
@@ -65,14 +65,14 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
       name: 'rawBodyPlugin',
       plugin: new TypescriptCodeExpression(
         'rawBodyPlugin',
-        "import rawBodyPlugin from 'fastify-raw-body'"
+        "import rawBodyPlugin from 'fastify-raw-body'",
       ),
     });
     fastifyServer.registerPlugin({
       name: 'stripeWebhookPlugin',
       plugin: new TypescriptCodeExpression(
         'stripeWebhookPlugin',
-        "import { stripeWebhookPlugin } from '@/src/plugins/stripe-webhook'"
+        "import { stripeWebhookPlugin } from '@/src/plugins/stripe-webhook'",
       ),
     });
 
@@ -91,7 +91,7 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
               'services/stripe.ts',
             ],
             importMappers: [configService, errorHandlerService, loggerService],
-          })
+          }),
         );
       },
     };

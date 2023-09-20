@@ -109,7 +109,7 @@ const TextInputRoot = genericForwardRef(TextInputFn);
 
 export interface TextInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends TextInputProps {
   control: Control<TFieldValues>;
   name: TFieldName;
@@ -118,7 +118,7 @@ export interface TextInputControllerProps<
 
 function TextInputControllerFn<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   {
     control,

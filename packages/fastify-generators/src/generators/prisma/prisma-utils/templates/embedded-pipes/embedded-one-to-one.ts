@@ -18,12 +18,12 @@ interface OneToOneCreatePipeInputWithTransform<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 > {
   input: DataInput | undefined;
   transform: (
     input: DataInput,
-    context: ServiceContext
+    context: ServiceContext,
   ) => Promise<DataPipeOutput<UpsertData>> | DataPipeOutput<UpsertData>;
   context: ServiceContext;
 }
@@ -33,7 +33,7 @@ export async function createOneToOneCreateData<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 >({
   input,
   context,
@@ -77,14 +77,14 @@ interface OneToOneUpsertPipeInputWithTransform<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 > {
   input: DataInput | null | undefined;
   transform: (
     input: DataInput,
     context: ServiceContext,
     updateKey?: WhereUniqueInput,
-    parentId?: ParentId
+    parentId?: ParentId,
   ) => Promise<DataPipeOutput<UpsertData>> | DataPipeOutput<UpsertData>;
   context: ServiceContext;
   getWhereUnique: (input: DataInput) => WhereUniqueInput | undefined;
@@ -99,7 +99,7 @@ export async function createOneToOneUpsertData<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 >({
   input,
   context,
@@ -128,7 +128,7 @@ export async function createOneToOneUpsertData<
   }
   if (transform) {
     const transformedData = await Promise.resolve(
-      transform(input, context, getWhereUnique(input), parentId)
+      transform(input, context, getWhereUnique(input), parentId),
     );
     return {
       data: { upsert: transformedData.data },

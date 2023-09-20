@@ -32,19 +32,17 @@ const NexusPrismaEnumGenerator = createGeneratorWithChildren({
             enumBlock.values.map((value) =>
               TypescriptCodeUtils.mergeExpressionsAsObject({
                 name: quot(value.name),
-              })
-            )
+              }),
+            ),
           ),
         }),
       },
-      { importText: ['import {enumType} from "nexus"'] }
+      { importText: ['import {enumType} from "nexus"'] },
     );
 
     nexusTypesFile.registerType({ block: nexusBlock });
 
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

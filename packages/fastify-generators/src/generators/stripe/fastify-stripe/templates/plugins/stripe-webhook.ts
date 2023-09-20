@@ -10,13 +10,13 @@ import { BadRequestError } from '%http-errors';
 
 async function getStripeEvent(
   rawBody: string | Buffer = '',
-  signature: string | string[] = ''
+  signature: string | string[] = '',
 ): Promise<Stripe.Event> {
   try {
     return await stripe.webhooks.constructEventAsync(
       rawBody,
       signature,
-      config.STRIPE_ENDPOINT_SECRET
+      config.STRIPE_ENDPOINT_SECRET,
     );
   } catch (err) {
     logError(err);
@@ -28,7 +28,7 @@ export const stripeWebhookPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.post('/webhooks/stripe', {
     config: { rawBody: true },
     handler: async (req, reply) => {
-      const signature = req.headers['stripe-signature'] || '';
+      const signature = req.headers['stripe-signature'] ?? '';
 
       const event = await getStripeEvent(req.rawBody, signature);
 

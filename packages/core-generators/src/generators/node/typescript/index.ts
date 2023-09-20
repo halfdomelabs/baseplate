@@ -33,7 +33,9 @@ import { nodeProvider } from '../node/index.js';
 // CompilerOptions which would have to be done manually
 export type TypescriptCompilerOptions = Record<string, unknown>;
 
-export type TypescriptConfigReference = { path: string };
+export interface TypescriptConfigReference {
+  path: string;
+}
 
 export interface TypescriptConfigProvider {
   setTypescriptVersion(version: string): void;
@@ -50,21 +52,21 @@ export const typescriptConfigProvider =
 
 export interface TypescriptProvider {
   createTemplate<
-    Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>
+    Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>,
   >(
     config: Config,
-    options?: Omit<TypescriptSourceFileOptions, 'pathMappings'>
+    options?: Omit<TypescriptSourceFileOptions, 'pathMappings'>,
   ): TypescriptSourceFile<Config>;
   createCopyFilesAction(
-    options: Omit<CopyTypescriptFilesOptions, 'pathMappings'>
+    options: Omit<CopyTypescriptFilesOptions, 'pathMappings'>,
   ): ReturnType<typeof copyTypescriptFilesAction>;
   createCopyAction(
-    options: Omit<CopyTypescriptFileOptions, 'pathMappings'>
+    options: Omit<CopyTypescriptFileOptions, 'pathMappings'>,
   ): ReturnType<typeof copyTypescriptFileAction>;
   renderBlockToAction(
     block: TypescriptCodeBlock,
     destination: string,
-    options?: WriteFileOptions
+    options?: WriteFileOptions,
   ): BuilderAction;
   resolveModule(moduleSpecifier: string, from: string): string;
   getCompilerOptions(): CompilerOptions;
@@ -120,19 +122,19 @@ const TypescriptGenerator = createGeneratorWithTasks({
           {
             name: 'typescript',
             defaultsOverwriteable: true,
-          }
+          },
         );
 
         function getCompilerOptions(): CompilerOptions {
           const result = ts.convertCompilerOptionsFromJson(
             config.get('compilerOptions'),
-            '.'
+            '.',
           );
           if (result.errors.length) {
             throw new Error(
               `Unable to extract compiler options: ${JSON.stringify(
-                result.errors
-              )}`
+                result.errors,
+              )}`,
             );
           }
           return result.options;
@@ -193,7 +195,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
               cachedPathEntries = Object.entries(paths).map(([key, value]) => {
                 if (value.length !== 1) {
                   throw new Error(
-                    'We do not support paths with multiple values'
+                    'We do not support paths with multiple values',
                   );
                 }
                 if (!key.endsWith('/*')) {
@@ -202,7 +204,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
                 return {
                   from: join(baseUrl, value[0].replace(/\/\*$/, '')).replace(
                     /^\./,
-                    ''
+                    '',
                   ),
                   to: key.substring(0, key.length - 2),
                 };
@@ -234,13 +236,13 @@ const TypescriptGenerator = createGeneratorWithTasks({
                 renderBlockToAction: (block, destination, options) => {
                   const file = new TypescriptSourceFile(
                     { BLOCK: { type: 'code-block' } },
-                    { pathMappings: getPathEntries() }
+                    { pathMappings: getPathEntries() },
                   );
                   file.addCodeEntries({ BLOCK: block });
                   return file.renderToActionFromText(
                     'BLOCK',
                     destination,
-                    options
+                    options,
                   );
                 },
                 resolveModule: (moduleSpecifier, from) =>
@@ -272,7 +274,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
                   references: references.length ? references : undefined,
                   ...R.mergeAll(extraSections),
                 },
-              })
+              }),
             );
           },
         };

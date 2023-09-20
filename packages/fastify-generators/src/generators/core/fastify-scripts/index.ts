@@ -48,7 +48,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
           copyFileAction({
             source: 'tsconfig.tpl.json',
             destination: 'scripts/tsconfig.json',
-          })
+          }),
         );
       },
     };

@@ -49,7 +49,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           name: 'sentryPlugin',
           plugin: TypescriptCodeUtils.createExpression(
             'sentryPlugin',
-            "import {sentryPlugin} from '@/src/plugins/sentry'"
+            "import {sentryPlugin} from '@/src/plugins/sentry'",
           ),
           orderPriority: 'EARLY',
         });
@@ -74,8 +74,8 @@ const FastifySentryGenerator = createGeneratorWithTasks({
             [
               `import { HttpError } from '${errorHandlerServiceSetup.getHttpErrorsImport()}'`,
               "import { FastifyError } from 'fastify';",
-            ]
-          )
+            ],
+          ),
         );
 
         errorHandlerServiceSetup.getHandlerFile().addCodeBlock(
@@ -88,8 +88,8 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         logErrorToSentry(new Error(error));
       }
       `,
-            "import { logErrorToSentry } from '@/src/services/sentry'"
-          )
+            "import { logErrorToSentry } from '@/src/services/sentry'",
+          ),
         );
 
         return {};
@@ -129,7 +129,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           SENTRY_DSN: {
             comment: 'Sentry DSN',
             value: TypescriptCodeUtils.createExpression(
-              'z.string().optional()'
+              'z.string().optional()',
             ),
             seedValue: '',
             exampleValue: '',
@@ -137,7 +137,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         });
 
         const [serviceImport, servicePath] = makeImportAndFilePath(
-          'src/services/sentry.ts'
+          'src/services/sentry.ts',
         );
 
         const importMap: ImportMap = {
@@ -162,8 +162,8 @@ const FastifySentryGenerator = createGeneratorWithTasks({
 
         sentryIntegrations.push(
           TypescriptCodeUtils.createExpression(
-            `new Sentry.Integrations.Http({ tracing: true })`
-          )
+            `new Sentry.Integrations.Http({ tracing: true })`,
+          ),
         );
 
         return {
@@ -190,15 +190,15 @@ const FastifySentryGenerator = createGeneratorWithTasks({
             await builder.apply(
               sentryServiceFile.renderToAction(
                 'services/sentry.ts',
-                servicePath
-              )
+                servicePath,
+              ),
             );
 
             await builder.apply(
               copyTypescriptFileAction({
                 source: 'plugins/sentry.ts',
                 destination: 'src/plugins/sentry.ts',
-              })
+              }),
             );
           },
         };
@@ -221,8 +221,8 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           id: userData.id,
           ip_address: requestData?.ip,
         });
-      }`
-            )
+      }`,
+            ),
           );
         }
         return {};
@@ -243,8 +243,8 @@ const FastifySentryGenerator = createGeneratorWithTasks({
               `import * as Sentry from '@sentry/node';`,
               `import { prisma } from '%prisma-service';`,
             ],
-            { importMappers: [prismaOutput] }
-          )
+            { importMappers: [prismaOutput] },
+          ),
         );
         return {};
       },

@@ -5,10 +5,10 @@ import {
 
 export function createRouteElement(
   componentName: string,
-  componentPath: string
+  componentPath: string,
 ): TypescriptCodeExpression {
   return TypescriptCodeUtils.createExpression(
     `<${componentName} />`,
-    `import ${componentName} from '${componentPath}'`
+    `import ${componentName} from '${componentPath}'`,
   );
 }

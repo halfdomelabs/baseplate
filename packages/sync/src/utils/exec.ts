@@ -1,8 +1,10 @@
 import { execaCommand } from 'execa';
-import _ from 'lodash';
 
 export class ExecError extends Error {
-  constructor(message: string, public readonly stderr: string) {
+  constructor(
+    message: string,
+    public readonly stderr: string,
+  ) {
     super(message);
   }
 }
@@ -13,7 +15,7 @@ export interface ExecOptions {
 
 export async function executeCommand(
   command: string,
-  options: ExecOptions
+  options: ExecOptions,
 ): Promise<string> {
   const result = await execaCommand(command, {
     cwd: options.cwd,
@@ -23,7 +25,7 @@ export async function executeCommand(
       .filter((k) => !k.startsWith('npm_'))
       .reduce(
         (acc, key) => ({ ...acc, [key]: process.env[key] }),
-        {} as Record<string, string | undefined>
+        {} as Record<string, string | undefined>,
       ),
     extendEnv: false,
   });

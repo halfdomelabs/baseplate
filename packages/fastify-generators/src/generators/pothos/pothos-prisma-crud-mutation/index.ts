@@ -95,7 +95,7 @@ const createMainTask = createTaskConfigBuilder(
           typeReferences,
           schemaBuilder: 'builder',
           fieldBuilder: 't.input',
-        }
+        },
       );
 
       return {
@@ -127,15 +127,15 @@ const createMainTask = createTaskConfigBuilder(
             ],
             {
               typeReferences: typeReferences.cloneWithObjectType(
-                pothosObjectType.getTypeReference()
+                pothosObjectType.getTypeReference(),
               ),
               schemaBuilder: 'builder',
               fieldBuilder: 't.payload',
-            }
+            },
           );
 
           const argNames = inputArgument.nestedType.fields.map(
-            (arg) => arg.name
+            (arg) => arg.name,
           );
 
           const resolveFunction = TypescriptCodeUtils.formatExpression(
@@ -153,7 +153,7 @@ const createMainTask = createTaskConfigBuilder(
                   unwrappedArguments.map((arg) => [
                     arg.name,
                     writeValueFromPothosArg(arg, tsUtils),
-                  ])
+                  ]),
                 ),
                 context: 'context',
                 query: TypescriptCodeUtils.formatExpression(
@@ -165,10 +165,10 @@ const createMainTask = createTaskConfigBuilder(
                     importText: [
                       `import { queryFromInfo } from '@pothos/plugin-prisma';`,
                     ],
-                  }
+                  },
                 ),
               }),
-            }
+            },
           );
 
           const fieldOptions = {
@@ -187,7 +187,7 @@ const createMainTask = createTaskConfigBuilder(
               NAME: quot(mutationName),
               OPTIONS:
                 TypescriptCodeUtils.mergeExpressionsAsObject(fieldOptions),
-            }
+            },
           );
 
           pothosTypesFile.registerType({
@@ -197,7 +197,7 @@ const createMainTask = createTaskConfigBuilder(
         },
       };
     },
-  })
+  }),
 );
 
 const PothosPrismaCrudMutationGenerator = createGeneratorWithTasks({

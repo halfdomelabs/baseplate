@@ -5,7 +5,6 @@ import {
   prettierProvider,
   tsUtilsProvider,
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
@@ -91,20 +90,20 @@ const NexusGenerator = createGeneratorWithTasks({
       run() {
         const configMap = createNonOverwriteableMap<NexusGeneratorConfig>(
           { nexusPlugins: [], mutationFields: [] },
-          { name: 'nexus-config' }
+          { name: 'nexus-config' },
         );
 
         configMap.appendUnique('nexusPlugins', [
           new TypescriptCodeExpression(
             'connectionPlugin({ includeNodesField: true })',
-            "import { connectionPlugin } from 'nexus'"
+            "import { connectionPlugin } from 'nexus'",
           ),
         ]);
 
         configMap.appendUnique('nexusPlugins', [
           new TypescriptCodeExpression(
             'missingTypePlugin',
-            "import { missingTypePlugin } from './missing-type-plugin'"
+            "import { missingTypePlugin } from './missing-type-plugin'",
           ),
         ]);
 
@@ -159,8 +158,8 @@ const NexusGenerator = createGeneratorWithTasks({
           'schemaTypes',
           new TypescriptCodeExpression(
             'NexusType',
-            "import type {NexusType} from '@/src/utils/nexus'"
-          )
+            "import type {NexusType} from '@/src/utils/nexus'",
+          ),
         );
 
         return {};
@@ -176,7 +175,7 @@ const NexusGenerator = createGeneratorWithTasks({
       },
       run(deps, { setupTask: { scalarMap, schemaFiles, importMap } }) {
         const getScalarConfig = (
-          scalar: ScalarFieldType
+          scalar: ScalarFieldType,
         ): NexusScalarConfig => {
           const config = scalarMap.get(scalar);
           if (!config) {
@@ -210,7 +209,7 @@ const NexusGenerator = createGeneratorWithTasks({
                     case 'STANDARD_MUTATION':
                       return new TypescriptCodeExpression(
                         'createStandardMutation',
-                        `import {createStandardMutation} from '@/src/utils/nexus'`
+                        `import {createStandardMutation} from '@/src/utils/nexus'`,
                       );
                     default:
                       throw new Error(`Unknown method ${method as string}`);
@@ -247,14 +246,12 @@ const NexusGenerator = createGeneratorWithTasks({
         {
           node,
           typescript,
-          requestServiceContext,
           eslint,
           prettier,
           tsUtils,
-          rootModuleImport,
           // yogaPluginSetup,
         },
-        { setupTask: { configMap, schemaFiles } }
+        { setupTask: { configMap } },
       ) {
         node.addPackages({
           nexus: '1.3.0',
@@ -284,50 +281,50 @@ const NexusGenerator = createGeneratorWithTasks({
               },
               {
                 importMappers: [tsUtils],
-              }
+              },
             );
             utilsFile.addCodeEntries({
               CUSTOM_MUTATION_FIELDS: new TypescriptStringReplacement(
-                config.mutationFields.map((f) => f.name).join(',\n')
+                config.mutationFields.map((f) => f.name).join(',\n'),
               ),
               CUSTOM_CREATE_MUTATION_OPTIONS: config.mutationFields.map((f) =>
                 f.type
                   .prepend(`${`${f.name}${f.isOptional ? '?' : ''}`}: `)
-                  .toBlock()
+                  .toBlock(),
               ),
             });
             await builder.apply(
-              utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts')
+              utilsFile.renderToAction('utils/nexus.ts', 'src/utils/nexus.ts'),
             );
 
-            const schemaExpression = TypescriptCodeUtils.formatExpression(
-              `makeSchema({
-                types: ROOT_MODULE.schemaTypes,
-                outputs: {
-                  typegen: join(__dirname, '../..', 'nexus-typegen.ts'),
-                  schema: join(__dirname, '../../..', 'schema.graphql'),
-                },
-                plugins: NEXUS_PLUGINS,
-                contextType: {
-                  module: join(__dirname, '../../..', 'CONTEXT_PATH'),
-                  export: 'RequestServiceContext',
-                },
-                shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
-              })`,
-              {
-                ROOT_MODULE: rootModuleImport.getRootModule(),
-                NEXUS_PLUGINS: TypescriptCodeUtils.mergeExpressionsAsArray(
-                  config.nexusPlugins
-                ),
-                CONTEXT_PATH: requestServiceContext.getContextPath(),
-              },
-              {
-                importText: [
-                  `import { makeSchema } from 'nexus';`,
-                  `import { join } from 'path';`,
-                ],
-              }
-            );
+            // const schemaExpression = TypescriptCodeUtils.formatExpression(
+            //   `makeSchema({
+            //     types: ROOT_MODULE.schemaTypes,
+            //     outputs: {
+            //       typegen: join(__dirname, '../..', 'nexus-typegen.ts'),
+            //       schema: join(__dirname, '../../..', 'schema.graphql'),
+            //     },
+            //     plugins: NEXUS_PLUGINS,
+            //     contextType: {
+            //       module: join(__dirname, '../../..', 'CONTEXT_PATH'),
+            //       export: 'RequestServiceContext',
+            //     },
+            //     shouldExitAfterGenerateArtifacts: process.argv.includes('--nexus-exit'),
+            //   })`,
+            //   {
+            //     ROOT_MODULE: rootModuleImport.getRootModule(),
+            //     NEXUS_PLUGINS: TypescriptCodeUtils.mergeExpressionsAsArray(
+            //       config.nexusPlugins
+            //     ),
+            //     CONTEXT_PATH: requestServiceContext.getContextPath(),
+            //   },
+            //   {
+            //     importText: [
+            //       `import { makeSchema } from 'nexus';`,
+            //       `import { join } from 'path';`,
+            //     ],
+            //   }
+            // );
 
             // yogaPluginSetup.getConfig().set('schema', schemaExpression);
 
@@ -335,7 +332,7 @@ const NexusGenerator = createGeneratorWithTasks({
               typescript.createCopyAction({
                 source: 'plugins/graphql/missing-type-plugin.ts',
                 destination: 'src/plugins/graphql/missing-type-plugin.ts',
-              })
+              }),
             );
 
             // builder.addPostWriteCommand('pnpm nexusgen', {
@@ -362,7 +359,7 @@ const NexusGenerator = createGeneratorWithTasks({
         // add script to generate types
         node.addScript(
           'nexusgen',
-          `tsx --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`
+          `tsx --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`,
         );
         return {};
       },

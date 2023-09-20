@@ -56,7 +56,7 @@ function ServiceEmbeddedRelationForm({
             .map((relation) => ({
               model,
               relation,
-            })) || []
+            })) ?? []
       ),
     [
       parsedProject,
@@ -102,13 +102,13 @@ function ServiceEmbeddedRelationForm({
       .map((field) => ({
         label: field.name,
         value: field.name,
-      })) || [];
+      })) ?? [];
 
   const foreignTransformerOptions =
     selectedRelation?.model.service?.transformers?.map((transformer) => ({
       label: transformer.name,
       value: transformer.name,
-    })) || [];
+    })) ?? [];
 
   return (
     <div className={classNames('space-y-4', className)}>

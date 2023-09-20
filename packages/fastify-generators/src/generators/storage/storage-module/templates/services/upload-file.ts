@@ -10,16 +10,16 @@ interface UploadFileInput extends UploadDataInput {
 
 export async function uploadFile(
   input: UploadFileInput,
-  context: ServiceContext
+  context: ServiceContext,
 ): Promise<FILE_TYPE> {
   const { data, fileCategory, adapter } = await prepareUploadData(
     input,
-    context
+    context,
   );
 
   if (!adapter.uploadFile) {
     throw new BadRequestError(
-      `Adapter for ${fileCategory.name} does not support createPresignedUploadUrl`
+      `Adapter for ${fileCategory.name} does not support createPresignedUploadUrl`,
     );
   }
 

@@ -8,7 +8,7 @@ import { getRedisClient } from '%fastify-redis';
 export function createWorker<DataType>(
   queueName: string,
   processor: string | Processor<DataType>,
-  options?: WorkerOptions
+  options?: WorkerOptions,
 ): Worker<DataType> {
   const worker = new Worker(queueName, processor, {
     connection: getRedisClient(),

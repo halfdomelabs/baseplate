@@ -6,10 +6,10 @@ import { compileAdminCrudSection } from './crud/index.js';
 export function compileAdminSections(
   featurePath: string,
   builder: AppEntryBuilder<AdminAppConfig>,
-  sectionsId: string
+  sectionsId: string,
 ): unknown[] | undefined {
   const sections = builder.appConfig.sections?.filter(
-    (s) => s.feature === featurePath
+    (s) => s.feature === featurePath,
   );
 
   if (!sections?.length) {
@@ -28,7 +28,7 @@ export function compileAdminSections(
 
 function compileAdminFeatureRecursive(
   featurePath: string,
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
   const { projectConfig, parsedProject } = builder;
   const descriptorLocation = `${featurePath}/root`;
@@ -36,19 +36,19 @@ function compileAdminFeatureRecursive(
   // find sub-features
   const subFeatures =
     projectConfig.features?.filter((f) =>
-      f.name.startsWith(`${featurePath}/`)
-    ) || [];
+      f.name.startsWith(`${featurePath}/`),
+    ) ?? [];
 
   const subDescriptors = subFeatures
     .flatMap((subFeature) =>
-      compileAdminFeatureRecursive(subFeature.name, builder)
+      compileAdminFeatureRecursive(subFeature.name, builder),
     )
     .filter(notEmpty);
 
   const sectionDescriptors = compileAdminSections(
     featurePath,
     builder,
-    `${descriptorLocation}:$sections`
+    `${descriptorLocation}:$sections`,
   );
 
   if (!subDescriptors.length && !sectionDescriptors) {
@@ -71,13 +71,13 @@ function compileAdminFeatureRecursive(
 }
 
 export function compileAdminFeatures(
-  builder: AppEntryBuilder<AdminAppConfig>
+  builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown[] {
   const { projectConfig } = builder;
   const rootFeatures =
-    projectConfig.features?.filter((f) => !f.name.includes('/')) || [];
+    projectConfig.features?.filter((f) => !f.name.includes('/')) ?? [];
 
   return rootFeatures.flatMap((feature) =>
-    compileAdminFeatureRecursive(feature.name, builder)
+    compileAdminFeatureRecursive(feature.name, builder),
   );
 }

@@ -4,14 +4,14 @@ import { EnumConfig } from '@src/schema/models/enums.js';
 import { ModelConfig } from '../../schema/models/index.js';
 
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
-  const { schema } = model || {};
+  const { schema } = model ?? {};
   const {
     authorize,
     buildQuery,
     exposedFields = [],
     exposedForeignRelations = [],
     exposedLocalRelations = [],
-  } = schema || {};
+  } = schema ?? {};
 
   return [
     {
@@ -55,10 +55,10 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
 
 function buildMutationSchemaTypeForModel(
   feature: string,
-  model: ModelConfig
+  model: ModelConfig,
 ): unknown {
-  const { schema: graphql } = model || {};
-  const { authorize } = graphql || {};
+  const { schema: graphql } = model ?? {};
+  const { authorize } = graphql ?? {};
 
   return {
     name: `${model.name}PothosMutations`,
@@ -104,12 +104,12 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
 
 export function buildSchemaTypesForFeature(
   feature: string,
-  parsedProject: ParsedProjectConfig
+  parsedProject: ParsedProjectConfig,
 ): unknown {
   const models =
     parsedProject
       .getModels()
-      .filter((m) => m.feature === feature && m.schema) || [];
+      .filter((m) => m.feature === feature && m.schema) ?? [];
   const enums = parsedProject
     .getEnums()
     .filter((e) => e.feature === feature && e.isExposed);

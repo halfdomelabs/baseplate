@@ -14,7 +14,7 @@ export function buildTaskDependencyMap(
   entry: GeneratorTaskEntry,
   parentProviders: Record<string, string>,
   globalGeneratorTaskMap: Record<string, GeneratorTaskEntry>,
-  logger: Logger
+  logger: Logger,
 ): Record<string, { id: string; options: ProviderDependencyOptions } | null> {
   return R.mapObjIndexed((dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
@@ -30,12 +30,12 @@ export function buildTaskDependencyMap(
 
       // looks for all tasks within the referenced generator that have the required export
       const referencedTaskIds = Object.keys(globalGeneratorTaskMap).filter(
-        (key) => key.startsWith(`${reference}#`)
+        (key) => key.startsWith(`${reference}#`),
       );
       const referencedTaskId = referencedTaskIds.find((key) =>
         providerMapToNames(globalGeneratorTaskMap[key].exports).includes(
-          provider
-        )
+          provider,
+        ),
       );
 
       if (!referencedTaskId) {
@@ -45,7 +45,7 @@ export function buildTaskDependencyMap(
         const tasksInFile = taskKeys.filter((key) => key.startsWith(file));
         logger.error(`Task IDs in file: ${tasksInFile.join('\n')}`);
         throw new Error(
-          `Could not resolve dependency reference ${reference} for ${entry.id}`
+          `Could not resolve dependency reference ${reference} for ${entry.id}`,
         );
       }
 
@@ -54,7 +54,7 @@ export function buildTaskDependencyMap(
       const taskProviders = providerMapToNames(referencedTask.exports);
       if (!taskProviders.includes(provider)) {
         throw new Error(
-          `${reference} does not implement ${provider} required in ${entry.id}`
+          `${reference} does not implement ${provider} required in ${entry.id}`,
         );
       }
 
@@ -64,7 +64,7 @@ export function buildTaskDependencyMap(
     if (!parentProviders[provider]) {
       if (!optional) {
         throw new Error(
-          `Could not resolve dependency ${provider} for ${entry.id}`
+          `Could not resolve dependency ${provider} for ${entry.id}`,
         );
       }
       return null;
@@ -81,7 +81,7 @@ export type EntryDependencyMap = Record<
 
 function buildHoistedProviderMap(
   entry: GeneratorEntry,
-  providers: string[]
+  providers: string[],
 ): Record<string, string> {
   if (!providers.length) {
     return {};
@@ -93,23 +93,23 @@ function buildHoistedProviderMap(
         .filter((name) => providers.includes(name))
         .reduce(
           (acc, name) => ({ ...acc, [name]: task.id }),
-          {} as Record<string, string>
-        )
-    )
+          {} as Record<string, string>,
+        ),
+    ),
   );
 
   const safeMerge = R.mergeWithKey((key) => {
     throw new Error(
-      `Duplicate hoisted provider (${key}) detected at ${entry.id}`
+      `Duplicate hoisted provider (${key}) detected at ${entry.id}`,
     );
   });
   const hoistedChildProviders = entry.children.map((child) =>
-    buildHoistedProviderMap(child, providers)
+    buildHoistedProviderMap(child, providers),
   );
   const hoistedProviders: Record<string, string> = R.reduce(
     safeMerge,
     matchingProviderMap,
-    hoistedChildProviders
+    hoistedChildProviders,
   );
 
   return hoistedProviders;
@@ -126,7 +126,7 @@ export function buildEntryDependencyMapRecursive(
   entry: GeneratorEntry,
   parentProviders: Record<string, string>,
   globalTaskMap: Record<string, GeneratorTaskEntry>,
-  logger: Logger
+  logger: Logger,
 ): EntryDependencyMap {
   const entryDependencyMaps = R.mergeAll(
     entry.tasks.map((task) => {
@@ -134,14 +134,14 @@ export function buildEntryDependencyMapRecursive(
         task,
         parentProviders,
         globalTaskMap,
-        logger
+        logger,
       );
 
       // force formatter to be optionally added since it's used by most generators
       const { formatter } = parentProviders;
       if (taskDependencyMap.formatter) {
         throw new Error(
-          `formatter cannot be set as a dependency (it is automatically set) for ${entry.id}`
+          `formatter cannot be set as a dependency (it is automatically set) for ${entry.id}`,
         );
       }
 
@@ -157,7 +157,7 @@ export function buildEntryDependencyMapRecursive(
       return {
         [task.id]: taskDependencyMap,
       };
-    })
+    }),
   );
 
   // get all the peer providers from the children and providers from self
@@ -165,8 +165,8 @@ export function buildEntryDependencyMapRecursive(
     .filter((g) => g.descriptor.peerProvider)
     .map((g) =>
       g.tasks.map((task) =>
-        providerMapToNames(task.exports).map((name) => ({ [name]: task.id }))
-      )
+        providerMapToNames(task.exports).map((name) => ({ [name]: task.id })),
+      ),
     );
 
   const safeMerge = R.mergeWithKey((key) => {
@@ -175,7 +175,7 @@ export function buildEntryDependencyMapRecursive(
   const childProviders: Record<string, string> = R.reduce(
     safeMerge,
     {},
-    R.flatten(childProviderArrays)
+    R.flatten(childProviderArrays),
   );
 
   const selfProviders = R.reduce(
@@ -184,13 +184,13 @@ export function buildEntryDependencyMapRecursive(
     entry.tasks.flatMap((task) =>
       providerMapToNames(task.exports).map((name) => ({
         [name]: task.id,
-      }))
-    )
+      })),
+    ),
   );
 
   const hoistedProviders = buildHoistedProviderMap(
     entry,
-    entry.descriptor.hoistedProviders || []
+    entry.descriptor.hoistedProviders ?? [],
   );
 
   const providerMap = {
@@ -206,9 +206,9 @@ export function buildEntryDependencyMapRecursive(
         childEntry,
         providerMap,
         globalTaskMap,
-        logger
-      )
-    )
+        logger,
+      ),
+    ),
   );
 
   return {

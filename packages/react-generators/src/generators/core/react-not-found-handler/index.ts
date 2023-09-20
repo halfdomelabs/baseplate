@@ -35,7 +35,7 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
   },
   createGenerator({ layoutKey }, { reactPages, reactComponents, typescript }) {
     const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
-      `${reactPages.getDirectoryBase()}/NotFound.page.tsx`
+      `${reactPages.getDirectoryBase()}/NotFound.page.tsx`,
     );
 
     const notFoundRoute = {
@@ -45,7 +45,7 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
         `import NotFoundPage from '${notFoundPageImport}';`,
         {
           importMappers: [reactComponents],
-        }
+        },
       ),
     };
 
@@ -65,7 +65,7 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
             source: 'NotFound.page.tsx',
             destination: notFoundPagePath,
             importMappers: [reactComponents],
-          })
+          }),
         );
       },
     };

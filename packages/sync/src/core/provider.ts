@@ -89,7 +89,7 @@ interface ProviderTypeOptions {
 
 export function createProviderType<T>(
   name: string,
-  options?: ProviderTypeOptions
+  options?: ProviderTypeOptions,
 ): ProviderType<T> {
   return {
     type: 'type',
@@ -133,7 +133,7 @@ export function createProviderType<T>(
             options: {
               ...this.options,
               dependencies: [
-                ...(this.options.dependencies || []),
+                ...(this.options.dependencies ?? []),
                 ...dependencies,
               ],
             },

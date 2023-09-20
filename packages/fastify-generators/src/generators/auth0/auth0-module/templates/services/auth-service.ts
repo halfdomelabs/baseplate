@@ -20,7 +20,7 @@ interface Auth0Jwt {
 }
 
 export async function getUserInfoFromRequest(
-  req: FastifyRequest
+  req: FastifyRequest,
 ): Promise<(UserInfo & { roles: string[] }) | null> {
   if (!req.headers.authorization) {
     return null;
@@ -28,7 +28,7 @@ export async function getUserInfoFromRequest(
 
   const verifiedJwt = await req.jwtVerify<Auth0Jwt>();
   const userId = verifiedJwt[USER_ID_CLAIM];
-  const roles = verifiedJwt[ROLES_CLAIM] || [];
+  const roles = verifiedJwt[ROLES_CLAIM] ?? [];
   const email = verifiedJwt[EMAIL_CLAIM];
 
   if (!userId) {
@@ -67,7 +67,7 @@ export async function getUserInfoFromRequest(
 }
 
 export async function createAuthInfoFromRequest(
-  req: FastifyRequest
+  req: FastifyRequest,
 ): Promise<AuthInfo> {
   const user = await getUserInfoFromRequest(req);
   if (!user) {
@@ -81,7 +81,7 @@ export async function createAuthInfoFromRequest(
 
 export async function createAuthInfoFromAuthorization(
   req: FastifyRequest,
-  authorization: string | undefined
+  authorization: string | undefined,
 ): Promise<AuthInfo> {
   // We have to manually add the header to the request since we can't
   // use server.jwt.verify due to an error

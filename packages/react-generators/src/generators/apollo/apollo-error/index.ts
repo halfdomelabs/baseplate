@@ -29,7 +29,7 @@ const ApolloErrorGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { typescript }) {
     const [utilImport, utilPath] = makeImportAndFilePath(
-      'src/utils/apollo-error.ts'
+      'src/utils/apollo-error.ts',
     );
 
     return {
@@ -48,7 +48,7 @@ const ApolloErrorGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'apollo-error.ts',
             destination: utilPath,
-          })
+          }),
         );
       },
     };

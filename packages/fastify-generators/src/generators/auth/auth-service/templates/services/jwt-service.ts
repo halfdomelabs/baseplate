@@ -12,14 +12,14 @@ export class InvalidTokenError extends UnauthorizedError {
 export const jwtService = {
   async sign<PayloadType extends JwtPayload = JwtPayload>(
     payload: PayloadType,
-    expiresIn: string | number
+    expiresIn: string | number,
   ): Promise<string> {
     return sign(payload, config.JWT_SECRET, {
       expiresIn,
     });
   },
   async verify<PayloadType extends JwtPayload = JwtPayload>(
-    token: string
+    token: string,
   ): Promise<PayloadType> {
     try {
       return verify(token, config.JWT_SECRET) as PayloadType;

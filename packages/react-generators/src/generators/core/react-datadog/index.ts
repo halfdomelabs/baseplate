@@ -36,7 +36,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ typescript, node, reactConfig, authIdentify, project }) {
     const [datadogImport, datadogPath] = makeImportAndFilePath(
-      'src/services/datadog.ts'
+      'src/services/datadog.ts',
     );
 
     node.addPackages({
@@ -61,8 +61,8 @@ const createMainTask = createTaskConfigBuilder(() => ({
         id: user.id,
         email: user.email,
       });`,
-        `import { identifyDatadogUser } from '${datadogImport}';`
-      )
+        `import { identifyDatadogUser } from '${datadogImport}';`,
+      ),
     );
 
     return {
@@ -78,7 +78,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             replacements: {
               APP_NAME: quot(project.getProjectName()),
             },
-          })
+          }),
         );
       },
     };

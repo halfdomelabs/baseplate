@@ -26,7 +26,7 @@ function COMPONENT_NAME({
       toast.success('Successfully deleted the item!');
     } catch (err) {
       toast.error(
-        logAndFormatError(err, 'Sorry we could not delete the item.')
+        logAndFormatError(err, 'Sorry we could not delete the item.'),
       );
     }
   }

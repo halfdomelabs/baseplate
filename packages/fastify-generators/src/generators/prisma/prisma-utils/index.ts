@@ -71,7 +71,7 @@ const PrismaUtilsGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { typescript, serviceContext, prismaOutput, tsUtils }
+    { typescript, serviceContext, prismaOutput, tsUtils },
   ) {
     return {
       getProviders: () => ({
@@ -85,7 +85,7 @@ const PrismaUtilsGenerator = createGeneratorWithChildren({
                   allowedImports: config.exports,
                 },
               }),
-              {}
+              {},
             ),
         },
       }),
@@ -94,7 +94,7 @@ const PrismaUtilsGenerator = createGeneratorWithChildren({
 
         // Copy all the util files that were used
         const templateFiles = Object.keys(UTIL_CONFIG_MAP).map(
-          (key) => UTIL_CONFIG_MAP[key].file
+          (key) => UTIL_CONFIG_MAP[key].file,
         );
 
         await Promise.all(
@@ -104,9 +104,9 @@ const PrismaUtilsGenerator = createGeneratorWithChildren({
                 source: file,
                 destination: `src/utils/${file}`,
                 importMappers: [serviceContext, prismaOutput, tsUtils],
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
       },
     };

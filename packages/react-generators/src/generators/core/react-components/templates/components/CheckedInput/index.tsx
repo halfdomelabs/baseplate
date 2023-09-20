@@ -54,7 +54,7 @@ function CheckedInput({
       className={classNames(
         'h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500',
         { rounded: type === 'checkbox' },
-        className
+        className,
       )}
       {...inputProps}
     />
@@ -108,7 +108,7 @@ export interface CheckedInputLabelledControllerProps<T extends FieldValues>
 }
 
 CheckedInput.LabelledController = function CheckedInputLabelledController<
-  T extends FieldValues
+  T extends FieldValues,
 >({
   control,
   name,

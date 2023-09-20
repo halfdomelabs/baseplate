@@ -13,78 +13,112 @@ export function generateConfig({
   react,
   disableJest,
 }: EslintConfig): Linter.Config {
-  const baseExtends = react
-    ? [
-        'airbnb',
-        'airbnb-typescript',
-        'airbnb/hooks',
-        'plugin:react/jsx-runtime',
-      ]
-    : ['airbnb-base', 'airbnb-typescript/base'];
-  const reactRules: Linter.RulesRecord = !react
-    ? {}
-    : {
-        'react/require-default-props': 'off',
-        'react/jsx-props-no-spreading': 'off',
-        'no-alert': 'off',
-      };
   return {
-    extends: [
-      ...baseExtends,
-      'plugin:@typescript-eslint/eslint-recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:@typescript-eslint/recommended-requiring-type-checking',
-      'plugin:import/recommended',
-      'plugin:import/typescript',
-      ...(disableJest ? [] : ['plugin:jest/recommended', 'plugin:jest/style']),
-      'prettier',
-    ],
+    root: true,
+    plugins: ['import'],
     parserOptions: {
-      project: ['./tsconfig.json', ...extraTsconfigProjects],
+      ecmaVersion: 2021,
     },
-    rules: {
-      '@typescript-eslint/explicit-function-return-type': [
-        'error',
-        { allowExpressions: true, allowTypedFunctionExpressions: true },
-      ],
-      'import/prefer-default-export': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
-      'no-underscore-dangle': ['error', { allow: ['__typename'] }],
-      'import/order': [
-        'error',
-        {
-          pathGroups: [
+    extends: [
+      'eslint:recommended',
+      ...(react
+        ? [
+            'plugin:react/recommended',
+            'plugin:react-hooks/recommended',
+            'plugin:react/jsx-runtime',
+            'plugin:jsx-a11y/recommended',
+          ]
+        : []),
+      ...(disableJest ? [] : ['plugin:jest/recommended', 'plugin:jest/style']),
+    ],
+    overrides: [
+      {
+        files: ['*.tsx', '*.ts'],
+        extends: [
+          'plugin:@typescript-eslint/recommended-type-checked',
+          'plugin:@typescript-eslint/stylistic-type-checked',
+        ],
+        rules: {
+          // useful for replacing _.omit e.g. const { a, ...rest } = obj
+          '@typescript-eslint/no-unused-vars': [
+            'error',
+            { ignoreRestSiblings: true },
+          ],
+          // allows us to pass handleSubmit from React Hook Form to onSubmit
+          '@typescript-eslint/no-misused-promises': [
+            'error',
+            { checksVoidReturn: { attributes: false } },
+          ],
+          // useful for being explicit about return types and improving Typescript performance
+          '@typescript-eslint/explicit-function-return-type': [
+            'error',
+            { allowExpressions: true, allowTypedFunctionExpressions: true },
+          ],
+        },
+        parserOptions: {
+          project: ['./tsconfig.json', ...extraTsconfigProjects],
+        },
+        settings: {
+          'import/resolver': {
+            typescript: {},
+          },
+          react: react
+            ? {
+                version: 'detect',
+              }
+            : undefined,
+        },
+      },
+      {
+        files: ['*'],
+        extends: ['prettier'],
+        rules: {
+          // we should prefer logger over console
+          'no-console': 'error',
+          // ensure we alphabetize imports for easier reading
+          'import/order': [
+            'error',
             {
-              pattern: react ? 'src/**' : '@src/**',
-              group: 'external',
-              position: 'after',
+              pathGroups: [
+                { pattern: 'src/**', group: 'external', position: 'after' },
+                { pattern: '@src/**', group: 'external', position: 'after' },
+              ],
+              alphabetize: { order: 'asc', caseInsensitive: true },
             },
           ],
-          alphabetize: { order: 'asc', caseInsensitive: true },
-        },
-      ],
-      '@typescript-eslint/require-await': 'off',
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: [
-            '**/*.test.ts',
-            'src/tests/**/*.ts',
-            'scripts/**/*.ts',
-            ...(react ? ['vite.config.ts'] : []),
+          // ensure we don't have devDependencies imported in production code
+          'import/no-extraneous-dependencies': [
+            'error',
+            {
+              devDependencies: [
+                '**/*.test-helper.ts',
+                '**/*.test.ts',
+                '**/*.stories.ts',
+                '**/*.mdx',
+                'src/tests/**/*.ts',
+                '**/__mocks__/**/*.ts',
+                '**/setupTests.ts',
+                ...(react
+                  ? [
+                      'vite.config.ts',
+                      'postcss.config.js',
+                      'postcss.config.cjs',
+                      'tailwind.config.js',
+                      'tailwind.config.cjs',
+                    ]
+                  : []),
+                '.eslintrc.js',
+                '.eslintrc.cjs',
+                'prettier.config.js',
+                'prettier.config.cjs',
+              ],
+            },
           ],
+          // Fastify plugins are more easily written as async functions and there's no real downside IMO
+          '@typescript-eslint/require-await': 'off',
+          ...extraRules,
         },
-      ],
-      '@typescript-eslint/no-misused-promises': [
-        'error',
-        {
-          checksVoidReturn: false,
-        },
-      ],
-      ...reactRules,
-      ...extraRules,
-    },
-    overrides: [
+      },
       {
         files: ['scripts/*'],
         rules: {

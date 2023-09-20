@@ -38,10 +38,10 @@ export const authSchema = z.object({
   roles: z.array(authRoleSchema).refine(
     (roles) =>
       // TODO: Add system role
-      ['anonymous', 'user'].every((name) =>
-        roles?.some((r) => r.name === name)
+      ['anonymous', 'user'].every(
+        (name) => roles?.some((r) => r.name === name),
       ),
-    { message: 'Anonymous, user, system role required' }
+    { message: 'Anonymous, user, system role required' },
   ),
 });
 
@@ -49,7 +49,7 @@ export type AuthConfig = z.infer<typeof authSchema>;
 
 export function buildAuthReferences(
   config: AuthConfig,
-  builder: ReferencesBuilder<AuthConfig>
+  builder: ReferencesBuilder<AuthConfig>,
 ): void {
   config.roles.forEach((role) => {
     builder.addReferenceable({

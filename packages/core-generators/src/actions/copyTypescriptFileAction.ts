@@ -7,7 +7,7 @@ import { PathMapEntry, TypescriptSourceFile } from '../writers/index.js';
 export interface CopyTypescriptFileOptions {
   destination?: string;
   source: string;
-  replacements?: { [key: string]: string };
+  replacements?: Record<string, string>;
   importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
   neverOverwrite?: boolean;
@@ -16,14 +16,14 @@ export interface CopyTypescriptFileOptions {
 function formatImports(
   source: string,
   destination: string,
-  options: CopyTypescriptFileOptions
+  options: CopyTypescriptFileOptions,
 ): string {
   const file = new TypescriptSourceFile(
     {},
     {
       pathMappings: options.pathMappings,
       importMappers: options.importMappers,
-    }
+    },
   );
 
   return file.renderToText(source, destination);
@@ -37,7 +37,7 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
   const templatePath = path.join(
     builder.generatorBaseDirectory,
     'templates',
-    source
+    source,
   );
 
   const fileContents = await fs.readFile(templatePath, 'utf8');
@@ -46,15 +46,15 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
   // process any replacement
   const replacedContents = Object.entries(replacements).reduce(
     (str, [key, value]) => str.replace(new RegExp(key, 'g'), value),
-    strippedContents
+    strippedContents,
   );
 
-  const destinationPath = destination || source;
+  const destinationPath = destination ?? source;
 
   const fullPath = builder.resolvePath(destinationPath);
 
   // apply any wrappers if needed
-  const needsParsing = options.importMappers || options.pathMappings;
+  const needsParsing = options.importMappers ?? options.pathMappings;
   const formattedContents = needsParsing
     ? formatImports(replacedContents, fullPath, options)
     : replacedContents;

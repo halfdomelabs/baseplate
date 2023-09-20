@@ -56,14 +56,14 @@ const FastifyServerGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { loggerService, configService, node, rootModule, typescript }
+    { loggerService, configService, node, rootModule, typescript },
   ) {
     const configMap = createNonOverwriteableMap<FastifyServerConfig>(
       {
         errorHandlerFunction:
           TypescriptCodeUtils.createExpression('console.error'),
       },
-      { name: 'fastify-server-config', defaultsOverwriteable: true }
+      { name: 'fastify-server-config', defaultsOverwriteable: true },
     );
     const plugins: FastifyServerPlugin[] = [];
 
@@ -78,14 +78,14 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       name: 'helmet',
       plugin: TypescriptCodeUtils.createExpression(
         'helmet',
-        "import helmet from '@fastify/helmet'"
+        "import helmet from '@fastify/helmet'",
       ),
       options: TypescriptCodeUtils.createExpression(
         `{
           // disable to enable Altair to function (alright since we're a backend service)
           contentSecurityPolicy: false,
           crossOriginEmbedderPolicy: false,
-        }`
+        }`,
       ),
       orderPriority: 'EARLY',
     });
@@ -94,13 +94,13 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       SERVER_HOST: {
         comment: 'Hostname to bind the server to',
         value: TypescriptCodeUtils.createExpression(
-          "z.string().default('localhost')"
+          "z.string().default('localhost')",
         ),
       },
       SERVER_PORT: {
         comment: 'Port to bind the server to',
         value: TypescriptCodeUtils.createExpression(
-          `z.coerce.number().min(1).max(65535).default(${descriptor.defaultPort})`
+          `z.coerce.number().min(1).max(65535).default(${descriptor.defaultPort})`,
         ),
       },
     });
@@ -109,8 +109,8 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       'plugins',
       TypescriptCodeUtils.createExpression(
         '(FastifyPluginCallback | FastifyPluginAsync)',
-        "import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';"
-      )
+        "import { FastifyPluginAsync, FastifyPluginCallback } from 'fastify';",
+      ),
     );
 
     return {
@@ -133,26 +133,26 @@ const FastifyServerGenerator = createGeneratorWithChildren({
           'SERVER_OPTIONS',
           TypescriptCodeUtils.mergeExpressionsAsObject({
             logger: loggerService.getLogger(),
-          })
+          }),
         );
         const configExpression = configService.getConfigExpression();
         indexFile.addCodeExpression(
           'SERVER_PORT',
           TypescriptCodeUtils.appendToExpression(
             configExpression,
-            '.SERVER_PORT'
-          )
+            '.SERVER_PORT',
+          ),
         );
         indexFile.addCodeExpression(
           'SERVER_HOST',
           TypescriptCodeUtils.appendToExpression(
             configExpression,
-            '.SERVER_HOST'
-          )
+            '.SERVER_HOST',
+          ),
         );
 
         await builder.apply(
-          indexFile.renderToAction('index.ts', 'src/index.ts')
+          indexFile.renderToAction('index.ts', 'src/index.ts'),
         );
 
         const serverFile = typescript.createTemplate({
@@ -182,15 +182,15 @@ const FastifyServerGenerator = createGeneratorWithChildren({
                   options ? `, ${options}` : ''
                 });`,
                 null,
-                mergeCodeEntryOptions([plugin.plugin, plugin.options])
+                mergeCodeEntryOptions([plugin.plugin, plugin.options]),
               );
-            })
-          )
+            }),
+          ),
         );
         serverFile.addCodeExpression('ROOT_MODULE', rootModule.getRootModule());
 
         await builder.apply(
-          serverFile.renderToAction('server.ts', 'src/server.ts')
+          serverFile.renderToAction('server.ts', 'src/server.ts'),
         );
       },
     };

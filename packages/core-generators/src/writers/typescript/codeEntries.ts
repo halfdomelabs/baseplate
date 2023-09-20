@@ -29,7 +29,7 @@ export abstract class TypescriptCodeEntry {
   constructor(
     type: string,
     importText?: string | string[] | null,
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ) {
     this.type = type;
     this.options = {
@@ -45,7 +45,7 @@ export function mergeCodeEntryOptions(
     | undefined
     | TypescriptCodeEntryOptions
     | string
-  )[]
+  )[],
 ): TypescriptCodeEntryOptions {
   const options = entriesOrOptions
     .filter(notEmpty)
@@ -55,10 +55,10 @@ export function mergeCodeEntryOptions(
     imports: R.flatten(options.map((e) => e.imports).filter(notEmpty)),
     importText: R.flatten(options.map((e) => e.importText).filter(notEmpty)),
     headerBlocks: R.flatten(
-      options.map((e) => e.headerBlocks).filter(notEmpty)
+      options.map((e) => e.headerBlocks).filter(notEmpty),
     ),
     importMappers: R.flatten(
-      R.uniq(options.map((e) => e.importMappers).filter(notEmpty))
+      R.uniq(options.map((e) => e.importMappers).filter(notEmpty)),
     ),
   };
 }
@@ -70,7 +70,7 @@ export abstract class TypescriptCodeContents extends TypescriptCodeEntry {
     type: string,
     content: string,
     importText?: string | string[] | null,
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ) {
     super(type, importText, options);
     this.content = content;
@@ -83,7 +83,7 @@ export class TypescriptStringReplacement extends TypescriptCodeContents {
   constructor(
     content: string,
     importText?: string | string[] | null,
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ) {
     super('string-replacement', content, importText, options);
   }
@@ -95,29 +95,29 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
   constructor(
     content: string,
     importText?: string | string[] | null,
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ) {
     super('code-block', content, importText, options);
   }
 
   wrap(
     wrapper: (contents: string) => string,
-    importText?: string | string[] | null
+    importText?: string | string[] | null,
   ): TypescriptCodeBlock {
     return new TypescriptCodeBlock(
       wrapper(this.content),
       importText,
-      this.options
+      this.options,
     );
   }
 
   wrapAsExpression(
-    wrapper: (contents: string) => string
+    wrapper: (contents: string) => string,
   ): TypescriptCodeExpression {
     return new TypescriptCodeExpression(
       wrapper(this.content),
       null,
-      this.options
+      this.options,
     );
   }
 
@@ -129,11 +129,11 @@ export class TypescriptCodeBlock extends TypescriptCodeContents {
   }
 
   withImportMappers(
-    mappers: ImportMapper[] | ImportMapper
+    mappers: ImportMapper[] | ImportMapper,
   ): TypescriptCodeBlock {
     return new TypescriptCodeBlock(this.content, null, {
       ...this.options,
-      importMappers: [this.options.importMappers || [], mappers].flat(),
+      importMappers: [this.options.importMappers ?? [], mappers].flat(),
     });
   }
 }
@@ -144,7 +144,7 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
   constructor(
     content: string,
     importText?: string | string[] | null,
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ) {
     super('code-expression', content, importText, options);
   }
@@ -159,12 +159,12 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
 
   wrap(
     wrapper: (contents: string) => string,
-    importText?: string | string[] | null
+    importText?: string | string[] | null,
   ): TypescriptCodeExpression {
     return new TypescriptCodeExpression(
       wrapper(this.content),
       importText,
-      this.options
+      this.options,
     );
   }
 
@@ -172,7 +172,7 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
     return new TypescriptCodeExpression(
       `${text}${this.content}`,
       null,
-      this.options
+      this.options,
     );
   }
 
@@ -180,7 +180,7 @@ export class TypescriptCodeExpression extends TypescriptCodeContents {
     return new TypescriptCodeExpression(
       `${this.content}${text}`,
       null,
-      this.options
+      this.options,
     );
   }
 }
@@ -195,7 +195,7 @@ export class TypescriptCodeWrapper extends TypescriptCodeEntry {
   constructor(
     wrapper: TypescriptCodeWrapperFunction,
     importText?: string | string[] | null,
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ) {
     super('code-wrapper', importText, options);
     this.wrap = wrapper;
@@ -204,12 +204,12 @@ export class TypescriptCodeWrapper extends TypescriptCodeEntry {
 
 function mergeBlocks(
   entries: TypescriptCodeBlock[],
-  separator = '\n'
+  separator = '\n',
 ): TypescriptCodeBlock {
   return new TypescriptCodeBlock(
     entries.map((e) => e.content).join(separator),
     null,
-    mergeCodeEntryOptions(entries)
+    mergeCodeEntryOptions(entries),
   );
 }
 
@@ -218,39 +218,39 @@ function mergeBlocks(
  */
 function mergeExpressions(
   entries: (TypescriptCodeExpression | string)[],
-  separator = '\n'
+  separator = '\n',
 ): TypescriptCodeExpression {
   return new TypescriptCodeExpression(
     entries.map((e) => getExpressionContent(e)).join(separator),
     null,
-    mergeCodeEntryOptions(entries)
+    mergeCodeEntryOptions(entries),
   );
 }
 
 function mergeStringReplacements(
   entries: TypescriptStringReplacement[],
-  separator = '\n'
+  separator = '\n',
 ): TypescriptStringReplacement {
   return new TypescriptStringReplacement(
     entries.map((e) => e.content).join(separator),
     null,
-    mergeCodeEntryOptions(entries)
+    mergeCodeEntryOptions(entries),
   );
 }
 
 function mergeWrappers(
-  entries: TypescriptCodeWrapper[]
+  entries: TypescriptCodeWrapper[],
 ): TypescriptCodeWrapper {
   return new TypescriptCodeWrapper(
     (contents) =>
       entries.reverse().reduce((prev, cur) => cur.wrap(prev), contents),
     null,
-    mergeCodeEntryOptions(entries)
+    mergeCodeEntryOptions(entries),
   );
 }
 
 function getExpressionContent(
-  expression: string | TypescriptCodeExpression
+  expression: string | TypescriptCodeExpression,
 ): string {
   return typeof expression === 'string' ? expression : expression.content;
 }
@@ -259,7 +259,7 @@ export function normalizeTypescriptCodeWrappers(
   wrappers:
     | TypescriptCodeWrapper
     | TypescriptCodeWrapper[]
-    | TypescriptCodeWrapperFunction
+    | TypescriptCodeWrapperFunction,
 ): TypescriptCodeWrapper {
   if (Array.isArray(wrappers)) {
     return mergeWrappers(wrappers);
@@ -271,7 +271,7 @@ export function normalizeTypescriptCodeWrappers(
 }
 
 export function normalizeTypescriptCodeBlock(
-  block: TypescriptCodeBlock | string
+  block: TypescriptCodeBlock | string,
 ): TypescriptCodeBlock {
   if (typeof block === 'string') {
     return new TypescriptCodeBlock(block);
@@ -280,7 +280,7 @@ export function normalizeTypescriptCodeBlock(
 }
 
 export function normalizeTypescriptCodeExpression(
-  expression: TypescriptCodeExpression | string
+  expression: TypescriptCodeExpression | string,
 ): TypescriptCodeExpression {
   if (typeof expression === 'string') {
     return new TypescriptCodeExpression(expression);
@@ -289,7 +289,7 @@ export function normalizeTypescriptCodeExpression(
 }
 
 export function normalizeTypescriptStringReplacement(
-  replacement: TypescriptStringReplacement | string
+  replacement: TypescriptStringReplacement | string,
 ): TypescriptStringReplacement {
   if (typeof replacement === 'string') {
     return new TypescriptStringReplacement(replacement);
@@ -299,7 +299,7 @@ export function normalizeTypescriptStringReplacement(
 
 function formatStringWithContent(
   str: string,
-  args: Record<string, TypescriptCodeContents | string>
+  args: Record<string, TypescriptCodeContents | string>,
 ): string {
   if (Object.keys(args).some((key) => !/^[A-Za-z_-]+$/.test(key))) {
     throw new Error('All arguments for format must follow [A-Z_-]');
@@ -322,34 +322,34 @@ export const TypescriptCodeUtils = {
   createBlock(
     code: string,
     importText: string | string[] = [],
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ): TypescriptCodeBlock {
     return new TypescriptCodeBlock(
       code,
       Array.isArray(importText) ? importText : [importText],
-      options
+      options,
     );
   },
   createExpression(
     expression: string,
     importText: string | string[] = [],
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ): TypescriptCodeExpression {
     return new TypescriptCodeExpression(
       expression,
       Array.isArray(importText) ? importText : [importText],
-      options
+      options,
     );
   },
   createWrapper(
     wrap: TypescriptCodeWrapperFunction,
     importText: string | string[] = [],
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ): TypescriptCodeWrapper {
     return new TypescriptCodeWrapper(
       wrap,
       Array.isArray(importText) ? importText : [importText],
-      options
+      options,
     );
   },
   mergeBlocks,
@@ -361,13 +361,13 @@ export const TypescriptCodeUtils = {
     wrappers:
       | TypescriptCodeWrapper
       | TypescriptCodeWrapper[]
-      | TypescriptCodeWrapperFunction
+      | TypescriptCodeWrapperFunction,
   ): TypescriptCodeExpression {
     const wrapper = normalizeTypescriptCodeWrappers(wrappers);
     return new TypescriptCodeExpression(
       wrapper.wrap(entry.content),
       null,
-      mergeCodeEntryOptions([entry, wrapper])
+      mergeCodeEntryOptions([entry, wrapper]),
     );
   },
   wrapBlock(
@@ -375,33 +375,33 @@ export const TypescriptCodeUtils = {
     wrappers:
       | TypescriptCodeWrapper
       | TypescriptCodeWrapper[]
-      | TypescriptCodeWrapperFunction
+      | TypescriptCodeWrapperFunction,
   ): TypescriptCodeBlock {
     const wrapper = normalizeTypescriptCodeWrappers(wrappers);
     return new TypescriptCodeBlock(
       wrapper.wrap(entry.content),
       null,
-      mergeCodeEntryOptions([entry, wrapper])
+      mergeCodeEntryOptions([entry, wrapper]),
     );
   },
   toBlock(entry: TypescriptCodeExpression): TypescriptCodeBlock {
     return entry.toBlock();
   },
   mergeExpressionsAsArray(
-    entries: (TypescriptCodeExpression | string)[]
+    entries: (TypescriptCodeExpression | string)[],
   ): TypescriptCodeExpression {
     const mergedExpression = mergeExpressions(entries, ', ');
     return new TypescriptCodeExpression(
       `[${mergedExpression.content}]`,
       null,
-      mergedExpression.options
+      mergedExpression.options,
     );
   },
   mergeExpressionsAsObject(
     obj: Record<string, TypescriptCodeExpression | string | undefined>,
     options: {
       wrapWithParenthesis?: boolean;
-    } = {}
+    } = {},
   ): TypescriptCodeExpression {
     const { wrapWithParenthesis = false } = options;
     const keys = Object.keys(obj);
@@ -430,7 +430,7 @@ export const TypescriptCodeUtils = {
             .trim();
           const strippedContent = content.substring(
             0,
-            content.lastIndexOf('/*')
+            content.lastIndexOf('/*'),
           );
           return `// ${comment}\n${key}: ${strippedContent},`;
         }
@@ -442,7 +442,7 @@ export const TypescriptCodeUtils = {
         ? `({${mergedExpression}\n})`
         : `{${mergedExpression}\n}`,
       null,
-      mergeCodeEntryOptions(expressions)
+      mergeCodeEntryOptions(expressions),
     );
   },
   mergeExpressionsAsJsxElement(
@@ -451,7 +451,7 @@ export const TypescriptCodeUtils = {
       string,
       TypescriptCodeExpression | string | boolean | undefined
     >,
-    importText?: string | string[] | null
+    importText?: string | string[] | null,
   ): TypescriptCodeExpression {
     const { children, ...rest } = attributes;
     const keys = Object.keys(rest);
@@ -476,8 +476,8 @@ export const TypescriptCodeUtils = {
     const codeEntryOptions = mergeCodeEntryOptions(
       Object.values(attributes).filter(
         (value): value is TypescriptCodeExpression =>
-          value instanceof TypescriptCodeExpression
-      )
+          value instanceof TypescriptCodeExpression,
+      ),
     );
 
     if (typeof children === 'boolean') {
@@ -488,17 +488,17 @@ export const TypescriptCodeUtils = {
       return new TypescriptCodeExpression(
         `<${name} ${attributesStr}>${getExpressionContent(children)}</${name}>`,
         importText,
-        codeEntryOptions
+        codeEntryOptions,
       );
     }
     return new TypescriptCodeExpression(
       `<${name} ${attributesStr} />`,
       importText,
-      codeEntryOptions
+      codeEntryOptions,
     );
   },
   mergeBlocksAsInterfaceContent(
-    obj: Record<string, TypescriptCodeExpression | string | undefined>
+    obj: Record<string, TypescriptCodeExpression | string | undefined>,
   ): TypescriptCodeBlock {
     const keys = Object.keys(obj);
     const expressions = Object.values(obj);
@@ -508,13 +508,13 @@ export const TypescriptCodeUtils = {
         (key) =>
           `${key}: ${
             normalizeTypescriptCodeExpression(obj[key] || '').content
-          };`
+          };`,
       )
       .join('\n');
     return new TypescriptCodeBlock(
       mergedBlock,
       null,
-      mergeCodeEntryOptions(expressions)
+      mergeCodeEntryOptions(expressions),
     );
   },
   formatAsComment(text: string): string {
@@ -525,53 +525,53 @@ export const TypescriptCodeUtils = {
   },
   appendToExpression(
     expression: TypescriptCodeExpression,
-    text: string
+    text: string,
   ): TypescriptCodeExpression {
     return expression.append(text);
   },
   formatBlock(
     formatString: string,
     args: Record<string, TypescriptCodeContents | string>,
-    options?: Omit<TypescriptCodeEntryOptions, 'headerKey'>
+    options?: Omit<TypescriptCodeEntryOptions, 'headerKey'>,
   ): TypescriptCodeBlock {
     return new TypescriptCodeBlock(
       formatStringWithContent(formatString, args),
       null,
       mergeCodeEntryOptions([
         ...(Object.values(args).filter(
-          isTypescriptCodeEntry
+          isTypescriptCodeEntry,
         ) as TypescriptCodeEntry[]),
         options,
-      ])
+      ]),
     );
   },
   formatExpression(
     formatString: string,
     args: Record<string, TypescriptCodeContents | string>,
-    options?: TypescriptCodeEntryOptions
+    options?: TypescriptCodeEntryOptions,
   ): TypescriptCodeExpression {
     return new TypescriptCodeExpression(
       formatStringWithContent(formatString, args),
       null,
       mergeCodeEntryOptions([
         ...(Object.values(args).filter(
-          isTypescriptCodeEntry
+          isTypescriptCodeEntry,
         ) as TypescriptCodeEntry[]),
         options,
-      ])
+      ]),
     );
   },
   extractTemplateSnippet(template: string, key: string): string {
     const startDivision = template.split(`// ${key}:START`);
     if (startDivision.length !== 2) {
       throw new Error(
-        `Could not find start divider // ${key}:START in template file`
+        `Could not find start divider // ${key}:START in template file`,
       );
     }
     const endDivision = startDivision[1].split(`// ${key}:END`);
     if (endDivision.length !== 2) {
       throw new Error(
-        `Could not find end divider // ${key}:END in template file`
+        `Could not find end divider // ${key}:END in template file`,
       );
     }
     return endDivision[0].trim();

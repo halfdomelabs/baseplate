@@ -26,7 +26,7 @@ export function COMPONENT_NAME({
       onSubmit={(e) => {
         e.stopPropagation();
         handleSubmit(onSubmit)(e).catch((err) =>
-          setError(logAndFormatError(err))
+          setError(logAndFormatError(err)),
         );
       }}
       className="space-y-4"

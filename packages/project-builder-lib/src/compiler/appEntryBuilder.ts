@@ -10,7 +10,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
 
   constructor(
     public projectConfig: ProjectConfig,
-    public appConfig: AppConfig
+    public appConfig: AppConfig,
   ) {
     this.parsedProject = new ParsedProjectConfig(projectConfig);
     this.addDescriptor = this.addDescriptor.bind(this);

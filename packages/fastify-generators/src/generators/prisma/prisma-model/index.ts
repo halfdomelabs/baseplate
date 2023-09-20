@@ -83,7 +83,7 @@ const PrismaModelGenerator = createGeneratorWithChildren({
 
     const config = createNonOverwriteableMap(
       {},
-      { name: 'prisma-model-config' }
+      { name: 'prisma-model-config' },
     );
     return {
       getProviders: () => ({

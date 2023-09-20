@@ -33,7 +33,7 @@ function createFakeWebhookEvent(data?: Partial<Stripe.Event>): Stripe.Event {
 describe('stripeWebhookPlugin', () => {
   it('handles webhook and calls stripe event service', async () => {
     mockedStripe.webhooks.constructEventAsync.mockResolvedValue(
-      createFakeWebhookEvent()
+      createFakeWebhookEvent(),
     );
 
     const fastify = Fastify();
@@ -43,7 +43,7 @@ describe('stripeWebhookPlugin', () => {
     const eventHandler = jest.fn();
     stripeEventService.registerHandler(
       'payment_intent.succeeded',
-      eventHandler
+      eventHandler,
     );
 
     const event = createFakeWebhookEvent();
@@ -60,7 +60,7 @@ describe('stripeWebhookPlugin', () => {
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockedStripe.webhooks.constructEventAsync.mock.calls[0][1]).toBe(
-      'signature'
+      'signature',
     );
 
     expect(eventHandler).toHaveBeenCalledWith(event);

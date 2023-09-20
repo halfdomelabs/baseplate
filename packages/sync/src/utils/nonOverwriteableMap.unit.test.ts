@@ -23,11 +23,11 @@ describe('createNonOverwriteableMap', () => {
   it('throws when overwriting a field', () => {
     const map = createNonOverwriteableMap(
       { fieldOne: 'valueOne', fieldTwo: 'valueTwo' },
-      { name: 'cool map', defaultsOverwriteable: true }
+      { name: 'cool map', defaultsOverwriteable: true },
     );
     map.set('fieldOne', 'valueOneOverride');
     expect(() => map.set('fieldOne', 'valueOneOverride2')).toThrow(
-      'Field fieldOne already has value in cool map'
+      'Field fieldOne already has value in cool map',
     );
   });
 
@@ -38,7 +38,7 @@ describe('createNonOverwriteableMap', () => {
         fieldTwo: 'valueTwo',
         fieldThree: 'valueThree',
       },
-      { defaultsOverwriteable: true }
+      { defaultsOverwriteable: true },
     );
     map.set('fieldOne', 'valueOneOverride');
     map.merge({ fieldTwo: 'valueTwoOverride' });
@@ -52,7 +52,7 @@ describe('createNonOverwriteableMap', () => {
   it('merges array fields', () => {
     const map = createNonOverwriteableMap(
       { fieldOne: ['a', 'b'], fieldTwo: 'valueTwo' },
-      { mergeArraysUniquely: true }
+      { mergeArraysUniquely: true },
     );
     map.appendUnique('fieldOne', ['b', 'c', 'd']);
     map.appendUnique('fieldOne', ['d', 'e', 'f']);

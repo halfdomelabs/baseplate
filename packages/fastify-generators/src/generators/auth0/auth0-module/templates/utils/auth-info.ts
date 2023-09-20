@@ -20,7 +20,7 @@ export interface AuthInfo {
 
 export function createAuthInfoFromUser(
   user: UserInfo | null,
-  roles: AuthRole[]
+  roles: AuthRole[],
 ): AuthInfo {
   return {
     user,

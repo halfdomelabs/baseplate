@@ -20,7 +20,7 @@ export function ConfirmDialogPopper(): JSX.Element {
   const textOptions = useRef<null | Partial<
     Omit<UseConfirmDialogRequestOptions, 'onSubmit'>
   >>();
-  const { title, message, onSubmit, confirmText } = confirmOptions || {};
+  const { title, message, onSubmit, confirmText } = confirmOptions ?? {};
   if (confirmOptions) {
     textOptions.current = { title, message, confirmText };
   }

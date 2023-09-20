@@ -44,7 +44,7 @@ const DockerComposeGenerator = createGeneratorWithChildren({
         generatePostgresDockerCompose({
           port: postgres.port.toString(),
           password: postgres.password || `${projectName}-password`,
-        })
+        }),
       );
     }
 
@@ -53,7 +53,7 @@ const DockerComposeGenerator = createGeneratorWithChildren({
         generateRedisDockerCompose({
           port: redis.port.toString(),
           password: redis.password || `${projectName}-password`,
-        })
+        }),
       );
     }
 
@@ -89,12 +89,12 @@ ${volumeEntries.join('\n')}`.trim();
 version: '3.9'
 
 ${entries.join('\n')}`.trim()}\n`,
-          { shouldFormat: true }
+          { shouldFormat: true },
         );
 
         builder.writeFile(
           dockerEnvPath,
-          `COMPOSE_PROJECT_NAME=${projectName}-dev\n`
+          `COMPOSE_PROJECT_NAME=${projectName}-dev\n`,
         );
       },
     };

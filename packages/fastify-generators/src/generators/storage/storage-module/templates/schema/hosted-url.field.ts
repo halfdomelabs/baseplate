@@ -14,7 +14,7 @@ builder.objectField(FILE_OBJECT_TYPE, 'hostedUrl', (t) =>
       if (!adapter) {
         throw new Error(`Unknown adapter ${adapterName}`);
       }
-      return adapter?.getHostedUrl?.(path) || null;
+      return adapter?.getHostedUrl?.(path) ?? null;
     },
-  })
+  }),
 );

@@ -18,5 +18,5 @@ export const writeJsonAction = createBuilderActionCreator<[Options]>(
       shouldFormat: !noFormat,
       preformat,
     });
-  }
+  },
 );

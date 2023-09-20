@@ -17,11 +17,11 @@ export interface PothosTypeReference {
 }
 
 export function getExpressionFromPothosTypeReference(
-  ref: PothosTypeReference
+  ref: PothosTypeReference,
 ): TypescriptCodeExpression {
   return TypescriptCodeUtils.createExpression(
     ref.exportName,
-    `import { ${ref.exportName} } from '${ref.moduleName}';`
+    `import { ${ref.exportName} } from '${ref.moduleName}';`,
   );
 }
 
@@ -29,7 +29,7 @@ export function getExpressionFromPothosTypeReference(
 
 export function safeMerge<T>(
   itemOne: Record<string, T>,
-  itemTwo: Record<string, T>
+  itemTwo: Record<string, T>,
 ): Record<string, T> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return R.mergeWithKey((key) => {
@@ -44,13 +44,13 @@ export class PothosTypeReferenceContainer {
     > = {},
     protected pothosEnums: Record<string, PothosTypeReference> = {},
     protected inputTypes: Record<string, PothosTypeReference> = {},
-    protected objectTypes: Record<string, PothosTypeReference> = {}
+    protected objectTypes: Record<string, PothosTypeReference> = {},
   ) {}
 
   public addCustomScalar(config: PothosCustomScalarConfig): void {
     if (this.customScalars[config.scalar]) {
       throw new Error(
-        `Custom scalar ${config.scalar} already has been added to PothosTypeReferenceContainer`
+        `Custom scalar ${config.scalar} already has been added to PothosTypeReferenceContainer`,
       );
     }
     this.customScalars[config.scalar] = config;
@@ -59,7 +59,7 @@ export class PothosTypeReferenceContainer {
   public addPothosEnum(config: PothosTypeReference): void {
     if (this.pothosEnums[config.typeName]) {
       throw new Error(
-        `Enum ${config.typeName} already has been added to PothosTypeReferenceContainer`
+        `Enum ${config.typeName} already has been added to PothosTypeReferenceContainer`,
       );
     }
     this.pothosEnums[config.typeName] = config;
@@ -68,7 +68,7 @@ export class PothosTypeReferenceContainer {
   public addInputType(config: PothosTypeReference): void {
     if (this.inputTypes[config.typeName]) {
       throw new Error(
-        `Input type ${config.typeName} already has been added to PothosTypeReferenceContainer`
+        `Input type ${config.typeName} already has been added to PothosTypeReferenceContainer`,
       );
     }
     this.inputTypes[config.typeName] = config;
@@ -77,20 +77,20 @@ export class PothosTypeReferenceContainer {
   public addObjectType(config: PothosTypeReference): void {
     if (this.objectTypes[config.typeName]) {
       throw new Error(
-        `Object type ${config.typeName} already has been added to PothosTypeReferenceContainer`
+        `Object type ${config.typeName} already has been added to PothosTypeReferenceContainer`,
       );
     }
     this.objectTypes[config.typeName] = config;
   }
 
   public cloneWithObjectType(
-    config: PothosTypeReference
+    config: PothosTypeReference,
   ): PothosTypeReferenceContainer {
     return new PothosTypeReferenceContainer(
       this.customScalars,
       this.pothosEnums,
       this.inputTypes,
-      safeMerge(this.objectTypes, { [config.typeName]: config })
+      safeMerge(this.objectTypes, { [config.typeName]: config }),
     );
   }
 
@@ -125,13 +125,13 @@ export class PothosTypeReferenceContainer {
   }
 
   public merge(
-    other: PothosTypeReferenceContainer
+    other: PothosTypeReferenceContainer,
   ): PothosTypeReferenceContainer {
     return new PothosTypeReferenceContainer(
       safeMerge(this.customScalars, other.customScalars),
       safeMerge(this.pothosEnums, other.pothosEnums),
       safeMerge(this.inputTypes, other.inputTypes),
-      safeMerge(this.objectTypes, other.objectTypes)
+      safeMerge(this.objectTypes, other.objectTypes),
     );
   }
 }

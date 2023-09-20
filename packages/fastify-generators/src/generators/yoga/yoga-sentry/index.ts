@@ -24,7 +24,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ fastifySentry, yogaPluginSetup, typescript, errorHandlerService }) {
     const [pluginImport, pluginPath] = makeImportAndFilePath(
-      'src/plugins/graphql/useSentry.ts'
+      'src/plugins/graphql/useSentry.ts',
     );
     yogaPluginSetup.getConfig().appendUnique('envelopPlugins', [
       new TypescriptCodeExpression(
@@ -32,7 +32,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             configureScope: (args, scope) => configureSentryScope(scope),
             skipError: (error) =>
               !shouldLogToSentry(
-                error instanceof GraphQLError ? error.originalError || error : error
+                error instanceof GraphQLError ? error.originalError ?? error : error
               ),
             eventIdKey: null,
           })`,
@@ -41,7 +41,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
           "import { configureSentryScope } from '%fastify-sentry/service';",
           "import { shouldLogToSentry } from '%fastify-sentry/logger';",
         ],
-        { importMappers: [fastifySentry] }
+        { importMappers: [fastifySentry] },
       ),
     ]);
     ///
@@ -53,7 +53,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             source: 'useSentry.ts',
             destination: pluginPath,
             importMappers: [errorHandlerService, fastifySentry],
-          })
+          }),
         );
       },
     };

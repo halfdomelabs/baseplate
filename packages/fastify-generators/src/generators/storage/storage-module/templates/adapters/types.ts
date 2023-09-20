@@ -20,13 +20,13 @@ export interface AdapterPresignedUploadUrlInput {
 
 export interface StorageAdapter {
   createPresignedUploadUrl?: (
-    input: AdapterPresignedUploadUrlInput
+    input: AdapterPresignedUploadUrlInput,
   ) => Promise<AdapterPresignedUploadUrlPayload>;
   createPresignedDownloadUrl?: (path: string) => Promise<string>;
   getHostedUrl?: (path: string) => string | null;
   uploadFile?: (
     path: string,
-    contents: Buffer | ReadableStream | string
+    contents: Buffer | ReadableStream | string,
   ) => Promise<void>;
   downloadFile?: (path: string) => Promise<Readable>;
 }

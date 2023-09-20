@@ -20,7 +20,7 @@ function getRefreshCookieName(context: RequestServiceContext): string {
 }
 
 export function getRefreshTokenFromCookie(
-  context: RequestServiceContext
+  context: RequestServiceContext,
 ): string | undefined {
   const cookieName = getRefreshCookieName(context);
   return context.cookieStore.get(cookieName);
@@ -28,7 +28,7 @@ export function getRefreshTokenFromCookie(
 
 export function setRefreshTokenIntoCookie(
   context: RequestServiceContext,
-  refreshToken: string
+  refreshToken: string,
 ): void {
   const cookieName = getRefreshCookieName(context);
   context.cookieStore.set(cookieName, refreshToken, {
@@ -41,7 +41,7 @@ export function setRefreshTokenIntoCookie(
 }
 
 export function clearRefreshTokenFromCookie(
-  context: RequestServiceContext
+  context: RequestServiceContext,
 ): void {
   const cookieName = getRefreshCookieName(context);
   context.cookieStore.clear(cookieName);
@@ -49,7 +49,7 @@ export function clearRefreshTokenFromCookie(
 
 export function formatRefreshTokens(
   context: RequestServiceContext,
-  payload: AuthPayload
+  payload: AuthPayload,
 ): NexusGenFieldTypes['AuthPayload'] {
   // if request needs refresh token returned directly, e.g. mobile app
   // return the refresh token in the payload
