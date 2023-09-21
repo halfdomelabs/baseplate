@@ -160,7 +160,9 @@ export interface GeneratorWithTasksConfig<DescriptorSchema extends z.ZodType> {
  * @param config Configuration of the generator
  * @returns Normal generator
  */
-export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
+export function createGeneratorWithTasks<
+  DescriptorSchema extends z.SomeZodObject,
+>(
   config: GeneratorWithTasksConfig<DescriptorSchema>,
 ): GeneratorConfig<DescriptorWithChildren & z.infer<DescriptorSchema>> {
   return {

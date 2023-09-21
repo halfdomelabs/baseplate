@@ -103,7 +103,7 @@ export async function buildGeneratorEntry(
     });
 
   const tasks = generatorConfig
-    .createGenerator(validatedDescriptor || descriptor)
+    .createGenerator(validatedDescriptor ?? descriptor)
     .map(
       (task): GeneratorTaskEntry => ({
         id: `${id}#${task.name}`,

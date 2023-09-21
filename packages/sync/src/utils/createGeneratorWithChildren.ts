@@ -57,7 +57,7 @@ export function createGeneratorWithChildren<
   config: SimpleGeneratorConfig<DescriptorSchema, ExportMap, DependencyMap>,
 ): GeneratorConfig<DescriptorWithChildren & z.infer<DescriptorSchema>> {
   let dependencyMap: DependencyMap =
-    config.dependencies || ({} as DependencyMap);
+    config.dependencies ?? ({} as DependencyMap);
 
   return {
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
@@ -100,7 +100,7 @@ export function createGeneratorWithChildren<
           // if descriptor child is null, assume it's been explicitly removed
           if (
             (!defaultDescriptor && !descriptorChild) ||
-            (!descriptorChild && defaultToNullIfEmpty) ||
+            (!descriptorChild && !!defaultToNullIfEmpty) ||
             descriptorChild === null
           ) {
             return null;
