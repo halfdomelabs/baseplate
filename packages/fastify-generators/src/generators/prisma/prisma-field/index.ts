@@ -36,7 +36,7 @@ const descriptorSchema = z
   .superRefine((obj, ctx) => {
     // TODO: Clean up
     const schema = prismaScalarFieldTypes[obj.type]?.optionsSchema;
-    if (schema) {
+    if (schema && obj.options) {
       const parseResult = schema.safeParse(obj.options);
       if (!parseResult.success) {
         ctx.addIssue(parseResult.error.errors[0]);
