@@ -110,6 +110,8 @@ function createEmbeddedTransformFunction(options: {
     whereUniqueType,
   } = options;
 
+  dataMethodOptions.prismaOutput.getPrismaModel(dataMethodOptions.modelName);
+
   const isAsync = dataMethodOptions.transformers.some((t) => t.isAsync);
 
   const { functionBody, createExpression, updateExpression, dataPipeNames } =
@@ -123,6 +125,18 @@ function createEmbeddedTransformFunction(options: {
   const outputType = isAsync
     ? outputPipeType.wrap((contents) => `Promise<${contents}>`)
     : outputPipeType;
+
+  // get a primary key to add a dummy where unique (since create operations don't have a whereunique)
+  const prismaModel = options.dataMethodOptions.prismaOutput.getPrismaModel(
+    options.dataMethodOptions.modelName,
+  );
+
+  const primaryKey = prismaModel.idFields?.[0];
+  if (!primaryKey) {
+    throw new Error(
+      `Model ${options.dataMethodOptions.modelName} must have at least one primary key`,
+    );
+  }
 
   const func = TypescriptCodeUtils.formatBlock(
     `${
@@ -139,7 +153,9 @@ function createEmbeddedTransformFunction(options: {
       WHERE_UNIQUE_TYPE: whereUniqueType,
       DATA_RESULT: TypescriptCodeUtils.mergeExpressionsAsObject({
         data: TypescriptCodeUtils.mergeExpressionsAsObject({
-          where: isOneToOne ? undefined : 'whereUnique ?? {}',
+          where: isOneToOne
+            ? undefined
+            : `whereUnique ?? { ${primaryKey}: '' }`,
           create: createExpression,
           update: updateExpression,
         }),
@@ -197,7 +213,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
       operationType,
     }: PrismaDataTransformerOptions): PrismaDataTransformer {
       const modelName = prismaCrudServiceSetup.getModelName();
-      const inputName = inputNameDescriptor || localRelationName;
+      const inputName = inputNameDescriptor ?? localRelationName;
 
       const { localModel, foreignModel, localRelation, foreignRelation } =
         getForeignModelRelation(prismaOutput, modelName, localRelationName);

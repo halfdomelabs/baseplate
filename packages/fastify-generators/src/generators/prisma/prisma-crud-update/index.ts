@@ -123,7 +123,7 @@ export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateSer
           ? 'id'
           : `id : ${primaryKey.argumentName}`,
       PRIMARY_KEY_TYPE: primaryKey.argumentType,
-      QUERY_ARGS: `Prisma.${modelName}Args`,
+      QUERY_ARGS: `Prisma.${modelName}DefaultArgs`,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
       FUNCTION_BODY: functionBody,
       OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),

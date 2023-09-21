@@ -38,7 +38,7 @@
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
-    "@prisma/internals": "4.16.2",
+    "@prisma/internals": "5.3.1",
     "@types/eslint": "^8.44.1",
     "@types/resolve": "^1.20.2",
     "change-case": "^4.1.2",

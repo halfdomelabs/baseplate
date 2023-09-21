@@ -107,7 +107,7 @@ export async function METHOD_NAME({ data, query, EXTRA_ARGS }: CreateServiceInpu
       CREATE_INPUT_TYPE_NAME: createInputTypeName,
       MODEL_TYPE: modelType,
       EXTRA_ARGS: contextRequired ? 'context' : '',
-      QUERY_ARGS: `Prisma.${modelName}Args`,
+      QUERY_ARGS: `Prisma.${modelName}DefaultArgs`,
       FUNCTION_BODY: functionBody,
       OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
     },
