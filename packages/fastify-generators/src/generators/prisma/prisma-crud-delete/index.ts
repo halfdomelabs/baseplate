@@ -96,7 +96,7 @@ return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
           ? 'id'
           : `id : ${primaryKey.argumentName}`,
       PRIMARY_KEY_TYPE: primaryKey.argumentType,
-      QUERY_ARGS: `Prisma.${modelName}Args`,
+      QUERY_ARGS: `Prisma.${modelName}DefaultArgs`,
       WHERE_CLAUSE: primaryKey.whereClause,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
     },

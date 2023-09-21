@@ -89,11 +89,11 @@ const PrismaGenerator = createGeneratorWithTasks({
         typescript,
       }) {
         node.addDevPackages({
-          prisma: '4.16.2',
+          prisma: '5.3.1',
         });
 
         node.addPackages({
-          '@prisma/client': '4.16.2',
+          '@prisma/client': '5.3.1',
         });
 
         // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
@@ -125,7 +125,7 @@ const PrismaGenerator = createGeneratorWithTasks({
         );
 
         const defaultDatabaseUrl =
-          descriptor.defaultDatabaseUrl ||
+          descriptor.defaultDatabaseUrl ??
           `postgres://postgres:${project.getProjectName()}-password@localhost:${
             descriptor.defaultPort
           }/postgres?schema=public`;
