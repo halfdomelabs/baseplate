@@ -12,7 +12,7 @@ declare module 'fastify' {
 }
 
 function getTransactionName(request: FastifyRequest): string {
-  return `${request.method} ${request.routerPath}`;
+  return `${request.method} ${request.routeOptions.url || request.url}`;
 }
 
 export const sentryPlugin = fp(async (fastify) => {
@@ -41,13 +41,20 @@ export const sentryPlugin = fp(async (fastify) => {
     );
     req.sentryTransaction = transaction;
 
-    Sentry.getCurrentHub().configureScope((scope) => {
-      transaction.setData('url', requestData.url);
-      transaction.setData('query', requestData.query_string);
-      scope.setSpan(transaction);
-    });
+    transaction.setData('url', requestData.url);
+    transaction.setData('query', requestData.query_string);
 
-    done();
+    Sentry.runWithAsyncContext(() => {
+      Sentry.getCurrentHub().configureScope((scope) => {
+        scope.setSpan(transaction);
+        scope.addEventProcessor((event) => ({
+          ...event,
+          request: { ...event.request, ...requestData },
+        }));
+      });
+
+      done();
+    });
   });
 
   fastify.addHook('onResponse', async (req, reply) => {
@@ -59,5 +66,9 @@ export const sentryPlugin = fp(async (fastify) => {
       transaction.setHttpStatus(reply.statusCode);
       transaction.finish();
     });
+  });
+
+  fastify.addHook('onClose', (instance, done) => {
+    Sentry.close(2000).then(() => done(), done);
   });
 });

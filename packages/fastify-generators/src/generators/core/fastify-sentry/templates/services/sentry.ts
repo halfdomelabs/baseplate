@@ -48,10 +48,10 @@ export function isSentryEnabled(): boolean {
   return SENTRY_ENABLED;
 }
 
-export function getUrlQueryString(url: string): string {
+export function getUrlQueryString(url: string): string | undefined {
   // need arbitrary base to make URL work
   const parsedUrl = new URL(url, 'http://a');
-  return parsedUrl.search;
+  return parsedUrl.search || undefined;
 }
 
 export function extractSentryRequestData(
@@ -73,11 +73,6 @@ export function configureSentryScope(scope: Sentry.Scope): void {
     });
     scope.setTag('path', requestData.url);
     scope.setTag('request_id', requestData.id);
-    const sentryRequestData = extractSentryRequestData(requestData);
-    scope.addEventProcessor((event) => ({
-      ...event,
-      request: { ...event.request, ...sentryRequestData },
-    }));
   }
 
   SCOPE_CONFIGURATION_BLOCKS;
