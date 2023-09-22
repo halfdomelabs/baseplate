@@ -61,11 +61,11 @@ const ServiceContextGenerator = createGeneratorWithTasks({
         >({}, { name: 'service-context-fields' });
 
         const [contextImport, contextPath] = makeImportAndFilePath(
-          'src/utils/service-context.ts'
+          'src/utils/service-context.ts',
         );
 
         const [testHelperImport, testHelperPath] = makeImportAndFilePath(
-          'src/tests/helpers/service-context.test-helper.ts'
+          'src/tests/helpers/service-context.test-helper.ts',
         );
 
         const importMap = {
@@ -93,30 +93,30 @@ const ServiceContextGenerator = createGeneratorWithTasks({
             const contextFields = contextFieldsMap.value();
 
             const contextArgs = Object.values(contextFields).flatMap(
-              (f) => f.contextArg || []
+              (f) => f.contextArg ?? [],
             );
 
             const contextFile = typescript.createTemplate({
               CONTEXT_FIELDS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                R.mapObjIndexed((field) => field.type, contextFields)
+                R.mapObjIndexed((field) => field.type, contextFields),
               ),
               CREATE_CONTEXT_ARGS: TypescriptCodeUtils.mergeExpressions(
                 contextArgs.map((arg) =>
-                  arg.type.wrap((contents) => `${arg.name}: ${contents}`)
+                  arg.type.wrap((contents) => `${arg.name}: ${contents}`),
                 ),
-                '; '
+                '; ',
               ).wrap(
                 (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
-          `
+          `,
               ),
               CONTEXT_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-                R.mapObjIndexed((field) => field.value, contextFields)
+                R.mapObjIndexed((field) => field.value, contextFields),
               ),
             });
 
             await builder.apply(
-              contextFile.renderToAction('service-context.ts', contextPath)
+              contextFile.renderToAction('service-context.ts', contextPath),
             );
 
             const testHelperFile = typescript.createTemplate(
@@ -125,14 +125,14 @@ const ServiceContextGenerator = createGeneratorWithTasks({
                   contextArgs.map((arg) =>
                     arg.type.wrap(
                       (contents) =>
-                        `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`
-                    )
+                        `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`,
+                    ),
                   ),
-                  '; '
+                  '; ',
                 ).wrap(
                   (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}} = {}
-          `
+          `,
                 ),
                 TEST_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
                   R.fromPairs(
@@ -141,18 +141,18 @@ const ServiceContextGenerator = createGeneratorWithTasks({
                       arg.testDefault
                         ? arg.testDefault.prepend(`${arg.name} ?? `)
                         : TypescriptCodeUtils.createExpression(arg.name),
-                    ])
-                  )
+                    ]),
+                  ),
                 ),
               },
-              { importMappers: [{ getImportMap: () => importMap }] }
+              { importMappers: [{ getImportMap: () => importMap }] },
             );
 
             await builder.apply(
               testHelperFile.renderToAction(
                 'service-context.test-helper.ts',
-                testHelperPath
-              )
+                testHelperPath,
+              ),
             );
 
             return { importMap, contextPath, contextImport };
@@ -174,7 +174,7 @@ const ServiceContextGenerator = createGeneratorWithTasks({
               getServiceContextType: () =>
                 TypescriptCodeUtils.createExpression(
                   'ServiceContext',
-                  `import {ServiceContext} from '${contextImport}'`
+                  `import {ServiceContext} from '${contextImport}'`,
                 ),
             },
           }),

@@ -26,7 +26,7 @@ export function NewProjectCard({
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       name: existingProject?.name,
-      portOffset: existingProject?.portOffset || 3000,
+      portOffset: existingProject?.portOffset ?? 3000,
     },
     resolver: zodResolver(schema),
   });

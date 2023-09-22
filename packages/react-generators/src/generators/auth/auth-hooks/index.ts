@@ -52,19 +52,19 @@ const AuthHooksGenerator = createGeneratorWithChildren({
       reactLogger,
       reactError,
       node,
-    }
+    },
   ) {
     const currentUserFields: string[] = [];
 
     const hookFolder = 'src/hooks';
     const [useCurrentUserImport, useCurrentUserPath] = makeImportAndFilePath(
-      `${hookFolder}/useCurrentUser.ts`
+      `${hookFolder}/useCurrentUser.ts`,
     );
     const [useLogOutImport, useLogOutPath] = makeImportAndFilePath(
-      `${hookFolder}/useLogOut.ts`
+      `${hookFolder}/useLogOut.ts`,
     );
     const [useSessionImport, useSessionPath] = makeImportAndFilePath(
-      `${hookFolder}/useSession.ts`
+      `${hookFolder}/useSession.ts`,
     );
     const [useRequiredUserIdImport, useRequiredUserIdPath] =
       makeImportAndFilePath(`${hookFolder}/useRequiredUserId.ts`);
@@ -111,7 +111,7 @@ const AuthHooksGenerator = createGeneratorWithChildren({
               USER_QUERY: userQueryName,
             },
             importMappers: [reactApollo],
-          })
+          }),
         );
 
         await builder.apply(
@@ -123,7 +123,7 @@ const AuthHooksGenerator = createGeneratorWithChildren({
               CURRENT_USER_FIELDS: currentUserFields.join('\n'),
               USER_QUERY: userQueryName,
             },
-          })
+          }),
         );
         reactApollo.registerGqlFile(`${hookFolder}/useCurrentUser.gql`);
 
@@ -138,7 +138,7 @@ const AuthHooksGenerator = createGeneratorWithChildren({
               reactLogger,
               reactError,
             ],
-          })
+          }),
         );
 
         await builder.apply(
@@ -146,7 +146,7 @@ const AuthHooksGenerator = createGeneratorWithChildren({
             source: 'hooks/useLogOut.gql',
             destination: `${hookFolder}/useLogOut.gql`,
             shouldFormat: true,
-          })
+          }),
         );
         reactApollo.registerGqlFile(`${hookFolder}/useLogOut.gql`);
 
@@ -155,14 +155,14 @@ const AuthHooksGenerator = createGeneratorWithChildren({
             source: 'hooks/useSession.ts',
             destination: useSessionPath,
             importMappers: [authService],
-          })
+          }),
         );
 
         await builder.apply(
           typescript.createCopyAction({
             source: 'hooks/useRequiredUserId.ts',
             destination: useRequiredUserIdPath,
-          })
+          }),
         );
       },
     };

@@ -13,7 +13,7 @@ function Card({ className, padding, children }: Props): JSX.Element {
       className={classNames(
         'max-w-sm rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800',
         { 'sm:p-6 lg:p-8': padding },
-        className
+        className,
       )}
     >
       {children}

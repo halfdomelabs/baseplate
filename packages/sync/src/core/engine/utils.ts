@@ -9,9 +9,9 @@ import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder.js';
 /**
  * Converts a provider map to a list of provider names
  */
-export function providerMapToNames(map?: {
-  [key: string]: ProviderType | ProviderDependency | ProviderExport;
-}): string[] {
+export function providerMapToNames(
+  map?: Record<string, ProviderType | ProviderDependency | ProviderExport>,
+): string[] {
   if (!map) {
     return [];
   }
@@ -29,10 +29,10 @@ export function getGeneratorEntryExportNames(entry: GeneratorEntry): string[] {
  * @returns Flat list of generator entry and its children
  */
 export function flattenGeneratorEntries(
-  entry: GeneratorEntry
+  entry: GeneratorEntry,
 ): GeneratorEntry[] {
   const childEntries = entry.children.map((child) =>
-    flattenGeneratorEntries(child)
+    flattenGeneratorEntries(child),
   );
   return R.flatten([entry, ...childEntries]);
 }
@@ -44,7 +44,7 @@ export function flattenGeneratorEntries(
  * @returns Flat list of generator entry and its children
  */
 export function flattenGeneratorTaskEntries(
-  entry: GeneratorEntry
+  entry: GeneratorEntry,
 ): GeneratorTaskEntry[] {
   const entries = flattenGeneratorEntries(entry);
   return entries.flatMap((e) => e.tasks);

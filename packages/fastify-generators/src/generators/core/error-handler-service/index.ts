@@ -39,14 +39,14 @@ export interface ErrorHandlerServiceSetupProvider extends ImportMapper {
 
 export const errorHandlerServiceSetupProvider =
   createProviderType<ErrorHandlerServiceSetupProvider>(
-    'error-handler-service-setup'
+    'error-handler-service-setup',
   );
 
 export interface ErrorHandlerServiceProvider extends ImportMapper {
   getHttpErrorsImport(): string;
   getErrorFunction(): TypescriptCodeExpression;
   getHttpErrorExpression(
-    error: keyof typeof ERROR_MAP
+    error: keyof typeof ERROR_MAP,
   ): TypescriptCodeExpression;
 }
 
@@ -70,7 +70,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { loggerService, fastifyServer, typescript, configService }
+    { loggerService, fastifyServer, typescript, configService },
   ) {
     const errorLoggerFile = typescript.createTemplate(errorHandlerFileConfig);
 
@@ -78,14 +78,14 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
       name: 'errorHandlerPlugin',
       plugin: TypescriptCodeUtils.createExpression(
         'errorHandlerPlugin',
-        "import { errorHandlerPlugin } from '@/src/plugins/error-handler'"
+        "import { errorHandlerPlugin } from '@/src/plugins/error-handler'",
       ),
       orderPriority: 'EARLY',
     });
 
     const errorFunction = TypescriptCodeUtils.createExpression(
       'logError',
-      "import { logError } from '@/src/services/error-logger'"
+      "import { logError } from '@/src/services/error-logger'",
     );
 
     fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
@@ -115,7 +115,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
           getHttpErrorExpression: (error) =>
             new TypescriptCodeExpression(
               ERROR_MAP[error],
-              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`
+              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`,
             ),
           getImportMap: () => importMap,
         },
@@ -126,9 +126,9 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
           TypescriptCodeUtils.toBlock(
             TypescriptCodeUtils.wrapExpression(
               loggerService.getLogger(),
-              (code) => `${code}.error(error);`
-            )
-          )
+              (code) => `${code}.error(error);`,
+            ),
+          ),
         );
 
         await builder.apply(
@@ -136,14 +136,14 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
             source: 'plugins/error-handler.ts',
             destination: 'src/plugins/error-handler.ts',
             importMappers: [configService],
-          })
+          }),
         );
 
         await builder.apply(
           errorLoggerFile.renderToAction(
             'services/error-logger.ts',
-            'src/services/error-logger.ts'
-          )
+            'src/services/error-logger.ts',
+          ),
         );
 
         await builder.apply(
@@ -151,7 +151,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
             source: 'utils/http-errors.ts',
             destination: 'src/utils/http-errors.ts',
             shouldFormat: true,
-          })
+          }),
         );
       },
     };

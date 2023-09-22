@@ -9,9 +9,9 @@ const descriptorSchema = z.object({
   additionalExclusions: z.array(z.string().min(1)).optional(),
 });
 
-export type NodeGitIgnoreProvider = {
+export interface NodeGitIgnoreProvider {
   addExclusions(exclusions: string[]): void;
-};
+}
 
 export const nodeGitIgnoreProvider =
   createProviderType<NodeGitIgnoreProvider>('node-git-ignore');
@@ -71,7 +71,7 @@ const NodeGitIgnoreGenerator = createGeneratorWithChildren({
           writeFormattedAction({
             destination: '.gitignore',
             contents: `${exclusionLines.join('\n')}\n`,
-          })
+          }),
         );
       },
     };

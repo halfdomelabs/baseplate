@@ -15,7 +15,7 @@ interface PrimaryKeyOutput {
 }
 
 export function getPrimaryKeyDefinition(
-  model: PrismaOutputModel
+  model: PrismaOutputModel,
 ): ServiceOutputDtoField {
   const { idFields, fields } = model;
   if (!idFields?.length) {
@@ -50,7 +50,7 @@ export function getPrimaryKeyDefinition(
         const field = fields.find((f) => f.name === idField);
         if (!field || field.type !== 'scalar') {
           throw new Error(
-            `ID field ${idField} in model ${model.name} must be a scalar`
+            `ID field ${idField} in model ${model.name} must be a scalar`,
           );
         }
 
@@ -65,7 +65,7 @@ export function getPrimaryKeyDefinition(
 }
 
 export function getPrimaryKeyExpressions(
-  model: PrismaOutputModel
+  model: PrismaOutputModel,
 ): PrimaryKeyOutput {
   const { idFields, fields } = model;
   if (!idFields?.length) {
@@ -82,7 +82,7 @@ export function getPrimaryKeyExpressions(
     }
 
     const argumentType = getScalarFieldTypeInfo(
-      idField.scalarType
+      idField.scalarType,
     ).typescriptType;
 
     return {
@@ -103,7 +103,7 @@ export function getPrimaryKeyExpressions(
     `import {${model.name}} from '@prisma/client';`,
     {
       headerKey: primaryKeyInputName,
-    }
+    },
   );
 
   return {

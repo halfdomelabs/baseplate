@@ -13,7 +13,7 @@ function AppApolloProvider({ children }: Props): JSX.Element {
 
   const client = useMemo(
     () => createApolloClient(CREATE_ARG_VALUE),
-    [CREATE_ARGS]
+    [CREATE_ARGS],
   );
 
   return <ApolloProvider client={client}>{children}</ApolloProvider>;

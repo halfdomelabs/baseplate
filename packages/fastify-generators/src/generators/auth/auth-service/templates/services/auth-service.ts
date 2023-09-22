@@ -22,11 +22,11 @@ export const REFRESH_TOKEN_EXPIRY_SECONDS =
 async function issueUserAuthPayload(userId: string): Promise<AuthPayload> {
   const accessToken = await jwtService.sign<AuthJwtPayload>(
     { sub: userId, type: 'access' },
-    ACCESS_TOKEN_EXPIRY_SECONDS
+    ACCESS_TOKEN_EXPIRY_SECONDS,
   );
   const refreshToken = await jwtService.sign<AuthJwtPayload>(
     { sub: userId, type: 'refresh' },
-    REFRESH_TOKEN_EXPIRY_SECONDS
+    REFRESH_TOKEN_EXPIRY_SECONDS,
   );
   return { userId, refreshToken, accessToken };
 }
@@ -37,7 +37,7 @@ async function issueUserAuthPayload(userId: string): Promise<AuthPayload> {
  */
 function isJwtIssueDateValid(
   payload: JwtPayload,
-  notBefore: Date | null
+  notBefore: Date | null,
 ): boolean {
   if (!notBefore) {
     return true;
@@ -52,7 +52,7 @@ export async function loginUser(userId: string): Promise<AuthPayload> {
 
 export async function renewToken(
   userId: string,
-  refreshToken: string
+  refreshToken: string,
 ): Promise<AuthPayload> {
   const user = await USER_MODEL.findUnique({
     where: { USER_ID_NAME: userId },
@@ -106,7 +106,7 @@ async function getUserInfoFromToken(accessToken: string): Promise<UserInfo> {
 }
 
 export async function getUserInfoFromAuthorization(
-  authorization?: string
+  authorization?: string,
 ): Promise<UserInfo | null> {
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return null;
@@ -116,7 +116,7 @@ export async function getUserInfoFromAuthorization(
 }
 
 export async function createAuthInfoFromAuthorization(
-  authorization: string | undefined
+  authorization: string | undefined,
 ): Promise<AuthInfo> {
   const user = await getUserInfoFromAuthorization(authorization);
   if (!user) {

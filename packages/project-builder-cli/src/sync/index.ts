@@ -31,13 +31,13 @@ export async function getGeneratorEngine(): Promise<GeneratorEngine> {
             (await packageDirectory({
               cwd: resolveModule(moduleName),
             })) || '',
-          ]
-        )
+          ],
+        ),
       );
       const generators = await Promise.all(
         resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
-          loadGeneratorsForModule(moduleName, modulePath)
-        )
+          loadGeneratorsForModule(moduleName, modulePath),
+        ),
       );
       const generatorMap = R.mergeAll(generators);
 
@@ -54,7 +54,7 @@ interface BuildResultFile {
 export async function generateForDirectory(
   baseDirectory: string,
   appEntry: AppEntry,
-  logger: Logger = console
+  logger: Logger = console,
 ): Promise<void> {
   const { rootDirectory, name } = appEntry;
   const engine = await getGeneratorEngine();
@@ -75,11 +75,11 @@ export async function generateForDirectory(
     await engine.writeOutput(output, projectDirectory, { cleanDirectory });
   } else {
     logger.log(
-      'Detected project clean folder. Attempting 3-way mediocre-merge...'
+      'Detected project clean folder. Attempting 3-way mediocre-merge...',
     );
     const cleanTmpDirectory = path.join(
       projectDirectory,
-      'baseplate/.clean_tmp'
+      'baseplate/.clean_tmp',
     );
 
     try {
@@ -89,13 +89,13 @@ export async function generateForDirectory(
         await Promise.all(
           files.map(async (filePath) => {
             const contents = await fs.readFile(
-              path.join(cleanDirectory, filePath)
+              path.join(cleanDirectory, filePath),
             );
             return {
               filePath,
               contents,
             };
-          })
+          }),
         );
 
       const augmentedOutput = {
@@ -104,7 +104,7 @@ export async function generateForDirectory(
           Object.entries(output.files).map(
             ([filePath, data]): Record<string, FileData> => {
               const cleanFile = cleanProjectFiles.find(
-                (f) => f.filePath === filePath
+                (f) => f.filePath === filePath,
               );
 
               return {
@@ -116,15 +116,15 @@ export async function generateForDirectory(
                   },
                 },
               };
-            }
-          )
+            },
+          ),
         ),
       };
 
       // look for previous build result
       const buildResultPath = path.join(
         projectDirectory,
-        'baseplate/.build_result.json'
+        'baseplate/.build_result.json',
       );
 
       const buildResultExists = await fs.pathExists(buildResultPath);
@@ -139,7 +139,7 @@ export async function generateForDirectory(
           cleanDirectory: cleanTmpDirectory,
           rerunCommands: oldBuildResult.failedCommands,
         },
-        logger
+        logger,
       );
 
       if (buildResultExists) {
@@ -160,7 +160,7 @@ export async function generateForDirectory(
 
       // find deleted files
       const deletedCleanFiles = cleanProjectFiles.filter(
-        (f) => !output.files[f.filePath]
+        (f) => !output.files[f.filePath],
       );
 
       await Promise.all(
@@ -176,14 +176,16 @@ export async function generateForDirectory(
             await fs.remove(pathToDelete);
           } else {
             logger.log(
-              chalk.red(`${file.filePath} has been modified. Skipping delete.`)
+              chalk.red(`${file.filePath} has been modified. Skipping delete.`),
             );
           }
-        })
+        }),
       );
     } finally {
       // attempt to remove any temporary directory
-      await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {});
+      await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {
+        /* ignore errors */
+      });
     }
   }
 
@@ -193,7 +195,7 @@ export async function generateForDirectory(
 export async function generateCleanAppForDirectory(
   baseDirectory: string,
   { rootDirectory, name }: AppEntry,
-  logger: Logger = console
+  logger: Logger = console,
 ): Promise<void> {
   const engine = await getGeneratorEngine();
 
@@ -226,13 +228,13 @@ export async function generateCleanAppForDirectory(
           return {
             [filePath]: file,
           };
-        })
+        }),
       ),
       postWriteCommands: [],
     },
     cleanDirectory,
     undefined,
-    logger
+    logger,
   );
   logger.log('Project successfully written to clean project!');
 }

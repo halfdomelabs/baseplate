@@ -19,13 +19,15 @@ function buildGeneratorEntry(
     exports?: Record<string, Provider>;
     build?: (
       builder: GeneratorOutputBuilder,
-      deps: Record<string, Provider>
+      deps: Record<string, Provider>,
     ) => void;
-  } = {}
+  } = {},
 ): GeneratorEntry {
   const {
     id,
-    build = () => {},
+    build = () => {
+      /* empty */
+    },
     children = [],
     exports = {},
     dependencyMap = {},
@@ -50,7 +52,7 @@ function buildGeneratorEntry(
           build: (builder) => build(builder, deps),
         }),
       },
-    }
+    },
   );
 }
 

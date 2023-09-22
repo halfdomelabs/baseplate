@@ -139,7 +139,7 @@ const ToggleInputRoot = genericForwardRef(ToggleInputFn);
 
 export interface ToggleInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<ToggleInputProps, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
@@ -148,7 +148,7 @@ export interface ToggleInputControllerProps<
 
 function ToggleInputControllerFn<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   {
     control,

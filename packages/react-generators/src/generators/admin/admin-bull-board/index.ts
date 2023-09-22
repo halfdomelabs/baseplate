@@ -65,7 +65,7 @@ const createMainTask = createTaskConfigBuilder(
             path: 'bull-board',
             element: TypescriptCodeUtils.createExpression(
               '<BullBoardPage />',
-              `import BullBoardPage from '@/${baseDirectory}'`
+              `import BullBoardPage from '@/${baseDirectory}'`,
             ),
           });
 
@@ -81,12 +81,12 @@ const createMainTask = createTaskConfigBuilder(
               paths: ['index.tsx', 'bull-board.gql'],
               destinationBaseDirectory: baseDirectory,
               importMappers,
-            })
+            }),
           );
         },
       };
     },
-  })
+  }),
 );
 
 const AdminBullBoardGenerator = createGeneratorWithTasks({

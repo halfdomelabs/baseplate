@@ -130,7 +130,7 @@ const CheckedInputRoot = genericForwardRef(CheckedInputFn);
 
 export interface CheckedInputControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<CheckedInputProps, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
@@ -139,7 +139,7 @@ export interface CheckedInputControllerProps<
 
 function CheckedInputControllerFn<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >(
   {
     control,

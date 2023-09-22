@@ -51,12 +51,12 @@ const ReactConfigGenerator = createGeneratorWithChildren({
           comment: 'Environment the app is running in',
           validator: TypescriptCodeUtils.createExpression(
             `z.enum(['development', 'test', 'staging', 'production'])`,
-            "import { z } from 'zod'"
+            "import { z } from 'zod'",
           ),
           devValue: 'development',
         },
       },
-      { name: 'react-config-entries' }
+      { name: 'react-config-entries' },
     );
     const customEnvVars: { name: string; value: string }[] = [];
 
@@ -86,7 +86,7 @@ const ReactConfigGenerator = createGeneratorWithChildren({
         const configEntries = configEntryMap.value();
         const sortedConfigEntries = R.sortBy(
           (entry) => entry[0],
-          Object.entries(configEntries)
+          Object.entries(configEntries),
         );
         const configEntryKeys = Object.keys(configEntries).sort();
         const mergedExpression = TypescriptCodeUtils.mergeExpressions(
@@ -100,22 +100,22 @@ const ReactConfigGenerator = createGeneratorWithChildren({
               }${key}: VALIDATOR,`,
               {
                 VALIDATOR: validator,
-              }
+              },
             );
           }),
-          '\n'
+          '\n',
         );
 
         configFile.addCodeExpression(
           'CONFIG_SCHEMA',
-          mergedExpression.wrap((contents) => `{${contents}}`)
+          mergedExpression.wrap((contents) => `{${contents}}`),
         );
 
         await builder.apply(
           configFile.renderToAction(
             'services/config.ts',
-            'src/services/config.ts'
-          )
+            'src/services/config.ts',
+          ),
         );
 
         const configVars = sortedConfigEntries.map(([key, { devValue }]) => ({

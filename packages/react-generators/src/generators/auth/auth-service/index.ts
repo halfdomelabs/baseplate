@@ -36,11 +36,11 @@ const AuthServiceGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { tsUtils, reactApolloSetup, typescript, reactUtils }
+    { tsUtils, reactApolloSetup, typescript, reactUtils },
   ) {
     const authFolder = 'src/services/auth';
     const [serviceImport, servicePath] = makeImportAndFilePath(
-      `${authFolder}/index.ts`
+      `${authFolder}/index.ts`,
     );
 
     const tokensFile = typescript.createTemplate(
@@ -49,7 +49,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
       },
       {
         importMappers: [reactApolloSetup],
-      }
+      },
     );
     tokensFile.addCodeEntries({
       API_ENDPOINT_URI: reactApolloSetup.getApiEndpointExpression(),
@@ -76,7 +76,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
             source: 'index.ts',
             destination: servicePath,
             importMappers: [tsUtils, reactUtils],
-          })
+          }),
         );
 
         await builder.apply(tokensFile.renderToAction('tokens.ts', tokensPath));
@@ -85,7 +85,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'types.ts',
             destination: typesPath,
-          })
+          }),
         );
 
         await builder.apply(
@@ -93,7 +93,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
             source: 'tokens.gql',
             destination: `${authFolder}/tokens.gql`,
             shouldFormat: true,
-          })
+          }),
         );
       },
     };

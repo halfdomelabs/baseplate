@@ -15,7 +15,7 @@ interface EmailTemplateConfiguration {
 
 // helper for making strongly-typed template configs
 function createTemplateConfig<
-  T extends Record<string, EmailTemplateConfiguration>
+  T extends Record<string, EmailTemplateConfiguration>,
 >(templateConfig: T): T {
   return templateConfig;
 }
@@ -32,7 +32,7 @@ interface RenderAndSendTemplateInput<TemplateKey extends PostmarkTemplateKey> {
 }
 
 export async function renderAndSendTemplate<
-  TemplateKey extends PostmarkTemplateKey
+  TemplateKey extends PostmarkTemplateKey,
 >({
   templateKey,
   from,
@@ -52,7 +52,7 @@ export async function renderAndSendTemplate<
   }
 
   await client.sendEmailWithTemplate({
-    From: from || DEFAULT_FROM,
+    From: from ?? DEFAULT_FROM,
     To: to,
     TemplateAlias: template.alias,
     TemplateModel: validatedData,

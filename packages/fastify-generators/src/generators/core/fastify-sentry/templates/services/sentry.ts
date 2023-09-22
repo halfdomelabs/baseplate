@@ -34,13 +34,13 @@ const SENSITIVE_HEADERS = ['authorization', 'cookie'];
 
 // filters headers that are sensitive or not strings
 function filterHeaders(
-  headers: FastifyRequest['headers']
+  headers: FastifyRequest['headers'],
 ): Record<string, string> {
   return _.fromPairs(
     Object.keys(headers)
       .filter((key) => typeof headers[key] === 'string')
       .filter((key) => !SENSITIVE_HEADERS.includes(key))
-      .map((key) => [key, headers[key] as string])
+      .map((key) => [key, headers[key] as string]),
   );
 }
 
@@ -48,14 +48,14 @@ export function isSentryEnabled(): boolean {
   return SENTRY_ENABLED;
 }
 
-export function getUrlQueryString(url: string): string {
+export function getUrlQueryString(url: string): string | undefined {
   // need arbitrary base to make URL work
   const parsedUrl = new URL(url, 'http://a');
-  return parsedUrl.search;
+  return parsedUrl.search || undefined;
 }
 
 export function extractSentryRequestData(
-  request: FastifyRequest | REQUEST_INFO_TYPE
+  request: FastifyRequest | REQUEST_INFO_TYPE,
 ): ExtractedNodeRequestData {
   return {
     headers: filterHeaders(request.headers),
@@ -73,11 +73,6 @@ export function configureSentryScope(scope: Sentry.Scope): void {
     });
     scope.setTag('path', requestData.url);
     scope.setTag('request_id', requestData.id);
-    const sentryRequestData = extractSentryRequestData(requestData);
-    scope.addEventProcessor((event) => ({
-      ...event,
-      request: { ...event.request, ...sentryRequestData },
-    }));
   }
 
   SCOPE_CONFIGURATION_BLOCKS;

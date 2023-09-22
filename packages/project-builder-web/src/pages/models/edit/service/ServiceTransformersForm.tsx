@@ -1,8 +1,8 @@
 import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
+import { Button, Dropdown } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import { LinkButton } from 'src/components';
-import Dropdown from 'src/components/Dropdown';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
 import ServiceFileTransformerForm from './ServiceFileTransformerForm';
@@ -69,35 +69,48 @@ function ServiceEmbeddedRelationsForm({
             );
         }
       })}
-      <Dropdown buttonLabel="Add Transformer">
-        {!fields.some((f) => f.type === 'password') && (
-          <Dropdown.ButtonItem
-            onClick={() =>
-              append({ uid: randomUid(), name: 'password', type: 'password' })
-            }
-          >
-            Password
-          </Dropdown.ButtonItem>
-        )}
-        {parsedProject.projectConfig.storage && (
-          <Dropdown.ButtonItem
-            onClick={() => append({ uid: randomUid(), name: '', type: 'file' })}
-          >
-            File
-          </Dropdown.ButtonItem>
-        )}
-        <Dropdown.ButtonItem
-          onClick={() =>
-            append({
-              uid: randomUid(),
-              name: '',
-              type: 'embeddedRelation',
-              embeddedFieldNames: [],
-            })
-          }
-        >
-          Embedded Relation
-        </Dropdown.ButtonItem>
+      <Dropdown>
+        <Dropdown.Trigger asChild>
+          <Button>Add Transformer</Button>
+        </Dropdown.Trigger>
+        <Dropdown.Content>
+          <Dropdown.Group>
+            {!fields.some((f) => f.type === 'password') && (
+              <Dropdown.Item
+                onSelect={() =>
+                  append({
+                    uid: randomUid(),
+                    name: 'password',
+                    type: 'password',
+                  })
+                }
+              >
+                Password
+              </Dropdown.Item>
+            )}
+            {parsedProject.projectConfig.storage && (
+              <Dropdown.Item
+                onSelect={() =>
+                  append({ uid: randomUid(), name: '', type: 'file' })
+                }
+              >
+                File
+              </Dropdown.Item>
+            )}
+            <Dropdown.Item
+              onSelect={() =>
+                append({
+                  uid: randomUid(),
+                  name: '',
+                  type: 'embeddedRelation',
+                  embeddedFieldNames: [],
+                })
+              }
+            >
+              Embedded Relation
+            </Dropdown.Item>
+          </Dropdown.Group>
+        </Dropdown.Content>
       </Dropdown>
     </div>
   );

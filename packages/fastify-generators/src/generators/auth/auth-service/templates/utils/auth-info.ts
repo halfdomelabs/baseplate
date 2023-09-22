@@ -12,7 +12,7 @@ export interface AuthInfo {
 
 export function createAuthInfoFromUser(
   user: UserInfo | null,
-  EXTRA_ARGS
+  EXTRA_ARGS,
 ): AuthInfo {
   return AUTH_OBJECT;
 }

@@ -30,7 +30,7 @@ export const refreshTokenMutation = createStandardMutation({
   authorize: AUTHORIZE_ANONYMOUS,
   resolve: async (root, { input }, context) => {
     const refreshToken =
-      input.refreshToken || getRefreshTokenFromCookie(context);
+      input.refreshToken ?? getRefreshTokenFromCookie(context);
     if (!refreshToken) {
       throw new InvalidTokenError('Missing refresh token');
     }
@@ -38,7 +38,7 @@ export const refreshTokenMutation = createStandardMutation({
 
     const { accessToken, refreshToken: newRefreshToken } = await renewToken(
       userId,
-      refreshToken
+      refreshToken,
     );
 
     if (!input.refreshToken) {

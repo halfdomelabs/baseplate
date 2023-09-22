@@ -31,6 +31,6 @@ export interface PrismaDataTransformerOptions {
 
 export interface PrismaDataTransformerFactory {
   buildTransformer: (
-    transformerOptions: PrismaDataTransformerOptions
+    transformerOptions: PrismaDataTransformerOptions,
   ) => PrismaDataTransformer;
 }

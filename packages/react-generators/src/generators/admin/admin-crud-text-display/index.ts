@@ -19,9 +19,7 @@ const AdminCrudTextDisplayGenerator = createGeneratorWithChildren({
         TypescriptCodeUtils.createExpression(`{${itemName}.${modelField}}`),
       graphQLFields: [{ name: modelField }],
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

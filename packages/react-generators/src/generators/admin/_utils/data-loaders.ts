@@ -17,7 +17,7 @@ export interface AdminCrudDataDependency {
 
 export function areDepsMergeable(
   depOne: AdminCrudDataDependency,
-  depTwo: AdminCrudDataDependency
+  depTwo: AdminCrudDataDependency,
 ): boolean {
   if (depOne.propName !== depTwo.propName) {
     return false;
@@ -27,11 +27,11 @@ export function areDepsMergeable(
 }
 
 export function mergeAdminCrudDataDependencies(
-  deps: AdminCrudDataDependency[]
+  deps: AdminCrudDataDependency[],
 ): AdminCrudDataDependency[] {
   return deps.reduce((accumulator, dep) => {
     const idx = accumulator.findIndex((accumDep) =>
-      areDepsMergeable(accumDep, dep)
+      areDepsMergeable(accumDep, dep),
     );
     if (idx === -1) {
       return [...accumulator, dep];
@@ -42,8 +42,8 @@ export function mergeAdminCrudDataDependencies(
         return {
           ...accumDep,
           graphFragments: mergeGraphQLFragments([
-            ...(accumDep.graphFragments || []),
-            ...(dep.graphFragments || []),
+            ...(accumDep.graphFragments ?? []),
+            ...(dep.graphFragments ?? []),
           ]),
         };
       }
@@ -53,18 +53,18 @@ export function mergeAdminCrudDataDependencies(
 }
 
 export function getLoaderExtraProps(
-  dataDependencies: AdminCrudDataDependency[]
+  dataDependencies: AdminCrudDataDependency[],
 ): string {
   return dataDependencies
     ?.map(
       (d) =>
-        `${d.propName}={${d.propLoaderValueGetter(d.loader.loaderValueName)}}`
+        `${d.propName}={${d.propLoaderValueGetter(d.loader.loaderValueName)}}`,
     )
     .join(' ');
 }
 
 export function getPassthroughExtraProps(
-  dataDependencies: AdminCrudDataDependency[]
+  dataDependencies: AdminCrudDataDependency[],
 ): string {
   return dataDependencies
     ?.map((d) => `${d.propName}={${d.propName}}`)

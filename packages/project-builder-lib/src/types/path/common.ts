@@ -68,7 +68,7 @@ export type Traversable = object;
  * IsTuple<number[]> = false
  * ```
  */
-export type IsTuple<T extends ReadonlyArray<any>> = number extends T['length']
+export type IsTuple<T extends readonly any[]> = number extends T['length']
   ? false
   : true;
 
@@ -146,7 +146,7 @@ type AppendNonBlankKey<PT extends PathTuple, K extends Key> = K extends ''
  */
 type SplitPathStringImpl<
   PS extends PathString,
-  PT extends PathTuple
+  PT extends PathTuple,
 > = PS extends `${infer K}.${infer R}`
   ? SplitPathStringImpl<R, AppendNonBlankKey<PT, K>>
   : AppendNonBlankKey<PT, PS>;
@@ -175,7 +175,7 @@ export type SplitPathString<PS extends PathString> = SplitPathStringImpl<
  */
 type JoinPathTupleImpl<
   PT extends PathTuple,
-  PS extends PathString
+  PS extends PathString,
 > = PT extends [infer K, ...infer R]
   ? JoinPathTupleImpl<AsPathTuple<R>, `${PS}.${AsKey<K>}`>
   : PS;
@@ -192,7 +192,7 @@ type JoinPathTupleImpl<
  */
 export type JoinPathTuple<PT extends PathTuple> = PT extends [
   infer K,
-  ...infer R
+  ...infer R,
 ]
   ? JoinPathTupleImpl<AsPathTuple<R>, AsKey<K>>
   : never;
@@ -238,8 +238,8 @@ type TryAccess<T, K> = K extends keyof T
  * ```
  */
 type TryAccessArray<
-  T extends ReadonlyArray<any>,
-  K extends Key
+  T extends readonly any[],
+  K extends Key,
 > = K extends `${ArrayKey}` ? T[number] : TryAccess<T, K>;
 
 /**
@@ -253,7 +253,7 @@ type TryAccessArray<
  * EvaluateKey<string[], '1'> = string
  * ```
  */
-export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
+export type EvaluateKey<T, K extends Key> = T extends readonly any[]
   ? IsTuple<T> extends true
     ? TryAccess<T, K>
     : TryAccessArray<T, K>
@@ -273,7 +273,7 @@ export type EvaluateKey<T, K extends Key> = T extends ReadonlyArray<any>
  */
 export type EvaluatePath<T, PT extends PathTuple> = PT extends [
   infer K,
-  ...infer R
+  ...infer R,
 ]
   ? EvaluatePath<EvaluateKey<T, AsKey<K>>, AsPathTuple<R>>
   : T;
@@ -286,10 +286,7 @@ export type EvaluatePath<T, PT extends PathTuple> = PT extends [
  * TupleKeys<[number, string]> = '0' | '1'
  * ```
  */
-export type TupleKeys<T extends ReadonlyArray<any>> = Exclude<
-  keyof T,
-  keyof any[]
->;
+export type TupleKeys<T extends readonly any[]> = Exclude<keyof T, keyof any[]>;
 
 /**
  * Type which extracts all numeric keys from an object.
@@ -316,7 +313,7 @@ type NumericObjectKeys<T extends Traversable> = ToKey<
  * ```
  */
 export type NumericKeys<T extends Traversable> = UnionToIntersection<
-  T extends ReadonlyArray<any>
+  T extends readonly any[]
     ? IsTuple<T> extends true
       ? [TupleKeys<T>]
       : [ToKey<ArrayKey>]
@@ -368,7 +365,7 @@ export type CheckKeyConstraint<T, K extends Key, U> = K extends any
  * ```
  */
 export type ContainsIndexable<T> = IsNever<
-  Extract<T, ReadonlyArray<any>>
+  Extract<T, readonly any[]>
 > extends true
   ? false
   : true;
@@ -432,7 +429,7 @@ export type HasKey<T, K extends Key> = IsNever<Exclude<K, Keys<T>>>;
 type ValidPathPrefixImpl<
   T,
   PT extends PathTuple,
-  VPT extends PathTuple
+  VPT extends PathTuple,
 > = PT extends [infer K, ...infer R]
   ? HasKey<T, AsKey<K>> extends true
     ? ValidPathPrefixImpl<

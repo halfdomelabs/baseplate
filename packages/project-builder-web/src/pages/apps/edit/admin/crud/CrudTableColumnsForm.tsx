@@ -93,13 +93,13 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
     model?.model.relations?.map((relation) => ({
       label: `${relation.name} (${relation.modelName})`,
       value: relation.name,
-    })) || [];
+    })) ?? [];
 
   const fieldOptions =
     model?.model.fields.map((field) => ({
       label: field.name,
       value: field.name,
-    })) || [];
+    })) ?? [];
 
   return (
     <div className={classNames('space-y-4', className)}>

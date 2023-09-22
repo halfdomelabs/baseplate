@@ -18,7 +18,7 @@ export type WebAppConfig = z.infer<typeof webAppSchema>;
 
 export function buildWebAppReferences(
   config: WebAppConfig,
-  builder: ReferencesBuilder<WebAppConfig>
+  builder: ReferencesBuilder<WebAppConfig>,
 ): void {
   builder.addReferences('allowedRoles.*', {
     category: 'role',

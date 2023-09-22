@@ -11,14 +11,14 @@ import {
 
 function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,
-  tsUtils: TsUtilsProvider
+  tsUtils: TsUtilsProvider,
 ): TypescriptCodeExpression {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
   }
   const { fields } = arg.nestedType;
   const nestedFields = fields.filter(
-    (f): f is ServiceOutputDtoNestedField => f.type === 'nested'
+    (f): f is ServiceOutputDtoNestedField => f.type === 'nested',
   );
 
   if (nestedFields.length) {
@@ -35,7 +35,7 @@ function buildNestedArgExpression(
               ? singularize(nestedField.name)
               : `${arg.name}.${nestedField.name}`,
           },
-          tsUtils
+          tsUtils,
         ),
       }))
       .filter((f) => f.expression.content.includes('restrictObjectNulls'));
@@ -58,17 +58,17 @@ function buildNestedArgExpression(
                       contents.trimStart().startsWith('{')
                         ? `(${contents})`
                         : contents
-                    })`
+                    })`,
                 );
               }
               return expression.wrap(
                 (contents) =>
-                  `${field.name}: ${arg.name}.${field.name} && ${contents}`
+                  `${field.name}: ${arg.name}.${field.name} && ${contents}`,
               );
             }),
-            ',\n'
+            ',\n',
           ),
-        }
+        },
       );
     }
   }
@@ -77,14 +77,14 @@ function buildNestedArgExpression(
 
 function convertNestedArgForCall(
   arg: ServiceOutputDtoNestedField,
-  tsUtils: TsUtilsProvider
+  tsUtils: TsUtilsProvider,
 ): TypescriptCodeExpression {
   if (arg.isPrismaType) {
     throw new Error(`Prisma types are not supported in input fields`);
   }
   const { fields } = arg.nestedType;
   const nonNullableOptionalFields = fields.filter(
-    (f) => f.isOptional && !f.isNullable
+    (f) => f.isOptional && !f.isNullable,
   );
 
   const nestedArgExpression: TypescriptCodeExpression =
@@ -99,7 +99,7 @@ function convertNestedArgForCall(
       {
         importText: [`import {restrictObjectNulls} from '%ts-utils/nulls';`],
         importMappers: [tsUtils],
-      }
+      },
     );
   }
   return nestedArgExpression;
@@ -107,7 +107,7 @@ function convertNestedArgForCall(
 
 export function writeValueFromPothosArg(
   arg: ServiceOutputDtoField,
-  tsUtils: TsUtilsProvider
+  tsUtils: TsUtilsProvider,
 ): TypescriptCodeExpression {
   // TODO: Handle convert all nulls
   if (arg.isOptional && !arg.isNullable) {

@@ -1,5 +1,5 @@
 // Simple typed event emitter
-type TypeConfig = { [eventName: string]: unknown };
+type TypeConfig = Record<string, unknown>;
 
 export interface TypedEventEmitter<T extends TypeConfig> {
   on<K extends keyof T>(
@@ -15,13 +15,13 @@ export interface TypedEventEmitter<T extends TypeConfig> {
  * @returns TypedEventEmitter that allows you to listen to events and emit them
  */
 export function createTypedEventEmitter<
-  T extends TypeConfig
+  T extends TypeConfig,
 >(): TypedEventEmitter<T> {
-  const listenerMap = new Map<keyof T, Array<(payload: unknown) => void>>();
+  const listenerMap = new Map<keyof T, ((payload: unknown) => void)[]>();
 
   return {
     on(eventName, listener) {
-      const existingListeners = listenerMap.get(eventName) || [];
+      const existingListeners = listenerMap.get(eventName) ?? [];
       listenerMap.set(eventName, [
         ...existingListeners,
         listener as (payload: unknown) => void,
@@ -30,12 +30,12 @@ export function createTypedEventEmitter<
       return () => {
         listenerMap.set(
           eventName,
-          listenerMap.get(eventName)?.filter((l) => l !== listener) || []
+          listenerMap.get(eventName)?.filter((l) => l !== listener) ?? []
         );
       };
     },
     emit(eventName, payload) {
-      const listeners = listenerMap.get(eventName) || [];
+      const listeners = listenerMap.get(eventName) ?? [];
       listeners.forEach((listener) => listener(payload));
     },
   };

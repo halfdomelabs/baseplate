@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import classNames from 'classnames';
 import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
@@ -31,14 +33,14 @@ function ErrorDisplay({
     <div
       className={classNames(
         'flex h-full items-center justify-center',
-        className
+        className,
       )}
     >
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
           <MdOutlineErrorOutline className="text-foreground-300 dark:text-foreground-700 h-20 w-20" />
         </div>
-        <h1>{header || 'Sorry, something went wrong'}</h1>
+        <h1>{header ?? 'Sorry, something went wrong'}</h1>
         <p className="text-base">
           {typeof error === 'string' || React.isValidElement(error)
             ? error

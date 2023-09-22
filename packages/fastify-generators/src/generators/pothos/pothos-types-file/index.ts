@@ -49,7 +49,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
     },
     run({ appModule, typescript, pothosSchema }) {
       const [typesImport, typesPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/schema/${fileName}.ts`
+        `${appModule.getModuleFolder()}/schema/${fileName}.ts`,
       );
 
       appModule.addModuleImport(typesImport);
@@ -79,7 +79,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
         build: async (builder) => {
           const orderedTypes = R.sortBy((type) => {
             if (!type.category || !categoryOrder?.includes(type.category)) {
-              return (categoryOrder || []).length;
+              return (categoryOrder ?? []).length;
             }
             return categoryOrder.indexOf(type.category);
           }, types);
@@ -87,7 +87,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
           const typesFile = typescript.createTemplate({
             TYPES: TypescriptCodeUtils.mergeBlocks(
               orderedTypes.map((t) => t.block),
-              '\n\n'
+              '\n\n',
             ),
           });
 
@@ -97,12 +97,12 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
           });
 
           await builder.apply(
-            typesFile.renderToActionFromText('TYPES', typesPath)
+            typesFile.renderToActionFromText('TYPES', typesPath),
           );
         },
       };
     },
-  })
+  }),
 );
 
 const PothosTypesFileGenerator = createGeneratorWithTasks({

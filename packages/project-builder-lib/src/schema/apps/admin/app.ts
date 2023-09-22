@@ -22,7 +22,7 @@ export type AdminAppConfig = z.infer<typeof adminAppSchema>;
 
 export function buildAdminAppReferences(
   config: AdminAppConfig,
-  builder: ReferencesBuilder<AdminAppConfig>
+  builder: ReferencesBuilder<AdminAppConfig>,
 ): void {
   builder.addReferences('allowedRoles.*', {
     category: 'role',
@@ -37,7 +37,7 @@ export function buildAdminAppReferences(
       case 'crud':
         buildAdminCrudSectionReferences(
           page,
-          builder.withPrefix(`sections.${index}`)
+          builder.withPrefix(`sections.${index}`),
         );
         break;
       default:

@@ -15,7 +15,7 @@ const refreshApolloClient = new ApolloClient({
 
 async function refreshAccessToken(
   userId: string,
-  refreshToken?: string | null
+  refreshToken?: string | null,
 ): Promise<AuthPayload> {
   const { data } = await refreshApolloClient.mutate<
     RefreshTokenMutation,
@@ -42,7 +42,7 @@ let refreshPromise: Promise<AuthPayload> | null = null;
 
 export async function getRefreshedAccessToken(
   userId: string,
-  refreshToken?: string | null
+  refreshToken?: string | null,
 ): Promise<AuthPayload> {
   if (refreshPromise) {
     return refreshPromise;

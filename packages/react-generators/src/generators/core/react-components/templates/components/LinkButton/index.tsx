@@ -35,7 +35,7 @@ function LinkButton({
         'font-medium',
         { 'hover:underline': !disabled },
         colorClass,
-        className
+        className,
       )}
       // a type is being provided but eslint doesn't know
       // eslint-disable-next-line react/button-has-type

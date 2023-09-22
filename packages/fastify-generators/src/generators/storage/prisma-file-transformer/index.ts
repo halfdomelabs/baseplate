@@ -34,14 +34,14 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { name, category },
-    { prismaOutput, prismaCrudServiceSetup, storageModule, prismaUtils }
+    { prismaOutput, prismaCrudServiceSetup, storageModule, prismaUtils },
   ) {
     const modelName = prismaCrudServiceSetup.getModelName();
     const model = prismaOutput.getPrismaModel(modelName);
 
     const foreignRelation = model.fields.find(
       (f): f is PrismaOutputRelationField =>
-        f.type === 'relation' && f.name === name
+        f.type === 'relation' && f.name === name,
     );
 
     if (!foreignRelation) {
@@ -50,7 +50,7 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
 
     if (foreignRelation.fields?.length !== 1) {
       throw new Error(
-        `Foreign relation for file transformer must only have one field in model ${modelName}`
+        `Foreign relation for file transformer must only have one field in model ${modelName}`,
       );
     }
 
@@ -69,7 +69,7 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
               : ''
           })`,
           'import {validateFileUploadInput} from "%storage-module/validate-upload-input";',
-          { importMappers: [storageModule] }
+          { importMappers: [storageModule] },
         );
 
         const prefix = isFieldOptional ? `${name} == null ? ${name} : ` : '';
@@ -80,7 +80,7 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
               type: TypescriptCodeUtils.createExpression(
                 `FileUploadInput${foreignRelation.isOptional ? '| null' : ''}`,
                 'import {FileUploadInput} from "%storage-module/validate-upload-input";',
-                { importMappers: [storageModule] }
+                { importMappers: [storageModule] },
               ),
               dtoField: {
                 name,
@@ -109,9 +109,9 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
                 : undefined,
               updateExpression: foreignRelation.isOptional
                 ? TypescriptCodeUtils.createExpression(
-                    `createPrismaDisconnectOrConnectData(${name}Output && ${name}Output.data)`,
+                    `createPrismaDisconnectOrConnectData(${name}Output?.data)`,
                     `import {createPrismaDisconnectOrConnectData} from "%prisma-utils/prismaRelations";`,
-                    { importMappers: [prismaUtils] }
+                    { importMappers: [prismaUtils] },
                   )
                 : `${name}Output?.data`,
             },
@@ -126,7 +126,6 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaFileTransformer: {},
       }),
-      build: async () => {},
     };
   },
 });

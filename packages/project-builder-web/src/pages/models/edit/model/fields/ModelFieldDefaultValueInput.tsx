@@ -55,24 +55,31 @@ export function ModelFieldDefaultValueInput({
           placeholder="NULL"
           name={`model.fields.${idx}.options.default`}
         />
-        <Dropdown variant="tertiary" size="icon">
-          <Dropdown.ButtonItem
-            onClick={() =>
-              onOptionsChange({
-                ...optionsValue,
-                genUuid: true,
-              })
-            }
-          >
-            Random UUID v4
-          </Dropdown.ButtonItem>
+        <Dropdown>
+          <Dropdown.Trigger asChild>
+            <Button variant="tertiary" size="icon" />
+          </Dropdown.Trigger>
+          <Dropdown.Content>
+            <Dropdown.Group>
+              <Dropdown.Item
+                onSelect={() =>
+                  onOptionsChange({
+                    ...optionsValue,
+                    genUuid: true,
+                  })
+                }
+              >
+                Random UUID v4
+              </Dropdown.Item>
+            </Dropdown.Group>
+          </Dropdown.Content>
         </Dropdown>
       </div>
     );
   }
 
   if (type === 'dateTime' || type === 'date') {
-    const { defaultToNow, updatedAt } = optionsValue || {};
+    const { defaultToNow, updatedAt } = optionsValue ?? {};
 
     if (defaultToNow || updatedAt) {
       return (
@@ -101,28 +108,36 @@ export function ModelFieldDefaultValueInput({
           control={control}
           name={`model.fields.${idx}.options.default`}
         />
-        <Dropdown variant="tertiary" size="icon">
-          <Dropdown.ButtonItem
-            onClick={() =>
-              onOptionsChange({
-                ...optionsValue,
-                defaultToNow: true,
-              })
-            }
-          >
-            Now
-          </Dropdown.ButtonItem>
-          <Dropdown.ButtonItem
-            onClick={() =>
-              onOptionsChange({
-                ...optionsValue,
-                defaultToNow: true,
-                updatedAt: true,
-              })
-            }
-          >
-            Last Updated At
-          </Dropdown.ButtonItem>
+        <Dropdown>
+          <Dropdown.Trigger asChild>
+            <Button variant="tertiary" size="icon" />
+          </Dropdown.Trigger>
+          <Dropdown.Content>
+            <Dropdown.Group>
+              <Dropdown.Item
+                onSelect={() =>
+                  onOptionsChange({
+                    ...optionsValue,
+                    defaultToNow: true,
+                    updatedAt: false,
+                  })
+                }
+              >
+                Now
+              </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() =>
+                  onOptionsChange({
+                    ...optionsValue,
+                    defaultToNow: true,
+                    updatedAt: true,
+                  })
+                }
+              >
+                Last Updated At
+              </Dropdown.Item>
+            </Dropdown.Group>
+          </Dropdown.Content>
         </Dropdown>
       </div>
     );

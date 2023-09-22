@@ -12,12 +12,12 @@ function compileAdminCrudEmbeddedForm(
   form: AdminCrudEmbeddedFormConfig,
   modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
-  crudSectionId: string
+  crudSectionId: string,
 ): unknown {
   const idFields = builder.parsedProject.getModelPrimaryKeys(form.modelName);
   if (form.includeIdField && idFields.length !== 1) {
     throw new Error(
-      `Embedded form ${form.modelName} has ${idFields.length} primary keys, but only one is allowed`
+      `Embedded form ${form.modelName} has ${idFields.length} primary keys, but only one is allowed`,
     );
   }
   const sharedData = {
@@ -40,12 +40,12 @@ function compileAdminCrudEmbeddedForm(
             display: compileAdminCrudDisplay(
               c.display,
               form.modelName,
-              builder
+              builder,
             ),
           },
         })),
         inputs: form.form.fields.map((field) =>
-          compileAdminCrudInput(field, form.modelName, builder, crudSectionId)
+          compileAdminCrudInput(field, form.modelName, builder, crudSectionId),
         ),
       },
     };
@@ -55,7 +55,7 @@ function compileAdminCrudEmbeddedForm(
     isList: false,
     children: {
       inputs: form.form.fields.map((field) =>
-        compileAdminCrudInput(field, form.modelName, builder, crudSectionId)
+        compileAdminCrudInput(field, form.modelName, builder, crudSectionId),
       ),
     },
   };
@@ -64,11 +64,11 @@ function compileAdminCrudEmbeddedForm(
 export function compileAdminCrudSection(
   crudSection: AdminCrudSectionConfig,
   builder: AppEntryBuilder<AdminAppConfig>,
-  parentId: string
+  parentId: string,
 ): unknown {
   const sectionName = inflection.camelize(
     crudSection.name.replace(/ /g, '_'),
-    true
+    true,
   );
   const crudSectionId = `${parentId}.${sectionName}.$section`;
   return {
@@ -87,16 +87,16 @@ export function compileAdminCrudSection(
                   field,
                   crudSection.modelName,
                   builder,
-                  crudSectionId
-                )
+                  crudSectionId,
+                ),
               ),
               embeddedForms: crudSection.embeddedForms?.map((form) =>
                 compileAdminCrudEmbeddedForm(
                   form,
                   crudSection.modelName,
                   builder,
-                  crudSectionId
-                )
+                  crudSectionId,
+                ),
               ),
             },
           },
@@ -109,7 +109,7 @@ export function compileAdminCrudSection(
                   display: compileAdminCrudDisplay(
                     column.display,
                     crudSection.modelName,
-                    builder
+                    builder,
                   ),
                 },
               })),

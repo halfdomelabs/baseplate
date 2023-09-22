@@ -32,7 +32,7 @@ function Toast({
         className={classNames(
           'flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400',
           visible && '-top-96',
-          className
+          className,
         )}
         role="alert"
       >

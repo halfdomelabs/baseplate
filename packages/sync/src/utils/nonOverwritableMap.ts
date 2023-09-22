@@ -2,7 +2,7 @@
 import * as R from 'ramda';
 
 type ArrayKeys<T> = {
-  [K in keyof T]: T[K] extends Array<unknown> ? K : never;
+  [K in keyof T]: T[K] extends unknown[] ? K : never;
 }[keyof T];
 
 export interface NonOverwriteableMap<T extends object> {
@@ -21,7 +21,7 @@ export interface NonOverwriteableMap<T extends object> {
    */
   append<Key extends ArrayKeys<T>>(
     key: Key,
-    value: T[Key] extends Array<infer U> ? U : never
+    value: T[Key] extends (infer U)[] ? U : never,
   ): this;
   /**
    * Appends an array of values to an array uniquely in the map
@@ -31,7 +31,7 @@ export interface NonOverwriteableMap<T extends object> {
    */
   appendUnique<Key extends ArrayKeys<T>>(
     key: Key,
-    value: T[Key] | (T[Key] extends Array<infer U> ? U : never)
+    value: T[Key] | (T[Key] extends (infer U)[] ? U : never),
   ): this;
   /**
    * Gets a value from the map
@@ -72,7 +72,7 @@ interface NonOverwriteableMapConfig {
  */
 export function createNonOverwriteableMap<T extends object>(
   defaults: T,
-  options: NonOverwriteableMapConfig = {}
+  options: NonOverwriteableMapConfig = {},
 ): NonOverwriteableMap<T> {
   const {
     name = 'non-overwriteable map',
@@ -103,10 +103,10 @@ export function createNonOverwriteableMap<T extends object>(
     },
     append(key, value) {
       const arrValue = Array.isArray(value) ? value : [value];
-      const existingValue = overrideValues[key] || [];
+      const existingValue = overrideValues[key] ?? [];
       if (!Array.isArray(existingValue)) {
         throw new Error(
-          `Field ${key.toString()} is not array and cannot be appended to in ${name}`
+          `Field ${key.toString()} is not array and cannot be appended to in ${name}`,
         );
       }
       overrideValues = {
@@ -121,7 +121,7 @@ export function createNonOverwriteableMap<T extends object>(
       if (existingValue) {
         if (!Array.isArray(existingValue)) {
           throw new Error(
-            `Field ${key.toString()} is not array and cannot be appended to in ${name}`
+            `Field ${key.toString()} is not array and cannot be appended to in ${name}`,
           );
         }
         overrideValues = {
@@ -139,14 +139,14 @@ export function createNonOverwriteableMap<T extends object>(
     merge(value) {
       overrideValues = nonOverwriteableMerge(
         overrideValues,
-        value
+        value,
       ) as Partial<T>;
       return this;
     },
     value() {
       return finalMerge(defaults, overrideValues) as T;
     },
-    get(key) {
+    get<K extends keyof T>(key: keyof T): T[K] | undefined {
       const override = overrideValues[key];
       const def = defaults[key];
       if (
@@ -154,9 +154,7 @@ export function createNonOverwriteableMap<T extends object>(
         Array.isArray(override) &&
         Array.isArray(def)
       ) {
-        // TODO: Fix typing
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return R.uniq(def.concat(override)) as any;
+        return R.uniq([...def, ...override]) as T[K];
       }
       return override || def;
     },

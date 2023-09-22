@@ -157,7 +157,7 @@ export function ComboboxInput<OptionType>({
 interface ComboboxInputControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<ComboboxInputPropsBase<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
@@ -166,14 +166,14 @@ interface ComboboxInputControllerPropsBase<
 type ComboboxInputControllerProps<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = ComboboxInputControllerPropsBase<OptionType, TFieldValues, TFieldName> &
   AddOptionRequiredFields<OptionType>;
 
 ComboboxInput.Controller = function ComboboxInputController<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   name,
   control,

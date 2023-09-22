@@ -37,7 +37,7 @@ export function createForeignDataDependency({
     propName,
     propType: TypescriptCodeUtils.createExpression(
       `${fragmentName}Fragment[]`,
-      `import { ${fragmentName}Fragment } from '${reactApollo.getGeneratedFilePath()}'`
+      `import { ${fragmentName}Fragment } from '${reactApollo.getGeneratedFilePath()}'`,
     ),
     graphFragments: [
       {
@@ -70,7 +70,7 @@ export function createForeignDataDependency({
     loader: {
       loader: TypescriptCodeUtils.createBlock(
         `const { data: ${loaderValueName}, error: ${loaderErrorName} } = useGet${dataName}Query();`,
-        `import { useGet${dataName}Query } from '${reactApollo.getGeneratedFilePath()}'`
+        `import { useGet${dataName}Query } from '${reactApollo.getGeneratedFilePath()}'`,
       ),
       loaderErrorName,
       loaderValueName,

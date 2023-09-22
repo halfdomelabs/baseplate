@@ -78,7 +78,7 @@ export interface AdminCrudEmbeddedFormProvider {
 export const adminCrudEmbeddedFormProvider =
   createProviderType<AdminCrudEmbeddedFormProvider>(
     'admin-crud-embedded-form',
-    { isReadOnly: true }
+    { isReadOnly: true },
   );
 
 function getComponentProps({
@@ -98,7 +98,7 @@ function getComponentProps({
   const defaultPropsExpression = new TypescriptCodeExpression(
     `Embedded${inputType}${componentType}Props`,
     `import { ${defaultProps} } from "%admin-components/Embedded${inputType}Input"`,
-    { importMappers: [adminComponents] }
+    { importMappers: [adminComponents] },
   ).append(`<${formDataType}>`);
   if (dataDependencies.length === 0) {
     return defaultPropsExpression;
@@ -121,10 +121,10 @@ function getComponentProps({
               dataDependencies.map((d): [string, TypescriptCodeExpression] => [
                 d.propName,
                 d.propType,
-              ])
-            )
+              ]),
+            ),
           ),
-        }
+        },
       ),
     ],
   });
@@ -153,7 +153,7 @@ const createSetupFormTask = createTaskConfigBuilder(
             addColumn: (column) => {
               if (!isList) {
                 throw new Error(
-                  'Cannot add columns to a non-list embedded form'
+                  'Cannot add columns to a non-list embedded form',
                 );
               }
               tableColumns.push(column);
@@ -164,7 +164,7 @@ const createSetupFormTask = createTaskConfigBuilder(
         build: () => ({ inputFields, tableColumns }),
       };
     },
-  })
+  }),
 );
 
 const createMainTask = createTaskConfigBuilder(
@@ -172,7 +172,7 @@ const createMainTask = createTaskConfigBuilder(
     { isList, name, idField }: Descriptor,
     taskDependencies?: InferTaskBuilderMap<{
       setupTask: typeof createSetupFormTask;
-    }>
+    }>,
   ) => ({
     name: 'main',
     dependencies: {
@@ -194,7 +194,7 @@ const createMainTask = createTaskConfigBuilder(
         typescript,
         adminComponents,
       },
-      { setupTask: { inputFields, tableColumns } }
+      { setupTask: { inputFields, tableColumns } },
     ) {
       const capitalizedName = upperCaseFirst(name);
       const formName = `Embedded${capitalizedName}Form`;
@@ -202,16 +202,16 @@ const createMainTask = createTaskConfigBuilder(
       const formSchema = `embedded${capitalizedName}FormSchema`;
 
       const [formImport, formPath] = makeImportAndFilePath(
-        `${adminCrudEdit.getDirectoryBase()}/${formName}.tsx`
+        `${adminCrudEdit.getDirectoryBase()}/${formName}.tsx`,
       );
 
       const inputDataDependencies = inputFields.flatMap(
-        (f) => f.dataDependencies || []
+        (f) => f.dataDependencies ?? [],
       );
 
       const tableName = `Embedded${capitalizedName}Table`;
       const tableDataDependencies = tableColumns.flatMap(
-        (f) => f.display.dataDependencies || []
+        (f) => f.display.dataDependencies ?? [],
       );
 
       const allDataDependencies = mergeAdminCrudDataDependencies([
@@ -234,7 +234,7 @@ const createMainTask = createTaskConfigBuilder(
                 key: idField,
                 // TODO: Allow non-string IDs
                 expression: new TypescriptCodeExpression(
-                  'z.string().nullish()'
+                  'z.string().nullish()',
                 ),
               },
             ]
@@ -253,16 +253,16 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
           SCHEMA_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
             _.zipObject(
               validations.map((v) => v.key),
-              validations.map((v) => v.expression)
-            )
+              validations.map((v) => v.expression),
+            ),
           ),
-        }
+        },
       ).withHeaderKey(formSchema);
 
       const validationExpression = TypescriptCodeUtils.createExpression(
         `${isList ? `z.array(${formSchema})` : formSchema}`,
         undefined,
-        { headerBlocks: [embeddedBlock] }
+        { headerBlocks: [embeddedBlock] },
       );
 
       return {
@@ -273,7 +273,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                 embeddedFormComponent: {
                   expression: TypescriptCodeUtils.createExpression(
                     formName,
-                    `import { ${formName} } from '${formImport}'`
+                    `import { ${formName} } from '${formImport}'`,
                   ),
                   extraProps: getPassthroughExtraProps(inputDataDependencies),
                 },
@@ -288,7 +288,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                   embeddedTableComponent: {
                     expression: TypescriptCodeUtils.createExpression(
                       tableName,
-                      `import { ${tableName} } from '${formImport}'`
+                      `import { ${tableName} } from '${formImport}'`,
                     ),
                     extraProps: getPassthroughExtraProps(tableDataDependencies),
                   },
@@ -304,13 +304,13 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
         build: async (builder) => {
           const headers = tableColumns.map((column) =>
             TypescriptCodeUtils.createExpression(
-              `<Table.HeadCell>${column.label}</Table.HeadCell>`
-            )
+              `<Table.HeadCell>${column.label}</Table.HeadCell>`,
+            ),
           );
           const cells = tableColumns.map((column) =>
             column.display
               .content('item')
-              .wrap((content) => `<Table.Cell>${content}</Table.Cell>`)
+              .wrap((content) => `<Table.Cell>${content}</Table.Cell>`),
           );
           const tableComponent = !isList
             ? new TypescriptCodeBlock('')
@@ -350,7 +350,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                 {
                   COMPONENT_NAME: tableName,
                   EXTRA_PROP_SPREAD: new TypescriptStringReplacement(
-                    tableDataDependencies.map((d) => d.propName).join(',\n')
+                    tableDataDependencies.map((d) => d.propName).join(',\n'),
                   ),
                   PROPS: getComponentProps({
                     inputType: isList ? 'List' : 'Object',
@@ -367,29 +367,29 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                     'import {Table, LinkButton} from "%react-components"',
                   ],
                   importMappers: [reactComponents],
-                }
+                },
               );
 
           const formFile = typescript.createTemplate(
             {
               EMBEDDED_FORM_DATA_TYPE: TypescriptCodeUtils.createExpression(
                 formDataType,
-                `import { ${formDataType} } from "${adminCrudEdit.getSchemaImport()}`
+                `import { ${formDataType} } from "${adminCrudEdit.getSchemaImport()}`,
               ),
               EMBEDDED_FORM_DATA_SCHEMA: TypescriptCodeUtils.createExpression(
                 formSchema,
-                `import { ${formSchema} } from "${adminCrudEdit.getSchemaImport()}`
+                `import { ${formSchema} } from "${adminCrudEdit.getSchemaImport()}`,
               ),
               COMPONENT_NAME: new TypescriptStringReplacement(formName),
               INPUTS: TypescriptCodeUtils.mergeExpressions(
                 inputFields.map((input) => input.content),
-                '\n'
+                '\n',
               ),
               HEADER: TypescriptCodeUtils.mergeBlocks(
-                inputFields.map((field) => field.header).filter(notEmpty)
+                inputFields.map((field) => field.header).filter(notEmpty),
               ),
               'EXTRA_PROP_SPREAD,': new TypescriptStringReplacement(
-                inputDataDependencies.map((d) => d.propName).join(',\n')
+                inputDataDependencies.map((d) => d.propName).join(',\n'),
               ),
               PROPS: getComponentProps({
                 inputType: isList ? 'List' : 'Object',
@@ -400,16 +400,16 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
               }),
               TABLE_COMPONENT: tableComponent,
             },
-            { importMappers: [reactComponents, reactError] }
+            { importMappers: [reactComponents, reactError] },
           );
 
           await builder.apply(
-            formFile.renderToAction('EmbeddedForm.tsx', formPath)
+            formFile.renderToAction('EmbeddedForm.tsx', formPath),
           );
         },
       };
     },
-  })
+  }),
 );
 
 const AdminCrudEmbeddedFormGenerator = createGeneratorWithTasks({

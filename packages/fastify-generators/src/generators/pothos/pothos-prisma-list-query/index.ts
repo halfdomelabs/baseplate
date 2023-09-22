@@ -58,7 +58,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
           `async (query) => MODEL.findMany({ ...query })`,
           {
             MODEL: prismaOutput.getPrismaModelExpression(modelName),
-          }
+          },
         );
 
         const options = {
@@ -76,7 +76,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
             BUILDER: 'builder',
             QUERY_NAME: quot(queryName),
             OPTIONS: TypescriptCodeUtils.mergeExpressionsAsObject(options),
-          }
+          },
         );
 
         pothosTypesFile.registerType({

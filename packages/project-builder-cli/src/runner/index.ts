@@ -15,7 +15,7 @@ import { writeApplicationFiles } from '../writer/index.js';
 
 async function loadProjectJson(directory: string): Promise<ProjectConfig> {
   const projectJsonPath = expandPathWithTilde(
-    path.join(directory, 'baseplate/project.json')
+    path.join(directory, 'baseplate/project.json'),
   );
   const fileExists = await fs.pathExists(projectJsonPath);
 
@@ -34,7 +34,7 @@ export interface BuildProjectForDirectoryOptions {
 export async function buildProjectForDirectory(
   directory: string,
   options: BuildProjectForDirectoryOptions,
-  logger: Logger = console
+  logger: Logger = console,
 ): Promise<void> {
   const resolvedDirectory = expandPathWithTilde(directory);
   // load project.json file
@@ -59,7 +59,7 @@ export async function buildProjectForDirectory(
 export async function buildToCleanFolder(
   directory: string,
   options: unknown,
-  logger: Logger = console
+  logger: Logger = console,
 ): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file

@@ -4,5 +4,5 @@ export default {
   singleQuote: true,
   trailingComma: 'es5',
   tailwindFunctions: ['clsx'],
-  plugins: [require('prettier-plugin-tailwindcss')],
+  plugins: ['prettier-plugin-tailwindcss'],
 };

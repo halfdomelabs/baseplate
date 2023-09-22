@@ -17,12 +17,12 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-export type ReactAppProvider = {
+export interface ReactAppProvider {
   setErrorBoundary(errorBoundary: TypescriptCodeWrapper): void;
   getRenderWrappers(): OrderedList<TypescriptCodeWrapper>;
   setRenderRoot(root: TypescriptCodeExpression): void;
   addRenderSibling(sibling: TypescriptCodeExpression): void;
-};
+}
 
 export const reactAppProvider =
   createProviderType<ReactAppProvider>('react-app');
@@ -56,8 +56,8 @@ const ReactAppGenerator = createGeneratorWithChildren({
         'APP',
         TypescriptCodeUtils.createExpression(
           '<App />',
-          `import App from '@/${srcFolder}/app/App';`
-        )
+          `import App from '@/${srcFolder}/app/App';`,
+        ),
       );
     return {
       getProviders: () => ({
@@ -82,7 +82,7 @@ const ReactAppGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const rootWithSiblings = TypescriptCodeUtils.mergeExpressions(
           [renderRoot, ...renderSiblings],
-          '\n'
+          '\n',
         );
 
         appFile.addCodeEntries({

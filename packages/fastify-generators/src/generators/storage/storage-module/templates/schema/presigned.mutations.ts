@@ -12,7 +12,7 @@ export const presignedUrlFieldObjectType = builder.simpleObject(
       name: t.string(),
       value: t.string(),
     }),
-  }
+  },
 );
 
 builder.mutationField('createPresignedUploadUrl', (t) =>
@@ -35,7 +35,7 @@ builder.mutationField('createPresignedUploadUrl', (t) =>
     },
     resolve: (root, args, context) =>
       createPresignedUploadUrl(args.input, context),
-  })
+  }),
 );
 
 builder.mutationField('createPresignedDownloadUrl', (t) =>
@@ -49,5 +49,5 @@ builder.mutationField('createPresignedDownloadUrl', (t) =>
     },
     resolve: (root, args, context) =>
       createPresignedDownloadUrl(args.input, context),
-  })
+  }),
 );

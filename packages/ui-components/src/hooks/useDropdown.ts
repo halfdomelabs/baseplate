@@ -13,9 +13,7 @@ import { Modifier, usePopper } from 'react-popper';
 type PopperProps =
   | MutableRefObject<HTMLDivElement | null>
   | CSSProperties
-  | {
-      [key: string]: string;
-    }
+  | Record<string, string>
   | undefined;
 
 interface TransitionProps {

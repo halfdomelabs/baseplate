@@ -50,7 +50,6 @@ const AuthModuleGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         authModule: {},
       }),
-      build: async () => {},
     };
   },
 });

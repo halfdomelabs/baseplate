@@ -87,7 +87,7 @@ interface TextInputControllerProps<T extends FieldValues>
 }
 
 TextInput.LabelledController = function TextInputController<
-  T extends FieldValues
+  T extends FieldValues,
 >({ control, name, ...rest }: TextInputControllerProps<T>): JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;

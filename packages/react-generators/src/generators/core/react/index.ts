@@ -31,12 +31,12 @@ const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   HEADER: { type: 'code-block' },
 });
 
-export type ReactProvider = {
+export interface ReactProvider {
   getSrcFolder(): string;
   getIndexFile(): TypescriptSourceFile<typeof INDEX_FILE_CONFIG>;
   addVitePlugin(plugin: TypescriptCodeExpression): void;
   addServerOption(key: string, value: TypescriptCodeExpression): void;
-};
+}
 
 export const reactProvider = createProviderType<ReactProvider>('react');
 
@@ -138,15 +138,15 @@ const ReactGenerator = createGeneratorWithChildren({
     const vitePlugins: TypescriptCodeExpression[] = [
       TypescriptCodeUtils.createExpression(
         `react()`,
-        `import react from '@vitejs/plugin-react';`
+        `import react from '@vitejs/plugin-react';`,
       ),
       TypescriptCodeUtils.createExpression(
         `viteTsconfigPaths()`,
-        `import viteTsconfigPaths from 'vite-tsconfig-paths';`
+        `import viteTsconfigPaths from 'vite-tsconfig-paths';`,
       ),
       TypescriptCodeUtils.createExpression(
         `svgrPlugin()`,
-        `import svgrPlugin from 'vite-plugin-svgr';`
+        `import svgrPlugin from 'vite-plugin-svgr';`,
       ),
     ];
 
@@ -154,12 +154,12 @@ const ReactGenerator = createGeneratorWithChildren({
       Record<string, TypescriptCodeExpression>
     >({
       port: TypescriptCodeUtils.createExpression(
-        'envVars.PORT ? parseInt(envVars.PORT, 10) : 3000'
+        'envVars.PORT ? parseInt(envVars.PORT, 10) : 3000',
       ),
       watch: TypescriptCodeUtils.createExpression(
         JSON.stringify({
           ignored: ['**/baseplate/.clean/**', '**/baseplate/.clean_tmp/**'],
-        })
+        }),
       ),
     });
 
@@ -189,8 +189,8 @@ const ReactGenerator = createGeneratorWithChildren({
               source: file,
               destination: file,
               neverOverwrite: true,
-            })
-          )
+            }),
+          ),
         );
 
         const staticFiles = ['src/vite-env.d.ts'];
@@ -202,13 +202,13 @@ const ReactGenerator = createGeneratorWithChildren({
                 source: file,
                 destination: file,
                 shouldFormat: true,
-              })
-            )
-          )
+              }),
+            ),
+          ),
         );
 
         await builder.apply(
-          indexFile.renderToAction('src/index.tsx', 'src/index.tsx')
+          indexFile.renderToAction('src/index.tsx', 'src/index.tsx'),
         );
 
         await builder.apply(
@@ -219,14 +219,14 @@ const ReactGenerator = createGeneratorWithChildren({
               title: descriptor.title,
               description: descriptor.description,
             },
-          })
+          }),
         );
 
         const viteConfig = new TypescriptSourceFile({
           CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject({
             plugins: TypescriptCodeUtils.mergeExpressionsAsArray(vitePlugins),
             server: TypescriptCodeUtils.mergeExpressionsAsObject(
-              viteServerOptions.value()
+              viteServerOptions.value(),
             ),
             build: TypescriptCodeUtils.mergeExpressionsAsObject({
               outDir: quot('build'),

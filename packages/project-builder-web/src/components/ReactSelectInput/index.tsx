@@ -29,7 +29,7 @@ interface Props<ValueType = string> {
 function Input<
   OptionType = unknown,
   IsMultiType extends boolean = boolean,
-  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>
+  GroupType extends GroupBase<OptionType> = GroupBase<OptionType>,
 >(props: InputProps<OptionType, IsMultiType, GroupType>): JSX.Element {
   return <components.Input {...props} inputClassName="focus:ring-0" />;
 }
@@ -96,7 +96,7 @@ ReactSelectInput.Labelled = function ReactSelectInputLabelled({
 
 interface ReactSelectInputLabelledControllerProps<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > extends Omit<
     ReactSelectInputLabelledProps<PathValue<TFieldValues, TFieldName>>,
     'onChange' | 'onBlur' | 'value' | 'error'
@@ -109,7 +109,7 @@ interface ReactSelectInputLabelledControllerProps<
 
 ReactSelectInput.LabelledController = function ReactSelectInputController<
   TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 >({
   className,
   name,

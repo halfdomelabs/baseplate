@@ -15,34 +15,31 @@ module.exports = function createEslintConfig(options) {
   const additionalTsConfigs = options.additionalTsConfigs || [];
   const mdx = options.mdx || false;
 
-  const reactRules = {
-    'react/require-default-props': 'off',
-    'react/jsx-props-no-spreading': 'off',
-  };
-
-  const baseConfigs = react
-    ? ['airbnb', 'airbnb/hooks', 'plugin:react/jsx-runtime']
-    : ['airbnb-base'];
-
   const typescriptOverrides = typescript
     ? [
         {
           files: ['*.tsx', '*.ts'],
           extends: [
-            react ? 'airbnb-typescript' : 'airbnb-typescript/base',
-            'plugin:@typescript-eslint/eslint-recommended',
-            'plugin:@typescript-eslint/recommended',
-            'plugin:@typescript-eslint/recommended-requiring-type-checking',
+            'plugin:@typescript-eslint/recommended-type-checked',
+            'plugin:@typescript-eslint/stylistic-type-checked',
           ],
           rules: {
+            // useful for replacing _.omit e.g. const { a, ...rest } = obj
+            '@typescript-eslint/no-unused-vars': [
+              'error',
+              { ignoreRestSiblings: true },
+            ],
+            // allows us to pass handleSubmit from React Hook Form to onSubmit
+            '@typescript-eslint/no-misused-promises': [
+              'error',
+              { checksVoidReturn: { attributes: false } },
+            ],
+            // useful for being explicit about return types and improving Typescript performance
             '@typescript-eslint/explicit-function-return-type': [
               'error',
               { allowExpressions: true, allowTypedFunctionExpressions: true },
             ],
-            '@typescript-eslint/no-misused-promises': [
-              'error',
-              { checksVoidReturn: false },
-            ],
+            '@typescript-eslint/prefer-nullish-coalescing': 'warn',
           },
           parserOptions: {
             project: ['./tsconfig.json', ...additionalTsConfigs],
@@ -73,58 +70,73 @@ module.exports = function createEslintConfig(options) {
 
   return {
     root: true,
-    ignorePatterns: ['.eslintrc.js'],
+    plugins: ['import'],
+    parserOptions: {
+      ecmaVersion: 2021,
+    },
     extends: [
-      ...baseConfigs,
-      'plugin:import/recommended',
+      'eslint:recommended',
+      ...(react
+        ? [
+            'plugin:react/recommended',
+            'plugin:react-hooks/recommended',
+            'plugin:react/jsx-runtime',
+            'plugin:jsx-a11y/recommended',
+          ]
+        : []),
       ...(storybook ? ['plugin:storybook/recommended'] : []),
       'plugin:vitest/recommended',
     ],
     rules: {
-      ...(react ? reactRules : {}),
-      'import/prefer-default-export': 'off',
-      'class-methods-use-this': 'off',
-      'no-template-curly-in-string': 'off',
-      'no-console': 'error',
-      'no-param-reassign': [
-        'error',
-        // allows for use in immer (https://github.com/immerjs/immer/issues/189)
-        { props: true, ignorePropertyModificationsForRegex: ['^draft'] },
-      ],
-      'import/order': [
-        'error',
-        {
-          pathGroups: [
-            { pattern: 'src/**', group: 'external', position: 'after' },
-            { pattern: '@src/**', group: 'external', position: 'after' },
-          ],
-          alphabetize: { order: 'asc' },
-        },
-      ],
-      'import/no-extraneous-dependencies': [
-        'error',
-        {
-          devDependencies: [
-            '**/*.test-helper.ts',
-            '**/*.test.ts',
-            '**/*.stories.ts',
-            '**/*.mdx',
-            'src/tests/**/*.ts',
-            '**/__mocks__/*.ts',
-            '**/setupTests.ts',
-            'vite.config.ts',
-            'tailwind.config.ts',
-          ],
-        },
-      ],
+      // useful for replacing _.omit e.g. const { a, ...rest } = obj
+      'no-unused-vars': ['error', { ignoreRestSiblings: true }],
     },
     overrides: [
       ...typescriptOverrides,
       ...mdxOverrides,
-      // make sure prettier is always applied last
+      // make sure prettier and rule overrides are always applied last
       {
         files: ['*'],
         extends: ['prettier'],
+        rules: {
+          // we should prefer logger over console
+          'no-console': 'error',
+          // ensure we alphabetize imports for easier reading
+          'import/order': [
+            'error',
+            {
+              pathGroups: [
+                { pattern: 'src/**', group: 'external', position: 'after' },
+                { pattern: '@src/**', group: 'external', position: 'after' },
+              ],
+              alphabetize: { order: 'asc' },
+            },
+          ],
+          // ensure we don't have devDependencies imported in production code
+          'import/no-extraneous-dependencies': [
+            'error',
+            {
+              devDependencies: [
+                '**/*.test-helper.ts',
+                '**/*.test.ts',
+                '**/*.stories.ts',
+                '**/*.mdx',
+                'src/tests/**/*.ts',
+                '**/__mocks__/**/*.ts',
+                '**/setupTests.ts',
+                'vite.config.ts',
+                '.eslintrc.js',
+                '.eslintrc.cjs',
+                'prettier.config.js',
+                'prettier.config.cjs',
+                'postcss.config.js',
+                'postcss.config.cjs',
+                'tailwind.config.js',
+                'tailwind.config.cjs',
+              ],
+            },
+          ],
+        },
       },
     ],
     env: {

@@ -16,7 +16,7 @@ import { flattenGeneratorTaskEntries } from './utils.js';
 
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
-  logger: Logger
+  logger: Logger,
 ): Promise<GeneratorOutput> {
   const taskEntries = flattenGeneratorTaskEntries(rootEntry);
   const taskEntriesById = R.indexBy(R.prop('id'), taskEntries);
@@ -24,7 +24,7 @@ export async function executeGeneratorEntry(
     rootEntry,
     {},
     taskEntriesById,
-    logger
+    logger,
   );
   const sortedRunSteps = getSortedRunSteps(taskEntries, dependencyMap);
 
@@ -54,10 +54,10 @@ export async function executeGeneratorEntry(
 
           if (!provider && !optional) {
             throw new Error(
-              `Could not resolve required dependency ${key} in ${taskId}`
+              `Could not resolve required dependency ${key} in ${taskId}`,
             );
           }
-          return provider as Provider; // cheat Type system to prevent null from appearing
+          return provider!; // cheat Type system to prevent null from appearing
         }, dependencies);
 
         const taskInstance = task.run(resolvedDependencies);
@@ -69,22 +69,22 @@ export async function executeGeneratorEntry(
           Object.keys(exports).length
         ) {
           throw new Error(
-            `Task ${taskId} does not have getProviders function despite having exports`
+            `Task ${taskId} does not have getProviders function despite having exports`,
           );
         }
         if (taskInstance.getProviders && exports) {
           const providers = taskInstance.getProviders();
           const missingProvider = Object.keys(exports).find(
-            (key) => !providers[key]
+            (key) => !providers[key],
           );
           if (missingProvider) {
             throw new Error(
-              `Task ${taskId} did not export provider ${missingProvider}`
+              `Task ${taskId} did not export provider ${missingProvider}`,
             );
           }
           providerMapById[taskId] = R.zipObj(
             Object.values(exports).map((value) => value.name),
-            Object.keys(exports).map((key) => providers[key])
+            Object.keys(exports).map((key) => providers[key]),
           );
         }
       } else if (action === 'build') {
@@ -102,10 +102,12 @@ export async function executeGeneratorEntry(
 
         const outputBuilder = new OutputBuilder(
           entry.generatorBaseDirectory,
-          formatter
+          formatter,
         );
 
-        await Promise.resolve(generator.build(outputBuilder));
+        if (generator.build) {
+          await Promise.resolve(generator.build(outputBuilder));
+        }
 
         generatorOutputs.push(outputBuilder.output);
       } else {
@@ -114,7 +116,7 @@ export async function executeGeneratorEntry(
     } catch (err) {
       const { generatorName } = taskEntriesById[taskId];
       logger.error(
-        `Error encountered in ${action} step of ${taskId} (${generatorName})`
+        `Error encountered in ${action} step of ${taskId} (${generatorName})`,
       );
       throw err;
     }
@@ -122,7 +124,7 @@ export async function executeGeneratorEntry(
 
   const safeMerge = R.mergeWithKey((key) => {
     throw new Error(
-      `Two or more generators attempted to write to the same file (${key})`
+      `Two or more generators attempted to write to the same file (${key})`,
     );
   });
 
@@ -130,10 +132,10 @@ export async function executeGeneratorEntry(
     files: R.reduce(
       safeMerge,
       {},
-      generatorOutputs.map((output) => output.files)
+      generatorOutputs.map((output) => output.files),
     ),
     postWriteCommands: R.flatten(
-      generatorOutputs.map((output) => output.postWriteCommands)
+      generatorOutputs.map((output) => output.postWriteCommands),
     ),
   };
 

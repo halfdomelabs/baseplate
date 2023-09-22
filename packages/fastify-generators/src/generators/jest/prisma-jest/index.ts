@@ -41,7 +41,7 @@ const PrismaJestGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { node, jest, project, typescript, prismaOutput }
+    { node, jest, project, typescript, prismaOutput },
   ) {
     node.addDevPackages({
       'jest-mock-extended': '3.0.4',
@@ -49,11 +49,11 @@ const PrismaJestGenerator = createGeneratorWithChildren({
     });
 
     const [dbHelperImport, dbHelperPath] = makeImportAndFilePath(
-      'src/tests/helpers/db.test-helper.ts'
+      'src/tests/helpers/db.test-helper.ts',
     );
 
     const [prismaHelperImport, prismaHelperPath] = makeImportAndFilePath(
-      'src/tests/helpers/prisma.test-helper.ts'
+      'src/tests/helpers/prisma.test-helper.ts',
     );
 
     const importMap = {
@@ -87,7 +87,7 @@ if (!globalConfig.testPathPattern.includes('.unit.')) {
 }
 `,
         [`import { createTestDatabase } from '%prisma-jest/db'`],
-        { importMappers: [{ getImportMap: () => importMap }] }
+        { importMappers: [{ getImportMap: () => importMap }] },
       ),
     ]);
 
@@ -107,7 +107,7 @@ if (!globalConfig.testPathPattern.includes('.unit.')) {
                 .getProjectName()
                 .replace('-', '_')}_test`,
             },
-          })
+          }),
         );
 
         await builder.apply(
@@ -118,10 +118,10 @@ if (!globalConfig.testPathPattern.includes('.unit.')) {
             replacements: {
               PRISMA_SERVICE_PATH: typescript.resolveModule(
                 prismaOutput.getPrismaServicePath(),
-                prismaHelperPath
+                prismaHelperPath,
               ),
             },
-          })
+          }),
         );
       },
     };

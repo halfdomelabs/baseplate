@@ -26,7 +26,7 @@ declare global {
     }
 
     export interface ExtendDefaultTypes<
-      PartialTypes extends Partial<UserSchemaTypes>
+      PartialTypes extends Partial<UserSchemaTypes>,
     > {
       AuthRole: PartialTypes['AuthRole'] & string;
     }
@@ -42,7 +42,7 @@ declare global {
       Nullable extends FieldNullability<Type>,
       Args extends InputFieldMap,
       ResolveShape,
-      ResolveReturnShape
+      ResolveReturnShape,
     > {
       authorize?: AuthorizeRoleRuleOption<
         ParentShape,

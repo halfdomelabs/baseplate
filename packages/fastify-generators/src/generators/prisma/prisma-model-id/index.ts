@@ -17,9 +17,7 @@ const PrismaModelIdGenerator = createGeneratorWithChildren({
       name: '@@id',
       args: [fields],
     });
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

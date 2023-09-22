@@ -14,10 +14,10 @@ import { AuthorizeRoleRuleFunction, AuthorizeRoleRuleOption } from './types';
 export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles' as const;
 
 export class PothosAuthorizeByRolesPlugin<
-  Types extends SchemaTypes
+  Types extends SchemaTypes,
 > extends BasePlugin<Types> {
   override onOutputFieldConfig(
-    fieldConfig: PothosOutputFieldConfig<Types>
+    fieldConfig: PothosOutputFieldConfig<Types>,
   ): PothosOutputFieldConfig<Types> | null {
     const { authorize } = fieldConfig.pothosOptions;
 
@@ -27,7 +27,7 @@ export class PothosAuthorizeByRolesPlugin<
       this.builder.options.authorizeByRoles?.requireOnRootFields
     ) {
       throw new Error(
-        `Field "${fieldConfig.parentType}.${fieldConfig.name}" is missing an "authorize" option and all root fields require authorization.`
+        `Field "${fieldConfig.parentType}.${fieldConfig.name}" is missing an "authorize" option and all root fields require authorization.`,
       );
     }
 
@@ -40,14 +40,14 @@ export class PothosAuthorizeByRolesPlugin<
     root: unknown,
     args: object,
     context: Types['Context'],
-    info: GraphQLResolveInfo
+    info: GraphQLResolveInfo,
   ): Promise<void> {
     const rules = Array.isArray(authorize) ? authorize : [authorize];
     const roles = this.builder.options.authorizeByRoles.extractRoles(context);
 
     // process all string rules first
     const stringRules = rules.filter(
-      (rule): rule is Types['AuthRole'] => typeof rule === 'string'
+      (rule): rule is Types['AuthRole'] => typeof rule === 'string',
     );
 
     if (stringRules.some((rule) => roles.includes(rule))) {
@@ -56,12 +56,12 @@ export class PothosAuthorizeByRolesPlugin<
 
     const ruleFunctions = rules.filter(
       (rule): rule is AuthorizeRoleRuleFunction<unknown, unknown, Types> =>
-        typeof rule === 'function'
+        typeof rule === 'function',
     );
 
     // try all rules and see if any match
     const results = await Promise.allSettled(
-      ruleFunctions.map((func) => func(root, args, context, info))
+      ruleFunctions.map((func) => func(root, args, context, info)),
     );
 
     // if any check passed, return success
@@ -72,7 +72,7 @@ export class PothosAuthorizeByRolesPlugin<
     // if a check threw an unexpected error, throw that since it may mean
     // the authorization rule may have been valid but failed to run
     const unexpectedError = results.find(
-      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError)
+      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError),
     ) as PromiseRejectedResult;
 
     if (unexpectedError) {
@@ -81,7 +81,7 @@ export class PothosAuthorizeByRolesPlugin<
 
     // if a check threw a forbidden error with a message, throw that
     const forbiddenError = results.find(
-      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError)
+      (r) => r.status === 'rejected' && !(r.reason instanceof ForbiddenError),
     ) as PromiseRejectedResult;
 
     if (forbiddenError) {
@@ -93,7 +93,7 @@ export class PothosAuthorizeByRolesPlugin<
 
   override wrapResolve(
     resolver: GraphQLFieldResolver<unknown, Types['Context'], object>,
-    fieldConfig: PothosOutputFieldConfig<Types>
+    fieldConfig: PothosOutputFieldConfig<Types>,
   ): GraphQLFieldResolver<unknown, Types['Context'], object> {
     const { authorize } = fieldConfig.pothosOptions;
     if (!authorize) {
@@ -108,7 +108,7 @@ export class PothosAuthorizeByRolesPlugin<
 
   override wrapSubscribe(
     subscriber: GraphQLFieldResolver<unknown, Types['Context'], object>,
-    fieldConfig: PothosOutputFieldConfig<Types>
+    fieldConfig: PothosOutputFieldConfig<Types>,
   ): GraphQLFieldResolver<unknown, Types['Context'], object> {
     const { authorize } = fieldConfig.pothosOptions;
     if (!authorize) {
@@ -124,5 +124,5 @@ export class PothosAuthorizeByRolesPlugin<
 
 SchemaBuilder.registerPlugin(
   pothosAuthorizeByRolesPlugin,
-  PothosAuthorizeByRolesPlugin
+  PothosAuthorizeByRolesPlugin,
 );

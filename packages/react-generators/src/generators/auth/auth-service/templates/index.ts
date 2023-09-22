@@ -70,7 +70,7 @@ export function createAuthService(): AuthService {
         err.graphQLErrors.some(
           (gqlErr) =>
             gqlErr.extensions?.code === 'invalid-token' ||
-            gqlErr.extensions?.code === 'token-expired'
+            gqlErr.extensions?.code === 'token-expired',
         )
       ) {
         // log us out if the refresh token is invalid

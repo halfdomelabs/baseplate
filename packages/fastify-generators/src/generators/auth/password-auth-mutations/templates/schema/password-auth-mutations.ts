@@ -17,7 +17,7 @@ export const loginWithEmailAndPasswordMutation = createStandardMutation({
   resolve: async (root, { input }, context) => {
     const payload = await passwordAuthService.loginWithPassword(
       input.email,
-      input.password
+      input.password,
     );
     const user = await USER_MODEL.findUniqueOrThrow({
       where: { id: payload.userId },

@@ -34,7 +34,7 @@ interface Renderer<Type extends RendererType> {
   name: Type;
   render: (
     config: AdminCrudRendererConfig & { type: Type },
-    itemName: string
+    itemName: string,
   ) => RendererOutput;
 }
 
@@ -46,7 +46,7 @@ export const ADMIN_CRUD_RENDERERS: Record<
     name: 'text',
     render: (config, itemName) => ({
       content: TypescriptCodeUtils.createExpression(
-        `{${itemName}.${config.field}}`
+        `{${itemName}.${config.field}}`,
       ),
       graphQLFields: [{ name: config.field }],
     }),

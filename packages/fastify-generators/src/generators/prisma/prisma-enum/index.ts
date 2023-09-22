@@ -34,7 +34,6 @@ const PrismaEnumGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaEnum: {},
       }),
-      build: async () => {},
     };
   },
 });

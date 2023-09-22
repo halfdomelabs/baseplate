@@ -11,7 +11,7 @@ interface Props {
 }
 
 function AdminSectionsForm({ className, appConfig }: Props): JSX.Element {
-  const sortedSections = _.sortBy(appConfig.sections || [], [
+  const sortedSections = _.sortBy(appConfig.sections ?? [], [
     'feature',
     'name',
   ]);

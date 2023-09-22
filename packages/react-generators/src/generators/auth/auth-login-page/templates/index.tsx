@@ -49,7 +49,7 @@ function LoginPage(): JSX.Element {
       }
       authService.setAuthPayload(data.loginWithEmailAndPassword.authPayload);
       const from =
-        (location.state as LoginLocationState)?.from?.pathname || '/';
+        (location.state as LoginLocationState)?.from?.pathname ?? '/';
       navigate(from);
     },
   });
@@ -73,7 +73,7 @@ function LoginPage(): JSX.Element {
           setFormError(
             'email',
             { message: 'User does not exist' },
-            { shouldFocus: true }
+            { shouldFocus: true },
           );
           break;
         case 'invalid-password':
@@ -81,12 +81,12 @@ function LoginPage(): JSX.Element {
           setFormError(
             'password',
             { message: 'Password is incorrect' },
-            { shouldFocus: true }
+            { shouldFocus: true },
           );
           break;
         case 'user-has-no-password':
           setError(
-            "You don't have a password assigned to your account. Maybe you logged in another way?"
+            "You don't have a password assigned to your account. Maybe you logged in another way?",
           );
           break;
         default:

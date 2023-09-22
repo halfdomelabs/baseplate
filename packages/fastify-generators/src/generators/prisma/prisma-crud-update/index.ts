@@ -41,7 +41,7 @@ const descriptorSchema = z.object({
 
 function getMethodDefinition(
   serviceMethodExpression: TypescriptCodeExpression,
-  options: PrismaDataMethodOptions
+  options: PrismaDataMethodOptions,
 ): ServiceOutputMethod {
   const { name, modelName, prismaOutput } = options;
   const prismaDefinition = prismaOutput.getPrismaModel(modelName);
@@ -72,7 +72,7 @@ function getMethodDefinition(
     ],
     requiresContext: contextRequired,
     returnType: prismaToServiceOutputDto(prismaDefinition, (enumName) =>
-      prismaOutput.getServiceEnum(enumName)
+      prismaOutput.getServiceEnum(enumName),
     ),
   };
 }
@@ -103,7 +103,7 @@ function getMethodBlock(options: PrismaDataMethodOptions): TypescriptCodeBlock {
         data: updateExpression,
         '...': 'query',
       }),
-    }
+    },
   );
 
   return TypescriptCodeUtils.formatBlock(
@@ -123,7 +123,7 @@ export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateSer
           ? 'id'
           : `id : ${primaryKey.argumentName}`,
       PRIMARY_KEY_TYPE: primaryKey.argumentType,
-      QUERY_ARGS: `Prisma.${modelName}Args`,
+      QUERY_ARGS: `Prisma.${modelName}DefaultArgs`,
       PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
       FUNCTION_BODY: functionBody,
       OPERATION: wrapWithApplyDataPipe(operation, dataPipeNames, prismaUtils),
@@ -131,14 +131,14 @@ export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateSer
     },
     {
       headerBlocks: [typeHeaderBlock, primaryKey.headerTypeBlock].filter(
-        notEmpty
+        notEmpty,
       ),
       importText: [
         "import { UpdateServiceInput } from '%prisma-utils/crudServiceTypes';",
         "import { Prisma } from '@prisma/client';",
       ],
       importMappers: [prismaUtils],
-    }
+    },
   );
 }
 
@@ -160,14 +160,14 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
       crudPrismaService,
       serviceContext,
       prismaUtils,
-    }
+    },
   ) {
     const { name, modelName, prismaFields, transformerNames } = descriptor;
     const methodName = `${name}${modelName}`;
 
     const serviceMethodExpression = TypescriptCodeUtils.createExpression(
       methodName,
-      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`
+      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
     );
     const transformerOption: PrismaDataTransformerOptions = {
       operationType: 'update',
@@ -176,8 +176,8 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
       transformerNames?.map((transformerName) =>
         crudPrismaService
           .getTransformerByName(transformerName)
-          .buildTransformer(transformerOption)
-      ) || [];
+          .buildTransformer(transformerOption),
+      ) ?? [];
 
     return {
       getProviders: () => ({}),
@@ -201,7 +201,7 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
         serviceFile.registerMethod(
           name,
           getMethodBlock(methodOptions),
-          getMethodDefinition(serviceMethodExpression, methodOptions)
+          getMethodDefinition(serviceMethodExpression, methodOptions),
         );
       },
     };

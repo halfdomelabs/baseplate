@@ -16,6 +16,6 @@ export function flattenAppModule(module: AppModule): FlattenedAppModule {
 
   return [module, ...flattenedChildren].reduce(
     (prev, current) => MODULE_MERGER,
-    {}
+    {},
   );
 }

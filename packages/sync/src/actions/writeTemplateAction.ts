@@ -17,7 +17,7 @@ export const writeTemplateAction = createBuilderActionCreator<[Options]>(
     const templatePath = path.join(
       builder.generatorBaseDirectory,
       'templates',
-      template
+      template,
     );
 
     const templateContents = await fs.readFile(templatePath, 'utf8');
@@ -25,5 +25,5 @@ export const writeTemplateAction = createBuilderActionCreator<[Options]>(
     const contents = ejs.render(templateContents, data);
 
     builder.writeFile(destination, contents, { shouldFormat: !noFormat });
-  }
+  },
 );

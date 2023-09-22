@@ -17,11 +17,9 @@ const NexusAuthorizeFieldGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { nexusAuth, nexusType }) {
     nexusType.addCustomField(
       'authorize',
-      nexusAuth.formatAuthorizeConfig(descriptor)
+      nexusAuth.formatAuthorizeConfig(descriptor),
     );
-    return {
-      build: async () => {},
-    };
+    return {};
   },
 });
 

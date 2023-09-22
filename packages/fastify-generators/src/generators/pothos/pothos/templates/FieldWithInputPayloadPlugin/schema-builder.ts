@@ -95,18 +95,18 @@ Object.defineProperty(rootBuilderProto, 'input', {
     return new InputFieldBuilder(
       this.builder,
       'InputObject',
-      `UnnamedWithInputOn${this.typename}`
+      `UnnamedWithInputOn${this.typename}`,
     );
   },
 });
 
 Object.defineProperty(rootBuilderProto, 'payload', {
   get: function getPayloadBuilder(
-    this: RootFieldBuilder<SchemaTypes, unknown>
+    this: RootFieldBuilder<SchemaTypes, unknown>,
   ) {
     return new ObjectFieldBuilder(
       `UnnamedWithPayloadOn${this.typename}`,
-      this.builder
+      this.builder,
     );
   },
 });

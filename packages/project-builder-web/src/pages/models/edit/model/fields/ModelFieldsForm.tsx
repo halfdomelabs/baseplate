@@ -175,9 +175,9 @@ export function ModelFieldsForm({
             disabled={availableAutoFields.length === 0}
           >
             {availableAutoFields.map((field) => (
-              <Dropdown.ButtonItem key={field.name} onClick={field.addField}>
+              <Dropdown.Item key={field.name} onClick={field.addField}>
                 {field.name}
-              </Dropdown.ButtonItem>
+              </Dropdown.Item>
             ))}
           </ButtonGroup.Dropdown>
         </ButtonGroup>

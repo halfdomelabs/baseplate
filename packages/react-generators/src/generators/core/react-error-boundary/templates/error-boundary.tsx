@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { ErrorDisplay, Button } from '%react-components';
 
 import { useContext } from 'react';
@@ -31,8 +33,10 @@ function ErrorBoundaryFallback({
   }: {
     resetErrorBoundary: () => void;
     error: unknown;
-  } = useContext(ErrorBoundaryContext) || {
-    resetErrorBoundary: () => {},
+  } = useContext(ErrorBoundaryContext) ?? {
+    resetErrorBoundary: () => {
+      /* no-op */
+    },
     error: undefined,
   };
   return (
@@ -55,7 +59,7 @@ export function ErrorBoundary({
     <ReactErrorBoundary
       fallback={
         <ErrorBoundaryFallback
-          resetButtonLabel={resetButtonLabel || 'Reload Page'}
+          resetButtonLabel={resetButtonLabel ?? 'Reload Page'}
         />
       }
       onError={(err) => logError(err)}

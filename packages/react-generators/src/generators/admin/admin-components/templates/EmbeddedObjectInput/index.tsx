@@ -52,9 +52,9 @@ function EmbeddedObjectInput<InputType>({
         size="small"
         onClick={() =>
           setValueToEdit(
-            (value || defaultValue) as DefaultValues<
+            (value ?? defaultValue) as DefaultValues<
               Exclude<InputType, undefined | null>
-            >
+            >,
           )
         }
       >
@@ -71,7 +71,7 @@ function EmbeddedObjectInput<InputType>({
         width="large"
       >
         <Modal.Header onClose={() => setValueToEdit(undefined)}>
-          Edit {itemName || 'Item'}
+          Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
           {renderForm({ initialData: valueToEdit, onSubmit: handleSubmit })}
@@ -87,7 +87,7 @@ interface EmbeddedObjectInputLabelledProps<InputType> extends Props<InputType> {
 }
 
 EmbeddedObjectInput.Labelled = function EmbeddedOneToOneInputLabelled<
-  InputType
+  InputType,
 >({
   label,
   className,
@@ -107,7 +107,7 @@ EmbeddedObjectInput.Labelled = function EmbeddedOneToOneInputLabelled<
 
 interface EmbeddedObjectInputLabelledControllerProps<
   FormType extends FieldValues,
-  FormPath extends FieldPath<FormType>
+  FormPath extends FieldPath<FormType>,
 > extends Omit<
     EmbeddedObjectInputLabelledProps<FieldPathValue<FormType, FormPath>>,
     'onChange' | 'value' | 'error'
@@ -120,7 +120,7 @@ interface EmbeddedObjectInputLabelledControllerProps<
 EmbeddedObjectInput.LabelledController =
   function EmbeddedObjectInputLabelledController<
     FormType extends FieldValues,
-    FormPath extends FieldPath<FormType>
+    FormPath extends FieldPath<FormType>,
   >({
     className,
     control,

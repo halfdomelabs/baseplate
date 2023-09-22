@@ -29,7 +29,7 @@ const createMainTask = createTaskConfigBuilder(({ label }: Descriptor) => ({
           addDisplay(input) {
             if (display) {
               throw new Error(
-                'Cannot add more than one display to the same crud display container'
+                'Cannot add more than one display to the same crud display container',
               );
             }
             display = input;
@@ -40,7 +40,7 @@ const createMainTask = createTaskConfigBuilder(({ label }: Descriptor) => ({
       build: () => {
         if (!display) {
           throw new Error(
-            'Cannot build crud display container without a display'
+            'Cannot build crud display container without a display',
           );
         }
         adminCrudColumnContainer.addColumn({

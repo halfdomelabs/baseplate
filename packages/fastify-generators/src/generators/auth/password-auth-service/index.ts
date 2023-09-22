@@ -56,7 +56,7 @@ const PasswordAuthServiceGenerator = createGeneratorWithChildren({
       auth,
       typescript,
       errorHandlerService,
-    }
+    },
   ) {
     const moduleFolder = appModule.getModuleFolder();
     const { userModelName } = auth.getConfig();
@@ -75,7 +75,7 @@ const PasswordAuthServiceGenerator = createGeneratorWithChildren({
           authServiceImport,
           errorHandlerService,
         ],
-      }
+      },
     );
 
     passwordAuthServiceFile.addCodeEntries({
@@ -97,8 +97,8 @@ const PasswordAuthServiceGenerator = createGeneratorWithChildren({
         builder.setBaseDirectory(moduleFolder);
         await builder.apply(
           passwordAuthServiceFile.renderToAction(
-            'services/password-auth-service.ts'
-          )
+            'services/password-auth-service.ts',
+          ),
         );
       },
     };

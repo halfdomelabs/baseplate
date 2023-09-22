@@ -4,7 +4,7 @@ export function convertExpressionToField(expression: string): GraphQLField {
   const parts = expression.split('.');
   if (!parts.length) {
     throw new Error(
-      `Must have at least one part to expression to convert to field`
+      `Must have at least one part to expression to convert to field`,
     );
   }
   return parts.reverse().reduce(
@@ -13,6 +13,6 @@ export function convertExpressionToField(expression: string): GraphQLField {
       name: cur,
       fields: prev ? [prev] : undefined,
     }),
-    undefined as undefined | GraphQLField
-  ) as GraphQLField;
+    undefined as undefined | GraphQLField,
+  )!;
 }

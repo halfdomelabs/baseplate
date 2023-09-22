@@ -14,5 +14,5 @@ export const writeFormattedAction = createBuilderActionCreator<[Options]>(
       shouldFormat: true,
       neverOverwrite,
     });
-  }
+  },
 );

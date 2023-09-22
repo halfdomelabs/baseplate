@@ -24,14 +24,14 @@ const ReactSentryGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     descriptor,
-    { typescript, reactError, reactConfig, node, authIdentify }
+    { typescript, reactError, reactConfig, node, authIdentify },
   ) {
     const sentryFile = typescript.createTemplate(
       {},
-      { importMappers: [reactConfig] }
+      { importMappers: [reactConfig] },
     );
     const [sentryImport, sentryPath] = makeImportAndFilePath(
-      'src/services/sentry.ts'
+      'src/services/sentry.ts',
     );
 
     node.addPackages({
@@ -41,7 +41,7 @@ const ReactSentryGenerator = createGeneratorWithChildren({
     reactError.addErrorReporter(
       TypescriptCodeUtils.createBlock(`captureSentryError(error);`, [
         `import { captureSentryError } from '${sentryImport}';`,
-      ])
+      ]),
     );
 
     reactConfig.getConfigMap().set('VITE_SENTRY_DSN', {
@@ -56,8 +56,8 @@ const ReactSentryGenerator = createGeneratorWithChildren({
         id: user.id,
         email: user.email,
       });`,
-        `import { identifySentryUser } from '${sentryImport}';`
-      )
+        `import { identifySentryUser } from '${sentryImport}';`,
+      ),
     );
 
     return {

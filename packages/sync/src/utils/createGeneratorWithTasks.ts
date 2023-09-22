@@ -24,7 +24,7 @@ export interface SimpleGeneratorTaskOutput<TaskOutput = void> {
 
 interface SimpleGeneratorTaskInstance<
   ExportMap extends Record<string, unknown> = Record<string, Provider>,
-  TaskOutput = unknown
+  TaskOutput = unknown,
 > {
   getProviders?: () => ExportMap;
   build?: (builder: GeneratorOutputBuilder) => Promise<TaskOutput> | TaskOutput;
@@ -44,7 +44,7 @@ export interface SimpleGeneratorTaskConfig<
   ExportMap extends ProviderExportMap,
   DependencyMap extends ProviderDependencyMap,
   TaskDependencyMap extends TaskOutputDependencyMap,
-  TaskOutput = unknown
+  TaskOutput = unknown,
 > {
   name: string;
   exports?: ExportMap;
@@ -52,7 +52,7 @@ export interface SimpleGeneratorTaskConfig<
   taskDependencies?: TaskDependencyMap;
   run: (
     dependencies: InferDependencyProviderMap<DependencyMap>,
-    taskDependencies: InferTaskOutputDependencyMap<TaskDependencyMap>
+    taskDependencies: InferTaskOutputDependencyMap<TaskDependencyMap>,
   ) => SimpleGeneratorTaskInstance<
     InferExportProviderMap<ExportMap>,
     TaskOutput
@@ -64,10 +64,10 @@ type TaskConfigBuilder<
   DependencyMap extends ProviderDependencyMap,
   TaskDependencyMap extends TaskOutputDependencyMap,
   TaskOutput = unknown,
-  Input = never
+  Input = never,
 > = (
   input: Input,
-  taskDependencies?: TaskDependencyMap
+  taskDependencies?: TaskDependencyMap,
 ) => SimpleGeneratorTaskConfig<
   ExportMap,
   DependencyMap,
@@ -102,7 +102,7 @@ export function createTaskConfigBuilder<
   DependencyMap extends ProviderDependencyMap,
   TaskDependencyMap extends TaskOutputDependencyMap,
   TaskOutput = unknown,
-  Input = unknown
+  Input = unknown,
 >(
   builder: TaskConfigBuilder<
     ExportMap,
@@ -110,10 +110,10 @@ export function createTaskConfigBuilder<
     TaskDependencyMap,
     TaskOutput,
     Input
-  >
+  >,
 ): (
   input: Input,
-  taskDependencies?: TaskDependencyMap
+  taskDependencies?: TaskDependencyMap,
 ) => SimpleGeneratorTaskConfig<
   ExportMap,
   DependencyMap,
@@ -128,25 +128,25 @@ export interface GeneratorTaskBuilder {
     ExportMap extends ProviderExportMap,
     DependencyMap extends ProviderDependencyMap,
     TaskDependencyMap extends TaskOutputDependencyMap,
-    TaskOutput = unknown
+    TaskOutput = unknown,
   >(
     task: SimpleGeneratorTaskConfig<
       ExportMap,
       DependencyMap,
       TaskDependencyMap,
       TaskOutput
-    >
+    >,
   ) => SimpleGeneratorTaskOutput<TaskOutput>;
 }
 
 export interface GeneratorWithTasksConfig<DescriptorSchema extends z.ZodType> {
   descriptorSchema?: DescriptorSchema;
   getDefaultChildGenerators?(
-    descriptor: z.infer<DescriptorSchema>
+    descriptor: z.infer<DescriptorSchema>,
   ): Record<string, ChildGeneratorConfig>;
   buildTasks: (
     taskBuilder: GeneratorTaskBuilder,
-    descriptor: DescriptorWithChildren & z.infer<DescriptorSchema>
+    descriptor: DescriptorWithChildren & z.infer<DescriptorSchema>,
   ) => void;
 }
 
@@ -160,8 +160,10 @@ export interface GeneratorWithTasksConfig<DescriptorSchema extends z.ZodType> {
  * @param config Configuration of the generator
  * @returns Normal generator
  */
-export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
-  config: GeneratorWithTasksConfig<DescriptorSchema>
+export function createGeneratorWithTasks<
+  DescriptorSchema extends z.SomeZodObject,
+>(
+  config: GeneratorWithTasksConfig<DescriptorSchema>,
 ): GeneratorConfig<DescriptorWithChildren & z.infer<DescriptorSchema>> {
   return {
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
@@ -169,26 +171,29 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
         // TODO: Merge with base descriptor
         const mergedSchema = config.descriptorSchema?.and(baseDescriptorSchema);
         const validatedDescriptor = mergedSchema?.parse(
-          descriptor
+          descriptor,
         ) as DescriptorWithChildren & z.infer<DescriptorSchema>;
         const { id } = context;
         const childGeneratorConfigs =
-          config.getDefaultChildGenerators?.(descriptor) || {};
+          config.getDefaultChildGenerators?.(descriptor) ?? {};
 
         // make sure descriptor children match context
-        const descriptorChildren = descriptor.children || {};
+        const descriptorChildren = descriptor.children ?? {};
         const invalidChild = Object.keys(descriptorChildren)
           .filter((key) => !key.startsWith('$'))
           .find((key) => !childGeneratorConfigs[key]);
         if (invalidChild) {
           throw new Error(
-            `Unknown child found in descriptor: ${invalidChild} (in ${id}). Prefix key with $ if custom child`
+            `Unknown child found in descriptor: ${invalidChild} (in ${id}). Prefix key with $ if custom child`,
           );
         }
 
         const mergeAndValidateDescriptor = (
           { defaultDescriptor, defaultToNullIfEmpty }: ChildGeneratorConfig,
-          descriptorChild: Partial<BaseGeneratorDescriptor> | string | undefined
+          descriptorChild:
+            | Partial<BaseGeneratorDescriptor>
+            | string
+            | undefined,
         ): BaseGeneratorDescriptor | string | null => {
           if (typeof descriptorChild === 'string') {
             // child references are not parsed currently
@@ -208,8 +213,8 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
           }
 
           const mergedDescriptor = R.mergeRight(
-            defaultDescriptor || {},
-            descriptorChild || {}
+            defaultDescriptor ?? {},
+            descriptorChild ?? {},
           );
 
           const validatedChildDescriptor = baseDescriptorSchema
@@ -225,13 +230,13 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
           const { isMultiple } = value;
 
           if (isMultiple) {
-            const childArray = descriptorChildren[key] || [];
+            const childArray = descriptorChildren[key] ?? [];
             if (!Array.isArray(childArray)) {
               throw new Error(`${id} has invalid child ${key}. Must be array.`);
             }
             return childArray
               .map((childDescriptor) =>
-                mergeAndValidateDescriptor(value, childDescriptor)
+                mergeAndValidateDescriptor(value, childDescriptor),
               )
               .filter(notEmpty);
           }
@@ -254,7 +259,7 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
         context.logger.error(
           `Descriptor validation failed at ${context.id}: ${
             (err as Error).message
-          }`
+          }`,
         );
         throw err;
       }
@@ -285,18 +290,18 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
       config.buildTasks(taskBuilder, descriptor);
 
       return tasks.map((task) => {
-        const taskDependencies = task.taskDependencies || {};
+        const taskDependencies = task.taskDependencies ?? {};
         return {
           name: task.name,
           dependencies: task.dependencies,
           exports: task.exports,
           taskDependencies: Object.values(taskDependencies).map(
-            (dep) => dep.name
+            (dep) => dep.name,
           ),
           run(dependencies) {
             const resolvedTaskOutputs = R.mapObjIndexed(
               (obj) => obj.getOutput(),
-              taskDependencies
+              taskDependencies,
             );
             const runResult = task.run(dependencies, resolvedTaskOutputs);
             return {
@@ -306,7 +311,7 @@ export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
                   return;
                 }
                 const taskOutput = await Promise.resolve(
-                  runResult.build(builder)
+                  runResult.build(builder),
                 );
                 taskOutputs[task.name] = taskOutput;
               },

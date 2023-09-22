@@ -94,15 +94,15 @@ const ReactRouterGenerator = createGeneratorWithChildren({
             'react-router',
             new TypescriptCodeWrapper(
               (contents) => `<BrowserRouter>${contents}</BrowserRouter>`,
-              "import {BrowserRouter} from 'react-router-dom'"
-            )
+              "import {BrowserRouter} from 'react-router-dom'",
+            ),
           );
 
         reactApp.setRenderRoot(
           TypescriptCodeUtils.createExpression(
             '<PagesRoot />',
-            `import PagesRoot from "@/${react.getSrcFolder()}/pages"`
-          )
+            `import PagesRoot from "@/${react.getSrcFolder()}/pages"`,
+          ),
         );
 
         const pagesRootFile = typescript.createTemplate({

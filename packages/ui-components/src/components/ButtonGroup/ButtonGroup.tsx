@@ -1,6 +1,7 @@
 import { clsx } from 'clsx';
+import { MdExpandMore } from 'react-icons/md';
 import { Button, ButtonProps } from '../Button/Button.js';
-import { Dropdown, DropdownProps } from '../Dropdown/Dropdown.js';
+import { Dropdown, DropdownProps } from '../Dropdown/Dropdown';
 
 interface ButtonGroupProps {
   className?: string;
@@ -42,26 +43,47 @@ ButtonGroup.Button = function ButtonGroupButton({
   );
 };
 
-interface ButtonGroupDropdownProps extends Omit<DropdownProps, 'noBorder'> {
+interface ButtonGroupDropdownProps
+  extends DropdownProps,
+    Pick<ButtonProps, 'variant' | 'disabled' | 'size' | 'iconAfter'> {
   children: React.ReactNode;
+  className?: string;
 }
 
 ButtonGroup.Dropdown = function ButtonGroupDropdown({
-  className,
   children,
-  ...props
+  defaultOpen,
+  open,
+  onOpenChange,
+  modal,
+  dir,
+  className,
+  iconAfter,
+  ...buttonProps
 }: ButtonGroupDropdownProps): JSX.Element {
   // TODO: Add border between primary buttons
   return (
     <Dropdown
-      noButtonBorder
-      className={clsx(
-        'relative border-b border-r border-t border-secondary-300 first-of-type:rounded-l-md first-of-type:border-l last-of-type:rounded-r-md dark:border-secondary-700',
-        className
-      )}
-      {...props}
+      defaultOpen={defaultOpen}
+      open={open}
+      onOpenChange={onOpenChange}
+      modal={modal}
+      dir={dir}
     >
-      {children}
+      <Dropdown.Trigger asChild>
+        <Button
+          noBorder
+          iconAfter={iconAfter || MdExpandMore}
+          className={clsx(
+            'h-inherit relative border-b border-r border-t border-secondary-300 last-of-type:rounded-r-md dark:border-secondary-700',
+            className
+          )}
+          {...buttonProps}
+        />
+      </Dropdown.Trigger>
+      <Dropdown.Content>
+        <Dropdown.Group>{children}</Dropdown.Group>
+      </Dropdown.Content>
     </Dropdown>
   );
 };

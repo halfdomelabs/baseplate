@@ -33,7 +33,7 @@ const AuthComponentsGenerator = createGeneratorWithChildren({
   },
   createGenerator({ loginPath }, { authHooks, reactComponents, typescript }) {
     const [, requireAuthPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`
+      `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`,
     );
     reactComponents.registerComponent({ name: 'RequireAuth' });
 
@@ -57,7 +57,7 @@ const AuthComponentsGenerator = createGeneratorWithChildren({
             replacements: {
               LOGIN_PATH: loginPath,
             },
-          })
+          }),
         );
       },
     };

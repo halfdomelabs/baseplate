@@ -18,12 +18,12 @@ interface OneToManyCreatePipeInputWithTransform<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 > {
   input: DataInput[] | undefined;
   transform: (
     input: DataInput,
-    context: ServiceContext
+    context: ServiceContext,
   ) => Promise<DataPipeOutput<UpsertData>> | DataPipeOutput<UpsertData>;
   context: ServiceContext;
 }
@@ -33,7 +33,7 @@ export async function createOneToManyCreateData<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 >({
   input,
   context,
@@ -48,7 +48,7 @@ export async function createOneToManyCreateData<
   }
 
   async function transformCreateInput(
-    item: DataInput
+    item: DataInput,
   ): Promise<DataPipeOutput<UpsertData>> {
     return transform
       ? transform(item, context)
@@ -64,7 +64,7 @@ export async function createOneToManyCreateData<
         data: output.data.create,
         operations: output.operations,
       };
-    })
+    }),
   );
 
   return {
@@ -78,7 +78,7 @@ export async function createOneToManyCreateData<
 interface UpsertManyPayload<
   UpsertData extends UpsertPayload<unknown, unknown>,
   WhereUniqueInput,
-  IdField extends string | number | symbol
+  IdField extends string | number | symbol,
 > {
   deleteMany?: { [key in IdField]: { notIn: string[] } };
   upsert?: {
@@ -92,7 +92,7 @@ interface UpsertManyPayload<
 interface OneToManyUpsertPipeInput<
   DataInput,
   WhereUniqueInput,
-  IdField extends keyof DataInput
+  IdField extends keyof DataInput,
 > {
   input: DataInput[] | undefined;
   idField: IdField;
@@ -110,7 +110,7 @@ interface OneToManyUpsertPipeInputWithTransform<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 > {
   input: DataInput[] | undefined;
   context: ServiceContext;
@@ -120,7 +120,7 @@ interface OneToManyUpsertPipeInputWithTransform<
     input: DataInput,
     context: ServiceContext,
     updateKey?: WhereUniqueInput,
-    parentId?: ParentId
+    parentId?: ParentId,
   ) => Promise<DataPipeOutput<UpsertData>> | DataPipeOutput<UpsertData>;
   parentId?: ParentId;
 }
@@ -133,7 +133,7 @@ export async function createOneToManyUpsertData<
   UpsertData extends UpsertPayload<unknown, unknown> = {
     create: DataInput;
     update: DataInput;
-  }
+  },
 >({
   input,
   idField,
@@ -159,7 +159,7 @@ export async function createOneToManyUpsertData<
   }
 
   async function transformCreateInput(
-    item: DataInput
+    item: DataInput,
   ): Promise<DataPipeOutput<UpsertData>> {
     return transform
       ? transform(item, context, undefined, parentId)
@@ -172,7 +172,7 @@ export async function createOneToManyUpsertData<
     input
       .filter(
         (item) =>
-          item[idField] === undefined || getWhereUnique(item) === undefined
+          item[idField] === undefined || getWhereUnique(item) === undefined,
       )
       .map(async (item) => {
         const output = await transformCreateInput(item);
@@ -180,11 +180,11 @@ export async function createOneToManyUpsertData<
           data: output.data.create,
           operations: output.operations,
         };
-      })
+      }),
   );
 
   async function transformUpsertInput(
-    item: DataInput
+    item: DataInput,
   ): Promise<DataPipeOutput<UpsertData>> {
     return transform
       ? transform(item, context, getWhereUnique(item), parentId)
@@ -206,7 +206,7 @@ export async function createOneToManyUpsertData<
           },
           operations: output.operations,
         };
-      })
+      }),
   );
 
   const [upsertOutput, createOutput] = await Promise.all([

@@ -31,7 +31,7 @@ function makeFileNameSafe(filename: string): string {
 
 export async function prepareUploadData(
   { category, contentType, fileName, fileSize }: UploadDataInput,
-  context: ServiceContext
+  context: ServiceContext,
 ): Promise<{
   data: Prisma.FILE_CREATE_INPUT;
   fileCategory: FileCategory;
@@ -48,19 +48,19 @@ export async function prepareUploadData(
     !(await Promise.resolve(fileCategory.authorizeUpload(context)))
   ) {
     throw new ForbiddenError(
-      `You are not authorized to upload files to ${category}`
+      `You are not authorized to upload files to ${category}`,
     );
   }
 
   if (fileCategory.minFileSize && fileSize < fileCategory.minFileSize) {
     throw new BadRequestError(
-      `File size is below minimum file size of ${fileCategory.minFileSize}`
+      `File size is below minimum file size of ${fileCategory.minFileSize}`,
     );
   }
 
   if (fileCategory.maxFileSize && fileSize > fileCategory.maxFileSize) {
     throw new BadRequestError(
-      `File size is above maximum file size of ${fileCategory.maxFileSize}`
+      `File size is above maximum file size of ${fileCategory.maxFileSize}`,
     );
   }
 
@@ -74,7 +74,7 @@ export async function prepareUploadData(
     !fileCategory.allowedMimeTypes.includes(mimeType)
   ) {
     throw new BadRequestError(
-      `File mime type ${mimeType} is not allowed for ${fileCategory.name}`
+      `File mime type ${mimeType} is not allowed for ${fileCategory.name}`,
     );
   }
 

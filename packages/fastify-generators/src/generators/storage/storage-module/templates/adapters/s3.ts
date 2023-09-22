@@ -31,7 +31,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
   const client = new S3Client({ region });
 
   async function createPresignedUploadUrl(
-    input: AdapterPresignedUploadUrlInput
+    input: AdapterPresignedUploadUrlInput,
   ): Promise<AdapterPresignedUploadUrlPayload> {
     const { path, contentType, minFileSize, maxFileSize } = input;
 
@@ -39,7 +39,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
       Bucket: bucket,
       Key: path,
       Conditions: [
-        ['content-length-range', minFileSize || 0, maxFileSize],
+        ['content-length-range', minFileSize ?? 0, maxFileSize],
         { bucket },
         { key: path },
         ...(contentType ? [{ 'Content-Type': contentType }] : []),
@@ -74,7 +74,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
 
   async function uploadFile(
     path: string,
-    contents: Buffer | ReadableStream | string
+    contents: Buffer | ReadableStream | string,
   ): Promise<void> {
     await client.send(
       new PutObjectCommand({
@@ -82,7 +82,7 @@ export const createS3Adapter = (options: S3AdapterOptions): StorageAdapter => {
         Key: path,
         Body: contents,
         ServerSideEncryption: 'AES256',
-      })
+      }),
     );
   }
 

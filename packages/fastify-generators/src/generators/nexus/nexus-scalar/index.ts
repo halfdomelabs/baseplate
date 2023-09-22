@@ -22,7 +22,7 @@ interface NexusScalarConfig {
 }
 
 const createNexusScalarMap = <T extends Record<string, NexusScalarConfig>>(
-  t: T
+  t: T,
 ): T => t;
 
 const scalarConfigMap = createNexusScalarMap({
@@ -66,7 +66,7 @@ type ScalarConfigKey = keyof typeof scalarConfigMap;
 
 const descriptorSchema = z.object({
   type: z.enum(
-    Object.keys(scalarConfigMap) as [ScalarConfigKey, ...ScalarConfigKey[]]
+    Object.keys(scalarConfigMap) as [ScalarConfigKey, ...ScalarConfigKey[]],
   ),
 });
 
@@ -82,7 +82,7 @@ const NexusScalarGenerator = createGeneratorWithChildren({
   },
   createGenerator(
     { type },
-    { appModule, nexusSetup, node, errorHandlerService, typescript }
+    { appModule, nexusSetup, node, errorHandlerService, typescript },
   ) {
     const scalarConfig = scalarConfigMap[type];
     const scalarPath = `${appModule.getModuleFolder()}/scalars/${
@@ -94,9 +94,9 @@ const NexusScalarGenerator = createGeneratorWithChildren({
         scalarConfig.export,
         `import {${scalarConfig.export}} from '@/${scalarPath.replace(
           /\.ts$/,
-          ''
-        )}'`
-      )
+          '',
+        )}'`,
+      ),
     );
     const { name, scalar, nexusMethod, sourceType } = scalarConfig;
     nexusSetup.addScalarField({
@@ -122,7 +122,7 @@ const NexusScalarGenerator = createGeneratorWithChildren({
             source: scalarConfig.templatePath,
             destination: scalarPath,
             importMappers: [errorHandlerService],
-          })
+          }),
         );
       },
     };

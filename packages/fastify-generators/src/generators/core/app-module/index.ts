@@ -29,7 +29,7 @@ const AppModuleGenerator = createGeneratorWithChildren({
     appModule: appModuleProvider,
   },
   createGenerator(descriptor, { appModule, typescript }) {
-    const folderName = descriptor.folderName || paramCase(descriptor.name);
+    const folderName = descriptor.folderName ?? paramCase(descriptor.name);
     const moduleName = `${descriptor.name}Module`;
     const moduleFolder = `${appModule.getModuleFolder()}/${folderName}`;
     const moduleEntries = createNonOverwriteableMap<
@@ -42,8 +42,8 @@ const AppModuleGenerator = createGeneratorWithChildren({
       'children',
       TypescriptCodeUtils.createExpression(
         moduleName,
-        `import {${moduleName}} from '@/${moduleFolder}'`
-      )
+        `import {${moduleName}} from '@/${moduleFolder}'`,
+      ),
     );
 
     return {
@@ -72,9 +72,9 @@ const AppModuleGenerator = createGeneratorWithChildren({
           TypescriptCodeUtils.mergeExpressionsAsObject(
             R.mapObjIndexed(
               (types) => TypescriptCodeUtils.mergeExpressionsAsArray(types),
-              moduleEntries.value()
-            )
-          )
+              moduleEntries.value(),
+            ),
+          ),
         );
 
         indexFile.addCodeAddition({
@@ -85,8 +85,8 @@ const AppModuleGenerator = createGeneratorWithChildren({
         await builder.apply(
           indexFile.renderToActionFromText(
             `export const ${moduleName} = MODULE_CONTENTS`,
-            moduleFolderIndex
-          )
+            moduleFolderIndex,
+          ),
         );
       },
     };

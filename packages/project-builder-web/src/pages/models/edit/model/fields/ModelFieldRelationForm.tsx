@@ -99,7 +99,7 @@ export function ModelFieldRelationForm({
       .map((f) => ({
         label: f.name,
         value: f.name,
-      })) || [];
+      })) ?? [];
 
   const formId = useId();
 
@@ -111,8 +111,10 @@ export function ModelFieldRelationForm({
       }}
       id={formId}
     >
-      <Dialog.Header onClose={onClose}>
-        {existingRelation ? 'Edit Relation' : 'Add Relation'}
+      <Dialog.Header>
+        <Dialog.Title>
+          {existingRelation ? 'Edit Relation' : 'Add Relation'}
+        </Dialog.Title>
       </Dialog.Header>
       <Dialog.Body className="space-y-4">
         <ComboboxInput.Controller

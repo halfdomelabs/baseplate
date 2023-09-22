@@ -6,7 +6,7 @@ interface PostgresConfig {
 }
 
 export function generatePostgresDockerCompose(
-  config: PostgresConfig
+  config: PostgresConfig,
 ): DockerComposeOutput {
   return {
     services: [

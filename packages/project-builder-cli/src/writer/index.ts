@@ -12,7 +12,7 @@ import { notEmpty } from '../utils/array.js';
  */
 async function writeFileEntry(
   rootDirectory: string,
-  file: FileEntry
+  file: FileEntry,
 ): Promise<boolean> {
   const jsonContent = stringify(file.jsonContent);
   const filePath = path.join(rootDirectory, file.path);
@@ -34,12 +34,12 @@ async function writeFileEntry(
  */
 async function writeAppFiles(
   baseDirectory: string,
-  app: AppEntry
+  app: AppEntry,
 ): Promise<boolean> {
   try {
     const appDirectory = path.join(baseDirectory, app.rootDirectory);
     const anyModified = await Promise.all(
-      app.files.map((file) => writeFileEntry(appDirectory, file))
+      app.files.map((file) => writeFileEntry(appDirectory, file)),
     );
 
     // delete all files that aren't present
@@ -47,17 +47,17 @@ async function writeAppFiles(
       cwd: `${appDirectory}`,
     });
     const missingJsonFiles = allJsonFiles.filter(
-      (file) => !app.files.find((f) => f.path === file)
+      (file) => !app.files.find((f) => f.path === file),
     );
 
     await Promise.all(
-      missingJsonFiles.map((f) => fs.unlink(path.join(appDirectory, f)))
+      missingJsonFiles.map((f) => fs.unlink(path.join(appDirectory, f))),
     );
 
     return anyModified.some((m) => m);
   } catch (err) {
     logger.error(
-      `Error writing out app ${app.name}: ${(err as Error).message}`
+      `Error writing out app ${app.name}: ${(err as Error).message}`,
     );
     logError(err);
     throw err;
@@ -69,13 +69,13 @@ async function writeAppFiles(
  */
 export async function writeApplicationFiles(
   baseDirectory: string,
-  apps: AppEntry[]
+  apps: AppEntry[],
 ): Promise<AppEntry[]> {
   const modifiedApps = await Promise.all(
     apps.map(async (app) => {
       const wasModified = await writeAppFiles(baseDirectory, app);
       return wasModified ? app : null;
-    })
+    }),
   );
   return modifiedApps.filter(notEmpty);
 }

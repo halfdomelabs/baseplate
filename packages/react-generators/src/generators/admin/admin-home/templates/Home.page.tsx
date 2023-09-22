@@ -13,7 +13,7 @@ function HomePage(): JSX.Element {
   return (
     <div className="space-y-4">
       <h1>Home</h1>
-      <p>Welcome {user.email || 'User'}!</p>
+      <p>Welcome {user.email ?? 'User'}!</p>
     </div>
   );
 }

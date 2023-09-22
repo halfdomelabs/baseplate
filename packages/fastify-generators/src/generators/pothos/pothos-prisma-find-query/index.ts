@@ -70,7 +70,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
       build: () => {
         const pothosArgs = writePothosArgsFromDtoFields(
           [primaryKeyDefinition],
-          writerOptions
+          writerOptions,
         );
 
         pothosArgs.childDefinitions?.forEach((child) => {
@@ -81,12 +81,12 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
         });
 
         const resolveFunction = TypescriptCodeUtils.formatExpression(
-          `async (query, root, ARG_INPUT, ctx) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
+          `async (query, root, ARG_INPUT) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
           {
             ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
             MODEL: prismaOutput.getPrismaModelExpression(modelName),
             WHERE_CLAUSE: `{ ${primaryKeyDefinition.name} }`,
-          }
+          },
         );
 
         const options = {
@@ -105,7 +105,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
             BUILDER: 'builder',
             QUERY_NAME: quot(lowerFirstModelName),
             OPTIONS: TypescriptCodeUtils.mergeExpressionsAsObject(options),
-          }
+          },
         );
 
         pothosTypesFile.registerType({

@@ -12,7 +12,7 @@ export async function validateFileUploadInput(
   { id }: FileUploadInput,
   category: string,
   context: ServiceContext,
-  existingId?: string | null
+  existingId?: string | null,
 ): Promise<DataPipeOutput<{ connect: { id: string } }>> {
   // if we're updating and not changing the ID, skip checks
   if (existingId === id) {
