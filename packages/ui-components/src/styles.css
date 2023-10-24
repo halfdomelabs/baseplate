@@ -1,65 +1,56 @@
+@import './global.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #172554;
-  --muted: #dbeafe;
-  --muted-foreground: #3b82f6;
-  --card: #ffffff;
-  --card-foreground: #172554;
-  --popover: #ffffff;
-  --popover-foreground: #172554;
-  --border: #bfdbfe;
-  --input-border: #bfdbfe;
-  --primary: #1e40af;
-  --primary-foreground: #eff6ff;
-  --secondary: #dbeafe;
-  --secondary-foreground: #1e3a8a;
-  --accent: #dbeafe;
-  --accent-foreground: #1e3a8a;
-  --destructive: #ef4444;
-  --destructive-foreground: #eff6ff;
-  --ring: #172554;
-  --link: #1e40af;
-  --link-visited: #1d4ed8;
+  --background: 0 0% 100%;
+  --foreground: 229 84% 5%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --card: 0 0% 100%;
+  --card-foreground: 229 84% 5%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 229 84% 5%;
+  --border: 214 32% 91%;
+  --input-border: 214 32% 91%;
+  --primary: 226 71% 40%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --accent: 214 95% 93%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 214 100% 97%;
+  --ring: 226 57% 21%;
+  --link: 226 71% 40%;
+  --link-visited: 224 76% 48%;
 }
 
-body.dark {
-  --background: #172554;
-  --foreground: #eff6ff;
-  --muted: #1e40af;
-  --muted-foreground: #60a5fa;
-  --card: #172554;
-  --card-foreground: #eff6ff;
-  --popover: #172554;
-  --popover-foreground: #eff6ff;
-  --border: #1e40af;
-  --input-border: #1e40af;
-  --primary: #eff6ff;
-  --primary-foreground: #1e3a8a;
-  --secondary: #1e40af;
-  --secondary-foreground: #eff6ff;
-  --accent: #1e40af;
-  --accent-foreground: #eff6ff;
-  --destructive: #7f1d1d;
-  --destructive-foreground: #eff6ff;
-  --ring: #93c5fd;
-  --link: #eff6ff;
-  --link-visited: #dbeafe;
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings:
-      'rlig' 1,
-      'calt' 1;
-  }
+.dark,
+html[data-theme='dark'] {
+  --background: 229 84% 5%;
+  --foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --card: 229 84% 5%;
+  --card-foreground: 210 40% 98%;
+  --popover: 229 84% 5%;
+  --popover-foreground: 210 40% 98%;
+  --border: 217 33% 17%;
+  --input-border: 217 33% 17%;
+  --primary: 214 100% 97%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 98%;
+  --accent: 226 71% 40%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 214 100% 97%;
+  --ring: 212 96% 78%;
+  --link: 214 100% 97%;
+  --link-visited: 214 95% 93%;
 }
 
 @media (max-width: 640px) {
