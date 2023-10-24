@@ -27,26 +27,27 @@ export function ConfirmDialogPopper(): JSX.Element {
 
   return (
     <Dialog
-      isOpen={!!confirmOptions}
+      open={!!confirmOptions}
       onOpenChange={() => setConfirmOptions(undefined)}
     >
-      <Dialog.Header>
-        <Dialog.Title>{textOptions.current?.title}</Dialog.Title>
-      </Dialog.Header>
-      <Dialog.Body>
+      <Dialog.Content width="md">
+        <Dialog.Header>
+          <Dialog.Title>{textOptions.current?.title}</Dialog.Title>
+        </Dialog.Header>
         <p>{textOptions.current?.message}</p>
-      </Dialog.Body>
-      <Dialog.Footer>
-        <Button
-          variant="secondary"
-          onClick={() => setConfirmOptions(undefined)}
-        >
-          {COMPONENT_STRINGS.cancelButton}
-        </Button>
-        <Button onClick={onSubmit}>
-          {textOptions.current?.confirmText || COMPONENT_STRINGS.confirmButton}
-        </Button>
-      </Dialog.Footer>
+        <Dialog.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setConfirmOptions(undefined)}
+          >
+            {COMPONENT_STRINGS.cancelButton}
+          </Button>
+          <Button onClick={onSubmit}>
+            {textOptions.current?.confirmText ||
+              COMPONENT_STRINGS.confirmButton}
+          </Button>
+        </Dialog.Footer>
+      </Dialog.Content>
     </Dialog>
   );
 }

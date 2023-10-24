@@ -35,29 +35,31 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
 
   return (
     <div className={classNames('', className)}>
-      <Button
-        onClick={() => {
-          startSyncProject();
-        }}
-      >
-        <Button.Icon icon={MdSync} />
-        Sync
-      </Button>
-      <Dialog isOpen={isOpen} onOpenChange={() => setIsOpen(false)} size="xl">
-        <Dialog.Header>
-          <Dialog.Title>Sync Project</Dialog.Title>
-        </Dialog.Header>
-        <Dialog.Body>
+      <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
+        <Dialog.Trigger asChild>
+          <Button
+            onClick={() => {
+              startSyncProject();
+            }}
+          >
+            <Button.Icon icon={MdSync} />
+            Sync
+          </Button>
+        </Dialog.Trigger>
+        <Dialog.Content width="lg">
+          <Dialog.Header>
+            <Dialog.Title>Sync Project</Dialog.Title>
+          </Dialog.Header>
           <Console />
-        </Dialog.Body>
-        <Dialog.Footer>
-          <Button variant="secondary" onClick={startSyncProject}>
-            Retry
-          </Button>
-          <Button variant="secondary" onClick={() => setIsOpen(false)}>
-            Close
-          </Button>
-        </Dialog.Footer>
+          <Dialog.Footer>
+            <Button variant="secondary" onClick={startSyncProject}>
+              Retry
+            </Button>
+            <Button variant="secondary" onClick={() => setIsOpen(false)}>
+              Close
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
       </Dialog>
     </div>
   );

@@ -20,20 +20,20 @@ export function ModelGeneralEditDialog({
     },
   });
   return (
-    <Dialog isOpen={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <form onSubmit={handleSubmit(onFormSubmit)}>
-        <Dialog.Header>
-          <Dialog.Title>Edit Model</Dialog.Title>
-        </Dialog.Header>
-        <Dialog.Body>
+        <Dialog.Content>
+          <Dialog.Header>
+            <Dialog.Title>Edit Model</Dialog.Title>
+          </Dialog.Header>
           <ModelGeneralForm control={control} />
-        </Dialog.Body>
-        <Dialog.Footer>
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit">Save</Button>
-        </Dialog.Footer>
+          <Dialog.Footer>
+            <Button variant="secondary" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit">Save</Button>
+          </Dialog.Footer>
+        </Dialog.Content>
       </form>
     </Dialog>
   );

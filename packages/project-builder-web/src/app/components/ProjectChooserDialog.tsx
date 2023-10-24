@@ -42,19 +42,18 @@ export function ProjectChooserDialog({
 
   return (
     <Dialog
-      size="lg"
       onOpenChange={
         onClose ??
         (() => {
           /* dummy */
         })
       }
-      isOpen={isOpen}
+      open={isOpen}
     >
-      <Dialog.Header>
-        <Dialog.Title>Pick Project</Dialog.Title>
-      </Dialog.Header>
-      <Dialog.Body>
+      <Dialog.Content width="lg">
+        <Dialog.Header>
+          <Dialog.Title>Pick Project</Dialog.Title>
+        </Dialog.Header>
         <Table>
           <Table.Head>
             <Table.HeadRow>
@@ -91,7 +90,7 @@ export function ProjectChooserDialog({
             ))}
           </Table.Body>
         </Table>
-      </Dialog.Body>
+      </Dialog.Content>
     </Dialog>
   );
 }

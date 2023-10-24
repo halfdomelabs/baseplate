@@ -116,7 +116,7 @@ export function ModelFieldRelationForm({
           {existingRelation ? 'Edit Relation' : 'Add Relation'}
         </Dialog.Title>
       </Dialog.Header>
-      <Dialog.Body className="space-y-4">
+      <div className="space-y-4">
         <ComboboxInput.Controller
           control={control}
           name="modelName"
@@ -180,7 +180,7 @@ export function ModelFieldRelationForm({
           name="onDelete"
           description="The action to take when the corresponding row in the foreign model is deleted"
         />
-      </Dialog.Body>
+      </div>
       <Dialog.Footer className="justify-between">
         {existingRelation ? (
           <Button variant="secondary" onClick={onDelete}>

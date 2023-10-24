@@ -107,15 +107,17 @@ export function ModalRelationsModal({
   };
 
   return (
-    <Dialog isOpen={isOpen} onOpenChange={onClose}>
-      <ModelFieldRelationForm
-        existingRelation={modelFieldRelation}
-        modelName={modelName}
-        localScalarField={watchedField}
-        onSave={handleSave}
-        onDelete={handleDelete}
-        onClose={onClose}
-      />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog.Content>
+        <ModelFieldRelationForm
+          existingRelation={modelFieldRelation}
+          modelName={modelName}
+          localScalarField={watchedField}
+          onSave={handleSave}
+          onDelete={handleDelete}
+          onClose={onClose}
+        />
+      </Dialog.Content>
     </Dialog>
   );
 }
