@@ -35,11 +35,9 @@ function SortableItem({ id, children }: SortableItemProps): JSX.Element {
       style={style}
     >
       <div className="space-x-2" {...attributes} {...listeners}>
-        <Button
-          variant="tertiary"
-          iconBefore={RxDragHandleHorizontal}
-          size="icon"
-        />
+        <Button variant="ghost" size="icon">
+          <Button.Icon icon={RxDragHandleHorizontal} />
+        </Button>
       </div>
       <div className="w-full">{children}</div>
     </div>

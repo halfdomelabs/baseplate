@@ -2,7 +2,7 @@ import {
   ThemeConfig,
   generateCssFromThemeConfig,
 } from '@halfdomelabs/project-builder-lib';
-import { Card } from '@halfdomelabs/ui-components';
+import { Button, Card } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 
@@ -35,6 +35,15 @@ export function ThemeColorsPreview({
           <Card.Description>Some Card Description</Card.Description>
         </Card.Header>
         <Card.Content>Hello Hello!</Card.Content>
+        <Card.Footer className="flex gap-4">
+          <Button type="button">Primary</Button>
+          <Button variant="secondary" type="button">
+            Secondary
+          </Button>
+          <Button variant="destructive" type="button">
+            Delete
+          </Button>
+        </Card.Footer>
       </Card>
     </div>
   );

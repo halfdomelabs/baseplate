@@ -73,7 +73,7 @@ function TextInputFn(
     ...register,
   };
 
-  const addWrapper = label || error || description;
+  const addWrapper = label ?? error ?? description;
 
   const id = useId();
 
@@ -141,7 +141,7 @@ function TextInputControllerFn<
   );
 }
 
-export const TextInputController = genericForwardRef(TextInputControllerFn);
+const TextInputController = genericForwardRef(TextInputControllerFn);
 
 export const TextInput = Object.assign(TextInputRoot, {
   Controller: TextInputController,

@@ -1,7 +1,7 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { Button, Dropdown, TextInput } from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
-import { HiOutlineX } from 'react-icons/hi';
+import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
 interface ModelFieldDefaultValueInputProps {
   control: Control<ModelConfig>;
@@ -41,10 +41,11 @@ export function ModelFieldDefaultValueInput({
           <Button
             title="Reset"
             onClick={() => onOptionsChange({ ...optionsValue, genUuid: false })}
-            iconAfter={HiOutlineX}
-            variant="tertiary"
+            variant="ghost"
             size="icon"
-          />
+          >
+            <Button.Icon icon={HiOutlineX} />
+          </Button>
         </div>
       );
     }
@@ -57,7 +58,9 @@ export function ModelFieldDefaultValueInput({
         />
         <Dropdown>
           <Dropdown.Trigger asChild>
-            <Button variant="tertiary" size="icon" />
+            <Button variant="ghost" size="icon">
+              <Button.Icon icon={HiDotsVertical} />
+            </Button>
           </Dropdown.Trigger>
           <Dropdown.Content>
             <Dropdown.Group>
@@ -94,10 +97,11 @@ export function ModelFieldDefaultValueInput({
                 updatedAt: false,
               })
             }
-            iconAfter={HiOutlineX}
-            variant="tertiary"
+            variant="ghost"
             size="icon"
-          />
+          >
+            <Button.Icon icon={HiOutlineX} />
+          </Button>
         </div>
       );
     }
@@ -110,7 +114,9 @@ export function ModelFieldDefaultValueInput({
         />
         <Dropdown>
           <Dropdown.Trigger asChild>
-            <Button variant="tertiary" size="icon" />
+            <Button variant="ghost" size="icon">
+              <Button.Icon icon={HiDotsVertical} />
+            </Button>
           </Dropdown.Trigger>
           <Dropdown.Content>
             <Dropdown.Group>

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Dropdown } from '../Dropdown/Dropdown.js';
 import { ButtonGroup } from './ButtonGroup.js';
 
 const meta = {
@@ -33,10 +32,10 @@ export const Secondary: Story = {
         <ButtonGroup.Button variant="secondary">
           Remove Something
         </ButtonGroup.Button>
-        <ButtonGroup.Dropdown variant="secondary">
+        {/* <ButtonGroup.Dropdown variant="secondary">
           <Dropdown.Item>Admin</Dropdown.Item>
           <Dropdown.Item>User</Dropdown.Item>
-        </ButtonGroup.Dropdown>
+        </ButtonGroup.Dropdown> */}
       </>
     ),
   },

@@ -1,7 +1,7 @@
 import * as Popover from '@radix-ui/react-popover';
 import { clsx } from 'clsx';
 import { ForwardedRef, useId } from 'react';
-import { HexColorPicker, HexColorInput } from 'react-colorful';
+import { HexColorInput, HexColorPicker } from 'react-colorful';
 import {
   Control,
   FieldPath,

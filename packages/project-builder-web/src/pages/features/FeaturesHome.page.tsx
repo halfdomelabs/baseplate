@@ -72,12 +72,13 @@ export function FeaturesHomePage(): JSX.Element {
                   name={`features.${idx}.name`}
                 />
                 <Button
-                  variant="tertiary"
+                  variant="ghost"
                   onClick={() => remove(idx)}
-                  iconBefore={MdDelete}
                   title="Delete Feature"
                   size="icon"
-                />
+                >
+                  <Button.Icon icon={MdDelete} />
+                </Button>
               </div>
             );
           })}

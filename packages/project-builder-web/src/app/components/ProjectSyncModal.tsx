@@ -36,12 +36,11 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   return (
     <div className={classNames('', className)}>
       <Button
-        variant="primary"
-        iconBefore={MdSync}
         onClick={() => {
           startSyncProject();
         }}
       >
+        <Button.Icon icon={MdSync} />
         Sync
       </Button>
       <Dialog isOpen={isOpen} onOpenChange={() => setIsOpen(false)} size="xl">

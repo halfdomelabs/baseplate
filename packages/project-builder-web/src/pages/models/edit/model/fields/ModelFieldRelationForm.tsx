@@ -193,7 +193,7 @@ export function ModelFieldRelationForm({
           <Button variant="secondary" onClick={onClose}>
             Close
           </Button>
-          <Button formId={formId} type="submit">
+          <Button form={formId} type="submit">
             Save
           </Button>
         </div>

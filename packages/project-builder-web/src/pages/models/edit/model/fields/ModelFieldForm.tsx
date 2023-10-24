@@ -187,11 +187,9 @@ function ModelFieldForm({
         <div className="space-x-4">
           <Dropdown>
             <Dropdown.Trigger asChild>
-              <Button
-                variant="tertiary"
-                iconAfter={HiDotsVertical}
-                size="icon"
-              />
+              <Button variant="ghost" size="icon">
+                <Button.Icon icon={HiDotsVertical} />
+              </Button>
             </Dropdown.Trigger>
             <Dropdown.Content>
               <Dropdown.Group>
@@ -201,12 +199,9 @@ function ModelFieldForm({
               </Dropdown.Group>
             </Dropdown.Content>
           </Dropdown>
-          <Button
-            variant="tertiary"
-            iconBefore={HiOutlineTrash}
-            onClick={() => handleRemove()}
-            size="icon"
-          />
+          <Button variant="ghost" onClick={() => handleRemove()} size="icon">
+            <Button.Icon icon={HiOutlineTrash} />
+          </Button>
         </div>
       </div>
     </div>

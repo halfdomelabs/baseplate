@@ -39,12 +39,13 @@ export function ModelsSidebarList({
         />
         {filterQuery && (
           <Button
-            variant="tertiary"
-            iconBefore={MdClear}
+            variant="ghost"
             className="absolute right-4 top-1/2 -translate-y-1/2 transform"
-            size="icon"
             onClick={() => setFilterQuery('')}
-          />
+            size="icon"
+          >
+            <Button.Icon icon={MdClear} />
+          </Button>
         )}
       </div>
       <div className="flex-1 overflow-y-auto">

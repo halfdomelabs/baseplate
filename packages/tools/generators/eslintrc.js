@@ -74,6 +74,9 @@ module.exports = function createEslintConfig(options) {
     parserOptions: {
       ecmaVersion: 2021,
     },
+    settings: {
+      react: { version: 'detect' },
+    },
     extends: [
       'eslint:recommended',
       ...(react
