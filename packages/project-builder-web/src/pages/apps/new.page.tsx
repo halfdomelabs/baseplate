@@ -54,7 +54,7 @@ function NewAppPage(): JSX.Element {
     <div className="space-y-4">
       <h1>New App</h1>
       <Card>
-        <Card.Body>
+        <Card.Content>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <TextInput.Controller
               label="Name"
@@ -70,7 +70,7 @@ function NewAppPage(): JSX.Element {
             />
             <Button type="submit">Create</Button>
           </form>
-        </Card.Body>
+        </Card.Content>
       </Card>
     </div>
   );

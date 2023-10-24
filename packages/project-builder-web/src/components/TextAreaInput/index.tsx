@@ -11,6 +11,7 @@ interface Props {
   type?: HTMLInputTypeAttribute;
   register?: UseFormRegisterReturn;
   value?: string;
+  readOnly?: boolean;
   onTextChange?: (text: string) => void;
 }
 
@@ -23,6 +24,7 @@ const TextAreaInput = function TextAreaInput({
   value,
   onTextChange,
   register,
+  readOnly,
 }: Props): JSX.Element {
   const handleChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     if (onTextChange) {
@@ -36,6 +38,7 @@ const TextAreaInput = function TextAreaInput({
     type,
     value,
     onChange: handleChange,
+    readOnly,
     ...register,
   };
   return (

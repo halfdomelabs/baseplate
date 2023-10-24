@@ -1,20 +1,12 @@
 // obtained from Tailwind (https://github.com/tailwindlabs/tailwindcss/blob/master/src/public/colors.js)
 
-interface ColorPalette {
-  50: string;
-  100: string;
-  200: string;
-  300: string;
-  400: string;
-  500: string;
-  600: string;
-  700: string;
-  800: string
-  900: string;
-  950: string;
-}
+export const PALETTE_SHADES = [
+  50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
+] as const;
 
-export const COLOR_PALETTES = {
+export type ColorPalette = Record<(typeof PALETTE_SHADES)[number], string>;
+
+export const COLOR_PALETTES: Record<string, ColorPalette> = {
   slate: {
     50: '#f8fafc',
     100: '#f1f5f9',
@@ -301,4 +293,4 @@ export const COLOR_PALETTES = {
     900: '#881337',
     950: '#4c0519',
   },
-} satisfies Record<string,ColorPalette>
+};

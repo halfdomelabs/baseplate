@@ -14,7 +14,7 @@ function HomePage(): JSX.Element {
           </p>
         </div>
         <Card>
-          <Card.Body className="space-y-2">
+          <Card.Content className="space-y-2">
             <h2>Features</h2>
             <p className="instruction-text">
               Baseplate comes with a number of features that you can enable or
@@ -23,10 +23,10 @@ function HomePage(): JSX.Element {
             <Link className="inline-block" to="/features">
               <Button>Configure Features</Button>
             </Link>
-          </Card.Body>
+          </Card.Content>
         </Card>
         <Card>
-          <Card.Body className="space-y-2">
+          <Card.Content className="space-y-2">
             <h2>Models</h2>
             <p className="instruction-text">
               Models are the core of your app. They define the data that your
@@ -35,10 +35,10 @@ function HomePage(): JSX.Element {
             <Link className="inline-block" to="/models">
               <Button>Configure Models</Button>
             </Link>
-          </Card.Body>
+          </Card.Content>
         </Card>
         <Card>
-          <Card.Body className="space-y-2">
+          <Card.Content className="space-y-2">
             <h2>Apps & Repositories</h2>
             <p className="instruction-text">
               Each app represents a separate application that can be run, e.g.
@@ -48,7 +48,7 @@ function HomePage(): JSX.Element {
             <Link className="inline-block" to="/apps">
               <Button>Configure Apps</Button>
             </Link>
-          </Card.Body>
+          </Card.Content>
         </Card>
       </div>
     </div>

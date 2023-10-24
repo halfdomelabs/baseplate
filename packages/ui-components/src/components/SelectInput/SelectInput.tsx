@@ -136,6 +136,7 @@ SelectInput.Controller = function SelectInputController<
 >({
   name,
   control,
+  onChange,
   ...rest
 }: SelectInputControllerProps<
   OptionType,
@@ -154,9 +155,10 @@ SelectInput.Controller = function SelectInputController<
 
   return (
     <SelectInput
-      onChange={(value) =>
-        field.onChange(value as PathValue<TFieldValues, TFieldName>)
-      }
+      onChange={(value) => {
+        field.onChange(value as PathValue<TFieldValues, TFieldName>);
+        onChange?.(value);
+      }}
       value={field.value}
       error={error?.message}
       {...restProps}

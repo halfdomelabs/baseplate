@@ -1,38 +1,53 @@
-body {
-  @apply dark:bg-background-900 font-body text-foreground-700 dark:text-foreground-300;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-body bg-background text-foreground;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold;
+  }
+
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  .subheading {
+    @apply text-lg text-muted-foreground;
+  }
+
+  h3 {
+    @apply text-lg;
+  }
+
+  h4 {
+    @apply text-base;
+  }
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-semibold text-foreground-900 dark:text-foreground-200;
-}
-
-h1 {
-  @apply text-2xl;
-}
-
-h2 {
-  @apply text-xl;
-}
-
-.subheading {
-  @apply text-lg text-foreground-500 dark:text-foreground-400;
-}
-
-h3 {
-  @apply text-lg;
-}
-
-h4 {
-  @apply text-base;
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
+  }
 }
 
 .popover-background {
-  @apply dark:bg-background-900 bg-white;
+  @apply bg-white dark:bg-background-900;
 }
 
 .border-color {

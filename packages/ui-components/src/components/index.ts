@@ -3,6 +3,7 @@ export * from './Button/Button.js';
 export * from './ButtonGroup/ButtonGroup.js';
 export * from './Card/Card.js';
 export * from './CheckedInput/CheckedInput.js';
+export * from './ColorInput/ColorInput.js';
 export * from './ComboboxInput/ComboboxInput.js';
 export * from './ConfirmDialogPopper/ConfirmDialogPopper.js';
 export * from './Dialog/Dialog.js';

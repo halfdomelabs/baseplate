@@ -33,7 +33,7 @@ export function NewProjectCard({
 
   return (
     <Card className="animate-fade-in-and-grow w-[20rem] sm:w-[30rem]">
-      <Card.Body className="flex flex-col space-y-4">
+      <Card.Content className="flex flex-col space-y-4">
         <img
           className="mx-auto w-16"
           src="/images/logo.png"
@@ -65,7 +65,7 @@ export function NewProjectCard({
             Initialize Project
           </Button>
         </form>
-      </Card.Body>
+      </Card.Content>
     </Card>
   );
 }

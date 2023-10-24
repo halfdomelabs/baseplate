@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     children: (
-      <Card.Body className="space-y-4">
+      <Card.Content className="space-y-4">
         <h1>This is a card</h1>
         <p>
           Lorem ipsum dolor sit, amet consectetur adipisicing elit. Consectetur
@@ -21,7 +21,7 @@ export const Default: Story = {
           reiciendis, numquam corrupti blanditiis laboriosam voluptatum minima
           id nobis soluta nisi error.
         </p>
-      </Card.Body>
+      </Card.Content>
     ),
   },
 };

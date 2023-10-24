@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
+    "@types/culori": "^2.0.1",
     "@types/node": "^18.0.0",
     "@types/ramda": "^0.29.3",
     "tsc-alias": "1.8.7",
@@ -36,6 +37,7 @@
   },
   "dependencies": {
     "change-case": "^4.1.2",
+    "culori": "^3.2.0",
     "inflection": "2.0.1",
     "nanoid": "^4.0.2",
     "ramda": "^0.28.0",

@@ -13,11 +13,11 @@ import {
   webAppSchema,
 } from './apps/index.js';
 import { authSchema, buildAuthReferences } from './auth/index.js';
+import { themeSchema } from './features/theme.js';
 import { buildEnumReferences, enumSchema } from './models/enums.js';
 import { buildModelReferences, modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { buildStorageReferences, storageSchema } from './storage/index.js';
-import { themeSchema } from './index.js';
 
 export const appSchema = z.discriminatedUnion('type', [
   backendAppSchema,
