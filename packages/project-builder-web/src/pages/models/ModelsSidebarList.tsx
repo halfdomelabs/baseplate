@@ -1,9 +1,10 @@
-import { Button, TextInput } from '@halfdomelabs/ui-components';
+import { Button, InputField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
 import { MdClear } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface ModelsSidebarListProps {
@@ -32,7 +33,7 @@ export function ModelsSidebarList({
         </Button>
       </Link>
       <div className="relative">
-        <TextInput
+        <InputField
           value={filterQuery}
           onChange={(text) => setFilterQuery(text)}
           placeholder="Search"

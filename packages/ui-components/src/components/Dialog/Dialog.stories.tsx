@@ -1,8 +1,9 @@
 import { DialogProps } from '@radix-ui/react-dialog';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { Button } from '../index.js';
+
 import { Dialog } from './Dialog.js';
+import { Button } from '../index.js';
 
 const meta = {
   component: Dialog,

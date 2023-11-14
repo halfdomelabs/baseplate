@@ -62,7 +62,7 @@ const themeColorKeys = [
   'destructive',
   'destructiveForeground',
   'border',
-  'inputBorder',
+  'input',
   'accent',
   'ring',
   'link',
@@ -139,7 +139,7 @@ export const THEME_COLORS: Record<ThemeColorKey, ThemeColorConfig> = {
     darkDefault: { baseShade: '800' },
     categoryKey: 'border',
   },
-  inputBorder: {
+  input: {
     name: 'Input Border',
     description:
       'Border color for inputs such as <Input />, <Select />, <Textarea />',
@@ -150,7 +150,7 @@ export const THEME_COLORS: Record<ThemeColorKey, ThemeColorConfig> = {
   primary: {
     name: 'Primary',
     description: 'Primary colors for <Button />',
-    lightDefault: { primaryShade: '800' },
+    lightDefault: { primaryShade: '700' },
     darkDefault: { primaryShade: '50' },
     categoryKey: 'primary',
   },
@@ -210,7 +210,7 @@ export const THEME_COLORS: Record<ThemeColorKey, ThemeColorConfig> = {
   ring: {
     name: 'Focus Ring',
     description: 'Used for focus ring',
-    lightDefault: { primaryShade: '950' },
+    lightDefault: { primaryShade: '800' },
     darkDefault: { primaryShade: '300' },
     categoryKey: 'ring',
   },

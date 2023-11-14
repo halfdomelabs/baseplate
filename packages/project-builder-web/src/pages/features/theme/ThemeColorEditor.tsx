@@ -1,7 +1,8 @@
 import { THEME_COLORS, ThemeConfig } from '@halfdomelabs/project-builder-lib';
-import { ColorInput } from '@halfdomelabs/ui-components';
+import { ColorPickerField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
+
 import { ThemeColorsPreview } from './ThemeColorsPreview';
 
 interface ThemeColorEditorProps {
@@ -26,7 +27,7 @@ export function ThemeColorEditor({
             idx > 0 ? themeColorEntries[idx - 1][1].categoryKey : undefined;
           const shouldStartNewColumn = lastCategoryKey !== config.categoryKey;
           return (
-            <ColorInput.Controller
+            <ColorPickerField.Controller
               className={shouldStartNewColumn ? 'col-start-1' : undefined}
               key={key}
               control={control}

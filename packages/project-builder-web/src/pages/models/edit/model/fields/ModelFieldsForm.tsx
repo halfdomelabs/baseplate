@@ -9,8 +9,9 @@ import {
   useWatch,
 } from 'react-hook-form';
 import { MdExpandMore } from 'react-icons/md';
-import { SortableList } from 'src/components/SortableList';
+
 import ModelFieldForm from './ModelFieldForm';
+import { SortableList } from 'src/components/SortableList';
 
 interface ModelFieldsFormProps {
   className?: string;

@@ -4,16 +4,18 @@ import {
   generateThemeColorsFromShade,
   themeSchema,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, ToggleTabs } from '@halfdomelabs/ui-components';
+import { Alert, Button, Tabs } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
+import { MdConstruction } from 'react-icons/md';
+
+import { ThemeColorEditor } from './ThemeColorEditor';
+import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
+import { ThemePaletteEditor } from './ThemePaletteEditor';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { logAndFormatError } from 'src/services/error-formatter';
-import { ThemeColorEditor } from './ThemeColorEditor';
-import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
-import { ThemePaletteEditor } from './ThemePaletteEditor';
 
 export function ThemeHomePage(): JSX.Element {
   const { config, setConfigAndFixReferences } = useProjectConfig();
@@ -30,19 +32,38 @@ export function ThemeHomePage(): JSX.Element {
       defaultValues,
     });
 
+  const generateNewThemeColors = useCallback(
+    (resetColors?: boolean) => {
+      const palettes = getValues('palettes');
+      setValue('colors', {
+        light: generateThemeColorsFromShade(
+          palettes,
+          'light',
+          resetColors
+            ? undefined
+            : {
+                palettes: defaultValues.palettes,
+                config: defaultValues.colors.light,
+              }
+        ),
+        dark: generateThemeColorsFromShade(
+          palettes,
+          'dark',
+          resetColors
+            ? undefined
+            : {
+                palettes: defaultValues.palettes,
+                config: defaultValues.colors.dark,
+              }
+        ),
+      });
+    },
+    [getValues, setValue, defaultValues]
+  );
+
   const handleShadesChange = useCallback(() => {
-    const palettes = getValues('palettes');
-    setValue('colors', {
-      light: generateThemeColorsFromShade(palettes, 'light', {
-        palettes: defaultValues.palettes,
-        config: defaultValues.colors.light,
-      }),
-      dark: generateThemeColorsFromShade(palettes, 'dark', {
-        palettes: defaultValues.palettes,
-        config: defaultValues.colors.dark,
-      }),
-    });
-  }, [getValues, setValue, defaultValues]);
+    generateNewThemeColors();
+  }, [generateNewThemeColors]);
 
   const onSubmit = (data: ThemeConfig): void => {
     try {
@@ -58,6 +79,14 @@ export function ThemeHomePage(): JSX.Element {
   return (
     <div className="max-w-4xl space-y-4">
       <h1>Theme Builder</h1>
+      <Alert>
+        <MdConstruction />
+        <Alert.Title>Work in Progress</Alert.Title>
+        <Alert.Description>
+          This page is still a work in progress. It is not being used for
+          generation at the moment.
+        </Alert.Description>
+      </Alert>
       <p>
         The theme of the UI is based off color variables used with{' '}
         <a href="https://ui.shadcn.com/docs/theming">
@@ -86,14 +115,13 @@ export function ThemeHomePage(): JSX.Element {
       </ul>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Button type="submit">Save</Button>
         <h2>Theme Palettes</h2>
-        <ToggleTabs defaultValue="base">
-          <ToggleTabs.List>
-            <ToggleTabs.Trigger value="base">Base</ToggleTabs.Trigger>
-            <ToggleTabs.Trigger value="primary">Primary</ToggleTabs.Trigger>
-          </ToggleTabs.List>
-          <ToggleTabs.Content value="base">
+        <Tabs defaultValue="base">
+          <Tabs.List>
+            <Tabs.Trigger value="base">Base</Tabs.Trigger>
+            <Tabs.Trigger value="primary">Primary</Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="base">
             <ThemePaletteEditor
               control={control}
               getValues={getValues}
@@ -101,8 +129,8 @@ export function ThemeHomePage(): JSX.Element {
               type="base"
               onShadesChange={handleShadesChange}
             />
-          </ToggleTabs.Content>
-          <ToggleTabs.Content value="primary">
+          </Tabs.Content>
+          <Tabs.Content value="primary">
             <ThemePaletteEditor
               control={control}
               getValues={getValues}
@@ -110,24 +138,33 @@ export function ThemeHomePage(): JSX.Element {
               type="primary"
               onShadesChange={handleShadesChange}
             />
-          </ToggleTabs.Content>
-        </ToggleTabs>
+          </Tabs.Content>
+        </Tabs>
 
         <h2>Theme Colors</h2>
         <p>Pick the colors for your theme</p>
+        <Button
+          onClick={() => generateNewThemeColors(true)}
+          variant="secondary"
+          type="button"
+        >
+          Reset Colors
+        </Button>
 
-        <ToggleTabs defaultValue="light">
-          <ToggleTabs.List>
-            <ToggleTabs.Trigger value="light">Light</ToggleTabs.Trigger>
-            <ToggleTabs.Trigger value="dark">Dark</ToggleTabs.Trigger>
-          </ToggleTabs.List>
-          <ToggleTabs.Content value="light">
+        <Tabs defaultValue="light">
+          <Tabs.List>
+            <Tabs.Trigger value="light">Light</Tabs.Trigger>
+            <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="light">
             <ThemeColorEditor control={control} mode="light" />
-          </ToggleTabs.Content>
-          <ToggleTabs.Content value="dark">
+          </Tabs.Content>
+          <Tabs.Content value="dark">
             <ThemeColorEditor control={control} mode="dark" />
-          </ToggleTabs.Content>
-        </ToggleTabs>
+          </Tabs.Content>
+        </Tabs>
+
+        <Button type="submit">Save</Button>
 
         <h2>CSS Preview</h2>
         <ThemeColorsCssDisplay control={control} />

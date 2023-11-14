@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { LinkButton } from '../LinkButton/LinkButton.js';
+
 import { Table } from './Table.js';
+import { Button } from '../Button/Button.js';
 
 const meta = {
   component: Table,
@@ -145,14 +146,15 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <Table.Head>
-          <Table.HeadRow>
-            <Table.HeadCell>Name</Table.HeadCell>
-            <Table.HeadCell>Email</Table.HeadCell>
-            <Table.HeadCell>Last Login</Table.HeadCell>
-            <Table.HeadCell />
-          </Table.HeadRow>
-        </Table.Head>
+        <Table.Caption>A list of users.</Table.Caption>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head>Name</Table.Head>
+            <Table.Head>Email</Table.Head>
+            <Table.Head>Last Login</Table.Head>
+            <Table.Head />
+          </Table.Row>
+        </Table.Header>
         <Table.Body>
           {SAMPLE_USERS.map((user) => (
             <Table.Row key={user.id}>
@@ -160,11 +162,20 @@ export const Default: Story = {
               <Table.Cell>{user.email}</Table.Cell>
               <Table.Cell>{user.lastLogin.toLocaleDateString()}</Table.Cell>
               <Table.Cell>
-                <LinkButton>Edit</LinkButton>
+                <Button variant="link">Edit</Button>
               </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
+
+        <Table.Footer>
+          <Table.Row>
+            <Table.Cell colSpan={3}>Total</Table.Cell>
+            <Table.Cell className="text-right">
+              {SAMPLE_USERS.length}
+            </Table.Cell>
+          </Table.Row>
+        </Table.Footer>
       </>
     ),
   },

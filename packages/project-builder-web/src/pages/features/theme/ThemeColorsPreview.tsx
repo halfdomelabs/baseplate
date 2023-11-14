@@ -2,7 +2,12 @@ import {
   ThemeConfig,
   generateCssFromThemeConfig,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, Card } from '@halfdomelabs/ui-components';
+import {
+  Badge,
+  Button,
+  Card,
+  ComboboxField,
+} from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 
@@ -34,7 +39,21 @@ export function ThemeColorsPreview({
           <Card.Title>Hello World!</Card.Title>
           <Card.Description>Some Card Description</Card.Description>
         </Card.Header>
-        <Card.Content>Hello Hello!</Card.Content>
+        <Card.Content className="space-y-4">
+          <p>Hello Hello!</p>
+          <ComboboxField
+            label="What is your favorite color?"
+            description="Choose anything you want"
+            options={[
+              { label: 'Red', value: 'red' },
+              { label: 'Green', value: 'green' },
+              { label: 'Blue', value: 'blue' },
+            ]}
+          />
+          <h2>Badges</h2>
+          <Badge variant="default">Default</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+        </Card.Content>
         <Card.Footer className="flex gap-4">
           <Button type="button">Primary</Button>
           <Button variant="secondary" type="button">

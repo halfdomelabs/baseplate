@@ -1,7 +1,8 @@
-import { clsx } from 'clsx';
 import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
-import { COMPONENT_STRINGS } from '@src/constants/strings.js';
+
+import { useComponentStrings } from '@src/contexts/ComponentStrings';
+import { cn } from '@src/utils';
 
 interface ErrorDisplayProps {
   /**
@@ -11,7 +12,7 @@ interface ErrorDisplayProps {
   /**
    * Header to be displayed (if not passed, a generic error header will be displayed)
    */
-  header?: string;
+  header?: React.ReactNode;
   /**
    * Error to be displayed (if a string is passed, it will be displayed as-is, otherwise a generic error message will be displayed)
    */
@@ -22,23 +23,27 @@ interface ErrorDisplayProps {
   actions?: React.ReactNode;
 }
 
+/**
+ * Displays a generic error state with a header and error message.
+ */
 export function ErrorDisplay({
   className,
   header,
   error,
   actions,
 }: ErrorDisplayProps): JSX.Element {
+  const strings = useComponentStrings();
   return (
-    <div className={clsx('flex h-full items-center justify-center', className)}>
+    <div className={cn('flex h-full items-center justify-center', className)}>
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
-          <MdOutlineErrorOutline className="h-20 w-20 text-foreground-300 dark:text-foreground-700" />
+          <MdOutlineErrorOutline className="h-20 w-20 text-muted-foreground" />
         </div>
-        <h1>{header || COMPONENT_STRINGS.genericErrorHeader}</h1>
-        <p className="text-base">
+        <h1>{header ?? strings.errorDisplayDefaultHeader}</h1>
+        <p>
           {typeof error === 'string' || React.isValidElement(error)
             ? error
-            : COMPONENT_STRINGS.genericErrorContent}
+            : strings.errorDisplayDefaultContent}
         </p>
         {actions}
       </div>

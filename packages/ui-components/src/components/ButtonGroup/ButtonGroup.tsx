@@ -1,12 +1,17 @@
 import React from 'react';
-import { cn } from '@src/utils/cn.js';
+
 import { Button, ButtonProps } from '../Button/Button.js';
+import { cn } from '@src/utils/cn.js';
 
-export interface ButtonGroupProps extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string;
-}
+/**
+ * Displays a list of buttons aligned next to one another.
+ */
 
-const ButtonGroupBase = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
+const ButtonGroupBase = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(
+  // eslint-disable-next-line react/prop-types
   ({ className, ...props }, ref) => {
     return (
       <div
@@ -25,7 +30,7 @@ const ButtonGroupButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Button
         className={cn(
-          '[&:not(:last-child)]:border-r-none [&:not(:first-child)]:border-l-none [&:not(:first-child)]:rounded-l-none [&:not(:last-child)]:rounded-r-none',
+          '[&:not(:first-child)]:rounded-l-none [&:not(:last-child)]:rounded-r-none [&:not(:last-child)]:border-r-0',
           // allow ring to show above neighbors
           'focus-visible:z-10',
           className

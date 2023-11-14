@@ -3,19 +3,20 @@ import {
   Badge,
   Button,
   Dropdown,
-  TextInput,
-  ToggleInput,
+  InputField,
+  SwitchField,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
-import { TbRelationOneToOne, TbRelationOneToMany } from 'react-icons/tb';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useToast } from 'src/hooks/useToast';
+import { TbRelationOneToMany, TbRelationOneToOne } from 'react-icons/tb';
+
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useToast } from 'src/hooks/useToast';
 
 interface Props {
   className?: string;
@@ -131,7 +132,7 @@ function ModelFieldForm({
   return (
     <div className={clsx('items-center', className)}>
       <div>
-        <TextInput.Controller
+        <InputField.Controller
           control={control}
           name={`model.fields.${idx}.name`}
           onBlur={() => fixReferences()}
@@ -144,28 +145,27 @@ function ModelFieldForm({
         <ModelFieldDefaultValueInput control={control} idx={idx} />
       </div>
       <div>
-        <ToggleInput.Controller
+        <SwitchField.Controller
           control={control}
           name={`model.fields.${idx}.isId`}
         />
       </div>
       <div>
-        <ToggleInput.Controller
+        <SwitchField.Controller
           control={control}
           name={`model.fields.${idx}.isOptional`}
         />
       </div>
       <div>
-        <ToggleInput.Controller
+        <SwitchField.Controller
           control={control}
           name={`model.fields.${idx}.isUnique`}
         />
       </div>
       <div>
         {modelFieldRelation && (
-          <Badge
+          <Badge.WithIcon
             className="max-w-[100px]"
-            color="primary"
             icon={
               modelFieldRelation.relationshipType === 'oneToOne'
                 ? TbRelationOneToOne
@@ -174,7 +174,7 @@ function ModelFieldForm({
             onClick={() => setIsRelationFormOpen(true)}
           >
             {modelFieldRelation.modelName}
-          </Badge>
+          </Badge.WithIcon>
         )}
         <ModalRelationsModal
           isOpen={isRelationFormOpen}

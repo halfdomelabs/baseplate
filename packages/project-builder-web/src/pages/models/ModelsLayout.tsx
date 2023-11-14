@@ -1,9 +1,10 @@
-import { SidebarLayout, ToggleTabs } from '@halfdomelabs/ui-components';
+import { SidebarLayout, Tabs } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Outlet } from 'react-router-dom';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+
 import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 export function ModelsLayout(): JSX.Element {
   const { parsedProject } = useProjectConfig();
@@ -19,18 +20,18 @@ export function ModelsLayout(): JSX.Element {
         className="flex h-full max-w-sm flex-col space-y-4"
         width="auto"
       >
-        <ToggleTabs defaultValue="models">
-          <ToggleTabs.List className="w-full">
-            <ToggleTabs.Trigger value="models">Models</ToggleTabs.Trigger>
-            <ToggleTabs.Trigger value="enums">Enums</ToggleTabs.Trigger>
-          </ToggleTabs.List>
-          <ToggleTabs.Content value="models">
+        <Tabs defaultValue="models">
+          <Tabs.List className="w-full">
+            <Tabs.Trigger value="models">Models</Tabs.Trigger>
+            <Tabs.Trigger value="enums">Enums</Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="models">
             <ModelsSidebarList />
-          </ToggleTabs.Content>
-          <ToggleTabs.Content value="enums">
+          </Tabs.Content>
+          <Tabs.Content value="enums">
             <EnumsSidebarList />
-          </ToggleTabs.Content>
-        </ToggleTabs>
+          </Tabs.Content>
+        </Tabs>
         {/* Allows us to ensure the width doesn't change when selected is semi-bold or search filter is active */}
         <div className="invisible block h-1 overflow-hidden overflow-y-scroll font-semibold text-transparent">
           {longestName}

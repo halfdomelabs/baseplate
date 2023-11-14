@@ -2,14 +2,15 @@ import { Button, Tabs, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
-import { NotFoundCard } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useToast } from 'src/hooks/useToast';
-import { formatError } from 'src/services/error-formatter';
+
 import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
 import ModelEditServicePage from './service/service.page';
+import { NotFoundCard } from 'src/components';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useToast } from 'src/hooks/useToast';
+import { formatError } from 'src/services/error-formatter';
 
 function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
@@ -54,7 +55,7 @@ function ModelEditPage(): JSX.Element {
             <MdEdit className="invisible h-4 w-4 group-hover:visible" />
           </button>
           {model?.feature && (
-            <div className="description-text">{model.feature}</div>
+            <div className="text-xs text-muted-foreground">{model.feature}</div>
           )}
           <ModelGeneralEditDialog
             isOpen={showNameModal}
@@ -92,11 +93,11 @@ function ModelEditPage(): JSX.Element {
           onClick={() => {
             requestConfirm({
               title: 'Confirm delete',
-              message: `Are you sure you want to delete ${
-                model?.name || 'the model'
+              content: `Are you sure you want to delete ${
+                model?.name ?? 'the model'
               }?`,
-              confirmText: 'Delete',
-              onSubmit: handleDelete,
+              buttonConfirmText: 'Delete',
+              onConfirm: handleDelete,
             });
           }}
         >

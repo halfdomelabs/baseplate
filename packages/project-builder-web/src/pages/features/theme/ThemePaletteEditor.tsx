@@ -3,7 +3,11 @@ import {
   PaletteShades,
   ThemeConfig,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, ColorInput, SelectInput } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  ColorPickerField,
+  ComboboxField,
+} from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { capitalize } from 'inflection';
 import { useCallback } from 'react';
@@ -13,6 +17,7 @@ import {
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
+
 import { COLOR_PALETTES } from './colors';
 import { generatePalette } from './palette-generator';
 
@@ -66,7 +71,7 @@ export function ThemePaletteEditor({
 
   return (
     <div className={clsx('space-y-4', className)}>
-      <SelectInput.Controller
+      <ComboboxField.Controller
         name={`palettes.${type}.paletteName`}
         control={control}
         options={paletteOptions}
@@ -75,7 +80,7 @@ export function ThemePaletteEditor({
       />
       {paletteName === 'custom' && (
         <div className="flex items-end space-x-2">
-          <ColorInput.Controller
+          <ColorPickerField.Controller
             className="flex-1"
             control={control}
             name={`palettes.${type}.customBase`}
@@ -90,7 +95,7 @@ export function ThemePaletteEditor({
       <div className="grid grid-cols-11 gap-4">
         {PALETTE_SHADES.map((shade) => (
           <div key={shade} className="w-14">
-            <ColorInput.Controller
+            <ColorPickerField.Controller
               hideText
               control={control}
               name={`palettes.${type}.shades.${shade}`}

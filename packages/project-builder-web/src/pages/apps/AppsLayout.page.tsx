@@ -1,10 +1,11 @@
 import {
   Button,
-  NavigationLink,
+  NavigationMenu,
   SidebarLayout,
 } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Link, NavLink, Outlet } from 'react-router-dom';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 function AppsLayout(): JSX.Element {
@@ -24,19 +25,17 @@ function AppsLayout(): JSX.Element {
             <Button variant="secondary">New App</Button>
           </Link>
         </div>
-        <ul className="space-y-2">
-          {sortedApps.map((app) => (
-            <li key={app.uid}>
-              <NavigationLink
-                as={NavLink}
-                to={`/apps/edit/${app.uid}`}
-                className="w-full"
-              >
-                {app.name}
-              </NavigationLink>
-            </li>
-          ))}
-        </ul>
+        <NavigationMenu orientation="vertical">
+          <NavigationMenu.List>
+            {sortedApps.map((app) => (
+              <li key={app.uid}>
+                <NavigationMenu.ItemWithLink asChild>
+                  <NavLink to={`/apps/edit/${app.uid}`}>{app.name}</NavLink>
+                </NavigationMenu.ItemWithLink>
+              </li>
+            ))}
+          </NavigationMenu.List>
+        </NavigationMenu>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content className=" p-4">
         <div className="max-w-3xl">

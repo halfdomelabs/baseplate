@@ -1,8 +1,9 @@
-import { NavigationLink } from '@halfdomelabs/ui-components';
+import { Button, NavigationMenu } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { HiCollection, HiDatabase, HiSwitchHorizontal } from 'react-icons/hi';
 import { MdApps, MdSettings } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
+
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -27,29 +28,43 @@ export function AppTopbar(): JSX.Element {
             <h3>{config.name}</h3>
           </Link>
         </div>
-        <div className="flex items-center space-x-4">
-          <ProjectSyncModal />
-          <NavigationLink as={NavLink} to="/apps" icon={MdApps}>
-            Apps
-          </NavigationLink>
-          <NavigationLink as={NavLink} to="/models" icon={HiDatabase}>
-            Models
-          </NavigationLink>
-          <NavigationLink as={NavLink} to="/features" icon={HiCollection}>
-            Features
-          </NavigationLink>
-        </div>
+        <ProjectSyncModal />
+        <NavigationMenu>
+          <NavigationMenu.List>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to="/apps">
+                <MdApps />
+                Apps
+              </NavLink>
+            </NavigationMenu.ItemWithLink>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to="/models">
+                <HiDatabase />
+                Models
+              </NavLink>
+            </NavigationMenu.ItemWithLink>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to="/features">
+                <HiCollection />
+                Features
+              </NavLink>
+            </NavigationMenu.ItemWithLink>
+          </NavigationMenu.List>
+        </NavigationMenu>
       </div>
       <div className="flex items-center space-x-4">
-        <NavigationLink
-          as={NavLink}
-          to="/settings"
-          icon={MdSettings}
-          title="Project Settings"
-        />
+        <NavLink to="/settings">
+          <Button.WithIcon
+            variant="ghost"
+            size="icon"
+            icon={MdSettings}
+            title="Project Settings"
+          />
+        </NavLink>
         {projects.length > 1 && (
-          <NavigationLink
-            as="button"
+          <Button.WithIcon
+            variant="ghost"
+            size="icon"
             onClick={() => setShowProjectChooserModal(true)}
             icon={HiSwitchHorizontal}
             title="Switch project"

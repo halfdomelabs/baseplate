@@ -1,8 +1,8 @@
-import { LabellableComponent } from './form.js';
+import { FieldProps } from './form.js';
 
 export type OptionToStringFunc<OptionType> = (value: OptionType) => string;
 
-export type DropdownPropsBase<OptionType> = LabellableComponent & {
+export type DropdownPropsBase<OptionType> = FieldProps & {
   options: OptionType[];
   className?: string;
   name?: string;

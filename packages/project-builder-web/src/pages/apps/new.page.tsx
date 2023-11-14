@@ -6,13 +6,14 @@ import {
 import {
   Button,
   Card,
-  SelectInput,
-  TextInput,
+  InputField,
+  SelectField,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -56,13 +57,13 @@ function NewAppPage(): JSX.Element {
       <Card>
         <Card.Content>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <TextInput.Controller
+            <InputField.Controller
               label="Name"
               control={control}
               name="name"
               description="The name of the app, such as 'backend' or 'web'"
             />
-            <SelectInput.Controller
+            <SelectField.Controller
               label="Type"
               control={control}
               name="type"

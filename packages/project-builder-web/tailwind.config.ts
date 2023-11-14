@@ -1,5 +1,5 @@
-import path from 'node:path';
 import tailwindBase from '@halfdomelabs/ui-components/tailwind-base';
+import path from 'node:path';
 import type { Config } from 'tailwindcss';
 
 export default {

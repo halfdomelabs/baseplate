@@ -108,10 +108,16 @@ module.exports = function createEslintConfig(options) {
           'import/order': [
             'error',
             {
-              pathGroups: [
-                { pattern: 'src/**', group: 'external', position: 'after' },
-                { pattern: '@src/**', group: 'external', position: 'after' },
+              groups: [
+                ['builtin', 'external'],
+                ['internal', 'parent', 'sibling', 'index', 'object'],
               ],
+              pathGroups: [
+                { pattern: '@/**', group: 'internal' },
+                { pattern: 'src/**', group: 'internal' },
+                { pattern: '@src/**', group: 'internal' },
+              ],
+              'newlines-between': 'always',
               alphabetize: { order: 'asc' },
             },
           ],

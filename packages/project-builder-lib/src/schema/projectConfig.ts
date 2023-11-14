@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { randomUid } from '@src/utils/randomUid.js';
-import { DASHED_NAME } from '@src/utils/validations.js';
+
 import {
   AdminAppConfig,
   adminAppSchema,
@@ -18,6 +17,8 @@ import { buildEnumReferences, enumSchema } from './models/enums.js';
 import { buildModelReferences, modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { buildStorageReferences, storageSchema } from './storage/index.js';
+import { randomUid } from '@src/utils/randomUid.js';
+import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const appSchema = z.discriminatedUnion('type', [
   backendAppSchema,

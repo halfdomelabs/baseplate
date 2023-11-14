@@ -1,12 +1,12 @@
 import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
-import tailwindForms from '@tailwindcss/forms';
 import colors from 'tailwindcss/colors';
 import headlessUi from '@headlessui/tailwindcss';
+import tailwindCssAnimate from 'tailwindcss-animate';
 
 const config: Config = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
-  darkMode: ['class'],
+  darkMode: ['class', '[data-mode="dark"]'],
   theme: {
     fontFamily: {
       body: ['Open Sans', ...defaultTheme.fontFamily.sans],
@@ -54,11 +54,15 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
+        link: {
+          DEFAULT: 'hsl(var(--link))',
+          visited: 'hsl(var(--link-visited))',
+        },
         error: colors.red,
       },
     },
   },
-  plugins: [tailwindForms, headlessUi],
+  plugins: [headlessUi, tailwindCssAnimate],
 } satisfies Config;
 
 export default config;

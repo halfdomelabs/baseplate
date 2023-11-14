@@ -1,5 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { Button, Dropdown, TextInput } from '@halfdomelabs/ui-components';
+import { Button, Dropdown, InputField } from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
@@ -26,7 +26,7 @@ export function ModelFieldDefaultValueInput({
 
   if (['string', 'int', 'float', 'boolean'].includes(type)) {
     return (
-      <TextInput.Controller
+      <InputField.Controller
         control={control}
         placeholder="NULL"
         name={`model.fields.${idx}.options.default`}
@@ -37,7 +37,7 @@ export function ModelFieldDefaultValueInput({
     if (optionsValue?.genUuid) {
       return (
         <div className="flex items-center space-x-1">
-          <TextInput disabled value="Random UUID v4" />
+          <InputField disabled value="Random UUID v4" />
           <Button
             title="Reset"
             onClick={() => onOptionsChange({ ...optionsValue, genUuid: false })}
@@ -51,7 +51,7 @@ export function ModelFieldDefaultValueInput({
     }
     return (
       <div className="flex items-center space-x-1">
-        <TextInput.Controller
+        <InputField.Controller
           control={control}
           placeholder="NULL"
           name={`model.fields.${idx}.options.default`}
@@ -87,7 +87,7 @@ export function ModelFieldDefaultValueInput({
     if (defaultToNow || updatedAt) {
       return (
         <div className="flex items-center space-x-1">
-          <TextInput disabled value={updatedAt ? 'Last Updated' : 'Now'} />
+          <InputField disabled value={updatedAt ? 'Last Updated' : 'Now'} />
           <Button
             title="Reset"
             onClick={() =>
@@ -107,7 +107,7 @@ export function ModelFieldDefaultValueInput({
     }
     return (
       <div className="flex items-center space-x-1">
-        <TextInput.Controller
+        <InputField.Controller
           placeholder="NULL"
           control={control}
           name={`model.fields.${idx}.options.default`}

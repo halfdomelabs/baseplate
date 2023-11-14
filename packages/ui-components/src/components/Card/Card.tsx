@@ -1,14 +1,14 @@
 import React from 'react';
+
 import { cn } from '@src/utils';
 
+/* eslint-disable react/prop-types */
+
 /**
- * Card Component
+ * Displays a card with header, content, and footer.
  *
  * https://ui.shadcn.com/docs/components/card
  */
-
-// We use React.HTMLAttributes so it's unnecessary to type: https://github.com/shadcn-ui/ui/issues/1013
-/* eslint-disable react/prop-types */
 
 const CardRoot = React.forwardRef<
   HTMLDivElement,

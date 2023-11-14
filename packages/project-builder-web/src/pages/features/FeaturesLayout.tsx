@@ -1,4 +1,4 @@
-import { NavigationLink, SidebarLayout } from '@halfdomelabs/ui-components';
+import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
 import { FaPalette } from 'react-icons/fa';
 import { MdAttachFile, MdPeople } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
@@ -10,30 +10,28 @@ function FeaturesLayout(): JSX.Element {
         <Link to="/features">
           <h2>Features</h2>
         </Link>
-        <NavigationLink
-          as={NavLink}
-          to="/features/auth"
-          icon={MdPeople}
-          className="w-full"
-        >
-          Authentication
-        </NavigationLink>
-        <NavigationLink
-          as={NavLink}
-          to="/features/storage"
-          icon={MdAttachFile}
-          className="w-full"
-        >
-          Storage
-        </NavigationLink>
-        <NavigationLink
-          as={NavLink}
-          to="/features/theme"
-          icon={FaPalette}
-          className="w-full"
-        >
-          Theme
-        </NavigationLink>
+        <NavigationMenu orientation="vertical">
+          <NavigationMenu.List>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to="/features/auth">
+                <MdPeople />
+                Authentication
+              </NavLink>
+            </NavigationMenu.ItemWithLink>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to="/features/storage">
+                <MdAttachFile />
+                Storage
+              </NavLink>
+            </NavigationMenu.ItemWithLink>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to="/features/theme">
+                <FaPalette />
+                Theme
+              </NavLink>
+            </NavigationMenu.ItemWithLink>
+          </NavigationMenu.List>
+        </NavigationMenu>
       </SidebarLayout.Sidebar>
       <SidebarLayout.Content className="p-4">
         <Outlet />
