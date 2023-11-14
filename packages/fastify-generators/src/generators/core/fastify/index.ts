@@ -10,6 +10,7 @@ import {
   NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { setupFastifyTypescript } from './setupFastifyTypescript.js';
 
 const descriptorSchema = z.object({

@@ -1,4 +1,5 @@
 import { createProviderType } from '@halfdomelabs/sync';
+
 import { AdminCrudDisplay } from '../_utils/data-display.js';
 
 export interface AdminCrudColumn {

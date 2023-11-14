@@ -1,8 +1,6 @@
 // because we manually require
 /* eslint-disable import/no-import-module-exports */
 
-import { createRequire } from 'module';
-import path from 'path';
 import {
   formatterProvider,
   createGeneratorWithChildren,
@@ -10,9 +8,12 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
+import { createRequire } from 'module';
+import path from 'path';
 import prettier from 'prettier';
 import requireResolve from 'resolve';
 import { z } from 'zod';
+
 import { nodeProvider } from '../node/index.js';
 
 const descriptorSchema = z.object({

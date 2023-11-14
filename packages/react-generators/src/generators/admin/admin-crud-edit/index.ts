@@ -12,13 +12,7 @@ import {
 import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';
-import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
-import { reactRoutesProvider } from '@src/providers/routes.js';
-import { notEmpty } from '@src/utils/array.js';
-import { lowerCaseFirst, titleizeCamel } from '@src/utils/case.js';
-import { createRouteElement } from '@src/utils/routes.js';
-import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
+
 import {
   AdminCrudInput,
   adminCrudInputContainerProvider,
@@ -26,6 +20,13 @@ import {
 import { DataLoader, printDataLoaders } from '../_providers/admin-loader.js';
 import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
 import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { reactRoutesProvider } from '@src/providers/routes.js';
+import { notEmpty } from '@src/utils/array.js';
+import { lowerCaseFirst, titleizeCamel } from '@src/utils/case.js';
+import { createRouteElement } from '@src/utils/routes.js';
+import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string(),

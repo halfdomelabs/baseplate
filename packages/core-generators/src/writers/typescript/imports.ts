@@ -1,9 +1,10 @@
-import path from 'path';
 import _ from 'lodash';
+import path from 'path';
 import * as R from 'ramda';
 import { CodeBlockWriter, SourceFile } from 'ts-morph';
-import { ImportMap, ImportMapper } from '../../providers/index.js';
+
 import { sortByImportOrder } from './importOrder.js';
+import { ImportMap, ImportMapper } from '../../providers/index.js';
 
 export interface NamedImportEntry {
   name: string;

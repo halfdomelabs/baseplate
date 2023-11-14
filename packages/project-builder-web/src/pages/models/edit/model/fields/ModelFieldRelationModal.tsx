@@ -5,11 +5,12 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { Dialog } from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
-import { useToast } from 'src/hooks/useToast';
+
 import {
   ModelFieldRelationForm,
   ModelFieldRelationFormValues,
 } from './ModelFieldRelationForm';
+import { useToast } from 'src/hooks/useToast';
 
 interface ModalRelationsModalProps {
   isOpen?: boolean;

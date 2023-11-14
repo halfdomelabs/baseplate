@@ -1,10 +1,11 @@
 import { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
+import { DataLoader } from '../_providers/admin-loader.js';
 import {
   GraphQLFragment,
   GraphQLRoot,
   mergeGraphQLFragments,
 } from '@src/writers/graphql/index.js';
-import { DataLoader } from '../_providers/admin-loader.js';
 
 export interface AdminCrudDataDependency {
   propName: string;

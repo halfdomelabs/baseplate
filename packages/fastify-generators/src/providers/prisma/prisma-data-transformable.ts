@@ -2,6 +2,7 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
+
 import { ServiceOutputDtoField } from '@src/types/serviceOutput.js';
 
 export interface PrismaDataTransformInputField {

@@ -4,6 +4,9 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
+
+import { PrismaOutputProvider } from '../../prisma/index.js';
+import { PrismaUtilsProvider } from '../../prisma-utils/index.js';
 import { ServiceContextProvider } from '@src/generators/core/service-context/index.js';
 import {
   PrismaDataTransformer,
@@ -13,8 +16,6 @@ import { PrismaOutputRelationField } from '@src/types/prismaOutput.js';
 import { ServiceOutputDto } from '@src/types/serviceOutput.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
-import { PrismaOutputProvider } from '../../prisma/index.js';
-import { PrismaUtilsProvider } from '../../prisma-utils/index.js';
 
 export interface PrismaDataMethodOptions {
   name: string;

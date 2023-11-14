@@ -1,10 +1,11 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
-import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { createForeignDataDependency } from '../_utils/foreign-data-dependency.js';
+import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 
 const descriptorSchema = z.object({
   label: z.string().min(1),

@@ -3,8 +3,8 @@
 
 // in the future, we could run eslint --fix with better caching
 
-import { isAbsolute as nodeIsAbsolute } from 'path';
 import isCoreModule from 'is-core-module';
+import { isAbsolute as nodeIsAbsolute } from 'path';
 import * as R from 'ramda';
 
 const DEFAULT_SORT_ORDER = [

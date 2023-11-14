@@ -1,12 +1,13 @@
-import crypto from 'crypto';
 import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
+import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
+
+import { FilePayload, ProjectBuilderApi } from './api.js';
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
 import { getGeneratorEngine } from '@src/sync/index.js';
 import { HttpError, NotFoundError } from '@src/utils/http-errors.js';
 import { getPackageVersion } from '@src/utils/version.js';
-import { FilePayload, ProjectBuilderApi } from './api.js';
 
 interface ConnectMessage {
   type: 'connect';

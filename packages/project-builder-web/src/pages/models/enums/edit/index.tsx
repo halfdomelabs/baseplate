@@ -1,12 +1,13 @@
 import { randomUid, EnumConfig } from '@halfdomelabs/project-builder-lib';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
+
+import EnumEditForm from './EnumEditForm';
 import { Alert, Button } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
-import EnumEditForm from './EnumEditForm';
 
 function EnumEditPage(): JSX.Element {
   const { id } = useParams<'id'>();

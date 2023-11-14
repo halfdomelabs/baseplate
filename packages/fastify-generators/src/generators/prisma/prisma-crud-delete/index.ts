@@ -8,11 +8,7 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
-import {
-  prismaToServiceOutputDto,
-  ServiceOutputMethod,
-} from '@src/types/serviceOutput.js';
+
 import {
   getPrimaryKeyDefinition,
   getPrimaryKeyExpressions,
@@ -22,6 +18,11 @@ import {
   PrismaUtilsProvider,
   prismaUtilsProvider,
 } from '../prisma-utils/index.js';
+import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
+import {
+  prismaToServiceOutputDto,
+  ServiceOutputMethod,
+} from '@src/types/serviceOutput.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

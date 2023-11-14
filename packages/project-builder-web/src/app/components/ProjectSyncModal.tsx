@@ -2,6 +2,7 @@ import { Button, Dialog } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { MdSync } from 'react-icons/md';
+
 import Console from 'src/components/Console';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';

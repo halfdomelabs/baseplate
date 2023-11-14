@@ -1,11 +1,11 @@
+import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 import { ProjectConfig, WebAppConfig } from '@src/schema/index.js';
 import {
   getBackendApp,
   getBackendRelativePath,
 } from '@src/schema-utils/index.js';
 import { AppEntry } from '@src/types/files.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;

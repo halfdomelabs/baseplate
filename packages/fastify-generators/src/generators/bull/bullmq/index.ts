@@ -9,6 +9,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';

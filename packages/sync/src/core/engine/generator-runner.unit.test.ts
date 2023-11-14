@@ -1,12 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
-import { formatterProvider } from '@src/providers/index.js';
-import { createEventedLogger } from '@src/utils/index.js';
-import { GeneratorOutputBuilder } from '../generator-output.js';
-import { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
-import { createProviderType, Provider } from '../provider.js';
+
 import { GeneratorEntry } from './generator-builder.js';
 import { executeGeneratorEntry } from './generator-runner.js';
 import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
+import { GeneratorOutputBuilder } from '../generator-output.js';
+import { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
+import { createProviderType, Provider } from '../provider.js';
+import { formatterProvider } from '@src/providers/index.js';
+import { createEventedLogger } from '@src/utils/index.js';
 
 const logger = createEventedLogger({ noConsole: true });
 

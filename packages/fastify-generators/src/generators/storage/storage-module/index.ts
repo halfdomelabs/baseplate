@@ -1,4 +1,3 @@
-import path from 'path';
 import {
   ImportMapper,
   makeImportAndFilePath,
@@ -13,7 +12,9 @@ import {
   createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
+import path from 'path';
 import { z } from 'zod';
+
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';

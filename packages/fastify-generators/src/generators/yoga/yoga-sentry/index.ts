@@ -8,6 +8,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/index.js';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';

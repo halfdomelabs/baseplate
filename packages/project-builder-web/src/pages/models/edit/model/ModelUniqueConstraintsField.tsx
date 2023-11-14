@@ -1,8 +1,9 @@
 import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
-import { LinkButton } from 'src/components';
+
 import ModelUniqueConstraintForm from './ModelUniqueConstraintForm';
+import { LinkButton } from 'src/components';
 
 interface Props {
   className?: string;

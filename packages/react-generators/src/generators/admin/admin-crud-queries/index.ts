@@ -1,4 +1,3 @@
-import * as path from 'path';
 import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -9,7 +8,9 @@ import {
   writeFormattedAction,
 } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
+import * as path from 'path';
 import { z } from 'zod';
+
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 import { lowerCaseFirst } from '@src/utils/case.js';

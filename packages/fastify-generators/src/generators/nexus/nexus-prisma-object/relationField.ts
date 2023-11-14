@@ -4,6 +4,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
+
 import { PrismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import {
   PrismaOutputModel,

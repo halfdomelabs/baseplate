@@ -1,10 +1,11 @@
 import * as R from 'ramda';
 import toposort from 'toposort';
-import { notEmpty } from '@src/utils/arrays.js';
-import { ProviderExportMap } from '../generator.js';
-import { ProviderExport } from '../provider.js';
+
 import { EntryDependencyMap } from './dependency-map.js';
 import { GeneratorTaskEntry } from './generator-builder.js';
+import { ProviderExportMap } from '../generator.js';
+import { ProviderExport } from '../provider.js';
+import { notEmpty } from '@src/utils/arrays.js';
 
 function normalizeExportMap(exportMap: ProviderExportMap): ProviderExport[] {
   return Object.values(exportMap).map((provider) =>

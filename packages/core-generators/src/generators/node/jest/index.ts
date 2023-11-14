@@ -5,14 +5,15 @@ import {
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import { eslintProvider } from '../eslint/index.js';
+import { nodeProvider } from '../node/index.js';
+import { typescriptProvider } from '../typescript/index.js';
 import { quot } from '@src/utils/string.js';
 import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
 } from '@src/writers/index.js';
-import { eslintProvider } from '../eslint/index.js';
-import { nodeProvider } from '../node/index.js';
-import { typescriptProvider } from '../typescript/index.js';
 
 const descriptorSchema = z.object({});
 

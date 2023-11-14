@@ -1,4 +1,3 @@
-import { createRequire } from 'module';
 import {
   copyTypescriptFileAction,
   ImportMapper,
@@ -13,7 +12,9 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import type { formatSchema } from '@prisma/internals';
+import { createRequire } from 'module';
 import { z } from 'zod';
+
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';

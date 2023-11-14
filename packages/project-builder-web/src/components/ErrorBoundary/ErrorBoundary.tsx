@@ -4,6 +4,7 @@ import {
   ErrorBoundary as ReactErrorBoundary,
   ErrorBoundaryContext,
 } from 'react-error-boundary';
+
 import { logError } from 'src/services/error-logger';
 
 interface ErrorBoundaryProps {

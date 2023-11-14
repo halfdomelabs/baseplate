@@ -1,5 +1,8 @@
 import path from 'path';
-import { Logger } from '@src/utils/evented-logger.js';
+
+import { loadDescriptorFromFile } from './descriptor-loader.js';
+import { buildGeneratorEntry, GeneratorEntry } from './generator-builder.js';
+import { executeGeneratorEntry } from './generator-runner.js';
 import {
   GeneratorWriteOptions,
   GeneratorWriteResult,
@@ -7,9 +10,7 @@ import {
 } from '../generator-output-writer.js';
 import { GeneratorOutput } from '../generator-output.js';
 import { GeneratorConfigMap } from '../loader.js';
-import { loadDescriptorFromFile } from './descriptor-loader.js';
-import { buildGeneratorEntry, GeneratorEntry } from './generator-builder.js';
-import { executeGeneratorEntry } from './generator-runner.js';
+import { Logger } from '@src/utils/evented-logger.js';
 
 export class GeneratorEngine {
   generators: GeneratorConfigMap = {};

@@ -4,6 +4,11 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Control } from 'react-hook-form';
+
+import CrudFormFieldsForm, { AdminCrudFormConfig } from './CrudFormFieldsForm';
+import CrudTableColumnsForm, {
+  AdminCrudTableConfig,
+} from './CrudTableColumnsForm';
 import {
   Alert,
   Button,
@@ -21,10 +26,6 @@ import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
-import CrudFormFieldsForm, { AdminCrudFormConfig } from './CrudFormFieldsForm';
-import CrudTableColumnsForm, {
-  AdminCrudTableConfig,
-} from './CrudTableColumnsForm';
 
 export function AdminCrudEmbeddedTable({
   items,

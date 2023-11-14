@@ -3,12 +3,13 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
-import { ScalarFieldType } from '@src/types/fieldTypes.js';
+
 import {
   INBUILT_POTHOS_SCALARS,
   PothosCustomScalarConfig,
   PothosScalarConfig,
 } from './scalars.js';
+import { ScalarFieldType } from '@src/types/fieldTypes.js';
 
 export interface PothosTypeReference {
   typeName: string;

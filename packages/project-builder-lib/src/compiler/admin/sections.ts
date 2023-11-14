@@ -1,7 +1,7 @@
+import { compileAdminCrudSection } from './crud/index.js';
+import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { AdminAppConfig } from '@src/schema/index.js';
 import { notEmpty } from '@src/utils/array.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
-import { compileAdminCrudSection } from './crud/index.js';
 
 export function compileAdminSections(
   featurePath: string,

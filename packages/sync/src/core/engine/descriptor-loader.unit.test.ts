@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import { describe, expect, it, vi } from 'vitest';
+
 import { loadDescriptorFromFile } from './descriptor-loader.js';
 
 vi.mock('fs', () => ({

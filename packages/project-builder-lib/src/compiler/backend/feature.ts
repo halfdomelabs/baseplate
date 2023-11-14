@@ -1,8 +1,8 @@
-import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { buildEnumsForFeature } from './enums.js';
 import { buildModelsForFeature } from './models.js';
 import { buildSchemaTypesForFeature } from './schemaTypes.js';
 import { buildServicesForFeature } from './services.js';
+import { AppEntryBuilder } from '../appEntryBuilder.js';
 
 export function buildFeature(
   featurePath: string,

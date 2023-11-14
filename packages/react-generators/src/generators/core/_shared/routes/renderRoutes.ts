@@ -4,6 +4,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import _ from 'lodash';
+
 import { ReactRouteLayout, ReactRoute } from '@src/providers/routes.js';
 
 export function renderRoutes(

@@ -1,10 +1,5 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import {
-  ServiceOutputDtoField,
-  ServiceOutputDtoNestedField,
-} from '@src/types/serviceOutput.js';
-import { notEmpty } from '@src/utils/array.js';
-import { lowerCaseFirst } from '@src/utils/case.js';
+
 import {
   PothosExpressionWithChildren,
   PothosTypeDefinitionWithChildren,
@@ -15,6 +10,12 @@ import {
   PothosWriterOptions,
 } from './options.js';
 import { writePothosInputFieldFromDtoScalarField } from './scalar-fields.js';
+import {
+  ServiceOutputDtoField,
+  ServiceOutputDtoNestedField,
+} from '@src/types/serviceOutput.js';
+import { notEmpty } from '@src/utils/array.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
 
 export function writePothosInputFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,

@@ -1,4 +1,3 @@
-import { join } from 'path';
 import {
   BuilderAction,
   createGeneratorWithTasks,
@@ -7,12 +6,10 @@ import {
   WriteFileOptions,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import { join } from 'path';
 import * as R from 'ramda';
 import { CompilerOptions, ts } from 'ts-morph';
-import {
-  copyTypescriptFilesAction,
-  CopyTypescriptFilesOptions,
-} from '@src/actions/copyTypescriptFilesAction.js';
+
 import {
   copyTypescriptFileAction,
   CopyTypescriptFileOptions,
@@ -28,6 +25,10 @@ import {
   TypescriptTemplateConfigOrEntry,
 } from '../../../writers/typescript/sourceFile.js';
 import { nodeProvider } from '../node/index.js';
+import {
+  copyTypescriptFilesAction,
+  CopyTypescriptFilesOptions,
+} from '@src/actions/copyTypescriptFilesAction.js';
 
 // can use CompilerOptions from Typescript but it requires awkwardly serializing
 // CompilerOptions which would have to be done manually

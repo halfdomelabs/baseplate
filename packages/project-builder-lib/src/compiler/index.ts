@@ -1,8 +1,8 @@
-import { BaseAppConfig, ProjectConfig } from '../schema/index.js';
-import { AppEntry } from '../types/files.js';
 import { compileAdmin } from './admin/index.js';
 import { compileBackend } from './backend/index.js';
 import { compileWeb } from './web/index.js';
+import { BaseAppConfig, ProjectConfig } from '../schema/index.js';
+import { AppEntry } from '../types/files.js';
 
 export function compileApplications(projectConfig: ProjectConfig): AppEntry[] {
   // Compile backend app first since it's likely the dependency for the other apps

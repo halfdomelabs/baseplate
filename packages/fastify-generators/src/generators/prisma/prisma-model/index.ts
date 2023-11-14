@@ -6,12 +6,13 @@ import {
 } from '@halfdomelabs/sync';
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
+
+import { prismaSchemaProvider } from '../prisma/index.js';
 import {
   PrismaModelAttribute,
   PrismaModelBlockWriter,
   PrismaModelField,
 } from '@src/writers/prisma-schema/index.js';
-import { prismaSchemaProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

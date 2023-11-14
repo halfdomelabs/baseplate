@@ -1,6 +1,7 @@
+import ejs from 'ejs';
 import fs from 'fs/promises';
 import path from 'path';
-import ejs from 'ejs';
+
 import { createBuilderActionCreator } from '../core/index.js';
 
 interface Options {

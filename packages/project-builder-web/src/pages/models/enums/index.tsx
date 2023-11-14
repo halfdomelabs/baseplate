@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+
 import EnumEditPage from './edit';
 
 function EnumRoutes(): JSX.Element {

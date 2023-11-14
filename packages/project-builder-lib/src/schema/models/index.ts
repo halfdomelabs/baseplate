@@ -1,13 +1,14 @@
 import { z } from 'zod';
-import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
-import { randomUid } from '@src/utils/randomUid.js';
-import type { ProjectConfig } from '../projectConfig.js';
-import { ReferencesBuilder } from '../references.js';
-import { VALIDATORS } from '../utils/validation.js';
+
 import {
   buildServiceTransformerReferences,
   transformerSchema,
 } from './transformers.js';
+import type { ProjectConfig } from '../projectConfig.js';
+import { ReferencesBuilder } from '../references.js';
+import { VALIDATORS } from '../utils/validation.js';
+import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
+import { randomUid } from '@src/utils/randomUid.js';
 
 export * from './enums.js';
 

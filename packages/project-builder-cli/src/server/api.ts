@@ -1,9 +1,10 @@
-import path from 'path';
 import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
+import path from 'path';
+
 import { buildProjectForDirectory } from '@src/runner/index.js';
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';

@@ -1,4 +1,5 @@
 import { converter, Rgb, formatHex } from 'culori';
+
 import { ColorPalette, PALETTE_SHADES } from './colors';
 import { generatePaletteNN } from './palette-neural-net';
 

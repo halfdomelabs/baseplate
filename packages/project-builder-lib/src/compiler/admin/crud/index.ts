@@ -1,12 +1,13 @@
 import inflection from 'inflection';
+
+import { compileAdminCrudDisplay } from './displays.js';
+import { compileAdminCrudInput } from './inputs.js';
 import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
 import {
   AdminAppConfig,
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
 } from '@src/schema/index.js';
-import { compileAdminCrudDisplay } from './displays.js';
-import { compileAdminCrudInput } from './inputs.js';
 
 function compileAdminCrudEmbeddedForm(
   form: AdminCrudEmbeddedFormConfig,

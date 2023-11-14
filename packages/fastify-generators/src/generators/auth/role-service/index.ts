@@ -12,9 +12,10 @@ import {
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
+
+import { authSetupProvider } from '../auth/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
-import { authSetupProvider } from '../auth/index.js';
 
 /**
  * UserRole schema:

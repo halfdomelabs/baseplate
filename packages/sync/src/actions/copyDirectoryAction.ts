@@ -1,7 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { readDirectoryRecursive } from '@src/utils/fs.js';
+
 import { createBuilderActionCreator } from '../core/index.js';
+import { readDirectoryRecursive } from '@src/utils/fs.js';
 
 interface Options {
   destination: string;

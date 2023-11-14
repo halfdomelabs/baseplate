@@ -12,6 +12,7 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { configServiceProvider } from '../config-service/index.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { loggerServiceProvider } from '../logger-service/index.js';

@@ -3,11 +3,12 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { ServiceOutputDtoScalarField } from '@src/types/serviceOutput.js';
+
 import {
   getExpressionFromPothosTypeReference,
   PothosWriterOptions,
 } from './options.js';
+import { ServiceOutputDtoScalarField } from '@src/types/serviceOutput.js';
 
 interface PothosFieldOptions {
   required?: boolean;

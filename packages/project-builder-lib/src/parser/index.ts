@@ -1,4 +1,10 @@
 import * as R from 'ramda';
+
+import { AuthPlugin } from './plugins/auth.js';
+import { Auth0Plugin } from './plugins/auth0.js';
+import { StoragePlugin } from './plugins/storage.js';
+import { ParsedModel, ParsedModelField, ParsedRelationField } from './types.js';
+import { randomUid } from '../utils/randomUid.js';
 import {
   AppConfig,
   ProjectConfig,
@@ -12,11 +18,6 @@ import {
   GetReferencesResult,
 } from '@src/schema/references.js';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
-import { randomUid } from '../utils/randomUid.js';
-import { AuthPlugin } from './plugins/auth.js';
-import { Auth0Plugin } from './plugins/auth0.js';
-import { StoragePlugin } from './plugins/storage.js';
-import { ParsedModel, ParsedModelField, ParsedRelationField } from './types.js';
 
 const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
 

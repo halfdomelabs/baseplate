@@ -15,6 +15,8 @@ import produce from 'immer';
 import { useEffect, useMemo, useRef } from 'react';
 import semver from 'semver';
 import { ZodError } from 'zod';
+
+import { NewProjectCard } from './NewProjectCard';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import {
   ProjectConfigContext,
@@ -32,7 +34,6 @@ import { logError } from 'src/services/error-logger';
 import { logger } from 'src/services/logger';
 import { formatZodError, UserVisibleError } from 'src/utils/error';
 import { prettyStableStringify } from 'src/utils/json';
-import { NewProjectCard } from './NewProjectCard';
 
 interface ProjectConfigGateProps {
   children?: React.ReactNode;

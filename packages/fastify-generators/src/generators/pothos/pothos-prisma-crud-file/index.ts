@@ -1,5 +1,6 @@
 import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { createPothosTypesFileTask } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({

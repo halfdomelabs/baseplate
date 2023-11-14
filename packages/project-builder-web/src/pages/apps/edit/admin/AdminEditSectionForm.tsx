@@ -9,13 +9,14 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+
+import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
-import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 
 interface Props {
   className?: string;

@@ -1,9 +1,10 @@
 import { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Route, Routes } from 'react-router-dom';
-import { NavigationTabs } from 'src/components';
+
 import AdminGeneralForm from './admin/AdminGeneralForm';
 import AdminSectionsForm from './admin/AdminSectionsForm';
+import { NavigationTabs } from 'src/components';
 
 interface Props {
   className?: string;

@@ -13,6 +13,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { configServiceProvider } from '../config-service/index.js';
 import { fastifyHealthCheckProvider } from '../fastify-health-check/index.js';
 

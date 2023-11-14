@@ -1,5 +1,8 @@
 import { AxiosError } from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { useProjectIdState } from './useProjectIdState';
+import { useToast } from './useToast';
 import { logError } from 'src/services/error-logger';
 import {
   downloadProjectConfig,
@@ -7,8 +10,6 @@ import {
   ProjectWebsocketClient,
   uploadProjectConfig,
 } from 'src/services/remote';
-import { useProjectIdState } from './useProjectIdState';
-import { useToast } from './useToast';
 
 interface UseRemoteProjectConfigResult {
   value?: string | null;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { baseAppValidators } from '../base.js';
 
 export const backendAppSchema = z.object({

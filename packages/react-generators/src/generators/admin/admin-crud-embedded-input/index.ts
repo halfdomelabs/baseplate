@@ -5,10 +5,11 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
+
 import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
 import { adminComponentsProvider } from '../admin-components/index.js';
 import { adminCrudEmbeddedFormProvider } from '../admin-crud-embedded-form/index.js';
+import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
 
 const descriptorSchema = z.object({
   label: z.string().min(1),

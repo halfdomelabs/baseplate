@@ -1,4 +1,3 @@
-import path from 'path';
 import { eslintProvider, nodeProvider } from '@halfdomelabs/core-generators';
 import {
   createProviderType,
@@ -6,7 +5,9 @@ import {
   writeTemplateAction,
   copyFileAction,
 } from '@halfdomelabs/sync';
+import path from 'path';
 import { z } from 'zod';
+
 import { reactProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({

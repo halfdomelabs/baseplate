@@ -6,12 +6,13 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/index.js';
-import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+
 import {
   authInfoImportProvider,
   authServiceProvider,
 } from '../auth-service/index.js';
+import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
 const descriptorSchema = z.object({});
 

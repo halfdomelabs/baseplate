@@ -1,9 +1,10 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { FormatterProvider } from '@src/providers/index.js';
+
+import { writeGeneratorOutput } from './generator-output-writer.js';
 import { executeCommand } from '../utils/exec.js';
 import { createEventedLogger } from '../utils/index.js';
-import { writeGeneratorOutput } from './generator-output-writer.js';
+import { FormatterProvider } from '@src/providers/index.js';
 
 vi.mock('fs');
 vi.mock('fs/promises');

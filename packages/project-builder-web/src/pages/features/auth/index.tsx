@@ -5,6 +5,8 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+
+import RoleEditorForm from './RoleEditorForm';
 import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
@@ -14,7 +16,6 @@ import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
-import RoleEditorForm from './RoleEditorForm';
 
 function AuthPage(): JSX.Element {
   const { config, parsedProject, setConfig, setConfigAndFixReferences } =

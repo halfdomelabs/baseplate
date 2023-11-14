@@ -1,8 +1,9 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service/index.js';
+
 import { passwordHasherServiceProvider } from '../password-hasher-service/index.js';
+import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
