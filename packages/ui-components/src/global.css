@@ -1,89 +1,45 @@
-body {
-  @apply font-body text-foreground-700 dark:bg-background-900 dark:text-foreground-300;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  @apply font-semibold text-foreground-900 dark:text-foreground-200;
-}
-
-h1 {
-  @apply text-2xl;
-}
-
-h2 {
-  @apply text-xl;
-}
-
-.subheading {
-  @apply text-lg text-foreground-500 dark:text-foreground-400;
-}
-
-h3 {
-  @apply text-lg;
-}
-
-h4 {
-  @apply text-base;
-}
-
-.popover-background {
-  @apply bg-white dark:bg-background-900;
-}
-
-.border-color {
-  @apply border-background-200 dark:border-background-700;
-}
-
-.border-normal {
-  @apply border-color border;
-}
-
-.text-secondary {
-  @apply text-foreground-500 dark:text-foreground-400;
-}
-
-.ux-input {
-  @apply w-full rounded-lg border text-sm;
-  @apply border-background-300 bg-white placeholder-foreground-500 focus:border-primary-500 focus:ring-primary-500;
-  @apply dark:border-background-600 dark:bg-background-900 dark:placeholder-foreground-500 dark:focus:border-primary-800 dark:focus:ring-primary-800;
-}
-
-.ux-input:disabled {
-  @apply bg-background-100 dark:bg-background-700;
-}
-
-.label-text {
-  @apply text-sm font-semibold text-foreground-900 dark:text-foreground-200;
-}
-
-.description-text {
-  @apply text-secondary text-xs;
-}
-
-.instruction-text {
-  @apply text-secondary;
-}
-
-a,
-.link {
-  @apply font-semibold text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300;
-}
-
-.animate-in {
-  opacity: 0.5;
-  animation: fadeIn 150ms cubic-bezier(0.42, 0, 0.58, 1) forwards;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0.5;
+@layer base {
+  * {
+    @apply border-border;
   }
-  100% {
-    opacity: 1;
+
+  body {
+    @apply bg-background font-body text-foreground;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold text-foreground;
+  }
+
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  .subheading {
+    @apply text-lg text-muted-foreground;
+  }
+
+  h3 {
+    @apply text-lg;
+  }
+
+  h4 {
+    @apply text-base;
+  }
+
+  .linkable a {
+    @apply font-semibold text-link visited:text-link-visited;
   }
 }

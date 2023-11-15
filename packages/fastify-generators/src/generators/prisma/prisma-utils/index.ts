@@ -8,8 +8,9 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
+
 import { prismaOutputProvider } from '../prisma/index.js';
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
 
 const descriptorSchema = z.object({});
 

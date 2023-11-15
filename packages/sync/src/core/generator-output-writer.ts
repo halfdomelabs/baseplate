@@ -1,18 +1,19 @@
-import fs from 'fs/promises';
-import path from 'path';
 import chalk from 'chalk';
+import fs from 'fs/promises';
 import _ from 'lodash';
 import pLimit from 'p-limit';
-import { getErrorMessage } from '@src/utils/errors.js';
-import { Logger } from '@src/utils/evented-logger.js';
-import { ExecError, executeCommand } from '@src/utils/exec.js';
-import { ensureDir, pathExists } from '@src/utils/fs.js';
-import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
+import path from 'path';
+
 import {
   FileData,
   GeneratorOutput,
   POST_WRITE_COMMAND_TYPE_PRIORITY,
 } from './generator-output.js';
+import { getErrorMessage } from '@src/utils/errors.js';
+import { Logger } from '@src/utils/evented-logger.js';
+import { ExecError, executeCommand } from '@src/utils/exec.js';
+import { ensureDir, pathExists } from '@src/utils/fs.js';
+import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
 
 async function mergeContents(
   newContents: string,

@@ -1,14 +1,15 @@
-import path from 'node:path';
 import fastifyHelmet from '@fastify/helmet';
 import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
 import { fastify, FastifyInstance } from 'fastify';
+import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
+
+import { baseplatePlugin } from './plugin.js';
 import { logError } from '@src/services/error-logger.js';
 import { logger } from '@src/services/logger.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
 import { resolveModule } from '@src/utils/resolve.js';
-import { baseplatePlugin } from './plugin.js';
 
 export async function buildServer(
   directories: string[],

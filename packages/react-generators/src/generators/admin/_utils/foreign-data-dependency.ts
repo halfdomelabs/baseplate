@@ -1,10 +1,11 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { pluralize } from 'inflection';
+
+import { AdminCrudDataDependency } from './data-loaders.js';
+import { convertExpressionToField } from './graphql.js';
 import { ReactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
-import { AdminCrudDataDependency } from './data-loaders.js';
-import { convertExpressionToField } from './graphql.js';
 
 interface ForeignDataDependencyOptions {
   foreignModelName: string;

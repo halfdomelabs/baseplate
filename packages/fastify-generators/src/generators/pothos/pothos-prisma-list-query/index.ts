@@ -9,11 +9,12 @@ import {
 } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
+
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { quot } from '@src/utils/string.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

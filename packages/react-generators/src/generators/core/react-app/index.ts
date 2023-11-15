@@ -11,6 +11,7 @@ import {
   OrderedList,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { reactProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({

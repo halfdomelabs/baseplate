@@ -1,3 +1,54 @@
+@import './global.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 229 84% 5%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 16% 47%;
+  --card: 0 0% 100%;
+  --card-foreground: 229 84% 5%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 229 84% 5%;
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --primary: 224 76% 48%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96%;
+  --secondary-foreground: 222 47% 11%;
+  --accent: 214 95% 93%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 214 100% 97%;
+  --ring: 226 71% 40%;
+  --link: 226 71% 40%;
+  --link-visited: 224 76% 48%;
+}
+
+.dark,
+html[data-theme='dark'] {
+  --background: 229 84% 5%;
+  --foreground: 210 40% 98%;
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+  --card: 229 84% 5%;
+  --card-foreground: 210 40% 98%;
+  --popover: 229 84% 5%;
+  --popover-foreground: 210 40% 98%;
+  --border: 217 33% 17%;
+  --input: 217 33% 17%;
+  --primary: 214 100% 97%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 98%;
+  --accent: 226 71% 40%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 63% 31%;
+  --destructive-foreground: 214 100% 97%;
+  --ring: 212 96% 78%;
+  --link: 214 100% 97%;
+  --link-visited: 214 95% 93%;
+}

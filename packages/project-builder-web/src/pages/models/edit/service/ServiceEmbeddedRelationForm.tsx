@@ -2,6 +2,7 @@ import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useEffect, useMemo } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
+
 import { LinkButton, SelectInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { usePrevious } from 'src/hooks/usePrevious';

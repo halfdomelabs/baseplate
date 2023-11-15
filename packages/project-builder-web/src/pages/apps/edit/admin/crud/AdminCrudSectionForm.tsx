@@ -1,10 +1,7 @@
 import { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useWatch } from 'react-hook-form';
-import { SelectInput } from 'src/components';
-import CheckedInput from 'src/components/CheckedInput';
-import EmbeddedListInput from 'src/components/EmbeddedListInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+
 import AdminCrudEmbeddedForm, {
   AdminCrudEmbeddedTable,
 } from './AdminCrudEmbeddedForm';
@@ -12,6 +9,10 @@ import CrudFormFieldsForm, { AdminCrudFormConfig } from './CrudFormFieldsForm';
 import CrudTableColumnsForm, {
   AdminCrudTableConfig,
 } from './CrudTableColumnsForm';
+import { SelectInput } from 'src/components';
+import CheckedInput from 'src/components/CheckedInput';
+import EmbeddedListInput from 'src/components/EmbeddedListInput';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface Props {
   className?: string;

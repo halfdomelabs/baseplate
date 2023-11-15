@@ -1,6 +1,7 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { UseFormReturn } from 'react-hook-form';
+
 import SelectArrayInput from 'src/components/SelectArrayInput';
 
 interface Props {
@@ -23,7 +24,7 @@ function ModelPrimaryKeyForm({ className, formProps }: Props): JSX.Element {
     <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>
       <div>
         <h2>Primary Keys</h2>
-        <p className="description-text">
+        <p className="text-xs text-muted-foreground">
           Only use this if you plan on having more than one primary key
         </p>
       </div>

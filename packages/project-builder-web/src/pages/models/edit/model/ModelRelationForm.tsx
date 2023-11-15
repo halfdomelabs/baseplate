@@ -6,12 +6,13 @@ import {
 import classNames from 'classnames';
 import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
+
+import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 import { setUndefinedIfEmpty } from 'src/utils/form';
-import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 
 interface Props {
   className?: string;

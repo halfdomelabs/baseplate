@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
+
 import { Badge } from './Badge.js';
 
 const meta = {
@@ -10,7 +10,6 @@ const meta = {
       control: 'text',
       defaultValue: 'Relation',
     },
-    icon: STORYBOOK_ICON_SELECT,
   },
   args: {
     children: 'Relation',
@@ -22,24 +21,12 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    color: 'primary',
-  },
-};
-
-export const PrimaryWithClose: Story = {
-  args: {
-    color: 'primary',
-    onClick: () => {
-      /* no-op */
-    },
-    onClose: () => {
-      /* no-op */
-    },
+    variant: 'default',
   },
 };
 
 export const Secondary: Story = {
   args: {
-    color: 'secondary',
+    variant: 'secondary',
   },
 };

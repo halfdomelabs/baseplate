@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { randomUid } from '@src/utils/randomUid.js';
-import { DASHED_NAME } from '@src/utils/validations.js';
+
 import {
   AdminAppConfig,
   adminAppSchema,
@@ -13,10 +12,13 @@ import {
   webAppSchema,
 } from './apps/index.js';
 import { authSchema, buildAuthReferences } from './auth/index.js';
+import { themeSchema } from './features/theme.js';
 import { buildEnumReferences, enumSchema } from './models/enums.js';
 import { buildModelReferences, modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { buildStorageReferences, storageSchema } from './storage/index.js';
+import { randomUid } from '@src/utils/randomUid.js';
+import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const appSchema = z.discriminatedUnion('type', [
   backendAppSchema,
@@ -56,6 +58,7 @@ export const projectConfigSchema = z.object({
   storage: storageSchema.optional(),
   isInitialized: z.boolean().default(false),
   schemaVersion: z.number().nullish(),
+  theme: themeSchema.optional(),
 });
 
 export type ProjectConfigInput = z.input<typeof projectConfigSchema>;

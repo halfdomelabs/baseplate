@@ -1,4 +1,8 @@
 import { capitalize } from 'inflection';
+
+import { compileAdminFeatures } from './sections.js';
+import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
 import { ProjectConfig } from '@src/schema/index.js';
 import {
@@ -7,9 +11,6 @@ import {
 } from '@src/schema-utils/backend-app.js';
 import { AppEntry } from '@src/types/files.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
-import { compileAdminFeatures } from './sections.js';
 
 export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
   return (

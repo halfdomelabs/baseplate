@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { ReferencesBuilder } from '@src/schema/references.js';
-import { baseAppValidators } from '../base.js';
+
 import {
   adminCrudSectionSchema,
   buildAdminCrudSectionReferences,
 } from './sections/crud.js';
 import { AdminCrudSectionConfig } from './sections/index.js';
+import { baseAppValidators } from '../base.js';
+import { ReferencesBuilder } from '@src/schema/references.js';
 
 export const adminSectionSchema = adminCrudSectionSchema;
 

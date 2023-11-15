@@ -11,6 +11,7 @@ import {
 } from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';
+
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';

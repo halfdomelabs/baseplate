@@ -1,9 +1,9 @@
-import { ParsedProjectConfig } from '@src/parser/index.js';
+import { buildFastify } from './fastify.js';
+import { getPostgresSettings, getRedisSettings } from './utils.js';
 import { ProjectConfig, BackendAppConfig } from '../../schema/index.js';
 import { AppEntry } from '../../types/files.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
-import { buildFastify } from './fastify.js';
-import { getPostgresSettings, getRedisSettings } from './utils.js';
+import { ParsedProjectConfig } from '@src/parser/index.js';
 
 export function buildDocker(
   projectConfig: ProjectConfig,

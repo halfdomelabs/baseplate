@@ -5,10 +5,11 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import { nexusSetupProvider } from '../nexus/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { ScalarFieldType } from '@src/types/fieldTypes.js';
-import { nexusSetupProvider } from '../nexus/index.js';
 
 interface NexusScalarConfig {
   name: string;

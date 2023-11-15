@@ -1,7 +1,8 @@
 import { z } from 'zod';
-import { randomUid } from '@src/utils/randomUid.js';
+
 import type { ProjectConfig } from '../projectConfig.js';
 import { ReferencesBuilder } from '../references.js';
+import { randomUid } from '@src/utils/randomUid.js';
 
 const baseTransformerFields = {
   uid: z.string().default(randomUid),

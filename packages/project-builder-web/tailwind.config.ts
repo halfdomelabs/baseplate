@@ -1,8 +1,9 @@
-import path from 'path';
+import tailwindBase from '@halfdomelabs/ui-components/tailwind-base';
+import path from 'node:path';
 import type { Config } from 'tailwindcss';
 
-module.exports = {
-  presets: [require('@halfdomelabs/ui-components/tailwind-base')],
+export default {
+  presets: [tailwindBase],
   content: [
     './src/**/*.{js,jsx,ts,tsx}',
     path.join(

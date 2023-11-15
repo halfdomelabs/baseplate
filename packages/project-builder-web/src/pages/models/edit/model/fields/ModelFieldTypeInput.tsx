@@ -3,9 +3,9 @@ import {
   ScalarFieldType,
   SCALAR_FIELD_TYPES,
 } from '@halfdomelabs/project-builder-lib';
-import { ComboboxInput } from '@halfdomelabs/ui-components';
-import clsx from 'clsx';
+import { ComboboxField } from '@halfdomelabs/ui-components';
 import { Control, useController } from 'react-hook-form';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface ModelFieldTypeInputProps {
@@ -117,21 +117,16 @@ export function ModelFieldTypeInput({
 
   return (
     <div className="space-y-2">
-      <ComboboxInput
+      <ComboboxField
         value={
           typeValue === 'enum' && enumType ? `enum-${enumType}` : typeValue
         }
         onChange={handleChange}
         options={typeOptions}
-        renderOption={(option, { selected }) => (
+        renderItemLabel={(option) => (
           <div className="flex flex-col">
             <div>{option.label}</div>
-            <div
-              className={clsx(
-                'text-xs',
-                selected ? 'text-secondary-200' : 'text-secondary-500'
-              )}
-            >
+            <div className="text-xs text-muted-foreground">
               {option.description}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import { Project } from 'src/services/remote';
 
 interface ProjectsStore {

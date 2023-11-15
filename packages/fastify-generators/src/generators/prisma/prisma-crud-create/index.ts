@@ -5,16 +5,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
-import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
-import {
-  PrismaDataTransformer,
-  PrismaDataTransformerOptions,
-} from '@src/providers/prisma/prisma-data-transformable.js';
-import {
-  prismaToServiceOutputDto,
-  ServiceOutputMethod,
-} from '@src/types/serviceOutput.js';
+
 import {
   getDataInputTypeBlock,
   getDataMethodContextRequired,
@@ -26,6 +17,16 @@ import {
 import { prismaOutputProvider } from '../prisma/index.js';
 import { prismaCrudServiceProvider } from '../prisma-crud-service/index.js';
 import { prismaUtilsProvider } from '../prisma-utils/index.js';
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
+import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
+import {
+  PrismaDataTransformer,
+  PrismaDataTransformerOptions,
+} from '@src/providers/prisma/prisma-data-transformable.js';
+import {
+  prismaToServiceOutputDto,
+  ServiceOutputMethod,
+} from '@src/types/serviceOutput.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

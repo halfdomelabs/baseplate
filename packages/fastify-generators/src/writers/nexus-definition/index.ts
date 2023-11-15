@@ -2,6 +2,8 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
+
+import { NexusScalarConfig } from './scalars.js';
 import { ScalarFieldType } from '@src/types/fieldTypes.js';
 import {
   ServiceOutputDtoField,
@@ -9,7 +11,6 @@ import {
   ServiceOutputDtoScalarField,
 } from '@src/types/serviceOutput.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
-import { NexusScalarConfig } from './scalars.js';
 
 export interface NexusDefinitionWriterOptions {
   builder: string;

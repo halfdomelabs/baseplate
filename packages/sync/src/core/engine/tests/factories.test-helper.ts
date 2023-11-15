@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { vi } from 'vitest';
+
 import { GeneratorEntry, GeneratorTaskEntry } from '../generator-builder.js';
 
 let lastGeneratorId = 100;

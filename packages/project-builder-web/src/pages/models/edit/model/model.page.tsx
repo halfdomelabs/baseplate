@@ -4,15 +4,16 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { useController } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { Alert, Button, LinkButton } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useStatus } from 'src/hooks/useStatus';
-import { useModelForm } from '../hooks/useModelForm';
+
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
+import { useModelForm } from '../hooks/useModelForm';
+import { Alert, Button, LinkButton } from 'src/components';
+import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditModelPage(): JSX.Element {
   const { status, setError } = useStatus();
@@ -63,7 +64,7 @@ function ModelEditModelPage(): JSX.Element {
       />
       <div>
         <h2>Relations</h2>
-        <div className="description-text">
+        <div className="text-xs text-muted-foreground">
           You can modify the relations individually if you have more complex
           relations, e.g. relations over more than one field
         </div>

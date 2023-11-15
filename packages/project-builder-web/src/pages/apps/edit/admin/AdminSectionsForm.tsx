@@ -2,8 +2,9 @@ import { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
-import { Sidebar } from 'src/components';
+
 import AdminEditSectionForm from './AdminEditSectionForm';
+import { Sidebar } from 'src/components';
 
 interface Props {
   className?: string;

@@ -1,7 +1,8 @@
 import { paramCase } from 'change-case';
+
+import { ModelConfig } from '../../schema/models/index.js';
 import { ParsedProjectConfig } from '@src/parser/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
-import { ModelConfig } from '../../schema/models/index.js';
 
 function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
   const { schema } = model ?? {};

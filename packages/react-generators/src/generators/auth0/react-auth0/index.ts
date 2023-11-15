@@ -7,6 +7,7 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { reactAppProvider } from '@src/generators/core/react-app/index.js';
 import { reactConfigProvider } from '@src/generators/core/react-config/index.js';
 

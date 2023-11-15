@@ -30,3 +30,4 @@ jobs:
       - run: pnpm lint
       - run: pnpm prettier:check
       - run: pnpm check-dependency-version-consistency .
+      - run: pnpm dedupe --check

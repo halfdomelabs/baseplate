@@ -14,6 +14,7 @@ import {
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
+
 import { configServiceProvider } from '../config-service/index.js';
 import { loggerServiceProvider } from '../logger-service/index.js';
 import { rootModuleProvider } from '../root-module/index.js';

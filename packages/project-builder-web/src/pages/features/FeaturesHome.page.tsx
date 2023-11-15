@@ -2,13 +2,14 @@ import {
   projectConfigSchema,
   randomUid,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, Card, TextInput } from '@halfdomelabs/ui-components';
+import { Button, Card, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useFieldArray } from 'react-hook-form';
 import { MdDelete } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
@@ -58,7 +59,7 @@ export function FeaturesHomePage(): JSX.Element {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Card className="flex flex-col items-start space-y-4 p-4">
           <h2>Hierarchy</h2>
-          <p className="instruction-text">
+          <p className="text-muted-foreground">
             Features are organized in a hierarchy. The structure of the features
             in the list below is the way the folder structure will be created in
             your backend/admin applications.
@@ -67,17 +68,18 @@ export function FeaturesHomePage(): JSX.Element {
             const { id } = field;
             return (
               <div key={id} className="flex flex-row space-x-4">
-                <TextInput.Controller
+                <InputField.Controller
                   control={control}
                   name={`features.${idx}.name`}
                 />
                 <Button
-                  variant="tertiary"
+                  variant="ghost"
                   onClick={() => remove(idx)}
-                  iconBefore={MdDelete}
                   title="Delete Feature"
                   size="icon"
-                />
+                >
+                  <Button.Icon icon={MdDelete} />
+                </Button>
               </div>
             );
           })}

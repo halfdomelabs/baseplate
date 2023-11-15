@@ -18,10 +18,11 @@ import {
 import * as R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
-import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
+
 import { notEmpty } from '../../../utils/array.js';
 import { reactAppProvider } from '../../core/react-app/index.js';
 import { reactConfigProvider } from '../../core/react-config/index.js';
+import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
 
 const descriptorSchema = z.object({
   devApiEndpoint: z.string().min(1),

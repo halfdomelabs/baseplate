@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { ReferencesBuilder } from '@src/schema/references.js';
+
 import { baseAppValidators } from '../base.js';
+import { ReferencesBuilder } from '@src/schema/references.js';
 
 export const webAppSchema = z.object({
   ...baseAppValidators,

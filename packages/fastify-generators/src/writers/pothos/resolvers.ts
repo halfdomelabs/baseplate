@@ -4,6 +4,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { singularize } from 'inflection';
+
 import {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,

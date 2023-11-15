@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+
 import { FormatFunction, FormatterProvider } from '../providers/index.js';
 
 export interface WriteFileOptions {

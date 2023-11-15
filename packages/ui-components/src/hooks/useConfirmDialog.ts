@@ -1,14 +1,21 @@
+import { useCallback } from 'react';
 import { create } from 'zustand';
+
+import { ButtonProps } from '../components/Button/Button';
 
 export interface UseConfirmDialogRequestOptions {
   title: string;
-  message: string;
-  confirmText?: string;
-  onSubmit: () => void;
+  content: string;
+  buttonCancelText?: string;
+  buttonConfirmText?: string;
+  buttonConfirmVariant?: ButtonProps['variant'];
+  onCancel?: React.MouseEventHandler<HTMLButtonElement>;
+  onConfirm?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 interface UseConfirmDialogResult {
   requestConfirm: (request: UseConfirmDialogRequestOptions) => void;
+  clearConfirm: () => void;
 }
 
 interface UseConfirmDialogState {
@@ -24,11 +31,19 @@ export const useConfirmDialogState = create<UseConfirmDialogState>((set) => ({
 }));
 
 export function useConfirmDialog(): UseConfirmDialogResult {
-  const state = useConfirmDialogState();
+  const setConfirmOptions = useConfirmDialogState(
+    (state) => state.setConfirmOptions
+  );
 
   return {
-    requestConfirm: (request) => {
-      state.setConfirmOptions(request);
-    },
+    requestConfirm: useCallback(
+      (request) => {
+        setConfirmOptions(request);
+      },
+      [setConfirmOptions]
+    ),
+    clearConfirm: useCallback(() => {
+      setConfirmOptions(undefined);
+    }, [setConfirmOptions]),
   };
 }

@@ -9,6 +9,7 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { fastifyServerProvider } from '../fastify-server/index.js';
 
 const descriptorSchema = z.object({});

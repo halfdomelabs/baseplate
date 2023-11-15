@@ -3,13 +3,14 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import { prismaModelProvider } from '../prisma-model/index.js';
 import { ScalarFieldType } from '@src/types/fieldTypes.js';
 import {
   buildPrismaScalarField,
   PrismaFieldTypeConfig,
   PRISMA_SCALAR_FIELD_TYPES,
 } from '@src/writers/prisma-schema/fields.js';
-import { prismaModelProvider } from '../prisma-model/index.js';
 
 // some typescript hacking to make field types work generically
 const prismaScalarFieldTypes = PRISMA_SCALAR_FIELD_TYPES as Record<

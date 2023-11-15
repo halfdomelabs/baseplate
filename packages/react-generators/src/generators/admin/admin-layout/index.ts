@@ -9,6 +9,7 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { authComponentsProvider } from '@src/generators/auth/auth-components/index.js';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';

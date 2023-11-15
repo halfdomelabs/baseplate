@@ -4,6 +4,9 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
+
+import AdapterEditorForm from './AdapterEditorForm';
+import CategoryEditorForm from './CategoryEditorForm';
 import { Alert, Button } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -12,8 +15,6 @@ import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
-import AdapterEditorForm from './AdapterEditorForm';
-import CategoryEditorForm from './CategoryEditorForm';
 
 function StoragePage(): JSX.Element {
   const { config, parsedProject, setConfig, setConfigAndFixReferences } =

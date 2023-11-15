@@ -3,8 +3,9 @@ import {
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 import { createProviderType } from '@halfdomelabs/sync';
-import { GraphQLField } from '@src/writers/graphql/index.js';
+
 import { AdminCrudDataDependency } from '../_utils/data-loaders.js';
+import { GraphQLField } from '@src/writers/graphql/index.js';
 
 export interface AdminCrudInputValidation {
   key: string;

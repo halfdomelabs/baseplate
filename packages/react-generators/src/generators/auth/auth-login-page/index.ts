@@ -10,13 +10,14 @@ import {
   copyFileAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import { authServiceProvider } from '../auth-service/index.js';
 import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/index.js';
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 import { reactLinkableProvider } from '@src/providers/linkable.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
-import { authServiceProvider } from '../auth-service/index.js';
 
 const descriptorSchema = z.object({
   allowedRoles: z.array(z.string().min(1)),

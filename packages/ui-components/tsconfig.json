@@ -6,8 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
-    /* Node module resolution to work with react-icons */
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

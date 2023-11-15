@@ -1,10 +1,11 @@
 import * as R from 'ramda';
+
+import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder.js';
 import {
   ProviderType,
   ProviderDependency,
   ProviderExport,
 } from '../provider.js';
-import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder.js';
 
 /**
  * Converts a provider map to a list of provider names

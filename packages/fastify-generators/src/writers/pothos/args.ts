@@ -3,11 +3,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
-import {
-  ServiceOutputDtoField,
-  ServiceOutputDtoNestedField,
-  ServiceOutputDtoScalarField,
-} from '@src/types/serviceOutput.js';
+
 import { PothosTypeDefinition } from './definitions.js';
 import {
   getPothosMethodAndTypeForScalar,
@@ -15,6 +11,11 @@ import {
 } from './helpers.js';
 import { getPothosTypeForNestedInput } from './input-types.js';
 import { PothosWriterOptions } from './options.js';
+import {
+  ServiceOutputDtoField,
+  ServiceOutputDtoNestedField,
+  ServiceOutputDtoScalarField,
+} from '@src/types/serviceOutput.js';
 
 export interface PothosArgOutput {
   expression: TypescriptCodeExpression;

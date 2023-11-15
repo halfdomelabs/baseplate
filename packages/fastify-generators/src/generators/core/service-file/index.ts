@@ -1,4 +1,3 @@
-import path from 'path';
 import {
   makeImportAndFilePath,
   TypescriptCodeBlock,
@@ -11,10 +10,12 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { paramCase } from 'change-case';
+import path from 'path';
 import { z } from 'zod';
+
+import { appModuleProvider } from '../root-module/index.js';
 import { ServiceOutputMethod } from '@src/types/serviceOutput.js';
 import { notEmpty } from '@src/utils/array.js';
-import { appModuleProvider } from '../root-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

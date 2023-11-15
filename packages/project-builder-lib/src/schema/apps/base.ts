@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { DASHED_NAME } from '@src/utils/validations.js';
+
 import { randomUid } from '../../utils/randomUid.js';
+import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const baseAppValidators = {
   uid: z.string().default(randomUid),

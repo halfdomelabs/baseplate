@@ -2,8 +2,9 @@ import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
-import { LinkButton, TextInput } from 'src/components';
+
 import ModelUniqueConstraintFieldsField from './ModelUniqueConstraintFieldsField';
+import { LinkButton, TextInput } from 'src/components';
 
 interface Props {
   className?: string;

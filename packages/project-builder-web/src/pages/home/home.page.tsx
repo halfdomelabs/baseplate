@@ -13,43 +13,51 @@ function HomePage(): JSX.Element {
             configuration to your codebase.
           </p>
         </div>
-        <Card>
-          <Card.Body className="space-y-2">
-            <h2>Features</h2>
-            <p className="instruction-text">
-              Baseplate comes with a number of features that you can enable or
-              disable, such as email and authentication.
-            </p>
-            <Link className="inline-block" to="/features">
-              <Button>Configure Features</Button>
-            </Link>
-          </Card.Body>
-        </Card>
-        <Card>
-          <Card.Body className="space-y-2">
-            <h2>Models</h2>
-            <p className="instruction-text">
-              Models are the core of your app. They define the data that your
-              app will store and manipulate.
-            </p>
-            <Link className="inline-block" to="/models">
-              <Button>Configure Models</Button>
-            </Link>
-          </Card.Body>
-        </Card>
-        <Card>
-          <Card.Body className="space-y-2">
-            <h2>Apps & Repositories</h2>
-            <p className="instruction-text">
-              Each app represents a separate application that can be run, e.g.
-              backend, frontend, mobile app, etc. You can also configure how the
-              apps are organized into repositories, e.g. monorepos.
-            </p>
-            <Link className="inline-block" to="/apps">
-              <Button>Configure Apps</Button>
-            </Link>
-          </Card.Body>
-        </Card>
+        <div className="grid gap-4 md:grid-cols-1">
+          <Card>
+            <Card.Header>
+              <Card.Title>Features</Card.Title>
+              <Card.Description>
+                Baseplate comes with a number of features that you can enable or
+                disable, such as email and authentication.
+              </Card.Description>
+            </Card.Header>
+            <Card.Footer>
+              <Link to="/features">
+                <Button>Configure Features</Button>
+              </Link>
+            </Card.Footer>
+          </Card>
+          <Card>
+            <Card.Header>
+              <Card.Title>Models</Card.Title>
+              <Card.Description>
+                Models are the core of your app. They define the data that your
+                app will store and manipulate.
+              </Card.Description>
+            </Card.Header>
+            <Card.Footer>
+              <Link to="/models">
+                <Button>Configure Models</Button>
+              </Link>
+            </Card.Footer>
+          </Card>
+          <Card>
+            <Card.Header>
+              <Card.Title>Apps & Repositories</Card.Title>
+              <Card.Description>
+                Each app represents a separate application that can be run, e.g.
+                backend, frontend, mobile app, etc. You can also configure how
+                the apps are organized into repositories, e.g. monorepos.
+              </Card.Description>
+            </Card.Header>
+            <Card.Footer>
+              <Link className="inline-block" to="/apps">
+                <Button>Configure Apps</Button>
+              </Link>
+            </Card.Footer>
+          </Card>
+        </div>
       </div>
     </div>
   );

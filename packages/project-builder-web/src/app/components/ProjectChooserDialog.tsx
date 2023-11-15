@@ -1,11 +1,12 @@
 import {
-  ErrorableLoader,
+  Button,
   Dialog,
+  ErrorableLoader,
   Table,
-  LinkButton,
 } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
@@ -42,27 +43,26 @@ export function ProjectChooserDialog({
 
   return (
     <Dialog
-      size="lg"
       onOpenChange={
         onClose ??
         (() => {
           /* dummy */
         })
       }
-      isOpen={isOpen}
+      open={isOpen}
     >
-      <Dialog.Header>
-        <Dialog.Title>Pick Project</Dialog.Title>
-      </Dialog.Header>
-      <Dialog.Body>
+      <Dialog.Content width="lg">
+        <Dialog.Header>
+          <Dialog.Title>Pick Project</Dialog.Title>
+        </Dialog.Header>
         <Table>
-          <Table.Head>
-            <Table.HeadRow>
-              <Table.HeadCell>Name</Table.HeadCell>
-              <Table.HeadCell>Directory</Table.HeadCell>
-              <Table.HeadCell />
-            </Table.HeadRow>
-          </Table.Head>
+          <Table.Header>
+            <Table.Row>
+              <Table.Head>Name</Table.Head>
+              <Table.Head>Directory</Table.Head>
+              <Table.Head />
+            </Table.Row>
+          </Table.Header>
           <Table.Body>
             {projects.map((project) => (
               <Table.Row key={project.id}>
@@ -72,9 +72,12 @@ export function ProjectChooserDialog({
                 <Table.Cell>{project.directory}</Table.Cell>
                 <Table.Cell>
                   {projectId === project.id ? (
-                    <LinkButton disabled>Selected</LinkButton>
+                    <Button variant="link" disabled>
+                      Selected
+                    </Button>
                   ) : (
-                    <LinkButton
+                    <Button
+                      variant="link"
                       onClick={() => {
                         setProjectId(project.id);
                         navigate('/');
@@ -84,14 +87,14 @@ export function ProjectChooserDialog({
                       }}
                     >
                       Select
-                    </LinkButton>
+                    </Button>
                   )}
                 </Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
         </Table>
-      </Dialog.Body>
+      </Dialog.Content>
     </Dialog>
   );
 }

@@ -1,89 +1,49 @@
-import { clsx } from 'clsx';
-import { MdExpandMore } from 'react-icons/md';
+import React from 'react';
+
 import { Button, ButtonProps } from '../Button/Button.js';
-import { Dropdown, DropdownProps } from '../Dropdown/Dropdown';
+import { cn } from '@src/utils/cn.js';
 
-interface ButtonGroupProps {
-  className?: string;
-  children: React.ReactNode;
-}
+/**
+ * Displays a list of buttons aligned next to one another.
+ */
 
-export function ButtonGroup({
-  className,
-  children,
-}: ButtonGroupProps): JSX.Element {
-  return (
-    <div className={clsx('inline-flex rounded-md shadow', className)}>
-      {children}
-    </div>
-  );
-}
+const ButtonGroupBase = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(
+  // eslint-disable-next-line react/prop-types
+  ({ className, ...props }, ref) => {
+    return (
+      <div
+        className={cn('inline-flex rounded-md shadow', className)}
+        {...props}
+        ref={ref}
+      />
+    );
+  }
+);
 
-interface ButtonGroupButtonProps extends Omit<ButtonProps, 'noBorder'> {
-  children: React.ReactNode;
-}
+ButtonGroupBase.displayName = 'ButtonGroup';
 
-ButtonGroup.Button = function ButtonGroupButton({
-  className,
-  children,
-  ...props
-}: ButtonGroupButtonProps): JSX.Element {
-  // TODO: Add border between primary buttons
-  return (
-    <Button
-      noBorder
-      className={clsx(
-        'relative border-b border-r border-t border-secondary-300 first-of-type:rounded-l-md first-of-type:border-l last-of-type:rounded-r-md dark:border-secondary-700',
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </Button>
-  );
-};
+const ButtonGroupButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <Button
+        className={cn(
+          '[&:not(:first-child)]:rounded-l-none [&:not(:last-child)]:rounded-r-none [&:not(:last-child)]:border-r-0',
+          // allow ring to show above neighbors
+          'focus-visible:z-10',
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
 
-interface ButtonGroupDropdownProps
-  extends DropdownProps,
-    Pick<ButtonProps, 'variant' | 'disabled' | 'size' | 'iconAfter'> {
-  children: React.ReactNode;
-  className?: string;
-}
+ButtonGroupButton.displayName = 'ButtonGroupButton';
 
-ButtonGroup.Dropdown = function ButtonGroupDropdown({
-  children,
-  defaultOpen,
-  open,
-  onOpenChange,
-  modal,
-  dir,
-  className,
-  iconAfter,
-  ...buttonProps
-}: ButtonGroupDropdownProps): JSX.Element {
-  // TODO: Add border between primary buttons
-  return (
-    <Dropdown
-      defaultOpen={defaultOpen}
-      open={open}
-      onOpenChange={onOpenChange}
-      modal={modal}
-      dir={dir}
-    >
-      <Dropdown.Trigger asChild>
-        <Button
-          noBorder
-          iconAfter={iconAfter || MdExpandMore}
-          className={clsx(
-            'h-inherit relative border-b border-r border-t border-secondary-300 last-of-type:rounded-r-md dark:border-secondary-700',
-            className
-          )}
-          {...buttonProps}
-        />
-      </Dropdown.Trigger>
-      <Dropdown.Content>
-        <Dropdown.Group>{children}</Dropdown.Group>
-      </Dropdown.Content>
-    </Dropdown>
-  );
-};
+export const ButtonGroup = Object.assign(ButtonGroupBase, {
+  Button: ButtonGroupButton,
+});

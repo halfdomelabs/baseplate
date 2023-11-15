@@ -1,3 +1,3 @@
 import { ElementType } from 'react';
 
-export type IconElement = ElementType<{ className?: string }>;
+export type IconElement = ElementType<React.SVGAttributes<SVGElement>>;

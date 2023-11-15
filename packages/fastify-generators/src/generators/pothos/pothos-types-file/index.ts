@@ -11,8 +11,9 @@ import {
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
-import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+
 import { pothosSchemaProvider } from '../pothos/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
 const descriptorSchema = z.object({
   fileName: z.string().min(1),

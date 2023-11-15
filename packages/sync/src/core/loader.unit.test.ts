@@ -1,8 +1,9 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import * as requireUtils from '../utils/require.js';
+
 import { GeneratorConfig } from './generator.js';
 import { loadGeneratorsForModule } from './loader.js';
+import * as requireUtils from '../utils/require.js';
 
 vi.mock('fs');
 vi.mock('fs/promises');

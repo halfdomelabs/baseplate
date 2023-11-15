@@ -1,3 +1,4 @@
+import { logError } from './error-logger';
 import { UserVisibleError } from 'src/utils/error';
 
 function getFormattedErrorSuffix(error: unknown): string {
@@ -13,4 +14,9 @@ export function formatError(
 ): string {
   const suffix = getFormattedErrorSuffix(error);
   return `${context} ${suffix}`;
+}
+
+export function logAndFormatError(error: unknown, context?: string): string {
+  logError(error);
+  return formatError(error, context);
 }

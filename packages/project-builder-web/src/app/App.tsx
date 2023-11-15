@@ -1,11 +1,12 @@
-import { ConfirmDialogPopper } from '@halfdomelabs/ui-components';
+import { ConfirmDialog } from '@halfdomelabs/ui-components';
 import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router-dom';
-import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
-import PagesRoot from '../pages';
+
 import { ClientVersionGate } from './components/ClientVersionGate';
 import { ProjectChooserGate } from './components/ProjectChooserGate';
 import { ProjectConfigGate } from './components/ProjectConfigGate';
+import PagesRoot from '../pages';
+import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
 
 function App(): JSX.Element {
   return (
@@ -18,7 +19,7 @@ function App(): JSX.Element {
             </ProjectConfigGate>
           </ProjectChooserGate>
           <Toaster />
-          <ConfirmDialogPopper />
+          <ConfirmDialog />
         </ClientVersionGate>
       </BrowserRouter>
     </ErrorBoundary>

@@ -1,5 +1,11 @@
 import * as R from 'ramda';
 import { z } from 'zod';
+
+import { notEmpty } from './arrays.js';
+import {
+  ChildGeneratorConfig,
+  DescriptorWithChildren,
+} from './createGeneratorTypes.js';
 import {
   baseDescriptorSchema,
   BaseGeneratorDescriptor,
@@ -11,11 +17,6 @@ import {
   ProviderDependencyMap,
   ProviderExportMap,
 } from '../core/index.js';
-import { notEmpty } from './arrays.js';
-import {
-  ChildGeneratorConfig,
-  DescriptorWithChildren,
-} from './createGeneratorTypes.js';
 
 export interface SimpleGeneratorTaskOutput<TaskOutput = void> {
   name: string;

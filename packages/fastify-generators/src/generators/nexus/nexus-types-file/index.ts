@@ -12,8 +12,9 @@ import {
 import { paramCase } from 'change-case';
 import * as R from 'ramda';
 import { z } from 'zod';
-import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+
 import { nexusSchemaProvider } from '../nexus/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

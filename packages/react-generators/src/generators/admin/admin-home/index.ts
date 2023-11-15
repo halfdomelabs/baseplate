@@ -8,6 +8,7 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';

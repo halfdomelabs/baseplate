@@ -8,6 +8,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactConfigProvider } from '@src/generators/core/react-config/index.js';

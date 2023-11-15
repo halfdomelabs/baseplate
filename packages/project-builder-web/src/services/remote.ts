@@ -1,12 +1,12 @@
 import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { TypedEventEmitterBase } from 'src/utils/typed-event-emitter';
+
 import { config as envConfig } from './config';
 import { logError } from './error-logger';
 import { logger } from './logger';
-
 import PREVIEW_APP from './preview-app.json';
+import { TypedEventEmitterBase } from 'src/utils/typed-event-emitter';
 
 const URL_BASE = undefined;
 
@@ -25,12 +25,8 @@ axiosClient.interceptors.request.use(async (config) => {
   if (!csrfToken) {
     csrfToken = await getCsrfToken();
   }
-  return {
-    ...config,
-    headers: {
-      'x-csrf-token': csrfToken,
-    },
-  };
+  config.headers.set('x-csrf-token', csrfToken);
+  return config;
 });
 
 axiosClient.interceptors.response.use(undefined, (error) => {
@@ -38,7 +34,7 @@ axiosClient.interceptors.response.use(undefined, (error) => {
   // retry if csrf token is invalid
   if (
     config &&
-    !(config as { csrfRetry: boolean }).csrfRetry &&
+    !(config as unknown as { csrfRetry: boolean }).csrfRetry &&
     response?.data.code === 'invalid-csrf-token'
   ) {
     csrfToken = undefined;

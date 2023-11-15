@@ -9,6 +9,7 @@ import semver from 'semver';
 import sortKeys from 'sort-keys';
 import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
+
 import { projectProvider } from '../../../providers/index.js';
 
 const descriptorSchema = z.object({

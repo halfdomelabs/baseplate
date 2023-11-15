@@ -7,18 +7,7 @@ import {
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
-import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
-import {
-  PrismaDataTransformer,
-  PrismaDataTransformerOptions,
-  PrismaDataTransformInputField,
-} from '@src/providers/prisma/prisma-data-transformable.js';
-import {
-  PrismaOutputModel,
-  PrismaOutputRelationField,
-} from '@src/types/prismaOutput.js';
-import { notEmpty } from '@src/utils/array.js';
-import { upperCaseFirst } from '@src/utils/case.js';
+
 import {
   getDataInputTypeBlock,
   getDataMethodDataExpressions,
@@ -34,6 +23,18 @@ import {
   PrismaUtilsProvider,
   prismaUtilsProvider,
 } from '../prisma-utils/index.js';
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
+import {
+  PrismaDataTransformer,
+  PrismaDataTransformerOptions,
+  PrismaDataTransformInputField,
+} from '@src/providers/prisma/prisma-data-transformable.js';
+import {
+  PrismaOutputModel,
+  PrismaOutputRelationField,
+} from '@src/types/prismaOutput.js';
+import { notEmpty } from '@src/utils/array.js';
+import { upperCaseFirst } from '@src/utils/case.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

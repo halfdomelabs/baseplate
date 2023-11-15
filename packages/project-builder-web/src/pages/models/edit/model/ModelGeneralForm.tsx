@@ -1,7 +1,8 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { ComboboxInput, TextInput } from '@halfdomelabs/ui-components';
+import { ComboboxField, InputField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface ModelGeneralFormProps {
@@ -27,14 +28,14 @@ export function ModelGeneralForm({
     <div
       className={clsx(horizontal ? 'flex space-x-4' : 'space-y-4', className)}
     >
-      <TextInput.Controller
+      <InputField.Controller
         label="Name"
         description="The name of the model (PascalCase)"
         control={control}
         name="name"
         className={horizontal ? 'flex-1' : undefined}
       />
-      <ComboboxInput.Controller
+      <ComboboxField.Controller
         label="Feature"
         description="The feature this model belongs to"
         control={control}

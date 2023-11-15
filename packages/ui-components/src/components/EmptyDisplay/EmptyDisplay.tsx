@@ -1,8 +1,9 @@
-import { clsx } from 'clsx';
 import React from 'react';
 import { MdFormatListBulleted } from 'react-icons/md';
-import { COMPONENT_STRINGS } from '@src/constants/strings.js';
+
+import { useComponentStrings } from '@src/contexts/ComponentStrings';
 import { IconElement } from '@src/types/react.js';
+import { cn } from '@src/utils';
 
 interface EmptyDisplayProps {
   /**
@@ -16,7 +17,7 @@ interface EmptyDisplayProps {
   /**
    * Header to be displayed (if not passed, a generic empty header will be displayed)
    */
-  header?: string;
+  header?: React.ReactNode;
   /**
    * Subtitle to be displayed (if a string is passed, it will be displayed as-is, otherwise a generic empty message will be displayed)
    */
@@ -27,6 +28,10 @@ interface EmptyDisplayProps {
   actions?: React.ReactNode;
 }
 
+/**
+ * Displays a generic empty state with a header and subtitle.
+ */
+
 export function EmptyDisplay({
   className,
   icon: Icon = MdFormatListBulleted,
@@ -34,15 +39,17 @@ export function EmptyDisplay({
   subtitle,
   actions,
 }: EmptyDisplayProps): JSX.Element {
+  const strings = useComponentStrings();
+
   return (
-    <div className={clsx('mt-20 flex items-center justify-center', className)}>
+    <div className={cn('flex h-full items-center justify-center', className)}>
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
-          <Icon className="h-20 w-20 text-foreground-300 dark:text-foreground-700" />
+          <Icon className="h-20 w-20 text-muted-foreground" />
         </div>
-        <h1>{header || COMPONENT_STRINGS.genericEmptyHeader}</h1>
-        <p className="text-base">
-          {subtitle || COMPONENT_STRINGS.genericEmptyContent}
+        <h1>{header ?? strings.emptyDisplayDefaultHeader}</h1>
+        <p className="text-muted-foreground">
+          {subtitle ?? strings.emptyDisplayDefaultContent}
         </p>
         {actions}
       </div>

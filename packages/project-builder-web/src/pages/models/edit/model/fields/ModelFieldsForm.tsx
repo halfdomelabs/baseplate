@@ -1,5 +1,5 @@
 import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
-import { ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
+import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
 import {
@@ -8,8 +8,10 @@ import {
   useFieldArray,
   useWatch,
 } from 'react-hook-form';
-import { SortableList } from 'src/components/SortableList';
+import { MdExpandMore } from 'react-icons/md';
+
 import ModelFieldForm from './ModelFieldForm';
+import { SortableList } from 'src/components/SortableList';
 
 interface ModelFieldsFormProps {
   className?: string;
@@ -170,16 +172,23 @@ export function ModelFieldsForm({
           >
             Add Field
           </ButtonGroup.Button>
-          <ButtonGroup.Dropdown
-            variant="secondary"
-            disabled={availableAutoFields.length === 0}
-          >
-            {availableAutoFields.map((field) => (
-              <Dropdown.Item key={field.name} onClick={field.addField}>
-                {field.name}
-              </Dropdown.Item>
-            ))}
-          </ButtonGroup.Dropdown>
+          <Dropdown>
+            <Dropdown.Trigger
+              disabled={availableAutoFields.length === 0}
+              asChild
+            >
+              <ButtonGroup.Button variant="secondary">
+                <Button.Icon icon={MdExpandMore} />
+              </ButtonGroup.Button>
+            </Dropdown.Trigger>
+            <Dropdown.Content>
+              {availableAutoFields.map((field) => (
+                <Dropdown.Item key={field.name} onClick={field.addField}>
+                  {field.name}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Content>
+          </Dropdown>
         </ButtonGroup>
       </div>
     </div>

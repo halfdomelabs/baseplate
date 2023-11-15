@@ -1,9 +1,13 @@
-export const COMPONENT_STRINGS = {
-  genericEmptyHeader: 'No items found',
-  genericEmptyContent: 'There is no content here yet.',
-  genericErrorHeader: 'Sorry, something went wrong',
-  genericErrorContent: 'We encountered an error showing this page.',
-  noOptions: 'No options',
-  cancelButton: 'Cancel',
-  confirmButton: 'Confirm',
+/**
+ * Default strings for components that can be overriden by the ComponentStringContext.
+ */
+export const DEFAULT_COMPONENT_STRINGS = {
+  emptyDisplayDefaultHeader: 'No items found',
+  emptyDisplayDefaultContent: 'There is no content here yet.',
+  errorDisplayDefaultHeader: 'Sorry, something went wrong',
+  errorDisplayDefaultContent: 'We encountered an error showing this page.',
+  buttonCancel: 'Cancel',
+  buttonConfirm: 'Confirm',
 };
+
+export type ComponentStrings = typeof DEFAULT_COMPONENT_STRINGS;

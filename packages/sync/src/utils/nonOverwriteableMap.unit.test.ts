@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { createNonOverwriteableMap } from './index.js';
 
 describe('createNonOverwriteableMap', () => {

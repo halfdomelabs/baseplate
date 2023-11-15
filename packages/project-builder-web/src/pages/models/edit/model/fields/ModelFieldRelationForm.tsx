@@ -6,10 +6,10 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
-  ComboboxInput,
+  ComboboxField,
   Dialog,
-  SelectInput,
-  TextInput,
+  InputField,
+  SelectField,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pluralize } from 'inflection';
@@ -17,6 +17,7 @@ import { camelCase } from 'lodash';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 const modelFieldRelationSchema = z.object({
@@ -116,8 +117,8 @@ export function ModelFieldRelationForm({
           {existingRelation ? 'Edit Relation' : 'Add Relation'}
         </Dialog.Title>
       </Dialog.Header>
-      <Dialog.Body className="space-y-4">
-        <ComboboxInput.Controller
+      <div className="space-y-4">
+        <ComboboxField.Controller
           control={control}
           name="modelName"
           options={foreignModelOptions}
@@ -133,14 +134,14 @@ export function ModelFieldRelationForm({
             setValue('foreignFieldName', newForeignField || '');
           }}
         />
-        <ComboboxInput.Controller
+        <ComboboxField.Controller
           control={control}
           name="foreignFieldName"
           options={foreignFieldOptions}
           label="Foreign Field"
           description="The field on the foreign model to link this field to (note: the type of the field must match)"
         />
-        <TextInput.Controller
+        <InputField.Controller
           control={control}
           name="name"
           label="Local Relation Name"
@@ -151,7 +152,7 @@ export function ModelFieldRelationForm({
             </span>
           }
         />
-        <TextInput.Controller
+        <InputField.Controller
           control={control}
           name="foreignRelationName"
           label="Foreign Relation Name"
@@ -162,7 +163,7 @@ export function ModelFieldRelationForm({
             </span>
           }
         />
-        <SelectInput.Controller
+        <SelectField.Controller
           label="On Delete"
           control={control}
           options={[
@@ -180,7 +181,7 @@ export function ModelFieldRelationForm({
           name="onDelete"
           description="The action to take when the corresponding row in the foreign model is deleted"
         />
-      </Dialog.Body>
+      </div>
       <Dialog.Footer className="justify-between">
         {existingRelation ? (
           <Button variant="secondary" onClick={onDelete}>
@@ -193,7 +194,7 @@ export function ModelFieldRelationForm({
           <Button variant="secondary" onClick={onClose}>
             Close
           </Button>
-          <Button formId={formId} type="submit">
+          <Button form={formId} type="submit">
             Save
           </Button>
         </div>

@@ -1,13 +1,14 @@
 import * as R from 'ramda';
-import { FormatterProvider } from '@src/providers/index.js';
-import { Logger } from '@src/utils/evented-logger.js';
-import { GeneratorOutput, OutputBuilder } from '../generator-output.js';
-import { GeneratorTaskInstance } from '../generator.js';
-import { Provider } from '../provider.js';
+
 import { buildEntryDependencyMapRecursive as buildTaskEntryDependencyMapRecursive } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
 import { GeneratorEntry } from './generator-builder.js';
 import { flattenGeneratorTaskEntries } from './utils.js';
+import { GeneratorOutput, OutputBuilder } from '../generator-output.js';
+import { GeneratorTaskInstance } from '../generator.js';
+import { Provider } from '../provider.js';
+import { FormatterProvider } from '@src/providers/index.js';
+import { Logger } from '@src/utils/evented-logger.js';
 
 // running awaits in serial for ease of reading
 

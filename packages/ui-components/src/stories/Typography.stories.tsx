@@ -18,7 +18,7 @@ function Typography(): JSX.Element {
         vero aut minus autem cupiditate consectetur quibusdam quas nesciunt
         sapiente?
       </p>
-      <p className="description-text">
+      <p className="text-xs text-muted-foreground">
         Some description goes here. Lorem ipsum dolor sit amet consectetur.
       </p>
       <div>

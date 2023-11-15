@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { randomUid } from '@src/utils/randomUid.js';
+
 import { ReferencesBuilder } from '../references.js';
+import { randomUid } from '@src/utils/randomUid.js';
 
 export const authRoleSchema = z.object({
   uid: z.string().default(randomUid),

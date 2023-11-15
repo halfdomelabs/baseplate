@@ -1,5 +1,5 @@
-import { ProjectConfig } from '../schema/index.js';
 import { SchemaMigration, SCHEMA_MIGRATIONS } from './migrations.js';
+import { ProjectConfig } from '../schema/index.js';
 
 export function runSchemaMigrations(config: ProjectConfig): {
   newConfig: ProjectConfig;

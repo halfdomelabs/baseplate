@@ -1,10 +1,11 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+
+import ServiceTransformersForm from './ServiceTransformersForm';
+import { useModelForm } from '../hooks/useModelForm';
 import { Alert, Button } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useStatus } from 'src/hooks/useStatus';
-import { useModelForm } from '../hooks/useModelForm';
-import ServiceTransformersForm from './ServiceTransformersForm';
 
 function ModelEditServicePage(): JSX.Element {
   const { status, setError } = useStatus();

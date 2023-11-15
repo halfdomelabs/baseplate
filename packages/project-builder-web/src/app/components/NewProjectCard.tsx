@@ -2,7 +2,7 @@ import {
   ProjectConfig,
   projectConfigSchema,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, Card, TextInput } from '@halfdomelabs/ui-components';
+import { Button, Card, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -33,7 +33,7 @@ export function NewProjectCard({
 
   return (
     <Card className="animate-fade-in-and-grow w-[20rem] sm:w-[30rem]">
-      <Card.Body className="flex flex-col space-y-4">
+      <Card.Content className="flex flex-col space-y-4">
         <img
           className="mx-auto w-16"
           src="/images/logo.png"
@@ -47,14 +47,14 @@ export function NewProjectCard({
           onSubmit={handleSubmit(saveProject)}
           className="flex flex-col space-y-4"
         >
-          <TextInput.Controller
+          <InputField.Controller
             name="name"
             label="Project Name"
             description="Lowercase letters and dashes, e.g. my-project"
             control={control}
             placeholder="e.g. my-project"
           />
-          <TextInput.Controller
+          <InputField.Controller
             name="portOffset"
             label="Port Offset"
             description="Multiple of 1000, e.g. 4000. This will offset the ports used by the project, e.g. API at 4001, database at 4432, to avoid conflicts with other projects."
@@ -65,7 +65,7 @@ export function NewProjectCard({
             Initialize Project
           </Button>
         </form>
-      </Card.Body>
+      </Card.Content>
     </Card>
   );
 }

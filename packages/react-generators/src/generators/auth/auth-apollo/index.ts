@@ -4,6 +4,7 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
 import { reactApolloSetupProvider } from '../../apollo/react-apollo/index.js';
 import { authServiceProvider } from '../auth-service/index.js';
 

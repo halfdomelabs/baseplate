@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { ErrorableLoader } from './ErrorableLoader.js';
 
 const meta = {

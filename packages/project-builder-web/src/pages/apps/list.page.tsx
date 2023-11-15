@@ -2,6 +2,7 @@ import { Button, Card, EmptyDisplay } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 export function AppsListPage(): JSX.Element {
@@ -42,7 +43,9 @@ export function AppsListPage(): JSX.Element {
               <h3>
                 {app.name} ({app.type})
               </h3>
-              <p className="description-text">{app.packageLocation}</p>
+              <p className="text-xs text-muted-foreground">
+                {app.packageLocation}
+              </p>
             </div>
             <Link to={`/apps/edit/${app.uid}`} className="inline-block">
               <Button variant="secondary">Edit</Button>

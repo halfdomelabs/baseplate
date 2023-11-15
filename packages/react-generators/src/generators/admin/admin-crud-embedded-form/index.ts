@@ -14,11 +14,7 @@ import {
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
 import { z } from 'zod';
-import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
-import { notEmpty } from '@src/utils/array.js';
-import { upperCaseFirst } from '@src/utils/case.js';
-import { GraphQLField } from '@src/writers/graphql/index.js';
+
 import {
   AdminCrudColumn,
   adminCrudColumnContainerProvider,
@@ -38,6 +34,11 @@ import {
   AdminComponentsProvider,
 } from '../admin-components/index.js';
 import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
+import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { notEmpty } from '@src/utils/array.js';
+import { upperCaseFirst } from '@src/utils/case.js';
+import { GraphQLField } from '@src/writers/graphql/index.js';
 
 const descriptorSchema = z.object({
   name: z.string(),

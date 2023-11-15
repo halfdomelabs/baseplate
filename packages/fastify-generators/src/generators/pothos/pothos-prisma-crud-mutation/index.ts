@@ -10,6 +10,9 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
@@ -19,8 +22,6 @@ import {
   writePothosSimpleObjectFieldsFromDtoFields,
 } from '@src/writers/pothos/index.js';
 import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
-import { pothosSchemaProvider } from '../pothos/index.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

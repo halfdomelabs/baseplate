@@ -1,11 +1,12 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useMemo } from 'react';
+
+import { useModelForm } from '../hooks/useModelForm';
 import { Alert, Button } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
-import { useModelForm } from '../hooks/useModelForm';
 
 function ModelEditSchemaPage(): JSX.Element {
   const { status, setError } = useStatus();

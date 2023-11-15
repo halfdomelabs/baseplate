@@ -1,4 +1,3 @@
-import path from 'path';
 import { AppEntry } from '@halfdomelabs/project-builder-lib';
 import {
   FileData,
@@ -9,8 +8,10 @@ import {
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { globby } from 'globby';
+import path from 'path';
 import { packageDirectory } from 'pkg-dir';
 import * as R from 'ramda';
+
 import { resolveModule } from '@src/utils/resolve.js';
 
 const GENERATOR_MODULES = [

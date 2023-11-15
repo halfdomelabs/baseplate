@@ -13,7 +13,7 @@ interface ErrorableLoaderProps {
   /**
    * Header to be displayed (if not passed, a generic error header will be displayed)
    */
-  header?: string;
+  header?: React.ReactNode;
   /**
    * Optional actions to be displayed below the error message
    */
@@ -21,7 +21,7 @@ interface ErrorableLoaderProps {
 }
 
 /**
- * Renders a loader component that can display an error message.
+ * Displays a loader component that can also render an error message.
  */
 export function ErrorableLoader({
   className,

@@ -15,13 +15,14 @@ import {
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
+
+import { authSetupProvider } from '../auth/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { notEmpty } from '@src/utils/array.js';
 import { quot } from '@src/utils/string.js';
-import { authSetupProvider } from '../auth/index.js';
 
 const descriptorSchema = z.object({
   accessTokenExpiry: z.string().default('1h'),

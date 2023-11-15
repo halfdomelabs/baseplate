@@ -1,4 +1,3 @@
-import path from 'path';
 import {
   compileApplications,
   ProjectConfig,
@@ -6,12 +5,14 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
-import { expandPathWithTilde } from '@src/utils/path.js';
+import path from 'path';
+
 import {
   generateCleanAppForDirectory,
   generateForDirectory,
 } from '../sync/index.js';
 import { writeApplicationFiles } from '../writer/index.js';
+import { expandPathWithTilde } from '@src/utils/path.js';
 
 async function loadProjectJson(directory: string): Promise<ProjectConfig> {
   const projectJsonPath = expandPathWithTilde(

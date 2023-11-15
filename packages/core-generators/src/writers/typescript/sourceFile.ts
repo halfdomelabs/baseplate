@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-classes-per-file */
 
-import path from 'path';
 import { BuilderAction, writeFormattedAction } from '@halfdomelabs/sync';
+import path from 'path';
 import * as R from 'ramda';
 import {
   CallExpression,
@@ -12,8 +12,7 @@ import {
   SourceFile,
   SyntaxKind,
 } from 'ts-morph';
-import { ImportMapper } from '../../providers/index.js';
-import { notEmpty } from '../../utils/array.js';
+
 import {
   TypescriptCodeUtils,
   TypescriptCodeBlock,
@@ -36,6 +35,8 @@ import {
   writeImportDeclarations,
   PathMapEntry,
 } from './imports.js';
+import { ImportMapper } from '../../providers/index.js';
+import { notEmpty } from '../../utils/array.js';
 
 interface TypescriptCodeBlockConfig {
   type: 'code-block';

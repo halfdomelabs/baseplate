@@ -5,9 +5,10 @@
 // specifies a block of code
 
 import * as R from 'ramda';
+
+import { ImportDeclarationEntry } from './imports.js';
 import { ImportMapper } from '../../providers/index.js';
 import { notEmpty, notString } from '../../utils/array.js';
-import { ImportDeclarationEntry } from './imports.js';
 
 export interface TypescriptCodeEntryOptions {
   imports?: ImportDeclarationEntry[];

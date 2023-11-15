@@ -1,9 +1,10 @@
-import { Button, TextInput } from '@halfdomelabs/ui-components';
+import { Button, InputField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
 import { MdClear } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
+
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface EnumsSidebarListProps {
@@ -32,19 +33,20 @@ export function EnumsSidebarList({
         </Button>
       </Link>
       <div className="relative">
-        <TextInput
+        <InputField
           value={filterQuery}
           onChange={(text) => setFilterQuery(text)}
           placeholder="Search"
         />
         {filterQuery && (
           <Button
-            variant="tertiary"
-            iconBefore={MdClear}
+            variant="ghost"
             className="absolute right-4 top-1/2 -translate-y-1/2 transform"
             size="icon"
             onClick={() => setFilterQuery('')}
-          />
+          >
+            <Button.Icon icon={MdClear} />
+          </Button>
         )}
       </div>
       <div className="flex-1 overflow-y-auto">

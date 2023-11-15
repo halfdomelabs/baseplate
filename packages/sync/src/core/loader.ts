@@ -1,10 +1,11 @@
-import path from 'path';
 import multimatch from 'multimatch';
+import path from 'path';
 import * as R from 'ramda';
 import { z } from 'zod';
-import { listDirectories, pathExists, readJSON } from '@src/utils/fs.js';
-import { getModuleDefault } from '../utils/require.js';
+
 import { GeneratorConfig } from './generator.js';
+import { getModuleDefault } from '../utils/require.js';
+import { listDirectories, pathExists, readJSON } from '@src/utils/fs.js';
 
 export interface GeneratorConfigWithLocation extends GeneratorConfig {
   /**

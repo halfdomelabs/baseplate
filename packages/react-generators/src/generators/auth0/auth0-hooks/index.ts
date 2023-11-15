@@ -7,8 +7,9 @@ import {
   createGeneratorWithChildren,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
-import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
+
 import { reactApolloProvider } from '../../apollo/react-apollo/index.js';
+import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
 
 const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),
