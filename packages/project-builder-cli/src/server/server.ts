@@ -1,7 +1,7 @@
 import fastifyHelmet from '@fastify/helmet';
 import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
-import { fastify, FastifyInstance } from 'fastify';
+import { fastify, FastifyBaseLogger, FastifyInstance } from 'fastify';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
@@ -14,7 +14,11 @@ import { resolveModule } from '@src/utils/resolve.js';
 export async function buildServer(
   directories: string[],
 ): Promise<FastifyInstance> {
-  const server = fastify({ forceCloseConnections: true, logger });
+  const server = fastify({
+    forceCloseConnections: true,
+    // https://github.com/fastify/fastify/issues/4960
+    logger: logger as FastifyBaseLogger,
+  });
   const resolvedDirectories = directories.map((directory) =>
     expandPathWithTilde(directory),
   );

@@ -97,21 +97,21 @@ const ReactApolloGenerator = createGeneratorWithChildren({
     const gqlFiles: string[] = [];
 
     node.addPackages({
-      '@apollo/client': '3.7.17',
-      graphql: '16.7.1',
+      '@apollo/client': '3.8.7',
+      graphql: '16.8.1',
     });
 
     if (enableSubscriptions) {
       node.addPackages({
-        'graphql-ws': '5.14.0',
+        'graphql-ws': '5.14.2',
       });
     }
 
     node.addDevPackages({
-      '@graphql-codegen/cli': '4.0.1',
+      '@graphql-codegen/cli': '5.0.0',
       '@graphql-codegen/typescript': '4.0.1',
       '@graphql-codegen/typescript-operations': '4.0.1',
-      '@graphql-codegen/typescript-react-apollo': '3.3.7',
+      '@graphql-codegen/typescript-react-apollo': '4.1.0',
     });
 
     node.addScripts({

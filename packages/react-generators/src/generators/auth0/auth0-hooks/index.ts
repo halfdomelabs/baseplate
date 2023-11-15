@@ -10,6 +10,7 @@ import { z } from 'zod';
 
 import { reactApolloProvider } from '../../apollo/react-apollo/index.js';
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 
 const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),
@@ -21,11 +22,12 @@ const Auth0HooksGenerator = createGeneratorWithChildren({
   dependencies: {
     typescript: typescriptProvider,
     reactApollo: reactApolloProvider,
+    reactError: reactErrorProvider,
   },
   exports: {
     authHooks: authHooksProvider,
   },
-  createGenerator({ userQueryName }, { typescript, reactApollo }) {
+  createGenerator({ userQueryName }, { typescript, reactApollo, reactError }) {
     const currentUserFields: string[] = [];
 
     const hookFolder = 'src/hooks';
@@ -96,6 +98,7 @@ const Auth0HooksGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'hooks/useLogOut.ts',
             destination: useLogOutPath,
+            importMappers: [reactError],
           }),
         );
 

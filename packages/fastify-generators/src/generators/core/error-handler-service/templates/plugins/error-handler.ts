@@ -25,21 +25,21 @@ export const errorHandlerPlugin = fp(async (fastify) => {
         message: error.message,
         code: error.code,
         statusCode: error.statusCode,
-        reqId: request.id as string,
+        reqId: request.id,
       });
     } else if (error.statusCode && error.statusCode < 500) {
       await reply.code(error.statusCode).send({
         message: error.message,
         code: error.code,
         statusCode: error.statusCode,
-        reqId: request.id as string,
+        reqId: request.id,
       });
     } else {
       await reply.code(500).send({
         message: 'Internal server error',
         code: 'INTERNAL_SERVER_ERROR',
         statusCode: error.statusCode,
-        reqId: request.id as string,
+        reqId: request.id,
         originalError: IS_DEVELOPMENT
           ? { message: error?.message, stack: error?.stack }
           : undefined,

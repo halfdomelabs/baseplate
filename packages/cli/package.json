@@ -18,7 +18,7 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "^18.0.0",
     "@types/ramda": "^0.29.3",
-    "tsx": "^3.12.7",
+    "tsx": "4.1.2",
     "typescript": "5.1.6"
   },
   "scripts": {
@@ -44,7 +44,7 @@
     "node": "^18.0.0"
   },
   "volta": {
-    "node": "18.17.1"
+    "extends": "../../package.json"
   },
   "type": "module"
 }

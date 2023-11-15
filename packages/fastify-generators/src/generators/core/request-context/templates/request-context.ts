@@ -33,7 +33,7 @@ export const requestContextPlugin = fp(async (fastify) => {
 
   fastify.addHook('onRequest', async (req) => {
     const reqInfo = {
-      id: req.id as string,
+      id: req.id,
       url: req.url,
       method: req.method,
       headers: req.headers,

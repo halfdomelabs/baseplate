@@ -129,21 +129,21 @@ export async function baseplatePlugin(
         message: error.message,
         code: error.code,
         statusCode: error.statusCode,
-        reqId: request.id as string,
+        reqId: request.id,
       });
     } else if (error.statusCode && error.statusCode < 500) {
       await reply.code(error.statusCode).send({
         message: error.message,
         code: error.code,
         statusCode: error.statusCode,
-        reqId: request.id as string,
+        reqId: request.id,
       });
     } else {
       await reply.code(500).send({
         message: error?.message,
         code: 'INTERNAL_SERVER_ERROR',
         statusCode: error.statusCode,
-        reqId: request.id as string,
+        reqId: request.id,
         stack: error?.stack,
       });
     }
