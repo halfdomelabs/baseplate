@@ -61,13 +61,13 @@ const EslintGenerator = createGeneratorWithChildren({
           : {};
 
         node.addDevPackages({
-          '@typescript-eslint/eslint-plugin': '6.6.0',
-          '@typescript-eslint/parser': '6.6.0',
-          eslint: '8.49.0',
+          '@typescript-eslint/eslint-plugin': '6.11.0',
+          '@typescript-eslint/parser': '6.11.0',
+          eslint: '8.53.0',
           ...reactPackages,
           'eslint-config-prettier': '9.0.0',
-          'eslint-import-resolver-typescript': '3.6.0',
-          'eslint-plugin-import': '2.28.1',
+          'eslint-import-resolver-typescript': '3.6.1',
+          'eslint-plugin-import': '2.29.0',
           ...(config.disableJest
             ? {}
             : {
