@@ -24,10 +24,10 @@
     "versions:fix": "check-dependency-version-consistency . --fix"
   },
   "volta": {
-    "node": "18.17.1"
+    "node": "18.18.2"
   },
   "dependencies": {
     "@changesets/cli": "^2.26.2"
   },
-  "packageManager": "pnpm@8.9.0"
+  "packageManager": "pnpm@8.10.5"
 }

@@ -36,6 +36,9 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
       strict: true,
       noFallthroughCasesInSwitch: true,
       baseUrl: './',
+      paths: {
+        '@src/*': ['./src/*'],
+      },
     });
     typescriptConfig.addInclude('src');
     typescriptConfig.addReference({

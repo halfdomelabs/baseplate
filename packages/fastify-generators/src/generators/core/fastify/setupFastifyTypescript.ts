@@ -28,7 +28,7 @@ export function setupFastifyTypescript(
   });
 
   node.addDevPackages({
-    'tsc-alias': '1.8.7',
-    tsx: '3.12.0',
+    'tsc-alias': '1.8.8',
+    tsx: '4.1.2',
   });
 }
