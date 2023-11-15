@@ -40,6 +40,6 @@
   }
 
   .linkable a {
-    @apply text-link visited:text-link-visited font-semibold;
+    @apply font-semibold text-link visited:text-link-visited;
   }
 }
