@@ -38,7 +38,6 @@ function buildRelationField(
     references,
     modelName,
     foreignRelationName,
-    relationshipName,
     onDelete,
     onUpdate,
   } = relationConfig;
@@ -53,6 +52,12 @@ function buildRelationField(
   const relationshipType = isModelRelationOneToOne(parentModel, relationConfig)
     ? 'oneToOne'
     : 'oneToMany';
+  const relations = parentModel.model.relations ?? [];
+
+  // If there are multiple relations to the same model, we need to specify the
+  // relation name to avoid conflicts in Prisma
+  const needsRelationName =
+    relations.filter((r) => r.modelName === modelName).length > 1;
 
   return {
     name,
@@ -60,7 +65,7 @@ function buildRelationField(
     references: references.map((r) => r.foreign),
     modelRef: `${foreignModel.feature}/root:$models.${foreignModel.name}`,
     foreignRelationName,
-    relationshipName,
+    relationshipName: needsRelationName ? foreignRelationName : undefined,
     relationshipType: relationshipType,
     optional,
     onDelete,

@@ -33,7 +33,7 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
         {label && <FormItem.Label>{label}</FormItem.Label>}
         <FormItem.Control>
           <Input
-            onChange={(e) => onChange?.(e.target.value)}
+            onChange={onChange && ((e) => onChange?.(e.target.value))}
             {...props}
             {...register}
           />
@@ -67,7 +67,7 @@ const InputFieldController = genericForwardRef(
       registerOptions,
       ...rest
     }: InputFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLInputElement>,
+    ref: ForwardedRef<HTMLDivElement>,
   ): JSX.Element => {
     const { errors } = useFormState({ control, name });
     const error = get(errors, name) as FieldError | undefined;

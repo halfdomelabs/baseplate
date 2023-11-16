@@ -54,22 +54,15 @@ export function ModalRelationsModal({
       return;
     }
 
-    const needsRelationshipName = value.some(
-      (r) => r.uid !== modelFieldRelation?.uid && r.modelName === relation.name,
-    );
-
     const newRelation: ModelRelationFieldConfig = {
       ...modelFieldRelation,
-      uid: modelFieldRelation?.uid || randomUid(),
+      uid: modelFieldRelation?.uid ?? randomUid(),
       name: relation.name,
       references: [
         { local: watchedField.name, foreign: relation.foreignFieldName },
       ],
       modelName: relation.modelName,
       foreignRelationName: relation.foreignRelationName,
-      relationshipName: needsRelationshipName
-        ? relation.foreignRelationName
-        : undefined,
       onDelete: relation.onDelete,
       onUpdate: 'Restrict',
     };
@@ -80,20 +73,6 @@ export function ModalRelationsModal({
       );
     } else {
       onChange([...value, newRelation]);
-    }
-
-    // add relationship name to all other relations
-    if (needsRelationshipName) {
-      onChange(
-        value.map((r) =>
-          r.modelName === relation.modelName
-            ? {
-                ...r,
-                relationshipName: relation.foreignRelationName,
-              }
-            : r,
-        ),
-      );
     }
     onClose();
   };

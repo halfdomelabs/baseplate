@@ -68,7 +68,6 @@ export const modelRelationFieldSchema = z.object({
   ),
   modelName: z.string().min(1),
   foreignRelationName: z.string().min(1),
-  relationshipName: z.string().optional(),
   onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
   onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
 });

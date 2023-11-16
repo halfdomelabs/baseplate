@@ -11,7 +11,6 @@ import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
-import { setUndefinedIfEmpty } from 'src/utils/form';
 
 interface Props {
   className?: string;
@@ -24,8 +23,6 @@ interface Props {
 
 function formatFieldAttributes(field: ModelRelationFieldConfig): string {
   const attrStrings: string[] = [];
-  if (field.relationshipName)
-    attrStrings.push(`name-${field.relationshipName}`);
   if (field.onDelete)
     attrStrings.push(`delete-${field.onDelete.toLowerCase()}`);
   if (field.onUpdate)
@@ -130,14 +127,6 @@ function ModelRelationForm({
             label="Foreign Field Name"
             className="w-full"
             register={register(`model.relations.${idx}.foreignRelationName`)}
-            error={relationErrors?.name?.message}
-          />
-          <TextInput.Labelled
-            label="Relationship Name"
-            className="w-full"
-            register={register(`model.relations.${idx}.relationshipName`, {
-              setValueAs: setUndefinedIfEmpty,
-            })}
             error={relationErrors?.name?.message}
           />
           <div className="flex flex-row space-x-4">
