@@ -260,13 +260,11 @@
         "relations": [
           {
             "foreignRelationName": "customer",
-            "isOptional": false,
             "modelName": "User",
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
             "references": [{ "foreign": "id", "local": "id" }],
-            "relationshipType": "oneToOne",
             "uid": "jQMH6w6TBbZQ"
           }
         ]
@@ -390,13 +388,11 @@
         "relations": [
           {
             "foreignRelationName": "files",
-            "isOptional": true,
             "modelName": "User",
             "name": "uploader",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
             "references": [{ "foreign": "id", "local": "uploaderId" }],
-            "relationshipType": "oneToMany",
             "uid": "tdoyntCRk8Yi"
           }
         ]
