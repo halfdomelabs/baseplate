@@ -21,7 +21,7 @@ function Layout({
         className={classNames(
           'flex flex-auto flex-col overflow-auto',
           centered && 'items-center justify-center',
-          !noPadding && 'p-4'
+          !noPadding && 'p-4',
         )}
       >
         <Outlet />

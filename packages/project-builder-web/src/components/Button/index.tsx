@@ -60,7 +60,7 @@ function Button(props: Props): JSX.Element {
         'rounded-lg text-center font-medium focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:bg-opacity-50',
         getButtonColorClass(color),
         getButtonSizeClass(size),
-        className
+        className,
       )}
       disabled={disabled}
       onClick={onClick}

@@ -33,7 +33,7 @@
     "watch:templates": "pnpm build:templates --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:write": "prettier -w ."
   },
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",

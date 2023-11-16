@@ -33,7 +33,7 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:write": "prettier -w ."
   },
   "dependencies": {
     "change-case": "^4.1.2",

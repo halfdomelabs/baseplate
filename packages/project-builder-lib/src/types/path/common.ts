@@ -224,8 +224,8 @@ type MapKeys<T> = { [K in keyof T as ToKey<K>]: T[K] };
 type TryAccess<T, K> = K extends keyof T
   ? T[K]
   : T extends null
-  ? null
-  : undefined;
+    ? null
+    : undefined;
 
 /**
  * Type to access an array type by a key.
@@ -399,10 +399,10 @@ type KeysImpl<T> = [T] extends [Traversable]
 export type Keys<T, U = unknown> = IsAny<T> extends true
   ? Key
   : IsNever<T> extends true
-  ? Key
-  : IsNever<NonNullable<T>> extends true
-  ? never
-  : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, U>;
+    ? Key
+    : IsNever<NonNullable<T>> extends true
+      ? never
+      : CheckKeyConstraint<T, KeysImpl<NonNullable<T>>, U>;
 
 /**
  * Type to check whether a {@link Key} is present in a type.

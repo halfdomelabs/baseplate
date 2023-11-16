@@ -49,7 +49,7 @@ export function ClientVersionGate({
             refreshVersion: () => getVersion().then(setClientVersion),
           }
         : undefined,
-    [clientVersion]
+    [clientVersion],
   );
 
   if (!clientVersionResult) {

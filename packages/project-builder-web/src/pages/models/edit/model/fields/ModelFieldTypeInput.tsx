@@ -86,7 +86,7 @@ export function ModelFieldTypeInput({
 
   const typeOptions = [
     ...SCALAR_FIELD_TYPES.filter((t) => t !== 'enum').map(
-      (fieldType) => scalarOptions[fieldType]
+      (fieldType) => scalarOptions[fieldType],
     ),
     ...enumOptions,
   ];

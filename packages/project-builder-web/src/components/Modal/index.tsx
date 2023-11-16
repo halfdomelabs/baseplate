@@ -62,7 +62,7 @@ function Modal({
               className={classNames(
                 'max-h-full overflow-y-auto rounded-lg bg-white shadow md:max-w-7xl',
                 getModalWidthClass(width),
-                className
+                className,
               )}
             >
               {children}
@@ -89,7 +89,7 @@ Modal.Header = function ModalHeader({
     <div
       className={classNames(
         'flex items-start justify-between rounded-t px-4 pt-4',
-        className
+        className,
       )}
     >
       <Dialog.Title>{children}</Dialog.Title>
@@ -142,7 +142,7 @@ Modal.Footer = function ModalFooter({
     <div
       className={classNames(
         'flex items-center justify-end space-x-4 rounded-b bg-gray-50 p-4',
-        className
+        className,
       )}
     >
       {children}

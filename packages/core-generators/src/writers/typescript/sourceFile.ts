@@ -84,14 +84,14 @@ type TypescriptTemplateConfigFromEntry<
 > = T extends TypescriptCodeConfig
   ? T
   : T extends TypescriptCodeBlock
-  ? TypescriptCodeBlockConfig
-  : T extends TypescriptCodeWrapper
-  ? TypescriptCodeWrapperConfig
-  : T extends TypescriptCodeExpression
-  ? TypescriptCodeExpressionConfig
-  : T extends TypescriptStringReplacement
-  ? TypescriptStringReplacementConfig
-  : never;
+    ? TypescriptCodeBlockConfig
+    : T extends TypescriptCodeWrapper
+      ? TypescriptCodeWrapperConfig
+      : T extends TypescriptCodeExpression
+        ? TypescriptCodeExpressionConfig
+        : T extends TypescriptStringReplacement
+          ? TypescriptStringReplacementConfig
+          : never;
 
 type TypescriptTemplateConfig<
   T extends TypescriptTemplateConfigOrEntry = Record<
@@ -106,16 +106,16 @@ type InferCodeEntry<T extends TypescriptCodeConfig | TypescriptCodeEntry> =
   T extends TypescriptCodeExpressionConfig
     ? TypescriptCodeExpression | string
     : T extends TypescriptCodeBlockConfig
-    ? TypescriptCodeBlock | string
-    : T extends TypescriptCodeWrapperConfig
-    ? TypescriptCodeWrapper
-    : T extends TypescriptStringReplacementConfig
-    ? TypescriptStringReplacement | string
-    : T extends TypescriptCodeContents
-    ? T | string
-    : T extends TypescriptCodeEntry
-    ? T
-    : never;
+      ? TypescriptCodeBlock | string
+      : T extends TypescriptCodeWrapperConfig
+        ? TypescriptCodeWrapper
+        : T extends TypescriptStringReplacementConfig
+          ? TypescriptStringReplacement | string
+          : T extends TypescriptCodeContents
+            ? T | string
+            : T extends TypescriptCodeEntry
+              ? T
+              : never;
 
 type InferCodeEntries<T extends TypescriptTemplateConfigOrEntry> = {
   [K in keyof T]: InferCodeEntry<T[K]> | InferCodeEntry<T[K]>[];

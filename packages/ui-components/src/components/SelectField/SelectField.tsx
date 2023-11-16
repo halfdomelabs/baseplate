@@ -37,7 +37,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
     onChange,
     ...props
   }: SelectFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>
+  ref: ForwardedRef<HTMLDivElement>,
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
@@ -107,7 +107,7 @@ const SelectFieldController = genericForwardRef(function SelectFieldController<
     ...rest
   }: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
     AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>
+  ref: ForwardedRef<HTMLDivElement>,
 ): JSX.Element {
   const {
     field,

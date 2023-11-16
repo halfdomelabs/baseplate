@@ -45,7 +45,7 @@ export function ModalRelationsModal({
   const modelFieldRelation = value.find(
     (r) =>
       r.references.length === 1 &&
-      r.references[0].local.includes(watchedField.name)
+      r.references[0].local.includes(watchedField.name),
   );
 
   const handleSave = (relation: ModelFieldRelationFormValues): void => {
@@ -55,7 +55,7 @@ export function ModalRelationsModal({
     }
 
     const needsRelationshipName = value.some(
-      (r) => r.uid !== modelFieldRelation?.uid && r.modelName === relation.name
+      (r) => r.uid !== modelFieldRelation?.uid && r.modelName === relation.name,
     );
 
     const newRelation: ModelRelationFieldConfig = {
@@ -78,7 +78,7 @@ export function ModalRelationsModal({
 
     if (modelFieldRelation) {
       onChange(
-        value.map((r) => (r.uid === modelFieldRelation.uid ? newRelation : r))
+        value.map((r) => (r.uid === modelFieldRelation.uid ? newRelation : r)),
       );
     } else {
       onChange([...value, newRelation]);
@@ -93,8 +93,8 @@ export function ModalRelationsModal({
                 ...r,
                 relationshipName: relation.foreignRelationName,
               }
-            : r
-        )
+            : r,
+        ),
       );
     }
     onClose();

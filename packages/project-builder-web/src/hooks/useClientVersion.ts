@@ -12,7 +12,7 @@ export function useClientVersion(): UseClientVersionResult {
   const result = React.useContext(ClientVersionContext);
   if (!result) {
     throw new Error(
-      `useClientVersion must be used within a <ClientVersionContext.Provider>`
+      `useClientVersion must be used within a <ClientVersionContext.Provider>`,
     );
   }
   return result;

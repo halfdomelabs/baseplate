@@ -11,7 +11,7 @@ export function useProjectIdState(): [
     value,
     useCallback(
       (val) => (val ? setValue(val) : removeItem()),
-      [setValue, removeItem]
+      [setValue, removeItem],
     ),
   ];
 }

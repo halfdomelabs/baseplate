@@ -62,7 +62,7 @@ function ModelFieldForm({
     // check for references
     if (originalModel) {
       const originalField = originalModel.model.fields.find(
-        (f) => f.uid === watchedField.uid
+        (f) => f.uid === watchedField.uid,
       );
       if (originalField) {
         const references = parsedProject.references.modelField?.[
@@ -70,7 +70,7 @@ function ModelFieldForm({
         ]?.filter(
           (ref) =>
             ref.referenceType !== 'modelPrimaryKey' &&
-            ref.referenceType !== 'modelLocalRelation'
+            ref.referenceType !== 'modelLocalRelation',
         );
         if (references?.length) {
           toast.error(
@@ -78,7 +78,7 @@ function ModelFieldForm({
               originalField.name
             } as it is being used in ${references
               .map((r) => r.path)
-              .join(', ')}`
+              .join(', ')}`,
           );
           return;
         }
@@ -87,14 +87,14 @@ function ModelFieldForm({
     // check local references
     const usedRelations = watchedRelations?.filter((relation) =>
       relation.references.some(
-        (r) => watchedField.name && r.local.includes(watchedField.name)
-      )
+        (r) => watchedField.name && r.local.includes(watchedField.name),
+      ),
     );
     if (usedRelations?.length) {
       toast.error(
         `Unable to remove field as it is being used in relations ${usedRelations
           .map((r) => r.name)
-          .join(', ')}`
+          .join(', ')}`,
       );
       return;
     }
@@ -102,7 +102,7 @@ function ModelFieldForm({
     // check primary keys
     if (watchedPrimaryKeys?.includes(watchedField.name)) {
       toast.error(
-        `Unable to remove field as it is being used in in the primary key`
+        `Unable to remove field as it is being used in in the primary key`,
       );
       return;
     }
@@ -110,11 +110,11 @@ function ModelFieldForm({
     // check unique constraints
     if (
       watchedUniqueConstraints?.some(
-        (constraint) => constraint.name === watchedField.name
+        (constraint) => constraint.name === watchedField.name,
       )
     ) {
       toast.error(
-        `Unable to remove field as it is being used in in a unique constraint`
+        `Unable to remove field as it is being used in in a unique constraint`,
       );
       return;
     }
@@ -124,7 +124,7 @@ function ModelFieldForm({
 
   const modelFieldRelation = watchedRelations?.find(
     (r) =>
-      r.references.length === 1 && r.references[0].local === watchedField.name
+      r.references.length === 1 && r.references[0].local === watchedField.name,
   );
 
   const [isRelationFormOpen, setIsRelationFormOpen] = useState(false);

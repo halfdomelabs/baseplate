@@ -38,7 +38,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
           .map((r) => ({
             label: r.foreignRelationName,
             value: r.foreignRelationName,
-          }))
+          })),
     )
     .filter(notEmpty);
 

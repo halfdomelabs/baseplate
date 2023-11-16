@@ -63,7 +63,7 @@ Table.HeadCell = function TableHeadCell({
       scope="col"
       className={classNames(
         'px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
-        className
+        className,
       )}
     >
       {children}
@@ -96,7 +96,7 @@ Table.Row = function TableRow({
     <tr
       className={classNames(
         'border-b bg-white dark:border-gray-700 dark:bg-gray-800',
-        className
+        className,
       )}
     >
       {children}
@@ -117,7 +117,7 @@ Table.Cell = function TableCell({
     <td
       className={classNames(
         'whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400',
-        className
+        className,
       )}
     >
       {children}

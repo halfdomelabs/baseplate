@@ -23,7 +23,7 @@ export function ThemeHomePage(): JSX.Element {
 
   const defaultValues = useMemo(
     () => config.theme ?? generateDefaultTheme(),
-    [config.theme]
+    [config.theme],
   );
 
   const { control, handleSubmit, setValue, getValues } =
@@ -44,7 +44,7 @@ export function ThemeHomePage(): JSX.Element {
             : {
                 palettes: defaultValues.palettes,
                 config: defaultValues.colors.light,
-              }
+              },
         ),
         dark: generateThemeColorsFromShade(
           palettes,
@@ -54,11 +54,11 @@ export function ThemeHomePage(): JSX.Element {
             : {
                 palettes: defaultValues.palettes,
                 config: defaultValues.colors.dark,
-              }
+              },
         ),
       });
     },
-    [getValues, setValue, defaultValues]
+    [getValues, setValue, defaultValues],
   );
 
   const handleShadesChange = useCallback(() => {

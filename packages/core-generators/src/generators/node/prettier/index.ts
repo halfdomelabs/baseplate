@@ -159,7 +159,7 @@ const PrettierGenerator = createGeneratorWithChildren({
 
         node.addScripts({
           'prettier:check': 'prettier --check .',
-          'prettier:format': 'prettier -w .',
+          'prettier:write': 'prettier -w .',
         });
 
         await builder.apply(

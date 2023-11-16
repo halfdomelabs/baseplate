@@ -34,13 +34,13 @@ export function ThemeColorEditor({
               label={config.name}
               formatLabel={(color) => {
                 const baseShade = Object.entries(
-                  palettes.base.shades ?? {}
+                  palettes.base.shades ?? {},
                 ).find(([, shadeColor]) => shadeColor === color)?.[0];
                 if (baseShade) {
                   return `base-${baseShade}`;
                 }
                 const primaryShade = Object.entries(
-                  palettes.primary.shades ?? {}
+                  palettes.primary.shades ?? {},
                 ).find(([, shadeColor]) => shadeColor === color)?.[0];
                 if (primaryShade) {
                   return `primary-${primaryShade}`;

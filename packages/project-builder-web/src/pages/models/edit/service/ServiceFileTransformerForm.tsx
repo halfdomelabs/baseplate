@@ -22,7 +22,7 @@ function ServiceFileTransformerForm({
   const fileRelations =
     originalModel.model.relations?.filter(
       (relation) =>
-        relation.modelName === parsedProject.projectConfig.storage?.fileModel
+        relation.modelName === parsedProject.projectConfig.storage?.fileModel,
     ) ?? [];
 
   const relationOptions = fileRelations.map((relation) => ({

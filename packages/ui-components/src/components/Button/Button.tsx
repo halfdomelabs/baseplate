@@ -28,7 +28,7 @@ const ButtonBase = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  }
+  },
 );
 ButtonBase.displayName = 'Button';
 
@@ -58,7 +58,7 @@ const ButtonWithIcon = React.forwardRef<HTMLButtonElement, ButtonWithIconProps>(
         {iconPosition === 'right' && <ButtonIcon icon={icon} />}
       </Button>
     );
-  }
+  },
 );
 
 ButtonWithIcon.displayName = 'ButtonWithIcon';

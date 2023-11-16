@@ -37,7 +37,7 @@ SidebarLayout.Sidebar = function SidebarLayoutSidebar({
           'w-72': width === 'md',
           'w-96': width === 'lg',
         },
-        className
+        className,
       )}
     >
       {children}

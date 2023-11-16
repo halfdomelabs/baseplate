@@ -118,7 +118,7 @@ export function ModelFieldsForm({
   }, [fields, appendField]);
 
   const gridClassNames = clsx(
-    'grid grid-cols-[repeat(3,1fr)_repeat(3,60px)_100px_80px] gap-2'
+    'grid grid-cols-[repeat(3,1fr)_repeat(3,60px)_100px_80px] gap-2',
   );
 
   const fieldListItems = fieldFields.map((f: FieldArrayWithId, i: number) => ({
@@ -143,7 +143,7 @@ export function ModelFieldsForm({
           <div
             className={clsx(
               gridClassNames,
-              'sticky -top-4 z-10 bg-white py-2 text-sm font-semibold'
+              'sticky -top-4 z-10 bg-white py-2 text-sm font-semibold',
             )}
           >
             <div>Name</div>

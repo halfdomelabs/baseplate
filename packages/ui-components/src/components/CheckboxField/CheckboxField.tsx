@@ -34,7 +34,7 @@ export interface CheckboxFieldProps
 const CheckboxFieldRoot = React.forwardRef<HTMLDivElement, CheckboxFieldProps>(
   (
     { label, description, error, onChange, value, className, ...props },
-    ref
+    ref,
   ) => {
     return (
       <FormItem ref={ref} error={error} className={cn('space-y-2', className)}>
@@ -56,7 +56,7 @@ const CheckboxFieldRoot = React.forwardRef<HTMLDivElement, CheckboxFieldProps>(
         {error && <FormItem.Error>{error}</FormItem.Error>}
       </FormItem>
     );
-  }
+  },
 );
 
 CheckboxFieldRoot.displayName = 'CheckboxField';
@@ -81,7 +81,7 @@ const CheckboxFieldController = genericForwardRef(
       registerOptions,
       ...rest
     }: CheckboxFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLInputElement>
+    ref: ForwardedRef<HTMLInputElement>,
   ): JSX.Element => {
     const {
       field: { onChange, value },
@@ -104,7 +104,7 @@ const CheckboxFieldController = genericForwardRef(
       />
     );
   },
-  'CheckboxFieldController'
+  'CheckboxFieldController',
 );
 
 export const CheckboxField = Object.assign(CheckboxFieldRoot, {

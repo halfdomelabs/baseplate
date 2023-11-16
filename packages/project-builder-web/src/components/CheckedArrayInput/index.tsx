@@ -33,7 +33,7 @@ function CheckedArrayInput({
           onChange={(checked) => {
             const filteredValues = values.filter((v) => v !== option.value);
             return onChange(
-              checked ? [...filteredValues, option.value] : filteredValues
+              checked ? [...filteredValues, option.value] : filteredValues,
             );
           }}
         />

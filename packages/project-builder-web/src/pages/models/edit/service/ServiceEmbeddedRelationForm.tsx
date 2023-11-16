@@ -32,7 +32,7 @@ function ServiceEmbeddedRelationForm({
     name: 'service.transformers',
   });
   const embeddedRelationTransformers = transformers?.filter(
-    (t) => t.type === 'embeddedRelation'
+    (t) => t.type === 'embeddedRelation',
   );
 
   const selectedTransformer = transformers?.[idx];
@@ -51,20 +51,20 @@ function ServiceEmbeddedRelationForm({
               (relation) =>
                 embeddedRelation?.name === relation.foreignRelationName ||
                 !embeddedRelationTransformers?.some(
-                  (t) => t.name === relation.foreignRelationName
-                )
+                  (t) => t.name === relation.foreignRelationName,
+                ),
             )
             .map((relation) => ({
               model,
               relation,
-            })) ?? []
+            })) ?? [],
       ),
     [
       parsedProject,
       originalModel,
       embeddedRelation,
       embeddedRelationTransformers,
-    ]
+    ],
   );
 
   const relationOptions = relations.map((relation) => ({
@@ -74,7 +74,7 @@ function ServiceEmbeddedRelationForm({
 
   const selectedRelation = relations.find(
     (relation) =>
-      relation.relation.foreignRelationName === embeddedRelation?.name
+      relation.relation.foreignRelationName === embeddedRelation?.name,
   );
 
   const selectedLocalRelationName = useWatch({
@@ -97,8 +97,8 @@ function ServiceEmbeddedRelationForm({
       .filter(
         (field) =>
           !selectedRelation.relation.references.some(
-            (reference) => reference.local === field.name
-          )
+            (reference) => reference.local === field.name,
+          ),
       )
       .map((field) => ({
         label: field.name,

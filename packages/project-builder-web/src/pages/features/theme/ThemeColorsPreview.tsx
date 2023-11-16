@@ -30,7 +30,7 @@ export function ThemeColorsPreview({
     <div
       className={clsx(
         'h-full w-full rounded-md bg-background p-4 shadow-inner',
-        className
+        className,
       )}
       style={colors && generateCssFromThemeConfig(colors)}
     >

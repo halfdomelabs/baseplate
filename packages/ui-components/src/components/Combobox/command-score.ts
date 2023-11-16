@@ -59,7 +59,7 @@ function commandScoreInner(
   lowerAbbreviation: string,
   stringIndex: number,
   abbreviationIndex: number,
-  memoizedResults: Record<string, number>
+  memoizedResults: Record<string, number>,
 ): number {
   if (abbreviationIndex === abbreviation.length) {
     if (stringIndex === string.length) {
@@ -87,7 +87,7 @@ function commandScoreInner(
       lowerAbbreviation,
       index + 1,
       abbreviationIndex + 1,
-      memoizedResults
+      memoizedResults,
     );
     if (score > highScore) {
       if (index === stringIndex) {
@@ -136,7 +136,7 @@ function commandScoreInner(
         lowerAbbreviation,
         index + 1,
         abbreviationIndex + 2,
-        memoizedResults
+        memoizedResults,
       );
 
       if (transposedScore * SCORE_TRANSPOSITION > score) {
@@ -172,6 +172,6 @@ export function commandScore(string: string, abbreviation: string): number {
     formatInput(abbreviation),
     0,
     0,
-    {}
+    {},
   );
 }

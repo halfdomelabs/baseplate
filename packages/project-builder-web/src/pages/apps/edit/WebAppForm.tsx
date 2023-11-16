@@ -28,7 +28,7 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
   function onSubmit(data: WebAppConfig): void {
     setConfigAndFixReferences((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
-        app.uid === appConfig.uid ? data : app
+        app.uid === appConfig.uid ? data : app,
       );
     });
     toast.success('Successfully saved app!');

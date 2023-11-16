@@ -56,7 +56,9 @@ function EmbeddedListInput<InputType>({
       onChange([...definedValue, data]);
     } else {
       onChange(
-        definedValue.map((item, idx) => (idx === valueToEdit.idx ? data : item))
+        definedValue.map((item, idx) =>
+          idx === valueToEdit.idx ? data : item,
+        ),
       );
     }
     setValueToEdit(undefined);

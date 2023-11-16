@@ -24,7 +24,7 @@ function Console({ className }: Props): JSX.Element {
     const unsubscribe = websocketClient.on('message', (msg) => {
       if (msg.type === 'command-console-emitted') {
         setConsoleText((prev) =>
-          prev ? `${prev}\n${msg.message}` : msg.message
+          prev ? `${prev}\n${msg.message}` : msg.message,
         );
       }
     });
@@ -60,7 +60,7 @@ function Console({ className }: Props): JSX.Element {
     <code
       className={classNames(
         'block h-72 w-full overflow-y-scroll whitespace-pre-wrap border border-gray-200 bg-slate-900 p-4 text-sm text-neutral-400 shadow-inner',
-        className
+        className,
       )}
       ref={codeRef}
       onScroll={handleScroll}

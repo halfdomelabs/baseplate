@@ -7,7 +7,7 @@ function isObject(obj: unknown): obj is Record<string, unknown> {
 
 function forEach(
   obj: unknown,
-  cb: (val: unknown, key: string | number) => void
+  cb: (val: unknown, key: string | number) => void,
 ): void {
   if (Array.isArray(obj)) {
     obj.forEach(cb);
@@ -50,7 +50,7 @@ interface StringifyOptions {
 function get<Type extends object, Key extends keyof Type>(
   options: Type,
   name: Key,
-  defaultValue: Type[Key]
+  defaultValue: Type[Key],
 ): Exclude<Type[Key], undefined> {
   return (name in options ? options[name] : defaultValue) as Exclude<
     Type[Key],
@@ -71,7 +71,7 @@ function prettify(
     addMargin?: boolean;
     addObjectMargin?: boolean;
     addArrayMargin?: boolean;
-  } = {}
+  } = {},
 ): string {
   const tokens: Record<string, string> = {
     '{': '{',
@@ -93,17 +93,17 @@ function prettify(
   }
 
   return str.replace(stringOrChar, (match, string) =>
-    string ? match : tokens[match]
+    string ? match : tokens[match],
   );
 }
 
 export function stringify(
   rootObj: unknown,
-  options: StringifyOptions = {}
+  options: StringifyOptions = {},
 ): string {
   const indent = JSON.stringify([1], null, get(options, 'indent', 2)).slice(
     2,
-    -3
+    -3,
   );
   const addMargin = get(options, 'margins', false);
   const addArrayMargin = get(options, 'arrayMargins', false);
@@ -154,8 +154,8 @@ export function stringify(
             stringifyRecursive(
               obj[index],
               nextIndent,
-              atEndOfArray(obj, index)
-            ) || 'null'
+              atEndOfArray(obj, index),
+            ) || 'null',
           );
         }
         delimiters = '[]';
@@ -165,7 +165,7 @@ export function stringify(
           const value = stringifyRecursive(
             (obj as Record<string, unknown>)[key],
             nextIndent,
-            keyPart.length + atEndOfArray(array, index)
+            keyPart.length + atEndOfArray(array, index),
           );
           if (value !== undefined) {
             items.push(keyPart + value);

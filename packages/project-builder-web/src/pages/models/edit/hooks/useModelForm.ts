@@ -86,10 +86,10 @@ export function useModelForm({
                   uid: newUid,
                 },
               ],
-              (m) => m.name
+              (m) => m.name,
             );
           },
-          { ignoredReferences: controlledReferences }
+          { ignoredReferences: controlledReferences },
         );
         toast.success('Successfully saved model!');
         if (!id || model?.name !== data.name) {
@@ -116,7 +116,7 @@ export function useModelForm({
       setConfigAndFixReferences,
       onSubmitSuccess,
       controlledReferences,
-    ]
+    ],
   );
 
   const fixControlledReferences = useCallback(() => {
@@ -133,7 +133,7 @@ export function useModelForm({
       getProjectConfigReferences,
       {
         whitelistReferences: controlledReferences,
-      }
+      },
     );
     const fixedModel = fixedConfig.models?.find((m) => m.uid === id);
     if (!fixedModel) {

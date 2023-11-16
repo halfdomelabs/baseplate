@@ -24,7 +24,7 @@ function EnumEditPage(): JSX.Element {
   const handleDelete = (): void => {
     if (
       window.confirm(
-        `Are you sure you want to delete ${enumBlock?.name || 'model'}?`
+        `Are you sure you want to delete ${enumBlock?.name || 'model'}?`,
       )
     ) {
       try {
@@ -47,7 +47,7 @@ function EnumEditPage(): JSX.Element {
             ...(draftConfig.enums?.filter((m) => m.uid !== id) ?? []),
             { ...config, uid },
           ],
-          (c) => c.name
+          (c) => c.name,
         );
       });
 

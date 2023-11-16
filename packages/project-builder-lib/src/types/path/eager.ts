@@ -78,10 +78,10 @@ export type FieldPath<TFieldValues extends FieldValues> = Path<TFieldValues>;
 type ArrayPathImpl<K extends string | number, V> = V extends Primitive
   ? never
   : V extends readonly (infer U)[]
-  ? U extends Primitive
-    ? never
-    : `${K}` | `${K}.${ArrayPath<V>}`
-  : `${K}.${ArrayPath<V>}`;
+    ? U extends Primitive
+      ? never
+      : `${K}` | `${K}.${ArrayPath<V>}`
+    : `${K}.${ArrayPath<V>}`;
 
 /**
  * Type which eagerly collects all paths through a type which point to an array
@@ -125,17 +125,17 @@ export type PathValue<T, P extends Path<T> | ArrayPath<T>> = T extends any
         ? PathValue<T[K], R>
         : never
       : K extends `${ArrayKey}`
-      ? T extends readonly (infer V)[]
-        ? PathValue<V, R & Path<V>>
+        ? T extends readonly (infer V)[]
+          ? PathValue<V, R & Path<V>>
+          : never
         : never
-      : never
     : P extends keyof T
-    ? T[P]
-    : P extends `${ArrayKey}`
-    ? T extends readonly (infer V)[]
-      ? V
-      : never
-    : never
+      ? T[P]
+      : P extends `${ArrayKey}`
+        ? T extends readonly (infer V)[]
+          ? V
+          : never
+        : never
   : never;
 
 /**
@@ -226,17 +226,17 @@ export type GlobPathValue<T, P extends GlobPath<T>> = T extends any
         ? GlobPathValue<T[K], R>
         : never
       : K extends `${ArrayKey}` | '*'
-      ? T extends readonly (infer V)[]
-        ? GlobPathValue<V, R & GlobPath<V>>
+        ? T extends readonly (infer V)[]
+          ? GlobPathValue<V, R & GlobPath<V>>
+          : never
         : never
-      : never
     : P extends keyof T
-    ? T[P]
-    : P extends `${ArrayKey}` | '*'
-    ? T extends readonly (infer V)[]
-      ? V
-      : never
-    : never
+      ? T[P]
+      : P extends `${ArrayKey}` | '*'
+        ? T extends readonly (infer V)[]
+          ? V
+          : never
+        : never
   : never;
 
 /**

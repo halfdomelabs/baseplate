@@ -32,7 +32,7 @@ const ColorPickerRoot = forwardRef(
       formatInputText,
       ...rest
     }: ColorFieldProps,
-    ref: ForwardedRef<HTMLButtonElement>
+    ref: ForwardedRef<HTMLButtonElement>,
   ): React.JSX.Element => {
     const [value, setValue] = useControlledState(controlledValue, onChange);
     const inputComponent = (
@@ -42,7 +42,7 @@ const ColorPickerRoot = forwardRef(
             className={cn(
               inputVariants(),
               'flex items-center space-x-2',
-              className
+              className,
             )}
             {...rest}
             ref={ref}
@@ -75,7 +75,7 @@ const ColorPickerRoot = forwardRef(
     );
 
     return inputComponent;
-  }
+  },
 );
 
 ColorPickerRoot.displayName = 'ColorPicker';

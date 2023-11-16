@@ -62,7 +62,7 @@ export function ModelFieldRelationForm({
   const defaultForeignModel =
     defaultRelationName &&
     foreignModelOptions.find((m) =>
-      m.value.toLowerCase().includes(defaultRelationName.toLowerCase())
+      m.value.toLowerCase().includes(defaultRelationName.toLowerCase()),
     )?.value;
   const defaultForeignField =
     defaultForeignModel &&

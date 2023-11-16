@@ -44,7 +44,7 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
         {error && <FormItem.Error>{error}</FormItem.Error>}
       </FormItem>
     );
-  }
+  },
 );
 InputFieldRoot.displayName = 'InputField';
 
@@ -67,7 +67,7 @@ const InputFieldController = genericForwardRef(
       registerOptions,
       ...rest
     }: InputFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLInputElement>
+    ref: ForwardedRef<HTMLInputElement>,
   ): JSX.Element => {
     const { errors } = useFormState({ control, name });
     const error = get(errors, name) as FieldError | undefined;
@@ -81,7 +81,7 @@ const InputFieldController = genericForwardRef(
       />
     );
   },
-  'InputFieldController'
+  'InputFieldController',
 );
 
 export const InputField = Object.assign(InputFieldRoot, {

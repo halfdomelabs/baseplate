@@ -19,11 +19,11 @@ export interface UseProjectConfigResult {
   parsedProject: ParsedProjectConfig;
   setConfigAndFixReferences: (
     configOrTransform: SetOrTransformConfig,
-    options?: FixReferenceRenamesOptions
+    options?: FixReferenceRenamesOptions,
   ) => void;
   setConfig: (
     configOrTransform: SetOrTransformConfig,
-    options?: SetProjectConfigOptions
+    options?: SetProjectConfigOptions,
   ) => void;
   externalChangeCounter: number;
 }
@@ -35,7 +35,7 @@ export function useProjectConfig(): UseProjectConfigResult {
   const result = React.useContext(ProjectConfigContext);
   if (!result) {
     throw new Error(
-      `useProjectConfig must be used within a <ProjectConfigProvider>`
+      `useProjectConfig must be used within a <ProjectConfigProvider>`,
     );
   }
   return result;

@@ -18,7 +18,7 @@ interface UseRemoteProjectConfigResult {
   saveValue: (
     newValue: string,
     lastModifiedAt?: string,
-    successCallback?: () => void
+    successCallback?: () => void,
   ) => void;
   /**
    * External change counter gets incremented every time the remote config
@@ -87,7 +87,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       }
       setError(err as Error);
       toast.error(
-        `Error downloading project config: ${(err as Error).message}`
+        `Error downloading project config: ${(err as Error).message}`,
       );
     }
   }, [toast, projectId, setProjectId, updateConfig]);
@@ -102,7 +102,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     (
       contents: string,
       lastModifiedAt?: string,
-      successCallback?: () => void
+      successCallback?: () => void,
     ) => {
       if (!projectId) {
         throw new Error('No project ID');
@@ -126,7 +126,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
         .then((result) => {
           if (result.type === 'modified-more-recently') {
             toast.error(
-              'Cannot save because project was modified more recently'
+              'Cannot save because project was modified more recently',
             );
             shouldTriggerRefetch.current = true;
           } else if (result.type === 'success') {
@@ -157,7 +157,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
           }
         });
     },
-    [toast, projectId, file?.lastModifiedAt, downloadConfig]
+    [toast, projectId, file?.lastModifiedAt, downloadConfig],
   );
 
   const [websocketClient, setWebsocketClient] = useState<

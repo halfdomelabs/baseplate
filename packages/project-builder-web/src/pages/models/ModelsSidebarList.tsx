@@ -20,7 +20,7 @@ export function ModelsSidebarList({
 
   const [filterQuery, setFilterQuery] = useState('');
   const filteredModels = models.filter((model) =>
-    model.name.toLowerCase().includes(filterQuery.toLowerCase())
+    model.name.toLowerCase().includes(filterQuery.toLowerCase()),
   );
 
   const sortedModels = _.sortBy(filteredModels, (m) => m.name);
@@ -60,7 +60,7 @@ export function ModelsSidebarList({
                     'block w-full p-2 text-sm hover:bg-background-100 dark:hover:bg-background-700',
                     isActive
                       ? 'bg-background-100 font-semibold text-primary-700 dark:bg-background-700'
-                      : 'font-normal text-foreground-700'
+                      : 'font-normal text-foreground-700',
                   )
                 }
                 title={model.name}
