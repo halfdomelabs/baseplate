@@ -70,8 +70,6 @@ export function ModalRelationsModal({
       relationshipName: needsRelationshipName
         ? relation.foreignRelationName
         : undefined,
-      relationshipType: watchedField.isUnique ? 'oneToOne' : 'oneToMany',
-      isOptional: watchedField.isOptional || false,
       onDelete: relation.onDelete,
       onUpdate: 'Restrict',
     };

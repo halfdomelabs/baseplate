@@ -11,6 +11,7 @@ import {
   AdminCrudTextInputConfig,
   ModelScalarFieldConfig,
 } from '@src/schema/index.js';
+import { isModelRelationOptional } from '@src/schema-utils/model.js';
 
 function compileAdminEnumInput(
   field: AdminCrudEnumInputConfig,
@@ -72,7 +73,7 @@ function compileAdminForeignInput(
     generator: '@halfdomelabs/react/admin/admin-crud-foreign-input',
     label: field.label,
     localRelationName: field.localRelationName,
-    isOptional: relation.isOptional,
+    isOptional: isModelRelationOptional(model, relation),
     localField,
     foreignModelName: relation.modelName,
     labelExpression: field.labelExpression,
@@ -150,12 +151,13 @@ function compileAdminCrudFileInput(
       `Could not find category for relation ${relation.foreignRelationName}`,
     );
   }
+  const isOptional = isModelRelationOptional(model, relation);
 
   return {
     name: field.modelRelation,
     generator: '@halfdomelabs/react/admin/admin-crud-file-input',
     label: field.label,
-    isOptional: relation.isOptional,
+    isOptional,
     category: category.name,
     modelRelation: field.modelRelation,
   };
@@ -182,9 +184,10 @@ function compileAdminCrudEmbeddedLocalInput(
   builder: AppEntryBuilder<AdminAppConfig>,
   crudSectionId: string,
 ): unknown {
-  const localRelation = builder.parsedProject
-    .getModelByName(modelName)
-    .model.relations?.find((r) => r.name === field.localRelation);
+  const model = builder.parsedProject.getModelByName(modelName);
+  const localRelation = model.model.relations?.find(
+    (r) => r.name === field.localRelation,
+  );
 
   if (!localRelation) {
     throw new Error(
@@ -197,7 +200,7 @@ function compileAdminCrudEmbeddedLocalInput(
     generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
     label: field.label,
     modelRelation: field.localRelation,
-    isRequired: !localRelation.isOptional,
+    isRequired: !isModelRelationOptional(model, localRelation),
     embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
   };
 }

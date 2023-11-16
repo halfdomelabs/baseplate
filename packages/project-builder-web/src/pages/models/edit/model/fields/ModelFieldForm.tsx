@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
-import { TbRelationOneToMany, TbRelationOneToOne } from 'react-icons/tb';
+import { TbLink } from 'react-icons/tb';
 
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
@@ -166,11 +166,8 @@ function ModelFieldForm({
         {modelFieldRelation && (
           <Badge.WithIcon
             className="max-w-[100px]"
-            icon={
-              modelFieldRelation.relationshipType === 'oneToOne'
-                ? TbRelationOneToOne
-                : TbRelationOneToMany
-            }
+            variant="secondary"
+            icon={TbLink}
             onClick={() => setIsRelationFormOpen(true)}
           >
             {modelFieldRelation.modelName}

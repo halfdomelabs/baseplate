@@ -5,6 +5,10 @@ import {
   ModelUniqueConstraintConfig,
 } from '../../schema/models/index.js';
 import { ParsedProjectConfig } from '@src/parser/index.js';
+import {
+  isModelRelationOneToOne,
+  isModelRelationOptional,
+} from '@src/schema-utils/model.js';
 
 function buildScalarField(field: ModelScalarFieldConfig): unknown {
   const { options = {} } = field;
@@ -25,32 +29,40 @@ function buildScalarField(field: ModelScalarFieldConfig): unknown {
 }
 
 function buildRelationField(
-  {
+  relationConfig: ModelRelationFieldConfig,
+  parentModel: ModelConfig,
+  parsedProject: ParsedProjectConfig,
+): unknown {
+  const {
     name,
     references,
     modelName,
     foreignRelationName,
     relationshipName,
-    relationshipType,
-    isOptional,
     onDelete,
     onUpdate,
-  }: ModelRelationFieldConfig,
-  parsedProject: ParsedProjectConfig,
-): unknown {
-  const model = parsedProject.getModels().find((m) => m.name === modelName);
-  if (!model) {
-    throw new Error(`Could not find model ${modelName}`);
+  } = relationConfig;
+  const foreignModel = parsedProject
+    .getModels()
+    .find((m) => m.name === modelName);
+  if (!foreignModel) {
+    throw new Error(`Could not find foreign model ${modelName}`);
   }
+
+  const optional = isModelRelationOptional(parentModel, relationConfig);
+  const relationshipType = isModelRelationOneToOne(parentModel, relationConfig)
+    ? 'oneToOne'
+    : 'oneToMany';
+
   return {
     name,
     fields: references.map((r) => r.local),
     references: references.map((r) => r.foreign),
-    modelRef: `${model.feature}/root:$models.${model.name}`,
+    modelRef: `${foreignModel.feature}/root:$models.${foreignModel.name}`,
     foreignRelationName,
     relationshipName,
-    relationshipType,
-    optional: isOptional,
+    relationshipType: relationshipType,
+    optional,
     onDelete,
     onUpdate,
   };
@@ -76,7 +88,7 @@ function buildModel(
     children: {
       fields: model.model.fields?.map(buildScalarField),
       relations: model.model.relations?.map((r) =>
-        buildRelationField(r, parsedProject),
+        buildRelationField(r, model, parsedProject),
       ),
       primaryKey: {
         fields: model.model.primaryKeys,
