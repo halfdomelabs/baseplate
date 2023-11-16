@@ -59,7 +59,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
         }
 
         adminApp.sections = (adminApp.sections ?? []).filter(
-          (section) => !sectionId || section.uid !== sectionId
+          (section) => !sectionId || section.uid !== sectionId,
         );
       });
       navigate(`..`);
@@ -81,11 +81,11 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
         adminApp.sections = _.sortBy(
           [
             ...(adminApp.sections ?? []).filter(
-              (section) => !sectionId || section.uid !== sectionId
+              (section) => !sectionId || section.uid !== sectionId,
             ),
             { ...data, uid },
           ],
-          'name'
+          'name',
         );
       });
       if (!sectionId) {

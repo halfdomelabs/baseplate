@@ -54,7 +54,7 @@ const PARSEABLE_EXTENSIONS = [
   '.yaml',
 ];
 
-const PRETTIER_VERSION = '3.0.3';
+const PRETTIER_VERSION = '3.1.0';
 
 interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;
@@ -159,7 +159,7 @@ const PrettierGenerator = createGeneratorWithChildren({
 
         node.addScripts({
           'prettier:check': 'prettier --check .',
-          'prettier:format': 'prettier -w .',
+          'prettier:write': 'prettier -w .',
         });
 
         await builder.apply(

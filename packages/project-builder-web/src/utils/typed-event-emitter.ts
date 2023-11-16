@@ -4,7 +4,7 @@ type TypeConfig = Record<string, unknown>;
 export interface TypedEventEmitter<T extends TypeConfig> {
   on<K extends keyof T>(
     eventName: K,
-    listener: (payload: T[K]) => void
+    listener: (payload: T[K]) => void,
   ): () => void;
   emit<K extends keyof T>(eventName: K, payload: T[K]): void;
 }
@@ -30,7 +30,7 @@ export function createTypedEventEmitter<
       return () => {
         listenerMap.set(
           eventName,
-          listenerMap.get(eventName)?.filter((l) => l !== listener) ?? []
+          listenerMap.get(eventName)?.filter((l) => l !== listener) ?? [],
         );
       };
     },
@@ -46,7 +46,7 @@ export class TypedEventEmitterBase<T extends TypeConfig> {
 
   public on<K extends keyof T>(
     eventName: K,
-    listener: (payload: T[K]) => void
+    listener: (payload: T[K]) => void,
   ): () => void {
     return this.typedEventEmitter.on(eventName, listener);
   }

@@ -20,7 +20,7 @@ const ButtonGroupBase = React.forwardRef<
         ref={ref}
       />
     );
-  }
+  },
 );
 
 ButtonGroupBase.displayName = 'ButtonGroup';
@@ -33,13 +33,13 @@ const ButtonGroupButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
           '[&:not(:first-child)]:rounded-l-none [&:not(:last-child)]:rounded-r-none [&:not(:last-child)]:border-r-0',
           // allow ring to show above neighbors
           'focus-visible:z-10',
-          className
+          className,
         )}
         ref={ref}
         {...props}
       />
     );
-  }
+  },
 );
 
 ButtonGroupButton.displayName = 'ButtonGroupButton';

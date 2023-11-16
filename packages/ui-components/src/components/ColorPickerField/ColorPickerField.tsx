@@ -42,7 +42,7 @@ function ColorPickerFieldFn(
     hideText,
     formatLabel,
   }: ColorPickerFieldProps,
-  ref: ForwardedRef<HTMLButtonElement>
+  ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const addWrapper = label ?? error ?? description;
 
@@ -57,7 +57,7 @@ function ColorPickerFieldFn(
             'items-center space-x-2',
             hideText ? 'justify-center' : undefined,
             disabled ? 'opacity-75' : undefined,
-            addWrapper ? null : className
+            addWrapper ? null : className,
           )}
           id={id}
           ref={ref}
@@ -136,7 +136,7 @@ function ColorPickerFieldControllerFn<
     onChange: providedOnChange,
     ...rest
   }: ColorPickerFieldControllerProps<TFieldValues, TFieldName>,
-  ref: ForwardedRef<HTMLButtonElement>
+  ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const {
     field: { value, onChange },
@@ -161,7 +161,7 @@ function ColorPickerFieldControllerFn<
 }
 
 const ColorPickerFieldController = genericForwardRef(
-  ColorPickerFieldControllerFn
+  ColorPickerFieldControllerFn,
 );
 
 export const ColorPickerField = Object.assign(ColorPickerFieldRoot, {

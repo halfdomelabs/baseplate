@@ -35,7 +35,7 @@ const SelectTrigger = React.forwardRef<
     className={cn(
       inputVariants(),
       'group items-center justify-between data-[placeholder]:text-muted-foreground',
-      className
+      className,
     )}
     {...props}
   >
@@ -58,7 +58,7 @@ const SelectContent = React.forwardRef<
 >(
   (
     { className, children, position = 'popper', maxHeight = '320px', ...props },
-    ref
+    ref,
   ) => {
     return (
       <SelectPrimitive.Portal>
@@ -68,7 +68,7 @@ const SelectContent = React.forwardRef<
             selectContentVariants({
               popper: position === 'popper' ? 'active' : 'none',
             }),
-            className
+            className,
           )}
           position={position}
           {...props}
@@ -83,7 +83,7 @@ const SelectContent = React.forwardRef<
                   'h-full w-full rounded-[inherit] p-1',
                   position === 'popper'
                     ? 'max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full min-w-[var(--radix-select-trigger-width)]'
-                    : 'max-h-[var(--max-popper-height)]'
+                    : 'max-h-[var(--max-popper-height)]',
                 )}
                 style={
                   {
@@ -100,7 +100,7 @@ const SelectContent = React.forwardRef<
         </SelectPrimitive.Content>
       </SelectPrimitive.Portal>
     );
-  }
+  },
 );
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 

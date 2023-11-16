@@ -53,7 +53,7 @@ function EmbeddedObjectInput<InputType>({
           setValueToEdit(
             (value || defaultValue) as DefaultValues<
               Exclude<InputType, undefined | null>
-            >
+            >,
           )
         }
       >

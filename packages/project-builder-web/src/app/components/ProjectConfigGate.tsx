@@ -65,7 +65,7 @@ export function ProjectConfigGate({
       websocketClient?.on('connected', () => {
         refreshVersion().catch((err) => logError(err));
       }),
-    [websocketClient, refreshVersion]
+    [websocketClient, refreshVersion],
   );
 
   const savedConfigRef = useRef<{
@@ -96,7 +96,7 @@ export function ProjectConfigGate({
         logger.log(
           `Applied migrations:\n${appliedMigrations
             .map((m) => `${m.version}: ${m.description}`)
-            .join('\n')}`
+            .join('\n')}`,
         );
       }
       // validate config
@@ -115,14 +115,14 @@ export function ProjectConfigGate({
       if (err instanceof SyntaxError) {
         return {
           configError: new UserVisibleError(
-            'The project configuration is not a valid JSON file. Please check the file and try again.'
+            'The project configuration is not a valid JSON file. Please check the file and try again.',
           ),
         };
       }
       if (err instanceof ZodError) {
         return {
           configError: new UserVisibleError(
-            `The project configuration is not valid: ${formatZodError(err)}`
+            `The project configuration is not valid: ${formatZodError(err)}`,
           ),
         };
       }
@@ -137,11 +137,11 @@ export function ProjectConfigGate({
     }
     function setConfig(
       newConfig: SetOrTransformConfig,
-      { fixReferences }: SetProjectConfigOptions = {}
+      { fixReferences }: SetProjectConfigOptions = {},
     ): void {
       if (!parsedProject || !projectId) {
         throw new Error(
-          'Cannot set config when project config is not yet loaded'
+          'Cannot set config when project config is not yet loaded',
         );
       }
 
@@ -159,7 +159,7 @@ export function ProjectConfigGate({
           oldProjectConfig,
           validatedProjectConfig,
           getProjectConfigReferences,
-          typeof fixReferences === 'boolean' ? undefined : fixReferences
+          typeof fixReferences === 'boolean' ? undefined : fixReferences,
         );
       }
 
@@ -194,7 +194,7 @@ export function ProjectConfigGate({
 
   const websocketClientResult = useMemo(
     () => ({ websocketClient }),
-    [websocketClient]
+    [websocketClient],
   );
 
   const compositeError = error || configError;
@@ -207,7 +207,7 @@ export function ProjectConfigGate({
             compositeError,
             `We could not load the project config (${
               selectedProject?.directory || 'unknown'
-            }).`
+            }).`,
           )
         }
         header="Failed to load project config"
@@ -244,12 +244,12 @@ export function ProjectConfigGate({
             };
             saveRemoteConfig(
               prettyStableStringify(
-                projectConfigSchema.parse(newProjectConfig)
+                projectConfigSchema.parse(newProjectConfig),
               ),
               undefined,
               () => {
                 toast.success('Successfully created project!');
-              }
+              },
             );
           }}
         />

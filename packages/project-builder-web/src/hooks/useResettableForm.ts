@@ -14,7 +14,7 @@ export function useResettableForm<
   TFieldValues extends FieldValues = FieldValues,
   TContext = unknown,
 >(
-  props?: UseFormProps<TFieldValues, TContext>
+  props?: UseFormProps<TFieldValues, TContext>,
 ): UseFormReturn<TFieldValues, TContext> {
   const formProps = useForm(props);
   const { reset, formState } = formProps;

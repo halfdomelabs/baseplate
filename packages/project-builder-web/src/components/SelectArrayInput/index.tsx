@@ -32,7 +32,7 @@ function SelectArrayInput({
     ? options.filter((o) => !values.includes(o.value))
     : options;
   const [selectedValue, setSelectedValue] = useState(
-    availableOptions[0]?.value || ''
+    availableOptions[0]?.value || '',
   );
   useEffect(() => {
     if (!availableOptions.some((option) => option.value === selectedValue)) {

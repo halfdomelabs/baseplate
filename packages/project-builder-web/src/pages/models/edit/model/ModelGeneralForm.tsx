@@ -21,7 +21,7 @@ export function ModelGeneralForm({
     (f) => ({
       label: f.name,
       value: f.name,
-    })
+    }),
   );
 
   return (

@@ -21,7 +21,7 @@ interface UseConfirmDialogResult {
 interface UseConfirmDialogState {
   confirmOptions?: UseConfirmDialogRequestOptions;
   setConfirmOptions: (
-    options: UseConfirmDialogRequestOptions | undefined
+    options: UseConfirmDialogRequestOptions | undefined,
   ) => void;
 }
 
@@ -32,7 +32,7 @@ export const useConfirmDialogState = create<UseConfirmDialogState>((set) => ({
 
 export function useConfirmDialog(): UseConfirmDialogResult {
   const setConfirmOptions = useConfirmDialogState(
-    (state) => state.setConfirmOptions
+    (state) => state.setConfirmOptions,
   );
 
   return {
@@ -40,7 +40,7 @@ export function useConfirmDialog(): UseConfirmDialogResult {
       (request) => {
         setConfirmOptions(request);
       },
-      [setConfirmOptions]
+      [setConfirmOptions],
     ),
     clearConfirm: useCallback(() => {
       setConfirmOptions(undefined);

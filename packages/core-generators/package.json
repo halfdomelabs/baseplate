@@ -23,24 +23,24 @@
     "@types/prettier": "^2.7.3",
     "@types/ramda": "^0.29.3",
     "@types/semver": "^7.5.0",
-    "concurrently": "^8.2.0",
+    "concurrently": "8.2.2",
     "cpx2": "^5.0.0",
     "tsc-alias": "1.8.8",
     "typescript": "5.1.6",
-    "vitest": "0.34.4"
+    "vitest": "0.34.6"
   },
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:tsc": "tsc && tsc-alias",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
     "watch": "concurrently pnpm:watch:*",
-    "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
+    "watch:tsc": "pnpm build && (concurrently \"tsc --preserveWatchOutput -w\" \"tsc-alias -w\")",
     "watch:templates": "pnpm build:templates --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "prettier:check": "prettier --check .",
-    "prettier:format": "prettier -w ."
+    "prettier:write": "prettier -w ."
   },
   "dependencies": {
     "@halfdomelabs/sync": "workspace:*",
@@ -49,7 +49,7 @@
     "fs-extra": "11.1.1",
     "is-core-module": "2.12.1",
     "lodash": "^4.17.21",
-    "prettier": "3.0.3",
+    "prettier": "3.1.0",
     "ramda": "^0.28.0",
     "resolve": "^1.22.2",
     "semver": "^7.5.4",

@@ -20,7 +20,7 @@ export function EnumsSidebarList({
 
   const [filterQuery, setFilterQuery] = useState('');
   const filteredEnums = enums.filter((item) =>
-    item.name.toLowerCase().includes(filterQuery.toLowerCase())
+    item.name.toLowerCase().includes(filterQuery.toLowerCase()),
   );
 
   const sortedEnums = _.sortBy(filteredEnums, (m) => m.name);
@@ -60,7 +60,7 @@ export function EnumsSidebarList({
                     'block w-full p-2 text-sm hover:bg-background-100 dark:hover:bg-background-700',
                     isActive
                       ? 'bg-background-100 font-semibold text-primary-700 dark:bg-background-700'
-                      : 'font-normal text-foreground-700'
+                      : 'font-normal text-foreground-700',
                   )
                 }
                 title={item.name}

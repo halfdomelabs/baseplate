@@ -58,7 +58,7 @@ export function ThemePaletteEditor({
         onShadesChange?.(COLOR_PALETTES[name]);
       }
     },
-    [setValue, onShadesChange, type]
+    [setValue, onShadesChange, type],
   );
 
   const handleCustomPaletteGenerate = (): void => {

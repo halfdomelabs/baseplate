@@ -41,7 +41,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
     className,
     ...props
   }: ComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>
+  ref: ForwardedRef<HTMLDivElement>,
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
   const selectedValue = (() => {
@@ -116,7 +116,7 @@ const ComboboxFieldController = genericForwardRef(
       ...rest
     }: ComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
-    ref: ForwardedRef<HTMLDivElement>
+    ref: ForwardedRef<HTMLDivElement>,
   ): JSX.Element {
     const {
       field,
@@ -141,7 +141,7 @@ const ComboboxFieldController = genericForwardRef(
         {...restProps}
       />
     );
-  }
+  },
 );
 
 export const ComboboxField = Object.assign(ComboboxFieldRoot, {

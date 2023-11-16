@@ -67,7 +67,7 @@ function ComboboxRoot({
   const [searchQuery, setSearchQuery] = useControlledState(
     defaultSearchQuery,
     onSearchQueryChange,
-    ''
+    '',
   );
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -97,7 +97,7 @@ function ComboboxRoot({
       inputId,
       inputRef,
     }),
-    [value, inputId, searchQuery, setSearchQuery, setValue, open]
+    [value, inputId, searchQuery, setSearchQuery, setValue, open],
   );
 
   return (
@@ -116,7 +116,7 @@ export function useComboboxContext(): ComboboxContextValue {
 
   if (!value) {
     throw new Error(
-      `useComboboxContext must be used inside a ComboboxContext provider`
+      `useComboboxContext must be used inside a ComboboxContext provider`,
     );
   }
 
@@ -151,7 +151,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             setOpen(true);
           }
         },
-        [setOpen]
+        [setOpen],
       );
 
     return (
@@ -187,7 +187,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
               searchQuery ? 'hidden' : '',
               // the top-[1px] is a hack to prevent the text from jumping when the
               // input is focused
-              'pointer-events-none absolute inset-0 top-[1px] overflow-hidden text-ellipsis'
+              'pointer-events-none absolute inset-0 top-[1px] overflow-hidden text-ellipsis',
             )}
           >
             {selectedLabel}
@@ -212,7 +212,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
         </div>
       </PopoverAnchor>
     );
-  }
+  },
 );
 
 ComboboxInput.displayName = 'ComboboxInput';
@@ -257,7 +257,7 @@ function ComboboxContent({
           <ScrollAreaPrimitive.Viewport
             className={cn(
               'h-full w-full rounded-[inherit] p-1',
-              'max-h-[min(var(--max-popover-height),var(--radix-popover-content-available-height))] w-full min-w-[var(--radix-popover-trigger-width)]'
+              'max-h-[min(var(--max-popover-height),var(--radix-popover-content-available-height))] w-full min-w-[var(--radix-popover-trigger-width)]',
             )}
             style={
               {
@@ -280,7 +280,7 @@ type ComboboxEmptyProps = React.HTMLAttributes<HTMLDivElement>;
 const ComboboxEmpty = React.forwardRef<HTMLDivElement, ComboboxEmptyProps>(
   ({ className, ...props }: ComboboxEmptyProps, ref) => (
     <Command.Empty className={cn('p-2', className)} {...props} ref={ref} />
-  )
+  ),
 );
 
 ComboboxEmpty.displayName = 'ComboboxEmpty';
@@ -314,12 +314,12 @@ const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         <MdCheck
           className={cn(
             selectCheckVariants(),
-            value === selectedValue ? 'opacity-100' : 'opacity-0'
+            value === selectedValue ? 'opacity-100' : 'opacity-0',
           )}
         />
       </Command.Item>
     );
-  }
+  },
 );
 
 ComboboxItem.displayName = 'ComboboxItem';

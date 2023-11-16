@@ -70,7 +70,7 @@ function ModelRelationForm({
     // check for references
     if (originalModel) {
       const originalRelation = originalModel.model.relations?.find(
-        (f) => f.uid === watchedField.uid
+        (f) => f.uid === watchedField.uid,
       );
       if (originalRelation) {
         const references =
@@ -83,7 +83,7 @@ function ModelRelationForm({
               originalRelation.name
             } as it is being used in ${references
               .map((r) => r.path)
-              .join(', ')}`
+              .join(', ')}`,
           );
         }
       }

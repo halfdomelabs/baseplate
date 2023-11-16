@@ -5,17 +5,17 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  */
 export function useControlledState<T>(
   value: T | undefined,
-  setValue: ((value: T) => void) | undefined
+  setValue: ((value: T) => void) | undefined,
 ): [T | undefined, (value: T) => void];
 export function useControlledState<T>(
   value: T | undefined,
   setValue: ((value: T) => void) | undefined,
-  defaultValue: T
+  defaultValue: T,
 ): [T, (value: T) => void];
 export function useControlledState<T>(
   value: T | undefined,
   setValue: ((value: T) => void) | undefined,
-  defaultValue?: T
+  defaultValue?: T,
 ): [T, (value: T) => void] {
   const isControlled = value !== undefined;
   const isControlledRef = useRef(isControlled);
@@ -27,7 +27,7 @@ export function useControlledState<T>(
       if (isControlledRef.current !== isControlled) {
         // eslint-disable-next-line no-console
         console.warn(
-          'Component is changing from controlled to uncontrolled (or visa versa). Component should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled Combobox for the lifetime of the component. Check the `value` prop.'
+          'Component is changing from controlled to uncontrolled (or visa versa). Component should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled Combobox for the lifetime of the component. Check the `value` prop.',
         );
       }
     }

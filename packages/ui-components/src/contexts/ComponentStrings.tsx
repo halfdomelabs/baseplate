@@ -6,7 +6,7 @@ import {
 } from '@src/constants/strings';
 
 const ComponentStringsContext = React.createContext<ComponentStrings>(
-  DEFAULT_COMPONENT_STRINGS
+  DEFAULT_COMPONENT_STRINGS,
 );
 
 export const useComponentStrings = (): ComponentStrings =>

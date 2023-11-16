@@ -30,7 +30,7 @@ export interface SwitchFieldProps
 const SwitchFieldRoot = React.forwardRef<HTMLDivElement, SwitchFieldProps>(
   (
     { label, description, error, onChange, value, className, ...props },
-    ref
+    ref,
   ) => {
     return (
       <FormItem ref={ref} error={error} className={cn('space-y-2', className)}>
@@ -52,7 +52,7 @@ const SwitchFieldRoot = React.forwardRef<HTMLDivElement, SwitchFieldProps>(
         {error && <FormItem.Error>{error}</FormItem.Error>}
       </FormItem>
     );
-  }
+  },
 );
 
 SwitchFieldRoot.displayName = 'SwitchField';
@@ -77,7 +77,7 @@ const SwitchFieldController = genericForwardRef(
       registerOptions,
       ...rest
     }: SwitchFieldControllerProps<TFieldValues, TFieldName>,
-    ref: ForwardedRef<HTMLInputElement>
+    ref: ForwardedRef<HTMLInputElement>,
   ): JSX.Element => {
     const {
       field: { onChange, value },
@@ -100,7 +100,7 @@ const SwitchFieldController = genericForwardRef(
       />
     );
   },
-  'SwitchFieldController'
+  'SwitchFieldController',
 );
 
 export const SwitchField = Object.assign(SwitchFieldRoot, {

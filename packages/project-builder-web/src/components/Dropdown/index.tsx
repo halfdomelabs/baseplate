@@ -34,7 +34,7 @@ function Dropdown({
               ref={setReferenceElement}
               className={classNames(
                 'inline-flex w-44 items-center rounded-lg bg-blue-700 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800',
-                buttonClassName
+                buttonClassName,
               )}
             >
               {buttonLabel}
@@ -89,7 +89,7 @@ Dropdown.ButtonItem = function DropdownItem({
           onClick={onClick}
           className={classNames(
             'block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',
-            className
+            className,
           )}
         >
           {children}

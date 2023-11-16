@@ -13,7 +13,7 @@ export function useWebsocketClient(): UseWebsocketClientResult {
   const result = React.useContext(WebsocketClientContext);
   if (!result) {
     throw new Error(
-      `useWebsocketCLient must be used within a <WebsocketClientContext>`
+      `useWebsocketCLient must be used within a <WebsocketClientContext>`,
     );
   }
   return result;

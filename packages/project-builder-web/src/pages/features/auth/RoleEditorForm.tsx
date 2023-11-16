@@ -34,7 +34,7 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
     roles?.forEach((role, idx) => {
       const inherits = role.inherits ?? [];
       const permittedInherits = inherits.filter((inherit) =>
-        roles.find((r) => r.name === inherit)
+        roles.find((r) => r.name === inherit),
       );
       if (permittedInherits.length !== inherits.length) {
         update(idx, { ...role, inherits: permittedInherits });

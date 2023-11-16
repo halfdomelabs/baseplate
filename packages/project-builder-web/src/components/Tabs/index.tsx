@@ -28,7 +28,7 @@ Tabs.List = function TabsList({
       as="div"
       className={classNames(
         'border-b border-gray-200 text-center text-sm font-semibold text-gray-500 dark:border-gray-700 dark:text-gray-400',
-        className
+        className,
       )}
     >
       <ul className="-mb-px flex flex-wrap">{children}</ul>
@@ -56,7 +56,7 @@ Tabs.Tab = function TabsTab({
                 selected,
               'hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300':
                 !selected,
-            }
+            },
           )}
         >
           {children}
@@ -79,7 +79,7 @@ Tabs.Panels = function TabsPanels({
     <Tab.Panels
       className={classNames(
         'rounded-b-lg border border-gray-200 bg-gray-100 p-4',
-        className
+        className,
       )}
     >
       {children}

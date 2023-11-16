@@ -11,7 +11,7 @@ function NavigationTabs({ className, children }: Props): JSX.Element {
     <div
       className={classNames(
         'border-b border-gray-200 text-center text-sm font-semibold text-gray-500 dark:border-gray-700 dark:text-gray-400',
-        className
+        className,
       )}
     >
       <ul className="-mb-px flex flex-wrap">{children}</ul>
@@ -43,7 +43,7 @@ NavigationTabs.Tab = function TabsTab({
               selected,
             'hover:border-gray-300 hover:text-gray-600 dark:hover:text-gray-300':
               !selected,
-          }
+          },
         )}
       >
         {children}

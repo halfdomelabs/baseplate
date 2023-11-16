@@ -6,11 +6,11 @@ export interface FieldProps {
 
 export type SelectOptionLabelRenderer<OptionType> = (
   value: OptionType,
-  options: { selected: boolean }
+  options: { selected: boolean },
 ) => React.ReactNode;
 
 export type SelectOptionStringExtractor<OptionType> = (
-  value: OptionType
+  value: OptionType,
 ) => string;
 
 export interface SelectOptionProps<OptionType> {

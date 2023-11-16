@@ -9,10 +9,10 @@ import React, { forwardRef } from 'react';
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function genericForwardRef<T, P = {}>(
   render: (props: P, ref: React.Ref<T>) => React.ReactElement | null,
-  displayName?: string
+  displayName?: string,
 ): (props: P & React.RefAttributes<T>) => React.ReactElement | null {
   const newElem = forwardRef(render) as (
-    props: P & React.RefAttributes<T>
+    props: P & React.RefAttributes<T>,
   ) => React.ReactElement | null;
 
   if (displayName) {

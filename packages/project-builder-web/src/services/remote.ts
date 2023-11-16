@@ -68,7 +68,7 @@ export async function getVersion(): Promise<string> {
     return 'preview';
   }
   const response = await axiosClient.get<{ cliVersion: string }>(
-    '/api/version'
+    '/api/version',
   );
   return response.data.cliVersion;
 }
@@ -79,7 +79,7 @@ export interface FilePayload {
 }
 
 export async function downloadProjectConfig(
-  id: string
+  id: string,
 ): Promise<FilePayload | null> {
   if (IS_PREVIEW) {
     return {
@@ -89,7 +89,7 @@ export async function downloadProjectConfig(
   }
   const response = await axiosClient.get<{ file: FilePayload | null }>(
     `/api/project-json/${id}`,
-    { baseURL: URL_BASE }
+    { baseURL: URL_BASE },
   );
   return response.data.file;
 }
@@ -100,7 +100,7 @@ type WriteResult =
 
 export async function uploadProjectConfig(
   id: string,
-  contents: FilePayload
+  contents: FilePayload,
 ): Promise<WriteResult> {
   if (IS_PREVIEW) {
     return { type: 'success', lastModifiedAt: new Date().toISOString() };
@@ -110,7 +110,7 @@ export async function uploadProjectConfig(
     contents,
     {
       baseURL: URL_BASE,
-    }
+    },
   );
 
   return response.data;
@@ -206,12 +206,12 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
               new Error(
                 `Unknown message type from websocket ${
                   (message as { type: string }).type
-                }`
-              )
+                }`,
+              ),
             );
             break;
         }
-      }
+      },
     );
 
     this.socket.addEventListener('open', () => {
@@ -245,7 +245,7 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
       JSON.stringify({
         type: 'subscribe',
         id,
-      })
+      }),
     );
   }
 

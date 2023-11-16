@@ -35,7 +35,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
     (f) => ({
       label: f.name,
       value: f.name,
-    })
+    }),
   );
 
   const {
@@ -84,7 +84,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
                 if (!values[i].friendlyName && values[i].name) {
                   setValue(
                     `values.${i}.friendlyName`,
-                    underscoreToTitleCase(values[i].name)
+                    underscoreToTitleCase(values[i].name),
                   );
                 }
               }}

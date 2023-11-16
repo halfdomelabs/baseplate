@@ -14,11 +14,11 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const tags = Array.from({ length: 50 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`
+  (_, i, a) => `v1.2.0-beta.${a.length - i}`,
 );
 
 function ScrollAreaContainer(
-  args: Omit<ScrollAreaProps, 'children'>
+  args: Omit<ScrollAreaProps, 'children'>,
 ): JSX.Element {
   return (
     <ScrollArea className="h-72 w-48 rounded-md border" {...args}>

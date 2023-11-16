@@ -48,7 +48,7 @@ export const Default: Story = {
 };
 
 function ControlledDialogContainer(
-  args: Omit<DialogProps, 'children' | 'open'>
+  args: Omit<DialogProps, 'children' | 'open'>,
 ): JSX.Element {
   const [open, setOpen] = useState(false);
 

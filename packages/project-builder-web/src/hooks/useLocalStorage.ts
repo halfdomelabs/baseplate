@@ -3,11 +3,11 @@ import { useCallback, useState } from 'react';
 const ALLOWED_KEYS = ['saved-app-config'] as const;
 
 export function useLocalStorage(
-  key: (typeof ALLOWED_KEYS)[number]
+  key: (typeof ALLOWED_KEYS)[number],
 ): [string, (value: string) => void] {
   if (!ALLOWED_KEYS.includes(key)) {
     throw new Error(
-      `useLocalStorage: key must be one of ${ALLOWED_KEYS.join(', ')}`
+      `useLocalStorage: key must be one of ${ALLOWED_KEYS.join(', ')}`,
     );
   }
 
@@ -17,7 +17,7 @@ export function useLocalStorage(
       setValue(newValue);
       localStorage.setItem(key, newValue);
     },
-    [key]
+    [key],
   );
   return [value, saveValue];
 }

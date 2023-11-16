@@ -39,9 +39,9 @@ function ModelEditSchemaPage(): JSX.Element {
             .map((relation) => ({
               model,
               relation,
-            })) ?? []
+            })) ?? [],
       ),
-    [parsedProject, originalModel]
+    [parsedProject, originalModel],
   );
   const foreignRelationOptions = foreignRelations?.map((f) => ({
     label: f.relation.foreignRelationName,
