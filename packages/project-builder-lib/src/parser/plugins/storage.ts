@@ -116,8 +116,6 @@ export const StoragePlugin: ParserPlugin = {
             references: [{ local: 'uploaderId', foreign: 'id' }],
             modelName: auth.userModel,
             foreignRelationName: 'files',
-            relationshipType: 'oneToMany',
-            isOptional: true,
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
             isLocked: true,

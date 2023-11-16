@@ -331,6 +331,9 @@ importers:
       inflection:
         specifier: 2.0.1
         version: 2.0.1
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       nanoid:
         specifier: 5.0.3
         version: 5.0.3
@@ -347,6 +350,9 @@ importers:
       '@types/culori':
         specifier: ^2.0.1
         version: 2.0.1
+      '@types/lodash':
+        specifier: 4.14.196
+        version: 4.14.196
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15

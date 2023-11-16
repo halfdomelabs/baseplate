@@ -67,8 +67,6 @@ export const Auth0Plugin: ParserPlugin = {
         references: [{ local: 'userId', foreign: 'id' }],
         modelName: auth.userModel,
         foreignRelationName: 'roles',
-        relationshipType: 'oneToMany',
-        isOptional: false,
         onDelete: 'Cascade',
         onUpdate: 'Restrict',
         isLocked: true,

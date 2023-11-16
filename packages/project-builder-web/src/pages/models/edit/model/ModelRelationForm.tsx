@@ -9,10 +9,8 @@ import { UseFormReturn } from 'react-hook-form';
 
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
-import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
-import { setUndefinedIfEmpty } from 'src/utils/form';
 
 interface Props {
   className?: string;
@@ -25,10 +23,6 @@ interface Props {
 
 function formatFieldAttributes(field: ModelRelationFieldConfig): string {
   const attrStrings: string[] = [];
-  if (field.isOptional) attrStrings.push('optional');
-  if (field.relationshipName)
-    attrStrings.push(`name-${field.relationshipName}`);
-  if (field.relationshipType) attrStrings.push(field.relationshipType);
   if (field.onDelete)
     attrStrings.push(`delete-${field.onDelete.toLowerCase()}`);
   if (field.onUpdate)
@@ -40,11 +34,6 @@ const REFERENTIAL_ACTION_OPTIONS = REFERENTIAL_ACTIONS.map((action) => ({
   label: action,
   value: action,
 }));
-
-const RELATIONSHIP_TYPE_OPTIONS = [
-  { label: 'One to One', value: 'oneToOne' },
-  { label: 'One to Many', value: 'oneToMany' },
-];
 
 function ModelRelationForm({
   className,
@@ -139,26 +128,6 @@ function ModelRelationForm({
             className="w-full"
             register={register(`model.relations.${idx}.foreignRelationName`)}
             error={relationErrors?.name?.message}
-          />
-          <TextInput.Labelled
-            label="Relationship Name"
-            className="w-full"
-            register={register(`model.relations.${idx}.relationshipName`, {
-              setValueAs: setUndefinedIfEmpty,
-            })}
-            error={relationErrors?.name?.message}
-          />
-          <SelectInput.LabelledController
-            label="Relationship Type"
-            className="w-full"
-            control={control}
-            name={`model.relations.${idx}.relationshipType`}
-            options={RELATIONSHIP_TYPE_OPTIONS}
-          />
-          <CheckedInput.LabelledController
-            label="Is Optional?"
-            control={control}
-            name={`model.relations.${idx}.isOptional`}
           />
           <div className="flex flex-row space-x-4">
             <SelectInput.LabelledController

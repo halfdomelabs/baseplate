@@ -34,12 +34,16 @@ function SortableItem({ id, children }: SortableItemProps): JSX.Element {
       ref={setNodeRef}
       style={style}
     >
-      <div className="space-x-2" {...attributes} {...listeners}>
-        <Button variant="ghost" size="icon">
+      <div
+        className="flex w-10 items-center justify-center"
+        {...attributes}
+        {...listeners}
+      >
+        <Button className="cursor-grab" variant="ghost" size="icon">
           <Button.Icon icon={RxDragHandleHorizontal} />
         </Button>
       </div>
-      <div className="w-full">{children}</div>
+      <div className="flex-1">{children}</div>
     </div>
   );
 }
