@@ -36,7 +36,7 @@
     "build": "pnpm build:lib",
     "build:lib": "tsc -p tsconfig.build.json && tsc-alias",
     "build:storybook": "storybook build",
-    "watch": "tsc --preserveWatchOutput --watch -p tsconfig.build.json & tsc-alias --watch",
+    "watch": "pnpm build && (concurrently \"tsc -p tsconfig.build.json --preserveWatchOutput -w\" \"tsc-alias -w\")",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx,.mdx ./",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",

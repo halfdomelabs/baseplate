@@ -28,7 +28,7 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
-    "watch": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
+    "watch": "pnpm build && (concurrently \"tsc --preserveWatchOutput -w\" \"tsc-alias -w\")",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",

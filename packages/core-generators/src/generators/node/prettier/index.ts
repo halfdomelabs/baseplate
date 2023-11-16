@@ -54,7 +54,7 @@ const PARSEABLE_EXTENSIONS = [
   '.yaml',
 ];
 
-const PRETTIER_VERSION = '3.0.3';
+const PRETTIER_VERSION = '3.1.0';
 
 interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;

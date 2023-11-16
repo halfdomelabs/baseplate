@@ -31,7 +31,7 @@
     "build:tsc": "tsc && tsc-alias",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
     "watch": "concurrently pnpm:watch:*",
-    "watch:tsc": "tsc --preserveWatchOutput --watch & tsc-alias --watch",
+    "watch:tsc": "pnpm build && (concurrently \"tsc --preserveWatchOutput -w\" \"tsc-alias -w\")",
     "watch:templates": "pnpm build:templates --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
