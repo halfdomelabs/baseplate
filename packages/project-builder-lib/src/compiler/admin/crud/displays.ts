@@ -5,6 +5,7 @@ import {
   AdminCrudForeignDisplayConfig,
   AdminCrudTextDisplayConfig,
 } from '@src/schema/index.js';
+import { isModelRelationOptional } from '@src/schema-utils/model.js';
 
 function compileAdminCrudForeignDisplay(
   field: AdminCrudForeignDisplayConfig,
@@ -30,7 +31,7 @@ function compileAdminCrudForeignDisplay(
   return {
     name: field.localRelationName,
     generator: '@halfdomelabs/react/admin/admin-crud-foreign-display',
-    isOptional: relation.isOptional,
+    isOptional: isModelRelationOptional(model, relation),
     localField,
     foreignModelName: relation.modelName,
     labelExpression: field.labelExpression,
