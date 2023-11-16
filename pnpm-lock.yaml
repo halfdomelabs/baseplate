@@ -12,7 +12,7 @@ importers:
         specifier: ^2.26.2
         version: 2.26.2
       '@halfdomelabs/tools':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:packages/tools
     devDependencies:
       check-dependency-version-consistency:
@@ -138,8 +138,8 @@ importers:
         specifier: ^7.5.0
         version: 7.5.1
       concurrently:
-        specifier: ^8.2.0
-        version: 8.2.0
+        specifier: 8.2.2
+        version: 8.2.2
       cpx2:
         specifier: ^5.0.0
         version: 5.0.0
@@ -205,8 +205,8 @@ importers:
         specifier: ^7.5.0
         version: 7.5.1
       concurrently:
-        specifier: ^8.2.0
-        version: 8.2.0
+        specifier: 8.2.2
+        version: 8.2.2
       cpx2:
         specifier: ^5.0.0
         version: 5.0.0
@@ -353,6 +353,9 @@ importers:
       '@types/ramda':
         specifier: ^0.29.3
         version: 0.29.3
+      concurrently:
+        specifier: 8.2.2
+        version: 8.2.2
       tsc-alias:
         specifier: 1.8.8
         version: 1.8.8
@@ -578,8 +581,8 @@ importers:
         specifier: ^2.0.3
         version: 2.0.3
       concurrently:
-        specifier: ^8.2.0
-        version: 8.2.0
+        specifier: 8.2.2
+        version: 8.2.2
       cpx2:
         specifier: ^5.0.0
         version: 5.0.0
@@ -641,6 +644,9 @@ importers:
       '@types/toposort':
         specifier: ^2.0.3
         version: 2.0.3
+      concurrently:
+        specifier: 8.2.2
+        version: 8.2.2
       memfs:
         specifier: 4.2.0
         version: 4.2.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
@@ -823,6 +829,9 @@ importers:
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.31)
+      concurrently:
+        specifier: 8.2.2
+        version: 8.2.2
       postcss:
         specifier: 8.4.31
         version: 8.4.31
@@ -7218,8 +7227,8 @@ packages:
       typedarray: 0.0.6
     dev: true
 
-  /concurrently@8.2.0:
-    resolution: {integrity: sha512-nnLMxO2LU492mTUj9qX/az/lESonSZu81UznYDoXtz1IQf996ixVqPAgHXwvHiHCAef/7S8HIK+fTFK7Ifk8YA==}
+  /concurrently@8.2.2:
+    resolution: {integrity: sha512-1dP4gpXFhei8IOtlXRE/T/4H88ElHgTiUzh71YUmtjTEHMSRS2Z/fgOxHSxxusGHogsRfxNq1vyAwxSC+EVyDg==}
     engines: {node: ^14.13.0 || >=16.0.0}
     hasBin: true
     dependencies:
