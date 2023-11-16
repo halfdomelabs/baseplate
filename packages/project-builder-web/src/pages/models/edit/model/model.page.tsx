@@ -89,8 +89,6 @@ function ModelEditModelPage(): JSX.Element {
             name: '',
             references: [{ local: '', foreign: '' }],
             modelName: '',
-            relationshipType: 'oneToMany',
-            isOptional: false,
             onDelete: 'Cascade',
             onUpdate: 'Restrict',
             foreignRelationName: '',
