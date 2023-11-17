@@ -1,5 +1,16 @@
 # @halfdomelabs/tools
 
+## 0.5.0
+
+### Minor Changes
+
+- 99b436a: Updated eslint/prettier and use new import order rules
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- f24754d: Upgrade to Node 18.17.1
+
 ## 0.4.1
 
 ### Patch Changes

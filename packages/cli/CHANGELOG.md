@@ -1,5 +1,32 @@
 # @halfdomelabs/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- f24754d: Upgrade to Node 18.17.1
+- Updated dependencies [c314b65]
+- Updated dependencies [ea1f862]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+- Updated dependencies [47d84ca]
+- Updated dependencies [e2fb218]
+- Updated dependencies [f24754d]
+- Updated dependencies [c314b65]
+- Updated dependencies [0275a54]
+- Updated dependencies [55268b6]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+- Updated dependencies [cd045cc]
+  - @halfdomelabs/core-generators@0.7.0
+  - @halfdomelabs/fastify-generators@0.7.0
+  - @halfdomelabs/react-generators@0.6.0
+  - @halfdomelabs/sync@0.6.0
+
 ## 0.5.4
 
 ### Patch Changes

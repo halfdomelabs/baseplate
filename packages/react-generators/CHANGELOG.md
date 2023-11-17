@@ -1,5 +1,30 @@
 # @halfdomelabs/react-generators
 
+## 0.6.0
+
+### Minor Changes
+
+- c314b65: Upgrade to Node 18.18.2
+- c314b65: Upgrade vite & react dependencies. NOTE: This requires changing SVG imports to append ?react to the end of them
+- 0275a54: Switches Dialog to Shadcn component
+- c314b65: Upgrade dependencies across the board to latest
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- f24754d: Upgrade to Node 18.17.1
+- 47d84ca: Upgrade jest, Sentry, Postmark, and Stripe integrations to latest
+- f24754d: Upgrade to Typescript 5.1
+- 55268b6: Upgrade react-hook-form and resolver
+- Updated dependencies [c314b65]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+- Updated dependencies [47d84ca]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+  - @halfdomelabs/core-generators@0.7.0
+  - @halfdomelabs/sync@0.6.0
+
 ## 0.5.1
 
 ### Patch Changes

@@ -1,5 +1,29 @@
 # @halfdomelabs/project-builder-web
 
+## 0.6.0
+
+### Minor Changes
+
+- 0275a54: Switches Dialog to Shadcn component
+- b43f6e6: Switched Tabs component to shadcn
+- f24754d: Updated eslint/prettier rules
+- 99b436a: Add beta of theme editor for customizing colors
+
+### Patch Changes
+
+- 486a5b2: Derive isOptional and relationshipType from relation instead of manually inputting
+- 33aed0b: Fix renaming of fields not renaming relations
+- f24754d: Upgrade to Node 18.17.1
+- Updated dependencies [52c5b57]
+- Updated dependencies [99b436a]
+- Updated dependencies [486a5b2]
+- Updated dependencies [f24754d]
+- Updated dependencies [0275a54]
+- Updated dependencies [b43f6e6]
+- Updated dependencies [f24754d]
+  - @halfdomelabs/ui-components@0.4.0
+  - @halfdomelabs/project-builder-lib@0.6.0
+
 ## 0.5.1
 
 ### Patch Changes

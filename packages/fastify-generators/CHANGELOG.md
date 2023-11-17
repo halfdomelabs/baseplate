@@ -1,5 +1,30 @@
 # @halfdomelabs/fastify-generators
 
+## 0.7.0
+
+### Minor Changes
+
+- c314b65: Upgrade to Node 18.18.2
+- c314b65: Upgrade dependencies across the board to latest
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- ea1f862: Fix Sentry plugin to avoid stacking event processors
+- f24754d: Upgrade to Node 18.17.1
+- 47d84ca: Upgrade jest, Sentry, Postmark, and Stripe integrations to latest
+- e2fb218: Log userId in global logger for requests
+- f24754d: Upgrade to Typescript 5.1
+- cd045cc: Upgrade to Prisma 5.6.0
+- Updated dependencies [c314b65]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+- Updated dependencies [47d84ca]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+  - @halfdomelabs/core-generators@0.7.0
+  - @halfdomelabs/sync@0.6.0
+
 ## 0.6.2
 
 ### Patch Changes
