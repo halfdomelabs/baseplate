@@ -7,7 +7,7 @@ import {
   SwitchField,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 import { TbLink } from 'react-icons/tb';
@@ -57,6 +57,10 @@ function ModelFieldForm({
 
   const { parsedProject } = useProjectConfig();
   const toast = useToast();
+
+  useEffect(() => {
+    fixReferences();
+  }, [fixReferences, watchedField.name]);
 
   function handleRemove(): void {
     // check for references
@@ -135,7 +139,6 @@ function ModelFieldForm({
         <InputField.Controller
           control={control}
           name={`model.fields.${idx}.name`}
-          onBlur={() => fixReferences()}
         />
       </div>
       <div>

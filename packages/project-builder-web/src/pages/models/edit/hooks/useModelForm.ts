@@ -7,7 +7,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -64,13 +64,15 @@ export function useModelForm({
 
   const form = useResettableForm<ModelConfig>({
     resolver: zodResolver(modelSchema),
-    defaultValues: model || newModel,
+    defaultValues: model ?? newModel,
   });
-  const { reset, getValues, setValue } = form;
+  const { getValues, setValue } = form;
+
+  const lastFixedModel = useRef<ModelConfig | undefined>();
 
   useEffect(() => {
-    reset(model || createNewModel());
-  }, [model, reset]);
+    lastFixedModel.current = undefined;
+  }, [model]);
 
   const onFormSubmit = useCallback(
     (data: ModelConfig) => {
@@ -120,15 +122,31 @@ export function useModelForm({
   );
 
   const fixControlledReferences = useCallback(() => {
-    const config = parsedProject.projectConfig;
     // add latest model to config
     const updatedModel = getValues();
+
+    if (_.isEqual(updatedModel, lastFixedModel.current)) {
+      return;
+    }
+
+    // skip if model is invalid
+    if (!modelSchema.safeParse(updatedModel).success) {
+      return;
+    }
+
+    const config = parsedProject.projectConfig;
+    const lastFixedConfig = {
+      ...config,
+      models: lastFixedModel.current
+        ? [...config.models.filter((m) => m.uid !== id), lastFixedModel.current]
+        : config.models,
+    };
     const updatedConfig = {
       ...config,
       models: [...config.models.filter((m) => m.uid !== id), updatedModel],
     };
     const fixedConfig = fixReferenceRenames(
-      config,
+      lastFixedConfig,
       updatedConfig,
       getProjectConfigReferences,
       {
@@ -146,6 +164,7 @@ export function useModelForm({
       }
       setValue(modelKey, fixedModel[modelKey]);
     });
+    lastFixedModel.current = fixedModel;
   }, [parsedProject, getValues, setValue, controlledReferences, id]);
 
   return { form, onFormSubmit, originalModel: model, fixControlledReferences };
