@@ -54,10 +54,14 @@ function buildRelationField(
     : 'oneToMany';
   const relations = parentModel.model.relations ?? [];
 
-  // If there are multiple relations to the same model, we need to specify the
+  // If there are multiple relations between the same models, we need to specify the
   // relation name to avoid conflicts in Prisma
   const needsRelationName =
-    relations.filter((r) => r.modelName === modelName).length > 1;
+    (foreignModel.model.relations?.filter(
+      (r) => r.modelName === parentModel.name,
+    ).length ?? 0) +
+      relations.filter((r) => r.modelName === modelName).length >
+    1;
 
   return {
     name,
