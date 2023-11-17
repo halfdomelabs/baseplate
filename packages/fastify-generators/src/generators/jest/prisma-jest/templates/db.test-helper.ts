@@ -2,6 +2,7 @@
 
 import { execSync } from 'child_process';
 import path from 'path';
+import { nanoid } from 'nanoid';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { parse } from 'pg-connection-string';
 

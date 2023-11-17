@@ -29,7 +29,6 @@ interface DescriptionListItemProps {
 }
 
 DescriptionList.Item = function DescriptionListItem({
-  className,
   children,
   label,
 }: DescriptionListItemProps): JSX.Element {
