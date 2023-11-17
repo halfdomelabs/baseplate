@@ -30,7 +30,9 @@
   },
   "scripts": {
     "build": "tsc && tsc-alias",
-    "watch": "pnpm build && (concurrently \"tsc --preserveWatchOutput -w\" \"tsc-alias -w\")",
+    "watch": "pnpm build && concurrently pnpm:watch:*",
+    "watch:tsc": "tsc --preserveWatchOutput -w",
+    "watch:tsc-alias": "tsc-alias -w",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
