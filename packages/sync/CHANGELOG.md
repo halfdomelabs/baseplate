@@ -1,5 +1,15 @@
 # @halfdomelabs/sync
 
+## 0.6.0
+
+### Minor Changes
+
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- f24754d: Upgrade to Node 18.17.1
+
 ## 0.5.1
 
 ### Patch Changes

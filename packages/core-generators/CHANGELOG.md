@@ -1,5 +1,22 @@
 # @halfdomelabs/core-generators
 
+## 0.7.0
+
+### Minor Changes
+
+- c314b65: Upgrade PNPM to 8.10.5
+- c314b65: Upgrade to Node 18.18.2
+- c314b65: Upgrade dependencies across the board to latest
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- f24754d: Upgrade to Node 18.17.1
+- 47d84ca: Upgrade jest, Sentry, Postmark, and Stripe integrations to latest
+- Updated dependencies [f24754d]
+- Updated dependencies [f24754d]
+  - @halfdomelabs/sync@0.6.0
+
 ## 0.6.1
 
 ### Patch Changes

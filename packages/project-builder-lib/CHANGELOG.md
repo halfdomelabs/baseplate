@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.6.0
+
+### Minor Changes
+
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- 486a5b2: Derive isOptional and relationshipType from relation instead of manually inputting
+- f24754d: Upgrade to Node 18.17.1
+
 ## 0.5.1
 
 ### Patch Changes

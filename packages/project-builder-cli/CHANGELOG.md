@@ -1,5 +1,38 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.5.0
+
+### Minor Changes
+
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- f24754d: Upgrade to Node 18.17.1
+- Updated dependencies [c314b65]
+- Updated dependencies [486a5b2]
+- Updated dependencies [ea1f862]
+- Updated dependencies [33aed0b]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+- Updated dependencies [47d84ca]
+- Updated dependencies [e2fb218]
+- Updated dependencies [f24754d]
+- Updated dependencies [c314b65]
+- Updated dependencies [0275a54]
+- Updated dependencies [b43f6e6]
+- Updated dependencies [55268b6]
+- Updated dependencies [c314b65]
+- Updated dependencies [f24754d]
+- Updated dependencies [cd045cc]
+- Updated dependencies [99b436a]
+  - @halfdomelabs/core-generators@0.7.0
+  - @halfdomelabs/project-builder-lib@0.6.0
+  - @halfdomelabs/project-builder-web@0.6.0
+  - @halfdomelabs/fastify-generators@0.7.0
+  - @halfdomelabs/react-generators@0.6.0
+  - @halfdomelabs/sync@0.6.0
+
 ## 0.4.4
 
 ### Patch Changes

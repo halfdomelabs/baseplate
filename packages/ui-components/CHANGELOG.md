@@ -1,5 +1,19 @@
 # @halfdomelabs/ui-components
 
+## 0.4.0
+
+### Minor Changes
+
+- 52c5b57: Switch dropdown to shadcn component
+- 99b436a: Refactor ui-components to use shadncn components
+- 0275a54: Switches Dialog to Shadcn component
+- b43f6e6: Switched Tabs component to shadcn
+- f24754d: Updated eslint/prettier rules
+
+### Patch Changes
+
+- f24754d: Upgrade to Node 18.17.1
+
 ## 0.3.2
 
 ### Patch Changes
