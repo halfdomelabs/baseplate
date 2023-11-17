@@ -49,8 +49,8 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
     },
   ) {
     node.addPackages({
-      stripe: '12.13.0',
-      'fastify-raw-body': '4.2.0',
+      stripe: '14.5.0',
+      'fastify-raw-body': '4.3.0',
     });
     configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
       comment: 'Stripe secret API key',

@@ -9,7 +9,7 @@ import { stripeWebhookPlugin } from './stripe-webhook';
 
 jest.mock('@src/services/stripe');
 
-const mockedStripe = jest.mocked(stripe, true);
+const mockedStripe = jest.mocked(stripe);
 
 function createFakeWebhookEvent(data?: Partial<Stripe.Event>): Stripe.Event {
   return {
@@ -24,10 +24,10 @@ function createFakeWebhookEvent(data?: Partial<Stripe.Event>): Stripe.Event {
     data: {
       object: {
         amount: 100,
-      },
+      } as Stripe.PaymentIntent,
     },
     ...data,
-  };
+  } as Stripe.Event;
 }
 
 describe('stripeWebhookPlugin', () => {

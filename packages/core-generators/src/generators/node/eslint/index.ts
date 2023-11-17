@@ -71,7 +71,7 @@ const EslintGenerator = createGeneratorWithChildren({
           ...(config.disableJest
             ? {}
             : {
-                'eslint-plugin-jest': '27.2.3',
+                'eslint-plugin-jest': '27.6.0',
               }),
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');

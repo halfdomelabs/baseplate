@@ -117,12 +117,12 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         });
 
         node.addPackages({
-          '@sentry/node': '7.58.1',
+          '@sentry/node': '7.80.1',
           lodash: '4.17.21',
         });
 
         node.addDevPackages({
-          '@sentry/types': '7.58.1',
+          '@sentry/types': '7.80.1',
           '@types/lodash': '4.14.194',
         });
 

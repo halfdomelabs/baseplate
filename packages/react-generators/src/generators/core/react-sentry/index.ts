@@ -36,7 +36,7 @@ const ReactSentryGenerator = createGeneratorWithChildren({
     );
 
     node.addPackages({
-      '@sentry/react': '7.58.1',
+      '@sentry/react': '7.80.1',
     });
 
     reactError.addErrorReporter(
