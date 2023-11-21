@@ -30,7 +30,7 @@ function compileAdminEnumInput(
     .find((e) => e.name === fieldConfig.options?.enumType);
   if (!enumBlock) {
     throw new Error(
-      `Could not find enum type ${fieldConfig.options?.enumType || ''}`,
+      `Could not find enum type ${fieldConfig.options?.enumType ?? ''}`,
     );
   }
   return {
@@ -116,13 +116,13 @@ function compileAdminCrudTextInput(
     label: field.label,
     modelField: field.modelField,
     type: getInputType(fieldConfig),
-    validation:
-      field.validation ||
-      builder.parsedProject.getModelFieldValidation(
-        modelName,
-        field.modelField,
-        true,
-      ),
+    validation: !field.validation
+      ? builder.parsedProject.getModelFieldValidation(
+          modelName,
+          field.modelField,
+          true,
+        )
+      : field.validation,
   };
 }
 

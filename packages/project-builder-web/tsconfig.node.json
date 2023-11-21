@@ -1,12 +1,4 @@
 {
-  "compilerOptions": {
-    "composite": true,
-    "skipLibCheck": true,
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "allowSyntheticDefaultImports": true,
-    "types": ["node"],
-    "strict": true
-  },
+  "extends": "@halfdomelabs/tools/tsconfig.node.script.json",
   "include": ["vite.config.ts", "tailwind.config.ts"]
 }

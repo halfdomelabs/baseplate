@@ -27,8 +27,11 @@ export function setupFastifyTypescript(
     sourceMap: true,
   });
 
+  const nodeVersion = node.getNodeVersion().split('.')[0];
+
   node.addDevPackages({
     'tsc-alias': '1.8.8',
     tsx: '4.1.2',
+    '@types/node': `^${nodeVersion}.0.0`,
   });
 }

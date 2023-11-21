@@ -1,8 +1,8 @@
-import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
 import { useEffect, useRef } from 'react';
 
 import { Button } from '../Button/Button.js';
 import { Dialog } from '../Dialog/Dialog.js';
+import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
 import {
   UseConfirmDialogRequestOptions,
   useConfirmDialogState,

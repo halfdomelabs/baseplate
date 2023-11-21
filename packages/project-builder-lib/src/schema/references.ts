@@ -120,7 +120,7 @@ export class ReferencesBuilder<T extends FieldValues> {
     parentBuilder: ReferencesBuilder<any> | null = null,
   ) {
     this.baseObject = baseObject;
-    this.prefix = prefix || '';
+    this.prefix = prefix ?? '';
     this.parentBuilder = parentBuilder;
   }
 
@@ -146,7 +146,7 @@ export class ReferencesBuilder<T extends FieldValues> {
         }
       : never,
   ): ReferencesBuilder<T> {
-    const name = reference.name || R.path(pathToParts(path), this.baseObject);
+    const name = reference.name ?? R.path(pathToParts(path), this.baseObject);
     if (!name) {
       throw new Error(
         `Cannot find value of reference ${path} (${reference.category})`,
@@ -155,7 +155,7 @@ export class ReferencesBuilder<T extends FieldValues> {
     const fullPath = this.prefix ? `${this.prefix}.${path}` : path;
     const constructedReference = {
       ...reference,
-      key: reference.key || name,
+      key: reference.key ?? name,
       name,
     };
     if (this.parentBuilder) {
@@ -207,7 +207,7 @@ export class ReferencesBuilder<T extends FieldValues> {
   ): ReferencesBuilder<T> {
     const constructedReferenceable = {
       ...referenceable,
-      key: referenceable.key || referenceable.name,
+      key: referenceable.key ?? referenceable.name,
     };
     if (this.parentBuilder) {
       this.parentBuilder.addReferenceable(constructedReferenceable);

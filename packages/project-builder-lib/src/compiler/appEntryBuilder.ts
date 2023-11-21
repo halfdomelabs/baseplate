@@ -28,8 +28,9 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   toProjectEntry(): AppEntry {
     return {
       name: `${this.projectConfig.name}-${this.appConfig.name}`,
-      rootDirectory:
-        this.appConfig.packageLocation || `packages/${this.appConfig.name}`,
+      rootDirectory: this.appConfig.packageLocation
+        ? this.appConfig.packageLocation
+        : `packages/${this.appConfig.name}`,
       files: this.files,
     };
   }

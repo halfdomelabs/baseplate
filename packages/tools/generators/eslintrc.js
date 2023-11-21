@@ -6,7 +6,7 @@
  * @param {boolean} options.typescript - Indicates whether the configuration should include TypeScript rules.
  * @param {boolean} options.mdx - Indicates whether the configuration should include MDX rules.
  * @param {string[]} options.additionalTsConfigs - Additional TypeScript configuration files to include.
- * @returns {object} The generated ESLint configuration.
+ * @returns {import("eslint").Linter.Config} The generated ESLint configuration.
  */
 module.exports = function createEslintConfig(options) {
   const typescript = options.typescript || false;
@@ -70,10 +70,17 @@ module.exports = function createEslintConfig(options) {
 
   return {
     root: true,
+    ignorePatterns: [
+      '/coverage',
+      '/dist',
+      '/node_modules',
+      'vitest.config.ts',
+      '*.md',
+      'LICENSE',
+      'README.md',
+      'templates/',
+    ],
     plugins: ['import'],
-    parserOptions: {
-      ecmaVersion: 2021,
-    },
     settings: {
       react: { version: 'detect' },
     },
@@ -101,6 +108,9 @@ module.exports = function createEslintConfig(options) {
       {
         files: ['*'],
         extends: ['prettier'],
+        settings: {
+          'import/internal-regex': '^@src/',
+        },
         rules: {
           // we should prefer logger over console
           'no-console': 'error',
@@ -112,15 +122,15 @@ module.exports = function createEslintConfig(options) {
                 ['builtin', 'external'],
                 ['internal', 'parent', 'sibling', 'index', 'object'],
               ],
-              pathGroups: [
-                { pattern: '@/**', group: 'internal' },
-                { pattern: 'src/**', group: 'internal' },
-                { pattern: '@src/**', group: 'internal' },
-              ],
               'newlines-between': 'always',
               alphabetize: { order: 'asc' },
             },
           ],
+          // disable unnecessary import rules: https://typescript-eslint.io/linting/troubleshooting/performance-troubleshooting/#eslint-plugin-import
+          'import/named': 'off',
+          'import/namespace': 'off',
+          'import/default': 'off',
+          'import/no-named-as-default-member': 'off',
           // ensure we don't have devDependencies imported in production code
           'import/no-extraneous-dependencies': [
             'error',
@@ -151,6 +161,7 @@ module.exports = function createEslintConfig(options) {
     env: {
       node: true,
       browser: react,
+      es2023: true,
     },
   };
 };

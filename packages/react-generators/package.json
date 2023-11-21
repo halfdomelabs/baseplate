@@ -17,19 +17,20 @@
   ],
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "@types/lodash": "4.14.196",
     "@types/ramda": "^0.29.3",
     "@types/toposort": "^2.0.3",
     "concurrently": "8.2.2",
     "cpx2": "^5.0.0",
     "tsc-alias": "1.8.8",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "scripts": {
     "build": "concurrently pnpm:build:*",
     "build:tsc": "tsc && tsc-alias",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
+    "clean": "rm -rf ./dist",
     "watch": "pnpm build && concurrently pnpm:watch:*",
     "watch:tsc": "tsc --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w",
@@ -50,7 +51,7 @@
     "zod": "3.22.4"
   },
   "engines": {
-    "node": "^18.0.0"
+    "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"

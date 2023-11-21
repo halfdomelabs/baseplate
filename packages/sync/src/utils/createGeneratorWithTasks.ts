@@ -207,7 +207,7 @@ export function createGeneratorWithTasks<
           // if descriptor child is null, assume it's been explicitly removed
           if (
             (!defaultDescriptor && !descriptorChild) ||
-            (!descriptorChild && defaultToNullIfEmpty) ||
+            (!descriptorChild && !!defaultToNullIfEmpty) ||
             descriptorChild === null
           ) {
             return null;

@@ -36,8 +36,9 @@
     "build": "pnpm build:lib",
     "build:lib": "tsc -p tsconfig.build.json && tsc-alias",
     "build:storybook": "storybook build",
+    "clean": "rm -rf ./dist",
     "watch": "pnpm build:lib && concurrently pnpm:watch:*",
-    "watch:tsc": "tsc --preserveWatchOutput -w",
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx,.mdx ./",
     "test": "vitest",
@@ -90,18 +91,18 @@
     "postcss": "8.4.31",
     "postcss-import": "^15.1.0",
     "prop-types": "^15.8.1",
-    "storybook": "^7.5.1",
+    "storybook": "^7.5.3",
     "tailwindcss": "3.3.2",
     "tailwindcss-animate": "^1.0.7",
     "tsc-alias": "1.8.8",
-    "typescript": "5.1.6",
+    "typescript": "5.2.2",
     "vite": "4.5.0",
     "vite-plugin-svgr": "4.1.0",
     "vite-tsconfig-paths": "4.2.0",
     "vitest": "0.34.6"
   },
   "engines": {
-    "node": "^18.0.0"
+    "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"

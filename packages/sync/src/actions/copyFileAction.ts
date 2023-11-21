@@ -32,7 +32,7 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
       source,
     );
 
-    if (shouldFormat || replacements) {
+    if (shouldFormat ?? replacements) {
       const fileContents = await fs.readFile(templatePath, 'utf8');
       const replacedFileContents = applyReplacements(
         fileContents,

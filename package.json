@@ -6,10 +6,11 @@
   "devDependencies": {
     "check-dependency-version-consistency": "^4.1.0",
     "nx": "16.8.1",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
+    "clean": "nx reset && nx run-many --target=clean",
     "watch": "nx run-many --target=watch --parallel=100 --output-style=stream",
     "lint": "nx affected --target=lint",
     "prettier:check": "nx affected --target=prettier:check",
@@ -23,8 +24,11 @@
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix"
   },
+  "engines": {
+    "node": "^20.0.0"
+  },
   "volta": {
-    "node": "18.18.2"
+    "node": "20.9.0"
   },
   "dependencies": {
     "@changesets/cli": "^2.26.2",

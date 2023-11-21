@@ -21,19 +21,20 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/fs-extra": "11.0.1",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "@types/ramda": "^0.29.3",
     "@types/ws": "^8.5.3",
     "dotenv": "^16.0.3",
     "tsc-alias": "1.8.8",
     "tsx": "4.1.2",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "scripts": {
     "start": "tsx -r dotenv/config ./src",
     "dev": "tsx watch -r dotenv/config ./src",
     "dev:serve": "pnpm dev serve",
     "build": "tsc && tsc-alias",
+    "clean": "rm -rf ./dist",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w ."
@@ -65,7 +66,7 @@
     "sort-keys": "^5.0.0"
   },
   "engines": {
-    "node": "^18.0.0"
+    "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"

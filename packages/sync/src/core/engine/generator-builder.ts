@@ -155,7 +155,7 @@ export async function buildGeneratorEntry(
   return {
     id,
     generatorConfig,
-    descriptor: validatedDescriptor || descriptor,
+    descriptor: validatedDescriptor ?? descriptor,
     children: childGenerators,
     tasks,
   };
