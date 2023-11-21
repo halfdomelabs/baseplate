@@ -6,8 +6,10 @@ module.exports = defineConfig({
   test: {
     watch: false,
     root: './src',
-    deps: {
-      inline: ['globby'],
+    server: {
+      deps: {
+        inline: ['globby'],
+      },
     },
     mockReset: true,
   },

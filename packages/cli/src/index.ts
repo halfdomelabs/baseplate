@@ -24,7 +24,7 @@ async function getGeneratorEngine(): Promise<GeneratorEngine> {
           moduleName,
           (await packageDirectory({
             cwd: resolveModule(moduleName),
-          })) || '',
+          })) ?? '',
         ],
       ),
     );
@@ -50,7 +50,7 @@ async function generateForDirectory(directory: string): Promise<void> {
 }
 
 async function runMain(): Promise<void> {
-  const version = (await getPackageVersion()) || '0.0.0';
+  const version = (await getPackageVersion()) ?? '0.0.0';
   program.version(version || 'unknown');
   program
     .command('generate <directory>')

@@ -146,7 +146,7 @@ export function createNonOverwriteableMap<T extends object>(
     value() {
       return finalMerge(defaults, overrideValues) as T;
     },
-    get<K extends keyof T>(key: keyof T): T[K] | undefined {
+    get<K extends keyof T>(key: K): T[K] | undefined {
       const override = overrideValues[key];
       const def = defaults[key];
       if (

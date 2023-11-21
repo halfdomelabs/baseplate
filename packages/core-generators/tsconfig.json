@@ -1,9 +1,9 @@
 {
-  "extends": "@halfdomelabs/tools/tsconfig.base.json",
+  "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
   "compilerOptions": {
     "outDir": "dist",
-    "declaration": true,
     "baseUrl": ".",
+    "noEmit": true,
     "paths": {
       "@src/*": ["src/*"],
       "@generators/*": ["src/generators/*"]

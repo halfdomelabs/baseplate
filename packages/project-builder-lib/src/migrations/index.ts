@@ -5,7 +5,7 @@ export function runSchemaMigrations(config: ProjectConfig): {
   newConfig: ProjectConfig;
   appliedMigrations: SchemaMigration[];
 } {
-  const schemaVersion = config.schemaVersion || 0;
+  const schemaVersion = config.schemaVersion ?? 0;
 
   const unappliedMigrations = SCHEMA_MIGRATIONS.filter(
     (m) => m.version > schemaVersion,

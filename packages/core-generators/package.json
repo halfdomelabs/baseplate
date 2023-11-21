@@ -26,15 +26,16 @@
     "concurrently": "8.2.2",
     "cpx2": "^5.0.0",
     "tsc-alias": "1.8.8",
-    "typescript": "5.1.6",
+    "typescript": "5.2.2",
     "vitest": "0.34.6"
   },
   "scripts": {
     "build": "concurrently pnpm:build:*",
-    "build:tsc": "tsc && tsc-alias",
+    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
+    "clean": "rm -rf ./dist",
     "watch": "pnpm build && concurrently pnpm:watch:*",
-    "watch:tsc": "tsc --preserveWatchOutput -w",
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w",
     "watch:templates": "pnpm build:templates --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
@@ -60,7 +61,7 @@
     "zod": "3.22.4"
   },
   "engines": {
-    "node": "^18.0.0"
+    "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"

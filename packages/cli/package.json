@@ -16,13 +16,14 @@
   ],
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.0.0",
     "@types/ramda": "^0.29.3",
     "tsx": "4.1.2",
-    "typescript": "5.1.6"
+    "typescript": "5.2.2"
   },
   "scripts": {
     "start": "tsx ./src",
+    "clean": "rm -rf ./dist",
     "dev": "tsx watch ./src",
     "build": "tsc",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
@@ -41,7 +42,7 @@
     "ramda": "^0.28.0"
   },
   "engines": {
-    "node": "^18.0.0"
+    "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"

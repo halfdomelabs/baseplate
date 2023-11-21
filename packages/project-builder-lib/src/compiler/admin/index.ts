@@ -17,7 +17,7 @@ export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
     config.sections?.map((section) => ({
       type: 'link',
       label: titleizeCamel(section.name),
-      icon: section.icon || 'MdHome',
+      icon: section.icon ?? 'MdHome',
       path: `${section.feature}/${dasherizeCamel(section.name)}`,
     })) ?? []
   );

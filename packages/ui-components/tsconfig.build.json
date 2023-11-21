@@ -1,10 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": [
-    "**/node_modules",
-    "**/dist",
-    "**/lib",
-    "**/*.test.ts",
-    "**/*.stories.ts"
-  ]
+  "compilerOptions": {
+    "noEmit": false
+  },
+  "exclude": ["**/*.test.ts", "**/*.stories.ts"]
 }

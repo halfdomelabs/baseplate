@@ -30,5 +30,5 @@ export async function executeCommand(
     extendEnv: false,
   });
 
-  return result.all || '';
+  return result.all ?? '';
 }

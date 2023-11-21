@@ -11,7 +11,7 @@ import { getPackageVersion } from './utils/version.js';
 
 async function runMain(): Promise<void> {
   const version = await getPackageVersion();
-  program.version(version || 'unknown');
+  program.version(version ?? 'unknown');
   program
     .command('generate <directory>')
     .description('Builds project from project.json in baseplate/ directory')
@@ -44,7 +44,7 @@ async function runMain(): Promise<void> {
     .argument(
       '[directories...]',
       'Directories to serve',
-      process.env.PROJECT_DIRECTORIES?.split(',') || ['.'],
+      process.env.PROJECT_DIRECTORIES?.split(',') ?? ['.'],
     )
     .action(startWebServer);
 

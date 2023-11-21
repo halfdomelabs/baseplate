@@ -12,7 +12,7 @@
       "default",
       "!{projectRoot}/**/*.test.ts",
       "!{projectRoot}/**/*.md",
-      "!{projectRoot}/jest.config.ts",
+      "!{projectRoot}/vitest.config.ts",
       "!{projectRoot}/.eslintrc.js"
     ]
   },
@@ -28,11 +28,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
-      "outputs": [
-        "{projectRoot}/lib",
-        "{projectRoot}/dist",
-        "{projectRoot}/build"
-      ]
+      "outputs": ["{projectRoot}/dist", "{projectRoot}/build"]
     },
     "release": {
       "inputs": ["production", "^production"],

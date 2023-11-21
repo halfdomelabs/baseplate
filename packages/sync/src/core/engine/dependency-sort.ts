@@ -36,7 +36,7 @@ function getExportInterdependencies(
       const key = `provider|${resolvedDependency.id}#${providerName}`;
 
       const modifiedInBuild =
-        (dep.type === 'dependency' && dep.options.modifiedInBuild) || false;
+        dep.type === 'dependency' && dep.options.modifiedInBuild ? true : false;
 
       exportDependencies[key] = [
         ...(exportDependencies[key] ?? []),

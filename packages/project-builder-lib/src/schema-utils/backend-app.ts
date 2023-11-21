@@ -24,8 +24,12 @@ export function getBackendRelativePath(
   backendApp: BackendAppConfig,
 ): string {
   const backendRelativePath = computeRelativePath(
-    appConfig.packageLocation || `packages/${appConfig.name}`,
-    backendApp.packageLocation || `packages/${backendApp.name}`,
+    appConfig.packageLocation
+      ? appConfig.packageLocation
+      : `packages/${appConfig.name}`,
+    backendApp.packageLocation
+      ? backendApp.packageLocation
+      : `packages/${backendApp.name}`,
   );
 
   return backendRelativePath;

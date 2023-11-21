@@ -33,9 +33,9 @@ export function buildTestGeneratorEntry(
   task?: Partial<GeneratorTaskEntry>,
 ): GeneratorEntry {
   lastGeneratorId += 1;
-  const id = data?.id || lastGeneratorId.toString();
+  const id = data?.id ?? lastGeneratorId.toString();
   const tasks =
-    data?.tasks ||
+    data?.tasks ??
     (!task
       ? []
       : [
