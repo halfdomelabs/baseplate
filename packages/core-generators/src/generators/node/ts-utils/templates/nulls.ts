@@ -1,4 +1,4 @@
-import { NormalizeTypes } from './normalizeTypes.js';
+import { NormalizeTypes } from './normalizeTypes';
 
 /**
  * Restricts an object from having null in certain fields. This
