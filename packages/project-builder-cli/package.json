@@ -2,12 +2,13 @@
   "name": "@halfdomelabs/project-builder-cli",
   "version": "0.5.0",
   "description": "Full-stack CLI builder using Baseplate generators",
-  "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
-  "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "restricted"
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "baseplate": "./scripts/baseplate.js"
   },
   "files": [
     "LICENSE",
@@ -15,29 +16,15 @@
     "dist/**/*",
     "scripts/**/*"
   ],
-  "bin": {
-    "baseplate": "./scripts/baseplate.js"
-  },
-  "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
-    "@types/fs-extra": "11.0.1",
-    "@types/node": "^20.0.0",
-    "@types/ramda": "^0.29.3",
-    "@types/ws": "^8.5.3",
-    "dotenv": "^16.0.3",
-    "tsc-alias": "1.8.8",
-    "tsx": "4.1.2",
-    "typescript": "5.2.2"
-  },
   "scripts": {
-    "start": "tsx -r dotenv/config ./src",
-    "dev": "tsx watch -r dotenv/config ./src",
-    "dev:serve": "pnpm dev serve",
     "build": "tsc && tsc-alias",
     "clean": "rm -rf ./dist",
+    "dev": "tsx watch -r dotenv/config ./src",
+    "dev:serve": "pnpm dev serve",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
+    "prettier:write": "prettier -w .",
+    "start": "tsx -r dotenv/config ./src"
   },
   "dependencies": {
     "@fastify/helmet": "11.1.1",
@@ -65,11 +52,24 @@
     "ramda": "^0.28.0",
     "sort-keys": "^5.0.0"
   },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/fs-extra": "11.0.1",
+    "@types/node": "^20.0.0",
+    "@types/ramda": "^0.29.3",
+    "@types/ws": "^8.5.3",
+    "dotenv": "^16.0.3",
+    "tsc-alias": "1.8.8",
+    "tsx": "4.1.2",
+    "typescript": "5.2.2"
+  },
   "engines": {
     "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"
   },
-  "type": "module"
+  "publishConfig": {
+    "access": "restricted"
+  }
 }

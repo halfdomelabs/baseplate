@@ -1,18 +1,24 @@
 {
   "name": "@halfdomelabs/project-builder-web",
-  "description": "Web interface for constructing project builder JSON",
-  "author": "Half Dome Labs LLC",
-  "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "restricted"
-  },
-  "type": "module",
   "version": "0.6.0",
+  "description": "Web interface for constructing project builder JSON",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
   "files": [
     "LICENSE",
     "dist/**/*",
     "CHANGELOG"
   ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rf ./dist",
+    "dev": "vite",
+    "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "serve": "vite preview"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -24,15 +30,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rf ./dist",
-    "dev": "vite",
-    "serve": "vite preview",
-    "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
   },
   "dependencies": {
     "@cocalc/ansi-to-react": "^7.0.0",
@@ -97,5 +94,8 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "restricted"
   }
 }

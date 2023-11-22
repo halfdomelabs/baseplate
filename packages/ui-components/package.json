@@ -1,18 +1,17 @@
 {
   "name": "@halfdomelabs/ui-components",
-  "description": "Shared UI component library",
-  "author": "Half Dome Labs LLC",
-  "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "restricted"
-  },
   "version": "0.4.0",
-  "main": "./dist/index.js",
+  "description": "Shared UI component library",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Half Dome Labs LLC",
+  "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": "./dist/index.js",
     "./tailwind-base": "./tailwind.config.ts",
     "./global.css": "./src/global.css"
   },
+  "main": "./dist/index.js",
   "files": [
     "LICENSE",
     "dist/**/*",
@@ -20,6 +19,21 @@
     "tailwind.config.ts",
     "./src/global.css"
   ],
+  "scripts": {
+    "build": "pnpm build:lib",
+    "build:lib": "tsc -p tsconfig.build.json && tsc-alias",
+    "build:storybook": "storybook build",
+    "clean": "rm -rf ./dist",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx,.mdx ./",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "storybook": "storybook dev -p 6006",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "watch": "pnpm build:lib && concurrently pnpm:watch:*",
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "watch:tsc-alias": "tsc-alias -w"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -31,21 +45,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "scripts": {
-    "build": "pnpm build:lib",
-    "build:lib": "tsc -p tsconfig.build.json && tsc-alias",
-    "build:storybook": "storybook build",
-    "clean": "rm -rf ./dist",
-    "watch": "pnpm build:lib && concurrently pnpm:watch:*",
-    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx,.mdx ./",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
-    "storybook": "storybook dev -p 6006"
   },
   "dependencies": {
     "@halfdomelabs/cmdk": "0.4.0",
@@ -107,7 +106,9 @@
   "volta": {
     "extends": "../../package.json"
   },
-  "type": "module",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "nx": {
     "targets": {
       "build": {
@@ -136,6 +137,5 @@
         ]
       }
     }
-  },
-  "sideEffects": false
+  }
 }

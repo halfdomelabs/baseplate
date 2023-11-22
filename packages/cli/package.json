@@ -2,33 +2,24 @@
   "name": "@halfdomelabs/cli",
   "version": "0.6.0",
   "description": "Command line tool for syncing Baseplate descriptions",
-  "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
-  "author": "Kingston Tam",
   "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "restricted"
-  },
+  "author": "Kingston Tam",
+  "type": "module",
+  "main": "dist/index.js",
   "files": [
     "LICENSE",
     "dist/**/*",
     "CHANGELOG"
   ],
-  "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
-    "@types/node": "^20.0.0",
-    "@types/ramda": "^0.29.3",
-    "tsx": "4.1.2",
-    "typescript": "5.2.2"
-  },
   "scripts": {
-    "start": "tsx ./src",
+    "build": "tsc",
     "clean": "rm -rf ./dist",
     "dev": "tsx watch ./src",
-    "build": "tsc",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
+    "prettier:write": "prettier -w .",
+    "start": "tsx ./src"
   },
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",
@@ -41,11 +32,20 @@
     "pkg-up": "^4.0.0",
     "ramda": "^0.28.0"
   },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/node": "^20.0.0",
+    "@types/ramda": "^0.29.3",
+    "tsx": "4.1.2",
+    "typescript": "5.2.2"
+  },
   "engines": {
     "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"
   },
-  "type": "module"
+  "publishConfig": {
+    "access": "restricted"
+  }
 }

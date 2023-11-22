@@ -2,40 +2,29 @@
   "name": "@halfdomelabs/fastify-generators",
   "version": "0.7.0",
   "description": "Fastify generators for Baseplate",
-  "main": "dist/index.js",
   "repository": "https://github.com/halfdomelabs/baseplate",
-  "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "restricted"
-  },
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "main": "dist/index.js",
   "files": [
     "LICENSE",
     "generator.json",
     "dist/**/*",
     "CHANGELOG"
   ],
-  "devDependencies": {
-    "@halfdomelabs/tools": "workspace:*",
-    "@types/ramda": "^0.29.3",
-    "@types/semver": "^7.5.0",
-    "concurrently": "8.2.2",
-    "cpx2": "^5.0.0",
-    "tsc-alias": "1.8.8",
-    "typescript": "5.2.2"
-  },
   "scripts": {
     "build": "concurrently pnpm:build:*",
-    "build:tsc": "tsc && tsc-alias",
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
+    "build:tsc": "tsc && tsc-alias",
     "clean": "rm -rf ./dist",
-    "watch": "pnpm build && concurrently pnpm:watch:*",
-    "watch:tsc": "tsc --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w",
-    "watch:templates": "pnpm build:templates --watch",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
+    "prettier:write": "prettier -w .",
+    "watch": "pnpm build && concurrently pnpm:watch:*",
+    "watch:templates": "pnpm build:templates --watch",
+    "watch:tsc": "tsc --preserveWatchOutput -w",
+    "watch:tsc-alias": "tsc-alias -w"
   },
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",
@@ -52,11 +41,22 @@
     "ts-morph": "18.0.0",
     "zod": "3.22.4"
   },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/ramda": "^0.29.3",
+    "@types/semver": "^7.5.0",
+    "concurrently": "8.2.2",
+    "cpx2": "^5.0.0",
+    "tsc-alias": "1.8.8",
+    "typescript": "5.2.2"
+  },
   "engines": {
     "node": "^20.0.0"
   },
   "volta": {
     "extends": "../../package.json"
   },
-  "type": "module"
+  "publishConfig": {
+    "access": "restricted"
+  }
 }
