@@ -40,14 +40,14 @@ function getFirstNonBaseplateParentFolder(filePath: string): string | null {
   return null;
 }
 
-interface ProjectBuilderApiOptions {
+interface ProjectBuilderServiceOptions {
   directory: string;
   id: string;
   generatorSetupConfig: GeneratorEngineSetupConfig;
   cliVersion: string;
 }
 
-export class ProjectBuilderApi extends TypedEventEmitterBase<{
+export class ProjectBuilderService extends TypedEventEmitterBase<{
   'project-json-changed': FilePayload | null;
   'command-console-emitted': CommandConsoleEmittedPayload;
 }> {
@@ -72,7 +72,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
     id,
     generatorSetupConfig,
     cliVersion,
-  }: ProjectBuilderApiOptions) {
+  }: ProjectBuilderServiceOptions) {
     super();
 
     this.directory = directory;

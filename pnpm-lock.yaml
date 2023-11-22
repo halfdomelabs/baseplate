@@ -216,24 +216,12 @@ importers:
 
   packages/project-builder-cli:
     dependencies:
-      '@fastify/helmet':
-        specifier: 11.1.1
-        version: 11.1.1
-      '@fastify/static':
-        specifier: 6.10.2
-        version: 6.10.2
-      '@fastify/websocket':
-        specifier: ^8.1.0
-        version: 8.1.0
       '@halfdomelabs/core-generators':
         specifier: workspace:*
         version: link:../core-generators
       '@halfdomelabs/fastify-generators':
         specifier: workspace:*
         version: link:../fastify-generators
-      '@halfdomelabs/project-builder-lib':
-        specifier: workspace:*
-        version: link:../project-builder-lib
       '@halfdomelabs/project-builder-server':
         specifier: workspace:*
         version: link:../project-builder-server
@@ -243,36 +231,9 @@ importers:
       '@halfdomelabs/react-generators':
         specifier: workspace:*
         version: link:../react-generators
-      '@halfdomelabs/sync':
-        specifier: workspace:*
-        version: link:../sync
-      chalk:
-        specifier: 5.3.0
-        version: 5.3.0
-      chokidar:
-        specifier: ^3.5.3
-        version: 3.5.3
       commander:
         specifier: ^11.0.0
         version: 11.0.0
-      fastify:
-        specifier: 4.24.3
-        version: 4.24.3
-      fs-extra:
-        specifier: 11.1.1
-        version: 11.1.1
-      globby:
-        specifier: 13.2.0
-        version: 13.2.0
-      import-meta-resolve:
-        specifier: ^3.0.0
-        version: 3.0.0
-      json-stringify-pretty-compact:
-        specifier: ^3.0.0
-        version: 3.0.0
-      open:
-        specifier: ^9.1.0
-        version: 9.1.0
       pino:
         specifier: 8.14.1
         version: 8.14.1
@@ -285,28 +246,13 @@ importers:
       pkg-up:
         specifier: ^4.0.0
         version: 4.0.0
-      ramda:
-        specifier: ^0.28.0
-        version: 0.28.0
-      sort-keys:
-        specifier: ^5.0.0
-        version: 5.0.0
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
-      '@types/fs-extra':
-        specifier: 11.0.1
-        version: 11.0.1
       '@types/node':
         specifier: ^20.0.0
         version: 20.9.2
-      '@types/ramda':
-        specifier: ^0.29.3
-        version: 0.29.3
-      '@types/ws':
-        specifier: ^8.5.3
-        version: 8.5.3
       dotenv:
         specifier: ^16.0.3
         version: 16.3.1
@@ -381,14 +327,17 @@ importers:
         specifier: 6.10.2
         version: 6.10.2
       '@fastify/websocket':
-        specifier: ^8.1.0
-        version: 8.1.0
+        specifier: ^8.2.0
+        version: 8.2.0
       '@halfdomelabs/project-builder-lib':
         specifier: workspace:*
         version: link:../project-builder-lib
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      '@trpc/server':
+        specifier: ^10.44.0
+        version: 10.44.0
       chalk:
         specifier: 5.3.0
         version: 5.3.0
@@ -416,15 +365,15 @@ importers:
       pino-pretty:
         specifier: 10.0.1
         version: 10.0.1
-      pkg-dir:
-        specifier: ^7.0.0
-        version: 7.0.0
       ramda:
         specifier: ^0.28.0
         version: 0.28.0
       sort-keys:
         specifier: ^5.0.0
         version: 5.0.0
+      zod:
+        specifier: 3.22.4
+        version: 3.22.4
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -492,6 +441,12 @@ importers:
       '@testing-library/user-event':
         specifier: 14.4.3
         version: 14.4.3(@testing-library/dom@9.3.3)
+      '@trpc/client':
+        specifier: ^10.44.0
+        version: 10.44.0(@trpc/server@10.44.0)
+      '@trpc/server':
+        specifier: ^10.44.0
+        version: 10.44.0
       '@types/node':
         specifier: ^20.0.0
         version: 20.9.2
@@ -574,6 +529,9 @@ importers:
         specifier: 4.4.6
         version: 4.4.6(@types/react@18.2.15)(immer@9.0.12)(react@18.2.0)
     devDependencies:
+      '@halfdomelabs/project-builder-server':
+        specifier: workspace:*
+        version: link:../project-builder-server
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
@@ -2914,8 +2872,8 @@ packages:
       readable-stream: 4.2.0
     dev: false
 
-  /@fastify/websocket@8.1.0:
-    resolution: {integrity: sha512-7Tk+ODgvS/S9IyPXuXDU1v5tpchAeSWFH0B3Ldz+cnBKy5+lEmuj4ncLhVUzXgn9w3ycX/Vhf1mEEkcemBFUIQ==}
+  /@fastify/websocket@8.2.0:
+    resolution: {integrity: sha512-B4tlHFBKCX7tenEG9aUcQEpksW2e0+dgRTaH/05+cro1Xsq1+kSj+9IB9Gep7a0KbHZGrat+zBsOas6lRs5dFQ==}
     dependencies:
       fastify-plugin: 4.3.0
       ws: 8.13.0
@@ -5607,6 +5565,19 @@ packages:
       '@testing-library/dom': '>=7.21.4'
     dependencies:
       '@testing-library/dom': 9.3.3
+
+  /@trpc/client@10.44.0(@trpc/server@10.44.0):
+    resolution: {integrity: sha512-6PAL5rXMGTMlsKKGW9aBsij8XFBbLUbOCJ7jNVX3IripGqiQG3b/VJyTsHRWkss/oaz/sZMOn62amhfev1UVfg==}
+    peerDependencies:
+      '@trpc/server': 10.44.0
+    dependencies:
+      '@trpc/server': 10.44.0
+    dev: false
+
+  /@trpc/server@10.44.0:
+    resolution: {integrity: sha512-QBq/FnjyU6a7CAl9p2dv6kApn2i8MFuPt8uVLyGr0oa2aFv31rHaX0m+ibdsviE/3fOJIC8EUOfMYOJma5uK2w==}
+    engines: {node: '>=18.0.0'}
+    dev: false
 
   /@ts-morph/common@0.19.0:
     resolution: {integrity: sha512-Unz/WHmd4pGax91rdIKWi51wnVUW11QttMEPpBiBgIewnc9UQIX7UDLxr5vRlqeByXCwhkF6VabSsI0raWcyAQ==}
@@ -9543,10 +9514,6 @@ packages:
     resolution: {integrity: sha512-f8KcQ1D80V7RnqVm+/lirO9zkOxjGxhaTC1IPrBGd3MEfNgmNG67tSUO9gTi2F3Blr2Az6g1vocaxzkVnWl9MA==}
     dev: true
 
-  /import-meta-resolve@3.0.0:
-    resolution: {integrity: sha512-4IwhLhNNA8yy445rPjD/lWh++7hMDOml2eHtd58eG7h+qK3EryMuuRbsHGPikCoAgIkkDnckKfWSk2iDla/ejg==}
-    dev: false
-
   /imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
@@ -10158,10 +10125,6 @@ packages:
 
   /json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
-
-  /json-stringify-pretty-compact@3.0.0:
-    resolution: {integrity: sha512-Rc2suX5meI0S3bfdZuA7JMFBGkJ875ApfVyq2WHELjBiiG22My/l7/8zPpH/CfFVQHuVLd8NLR0nv6vi0BYYKA==}
-    dev: false
 
   /json-stringify-pretty-compact@4.0.0:
     resolution: {integrity: sha512-3CNZ2DnrpByG9Nqj6Xo8vqbjT4F6N+tb4Gb28ESAZjYZ5yqvmc56J+/kuIwkaAMOyblTQhUW7PxMkUb8Q36N3Q==}

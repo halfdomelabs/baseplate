@@ -44,6 +44,8 @@
     "@popperjs/core": "^2.11.8",
     "@testing-library/react": "13.4.0",
     "@testing-library/user-event": "14.4.3",
+    "@trpc/client": "^10.44.0",
+    "@trpc/server": "^10.44.0",
     "@types/node": "^20.0.0",
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
@@ -73,6 +75,7 @@
     "zustand": "4.4.6"
   },
   "devDependencies": {
+    "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/culori": "^2.0.1",
     "@types/lodash": "4.14.196",

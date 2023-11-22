@@ -27,12 +27,21 @@ export async function buildServer({
     forceCloseConnections: true,
     // https://github.com/fastify/fastify/issues/4960
     logger: logger as FastifyBaseLogger,
+    maxParamLength: 10000,
   });
   const resolvedDirectories = directories.map((directory) =>
     expandPathWithTilde(directory),
   );
 
   await server.register(fastifyHelmet);
+
+  await server.register(fastifyWebsocketPlugin);
+
+  await server.register(baseplatePlugin, {
+    directories: resolvedDirectories,
+    cliVersion,
+    generatorSetupConfig,
+  });
 
   if (projectBuilderStaticDir) {
     await server.register(fastifyStaticPlugin, {
@@ -43,14 +52,6 @@ export async function buildServer({
       reply.sendFile('index.html'),
     );
   }
-
-  await server.register(fastifyWebsocketPlugin);
-
-  await server.register(baseplatePlugin, {
-    directories: resolvedDirectories,
-    cliVersion,
-    generatorSetupConfig,
-  });
 
   return server;
 }

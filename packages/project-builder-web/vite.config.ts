@@ -18,6 +18,11 @@ export default defineConfig(({ mode }) => {
               changeOrigin: true,
               ws: true,
             },
+            '/trpc': {
+              target: envVars.DEV_BACKEND_HOST,
+              changeOrigin: true,
+              ws: true,
+            },
           }
         : undefined,
     },

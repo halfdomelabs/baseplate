@@ -1,8 +1,17 @@
-import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  FastifyTRPCPluginOptions,
+  fastifyTRPCPlugin,
+} from '@trpc/server/adapters/fastify';
 import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
 
-import { FilePayload, ProjectBuilderApi } from './api.js';
+import {
+  FilePayload,
+  ProjectBuilderService,
+} from '../service/builder-service.js';
+import { createContext } from '@src/api/context.js';
+import { getCsrfToken } from '@src/api/crsf.js';
+import { AppRouter, createAppRouter } from '@src/api/index.js';
 import {
   GeneratorEngineSetupConfig,
   getGeneratorEngine,
@@ -59,8 +68,8 @@ export async function baseplatePlugin(
     generatorSetupConfig: GeneratorEngineSetupConfig;
   },
 ): Promise<void> {
-  const csrfToken = crypto.randomBytes(32).toString('hex');
-  const apis = await Promise.all(
+  const csrfToken = getCsrfToken();
+  const services = await Promise.all(
     directories.map(async (directory) => {
       const id = crypto
         .createHash('shake256', { outputLength: 9 })
@@ -68,22 +77,38 @@ export async function baseplatePlugin(
         .digest('base64')
         .replace('/', '-')
         .replace('+', '_');
-      const api = new ProjectBuilderApi({
+      const service = new ProjectBuilderService({
         directory,
         id,
         generatorSetupConfig,
         cliVersion,
       });
-      await api.init();
-      return api;
+      await service.init();
+      return service;
     }),
   );
 
   fastify.log.info(
-    `Loaded projects:\n${apis
+    `Loaded projects:\n${services
       .map((api) => `${api.directory}: ${api.id}`)
       .join('\n')}`,
   );
+
+  await fastify.register(fastifyTRPCPlugin, {
+    prefix: '/trpc',
+    useWSS: true,
+    trpcOptions: {
+      router: createAppRouter({
+        services,
+        cliVersion,
+        logger: fastify.log,
+      }),
+      createContext,
+      onError: ({ error }) => {
+        fastify.log.error(error);
+      },
+    },
+  } satisfies FastifyTRPCPluginOptions<AppRouter>);
 
   fastify.get('/api/auth', (req) => {
     // DNS rebinding attack prevention
@@ -99,44 +124,12 @@ export async function baseplatePlugin(
     return { csrfToken };
   });
 
-  fastify.addHook('onRequest', async (request, reply) => {
-    const headerCsrfToken = request.headers['x-csrf-token'];
-
-    const IGNORED_PATHS = ['/api/auth', '/api/ws'];
-    if (IGNORED_PATHS.includes(request.url)) {
-      return;
-    }
-
-    if (headerCsrfToken !== csrfToken) {
-      await reply
-        .code(403)
-        .send({ error: 'Invalid CSRF token', code: 'invalid-csrf-token' });
-    }
-  });
-
-  fastify.get('/api/projects', async () =>
-    Promise.all(
-      apis.map(async (api) => {
-        const config = await api.readConfig();
-        if (!config) {
-          throw new Error(`File config missing for ${api.directory}`);
-        }
-        const parsedContents = JSON.parse(config.contents) as ProjectConfig;
-        return {
-          id: api.id,
-          name: parsedContents.name,
-          directory: api.directory,
-        };
-      }),
-    ),
-  );
-
-  function getApi(id: string): ProjectBuilderApi {
-    const api = apis.find((a) => a.id === id);
-    if (!api) {
+  function getApi(id: string): ProjectBuilderService {
+    const service = services.find((a) => a.id === id);
+    if (!service) {
       throw new NotFoundError(`No project with id ${id}`);
     }
-    return api;
+    return service;
   }
 
   fastify.setErrorHandler(async (error, request, reply) => {
@@ -166,74 +159,6 @@ export async function baseplatePlugin(
         stack: error?.stack,
       });
     }
-  });
-
-  fastify.addSchema({
-    $id: 'apiIdSchema',
-    type: 'object',
-    properties: {
-      id: { type: 'string' },
-    },
-    required: ['id'],
-  });
-
-  fastify.get('/api/version', {
-    handler: () => {
-      return { cliVersion };
-    },
-  });
-
-  fastify.get<{
-    Params: { id: string };
-  }>('/api/project-json/:id', {
-    schema: { params: { $ref: 'apiIdSchema#' } },
-    handler: async (req) => {
-      const { id } = req.params;
-      const api = getApi(id);
-      const file = await api.readConfig();
-      return { file };
-    },
-  });
-
-  fastify.post<{
-    Params: { id: string };
-  }>('/api/start-sync/:id', {
-    schema: {
-      params: { $ref: 'apiIdSchema#' },
-    },
-    handler: (req) => {
-      const { id } = req.params;
-      const api = getApi(id);
-
-      api.buildProject().catch((err) => fastify.log.error(err));
-
-      return { success: true };
-    },
-  });
-
-  fastify.post<{
-    Params: { id: string };
-    Body: { contents: string; lastModifiedAt: string };
-  }>('/api/project-json/:id', {
-    schema: {
-      params: { $ref: 'apiIdSchema#' },
-      body: {
-        type: 'object',
-        properties: {
-          contents: { type: 'string' },
-          lastModifiedAt: { type: 'string' },
-        },
-      },
-    },
-    handler: async (req) => {
-      const { contents, lastModifiedAt } = req.body;
-      const { id } = req.params;
-      const api = getApi(id);
-
-      const result = await api.writeConfig({ contents, lastModifiedAt });
-
-      return result;
-    },
   });
 
   fastify.get('/api/ws', { websocket: true }, (connection) => {
@@ -328,7 +253,7 @@ export async function baseplatePlugin(
   });
 
   fastify.addHook('onClose', () => {
-    apis.map((api) => api.close());
+    services.map((service) => service.close());
   });
 
   // pre-warm up generator engine so syncing is faster on first request

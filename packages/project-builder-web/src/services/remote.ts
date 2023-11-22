@@ -1,18 +1,13 @@
 import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
-import axios, { AxiosError, AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
+import { client } from './api';
 import { config as envConfig } from './config';
 import { logError } from './error-logger';
 import { logger } from './logger';
 import PREVIEW_APP from './preview-app.json';
 import { TypedEventEmitterBase } from 'src/utils/typed-event-emitter';
-
-const URL_BASE = undefined;
-
-const axiosClient = axios.create();
-
-let csrfToken: string | undefined;
 
 const IS_PREVIEW = envConfig.VITE_PREVIEW_MODE;
 
@@ -20,28 +15,6 @@ async function getCsrfToken(): Promise<string> {
   const response = await axios.get<{ csrfToken: string }>('/api/auth');
   return response.data.csrfToken;
 }
-
-axiosClient.interceptors.request.use(async (config) => {
-  if (!csrfToken) {
-    csrfToken = await getCsrfToken();
-  }
-  config.headers.set('x-csrf-token', csrfToken);
-  return config;
-});
-
-axiosClient.interceptors.response.use(undefined, (error) => {
-  const { config, response } = error as AxiosError<{ code: string }>;
-  // retry if csrf token is invalid
-  if (
-    config &&
-    !(config as unknown as { csrfRetry: boolean }).csrfRetry &&
-    response?.data.code === 'invalid-csrf-token'
-  ) {
-    csrfToken = undefined;
-    return axiosClient({ ...config, csrfRetry: true } as AxiosRequestConfig);
-  }
-  return Promise.reject(error);
-});
 
 export interface Project {
   id: string;
@@ -59,18 +32,16 @@ export async function getProjects(): Promise<Project[]> {
       },
     ];
   }
-  const response = await axiosClient.get<Project[]>('/api/projects');
-  return response.data;
+  const response = await client.projects.list.query();
+  return response;
 }
 
 export async function getVersion(): Promise<string> {
   if (IS_PREVIEW) {
     return 'preview';
   }
-  const response = await axiosClient.get<{ cliVersion: string }>(
-    '/api/version',
-  );
-  return response.data.cliVersion;
+  const response = await client.version.query();
+  return response;
 }
 
 export interface FilePayload {
@@ -87,11 +58,8 @@ export async function downloadProjectConfig(
       contents: JSON.stringify(PREVIEW_APP as ProjectConfig),
     };
   }
-  const response = await axiosClient.get<{ file: FilePayload | null }>(
-    `/api/project-json/${id}`,
-    { baseURL: URL_BASE },
-  );
-  return response.data.file;
+  const response = await client.projects.get.query({ id });
+  return response.file;
 }
 
 type WriteResult =
@@ -105,24 +73,20 @@ export async function uploadProjectConfig(
   if (IS_PREVIEW) {
     return { type: 'success', lastModifiedAt: new Date().toISOString() };
   }
-  const response = await axiosClient.post<WriteResult>(
-    `/api/project-json/${id}`,
-    contents,
-    {
-      baseURL: URL_BASE,
-    },
-  );
+  const response = await client.projects.writeConfig.mutate({
+    id,
+    contents: contents.contents,
+    lastModifiedAt: contents.lastModifiedAt,
+  });
 
-  return response.data;
+  return response.result;
 }
 
 export async function startSync(id: string): Promise<void> {
   if (IS_PREVIEW) {
     return;
   }
-  await axiosClient.post(`/api/start-sync/${id}`, undefined, {
-    baseURL: URL_BASE,
-  });
+  await client.projects.startSync.mutate({ id });
 }
 
 interface ConnectMessage {
