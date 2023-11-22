@@ -3,11 +3,11 @@ import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
 
 import { FilePayload, ProjectBuilderApi } from './api.js';
-import { logError } from '@src/services/error-logger.js';
-import { logger } from '@src/services/logger.js';
-import { getGeneratorEngine } from '@src/sync/index.js';
+import {
+  GeneratorEngineSetupConfig,
+  getGeneratorEngine,
+} from '@src/sync/index.js';
 import { HttpError, NotFoundError } from '@src/utils/http-errors.js';
-import { getPackageVersion } from '@src/utils/version.js';
 
 interface ConnectMessage {
   type: 'connect';
@@ -49,7 +49,15 @@ type ServerWebsocketMessage =
 
 export async function baseplatePlugin(
   fastify: FastifyInstance,
-  { directories }: { directories: string[] },
+  {
+    directories,
+    cliVersion,
+    generatorSetupConfig,
+  }: {
+    directories: string[];
+    cliVersion: string;
+    generatorSetupConfig: GeneratorEngineSetupConfig;
+  },
 ): Promise<void> {
   const csrfToken = crypto.randomBytes(32).toString('hex');
   const apis = await Promise.all(
@@ -60,13 +68,18 @@ export async function baseplatePlugin(
         .digest('base64')
         .replace('/', '-')
         .replace('+', '_');
-      const api = new ProjectBuilderApi(directory, id);
+      const api = new ProjectBuilderApi({
+        directory,
+        id,
+        generatorSetupConfig,
+        cliVersion,
+      });
       await api.init();
       return api;
     }),
   );
 
-  logger.info(
+  fastify.log.info(
     `Loaded projects:\n${apis
       .map((api) => `${api.directory}: ${api.id}`)
       .join('\n')}`,
@@ -74,7 +87,13 @@ export async function baseplatePlugin(
 
   fastify.get('/api/auth', (req) => {
     // DNS rebinding attack prevention
-    if (!req.headers.host?.startsWith('localhost')) {
+    const host = req.headers.host ?? '';
+    if (
+      !host.startsWith('localhost:') &&
+      host !== 'localhost' &&
+      !host.startsWith('127.0.0.1') &&
+      host !== '127.0.0.1'
+    ) {
       throw new Error(`Must connect from localhost`);
     }
     return { csrfToken };
@@ -121,7 +140,7 @@ export async function baseplatePlugin(
   }
 
   fastify.setErrorHandler(async (error, request, reply) => {
-    logError(error);
+    fastify.log.error(error);
 
     if (error instanceof HttpError) {
       await reply.code(error.statusCode).send({
@@ -159,8 +178,7 @@ export async function baseplatePlugin(
   });
 
   fastify.get('/api/version', {
-    handler: async () => {
-      const cliVersion = await getPackageVersion();
+    handler: () => {
       return { cliVersion };
     },
   });
@@ -187,7 +205,7 @@ export async function baseplatePlugin(
       const { id } = req.params;
       const api = getApi(id);
 
-      api.buildProject().catch((err) => logError(err));
+      api.buildProject().catch((err) => fastify.log.error(err));
 
       return { success: true };
     },
@@ -273,7 +291,7 @@ export async function baseplatePlugin(
                 type: 'error',
                 message: `Invalid CSRF token`,
               });
-              logger.error(`Invalid CSRF token: ${message.csrfKey}`);
+              fastify.log.error(`Invalid CSRF token: ${message.csrfKey}`);
               connection.socket.close(403);
               break;
             }
@@ -293,7 +311,7 @@ export async function baseplatePlugin(
             break;
         }
       } catch (err) {
-        logError(err);
+        fastify.log.error(err);
         sendWebsocketMessage({
           type: 'error',
           message: err instanceof Error ? err.message : JSON.stringify(err),
@@ -315,6 +333,8 @@ export async function baseplatePlugin(
 
   // pre-warm up generator engine so syncing is faster on first request
   setTimeout(() => {
-    getGeneratorEngine().catch((err) => logError(err));
+    getGeneratorEngine(generatorSetupConfig).catch((err) =>
+      fastify.log.error(err),
+    );
   }, 500);
 }

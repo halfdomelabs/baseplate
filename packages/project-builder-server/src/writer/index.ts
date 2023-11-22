@@ -1,12 +1,11 @@
-import { FileEntry, AppEntry } from '@halfdomelabs/project-builder-lib';
+import { AppEntry, FileEntry } from '@halfdomelabs/project-builder-lib';
+import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
 import { globby } from 'globby';
 import stringify from 'json-stringify-pretty-compact';
 import path from 'path';
 
 import { notEmpty } from '../utils/array.js';
-import { logError } from '@src/services/error-logger.js';
-import { logger } from '@src/services/logger.js';
 
 /**
  * Writes a file entry and returns if the file contents have changed
@@ -36,6 +35,7 @@ async function writeFileEntry(
 async function writeAppFiles(
   baseDirectory: string,
   app: AppEntry,
+  logger: Logger,
 ): Promise<boolean> {
   try {
     const appDirectory = path.join(baseDirectory, app.rootDirectory);
@@ -60,7 +60,6 @@ async function writeAppFiles(
     logger.error(
       `Error writing out app ${app.name}: ${(err as Error).message}`,
     );
-    logError(err);
     throw err;
   }
 }
@@ -71,10 +70,11 @@ async function writeAppFiles(
 export async function writeApplicationFiles(
   baseDirectory: string,
   apps: AppEntry[],
+  logger: Logger,
 ): Promise<AppEntry[]> {
   const modifiedApps = await Promise.all(
     apps.map(async (app) => {
-      const wasModified = await writeAppFiles(baseDirectory, app);
+      const wasModified = await writeAppFiles(baseDirectory, app, logger);
       return wasModified ? app : null;
     }),
   );

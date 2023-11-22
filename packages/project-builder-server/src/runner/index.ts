@@ -10,6 +10,7 @@ import path from 'path';
 import {
   generateCleanAppForDirectory,
   generateForDirectory,
+  GeneratorEngineSetupConfig,
 } from '../sync/index.js';
 import { writeApplicationFiles } from '../writer/index.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
@@ -29,39 +30,59 @@ async function loadProjectJson(directory: string): Promise<ProjectConfig> {
 }
 
 export interface BuildProjectForDirectoryOptions {
+  directory: string;
+  generatorSetupConfig: GeneratorEngineSetupConfig;
   regen?: boolean;
+  logger: Logger;
 }
 
-export async function buildProjectForDirectory(
-  directory: string,
-  options: BuildProjectForDirectoryOptions,
-  logger: Logger = console,
-): Promise<void> {
+export async function buildProjectForDirectory({
+  directory,
+  generatorSetupConfig,
+  regen,
+  logger,
+}: BuildProjectForDirectoryOptions): Promise<void> {
   const resolvedDirectory = expandPathWithTilde(directory);
   // load project.json file
   const projectConfig = await loadProjectJson(resolvedDirectory);
 
   const apps = compileApplications(projectConfig);
 
-  await writeApplicationFiles(resolvedDirectory, apps);
+  const modifiedApps = await writeApplicationFiles(
+    resolvedDirectory,
+    apps,
+    logger,
+  );
 
-  // TODO: Remove regen disabled (for dev it's convenient)
-  const appsToRegenerate = apps; // regen ? apps : modifiedApps;
+  const shouldRegen = regen ?? process.env.FORCE_REGEN === 'true';
+
+  const appsToRegenerate = shouldRegen ? apps : modifiedApps;
 
   // eslint-disable-next-line no-restricted-syntax
   for (const app of appsToRegenerate) {
     // eslint-disable-next-line no-await-in-loop
-    await generateForDirectory(resolvedDirectory, app, logger);
+    await generateForDirectory({
+      baseDirectory: resolvedDirectory,
+      appEntry: app,
+      logger,
+      generatorSetupConfig,
+    });
   }
 
-  logger.log(`Project written to ${resolvedDirectory}!`);
+  logger.info(`Project written to ${resolvedDirectory}!`);
 }
 
-export async function buildToCleanFolder(
-  directory: string,
-  options: unknown,
-  logger: Logger = console,
-): Promise<void> {
+interface BuildToCleanFolderOptions {
+  directory: string;
+  logger: Logger;
+  generatorSetupConfig: GeneratorEngineSetupConfig;
+}
+
+export async function buildToCleanFolder({
+  directory,
+  logger,
+  generatorSetupConfig,
+}: BuildToCleanFolderOptions): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file
   const projectConfig = await loadProjectJson(resolvedDirectory);
@@ -71,8 +92,13 @@ export async function buildToCleanFolder(
   // eslint-disable-next-line no-restricted-syntax
   for (const app of apps) {
     // eslint-disable-next-line no-await-in-loop
-    await generateCleanAppForDirectory(resolvedDirectory, app, logger);
+    await generateCleanAppForDirectory({
+      baseDirectory: resolvedDirectory,
+      appEntry: app,
+      logger,
+      generatorSetupConfig,
+    });
   }
 
-  logger.log(`Project written to ${resolvedDirectory}!`);
+  logger.info(`Project written to ${resolvedDirectory}!`);
 }

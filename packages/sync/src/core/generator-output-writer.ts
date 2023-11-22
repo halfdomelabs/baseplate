@@ -306,7 +306,7 @@ export async function writeGeneratorOutput(
     );
 
     if (conflictFilenames.length) {
-      logger.log(
+      logger.warn(
         chalk.red(
           `Conflicts occurred while writing files:\n${conflictFilenames.join(
             '\n',
@@ -314,11 +314,11 @@ export async function writeGeneratorOutput(
         ),
       );
       if (orderedCommands.length) {
-        logger.log(
+        logger.warn(
           `\nOnce resolved, please re-run the generator or run the following commands:`,
         );
         for (const command of orderedCommands) {
-          logger.log(`  ${command.command}`);
+          logger.warn(`  ${command.command}`);
         }
       }
       return {
@@ -334,7 +334,7 @@ export async function writeGeneratorOutput(
 
       const commandString = command.command;
 
-      logger.log(`Running ${commandString}...`);
+      logger.info(`Running ${commandString}...`);
       try {
         await executeCommand(commandString, {
           cwd: path.join(outputDirectory, workingDirectory),
@@ -357,7 +357,7 @@ export async function writeGeneratorOutput(
   } catch (err) {
     if (err instanceof FormatterError) {
       logger.error(`Error formatting file: ${err.message}`);
-      logger.log(`File Dump:\n${err.fileContents}`);
+      logger.info(`File Dump:\n${err.fileContents}`);
     }
     throw err;
   }
