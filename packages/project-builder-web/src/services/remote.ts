@@ -86,7 +86,7 @@ export async function startSync(id: string): Promise<void> {
   if (IS_PREVIEW) {
     return;
   }
-  await client.projects.startSync.mutate({ id });
+  await client.sync.startSync.mutate({ id });
 }
 
 interface ConnectMessage {
@@ -158,8 +158,9 @@ export class ProjectWebsocketClient extends TypedEventEmitterBase<{
             logger.info(`Websocket connection successfully established!`);
             break;
           case 'command-console-emitted':
-          case 'project-json-changed':
             this.emit('message', message);
+            break;
+          case 'project-json-changed':
             break;
           case 'error':
             this.emit('error', new Error(message.message));

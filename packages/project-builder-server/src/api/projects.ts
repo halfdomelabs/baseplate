@@ -1,16 +1,17 @@
 import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 import { TRPCError } from '@trpc/server';
+import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import { privateProcedure, router } from './trpc.js';
+import { privateProcedure, router, websocketProcedure } from './trpc.js';
 import { BaseplateApiContext } from './types.js';
-import { ProjectBuilderService } from '@src/service/builder-service.js';
+import {
+  FilePayload,
+  ProjectBuilderService,
+} from '@src/service/builder-service.js';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function createProjectsRouter({
-  services,
-  logger,
-}: BaseplateApiContext) {
+export function createProjectsRouter({ services }: BaseplateApiContext) {
   function getApi(id: string): ProjectBuilderService {
     const service = services.find((a) => a.id === id);
     if (!service) {
@@ -52,18 +53,18 @@ export function createProjectsRouter({
         return { file };
       }),
 
-    startSync: privateProcedure
-      .input(
-        z.object({
-          id: z.string(),
-        }),
-      )
-      .mutation(({ input: { id } }) => {
-        const api = getApi(id);
-
-        api.buildProject().catch((err) => logger.error(err));
-
-        return { success: true };
+    onProjectJsonChanged: websocketProcedure
+      .input(z.object({ id: z.string() }))
+      .subscription(({ input: { id } }) => {
+        return observable<FilePayload | null>((emit) => {
+          const unsubscribe = getApi(id).on(
+            'project-json-changed',
+            (payload) => {
+              emit.next(payload);
+            },
+          );
+          return () => unsubscribe();
+        });
       }),
 
     writeConfig: privateProcedure

@@ -1,5 +1,6 @@
 import { authRouter } from './auth.js';
 import { createProjectsRouter } from './projects.js';
+import { createSyncRouter } from './sync.js';
 import { publicProcedure, router } from './trpc.js';
 import { BaseplateApiContext } from './types.js';
 
@@ -9,6 +10,7 @@ export function createAppRouter(context: BaseplateApiContext) {
   return router({
     auth: authRouter,
     projects: createProjectsRouter(context),
+    sync: createSyncRouter(context),
     version: publicProcedure.query(() => {
       return context.cliVersion;
     }),

@@ -184,16 +184,6 @@ export async function baseplatePlugin(
           if (unsubscribe) {
             unsubscribe();
           }
-          const unsubscribeProjectJsonChanged = getApi(msg.id).on(
-            'project-json-changed',
-            (payload) => {
-              sendWebsocketMessage({
-                type: 'project-json-changed',
-                file: payload,
-                id: msg.id,
-              });
-            },
-          );
           const unsubscribeConsoleEmitted = getApi(msg.id).on(
             'command-console-emitted',
             (payload) => {
@@ -204,7 +194,6 @@ export async function baseplatePlugin(
             },
           );
           unsubscribe = () => {
-            unsubscribeProjectJsonChanged();
             unsubscribeConsoleEmitted();
           };
         };

@@ -22,3 +22,22 @@ export const privateProcedure = t.procedure.use(
     return opts.next();
   }),
 );
+
+export const websocketProcedure = t.procedure.use(
+  t.middleware(async (opts) => {
+    const input = opts.rawInput as { csrfToken?: string };
+    const headerCsrfToken = input.csrfToken;
+    const csrfToken = getCsrfToken();
+
+    if (headerCsrfToken !== csrfToken) {
+      throw new TRPCError({
+        message: `Invalid CSRF token`,
+        code: 'FORBIDDEN',
+      });
+    }
+
+    delete input.csrfToken;
+
+    return opts.next();
+  }),
+);

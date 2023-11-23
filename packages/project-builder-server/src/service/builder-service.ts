@@ -126,9 +126,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
         .then((payload) => {
           this.emit('project-json-changed', payload);
         })
-        .catch((err) =>
-          this.logger.error(err instanceof Error ? err.toString() : typeof err),
-        );
+        .catch((err) => this.logger.error(err));
     };
 
     this.watcher.on('add', handleChange);

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useProjectIdState } from './useProjectIdState';
 import { useToast } from './useToast';
+import { client } from '@src/services/api';
 import { logError } from 'src/services/error-logger';
 import {
   downloadProjectConfig,
@@ -177,21 +178,27 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       }
     });
 
-    const unsubscribeMessage = socket.on('message', (message) => {
-      if (message.type === 'project-json-changed') {
-        const didChange = updateConfig(message.file);
-        if (didChange) {
-          setExternalChangeCounter((val) => val + 1);
-        }
-      }
-    });
+    const unsubscribeMessage = client.projects.onProjectJsonChanged.subscribe(
+      { id: projectId ?? '' },
+      {
+        onData: (value) => {
+          if (!projectId) {
+            return;
+          }
+          const didChange = updateConfig(value);
+          if (didChange) {
+            setExternalChangeCounter((val) => val + 1);
+          }
+        },
+      },
+    );
 
     setWebsocketClient(socket);
 
     return () => {
       unsubscribeError();
       unsubscribeConnectionOpened();
-      unsubscribeMessage();
+      unsubscribeMessage.unsubscribe();
       socket.close();
       setWebsocketClient(undefined);
     };
