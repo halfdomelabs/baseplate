@@ -5,12 +5,10 @@ import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { GeneratorEngineSetupConfig } from '@src/index.js';
 import { buildProjectForDirectory } from '@src/runner/index.js';
-import { logError } from '@src/services/error-logger.js';
-import { logger } from '@src/services/logger.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter.js';
-import { getPackageVersion } from '@src/utils/version.js';
 
 export interface FilePayload {
   contents: string;
@@ -42,7 +40,14 @@ function getFirstNonBaseplateParentFolder(filePath: string): string | null {
   return null;
 }
 
-export class ProjectBuilderApi extends TypedEventEmitterBase<{
+interface ProjectBuilderServiceOptions {
+  directory: string;
+  id: string;
+  generatorSetupConfig: GeneratorEngineSetupConfig;
+  cliVersion: string;
+}
+
+export class ProjectBuilderService extends TypedEventEmitterBase<{
   'project-json-changed': FilePayload | null;
   'command-console-emitted': CommandConsoleEmittedPayload;
 }> {
@@ -58,7 +63,16 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
   private logger: EventedLogger;
 
-  constructor(directory: string, id: string) {
+  private generatorSetupConfig: GeneratorEngineSetupConfig;
+
+  private cliVersion: string;
+
+  constructor({
+    directory,
+    id,
+    generatorSetupConfig,
+    cliVersion,
+  }: ProjectBuilderServiceOptions) {
     super();
 
     this.directory = directory;
@@ -66,6 +80,8 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
       path.join(directory, 'baseplate/project.json'),
     );
     this.id = id;
+    this.generatorSetupConfig = generatorSetupConfig;
+    this.cliVersion = cliVersion;
 
     this.logger = createEventedLogger();
     this.logger.onLog((message) => {
@@ -85,18 +101,16 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
   public async init(): Promise<void> {
     const fileExists = await fs.pathExists(this.projectJsonPath);
     if (!fileExists) {
-      const version = await getPackageVersion();
-
       if (!fileExists) {
         // auto-create a simple project.json file
-        logger.info(
+        this.logger.info(
           `project.json not found. Creating project.json file in ${this.projectJsonPath}`,
         );
         const starterName =
-          getFirstNonBaseplateParentFolder(this.projectJsonPath) || 'project';
+          getFirstNonBaseplateParentFolder(this.projectJsonPath) ?? 'project';
         await fs.writeJson(this.projectJsonPath, {
           name: starterName,
-          cliVerison: version,
+          cliVerison: this.cliVersion,
           schemaVersion: getLatestMigrationVersion(),
         });
       }
@@ -104,7 +118,9 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
     this.watcher = chokidar.watch(this.projectJsonPath, {
       ignoreInitial: true,
-      awaitWriteFinish: true,
+      awaitWriteFinish: {
+        stabilityThreshold: 1000,
+      },
     });
 
     const handleChange = (): void => {
@@ -112,7 +128,7 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
         .then((payload) => {
           this.emit('project-json-changed', payload);
         })
-        .catch((err) => logger.error(err));
+        .catch((err) => this.logger.error(err));
     };
 
     this.watcher.on('add', handleChange);
@@ -122,7 +138,11 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
 
   public close(): void {
     if (this.watcher) {
-      this.watcher.close().catch((err) => logger.error(err));
+      this.watcher
+        .close()
+        .catch((err) =>
+          this.logger.error(err instanceof Error ? err.toString() : typeof err),
+        );
     }
   }
 
@@ -158,9 +178,13 @@ export class ProjectBuilderApi extends TypedEventEmitterBase<{
       }
       this.isRunningCommand = true;
 
-      await buildProjectForDirectory(this.directory, {}, this.logger);
+      await buildProjectForDirectory({
+        directory: this.directory,
+        logger: this.logger,
+        generatorSetupConfig: this.generatorSetupConfig,
+      });
     } catch (err) {
-      logError(err);
+      this.logger.error(err instanceof Error ? err.toString() : typeof err);
       this.emit('command-console-emitted', {
         id: this.id,
         message: chalk.red(

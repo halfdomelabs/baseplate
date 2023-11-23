@@ -2,7 +2,8 @@ import Ansi from '@cocalc/ansi-to-react';
 import classNames from 'classnames';
 import { UIEventHandler, useEffect, useRef, useState } from 'react';
 
-import { useWebsocketClient } from 'src/hooks/useWebsocketClient';
+import { useProjectIdState } from '@src/hooks/useProjectIdState';
+import { client } from '@src/services/api';
 
 interface Props {
   className?: string;
@@ -10,27 +11,31 @@ interface Props {
 
 function Console({ className }: Props): JSX.Element {
   const [consoleText, setConsoleText] = useState('');
-  const { websocketClient } = useWebsocketClient();
 
   const shouldScrollToBottom = useRef(true);
 
   const codeRef = useRef<HTMLElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
+  const [projectId] = useProjectIdState();
+
   useEffect(() => {
-    if (!websocketClient) {
+    if (!projectId) {
       return undefined;
     }
-    const unsubscribe = websocketClient.on('message', (msg) => {
-      if (msg.type === 'command-console-emitted') {
-        setConsoleText((prev) =>
-          prev ? `${prev}\n${msg.message}` : msg.message,
-        );
-      }
-    });
+    const unsubscribe = client.sync.onConsoleEmitted.subscribe(
+      { id: projectId },
+      {
+        onData: (msg) => {
+          setConsoleText((prev) =>
+            prev ? `${prev}\n${msg.message}` : msg.message,
+          );
+        },
+      },
+    );
 
-    return () => unsubscribe();
-  }, [websocketClient]);
+    return () => unsubscribe.unsubscribe();
+  }, [projectId]);
 
   useEffect(() => {
     // check if we should scroll to bottom

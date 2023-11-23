@@ -3,11 +3,8 @@
   "version": "0.5.0",
   "description": "Shared dev configurations for Baseplate projects",
   "repository": "https://github.com/halfdomelabs/baseplate",
-  "author": "Half Dome Labs LLC",
   "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "restricted"
-  },
+  "author": "Half Dome Labs LLC",
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "6.11.0",
@@ -38,6 +35,9 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "restricted"
   },
   "nx": {
     "namedInputs": {

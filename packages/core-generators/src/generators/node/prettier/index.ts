@@ -125,7 +125,7 @@ const PrettierGenerator = createGeneratorWithChildren({
                 prettierModulePromise = (async () => {
                   const result = await resolveModule('prettier', fullPath);
                   if (!result) {
-                    logger.log(
+                    logger.info(
                       'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
                     );
                     // use cached version of prettier if available

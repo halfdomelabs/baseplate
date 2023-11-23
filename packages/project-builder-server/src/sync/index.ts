@@ -9,35 +9,25 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import { globby } from 'globby';
 import path from 'path';
-import { packageDirectory } from 'pkg-dir';
 import * as R from 'ramda';
 
-import { resolveModule } from '@src/utils/resolve.js';
-
-const GENERATOR_MODULES = [
-  '@halfdomelabs/core-generators',
-  '@halfdomelabs/fastify-generators',
-  '@halfdomelabs/react-generators',
-];
+export interface GeneratorEngineSetupConfig {
+  generatorPackages: { name: string; path: string }[];
+}
 
 let cachedEnginePromise: Promise<GeneratorEngine> | undefined;
 
-export async function getGeneratorEngine(): Promise<GeneratorEngine> {
+export async function getGeneratorEngine(
+  config: GeneratorEngineSetupConfig,
+): Promise<GeneratorEngine> {
   if (!cachedEnginePromise) {
+    if (!config.generatorPackages) {
+      throw new Error(`No generator packages specified!`);
+    }
     cachedEnginePromise = (async () => {
-      const resolvedGeneratorPaths = await Promise.all(
-        GENERATOR_MODULES.map(
-          async (moduleName): Promise<[string, string]> => [
-            moduleName,
-            (await packageDirectory({
-              cwd: resolveModule(moduleName),
-            })) || '',
-          ],
-        ),
-      );
       const generators = await Promise.all(
-        resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
-          loadGeneratorsForModule(moduleName, modulePath),
+        config.generatorPackages.map(({ name, path: modulePath }) =>
+          loadGeneratorsForModule(name, modulePath),
         ),
       );
       const generatorMap = R.mergeAll(generators);
@@ -52,22 +42,30 @@ interface BuildResultFile {
   failedCommands?: string[];
 }
 
-export async function generateForDirectory(
-  baseDirectory: string,
-  appEntry: AppEntry,
-  logger: Logger = console,
-): Promise<void> {
+interface GenerateForDirectoryOptions {
+  generatorSetupConfig: GeneratorEngineSetupConfig;
+  baseDirectory: string;
+  appEntry: AppEntry;
+  logger: Logger;
+}
+
+export async function generateForDirectory({
+  generatorSetupConfig,
+  baseDirectory,
+  appEntry,
+  logger,
+}: GenerateForDirectoryOptions): Promise<void> {
   const { rootDirectory, name } = appEntry;
-  const engine = await getGeneratorEngine();
+  const engine = await getGeneratorEngine(generatorSetupConfig);
 
   const projectDirectory = path.join(baseDirectory, rootDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
 
-  logger.log(`Generating project ${name} in ${projectDirectory}...`);
+  logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
   const project = await engine.loadProject(projectDirectory, logger);
   const output = await engine.build(project, logger);
-  logger.log('Project built! Writing output....');
+  logger.info('Project built! Writing output....');
 
   // check if the project directory exists
   const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
@@ -75,7 +73,7 @@ export async function generateForDirectory(
   if (!cleanDirectoryExists) {
     await engine.writeOutput(output, projectDirectory, { cleanDirectory });
   } else {
-    logger.log(
+    logger.info(
       'Detected project clean folder. Attempting 3-way mediocre-merge...',
     );
     const cleanTmpDirectory = path.join(
@@ -173,10 +171,10 @@ export async function generateForDirectory(
           }
           const existingContents = await fs.readFile(pathToDelete);
           if (existingContents.equals(file.contents)) {
-            logger.log(`Deleting ${file.filePath}...`);
+            logger.info(`Deleting ${file.filePath}...`);
             await fs.remove(pathToDelete);
           } else {
-            logger.log(
+            logger.info(
               chalk.red(`${file.filePath} has been modified. Skipping delete.`),
             );
           }
@@ -190,15 +188,16 @@ export async function generateForDirectory(
     }
   }
 
-  logger.log('Project successfully generated!');
+  logger.info('Project successfully generated!');
 }
 
-export async function generateCleanAppForDirectory(
-  baseDirectory: string,
-  { rootDirectory, name }: AppEntry,
-  logger: Logger = console,
-): Promise<void> {
-  const engine = await getGeneratorEngine();
+export async function generateCleanAppForDirectory({
+  baseDirectory,
+  appEntry: { rootDirectory, name },
+  logger,
+  generatorSetupConfig,
+}: GenerateForDirectoryOptions): Promise<void> {
+  const engine = await getGeneratorEngine(generatorSetupConfig);
 
   const projectDirectory = path.join(baseDirectory, rootDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
@@ -210,11 +209,11 @@ export async function generateCleanAppForDirectory(
     await fs.rm(cleanDirectory, { recursive: true });
   }
 
-  logger.log(`Generating clean project ${name} in ${cleanDirectory}...`);
+  logger.info(`Generating clean project ${name} in ${cleanDirectory}...`);
 
   const project = await engine.loadProject(projectDirectory, logger);
   const output = await engine.build(project, logger);
-  logger.log('Project built! Writing output....');
+  logger.info('Project built! Writing output....');
 
   // strip out any post write commands
   await engine.writeOutput(
@@ -237,5 +236,5 @@ export async function generateCleanAppForDirectory(
     undefined,
     logger,
   );
-  logger.log('Project successfully written to clean project!');
+  logger.info('Project successfully written to clean project!');
 }

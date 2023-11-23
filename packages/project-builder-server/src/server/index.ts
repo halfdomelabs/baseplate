@@ -1,18 +1,19 @@
 import open from 'open';
 
-import { buildServer } from './server.js';
-import { logger } from '@src/services/logger.js';
+import { WebServerOptions, buildServer } from './server.js';
 
-interface WebServerOptions {
+export interface StartWebServerOptions extends WebServerOptions {
   browser: boolean;
-  port: number;
+  port?: number;
 }
 
+const DEFAULT_PORT = 3230;
+
 export async function startWebServer(
-  directories: string[],
-  { browser, port = 3230 }: WebServerOptions,
+  options: StartWebServerOptions,
 ): Promise<void> {
-  const server = await buildServer(directories);
+  const { browser, port = DEFAULT_PORT, logger } = options;
+  const server = await buildServer(options);
 
   try {
     await server.listen({ port });

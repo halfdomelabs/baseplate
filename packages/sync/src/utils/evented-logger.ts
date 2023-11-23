@@ -2,8 +2,7 @@
 import { createTypedEventEmitter } from './typed-event-emitter.js';
 
 export interface Logger {
-  log(message: string): void;
-  error(message: string): void;
+  error(message: unknown): void;
   warn(message: string): void;
   info(message: string): void;
   debug(message: string): void;
@@ -24,12 +23,19 @@ export function createEventedLogger({
     error: string;
   }>();
   return {
-    log(message) {
-      eventEmitter.emit('log', message);
-      if (!noConsole) console.log(message);
-    },
     error(message) {
-      eventEmitter.emit('error', message);
+      eventEmitter.emit(
+        'error',
+        ((): string => {
+          if (typeof message === 'string') {
+            return message;
+          } else if (message instanceof Error) {
+            return String(message);
+          } else {
+            return typeof message;
+          }
+        })(),
+      );
       if (!noConsole) console.error(message);
     },
     warn(message) {

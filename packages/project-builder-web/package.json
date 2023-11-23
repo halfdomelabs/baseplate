@@ -1,18 +1,24 @@
 {
   "name": "@halfdomelabs/project-builder-web",
-  "description": "Web interface for constructing project builder JSON",
-  "author": "Half Dome Labs LLC",
-  "license": "SEE LICENSE IN LICENSE",
-  "publishConfig": {
-    "access": "restricted"
-  },
-  "type": "module",
   "version": "0.6.0",
+  "description": "Web interface for constructing project builder JSON",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
   "files": [
     "LICENSE",
     "dist/**/*",
     "CHANGELOG"
   ],
+  "scripts": {
+    "build": "tsc && vite build",
+    "clean": "rm -rf ./dist",
+    "dev": "vite",
+    "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "serve": "vite preview"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -24,15 +30,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "scripts": {
-    "build": "tsc && vite build",
-    "clean": "rm -rf ./dist",
-    "dev": "vite",
-    "serve": "vite preview",
-    "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
-    "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
   },
   "dependencies": {
     "@cocalc/ansi-to-react": "^7.0.0",
@@ -47,6 +44,8 @@
     "@popperjs/core": "^2.11.8",
     "@testing-library/react": "13.4.0",
     "@testing-library/user-event": "14.4.3",
+    "@trpc/client": "^10.44.0",
+    "@trpc/server": "^10.44.0",
     "@types/node": "^20.0.0",
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
@@ -67,7 +66,6 @@
     "react-popper": "^2.3.0",
     "react-router-dom": "6.14.1",
     "react-select": "5.7.4",
-    "reconnecting-websocket": "^4.4.0",
     "semver": "^7.5.4",
     "sort-keys": "^5.0.0",
     "use-local-storage-state": "^18.3.2",
@@ -76,6 +74,7 @@
     "zustand": "4.4.6"
   },
   "devDependencies": {
+    "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/culori": "^2.0.1",
     "@types/lodash": "4.14.196",
@@ -97,5 +96,8 @@
   },
   "volta": {
     "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "restricted"
   }
 }

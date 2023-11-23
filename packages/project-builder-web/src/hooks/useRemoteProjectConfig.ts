@@ -1,13 +1,13 @@
-import { AxiosError } from 'axios';
+import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useProjectIdState } from './useProjectIdState';
 import { useToast } from './useToast';
+import { client } from '@src/services/api';
 import { logError } from 'src/services/error-logger';
 import {
   downloadProjectConfig,
   FilePayload,
-  ProjectWebsocketClient,
   uploadProjectConfig,
 } from 'src/services/remote';
 
@@ -25,7 +25,6 @@ interface UseRemoteProjectConfigResult {
    * gets updated externally
    */
   externalChangeCounter: number;
-  websocketClient?: ProjectWebsocketClient;
   projectId?: string | null;
   downloadConfig: () => Promise<void>;
 }
@@ -63,7 +62,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       return false;
     }
     setFile(payload);
-    lastSavedValueRef.current = payload?.contents || null;
+    lastSavedValueRef.current = payload?.contents ?? null;
     return true;
   }, []);
 
@@ -80,8 +79,11 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       setLoaded(true);
       loadedProjectId.current = projectId;
     } catch (err) {
-      if (err instanceof AxiosError && err.response?.status === 404) {
-        toast.error(`Project not found: ${projectId || ''}`);
+      if (
+        err instanceof TRPCClientError &&
+        (err.data as { code?: string })?.code === 'NOT_FOUND'
+      ) {
+        toast.error(`Project not found: ${projectId ?? ''}`);
         setProjectId(null);
         return;
       }
@@ -121,7 +123,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       uploadProjectConfig(projectId, {
         contents,
         lastModifiedAt:
-          lastModifiedAt || file?.lastModifiedAt || new Date(0).toISOString(),
+          lastModifiedAt ?? file?.lastModifiedAt ?? new Date(0).toISOString(),
       })
         .then((result) => {
           if (result.type === 'modified-more-recently') {
@@ -160,40 +162,24 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     [toast, projectId, file?.lastModifiedAt, downloadConfig],
   );
 
-  const [websocketClient, setWebsocketClient] = useState<
-    ProjectWebsocketClient | undefined
-  >();
-
   useEffect(() => {
-    const socket = new ProjectWebsocketClient();
-
-    const unsubscribeError = socket.on('error', (err) => {
-      setError(err);
-    });
-
-    const unsubscribeConnectionOpened = socket.on('connectionOpened', () => {
-      if (projectId) {
-        socket.subscribe(projectId);
-      }
-    });
-
-    const unsubscribeMessage = socket.on('message', (message) => {
-      if (message.type === 'project-json-changed') {
-        const didChange = updateConfig(message.file);
-        if (didChange) {
-          setExternalChangeCounter((val) => val + 1);
-        }
-      }
-    });
-
-    setWebsocketClient(socket);
+    const unsubscribeMessage = client.projects.onProjectJsonChanged.subscribe(
+      { id: projectId ?? '' },
+      {
+        onData: (value) => {
+          if (!projectId) {
+            return;
+          }
+          const didChange = updateConfig(value);
+          if (didChange) {
+            setExternalChangeCounter((val) => val + 1);
+          }
+        },
+      },
+    );
 
     return () => {
-      unsubscribeError();
-      unsubscribeConnectionOpened();
-      unsubscribeMessage();
-      socket.close();
-      setWebsocketClient(undefined);
+      unsubscribeMessage.unsubscribe();
     };
   }, [downloadConfig, updateConfig, projectId]);
 
@@ -204,7 +190,6 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     saveValue,
     externalChangeCounter,
     projectId,
-    websocketClient,
     downloadConfig,
   };
 }

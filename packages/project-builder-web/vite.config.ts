@@ -1,10 +1,7 @@
 import react from '@vitejs/plugin-react';
-import dns from 'dns';
 import { defineConfig, loadEnv } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
-
-dns.setDefaultResultOrder('verbatim');
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -17,6 +14,11 @@ export default defineConfig(({ mode }) => {
       proxy: envVars.DEV_BACKEND_HOST
         ? {
             '/api': {
+              target: envVars.DEV_BACKEND_HOST,
+              changeOrigin: true,
+              ws: true,
+            },
+            '/trpc': {
               target: envVars.DEV_BACKEND_HOST,
               changeOrigin: true,
               ws: true,
