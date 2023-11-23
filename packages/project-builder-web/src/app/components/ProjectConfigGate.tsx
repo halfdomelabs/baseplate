@@ -17,6 +17,7 @@ import semver from 'semver';
 import { ZodError } from 'zod';
 
 import { NewProjectCard } from './NewProjectCard';
+import { websocketEvents } from '@src/services/api';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import {
   ProjectConfigContext,
@@ -28,7 +29,6 @@ import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
 import { useRemoteProjectConfig } from 'src/hooks/useRemoteProjectConfig';
 import { useToast } from 'src/hooks/useToast';
-import { WebsocketClientContext } from 'src/hooks/useWebsocketClient';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 import { logger } from 'src/services/logger';
@@ -47,7 +47,6 @@ export function ProjectConfigGate({
     loaded,
     error,
     saveValue: saveRemoteConfig,
-    websocketClient,
     projectId,
     externalChangeCounter,
     downloadConfig,
@@ -62,10 +61,10 @@ export function ProjectConfigGate({
   // refresh version when we reconnect to websocket client
   useEffect(
     () =>
-      websocketClient?.on('connected', () => {
+      websocketEvents.on('open', () => {
         refreshVersion().catch((err) => logError(err));
       }),
-    [websocketClient, refreshVersion],
+    [refreshVersion],
   );
 
   const savedConfigRef = useRef<{
@@ -180,7 +179,7 @@ export function ProjectConfigGate({
       parsedProject,
       externalChangeCounter,
       setConfigAndFixReferences: (config, options) => {
-        setConfig(config, { fixReferences: options || true });
+        setConfig(config, { fixReferences: options ?? true });
       },
       setConfig,
     };
@@ -192,12 +191,7 @@ export function ProjectConfigGate({
     projectId,
   ]);
 
-  const websocketClientResult = useMemo(
-    () => ({ websocketClient }),
-    [websocketClient],
-  );
-
-  const compositeError = error || configError;
+  const compositeError = error ?? configError;
   if (!loaded || compositeError) {
     return (
       <ErrorableLoader
@@ -206,7 +200,7 @@ export function ProjectConfigGate({
           formatError(
             compositeError,
             `We could not load the project config (${
-              selectedProject?.directory || 'unknown'
+              selectedProject?.directory ?? 'unknown'
             }).`,
           )
         }
@@ -290,10 +284,8 @@ export function ProjectConfigGate({
   }
 
   return (
-    <WebsocketClientContext.Provider value={websocketClientResult}>
-      <ProjectConfigContext.Provider value={result}>
-        {children}
-      </ProjectConfigContext.Provider>
-    </WebsocketClientContext.Provider>
+    <ProjectConfigContext.Provider value={result}>
+      {children}
+    </ProjectConfigContext.Provider>
   );
 }

@@ -5,10 +5,7 @@ import {
 import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
 
-import {
-  FilePayload,
-  ProjectBuilderService,
-} from '../service/builder-service.js';
+import { ProjectBuilderService } from '../service/builder-service.js';
 import { createContext } from '@src/api/context.js';
 import { getCsrfToken } from '@src/api/crsf.js';
 import { AppRouter, createAppRouter } from '@src/api/index.js';
@@ -16,45 +13,7 @@ import {
   GeneratorEngineSetupConfig,
   getGeneratorEngine,
 } from '@src/sync/index.js';
-import { HttpError, NotFoundError } from '@src/utils/http-errors.js';
-
-interface ConnectMessage {
-  type: 'connect';
-  csrfKey: string;
-}
-
-interface SubscribeMessage {
-  type: 'subscribe';
-  id: string;
-}
-
-type ClientWebsocketMessage = ConnectMessage | SubscribeMessage;
-
-interface ConnectedMessage {
-  type: 'connected';
-}
-
-interface ProjectJsonChangedMessage {
-  type: 'project-json-changed';
-  id: string;
-  file: FilePayload | null;
-}
-
-interface ErrorMessage {
-  type: 'error';
-  message: string;
-}
-
-interface CommandConsoleEmittedMessage {
-  type: 'command-console-emitted';
-  message: string;
-}
-
-type ServerWebsocketMessage =
-  | ConnectedMessage
-  | ErrorMessage
-  | ProjectJsonChangedMessage
-  | CommandConsoleEmittedMessage;
+import { HttpError } from '@src/utils/http-errors.js';
 
 export async function baseplatePlugin(
   fastify: FastifyInstance,
@@ -124,14 +83,6 @@ export async function baseplatePlugin(
     return { csrfToken };
   });
 
-  function getApi(id: string): ProjectBuilderService {
-    const service = services.find((a) => a.id === id);
-    if (!service) {
-      throw new NotFoundError(`No project with id ${id}`);
-    }
-    return service;
-  }
-
   fastify.setErrorHandler(async (error, request, reply) => {
     fastify.log.error(error);
 
@@ -159,86 +110,6 @@ export async function baseplatePlugin(
         stack: error?.stack,
       });
     }
-  });
-
-  fastify.get('/api/ws', { websocket: true }, (connection) => {
-    let unsubscribe: () => void | undefined;
-    let isAuthenticated = false;
-    function sendWebsocketMessage(message: ServerWebsocketMessage): void {
-      connection.socket.send(JSON.stringify(message));
-    }
-    connection.socket.on('message', (rawData) => {
-      try {
-        const message = JSON.parse(
-          // eslint-disable-next-line @typescript-eslint/no-base-to-string
-          rawData.toString('utf-8'),
-        ) as ClientWebsocketMessage;
-
-        const handleSubscribe = (msg: SubscribeMessage): void => {
-          if (!isAuthenticated) {
-            sendWebsocketMessage({
-              type: 'error',
-              message: `Not Authenticated`,
-            });
-          }
-          if (unsubscribe) {
-            unsubscribe();
-          }
-          const unsubscribeConsoleEmitted = getApi(msg.id).on(
-            'command-console-emitted',
-            (payload) => {
-              sendWebsocketMessage({
-                type: 'command-console-emitted',
-                message: payload.message,
-              });
-            },
-          );
-          unsubscribe = () => {
-            unsubscribeConsoleEmitted();
-          };
-        };
-
-        switch (message.type) {
-          case 'connect':
-            if (csrfToken !== message.csrfKey) {
-              sendWebsocketMessage({
-                type: 'error',
-                message: `Invalid CSRF token`,
-              });
-              fastify.log.error(`Invalid CSRF token: ${message.csrfKey}`);
-              connection.socket.close(403);
-              break;
-            }
-            isAuthenticated = true;
-            sendWebsocketMessage({ type: 'connected' });
-            break;
-          case 'subscribe':
-            handleSubscribe(message);
-            break;
-          default:
-            sendWebsocketMessage({
-              type: 'error',
-              message: `Unknown websocket message type: ${
-                (message as { type: string }).type
-              }`,
-            });
-            break;
-        }
-      } catch (err) {
-        fastify.log.error(err);
-        sendWebsocketMessage({
-          type: 'error',
-          message: err instanceof Error ? err.message : JSON.stringify(err),
-        });
-        connection.socket.close();
-      }
-    });
-
-    connection.socket.on('close', () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    });
   });
 
   fastify.addHook('onClose', () => {

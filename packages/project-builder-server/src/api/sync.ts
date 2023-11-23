@@ -1,9 +1,13 @@
 import { TRPCError } from '@trpc/server';
+import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import { privateProcedure, router } from './trpc.js';
+import { privateProcedure, router, websocketProcedure } from './trpc.js';
 import { BaseplateApiContext } from './types.js';
-import { ProjectBuilderService } from '@src/service/builder-service.js';
+import {
+  CommandConsoleEmittedPayload,
+  ProjectBuilderService,
+} from '@src/service/builder-service.js';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createSyncRouter({ services, logger }: BaseplateApiContext) {
@@ -31,6 +35,20 @@ export function createSyncRouter({ services, logger }: BaseplateApiContext) {
         api.buildProject().catch((err) => logger.error(err));
 
         return { success: true };
+      }),
+
+    onConsoleEmitted: websocketProcedure
+      .input(z.object({ id: z.string() }))
+      .subscription(({ input: { id } }) => {
+        return observable<CommandConsoleEmittedPayload>((emit) => {
+          const unsubscribe = getApi(id).on(
+            'command-console-emitted',
+            (payload) => {
+              emit.next(payload);
+            },
+          );
+          return () => unsubscribe();
+        });
       }),
   });
 }

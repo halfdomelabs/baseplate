@@ -11,6 +11,8 @@ import {
 import { Unsubscribable, observable } from '@trpc/server/observable';
 import axios from 'axios';
 
+import { createTypedEventEmitter } from '@src/utils/typed-event-emitter';
+
 const URL_BASE = undefined;
 
 let csrfToken: string | undefined;
@@ -124,7 +126,12 @@ export function attachCsrfToken(): TRPCLink<AppRouter> {
   };
 }
 
+export const websocketEvents = createTypedEventEmitter<{ open: void }>();
+
 const wsClient = createWSClient({
+  onOpen() {
+    websocketEvents.emit('open', undefined);
+  },
   url: () => {
     const domain = window.location.origin;
     return `${(URL_BASE ?? domain).replace(/^http/, 'ws')}/trpc`;

@@ -118,7 +118,9 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
     this.watcher = chokidar.watch(this.projectJsonPath, {
       ignoreInitial: true,
-      awaitWriteFinish: true,
+      awaitWriteFinish: {
+        stabilityThreshold: 1000,
+      },
     });
 
     const handleChange = (): void => {

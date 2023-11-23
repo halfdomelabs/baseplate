@@ -8,7 +8,6 @@ import { logError } from 'src/services/error-logger';
 import {
   downloadProjectConfig,
   FilePayload,
-  ProjectWebsocketClient,
   uploadProjectConfig,
 } from 'src/services/remote';
 
@@ -26,7 +25,6 @@ interface UseRemoteProjectConfigResult {
    * gets updated externally
    */
   externalChangeCounter: number;
-  websocketClient?: ProjectWebsocketClient;
   projectId?: string | null;
   downloadConfig: () => Promise<void>;
 }
@@ -64,7 +62,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       return false;
     }
     setFile(payload);
-    lastSavedValueRef.current = payload?.contents || null;
+    lastSavedValueRef.current = payload?.contents ?? null;
     return true;
   }, []);
 
@@ -82,7 +80,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       loadedProjectId.current = projectId;
     } catch (err) {
       if (err instanceof AxiosError && err.response?.status === 404) {
-        toast.error(`Project not found: ${projectId || ''}`);
+        toast.error(`Project not found: ${projectId ?? ''}`);
         setProjectId(null);
         return;
       }
@@ -122,7 +120,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       uploadProjectConfig(projectId, {
         contents,
         lastModifiedAt:
-          lastModifiedAt || file?.lastModifiedAt || new Date(0).toISOString(),
+          lastModifiedAt ?? file?.lastModifiedAt ?? new Date(0).toISOString(),
       })
         .then((result) => {
           if (result.type === 'modified-more-recently') {
@@ -161,23 +159,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     [toast, projectId, file?.lastModifiedAt, downloadConfig],
   );
 
-  const [websocketClient, setWebsocketClient] = useState<
-    ProjectWebsocketClient | undefined
-  >();
-
   useEffect(() => {
-    const socket = new ProjectWebsocketClient();
-
-    const unsubscribeError = socket.on('error', (err) => {
-      setError(err);
-    });
-
-    const unsubscribeConnectionOpened = socket.on('connectionOpened', () => {
-      if (projectId) {
-        socket.subscribe(projectId);
-      }
-    });
-
     const unsubscribeMessage = client.projects.onProjectJsonChanged.subscribe(
       { id: projectId ?? '' },
       {
@@ -193,14 +175,8 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       },
     );
 
-    setWebsocketClient(socket);
-
     return () => {
-      unsubscribeError();
-      unsubscribeConnectionOpened();
       unsubscribeMessage.unsubscribe();
-      socket.close();
-      setWebsocketClient(undefined);
     };
   }, [downloadConfig, updateConfig, projectId]);
 
@@ -211,7 +187,6 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
     saveValue,
     externalChangeCounter,
     projectId,
-    websocketClient,
     downloadConfig,
   };
 }
