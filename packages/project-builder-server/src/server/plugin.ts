@@ -13,7 +13,6 @@ import {
   GeneratorEngineSetupConfig,
   getGeneratorEngine,
 } from '@src/sync/index.js';
-import { HttpError } from '@src/utils/http-errors.js';
 
 export async function baseplatePlugin(
   fastify: FastifyInstance,
@@ -81,35 +80,6 @@ export async function baseplatePlugin(
       throw new Error(`Must connect from localhost`);
     }
     return { csrfToken };
-  });
-
-  fastify.setErrorHandler(async (error, request, reply) => {
-    fastify.log.error(error);
-
-    if (error instanceof HttpError) {
-      await reply.code(error.statusCode).send({
-        ...error.extraData,
-        message: error.message,
-        code: error.code,
-        statusCode: error.statusCode,
-        reqId: request.id,
-      });
-    } else if (error.statusCode && error.statusCode < 500) {
-      await reply.code(error.statusCode).send({
-        message: error.message,
-        code: error.code,
-        statusCode: error.statusCode,
-        reqId: request.id,
-      });
-    } else {
-      await reply.code(500).send({
-        message: error?.message,
-        code: 'INTERNAL_SERVER_ERROR',
-        statusCode: error.statusCode,
-        reqId: request.id,
-        stack: error?.stack,
-      });
-    }
   });
 
   fastify.addHook('onClose', () => {

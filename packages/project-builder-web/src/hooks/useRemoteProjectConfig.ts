@@ -1,4 +1,4 @@
-import { AxiosError } from 'axios';
+import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useProjectIdState } from './useProjectIdState';
@@ -79,7 +79,10 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       setLoaded(true);
       loadedProjectId.current = projectId;
     } catch (err) {
-      if (err instanceof AxiosError && err.response?.status === 404) {
+      if (
+        err instanceof TRPCClientError &&
+        (err.data as { code?: string })?.code === 'NOT_FOUND'
+      ) {
         toast.error(`Project not found: ${projectId ?? ''}`);
         setProjectId(null);
         return;
