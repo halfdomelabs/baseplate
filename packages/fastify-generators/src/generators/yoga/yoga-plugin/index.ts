@@ -254,7 +254,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         },
         run({ node, fastifyServer }) {
           node.addPackages({
-            '@fastify/websocket': '8.1.0',
+            '@fastify/websocket': '8.2.0',
           });
 
           fastifyServer.registerPlugin({
@@ -292,7 +292,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         }) {
           node.addPackages({
             '@graphql-yoga/redis-event-target': '2.0.0',
-            'graphql-ws': '5.14.0',
+            'graphql-ws': '5.14.2',
           });
 
           const [, pubsubPath] = makeImportAndFilePath(
