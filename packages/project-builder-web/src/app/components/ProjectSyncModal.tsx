@@ -1,9 +1,9 @@
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
-import Console from 'src/components/Console';
+import Console, { ConsoleRef } from 'src/components/Console';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useToast } from 'src/hooks/useToast';
@@ -17,6 +17,7 @@ interface Props {
 function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const [projectId] = useProjectIdState();
+  const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
   const { config, setConfig } = useProjectConfig();
 
@@ -29,6 +30,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
     // TODO: this is a hack to ensure we don't attempt to read from the file while we write to it
 
     setTimeout(() => {
+      clearConsoleRef.current?.clearConsole();
       startSync(projectId).catch((err) => toast.error(formatError(err)));
     }, 300);
     setIsOpen(true);
@@ -51,7 +53,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
           <Dialog.Header>
             <Dialog.Title>Sync Project</Dialog.Title>
           </Dialog.Header>
-          <Console />
+          <Console ref={clearConsoleRef} />
           <Dialog.Footer>
             <Button variant="secondary" onClick={startSyncProject}>
               Retry
