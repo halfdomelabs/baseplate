@@ -108,7 +108,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       exports: {
         fastifySentry: fastifySentryProvider,
       },
-      run({ node, requestContext, configService, typescript, errorHandler }) {
+      run({ node, configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate({
           CONFIG: { type: 'code-expression' },
           REQUEST_INFO_TYPE: { type: 'code-expression' },
@@ -184,7 +184,6 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           build: async (builder) => {
             sentryServiceFile.addCodeEntries({
               CONFIG: configService.getConfigExpression(),
-              REQUEST_INFO_TYPE: requestContext.getRequestInfoType(),
               SCOPE_CONFIGURATION_BLOCKS: scopeConfigurationBlocks,
               SENTRY_INTEGRATIONS:
                 TypescriptCodeUtils.mergeExpressionsAsArray(sentryIntegrations),
@@ -221,10 +220,11 @@ const FastifySentryGenerator = createGeneratorWithTasks({
               `const userData = requestContext.get('user');
       if (userData) {
         scope.setUser({
+          ...scope.getUser(),
           id: userData.id,
-          ip_address: requestData?.ip,
         });
       }`,
+              `import { requestContext } from '@fastify/request-context';`,
             ),
           );
         }

@@ -1,15 +1,12 @@
 // @ts-nocheck
 import os from 'os';
-import { URL } from 'url';
 import * as Sentry from '@sentry/node';
-import type { ExtractedNodeRequestData } from '@sentry/types';
-import { FastifyRequest } from 'fastify';
-import { requestContext } from '@fastify/request-context';
-import _ from 'lodash';
 
 const SENTRY_ENABLED = !!CONFIG.SENTRY_DSN;
 
-const IGNORED_TRANSACTION_PATHS = ['/graphql', '/healthz'];
+const IGNORED_TRANSACTION_PATHS = ['/healthz'];
+
+const SENTRY_TRACES_SAMPLE_RATE = 1.0;
 
 if (SENTRY_ENABLED) {
   Sentry.init({
@@ -17,7 +14,7 @@ if (SENTRY_ENABLED) {
     environment: CONFIG.APP_ENVIRONMENT,
     serverName: os.hostname(),
     integrations: SENTRY_INTEGRATIONS,
-    tracesSampleRate: 1.0,
+    tracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
     tracesSampler: (samplingContext) => {
       if (
         samplingContext?.request?.url &&
@@ -30,51 +27,11 @@ if (SENTRY_ENABLED) {
   });
 }
 
-const SENSITIVE_HEADERS = ['authorization', 'cookie'];
-
-// filters headers that are sensitive or not strings
-function filterHeaders(
-  headers: FastifyRequest['headers'],
-): Record<string, string> {
-  return _.fromPairs(
-    Object.keys(headers)
-      .filter((key) => typeof headers[key] === 'string')
-      .filter((key) => !SENSITIVE_HEADERS.includes(key))
-      .map((key) => [key, headers[key] as string]),
-  );
-}
-
 export function isSentryEnabled(): boolean {
   return SENTRY_ENABLED;
 }
 
-export function getUrlQueryString(url: string): string | undefined {
-  // need arbitrary base to make URL work
-  const parsedUrl = new URL(url, 'http://a');
-  return parsedUrl.search || undefined;
-}
-
-export function extractSentryRequestData(
-  request: FastifyRequest | REQUEST_INFO_TYPE,
-): ExtractedNodeRequestData {
-  return {
-    headers: filterHeaders(request.headers),
-    method: request.method,
-    url: request.url,
-    query_string: getUrlQueryString(request.url),
-  };
-}
-
 export function configureSentryScope(scope: Sentry.Scope): void {
-  const requestData = requestContext.get('reqInfo');
-  if (requestData) {
-    scope.setUser({
-      ip_address: requestData.ip,
-    });
-    scope.setTag('path', requestData.url);
-    scope.setTag('request_id', requestData.id);
-  }
-
   SCOPE_CONFIGURATION_BLOCKS;
 }
 
