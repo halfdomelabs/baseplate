@@ -35,13 +35,23 @@ export function configureSentryScope(scope: Sentry.Scope): void {
   SCOPE_CONFIGURATION_BLOCKS;
 }
 
-export function logErrorToSentry(error: Error): void {
+export function logErrorToSentry(
+  error: Error,
+  additionalContext?: Record<string, unknown>,
+): string | undefined {
   if (!SENTRY_ENABLED) {
     return;
   }
+  let sentryId: string | undefined;
   Sentry.withScope((scope) => {
     configureSentryScope(scope);
 
-    Sentry.captureException(error);
+    if (additionalContext) {
+      scope.setExtras(additionalContext);
+    }
+
+    sentryId = Sentry.captureException(error);
   });
+
+  return sentryId;
 }

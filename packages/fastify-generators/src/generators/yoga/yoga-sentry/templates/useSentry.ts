@@ -18,6 +18,7 @@ import {
 } from 'graphql';
 import { isSentryEnabled } from '%fastify-sentry/service';
 import { HttpError } from '@src/utils/http-errors';
+import { logError } from '%error-logger';
 
 // Copied from https://github.com/n1ru4l/envelop/blob/main/packages/plugins/sentry/src/index.ts
 // Modified to allow reporting status of Sentry transactions
@@ -93,8 +94,11 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
 
   const eventIdKey = options.eventIdKey === null ? null : 'sentryEventId';
 
-  function addEventId(err: GraphQLError, eventId: string | null): GraphQLError {
-    if (eventIdKey !== null && eventId !== null) {
+  function addEventId(
+    err: GraphQLError,
+    eventId: string | undefined,
+  ): GraphQLError {
+    if (eventIdKey !== null && eventId) {
       err.extensions[eventIdKey] = eventId;
     }
 
@@ -163,7 +167,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
           path: errorPath,
         });
 
-        const eventId = Sentry.captureException(err.originalError);
+        const eventId = logError(err.originalError);
 
         return addEventId(err, eventId);
       });

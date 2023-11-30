@@ -36,23 +36,23 @@ export const graphqlPlugin = fp(async (fastify) => {
 
         const { originalError } = error;
 
-        if (originalError) {
-          if (originalError instanceof HttpError) {
-            return new GraphQLError(originalError.message, {
-              ...error,
-              extensions: {
-                code: originalError.code,
-                statusCode: originalError.statusCode,
-                extraData: originalError.extraData,
-                reqId: requestContext.get('reqInfo')?.id,
-              },
-            });
-          }
+        if (originalError && originalError instanceof HttpError) {
+          return new GraphQLError(originalError.message, {
+            ...error,
+            extensions: {
+              ...error.extensions,
+              code: originalError.code,
+              statusCode: originalError.statusCode,
+              extraData: originalError.extraData,
+              reqId: requestContext.get('reqInfo')?.id,
+            },
+          });
         }
 
         return new GraphQLError(message, {
           ...error,
           extensions: {
+            ...error.extensions,
             code: 'INTERNAL_SERVER_ERROR',
             statusCode: 500,
             reqId: requestContext.get('reqInfo')?.id,

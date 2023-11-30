@@ -127,7 +127,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
           TypescriptCodeUtils.toBlock(
             TypescriptCodeUtils.wrapExpression(
               loggerService.getLogger(),
-              (code) => `${code}.error(error);`,
+              (code) => `${code}.error({ err: error, ...context });`,
             ),
           ),
         );

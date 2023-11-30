@@ -72,7 +72,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
 
         configMap.appendUnique('envelopPlugins', [
           new TypescriptCodeExpression(
-            'useGraphLogger()',
+            'useGraphLogger({ skipLogErrors: true })',
             "import { useGraphLogger } from './useGraphLogger'",
           ),
         ]);
