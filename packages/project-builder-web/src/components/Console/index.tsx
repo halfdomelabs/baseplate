@@ -1,6 +1,13 @@
 import Ansi from '@cocalc/ansi-to-react';
 import classNames from 'classnames';
-import { UIEventHandler, useEffect, useRef, useState } from 'react';
+import {
+  UIEventHandler,
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 
 import { useProjectIdState } from '@src/hooks/useProjectIdState';
 import { client } from '@src/services/api';
@@ -9,8 +16,16 @@ interface Props {
   className?: string;
 }
 
-function Console({ className }: Props): JSX.Element {
+export interface ConsoleRef {
+  clearConsole: () => void;
+}
+
+const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
   const [consoleText, setConsoleText] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    clearConsole: () => setConsoleText(''),
+  }));
 
   const shouldScrollToBottom = useRef(true);
 
@@ -74,6 +89,8 @@ function Console({ className }: Props): JSX.Element {
       <div ref={bottomRef} />
     </code>
   );
-}
+});
+
+Console.displayName = 'Console';
 
 export default Console;
