@@ -2,6 +2,10 @@
 
 HEADER;
 
+interface ErrorContext extends Record<string, unknown> {
+  errorId?: string;
+}
+
 /**
  * Logs error to the appropriate receivers.
  *
@@ -12,10 +16,7 @@ export function logError(
   error: unknown,
   additionalContext?: Record<string, unknown>,
 ): string | undefined {
-  const context = {
-    ...additionalContext,
-    errorId: undefined as string | undefined,
-  };
+  const context: ErrorContext = { ...additionalContext };
 
   LOGGER_ACTIONS;
 

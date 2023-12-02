@@ -1,10 +1,15 @@
 import {
   makeImportAndFilePath,
   nodeProvider,
+  TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import {
+  createGeneratorWithTasks,
+  createProviderType,
+  createTaskConfigBuilder,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactConfigProvider } from '../react-config/index.js';
@@ -13,9 +18,15 @@ import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.j
 
 const descriptorSchema = z.object({});
 
-const ReactSentryGenerator = createGeneratorWithChildren({
-  descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+export interface ReactSentryProvider {
+  addSentryScopeAction(block: TypescriptCodeBlock): void;
+}
+
+export const reactSentryProvider =
+  createProviderType<ReactSentryProvider>('react-sentry');
+
+const createMainTask = createTaskConfigBuilder(() => ({
+  name: 'main',
   dependencies: {
     typescript: typescriptProvider,
     reactError: reactErrorProvider,
@@ -23,12 +34,16 @@ const ReactSentryGenerator = createGeneratorWithChildren({
     node: nodeProvider,
     authIdentify: authIdentifyProvider,
   },
-  createGenerator(
-    descriptor,
-    { typescript, reactError, reactConfig, node, authIdentify },
-  ) {
+  exports: {
+    reactSentryProvider,
+  },
+  run({ typescript, reactError, reactConfig, node, authIdentify }) {
     const sentryFile = typescript.createTemplate(
-      {},
+      {
+        SENTRY_SCOPE_ACTIONS: {
+          type: 'code-block',
+        },
+      },
       { importMappers: [reactConfig] },
     );
     const [sentryImport, sentryPath] = makeImportAndFilePath(
@@ -40,9 +55,10 @@ const ReactSentryGenerator = createGeneratorWithChildren({
     });
 
     reactError.addErrorReporter(
-      TypescriptCodeUtils.createBlock(`captureSentryError(error);`, [
-        `import { captureSentryError } from '${sentryImport}';`,
-      ]),
+      TypescriptCodeUtils.createBlock(
+        `context.errorId = logErrorToSentry(error, context);`,
+        [`import { logErrorToSentry } from '${sentryImport}';`],
+      ),
     );
 
     reactConfig.getConfigMap().set('VITE_SENTRY_DSN', {
@@ -54,18 +70,32 @@ const ReactSentryGenerator = createGeneratorWithChildren({
     authIdentify.addBlock(
       TypescriptCodeUtils.createBlock(
         `identifySentryUser({
-        id: user.id,
-        email: user.email,
+        id: userId,
       });`,
         `import { identifySentryUser } from '${sentryImport}';`,
       ),
     );
 
     return {
+      getProviders: () => ({
+        reactSentryProvider: {
+          addSentryScopeAction(block) {
+            sentryFile.addCodeBlock('SENTRY_SCOPE_ACTIONS', block);
+          },
+        },
+      }),
       build: async (builder) => {
         await builder.apply(sentryFile.renderToAction('sentry.ts', sentryPath));
       },
     };
+  },
+}));
+
+const ReactSentryGenerator = createGeneratorWithTasks({
+  descriptorSchema,
+  getDefaultChildGenerators: () => ({}),
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask(createMainTask(descriptor));
   },
 });
 

@@ -17,6 +17,7 @@ const descriptorSchema = z.object({
 });
 
 export interface ReactErrorProvider extends ImportMapper {
+  addContextAction(action: TypescriptCodeBlock): void;
   addErrorReporter(reporter: TypescriptCodeBlock): void;
   addErrorFormatter(formatter: TypescriptCodeBlock): void;
 }
@@ -37,7 +38,10 @@ const ReactErrorGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { typescript, reactLogger }) {
     const loggerFile = typescript.createTemplate(
       {
-        ERROR_REPORTERS: {
+        CONTEXT_ACTIONS: {
+          type: 'code-block',
+        },
+        LOGGER_ACTIONS: {
           type: 'code-block',
           default: '// no error reporters registered',
         },
@@ -58,8 +62,11 @@ const ReactErrorGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         reactError: {
+          addContextAction(action) {
+            loggerFile.addCodeBlock('CONTEXT_ACTIONS', action);
+          },
           addErrorReporter(reporter) {
-            loggerFile.addCodeBlock('ERROR_REPORTERS', reporter);
+            loggerFile.addCodeBlock('LOGGER_ACTIONS', reporter);
           },
           addErrorFormatter(formatter) {
             formatterFile.addCodeBlock('ERROR_FORMATTERS', formatter);

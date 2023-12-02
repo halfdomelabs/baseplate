@@ -59,8 +59,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     authIdentify.addBlock(
       TypescriptCodeUtils.createBlock(
         `identifyDatadogUser({
-        id: user.id,
-        email: user.email,
+        id: userId,
       });`,
         `import { identifyDatadogUser } from '${datadogImport}';`,
       ),
