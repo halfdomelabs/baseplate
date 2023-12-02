@@ -78,6 +78,11 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
           control={control}
           name="enableSubscriptions"
         />
+        <CheckedInput.LabelledController
+          label="Enable Axios?"
+          control={control}
+          name="enableAxios"
+        />
         <Button type="submit">Save</Button>
       </form>
     </div>

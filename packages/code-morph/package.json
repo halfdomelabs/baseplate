@@ -1,0 +1,42 @@
+{
+  "name": "@halfdomelabs/code-morph",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Simple package for running code migrations on the codebase",
+  "repository": "https://github.com/halfdomelabs/baseplate",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Kingston Tam",
+  "type": "module",
+  "files": [
+    "LICENSE",
+    "scripts/**/*",
+    "CHANGELOG"
+  ],
+  "scripts": {
+    "run:script": "tsx",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "transform": "jscodeshift --extensions=ts --parser=ts -t ",
+    "transform:dry": "jscodeshift  --extensions=ts --parser=ts -d -p -t "
+  },
+  "dependencies": {
+    "ast-types": "^0.14.2",
+    "commander": "^11.0.0",
+    "jscodeshift": "^0.15.1",
+    "tiny-invariant": "^1.3.1",
+    "ts-morph": "18.0.0"
+  },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/jscodeshift": "^0.11.11",
+    "@types/node": "^20.0.0",
+    "tsx": "4.1.2",
+    "typescript": "5.2.2"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
+}

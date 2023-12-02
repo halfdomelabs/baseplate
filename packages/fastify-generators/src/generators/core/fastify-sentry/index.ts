@@ -83,11 +83,11 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           'LOGGER_ACTIONS',
           TypescriptCodeUtils.createBlock(
             `
-      if (error instanceof Error && shouldLogToSentry(error)) {
-        logErrorToSentry(error);
-      } else if (typeof error === 'string') {
-        logErrorToSentry(new Error(error));
-      }
+if (error instanceof Error && shouldLogToSentry(error)) {
+  context.errorId = logErrorToSentry(error, context);
+} else if (typeof error === 'string') {
+  context.errorId = logErrorToSentry(new Error(error), context);
+}
       `,
             "import { logErrorToSentry } from '@/src/services/sentry'",
           ),
@@ -108,7 +108,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       exports: {
         fastifySentry: fastifySentryProvider,
       },
-      run({ node, requestContext, configService, typescript, errorHandler }) {
+      run({ node, configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate({
           CONFIG: { type: 'code-expression' },
           REQUEST_INFO_TYPE: { type: 'code-expression' },
@@ -117,12 +117,14 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         });
 
         node.addPackages({
-          '@sentry/node': '7.80.1',
+          '@sentry/node': '7.81.1',
+          '@sentry/core': '7.81.1',
+          '@sentry/utils': '7.81.1',
           lodash: '4.17.21',
         });
 
         node.addDevPackages({
-          '@sentry/types': '7.80.1',
+          '@sentry/types': '7.81.1',
           '@types/lodash': '4.14.194',
         });
 
@@ -182,7 +184,6 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           build: async (builder) => {
             sentryServiceFile.addCodeEntries({
               CONFIG: configService.getConfigExpression(),
-              REQUEST_INFO_TYPE: requestContext.getRequestInfoType(),
               SCOPE_CONFIGURATION_BLOCKS: scopeConfigurationBlocks,
               SENTRY_INTEGRATIONS:
                 TypescriptCodeUtils.mergeExpressionsAsArray(sentryIntegrations),
@@ -219,10 +220,11 @@ const FastifySentryGenerator = createGeneratorWithTasks({
               `const userData = requestContext.get('user');
       if (userData) {
         scope.setUser({
+          ...scope.getUser(),
           id: userData.id,
-          ip_address: requestData?.ip,
         });
       }`,
+              `import { requestContext } from '@fastify/request-context';`,
             ),
           );
         }

@@ -24,7 +24,7 @@ export async function buildServer({
   generatorSetupConfig,
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
-    forceCloseConnections: true,
+    forceCloseConnections: 'idle',
     // https://github.com/fastify/fastify/issues/4960
     logger: logger as FastifyBaseLogger,
     maxParamLength: 10000,

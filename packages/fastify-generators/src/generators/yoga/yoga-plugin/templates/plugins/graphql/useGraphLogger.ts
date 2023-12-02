@@ -20,10 +20,11 @@ function getOperationType(document: DocumentNode): string | undefined {
 
 interface UseGraphLoggerOptions {
   logSubscriptionExecution?: boolean;
+  skipLogErrors?: boolean;
 }
 
 export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
-  const { logSubscriptionExecution } = options ?? {};
+  const { logSubscriptionExecution, skipLogErrors } = options ?? {};
   function logResult(
     { args, result }: OnExecuteDoneHookResultOnNextHookPayload<unknown>,
     startTime?: number,
@@ -37,9 +38,11 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
 
     const errors = result.errors ?? [];
 
-    errors.forEach((error: GraphQLError) =>
-      logger.error(error.originalError ?? error),
-    );
+    if (!skipLogErrors) {
+      errors.forEach((error: GraphQLError) =>
+        logger.error(error.originalError ?? error),
+      );
+    }
 
     if (operationType !== 'subscription' || logSubscriptionExecution) {
       logger.info(

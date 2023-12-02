@@ -46,16 +46,16 @@ const createMainTask = createTaskConfigBuilder(() => ({
             TypescriptCodeUtils.mergeBlocks(blocks)
               .wrap(
                 (contents) => `
-              const { user } = useCurrentUser();
+              const { userId } = useSession();
 
             useEffect(() => {
-              if (!user) return;
+              if (!userId) return;
               
               ${contents}
-            }, [user]);
+            }, [userId]);
             `,
                 [
-                  "import {useCurrentUser} from '%auth-hooks/useCurrentUser'",
+                  "import {useSession} from '%auth-hooks/useSession'",
                   "import {useEffect} from 'react'",
                 ],
               )

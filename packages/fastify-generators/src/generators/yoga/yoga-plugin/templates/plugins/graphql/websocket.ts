@@ -2,7 +2,7 @@
 
 import { WebsocketHandler } from '@fastify/websocket';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { ExecutionArgs, ExecutionResult } from 'graphql';
+import { ExecutionArgs, ExecutionResult, GraphQLError } from 'graphql';
 import { CloseCode } from 'graphql-ws';
 import { makeHandler } from 'graphql-ws/lib/use/@fastify/websocket';
 import { YogaServerInstance } from 'graphql-yoga';
@@ -117,7 +117,11 @@ export function getGraphqlWsHandler(
         return args;
       } catch (err) {
         logError(err);
-        throw err;
+        return [
+          new GraphQLError('Error creating subscription', {
+            originalError: err as Error,
+          }),
+        ];
       }
     },
   });

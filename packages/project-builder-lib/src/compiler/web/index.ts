@@ -37,6 +37,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
       },
       $sentry: {
         generator: '@halfdomelabs/react/core/react-sentry',
+        peerProvider: true,
       },
       $apollo: {
         generator: '@halfdomelabs/react/apollo/react-apollo',

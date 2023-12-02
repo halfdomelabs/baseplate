@@ -124,19 +124,28 @@ export function createTaskConfigBuilder<
   return builder;
 }
 
-export interface GeneratorTaskBuilder {
+export interface GeneratorTaskBuilder<Descriptor = unknown> {
   addTask: <
     ExportMap extends ProviderExportMap,
     DependencyMap extends ProviderDependencyMap,
     TaskDependencyMap extends TaskOutputDependencyMap,
     TaskOutput = unknown,
   >(
-    task: SimpleGeneratorTaskConfig<
-      ExportMap,
-      DependencyMap,
-      TaskDependencyMap,
-      TaskOutput
-    >,
+    task:
+      | SimpleGeneratorTaskConfig<
+          ExportMap,
+          DependencyMap,
+          TaskDependencyMap,
+          TaskOutput
+        >
+      | ((
+          descriptor: Descriptor,
+        ) => SimpleGeneratorTaskConfig<
+          ExportMap,
+          DependencyMap,
+          TaskDependencyMap,
+          TaskOutput
+        >),
   ) => SimpleGeneratorTaskOutput<TaskOutput>;
 }
 
@@ -272,9 +281,11 @@ export function createGeneratorWithTasks<
         TaskOutputDependencyMap<Record<string, unknown>>
       >[] = [];
       const taskOutputs: Record<string, unknown> = {};
-      const taskBuilder: GeneratorTaskBuilder = {
+      const taskBuilder: GeneratorTaskBuilder<
+        DescriptorWithChildren & z.infer<DescriptorSchema>
+      > = {
         addTask: (task) => {
-          tasks.push(task);
+          tasks.push(task instanceof Function ? task(descriptor) : task);
           return {
             name: task.name,
             getOutput: () => {

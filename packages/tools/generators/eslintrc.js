@@ -157,6 +157,12 @@ module.exports = function createEslintConfig(options) {
           ],
         },
       },
+      {
+        files: ['scripts/**/*'],
+        rules: {
+          'no-console': 'off',
+        },
+      },
     ],
     env: {
       node: true,

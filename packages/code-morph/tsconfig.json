@@ -1,0 +1,11 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.node.cli.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@scripts/*": ["scripts/*"]
+    }
+  },
+  "include": ["scripts/**/*", "transforms/**/*"]
+}

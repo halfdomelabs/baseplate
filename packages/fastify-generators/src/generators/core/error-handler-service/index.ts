@@ -21,6 +21,7 @@ const descriptorSchema = z.object({});
 
 const errorHandlerFileConfig = createTypescriptTemplateConfig({
   HEADER: { type: 'code-block' },
+  CONTEXT_ACTIONS: { type: 'code-block' },
   LOGGER_ACTIONS: { type: 'code-block' },
 });
 
@@ -127,7 +128,7 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
           TypescriptCodeUtils.toBlock(
             TypescriptCodeUtils.wrapExpression(
               loggerService.getLogger(),
-              (code) => `${code}.error(error);`,
+              (code) => `${code}.error({ err: error, ...context });`,
             ),
           ),
         );

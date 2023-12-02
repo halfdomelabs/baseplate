@@ -35,7 +35,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
               !shouldLogToSentry(
                 error instanceof GraphQLError ? error.originalError ?? error : error
               ),
-            eventIdKey: null,
           })`,
         [
           `import { useSentry } from '${pluginImport}'`,
