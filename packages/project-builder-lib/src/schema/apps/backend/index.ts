@@ -11,6 +11,7 @@ export const backendAppSchema = z.object({
   enablePostmark: z.boolean().optional(),
   enableSendgrid: z.boolean().optional(),
   enableSubscriptions: z.boolean().optional(),
+  enableAxios: z.boolean().optional(),
 });
 
 export type BackendAppConfig = z.infer<typeof backendAppSchema>;

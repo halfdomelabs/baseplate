@@ -72,6 +72,12 @@ export function buildFastify(
             generator: '@halfdomelabs/fastify/email/fastify-postmark',
             peerProvider: true,
           },
+      $axios: !app.enableAxios
+        ? undefined
+        : {
+            generator: '@halfdomelabs/fastify/core/axios',
+            peerProvider: true,
+          },
       $sendgrid: !app.enableSendgrid
         ? undefined
         : {

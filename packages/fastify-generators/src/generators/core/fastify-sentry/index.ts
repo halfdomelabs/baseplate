@@ -84,9 +84,9 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           TypescriptCodeUtils.createBlock(
             `
 if (error instanceof Error && shouldLogToSentry(error)) {
-  context.errorId = logErrorToSentry(error, additionalContext);
+  context.errorId = logErrorToSentry(error, context);
 } else if (typeof error === 'string') {
-  context.errorId = logErrorToSentry(new Error(error), additionalContext);
+  context.errorId = logErrorToSentry(new Error(error), context);
 }
       `,
             "import { logErrorToSentry } from '@/src/services/sentry'",

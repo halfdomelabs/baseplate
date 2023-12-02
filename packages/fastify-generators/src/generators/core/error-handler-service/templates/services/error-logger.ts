@@ -18,6 +18,8 @@ export function logError(
 ): string | undefined {
   const context: ErrorContext = { ...additionalContext };
 
+  CONTEXT_ACTIONS;
+
   LOGGER_ACTIONS;
 
   return context.errorId;

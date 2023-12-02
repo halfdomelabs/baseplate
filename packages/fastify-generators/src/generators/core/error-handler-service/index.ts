@@ -21,6 +21,7 @@ const descriptorSchema = z.object({});
 
 const errorHandlerFileConfig = createTypescriptTemplateConfig({
   HEADER: { type: 'code-block' },
+  CONTEXT_ACTIONS: { type: 'code-block' },
   LOGGER_ACTIONS: { type: 'code-block' },
 });
 

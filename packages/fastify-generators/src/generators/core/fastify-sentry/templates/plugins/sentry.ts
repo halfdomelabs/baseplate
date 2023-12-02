@@ -60,7 +60,7 @@ const errorWrapperHook: onRequestHookHandler = (req, reply, done) => {
         event.request = { ...event.request, ...requestData };
         // attach route path, request ID, and transaction as well
         const routePath = req.routeOptions.url;
-        event.extra = { ...event.extra, routePath, request_id: req.id };
+        event.extra = { ...event.extra, routePath, reqId: req.id };
         event.tags = { ...event.tags, routePath };
         event.transaction ||= getTransactionPath(req)[0];
         // attach IP
