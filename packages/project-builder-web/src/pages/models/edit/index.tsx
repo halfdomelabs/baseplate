@@ -1,8 +1,9 @@
-import { Button, Tabs, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { Tabs } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { ModelEditContext } from './ModelEditContext';
 import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
@@ -16,7 +17,7 @@ function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
   const { parsedProject, setConfig } = useProjectConfig();
   const navigate = useNavigate();
-  const { requestConfirm } = useConfirmDialog();
+
   const toast = useToast();
 
   const isNew = !id;
@@ -41,70 +42,59 @@ function ModelEditPage(): JSX.Element {
   }
 
   return (
-    <div className="space-y-4" key={id}>
-      {model ? (
-        <div className="flex flex-col items-start">
-          <button
-            className="group flex items-center space-x-2 hover:cursor-pointer"
-            onClick={() => {
-              setShowNameModal(true);
-            }}
-            type="button"
-          >
-            <h1>{model.name}</h1>
-            <MdEdit className="invisible h-4 w-4 group-hover:visible" />
-          </button>
-          {model?.feature && (
-            <div className="text-xs text-muted-foreground">{model.feature}</div>
-          )}
-          <ModelGeneralEditDialog
-            isOpen={showNameModal}
-            onClose={() => {
-              setShowNameModal(false);
-            }}
-          />
-        </div>
-      ) : (
-        <h1>New Model</h1>
-      )}
-      {isNew ? (
-        <ModelEditModelPage />
-      ) : (
-        <Tabs defaultValue="fields">
-          <Tabs.List>
-            <Tabs.Trigger value="fields">Fields</Tabs.Trigger>
-            <Tabs.Trigger value="service">Service</Tabs.Trigger>
-            <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
-          </Tabs.List>
-          <Tabs.Content value="fields">
-            <ModelEditModelPage />
-          </Tabs.Content>
-          <Tabs.Content value="service">
-            <ModelEditServicePage />
-          </Tabs.Content>
-          <Tabs.Content value="schema">
-            <ModelEditSchemaPage />
-          </Tabs.Content>
-        </Tabs>
-      )}
-      {!isNew && (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            requestConfirm({
-              title: 'Confirm delete',
-              content: `Are you sure you want to delete ${
-                model?.name ?? 'the model'
-              }?`,
-              buttonConfirmText: 'Delete',
-              onConfirm: handleDelete,
-            });
-          }}
-        >
-          Delete Model
-        </Button>
-      )}
-    </div>
+    <ModelEditContext.Provider
+      value={{ onDelete: handleDelete, isModelNew: isNew, model }}
+    >
+      <div className="space-y-4" key={id}>
+        {model ? (
+          <div className="flex flex-col items-start">
+            <button
+              className="group flex items-center space-x-2 hover:cursor-pointer"
+              onClick={() => {
+                setShowNameModal(true);
+              }}
+              type="button"
+            >
+              <h1>{model.name}</h1>
+              <MdEdit className="invisible h-4 w-4 group-hover:visible" />
+            </button>
+            {model?.feature && (
+              <div className="text-xs text-muted-foreground">
+                {model.feature}
+              </div>
+            )}
+            <ModelGeneralEditDialog
+              isOpen={showNameModal}
+              onClose={() => {
+                setShowNameModal(false);
+              }}
+            />
+          </div>
+        ) : (
+          <h1>New Model</h1>
+        )}
+        {isNew ? (
+          <ModelEditModelPage />
+        ) : (
+          <Tabs defaultValue="fields">
+            <Tabs.List>
+              <Tabs.Trigger value="fields">Fields</Tabs.Trigger>
+              <Tabs.Trigger value="service">Service</Tabs.Trigger>
+              <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Content value="fields">
+              <ModelEditModelPage />
+            </Tabs.Content>
+            <Tabs.Content value="service">
+              <ModelEditServicePage />
+            </Tabs.Content>
+            <Tabs.Content value="schema">
+              <ModelEditSchemaPage />
+            </Tabs.Content>
+          </Tabs>
+        )}
+      </div>
+    </ModelEditContext.Provider>
   );
 }
 

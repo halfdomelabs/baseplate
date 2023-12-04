@@ -2,7 +2,8 @@ import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
 import { useModelForm } from '../hooks/useModelForm';
-import { Alert, Button } from 'src/components';
+import ModelFormActionBar from '../model/ModelFormActionBar';
+import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useStatus } from 'src/hooks/useStatus';
@@ -93,7 +94,7 @@ function ModelEditServicePage(): JSX.Element {
           )}
         </>
       )}
-      <Button type="submit">Save</Button>
+      <ModelFormActionBar form={form} />
     </form>
   );
 }

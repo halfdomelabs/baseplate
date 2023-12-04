@@ -5,13 +5,14 @@ import {
 import { useController } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
+import ModelFormActionBar from './ModelFormActionBar';
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import { useModelForm } from '../hooks/useModelForm';
-import { Alert, Button, LinkButton } from 'src/components';
+import { Alert, LinkButton } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 
@@ -52,7 +53,7 @@ function ModelEditModelPage(): JSX.Element {
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="min-w-[700px] max-w-6xl space-y-4"
+      className="relative min-w-[700px] max-w-6xl space-y-4 pb-[56px]"
     >
       <Alert.WithStatus status={status} />
       {!id && <ModelGeneralForm control={control} horizontal />}
@@ -99,9 +100,7 @@ function ModelEditModelPage(): JSX.Element {
       </LinkButton>
       <ModelPrimaryKeyForm formProps={form} />
       <ModelUniqueConstraintsField formProps={form} />
-      <div>
-        <Button type="submit">Save</Button>
-      </div>
+      <ModelFormActionBar form={form} />
     </form>
   );
 }
