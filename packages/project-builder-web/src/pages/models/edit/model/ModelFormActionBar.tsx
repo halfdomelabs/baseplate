@@ -46,7 +46,7 @@ const ModelFormActionBar = ({
             onClick={() => form.reset()}
             disabled={formState.isSubmitting || !isDirty}
           >
-            Cancel Changes
+            Cancel
           </Button>
           <Button
             variant="default"

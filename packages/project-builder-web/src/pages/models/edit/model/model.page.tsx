@@ -53,7 +53,7 @@ function ModelEditModelPage(): JSX.Element {
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="relative min-w-[700px] max-w-6xl space-y-4 pb-[56px]"
+      className="min-w-[700px] max-w-6xl space-y-4 pb-[56px]"
     >
       <Alert.WithStatus status={status} />
       {!id && <ModelGeneralForm control={control} horizontal />}
