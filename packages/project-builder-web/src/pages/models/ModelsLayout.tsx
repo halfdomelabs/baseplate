@@ -2,7 +2,9 @@ import { SidebarLayout, Tabs } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Outlet } from 'react-router-dom';
 
+import { ModelsLayoutFooter } from './ModelsLayoutFooter';
 import { ModelsSidebarList } from './ModelsSidebarList';
+import { ModelsFooterContentProvider } from './context/ModelsFooterContentContext';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
@@ -15,7 +17,7 @@ export function ModelsLayout(): JSX.Element {
     ?.name;
 
   return (
-    <SidebarLayout className="flex-1">
+    <SidebarLayout className="relative flex-1">
       <SidebarLayout.Sidebar
         className="flex h-full max-w-sm flex-col space-y-4"
         width="auto"
@@ -37,9 +39,14 @@ export function ModelsLayout(): JSX.Element {
           {longestName}
         </div>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="p-4">
-        <Outlet />
-      </SidebarLayout.Content>
+      <div className="flex h-full w-full max-w-full flex-col">
+        <ModelsFooterContentProvider>
+          <SidebarLayout.Content className="p-4">
+            <Outlet />
+          </SidebarLayout.Content>
+          <ModelsLayoutFooter />
+        </ModelsFooterContentProvider>
+      </div>
     </SidebarLayout>
   );
 }

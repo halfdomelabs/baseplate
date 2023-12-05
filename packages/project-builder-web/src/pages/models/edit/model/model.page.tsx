@@ -2,21 +2,26 @@ import {
   ModelRelationFieldConfig,
   randomUid,
 } from '@halfdomelabs/project-builder-lib';
+import { useContext, useEffect } from 'react';
 import { useController } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
-import ModelFormActionBar from './ModelFormActionBar';
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
+import ModelsFooterContentContext from '../../context/ModelsFooterContentContext';
+import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../hooks/useModelForm';
 import { Alert, LinkButton } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditModelPage(): JSX.Element {
+  const { setContent: setFooterContent } = useContext(
+    ModelsFooterContentContext,
+  );
   const { status, setError } = useStatus();
   const { form, onFormSubmit, fixControlledReferences } = useModelForm({
     setError,
@@ -26,6 +31,15 @@ function ModelEditModelPage(): JSX.Element {
       'modelUniqueConstraint',
     ],
   });
+
+  useEffect(() => {
+    setFooterContent(<ModelFormActionBar form={form} />);
+
+    return () => {
+      setFooterContent(null);
+    };
+  }, [form, setFooterContent]);
+
   const { control, handleSubmit } = form;
 
   const { parsedProject } = useProjectConfig();
@@ -53,7 +67,7 @@ function ModelEditModelPage(): JSX.Element {
   return (
     <form
       onSubmit={handleSubmit(onFormSubmit)}
-      className="min-w-[700px] max-w-6xl space-y-4 pb-[56px]"
+      className="min-w-[700px] max-w-6xl space-y-4"
     >
       <Alert.WithStatus status={status} />
       {!id && <ModelGeneralForm control={control} horizontal />}
@@ -100,7 +114,6 @@ function ModelEditModelPage(): JSX.Element {
       </LinkButton>
       <ModelPrimaryKeyForm formProps={form} />
       <ModelUniqueConstraintsField formProps={form} />
-      <ModelFormActionBar form={form} />
     </form>
   );
 }

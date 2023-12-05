@@ -1,17 +1,30 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { useContext, useEffect } from 'react';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
+import ModelsFooterContentContext from '../../context/ModelsFooterContentContext';
+import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../hooks/useModelForm';
-import ModelFormActionBar from '../model/ModelFormActionBar';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditServicePage(): JSX.Element {
+  const { setContent: setFooterContent } = useContext(
+    ModelsFooterContentContext,
+  );
   const { status, setError } = useStatus();
   const { form, onFormSubmit, originalModel } = useModelForm({ setError });
   const { control, handleSubmit, watch } = form;
+
+  useEffect(() => {
+    setFooterContent(<ModelFormActionBar form={form} />);
+
+    return () => {
+      setFooterContent(null);
+    };
+  }, [form, setFooterContent]);
 
   const shouldBuild = watch('service.build');
 
@@ -94,7 +107,6 @@ function ModelEditServicePage(): JSX.Element {
           )}
         </>
       )}
-      <ModelFormActionBar form={form} />
     </form>
   );
 }

@@ -60,3 +60,14 @@ SidebarLayout.Content = function SidebarLayoutContent({
     </div>
   );
 };
+
+interface SidebarLayoutContentFooterProps {
+  children: React.ReactNode;
+}
+
+SidebarLayout.ContentFooter = function SidebarLayoutContentFooter({
+  children,
+}: SidebarLayoutContentFooterProps): JSX.Element {
+  if (!children) return <></>;
+  return <div className={cn('flex', {})}>{children}</div>;
+};

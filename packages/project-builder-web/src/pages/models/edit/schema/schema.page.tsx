@@ -1,8 +1,9 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { useMemo } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 
+import ModelsFooterContentContext from '../../context/ModelsFooterContentContext';
+import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../hooks/useModelForm';
-import ModelFormActionBar from '../model/ModelFormActionBar';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
@@ -10,10 +11,21 @@ import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditSchemaPage(): JSX.Element {
+  const { setContent: setFooterContent } = useContext(
+    ModelsFooterContentContext,
+  );
   const { status, setError } = useStatus();
   const { form, onFormSubmit, originalModel } = useModelForm({ setError });
   const { control, handleSubmit, watch } = form;
   const { parsedProject } = useProjectConfig();
+
+  useEffect(() => {
+    setFooterContent(<ModelFormActionBar form={form} />);
+
+    return () => {
+      setFooterContent(null);
+    };
+  }, [form, setFooterContent]);
 
   const onSubmit = (data: ModelConfig): void => {
     onFormSubmit(data);
@@ -123,7 +135,6 @@ function ModelEditSchemaPage(): JSX.Element {
           />
         </>
       )}
-      <ModelFormActionBar form={form} />
     </form>
   );
 }
