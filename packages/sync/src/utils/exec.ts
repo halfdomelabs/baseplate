@@ -11,6 +11,7 @@ export class ExecError extends Error {
 
 export interface ExecOptions {
   cwd?: string;
+  timeout?: number;
 }
 
 export async function executeCommand(
@@ -28,6 +29,7 @@ export async function executeCommand(
         {} as Record<string, string | undefined>,
       ),
     extendEnv: false,
+    timeout: options.timeout,
   });
 
   return result.all ?? '';

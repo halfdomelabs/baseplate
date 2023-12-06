@@ -338,6 +338,7 @@ export async function writeGeneratorOutput(
       try {
         await executeCommand(commandString, {
           cwd: path.join(outputDirectory, workingDirectory),
+          timeout: 300000, // 5 minutes
         });
       } catch (err) {
         logger.error(chalk.red(`Unable to run ${commandString}`));
