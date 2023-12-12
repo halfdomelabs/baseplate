@@ -4,7 +4,7 @@ import {
   REFERENTIAL_ACTIONS,
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
@@ -49,6 +49,7 @@ function ModelRelationForm({
     formState: { errors },
     watch,
     control,
+    setValue,
   } = formProps;
 
   const { parsedProject } = useProjectConfig();
@@ -80,6 +81,26 @@ function ModelRelationForm({
 
     onRemove(idx);
   }
+
+  const getDefaultOnDeleteValue = (
+    modelName: string,
+  ): (typeof REFERENTIAL_ACTIONS)[number] => {
+    return modelName === 'File' ? 'Restrict' : 'Cascade';
+  };
+
+  const foreignModelName = watch(`model.relations.${idx}.modelName`);
+
+  useEffect(() => {
+    if (foreignModelName) {
+      setValue(
+        `model.relations.${idx}.onDelete`,
+        getDefaultOnDeleteValue(foreignModelName),
+        {
+          shouldDirty: true,
+        },
+      );
+    }
+  }, [foreignModelName, idx, setValue]);
 
   // TODO: Self references (requires a bit of patching for model renames)
   const foreignModelOptions = parsedProject.getModels().map((type) => ({
