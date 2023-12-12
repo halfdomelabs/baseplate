@@ -1,7 +1,7 @@
-import { Button, Tabs, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { Tabs } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import ModelEditModelPage from './model/model.page';
@@ -9,30 +9,14 @@ import ModelEditSchemaPage from './schema/schema.page';
 import ModelEditServicePage from './service/service.page';
 import { NotFoundCard } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useToast } from 'src/hooks/useToast';
-import { formatError } from 'src/services/error-formatter';
 
 function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
-  const { parsedProject, setConfig } = useProjectConfig();
-  const navigate = useNavigate();
-  const { requestConfirm } = useConfirmDialog();
-  const toast = useToast();
+  const { parsedProject } = useProjectConfig();
 
   const isNew = !id;
 
   const model = parsedProject.getModels().find((m) => m.uid === id);
-
-  const handleDelete = (): void => {
-    try {
-      setConfig((draftConfig) => {
-        draftConfig.models = draftConfig.models?.filter((m) => m.uid !== id);
-      });
-      navigate('..');
-    } catch (err) {
-      toast.error(formatError(err));
-    }
-  };
 
   const [showNameModal, setShowNameModal] = useState(false);
 
@@ -70,39 +54,22 @@ function ModelEditPage(): JSX.Element {
       {isNew ? (
         <ModelEditModelPage />
       ) : (
-        <Tabs defaultValue="fields">
+        <Tabs defaultValue="fields" className="h-full">
           <Tabs.List>
             <Tabs.Trigger value="fields">Fields</Tabs.Trigger>
             <Tabs.Trigger value="service">Service</Tabs.Trigger>
             <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
           </Tabs.List>
-          <Tabs.Content value="fields">
+          <Tabs.Content value="fields" className="h-full">
             <ModelEditModelPage />
           </Tabs.Content>
-          <Tabs.Content value="service">
+          <Tabs.Content value="service" className="h-full">
             <ModelEditServicePage />
           </Tabs.Content>
-          <Tabs.Content value="schema">
+          <Tabs.Content value="schema" className="h-full">
             <ModelEditSchemaPage />
           </Tabs.Content>
         </Tabs>
-      )}
-      {!isNew && (
-        <Button
-          variant="secondary"
-          onClick={() => {
-            requestConfirm({
-              title: 'Confirm delete',
-              content: `Are you sure you want to delete ${
-                model?.name ?? 'the model'
-              }?`,
-              buttonConfirmText: 'Delete',
-              onConfirm: handleDelete,
-            });
-          }}
-        >
-          Delete Model
-        </Button>
       )}
     </div>
   );

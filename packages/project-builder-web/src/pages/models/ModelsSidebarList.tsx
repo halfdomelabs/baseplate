@@ -1,10 +1,16 @@
-import { Button, InputField } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  InputField,
+  useConfirmDialog,
+} from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
-import { MdClear } from 'react-icons/md';
-import { Link, NavLink } from 'react-router-dom';
+import { MdClear, MdDelete } from 'react-icons/md';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
+import { useToast } from '@src/hooks/useToast';
+import { formatError } from '@src/services/error-formatter';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface ModelsSidebarListProps {
@@ -14,7 +20,10 @@ interface ModelsSidebarListProps {
 export function ModelsSidebarList({
   className,
 }: ModelsSidebarListProps): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const navigate = useNavigate();
+  const { requestConfirm } = useConfirmDialog();
+  const toast = useToast();
+  const { parsedProject, setConfig } = useProjectConfig();
 
   const models = parsedProject.getModels();
 
@@ -24,6 +33,17 @@ export function ModelsSidebarList({
   );
 
   const sortedModels = _.sortBy(filteredModels, (m) => m.name);
+
+  const handleDelete = (id: string): void => {
+    try {
+      setConfig((draftConfig) => {
+        draftConfig.models = draftConfig.models?.filter((m) => m.uid !== id);
+      });
+      navigate('..');
+    } catch (err) {
+      toast.error(formatError(err));
+    }
+  };
 
   return (
     <div className={clsx(className, 'flex flex-col space-y-4')}>
@@ -49,15 +69,16 @@ export function ModelsSidebarList({
           </Button>
         )}
       </div>
+
       <div className="flex-1 overflow-y-auto">
         <ul>
           {sortedModels.map((model) => (
-            <li key={model.uid}>
+            <li key={model.uid} className="group">
               <NavLink
                 to={`/models/edit/${model.uid}`}
                 className={({ isActive }) =>
                   clsx(
-                    'block w-full p-2 text-sm hover:bg-background-100 dark:hover:bg-background-700',
+                    'block w-full p-2 text-sm group-hover:bg-background-100 dark:group-hover:bg-background-700',
                     isActive
                       ? 'bg-background-100 font-semibold text-primary-700 dark:bg-background-700'
                       : 'font-normal text-foreground-700',
@@ -65,7 +86,24 @@ export function ModelsSidebarList({
                 }
                 title={model.name}
               >
-                {model.name}
+                <div className="flex items-center justify-between space-x-2">
+                  {model.name}
+
+                  <MdDelete
+                    className="z-10 hidden h-4 w-4 shrink-0 fill-destructive group-hover:inline-flex"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      requestConfirm({
+                        title: 'Confirm delete',
+                        content: `Are you sure you want to delete ${
+                          model?.name ?? 'the model'
+                        }?`,
+                        buttonConfirmText: 'Delete',
+                        onConfirm: () => handleDelete(model.uid),
+                      });
+                    }}
+                  />
+                </div>
               </NavLink>
             </li>
           ))}
