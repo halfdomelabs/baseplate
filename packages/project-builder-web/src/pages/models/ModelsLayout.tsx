@@ -15,7 +15,7 @@ export function ModelsLayout(): JSX.Element {
     ?.name;
 
   return (
-    <SidebarLayout className="relative flex-1">
+    <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar
         className="flex h-full max-w-sm flex-col space-y-4"
         width="auto"

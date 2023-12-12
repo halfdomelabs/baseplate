@@ -90,6 +90,7 @@ export function ModelsSidebarList({
                   {model.name}
 
                   <MdDelete
+                    title="Delete Model"
                     className="z-10 hidden h-4 w-4 shrink-0 fill-destructive group-hover:inline-flex"
                     onClick={(e) => {
                       e.preventDefault();

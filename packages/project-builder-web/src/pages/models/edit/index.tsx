@@ -54,19 +54,19 @@ function ModelEditPage(): JSX.Element {
       {isNew ? (
         <ModelEditModelPage />
       ) : (
-        <Tabs defaultValue="fields" className="h-full">
+        <Tabs defaultValue="fields">
           <Tabs.List>
             <Tabs.Trigger value="fields">Fields</Tabs.Trigger>
             <Tabs.Trigger value="service">Service</Tabs.Trigger>
             <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
           </Tabs.List>
-          <Tabs.Content value="fields" className="h-full">
+          <Tabs.Content value="fields">
             <ModelEditModelPage />
           </Tabs.Content>
-          <Tabs.Content value="service" className="h-full">
+          <Tabs.Content value="service">
             <ModelEditServicePage />
           </Tabs.Content>
-          <Tabs.Content value="schema" className="h-full">
+          <Tabs.Content value="schema">
             <ModelEditSchemaPage />
           </Tabs.Content>
         </Tabs>
