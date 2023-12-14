@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import fs from 'fs/promises';
 import _ from 'lodash';
+import ms from 'ms';
 import pLimit from 'p-limit';
 import path from 'path';
 
@@ -14,6 +15,8 @@ import { Logger } from '@src/utils/evented-logger.js';
 import { ExecError, executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
+
+const COMMAND_TIMEOUT_MILLIS = ms('5m');
 
 async function mergeContents(
   newContents: string,
@@ -338,7 +341,7 @@ export async function writeGeneratorOutput(
       try {
         await executeCommand(commandString, {
           cwd: path.join(outputDirectory, workingDirectory),
-          timeout: 300000, // 5 minutes
+          timeout: COMMAND_TIMEOUT_MILLIS,
         });
       } catch (err) {
         logger.error(chalk.red(`Unable to run ${commandString}`));
