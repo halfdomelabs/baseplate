@@ -32,7 +32,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ node, typescript, configService, loggerService }) {
     node.addPackages({
-      '@sendgrid/mail': '7.7.0',
+      '@sendgrid/mail': '8.1.0',
     });
     configService.getConfigEntries().set('SENDGRID_API_KEY', {
       comment: 'Sendgrid API token',
