@@ -1,5 +1,17 @@
 # @halfdomelabs/react-generators
 
+## 0.6.1
+
+### Patch Changes
+
+- 9d0005b: Improve React Sentry Apollo integration to report more useful errors for GraphQL
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+- f12e2c1: Upgrade Vite to 4.5.1
+- Updated dependencies [63794f7]
+- Updated dependencies [3da6a70]
+  - @halfdomelabs/sync@0.7.0
+  - @halfdomelabs/core-generators@0.7.1
+
 ## 0.6.0
 
 ### Minor Changes

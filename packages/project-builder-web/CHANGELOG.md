@@ -1,5 +1,23 @@
 # @halfdomelabs/project-builder-web
 
+## 0.7.0
+
+### Minor Changes
+
+- 5bcf4fd: Clears Console on retry of sync
+- bab0c31: Change to TRPC for communication instead of REST
+
+### Patch Changes
+
+- 9d0005b: Add axios utility to support better stack traces/error info for Axios
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+- f12e2c1: Upgrade Vite to 4.5.1
+- Updated dependencies [9d0005b]
+- Updated dependencies [3da6a70]
+- Updated dependencies [f12e2c1]
+  - @halfdomelabs/project-builder-lib@0.6.1
+  - @halfdomelabs/ui-components@0.4.1
+
 ## 0.6.0
 
 ### Minor Changes
