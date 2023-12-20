@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/react-generators",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "React Generators for Baseplate",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",

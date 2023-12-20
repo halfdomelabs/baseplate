@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/code-morph",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "Simple package for running code migrations on the codebase",
   "repository": "https://github.com/halfdomelabs/baseplate",

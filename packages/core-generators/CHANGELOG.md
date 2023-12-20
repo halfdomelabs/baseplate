@@ -1,5 +1,14 @@
 # @halfdomelabs/core-generators
 
+## 0.7.1
+
+### Patch Changes
+
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+- Updated dependencies [63794f7]
+- Updated dependencies [3da6a70]
+  - @halfdomelabs/sync@0.7.0
+
 ## 0.7.0
 
 ### Minor Changes

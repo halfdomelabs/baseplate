@@ -1,5 +1,31 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.6.0
+
+### Minor Changes
+
+- 8efd325: Bumped tsx version
+- bab0c31: Change to TRPC for communication instead of REST
+
+### Patch Changes
+
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+- Updated dependencies [5bcf4fd]
+- Updated dependencies [9d0005b]
+- Updated dependencies [9d0005b]
+- Updated dependencies [e65aca2]
+- Updated dependencies [8efd325]
+- Updated dependencies [9d0005b]
+- Updated dependencies [70c31ab]
+- Updated dependencies [bab0c31]
+- Updated dependencies [3da6a70]
+- Updated dependencies [f12e2c1]
+  - @halfdomelabs/project-builder-web@0.7.0
+  - @halfdomelabs/fastify-generators@0.8.0
+  - @halfdomelabs/react-generators@0.6.1
+  - @halfdomelabs/project-builder-server@0.2.0
+  - @halfdomelabs/core-generators@0.7.1
+
 ## 0.5.0
 
 ### Minor Changes

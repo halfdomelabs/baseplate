@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.1
+
+### Patch Changes
+
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+
 ## 0.5.0
 
 ### Minor Changes

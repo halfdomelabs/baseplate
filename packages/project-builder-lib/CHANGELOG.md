@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.6.1
+
+### Patch Changes
+
+- 9d0005b: Add axios utility to support better stack traces/error info for Axios
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+
 ## 0.6.0
 
 ### Minor Changes

@@ -1,5 +1,23 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.0
+
+### Minor Changes
+
+- 9d0005b: Improve Sentry error and transaction reporting
+- 8efd325: Bumped tsx version
+
+### Patch Changes
+
+- 9d0005b: Add axios utility to support better stack traces/error info for Axios
+- e65aca2: Upgrade Pothos to 3.40.1
+- 70c31ab: Upgrade Postmark to 4.0.2 and Sendgrid to 8.1.0
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+- Updated dependencies [63794f7]
+- Updated dependencies [3da6a70]
+  - @halfdomelabs/sync@0.7.0
+  - @halfdomelabs/core-generators@0.7.1
+
 ## 0.7.0
 
 ### Minor Changes

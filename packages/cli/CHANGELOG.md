@@ -1,5 +1,28 @@
 # @halfdomelabs/cli
 
+## 0.7.0
+
+### Minor Changes
+
+- 8efd325: Bumped tsx version
+
+### Patch Changes
+
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+- Updated dependencies [63794f7]
+- Updated dependencies [9d0005b]
+- Updated dependencies [9d0005b]
+- Updated dependencies [e65aca2]
+- Updated dependencies [8efd325]
+- Updated dependencies [9d0005b]
+- Updated dependencies [70c31ab]
+- Updated dependencies [3da6a70]
+- Updated dependencies [f12e2c1]
+  - @halfdomelabs/sync@0.7.0
+  - @halfdomelabs/fastify-generators@0.8.0
+  - @halfdomelabs/react-generators@0.6.1
+  - @halfdomelabs/core-generators@0.7.1
+
 ## 0.6.0
 
 ### Minor Changes
