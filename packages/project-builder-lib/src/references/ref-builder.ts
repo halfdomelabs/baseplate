@@ -192,6 +192,19 @@ class ZodRefBuilder<TInput> {
       throw new Error(`Parent path required if reference type has parent type`);
     }
 
+    // check reference exists, otherwise don't add reference
+    const refPathWithoutPrefix = this._constructPathWithoutPrefix(
+      reference.path,
+    );
+    const refValue =
+      refPathWithoutPrefix.length === 0
+        ? this.data
+        : (_.get(
+            this.data,
+            this._constructPathWithoutPrefix(reference.path),
+          ) as string);
+    if (!refValue) return;
+
     const path = this._constructPath(reference.path);
 
     this.references.push({
