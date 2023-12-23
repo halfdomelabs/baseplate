@@ -1,5 +1,15 @@
 # @halfdomelabs/sync
 
+## 0.7.0
+
+### Minor Changes
+
+- 63794f7: Adds a 5m timeout to project generation
+
+### Patch Changes
+
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+
 ## 0.6.0
 
 ### Minor Changes

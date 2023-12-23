@@ -1,5 +1,12 @@
 # @halfdomelabs/ui-components
 
+## 0.4.1
+
+### Patch Changes
+
+- 3da6a70: Upgrade to Node 20 and Typescript 5.2.2, cleaning up tsconfig setup
+- f12e2c1: Upgrade Vite to 4.5.1
+
 ## 0.4.0
 
 ### Minor Changes

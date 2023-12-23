@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/sync",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Library for syncing Baseplate descriptions",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
@@ -30,6 +30,7 @@
     "execa": "^7.2.0",
     "fast-json-patch": "^3.1.1",
     "lodash": "^4.17.21",
+    "ms": "2.1.3",
     "multimatch": "^6.0.0",
     "node-diff3": "3.1.2",
     "p-limit": "^4.0.0",
@@ -41,6 +42,7 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/ejs": "^3.1.2",
     "@types/lodash": "4.14.196",
+    "@types/ms": "0.7.34",
     "@types/node": "^20.0.0",
     "@types/ramda": "^0.29.3",
     "@types/toposort": "^2.0.3",

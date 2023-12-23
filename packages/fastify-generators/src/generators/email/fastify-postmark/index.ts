@@ -30,7 +30,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ node, typescript, configService }) {
     node.addPackages({
-      postmark: '3.11.0',
+      postmark: '4.0.2',
     });
     configService.getConfigEntries().set('POSTMARK_API_TOKEN', {
       comment: 'Postmark API token',
