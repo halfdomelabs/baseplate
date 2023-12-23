@@ -26,7 +26,11 @@ export interface DefinitionEntity {
   parentPath?: ReferencePath;
 }
 
-type ReferenceOnDeleteAction = 'SET_NULL' | 'CASCADE' | 'RESTRICT';
+type ReferenceOnDeleteAction =
+  | 'SET_NULL'
+  | 'DELETE'
+  | 'DELETE_PARENT'
+  | 'RESTRICT';
 
 export interface DefinitionReference {
   type: DefinitionEntityType;

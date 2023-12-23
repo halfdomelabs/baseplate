@@ -79,11 +79,14 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
           issues.push({ ref, entityId: id });
           _.set(processValue, ref.path, DELETED_SENTINEL_ID);
           break;
-        case 'CASCADE':
+        case 'DELETE':
           if (!tryDeleteParent(ref.path)) {
-            if (!tryDeleteParent(ref.path.slice(0, -1))) {
-              throw new Error(`Unable to find ref to cascade delete to`);
-            }
+            throw new Error(`Unable to find ref to cascade delete to`);
+          }
+          break;
+        case 'DELETE_PARENT':
+          if (!tryDeleteParent(ref.path.slice(0, -1))) {
+            throw new Error(`Unable to find ref to cascade delete to`);
           }
           break;
         default:
