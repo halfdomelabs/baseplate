@@ -3,11 +3,6 @@ import toposort from 'toposort';
 import { TypeOf, input, z } from 'zod';
 
 import { ZodRefPayload, ZodRefWrapper } from './ref-builder.js';
-import { ReferencePath } from './types.js';
-
-function pathToString(path: ReferencePath): string {
-  return path.map((p) => p.toString()).join('.');
-}
 
 export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   schema: TSchema,
@@ -31,11 +26,13 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
     entityTypeNames,
     entityTypes
       .filter((entityType) => !!entityType.parentType)
-      .map((entityType) => [entityType.name, entityType.parentType?.name]),
+      .map((entityType) => [
+        entityType.parentType?.name ?? '',
+        entityType.name,
+      ]),
   );
 
   const entitiesByType = _.groupBy(entities, (e) => e.type.name);
-  const entityByPath = _.keyBy(entities, (e) => pathToString(e.path));
   const referencesByType = _.groupBy(references, (r) => r.type.name);
 
   entityTypeOrder.forEach((name) => {
@@ -46,18 +43,17 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
       return JSON.stringify({ name, parentId });
     }
 
-    // fill in entity IDs
-    entities.forEach((entity) => {
-      entity.id;
-    });
-
     // resolve references to their ID
     const entitiesByParentIdName = _.keyBy(entities, (e) => {
-      const parentPath = e.parentPath && pathToString(e.parentPath);
-      const parentId = parentPath ? entityByPath[parentPath]?.id : undefined;
+      const parentPath = e.parentPath;
+      const parentId = parentPath
+        ? (_.get(data, parentPath) as string)
+        : undefined;
 
-      if (parentPath && !parentId) {
-        throw new Error(`Could not resolve parent path: ${parentPath}`);
+      if (parentPath && typeof parentId !== 'string') {
+        throw new Error(
+          `Could not resolve parent path: ${parentPath.join('.')}`,
+        );
       }
 
       return referenceToNameParentId(e.name, parentId);

@@ -47,6 +47,7 @@ interface DefinitionEntityInputBase<
   path?: PathInput<TInput>;
   namePath?: PathInput<TInput>;
   name?: string;
+  addContext?: string;
 }
 
 interface DefinitionEntityInputWithParent<
@@ -80,6 +81,7 @@ interface DefinitionReferenceInputBase<
 > extends Pick<DefinitionReference, 'onDelete'> {
   type: TEntityType;
   path?: PathInput<TInput>;
+  addContext?: string;
 }
 
 interface DefinitionReferenceInputWithParent<
@@ -151,6 +153,13 @@ class ZodRefBuilder<TInput> {
       return this._constructPath(path);
     }
     const pathContext = this.context.pathMap[path.context];
+    if (!pathContext) {
+      throw new Error(
+        `Could not find context for ${path.context} from ${this.pathPrefix.join(
+          '.',
+        )}`,
+      );
+    }
     if (pathContext.type !== expectedEntityType) {
       throw new Error(
         `Attempted retreive context for ${
@@ -176,9 +185,11 @@ class ZodRefBuilder<TInput> {
       throw new Error(`Parent path required if reference type has parent type`);
     }
 
+    const path = this._constructPath(reference.path);
+
     this.references.push({
       type: reference.type,
-      path: this._constructPath(reference.path),
+      path: path,
       parentPath:
         reference.parentPath &&
         reference.type.parentType &&
@@ -188,6 +199,10 @@ class ZodRefBuilder<TInput> {
         ),
       onDelete: reference.onDelete,
     });
+
+    if (reference.addContext) {
+      this._addPathToContext(path, reference.type, reference.addContext);
+    }
   }
 
   addEntity<TEntityType extends DefinitionEntityType>(
@@ -198,9 +213,9 @@ class ZodRefBuilder<TInput> {
     const prefix = entity.type.prefix ?? entity.type.name;
 
     // attempt to fetch id from entity input
+    const idPath = [...path, 'id'];
     const id =
-      (_.get(this.data, [...(entity.path ?? []), 'id']) as string) ??
-      `${prefix}_${generatedId}`;
+      (_.get(this.data, idPath) as string) ?? `${prefix}_${generatedId}`;
 
     // attempt to fetch name from entity input
     const name =
@@ -227,13 +242,36 @@ class ZodRefBuilder<TInput> {
           entity.type.parentType,
         ),
     });
+
+    if (entity.addContext) {
+      this._addPathToContext(idPath, entity.type, entity.addContext);
+    }
   }
 
-  addPathToContext(path: PathInput<TInput>, type: DefinitionEntityType): void {
-    this.pathMap[path] = {
-      path: this._constructPath(path),
+  _addPathToContext(
+    path: ReferencePath,
+    type: DefinitionEntityType,
+    context: string,
+  ): void {
+    if (this.pathMap[context]) {
+      throw new Error(
+        `Context path already defined for ${context} at ${this.pathPrefix.join(
+          '.',
+        )}`,
+      );
+    }
+    this.pathMap[context] = {
+      path,
       type,
     };
+  }
+
+  addPathToContext(
+    path: PathInput<TInput>,
+    type: DefinitionEntityType,
+    context: string,
+  ): void {
+    this._addPathToContext(this._constructPath(path), type, context);
   }
 }
 
@@ -282,40 +320,57 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
     zodRefContext.references.push(...builder.references);
     zodRefContext.entities.push(...builder.entities);
 
-    // replace IDs in input
-    const inputData = builder.entities.length
-      ? ((): unknown => {
-          const copiedInputData = _.clone(input.data) as object;
-          builder.entities.forEach((entity) => {
-            _.set(
-              copiedInputData,
-              [...entity.path.slice(input.path.length), 'id'],
-              entity.id,
-            );
-          });
-          return copiedInputData;
-        })()
-      : (input.data as unknown);
-
     const parseOutput = this._def.innerType._parse({
       ...input,
-      data: inputData,
+      path: input.path,
       parent: {
         ...input.parent,
-        [zodRefSymbol]: {
-          ...zodRefContext,
-          context: {
-            ...zodRefContext.context,
-            pathMap: {
-              ...zodRefContext.context.pathMap,
-              ...builder.pathMap,
+        common: {
+          ...input.parent.common,
+          [zodRefSymbol]: {
+            ...zodRefContext,
+            context: {
+              ...zodRefContext.context,
+              pathMap: {
+                ...zodRefContext.context.pathMap,
+                ...builder.pathMap,
+              },
             },
           },
         },
       } as ParseContext,
     });
 
-    return parseOutput;
+    function transformParseOutput(
+      output: SyncParseReturnType<unknown>,
+    ): SyncParseReturnType<unknown> {
+      if (output.status === 'aborted') return output;
+
+      // replace IDs in parse output
+      const outputData = builder.entities.length
+        ? ((): unknown => {
+            const copiedInputData = _.clone(output.value) as object;
+            builder.entities.forEach((entity) => {
+              _.set(
+                copiedInputData,
+                [...entity.path.slice(input.path.length), 'id'],
+                entity.id,
+              );
+            });
+            return copiedInputData;
+          })()
+        : output.value;
+      return {
+        ...output,
+        value: outputData,
+      };
+    }
+
+    if (isPromise(parseOutput)) {
+      return parseOutput.then(transformParseOutput);
+    }
+
+    return transformParseOutput(parseOutput);
   }
 
   static create = <T extends ZodTypeAny>(
@@ -330,8 +385,8 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
 
   addEntity<TEntityType extends DefinitionEntityType>(
     entity:
-      | DefinitionEntityInput<T, TEntityType>
-      | ((data: T) => DefinitionEntityInput<T, TEntityType>),
+      | DefinitionEntityInput<input<T>, TEntityType>
+      | ((data: input<T>) => DefinitionEntityInput<input<T>, TEntityType>),
   ): ZodRef<T> {
     return ZodRef.create(this, (builder, data) => {
       builder.addEntity(typeof entity === 'function' ? entity(data) : entity);
@@ -340,8 +395,8 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
 
   addReference<TEntityType extends DefinitionEntityType>(
     reference:
-      | DefinitionReferenceInput<T, TEntityType>
-      | ((data: T) => DefinitionReferenceInput<T, TEntityType>),
+      | DefinitionReferenceInput<input<T>, TEntityType>
+      | ((data: input<T>) => DefinitionReferenceInput<input<T>, TEntityType>),
   ): ZodRef<T> {
     return ZodRef.create(this, (builder, data) => {
       builder.addReference(
@@ -360,6 +415,32 @@ export function zRef<T extends z.ZodType>(
   builder?: ZodBuilderFunction<TypeOf<T>>,
 ): ZodRef<T> {
   return ZodRef.create(schema, builder);
+}
+
+export function zEnt<
+  T extends z.ZodType,
+  TEntityType extends DefinitionEntityType,
+>(
+  schema: T,
+  entity:
+    | DefinitionEntityInput<T, TEntityType>
+    | ((data: input<T>) => DefinitionEntityInput<T, TEntityType>),
+): TypeOf<T> extends object
+  ? ZodRef<
+      ZodType<TypeOf<T> & { id: string }, T['_def'], input<T> & { id?: string }>
+    >
+  : never {
+  return ZodRef.create(schema).addEntity(
+    entity,
+  ) as unknown as TypeOf<T> extends object
+    ? ZodRef<
+        ZodType<
+          TypeOf<T> & { id: string },
+          T['_def'],
+          input<T> & { id?: string }
+        >
+      >
+    : never;
 }
 
 /**

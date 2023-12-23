@@ -31,6 +31,11 @@ export function createEntityType(name: string): DefinitionEntityType<undefined>;
 
 export function createEntityType<TParent extends DefinitionEntityType>(
   name: string,
+  options: { parentType?: TParent; prefix?: string },
+): DefinitionEntityType<TParent>;
+
+export function createEntityType<TParent extends DefinitionEntityType>(
+  name: string,
   options?: { parentType?: TParent; prefix?: string },
 ): DefinitionEntityType<TParent> {
   const { parentType, prefix } = options ?? {};
