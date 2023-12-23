@@ -22,7 +22,7 @@ import {
 } from './types.js';
 import { FieldPath, FieldValues } from '@src/types/path/eager.js';
 
-export const zRefId = z.string().min(8).optional();
+export const zRefId = z.string().min(1).optional();
 
 /**
  * Builder for references
@@ -135,14 +135,22 @@ class ZodRefBuilder<TInput> {
     this.data = data;
   }
 
-  _constructPath(path: PathInput<TInput> | undefined): ReferencePath {
-    if (!path) return this.pathPrefix;
+  _constructPathWithoutPrefix(
+    path: PathInput<TInput> | undefined,
+  ): ReferencePath {
+    if (!path) return [];
 
     const pathComponents = path
       .split('.')
       .map((key) => (/^[0-9]+$/.test(key) ? parseInt(key, 10) : key));
 
-    return [...this.pathPrefix, ...pathComponents];
+    return pathComponents;
+  }
+
+  _constructPath(path: PathInput<TInput> | undefined): ReferencePath {
+    if (!path) return this.pathPrefix;
+
+    return [...this.pathPrefix, ...this._constructPathWithoutPrefix(path)];
   }
 
   _constructPathWithContext(
@@ -208,12 +216,12 @@ class ZodRefBuilder<TInput> {
   addEntity<TEntityType extends DefinitionEntityType>(
     entity: DefinitionEntityInput<TInput, TEntityType>,
   ): void {
-    const path = this._constructPath(entity.namePath);
+    const path = this._constructPath(entity.path);
     const generatedId = nanoid();
     const prefix = entity.type.prefix ?? entity.type.name;
 
     // attempt to fetch id from entity input
-    const idPath = [...path, 'id'];
+    const idPath = [...this._constructPathWithoutPrefix(entity.path), 'id'];
     const id =
       (_.get(this.data, idPath) as string) ?? `${prefix}_${generatedId}`;
 
@@ -244,7 +252,11 @@ class ZodRefBuilder<TInput> {
     });
 
     if (entity.addContext) {
-      this._addPathToContext(idPath, entity.type, entity.addContext);
+      this._addPathToContext(
+        [...this.pathPrefix, ...idPath],
+        entity.type,
+        entity.addContext,
+      );
     }
   }
 

@@ -1,24 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { deserializeSchemaWithReferences } from './deserialize-schema.js';
 import { zEnt, zRef, zRefId } from './ref-builder.js';
+import { serializeSchema } from './serialize-schema.js';
 import { createEntityType } from './types.js';
 
-describe('deserializeSchemaWithReferences', () => {
+describe('serializeSchema', () => {
   it('should work with a no-reference object', () => {
     const schema = z.object({
       test: z.string(),
     });
 
-    const refPayload = deserializeSchemaWithReferences(schema, {
+    const refPayload = serializeSchema(schema, {
       test: 'hi',
     });
 
     expect(refPayload).toMatchObject({
-      data: { test: 'hi' },
-      references: [],
-      entities: [],
+      test: 'hi',
     });
   });
 
@@ -26,7 +24,7 @@ describe('deserializeSchemaWithReferences', () => {
     const entityType = createEntityType('entity');
     const schema = z.object({
       entity: z.array(
-        zEnt(z.object({ id: zRefId, name: z.string() }), {
+        zEnt(z.object({ name: z.string() }), {
           type: entityType,
         }),
       ),
@@ -35,14 +33,17 @@ describe('deserializeSchemaWithReferences', () => {
         onDelete: 'CASCADE',
       }),
     });
-    const dataInput: z.input<typeof schema> = {
-      entity: [{ name: 'test-name' }],
-      ref: 'test-name',
+    const data: z.TypeOf<typeof schema> = {
+      entity: [{ id: 'test-id', name: 'test-name' }],
+      ref: 'test-id',
     };
 
-    const parsedData = deserializeSchemaWithReferences(schema, dataInput);
+    const refPayload = serializeSchema(schema, data);
 
-    expect(parsedData.data.ref).toEqual(parsedData.data.entity[0].id);
+    expect(refPayload).toMatchObject({
+      entity: [{ id: 'test-id', name: 'test-name' }],
+      ref: 'test-name',
+    });
   });
 
   it('should work with a multiple references', () => {
@@ -51,6 +52,7 @@ describe('deserializeSchemaWithReferences', () => {
       entity: z.array(
         zEnt(
           z.object({
+            id: zRefId,
             name: z.string(),
           }),
           { type: entityType },
@@ -67,22 +69,31 @@ describe('deserializeSchemaWithReferences', () => {
         onDelete: 'CASCADE',
       }),
     });
-    const dataInput: z.input<typeof schema> = {
+
+    const data: z.TypeOf<typeof schema> = {
       entity: [
-        { name: 'test-name' },
-        { name: 'test-name2' },
-        { name: 'test-name3' },
+        { id: 'test-id1', name: 'test-name' },
+        { id: 'test-id2', name: 'test-name2' },
+        { id: 'test-id3', name: 'test-name3' },
+      ],
+      nestedRef: {
+        ref: 'test-id2',
+      },
+      ref: 'test-id3',
+    };
+    const refPayload = serializeSchema(schema, data);
+
+    expect(refPayload).toMatchObject({
+      entity: [
+        { id: 'test-id1', name: 'test-name' },
+        { id: 'test-id2', name: 'test-name2' },
+        { id: 'test-id3', name: 'test-name3' },
       ],
       nestedRef: {
         ref: 'test-name2',
       },
       ref: 'test-name3',
-    };
-
-    const parsedData = deserializeSchemaWithReferences(schema, dataInput);
-
-    expect(parsedData.data.ref).toEqual(parsedData.data.entity[2].id);
-    expect(parsedData.data.nestedRef.ref).toEqual(parsedData.data.entity[1].id);
+    });
   });
 
   it('should work with parent references', () => {
@@ -127,25 +138,51 @@ describe('deserializeSchemaWithReferences', () => {
         ),
       ),
     });
-    const dataInput: z.input<typeof schema> = {
+    const data: z.TypeOf<typeof schema> = {
       models: [
         {
+          id: 'model-todo',
           name: 'todo',
-          fields: [{ name: 'title' }, { name: 'id' }],
-          relations: [{ modelName: 'todoList', fields: ['id'] }],
+          fields: [
+            { id: 'todo-title', name: 'title' },
+            { id: 'todo-id', name: 'id' },
+          ],
+          relations: [{ modelName: 'model-todoList', fields: ['todoList-id'] }],
         },
         {
+          id: 'model-todoList',
           name: 'todoList',
-          fields: [{ name: 'title' }, { name: 'id' }],
+          fields: [
+            { id: 'todoList-title', name: 'title' },
+            { id: 'todoList-id', name: 'id' },
+          ],
           relations: [],
         },
       ],
     };
+    const refPayload = serializeSchema(schema, data);
 
-    const parsedData = deserializeSchemaWithReferences(schema, dataInput);
-
-    expect(parsedData.data.models[0].relations[0].fields[0]).toEqual(
-      parsedData.data.models[1].fields[1].id,
-    );
+    expect(refPayload).toMatchObject({
+      models: [
+        {
+          id: 'model-todo',
+          name: 'todo',
+          fields: [
+            { id: 'todo-title', name: 'title' },
+            { id: 'todo-id', name: 'id' },
+          ],
+          relations: [{ modelName: 'todoList', fields: ['id'] }],
+        },
+        {
+          id: 'model-todoList',
+          name: 'todoList',
+          fields: [
+            { id: 'todoList-title', name: 'title' },
+            { id: 'todoList-id', name: 'id' },
+          ],
+          relations: [],
+        },
+      ],
+    });
   });
 });
