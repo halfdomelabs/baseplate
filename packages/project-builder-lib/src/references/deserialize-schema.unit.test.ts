@@ -86,7 +86,7 @@ describe('deserializeSchemaWithReferences', () => {
     expect(parsedData.data.nestedRef.ref).toEqual(parsedData.data.entity[1].id);
   });
 
-  it.only('should work with parent references', () => {
+  it('should work with parent references', () => {
     const modelType = createEntityType('model');
     const fieldType = createEntityType('field', {
       parentType: modelType,
