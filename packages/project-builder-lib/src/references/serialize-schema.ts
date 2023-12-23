@@ -7,7 +7,7 @@ export function serializeSchema<TSchema extends z.ZodType>(
   schema: TSchema,
   value: TypeOf<TSchema>,
 ): TypeOf<TSchema> {
-  const payload = ZodRefWrapper.create(schema, false).parse(value);
+  const payload = ZodRefWrapper.create(schema).parse(value);
 
   // resolve all references
   const { references, entities, data } = payload;

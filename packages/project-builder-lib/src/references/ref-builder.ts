@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { nanoid } from 'nanoid';
 import { isPromise } from 'node:util/types';
 import {
   ParseContext,
@@ -217,13 +216,11 @@ class ZodRefBuilder<TInput> {
     entity: DefinitionEntityInput<TInput, TEntityType>,
   ): void {
     const path = this._constructPath(entity.path);
-    const generatedId = nanoid();
-    const prefix = entity.type.prefix ?? entity.type.name;
 
     // attempt to fetch id from entity input
     const idPath = [...this._constructPathWithoutPrefix(entity.path), 'id'];
     const id =
-      (_.get(this.data, idPath) as string) ?? `${prefix}_${generatedId}`;
+      (_.get(this.data, idPath) as string) ?? entity.type.generateNewId();
 
     // attempt to fetch name from entity input
     const name =
@@ -523,7 +520,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
 
   static create = <T extends ZodTypeAny>(
     type: T,
-    deserialize: boolean,
+    deserialize = false,
   ): ZodRefWrapper<T> => {
     return new ZodRefWrapper<T>({
       innerType: type,

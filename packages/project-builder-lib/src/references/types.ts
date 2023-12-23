@@ -1,13 +1,21 @@
+import { nanoid } from 'nanoid';
+
 export type ReferencePath = (string | number)[];
 
-export interface DefinitionEntityType<
+export class DefinitionEntityType<
   TParent extends DefinitionEntityType | undefined =
     | DefinitionEntityType<undefined>
     | undefined,
 > {
-  name: string;
-  prefix?: string;
-  parentType?: TParent;
+  constructor(
+    public readonly name: string,
+    public readonly prefix?: string,
+    public readonly parentType?: TParent,
+  ) {}
+
+  generateNewId(): string {
+    return `${this.prefix ?? this.name}${nanoid(12)}`;
+  }
 }
 
 export interface DefinitionEntity {
@@ -39,9 +47,5 @@ export function createEntityType<TParent extends DefinitionEntityType>(
   options?: { parentType?: TParent; prefix?: string },
 ): DefinitionEntityType<TParent> {
   const { parentType, prefix } = options ?? {};
-  return {
-    name,
-    parentType,
-    prefix,
-  };
+  return new DefinitionEntityType(name, prefix, parentType);
 }
