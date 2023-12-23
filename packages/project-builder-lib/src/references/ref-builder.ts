@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { isPromise } from 'node:util/types';
 import {
   ParseContext,
   ParseInput,
@@ -22,6 +21,10 @@ import {
 import { FieldPath, FieldValues } from '@src/types/path/eager.js';
 
 export const zRefId = z.string().min(1).optional();
+
+function isPromise(object: unknown): object is Promise<unknown> {
+  return object instanceof Promise;
+}
 
 /**
  * Builder for references

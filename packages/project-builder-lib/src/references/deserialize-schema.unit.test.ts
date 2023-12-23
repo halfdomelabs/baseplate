@@ -32,7 +32,7 @@ describe('deserializeSchemaWithReferences', () => {
       ),
       ref: zRef(z.string()).addReference({
         type: entityType,
-        onDelete: 'CASCADE',
+        onDelete: 'DELETE',
       }),
     });
     const dataInput: z.input<typeof schema> = {
@@ -59,12 +59,12 @@ describe('deserializeSchemaWithReferences', () => {
       nestedRef: z.object({
         ref: zRef(z.string()).addReference({
           type: entityType,
-          onDelete: 'CASCADE',
+          onDelete: 'DELETE',
         }),
       }),
       ref: zRef(z.string()).addReference({
         type: entityType,
-        onDelete: 'CASCADE',
+        onDelete: 'DELETE',
       }),
     });
     const dataInput: z.input<typeof schema> = {
@@ -110,14 +110,14 @@ describe('deserializeSchemaWithReferences', () => {
                   fields: z.array(
                     zRef(z.string()).addReference({
                       type: fieldType,
-                      onDelete: 'CASCADE',
+                      onDelete: 'DELETE',
                       parentPath: { context: 'foreignModel' },
                     }),
                   ),
                 }),
               ).addReference({
                 type: modelType,
-                onDelete: 'CASCADE',
+                onDelete: 'DELETE',
                 addContext: 'foreignModel',
                 path: 'modelName',
               }),

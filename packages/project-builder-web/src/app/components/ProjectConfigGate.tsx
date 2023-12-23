@@ -5,6 +5,7 @@ import {
   ProjectConfig,
   projectConfigSchema,
   runSchemaMigrations,
+  deserializeSchemaWithReferences,
 } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
@@ -99,7 +100,10 @@ export function ProjectConfigGate({
         );
       }
       // validate config
-      const validatedConfig = projectConfigSchema.parse(migratedProjectConfig);
+      const { data: validatedConfig } = deserializeSchemaWithReferences(
+        projectConfigSchema,
+        migratedProjectConfig,
+      );
       const project = new ParsedProjectConfig(validatedConfig);
       // only save config if project is initialized
       if (projectConfig.isInitialized) {

@@ -35,7 +35,7 @@ describe('fixRefDeletions', () => {
       refs: z.array(
         zRef(z.string()).addReference({
           type: entityType,
-          onDelete: 'CASCADE',
+          onDelete: 'DELETE',
         }),
       ),
     });

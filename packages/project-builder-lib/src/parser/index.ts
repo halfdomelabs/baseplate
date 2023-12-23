@@ -5,6 +5,7 @@ import { Auth0Plugin } from './plugins/auth0.js';
 import { StoragePlugin } from './plugins/storage.js';
 import { ParsedModel, ParsedModelField, ParsedRelationField } from './types.js';
 import { randomUid } from '../utils/randomUid.js';
+import { serializeSchema } from '@src/index.js';
 import {
   AppConfig,
   ProjectConfig,
@@ -302,7 +303,7 @@ export class ParsedProjectConfig {
   }
 
   exportToProjectConfig(): ProjectConfig {
-    return projectConfigSchema.parse(this.projectConfig);
+    return serializeSchema(projectConfigSchema, this.projectConfig);
   }
 
   getAppByUid(uid: string): AppConfig | undefined {
