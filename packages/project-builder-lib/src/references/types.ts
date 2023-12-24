@@ -14,7 +14,7 @@ export class DefinitionEntityType<
   ) {}
 
   generateNewId(): string {
-    return `${this.prefix ?? this.name}${nanoid(12)}`;
+    return `${this.prefix ?? this.name}:${nanoid(12)}`;
   }
 }
 
