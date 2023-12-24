@@ -23,7 +23,11 @@ const meta: Meta<typeof ComboboxField> = {
 
       return (
         <Story
-          args={{ ...ctx.args, value: value ?? ctx.args.value, onChange }}
+          args={{
+            ...ctx.args,
+            value: value ?? ctx.args.value ?? null,
+            onChange,
+          }}
         />
       );
     },

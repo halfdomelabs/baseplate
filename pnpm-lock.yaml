@@ -804,8 +804,8 @@ importers:
   packages/ui-components:
     dependencies:
       '@halfdomelabs/cmdk':
-        specifier: 0.4.0
-        version: 0.4.0(react-dom@18.2.0)(react@18.2.0)
+        specifier: 0.4.1
+        version: 0.4.1(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-checkbox':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
@@ -2792,8 +2792,9 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
 
-  /@halfdomelabs/cmdk@0.4.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-W+Jw53nqx0XwKx7D510Zk1mN7VZhjG+n4g6ZISRwGjugG/gmdOwmaFZoh+xFoBZPpu0i5ExIm/GvpFaAvkfwkA==}
+  /@halfdomelabs/cmdk@0.4.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-UwYW+jZQPfqh0iMvOWz9kOvCiHvBA9tWYIDzERwK2lrgjjeMGr0QOmONJpCtFE45HSZlEWSqBFXWHC0ENs0PAg==}
+    engines: {node: ^20.9.0, pnpm: ^8.10.0}
     peerDependencies:
       react: ^18.0.0
       react-dom: ^18.0.0
