@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
-import { zEnt, zRef, zRefId } from './ref-builder.js';
+import { zEnt, zRefBuilder, zRefId } from './ref-builder.js';
 import { serializeSchema } from './serialize-schema.js';
 import { createEntityType } from './types.js';
 
@@ -28,7 +28,7 @@ describe('serializeSchema', () => {
           type: entityType,
         }),
       ),
-      ref: zRef(z.string()).addReference({
+      ref: zRefBuilder(z.string()).addReference({
         type: entityType,
         onDelete: 'DELETE',
       }),
@@ -59,12 +59,12 @@ describe('serializeSchema', () => {
         ),
       ),
       nestedRef: z.object({
-        ref: zRef(z.string()).addReference({
+        ref: zRefBuilder(z.string()).addReference({
           type: entityType,
           onDelete: 'RESTRICT',
         }),
       }),
-      ref: zRef(z.string()).addReference({
+      ref: zRefBuilder(z.string()).addReference({
         type: entityType,
         onDelete: 'RESTRICT',
       }),
@@ -115,11 +115,11 @@ describe('serializeSchema', () => {
               ),
             ),
             relations: z.array(
-              zRef(
+              zRefBuilder(
                 z.object({
                   modelName: z.string(),
                   fields: z.array(
-                    zRef(z.string()).addReference({
+                    zRefBuilder(z.string()).addReference({
                       type: fieldType,
                       onDelete: 'RESTRICT',
                       parentPath: { context: 'foreignModel' },

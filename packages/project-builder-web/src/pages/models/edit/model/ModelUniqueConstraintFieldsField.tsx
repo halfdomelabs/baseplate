@@ -26,7 +26,7 @@ function ModelUniqueConstraintFieldsField({
 
   const localFieldOptions = localFields.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   return (

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { fixRefDeletions } from './fix-ref-deletions.js';
-import { zEnt, zRef } from './ref-builder.js';
+import { zEnt, zRefBuilder } from './ref-builder.js';
 import { createEntityType } from './types.js';
 
 describe('fixRefDeletions', () => {
@@ -33,7 +33,7 @@ describe('fixRefDeletions', () => {
         }),
       ),
       refs: z.array(
-        zRef(z.string()).addReference({
+        zRefBuilder(z.string()).addReference({
           type: entityType,
           onDelete: 'DELETE',
         }),
@@ -64,7 +64,7 @@ describe('fixRefDeletions', () => {
         }),
       ),
       refs: z.array(
-        zRef(z.string().nullish()).addReference({
+        zRefBuilder(z.string().nullish()).addReference({
           type: entityType,
           onDelete: 'SET_NULL',
         }),
@@ -95,7 +95,7 @@ describe('fixRefDeletions', () => {
         }),
       ),
       refs: z.array(
-        zRef(z.string()).addReference({
+        zRefBuilder(z.string()).addReference({
           type: entityType,
           onDelete: 'RESTRICT',
         }),

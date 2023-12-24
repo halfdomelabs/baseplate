@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import { deserializeSchemaWithReferences } from './deserialize-schema.js';
-import { zEnt, zRef, zRefId } from './ref-builder.js';
+import { zEnt, zRefBuilder, zRefId } from './ref-builder.js';
 import { createEntityType } from './types.js';
 
 describe('deserializeSchemaWithReferences', () => {
@@ -30,7 +30,7 @@ describe('deserializeSchemaWithReferences', () => {
           type: entityType,
         }),
       ),
-      ref: zRef(z.string()).addReference({
+      ref: zRefBuilder(z.string()).addReference({
         type: entityType,
         onDelete: 'DELETE',
       }),
@@ -57,12 +57,12 @@ describe('deserializeSchemaWithReferences', () => {
         ),
       ),
       nestedRef: z.object({
-        ref: zRef(z.string()).addReference({
+        ref: zRefBuilder(z.string()).addReference({
           type: entityType,
           onDelete: 'DELETE',
         }),
       }),
-      ref: zRef(z.string()).addReference({
+      ref: zRefBuilder(z.string()).addReference({
         type: entityType,
         onDelete: 'DELETE',
       }),
@@ -104,11 +104,11 @@ describe('deserializeSchemaWithReferences', () => {
               ),
             ),
             relations: z.array(
-              zRef(
+              zRefBuilder(
                 z.object({
                   modelName: z.string(),
                   fields: z.array(
-                    zRef(z.string()).addReference({
+                    zRefBuilder(z.string()).addReference({
                       type: fieldType,
                       onDelete: 'DELETE',
                       parentPath: { context: 'foreignModel' },

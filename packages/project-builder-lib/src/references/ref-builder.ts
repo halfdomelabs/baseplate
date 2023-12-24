@@ -435,11 +435,23 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
   }
 }
 
-export function zRef<T extends z.ZodType>(
+export function zRefBuilder<T extends z.ZodType>(
   schema: T,
   builder?: ZodBuilderFunction<TypeOf<T>>,
 ): ZodRef<T> {
   return ZodRef.create(schema, builder);
+}
+
+export function zRef<
+  T extends z.ZodType,
+  TEntityType extends DefinitionEntityType,
+>(
+  schema: T,
+  reference:
+    | DefinitionReferenceInput<input<T>, TEntityType>
+    | ((data: input<T>) => DefinitionReferenceInput<input<T>, TEntityType>),
+): ZodRef<T> {
+  return ZodRef.create(schema).addReference(reference);
 }
 
 export function zEnt<

@@ -7,13 +7,20 @@ import {
 import type { ProjectConfig } from '../projectConfig.js';
 import { ReferencesBuilder } from '../references.js';
 import { VALIDATORS } from '../utils/validation.js';
+import { createEntityType, zEnt, zRef } from '@src/references/index.js';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
 export * from './enums.js';
 
-export const modelScalarFieldSchema = z
-  .object({
+export const modelEntityType = createEntityType('model');
+
+export const modelScalarFieldType = createEntityType('model-scalar-field', {
+  parentType: modelEntityType,
+});
+
+export const modelScalarFieldSchema = zEnt(
+  z.object({
     uid: z.string().default(randomUid),
     name: z.string().min(1),
     type: z.enum(SCALAR_FIELD_TYPES),
@@ -33,19 +40,23 @@ export const modelScalarFieldSchema = z
         enumType: z.string().optional(),
       })
       .optional(),
-  })
-  .transform((value) => {
-    if (value.type !== 'enum' && value.options?.enumType) {
-      return {
-        ...value,
-        options: {
-          ...value.options,
-          enumType: undefined,
-        },
-      };
-    }
-    return value;
-  });
+  }),
+  {
+    type: modelScalarFieldType,
+    parentPath: { context: 'model' },
+  },
+).transform((value) => {
+  if (value.type !== 'enum' && value.options?.enumType) {
+    return {
+      ...value,
+      options: {
+        ...value.options,
+        enumType: undefined,
+      },
+    };
+  }
+  return value;
+});
 
 export type ModelScalarFieldConfig = z.infer<typeof modelScalarFieldSchema>;
 
@@ -77,7 +88,15 @@ export type ModelRelationFieldConfig = z.infer<typeof modelRelationFieldSchema>;
 export const modelUniqueConstraintSchema = z.object({
   uid: z.string().default(randomUid),
   name: z.string().min(1),
-  fields: z.array(z.object({ name: z.string().min(1) })),
+  fields: z.array(
+    z.object({
+      name: zRef(z.string().min(1), {
+        type: modelScalarFieldType,
+        onDelete: 'RESTRICT',
+        parentPath: { context: 'model' },
+      }),
+    }),
+  ),
 });
 
 export type ModelUniqueConstraintConfig = z.infer<
@@ -127,19 +146,22 @@ export const modelSchemaSchema = z.object({
 
 export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
 
-export const modelSchema = z.object({
-  uid: z.string().default(randomUid),
-  name: VALIDATORS.PASCAL_CASE_STRING,
-  feature: z.string().min(1),
-  model: z.object({
-    fields: z.array(modelScalarFieldSchema),
-    relations: z.array(modelRelationFieldSchema).optional(),
-    primaryKeys: z.array(z.string().min(1)).optional(),
-    uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
+export const modelSchema = zEnt(
+  z.object({
+    uid: z.string().default(randomUid),
+    name: VALIDATORS.PASCAL_CASE_STRING,
+    feature: z.string().min(1),
+    model: z.object({
+      fields: z.array(modelScalarFieldSchema),
+      relations: z.array(modelRelationFieldSchema).optional(),
+      primaryKeys: z.array(z.string().min(1)).optional(),
+      uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
+    }),
+    service: modelServiceSchema.optional(),
+    schema: modelSchemaSchema.optional(),
   }),
-  service: modelServiceSchema.optional(),
-  schema: modelSchemaSchema.optional(),
-});
+  { type: modelEntityType, addContext: 'model' },
+);
 
 export type ModelConfig = z.infer<typeof modelSchema>;
 
@@ -275,18 +297,6 @@ export function buildModelReferences(
       key: `${model.name}#${primaryKey}`,
     }),
   );
-
-  model.model.uniqueConstraints?.forEach((constraint, idx) => {
-    const subBuilder = builder.withPrefix(`model.uniqueConstraints.${idx}`);
-
-    constraint.fields.forEach((field, fieldIdx) => {
-      subBuilder.withPrefix(`fields.${fieldIdx}`).addReference('name', {
-        referenceType: 'modelUniqueConstraint',
-        category: 'modelField',
-        key: `${model.name}#${field.name}`,
-      });
-    });
-  });
 
   model.model.fields.forEach((field, idx) =>
     buildModelScalarFieldReferences(

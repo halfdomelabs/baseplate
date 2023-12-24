@@ -21,8 +21,11 @@ export interface ParsedModel extends ModelConfig {
   service?: ModelConfig['service'];
 }
 
-export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'uid'>;
-export type PluginMergeModelRelationInput = Omit<ParsedRelationField, 'uid'>;
+export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'id' | 'uid'>;
+export type PluginMergeModelRelationInput = Omit<
+  ParsedRelationField,
+  'id' | 'uid'
+>;
 
 export interface PluginMergeModelInput
   extends Pick<ParsedModel, 'name' | 'feature' | 'service'> {

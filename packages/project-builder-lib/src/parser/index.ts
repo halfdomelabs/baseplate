@@ -11,6 +11,8 @@ import {
   ProjectConfig,
   projectConfigSchema,
   getProjectConfigReferences,
+  modelEntityType,
+  modelScalarFieldType,
 } from '@src/schema/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
 import {
@@ -195,12 +197,14 @@ export class ParsedProjectConfig {
 
           if (!existingModel) {
             this.models.push({
+              id: modelEntityType.generateNewId(),
               uid: randomUid(),
               ...model,
               model: {
                 ...model.model,
                 fields: model.model.fields.map((field) => ({
                   ...field,
+                  id: modelScalarFieldType.generateNewId(),
                   uid: randomUid(),
                 })),
                 relations: model.model.relations?.map((relation) => ({
@@ -285,6 +289,14 @@ export class ParsedProjectConfig {
 
   getEnums(): EnumConfig[] {
     return this.projectConfig.enums ?? [];
+  }
+
+  getModelById(id: string): ParsedModel {
+    const model = this.models.find((m) => m.id === id);
+    if (!model) {
+      throw new Error(`Model ${id} not found`);
+    }
+    return model;
   }
 
   getModelByName(name: string): ParsedModel {
