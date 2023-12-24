@@ -443,29 +443,26 @@ export function zRef<T extends z.ZodType>(
 }
 
 export function zEnt<
-  T extends z.ZodType,
+  TObject extends z.SomeZodObject,
   TEntityType extends DefinitionEntityType,
 >(
-  schema: T,
+  schema: TObject,
   entity:
-    | DefinitionEntityInput<T, TEntityType>
-    | ((data: input<T>) => DefinitionEntityInput<T, TEntityType>),
-): TypeOf<T> extends object
-  ? ZodRef<
-      ZodType<TypeOf<T> & { id: string }, T['_def'], input<T> & { id?: string }>
-    >
-  : never {
-  return ZodRef.create(schema).addEntity(
-    entity,
-  ) as unknown as TypeOf<T> extends object
-    ? ZodRef<
-        ZodType<
-          TypeOf<T> & { id: string },
-          T['_def'],
-          input<T> & { id?: string }
-        >
-      >
-    : never;
+    | DefinitionEntityInput<z.input<TObject>, TEntityType>
+    | ((
+        data: z.input<TObject>,
+      ) => DefinitionEntityInput<z.input<TObject>, TEntityType>),
+): ZodRef<
+  z.ZodObject<
+    TObject['shape'] & {
+      id: z.ZodType<string, z.ZodAnyDef, string | undefined>;
+    },
+    TObject['_def']['unknownKeys'],
+    TObject['_def']['catchall']
+  >
+> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+  return ZodRef.create(schema).addEntity(entity) as any;
 }
 
 /**
