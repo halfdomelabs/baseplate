@@ -36,8 +36,8 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   const referencesByType = _.groupBy(references, (r) => r.type.name);
 
   entityTypeOrder.forEach((name) => {
-    const entities = entitiesByType[name];
-    const references = referencesByType[name];
+    const entities = entitiesByType[name] ?? [];
+    const references = referencesByType[name] ?? [];
 
     function referenceToNameParentId(name: string, parentId?: string): string {
       return JSON.stringify({ name, parentId });
