@@ -8,6 +8,7 @@ export const DEFAULT_COMPONENT_STRINGS = {
   errorDisplayDefaultContent: 'We encountered an error showing this page.',
   buttonCancel: 'Cancel',
   buttonConfirm: 'Confirm',
+  comboboxNoResults: 'No results found',
 };
 
 export type ComponentStrings = typeof DEFAULT_COMPONENT_STRINGS;

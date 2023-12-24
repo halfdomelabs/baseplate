@@ -69,6 +69,9 @@ function ComboboxRoot({
     onSearchQueryChange,
     '',
   );
+  // Caches the filter query in a ref so we can maintain
+  // the query when animating the combobox open/close
+  const [filterQuery, setFilterQuery] = React.useState(searchQuery);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const inputId = React.useId();
@@ -79,6 +82,7 @@ function ComboboxRoot({
       selectedValue: value?.value,
       onSelect: (val, lab) => {
         setValue({ value: val, label: lab });
+        setFilterQuery(searchQuery);
         setSearchQuery('');
         setOpen(false);
       },
@@ -88,6 +92,7 @@ function ComboboxRoot({
         setOpen(true);
       },
       setOpen: (open) => {
+        setFilterQuery(searchQuery);
         if (!open) {
           setSearchQuery('');
         }
@@ -103,7 +108,12 @@ function ComboboxRoot({
   return (
     <ComboboxContext.Provider value={contextValue}>
       <Popover open={open} onOpenChange={contextValue.setOpen}>
-        <Command shouldSort={false}>{children}</Command>
+        <Command
+          shouldSort={false}
+          filterSearch={open ? undefined : filterQuery}
+        >
+          {children}
+        </Command>
       </Popover>
     </ComboboxContext.Provider>
   );
@@ -279,7 +289,11 @@ type ComboboxEmptyProps = React.HTMLAttributes<HTMLDivElement>;
 
 const ComboboxEmpty = React.forwardRef<HTMLDivElement, ComboboxEmptyProps>(
   ({ className, ...props }: ComboboxEmptyProps, ref) => (
-    <Command.Empty className={cn('p-2', className)} {...props} ref={ref} />
+    <Command.Empty
+      className={cn('p-2 text-sm', className)}
+      {...props}
+      ref={ref}
+    />
   ),
 );
 

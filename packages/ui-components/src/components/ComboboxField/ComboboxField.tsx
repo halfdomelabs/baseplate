@@ -9,6 +9,7 @@ import {
 
 import { Combobox } from '../Combobox/Combobox.js';
 import { FormItem } from '../FormItem/FormItem.js';
+import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
 import {
   AddOptionRequiredFields,
   DropdownPropsBase,
@@ -20,6 +21,7 @@ export interface ComboboxFieldProps<OptionType>
   extends SelectOptionProps<OptionType>,
     FieldProps {
   className?: string;
+  noResultsText?: React.ReactNode;
 }
 
 /**
@@ -39,6 +41,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
     getOptionLabel = (val) => (val as { label: string }).label,
     getOptionValue = (val) => (val as { value: string }).value,
     className,
+    noResultsText,
     ...props
   }: ComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLDivElement>,
@@ -52,6 +55,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
       value: getOptionValue(selectedOption),
     };
   })();
+  const { comboboxNoResults } = useComponentStrings();
 
   return (
     <FormItem ref={ref} error={error} className={className}>
@@ -78,6 +82,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
               </Combobox.Item>
             );
           })}
+          <Combobox.Empty>{noResultsText ?? comboboxNoResults}</Combobox.Empty>
         </Combobox.Content>
       </Combobox>
       {description && (
