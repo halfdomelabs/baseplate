@@ -2,6 +2,7 @@ import {
   fixReferenceRenames,
   getProjectConfigReferences,
   ModelConfig,
+  modelScalarFieldType,
   modelSchema,
   randomUid,
 } from '@halfdomelabs/project-builder-lib';
@@ -30,6 +31,7 @@ function createNewModel(): Partial<ModelConfig> {
     model: {
       fields: [
         {
+          id: modelScalarFieldType.generateNewId(),
           uid: randomUid(),
           name: 'id',
           type: 'uuid',
