@@ -1,18 +1,16 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
-import { UseFormReturn } from 'react-hook-form';
+import { Control, useWatch } from 'react-hook-form';
 
 import SelectArrayInput from 'src/components/SelectArrayInput';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<ModelConfig>;
+  control: Control<ModelConfig>;
 }
 
-function ModelPrimaryKeyForm({ className, formProps }: Props): JSX.Element {
-  const { control, watch } = formProps;
-
-  const localFields = watch(`model.fields`);
+function ModelPrimaryKeyForm({ className, control }: Props): JSX.Element {
+  const localFields = useWatch({ control, name: `model.fields` });
 
   const localFieldOptions =
     localFields?.map((f) => ({

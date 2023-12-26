@@ -23,7 +23,9 @@ function ModelEditModelPage(): JSX.Element {
         'modelUniqueConstraint',
       ],
     });
-  const { control, handleSubmit, watch } = form;
+  const { control, handleSubmit, watch, formState } = form;
+
+  console.log(formState.errors);
 
   const { parsedProject } = useProjectConfig();
 
@@ -47,10 +49,10 @@ function ModelEditModelPage(): JSX.Element {
           originalModel={originalModel}
         />
         <ModelRelationsForm control={control} originalModel={originalModel} />
-        <ModelPrimaryKeyForm formProps={form} />
-        <ModelUniqueConstraintsField formProps={form} />
+        <ModelPrimaryKeyForm control={control} />
+        <ModelUniqueConstraintsField control={control} />
+        <ModelFormActionBar form={form} />
       </form>
-      <ModelFormActionBar form={form} />
     </EditedModelContextProvider>
   );
 }

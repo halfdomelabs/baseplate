@@ -1,28 +1,27 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
-import { useFieldArray, UseFormReturn } from 'react-hook-form';
+import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { Button, LinkButton } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<ModelConfig>;
+  control: Control<ModelConfig>;
   constraintIdx: number;
 }
 
 function ModelUniqueConstraintFieldsField({
   className,
-  formProps,
+  control,
   constraintIdx,
 }: Props): JSX.Element {
-  const { control, watch } = formProps;
   const { fields, remove, append } = useFieldArray({
     control,
     name: `model.uniqueConstraints.${constraintIdx}.fields`,
   });
 
-  const localFields = watch(`model.fields`);
+  const localFields = useWatch({ control, name: `model.fields` });
 
   const localFieldOptions = localFields.map((f) => ({
     label: f.name,

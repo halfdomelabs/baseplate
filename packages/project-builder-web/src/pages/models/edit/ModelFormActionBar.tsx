@@ -5,6 +5,7 @@ import { UseFormReturn } from 'react-hook-form';
 interface ModelFormActionBarProps {
   form: UseFormReturn<ModelConfig>;
 }
+
 const ModelFormActionBar = ({ form }: ModelFormActionBarProps): JSX.Element => {
   const { formState } = form;
   const isDirty = Object.keys(formState.dirtyFields).length > 0;
