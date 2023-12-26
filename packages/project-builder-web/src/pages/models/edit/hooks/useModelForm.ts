@@ -2,6 +2,7 @@ import {
   fixReferenceRenames,
   getProjectConfigReferences,
   ModelConfig,
+  modelEntityType,
   modelScalarFieldType,
   modelSchema,
   randomUid,
@@ -25,9 +26,12 @@ interface UseModelFormOptions {
   onSubmitSuccess?: () => void;
 }
 
-function createNewModel(): Partial<ModelConfig> {
+function createNewModel(): ModelConfig {
   return {
+    id: modelEntityType.generateNewId(),
+    uid: randomUid(),
     name: '',
+    feature: '',
     model: {
       fields: [
         {
@@ -54,6 +58,7 @@ export function useModelForm({
   onFormSubmit: (data: ModelConfig) => void;
   originalModel?: ModelConfig;
   fixControlledReferences: () => void;
+  defaultValues: ModelConfig;
 } {
   const { id } = useParams<'id'>();
   const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
@@ -64,9 +69,10 @@ export function useModelForm({
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);
 
+  const defaultValues = model ?? newModel;
   const form = useResettableForm<ModelConfig>({
     resolver: zodResolver(modelSchema),
-    defaultValues: model ?? newModel,
+    defaultValues,
   });
   const { getValues, setValue } = form;
 
@@ -169,5 +175,11 @@ export function useModelForm({
     lastFixedModel.current = fixedModel;
   }, [parsedProject, getValues, setValue, controlledReferences, id]);
 
-  return { form, onFormSubmit, originalModel: model, fixControlledReferences };
+  return {
+    form,
+    onFormSubmit,
+    originalModel: model,
+    fixControlledReferences,
+    defaultValues,
+  };
 }

@@ -1,16 +1,17 @@
 import {
-  fixReferenceRenames,
-  getProjectConfigReferences,
   ParsedProjectConfig,
   ProjectConfig,
+  ProjectDefinitionContainer,
+  fixReferenceRenames,
+  getProjectConfigReferences,
   projectConfigSchema,
   runSchemaMigrations,
-  deserializeSchemaWithReferences,
+  serializeSchema,
 } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
-  ErrorableLoader,
   ErrorDisplay,
+  ErrorableLoader,
 } from '@halfdomelabs/ui-components';
 import produce from 'immer';
 import { useEffect, useMemo, useRef } from 'react';
@@ -33,7 +34,7 @@ import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 import { logger } from 'src/services/logger';
-import { formatZodError, UserVisibleError } from 'src/utils/error';
+import { UserVisibleError, formatZodError } from 'src/utils/error';
 import { prettyStableStringify } from 'src/utils/json';
 
 interface ProjectConfigGateProps {
@@ -70,22 +71,31 @@ export function ProjectConfigGate({
 
   const savedConfigRef = useRef<{
     project: ParsedProjectConfig;
+    definitionContainer: ProjectDefinitionContainer;
     externalChangeCounter: number;
     projectId: string;
   }>();
 
-  const { parsedProject, configError } = useMemo((): {
-    parsedProject?: ParsedProjectConfig;
-    configError?: unknown;
-  } => {
+  const loadData = useMemo(():
+    | {
+        status: 'loaded';
+        parsedProject: ParsedProjectConfig;
+        definitionContainer: ProjectDefinitionContainer;
+      }
+    | { status: 'error'; configError: unknown }
+    | { status: 'loading' } => {
     if (!remoteConfig || !projectId || !loaded) {
-      return {};
+      return { status: 'loading' };
     }
     if (
       externalChangeCounter === savedConfigRef.current?.externalChangeCounter &&
       projectId === savedConfigRef.current?.projectId
     ) {
-      return { parsedProject: savedConfigRef.current.project };
+      return {
+        status: 'loaded',
+        parsedProject: savedConfigRef.current.project,
+        definitionContainer: savedConfigRef.current.definitionContainer,
+      };
     }
     try {
       const projectConfig = JSON.parse(remoteConfig) as ProjectConfig;
@@ -100,23 +110,23 @@ export function ProjectConfigGate({
         );
       }
       // validate config
-      const { data: validatedConfig } = deserializeSchemaWithReferences(
-        projectConfigSchema,
-        migratedProjectConfig,
-      );
-      const project = new ParsedProjectConfig(validatedConfig);
+      const definitionContainer =
+        ProjectDefinitionContainer.fromSerializedConfig(migratedProjectConfig);
+      const project = new ParsedProjectConfig(definitionContainer.definition);
       // only save config if project is initialized
       if (projectConfig.isInitialized) {
         savedConfigRef.current = {
           project,
           externalChangeCounter,
           projectId,
+          definitionContainer,
         };
       }
-      return { parsedProject: project };
+      return { status: 'loaded', parsedProject: project, definitionContainer };
     } catch (err) {
       if (err instanceof SyntaxError) {
         return {
+          status: 'error',
           configError: new UserVisibleError(
             'The project configuration is not a valid JSON file. Please check the file and try again.',
           ),
@@ -124,31 +134,32 @@ export function ProjectConfigGate({
       }
       if (err instanceof ZodError) {
         return {
+          status: 'error',
           configError: new UserVisibleError(
             `The project configuration is not valid: ${formatZodError(err)}`,
           ),
         };
       }
       logError(err);
-      return { configError: err };
+      return { status: 'error', configError: err };
     }
   }, [remoteConfig, externalChangeCounter, projectId, loaded]);
 
   const result: UseProjectConfigResult | undefined = useMemo(() => {
-    if (!parsedProject || !projectId) {
+    if (loadData.status !== 'loaded' || !projectId) {
       return undefined;
     }
     function setConfig(
       newConfig: SetOrTransformConfig,
       { fixReferences }: SetProjectConfigOptions = {},
     ): void {
-      if (!parsedProject || !projectId) {
+      if (loadData.status !== 'loaded' || !projectId) {
         throw new Error(
           'Cannot set config when project config is not yet loaded',
         );
       }
 
-      const oldProjectConfig = parsedProject.exportToProjectConfig();
+      const oldProjectConfig = loadData.definitionContainer.definition;
       const newProjectConfig =
         typeof newConfig === 'function'
           ? produce(oldProjectConfig, newConfig)
@@ -170,17 +181,24 @@ export function ProjectConfigGate({
       parsedConfig.projectConfig.cliVersion = cliVersion;
 
       const exportedProjectConfig = parsedConfig.exportToProjectConfig();
+      const definitionContainer = ProjectDefinitionContainer.fromConfig(
+        exportedProjectConfig,
+      );
 
-      saveRemoteConfig(prettyStableStringify(exportedProjectConfig));
+      saveRemoteConfig(
+        prettyStableStringify(definitionContainer.toSerializedConfig()),
+      );
       savedConfigRef.current = {
         project: parsedConfig,
         externalChangeCounter,
         projectId,
+        definitionContainer,
       };
     }
     return {
-      config: parsedProject.exportToProjectConfig(),
-      parsedProject,
+      config: loadData.definitionContainer.definition,
+      parsedProject: loadData.parsedProject,
+      definitionContainer: loadData.definitionContainer,
       externalChangeCounter,
       setConfigAndFixReferences: (config, options) => {
         setConfig(config, { fixReferences: options ?? true });
@@ -188,14 +206,15 @@ export function ProjectConfigGate({
       setConfig,
     };
   }, [
-    parsedProject,
+    loadData,
     saveRemoteConfig,
     cliVersion,
     externalChangeCounter,
     projectId,
   ]);
 
-  const compositeError = error ?? configError;
+  const compositeError =
+    error ?? (loadData.status === 'error' ? loadData.configError : undefined);
   if (!loaded || compositeError) {
     return (
       <ErrorableLoader
@@ -242,7 +261,10 @@ export function ProjectConfigGate({
             };
             saveRemoteConfig(
               prettyStableStringify(
-                projectConfigSchema.parse(newProjectConfig),
+                serializeSchema(
+                  projectConfigSchema,
+                  newProjectConfig as ProjectConfig,
+                ),
               ),
               undefined,
               () => {

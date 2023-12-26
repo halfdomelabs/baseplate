@@ -69,7 +69,7 @@ function ComboboxRoot({
     onSearchQueryChange,
     '',
   );
-  // Caches the filter query in a ref so we can maintain
+  // Caches the filter query so we can maintain
   // the query when animating the combobox open/close
   const [filterQuery, setFilterQuery] = React.useState(searchQuery);
   const inputRef = React.useRef<HTMLInputElement>(null);

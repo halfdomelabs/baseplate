@@ -1,12 +1,12 @@
 import _ from 'lodash';
 import toposort from 'toposort';
-import { TypeOf, input, z } from 'zod';
+import { TypeOf, z } from 'zod';
 
 import { ZodRefPayload, ZodRefWrapper } from './ref-builder.js';
 
 export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   schema: TSchema,
-  input: input<TSchema>,
+  input: unknown,
 ): ZodRefPayload<TypeOf<TSchema>> {
   const payload = ZodRefWrapper.create(schema, true).parse(input);
 

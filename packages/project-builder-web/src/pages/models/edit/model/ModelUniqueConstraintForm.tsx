@@ -1,9 +1,10 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
 
 import ModelUniqueConstraintFieldsField from './ModelUniqueConstraintFieldsField';
+import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
 import { LinkButton, TextInput } from 'src/components';
 
 interface Props {
@@ -25,10 +26,14 @@ function ModelUniqueConstraintForm({
   const {
     register,
     formState: { errors },
-    watch,
   } = formProps;
 
-  const watchedField = watch(`model.uniqueConstraints.${idx}`);
+  const constraintFields = useEditedModelConfig((model) => {
+    const fields = model.model.uniqueConstraints?.[idx].fields.map(
+      (f) => ModelUtils.getScalarFieldById(model, f.name).name,
+    );
+    return fields?.length ? fields.join(', ') : 'No Fields';
+  });
 
   function handleRemove(): void {
     onRemove(idx);
@@ -42,11 +47,7 @@ function ModelUniqueConstraintForm({
         <div className="flex flex-row items-center space-x-4">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
           <div>
-            <strong>
-              {watchedField?.fields?.length
-                ? watchedField.fields.map((f) => f.name).join(', ')
-                : 'No Fields'}
-            </strong>
+            <strong>{constraintFields}</strong>
           </div>
           <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
         </div>

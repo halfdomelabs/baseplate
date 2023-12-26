@@ -5,20 +5,18 @@ import { Auth0Plugin } from './plugins/auth0.js';
 import { StoragePlugin } from './plugins/storage.js';
 import { ParsedModel, ParsedModelField, ParsedRelationField } from './types.js';
 import { randomUid } from '../utils/randomUid.js';
-import { serializeSchema } from '@src/index.js';
 import {
   AppConfig,
   ProjectConfig,
-  projectConfigSchema,
   getProjectConfigReferences,
   modelEntityType,
   modelScalarFieldType,
 } from '@src/schema/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
 import {
-  REFERENCEABLE_CATEGORIES,
-  ObjectReferenceEntry,
   GetReferencesResult,
+  ObjectReferenceEntry,
+  REFERENCEABLE_CATEGORIES,
 } from '@src/schema/references.js';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
 
@@ -315,7 +313,7 @@ export class ParsedProjectConfig {
   }
 
   exportToProjectConfig(): ProjectConfig {
-    return serializeSchema(projectConfigSchema, this.projectConfig);
+    return this.projectConfig;
   }
 
   getAppByUid(uid: string): AppConfig | undefined {

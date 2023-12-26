@@ -113,8 +113,8 @@ function ModelFieldForm({
 
     // check unique constraints
     if (
-      watchedUniqueConstraints?.some(
-        (constraint) => constraint.name === watchedField.name,
+      watchedUniqueConstraints?.some((constraint) =>
+        constraint.fields.some((f) => f.name === watchedField.id),
       )
     ) {
       toast.error(

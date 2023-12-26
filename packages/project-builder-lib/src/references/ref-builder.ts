@@ -474,7 +474,7 @@ export function zEnt<
   >
 > {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-  return ZodRef.create(schema).addEntity(entity) as any;
+  return ZodRef.create(schema.setKey('id', zRefId)).addEntity(entity) as any;
 }
 
 /**
