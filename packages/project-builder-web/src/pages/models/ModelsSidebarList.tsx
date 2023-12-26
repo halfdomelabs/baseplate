@@ -91,7 +91,7 @@ export function ModelsSidebarList({
 
                   <MdDelete
                     title="Delete Model"
-                    className="z-10 hidden h-4 w-4 shrink-0 fill-destructive group-hover:inline-flex"
+                    className="z-10 hidden h-4 w-4 shrink-0 text-foreground-700 opacity-75 group-hover:inline-flex"
                     onClick={(e) => {
                       e.preventDefault();
                       requestConfirm({
