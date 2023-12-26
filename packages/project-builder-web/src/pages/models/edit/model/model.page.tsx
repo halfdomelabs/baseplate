@@ -23,9 +23,7 @@ function ModelEditModelPage(): JSX.Element {
         'modelUniqueConstraint',
       ],
     });
-  const { control, handleSubmit, watch, formState } = form;
-
-  console.log(formState.errors);
+  const { control, handleSubmit, watch } = form;
 
   const { parsedProject } = useProjectConfig();
 

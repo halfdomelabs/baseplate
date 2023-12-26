@@ -1,7 +1,7 @@
 import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { Control, FieldArrayWithId, useFormState } from 'react-hook-form';
+import { Control, FieldArrayWithId } from 'react-hook-form';
 
 import ModelUniqueConstraintFieldsField from './ModelUniqueConstraintFieldsField';
 import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
@@ -23,9 +23,6 @@ function ModelUniqueConstraintForm({
   onRemove,
 }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(!field.name);
-
-  const { errors } = useFormState({ control });
-  console.log(errors);
 
   const constraintFields = useEditedModelConfig((model) => {
     const fields = model.model.uniqueConstraints?.[idx]?.fields
