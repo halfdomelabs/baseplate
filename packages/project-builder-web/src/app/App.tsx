@@ -6,6 +6,7 @@ import { ClientVersionGate } from './components/ClientVersionGate';
 import { ProjectChooserGate } from './components/ProjectChooserGate';
 import { ProjectConfigGate } from './components/ProjectConfigGate';
 import PagesRoot from '../pages';
+import { RefIssueDialog } from '@src/components/RefIssueDialog/RefIssueDialog';
 import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
 
 function App(): JSX.Element {
@@ -16,6 +17,7 @@ function App(): JSX.Element {
           <ProjectChooserGate>
             <ProjectConfigGate>
               <PagesRoot />
+              <RefIssueDialog />
             </ProjectConfigGate>
           </ProjectChooserGate>
           <Toaster />

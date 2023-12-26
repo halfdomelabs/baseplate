@@ -35,7 +35,11 @@ import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 import { logger } from 'src/services/logger';
-import { UserVisibleError, formatZodError } from 'src/utils/error';
+import {
+  RefDeleteError,
+  UserVisibleError,
+  formatZodError,
+} from 'src/utils/error';
 import { prettyStableStringify } from 'src/utils/json';
 
 interface ProjectConfigGateProps {
@@ -181,7 +185,7 @@ export function ProjectConfigGate({
           validatedProjectConfig,
         );
         if (result.type === 'failure') {
-          throw new UserVisibleError(`Failed to fix references!`);
+          throw new RefDeleteError(result.issues);
         }
         validatedProjectConfig = result.value;
       }

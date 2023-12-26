@@ -1,5 +1,6 @@
 import {
   FeatureConfig,
+  ProjectConfig,
   featureEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import {
@@ -13,6 +14,7 @@ import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
 import { FeatureForm } from './FeatureForm';
+import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useProjectConfig } from '@src/hooks/useProjectConfig';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
@@ -25,6 +27,7 @@ export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
   const { definitionContainer, setConfigAndFixReferences } = useProjectConfig();
   const toast = useToast();
   const { requestConfirm } = useConfirmDialog();
+  const { showRefIssues } = useDeleteReferenceDialog();
 
   const [featureToEdit, setFeatureToEdit] = useState<FeatureConfig>();
   const [showFeatureForm, setShowFeatureForm] = useState(false);
@@ -32,20 +35,27 @@ export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
   const features = definitionContainer.definition.features;
 
   const handleRemoveFeature = (feature: FeatureConfig): void => {
+    function deleteFeature(draftConfig: ProjectConfig): void {
+      const idx = draftConfig.features.findIndex((f) => f.id === feature.id);
+      if (idx === -1) {
+        throw new Error('Feature not found');
+      }
+      draftConfig.features.splice(idx, 1);
+    }
+
+    // try deleting the feature
+    const result = definitionContainer.fixRefDeletions(deleteFeature);
+    if (result.type === 'failure') {
+      showRefIssues({ issues: result.issues });
+      return;
+    }
+
     requestConfirm({
       title: 'Delete Feature',
       content: `Are you sure you want to delete ${feature.name}?`,
       onConfirm: () => {
         try {
-          setConfigAndFixReferences((draftConfig) => {
-            const idx = draftConfig.features.findIndex(
-              (f) => f.id === feature.id,
-            );
-            if (idx === -1) {
-              throw new Error('Feature not found');
-            }
-            draftConfig.features.splice(idx, 1);
-          });
+          setConfigAndFixReferences(deleteFeature);
           toast.success(`Feature ${feature.name} removed`);
         } catch (err) {
           toast.error(logAndFormatError(err));

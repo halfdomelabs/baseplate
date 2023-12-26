@@ -1,9 +1,13 @@
+import { produce } from 'immer';
+
 import {
   DefinitionEntity,
   DefinitionReference,
+  FixRefDeletionResult,
   ZodRefPayload,
   ZodRefWrapper,
   deserializeSchemaWithReferences,
+  fixRefDeletions,
   serializeSchema,
 } from '@src/references/index.js';
 import { ProjectConfig, projectConfigSchema } from '@src/schema/index.js';
@@ -17,6 +21,13 @@ export class ProjectDefinitionContainer {
     this.definition = config.data;
     this.references = config.references;
     this.entities = config.entities;
+  }
+
+  fixRefDeletions(
+    setter: (draftConfig: ProjectConfig) => void,
+  ): FixRefDeletionResult<typeof projectConfigSchema> {
+    const newDefinition = produce(setter)(this.definition);
+    return fixRefDeletions(projectConfigSchema, newDefinition);
   }
 
   toSerializedConfig(): Record<string, unknown> {

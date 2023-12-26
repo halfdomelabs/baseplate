@@ -9,7 +9,7 @@ interface FixRefDeletionSuccessResult<TSchema extends z.ZodType> {
   value: TypeOf<TSchema>;
 }
 
-interface FixRefDeletionError {
+export interface FixRefDeletionError {
   ref: DefinitionReference;
   entityId: string;
 }
@@ -19,7 +19,7 @@ interface FixRefDeletionFailureResult {
   issues: FixRefDeletionError[];
 }
 
-type FixRefDeletionResult<TSchema extends z.ZodType> =
+export type FixRefDeletionResult<TSchema extends z.ZodType> =
   | FixRefDeletionSuccessResult<TSchema>
   | FixRefDeletionFailureResult;
 
@@ -33,7 +33,7 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
   schema: TSchema,
   value: TypeOf<TSchema>,
 ): FixRefDeletionResult<TSchema> {
-  const processValue = _.clone(value);
+  const processValue = _.cloneDeep(value);
   const issues: FixRefDeletionError[] = [];
   // find all references that do not have a corresponding entity
   let iterations;
@@ -42,7 +42,7 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
       ZodRefWrapper.create(schema).parse(processValue);
     const entitiesById = _.keyBy(entities, (e) => e.id);
     const referencesMissingEntity = references.filter((r) => {
-      const id = _.get(value, r.path) as string;
+      const id = _.get(processValue, r.path) as string;
       return id !== DELETED_SENTINEL_ID && !entitiesById[id];
     });
     if (referencesMissingEntity.length === 0) {

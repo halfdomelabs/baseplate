@@ -31,18 +31,18 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const existingSection =
-    sectionId &&
-    appConfig.sections?.find((section) => section.uid === sectionId);
+  const existingSection = sectionId
+    ? appConfig.sections?.find((section) => section.uid === sectionId)
+    : undefined;
 
   const { control, handleSubmit, watch, reset } =
     useResettableForm<AdminSectionConfig>({
-      defaultValues: existingSection || { type: 'crud' },
+      defaultValues: existingSection ?? { type: 'crud' },
       resolver: zodResolver(adminSectionSchema),
     });
 
   useEffect(() => {
-    reset(existingSection || { type: 'crud' });
+    reset(existingSection ?? { type: 'crud' });
   }, [reset, existingSection]);
 
   const type = watch('type');
@@ -99,7 +99,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
 
   const featureOptions = parsedProject.projectConfig.features.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   return (

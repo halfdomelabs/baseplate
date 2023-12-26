@@ -29,10 +29,6 @@ export function buildAdminAppReferences(
     category: 'role',
   });
 
-  builder.addReferences('sections.*.feature', {
-    category: 'feature',
-  });
-
   config.sections?.forEach((page, index) => {
     switch (page.type) {
       case 'crud':
