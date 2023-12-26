@@ -7,17 +7,17 @@ import {
 } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
 import {
-  buildWebAppReferences,
   WebAppConfig,
+  buildWebAppReferences,
   webAppSchema,
 } from './apps/index.js';
 import { authSchema, buildAuthReferences } from './auth/index.js';
+import { featuresSchema } from './features/index.js';
 import { themeSchema } from './features/theme.js';
 import { buildEnumReferences, enumSchema } from './models/enums.js';
 import { buildModelReferences, modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { buildStorageReferences, storageSchema } from './storage/index.js';
-import { randomUid } from '@src/utils/randomUid.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const appSchema = z.discriminatedUnion('type', [
@@ -44,14 +44,7 @@ export const projectConfigSchema = z.object({
       'Port offset must be a multiple of 1000, e.g. 1000, 2000, 3000, etc.',
     ),
   apps: z.array(appSchema).default([]),
-  features: z
-    .array(
-      z.object({
-        uid: z.string().default(randomUid),
-        name: z.string().min(1),
-      }),
-    )
-    .default([]),
+  features: featuresSchema,
   models: z.array(modelSchema).default([]),
   enums: z.array(enumSchema).optional(),
   auth: authSchema.optional(),
@@ -72,7 +65,7 @@ export const getProjectConfigReferences: GetReferencesFunction<
   config.features?.forEach((feature) => {
     builder.addReferenceable({
       category: 'feature',
-      id: feature.uid,
+      id: feature.id,
       name: feature.name,
     });
   });

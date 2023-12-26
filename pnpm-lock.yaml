@@ -308,6 +308,9 @@ importers:
       culori:
         specifier: ^3.2.0
         version: 3.2.0
+      immer:
+        specifier: 10.0.3
+        version: 10.0.3
       inflection:
         specifier: 2.0.1
         version: 2.0.1
@@ -509,8 +512,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0
       immer:
-        specifier: ^9.0.12
-        version: 9.0.12
+        specifier: 10.0.3
+        version: 10.0.3
       inflection:
         specifier: 2.0.1
         version: 2.0.1
@@ -564,7 +567,7 @@ importers:
         version: 3.22.4
       zustand:
         specifier: 4.4.6
-        version: 4.4.6(@types/react@18.2.15)(immer@9.0.12)(react@18.2.0)
+        version: 4.4.6(@types/react@18.2.15)(immer@10.0.3)(react@18.2.0)
     devDependencies:
       '@halfdomelabs/project-builder-server':
         specifier: workspace:*
@@ -877,7 +880,7 @@ importers:
         version: 4.11.0(react@18.2.0)
       zustand:
         specifier: 4.4.6
-        version: 4.4.6(@types/react@18.2.15)(immer@9.0.12)(react@18.2.0)
+        version: 4.4.6(@types/react@18.2.15)(immer@10.0.3)(react@18.2.0)
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -9052,8 +9055,8 @@ packages:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
     engines: {node: '>= 4'}
 
-  /immer@9.0.12:
-    resolution: {integrity: sha512-lk7UNmSbAukB5B6dh9fnh5D0bJTOFKxVg2cyJWTYrWRfhLrLMBquONcUs3aFq507hNoIZEDDh8lb8UtOizSMhA==}
+  /immer@10.0.3:
+    resolution: {integrity: sha512-pwupu3eWfouuaowscykeckFmVTpqbzW+rXFCX8rQLkZzM9ftBmU/++Ra+o+L27mz03zJTlyV4UUr+fdKNffo4A==}
     dev: false
 
   /import-fresh@3.3.0:
@@ -14271,7 +14274,7 @@ packages:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
     dev: false
 
-  /zustand@4.4.6(@types/react@18.2.15)(immer@9.0.12)(react@18.2.0):
+  /zustand@4.4.6(@types/react@18.2.15)(immer@10.0.3)(react@18.2.0):
     resolution: {integrity: sha512-Rb16eW55gqL4W2XZpJh0fnrATxYEG3Apl2gfHTyDSE965x/zxslTikpNch0JgNjJA9zK6gEFW8Fl6d1rTZaqgg==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
@@ -14287,7 +14290,7 @@ packages:
         optional: true
     dependencies:
       '@types/react': 18.2.15
-      immer: 9.0.12
+      immer: 10.0.3
       react: 18.2.0
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false

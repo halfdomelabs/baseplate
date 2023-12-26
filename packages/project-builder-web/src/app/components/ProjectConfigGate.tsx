@@ -2,6 +2,7 @@ import {
   ParsedProjectConfig,
   ProjectConfig,
   ProjectDefinitionContainer,
+  fixRefDeletions,
   fixReferenceRenames,
   getProjectConfigReferences,
   projectConfigSchema,
@@ -13,7 +14,7 @@ import {
   ErrorDisplay,
   ErrorableLoader,
 } from '@halfdomelabs/ui-components';
-import produce from 'immer';
+import { produce } from 'immer';
 import { useEffect, useMemo, useRef } from 'react';
 import semver from 'semver';
 import { ZodError } from 'zod';
@@ -175,6 +176,14 @@ export function ProjectConfigGate({
           getProjectConfigReferences,
           typeof fixReferences === 'boolean' ? undefined : fixReferences,
         );
+        const result = fixRefDeletions(
+          projectConfigSchema,
+          validatedProjectConfig,
+        );
+        if (result.type === 'failure') {
+          throw new UserVisibleError(`Failed to fix references!`);
+        }
+        validatedProjectConfig = result.value;
       }
 
       const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);

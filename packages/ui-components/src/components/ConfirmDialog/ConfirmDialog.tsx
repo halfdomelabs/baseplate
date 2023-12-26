@@ -44,8 +44,8 @@ export function ConfirmDialog(): JSX.Element {
     buttonConfirmText = strings.buttonConfirm,
     buttonConfirmVariant,
   } = {
-    ...confirmOptions,
     ...textOptionsCached.current,
+    ...confirmOptions,
   };
 
   return (
