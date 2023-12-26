@@ -1,18 +1,13 @@
-import {
-  ModelRelationFieldConfig,
-  randomUid,
-} from '@halfdomelabs/project-builder-lib';
-import { useController } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
-import ModelRelationForm from './ModelRelationForm';
+import { ModelRelationsForm } from './ModelRelationsForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { Alert, Button, LinkButton } from 'src/components';
+import { Alert, Button } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 
@@ -36,21 +31,6 @@ function ModelEditModelPage(): JSX.Element {
     ? parsedProject.getModels().find((m) => m.uid === id)
     : undefined;
 
-  const {
-    field: { value: relationFields = [], onChange: relationOnChange },
-  } = useController({
-    name: 'model.relations',
-    control,
-  });
-
-  const removeRelation = (idx: number): void => {
-    relationOnChange(relationFields.filter((_, i) => i !== idx));
-  };
-
-  const appendRelation = (relation: ModelRelationFieldConfig): void => {
-    relationOnChange([...relationFields, relation]);
-  };
-
   return (
     <EditedModelContextProvider initialModel={defaultValues} watch={watch}>
       <form
@@ -65,41 +45,7 @@ function ModelEditModelPage(): JSX.Element {
           fixReferences={fixControlledReferences}
           originalModel={originalModel}
         />
-        <div>
-          <h2>Relations</h2>
-          <div className="text-xs text-muted-foreground">
-            You can modify the relations individually if you have more complex
-            relations, e.g. relations over more than one field
-          </div>
-        </div>
-        {relationFields.map((field, i) => (
-          <div key={field.uid}>
-            <div className="flex flex-row space-x-4">
-              <ModelRelationForm
-                formProps={form}
-                idx={i}
-                field={field}
-                onRemove={removeRelation}
-                originalModel={originalModel}
-              />
-            </div>
-          </div>
-        ))}
-        <LinkButton
-          onClick={() =>
-            appendRelation({
-              uid: randomUid(),
-              name: '',
-              references: [{ local: '', foreign: '' }],
-              modelName: '',
-              onDelete: 'Cascade',
-              onUpdate: 'Restrict',
-              foreignRelationName: '',
-            })
-          }
-        >
-          Add Relation
-        </LinkButton>
+        <ModelRelationsForm control={control} originalModel={originalModel} />
         <ModelPrimaryKeyForm formProps={form} />
         <ModelUniqueConstraintsField formProps={form} />
         <div>
