@@ -39,9 +39,11 @@ export function RefIssueDialog(): JSX.Element {
         </p>
         <Table>
           <Table.Header>
-            <Table.Head>Reference</Table.Head>
-            <Table.Head>Type</Table.Head>
-            <Table.Head>Entity</Table.Head>
+            <Table.Row>
+              <Table.Head>Reference</Table.Head>
+              <Table.Head>Type</Table.Head>
+              <Table.Head>Entity</Table.Head>
+            </Table.Row>
           </Table.Header>
           {issues?.map((issue) => {
             const entity = definitionContainer.entities.find(
