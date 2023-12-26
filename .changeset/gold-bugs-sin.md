@@ -2,4 +2,4 @@
 '@halfdomelabs/project-builder-web': minor
 ---
 
-Adds form context and fixed actions bar
+Adds fixed actions bar to bottom of model edit pages
