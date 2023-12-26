@@ -5,6 +5,7 @@ import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import { ModelRelationsForm } from './ModelRelationsForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
+import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
 import { Alert, Button } from 'src/components';
@@ -52,6 +53,7 @@ function ModelEditModelPage(): JSX.Element {
           <Button type="submit">Save</Button>
         </div>
       </form>
+      <ModelFormActionBar form={form} />
     </EditedModelContextProvider>
   );
 }

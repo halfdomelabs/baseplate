@@ -74,7 +74,7 @@ export function useModelForm({
     resolver: zodResolver(modelSchema),
     defaultValues,
   });
-  const { getValues, setValue } = form;
+  const { getValues, setValue, reset } = form;
 
   const lastFixedModel = useRef<ModelConfig | undefined>();
 
@@ -108,6 +108,7 @@ export function useModelForm({
         if (onSubmitSuccess) {
           onSubmitSuccess();
         }
+        reset(data);
       } catch (err) {
         logger.error(err);
         if (setError) {
@@ -118,14 +119,15 @@ export function useModelForm({
       }
     },
     [
-      id,
-      toast,
-      navigate,
-      model,
-      setError,
       setConfigAndFixReferences,
-      onSubmitSuccess,
       controlledReferences,
+      toast,
+      id,
+      model?.name,
+      onSubmitSuccess,
+      reset,
+      navigate,
+      setError,
     ],
   );
 

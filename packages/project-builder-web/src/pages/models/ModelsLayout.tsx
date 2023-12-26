@@ -37,9 +37,11 @@ export function ModelsLayout(): JSX.Element {
           {longestName}
         </div>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="p-4">
-        <Outlet />
-      </SidebarLayout.Content>
+      <div className="relative h-full w-full pb-[65px]">
+        <SidebarLayout.Content className="h-full p-4">
+          <Outlet />
+        </SidebarLayout.Content>
+      </div>
     </SidebarLayout>
   );
 }

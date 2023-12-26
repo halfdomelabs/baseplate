@@ -1,8 +1,9 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
+import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../hooks/useModelForm';
-import { Alert, Button } from 'src/components';
+import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useStatus } from 'src/hooks/useStatus';
@@ -43,58 +44,60 @@ function ModelEditServicePage(): JSX.Element {
   // TODO: Need to unset transformer options when reset
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <Alert.WithStatus status={status} />
-      <CheckedInput.LabelledController
-        label="Build controller?"
-        control={control}
-        name="service.build"
-      />
-      {shouldBuild && (
-        <>
-          <CheckedArrayInput.LabelledController
-            label="Createable Fields"
-            control={control}
-            options={localFieldOptions}
-            name="service.create.fields"
-          />
-          {!!transformerOptions?.length && (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <Alert.WithStatus status={status} />
+        <CheckedInput.LabelledController
+          label="Build controller?"
+          control={control}
+          name="service.build"
+        />
+        {shouldBuild && (
+          <>
             <CheckedArrayInput.LabelledController
-              label="Create Transformers"
+              label="Createable Fields"
               control={control}
-              options={transformerOptions}
-              name="service.create.transformerNames"
+              options={localFieldOptions}
+              name="service.create.fields"
             />
-          )}
-          <CheckedArrayInput.LabelledController
-            label="Updateable Fields"
-            control={control}
-            options={localFieldOptions}
-            name="service.update.fields"
-          />
-          {!!transformerOptions?.length && (
+            {!!transformerOptions?.length && (
+              <CheckedArrayInput.LabelledController
+                label="Create Transformers"
+                control={control}
+                options={transformerOptions}
+                name="service.create.transformerNames"
+              />
+            )}
             <CheckedArrayInput.LabelledController
-              label="Update Transformers"
+              label="Updateable Fields"
               control={control}
-              options={transformerOptions}
-              name="service.update.transformerNames"
+              options={localFieldOptions}
+              name="service.update.fields"
             />
-          )}
-          <CheckedInput.LabelledController
-            label="Disable Delete?"
-            control={control}
-            name="service.delete.disabled"
-          />
-          {originalModel && (
-            <ServiceTransformersForm
-              formProps={form}
-              originalModel={originalModel}
+            {!!transformerOptions?.length && (
+              <CheckedArrayInput.LabelledController
+                label="Update Transformers"
+                control={control}
+                options={transformerOptions}
+                name="service.update.transformerNames"
+              />
+            )}
+            <CheckedInput.LabelledController
+              label="Disable Delete?"
+              control={control}
+              name="service.delete.disabled"
             />
-          )}
-        </>
-      )}
-      <Button type="submit">Save</Button>
-    </form>
+            {originalModel && (
+              <ServiceTransformersForm
+                formProps={form}
+                originalModel={originalModel}
+              />
+            )}
+          </>
+        )}
+      </form>
+      <ModelFormActionBar form={form} />
+    </>
   );
 }
 
