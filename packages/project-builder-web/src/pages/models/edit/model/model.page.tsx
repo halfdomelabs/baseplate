@@ -10,8 +10,9 @@ import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import ModelRelationForm from './ModelRelationForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
+import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../hooks/useModelForm';
-import { Alert, Button, LinkButton } from 'src/components';
+import { Alert, LinkButton } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 
@@ -25,6 +26,7 @@ function ModelEditModelPage(): JSX.Element {
       'modelUniqueConstraint',
     ],
   });
+
   const { control, handleSubmit } = form;
 
   const { parsedProject } = useProjectConfig();
@@ -50,59 +52,59 @@ function ModelEditModelPage(): JSX.Element {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onFormSubmit)}
-      className="min-w-[700px] max-w-6xl space-y-4"
-    >
-      <Alert.WithStatus status={status} />
-      {!id && <ModelGeneralForm control={control} horizontal />}
-      {!id && <h2>Fields</h2>}
-      <ModelFieldsForm
-        control={control}
-        fixReferences={fixControlledReferences}
-        originalModel={originalModel}
-      />
-      <div>
-        <h2>Relations</h2>
-        <div className="text-xs text-muted-foreground">
-          You can modify the relations individually if you have more complex
-          relations, e.g. relations over more than one field
-        </div>
-      </div>
-      {relationFields.map((field, i) => (
-        <div key={field.uid}>
-          <div className="flex flex-row space-x-4">
-            <ModelRelationForm
-              formProps={form}
-              idx={i}
-              field={field}
-              onRemove={removeRelation}
-              originalModel={originalModel}
-            />
+    <>
+      <form
+        onSubmit={handleSubmit(onFormSubmit)}
+        className="min-w-[700px] max-w-6xl space-y-4"
+      >
+        <Alert.WithStatus status={status} />
+        {!id && <ModelGeneralForm control={control} horizontal />}
+        {!id && <h2>Fields</h2>}
+        <ModelFieldsForm
+          control={control}
+          fixReferences={fixControlledReferences}
+          originalModel={originalModel}
+        />
+        <div>
+          <h2>Relations</h2>
+          <div className="text-xs text-muted-foreground">
+            You can modify the relations individually if you have more complex
+            relations, e.g. relations over more than one field
           </div>
         </div>
-      ))}
-      <LinkButton
-        onClick={() =>
-          appendRelation({
-            uid: randomUid(),
-            name: '',
-            references: [{ local: '', foreign: '' }],
-            modelName: '',
-            onDelete: 'Cascade',
-            onUpdate: 'Restrict',
-            foreignRelationName: '',
-          })
-        }
-      >
-        Add Relation
-      </LinkButton>
-      <ModelPrimaryKeyForm formProps={form} />
-      <ModelUniqueConstraintsField formProps={form} />
-      <div>
-        <Button type="submit">Save</Button>
-      </div>
-    </form>
+        {relationFields.map((field, i) => (
+          <div key={field.uid}>
+            <div className="flex flex-row space-x-4">
+              <ModelRelationForm
+                formProps={form}
+                idx={i}
+                field={field}
+                onRemove={removeRelation}
+                originalModel={originalModel}
+              />
+            </div>
+          </div>
+        ))}
+        <LinkButton
+          onClick={() =>
+            appendRelation({
+              uid: randomUid(),
+              name: '',
+              references: [{ local: '', foreign: '' }],
+              modelName: '',
+              onDelete: 'Cascade',
+              onUpdate: 'Restrict',
+              foreignRelationName: '',
+            })
+          }
+        >
+          Add Relation
+        </LinkButton>
+        <ModelPrimaryKeyForm formProps={form} />
+        <ModelUniqueConstraintsField formProps={form} />
+      </form>
+      <ModelFormActionBar form={form} />
+    </>
   );
 }
 

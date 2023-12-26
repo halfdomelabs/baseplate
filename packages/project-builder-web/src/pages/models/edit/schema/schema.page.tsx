@@ -1,8 +1,9 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useMemo } from 'react';
 
+import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../hooks/useModelForm';
-import { Alert, Button } from 'src/components';
+import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -54,76 +55,78 @@ function ModelEditSchemaPage(): JSX.Element {
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <Alert.WithStatus status={status} />
-      <CheckedInput.LabelledController
-        label="Build Object Type?"
-        control={control}
-        name="schema.buildObjectType"
-      />
-      <CheckedArrayInput.LabelledController
-        label="Exposed Fields"
-        control={control}
-        options={localFieldOptions}
-        name="schema.exposedFields"
-      />
-      {!localRelationOptions?.length ? null : (
-        <CheckedArrayInput.LabelledController
-          label="Exposed Local Relations"
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <Alert.WithStatus status={status} />
+        <CheckedInput.LabelledController
+          label="Build Object Type?"
           control={control}
-          options={localRelationOptions}
-          name="schema.exposedLocalRelations"
+          name="schema.buildObjectType"
         />
-      )}
-      {!foreignRelationOptions?.length ? null : (
         <CheckedArrayInput.LabelledController
-          label="Exposed Foreign Relations"
+          label="Exposed Fields"
           control={control}
-          options={foreignRelationOptions}
-          name="schema.exposedForeignRelations"
+          options={localFieldOptions}
+          name="schema.exposedFields"
         />
-      )}
-      <CheckedInput.LabelledController
-        label="Build Query?"
-        control={control}
-        name="schema.buildQuery"
-      />
-      <CheckedInput.LabelledController
-        label="Build Mutations?"
-        control={control}
-        name="schema.buildMutations"
-      />
-      <h3>Permissions</h3>
-      {roleOptions && (
-        <>
+        {!localRelationOptions?.length ? null : (
           <CheckedArrayInput.LabelledController
-            label="Read"
+            label="Exposed Local Relations"
             control={control}
-            options={roleOptions}
-            name="schema.authorize.read"
+            options={localRelationOptions}
+            name="schema.exposedLocalRelations"
           />
+        )}
+        {!foreignRelationOptions?.length ? null : (
           <CheckedArrayInput.LabelledController
-            label="Create"
+            label="Exposed Foreign Relations"
             control={control}
-            options={roleOptions}
-            name="schema.authorize.create"
+            options={foreignRelationOptions}
+            name="schema.exposedForeignRelations"
           />
-          <CheckedArrayInput.LabelledController
-            label="Update"
-            control={control}
-            options={roleOptions}
-            name="schema.authorize.update"
-          />
-          <CheckedArrayInput.LabelledController
-            label="Delete"
-            control={control}
-            options={roleOptions}
-            name="schema.authorize.delete"
-          />
-        </>
-      )}
-      <Button type="submit">Save</Button>
-    </form>
+        )}
+        <CheckedInput.LabelledController
+          label="Build Query?"
+          control={control}
+          name="schema.buildQuery"
+        />
+        <CheckedInput.LabelledController
+          label="Build Mutations?"
+          control={control}
+          name="schema.buildMutations"
+        />
+        <h3>Permissions</h3>
+        {roleOptions && (
+          <>
+            <CheckedArrayInput.LabelledController
+              label="Read"
+              control={control}
+              options={roleOptions}
+              name="schema.authorize.read"
+            />
+            <CheckedArrayInput.LabelledController
+              label="Create"
+              control={control}
+              options={roleOptions}
+              name="schema.authorize.create"
+            />
+            <CheckedArrayInput.LabelledController
+              label="Update"
+              control={control}
+              options={roleOptions}
+              name="schema.authorize.update"
+            />
+            <CheckedArrayInput.LabelledController
+              label="Delete"
+              control={control}
+              options={roleOptions}
+              name="schema.authorize.delete"
+            />
+          </>
+        )}
+      </form>
+      <ModelFormActionBar form={form} />
+    </>
   );
 }
 
