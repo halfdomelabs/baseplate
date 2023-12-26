@@ -8,7 +8,7 @@ import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { Alert, Button } from 'src/components';
+import { Alert } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 
@@ -49,9 +49,6 @@ function ModelEditModelPage(): JSX.Element {
         <ModelRelationsForm control={control} originalModel={originalModel} />
         <ModelPrimaryKeyForm formProps={form} />
         <ModelUniqueConstraintsField formProps={form} />
-        <div>
-          <Button type="submit">Save</Button>
-        </div>
       </form>
       <ModelFormActionBar form={form} />
     </EditedModelContextProvider>

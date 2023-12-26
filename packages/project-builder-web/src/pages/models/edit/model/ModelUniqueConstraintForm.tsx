@@ -29,9 +29,9 @@ function ModelUniqueConstraintForm({
   } = formProps;
 
   const constraintFields = useEditedModelConfig((model) => {
-    const fields = model.model.uniqueConstraints?.[idx].fields.map(
-      (f) => ModelUtils.getScalarFieldById(model, f.name).name,
-    );
+    const fields = model.model.uniqueConstraints?.[idx]?.fields
+      .filter((f) => f.name)
+      .map((f) => ModelUtils.getScalarFieldById(model, f.name).name);
     return fields?.length ? fields.join(', ') : 'No Fields';
   });
 
