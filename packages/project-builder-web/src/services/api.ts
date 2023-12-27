@@ -148,7 +148,7 @@ export const client = createTRPCProxyClient<AppRouter>({
       true: [retryLink({}), attachCsrfToken(), wsLink({ client: wsClient })],
       // when condition is false, use batching
       false: [
-        retryLink({ maxAttempts: 2 }),
+        retryLink({ maxAttempts: 3 }),
         httpBatchLink({
           url: `${URL_BASE ?? ''}/trpc`,
           async headers() {

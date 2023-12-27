@@ -1,3 +1,4 @@
+import { FeatureUtils } from '@src/definition/index.js';
 import { ParsedProjectConfig } from '@src/parser/index.js';
 import { ParsedModel } from '@src/parser/types.js';
 import {
@@ -31,11 +32,16 @@ function buildEmbeddedRelationTransformer(
     );
   }
 
+  const foreignModelFeature = FeatureUtils.getFeatureByIdOrThrow(
+    parsedProject.projectConfig,
+    foreignModel.feature,
+  ).name;
+
   return {
     generator: '@halfdomelabs/fastify/prisma/embedded-relation-transformer',
     foreignCrudServiceRef: !transformer.embeddedTransformerNames
       ? undefined
-      : `${foreignModel.feature}/root:$services.${foreignModel.name}Service.$crud`,
+      : `${foreignModelFeature}/root:$services.${foreignModel.name}Service.$crud`,
     ...config,
   };
 }

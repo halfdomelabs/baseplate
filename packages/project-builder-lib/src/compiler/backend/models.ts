@@ -2,8 +2,8 @@ import {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-  ModelUniqueConstraintConfig,
 } from '../../schema/models/index.js';
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 import { ParsedProjectConfig } from '@src/parser/index.js';
 import {
   isModelRelationOneToOne,
@@ -62,28 +62,22 @@ function buildRelationField(
     ).length ?? 0) +
       relations.filter((r) => r.modelName === modelName).length >
     1;
+  const foreignFeature = FeatureUtils.getFeatureByIdOrThrow(
+    parsedProject.projectConfig,
+    foreignModel.feature,
+  ).name;
 
   return {
     name,
     fields: references.map((r) => r.local),
     references: references.map((r) => r.foreign),
-    modelRef: `${foreignModel.feature}/root:$models.${foreignModel.name}`,
+    modelRef: `${foreignFeature}/root:$models.${foreignModel.name}`,
     foreignRelationName,
     relationshipName: needsRelationName ? foreignRelationName : undefined,
     relationshipType: relationshipType,
     optional,
     onDelete,
     onUpdate,
-  };
-}
-
-function buildUniqueConstraint({
-  name,
-  fields,
-}: ModelUniqueConstraintConfig): unknown {
-  return {
-    name,
-    fields,
   };
 }
 
@@ -103,7 +97,12 @@ function buildModel(
         fields: model.model.primaryKeys,
       },
       uniqueConstraints: model.model.uniqueConstraints?.map(
-        buildUniqueConstraint,
+        ({ name, fields }) => ({
+          name,
+          fields: fields.map((f) => ({
+            name: ModelUtils.getScalarFieldById(model, f.name).name,
+          })),
+        }),
       ),
     },
   };

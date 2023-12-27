@@ -1,4 +1,5 @@
 import { ParserPlugin, PluginMergeModelFieldInput } from '../types.js';
+import { FeatureUtils } from '@src/index.js';
 import { notEmpty } from '@src/utils/array.js';
 
 export const StoragePlugin: ParserPlugin = {
@@ -124,11 +125,16 @@ export const StoragePlugin: ParserPlugin = {
       },
     });
 
+    const featurePath = FeatureUtils.getFeatureByIdOrThrow(
+      projectConfig,
+      storage.featurePath,
+    ).name;
+
     // add feature providers
     hooks.addFeatureChildren(storage.featurePath, {
       $storage: {
         generator: '@halfdomelabs/fastify/storage/storage-module',
-        fileObjectTypeRef: `${storage.featurePath}/root:$schemaTypes.${storage.fileModel}ObjectType.$objectType`,
+        fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${storage.fileModel}ObjectType.$objectType`,
         fileModel: storage.fileModel,
         s3Adapters: storage.s3Adapters,
         categories: storage.categories,

@@ -26,7 +26,7 @@ export function buildFeature(
       $services: buildServicesForFeature(featureId, parsedProject),
       $schemaTypes: buildSchemaTypesForFeature(featureId, parsedProject),
       $submodules: subFeatures.map((subFeature) =>
-        buildFeature(subFeature.name, builder),
+        buildFeature(subFeature.id, builder),
       ),
       ...parsedProject.getFeatureChildren(featureId),
     },

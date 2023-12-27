@@ -3,6 +3,7 @@ import { capitalize } from 'inflection';
 import { compileAdminFeatures } from './sections.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
+import { FeatureUtils } from '@src/index.js';
 import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
 import { ProjectConfig } from '@src/schema/index.js';
 import {
@@ -12,13 +13,19 @@ import {
 import { AppEntry } from '@src/types/files.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 
-export function buildNavigationLinks(config: AdminAppConfig): unknown[] {
+export function buildNavigationLinks(
+  builder: AppEntryBuilder<AdminAppConfig>,
+): unknown[] {
+  const config = builder.appConfig;
+  const projectConfig = builder.projectConfig;
   return (
     config.sections?.map((section) => ({
       type: 'link',
       label: titleizeCamel(section.name),
       icon: section.icon ?? 'MdHome',
-      path: `${section.feature}/${dasherizeCamel(section.name)}`,
+      path: `${
+        FeatureUtils.getFeatureByIdOrThrow(projectConfig, section.feature).name
+      }/${dasherizeCamel(section.name)}`,
     })) ?? []
   );
 }
@@ -72,7 +79,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         generator: '@halfdomelabs/react/admin/admin-layout',
         links: [
           { type: 'link', label: 'Home', icon: 'MdHome', path: '/' },
-          ...buildNavigationLinks(appConfig),
+          ...buildNavigationLinks(builder),
           ...(backendApp.enableBullQueue
             ? [
                 {

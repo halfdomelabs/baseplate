@@ -113,7 +113,7 @@ export function buildFastify(
         generator: '@halfdomelabs/fastify/yoga/yoga-sentry',
       },
       $modules: [
-        ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
+        ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),
         'graphql/root',
       ],
       $stripe: !app.enableStripe

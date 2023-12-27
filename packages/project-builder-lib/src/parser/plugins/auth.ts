@@ -3,6 +3,7 @@ import {
   PluginMergeModelFieldInput,
   PluginMergeModelRelationInput,
 } from '../types.js';
+import { FeatureUtils } from '@src/index.js';
 
 export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -109,7 +110,12 @@ export const AuthPlugin: ParserPlugin = {
       $authContext: {
         generator: '@halfdomelabs/fastify/auth/auth-context',
         peerProvider: true,
-        authInfoRef: `${auth.authFeaturePath}/root:$auth.service`,
+        authInfoRef: `${
+          FeatureUtils.getFeatureByIdOrThrow(
+            projectConfig,
+            auth.authFeaturePath,
+          ).name
+        }/root:$auth.service`,
       },
       $pothosAuth: {
         generator: '@halfdomelabs/fastify/pothos/pothos-auth',
