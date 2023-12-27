@@ -263,6 +263,7 @@ class ZodRefBuilder<TInput> {
       type: entity.type,
       name,
       path,
+      idPath: [...this.pathPrefix, ...idPath],
       parentPath:
         entity.parentPath &&
         entity.type.parentType &&
@@ -386,7 +387,7 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
             builder.entities.forEach((entity) => {
               _.set(
                 copiedInputData,
-                [...entity.path.slice(input.path.length), 'id'],
+                entity.idPath.slice(input.path.length),
                 entity.id,
               );
             });
@@ -470,18 +471,18 @@ export function zRef<
 export function zEnt<
   TObject extends z.SomeZodObject,
   TEntityType extends DefinitionEntityType,
-  TIDKey extends string = 'id',
 >(
   schema: TObject,
   entity:
-    | DefinitionEntityInput<z.input<TObject>, TEntityType, TIDKey>
+    | DefinitionEntityInput<z.input<TObject>, TEntityType, 'id'>
     | ((
         data: z.input<TObject>,
-      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, TIDKey>),
+      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, 'id'>),
 ): ZodRef<
   z.ZodObject<
-    TObject['shape'] &
-      Record<TIDKey, z.ZodType<string, z.ZodAnyDef, string | undefined>>,
+    TObject['shape'] & {
+      id: z.ZodType<string, z.ZodAnyDef, string | undefined>;
+    },
     TObject['_def']['unknownKeys'],
     TObject['_def']['catchall']
   >

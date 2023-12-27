@@ -27,6 +27,7 @@ export interface DefinitionEntity {
   name: string;
   type: DefinitionEntityType;
   path: ReferencePath;
+  idPath: ReferencePath;
   parentPath?: ReferencePath;
   /**
    * Strips the ID when deserializing

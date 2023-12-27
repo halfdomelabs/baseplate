@@ -4,6 +4,8 @@ import {
   ModelScalarFieldConfig,
   ModelUniqueConstraintConfig,
   modelEntityType,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
   modelScalarFieldType,
 } from './index.js';
 import { randomUid } from '@src/utils/randomUid.js';
@@ -35,6 +37,8 @@ export function generateMockModelRelationField(
   relation?: Partial<ModelRelationFieldConfig>,
 ): ModelRelationFieldConfig {
   return {
+    id: modelLocalRelationEntityType.generateNewId(),
+    foreignId: modelForeignRelationEntityType.generateNewId(),
     uid: randomUid(),
     name: 'mockRelation',
     modelName: 'mockModel',
