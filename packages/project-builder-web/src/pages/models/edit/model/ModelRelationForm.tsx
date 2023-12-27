@@ -78,7 +78,7 @@ function ModelRelationForm({
   // TODO: Self references (requires a bit of patching for model renames)
   const foreignModelOptions = parsedProject.getModels().map((type) => ({
     label: type.name,
-    value: type.name,
+    value: type.id,
   }));
 
   if (!watchedField) {

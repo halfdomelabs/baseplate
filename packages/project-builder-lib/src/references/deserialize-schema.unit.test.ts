@@ -45,6 +45,58 @@ describe('deserializeSchemaWithReferences', () => {
     expect(parsedData.data.ref).toEqual(parsedData.data.entity[0].id);
   });
 
+  it('should work with an optional reference', () => {
+    const entityType = createEntityType('entity');
+    const schema = z.object({
+      entity: z.array(
+        zEnt(z.object({ id: zRefId, name: z.string() }), {
+          type: entityType,
+        }),
+      ),
+      nullRef: zRefBuilder(z.string().nullable()).addReference({
+        type: entityType,
+        onDelete: 'DELETE',
+      }),
+      undefinedRef: zRefBuilder(z.string().optional()).addReference({
+        type: entityType,
+        onDelete: 'DELETE',
+      }),
+    });
+    const dataInput: z.input<typeof schema> = {
+      entity: [{ name: 'test-name' }],
+      nullRef: null,
+      undefinedRef: undefined,
+    };
+
+    const parsedData = deserializeSchemaWithReferences(schema, dataInput);
+
+    expect(parsedData.data.nullRef).toBeNull();
+    expect(parsedData.data.undefinedRef).toBeUndefined();
+  });
+
+  it('should fail with an optional reference that is an empty string', () => {
+    const entityType = createEntityType('entity');
+    const schema = z.object({
+      entity: z.array(
+        zEnt(z.object({ id: zRefId, name: z.string() }), {
+          type: entityType,
+        }),
+      ),
+      ref: zRefBuilder(z.string().nullish()).addReference({
+        type: entityType,
+        onDelete: 'DELETE',
+      }),
+    });
+    const dataInput: z.input<typeof schema> = {
+      entity: [{ name: 'test-name' }],
+      ref: '',
+    };
+
+    expect(() =>
+      deserializeSchemaWithReferences(schema, dataInput),
+    ).toThrowError('Unable to resolve reference');
+  });
+
   it('should work with a multiple references', () => {
     const entityType = createEntityType('entity');
     const schema = z.object({

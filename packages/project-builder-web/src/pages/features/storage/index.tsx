@@ -52,7 +52,7 @@ function StoragePage(): JSX.Element {
 
   const modelOptions = parsedProject.getModels().map((m) => ({
     label: m.name,
-    value: m.name,
+    value: m.id,
   }));
 
   const featureOptions =

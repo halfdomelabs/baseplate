@@ -24,7 +24,7 @@ function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
 
   const modelOptions = parsedProject.getModels().map((model) => ({
     label: model.name,
-    value: model.name,
+    value: model.id,
   }));
 
   // TODO: struggles with https://github.com/react-hook-form/react-hook-form/discussions/7354

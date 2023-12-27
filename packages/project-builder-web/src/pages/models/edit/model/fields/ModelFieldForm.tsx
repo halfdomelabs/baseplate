@@ -71,11 +71,7 @@ function ModelFieldForm({
       if (originalField) {
         const references = parsedProject.references.modelField?.[
           `${originalModel.name}.${originalField.name}`
-        ]?.filter(
-          (ref) =>
-            ref.referenceType !== 'modelPrimaryKey' &&
-            ref.referenceType !== 'modelLocalRelation',
-        );
+        ]?.filter((ref) => ref.referenceType !== 'modelPrimaryKey');
         if (references?.length) {
           toast.error(
             `Unable to remove field ${

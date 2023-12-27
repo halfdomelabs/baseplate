@@ -89,8 +89,20 @@ function ServiceEmbeddedRelationForm({
       previousLocalRelationName !== selectedLocalRelationName
     ) {
       setValue(`service.transformers.${idx}.embeddedFieldNames`, []);
+      if (selectedRelation?.model.id) {
+        setValue(
+          `service.transformers.${idx}.modelRef`,
+          selectedRelation?.model.id,
+        );
+      }
     }
-  }, [previousLocalRelationName, selectedLocalRelationName, idx, setValue]);
+  }, [
+    previousLocalRelationName,
+    selectedLocalRelationName,
+    idx,
+    setValue,
+    selectedRelation?.model.id,
+  ]);
 
   const foreignFieldOptions =
     selectedRelation?.model.model.fields
@@ -102,7 +114,7 @@ function ServiceEmbeddedRelationForm({
       )
       .map((field) => ({
         label: field.name,
-        value: field.name,
+        value: field.id,
       })) ?? [];
 
   const foreignTransformerOptions =

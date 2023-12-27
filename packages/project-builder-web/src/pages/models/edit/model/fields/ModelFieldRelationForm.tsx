@@ -53,7 +53,7 @@ export function ModelFieldRelationForm({
 
   const foreignModelOptions = parsedProject.getModels().map((type) => ({
     label: type.name,
-    value: type.name,
+    value: type.id,
   }));
 
   const defaultRelationName = localScalarField.name.endsWith('Id')
@@ -79,8 +79,8 @@ export function ModelFieldRelationForm({
           }
         : {
             name: defaultRelationName || '',
-            modelName: defaultForeignModel || '',
-            foreignFieldName: defaultForeignField || '',
+            modelName: defaultForeignModel ?? '',
+            foreignFieldName: defaultForeignField ?? '',
             foreignRelationName: defaultRelationName
               ? camelCase(pluralize(modelName))
               : '',
@@ -131,7 +131,7 @@ export function ModelFieldRelationForm({
             const newForeignField = parsedProject
               .getModelByName(newValue)
               .model.fields.find((f) => f.isId)?.name;
-            setValue('foreignFieldName', newForeignField || '');
+            setValue('foreignFieldName', newForeignField ?? '');
           }}
         />
         <ComboboxField.Controller

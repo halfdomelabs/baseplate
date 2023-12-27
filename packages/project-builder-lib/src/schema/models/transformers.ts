@@ -1,7 +1,14 @@
 import { z } from 'zod';
 
+import {
+  modelEntityType,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
+  modelScalarFieldType,
+} from './types.js';
 import type { ProjectConfig } from '../projectConfig.js';
 import { ReferencesBuilder } from '../references.js';
+import { zRef, zRefBuilder } from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
 const baseTransformerFields = {
@@ -21,9 +28,24 @@ export type PasswordTransformerConfig = z.infer<
 
 export const embeddedRelationTransformerSchema = z.object({
   ...baseTransformerFields,
+  name: zRef(z.string(), {
+    type: modelForeignRelationEntityType,
+    onDelete: 'DELETE_PARENT',
+    parentPath: { context: 'model' },
+  }),
   type: z.literal('embeddedRelation'),
-  embeddedFieldNames: z.array(z.string().min(1)),
+  embeddedFieldNames: z.array(
+    zRef(z.string(), {
+      type: modelScalarFieldType,
+      onDelete: 'RESTRICT',
+      parentPath: { context: 'embeddedModel' },
+    }),
+  ),
   embeddedTransformerNames: z.array(z.string().min(1)).optional(),
+  modelRef: zRef(z.string(), {
+    type: modelEntityType,
+    onDelete: 'RESTRICT',
+  }),
 });
 
 export type EmbeddedRelationTransformerConfig = z.infer<
@@ -34,16 +56,26 @@ export type EmbeddedRelationTransformerConfig = z.infer<
 
 export const fileTransformerSchema = z.object({
   ...baseTransformerFields,
+  name: zRef(z.string(), {
+    type: modelLocalRelationEntityType,
+    onDelete: 'DELETE_PARENT',
+    parentPath: { context: 'model' },
+  }),
   type: z.literal('file'),
 });
 
 export type FileTransformerConfig = z.infer<typeof fileTransformerSchema>;
 
-export const transformerSchema = z.discriminatedUnion('type', [
-  passwordTransformerSchema,
-  embeddedRelationTransformerSchema,
-  fileTransformerSchema,
-]);
+export const transformerSchema = zRefBuilder(
+  z.discriminatedUnion('type', [
+    passwordTransformerSchema,
+    embeddedRelationTransformerSchema,
+    fileTransformerSchema,
+  ]),
+  (builder) => {
+    builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel');
+  },
+);
 
 export type TransformerConfig = z.infer<typeof transformerSchema>;
 
@@ -59,39 +91,4 @@ export function buildServiceTransformerReferences(
     key: `${modelName}#${transformer.name}`,
     name: transformer.name,
   });
-
-  if (transformer.type === 'embeddedRelation') {
-    builder.addReference('name', {
-      category: 'modelForeignRelation',
-      key: `${modelName}#${transformer.name}`,
-    });
-
-    const localRelationName = transformer.name;
-    const foreignModel = originalConfig.models?.find(
-      (model) =>
-        model.model.relations?.some(
-          (relation) =>
-            relation.modelName === modelName &&
-            relation.foreignRelationName === localRelationName,
-        ),
-    );
-
-    if (!foreignModel) {
-      throw new Error(
-        `Could not find model associated with embedded relation ${modelName}/${localRelationName}`,
-      );
-    }
-
-    builder.addReferences('embeddedFieldNames.*', {
-      category: 'modelField',
-      generateKey: (name) => `${foreignModel.name}#${name}`,
-    });
-  }
-
-  if (transformer.type === 'file') {
-    builder.addReference('name', {
-      category: 'modelLocalRelation',
-      key: `${modelName}#${transformer.name}`,
-    });
-  }
 }

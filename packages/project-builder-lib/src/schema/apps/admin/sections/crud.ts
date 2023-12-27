@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
 import { baseAdminSectionValidators } from './base.js';
+import { zRef, zRefBuilder } from '@src/references/index.js';
+import {
+  modelEntityType,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
+  modelScalarFieldType,
+} from '@src/schema/models/index.js';
 import { ReferencesBuilder } from '@src/schema/references.js';
 import { notEmpty } from '@src/utils/array.js';
 import { randomUid } from '@src/utils/randomUid.js';
@@ -8,7 +15,11 @@ import { randomUid } from '@src/utils/randomUid.js';
 // Table Columns
 export const adminCrudForeignDisplaySchema = z.object({
   type: z.literal('foreign'),
-  localRelationName: z.string().min(1),
+  localRelationName: zRef(z.string(), {
+    type: modelLocalRelationEntityType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
   labelExpression: z.string().min(1),
   valueExpression: z.string().min(1),
 });
@@ -19,7 +30,11 @@ export type AdminCrudForeignDisplayConfig = z.infer<
 
 export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
-  modelField: z.string().min(1),
+  modelField: zRef(z.string(), {
+    type: modelScalarFieldType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
 });
 
 export type AdminCrudTextDisplayConfig = z.infer<
@@ -55,7 +70,11 @@ export const adminCrudTableColumnSchema = z.object({
 export const adminCrudTextInputSchema = z.object({
   type: z.literal('text'),
   label: z.string().min(1),
-  modelField: z.string().min(1),
+  modelField: zRef(z.string(), {
+    type: modelScalarFieldType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
   validation: z.string().optional(),
 });
 
@@ -64,7 +83,11 @@ export type AdminCrudTextInputConfig = z.infer<typeof adminCrudTextInputSchema>;
 export const adminCrudForeignInputSchema = z.object({
   type: z.literal('foreign'),
   label: z.string().min(1),
-  localRelationName: z.string().min(1),
+  localRelationName: zRef(z.string(), {
+    type: modelLocalRelationEntityType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
   labelExpression: z.string().min(1),
   valueExpression: z.string().min(1),
   defaultLabel: z.string().optional(),
@@ -78,7 +101,11 @@ export type AdminCrudForeignInputConfig = z.infer<
 export const adminCrudEnumInputSchema = z.object({
   type: z.literal('enum'),
   label: z.string().min(1),
-  modelField: z.string().min(1),
+  modelField: zRef(z.string(), {
+    type: modelScalarFieldType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
 });
 
 export type AdminCrudEnumInputConfig = z.infer<typeof adminCrudEnumInputSchema>;
@@ -94,7 +121,11 @@ export type AdminCrudFileInputConfig = z.infer<typeof adminCrudFileInputSchema>;
 export const adminCrudEmbeddedInputSchema = z.object({
   type: z.literal('embedded'),
   label: z.string().min(1),
-  modelRelation: z.string().min(1),
+  modelRelation: zRef(z.string(), {
+    type: modelForeignRelationEntityType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
   embeddedFormName: z.string().min(1),
 });
 
@@ -105,7 +136,11 @@ export type AdminCrudEmbeddedInputConfig = z.infer<
 export const adminCrudEmbeddedLocalInputSchema = z.object({
   type: z.literal('embeddedLocal'),
   label: z.string().min(1),
-  localRelation: z.string().min(1),
+  localRelation: zRef(z.string(), {
+    type: modelLocalRelationEntityType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
   embeddedFormName: z.string().min(1),
 });
 
@@ -142,7 +177,10 @@ export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 export const adminCrudEmbeddedObjectSchema = z.object({
   id: z.string().default(randomUid),
   name: z.string().min(1),
-  modelName: z.string().min(1),
+  modelName: zRef(z.string().min(1), {
+    type: modelEntityType,
+    onDelete: 'RESTRICT',
+  }),
   includeIdField: z.boolean().optional(),
   type: z.literal('object'),
   form: z.object({
@@ -153,7 +191,10 @@ export const adminCrudEmbeddedObjectSchema = z.object({
 export const adminCrudEmbeddedListSchema = z.object({
   id: z.string().default(randomUid),
   name: z.string().min(1),
-  modelName: z.string().min(1),
+  modelName: zRef(z.string().min(1), {
+    type: modelEntityType,
+    onDelete: 'RESTRICT',
+  }),
   includeIdField: z.boolean().optional(),
   type: z.literal('list'),
   // NOTE: These two fields need to be synced with crud section schema
@@ -166,10 +207,15 @@ export const adminCrudEmbeddedListSchema = z.object({
   }),
 });
 
-export const adminCrudEmbeddedFormSchema = z.discriminatedUnion('type', [
-  adminCrudEmbeddedObjectSchema,
-  adminCrudEmbeddedListSchema,
-]);
+export const adminCrudEmbeddedFormSchema = zRefBuilder(
+  z.discriminatedUnion('type', [
+    adminCrudEmbeddedObjectSchema,
+    adminCrudEmbeddedListSchema,
+  ]),
+  (builder) => {
+    builder.addPathToContext('modelName', modelEntityType, 'model');
+  },
+);
 
 export type AdminCrudEmbeddedFormConfig = z.infer<
   typeof adminCrudEmbeddedFormSchema
@@ -177,19 +223,27 @@ export type AdminCrudEmbeddedFormConfig = z.infer<
 
 // Admin Section
 
-export const adminCrudSectionSchema = z.object({
-  ...baseAdminSectionValidators,
-  type: z.literal('crud'),
-  modelName: z.string().min(1),
-  disableCreate: z.boolean().optional(),
-  table: z.object({
-    columns: z.array(adminCrudTableColumnSchema),
+export const adminCrudSectionSchema = zRefBuilder(
+  z.object({
+    ...baseAdminSectionValidators,
+    type: z.literal('crud'),
+    modelName: zRef(z.string().min(1), {
+      type: modelEntityType,
+      onDelete: 'RESTRICT',
+    }),
+    disableCreate: z.boolean().optional(),
+    table: z.object({
+      columns: z.array(adminCrudTableColumnSchema),
+    }),
+    form: z.object({
+      fields: z.array(adminCrudInputSchema),
+    }),
+    embeddedForms: z.array(adminCrudEmbeddedFormSchema).optional(),
   }),
-  form: z.object({
-    fields: z.array(adminCrudInputSchema),
-  }),
-  embeddedForms: z.array(adminCrudEmbeddedFormSchema).optional(),
-});
+  (builder) => {
+    builder.addPathToContext('modelName', modelEntityType, 'model');
+  },
+);
 
 export type AdminCrudSectionConfig = z.infer<typeof adminCrudSectionSchema>;
 
@@ -197,50 +251,14 @@ export function buildAdminCrudSectionReferences(
   config: AdminCrudSectionConfig,
   builder: ReferencesBuilder<AdminCrudSectionConfig>,
 ): void {
-  builder.addReference('modelName', { category: 'model' });
-
-  config.table.columns.forEach((column, idx) => {
-    const columnBuilder = builder.withPrefix(`table.columns.${idx}`);
-    switch (column.display.type) {
-      case 'foreign':
-        columnBuilder.addReference('display.localRelationName', {
-          category: 'modelLocalRelation',
-          key: `${config.modelName}#${column.display.localRelationName}`,
-        });
-        break;
-      case 'text':
-        columnBuilder.addReference('display.modelField', {
-          category: 'modelField',
-          key: `${config.modelName}#${column.display.modelField}`,
-        });
-        break;
-      default:
-        throw new Error(
-          `Unknown display type: ${(column.display as { type: string }).type}`,
-        );
-    }
-  });
-
   config.form.fields.forEach((field, idx) => {
     const fieldBuilder = builder.withPrefix(`form.fields.${idx}`);
     switch (field.type) {
       case 'text':
-        fieldBuilder.addReference('modelField', {
-          category: 'modelField',
-          key: `${config.modelName}#${field.modelField}`,
-        });
         break;
       case 'foreign':
-        fieldBuilder.addReference('localRelationName', {
-          category: 'modelLocalRelation',
-          key: `${config.modelName}#${field.localRelationName}`,
-        });
         break;
       case 'enum':
-        fieldBuilder.addReference('modelField', {
-          category: 'modelField',
-          key: `${config.modelName}#${field.modelField}`,
-        });
         break;
       case 'file':
         fieldBuilder.addReference('modelRelation', {
@@ -249,10 +267,6 @@ export function buildAdminCrudSectionReferences(
         });
         break;
       case 'embedded':
-        fieldBuilder.addReference('modelRelation', {
-          category: 'modelForeignRelation',
-          key: `${config.modelName}#${field.modelRelation}`,
-        });
         fieldBuilder.addReference('embeddedFormName', {
           category: 'adminCrudEmbeddedForm',
           key: `${config.name}#${field.embeddedFormName}`,
@@ -260,10 +274,6 @@ export function buildAdminCrudSectionReferences(
         break;
       case 'embeddedLocal':
         // TODO: Not supported in backend generation yet (but can be manually created)
-        fieldBuilder.addReference('localRelation', {
-          category: 'modelLocalRelation',
-          key: `${config.modelName}#${field.localRelation}`,
-        });
         fieldBuilder.addReference('embeddedFormName', {
           category: 'adminCrudEmbeddedForm',
           key: `${config.name}#${field.embeddedFormName}`,

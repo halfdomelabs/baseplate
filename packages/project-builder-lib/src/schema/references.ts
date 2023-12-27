@@ -10,16 +10,14 @@ import {
 import { notEmpty } from '@src/utils/array.js';
 
 export const REFERENCEABLE_CATEGORIES = [
-  'model',
-  'modelField',
-  'modelLocalRelation',
-  'modelForeignRelation',
   'modelTransformer',
   'role',
   'storageAdapter',
   'storageCategory',
   'enum',
   'adminCrudEmbeddedForm',
+  'test',
+  'test-foreign-relation',
 ] as const;
 
 export interface ObjectReferenceableEntry {

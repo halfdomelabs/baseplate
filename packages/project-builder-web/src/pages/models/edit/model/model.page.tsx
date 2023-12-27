@@ -21,7 +21,7 @@ function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, fixControlledReferences, defaultValues } =
     useModelForm({
       setError,
-      controlledReferences: ['modelPrimaryKey', 'modelLocalRelation'],
+      controlledReferences: ['modelPrimaryKey'],
     });
   const { control, handleSubmit, watch } = form;
 

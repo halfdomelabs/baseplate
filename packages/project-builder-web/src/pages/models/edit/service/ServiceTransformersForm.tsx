@@ -105,6 +105,7 @@ function ServiceEmbeddedRelationsForm({
                   name: '',
                   type: 'embeddedRelation',
                   embeddedFieldNames: [],
+                  modelRef: '',
                 })
               }
             >

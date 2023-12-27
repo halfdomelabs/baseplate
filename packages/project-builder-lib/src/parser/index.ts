@@ -10,6 +10,8 @@ import {
   ProjectConfig,
   getProjectConfigReferences,
   modelEntityType,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
   modelScalarFieldType,
 } from '@src/schema/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
@@ -80,7 +82,7 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
   models.forEach(
     (model) =>
       model.model.relations?.forEach((relation) => {
-        const foreignModel = models.find((m) => m.name === relation.modelName);
+        const foreignModel = models.find((m) => m.id === relation.modelName);
         if (!foreignModel) {
           throw new Error(
             `Model ${model.name} has a relation to ${relation.modelName} but that model does not exist`,
@@ -89,7 +91,7 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
         // verify types of fields match
         relation.references.forEach((reference) => {
           const foreignField = foreignModel.model.fields.find(
-            (f) => f.name === reference.foreign,
+            (f) => f.id === reference.foreign,
           );
           if (!foreignField) {
             throw new Error(
@@ -97,7 +99,7 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
             );
           }
           const localField = model.model.fields.find(
-            (f) => f.name === reference.local,
+            (f) => f.id === reference.local,
           );
           if (!localField) {
             throw new Error(
@@ -207,6 +209,8 @@ export class ParsedProjectConfig {
                 })),
                 relations: model.model.relations?.map((relation) => ({
                   ...relation,
+                  id: modelLocalRelationEntityType.generateNewId(),
+                  foreignId: modelForeignRelationEntityType.generateNewId(),
                   uid: randomUid(),
                 })),
               },

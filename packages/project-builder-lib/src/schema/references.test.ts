@@ -31,12 +31,12 @@ describe('fixReferenceRenames', () => {
       const builder = new ReferencesBuilder<typeof newObject>(config);
       config.model.fields.forEach((field) =>
         builder.addReferenceable({
-          category: 'modelField',
+          category: 'test',
           id: field.id,
           name: field.name,
         }),
       );
-      builder.addReferences('model.goodFields.*', { category: 'modelField' });
+      builder.addReferences('model.goodFields.*', { category: 'test' });
       return builder.build();
     };
 
@@ -73,13 +73,13 @@ describe('fixReferenceRenames', () => {
       const builder = new ReferencesBuilder<typeof newObject>(config);
       config.model.fields.forEach((field) =>
         builder.addReferenceable({
-          category: 'modelField',
+          category: 'test',
           id: field.id,
           name: field.name,
         }),
       );
       builder.addReferences('model.goodFields.*.name', {
-        category: 'modelField',
+        category: 'test',
       });
       return builder.build();
     };
@@ -122,7 +122,7 @@ describe('fixReferenceRenames', () => {
       const builder = new ReferencesBuilder<typeof newObject>(config);
       config.model.fields.forEach((field) =>
         builder.addReferenceable({
-          category: 'modelField',
+          category: 'test',
           id: field.id,
           name: field.name,
         }),
@@ -131,12 +131,12 @@ describe('fixReferenceRenames', () => {
         builder
           .withPrefix(`model.fieldRef.${i}`)
           .addReferenceable({
-            category: 'modelForeignRelation',
+            category: 'test-foreign-relation',
             id: fieldRef.id,
             name: fieldRef.name,
           })
           .addReference('name', {
-            category: 'modelField',
+            category: 'test',
             name: fieldRef.name,
           });
       });
@@ -144,7 +144,7 @@ describe('fixReferenceRenames', () => {
         .withPrefix('model')
         .withPrefix('fieldRefRef')
         .addReferences('*.name', {
-          category: 'modelForeignRelation',
+          category: 'test-foreign-relation',
         });
       return builder.build();
     };

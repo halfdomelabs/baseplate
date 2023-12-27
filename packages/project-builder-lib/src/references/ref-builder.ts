@@ -44,9 +44,11 @@ type PathInputOrContext<Type> = PathInput<Type> | ContextValue;
 interface DefinitionEntityInputBase<
   TInput,
   TEntityType extends DefinitionEntityType,
+  TIdKey = 'id',
 > {
   type: TEntityType;
   path?: PathInput<TInput>;
+  idPath?: TIdKey;
   namePath?: PathInput<TInput>;
   name?: string;
   addContext?: string;
@@ -55,23 +57,26 @@ interface DefinitionEntityInputBase<
 interface DefinitionEntityInputWithParent<
   TInput,
   TEntityType extends DefinitionEntityType,
-> extends DefinitionEntityInputBase<TInput, TEntityType> {
+  TIDKey extends string = 'id',
+> extends DefinitionEntityInputBase<TInput, TEntityType, TIDKey> {
   parentPath: PathInputOrContext<TInput>;
 }
 
 interface DefinitionEntityInputWithoutParent<
   TInput,
   TEntityType extends DefinitionEntityType,
-> extends DefinitionEntityInputBase<TInput, TEntityType> {
+  TIDKey extends string = 'id',
+> extends DefinitionEntityInputBase<TInput, TEntityType, TIDKey> {
   parentPath?: never;
 }
 
 type DefinitionEntityInput<
   TInput,
   TEntityType extends DefinitionEntityType,
+  TIDKey extends string = 'id',
 > = TEntityType['parentType'] extends undefined
-  ? DefinitionEntityInputWithoutParent<TInput, TEntityType>
-  : DefinitionEntityInputWithParent<TInput, TEntityType>;
+  ? DefinitionEntityInputWithoutParent<TInput, TEntityType, TIDKey>
+  : DefinitionEntityInputWithParent<TInput, TEntityType, TIDKey>;
 
 /**
  * Definition Reference Input
@@ -206,7 +211,7 @@ class ZodRefBuilder<TInput> {
             this.data,
             this._constructPathWithoutPrefix(reference.path),
           ) as string);
-    if (!refValue) return;
+    if (refValue === undefined || refValue === null) return;
 
     const path = this._constructPath(reference.path);
 
@@ -228,13 +233,16 @@ class ZodRefBuilder<TInput> {
     }
   }
 
-  addEntity<TEntityType extends DefinitionEntityType>(
-    entity: DefinitionEntityInput<TInput, TEntityType>,
-  ): void {
+  addEntity<
+    TEntityType extends DefinitionEntityType,
+    TIDKey extends string | PathInput<TInput> = 'id',
+  >(entity: DefinitionEntityInput<TInput, TEntityType, TIDKey>): void {
     const path = this._constructPath(entity.path);
 
     // attempt to fetch id from entity input
-    const idPath = [...this._constructPathWithoutPrefix(entity.path), 'id'];
+    const idPath = entity.idPath
+      ? this._constructPathWithoutPrefix(entity.idPath as PathInput<TInput>)
+      : [...this._constructPathWithoutPrefix(entity.path), 'id'];
     const id =
       (_.get(this.data, idPath) as string) ?? entity.type.generateNewId();
 
@@ -408,10 +416,15 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
     });
   };
 
-  addEntity<TEntityType extends DefinitionEntityType>(
+  addEntity<
+    TEntityType extends DefinitionEntityType,
+    TIDKey extends string = 'id',
+  >(
     entity:
-      | DefinitionEntityInput<input<T>, TEntityType>
-      | ((data: input<T>) => DefinitionEntityInput<input<T>, TEntityType>),
+      | DefinitionEntityInput<input<T>, TEntityType, TIDKey>
+      | ((
+          data: input<T>,
+        ) => DefinitionEntityInput<input<T>, TEntityType, TIDKey>),
   ): ZodRef<T> {
     return ZodRef.create(this, (builder, data) => {
       builder.addEntity(typeof entity === 'function' ? entity(data) : entity);
@@ -457,18 +470,18 @@ export function zRef<
 export function zEnt<
   TObject extends z.SomeZodObject,
   TEntityType extends DefinitionEntityType,
+  TIDKey extends string = 'id',
 >(
   schema: TObject,
   entity:
-    | DefinitionEntityInput<z.input<TObject>, TEntityType>
+    | DefinitionEntityInput<z.input<TObject>, TEntityType, TIDKey>
     | ((
         data: z.input<TObject>,
-      ) => DefinitionEntityInput<z.input<TObject>, TEntityType>),
+      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, TIDKey>),
 ): ZodRef<
   z.ZodObject<
-    TObject['shape'] & {
-      id: z.ZodType<string, z.ZodAnyDef, string | undefined>;
-    },
+    TObject['shape'] &
+      Record<TIDKey, z.ZodType<string, z.ZodAnyDef, string | undefined>>,
     TObject['_def']['unknownKeys'],
     TObject['_def']['catchall']
   >

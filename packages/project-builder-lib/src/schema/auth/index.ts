@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { modelEntityType } from '../models/index.js';
 import { ReferencesBuilder } from '../references.js';
 import { zRef } from '@src/references/index.js';
 import { featureEntityType } from '@src/schema/features/index.js';
@@ -32,8 +33,14 @@ export const AUTH_DEFAULT_ROLES = [
 ];
 
 export const authSchema = z.object({
-  userModel: z.string().min(1),
-  userRoleModel: z.string().min(1).optional(),
+  userModel: zRef(z.string().min(1), {
+    type: modelEntityType,
+    onDelete: 'RESTRICT',
+  }),
+  userRoleModel: zRef(z.string().min(1), {
+    type: modelEntityType,
+    onDelete: 'RESTRICT',
+  }),
   useAuth0: z.boolean().default(false),
   authFeaturePath: zRef(z.string().min(1), {
     type: featureEntityType,
@@ -67,8 +74,4 @@ export function buildAuthReferences(
       name: role.name,
     });
   });
-
-  builder
-    .addReference('userModel', { category: 'model' })
-    .addReference('userRoleModel', { category: 'model' });
 }

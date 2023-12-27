@@ -69,9 +69,9 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
       const resolvedEntity = entitiesByParentIdName[parentIdName];
       if (!resolvedEntity) {
         throw new Error(
-          `Unable to resolve reference: ${ref.path.join(
-            '.',
-          )} (${parentIdName})`,
+          `Unable to resolve reference: ${ref.path.join('.')} (${
+            ref.type.name
+          } ${parentIdName})`,
         );
       }
       _.set(data, ref.path, resolvedEntity.id);

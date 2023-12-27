@@ -24,7 +24,7 @@ export interface ParsedModel extends ModelConfig {
 export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'id' | 'uid'>;
 export type PluginMergeModelRelationInput = Omit<
   ParsedRelationField,
-  'id' | 'uid'
+  'id' | 'uid' | 'foreignId'
 >;
 
 export interface PluginMergeModelInput

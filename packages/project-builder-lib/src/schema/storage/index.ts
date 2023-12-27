@@ -1,38 +1,54 @@
 import { z } from 'zod';
 
 import { featureEntityType } from '../features/index.js';
+import {
+  modelEntityType,
+  modelForeignRelationEntityType,
+} from '../models/index.js';
 import { ReferencesBuilder } from '../references.js';
-import { zRef } from '@src/references/index.js';
+import { zRef, zRefBuilder } from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
-export const storageSchema = z.object({
-  fileModel: z.string().min(1),
-  featurePath: zRef(z.string().min(1), {
-    type: featureEntityType,
-    onDelete: 'RESTRICT',
+export const storageSchema = zRefBuilder(
+  z.object({
+    fileModel: zRef(z.string(), {
+      type: modelEntityType,
+      onDelete: 'RESTRICT',
+    }),
+    featurePath: zRef(z.string().min(1), {
+      type: featureEntityType,
+      onDelete: 'RESTRICT',
+    }),
+    s3Adapters: z.array(
+      z.object({
+        uid: z.string().default(randomUid),
+        name: z.string().min(1),
+        bucketConfigVar: z.string().min(1),
+        hostedUrlConfigVar: z.string().optional(),
+      }),
+    ),
+    categories: z.array(
+      z.object({
+        uid: z.string().default(randomUid),
+        name: z.string().min(1),
+        defaultAdapter: z.string().min(1),
+        maxFileSize: z.preprocess(
+          (a) => a && parseInt(a as string, 10),
+          z.number().positive().optional(),
+        ),
+        usedByRelation: zRef(z.string(), {
+          type: modelForeignRelationEntityType,
+          onDelete: 'RESTRICT',
+          parentPath: { context: 'fileModel' },
+        }),
+        uploadRoles: z.array(z.string().min(1)),
+      }),
+    ),
   }),
-  s3Adapters: z.array(
-    z.object({
-      uid: z.string().default(randomUid),
-      name: z.string().min(1),
-      bucketConfigVar: z.string().min(1),
-      hostedUrlConfigVar: z.string().optional(),
-    }),
-  ),
-  categories: z.array(
-    z.object({
-      uid: z.string().default(randomUid),
-      name: z.string().min(1),
-      defaultAdapter: z.string().min(1),
-      maxFileSize: z.preprocess(
-        (a) => a && parseInt(a as string, 10),
-        z.number().positive().optional(),
-      ),
-      usedByRelation: z.string().min(1),
-      uploadRoles: z.array(z.string().min(1)),
-    }),
-  ),
-});
+  (builder) => {
+    builder.addPathToContext('fileModel', modelEntityType, 'fileModel');
+  },
+);
 
 export type StorageConfig = z.infer<typeof storageSchema>;
 
@@ -59,10 +75,6 @@ export function buildStorageReferences(
 
     categoryBuilder.addReference('defaultAdapter', {
       category: 'storageAdapter',
-    });
-    categoryBuilder.addReference('usedByRelation', {
-      category: 'modelForeignRelation',
-      key: `${config.fileModel}#${category.usedByRelation}`,
     });
   });
 }

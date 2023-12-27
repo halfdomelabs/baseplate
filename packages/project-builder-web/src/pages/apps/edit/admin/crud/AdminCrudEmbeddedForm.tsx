@@ -85,7 +85,7 @@ function AdminCrudEmbeddedForm({
 
   const modelOptions = parsedProject.getModels().map((model) => ({
     label: model.name,
-    value: model.name,
+    value: model.id,
   }));
 
   const type = watch('type');

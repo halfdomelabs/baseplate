@@ -1,4 +1,4 @@
-import { randomUid } from '@src/index.js';
+import { randomUid } from '@src/utils/randomUid.js';
 
 export type ReferencePath = (string | number)[];
 
@@ -28,6 +28,10 @@ export interface DefinitionEntity {
   type: DefinitionEntityType;
   path: ReferencePath;
   parentPath?: ReferencePath;
+  /**
+   * Strips the ID when deserializing
+   */
+  stripIdWhenSerializing?: boolean;
 }
 
 type ReferenceOnDeleteAction =
