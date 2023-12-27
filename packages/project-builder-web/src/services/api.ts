@@ -9,7 +9,7 @@ import {
   wsLink,
 } from '@trpc/client';
 import { Unsubscribable, observable } from '@trpc/server/observable';
-import axios from 'axios';
+import axios, { isAxiosError } from 'axios';
 
 import { createTypedEventEmitter } from '@src/utils/typed-event-emitter';
 
@@ -54,6 +54,16 @@ export function retryLink({
                   attemptsLeft--;
                 }
                 attempt();
+              } else if (
+                isAxiosError(err.cause) &&
+                err.cause.response?.status === 500 &&
+                attemptsLeft !== 0
+              ) {
+                if (attemptsLeft !== undefined) {
+                  attemptsLeft--;
+                }
+                // retry after 500ms since server might be starting up (when in development)
+                setTimeout(attempt, 500);
               } else {
                 observer.error(err);
               }
