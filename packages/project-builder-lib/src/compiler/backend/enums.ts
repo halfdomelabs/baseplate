@@ -12,11 +12,11 @@ function buildEnum(enumConfig: EnumConfig): unknown {
 }
 
 export function buildEnumsForFeature(
-  feature: string,
+  featureId: string,
   parsedProject: ParsedProjectConfig,
 ): unknown {
   const enums =
-    parsedProject.getEnums().filter((m) => m.feature === feature) ?? [];
+    parsedProject.getEnums().filter((m) => m.feature === featureId) ?? [];
   if (!enums.length) {
     return undefined;
   }

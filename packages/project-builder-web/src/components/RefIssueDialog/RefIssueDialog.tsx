@@ -1,3 +1,4 @@
+import { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
 import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
 import { useEffect, useRef } from 'react';
 
@@ -10,26 +11,27 @@ import { useProjectConfig } from '@src/hooks/useProjectConfig';
 export function RefIssueDialog(): JSX.Element {
   const { dialogOptions, setDialogOptions } = useDeleteReferenceDialogState();
   const { definitionContainer } = useProjectConfig();
+  const entities = definitionContainer.entities;
 
   // We need to store the text content in a ref because the Dialog component
   // will transition to fade so we need to cache the text while we close.
-  const textOptionsCached =
+  const dialogOptionsCached =
     useRef<null | UseDeleteReferenceDialogRequestOptions>();
 
   useEffect(() => {
     if (dialogOptions) {
-      textOptionsCached.current = dialogOptions;
+      dialogOptionsCached.current = dialogOptions;
     }
   }, [dialogOptions]);
 
-  const { issues } = dialogOptions ?? {};
+  const { issues } = dialogOptions ?? dialogOptionsCached.current ?? {};
 
   return (
     <Dialog
       open={!!dialogOptions}
       onOpenChange={() => setDialogOptions(undefined)}
     >
-      <Dialog.Content width="md">
+      <Dialog.Content width="lg">
         <Dialog.Header>
           <Dialog.Title>Unable to delete</Dialog.Title>
         </Dialog.Header>
@@ -40,23 +42,63 @@ export function RefIssueDialog(): JSX.Element {
         <Table>
           <Table.Header>
             <Table.Row>
-              <Table.Head>Reference</Table.Head>
-              <Table.Head>Type</Table.Head>
               <Table.Head>Entity</Table.Head>
+              <Table.Head>Path</Table.Head>
+              <Table.Head>Referenced Entity</Table.Head>
             </Table.Row>
           </Table.Header>
-          {issues?.map((issue) => {
-            const entity = definitionContainer.entities.find(
-              (e) => e.id === issue.entityId,
-            );
-            return (
-              <Table.Row key={issue.ref.path.join('.')}>
-                <Table.Cell>{issue.ref.path.join('.')}</Table.Cell>
-                <Table.Cell>{entity?.type.name ?? 'Unknown Entity'}</Table.Cell>
-                <Table.Cell>{entity?.name ?? ''}</Table.Cell>
-              </Table.Row>
-            );
-          })}
+          <Table.Body>
+            {issues?.map((issue) => {
+              const entity = entities.find((e) => e.id === issue.entityId);
+              const issuePath = issue.ref.path.join('.');
+              const referenceParent = entities.reduce<
+                DefinitionEntity | undefined
+              >((acc, e) => {
+                const entityPath = e.path.join('.');
+                if (
+                  issuePath.startsWith(entityPath) &&
+                  (!acc || acc.path.length < entityPath.length)
+                ) {
+                  return e;
+                }
+                return acc;
+              }, undefined);
+              const pathInParent = referenceParent
+                ? issuePath.substring(referenceParent.path.join('.').length + 1)
+                : issuePath;
+              return (
+                <Table.Row key={issuePath}>
+                  <Table.Cell>
+                    {referenceParent ? (
+                      <div>
+                        <div>
+                          <strong>{referenceParent.name}</strong>
+                        </div>
+                        <div className="text-muted-foreground">
+                          {referenceParent.type.name}
+                        </div>
+                      </div>
+                    ) : (
+                      <strong>Root</strong>
+                    )}
+                  </Table.Cell>
+                  <Table.Cell>{pathInParent}</Table.Cell>
+                  <Table.Cell>
+                    {entity ? (
+                      <div>
+                        <div>{entity.name}</div>
+                        <div className="text-muted-foreground">
+                          {entity.type.name}
+                        </div>
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                  </Table.Cell>
+                </Table.Row>
+              );
+            })}
+          </Table.Body>
         </Table>
         <Dialog.Footer>
           <Button

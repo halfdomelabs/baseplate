@@ -3,33 +3,32 @@ import { buildModelsForFeature } from './models.js';
 import { buildSchemaTypesForFeature } from './schemaTypes.js';
 import { buildServicesForFeature } from './services.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { FeatureUtils } from '@src/definition/feature/feature-utils.js';
 
 export function buildFeature(
-  featurePath: string,
+  featureId: string,
   builder: AppEntryBuilder,
 ): unknown {
   const { projectConfig, parsedProject } = builder;
-  const descriptorLocation = `${featurePath}/root`;
-  const featureName = featurePath.split('/').pop();
+  const feature = FeatureUtils.getFeatureByIdOrThrow(projectConfig, featureId);
+  const descriptorLocation = `${feature.name}/root`;
+  const featureName = FeatureUtils.getFeatureName(feature);
   // find sub-features
-  const subFeatures =
-    projectConfig.features?.filter((f) =>
-      f.name.startsWith(`${featurePath}/`),
-    ) ?? [];
+  const subFeatures = FeatureUtils.getFeatureChildren(projectConfig, featureId);
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,
     generator: '@halfdomelabs/fastify/core/app-module',
-    hoistedProviders: parsedProject.getFeatureHoistedProviders(featurePath),
+    hoistedProviders: parsedProject.getFeatureHoistedProviders(featureId),
     children: {
-      $enums: buildEnumsForFeature(featurePath, parsedProject),
-      $models: buildModelsForFeature(featurePath, parsedProject),
-      $services: buildServicesForFeature(featurePath, parsedProject),
-      $schemaTypes: buildSchemaTypesForFeature(featurePath, parsedProject),
+      $enums: buildEnumsForFeature(featureId, parsedProject),
+      $models: buildModelsForFeature(featureId, parsedProject),
+      $services: buildServicesForFeature(featureId, parsedProject),
+      $schemaTypes: buildSchemaTypesForFeature(featureId, parsedProject),
       $submodules: subFeatures.map((subFeature) =>
         buildFeature(subFeature.name, builder),
       ),
-      ...parsedProject.getFeatureChildren(featurePath),
+      ...parsedProject.getFeatureChildren(featureId),
     },
   });
 

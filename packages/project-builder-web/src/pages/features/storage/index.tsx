@@ -58,7 +58,7 @@ function StoragePage(): JSX.Element {
   const featureOptions =
     config.features?.map((m) => ({
       label: m.name,
-      value: m.name,
+      value: m.id,
     })) ?? [];
 
   return (

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
+import { featureEntityType } from '../features/index.js';
 import { ReferencesBuilder } from '../references.js';
+import { zRef } from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
 export const enumValueSchema = z.object({
@@ -14,7 +16,10 @@ export type EnumValueConfig = z.infer<typeof enumSchema>;
 export const enumSchema = z.object({
   uid: z.string().default(randomUid),
   name: z.string().min(1),
-  feature: z.string().min(1),
+  feature: zRef(z.string().min(1), {
+    type: featureEntityType,
+    onDelete: 'RESTRICT',
+  }),
   values: z.array(enumValueSchema),
   isExposed: z.boolean(),
 });
@@ -25,7 +30,6 @@ export function buildEnumReferences(
   enumConfig: EnumConfig,
   builder: ReferencesBuilder<EnumConfig>,
 ): void {
-  builder.addReference('feature', { category: 'feature' });
   builder.addReferenceable({
     category: 'enum',
     id: enumConfig.uid,

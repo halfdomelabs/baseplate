@@ -174,18 +174,18 @@ export class ParsedProjectConfig {
             ...(Array.isArray(providers) ? providers : [providers]),
           ];
         },
-        addFeatureHoistedProviders: (featurePath, providers) => {
-          this.featureHoistedProviders[featurePath] = [
-            ...(this.featureHoistedProviders[featurePath] ?? []),
+        addFeatureHoistedProviders: (featureId, providers) => {
+          this.featureHoistedProviders[featureId] = [
+            ...(this.featureHoistedProviders[featureId] ?? []),
             ...(Array.isArray(providers) ? providers : [providers]),
           ];
         },
         addFastifyChildren: (children) => {
           this.fastifyChildren = safeMerge(this.fastifyChildren, children);
         },
-        addFeatureChildren: (featurePath, children) => {
-          this.featureChildren[featurePath] = safeMerge(
-            this.featureChildren[featurePath],
+        addFeatureChildren: (featureId, children) => {
+          this.featureChildren[featureId] = safeMerge(
+            this.featureChildren[featureId],
             children,
           );
         },
@@ -262,12 +262,12 @@ export class ParsedProjectConfig {
     }
   }
 
-  getFeatureHoistedProviders(featurePath: string): string[] {
-    return this.featureHoistedProviders[featurePath];
+  getFeatureHoistedProviders(featureId: string): string[] {
+    return this.featureHoistedProviders[featureId];
   }
 
-  getFeatureChildren(featurePath: string): Record<string, unknown> {
-    return this.featureChildren[featurePath];
+  getFeatureChildren(featureId: string): Record<string, unknown> {
+    return this.featureChildren[featureId];
   }
 
   getModelForeignRelations(

@@ -1,3 +1,4 @@
+import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { Tabs } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
@@ -12,7 +13,10 @@ import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 function ModelEditPage(): JSX.Element {
   const { id } = useParams<'id'>();
-  const { parsedProject } = useProjectConfig();
+  const {
+    parsedProject,
+    definitionContainer: { definition },
+  } = useProjectConfig();
 
   const isNew = !id;
 
@@ -39,7 +43,9 @@ function ModelEditPage(): JSX.Element {
             <MdEdit className="invisible h-4 w-4 group-hover:visible" />
           </button>
           {model?.feature && (
-            <div className="text-xs text-muted-foreground">{model.feature}</div>
+            <div className="text-xs text-muted-foreground">
+              {FeatureUtils.getFeatureById(definition, model.feature)?.name}
+            </div>
           )}
           <ModelGeneralEditDialog
             isOpen={showNameModal}

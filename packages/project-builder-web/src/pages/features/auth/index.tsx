@@ -25,7 +25,7 @@ function AuthPage(): JSX.Element {
     resolver: zodResolver(authSchema),
     defaultValues: {
       ...config.auth,
-      roles: config.auth?.roles || AUTH_DEFAULT_ROLES,
+      roles: config.auth?.roles ?? AUTH_DEFAULT_ROLES,
     },
   });
   const { control, reset, handleSubmit } = formProps;
@@ -56,13 +56,13 @@ function AuthPage(): JSX.Element {
 
   const modelOptions = parsedProject.getModels().map((m) => ({
     label: m.name,
-    value: m.name,
+    value: m.id,
   }));
 
   const featureOptions =
     config.features?.map((m) => ({
       label: m.name,
-      value: m.name,
+      value: m.id,
     })) ?? [];
 
   return (

@@ -39,12 +39,12 @@ export interface PluginHooks {
   mergeModel: (model: PluginMergeModelInput) => void;
   addGlobalHoistedProviders: (providers: string | string[]) => void;
   addFeatureHoistedProviders: (
-    featurePath: string,
+    featureId: string,
     providers: string | string[],
   ) => void;
   addFastifyChildren: (children: Record<string, unknown>) => void;
   addFeatureChildren: (
-    featurePath: string,
+    featureId: string,
     children: Record<string, unknown>,
   ) => void;
 }

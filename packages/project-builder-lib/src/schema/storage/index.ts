@@ -1,11 +1,16 @@
 import { z } from 'zod';
 
+import { featureEntityType } from '../features/index.js';
 import { ReferencesBuilder } from '../references.js';
+import { zRef } from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
 export const storageSchema = z.object({
   fileModel: z.string().min(1),
-  featurePath: z.string().min(1),
+  featurePath: zRef(z.string().min(1), {
+    type: featureEntityType,
+    onDelete: 'RESTRICT',
+  }),
   s3Adapters: z.array(
     z.object({
       uid: z.string().default(randomUid),
@@ -60,6 +65,4 @@ export function buildStorageReferences(
       key: `${config.fileModel}#${category.usedByRelation}`,
     });
   });
-
-  builder.addReference('featurePath', { category: 'feature' });
 }

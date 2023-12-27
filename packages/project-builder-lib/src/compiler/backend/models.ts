@@ -110,11 +110,11 @@ function buildModel(
 }
 
 export function buildModelsForFeature(
-  feature: string,
+  featureId: string,
   parsedProject: ParsedProjectConfig,
 ): unknown {
   const models =
-    parsedProject.getModels().filter((m) => m.feature === feature) ?? [];
+    parsedProject.getModels().filter((m) => m.feature === featureId) ?? [];
   if (!models.length) {
     return {};
   }

@@ -4,6 +4,7 @@ import {
   buildServiceTransformerReferences,
   transformerSchema,
 } from './transformers.js';
+import { featureEntityType } from '../features/index.js';
 import type { ProjectConfig } from '../projectConfig.js';
 import { ReferencesBuilder } from '../references.js';
 import { VALIDATORS } from '../utils/validation.js';
@@ -150,7 +151,10 @@ export const modelSchema = zEnt(
   z.object({
     uid: z.string().default(randomUid),
     name: VALIDATORS.PASCAL_CASE_STRING,
-    feature: z.string().min(1),
+    feature: zRef(z.string().min(1), {
+      type: featureEntityType,
+      onDelete: 'RESTRICT',
+    }),
     model: z.object({
       fields: z.array(modelScalarFieldSchema),
       relations: z.array(modelRelationFieldSchema).optional(),
@@ -287,8 +291,6 @@ export function buildModelReferences(
     id: model.uid,
     name: model.name,
   });
-
-  builder.addReference('feature', { category: 'feature' });
 
   model.model.primaryKeys?.forEach((primaryKey, idx) =>
     builder.addReference(`model.primaryKeys.${idx}`, {

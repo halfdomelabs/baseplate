@@ -1,6 +1,7 @@
 import { paramCase } from 'change-case';
 
 import { ModelConfig } from '../../schema/models/index.js';
+import { FeatureUtils } from '@src/definition/feature/feature-utils.js';
 import { ParsedProjectConfig } from '@src/parser/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
 
@@ -55,7 +56,7 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
 }
 
 function buildMutationSchemaTypeForModel(
-  feature: string,
+  featurePath: string,
   model: ModelConfig,
 ): unknown {
   const { schema: graphql } = model ?? {};
@@ -66,8 +67,8 @@ function buildMutationSchemaTypeForModel(
     fileName: `${paramCase(model.name)}.mutations`,
     generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-file',
     modelName: model.name,
-    objectTypeRef: `${feature}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
-    crudServiceRef: `${feature}/root:$services.${model.name}Service`,
+    objectTypeRef: `${featurePath}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
+    crudServiceRef: `${featurePath}/root:$services.${model.name}Service`,
     children: {
       create: model.service?.create?.fields?.length
         ? {
@@ -104,16 +105,21 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
 }
 
 export function buildSchemaTypesForFeature(
-  feature: string,
+  featureId: string,
   parsedProject: ParsedProjectConfig,
 ): unknown {
   const models =
     parsedProject
       .getModels()
-      .filter((m) => m.feature === feature && m.schema) ?? [];
+      .filter((m) => m.feature === featureId && m.schema) ?? [];
   const enums = parsedProject
     .getEnums()
-    .filter((e) => e.feature === feature && e.isExposed);
+    .filter((e) => e.feature === featureId && e.isExposed);
+
+  const featurePath = FeatureUtils.getFeatureByIdOrThrow(
+    parsedProject.projectConfig,
+    featureId,
+  ).name;
 
   return [
     ...models.flatMap((model) => [
@@ -121,7 +127,7 @@ export function buildSchemaTypesForFeature(
         ? buildQuerySchemaTypeForModel(model)
         : []),
       model.schema?.buildMutations
-        ? buildMutationSchemaTypeForModel(feature, model)
+        ? buildMutationSchemaTypeForModel(featurePath, model)
         : undefined,
     ]),
     ...buildEnumSchema(enums),

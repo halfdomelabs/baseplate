@@ -49,6 +49,11 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
       break;
     }
 
+    const objectsToDeleteInArray: {
+      path: ReferencePath;
+      idx: number;
+    }[] = [];
+
     // attempt to fix reference
     referencesMissingEntity.forEach((ref) => {
       const id = _.get(processValue, ref.path) as string;
@@ -57,17 +62,15 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
         if (path.length === 0) {
           return false;
         }
-        const parentIdx = path[path.length - 1];
         const parentPath = path.slice(0, -1);
         const parent = _.get(processValue, parentPath) as unknown;
         if (!Array.isArray(parent)) {
           return false;
         }
-        _.set(
-          processValue,
-          parentPath,
-          parent.filter((_, idx) => idx !== parentIdx),
-        );
+        objectsToDeleteInArray.push({
+          path: parentPath,
+          idx: path[path.length - 1] as number,
+        });
         return true;
       }
 
@@ -93,8 +96,25 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
           throw new Error(`Unknown onDelete action ${ref.onDelete as string}`);
       }
     });
-  }
 
+    const objectsToDeleteByPath = _.groupBy(objectsToDeleteInArray, (o) =>
+      o.path.join('.'),
+    );
+
+    // delete objects in reverse order to avoid index shifting
+    Object.entries(objectsToDeleteByPath).forEach(([, objects]) => {
+      const sortedObjects = _.sortBy(objects, (o) => -o.idx);
+      sortedObjects.forEach((o) => {
+        const parent = _.get(processValue, o.path) as unknown;
+        if (!Array.isArray(parent)) {
+          throw new Error(
+            `Expected parent to be an array at path ${o.path.join('.')}`,
+          );
+        }
+        parent.splice(o.idx, 1);
+      });
+    });
+  }
   if (iterations === 100) {
     throw new Error(`Exceeded max iterations fixing deletions`);
   }

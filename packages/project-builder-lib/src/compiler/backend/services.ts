@@ -139,13 +139,13 @@ function buildServiceForModel(
 }
 
 export function buildServicesForFeature(
-  feature: string,
+  featureId: string,
   parsedProjectConfig: ParsedProjectConfig,
 ): unknown {
   const models =
     parsedProjectConfig
       .getModels()
-      .filter((m) => m.feature === feature && m.service?.build) ?? [];
+      .filter((m) => m.feature === featureId && m.service?.build) ?? [];
   return models.map((model) =>
     buildServiceForModel(model, parsedProjectConfig),
   );

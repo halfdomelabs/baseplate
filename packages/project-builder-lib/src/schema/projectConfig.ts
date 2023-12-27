@@ -62,13 +62,6 @@ export const getProjectConfigReferences: GetReferencesFunction<
   ProjectConfig
 > = (config) => {
   const builder = new ReferencesBuilder<ProjectConfig>(config);
-  config.features?.forEach((feature) => {
-    builder.addReferenceable({
-      category: 'feature',
-      id: feature.id,
-      name: feature.name,
-    });
-  });
 
   config.apps?.forEach((app, idx) => {
     if (app.type === 'web') {

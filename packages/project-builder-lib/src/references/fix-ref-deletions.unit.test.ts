@@ -55,6 +55,37 @@ describe('fixRefDeletions', () => {
     });
   });
 
+  it('should work with a multiple CASCADE references', () => {
+    const entityType = createEntityType('entity');
+    const schema = z.object({
+      entity: z.array(
+        zEnt(z.object({ name: z.string() }), {
+          type: entityType,
+        }),
+      ),
+      refs: z.array(
+        zRefBuilder(z.string()).addReference({
+          type: entityType,
+          onDelete: 'DELETE',
+        }),
+      ),
+    });
+    const data: z.TypeOf<typeof schema> = {
+      entity: [{ id: 'test-id2', name: 'test-name' }],
+      refs: ['test-id', 'test-id2', 'test-id', 'test-id2'],
+    };
+
+    const refPayload = fixRefDeletions(schema, data);
+
+    expect(refPayload).toMatchObject({
+      type: 'success',
+      value: {
+        entity: [{ id: 'test-id2', name: 'test-name' }],
+        refs: ['test-id2', 'test-id2'],
+      },
+    });
+  });
+
   it('should work with a simple SET NULL reference', () => {
     const entityType = createEntityType('entity');
     const schema = z.object({
