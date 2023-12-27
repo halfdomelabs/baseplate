@@ -1,12 +1,14 @@
 import { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
 import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
 import { useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 import {
   UseDeleteReferenceDialogRequestOptions,
   useDeleteReferenceDialogState,
 } from '@src/hooks/useDeleteReferenceDialog';
 import { useProjectConfig } from '@src/hooks/useProjectConfig';
+import { getEntityTypeUrl } from '@src/services/entity-type';
 
 export function RefIssueDialog(): JSX.Element {
   const { dialogOptions, setDialogOptions } = useDeleteReferenceDialogState();
@@ -66,13 +68,27 @@ export function RefIssueDialog(): JSX.Element {
               const pathInParent = referenceParent
                 ? issuePath.substring(referenceParent.path.join('.').length + 1)
                 : issuePath;
+              const referenceParentUrl = referenceParent
+                ? getEntityTypeUrl(referenceParent)
+                : undefined;
               return (
                 <Table.Row key={issuePath}>
                   <Table.Cell>
                     {referenceParent ? (
-                      <div>
+                      <div className="linkable">
                         <div>
-                          <strong>{referenceParent.name}</strong>
+                          {referenceParentUrl ? (
+                            <Link
+                              to={referenceParentUrl}
+                              onClick={() => {
+                                setDialogOptions(undefined);
+                              }}
+                            >
+                              <strong>{referenceParent.name}</strong>
+                            </Link>
+                          ) : (
+                            <strong>{referenceParent.name}</strong>
+                          )}
                         </div>
                         <div className="text-muted-foreground">
                           {referenceParent.type.name}

@@ -1,3 +1,4 @@
+import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { useParams } from 'react-router-dom';
 
 import { ModelGeneralForm } from './ModelGeneralForm';
@@ -8,9 +9,12 @@ import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
+import { registerEntityTypeUrl } from '@src/services/entity-type';
 import { Alert } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
+
+registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
 
 function ModelEditModelPage(): JSX.Element {
   const { status, setError } = useStatus();

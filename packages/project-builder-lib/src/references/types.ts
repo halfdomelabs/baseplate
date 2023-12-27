@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { randomUid } from '@src/index.js';
 
 export type ReferencePath = (string | number)[];
 
@@ -13,8 +13,12 @@ export class DefinitionEntityType<
     public readonly parentType?: TParent,
   ) {}
 
-  generateNewId(): string {
-    return `${this.prefix ?? this.name}:${nanoid(12)}`;
+  generateNewId(uid?: string): string {
+    return `${this.prefix ?? this.name}:${uid ?? randomUid()}`;
+  }
+
+  getUidFromId(id: string): string {
+    return id.split(':')[1];
   }
 }
 

@@ -1,3 +1,4 @@
+import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   InputField,
@@ -75,7 +76,7 @@ export function ModelsSidebarList({
           {sortedModels.map((model) => (
             <li key={model.uid} className="group">
               <NavLink
-                to={`/models/edit/${model.uid}`}
+                to={`/models/edit/${modelEntityType.getUidFromId(model.id)}`}
                 className={({ isActive }) =>
                   clsx(
                     'block w-full p-2 text-sm group-hover:bg-background-100 dark:group-hover:bg-background-700',

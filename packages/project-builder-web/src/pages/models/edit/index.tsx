@@ -1,4 +1,7 @@
-import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
+import {
+  FeatureUtils,
+  modelEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { Tabs } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
@@ -20,7 +23,9 @@ function ModelEditPage(): JSX.Element {
 
   const isNew = !id;
 
-  const model = parsedProject.getModels().find((m) => m.uid === id);
+  const model = parsedProject
+    .getModels()
+    .find((m) => m.id === modelEntityType.generateNewId(id));
 
   const [showNameModal, setShowNameModal] = useState(false);
 
