@@ -7,6 +7,7 @@ import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldType,
+  modelTransformerEntityType,
 } from '@src/schema/models/index.js';
 import { ReferencesBuilder } from '@src/schema/references.js';
 import { notEmpty } from '@src/utils/array.js';
@@ -113,7 +114,11 @@ export type AdminCrudEnumInputConfig = z.infer<typeof adminCrudEnumInputSchema>;
 export const adminCrudFileInputSchema = z.object({
   type: z.literal('file'),
   label: z.string().min(1),
-  modelRelation: z.string().min(1),
+  modelRelation: zRef(z.string(), {
+    type: modelTransformerEntityType,
+    onDelete: 'RESTRICT',
+    parentPath: { context: 'model' },
+  }),
 });
 
 export type AdminCrudFileInputConfig = z.infer<typeof adminCrudFileInputSchema>;
@@ -254,17 +259,12 @@ export function buildAdminCrudSectionReferences(
   config.form.fields.forEach((field, idx) => {
     const fieldBuilder = builder.withPrefix(`form.fields.${idx}`);
     switch (field.type) {
+      case 'file':
       case 'text':
         break;
       case 'foreign':
         break;
       case 'enum':
-        break;
-      case 'file':
-        fieldBuilder.addReference('modelRelation', {
-          category: 'modelTransformer',
-          key: `${config.modelName}#${field.modelRelation}`,
-        });
         break;
       case 'embedded':
         fieldBuilder.addReference('embeddedFormName', {

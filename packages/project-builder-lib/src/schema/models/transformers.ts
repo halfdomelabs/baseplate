@@ -5,9 +5,8 @@ import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldType,
+  modelTransformerEntityType,
 } from './types.js';
-import type { ProjectConfig } from '../projectConfig.js';
-import { ReferencesBuilder } from '../references.js';
 import { zRef, zRefBuilder } from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
@@ -28,7 +27,7 @@ export type PasswordTransformerConfig = z.infer<
 
 export const embeddedRelationTransformerSchema = z.object({
   ...baseTransformerFields,
-  name: zRef(z.string(), {
+  foreignRelationRef: zRef(z.string(), {
     type: modelForeignRelationEntityType,
     onDelete: 'DELETE_PARENT',
     parentPath: { context: 'model' },
@@ -56,7 +55,7 @@ export type EmbeddedRelationTransformerConfig = z.infer<
 
 export const fileTransformerSchema = z.object({
   ...baseTransformerFields,
-  name: zRef(z.string(), {
+  fileRelationRef: zRef(z.string(), {
     type: modelLocalRelationEntityType,
     onDelete: 'DELETE_PARENT',
     parentPath: { context: 'model' },
@@ -73,22 +72,12 @@ export const transformerSchema = zRefBuilder(
     fileTransformerSchema,
   ]),
   (builder) => {
+    builder.addEntity({
+      type: modelTransformerEntityType,
+      parentPath: { context: 'model' },
+    });
     builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel');
   },
 );
 
 export type TransformerConfig = z.infer<typeof transformerSchema>;
-
-export function buildServiceTransformerReferences(
-  originalConfig: ProjectConfig,
-  modelName: string,
-  transformer: TransformerConfig,
-  builder: ReferencesBuilder<TransformerConfig>,
-): void {
-  builder.addReferenceable({
-    category: 'modelTransformer',
-    id: transformer.uid,
-    key: `${modelName}#${transformer.name}`,
-    name: transformer.name,
-  });
-}

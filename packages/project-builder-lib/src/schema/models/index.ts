@@ -1,14 +1,12 @@
 import { z } from 'zod';
 
-import {
-  buildServiceTransformerReferences,
-  transformerSchema,
-} from './transformers.js';
+import { transformerSchema } from './transformers.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldType,
+  modelTransformerEntityType,
 } from './types.js';
 import { featureEntityType } from '../features/index.js';
 import type { ProjectConfig } from '../projectConfig.js';
@@ -150,7 +148,15 @@ export const modelServiceSchema = z.object({
           }),
         )
         .optional(),
-      transformerNames: z.array(z.string().min(1)).optional(),
+      transformerNames: z
+        .array(
+          zRef(z.string(), {
+            type: modelTransformerEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
     })
     .optional(),
   update: z
@@ -164,7 +170,15 @@ export const modelServiceSchema = z.object({
           }),
         )
         .optional(),
-      transformerNames: z.array(z.string().min(1)).optional(),
+      transformerNames: z
+        .array(
+          zRef(z.string(), {
+            type: modelTransformerEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
     })
     .optional(),
   delete: z
@@ -262,32 +276,6 @@ function buildModelScalarFieldReferences(
   }
 }
 
-function buildModelServiceReferences(
-  config: ProjectConfig,
-  modelName: string,
-  service: ModelServiceConfig,
-  builder: ReferencesBuilder<ModelServiceConfig>,
-): void {
-  builder.addReferences('create.transformerNames.*', {
-    category: 'modelTransformer',
-    generateKey: (name) => `${modelName}#${name}`,
-  });
-
-  builder.addReferences('update.transformerNames.*', {
-    category: 'modelTransformer',
-    generateKey: (name) => `${modelName}#${name}`,
-  });
-
-  service.transformers?.forEach((transformer, idx) =>
-    buildServiceTransformerReferences(
-      config,
-      modelName,
-      transformer,
-      builder.withPrefix(`transformers.${idx}`),
-    ),
-  );
-}
-
 function buildModelSchemaReferences(
   modelName: string,
   schema: ModelSchemaConfig,
@@ -312,15 +300,6 @@ export function buildModelReferences(
       builder.withPrefix(`model.fields.${idx}`),
     ),
   );
-
-  if (model.service) {
-    buildModelServiceReferences(
-      config,
-      model.name,
-      model.service,
-      builder.withPrefix('service'),
-    );
-  }
 
   if (model.schema) {
     buildModelSchemaReferences(

@@ -57,27 +57,30 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   },
   {
     version: 3,
-    description: 'Add model to embedded transforms',
+    description: 'Add model to embedded transforms, file',
     migrate: (config: ProjectConfig) => {
       return produce((draftConfig: ProjectConfig) => {
         draftConfig.models.forEach((model) => {
           model.service?.transformers?.forEach((transformer) => {
-            const localRelationName = transformer.name;
-            const foreignModel = draftConfig.models?.find(
-              (m) =>
-                m.model.relations?.some(
-                  (relation) =>
-                    relation.modelName === model.name &&
-                    relation.foreignRelationName === localRelationName,
-                ),
-            );
             if (transformer.type === 'embeddedRelation') {
+              const localRelationName = transformer.name;
+              const foreignModel = draftConfig.models?.find(
+                (m) =>
+                  m.model.relations?.some(
+                    (relation) =>
+                      relation.modelName === model.name &&
+                      relation.foreignRelationName === localRelationName,
+                  ),
+              );
               if (!foreignModel) {
                 throw new Error(
                   `Could not find model associated with embedded relation ${model.name}/${localRelationName}`,
                 );
               }
+              transformer.foreignRelationRef = transformer.name;
               transformer.modelRef = foreignModel.name;
+            } else if (transformer.type === 'file') {
+              transformer.fileRelationRef = transformer.name;
             }
           });
         });

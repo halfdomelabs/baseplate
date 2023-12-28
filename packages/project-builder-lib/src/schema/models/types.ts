@@ -8,14 +8,15 @@ export const modelScalarFieldType = createEntityType('model-scalar-field', {
 
 export const modelLocalRelationEntityType = createEntityType(
   'model-local-relation',
-  {
-    parentType: modelEntityType,
-  },
+  { parentType: modelEntityType },
 );
 
 export const modelForeignRelationEntityType = createEntityType(
   'model-foreign-relation',
-  {
-    parentType: modelEntityType,
-  },
+  { parentType: modelEntityType },
+);
+
+export const modelTransformerEntityType = createEntityType(
+  'model-transformer',
+  { parentType: modelEntityType },
 );

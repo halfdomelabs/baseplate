@@ -21,7 +21,9 @@ export const StoragePlugin: ParserPlugin = {
               return undefined;
             }
             // look up relation
-            const relation = m.model.relations?.find((r) => r.id === t.name);
+            const relation = m.model.relations?.find(
+              (r) => r.id === t.fileRelationRef,
+            );
             // shouldn't happen as checked elsewhere
             if (!relation) throw new Error(`Relation not found for ${t.name}`);
             return relation.foreignId;
