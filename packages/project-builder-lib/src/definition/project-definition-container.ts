@@ -23,6 +23,16 @@ export class ProjectDefinitionContainer {
     this.entities = config.entities;
   }
 
+  nameFromId(id: string): string {
+    const name = this.entities.find((e) => e.id === id)?.name;
+
+    if (!name) {
+      throw new Error(`Could not find name for id ${id}`);
+    }
+
+    return name;
+  }
+
   fixRefDeletions(
     setter: (draftConfig: ProjectConfig) => void,
   ): FixRefDeletionResult<typeof projectConfigSchema> {

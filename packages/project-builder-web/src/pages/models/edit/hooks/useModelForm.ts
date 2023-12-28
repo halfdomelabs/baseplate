@@ -64,7 +64,9 @@ export function useModelForm({
   const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
   const toast = useToast();
   const navigate = useNavigate();
-  const model = parsedProject.getModels().find((m) => m.uid === id);
+  const model = id
+    ? parsedProject.getModelById(modelEntityType.generateNewId(id))
+    : undefined;
 
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);

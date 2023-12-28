@@ -1,4 +1,4 @@
-import { modelEntityType } from '@halfdomelabs/project-builder-lib';
+import { ModelUtils, modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { useParams } from 'react-router-dom';
 
 import { ModelGeneralForm } from './ModelGeneralForm';
@@ -21,15 +21,14 @@ function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, fixControlledReferences, defaultValues } =
     useModelForm({
       setError,
-      controlledReferences: ['modelPrimaryKey'],
     });
   const { control, handleSubmit, watch } = form;
 
-  const { parsedProject } = useProjectConfig();
+  const { config } = useProjectConfig();
 
   const { id } = useParams<'id'>();
   const originalModel = id
-    ? parsedProject.getModels().find((m) => m.uid === id)
+    ? ModelUtils.byId(config, modelEntityType.generateNewId(id))
     : undefined;
 
   return (

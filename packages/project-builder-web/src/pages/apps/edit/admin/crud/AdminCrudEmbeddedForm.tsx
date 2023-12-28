@@ -32,6 +32,7 @@ export function AdminCrudEmbeddedTable({
   edit,
   remove,
 }: EmbeddedListTableProps<AdminCrudEmbeddedFormConfig>): JSX.Element {
+  const { definitionContainer } = useProjectConfig();
   return (
     <Table className="max-w-6xl">
       <Table.Head>
@@ -46,7 +47,9 @@ export function AdminCrudEmbeddedTable({
         {items.map((item, idx) => (
           <Table.Row key={item.id}>
             <Table.Cell>{item.name}</Table.Cell>
-            <Table.Cell>{item.modelName}</Table.Cell>
+            <Table.Cell>
+              {definitionContainer.nameFromId(item.modelName)}
+            </Table.Cell>
             <Table.Cell>{item.type}</Table.Cell>
             <Table.Cell className="space-x-4">
               <LinkButton onClick={() => edit(idx)}>Edit</LinkButton>

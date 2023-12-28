@@ -34,13 +34,13 @@ function ModelRelationReferencesForm({
   }
   const localFieldOptions = localFields.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
-  const foreignFields = parsedProject.getModelByName(foreignModelName);
+  const foreignFields = parsedProject.getModelById(foreignModelName);
   const foreignFieldOptions = foreignFields.model.fields.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   return (

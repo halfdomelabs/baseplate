@@ -45,7 +45,7 @@ function ModelRelationForm({
 }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(!field.name);
 
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject, definitionContainer } = useProjectConfig();
   const watchedField = useWatch({ name: `model.relations.${idx}`, control });
 
   const toast = useToast();
@@ -93,7 +93,8 @@ function ModelRelationForm({
         <div className="flex flex-row items-center space-x-4">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
           <div>
-            <strong>{watchedField.name}</strong> ({watchedField.modelName})
+            <strong>{watchedField.name}</strong> (
+            {definitionContainer.nameFromId(watchedField.modelName)})
             {attrString && `: ${attrString}`}
           </div>
           <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>

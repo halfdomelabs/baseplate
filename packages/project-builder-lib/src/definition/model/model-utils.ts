@@ -1,4 +1,16 @@
-import { ModelConfig, ModelScalarFieldConfig } from '@src/schema/index.js';
+import {
+  ModelConfig,
+  ModelScalarFieldConfig,
+  ProjectConfig,
+} from '@src/schema/index.js';
+
+function byId(projectConfig: ProjectConfig, id: string): ModelConfig {
+  const model = projectConfig.models.find((m) => m.id === id);
+  if (!model) {
+    throw new Error(`Could not find model with ID ${id}`);
+  }
+  return model;
+}
 
 function getScalarFieldById(
   model: ModelConfig,
@@ -13,5 +25,6 @@ function getScalarFieldById(
 }
 
 export const ModelUtils = {
+  byId,
   getScalarFieldById,
 };
