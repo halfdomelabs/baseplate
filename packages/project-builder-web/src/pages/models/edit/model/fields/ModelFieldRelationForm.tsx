@@ -62,13 +62,13 @@ export function ModelFieldRelationForm({
   const defaultForeignModel =
     defaultRelationName &&
     foreignModelOptions.find((m) =>
-      m.value.toLowerCase().includes(defaultRelationName.toLowerCase()),
+      m.label.toLowerCase().includes(defaultRelationName.toLowerCase()),
     )?.value;
   const defaultForeignField =
     defaultForeignModel &&
     parsedProject
-      .getModelByName(defaultForeignModel)
-      .model.fields.find((f) => f.isId)?.name;
+      .getModelById(defaultForeignModel)
+      .model.fields.find((f) => f.isId)?.id;
 
   const { handleSubmit, control, watch, setValue } =
     useForm<ModelFieldRelationFormValues>({
@@ -93,13 +93,13 @@ export function ModelFieldRelationForm({
 
   const foreignFields = parsedProject
     .getModels()
-    .find((m) => m.name === foreignModelName);
+    .find((m) => m.id === foreignModelName);
   const foreignFieldOptions =
     foreignFields?.model.fields
       .filter((f) => f.type === localScalarField.type)
       .map((f) => ({
         label: f.name,
-        value: f.name,
+        value: f.id,
       })) ?? [];
 
   const formId = useId();
@@ -129,8 +129,8 @@ export function ModelFieldRelationForm({
               return;
             }
             const newForeignField = parsedProject
-              .getModelByName(newValue)
-              .model.fields.find((f) => f.isId)?.name;
+              .getModelById(newValue)
+              .model.fields.find((f) => f.isId)?.id;
             setValue('foreignFieldName', newForeignField ?? '');
           }}
         />

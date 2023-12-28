@@ -242,6 +242,33 @@ export class ParsedProjectConfig {
             },
             service: deepMergeRightUniq(existingModel.service, model.service),
           });
+
+          // re-resolve references
+          existingModel.model.relations?.forEach((relation) => {
+            relation.references = relation.references.map((reference) => {
+              const foreignModel = this.getModelById(relation.modelName);
+              const foreignField =
+                foreignModel.model.fields.find(
+                  (f) => f.name === reference.foreign,
+                )?.id ?? reference.foreign;
+              const localField =
+                existingModel.model.fields.find(
+                  (f) => f.name === reference.local,
+                )?.id ?? reference.local;
+              return {
+                ...reference,
+                foreign: foreignField,
+                local: localField,
+              };
+            });
+          });
+
+          existingModel.model.primaryKeys =
+            existingModel.model.primaryKeys?.map(
+              (key) =>
+                existingModel.model.fields.find((f) => f.name === key)?.id ??
+                key,
+            );
         },
       }),
     );

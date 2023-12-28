@@ -18,10 +18,9 @@ registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
 
 function ModelEditModelPage(): JSX.Element {
   const { status, setError } = useStatus();
-  const { form, onFormSubmit, fixControlledReferences, defaultValues } =
-    useModelForm({
-      setError,
-    });
+  const { form, onFormSubmit, defaultValues } = useModelForm({
+    setError,
+  });
   const { control, handleSubmit, watch } = form;
 
   const { config } = useProjectConfig();
@@ -40,11 +39,7 @@ function ModelEditModelPage(): JSX.Element {
         <Alert.WithStatus status={status} />
         {!id && <ModelGeneralForm control={control} horizontal />}
         {!id && <h2>Fields</h2>}
-        <ModelFieldsForm
-          control={control}
-          fixReferences={fixControlledReferences}
-          originalModel={originalModel}
-        />
+        <ModelFieldsForm control={control} />
         <ModelRelationsForm control={control} originalModel={originalModel} />
         <ModelPrimaryKeyForm control={control} />
         <ModelUniqueConstraintsField control={control} />

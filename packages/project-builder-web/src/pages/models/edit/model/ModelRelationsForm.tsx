@@ -1,6 +1,8 @@
 import {
   ModelConfig,
   ModelRelationFieldConfig,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
   randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { clsx } from 'clsx';
@@ -60,6 +62,8 @@ export function ModelRelationsForm({
       <LinkButton
         onClick={() =>
           appendRelation({
+            id: modelLocalRelationEntityType.generateNewId(),
+            foreignId: modelForeignRelationEntityType.generateNewId(),
             uid: randomUid(),
             name: '',
             references: [{ local: '', foreign: '' }],

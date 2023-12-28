@@ -20,8 +20,6 @@ import { SortableList } from 'src/components/SortableList';
 interface ModelFieldsFormProps {
   className?: string;
   control: Control<ModelConfig>;
-  fixReferences: () => void;
-  originalModel?: ModelConfig;
 }
 
 interface AutoAddField {
@@ -51,8 +49,6 @@ export function TableHeader({
 export function ModelFieldsForm({
   className,
   control,
-  fixReferences,
-  originalModel,
 }: ModelFieldsFormProps): JSX.Element {
   const {
     fields: fieldFields,
@@ -137,8 +133,6 @@ export function ModelFieldsForm({
         control={control}
         idx={i}
         onRemove={removeField}
-        fixReferences={fixReferences}
-        originalModel={originalModel}
       />
     ),
   }));

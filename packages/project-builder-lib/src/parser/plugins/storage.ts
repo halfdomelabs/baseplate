@@ -1,5 +1,5 @@
 import { ParserPlugin, PluginMergeModelFieldInput } from '../types.js';
-import { FeatureUtils } from '@src/index.js';
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 import { notEmpty } from '@src/utils/array.js';
 
 export const StoragePlugin: ParserPlugin = {
@@ -109,7 +109,7 @@ export const StoragePlugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: storage.fileModel,
+      name: ModelUtils.byId(projectConfig, storage.fileModel).name,
       feature: storage.featurePath,
       model: {
         fields: fileFields,

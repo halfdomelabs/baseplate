@@ -3,7 +3,7 @@ import {
   PluginMergeModelFieldInput,
   PluginMergeModelRelationInput,
 } from '../types.js';
-import { FeatureUtils } from '@src/index.js';
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 
 export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -44,7 +44,7 @@ export const Auth0Plugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: auth.userModel,
+      name: ModelUtils.byId(projectConfig, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userFields,
@@ -79,7 +79,7 @@ export const Auth0Plugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: auth.userRoleModel,
+      name: ModelUtils.byId(projectConfig, auth.userRoleModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userRoleFields,
