@@ -35,6 +35,10 @@ export interface DefinitionEntity {
    * Note: This will create a new ID every time the config is deserialized
    */
   stripIdWhenSerializing?: boolean;
+  /**
+   * Processes the data after serialization
+   */
+  processPostSerialize?: (entity: unknown) => unknown;
 }
 
 type ReferenceOnDeleteAction =

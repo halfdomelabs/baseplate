@@ -18,7 +18,11 @@ import {
   DefinitionReference,
   ReferencePath,
 } from './types.js';
-import { FieldPath, FieldValues } from '@src/types/path/eager.js';
+import {
+  FieldPath,
+  FieldPathValue,
+  FieldValues,
+} from '@src/types/path/eager.js';
 
 export const zRefId = z.string().min(1).optional();
 
@@ -44,40 +48,55 @@ type PathInputOrContext<Type> = PathInput<Type> | ContextValue;
 interface DefinitionEntityInputBase<
   TInput,
   TEntityType extends DefinitionEntityType,
+  TPath extends PathInput<TInput> | undefined = undefined,
   TIdKey = 'id',
 > {
   type: TEntityType;
-  path?: PathInput<TInput>;
+  path?: TPath;
   idPath?: TIdKey;
   namePath?: PathInput<TInput>;
   name?: string;
   addContext?: string;
   stripIdWhenSerializing?: boolean;
+  processPostSerialize?: (
+    input: TInput extends FieldValues
+      ? TPath extends PathInput<TInput>
+        ? FieldPathValue<TInput, TPath>
+        : TInput
+      : never,
+  ) => TInput extends FieldValues
+    ? TPath extends PathInput<TInput>
+      ? FieldPathValue<TInput, TPath>
+      : TInput
+    : never;
 }
 
 interface DefinitionEntityInputWithParent<
   TInput,
   TEntityType extends DefinitionEntityType,
+  TPath extends PathInput<TInput> | undefined = undefined,
   TIDKey extends string = 'id',
-> extends DefinitionEntityInputBase<TInput, TEntityType, TIDKey> {
+> extends DefinitionEntityInputBase<TInput, TEntityType, TPath, TIDKey> {
   parentPath: PathInputOrContext<TInput>;
 }
 
 interface DefinitionEntityInputWithoutParent<
   TInput,
   TEntityType extends DefinitionEntityType,
+  TPath extends PathInput<TInput> | undefined = undefined,
   TIDKey extends string = 'id',
-> extends DefinitionEntityInputBase<TInput, TEntityType, TIDKey> {
+> extends DefinitionEntityInputBase<TInput, TEntityType, TPath, TIDKey> {
   parentPath?: never;
 }
 
 type DefinitionEntityInput<
   TInput,
   TEntityType extends DefinitionEntityType,
+  TPath extends PathInput<TInput> | undefined = undefined,
   TIDKey extends string = 'id',
 > = TEntityType['parentType'] extends undefined
-  ? DefinitionEntityInputWithoutParent<TInput, TEntityType, TIDKey>
-  : DefinitionEntityInputWithParent<TInput, TEntityType, TIDKey>;
+  ? DefinitionEntityInputWithoutParent<TInput, TEntityType, TPath, TIDKey>
+  : DefinitionEntityInputWithParent<TInput, TEntityType, TPath, TIDKey>;
 
 /**
  * Definition Reference Input
@@ -236,8 +255,9 @@ class ZodRefBuilder<TInput> {
 
   addEntity<
     TEntityType extends DefinitionEntityType,
+    TPath extends PathInput<TInput> | undefined = undefined,
     TIDKey extends string | PathInput<TInput> = 'id',
-  >(entity: DefinitionEntityInput<TInput, TEntityType, TIDKey>): void {
+  >(entity: DefinitionEntityInput<TInput, TEntityType, TPath, TIDKey>): void {
     const path = this._constructPath(entity.path);
 
     // attempt to fetch id from entity input
@@ -252,7 +272,10 @@ class ZodRefBuilder<TInput> {
       entity.name ??
       (_.get(
         this.data,
-        entity.namePath ?? [...(entity.path ?? []), 'name'],
+        entity.namePath ?? [
+          ...((entity.path as PathInput<TInput>) ?? []),
+          'name',
+        ],
       ) as string);
 
     if (!name) {
@@ -273,6 +296,9 @@ class ZodRefBuilder<TInput> {
           entity.type.parentType,
         ),
       stripIdWhenSerializing: entity.stripIdWhenSerializing,
+      processPostSerialize: entity.processPostSerialize as (
+        entity: unknown,
+      ) => unknown,
     });
 
     if (entity.addContext) {
@@ -414,13 +440,14 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
 
   addEntity<
     TEntityType extends DefinitionEntityType,
+    TPath extends PathInput<input<T>> | undefined = undefined,
     TIDKey extends string = 'id',
   >(
     entity:
-      | DefinitionEntityInput<input<T>, TEntityType, TIDKey>
+      | DefinitionEntityInput<input<T>, TEntityType, TPath, TIDKey>
       | ((
           data: input<T>,
-        ) => DefinitionEntityInput<input<T>, TEntityType, TIDKey>),
+        ) => DefinitionEntityInput<input<T>, TEntityType, TPath, TIDKey>),
   ): ZodRef<T> {
     return ZodRef.create(this, (builder, data) => {
       builder.addEntity(typeof entity === 'function' ? entity(data) : entity);
@@ -466,13 +493,14 @@ export function zRef<
 export function zEnt<
   TObject extends z.SomeZodObject,
   TEntityType extends DefinitionEntityType,
+  TPath extends PathInput<input<TObject>>,
 >(
   schema: TObject,
   entity:
-    | DefinitionEntityInput<z.input<TObject>, TEntityType, 'id'>
+    | DefinitionEntityInput<z.input<TObject>, TEntityType, TPath, 'id'>
     | ((
         data: z.input<TObject>,
-      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, 'id'>),
+      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, TPath, 'id'>),
 ): ZodRef<
   z.ZodObject<
     TObject['shape'] & {

@@ -84,6 +84,21 @@ export const transformerSchema = zRefBuilder(
     builder.addEntity({
       type: modelTransformerEntityType,
       parentPath: { context: 'model' },
+      processPostSerialize(input) {
+        let newName = input.name;
+        switch (input.type) {
+          case 'embeddedRelation':
+            newName = input.foreignRelationRef;
+            break;
+          case 'file':
+            newName = input.fileRelationRef;
+            break;
+        }
+        return {
+          ...input,
+          name: newName,
+        };
+      },
     });
     builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel');
   },

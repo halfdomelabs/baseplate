@@ -30,5 +30,12 @@ export function serializeSchema<TSchema extends z.ZodType>(
       }
       _.set(draftData, reference.path, entity.name);
     });
+
+    entities.forEach((entity) => {
+      if (entity.processPostSerialize) {
+        const entityValue = _.get(draftData as unknown, entity.path) as unknown;
+        _.set(draftData, entity.path, entity.processPostSerialize(entityValue));
+      }
+    });
   })(data) as unknown;
 }
