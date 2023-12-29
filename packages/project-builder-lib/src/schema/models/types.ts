@@ -20,3 +20,5 @@ export const modelTransformerEntityType = createEntityType(
   'model-transformer',
   { parentType: modelEntityType },
 );
+
+export const modelEnumEntityType = createEntityType('model-enum');

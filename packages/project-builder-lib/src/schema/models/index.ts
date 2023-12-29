@@ -3,14 +3,13 @@ import { z } from 'zod';
 import { transformerSchema } from './transformers.js';
 import {
   modelEntityType,
+  modelEnumEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldType,
   modelTransformerEntityType,
 } from './types.js';
 import { featureEntityType } from '../features/index.js';
-import type { ProjectConfig } from '../projectConfig.js';
-import { ReferencesBuilder } from '../references.js';
 import { VALIDATORS } from '../utils/validation.js';
 import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
 import { authRoleEntityType } from '@src/schema/auth/types.js';
@@ -38,7 +37,10 @@ export const modelScalarFieldSchema = zEnt(
         updatedAt: z.boolean().optional(),
         defaultToNow: z.boolean().optional(),
         // enum options
-        enumType: z.string().optional(),
+        enumType: zRef(z.string().optional(), {
+          type: modelEnumEntityType,
+          onDelete: 'RESTRICT',
+        }),
       })
       .optional(),
   }),
@@ -275,29 +277,3 @@ export const modelSchema = zEnt(
 );
 
 export type ModelConfig = z.infer<typeof modelSchema>;
-
-function buildModelScalarFieldReferences(
-  modelName: string,
-  field: ModelScalarFieldConfig,
-  builder: ReferencesBuilder<ModelScalarFieldConfig>,
-): void {
-  if (field.type === 'enum') {
-    builder.addReference('options.enumType', {
-      category: 'enum',
-    });
-  }
-}
-
-export function buildModelReferences(
-  config: ProjectConfig,
-  model: ModelConfig,
-  builder: ReferencesBuilder<ModelConfig>,
-): void {
-  model.model.fields.forEach((field, idx) =>
-    buildModelScalarFieldReferences(
-      model.name,
-      field,
-      builder.withPrefix(`model.fields.${idx}`),
-    ),
-  );
-}

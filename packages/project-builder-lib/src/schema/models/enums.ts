@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
+import { modelEnumEntityType } from './types.js';
 import { featureEntityType } from '../features/index.js';
-import { ReferencesBuilder } from '../references.js';
-import { zRef } from '@src/references/index.js';
+import { zEnt, zRef } from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
 export const enumValueSchema = z.object({
@@ -13,26 +13,20 @@ export const enumValueSchema = z.object({
 
 export type EnumValueConfig = z.infer<typeof enumSchema>;
 
-export const enumSchema = z.object({
-  uid: z.string().default(randomUid),
-  name: z.string().min(1),
-  feature: zRef(z.string().min(1), {
-    type: featureEntityType,
-    onDelete: 'RESTRICT',
+export const enumSchema = zEnt(
+  z.object({
+    uid: z.string().default(randomUid),
+    name: z.string().min(1),
+    feature: zRef(z.string().min(1), {
+      type: featureEntityType,
+      onDelete: 'RESTRICT',
+    }),
+    values: z.array(enumValueSchema),
+    isExposed: z.boolean(),
   }),
-  values: z.array(enumValueSchema),
-  isExposed: z.boolean(),
-});
+  {
+    type: modelEnumEntityType,
+  },
+);
 
 export type EnumConfig = z.infer<typeof enumSchema>;
-
-export function buildEnumReferences(
-  enumConfig: EnumConfig,
-  builder: ReferencesBuilder<EnumConfig>,
-): void {
-  builder.addReferenceable({
-    category: 'enum',
-    id: enumConfig.uid,
-    name: enumConfig.name,
-  });
-}

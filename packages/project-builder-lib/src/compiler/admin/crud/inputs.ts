@@ -26,7 +26,7 @@ function compileAdminEnumInput(
   }
   const enumBlock = builder.parsedProject
     .getEnums()
-    .find((e) => e.name === fieldConfig.options?.enumType);
+    .find((e) => e.id === fieldConfig.options?.enumType);
   if (!enumBlock) {
     throw new Error(
       `Could not find enum type ${fieldConfig.options?.enumType ?? ''}`,

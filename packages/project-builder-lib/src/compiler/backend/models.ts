@@ -8,7 +8,10 @@ import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 import { ModelFieldUtils } from '@src/definition/model/model-field-utils.js';
 import { BackendAppConfig } from '@src/index.js';
 
-function buildScalarField(field: ModelScalarFieldConfig): unknown {
+function buildScalarField(
+  builder: BackendAppEntryBuilder,
+  field: ModelScalarFieldConfig,
+): unknown {
   const { options = {} } = field;
   return {
     name: field.name,
@@ -22,7 +25,7 @@ function buildScalarField(field: ModelScalarFieldConfig): unknown {
     },
     optional: field.isOptional,
     unique: field.isUnique,
-    enumType: options.enumType,
+    enumType: options.enumType && builder.nameFromId(options.enumType),
   };
 }
 
@@ -95,7 +98,9 @@ function buildModel(
     name: model.name,
     generator: '@halfdomelabs/fastify/prisma/prisma-model',
     children: {
-      fields: model.model.fields?.map(buildScalarField),
+      fields: model.model.fields?.map((field) =>
+        buildScalarField(appBuilder, field),
+      ),
       relations: model.model.relations?.map((r) =>
         buildRelationField(appBuilder, r, model),
       ),

@@ -10,8 +10,8 @@ import { webAppSchema } from './apps/index.js';
 import { authSchema } from './auth/index.js';
 import { featuresSchema } from './features/index.js';
 import { themeSchema } from './features/theme.js';
-import { buildEnumReferences, enumSchema } from './models/enums.js';
-import { buildModelReferences, modelSchema } from './models/index.js';
+import { enumSchema } from './models/enums.js';
+import { modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { buildStorageReferences, storageSchema } from './storage/index.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
@@ -71,14 +71,6 @@ export const getProjectConfigReferences: GetReferencesFunction<
   if (config.storage) {
     buildStorageReferences(config.storage, builder.withPrefix('storage'));
   }
-
-  config.models?.forEach((model, idx) => {
-    buildModelReferences(config, model, builder.withPrefix(`models.${idx}`));
-  });
-
-  config.enums?.forEach((enumConfig, idx) => {
-    buildEnumReferences(enumConfig, builder.withPrefix(`enums.${idx}`));
-  });
 
   return builder.build();
 };

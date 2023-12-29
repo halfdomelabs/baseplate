@@ -12,7 +12,6 @@ import { notEmpty } from '@src/utils/array.js';
 export const REFERENCEABLE_CATEGORIES = [
   'storageAdapter',
   'storageCategory',
-  'enum',
   'adminCrudEmbeddedForm',
   'test',
   'test-foreign-relation',
