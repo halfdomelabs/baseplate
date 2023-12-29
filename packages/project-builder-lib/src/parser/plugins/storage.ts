@@ -139,10 +139,15 @@ export const StoragePlugin: ParserPlugin = {
         generator: '@halfdomelabs/fastify/storage/storage-module',
         fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${fileModelName}ObjectType.$objectType`,
         fileModel: fileModelName,
-        s3Adapters: storage.s3Adapters,
+        s3Adapters: storage.s3Adapters.map((a) => ({
+          name: a.name,
+          bucketConfigVar: a.bucketConfigVar,
+          hostedUrlConfigVar: a.hostedUrlConfigVar,
+        })),
         categories: storage.categories.map((c) => ({
           ...c,
           usedByRelation: definitionContainer.nameFromId(c.usedByRelation),
+          defaultAdapter: definitionContainer.nameFromId(c.defaultAdapter),
         })),
       },
     });

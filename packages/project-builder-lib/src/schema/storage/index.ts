@@ -6,8 +6,15 @@ import {
   modelForeignRelationEntityType,
 } from '../models/index.js';
 import { ReferencesBuilder } from '../references.js';
-import { zRef, zRefBuilder } from '@src/references/index.js';
+import {
+  createEntityType,
+  zEnt,
+  zRef,
+  zRefBuilder,
+} from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
+
+export const storageAdapterEntityType = createEntityType('storage-adapter');
 
 export const storageSchema = zRefBuilder(
   z.object({
@@ -20,18 +27,24 @@ export const storageSchema = zRefBuilder(
       onDelete: 'RESTRICT',
     }),
     s3Adapters: z.array(
-      z.object({
-        uid: z.string().default(randomUid),
-        name: z.string().min(1),
-        bucketConfigVar: z.string().min(1),
-        hostedUrlConfigVar: z.string().optional(),
-      }),
+      zEnt(
+        z.object({
+          uid: z.string().default(randomUid),
+          name: z.string().min(1),
+          bucketConfigVar: z.string().min(1),
+          hostedUrlConfigVar: z.string().optional(),
+        }),
+        { type: storageAdapterEntityType },
+      ),
     ),
     categories: z.array(
       z.object({
         uid: z.string().default(randomUid),
         name: z.string().min(1),
-        defaultAdapter: z.string().min(1),
+        defaultAdapter: zRef(z.string(), {
+          type: storageAdapterEntityType,
+          onDelete: 'RESTRICT',
+        }),
         maxFileSize: z.preprocess(
           (a) => a && parseInt(a as string, 10),
           z.number().positive().optional(),
@@ -56,25 +69,11 @@ export function buildStorageReferences(
   config: StorageConfig,
   builder: ReferencesBuilder<StorageConfig>,
 ): void {
-  config.s3Adapters?.forEach((adapter) => {
-    builder.addReferenceable({
-      category: 'storageAdapter',
-      id: adapter.uid,
-      name: adapter.name,
-    });
-  });
-
-  config.categories?.forEach((category, idx) => {
+  config.categories?.forEach((category) => {
     builder.addReferenceable({
       category: 'storageCategory',
       id: category.uid,
       name: category.name,
-    });
-
-    const categoryBuilder = builder.withPrefix(`categories.${idx}`);
-
-    categoryBuilder.addReference('defaultAdapter', {
-      category: 'storageAdapter',
     });
   });
 }

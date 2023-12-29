@@ -26,7 +26,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
 
   const adapterOptions = (adapters ?? []).map((adapter) => ({
     label: adapter.name,
-    value: adapter.name,
+    value: adapter.id,
   }));
 
   const foreignKeyOptions = parsedProject
@@ -45,7 +45,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
   const roleOptions =
     parsedProject.projectConfig.auth?.roles.map((role) => ({
       label: role.name,
-      value: role.name,
+      value: role.id,
     })) ?? [];
 
   return (

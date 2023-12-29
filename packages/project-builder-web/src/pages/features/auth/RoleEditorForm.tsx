@@ -2,6 +2,7 @@ import {
   AuthConfig,
   AUTH_DEFAULT_ROLES,
   randomUid,
+  authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useEffect } from 'react';
@@ -26,7 +27,7 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
   const roleOptions =
     roles?.map((role) => ({
       label: role.name,
-      value: role.name,
+      value: role.id,
     })) ?? [];
 
   useEffect(() => {
@@ -76,7 +77,14 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
       ))}
 
       <Button
-        onClick={() => append({ uid: randomUid(), name: '', comment: '' })}
+        onClick={() =>
+          append({
+            id: authRoleEntityType.generateNewId(),
+            uid: randomUid(),
+            name: '',
+            comment: '',
+          })
+        }
       >
         Add Role
       </Button>
