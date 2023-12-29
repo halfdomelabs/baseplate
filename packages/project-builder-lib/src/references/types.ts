@@ -31,6 +31,8 @@ export interface DefinitionEntity {
   parentPath?: ReferencePath;
   /**
    * Strips the ID when deserializing
+   *
+   * Note: This will create a new ID every time the config is deserialized
    */
   stripIdWhenSerializing?: boolean;
 }

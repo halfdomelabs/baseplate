@@ -105,12 +105,14 @@ export const modelRelationFieldSchema = zRefBuilder(
     builder.addEntity({
       type: modelLocalRelationEntityType,
       parentPath: { context: 'model' },
+      stripIdWhenSerializing: true,
     });
     builder.addEntity({
       type: modelForeignRelationEntityType,
       idPath: 'foreignId',
       namePath: 'foreignRelationName',
       parentPath: 'modelName',
+      stripIdWhenSerializing: true,
     });
   },
 );

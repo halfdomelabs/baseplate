@@ -1,3 +1,4 @@
+import { produce } from 'immer';
 import _ from 'lodash';
 import { TypeOf, z } from 'zod';
 
@@ -33,91 +34,97 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
   schema: TSchema,
   value: TypeOf<TSchema>,
 ): FixRefDeletionResult<TSchema> {
-  const processValue = _.cloneDeep(value);
   const issues: FixRefDeletionError[] = [];
-  // find all references that do not have a corresponding entity
-  let iterations;
-  for (iterations = 0; iterations < 100; iterations++) {
-    const { references, entities } =
-      ZodRefWrapper.create(schema).parse(processValue);
-    const entitiesById = _.keyBy(entities, (e) => e.id);
-    const referencesMissingEntity = references.filter((r) => {
-      const id = _.get(processValue, r.path) as string;
-      return id !== DELETED_SENTINEL_ID && !entitiesById[id];
-    });
-    if (referencesMissingEntity.length === 0) {
-      break;
-    }
 
-    const objectsToDeleteInArray: {
-      path: ReferencePath;
-      idx: number;
-    }[] = [];
-
-    // attempt to fix reference
-    referencesMissingEntity.forEach((ref) => {
-      const id = _.get(processValue, ref.path) as string;
-
-      function tryDeleteParent(path: ReferencePath): boolean {
-        if (path.length === 0) {
-          return false;
-        }
-        const parentPath = path.slice(0, -1);
-        const parent = _.get(processValue, parentPath) as unknown;
-        if (!Array.isArray(parent)) {
-          return false;
-        }
-        objectsToDeleteInArray.push({
-          path: parentPath,
-          idx: path[path.length - 1] as number,
-        });
-        return true;
-      }
-
-      switch (ref.onDelete) {
-        case 'SET_NULL':
-          _.set(processValue, ref.path, null);
-          break;
-        case 'RESTRICT':
-          issues.push({ ref, entityId: id });
-          _.set(processValue, ref.path, DELETED_SENTINEL_ID);
-          break;
-        case 'DELETE':
-          if (!tryDeleteParent(ref.path)) {
-            throw new Error(`Unable to find ref to cascade delete to`);
-          }
-          break;
-        case 'DELETE_PARENT':
-          if (!tryDeleteParent(ref.path.slice(0, -1))) {
-            throw new Error(`Unable to find ref to cascade delete to`);
-          }
-          break;
-        default:
-          throw new Error(`Unknown onDelete action ${ref.onDelete as string}`);
-      }
-    });
-
-    const objectsToDeleteByPath = _.groupBy(objectsToDeleteInArray, (o) =>
-      o.path.join('.'),
-    );
-
-    // delete objects in reverse order to avoid index shifting
-    Object.entries(objectsToDeleteByPath).forEach(([, objects]) => {
-      const sortedObjects = _.sortBy(objects, (o) => -o.idx);
-      sortedObjects.forEach((o) => {
-        const parent = _.get(processValue, o.path) as unknown;
-        if (!Array.isArray(parent)) {
-          throw new Error(
-            `Expected parent to be an array at path ${o.path.join('.')}`,
-          );
-        }
-        parent.splice(o.idx, 1);
+  const produceFunc = produce((draftData: TypeOf<TSchema>) => {
+    // find all references that do not have a corresponding entity
+    let iterations;
+    for (iterations = 0; iterations < 100; iterations++) {
+      const { references, entities } =
+        ZodRefWrapper.create(schema).parse(draftData);
+      const entitiesById = _.keyBy(entities, (e) => e.id);
+      const referencesMissingEntity = references.filter((r) => {
+        const id = _.get(draftData, r.path) as string;
+        return id !== DELETED_SENTINEL_ID && !entitiesById[id];
       });
-    });
-  }
-  if (iterations === 100) {
-    throw new Error(`Exceeded max iterations fixing deletions`);
-  }
+      if (referencesMissingEntity.length === 0) {
+        break;
+      }
+
+      const objectsToDeleteInArray: {
+        path: ReferencePath;
+        idx: number;
+      }[] = [];
+
+      // attempt to fix reference
+      referencesMissingEntity.forEach((ref) => {
+        const id = _.get(draftData, ref.path) as string;
+
+        function tryDeleteParent(path: ReferencePath): boolean {
+          if (path.length === 0) {
+            return false;
+          }
+          const parentPath = path.slice(0, -1);
+          const parent = _.get(draftData, parentPath) as unknown;
+          if (!Array.isArray(parent)) {
+            return false;
+          }
+          objectsToDeleteInArray.push({
+            path: parentPath,
+            idx: path[path.length - 1] as number,
+          });
+          return true;
+        }
+
+        switch (ref.onDelete) {
+          case 'SET_NULL':
+            _.set(draftData, ref.path, null);
+            break;
+          case 'RESTRICT':
+            issues.push({ ref, entityId: id });
+            _.set(draftData, ref.path, DELETED_SENTINEL_ID);
+            break;
+          case 'DELETE':
+            if (!tryDeleteParent(ref.path)) {
+              throw new Error(`Unable to find ref to cascade delete to`);
+            }
+            break;
+          case 'DELETE_PARENT':
+            if (!tryDeleteParent(ref.path.slice(0, -1))) {
+              throw new Error(`Unable to find ref to cascade delete to`);
+            }
+            break;
+          default:
+            throw new Error(
+              `Unknown onDelete action ${ref.onDelete as string}`,
+            );
+        }
+      });
+
+      const objectsToDeleteByPath = _.groupBy(objectsToDeleteInArray, (o) =>
+        o.path.join('.'),
+      );
+
+      // delete objects in reverse order to avoid index shifting
+      Object.entries(objectsToDeleteByPath).forEach(([, objects]) => {
+        const sortedObjects = _.sortBy(objects, (o) => -o.idx);
+        sortedObjects.forEach((o) => {
+          const parent = _.get(draftData, o.path) as unknown;
+          if (!Array.isArray(parent)) {
+            throw new Error(
+              `Expected parent to be an array at path ${o.path.join('.')}`,
+            );
+          }
+          parent.splice(o.idx, 1);
+        });
+      });
+    }
+    if (iterations === 100) {
+      throw new Error(`Exceeded max iterations fixing deletions`);
+    }
+  });
+
+  const processedData = produceFunc(value) as unknown;
 
   if (issues.length) {
     return {
@@ -127,7 +134,7 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
   } else {
     return {
       type: 'success',
-      value: processValue,
+      value: processedData,
     };
   }
 }

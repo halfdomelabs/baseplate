@@ -52,6 +52,7 @@ interface DefinitionEntityInputBase<
   namePath?: PathInput<TInput>;
   name?: string;
   addContext?: string;
+  stripIdWhenSerializing?: boolean;
 }
 
 interface DefinitionEntityInputWithParent<
@@ -271,6 +272,7 @@ class ZodRefBuilder<TInput> {
           entity.parentPath,
           entity.type.parentType,
         ),
+      stripIdWhenSerializing: entity.stripIdWhenSerializing,
     });
 
     if (entity.addContext) {
@@ -381,23 +383,16 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
       if (output.status === 'aborted') return output;
 
       // replace IDs in parse output
-      const outputData = builder.entities.length
-        ? ((): unknown => {
-            const copiedInputData = _.clone(output.value) as object;
-            builder.entities.forEach((entity) => {
-              _.set(
-                copiedInputData,
-                entity.idPath.slice(input.path.length),
-                entity.id,
-              );
-            });
-            return copiedInputData;
-          })()
-        : output.value;
-      return {
-        ...output,
-        value: outputData,
-      };
+      if (builder.entities.length) {
+        builder.entities.forEach((entity) => {
+          _.set(
+            output.value as object,
+            entity.idPath.slice(input.path.length),
+            entity.id,
+          );
+        });
+      }
+      return output;
     }
 
     if (isPromise(parseOutput)) {
