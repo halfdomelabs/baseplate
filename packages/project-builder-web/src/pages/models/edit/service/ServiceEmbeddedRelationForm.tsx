@@ -1,8 +1,13 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  EmbeddedRelationTransformerConfig,
+  ModelConfig,
+  ModelUtils,
+} from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 
+import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
 import { LinkButton, SelectInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { usePrevious } from 'src/hooks/usePrevious';
@@ -13,7 +18,6 @@ interface Props {
   formProps: UseFormReturn<ModelConfig>;
   idx: number;
   onRemove: () => void;
-  originalModel: ModelConfig;
 }
 
 function ServiceEmbeddedRelationForm({
@@ -21,95 +25,68 @@ function ServiceEmbeddedRelationForm({
   formProps,
   idx,
   onRemove,
-  originalModel,
 }: Props): JSX.Element {
   const { control, setValue } = formProps;
 
-  const { parsedProject } = useProjectConfig();
+  const { config } = useProjectConfig();
 
-  const transformers = useWatch({
-    control,
-    name: 'service.transformers',
+  const availableRelations = useEditedModelConfig((model) => {
+    const relationsToModel = ModelUtils.getRelationsToModel(config, model.id);
+    const otherEmbeddedRelations = model.service?.transformers?.filter(
+      (t, transformerIdx): t is EmbeddedRelationTransformerConfig =>
+        t.type === 'embeddedRelation' && idx !== transformerIdx,
+    );
+    return relationsToModel.filter(({ relation }) => {
+      return !otherEmbeddedRelations?.some(
+        (o) => o.foreignRelationRef === relation.foreignId,
+      );
+    });
   });
-  const embeddedRelationTransformers = transformers?.filter(
-    (t) => t.type === 'embeddedRelation',
-  );
 
-  const selectedTransformer = transformers?.[idx];
-  const embeddedRelation =
-    selectedTransformer?.type === 'embeddedRelation'
-      ? selectedTransformer
-      : null;
-
-  const relations = useMemo(
-    () =>
-      parsedProject.getModels().flatMap(
-        (model) =>
-          model.model.relations
-            ?.filter((relation) => relation.modelName === originalModel.name)
-            .filter(
-              (relation) =>
-                embeddedRelation?.name === relation.foreignRelationName ||
-                !embeddedRelationTransformers?.some(
-                  (t) => t.name === relation.foreignRelationName,
-                ),
-            )
-            .map((relation) => ({
-              model,
-              relation,
-            })) ?? [],
-      ),
-    [
-      parsedProject,
-      originalModel,
-      embeddedRelation,
-      embeddedRelationTransformers,
-    ],
-  );
-
-  const relationOptions = relations.map((relation) => ({
+  const relationOptions = availableRelations.map((relation) => ({
     label: `${relation.relation.foreignRelationName} (${relation.model.name})`,
-    value: relation.relation.foreignRelationName,
+    value: relation.relation.foreignId,
   }));
 
-  const selectedRelation = relations.find(
-    (relation) =>
-      relation.relation.foreignRelationName === embeddedRelation?.name,
-  );
-
-  const selectedLocalRelationName = useWatch({
+  const transformer = useWatch({
     control,
-    name: `service.transformers.${idx}.name`,
+    name: `service.transformers.${idx}`,
   });
 
-  const previousLocalRelationName = usePrevious(selectedLocalRelationName);
+  const embeddedTransformer =
+    transformer?.type === 'embeddedRelation' ? transformer : null;
+  const relation = availableRelations.find(
+    (r) => r.relation.foreignId === embeddedTransformer?.foreignRelationRef,
+  );
+
+  const previousForeignModelId = usePrevious(
+    embeddedTransformer?.foreignRelationRef,
+  );
   useEffect(() => {
     if (
-      previousLocalRelationName !== undefined &&
-      previousLocalRelationName !== selectedLocalRelationName
+      previousForeignModelId !== undefined &&
+      previousForeignModelId !== embeddedTransformer?.foreignRelationRef
     ) {
       setValue(`service.transformers.${idx}.embeddedFieldNames`, []);
-      if (selectedRelation?.model.id) {
-        setValue(
-          `service.transformers.${idx}.modelRef`,
-          selectedRelation?.model.id,
-        );
+      if (relation?.model.id) {
+        setValue(`service.transformers.${idx}.modelRef`, relation?.model.id);
       }
     }
   }, [
-    previousLocalRelationName,
-    selectedLocalRelationName,
     idx,
     setValue,
-    selectedRelation?.model.id,
+    relation,
+    embeddedTransformer?.foreignRelationRef,
+    previousForeignModelId,
+    availableRelations,
   ]);
 
   const foreignFieldOptions =
-    selectedRelation?.model.model.fields
+    relation?.model.model.fields
       .filter(
         (field) =>
-          !selectedRelation.relation.references.some(
-            (reference) => reference.local === field.name,
+          !relation.relation.references.some(
+            (reference) => reference.local === field.id,
           ),
       )
       .map((field) => ({
@@ -118,9 +95,9 @@ function ServiceEmbeddedRelationForm({
       })) ?? [];
 
   const foreignTransformerOptions =
-    selectedRelation?.model.service?.transformers?.map((transformer) => ({
+    relation?.model.service?.transformers?.map((transformer) => ({
       label: transformer.name,
-      value: transformer.name,
+      value: transformer.id,
     })) ?? [];
 
   return (
@@ -128,7 +105,7 @@ function ServiceEmbeddedRelationForm({
       <SelectInput.LabelledController
         className="w-full"
         control={control}
-        name={`service.transformers.${idx}.name`}
+        name={`service.transformers.${idx}.foreignRelationRef`}
         options={relationOptions}
         label="Relation"
       />

@@ -2,6 +2,7 @@ import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
 import ModelFormActionBar from '../ModelFormActionBar';
+import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
@@ -10,7 +11,9 @@ import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditServicePage(): JSX.Element {
   const { status, setError } = useStatus();
-  const { form, onFormSubmit, originalModel } = useModelForm({ setError });
+  const { form, onFormSubmit, originalModel, defaultValues } = useModelForm({
+    setError,
+  });
   const { control, handleSubmit, watch } = form;
 
   const shouldBuild = watch('service.build');
@@ -32,19 +35,19 @@ function ModelEditServicePage(): JSX.Element {
   const localFields = watch(`model.fields`);
   const localFieldOptions = localFields.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   const transformers = watch(`service.transformers`);
   const transformerOptions = transformers?.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   // TODO: Need to unset transformer options when reset
 
   return (
-    <>
+    <EditedModelContextProvider initialModel={defaultValues} watch={watch}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Alert.WithStatus status={status} />
         <CheckedInput.LabelledController
@@ -97,7 +100,7 @@ function ModelEditServicePage(): JSX.Element {
         )}
       </form>
       <ModelFormActionBar form={form} />
-    </>
+    </EditedModelContextProvider>
   );
 }
 

@@ -22,13 +22,13 @@ function ModelEditSchemaPage(): JSX.Element {
   const localFields = watch(`model.fields`);
   const localFieldOptions = localFields.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   const localRelations = watch(`model.relations`);
   const localRelationOptions = localRelations?.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   const foreignRelations = useMemo(
@@ -36,7 +36,7 @@ function ModelEditSchemaPage(): JSX.Element {
       parsedProject.getModels().flatMap(
         (model) =>
           model.model.relations
-            ?.filter((relation) => relation.modelName === originalModel?.name)
+            ?.filter((relation) => relation.modelName === originalModel?.id)
             .map((relation) => ({
               model,
               relation,
@@ -46,7 +46,7 @@ function ModelEditSchemaPage(): JSX.Element {
   );
   const foreignRelationOptions = foreignRelations?.map((f) => ({
     label: f.relation.foreignRelationName,
-    value: f.relation.foreignRelationName,
+    value: f.relation.foreignId,
   }));
 
   const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({

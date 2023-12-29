@@ -1,5 +1,6 @@
 import {
   ModelConfig,
+  ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ProjectConfig,
 } from '@src/schema/index.js';
@@ -24,7 +25,25 @@ function getScalarFieldById(
   return field;
 }
 
+function getRelationsToModel(
+  projectConfig: ProjectConfig,
+  modelId: string,
+): { model: ModelConfig; relation: ModelRelationFieldConfig }[] {
+  return projectConfig.models.flatMap((m) => {
+    return (
+      m.model.relations
+        ?.filter((r) => {
+          return r.modelName === modelId;
+        })
+        .map((r) => {
+          return { model: m, relation: r };
+        }) ?? []
+    );
+  });
+}
+
 export const ModelUtils = {
   byId,
   getScalarFieldById,
+  getRelationsToModel,
 };
