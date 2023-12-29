@@ -41,6 +41,14 @@ function getFeatureNameById(
   return getFeatureName(feature);
 }
 
+function getFeaturePathById(
+  projectConfig: ProjectConfig,
+  featureId: string,
+): string {
+  const feature = getFeatureByIdOrThrow(projectConfig, featureId);
+  return feature.name;
+}
+
 export const FeatureUtils = {
   getRootFeatures,
   getFeatureById,
@@ -48,4 +56,5 @@ export const FeatureUtils = {
   getFeatureChildren,
   getFeatureName,
   getFeatureNameById,
+  getFeaturePathById,
 };

@@ -1,4 +1,5 @@
 import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
+import { ModelFieldUtils } from '@src/definition/model/model-field-utils.js';
 import {
   AdminAppConfig,
   AdminCrudEmbeddedInputConfig,
@@ -9,19 +10,17 @@ import {
   AdminCrudInputConfig,
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
+  FileTransformerConfig,
   ModelScalarFieldConfig,
 } from '@src/schema/index.js';
-import { isModelRelationOptional } from '@src/schema-utils/model.js';
 
 function compileAdminEnumInput(
-  field: AdminCrudEnumInputConfig,
-  modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
+  field: AdminCrudEnumInputConfig,
+  modelId: string,
 ): unknown {
-  const model = builder.parsedProject.getModelByName(modelName);
-  const fieldConfig = model.model.fields.find(
-    (f) => f.name === field.modelField,
-  );
+  const model = builder.parsedProject.getModelById(modelId);
+  const fieldConfig = model.model.fields.find((f) => f.id === field.modelField);
   if (fieldConfig?.type !== 'enum') {
     throw new Error(`Admin enum input ${field.modelField} is not an enum`);
   }
@@ -33,10 +32,11 @@ function compileAdminEnumInput(
       `Could not find enum type ${fieldConfig.options?.enumType ?? ''}`,
     );
   }
+  const fieldName = builder.nameFromId(field.modelField);
   return {
-    name: field.modelField,
+    name: fieldName,
     generator: '@halfdomelabs/react/admin/admin-crud-enum-input',
-    modelField: field.modelField,
+    modelField: fieldName,
     label: field.label,
     isOptional: fieldConfig.isOptional,
     options: enumBlock.values.map((v) => ({
@@ -47,18 +47,18 @@ function compileAdminEnumInput(
 }
 
 function compileAdminForeignInput(
-  field: AdminCrudForeignInputConfig,
-  modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
+  field: AdminCrudForeignInputConfig,
+  modelId: string,
 ): unknown {
-  const model = builder.parsedProject.getModelByName(modelName);
+  const model = builder.parsedProject.getModelById(modelId);
   const relation = model.model.relations?.find(
-    (r) => r.name === field.localRelationName,
+    (r) => r.id === field.localRelationName,
   );
 
   if (!relation) {
     throw new Error(
-      `Could not find relation ${field.localRelationName} in model ${modelName}`,
+      `Could not find relation ${field.localRelationName} in model ${model.name}`,
     );
   }
 
@@ -66,16 +66,16 @@ function compileAdminForeignInput(
     throw new Error(`Only relations with a single reference are supported`);
   }
 
-  const localField = relation.references[0].local;
+  const localField = builder.nameFromId(relation.references[0].local);
 
   return {
-    name: field.localRelationName,
+    name: relation.name,
     generator: '@halfdomelabs/react/admin/admin-crud-foreign-input',
     label: field.label,
-    localRelationName: field.localRelationName,
-    isOptional: isModelRelationOptional(model, relation),
+    localRelationName: relation.name,
+    isOptional: ModelFieldUtils.isRelationOptional(model, relation),
     localField,
-    foreignModelName: relation.modelName,
+    foreignModelName: builder.nameFromId(relation.modelName),
     labelExpression: field.labelExpression,
     valueExpression: field.valueExpression,
     defaultLabel: field.defaultLabel,
@@ -97,29 +97,29 @@ function getInputType(fieldConfig: ModelScalarFieldConfig): string {
 }
 
 function compileAdminCrudTextInput(
-  field: AdminCrudTextInputConfig,
-  modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
+  field: AdminCrudTextInputConfig,
+  modelId: string,
 ): unknown {
-  const model = builder.parsedProject.getModelByName(modelName);
-  const fieldConfig = model.model.fields.find(
-    (f) => f.name === field.modelField,
-  );
+  const model = builder.parsedProject.getModelById(modelId);
+  const fieldConfig = model.model.fields.find((f) => f.id === field.modelField);
   if (!fieldConfig) {
     throw new Error(
-      `Field ${field.modelField} cannot be found in ${modelName}`,
+      `Field ${field.modelField} cannot be found in ${model.name}`,
     );
   }
+  const fieldName = builder.nameFromId(field.modelField);
   return {
-    name: field.modelField,
+    name: fieldName,
     generator: '@halfdomelabs/react/admin/admin-crud-text-input',
     label: field.label,
-    modelField: field.modelField,
+    modelField: fieldName,
     type: getInputType(fieldConfig),
     validation: !field.validation
-      ? builder.parsedProject.getModelFieldValidation(
-          modelName,
-          field.modelField,
+      ? ModelFieldUtils.getModelFieldValidation(
+          builder.projectConfig,
+          modelId,
+          fieldConfig.id,
           true,
         )
       : field.validation,
@@ -127,23 +127,27 @@ function compileAdminCrudTextInput(
 }
 
 function compileAdminCrudFileInput(
-  field: AdminCrudFileInputConfig,
-  modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
+  field: AdminCrudFileInputConfig,
+  modelId: string,
 ): unknown {
-  const model = builder.parsedProject.getModelByName(modelName);
+  const model = builder.parsedProject.getModelById(modelId);
+  const transformer = model.service?.transformers?.find(
+    (t): t is FileTransformerConfig =>
+      t.id === field.modelRelation && t.type === 'file',
+  );
   const relation = model.model.relations?.find(
-    (r) => r.name === field.modelRelation,
+    (r) => r.id === transformer?.fileRelationRef,
   );
 
   if (!relation) {
     throw new Error(
-      `Could not find relation ${field.modelRelation} in model ${modelName}`,
+      `Could not find relation ${field.modelRelation} in model ${model.name}`,
     );
   }
 
   const category = builder.parsedProject.projectConfig.storage?.categories.find(
-    (c) => c.usedByRelation === relation.foreignRelationName,
+    (c) => c.usedByRelation === relation.foreignId,
   );
 
   if (!category) {
@@ -151,56 +155,59 @@ function compileAdminCrudFileInput(
       `Could not find category for relation ${relation.foreignRelationName}`,
     );
   }
-  const isOptional = isModelRelationOptional(model, relation);
+  const isOptional = ModelFieldUtils.isRelationOptional(model, relation);
+  const relationName = builder.nameFromId(field.modelRelation);
 
   return {
-    name: field.modelRelation,
+    name: relationName,
     generator: '@halfdomelabs/react/admin/admin-crud-file-input',
     label: field.label,
     isOptional,
     category: category.name,
-    modelRelation: field.modelRelation,
+    modelRelation: relationName,
   };
 }
 
 function compileAdminCrudEmbeddedInput(
-  field: AdminCrudEmbeddedInputConfig,
-  modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
+  field: AdminCrudEmbeddedInputConfig,
   crudSectionId: string,
 ): unknown {
+  const relationName = builder.nameFromId(field.modelRelation);
   return {
-    name: field.modelRelation,
+    name: relationName,
     generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
     label: field.label,
-    modelRelation: field.modelRelation,
+    modelRelation: relationName,
     embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
   };
 }
 
 function compileAdminCrudEmbeddedLocalInput(
-  field: AdminCrudEmbeddedLocalInputConfig,
-  modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
+  field: AdminCrudEmbeddedLocalInputConfig,
+  modelId: string,
   crudSectionId: string,
 ): unknown {
-  const model = builder.parsedProject.getModelByName(modelName);
+  const model = builder.parsedProject.getModelById(modelId);
   const localRelation = model.model.relations?.find(
-    (r) => r.name === field.localRelation,
+    (r) => r.id === field.localRelation,
   );
 
   if (!localRelation) {
     throw new Error(
-      `Could not find relation ${field.localRelation} in model ${modelName}`,
+      `Could not find relation ${field.localRelation} in model ${model.name}`,
     );
   }
 
+  const localRelationName = builder.nameFromId(field.localRelation);
+
   return {
-    name: field.localRelation,
+    name: localRelationName,
     generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
     label: field.label,
-    modelRelation: field.localRelation,
-    isRequired: !isModelRelationOptional(model, localRelation),
+    modelRelation: localRelationName,
+    isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
     embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
   };
 }
@@ -217,33 +224,28 @@ function compileAdminCrudPasswordInput(
 
 export function compileAdminCrudInput(
   field: AdminCrudInputConfig,
-  modelName: string,
+  modelId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   crudSectionId: string,
 ): unknown {
   switch (field.type) {
     case 'foreign':
-      return compileAdminForeignInput(field, modelName, builder);
+      return compileAdminForeignInput(builder, field, modelId);
     case 'enum':
-      return compileAdminEnumInput(field, modelName, builder);
+      return compileAdminEnumInput(builder, field, modelId);
     case 'text':
-      return compileAdminCrudTextInput(field, modelName, builder);
+      return compileAdminCrudTextInput(builder, field, modelId);
     case 'file':
-      return compileAdminCrudFileInput(field, modelName, builder);
+      return compileAdminCrudFileInput(builder, field, modelId);
     case 'password':
       return compileAdminCrudPasswordInput(field);
     case 'embedded':
-      return compileAdminCrudEmbeddedInput(
-        field,
-        modelName,
-        builder,
-        crudSectionId,
-      );
+      return compileAdminCrudEmbeddedInput(builder, field, crudSectionId);
     case 'embeddedLocal':
       return compileAdminCrudEmbeddedLocalInput(
-        field,
-        modelName,
         builder,
+        field,
+        modelId,
         crudSectionId,
       );
     default:

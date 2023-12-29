@@ -127,7 +127,7 @@ export const Auth0Plugin: ParserPlugin = {
       },
       $auth0: {
         generator: '@halfdomelabs/fastify/auth0/auth0-module',
-        userModelName: auth.userModel,
+        userModelName: ModelUtils.byId(projectConfig, auth.userModel).name,
         includeManagement: true,
       },
     });

@@ -1,6 +1,7 @@
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
-import { ProjectConfig, WebAppConfig } from '@src/schema/index.js';
+import { ProjectDefinitionContainer } from '@src/index.js';
+import { WebAppConfig } from '@src/schema/index.js';
 import {
   getBackendApp,
   getBackendRelativePath,
@@ -55,7 +56,9 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
           ? {
               generator: '@halfdomelabs/react/storage/upload-components',
               peerProvider: true,
-              fileModelName: projectConfig.storage.fileModel,
+              fileModelName: builder.nameFromId(
+                projectConfig.storage.fileModel,
+              ),
             }
           : undefined,
       $datadogLogger: appConfig.enableDatadog
@@ -67,10 +70,12 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
 }
 
 export function compileWeb(
-  projectConfig: ProjectConfig,
+  definitionContainer: ProjectDefinitionContainer,
   app: WebAppConfig,
 ): AppEntry {
-  const appBuilder = new AppEntryBuilder(projectConfig, app);
+  const appBuilder = new AppEntryBuilder(definitionContainer, app);
+
+  const { projectConfig } = appBuilder;
 
   const packageName = projectConfig.packageScope
     ? `@${projectConfig.packageScope}/${app.name}`

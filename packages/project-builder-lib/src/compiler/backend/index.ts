@@ -1,9 +1,9 @@
 import { buildFastify } from './fastify.js';
 import { getPostgresSettings, getRedisSettings } from './utils.js';
-import { ProjectConfig, BackendAppConfig } from '../../schema/index.js';
+import { BackendAppConfig, ProjectConfig } from '../../schema/index.js';
 import { AppEntry } from '../../types/files.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
-import { ParsedProjectConfig } from '@src/parser/index.js';
+import { ProjectDefinitionContainer } from '@src/index.js';
 
 export function buildDocker(
   projectConfig: ProjectConfig,
@@ -20,12 +20,12 @@ export function buildDocker(
 }
 
 export function compileBackend(
-  projectConfig: ProjectConfig,
+  definitionContainer: ProjectDefinitionContainer,
   app: BackendAppConfig,
 ): AppEntry {
-  const appBuilder = new AppEntryBuilder(projectConfig, app);
+  const appBuilder = new AppEntryBuilder(definitionContainer, app);
 
-  const parsedProject = new ParsedProjectConfig(projectConfig);
+  const { projectConfig, parsedProject } = appBuilder;
 
   const packageName = projectConfig.packageScope
     ? `@${projectConfig.packageScope}/${app.name}`

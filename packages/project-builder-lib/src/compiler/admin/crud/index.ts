@@ -10,9 +10,8 @@ import {
 } from '@src/schema/index.js';
 
 function compileAdminCrudEmbeddedForm(
-  form: AdminCrudEmbeddedFormConfig,
-  modelName: string,
   builder: AppEntryBuilder<AdminAppConfig>,
+  form: AdminCrudEmbeddedFormConfig,
   crudSectionId: string,
 ): unknown {
   const idFields = builder.parsedProject.getModelPrimaryKeys(form.modelName);
@@ -23,7 +22,7 @@ function compileAdminCrudEmbeddedForm(
   }
   const sharedData = {
     name: form.name,
-    modelName: form.modelName,
+    modelName: builder.nameFromId(form.modelName),
     // auto-add id field if it's a single ID
     idField: form.includeIdField ? idFields[0] : undefined,
   };
@@ -39,9 +38,9 @@ function compileAdminCrudEmbeddedForm(
           label: c.label,
           children: {
             display: compileAdminCrudDisplay(
+              builder,
               c.display,
               form.modelName,
-              builder,
             ),
           },
         })),
@@ -78,7 +77,7 @@ export function compileAdminCrudSection(
     children: {
       $section: {
         generator: '@halfdomelabs/react/admin/admin-crud-section',
-        modelName: crudSection.modelName,
+        modelName: builder.nameFromId(crudSection.modelName),
         disableCreate: crudSection.disableCreate,
         children: {
           edit: {
@@ -92,12 +91,7 @@ export function compileAdminCrudSection(
                 ),
               ),
               embeddedForms: crudSection.embeddedForms?.map((form) =>
-                compileAdminCrudEmbeddedForm(
-                  form,
-                  crudSection.modelName,
-                  builder,
-                  crudSectionId,
-                ),
+                compileAdminCrudEmbeddedForm(builder, form, crudSectionId),
               ),
             },
           },
@@ -108,9 +102,9 @@ export function compileAdminCrudSection(
                 label: column.label,
                 children: {
                   display: compileAdminCrudDisplay(
+                    builder,
                     column.display,
                     crudSection.modelName,
-                    builder,
                   ),
                 },
               })),

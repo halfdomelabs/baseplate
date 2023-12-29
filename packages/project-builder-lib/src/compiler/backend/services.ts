@@ -1,5 +1,5 @@
-import { FeatureUtils } from '@src/definition/index.js';
-import { ParsedProjectConfig } from '@src/parser/index.js';
+import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import { ModelUtils } from '@src/definition/index.js';
 import { ParsedModel } from '@src/parser/types.js';
 import {
   EmbeddedRelationTransformerConfig,
@@ -8,61 +8,64 @@ import {
 } from '@src/schema/models/transformers.js';
 
 function buildEmbeddedRelationTransformer(
+  appBuilder: BackendAppEntryBuilder,
   transformer: EmbeddedRelationTransformerConfig,
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig,
 ): unknown {
   const { type, ...config } = transformer;
 
   // find foreign relation
-  const foreignModel = parsedProject
-    .getModels()
-    .find(
-      (m) =>
-        m.model.relations?.some(
-          (r) =>
-            r.foreignRelationName === transformer.name &&
-            r.modelName === model.name,
-        ),
-    );
+  const foreignRelation = ModelUtils.getRelationsToModel(
+    appBuilder.projectConfig,
+    model.id,
+  ).find(
+    ({ relation }) => relation.foreignId === transformer.foreignRelationRef,
+  );
 
-  if (!foreignModel) {
+  if (!foreignRelation) {
     throw new Error(
       `Could not find relation ${transformer.name} for embedded relation transformer`,
     );
   }
 
-  const foreignModelFeature = FeatureUtils.getFeatureByIdOrThrow(
-    parsedProject.projectConfig,
-    foreignModel.feature,
-  ).name;
+  const foreignModel = foreignRelation.model;
+
+  const foreignModelFeature = appBuilder.nameFromId(foreignModel.feature);
 
   return {
     generator: '@halfdomelabs/fastify/prisma/embedded-relation-transformer',
+    name: foreignRelation.relation.foreignRelationName,
+    embeddedFieldNames: config.embeddedFieldNames.map((e) =>
+      appBuilder.nameFromId(e),
+    ),
+    embeddedTransformerNames: config.embeddedTransformerNames?.map((t) =>
+      appBuilder.nameFromId(t),
+    ),
     foreignCrudServiceRef: !transformer.embeddedTransformerNames
       ? undefined
       : `${foreignModelFeature}/root:$services.${foreignModel.name}Service.$crud`,
-    ...config,
   };
 }
 
 function buildFileTransformer(
+  appBuilder: BackendAppEntryBuilder,
   transformer: FileTransformerConfig,
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig,
 ): unknown {
-  const { name } = transformer;
+  const { fileRelationRef } = transformer;
 
   const foreignRelation = model.model.relations?.find(
-    (relation) => relation.name === name,
+    (relation) => relation.id === fileRelationRef,
   );
 
   if (!foreignRelation) {
-    throw new Error(`Could not find relation ${name} for file transformer`);
+    throw new Error(
+      `Could not find relation ${fileRelationRef} for file transformer`,
+    );
   }
 
-  const category = parsedProject.projectConfig.storage?.categories.find(
-    (c) => c.usedByRelation === foreignRelation.foreignRelationName,
+  const category = appBuilder.projectConfig.storage?.categories.find(
+    (c) => c.usedByRelation === foreignRelation.foreignId,
   );
 
   if (!category) {
@@ -74,29 +77,25 @@ function buildFileTransformer(
   return {
     generator: '@halfdomelabs/fastify/storage/prisma-file-transformer',
     category: category.name,
-    name,
+    name: foreignRelation.name,
   };
 }
 
 function buildTransformer(
+  appBuilder: BackendAppEntryBuilder,
   transformer: TransformerConfig,
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig,
 ): unknown {
   switch (transformer.type) {
     case 'embeddedRelation':
-      return buildEmbeddedRelationTransformer(
-        transformer,
-        model,
-        parsedProject,
-      );
+      return buildEmbeddedRelationTransformer(appBuilder, transformer, model);
     case 'password':
       return {
         name: transformer.name,
         generator: '@halfdomelabs/fastify/auth/prisma-password-transformer',
       };
     case 'file':
-      return buildFileTransformer(transformer, model, parsedProject);
+      return buildFileTransformer(appBuilder, transformer, model);
     default:
       throw new Error(
         `Unknown transformer type: ${(transformer as { type: string }).type}`,
@@ -105,8 +104,8 @@ function buildTransformer(
 }
 
 function buildServiceForModel(
+  appBuilder: BackendAppEntryBuilder,
   model: ParsedModel,
-  parsedProject: ParsedProjectConfig,
 ): unknown {
   const { service } = model;
   if (!service) {
@@ -123,18 +122,26 @@ function buildServiceForModel(
         modelName: model.name,
         children: {
           transformers: service.transformers?.map((transfomer) =>
-            buildTransformer(transfomer, model, parsedProject),
+            buildTransformer(appBuilder, transfomer, model),
           ),
           create: service.create?.fields?.length
             ? {
-                prismaFields: service.create.fields,
-                transformerNames: service.create.transformerNames,
+                prismaFields: service.create.fields.map((f) =>
+                  appBuilder.nameFromId(f),
+                ),
+                transformerNames: service.create.transformerNames?.map((f) =>
+                  appBuilder.nameFromId(f),
+                ),
               }
             : null,
           update: service.update?.fields?.length
             ? {
-                prismaFields: service.update.fields,
-                transformerNames: service.update.transformerNames,
+                prismaFields: service.update.fields.map((f) =>
+                  appBuilder.nameFromId(f),
+                ),
+                transformerNames: service.update.transformerNames?.map((f) =>
+                  appBuilder.nameFromId(f),
+                ),
               }
             : null,
           delete: service.delete?.disabled ? null : undefined,
@@ -145,14 +152,12 @@ function buildServiceForModel(
 }
 
 export function buildServicesForFeature(
+  appBuilder: BackendAppEntryBuilder,
   featureId: string,
-  parsedProjectConfig: ParsedProjectConfig,
 ): unknown {
-  const models =
-    parsedProjectConfig
-      .getModels()
-      .filter((m) => m.feature === featureId && m.service?.build) ?? [];
-  return models.map((model) =>
-    buildServiceForModel(model, parsedProjectConfig),
-  );
+  const models = ModelUtils.getModelsForFeature(
+    appBuilder.projectConfig,
+    featureId,
+  ).filter((m) => m.service?.build);
+  return models.map((model) => buildServiceForModel(appBuilder, model));
 }

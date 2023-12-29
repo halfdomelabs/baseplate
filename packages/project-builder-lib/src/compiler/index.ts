@@ -1,34 +1,30 @@
+import _ from 'lodash';
+
 import { compileAdmin } from './admin/index.js';
 import { compileBackend } from './backend/index.js';
 import { compileWeb } from './web/index.js';
-import {
-  BaseAppConfig,
-  ProjectConfig,
-  projectConfigSchema,
-} from '../schema/index.js';
+import { BaseAppConfig, ProjectConfig } from '../schema/index.js';
 import { AppEntry } from '../types/files.js';
-import { deserializeSchemaWithReferences } from '@src/index.js';
+import { ProjectDefinitionContainer } from '@src/index.js';
 
 export function compileApplications(
   rawProjectConfig: ProjectConfig,
 ): AppEntry[] {
-  const { data: projectDefintiion } = deserializeSchemaWithReferences(
-    projectConfigSchema,
-    rawProjectConfig,
-  );
+  const definitionContainer =
+    ProjectDefinitionContainer.fromSerializedConfig(rawProjectConfig);
   // Compile backend app first since it's likely the dependency for the other apps
-  const appConfigs = [
-    ...projectDefintiion.apps.filter((app) => app.type === 'backend'),
-    ...projectDefintiion.apps.filter((app) => app.type !== 'backend'),
-  ];
+  const appConfigs = _.sortBy(definitionContainer.definition.apps, [
+    (a) => (a.type === 'backend' ? 0 : 1),
+    (a) => a.name,
+  ]);
   const apps: AppEntry[] = appConfigs.map((app) => {
     switch (app.type) {
       case 'backend':
-        return compileBackend(projectDefintiion, app);
+        return compileBackend(definitionContainer, app);
       case 'web':
-        return compileWeb(projectDefintiion, app);
+        return compileWeb(definitionContainer, app);
       case 'admin':
-        return compileAdmin(projectDefintiion, app);
+        return compileAdmin(definitionContainer, app);
       default:
         throw new Error(`Unknown app type: ${(app as BaseAppConfig).type}`);
     }

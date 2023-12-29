@@ -1,11 +1,15 @@
 import { paramCase } from 'change-case';
 
 import { ModelConfig } from '../../schema/models/index.js';
+import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 import { FeatureUtils } from '@src/definition/feature/feature-utils.js';
-import { ParsedProjectConfig } from '@src/parser/index.js';
+import { ModelUtils } from '@src/definition/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
 
-function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
+function buildQuerySchemaTypeForModel(
+  appBuilder: BackendAppEntryBuilder,
+  model: ModelConfig,
+): unknown[] {
   const { schema } = model ?? {};
   const {
     authorize,
@@ -28,7 +32,7 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
             ...exposedFields,
             ...exposedForeignRelations,
             ...exposedLocalRelations,
-          ],
+          ].map((id) => appBuilder.nameFromId(id)),
         },
       },
     },
@@ -56,11 +60,17 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
 }
 
 function buildMutationSchemaTypeForModel(
-  featurePath: string,
+  appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
+  featureId: string,
 ): unknown {
   const { schema: graphql } = model ?? {};
   const { authorize } = graphql ?? {};
+
+  const featurePath = FeatureUtils.getFeaturePathById(
+    appBuilder.projectConfig,
+    featureId,
+  );
 
   return {
     name: `${model.name}PothosMutations`,
@@ -105,29 +115,24 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
 }
 
 export function buildSchemaTypesForFeature(
+  appBuilder: BackendAppEntryBuilder,
   featureId: string,
-  parsedProject: ParsedProjectConfig,
 ): unknown {
-  const models =
-    parsedProject
-      .getModels()
-      .filter((m) => m.feature === featureId && m.schema) ?? [];
-  const enums = parsedProject
+  const models = ModelUtils.getModelsForFeature(
+    appBuilder.projectConfig,
+    featureId,
+  ).filter((m) => m.schema);
+  const enums = appBuilder.parsedProject
     .getEnums()
     .filter((e) => e.feature === featureId && e.isExposed);
-
-  const featurePath = FeatureUtils.getFeatureByIdOrThrow(
-    parsedProject.projectConfig,
-    featureId,
-  ).name;
 
   return [
     ...models.flatMap((model) => [
       ...(model.schema?.buildObjectType ?? model.schema?.buildQuery
-        ? buildQuerySchemaTypeForModel(model)
+        ? buildQuerySchemaTypeForModel(appBuilder, model)
         : []),
       model.schema?.buildMutations
-        ? buildMutationSchemaTypeForModel(featurePath, model)
+        ? buildMutationSchemaTypeForModel(appBuilder, model, featureId)
         : undefined,
     ]),
     ...buildEnumSchema(enums),

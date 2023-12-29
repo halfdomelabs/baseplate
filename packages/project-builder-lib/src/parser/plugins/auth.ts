@@ -131,7 +131,7 @@ export const AuthPlugin: ParserPlugin = {
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth-module',
-        userModelName: auth.userModel,
+        userModelName: ModelUtils.byId(projectConfig, auth.userModel).name,
         children: {
           roleService: {
             name: 'AuthRoleService',
@@ -144,7 +144,10 @@ export const AuthPlugin: ParserPlugin = {
                 children: {
                   $authRoles: {
                     generator: '@halfdomelabs/fastify/auth/auth-roles',
-                    userRoleModelName: auth.userRoleModel,
+                    userRoleModelName: ModelUtils.byId(
+                      projectConfig,
+                      auth.userRoleModel,
+                    ).name,
                   },
                 },
               },

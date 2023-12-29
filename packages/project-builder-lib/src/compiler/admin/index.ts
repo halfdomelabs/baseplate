@@ -1,11 +1,10 @@
 import { capitalize } from 'inflection';
 
 import { compileAdminFeatures } from './sections.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { AdminAppEntryBuilder, AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
-import { FeatureUtils } from '@src/index.js';
+import { FeatureUtils, ProjectDefinitionContainer } from '@src/index.js';
 import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
-import { ProjectConfig } from '@src/schema/index.js';
 import {
   getBackendApp,
   getBackendRelativePath,
@@ -30,7 +29,7 @@ export function buildNavigationLinks(
   );
 }
 
-export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
+export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
   const { projectConfig, appConfig } = builder;
 
   const backendApp = getBackendApp(projectConfig);
@@ -114,7 +113,7 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
         ? {
             generator: '@halfdomelabs/react/storage/upload-components',
             peerProvider: true,
-            fileModelName: projectConfig.storage.fileModel,
+            fileModelName: builder.nameFromId(projectConfig.storage.fileModel),
           }
         : undefined,
       ...compileAuthFeatures(builder),
@@ -123,10 +122,12 @@ export function buildAdmin(builder: AppEntryBuilder<AdminAppConfig>): unknown {
 }
 
 export function compileAdmin(
-  projectConfig: ProjectConfig,
+  definitionContainer: ProjectDefinitionContainer,
   app: AdminAppConfig,
 ): AppEntry {
-  const appBuilder = new AppEntryBuilder(projectConfig, app);
+  const appBuilder = new AppEntryBuilder(definitionContainer, app);
+
+  const { projectConfig } = appBuilder;
 
   const packageName = projectConfig.packageScope
     ? `@${projectConfig.packageScope}/${app.name}`

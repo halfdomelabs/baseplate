@@ -117,7 +117,7 @@ export function ProjectConfigGate({
       // validate config
       const definitionContainer =
         ProjectDefinitionContainer.fromSerializedConfig(migratedProjectConfig);
-      const project = new ParsedProjectConfig(definitionContainer.definition);
+      const project = new ParsedProjectConfig(definitionContainer);
       // only save config if project is initialized
       if (projectConfig.isInitialized) {
         savedConfigRef.current = {
@@ -190,7 +190,9 @@ export function ProjectConfigGate({
         validatedProjectConfig = result.value;
       }
 
-      const parsedConfig = new ParsedProjectConfig(validatedProjectConfig);
+      const parsedConfig = new ParsedProjectConfig(
+        ProjectDefinitionContainer.fromConfig(validatedProjectConfig),
+      );
       parsedConfig.projectConfig.cliVersion = cliVersion;
 
       const exportedProjectConfig = parsedConfig.exportToProjectConfig();

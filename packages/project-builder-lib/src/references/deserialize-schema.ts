@@ -13,6 +13,26 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   // resolve all references
   const { references, entities, data } = payload;
 
+  // check we don't have more entities than IDs
+  const entitiesById = _.groupBy(entities, (entity) => entity.id);
+  const duplicateEntityIds = Object.values(entitiesById).filter(
+    (e) => e.length > 1,
+  );
+  if (duplicateEntityIds.length) {
+    throw new Error(
+      `Found multiple duplicate entity IDs: ${duplicateEntityIds
+        .map(
+          (ents) =>
+            `${ents[0].id} (${ents.map((e) => e.path.join('.')).join(',')})`,
+        )
+        .join(', ')}`,
+    );
+  }
+  const uniqueEntityIds = _.uniq(entities.map((e) => e.id));
+  if (uniqueEntityIds.length !== entities.length) {
+    throw new Error(`Found duplicate entity IDs`);
+  }
+
   // collect reference entity types
   const entityTypes = _.uniq(entities.map((e) => e.type));
   const entityTypeNames = _.uniq(entityTypes.map((t) => t.name));

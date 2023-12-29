@@ -70,10 +70,10 @@ export const REFERENTIAL_ACTIONS = [
 
 export const modelRelationFieldSchema = zRefBuilder(
   z.object({
-    id: z.string().default(modelLocalRelationEntityType.generateNewId()),
+    id: z.string().default(() => modelLocalRelationEntityType.generateNewId()),
     foreignId: z
       .string()
-      .default(modelForeignRelationEntityType.generateNewId()),
+      .default(() => modelForeignRelationEntityType.generateNewId()),
     uid: z.string().default(randomUid),
     name: VALIDATORS.CAMEL_CASE_STRING,
     references: z.array(

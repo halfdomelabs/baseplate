@@ -323,6 +323,9 @@ importers:
       ramda:
         specifier: ^0.28.0
         version: 0.28.0
+      tiny-invariant:
+        specifier: 1.3.1
+        version: 1.3.1
       toposort:
         specifier: ^2.0.2
         version: 2.0.2

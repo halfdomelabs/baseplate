@@ -11,7 +11,7 @@ import { zRef, zRefBuilder } from '@src/references/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
 const baseTransformerFields = {
-  id: z.string().default(modelTransformerEntityType.generateNewId()),
+  id: z.string().default(() => modelTransformerEntityType.generateNewId()),
   uid: z.string().default(randomUid),
   name: z.string().min(1),
   type: z.string().min(1),
@@ -41,7 +41,15 @@ export const embeddedRelationTransformerSchema = z.object({
       parentPath: { context: 'embeddedModel' },
     }),
   ),
-  embeddedTransformerNames: z.array(z.string().min(1)).optional(),
+  embeddedTransformerNames: z
+    .array(
+      zRef(z.string(), {
+        type: modelTransformerEntityType,
+        onDelete: 'RESTRICT',
+        parentPath: { context: 'embeddedModel' },
+      }),
+    )
+    .optional(),
   modelRef: zRef(z.string(), {
     type: modelEntityType,
     onDelete: 'RESTRICT',

@@ -1,4 +1,5 @@
 import { ProjectConfig } from '../schema/index.js';
+import { ProjectDefinitionContainer } from '@src/index.js';
 import {
   ModelConfig,
   ModelRelationFieldConfig,
@@ -51,5 +52,9 @@ export interface PluginHooks {
 
 export interface ParserPlugin {
   name: string;
-  run(projectConfig: ProjectConfig, hooks: PluginHooks): void;
+  run(
+    projectConfig: ProjectConfig,
+    hooks: PluginHooks,
+    container: ProjectDefinitionContainer,
+  ): void;
 }

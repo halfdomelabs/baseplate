@@ -42,8 +42,16 @@ function getRelationsToModel(
   });
 }
 
+function getModelsForFeature(
+  projectConfig: ProjectConfig,
+  featureId: string,
+): ModelConfig[] {
+  return projectConfig.models.filter((m) => m.feature === featureId);
+}
+
 export const ModelUtils = {
   byId,
   getScalarFieldById,
   getRelationsToModel,
+  getModelsForFeature,
 };

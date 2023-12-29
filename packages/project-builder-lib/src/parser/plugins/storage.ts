@@ -4,7 +4,7 @@ import { notEmpty } from '@src/utils/array.js';
 
 export const StoragePlugin: ParserPlugin = {
   name: 'StoragePlugin',
-  run(projectConfig, hooks) {
+  run(projectConfig, hooks, definitionContainer) {
     const { storage, auth, models } = projectConfig;
     if (!storage) {
       return;
@@ -133,13 +133,17 @@ export const StoragePlugin: ParserPlugin = {
     ).name;
 
     // add feature providers
+    const fileModelName = definitionContainer.nameFromId(storage.fileModel);
     hooks.addFeatureChildren(storage.featurePath, {
       $storage: {
         generator: '@halfdomelabs/fastify/storage/storage-module',
-        fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${storage.fileModel}ObjectType.$objectType`,
-        fileModel: storage.fileModel,
+        fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${fileModelName}ObjectType.$objectType`,
+        fileModel: fileModelName,
         s3Adapters: storage.s3Adapters,
-        categories: storage.categories,
+        categories: storage.categories.map((c) => ({
+          ...c,
+          usedByRelation: definitionContainer.nameFromId(c.usedByRelation),
+        })),
       },
     });
 
