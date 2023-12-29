@@ -7,7 +7,7 @@ import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 
 export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
-  run(projectConfig, hooks) {
+  run(projectConfig, hooks, definitionContainer) {
     const { auth } = projectConfig;
     if (!auth || !auth.useAuth0) {
       return;
@@ -120,7 +120,13 @@ export const Auth0Plugin: ParserPlugin = {
         children: {
           $roles: {
             generator: '@halfdomelabs/fastify/auth/role-service',
-            roles: auth.roles,
+            roles: auth.roles.map((r) => ({
+              name: r.name,
+              comment: r.comment,
+              inherits: r.inherits?.map((inheritRole) =>
+                definitionContainer.nameFromId(inheritRole),
+              ),
+            })),
             peerProvider: true,
           },
         },

@@ -79,7 +79,7 @@ export function compileAuthPages(
         generator: '@halfdomelabs/react/auth/auth-pages',
         children: {
           login: {
-            allowedRoles,
+            allowedRoles: allowedRoles.map((r) => builder.nameFromId(r)),
           },
         },
       },

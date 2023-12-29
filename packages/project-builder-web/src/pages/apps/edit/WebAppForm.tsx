@@ -36,7 +36,7 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
 
   const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({
     label: role.name,
-    value: role.name,
+    value: role.id,
   }));
 
   return (

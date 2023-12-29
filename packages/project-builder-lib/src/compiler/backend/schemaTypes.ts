@@ -46,12 +46,16 @@ function buildQuerySchemaTypeForModel(
           children: {
             findQuery: {
               children: {
-                authorize: { roles: authorize?.read },
+                authorize: {
+                  roles: authorize?.read?.map((r) => appBuilder.nameFromId(r)),
+                },
               },
             },
             listQuery: {
               children: {
-                authorize: { roles: authorize?.read },
+                authorize: {
+                  roles: authorize?.read?.map((r) => appBuilder.nameFromId(r)),
+                },
               },
             },
           },
@@ -82,14 +86,26 @@ function buildMutationSchemaTypeForModel(
     children: {
       create: model.service?.create?.fields?.length
         ? {
-            children: { authorize: { roles: authorize?.create } },
+            children: {
+              authorize: {
+                roles: authorize?.create?.map((r) => appBuilder.nameFromId(r)),
+              },
+            },
           }
         : null,
       update: {
-        children: { authorize: { roles: authorize?.update } },
+        children: {
+          authorize: {
+            roles: authorize?.update?.map((r) => appBuilder.nameFromId(r)),
+          },
+        },
       },
       delete: {
-        children: { authorize: { roles: authorize?.delete } },
+        children: {
+          authorize: {
+            roles: authorize?.delete?.map((r) => appBuilder.nameFromId(r)),
+          },
+        },
       },
     },
   };

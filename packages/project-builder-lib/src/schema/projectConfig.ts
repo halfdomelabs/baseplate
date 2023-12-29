@@ -6,12 +6,8 @@ import {
   buildAdminAppReferences,
 } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
-import {
-  WebAppConfig,
-  buildWebAppReferences,
-  webAppSchema,
-} from './apps/index.js';
-import { authSchema, buildAuthReferences } from './auth/index.js';
+import { webAppSchema } from './apps/index.js';
+import { authSchema } from './auth/index.js';
 import { featuresSchema } from './features/index.js';
 import { themeSchema } from './features/theme.js';
 import { buildEnumReferences, enumSchema } from './models/enums.js';
@@ -64,12 +60,6 @@ export const getProjectConfigReferences: GetReferencesFunction<
   const builder = new ReferencesBuilder<ProjectConfig>(config);
 
   config.apps?.forEach((app, idx) => {
-    if (app.type === 'web') {
-      buildWebAppReferences(
-        app,
-        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<WebAppConfig>,
-      );
-    }
     if (app.type === 'admin') {
       buildAdminAppReferences(
         app,
@@ -77,10 +67,6 @@ export const getProjectConfigReferences: GetReferencesFunction<
       );
     }
   });
-
-  if (config.auth) {
-    buildAuthReferences(config.auth, builder.withPrefix('auth'));
-  }
 
   if (config.storage) {
     buildStorageReferences(config.storage, builder.withPrefix('storage'));

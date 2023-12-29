@@ -13,6 +13,7 @@ import type { ProjectConfig } from '../projectConfig.js';
 import { ReferencesBuilder } from '../references.js';
 import { VALIDATORS } from '../utils/validation.js';
 import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
+import { authRoleEntityType } from '@src/schema/auth/types.js';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
@@ -193,6 +194,15 @@ export const modelServiceSchema = z.object({
 
 export type ModelServiceConfig = z.infer<typeof modelServiceSchema>;
 
+const roleArray = z
+  .array(
+    zRef(z.string(), {
+      type: authRoleEntityType,
+      onDelete: 'DELETE',
+    }),
+  )
+  .optional();
+
 export const modelSchemaSchema = z.object({
   buildObjectType: z.boolean().optional(),
   exposedFields: z
@@ -226,10 +236,10 @@ export const modelSchemaSchema = z.object({
   buildMutations: z.boolean().optional(),
   authorize: z
     .object({
-      read: z.array(z.string().min(1)).optional(),
-      create: z.array(z.string().min(1)).optional(),
-      update: z.array(z.string().min(1)).optional(),
-      delete: z.array(z.string().min(1)).optional(),
+      read: roleArray,
+      create: roleArray,
+      update: roleArray,
+      delete: roleArray,
     })
     .optional(),
 });
@@ -278,18 +288,6 @@ function buildModelScalarFieldReferences(
   }
 }
 
-function buildModelSchemaReferences(
-  modelName: string,
-  schema: ModelSchemaConfig,
-  builder: ReferencesBuilder<ModelSchemaConfig>,
-): void {
-  builder
-    .addReferences('authorize.read.*', { category: 'role' })
-    .addReferences('authorize.create.*', { category: 'role' })
-    .addReferences('authorize.update.*', { category: 'role' })
-    .addReferences('authorize.delete.*', { category: 'role' });
-}
-
 export function buildModelReferences(
   config: ProjectConfig,
   model: ModelConfig,
@@ -302,12 +300,4 @@ export function buildModelReferences(
       builder.withPrefix(`model.fields.${idx}`),
     ),
   );
-
-  if (model.schema) {
-    buildModelSchemaReferences(
-      model.name,
-      model.schema,
-      builder.withPrefix('schema'),
-    );
-  }
 }

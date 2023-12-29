@@ -1,17 +1,29 @@
 import { z } from 'zod';
 
+import { authRoleEntityType } from './types.js';
 import { modelEntityType } from '../models/index.js';
-import { ReferencesBuilder } from '../references.js';
-import { zRef } from '@src/references/index.js';
+import { zEnt, zRef } from '@src/references/index.js';
 import { featureEntityType } from '@src/schema/features/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
-export const authRoleSchema = z.object({
-  uid: z.string().default(randomUid),
-  name: z.string().min(1),
-  comment: z.string().min(1),
-  inherits: z.array(z.string().min(1)).optional(),
-});
+export * from './types.js';
+
+export const authRoleSchema = zEnt(
+  z.object({
+    uid: z.string().default(randomUid),
+    name: z.string().min(1),
+    comment: z.string().min(1),
+    inherits: z
+      .array(
+        zRef(z.string(), {
+          type: authRoleEntityType,
+          onDelete: 'RESTRICT',
+        }),
+      )
+      .optional(),
+  }),
+  { type: authRoleEntityType },
+);
 
 export type AuthRoleConfig = z.infer<typeof authRoleSchema>;
 
@@ -62,16 +74,3 @@ export const authSchema = z.object({
 });
 
 export type AuthConfig = z.infer<typeof authSchema>;
-
-export function buildAuthReferences(
-  config: AuthConfig,
-  builder: ReferencesBuilder<AuthConfig>,
-): void {
-  config.roles.forEach((role) => {
-    builder.addReferenceable({
-      category: 'role',
-      id: role.uid,
-      name: role.name,
-    });
-  });
-}

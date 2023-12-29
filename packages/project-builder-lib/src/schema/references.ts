@@ -10,7 +10,6 @@ import {
 import { notEmpty } from '@src/utils/array.js';
 
 export const REFERENCEABLE_CATEGORIES = [
-  'role',
   'storageAdapter',
   'storageCategory',
   'enum',
