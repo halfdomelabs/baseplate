@@ -5,7 +5,6 @@ import {
   modelEntityType,
   modelForeignRelationEntityType,
 } from '../models/index.js';
-import { ReferencesBuilder } from '../references.js';
 import {
   createEntityType,
   zEnt,
@@ -64,16 +63,3 @@ export const storageSchema = zRefBuilder(
 );
 
 export type StorageConfig = z.infer<typeof storageSchema>;
-
-export function buildStorageReferences(
-  config: StorageConfig,
-  builder: ReferencesBuilder<StorageConfig>,
-): void {
-  config.categories?.forEach((category) => {
-    builder.addReferenceable({
-      category: 'storageCategory',
-      id: category.uid,
-      name: category.name,
-    });
-  });
-}

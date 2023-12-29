@@ -13,7 +13,7 @@ import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
-import { buildStorageReferences, storageSchema } from './storage/index.js';
+import { storageSchema } from './storage/index.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const appSchema = z.discriminatedUnion('type', [
@@ -67,10 +67,6 @@ export const getProjectConfigReferences: GetReferencesFunction<
       );
     }
   });
-
-  if (config.storage) {
-    buildStorageReferences(config.storage, builder.withPrefix('storage'));
-  }
 
   return builder.build();
 };
