@@ -87,16 +87,12 @@ export function useModelForm({
   const onFormSubmit = useCallback(
     (data: ModelConfig) => {
       try {
-        const newUid = data.uid || randomUid();
         setConfigAndFixReferences(
           (draftConfig) => {
             draftConfig.models = _.sortBy(
               [
-                ...(draftConfig.models?.filter((m) => m.uid !== id) ?? []),
-                {
-                  ...data,
-                  uid: newUid,
-                },
+                ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),
+                data,
               ],
               (m) => m.name,
             );
@@ -105,7 +101,7 @@ export function useModelForm({
         );
         toast.success('Successfully saved model!');
         if (!id || model?.name !== data.name) {
-          navigate(`../edit/${newUid}`);
+          navigate(`../edit/${modelEntityType.getUidFromId(data.id)}`);
         }
         if (onSubmitSuccess) {
           onSubmitSuccess();
