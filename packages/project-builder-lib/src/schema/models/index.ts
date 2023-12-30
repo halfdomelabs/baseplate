@@ -14,14 +14,12 @@ import { VALIDATORS } from '../utils/validation.js';
 import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
 import { authRoleEntityType } from '@src/schema/auth/types.js';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
-import { randomUid } from '@src/utils/randomUid.js';
 
 export * from './enums.js';
 export * from './types.js';
 
 export const modelScalarFieldSchema = zEnt(
   z.object({
-    uid: z.string().default(randomUid),
     name: z.string().min(1),
     type: z.enum(SCALAR_FIELD_TYPES),
     isId: z.boolean().optional(),
@@ -77,7 +75,6 @@ export const modelRelationFieldSchema = zRefBuilder(
     foreignId: z
       .string()
       .default(() => modelForeignRelationEntityType.generateNewId()),
-    uid: z.string().default(randomUid),
     name: VALIDATORS.CAMEL_CASE_STRING,
     references: z.array(
       z.object({
@@ -123,7 +120,6 @@ export const modelRelationFieldSchema = zRefBuilder(
 export type ModelRelationFieldConfig = z.infer<typeof modelRelationFieldSchema>;
 
 export const modelUniqueConstraintSchema = z.object({
-  uid: z.string().default(randomUid),
   name: z.string().min(1),
   fields: z.array(
     z.object({
@@ -250,7 +246,6 @@ export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
 
 export const modelSchema = zEnt(
   z.object({
-    uid: z.string().default(randomUid),
     name: VALIDATORS.PASCAL_CASE_STRING,
     feature: zRef(z.string().min(1), {
       type: featureEntityType,

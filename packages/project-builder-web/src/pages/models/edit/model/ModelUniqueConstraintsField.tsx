@@ -1,4 +1,4 @@
-import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray } from 'react-hook-form';
 
@@ -37,7 +37,6 @@ function ModelUniqueConstraintsField({
       <LinkButton
         onClick={() =>
           append({
-            uid: randomUid(),
             name: '',
             fields: [],
           })

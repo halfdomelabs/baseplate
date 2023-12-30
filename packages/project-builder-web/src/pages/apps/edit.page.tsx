@@ -1,4 +1,7 @@
-import { BaseAppConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  BaseAppConfig,
+  appEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AdminAppForm from './edit/AdminAppForm';
@@ -10,15 +13,17 @@ import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function EditAppPage(): JSX.Element {
-  const { id } = useParams<'id'>();
-  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
+  const { uid } = useParams<'uid'>();
+  const { parsedProject, setConfigAndFixReferences, config } =
+    useProjectConfig();
 
-  const app = id && parsedProject.getAppByUid(id);
+  const id = uid ? appEntityType.fromUid(uid) : undefined;
+  const app = id && config.apps.find((a) => a.id === id);
 
   const toast = useToast();
   const navigate = useNavigate();
 
-  if (!id || !app) {
+  if (!uid || !app) {
     return <NotFoundCard />;
   }
 
@@ -28,7 +33,7 @@ function EditAppPage(): JSX.Element {
     }
     try {
       setConfigAndFixReferences((draftConfig) => {
-        draftConfig.apps = draftConfig.apps.filter((a) => a.uid !== id);
+        draftConfig.apps = draftConfig.apps.filter((a) => a.id !== id);
       });
       toast.success(`Successfully deleted app!`);
       navigate('/apps/new');
@@ -54,11 +59,11 @@ function EditAppPage(): JSX.Element {
         {(() => {
           switch (app.type) {
             case 'backend':
-              return <BackendAppForm appConfig={app} key={app.uid} />;
+              return <BackendAppForm appConfig={app} key={app.id} />;
             case 'web':
-              return <WebAppForm appConfig={app} key={app.uid} />;
+              return <WebAppForm appConfig={app} key={app.id} />;
             case 'admin':
-              return <AdminAppForm appConfig={app} key={app.uid} />;
+              return <AdminAppForm appConfig={app} key={app.id} />;
             default:
               return (
                 <Alert type="error">

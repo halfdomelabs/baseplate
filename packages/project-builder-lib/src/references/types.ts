@@ -11,11 +11,20 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
       : undefined,
   ) {}
 
-  generateNewId(uid?: string): string {
-    return `${this.prefix ?? this.name}:${uid ?? randomUid()}`;
+  generateNewId(): string {
+    return `${this.prefix ?? this.name}:${randomUid()}`;
   }
 
-  getUidFromId(id: string): string {
+  fromUid(uid: string): string;
+  fromUid(uid: string | undefined): string | undefined;
+  fromUid(uid: string | undefined): string | undefined {
+    if (!uid) {
+      return undefined;
+    }
+    return `${this.prefix ?? this.name}:${uid}`;
+  }
+
+  toUid(id: string): string {
     return id.split(':')[1];
   }
 }

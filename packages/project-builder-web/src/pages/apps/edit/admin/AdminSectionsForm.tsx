@@ -1,4 +1,7 @@
-import { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  AdminAppConfig,
+  adminSectionEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
@@ -28,7 +31,10 @@ function AdminSectionsForm({ className, appConfig }: Props): JSX.Element {
             New Section
           </Sidebar.LinkItem>
           {sortedSections.map((section) => (
-            <Sidebar.LinkItem key={section.uid} to={`edit/${section.uid}`}>
+            <Sidebar.LinkItem
+              key={section.id}
+              to={`edit/${adminSectionEntityType.toUid(section.id)}`}
+            >
               {section.name}
             </Sidebar.LinkItem>
           ))}

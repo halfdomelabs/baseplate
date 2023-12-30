@@ -12,7 +12,7 @@ function AppsPages(): JSX.Element {
       <Route element={<AppsLayout />}>
         <Route index element={<AppsListPage />} />
         <Route path="new" element={<NewAppPage />} />
-        <Route path="edit/:id/*" element={<EditAppPage />} />
+        <Route path="edit/:uid/*" element={<EditAppPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

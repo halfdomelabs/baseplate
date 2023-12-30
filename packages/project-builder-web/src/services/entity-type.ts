@@ -10,7 +10,7 @@ export function getEntityTypeUrl(entity: DefinitionEntity): string | undefined {
   if (!typeUrl) return undefined;
   return typeUrl
     .replace('{id}', entity.id)
-    .replace('{uid}', entity.type.getUidFromId(entity.id));
+    .replace('{uid}', entity.type.toUid(entity.id));
 }
 
 /**

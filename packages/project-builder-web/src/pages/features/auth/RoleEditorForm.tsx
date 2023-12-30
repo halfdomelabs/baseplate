@@ -1,7 +1,6 @@
 import {
-  AuthConfig,
   AUTH_DEFAULT_ROLES,
-  randomUid,
+  AuthConfig,
   authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
@@ -80,7 +79,6 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
         onClick={() =>
           append({
             id: authRoleEntityType.generateNewId(),
-            uid: randomUid(),
             name: '',
             comment: '',
           })

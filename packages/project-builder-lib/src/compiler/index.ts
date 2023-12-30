@@ -7,6 +7,8 @@ import { BaseAppConfig, ProjectConfig } from '../schema/index.js';
 import { AppEntry } from '../types/files.js';
 import { ProjectDefinitionContainer } from '@src/index.js';
 
+export * from './types.js';
+
 export function compileApplications(
   rawProjectConfig: ProjectConfig,
 ): AppEntry[] {

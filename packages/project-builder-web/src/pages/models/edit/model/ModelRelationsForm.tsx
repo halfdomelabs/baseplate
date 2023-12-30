@@ -3,7 +3,6 @@ import {
   ModelRelationFieldConfig,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
-  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { clsx } from 'clsx';
 import { Control, useController } from 'react-hook-form';
@@ -47,7 +46,7 @@ export function ModelRelationsForm({
         </div>
       </div>
       {relationFields.map((field, i) => (
-        <div key={field.uid}>
+        <div key={field.id}>
           <div className="flex flex-row space-x-4">
             <ModelRelationForm
               control={control}
@@ -64,7 +63,6 @@ export function ModelRelationsForm({
           appendRelation({
             id: modelLocalRelationEntityType.generateNewId(),
             foreignId: modelForeignRelationEntityType.generateNewId(),
-            uid: randomUid(),
             name: '',
             references: [{ local: '', foreign: '' }],
             modelName: '',

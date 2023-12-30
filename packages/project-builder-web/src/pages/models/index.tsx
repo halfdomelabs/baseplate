@@ -11,7 +11,7 @@ function ModelRoutes(): JSX.Element {
       <Route element={<ModelsLayout />}>
         <Route index element={<ModelListPage />} />
         <Route path="new" element={<ModelEditPage />} />
-        <Route path="edit/:id/*" element={<ModelEditPage />} />
+        <Route path="edit/:uid/*" element={<ModelEditPage />} />
         <Route path="enums/*" element={<EnumRoutes />} />
       </Route>
     </Routes>

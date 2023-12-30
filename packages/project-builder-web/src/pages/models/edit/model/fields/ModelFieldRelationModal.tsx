@@ -3,7 +3,6 @@ import {
   ModelRelationFieldConfig,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
-  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { Dialog } from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
@@ -62,7 +61,6 @@ export function ModalRelationsModal({
       foreignId:
         modelFieldRelation?.foreignId ??
         modelForeignRelationEntityType.generateNewId(),
-      uid: modelFieldRelation?.uid ?? randomUid(),
       name: relation.name,
       references: [
         { local: watchedField.id, foreign: relation.foreignFieldName },

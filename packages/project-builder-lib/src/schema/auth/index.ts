@@ -4,13 +4,11 @@ import { authRoleEntityType } from './types.js';
 import { modelEntityType } from '../models/index.js';
 import { zEnt, zRef } from '@src/references/index.js';
 import { featureEntityType } from '@src/schema/features/index.js';
-import { randomUid } from '@src/utils/randomUid.js';
 
 export * from './types.js';
 
 export const authRoleSchema = zEnt(
   z.object({
-    uid: z.string().default(randomUid),
     name: z.string().min(1),
     comment: z.string().min(1),
     inherits: z

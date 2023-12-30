@@ -11,7 +11,6 @@ import {
   zRef,
   zRefBuilder,
 } from '@src/references/index.js';
-import { randomUid } from '@src/utils/randomUid.js';
 
 export const storageAdapterEntityType = createEntityType('storage-adapter');
 
@@ -28,7 +27,6 @@ export const storageSchema = zRefBuilder(
     s3Adapters: z.array(
       zEnt(
         z.object({
-          uid: z.string().default(randomUid),
           name: z.string().min(1),
           bucketConfigVar: z.string().min(1),
           hostedUrlConfigVar: z.string().optional(),
@@ -38,7 +36,6 @@ export const storageSchema = zRefBuilder(
     ),
     categories: z.array(
       z.object({
-        uid: z.string().default(randomUid),
         name: z.string().min(1),
         defaultAdapter: zRef(z.string(), {
           type: storageAdapterEntityType,

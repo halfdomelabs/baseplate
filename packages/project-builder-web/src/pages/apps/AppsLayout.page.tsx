@@ -1,3 +1,4 @@
+import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   NavigationMenu,
@@ -28,9 +29,11 @@ function AppsLayout(): JSX.Element {
         <NavigationMenu orientation="vertical">
           <NavigationMenu.List>
             {sortedApps.map((app) => (
-              <li key={app.uid}>
+              <li key={app.id}>
                 <NavigationMenu.ItemWithLink asChild>
-                  <NavLink to={`/apps/edit/${app.uid}`}>{app.name}</NavLink>
+                  <NavLink to={`/apps/edit/${appEntityType.toUid(app.id)}`}>
+                    {app.name}
+                  </NavLink>
                 </NavigationMenu.ItemWithLink>
               </li>
             ))}

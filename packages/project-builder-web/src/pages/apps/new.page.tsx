@@ -1,7 +1,7 @@
 import {
   AppConfig,
+  appEntityType,
   baseAppSchema,
-  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
@@ -24,7 +24,7 @@ function NewAppPage(): JSX.Element {
   const formProps = useForm<AppConfig>({
     resolver: zodResolver(baseAppSchema),
     defaultValues: {
-      uid: randomUid(),
+      id: appEntityType.generateNewId(),
       name: '',
       type: 'backend',
     },
@@ -44,7 +44,7 @@ function NewAppPage(): JSX.Element {
         const newApps = [...draftConfig.apps, data];
         draftConfig.apps = _.sortBy(newApps, 'name');
       });
-      navigate(`../edit/${data.uid}`);
+      navigate(`../edit/${appEntityType.toUid(data.id)}`);
       toast.success(`Sucessfully created ${data.name}!`);
     } catch (err) {
       toast.error(formatError(err));

@@ -8,11 +8,9 @@ import {
   modelTransformerEntityType,
 } from './types.js';
 import { zRef, zRefBuilder } from '@src/references/index.js';
-import { randomUid } from '@src/utils/randomUid.js';
 
 const baseTransformerFields = {
   id: z.string().default(() => modelTransformerEntityType.generateNewId()),
-  uid: z.string().default(randomUid),
   name: z.string().min(1),
   type: z.string().min(1),
 } as const;

@@ -1,8 +1,8 @@
 import {
   AdminAppConfig,
   AdminSectionConfig,
+  adminSectionEntityType,
   adminSectionSchema,
-  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
@@ -26,13 +26,19 @@ interface Props {
 const SECTION_OPTIONS = [{ label: 'Crud', value: 'crud' }];
 
 function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
-  const { sectionId } = useParams<{ sectionId: string }>();
+  const { sectionId: sectionUid } = useParams<{ sectionId: string }>();
   const { setConfigAndFixReferences, parsedProject } = useProjectConfig();
   const toast = useToast();
   const navigate = useNavigate();
 
+  const sectionId = sectionUid
+    ? adminSectionEntityType.fromUid(sectionUid)
+    : undefined;
+
   const existingSection = sectionId
-    ? appConfig.sections?.find((section) => section.uid === sectionId)
+    ? appConfig.sections?.find(
+        (section) => section.id === adminSectionEntityType.fromUid(sectionId),
+      )
     : undefined;
 
   const { control, handleSubmit, watch, reset } =
@@ -53,13 +59,13 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
         return;
       }
       setConfigAndFixReferences((config) => {
-        const adminApp = config.apps.find((app) => app.uid === appConfig.uid);
+        const adminApp = config.apps.find((app) => app.id === appConfig.id);
         if (adminApp?.type !== 'admin') {
           throw new Error('Cannot add a section to a non-admin app');
         }
 
         adminApp.sections = (adminApp.sections ?? []).filter(
-          (section) => !sectionId || section.uid !== sectionId,
+          (section) => !sectionId || section.id !== sectionId,
         );
       });
       navigate(`..`);
@@ -71,9 +77,9 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
 
   function onSubmit(data: AdminSectionConfig): void {
     try {
-      const uid = data.uid || randomUid();
+      const id = data.id || adminSectionEntityType.generateNewId();
       setConfigAndFixReferences((config) => {
-        const adminApp = config.apps.find((app) => app.uid === appConfig.uid);
+        const adminApp = config.apps.find((app) => app.id === appConfig.id);
         if (adminApp?.type !== 'admin') {
           throw new Error('Cannot add a section to a non-admin app');
         }
@@ -81,15 +87,15 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
         adminApp.sections = _.sortBy(
           [
             ...(adminApp.sections ?? []).filter(
-              (section) => !sectionId || section.uid !== sectionId,
+              (section) => !sectionId || section.id !== sectionId,
             ),
-            { ...data, uid },
+            { ...data, id },
           ],
           'name',
         );
       });
       if (!sectionId) {
-        navigate(`edit/${uid}`);
+        navigate(`edit/${adminSectionEntityType.toUid(id)}`);
       }
       toast.success('Successfully saved section!');
     } catch (err) {

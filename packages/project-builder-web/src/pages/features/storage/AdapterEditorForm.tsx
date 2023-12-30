@@ -1,5 +1,4 @@
 import {
-  randomUid,
   storageAdapterEntityType,
   StorageConfig,
 } from '@halfdomelabs/project-builder-lib';
@@ -49,7 +48,6 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
         onClick={() =>
           append({
             id: storageAdapterEntityType.generateNewId(),
-            uid: randomUid(),
             name: '',
             bucketConfigVar: '',
           })

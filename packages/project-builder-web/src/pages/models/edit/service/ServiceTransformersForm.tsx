@@ -1,7 +1,6 @@
 import {
   ModelConfig,
   modelTransformerEntityType,
-  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { Button, Dropdown } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
@@ -84,7 +83,6 @@ function ServiceEmbeddedRelationsForm({
                 onSelect={() =>
                   append({
                     id: modelTransformerEntityType.generateNewId(),
-                    uid: randomUid(),
                     name: 'password',
                     type: 'password',
                   })
@@ -98,7 +96,6 @@ function ServiceEmbeddedRelationsForm({
                 onSelect={() =>
                   append({
                     id: modelTransformerEntityType.generateNewId(),
-                    uid: randomUid(),
                     name: '',
                     fileRelationRef: '',
                     type: 'file',
@@ -112,7 +109,6 @@ function ServiceEmbeddedRelationsForm({
               onSelect={() =>
                 append({
                   id: modelTransformerEntityType.generateNewId(),
-                  uid: randomUid(),
                   foreignRelationRef: '',
                   name: '',
                   type: 'embeddedRelation',

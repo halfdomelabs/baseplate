@@ -53,7 +53,7 @@ function ModelRelationForm({
     // check for references
     if (originalModel) {
       const originalRelation = originalModel.model.relations?.find(
-        (f) => f.uid === watchedField.uid,
+        (f) => f.id === watchedField.id,
       );
       if (originalRelation) {
         const references =

@@ -1,7 +1,6 @@
 import {
   ModelConfig,
   modelScalarFieldType,
-  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
@@ -70,7 +69,6 @@ export function ModelFieldsForm({
         addField: () =>
           appendField({
             id: modelScalarFieldType.generateNewId(),
-            uid: randomUid(),
             name: 'id',
             type: 'uuid',
             isId: true,
@@ -92,7 +90,6 @@ export function ModelFieldsForm({
               : [
                   {
                     id: modelScalarFieldType.generateNewId(),
-                    uid: randomUid(),
                     name: 'updatedAt',
                     type: 'dateTime' as const,
                     options: {
@@ -106,7 +103,6 @@ export function ModelFieldsForm({
               : [
                   {
                     id: modelScalarFieldType.generateNewId(),
-                    uid: randomUid(),
                     name: 'createdAt',
                     type: 'dateTime' as const,
                     options: {
@@ -168,7 +164,6 @@ export function ModelFieldsForm({
             onClick={() =>
               appendField({
                 id: modelScalarFieldType.generateNewId(),
-                uid: randomUid(),
                 name: '',
                 type: 'string',
               })

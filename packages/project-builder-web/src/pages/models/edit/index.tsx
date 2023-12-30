@@ -15,17 +15,16 @@ import { NotFoundCard } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 function ModelEditPage(): JSX.Element {
-  const { id } = useParams<'id'>();
+  const { uid } = useParams<'uid'>();
   const {
     parsedProject,
     definitionContainer: { definition },
   } = useProjectConfig();
 
+  const id = modelEntityType.fromUid(uid);
   const isNew = !id;
 
-  const model = parsedProject
-    .getModels()
-    .find((m) => m.id === modelEntityType.generateNewId(id));
+  const model = parsedProject.getModels().find((m) => m.id === id);
 
   const [showNameModal, setShowNameModal] = useState(false);
 

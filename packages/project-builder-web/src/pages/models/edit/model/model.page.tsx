@@ -25,10 +25,9 @@ function ModelEditModelPage(): JSX.Element {
 
   const { config } = useProjectConfig();
 
-  const { id } = useParams<'id'>();
-  const originalModel = id
-    ? ModelUtils.byId(config, modelEntityType.generateNewId(id))
-    : undefined;
+  const { uid } = useParams<'uid'>();
+  const id = modelEntityType.fromUid(uid);
+  const originalModel = id ? ModelUtils.byId(config, id) : undefined;
 
   return (
     <EditedModelContextProvider initialModel={defaultValues} watch={watch}>

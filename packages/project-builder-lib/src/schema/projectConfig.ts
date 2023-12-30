@@ -1,10 +1,6 @@
 import { z } from 'zod';
 
-import {
-  AdminAppConfig,
-  adminAppSchema,
-  buildAdminAppReferences,
-} from './apps/admin/index.js';
+import { adminAppSchema } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
 import { webAppSchema } from './apps/index.js';
 import { appEntityType } from './apps/types.js';
@@ -68,15 +64,6 @@ export const getProjectConfigReferences: GetReferencesFunction<
   ProjectConfig
 > = (config) => {
   const builder = new ReferencesBuilder<ProjectConfig>(config);
-
-  config.apps?.forEach((app, idx) => {
-    if (app.type === 'admin') {
-      buildAdminAppReferences(
-        app,
-        builder.withPrefix(`apps.${idx}`) as ReferencesBuilder<AdminAppConfig>,
-      );
-    }
-  });
 
   return builder.build();
 };

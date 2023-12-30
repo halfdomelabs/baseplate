@@ -4,10 +4,8 @@ import { AuthPlugin } from './plugins/auth.js';
 import { Auth0Plugin } from './plugins/auth0.js';
 import { StoragePlugin } from './plugins/storage.js';
 import { ParsedModel, ParsedRelationField } from './types.js';
-import { randomUid } from '../utils/randomUid.js';
 import { ProjectDefinitionContainer } from '@src/index.js';
 import {
-  AppConfig,
   ProjectConfig,
   getProjectConfigReferences,
   modelEntityType,
@@ -42,17 +40,14 @@ function upsertItems<T>(
   const itemsByKey = R.indexBy(keyFunction, items);
   const existingKeys = existingItems.map(keyFunction);
 
-  const newItems = items
-    .filter((item) => !existingKeys.includes(keyFunction(item)))
-    .map((item) => ({
-      ...item,
-      uid: randomUid(),
-    }));
+  const newItems = items.filter(
+    (item) => !existingKeys.includes(keyFunction(item)),
+  );
   return [
     ...existingItems.map((item) => {
       const newItem = itemsByKey[keyFunction(item)];
       if (newItem) {
-        return { uid: randomUid(), ...item, ...newItem };
+        return { ...item, ...newItem };
       }
       return item;
     }),
@@ -207,20 +202,17 @@ export class ParsedProjectConfig {
             if (!existingModel) {
               this.models.push({
                 id: modelEntityType.generateNewId(),
-                uid: randomUid(),
                 ...model,
                 model: {
                   ...model.model,
                   fields: model.model.fields.map((field) => ({
                     ...field,
                     id: modelScalarFieldType.generateNewId(),
-                    uid: randomUid(),
                   })),
                   relations: model.model.relations?.map((relation) => ({
                     ...relation,
                     id: modelLocalRelationEntityType.generateNewId(),
                     foreignId: modelForeignRelationEntityType.generateNewId(),
-                    uid: randomUid(),
                   })),
                 },
               });
@@ -356,9 +348,5 @@ export class ParsedProjectConfig {
 
   exportToProjectConfig(): ProjectConfig {
     return this.projectConfig;
-  }
-
-  getAppByUid(uid: string): AppConfig | undefined {
-    return this.projectConfig.apps?.find((app) => app.uid === uid);
   }
 }

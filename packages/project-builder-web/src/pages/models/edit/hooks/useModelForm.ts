@@ -1,11 +1,8 @@
 import {
-  fixReferenceRenames,
-  getProjectConfigReferences,
   ModelConfig,
   modelEntityType,
   modelScalarFieldType,
   modelSchema,
-  randomUid,
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
@@ -29,14 +26,12 @@ interface UseModelFormOptions {
 function createNewModel(): ModelConfig {
   return {
     id: modelEntityType.generateNewId(),
-    uid: randomUid(),
     name: '',
     feature: '',
     model: {
       fields: [
         {
           id: modelScalarFieldType.generateNewId(),
-          uid: randomUid(),
           name: 'id',
           type: 'uuid',
           isId: true,
@@ -57,16 +52,14 @@ export function useModelForm({
   form: UseFormReturn<ModelConfig>;
   onFormSubmit: (data: ModelConfig) => void;
   originalModel?: ModelConfig;
-  fixControlledReferences: () => void;
   defaultValues: ModelConfig;
 } {
-  const { id } = useParams<'id'>();
+  const { uid } = useParams<'uid'>();
   const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
   const toast = useToast();
   const navigate = useNavigate();
-  const model = id
-    ? parsedProject.getModelById(modelEntityType.generateNewId(id))
-    : undefined;
+  const id = uid ? modelEntityType.fromUid(uid) : undefined;
+  const model = id ? parsedProject.getModelById(id) : undefined;
 
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);
@@ -76,7 +69,7 @@ export function useModelForm({
     resolver: zodResolver(modelSchema),
     defaultValues,
   });
-  const { getValues, setValue, reset } = form;
+  const { reset } = form;
 
   const lastFixedModel = useRef<ModelConfig | undefined>();
 
@@ -101,7 +94,7 @@ export function useModelForm({
         );
         toast.success('Successfully saved model!');
         if (!id || model?.name !== data.name) {
-          navigate(`../edit/${modelEntityType.getUidFromId(data.id)}`);
+          navigate(`../edit/${modelEntityType.toUid(data.id)}`);
         }
         if (onSubmitSuccess) {
           onSubmitSuccess();
@@ -129,57 +122,10 @@ export function useModelForm({
     ],
   );
 
-  const fixControlledReferences = useCallback(() => {
-    // add latest model to config
-    const updatedModel = getValues();
-
-    if (_.isEqual(updatedModel, lastFixedModel.current)) {
-      return;
-    }
-
-    // skip if model is invalid
-    if (!modelSchema.safeParse(updatedModel).success) {
-      return;
-    }
-
-    const config = parsedProject.projectConfig;
-    const lastFixedConfig = {
-      ...config,
-      models: lastFixedModel.current
-        ? [...config.models.filter((m) => m.uid !== id), lastFixedModel.current]
-        : config.models,
-    };
-    const updatedConfig = {
-      ...config,
-      models: [...config.models.filter((m) => m.uid !== id), updatedModel],
-    };
-    const fixedConfig = fixReferenceRenames(
-      lastFixedConfig,
-      updatedConfig,
-      getProjectConfigReferences,
-      {
-        whitelistReferences: controlledReferences,
-      },
-    );
-    const fixedModel = fixedConfig.models?.find((m) => m.uid === id);
-    if (!fixedModel) {
-      return;
-    }
-    Object.keys(fixedModel).forEach((key) => {
-      const modelKey = key as keyof ModelConfig;
-      if (_.isEqual(fixedModel[modelKey], updatedModel[modelKey])) {
-        return;
-      }
-      setValue(modelKey, fixedModel[modelKey]);
-    });
-    lastFixedModel.current = fixedModel;
-  }, [parsedProject, getValues, setValue, controlledReferences, id]);
-
   return {
     form,
     onFormSubmit,
     originalModel: model,
-    fixControlledReferences,
     defaultValues,
   };
 }

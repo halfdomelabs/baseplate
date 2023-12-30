@@ -10,7 +10,6 @@ import {
   modelScalarFieldType,
   modelTransformerEntityType,
 } from '@src/schema/models/index.js';
-import { ReferencesBuilder } from '@src/schema/references.js';
 import { notEmpty } from '@src/utils/array.js';
 
 export const adminCrudEmbeddedFormEntityType = createEntityType(
@@ -270,41 +269,3 @@ export const adminCrudSectionSchema = zRefBuilder(
 );
 
 export type AdminCrudSectionConfig = z.infer<typeof adminCrudSectionSchema>;
-
-export function buildAdminCrudSectionReferences(
-  config: AdminCrudSectionConfig,
-  builder: ReferencesBuilder<AdminCrudSectionConfig>,
-): void {
-  config.form.fields.forEach((field, idx) => {
-    const fieldBuilder = builder.withPrefix(`form.fields.${idx}`);
-    switch (field.type) {
-      case 'file':
-      case 'text':
-        break;
-      case 'foreign':
-        break;
-      case 'enum':
-        break;
-      case 'embedded':
-        break;
-      case 'embeddedLocal':
-        break;
-      case 'password':
-        break;
-      default:
-        throw new Error(
-          `Unknown input type: ${(field as { type: string }).type}`,
-        );
-    }
-  });
-
-  config.embeddedForms?.forEach((form, idx) => {
-    const formBuilder = builder.withPrefix(`embeddedForms.${idx}`);
-    formBuilder.addReferenceable({
-      id: form.id,
-      name: form.name,
-      key: `${config.name}#${form.name}`,
-      category: 'adminCrudEmbeddedForm',
-    });
-  });
-}
