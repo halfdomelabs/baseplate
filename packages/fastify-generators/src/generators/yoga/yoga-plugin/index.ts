@@ -254,7 +254,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         },
         run({ node, fastifyServer }) {
           node.addPackages({
-            '@fastify/websocket': '8.2.0',
+            '@fastify/websocket': '8.3.1',
           });
 
           fastifyServer.registerPlugin({
