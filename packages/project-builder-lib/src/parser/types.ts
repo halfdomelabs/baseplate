@@ -22,10 +22,10 @@ export interface ParsedModel extends ModelConfig {
   service?: ModelConfig['service'];
 }
 
-export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'id' | 'uid'>;
+export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'id'>;
 export type PluginMergeModelRelationInput = Omit<
   ParsedRelationField,
-  'id' | 'uid' | 'foreignId'
+  'id' | 'foreignId'
 >;
 
 export interface PluginMergeModelInput
