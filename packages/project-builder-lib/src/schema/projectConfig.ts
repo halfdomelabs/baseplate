@@ -9,7 +9,6 @@ import { featuresSchema } from './features/index.js';
 import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
-import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { storageSchema } from './storage/index.js';
 import { zRefBuilder } from '@src/index.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
@@ -59,11 +58,3 @@ export const projectConfigSchema = z.object({
 export type ProjectConfigInput = z.input<typeof projectConfigSchema>;
 
 export type ProjectConfig = z.infer<typeof projectConfigSchema>;
-
-export const getProjectConfigReferences: GetReferencesFunction<
-  ProjectConfig
-> = (config) => {
-  const builder = new ReferencesBuilder<ProjectConfig>(config);
-
-  return builder.build();
-};

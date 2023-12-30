@@ -1,7 +1,6 @@
 import {
   ProjectConfig,
   ProjectConfigInput,
-  FixReferenceRenamesOptions,
   ParsedProjectConfig,
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
@@ -12,17 +11,14 @@ export type SetOrTransformConfig =
   | ((draftConfig: ProjectConfig) => void);
 
 export interface SetProjectConfigOptions {
-  fixReferences?: boolean | FixReferenceRenamesOptions;
+  fixReferences?: boolean;
 }
 
 export interface UseProjectConfigResult {
   config: ProjectConfig;
   parsedProject: ParsedProjectConfig;
   definitionContainer: ProjectDefinitionContainer;
-  setConfigAndFixReferences: (
-    configOrTransform: SetOrTransformConfig,
-    options?: FixReferenceRenamesOptions,
-  ) => void;
+  setConfigAndFixReferences: (configOrTransform: SetOrTransformConfig) => void;
   setConfig: (
     configOrTransform: SetOrTransformConfig,
     options?: SetProjectConfigOptions,

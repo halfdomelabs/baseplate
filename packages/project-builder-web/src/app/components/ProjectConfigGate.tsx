@@ -3,8 +3,6 @@ import {
   ProjectConfig,
   ProjectDefinitionContainer,
   fixRefDeletions,
-  fixReferenceRenames,
-  getProjectConfigReferences,
   projectConfigSchema,
   runSchemaMigrations,
   serializeSchema,
@@ -170,20 +168,10 @@ export function ProjectConfigGate({
           ? produce(oldProjectConfig, newConfig)
           : newConfig;
 
-      // TODO: Figure out better validation technique as we're validating twice
       let validatedProjectConfig = projectConfigSchema.parse(newProjectConfig);
 
       if (fixReferences) {
-        validatedProjectConfig = fixReferenceRenames(
-          oldProjectConfig,
-          validatedProjectConfig,
-          getProjectConfigReferences,
-          typeof fixReferences === 'boolean' ? undefined : fixReferences,
-        );
-        const result = fixRefDeletions(
-          projectConfigSchema,
-          validatedProjectConfig,
-        );
+        const result = fixRefDeletions(projectConfigSchema, oldProjectConfig);
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }
@@ -215,8 +203,8 @@ export function ProjectConfigGate({
       parsedProject: loadData.parsedProject,
       definitionContainer: loadData.definitionContainer,
       externalChangeCounter,
-      setConfigAndFixReferences: (config, options) => {
-        setConfig(config, { fixReferences: options ?? true });
+      setConfigAndFixReferences: (config) => {
+        setConfig(config, { fixReferences: true });
       },
       setConfig,
     };

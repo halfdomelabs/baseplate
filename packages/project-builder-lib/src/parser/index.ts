@@ -13,7 +13,6 @@ import {
   modelScalarFieldType,
 } from '@src/schema/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
-import { ObjectReferenceEntry } from '@src/schema/references.js';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
 
 const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
@@ -119,9 +118,6 @@ export class ParsedProjectConfig {
   public fastifyChildren: Record<string, unknown> = {};
 
   public featureChildren: Record<string, Record<string, unknown>> = {};
-
-  public references: Record<string, Record<string, ObjectReferenceEntry[]>> =
-    {};
 
   constructor(public definitionContainer: ProjectDefinitionContainer) {
     const projectConfig = definitionContainer.definition;

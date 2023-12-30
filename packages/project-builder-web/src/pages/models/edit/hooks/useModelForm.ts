@@ -17,8 +17,6 @@ import { formatError } from 'src/services/error-formatter';
 import { logger } from 'src/services/logger';
 
 interface UseModelFormOptions {
-  // References that are managed by the caller and should not be fixed when submitting the form.
-  controlledReferences?: string[];
   setError?: (error: string) => void;
   onSubmitSuccess?: () => void;
 }
@@ -46,7 +44,6 @@ function createNewModel(): ModelConfig {
 
 export function useModelForm({
   setError,
-  controlledReferences,
   onSubmitSuccess,
 }: UseModelFormOptions): {
   form: UseFormReturn<ModelConfig>;
@@ -80,18 +77,15 @@ export function useModelForm({
   const onFormSubmit = useCallback(
     (data: ModelConfig) => {
       try {
-        setConfigAndFixReferences(
-          (draftConfig) => {
-            draftConfig.models = _.sortBy(
-              [
-                ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),
-                data,
-              ],
-              (m) => m.name,
-            );
-          },
-          { ignoredReferences: controlledReferences },
-        );
+        setConfigAndFixReferences((draftConfig) => {
+          draftConfig.models = _.sortBy(
+            [
+              ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),
+              data,
+            ],
+            (m) => m.name,
+          );
+        });
         toast.success('Successfully saved model!');
         if (!id || model?.name !== data.name) {
           navigate(`../edit/${modelEntityType.toUid(data.id)}`);
@@ -111,7 +105,6 @@ export function useModelForm({
     },
     [
       setConfigAndFixReferences,
-      controlledReferences,
       toast,
       id,
       model?.name,
