@@ -6,7 +6,7 @@ import {
   modelEnumEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
-  modelScalarFieldType,
+  modelScalarFieldEntityType,
   modelTransformerEntityType,
 } from './types.js';
 import { featureEntityType } from '../features/index.js';
@@ -43,7 +43,7 @@ export const modelScalarFieldSchema = zEnt(
       .optional(),
   }),
   {
-    type: modelScalarFieldType,
+    type: modelScalarFieldEntityType,
     parentPath: { context: 'model' },
   },
 ).transform((value) => {
@@ -79,12 +79,12 @@ export const modelRelationFieldSchema = zRefBuilder(
     references: z.array(
       z.object({
         local: zRef(z.string(), {
-          type: modelScalarFieldType,
+          type: modelScalarFieldEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'model' },
         }),
         foreign: zRef(z.string(), {
-          type: modelScalarFieldType,
+          type: modelScalarFieldEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'foreignModel' },
         }),
@@ -124,7 +124,7 @@ export const modelUniqueConstraintSchema = z.object({
   fields: z.array(
     z.object({
       name: zRef(z.string().min(1), {
-        type: modelScalarFieldType,
+        type: modelScalarFieldEntityType,
         onDelete: 'RESTRICT',
         parentPath: { context: 'model' },
       }),
@@ -143,7 +143,7 @@ export const modelServiceSchema = z.object({
       fields: z
         .array(
           zRef(z.string(), {
-            type: modelScalarFieldType,
+            type: modelScalarFieldEntityType,
             onDelete: 'DELETE',
             parentPath: { context: 'model' },
           }),
@@ -165,7 +165,7 @@ export const modelServiceSchema = z.object({
       fields: z
         .array(
           zRef(z.string(), {
-            type: modelScalarFieldType,
+            type: modelScalarFieldEntityType,
             onDelete: 'DELETE',
             parentPath: { context: 'model' },
           }),
@@ -206,7 +206,7 @@ export const modelSchemaSchema = z.object({
   exposedFields: z
     .array(
       zRef(z.string(), {
-        type: modelScalarFieldType,
+        type: modelScalarFieldEntityType,
         onDelete: 'DELETE',
         parentPath: { context: 'model' },
       }),
@@ -257,7 +257,7 @@ export const modelSchema = zEnt(
       primaryKeys: z
         .array(
           zRef(z.string(), {
-            type: modelScalarFieldType,
+            type: modelScalarFieldEntityType,
             onDelete: 'RESTRICT',
             parentPath: { context: 'model' },
           }),

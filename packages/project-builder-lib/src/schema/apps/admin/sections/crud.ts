@@ -7,7 +7,7 @@ import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
-  modelScalarFieldType,
+  modelScalarFieldEntityType,
   modelTransformerEntityType,
 } from '@src/schema/models/index.js';
 import { notEmpty } from '@src/utils/array.js';
@@ -38,7 +38,7 @@ export type AdminCrudForeignDisplayConfig = z.infer<
 export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
   modelField: zRef(z.string(), {
-    type: modelScalarFieldType,
+    type: modelScalarFieldEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
   }),
@@ -78,7 +78,7 @@ export const adminCrudTextInputSchema = z.object({
   type: z.literal('text'),
   label: z.string().min(1),
   modelField: zRef(z.string(), {
-    type: modelScalarFieldType,
+    type: modelScalarFieldEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
   }),
@@ -109,7 +109,7 @@ export const adminCrudEnumInputSchema = z.object({
   type: z.literal('enum'),
   label: z.string().min(1),
   modelField: zRef(z.string(), {
-    type: modelScalarFieldType,
+    type: modelScalarFieldEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
   }),
