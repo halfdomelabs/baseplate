@@ -10,7 +10,7 @@ import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
-  modelScalarFieldType,
+  modelScalarFieldEntityType,
 } from '@src/schema/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
@@ -166,7 +166,7 @@ export class ParsedProjectConfig {
                   ...model.model,
                   fields: model.model.fields.map((field) => ({
                     ...field,
-                    id: modelScalarFieldType.generateNewId(),
+                    id: modelScalarFieldEntityType.generateNewId(),
                   })),
                   relations: model.model.relations?.map((relation) => ({
                     ...relation,

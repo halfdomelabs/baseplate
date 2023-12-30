@@ -1,7 +1,7 @@
 import {
   ModelConfig,
   modelEntityType,
-  modelScalarFieldType,
+  modelScalarFieldEntityType,
   modelSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +29,7 @@ function createNewModel(): ModelConfig {
     model: {
       fields: [
         {
-          id: modelScalarFieldType.generateNewId(),
+          id: modelScalarFieldEntityType.generateNewId(),
           name: 'id',
           type: 'uuid',
           isId: true,

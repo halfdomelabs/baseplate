@@ -1,18 +1,17 @@
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
-import { ProjectDefinitionContainer } from '@src/index.js';
+import { AppUtils, ProjectDefinitionContainer } from '@src/definition/index.js';
 import { WebAppConfig } from '@src/schema/index.js';
-import {
-  getBackendApp,
-  getBackendRelativePath,
-} from '@src/schema-utils/index.js';
 import { AppEntry } from '@src/types/files.js';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;
 
-  const backendApp = getBackendApp(projectConfig);
-  const backendRelativePath = getBackendRelativePath(appConfig, backendApp);
+  const backendApp = AppUtils.getBackendApp(projectConfig);
+  const backendRelativePath = AppUtils.getBackendRelativePath(
+    appConfig,
+    backendApp,
+  );
 
   return {
     name: 'react',

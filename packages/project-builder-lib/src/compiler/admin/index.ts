@@ -3,12 +3,12 @@ import { capitalize } from 'inflection';
 import { compileAdminFeatures } from './sections.js';
 import { AdminAppEntryBuilder, AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
-import { FeatureUtils, ProjectDefinitionContainer } from '@src/index.js';
-import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
 import {
-  getBackendApp,
-  getBackendRelativePath,
-} from '@src/schema-utils/backend-app.js';
+  AppUtils,
+  FeatureUtils,
+  ProjectDefinitionContainer,
+} from '@src/definition/index.js';
+import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
 import { AppEntry } from '@src/types/files.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 
@@ -32,8 +32,11 @@ export function buildNavigationLinks(
 export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
   const { projectConfig, appConfig } = builder;
 
-  const backendApp = getBackendApp(projectConfig);
-  const backendRelativePath = getBackendRelativePath(appConfig, backendApp);
+  const backendApp = AppUtils.getBackendApp(projectConfig);
+  const backendRelativePath = AppUtils.getBackendRelativePath(
+    appConfig,
+    backendApp,
+  );
 
   return {
     name: 'react',

@@ -4,7 +4,7 @@ import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
-  modelScalarFieldType,
+  modelScalarFieldEntityType,
   modelTransformerEntityType,
 } from './types.js';
 import { zRef, zRefBuilder } from '@src/references/index.js';
@@ -34,7 +34,7 @@ export const embeddedRelationTransformerSchema = z.object({
   type: z.literal('embeddedRelation'),
   embeddedFieldNames: z.array(
     zRef(z.string(), {
-      type: modelScalarFieldType,
+      type: modelScalarFieldEntityType,
       onDelete: 'RESTRICT',
       parentPath: { context: 'embeddedModel' },
     }),
