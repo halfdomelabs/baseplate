@@ -2,16 +2,13 @@ import { randomUid } from '@src/utils/randomUid.js';
 
 export type ReferencePath = (string | number)[];
 
-export class DefinitionEntityType<
-  TParent extends DefinitionEntityType | undefined =
-    | DefinitionEntityType<DefinitionEntityType<undefined>>
-    | DefinitionEntityType<undefined>
-    | undefined,
-> {
+export class DefinitionEntityType<THasParent extends boolean = boolean> {
   constructor(
     public readonly name: string,
     public readonly prefix?: string,
-    public readonly parentType?: TParent,
+    public readonly parentType?: THasParent extends true
+      ? DefinitionEntityType
+      : undefined,
   ) {}
 
   generateNewId(uid?: string): string {
@@ -55,17 +52,23 @@ export interface DefinitionReference {
   onDelete: ReferenceOnDeleteAction;
 }
 
-export function createEntityType(name: string): DefinitionEntityType<undefined>;
+export function createEntityType(name: string): DefinitionEntityType<false>;
 
 export function createEntityType<TParent extends DefinitionEntityType>(
   name: string,
   options: { parentType?: TParent; prefix?: string },
-): DefinitionEntityType<TParent>;
+): DefinitionEntityType<TParent extends DefinitionEntityType ? true : false>;
 
 export function createEntityType<TParent extends DefinitionEntityType>(
   name: string,
   options?: { parentType?: TParent; prefix?: string },
-): DefinitionEntityType<TParent> {
+): DefinitionEntityType<TParent extends DefinitionEntityType ? true : false> {
   const { parentType, prefix } = options ?? {};
-  return new DefinitionEntityType(name, prefix, parentType);
+  return new DefinitionEntityType(
+    name,
+    prefix,
+    parentType as TParent extends DefinitionEntityType
+      ? DefinitionEntityType
+      : undefined,
+  );
 }
