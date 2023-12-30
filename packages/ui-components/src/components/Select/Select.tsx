@@ -88,7 +88,9 @@ const SelectContent = React.forwardRef<
                 style={
                   {
                     '--max-popper-height': maxHeight,
-                  } as Record<string, string>
+                    // Resolves React warning: https://github.com/radix-ui/primitives/issues/2059
+                    overflowY: undefined,
+                  } as Record<string, string | undefined>
                 }
               >
                 {children}

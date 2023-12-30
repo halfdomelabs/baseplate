@@ -2,15 +2,16 @@ import {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-  ModelUniqueConstraintConfig,
 } from '../../schema/models/index.js';
-import { ParsedProjectConfig } from '@src/parser/index.js';
-import {
-  isModelRelationOneToOne,
-  isModelRelationOptional,
-} from '@src/schema-utils/model.js';
+import { AppEntryBuilder, BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
+import { ModelFieldUtils } from '@src/definition/model/model-field-utils.js';
+import { BackendAppConfig } from '@src/index.js';
 
-function buildScalarField(field: ModelScalarFieldConfig): unknown {
+function buildScalarField(
+  builder: BackendAppEntryBuilder,
+  field: ModelScalarFieldConfig,
+): unknown {
   const { options = {} } = field;
   return {
     name: field.name,
@@ -24,15 +25,16 @@ function buildScalarField(field: ModelScalarFieldConfig): unknown {
     },
     optional: field.isOptional,
     unique: field.isUnique,
-    enumType: options.enumType,
+    enumType: options.enumType && builder.nameFromId(options.enumType),
   };
 }
 
 function buildRelationField(
+  appBuilder: AppEntryBuilder<BackendAppConfig>,
   relationConfig: ModelRelationFieldConfig,
   parentModel: ModelConfig,
-  parsedProject: ParsedProjectConfig,
 ): unknown {
+  const { projectConfig } = appBuilder;
   const {
     name,
     references,
@@ -41,33 +43,44 @@ function buildRelationField(
     onDelete,
     onUpdate,
   } = relationConfig;
-  const foreignModel = parsedProject
-    .getModels()
-    .find((m) => m.name === modelName);
-  if (!foreignModel) {
-    throw new Error(`Could not find foreign model ${modelName}`);
-  }
+  const foreignModel = ModelUtils.byId(projectConfig, modelName);
 
-  const optional = isModelRelationOptional(parentModel, relationConfig);
-  const relationshipType = isModelRelationOneToOne(parentModel, relationConfig)
+  const optional = ModelFieldUtils.isRelationOptional(
+    parentModel,
+    relationConfig,
+  );
+  const relationshipType = ModelFieldUtils.isRelationOneToOne(
+    parentModel,
+    relationConfig,
+  )
     ? 'oneToOne'
     : 'oneToMany';
   const relations = parentModel.model.relations ?? [];
 
   // If there are multiple relations between the same models, we need to specify the
   // relation name to avoid conflicts in Prisma
+  const foreignRelations = ModelUtils.getRelationsToModel(
+    projectConfig,
+    parentModel.id,
+  ).filter(({ model }) => model.id === relationConfig.modelName);
   const needsRelationName =
-    (foreignModel.model.relations?.filter(
-      (r) => r.modelName === parentModel.name,
-    ).length ?? 0) +
+    foreignRelations.length +
       relations.filter((r) => r.modelName === modelName).length >
     1;
+  const foreignFeature = FeatureUtils.getFeatureByIdOrThrow(
+    projectConfig,
+    foreignModel.feature,
+  ).name;
 
   return {
     name,
-    fields: references.map((r) => r.local),
-    references: references.map((r) => r.foreign),
-    modelRef: `${foreignModel.feature}/root:$models.${foreignModel.name}`,
+    fields: references.map((r) =>
+      appBuilder.definitionContainer.nameFromId(r.local),
+    ),
+    references: references.map((r) =>
+      appBuilder.definitionContainer.nameFromId(r.foreign),
+    ),
+    modelRef: `${foreignFeature}/root:$models.${foreignModel.name}`,
     foreignRelationName,
     relationshipName: needsRelationName ? foreignRelationName : undefined,
     relationshipType: relationshipType,
@@ -77,46 +90,42 @@ function buildRelationField(
   };
 }
 
-function buildUniqueConstraint({
-  name,
-  fields,
-}: ModelUniqueConstraintConfig): unknown {
-  return {
-    name,
-    fields,
-  };
-}
-
 function buildModel(
+  appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
-  parsedProject: ParsedProjectConfig,
 ): unknown {
   return {
     name: model.name,
     generator: '@halfdomelabs/fastify/prisma/prisma-model',
     children: {
-      fields: model.model.fields?.map(buildScalarField),
+      fields: model.model.fields?.map((field) =>
+        buildScalarField(appBuilder, field),
+      ),
       relations: model.model.relations?.map((r) =>
-        buildRelationField(r, model, parsedProject),
+        buildRelationField(appBuilder, r, model),
       ),
       primaryKey: {
-        fields: model.model.primaryKeys,
+        fields: model.model.primaryKeys?.map((f) => appBuilder.nameFromId(f)),
       },
       uniqueConstraints: model.model.uniqueConstraints?.map(
-        buildUniqueConstraint,
+        ({ name, fields }) => ({
+          name,
+          fields: fields.map((f) => ({
+            name: appBuilder.nameFromId(f.name),
+          })),
+        }),
       ),
     },
   };
 }
 
 export function buildModelsForFeature(
-  feature: string,
-  parsedProject: ParsedProjectConfig,
+  appBuilder: BackendAppEntryBuilder,
+  featureId: string,
 ): unknown {
-  const models =
-    parsedProject.getModels().filter((m) => m.feature === feature) ?? [];
-  if (!models.length) {
-    return {};
-  }
-  return models.map((m) => buildModel(m, parsedProject));
+  const models = ModelUtils.getModelsForFeature(
+    appBuilder.projectConfig,
+    featureId,
+  );
+  return models.map((m) => buildModel(appBuilder, m));
 }

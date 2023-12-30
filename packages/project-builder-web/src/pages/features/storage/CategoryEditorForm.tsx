@@ -1,4 +1,4 @@
-import { randomUid, StorageConfig } from '@halfdomelabs/project-builder-lib';
+import { StorageConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
@@ -26,7 +26,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
 
   const adapterOptions = (adapters ?? []).map((adapter) => ({
     label: adapter.name,
-    value: adapter.name,
+    value: adapter.id,
   }));
 
   const foreignKeyOptions = parsedProject
@@ -37,7 +37,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
           ?.filter((r) => r.modelName === fileModel)
           .map((r) => ({
             label: r.foreignRelationName,
-            value: r.foreignRelationName,
+            value: r.foreignId,
           })),
     )
     .filter(notEmpty);
@@ -45,7 +45,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
   const roleOptions =
     parsedProject.projectConfig.auth?.roles.map((role) => ({
       label: role.name,
-      value: role.name,
+      value: role.id,
     })) ?? [];
 
   return (
@@ -90,7 +90,6 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
       <Button
         onClick={() =>
           append({
-            uid: randomUid(),
             name: '',
             defaultAdapter: '',
             usedByRelation: '',

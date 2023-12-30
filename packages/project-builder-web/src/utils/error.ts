@@ -1,9 +1,20 @@
+import { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
 import { ZodError, ZodIssue } from 'zod';
 
 export class UserVisibleError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'UserVisibleError';
+  }
+}
+
+export class RefDeleteError extends UserVisibleError {
+  constructor(public issues: FixRefDeletionError[]) {
+    super(
+      `Cannot delete because of references: ${issues
+        .map((i) => i.ref.path.join('.'))
+        .join(', ')}`,
+    );
   }
 }
 

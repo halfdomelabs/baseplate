@@ -84,7 +84,7 @@ export function ModelFieldDefaultValueInput({
   if (type === 'dateTime' || type === 'date') {
     const { defaultToNow, updatedAt } = optionsValue ?? {};
 
-    if (defaultToNow || updatedAt) {
+    if (defaultToNow ?? updatedAt) {
       return (
         <div className="flex items-center space-x-1">
           <InputField disabled value={updatedAt ? 'Last Updated' : 'Now'} />

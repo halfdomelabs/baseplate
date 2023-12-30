@@ -1,7 +1,8 @@
 import {
   ModelConfig,
   ModelRelationFieldConfig,
-  randomUid,
+  modelForeignRelationEntityType,
+  modelLocalRelationEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { Dialog } from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
@@ -44,8 +45,7 @@ export function ModalRelationsModal({
 
   const modelFieldRelation = value.find(
     (r) =>
-      r.references.length === 1 &&
-      r.references[0].local.includes(watchedField.name),
+      r.references.length === 1 && r.references[0].local === watchedField.id,
   );
 
   const handleSave = (relation: ModelFieldRelationFormValues): void => {
@@ -56,10 +56,14 @@ export function ModalRelationsModal({
 
     const newRelation: ModelRelationFieldConfig = {
       ...modelFieldRelation,
-      uid: modelFieldRelation?.uid ?? randomUid(),
+      id:
+        modelFieldRelation?.id ?? modelLocalRelationEntityType.generateNewId(),
+      foreignId:
+        modelFieldRelation?.foreignId ??
+        modelForeignRelationEntityType.generateNewId(),
       name: relation.name,
       references: [
-        { local: watchedField.name, foreign: relation.foreignFieldName },
+        { local: watchedField.id, foreign: relation.foreignFieldName },
       ],
       modelName: relation.modelName,
       foreignRelationName: relation.foreignRelationName,
@@ -69,7 +73,7 @@ export function ModalRelationsModal({
 
     if (modelFieldRelation) {
       onChange(
-        value.map((r) => (r.uid === modelFieldRelation.uid ? newRelation : r)),
+        value.map((r) => (r.id === modelFieldRelation.id ? newRelation : r)),
       );
     } else {
       onChange([...value, newRelation]);
@@ -79,7 +83,7 @@ export function ModalRelationsModal({
 
   const handleDelete = (): void => {
     if (modelFieldRelation) {
-      onChange(value.filter((r) => r.uid !== modelFieldRelation.uid));
+      onChange(value.filter((r) => r.id !== modelFieldRelation.id));
       onClose();
     }
   };

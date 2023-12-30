@@ -1,15 +1,15 @@
 import { buildFeature } from './feature.js';
 import { getPostgresSettings, getRedisSettings } from './utils.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import { FeatureUtils } from '@src/definition/index.js';
 import { BackendAppConfig } from '@src/schema/index.js';
 
 export function buildFastify(
-  builder: AppEntryBuilder,
+  builder: BackendAppEntryBuilder,
   app: BackendAppConfig,
 ): unknown {
   const { projectConfig, parsedProject } = builder;
-  const rootFeatures =
-    projectConfig.features?.filter((f) => !f.name.includes('/')) ?? [];
+  const rootFeatures = FeatureUtils.getRootFeatures(projectConfig);
 
   // add graphql scalars
   builder.addDescriptor('graphql/root.json', {
@@ -113,7 +113,7 @@ export function buildFastify(
         generator: '@halfdomelabs/fastify/yoga/yoga-sentry',
       },
       $modules: [
-        ...rootFeatures.map((feature) => buildFeature(feature.name, builder)),
+        ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),
         'graphql/root',
       ],
       $stripe: !app.enableStripe

@@ -1,6 +1,6 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
-import { useFieldArray, UseFormReturn } from 'react-hook-form';
+import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { Button, LinkButton } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
@@ -8,23 +8,25 @@ import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<ModelConfig>;
   relationIdx: number;
+  control: Control<ModelConfig>;
 }
 
 function ModelRelationReferencesForm({
   className,
-  formProps,
   relationIdx,
+  control,
 }: Props): JSX.Element {
-  const { control, watch } = formProps;
   const { fields, remove, append } = useFieldArray({
     control,
     name: `model.relations.${relationIdx}.references`,
   });
 
-  const foreignModelName = watch(`model.relations.${relationIdx}.modelName`);
-  const localFields = watch(`model.fields`);
+  const foreignModelName = useWatch({
+    control,
+    name: `model.relations.${relationIdx}.modelName`,
+  });
+  const localFields = useWatch({ control, name: `model.fields` });
   const { parsedProject } = useProjectConfig();
 
   if (!foreignModelName) {
@@ -32,13 +34,13 @@ function ModelRelationReferencesForm({
   }
   const localFieldOptions = localFields.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
-  const foreignFields = parsedProject.getModelByName(foreignModelName);
+  const foreignFields = parsedProject.getModelById(foreignModelName);
   const foreignFieldOptions = foreignFields.model.fields.map((f) => ({
     label: f.name,
-    value: f.name,
+    value: f.id,
   }));
 
   return (

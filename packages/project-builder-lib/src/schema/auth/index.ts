@@ -1,14 +1,27 @@
 import { z } from 'zod';
 
-import { ReferencesBuilder } from '../references.js';
-import { randomUid } from '@src/utils/randomUid.js';
+import { authRoleEntityType } from './types.js';
+import { modelEntityType } from '../models/index.js';
+import { zEnt, zRef } from '@src/references/index.js';
+import { featureEntityType } from '@src/schema/features/index.js';
 
-export const authRoleSchema = z.object({
-  uid: z.string().default(randomUid),
-  name: z.string().min(1),
-  comment: z.string().min(1),
-  inherits: z.array(z.string().min(1)).optional(),
-});
+export * from './types.js';
+
+export const authRoleSchema = zEnt(
+  z.object({
+    name: z.string().min(1),
+    comment: z.string().min(1),
+    inherits: z
+      .array(
+        zRef(z.string(), {
+          type: authRoleEntityType,
+          onDelete: 'RESTRICT',
+        }),
+      )
+      .optional(),
+  }),
+  { type: authRoleEntityType },
+);
 
 export type AuthRoleConfig = z.infer<typeof authRoleSchema>;
 
@@ -30,11 +43,23 @@ export const AUTH_DEFAULT_ROLES = [
 ];
 
 export const authSchema = z.object({
-  userModel: z.string().min(1),
-  userRoleModel: z.string().min(1).optional(),
+  userModel: zRef(z.string().min(1), {
+    type: modelEntityType,
+    onDelete: 'RESTRICT',
+  }),
+  userRoleModel: zRef(z.string().min(1), {
+    type: modelEntityType,
+    onDelete: 'RESTRICT',
+  }),
   useAuth0: z.boolean().default(false),
-  authFeaturePath: z.string().min(1),
-  accountsFeaturePath: z.string().min(1),
+  authFeaturePath: zRef(z.string().min(1), {
+    type: featureEntityType,
+    onDelete: 'RESTRICT',
+  }),
+  accountsFeaturePath: zRef(z.string().min(1), {
+    type: featureEntityType,
+    onDelete: 'RESTRICT',
+  }),
   passwordProvider: z.boolean().optional(),
   roles: z.array(authRoleSchema).refine(
     (roles) =>
@@ -47,22 +72,3 @@ export const authSchema = z.object({
 });
 
 export type AuthConfig = z.infer<typeof authSchema>;
-
-export function buildAuthReferences(
-  config: AuthConfig,
-  builder: ReferencesBuilder<AuthConfig>,
-): void {
-  config.roles.forEach((role) => {
-    builder.addReferenceable({
-      category: 'role',
-      id: role.uid,
-      name: role.name,
-    });
-  });
-
-  builder
-    .addReference('userModel', { category: 'model' })
-    .addReference('userRoleModel', { category: 'model' })
-    .addReference('authFeaturePath', { category: 'feature' })
-    .addReference('accountsFeaturePath', { category: 'feature' });
-}

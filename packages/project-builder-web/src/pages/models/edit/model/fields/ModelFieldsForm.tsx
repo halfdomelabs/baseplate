@@ -1,4 +1,7 @@
-import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
+import {
+  ModelConfig,
+  modelScalarFieldType,
+} from '@halfdomelabs/project-builder-lib';
 import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
@@ -16,8 +19,6 @@ import { SortableList } from 'src/components/SortableList';
 interface ModelFieldsFormProps {
   className?: string;
   control: Control<ModelConfig>;
-  fixReferences: () => void;
-  originalModel?: ModelConfig;
 }
 
 interface AutoAddField {
@@ -47,8 +48,6 @@ export function TableHeader({
 export function ModelFieldsForm({
   className,
   control,
-  fixReferences,
-  originalModel,
 }: ModelFieldsFormProps): JSX.Element {
   const {
     fields: fieldFields,
@@ -69,7 +68,7 @@ export function ModelFieldsForm({
         name: 'ID (uuid)',
         addField: () =>
           appendField({
-            uid: randomUid(),
+            id: modelScalarFieldType.generateNewId(),
             name: 'id',
             type: 'uuid',
             isId: true,
@@ -90,7 +89,7 @@ export function ModelFieldsForm({
               ? []
               : [
                   {
-                    uid: randomUid(),
+                    id: modelScalarFieldType.generateNewId(),
                     name: 'updatedAt',
                     type: 'dateTime' as const,
                     options: {
@@ -103,7 +102,7 @@ export function ModelFieldsForm({
               ? []
               : [
                   {
-                    uid: randomUid(),
+                    id: modelScalarFieldType.generateNewId(),
                     name: 'createdAt',
                     type: 'dateTime' as const,
                     options: {
@@ -130,8 +129,6 @@ export function ModelFieldsForm({
         control={control}
         idx={i}
         onRemove={removeField}
-        fixReferences={fixReferences}
-        originalModel={originalModel}
       />
     ),
   }));
@@ -166,7 +163,7 @@ export function ModelFieldsForm({
             variant="secondary"
             onClick={() =>
               appendField({
-                uid: randomUid(),
+                id: modelScalarFieldType.generateNewId(),
                 name: '',
                 type: 'string',
               })

@@ -1,10 +1,15 @@
 import { paramCase } from 'change-case';
 
 import { ModelConfig } from '../../schema/models/index.js';
-import { ParsedProjectConfig } from '@src/parser/index.js';
+import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import { FeatureUtils } from '@src/definition/feature/feature-utils.js';
+import { ModelUtils } from '@src/definition/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
 
-function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
+function buildQuerySchemaTypeForModel(
+  appBuilder: BackendAppEntryBuilder,
+  model: ModelConfig,
+): unknown[] {
   const { schema } = model ?? {};
   const {
     authorize,
@@ -27,7 +32,7 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
             ...exposedFields,
             ...exposedForeignRelations,
             ...exposedLocalRelations,
-          ],
+          ].map((id) => appBuilder.nameFromId(id)),
         },
       },
     },
@@ -41,12 +46,16 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
           children: {
             findQuery: {
               children: {
-                authorize: { roles: authorize?.read },
+                authorize: {
+                  roles: authorize?.read?.map((r) => appBuilder.nameFromId(r)),
+                },
               },
             },
             listQuery: {
               children: {
-                authorize: { roles: authorize?.read },
+                authorize: {
+                  roles: authorize?.read?.map((r) => appBuilder.nameFromId(r)),
+                },
               },
             },
           },
@@ -55,30 +64,48 @@ function buildQuerySchemaTypeForModel(model: ModelConfig): unknown[] {
 }
 
 function buildMutationSchemaTypeForModel(
-  feature: string,
+  appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
+  featureId: string,
 ): unknown {
   const { schema: graphql } = model ?? {};
   const { authorize } = graphql ?? {};
+
+  const featurePath = FeatureUtils.getFeaturePathById(
+    appBuilder.projectConfig,
+    featureId,
+  );
 
   return {
     name: `${model.name}PothosMutations`,
     fileName: `${paramCase(model.name)}.mutations`,
     generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-file',
     modelName: model.name,
-    objectTypeRef: `${feature}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
-    crudServiceRef: `${feature}/root:$services.${model.name}Service`,
+    objectTypeRef: `${featurePath}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
+    crudServiceRef: `${featurePath}/root:$services.${model.name}Service`,
     children: {
       create: model.service?.create?.fields?.length
         ? {
-            children: { authorize: { roles: authorize?.create } },
+            children: {
+              authorize: {
+                roles: authorize?.create?.map((r) => appBuilder.nameFromId(r)),
+              },
+            },
           }
         : null,
       update: {
-        children: { authorize: { roles: authorize?.update } },
+        children: {
+          authorize: {
+            roles: authorize?.update?.map((r) => appBuilder.nameFromId(r)),
+          },
+        },
       },
       delete: {
-        children: { authorize: { roles: authorize?.delete } },
+        children: {
+          authorize: {
+            roles: authorize?.delete?.map((r) => appBuilder.nameFromId(r)),
+          },
+        },
       },
     },
   };
@@ -104,24 +131,24 @@ function buildEnumSchema(enums: EnumConfig[]): unknown[] {
 }
 
 export function buildSchemaTypesForFeature(
-  feature: string,
-  parsedProject: ParsedProjectConfig,
+  appBuilder: BackendAppEntryBuilder,
+  featureId: string,
 ): unknown {
-  const models =
-    parsedProject
-      .getModels()
-      .filter((m) => m.feature === feature && m.schema) ?? [];
-  const enums = parsedProject
+  const models = ModelUtils.getModelsForFeature(
+    appBuilder.projectConfig,
+    featureId,
+  ).filter((m) => m.schema);
+  const enums = appBuilder.parsedProject
     .getEnums()
-    .filter((e) => e.feature === feature && e.isExposed);
+    .filter((e) => e.feature === featureId && e.isExposed);
 
   return [
     ...models.flatMap((model) => [
       ...(model.schema?.buildObjectType ?? model.schema?.buildQuery
-        ? buildQuerySchemaTypeForModel(model)
+        ? buildQuerySchemaTypeForModel(appBuilder, model)
         : []),
       model.schema?.buildMutations
-        ? buildMutationSchemaTypeForModel(feature, model)
+        ? buildMutationSchemaTypeForModel(appBuilder, model, featureId)
         : undefined,
     ]),
     ...buildEnumSchema(enums),

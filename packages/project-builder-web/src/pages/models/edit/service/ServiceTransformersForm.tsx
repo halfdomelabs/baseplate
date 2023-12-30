@@ -1,4 +1,7 @@
-import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
+import {
+  ModelConfig,
+  modelTransformerEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { Button, Dropdown } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
@@ -39,7 +42,6 @@ function ServiceEmbeddedRelationsForm({
                 formProps={formProps}
                 onRemove={() => remove(idx)}
                 idx={idx}
-                originalModel={originalModel}
               />
             );
           case 'password':
@@ -80,7 +82,7 @@ function ServiceEmbeddedRelationsForm({
               <Dropdown.Item
                 onSelect={() =>
                   append({
-                    uid: randomUid(),
+                    id: modelTransformerEntityType.generateNewId(),
                     name: 'password',
                     type: 'password',
                   })
@@ -92,7 +94,12 @@ function ServiceEmbeddedRelationsForm({
             {parsedProject.projectConfig.storage && (
               <Dropdown.Item
                 onSelect={() =>
-                  append({ uid: randomUid(), name: '', type: 'file' })
+                  append({
+                    id: modelTransformerEntityType.generateNewId(),
+                    name: '',
+                    fileRelationRef: '',
+                    type: 'file',
+                  })
                 }
               >
                 File
@@ -101,10 +108,12 @@ function ServiceEmbeddedRelationsForm({
             <Dropdown.Item
               onSelect={() =>
                 append({
-                  uid: randomUid(),
+                  id: modelTransformerEntityType.generateNewId(),
+                  foreignRelationRef: '',
                   name: '',
                   type: 'embeddedRelation',
                   embeddedFieldNames: [],
+                  modelRef: '',
                 })
               }
             >

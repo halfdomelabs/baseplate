@@ -1,8 +1,4 @@
-import {
-  EnumConfig,
-  enumSchema,
-  randomUid,
-} from '@halfdomelabs/project-builder-lib';
+import { EnumConfig, enumSchema } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';
@@ -34,7 +30,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
   const featureOptions = (parsedProject.projectConfig.features ?? []).map(
     (f) => ({
       label: f.name,
-      value: f.name,
+      value: f.id,
     }),
   );
 
@@ -99,7 +95,6 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
         type="button"
         onClick={() =>
           appendValue({
-            uid: randomUid(),
             name: '',
             friendlyName: '',
           })

@@ -1,3 +1,4 @@
+import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { Button, Card, EmptyDisplay } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { MdApps } from 'react-icons/md';
@@ -38,7 +39,7 @@ export function AppsListPage(): JSX.Element {
       </Link>
       <div className="max-w-xl space-y-4">
         {sortedApps.map((app) => (
-          <Card key={app.uid} className="flex justify-between space-x-4 p-4">
+          <Card key={app.id} className="flex justify-between space-x-4 p-4">
             <div>
               <h3>
                 {app.name} ({app.type})
@@ -47,7 +48,10 @@ export function AppsListPage(): JSX.Element {
                 {app.packageLocation}
               </p>
             </div>
-            <Link to={`/apps/edit/${app.uid}`} className="inline-block">
+            <Link
+              to={`/apps/edit/${appEntityType.toUid(app.id)}`}
+              className="inline-block"
+            >
               <Button variant="secondary">Edit</Button>
             </Link>
           </Card>

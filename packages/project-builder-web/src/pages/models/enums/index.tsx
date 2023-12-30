@@ -6,7 +6,7 @@ function EnumRoutes(): JSX.Element {
   return (
     <Routes>
       <Route path="new" element={<EnumEditPage />} />
-      <Route path="edit/:id/*" element={<EnumEditPage />} />
+      <Route path="edit/:uid/*" element={<EnumEditPage />} />
     </Routes>
   );
 }

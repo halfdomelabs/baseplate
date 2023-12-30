@@ -1,40 +1,39 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { useState } from 'react';
-import { FieldArrayWithId, UseFormReturn } from 'react-hook-form';
+import { Control, FieldArrayWithId } from 'react-hook-form';
 
 import ModelUniqueConstraintFieldsField from './ModelUniqueConstraintFieldsField';
+import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
 import { LinkButton, TextInput } from 'src/components';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<ModelConfig>;
   idx: number;
   field: FieldArrayWithId<ModelConfig, 'model.uniqueConstraints', 'id'>;
   onRemove: (idx: number) => void;
+  control: Control<ModelConfig>;
 }
 
 function ModelUniqueConstraintForm({
   className,
-  formProps,
+  control,
   idx,
   field,
   onRemove,
 }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(!field.name);
-  const {
-    register,
-    formState: { errors },
-    watch,
-  } = formProps;
 
-  const watchedField = watch(`model.uniqueConstraints.${idx}`);
+  const constraintFields = useEditedModelConfig((model) => {
+    const fields = model.model.uniqueConstraints?.[idx]?.fields
+      .filter((f) => f.name)
+      .map((f) => ModelUtils.getScalarFieldById(model, f.name).name);
+    return fields?.length ? fields.join(', ') : 'No Fields';
+  });
 
   function handleRemove(): void {
     onRemove(idx);
   }
-
-  const relationErrors = errors.model?.uniqueConstraints?.[idx];
 
   return (
     <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>
@@ -42,11 +41,7 @@ function ModelUniqueConstraintForm({
         <div className="flex flex-row items-center space-x-4">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>
           <div>
-            <strong>
-              {watchedField?.fields?.length
-                ? watchedField.fields.map((f) => f.name).join(', ')
-                : 'No Fields'}
-            </strong>
+            <strong>{constraintFields}</strong>
           </div>
           <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
         </div>
@@ -56,14 +51,14 @@ function ModelUniqueConstraintForm({
             <LinkButton onClick={() => setIsOpen(false)}>Close</LinkButton>
             <LinkButton onClick={() => handleRemove()}>Remove</LinkButton>
           </div>
-          <TextInput.Labelled
+          <TextInput.LabelledController
             label="Name"
             className="w-full"
-            register={register(`model.uniqueConstraints.${idx}.name`)}
-            error={relationErrors?.name?.message}
+            control={control}
+            name={`model.uniqueConstraints.${idx}.name`}
           />
           <ModelUniqueConstraintFieldsField
-            formProps={formProps}
+            control={control}
             constraintIdx={idx}
           />
         </div>

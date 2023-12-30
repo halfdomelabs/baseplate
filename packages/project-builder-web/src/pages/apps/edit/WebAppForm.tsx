@@ -28,7 +28,7 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
   function onSubmit(data: WebAppConfig): void {
     setConfigAndFixReferences((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
-        app.uid === appConfig.uid ? data : app,
+        app.id === appConfig.id ? data : app,
       );
     });
     toast.success('Successfully saved app!');
@@ -36,7 +36,7 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
 
   const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({
     label: role.name,
-    value: role.name,
+    value: role.id,
   }));
 
   return (

@@ -1,3 +1,4 @@
+import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useState } from 'react';
 import { FaDatabase, FaList } from 'react-icons/fa';
 import {
@@ -50,9 +51,9 @@ function AppSidebar(): JSX.Element {
             </Sidebar.DropdownLinkItem>
             {config.apps.map((app) => (
               <Sidebar.DropdownLinkItem
-                key={app.uid}
+                key={app.id}
                 withParentIcon
-                to={`/apps/edit/${app.uid}`}
+                to={`/apps/edit/${appEntityType.toUid(app.id)}`}
               >
                 {app.name}
               </Sidebar.DropdownLinkItem>

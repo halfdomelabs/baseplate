@@ -1,3 +1,4 @@
+import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
 import { Button, InputField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
@@ -52,9 +53,9 @@ export function EnumsSidebarList({
       <div className="flex-1 overflow-y-auto">
         <ul>
           {sortedEnums.map((item) => (
-            <li key={item.uid}>
+            <li key={item.id}>
               <NavLink
-                to={`/models/enums/edit/${item.uid}`}
+                to={`/models/enums/edit/${modelEnumEntityType.toUid(item.id)}`}
                 className={({ isActive }) =>
                   clsx(
                     'block w-full p-2 text-sm hover:bg-background-100 dark:hover:bg-background-700',

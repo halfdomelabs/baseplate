@@ -1,9 +1,10 @@
 import { ParserPlugin, PluginMergeModelFieldInput } from '../types.js';
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 import { notEmpty } from '@src/utils/array.js';
 
 export const StoragePlugin: ParserPlugin = {
   name: 'StoragePlugin',
-  run(projectConfig, hooks) {
+  run(projectConfig, hooks, definitionContainer) {
     const { storage, auth, models } = projectConfig;
     if (!storage) {
       return;
@@ -20,10 +21,12 @@ export const StoragePlugin: ParserPlugin = {
               return undefined;
             }
             // look up relation
-            const relation = m.model.relations?.find((r) => r.name === t.name);
+            const relation = m.model.relations?.find(
+              (r) => r.id === t.fileRelationRef,
+            );
             // shouldn't happen as checked elsewhere
             if (!relation) throw new Error(`Relation not found for ${t.name}`);
-            return relation.foreignRelationName;
+            return relation.foreignId;
           })
           .filter(notEmpty) ?? [],
     );
@@ -106,7 +109,7 @@ export const StoragePlugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: storage.fileModel,
+      name: ModelUtils.byId(projectConfig, storage.fileModel).name,
       feature: storage.featurePath,
       model: {
         fields: fileFields,
@@ -124,14 +127,28 @@ export const StoragePlugin: ParserPlugin = {
       },
     });
 
+    const featurePath = FeatureUtils.getFeatureByIdOrThrow(
+      projectConfig,
+      storage.featurePath,
+    ).name;
+
     // add feature providers
+    const fileModelName = definitionContainer.nameFromId(storage.fileModel);
     hooks.addFeatureChildren(storage.featurePath, {
       $storage: {
         generator: '@halfdomelabs/fastify/storage/storage-module',
-        fileObjectTypeRef: `${storage.featurePath}/root:$schemaTypes.${storage.fileModel}ObjectType.$objectType`,
-        fileModel: storage.fileModel,
-        s3Adapters: storage.s3Adapters,
-        categories: storage.categories,
+        fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${fileModelName}ObjectType.$objectType`,
+        fileModel: fileModelName,
+        s3Adapters: storage.s3Adapters.map((a) => ({
+          name: a.name,
+          bucketConfigVar: a.bucketConfigVar,
+          hostedUrlConfigVar: a.hostedUrlConfigVar,
+        })),
+        categories: storage.categories.map((c) => ({
+          ...c,
+          usedByRelation: definitionContainer.nameFromId(c.usedByRelation),
+          defaultAdapter: definitionContainer.nameFromId(c.defaultAdapter),
+        })),
       },
     });
 

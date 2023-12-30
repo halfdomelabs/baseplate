@@ -1,4 +1,7 @@
-import { randomUid, StorageConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  storageAdapterEntityType,
+  StorageConfig,
+} from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray } from 'react-hook-form';
 
@@ -43,7 +46,11 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
 
       <Button
         onClick={() =>
-          append({ uid: randomUid(), name: '', bucketConfigVar: '' })
+          append({
+            id: storageAdapterEntityType.generateNewId(),
+            name: '',
+            bucketConfigVar: '',
+          })
         }
       >
         Add Adapter

@@ -84,7 +84,7 @@ function ColumnForm({
 function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
   const { parsedProject } = useProjectConfig();
-  const model = modelName ? parsedProject.getModelByName(modelName) : undefined;
+  const model = modelName ? parsedProject.getModelById(modelName) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'table.columns',
@@ -93,13 +93,13 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
   const localRelationOptions =
     model?.model.relations?.map((relation) => ({
       label: `${relation.name} (${relation.modelName})`,
-      value: relation.name,
+      value: relation.id,
     })) ?? [];
 
   const fieldOptions =
     model?.model.fields.map((field) => ({
       label: field.name,
-      value: field.name,
+      value: field.id,
     })) ?? [];
 
   return (

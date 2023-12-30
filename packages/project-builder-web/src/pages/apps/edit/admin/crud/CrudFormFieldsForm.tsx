@@ -166,7 +166,7 @@ function CrudFormFieldsForm({
 }: Props): JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
   const { parsedProject } = useProjectConfig();
-  const model = modelName ? parsedProject.getModelByName(modelName) : undefined;
+  const model = modelName ? parsedProject.getModelById(modelName) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'form.fields',
@@ -175,20 +175,20 @@ function CrudFormFieldsForm({
   const fieldOptions =
     model?.model.fields.map((field) => ({
       label: field.name,
-      value: field.name,
+      value: field.id,
     })) ?? [];
 
   const localRelationOptions =
     model?.model.relations?.map((relation) => ({
       label: `${relation.name} (${relation.modelName})`,
-      value: relation.name,
+      value: relation.id,
     })) ?? [];
 
   const foreignRelationOptions = parsedProject
     .getModelForeignRelations(modelName)
     .map((r) => ({
       label: `${r.relation.foreignRelationName} (${r.model.name})`,
-      value: r.relation.foreignRelationName,
+      value: r.relation.foreignId,
     }));
 
   const fileTransformerOptions =
@@ -196,7 +196,7 @@ function CrudFormFieldsForm({
       ?.filter((t): t is FileTransformerConfig => t.type === 'file')
       .map((transformer) => ({
         label: transformer.name,
-        value: transformer.name,
+        value: transformer.id,
       })) ?? [];
 
   const enumFieldOptions =
@@ -204,7 +204,7 @@ function CrudFormFieldsForm({
       .filter((f) => f.type === 'enum')
       .map((field) => ({
         label: field.name,
-        value: field.name,
+        value: field.id,
       })) ?? [];
 
   return (

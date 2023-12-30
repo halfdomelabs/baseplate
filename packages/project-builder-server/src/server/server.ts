@@ -4,6 +4,7 @@ import fastifyWebsocketPlugin from '@fastify/websocket';
 import { FastifyBaseLogger, FastifyInstance, fastify } from 'fastify';
 import { Logger } from 'pino';
 
+import { gracefulShutdownPlugin } from './graceful-shutdown.js';
 import { baseplatePlugin } from './plugin.js';
 import { GeneratorEngineSetupConfig } from '@src/index.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
@@ -32,6 +33,8 @@ export async function buildServer({
   const resolvedDirectories = directories.map((directory) =>
     expandPathWithTilde(directory),
   );
+
+  await server.register(gracefulShutdownPlugin);
 
   await server.register(fastifyHelmet);
 

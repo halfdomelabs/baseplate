@@ -3,10 +3,11 @@ import {
   PluginMergeModelFieldInput,
   PluginMergeModelRelationInput,
 } from '../types.js';
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 
 export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
-  run(projectConfig, hooks) {
+  run(projectConfig, hooks, definitionContainer) {
     const { auth } = projectConfig;
     if (!auth || !auth.useAuth0) {
       return;
@@ -43,7 +44,7 @@ export const Auth0Plugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: auth.userModel,
+      name: ModelUtils.byId(projectConfig, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userFields,
@@ -78,7 +79,7 @@ export const Auth0Plugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: auth.userRoleModel,
+      name: ModelUtils.byId(projectConfig, auth.userRoleModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userRoleFields,
@@ -96,7 +97,12 @@ export const Auth0Plugin: ParserPlugin = {
       $authContext: {
         generator: '@halfdomelabs/fastify/auth/auth-context',
         peerProvider: true,
-        authInfoRef: `${auth.authFeaturePath}/root:$auth0`,
+        authInfoRef: `${
+          FeatureUtils.getFeatureByIdOrThrow(
+            projectConfig,
+            auth.authFeaturePath,
+          ).name
+        }/root:$auth0`,
       },
       $pothosAuth: {
         generator: '@halfdomelabs/fastify/pothos/pothos-auth',
@@ -114,14 +120,20 @@ export const Auth0Plugin: ParserPlugin = {
         children: {
           $roles: {
             generator: '@halfdomelabs/fastify/auth/role-service',
-            roles: auth.roles,
+            roles: auth.roles.map((r) => ({
+              name: r.name,
+              comment: r.comment,
+              inherits: r.inherits?.map((inheritRole) =>
+                definitionContainer.nameFromId(inheritRole),
+              ),
+            })),
             peerProvider: true,
           },
         },
       },
       $auth0: {
         generator: '@halfdomelabs/fastify/auth0/auth0-module',
-        userModelName: auth.userModel,
+        userModelName: ModelUtils.byId(projectConfig, auth.userModel).name,
         includeManagement: true,
       },
     });

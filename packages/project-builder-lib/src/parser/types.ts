@@ -1,4 +1,5 @@
 import { ProjectConfig } from '../schema/index.js';
+import { ProjectDefinitionContainer } from '@src/index.js';
 import {
   ModelConfig,
   ModelRelationFieldConfig,
@@ -21,8 +22,11 @@ export interface ParsedModel extends ModelConfig {
   service?: ModelConfig['service'];
 }
 
-export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'uid'>;
-export type PluginMergeModelRelationInput = Omit<ParsedRelationField, 'uid'>;
+export type PluginMergeModelFieldInput = Omit<ParsedModelField, 'id' | 'uid'>;
+export type PluginMergeModelRelationInput = Omit<
+  ParsedRelationField,
+  'id' | 'uid' | 'foreignId'
+>;
 
 export interface PluginMergeModelInput
   extends Pick<ParsedModel, 'name' | 'feature' | 'service'> {
@@ -36,17 +40,21 @@ export interface PluginHooks {
   mergeModel: (model: PluginMergeModelInput) => void;
   addGlobalHoistedProviders: (providers: string | string[]) => void;
   addFeatureHoistedProviders: (
-    featurePath: string,
+    featureId: string,
     providers: string | string[],
   ) => void;
   addFastifyChildren: (children: Record<string, unknown>) => void;
   addFeatureChildren: (
-    featurePath: string,
+    featureId: string,
     children: Record<string, unknown>,
   ) => void;
 }
 
 export interface ParserPlugin {
   name: string;
-  run(projectConfig: ProjectConfig, hooks: PluginHooks): void;
+  run(
+    projectConfig: ProjectConfig,
+    hooks: PluginHooks,
+    container: ProjectDefinitionContainer,
+  ): void;
 }

@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { randomUid } from '../../utils/randomUid.js';
+import { appEntityType } from './types.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const baseAppValidators = {
-  uid: z.string().default(randomUid),
+  id: z.string().default(appEntityType.generateNewId()),
   name: DASHED_NAME,
   type: z.string(),
   packageLocation: z.string().optional(),

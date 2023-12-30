@@ -43,7 +43,10 @@ function SelectArrayInput({
     <div className={classNames('space-y-4', className)}>
       {values.map((value) => (
         <div key={value}>
-          <span>{value}</span> (
+          <span>
+            {options.find((option) => option.value === value)?.label ?? value}
+          </span>{' '}
+          (
           <LinkButton
             onClick={() => {
               onChange(values.filter((v) => v !== value));

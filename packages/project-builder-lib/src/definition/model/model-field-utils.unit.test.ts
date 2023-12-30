@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  getModelLocalFields,
-  isModelRelationOneToOne,
-  isModelRelationOptional,
-} from './model.js';
+import { ModelFieldUtils } from './model-field-utils.js';
 import {
   generateMockModel,
   generateMockModelRelationField,
@@ -12,21 +8,28 @@ import {
   generateMockUniqueConstraint,
 } from '@src/schema/models/mocks.js';
 
-describe('getModelLocalFields', () => {
+const { getRelationLocalFields, isRelationOneToOne, isRelationOptional } =
+  ModelFieldUtils;
+
+describe('getRelationLocalFields', () => {
   it('should return a single local field of a relation', () => {
     const model = generateMockModel({
       model: {
         fields: [
-          generateMockModelScalarField({ name: 'localField', type: 'date' }),
-          generateMockModelScalarField({ name: 'otherField' }),
+          generateMockModelScalarField({
+            id: 'local',
+            name: 'localField',
+            type: 'date',
+          }),
+          generateMockModelScalarField({ id: 'other', name: 'otherField' }),
         ],
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'localField', foreign: 'foreignField' }],
+      references: [{ local: 'local', foreign: 'foreign' }],
     });
 
-    const localFields = getModelLocalFields(model, relation);
+    const localFields = getRelationLocalFields(model, relation);
 
     expect(localFields).toEqual([model.model.fields[0]]);
   });
@@ -35,31 +38,40 @@ describe('getModelLocalFields', () => {
     const model = generateMockModel({
       model: {
         fields: [
-          generateMockModelScalarField({ name: 'localField', type: 'date' }),
-          generateMockModelScalarField({ name: 'localField2', type: 'date' }),
+          generateMockModelScalarField({
+            id: 'local-id',
+            name: 'localField',
+            type: 'date',
+          }),
+          generateMockModelScalarField({
+            id: 'local-id2',
+            name: 'localField2',
+            type: 'date',
+          }),
           generateMockModelScalarField({ name: 'otherField' }),
         ],
       },
     });
     const relation = generateMockModelRelationField({
       references: [
-        { local: 'localField', foreign: 'foreignField' },
-        { local: 'localField2', foreign: 'foreignField2' },
+        { local: 'local-id', foreign: 'foreignField' },
+        { local: 'local-id2', foreign: 'foreignField2' },
       ],
     });
 
-    const localFields = getModelLocalFields(model, relation);
+    const localFields = getRelationLocalFields(model, relation);
 
     expect(localFields).toEqual([model.model.fields[0], model.model.fields[1]]);
   });
 });
 
-describe('isModelRelationOptional', () => {
+describe('isRelationOptional', () => {
   it('should return true if any local field is optional', () => {
     const model = generateMockModel({
       model: {
         fields: [
           generateMockModelScalarField({
+            id: 'local-id',
             name: 'localField',
             type: 'date',
             isOptional: true,
@@ -69,10 +81,10 @@ describe('isModelRelationOptional', () => {
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'localField', foreign: 'foreignField' }],
+      references: [{ local: 'local-id', foreign: 'foreignField' }],
     });
 
-    const isOptional = isModelRelationOptional(model, relation);
+    const isOptional = isRelationOptional(model, relation);
 
     expect(isOptional).toBe(true);
   });
@@ -82,6 +94,7 @@ describe('isModelRelationOptional', () => {
       model: {
         fields: [
           generateMockModelScalarField({
+            id: 'local-id',
             name: 'localField',
             type: 'date',
           }),
@@ -93,22 +106,23 @@ describe('isModelRelationOptional', () => {
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'localField', foreign: 'foreignField' }],
+      references: [{ local: 'local-id', foreign: 'foreignField' }],
     });
 
-    const isOptional = isModelRelationOptional(model, relation);
+    const isOptional = isRelationOptional(model, relation);
 
     expect(isOptional).toBe(false);
   });
 });
 
-describe('isModelRelationOneToOne', () => {
+describe('isRelationOneToOne', () => {
   it('should return true if the relation is a primary key', () => {
     const model = generateMockModel({
       model: {
         primaryKeys: ['localField'],
         fields: [
           generateMockModelScalarField({
+            id: 'local-id',
             name: 'localField',
             isId: true,
           }),
@@ -120,10 +134,10 @@ describe('isModelRelationOneToOne', () => {
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'localField', foreign: 'foreignField' }],
+      references: [{ local: 'local-id', foreign: 'foreignField' }],
     });
 
-    const isOneToOne = isModelRelationOneToOne(model, relation);
+    const isOneToOne = isRelationOneToOne(model, relation);
 
     expect(isOneToOne).toBe(true);
   });
@@ -133,14 +147,16 @@ describe('isModelRelationOneToOne', () => {
       model: {
         uniqueConstraints: [
           generateMockUniqueConstraint({
-            fields: [{ name: 'localField' }, { name: 'localField2' }],
+            fields: [{ name: 'local-id' }, { name: 'local-id2' }],
           }),
         ],
         fields: [
           generateMockModelScalarField({
+            id: 'local-id',
             name: 'localField',
           }),
           generateMockModelScalarField({
+            id: 'local-id2',
             name: 'localField2',
           }),
           generateMockModelScalarField({
@@ -152,12 +168,12 @@ describe('isModelRelationOneToOne', () => {
     });
     const relation = generateMockModelRelationField({
       references: [
-        { local: 'localField', foreign: 'foreignField' },
-        { local: 'localField2', foreign: 'foreignField' },
+        { local: 'local-id', foreign: 'foreignField' },
+        { local: 'local-id2', foreign: 'foreignField' },
       ],
     });
 
-    const isOneToOne = isModelRelationOneToOne(model, relation);
+    const isOneToOne = isRelationOneToOne(model, relation);
 
     expect(isOneToOne).toBe(true);
   });

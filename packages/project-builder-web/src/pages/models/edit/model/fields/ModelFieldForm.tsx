@@ -7,7 +7,7 @@ import {
   SwitchField,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 import { TbLink } from 'react-icons/tb';
@@ -15,6 +15,7 @@ import { TbLink } from 'react-icons/tb';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
+import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 
@@ -23,8 +24,6 @@ interface Props {
   control: Control<ModelConfig>;
   idx: number;
   onRemove: (idx: number) => void;
-  originalModel?: ModelConfig;
-  fixReferences: () => void;
 }
 
 function ModelFieldForm({
@@ -32,8 +31,6 @@ function ModelFieldForm({
   control,
   idx,
   onRemove,
-  originalModel,
-  fixReferences,
 }: Props): JSX.Element {
   const watchedField = useWatch({
     name: `model.fields.${idx}`,
@@ -45,81 +42,38 @@ function ModelFieldForm({
     control,
   });
 
-  const watchedPrimaryKeys = useWatch({
-    name: `model.primaryKeys`,
-    control,
-  });
-
-  const watchedUniqueConstraints = useWatch({
-    name: `model.uniqueConstraints`,
-    control,
-  });
-
-  const { parsedProject } = useProjectConfig();
+  const { definitionContainer } = useProjectConfig();
   const toast = useToast();
 
-  useEffect(() => {
-    fixReferences();
-  }, [fixReferences, watchedField.name]);
-
-  function handleRemove(): void {
-    // check for references
-    if (originalModel) {
-      const originalField = originalModel.model.fields.find(
-        (f) => f.uid === watchedField.uid,
-      );
-      if (originalField) {
-        const references = parsedProject.references.modelField?.[
-          `${originalModel.name}.${originalField.name}`
-        ]?.filter(
-          (ref) =>
-            ref.referenceType !== 'modelPrimaryKey' &&
-            ref.referenceType !== 'modelLocalRelation',
-        );
-        if (references?.length) {
-          toast.error(
-            `Unable to remove field ${
-              originalField.name
-            } as it is being used in ${references
-              .map((r) => r.path)
-              .join(', ')}`,
-          );
-          return;
-        }
-      }
-    }
+  const removeError = useEditedModelConfig((model) => {
+    const field = model.model.fields[idx];
     // check local references
-    const usedRelations = watchedRelations?.filter((relation) =>
-      relation.references.some(
-        (r) => watchedField.name && r.local.includes(watchedField.name),
-      ),
+    const usedRelations = model.model.relations?.filter((relation) =>
+      relation.references.some((r) => r.local === field.id),
     );
     if (usedRelations?.length) {
-      toast.error(
-        `Unable to remove field as it is being used in relations ${usedRelations
-          .map((r) => r.name)
-          .join(', ')}`,
-      );
-      return;
+      return `Unable to remove field as it is being used in relations ${usedRelations
+        .map((r) => r.name)
+        .join(', ')}`;
     }
-
     // check primary keys
-    if (watchedPrimaryKeys?.includes(watchedField.name)) {
-      toast.error(
-        `Unable to remove field as it is being used in in the primary key`,
-      );
-      return;
+    if (model.model.primaryKeys?.includes(field.id)) {
+      return `Unable to remove field as it is being used in in the primary key`;
     }
-
     // check unique constraints
     if (
-      watchedUniqueConstraints?.some(
-        (constraint) => constraint.name === watchedField.name,
+      model.model.uniqueConstraints?.some((constraint) =>
+        constraint.fields.some((f) => f.name === watchedField.id),
       )
     ) {
-      toast.error(
-        `Unable to remove field as it is being used in in a unique constraint`,
-      );
+      return `Unable to remove field as it is being used in in a unique constraint`;
+    }
+    return undefined;
+  });
+
+  function handleRemove(): void {
+    if (removeError) {
+      toast.error(removeError);
       return;
     }
 
@@ -128,7 +82,7 @@ function ModelFieldForm({
 
   const modelFieldRelation = watchedRelations?.find(
     (r) =>
-      r.references.length === 1 && r.references[0].local === watchedField.name,
+      r.references.length === 1 && r.references[0].local === watchedField.id,
   );
 
   const [isRelationFormOpen, setIsRelationFormOpen] = useState(false);
@@ -173,7 +127,7 @@ function ModelFieldForm({
             icon={TbLink}
             onClick={() => setIsRelationFormOpen(true)}
           >
-            {modelFieldRelation.modelName}
+            {definitionContainer.nameFromId(modelFieldRelation.modelName)}
           </Badge.WithIcon>
         )}
         <ModalRelationsModal

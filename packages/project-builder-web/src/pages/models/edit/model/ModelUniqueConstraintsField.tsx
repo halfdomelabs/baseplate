@@ -1,20 +1,19 @@
-import { ModelConfig, randomUid } from '@halfdomelabs/project-builder-lib';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
-import { useFieldArray, UseFormReturn } from 'react-hook-form';
+import { Control, useFieldArray } from 'react-hook-form';
 
 import ModelUniqueConstraintForm from './ModelUniqueConstraintForm';
 import { LinkButton } from 'src/components';
 
 interface Props {
   className?: string;
-  formProps: UseFormReturn<ModelConfig>;
+  control: Control<ModelConfig>;
 }
 
 function ModelUniqueConstraintsField({
   className,
-  formProps,
+  control,
 }: Props): JSX.Element {
-  const { control } = formProps;
   const { fields, remove, append } = useFieldArray({
     control,
     name: 'model.uniqueConstraints',
@@ -27,7 +26,7 @@ function ModelUniqueConstraintsField({
         <div key={field.id}>
           <div className="flex flex-row space-x-4">
             <ModelUniqueConstraintForm
-              formProps={formProps}
+              control={control}
               idx={i}
               field={field}
               onRemove={remove}
@@ -38,7 +37,6 @@ function ModelUniqueConstraintsField({
       <LinkButton
         onClick={() =>
           append({
-            uid: randomUid(),
             name: '',
             fields: [],
           })

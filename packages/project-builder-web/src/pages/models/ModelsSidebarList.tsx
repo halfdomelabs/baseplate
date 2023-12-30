@@ -1,3 +1,4 @@
+import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   InputField,
@@ -37,7 +38,7 @@ export function ModelsSidebarList({
   const handleDelete = (id: string): void => {
     try {
       setConfig((draftConfig) => {
-        draftConfig.models = draftConfig.models?.filter((m) => m.uid !== id);
+        draftConfig.models = draftConfig.models?.filter((m) => m.id !== id);
       });
       navigate('..');
     } catch (err) {
@@ -73,9 +74,9 @@ export function ModelsSidebarList({
       <div className="flex-1 overflow-y-auto">
         <ul>
           {sortedModels.map((model) => (
-            <li key={model.uid} className="group">
+            <li key={model.id} className="group">
               <NavLink
-                to={`/models/edit/${model.uid}`}
+                to={`/models/edit/${modelEntityType.toUid(model.id)}`}
                 className={({ isActive }) =>
                   clsx(
                     'block w-full p-2 text-sm group-hover:bg-background-100 dark:group-hover:bg-background-700',
@@ -91,7 +92,7 @@ export function ModelsSidebarList({
 
                   <MdDelete
                     title="Delete Model"
-                    className="z-10 hidden h-4 w-4 shrink-0 fill-destructive group-hover:inline-flex"
+                    className="z-10 hidden h-4 w-4 shrink-0 text-foreground-700 opacity-75 group-hover:inline-flex"
                     onClick={(e) => {
                       e.preventDefault();
                       requestConfirm({
@@ -100,7 +101,7 @@ export function ModelsSidebarList({
                           model?.name ?? 'the model'
                         }?`,
                         buttonConfirmText: 'Delete',
-                        onConfirm: () => handleDelete(model.uid),
+                        onConfirm: () => handleDelete(model.id),
                       });
                     }}
                   />

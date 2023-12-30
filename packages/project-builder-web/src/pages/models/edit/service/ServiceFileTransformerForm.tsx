@@ -27,7 +27,7 @@ function ServiceFileTransformerForm({
 
   const relationOptions = fileRelations.map((relation) => ({
     label: relation.name,
-    value: relation.name,
+    value: relation.id,
   }));
 
   return (
@@ -42,7 +42,7 @@ function ServiceFileTransformerForm({
         className="w-full"
         control={control}
         label="Relation"
-        name={`service.transformers.${idx}.name`}
+        name={`service.transformers.${idx}.fileRelationRef`}
         options={relationOptions}
       />
     </div>
