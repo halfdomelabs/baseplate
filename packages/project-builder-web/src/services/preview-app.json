@@ -2,6 +2,7 @@
   "apps": [
     {
       "allowedRoles": ["admin"],
+      "id": "app:NmEolDU3Iggt",
       "name": "admin",
       "packageLocation": "packages/admin",
       "sections": [
@@ -46,6 +47,7 @@
             ]
           },
           "icon": "BsCardChecklist",
+          "id": "admin-section:5zyomPGTfpla",
           "modelName": "TodoList",
           "name": "TodoList",
           "table": {
@@ -64,8 +66,7 @@
               }
             ]
           },
-          "type": "crud",
-          "uid": "VuanUxgD2Rt_"
+          "type": "crud"
         },
         {
           "disableCreate": true,
@@ -81,7 +82,7 @@
                   }
                 ]
               },
-              "id": "koHZa3SChNjF",
+              "id": "admin-crud-embedded-form:3CvZP5ndTqvj",
               "modelName": "Customer",
               "name": "customer",
               "type": "object"
@@ -97,7 +98,7 @@
                   }
                 ]
               },
-              "id": "F78Xht0ptyeZ",
+              "id": "admin-crud-embedded-form:UtuGJ_24FFu7",
               "modelName": "UserRole",
               "name": "roles",
               "table": {
@@ -142,6 +143,7 @@
             ]
           },
           "icon": "FaUserAlt",
+          "id": "admin-section:fNRQifZdC2LF",
           "modelName": "User",
           "name": "User",
           "table": {
@@ -156,12 +158,10 @@
               }
             ]
           },
-          "type": "crud",
-          "uid": "tRhhDTE8ZKBw"
+          "type": "crud"
         }
       ],
-      "type": "admin",
-      "uid": "VYxJMmh4T9DR"
+      "type": "admin"
     },
     {
       "enableAxios": true,
@@ -171,22 +171,23 @@
       "enableSendgrid": true,
       "enableStripe": true,
       "enableSubscriptions": true,
+      "id": "app:OHiu1F64bPmB",
       "name": "backend",
       "packageLocation": "packages/backend",
-      "type": "backend",
-      "uid": "HQP7ad3ALJ2I"
+      "type": "backend"
     },
     {
       "allowedRoles": ["user"],
       "description": "An app for cool todoers",
+      "enableDatadog": false,
       "enableSubscriptions": true,
+      "id": "app:yYeMVhgQG01I",
       "includeAuth": true,
       "includeUploadComponents": false,
       "name": "web",
       "packageLocation": "packages/web",
       "title": "Todoer App",
-      "type": "web",
-      "uid": "4uIAHqzVSL48"
+      "type": "web"
     }
   ],
   "auth": {
@@ -198,28 +199,24 @@
         "comment": "Anonymous role for unauthenticated users",
         "id": "role:6wrjv_fs5rHf",
         "inherits": [],
-        "name": "anonymous",
-        "uid": "ZsD2KmXlrGHE"
+        "name": "anonymous"
       },
       {
         "comment": "Role for authenticated users",
         "id": "role:zbp8hfo8qDZp",
         "inherits": ["anonymous"],
-        "name": "user",
-        "uid": "gXI_6zsDITx2"
+        "name": "user"
       },
       {
         "comment": "Administrative role",
         "id": "role:PYGSU4BDOlpQ",
         "inherits": ["user"],
-        "name": "admin",
-        "uid": "khgMLrppRfL3"
+        "name": "admin"
       },
       {
         "comment": "Role for jobs/tests without a user",
         "id": "role:_tnnEc4bvDHX",
-        "name": "system",
-        "uid": "3xp5hcHsx7dR"
+        "name": "system"
       }
     ],
     "useAuth0": true,
@@ -233,14 +230,9 @@
       "id": "model-enum:4I1OfJa0epEZ",
       "isExposed": true,
       "name": "TodoListStatus",
-      "uid": "AGa4i5YSuagN",
       "values": [
-        { "friendlyName": "Active", "name": "ACTIVE", "uid": "0UG9KplkDicn" },
-        {
-          "friendlyName": "Inactive",
-          "name": "INACTIVE",
-          "uid": "4yaRlMHqW7qT"
-        }
+        { "friendlyName": "Active", "name": "ACTIVE" },
+        { "friendlyName": "Inactive", "name": "INACTIVE" }
       ]
     }
   ],
@@ -273,8 +265,7 @@
             "isUnique": false,
             "name": "id",
             "options": { "genUuid": true },
-            "type": "uuid",
-            "uid": "uKYFuQ5frhvv"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:g0J7IEJUy1nB",
@@ -283,8 +274,7 @@
             "isUnique": false,
             "name": "stripeCustomerId",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "pHmOKNeHTjOD"
+            "type": "string"
           }
         ],
         "relations": [
@@ -294,8 +284,7 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "id" }],
-            "uid": "jQMH6w6TBbZQ"
+            "references": [{ "foreign": "id", "local": "id" }]
           }
         ],
         "uniqueConstraints": []
@@ -308,8 +297,7 @@
         "buildQuery": false,
         "exposedFields": ["stripeCustomerId", "id"],
         "exposedLocalRelations": ["user"]
-      },
-      "uid": "NP5gdtuJ_kHO"
+      }
     },
     {
       "feature": "storage",
@@ -321,8 +309,7 @@
             "isId": true,
             "name": "id",
             "options": { "genUuid": true },
-            "type": "uuid",
-            "uid": "N56qML4OxA7G"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:BZxar0z7M05D",
@@ -331,8 +318,7 @@
             "isUnique": false,
             "name": "category",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "6ZcBtPmwJxhp"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:koEUGjw2_e2u",
@@ -341,8 +327,7 @@
             "isUnique": false,
             "name": "adapter",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "50j8FZC1skgi"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:WGLx3y-dByFA",
@@ -351,8 +336,7 @@
             "isUnique": false,
             "name": "path",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "q7ybUs4oVzfy"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:kP7xXcrblj0K",
@@ -361,8 +345,7 @@
             "isUnique": false,
             "name": "mimeType",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "Nebixto2fQzg"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:FrVBptcXqSjZ",
@@ -371,8 +354,7 @@
             "isUnique": false,
             "name": "size",
             "options": { "default": "" },
-            "type": "int",
-            "uid": "5qgBMujEdEH0"
+            "type": "int"
           },
           {
             "id": "model-scalar-field:HvcnB9LvlFSm",
@@ -381,8 +363,7 @@
             "isUnique": false,
             "name": "name",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "D9XuxeCrEsTT"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:T5ygEUKHWCJW",
@@ -391,8 +372,7 @@
             "isUnique": false,
             "name": "shouldDelete",
             "options": { "default": "" },
-            "type": "boolean",
-            "uid": "pScJKC9eBBCN"
+            "type": "boolean"
           },
           {
             "id": "model-scalar-field:Mq6yG7YaK1Qq",
@@ -401,8 +381,7 @@
             "isUnique": false,
             "name": "isUsed",
             "options": { "default": "" },
-            "type": "boolean",
-            "uid": "O9vjcwIDbF7Y"
+            "type": "boolean"
           },
           {
             "id": "model-scalar-field:3ma5keqv7qYQ",
@@ -411,22 +390,19 @@
             "isUnique": false,
             "name": "uploaderId",
             "options": { "default": "", "genUuid": false },
-            "type": "uuid",
-            "uid": "vu81gNHmNPj1"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:LzZ9J_n3_JTO",
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime",
-            "uid": "qC5yiKs31l2E"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:lpS5K__i_FfX",
             "name": "createdAt",
             "options": { "defaultToNow": true },
-            "type": "dateTime",
-            "uid": "ETaOMbxxDF5j"
+            "type": "dateTime"
           }
         ],
         "relations": [
@@ -436,8 +412,7 @@
             "name": "uploader",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "uploaderId" }],
-            "uid": "tdoyntCRk8Yi"
+            "references": [{ "foreign": "id", "local": "uploaderId" }]
           }
         ]
       },
@@ -456,8 +431,7 @@
           "mimeType"
         ],
         "exposedLocalRelations": ["uploader"]
-      },
-      "uid": "TMQWikl5gzJf"
+      }
     },
     {
       "feature": "todos",
@@ -471,8 +445,7 @@
             "isUnique": false,
             "name": "id",
             "options": { "genUuid": true },
-            "type": "uuid",
-            "uid": "qyf7hm9Neg33"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:um_I5IonEAyH",
@@ -481,8 +454,7 @@
             "isUnique": false,
             "name": "todoListId",
             "options": { "default": "", "genUuid": false },
-            "type": "uuid",
-            "uid": "Knd48BFGLO4X"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:pfV3SSBP54Yj",
@@ -491,8 +463,7 @@
             "isUnique": false,
             "name": "position",
             "options": { "default": "" },
-            "type": "int",
-            "uid": "NA_XhPvo3Kv6"
+            "type": "int"
           },
           {
             "id": "model-scalar-field:2U5uVBPmVTuz",
@@ -501,8 +472,7 @@
             "isUnique": false,
             "name": "text",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "0u4aj84oZXkE"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:tNDfs0lDak4T",
@@ -511,8 +481,7 @@
             "isUnique": false,
             "name": "done",
             "options": { "default": "" },
-            "type": "boolean",
-            "uid": "Kp8CUdlYznQI"
+            "type": "boolean"
           },
           {
             "id": "model-scalar-field:3jH4AtQDjHSW",
@@ -521,8 +490,7 @@
             "isUnique": false,
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime",
-            "uid": "gOmZc6L9161q"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:IODaTmY6ArZ9",
@@ -531,8 +499,7 @@
             "isUnique": false,
             "name": "createdAt",
             "options": { "defaultToNow": true },
-            "type": "dateTime",
-            "uid": "tQiLWo7XDcbp"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:cq7L3WkPSg4V",
@@ -541,8 +508,7 @@
             "isUnique": false,
             "name": "assigneeId",
             "options": { "default": "", "genUuid": false },
-            "type": "uuid",
-            "uid": "whpPCTTJ5WO7"
+            "type": "uuid"
           }
         ],
         "relations": [
@@ -552,8 +518,7 @@
             "name": "todoList",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "todoListId" }],
-            "uid": "jZVrGe_MOeoK"
+            "references": [{ "foreign": "id", "local": "todoListId" }]
           },
           {
             "foreignRelationName": "assignedItems",
@@ -561,8 +526,7 @@
             "name": "assignee",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "assigneeId" }],
-            "uid": "FvY5fTKQOPeT"
+            "references": [{ "foreign": "id", "local": "assigneeId" }]
           }
         ],
         "uniqueConstraints": []
@@ -605,16 +569,14 @@
             "id": "model-transformer:Mtnj8pArKxUi",
             "modelRef": "TodoItemAttachment",
             "name": "attachments",
-            "type": "embeddedRelation",
-            "uid": "KeiDOKD0dS8Y"
+            "type": "embeddedRelation"
           }
         ],
         "update": {
           "fields": ["todoListId", "position", "text", "done", "assigneeId"],
           "transformerNames": ["attachments"]
         }
-      },
-      "uid": "OmAjI05klbWo"
+      }
     },
     {
       "feature": "todos",
@@ -626,8 +588,7 @@
             "isId": true,
             "name": "id",
             "options": { "genUuid": true },
-            "type": "uuid",
-            "uid": "y8Unr_jjdnak"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:pbp68yz8eZau",
@@ -636,8 +597,7 @@
             "isUnique": false,
             "name": "todoItemId",
             "options": { "genUuid": false },
-            "type": "uuid",
-            "uid": "M5XqG7JOd_cK"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:pQJNWGcAWIYH",
@@ -645,8 +605,7 @@
             "isOptional": false,
             "isUnique": false,
             "name": "position",
-            "type": "int",
-            "uid": "qnWLk_NXcx51"
+            "type": "int"
           },
           {
             "id": "model-scalar-field:ZcmokJ0_pqT3",
@@ -654,22 +613,19 @@
             "isOptional": false,
             "isUnique": false,
             "name": "url",
-            "type": "string",
-            "uid": "j3_G1XcC3Rt2"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:_OAxQ3JQUPaJ",
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime",
-            "uid": "gQaDHuCd6CAS"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:8UpAxHEMH0zq",
             "name": "createdAt",
             "options": { "defaultToNow": true },
-            "type": "dateTime",
-            "uid": "vvOZdvWFdl7W"
+            "type": "dateTime"
           }
         ],
         "relations": [
@@ -679,8 +635,7 @@
             "name": "todoItem",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "todoItemId" }],
-            "uid": "eqsfnSRBW5j_"
+            "references": [{ "foreign": "id", "local": "todoItemId" }]
           }
         ]
       },
@@ -712,13 +667,11 @@
             "id": "model-transformer:_dqWIm8tRhcj",
             "modelRef": "TodoItemAttachmentTag",
             "name": "tags",
-            "type": "embeddedRelation",
-            "uid": "Gt4hCI2iy8Au"
+            "type": "embeddedRelation"
           }
         ],
         "update": { "transformerNames": [] }
-      },
-      "uid": "XoHWaL4MgWXI"
+      }
     },
     {
       "feature": "todos",
@@ -732,8 +685,7 @@
             "isUnique": false,
             "name": "todoItemAttachmentId",
             "options": { "default": "" },
-            "type": "uuid",
-            "uid": "wM1CllN0K3By"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:GFUQr6gjhcWP",
@@ -742,8 +694,7 @@
             "isUnique": false,
             "name": "tag",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "Szd304ktXm2t"
+            "type": "string"
           }
         ],
         "primaryKeys": ["todoItemAttachmentId", "tag"],
@@ -754,10 +705,7 @@
             "name": "todoItemAttachment",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [
-              { "foreign": "id", "local": "todoItemAttachmentId" }
-            ],
-            "uid": "LLEO4A0TFlvj"
+            "references": [{ "foreign": "id", "local": "todoItemAttachmentId" }]
           }
         ]
       },
@@ -775,8 +723,7 @@
         "exposedFields": ["todoItemAttachmentId", "tag"],
         "exposedLocalRelations": ["todoItemAttachment"]
       },
-      "service": { "build": false },
-      "uid": "znYXZWUdlRbc"
+      "service": { "build": false }
     },
     {
       "feature": "todos",
@@ -788,8 +735,7 @@
             "isId": true,
             "name": "id",
             "options": { "genUuid": true },
-            "type": "uuid",
-            "uid": "IOXfpU9IXJHk"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:GNBj_9ieyOFc",
@@ -798,8 +744,7 @@
             "isUnique": false,
             "name": "ownerId",
             "options": { "genUuid": false },
-            "type": "uuid",
-            "uid": "rYTjki2jHvWt"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:yXRS8PY6c2pK",
@@ -807,8 +752,7 @@
             "isOptional": false,
             "isUnique": false,
             "name": "position",
-            "type": "int",
-            "uid": "fLiUnnH_JuWN"
+            "type": "int"
           },
           {
             "id": "model-scalar-field:F2Mb9A4wxB7p",
@@ -816,22 +760,19 @@
             "isOptional": false,
             "isUnique": false,
             "name": "name",
-            "type": "string",
-            "uid": "kXoRlHlZvElr"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:csmaHD2RPRaW",
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime",
-            "uid": "w65HJjYPjTGG"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:VFUjdkUanVAS",
             "name": "createdAt",
             "options": { "defaultToNow": true },
-            "type": "dateTime",
-            "uid": "KeLjDr5m5doO"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:RcO4g1UYpCiw",
@@ -840,8 +781,7 @@
             "isUnique": false,
             "name": "status",
             "options": { "default": "", "enumType": "TodoListStatus" },
-            "type": "enum",
-            "uid": "9zmfL72UNTgV"
+            "type": "enum"
           },
           {
             "id": "model-scalar-field:e7sP7kRUF1GT",
@@ -850,8 +790,7 @@
             "isUnique": false,
             "name": "coverPhotoId",
             "options": { "default": "", "genUuid": false },
-            "type": "uuid",
-            "uid": "7e8Y5pzdZrzQ"
+            "type": "uuid"
           }
         ],
         "relations": [
@@ -861,8 +800,7 @@
             "name": "owner",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "ownerId" }],
-            "uid": "2BfiZVoQTlfH"
+            "references": [{ "foreign": "id", "local": "ownerId" }]
           },
           {
             "foreignRelationName": "todoListCoverPhoto",
@@ -870,15 +808,13 @@
             "name": "coverPhoto",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "coverPhotoId" }],
-            "uid": "yEGRIuMdmEXf"
+            "references": [{ "foreign": "id", "local": "coverPhotoId" }]
           }
         ],
         "uniqueConstraints": [
           {
             "fields": [{ "name": "ownerId" }, { "name": "name" }],
-            "name": "ownerId_name",
-            "uid": "Z2LxJWMknAl9"
+            "name": "ownerId_name"
           }
         ]
       },
@@ -917,16 +853,14 @@
             "fileRelationRef": "coverPhoto",
             "id": "model-transformer:Kv0etvmd0wuR",
             "name": "coverPhoto",
-            "type": "file",
-            "uid": "k83AJaLdTzBs"
+            "type": "file"
           }
         ],
         "update": {
           "fields": ["position", "name", "ownerId", "status", "createdAt"],
           "transformerNames": ["coverPhoto"]
         }
-      },
-      "uid": "nke4pyKpDR0A"
+      }
     },
     {
       "feature": "accounts/users",
@@ -938,8 +872,7 @@
             "isId": true,
             "name": "id",
             "options": { "genUuid": true },
-            "type": "uuid",
-            "uid": "OZ6_HyDwtmzz"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:v7EXcZWLq4B_",
@@ -947,8 +880,7 @@
             "isOptional": true,
             "isUnique": false,
             "name": "name",
-            "type": "string",
-            "uid": "i1mM77XzkKen"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:rOz25DQvjLe0",
@@ -956,44 +888,38 @@
             "isOptional": false,
             "isUnique": false,
             "name": "email",
-            "type": "string",
-            "uid": "NTtnSUGHNUKv"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:0Q9XyNQ-s404",
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime",
-            "uid": "5H6JcWlh_bRf"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:KLhZ8CtXE0ek",
             "name": "createdAt",
             "options": { "defaultToNow": true },
-            "type": "dateTime",
-            "uid": "eytlgaahlxxu"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:QSC8rlLAMcXq",
             "isOptional": true,
             "name": "tokensNotBefore",
-            "type": "dateTime",
-            "uid": "cZFqwylLkO9P"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:7IUb_DmKmQNw",
             "isOptional": true,
             "name": "passwordHash",
-            "type": "string",
-            "uid": "6DUXaLlSsXaI"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:FUwIsTeqFAVu",
             "isOptional": true,
             "isUnique": true,
             "name": "auth0Id",
-            "type": "string",
-            "uid": "dD_ULccRVY3w"
+            "type": "string"
           }
         ],
         "relations": []
@@ -1031,8 +957,7 @@
             "id": "model-transformer:RyrON6XkHBhF",
             "modelRef": "UserRole",
             "name": "roles",
-            "type": "embeddedRelation",
-            "uid": "puMrGeE1tCfo"
+            "type": "embeddedRelation"
           },
           {
             "embeddedFieldNames": ["stripeCustomerId"],
@@ -1040,8 +965,7 @@
             "id": "model-transformer:oysUVIW3QbY2",
             "modelRef": "Customer",
             "name": "customer",
-            "type": "embeddedRelation",
-            "uid": "MLJL1BUfkwIj"
+            "type": "embeddedRelation"
           },
           {
             "embeddedFieldNames": ["id", "bio", "birthDay"],
@@ -1050,16 +974,14 @@
             "id": "model-transformer:Ll9gvoax1ly4",
             "modelRef": "UserProfile",
             "name": "userProfile",
-            "type": "embeddedRelation",
-            "uid": "Z_7Z5RD1EIOX"
+            "type": "embeddedRelation"
           }
         ],
         "update": {
           "fields": ["name", "email"],
           "transformerNames": ["roles", "customer", "userProfile"]
         }
-      },
-      "uid": "c1yt5BUof2bL"
+      }
     },
     {
       "feature": "accounts/users",
@@ -1071,8 +993,7 @@
             "isId": true,
             "name": "id",
             "options": { "genUuid": true },
-            "type": "uuid",
-            "uid": "nqyxh3BuQaBY"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:X3z9DOcV9xfb",
@@ -1081,8 +1002,7 @@
             "isUnique": true,
             "name": "userId",
             "options": { "default": "", "genUuid": false },
-            "type": "uuid",
-            "uid": "_RT9m_UxdmQ4"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:YPuamLEeJY-Q",
@@ -1091,8 +1011,7 @@
             "isUnique": false,
             "name": "bio",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "tmDF6bmUNsMW"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:yxsYmRmHdOhL",
@@ -1101,8 +1020,7 @@
             "isUnique": false,
             "name": "birthDay",
             "options": { "default": "" },
-            "type": "date",
-            "uid": "UTlp2DyM6BcU"
+            "type": "date"
           },
           {
             "id": "model-scalar-field:9stTi6BpANqK",
@@ -1111,8 +1029,7 @@
             "isUnique": false,
             "name": "avatarId",
             "options": { "default": "", "genUuid": false },
-            "type": "uuid",
-            "uid": "7gEF6W5Go1df"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:2tBU92L6vW1t",
@@ -1121,8 +1038,7 @@
             "isUnique": false,
             "name": "twitterHandle",
             "options": { "default": "" },
-            "type": "string",
-            "uid": "HkXWhrbotMWg"
+            "type": "string"
           }
         ],
         "relations": [
@@ -1132,8 +1048,7 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "userId" }],
-            "uid": "PCoDlBx4ad9l"
+            "references": [{ "foreign": "id", "local": "userId" }]
           },
           {
             "foreignRelationName": "userProfileAvatar",
@@ -1141,8 +1056,7 @@
             "name": "avatar",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "avatarId" }],
-            "uid": "04tGY8UssXvR"
+            "references": [{ "foreign": "id", "local": "avatarId" }]
           }
         ],
         "uniqueConstraints": []
@@ -1172,13 +1086,11 @@
             "fileRelationRef": "avatar",
             "id": "model-transformer:cbjBj3IacjKA",
             "name": "avatar",
-            "type": "file",
-            "uid": "ylQisLMQHzYW"
+            "type": "file"
           }
         ],
         "update": {}
-      },
-      "uid": "D8bME94D20L2"
+      }
     },
     {
       "feature": "accounts/users",
@@ -1192,8 +1104,7 @@
             "isUnique": false,
             "name": "userId",
             "options": { "genUuid": false },
-            "type": "uuid",
-            "uid": "OD6Qy_wL3bpW"
+            "type": "uuid"
           },
           {
             "id": "model-scalar-field:RVj3bydpdhOY",
@@ -1201,22 +1112,19 @@
             "isOptional": false,
             "isUnique": false,
             "name": "role",
-            "type": "string",
-            "uid": "OcJvSUm6xYMQ"
+            "type": "string"
           },
           {
             "id": "model-scalar-field:2-zT2hChCDMQ",
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
-            "type": "dateTime",
-            "uid": "jb56Nz81waQJ"
+            "type": "dateTime"
           },
           {
             "id": "model-scalar-field:Zgvc6bBe-WDe",
             "name": "createdAt",
             "options": { "defaultToNow": true },
-            "type": "dateTime",
-            "uid": "ywyQXtwXLUFL"
+            "type": "dateTime"
           }
         ],
         "primaryKeys": ["userId", "role"],
@@ -1227,8 +1135,7 @@
             "name": "user",
             "onDelete": "Cascade",
             "onUpdate": "Restrict",
-            "references": [{ "foreign": "id", "local": "userId" }],
-            "uid": "gOqZcoKeYoyF"
+            "references": [{ "foreign": "id", "local": "userId" }]
           }
         ]
       },
@@ -1241,8 +1148,7 @@
         "exposedFields": ["userId", "role", "updatedAt", "createdAt"],
         "exposedLocalRelations": ["user"]
       },
-      "service": {},
-      "uid": "LKYn3UFYS4TJ"
+      "service": {}
     }
   ],
   "name": "todoer",
@@ -1255,7 +1161,6 @@
         "defaultAdapter": "uploads",
         "maxFileSize": 10,
         "name": "userProfileAvatar",
-        "uid": "XlREfGBAd8aS",
         "uploadRoles": ["user"],
         "usedByRelation": "userProfileAvatar"
       },
@@ -1263,7 +1168,6 @@
         "defaultAdapter": "uploads",
         "maxFileSize": 10,
         "name": "todoListCoverPhoto",
-        "uid": "7LLcXze_oCGN",
         "uploadRoles": ["user"],
         "usedByRelation": "todoListCoverPhoto"
       }
@@ -1274,8 +1178,8 @@
       {
         "bucketConfigVar": "AWS_UPLOADS_BUCKET",
         "hostedUrlConfigVar": "AWS_UPLOADS_URL",
-        "name": "uploads",
-        "uid": "nzCz8K4N5Z0y"
+        "id": "storage-adapter:sG0zrvD_Uak9",
+        "name": "uploads"
       }
     ]
   },
