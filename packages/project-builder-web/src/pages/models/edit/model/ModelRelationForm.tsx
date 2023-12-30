@@ -10,7 +10,6 @@ import { Control, useWatch } from 'react-hook-form';
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useToast } from 'src/hooks/useToast';
 
 interface Props {
   className?: string;
@@ -40,7 +39,6 @@ function ModelRelationForm({
   idx,
   field,
   onRemove,
-  originalModel,
   control,
 }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(!field.name);
@@ -48,34 +46,10 @@ function ModelRelationForm({
   const { parsedProject, definitionContainer } = useProjectConfig();
   const watchedField = useWatch({ name: `model.relations.${idx}`, control });
 
-  const toast = useToast();
   function handleRemove(): void {
-    // check for references
-    if (originalModel) {
-      const originalRelation = originalModel.model.relations?.find(
-        (f) => f.id === watchedField.id,
-      );
-      if (originalRelation) {
-        const references =
-          parsedProject.references.modelForeignRelation?.[
-            `${originalRelation.modelName}.${originalRelation.foreignRelationName}`
-          ];
-        if (references?.length) {
-          toast.error(
-            `Unable to remove field ${
-              originalRelation.name
-            } as it is being used in ${references
-              .map((r) => r.path)
-              .join(', ')}`,
-          );
-        }
-      }
-    }
-
     onRemove(idx);
   }
 
-  // TODO: Self references (requires a bit of patching for model renames)
   const foreignModelOptions = parsedProject.getModels().map((type) => ({
     label: type.name,
     value: type.id,

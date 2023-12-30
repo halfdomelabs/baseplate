@@ -7,18 +7,13 @@ import { ParsedModel, ParsedRelationField } from './types.js';
 import { ProjectDefinitionContainer } from '@src/index.js';
 import {
   ProjectConfig,
-  getProjectConfigReferences,
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldType,
 } from '@src/schema/index.js';
 import { EnumConfig } from '@src/schema/models/enums.js';
-import {
-  GetReferencesResult,
-  ObjectReferenceEntry,
-  REFERENCEABLE_CATEGORIES,
-} from '@src/schema/references.js';
+import { ObjectReferenceEntry } from '@src/schema/references.js';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
 
 const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
@@ -110,38 +105,6 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
         });
       }) ?? [],
   );
-}
-
-function buildReferenceMap({
-  references,
-}: GetReferencesResult): Record<
-  string,
-  Record<string, ObjectReferenceEntry[]>
-> {
-  const referencesByKey = REFERENCEABLE_CATEGORIES.map((category) => {
-    const referenceEntries = references.filter((r) => r.category === category);
-    return R.groupBy(R.prop('key'), referenceEntries) as Record<
-      string,
-      ObjectReferenceEntry[]
-    >;
-  });
-  return R.zipObj(REFERENCEABLE_CATEGORIES, referencesByKey);
-}
-
-function findMissingReferences(
-  { referenceables }: GetReferencesResult,
-  referenceMap: Record<string, Record<string, ObjectReferenceEntry[]>>,
-): ObjectReferenceEntry[] {
-  return REFERENCEABLE_CATEGORIES.flatMap((category) => {
-    const availableKeys = referenceables.map(R.prop('key'));
-    const referencesByKey = referenceMap[category];
-    // make sure keys exist in referenceables
-    const missingKeys = R.difference(
-      Object.keys(referencesByKey),
-      availableKeys,
-    );
-    return missingKeys.flatMap((key) => referencesByKey[key]);
-  });
 }
 
 export class ParsedProjectConfig {
@@ -282,18 +245,6 @@ export class ParsedProjectConfig {
       models: this.models,
     };
     this.projectConfig = updatedProjectConfig;
-
-    // build reference map
-    const referenceResult = getProjectConfigReferences(updatedProjectConfig);
-    this.references = buildReferenceMap(referenceResult);
-    const missingKeys = findMissingReferences(referenceResult, this.references);
-    if (missingKeys.length) {
-      throw new Error(
-        `Missing keys in references: ${missingKeys
-          .map((key) => `${key.key} (${key.path})`)
-          .join(', ')}`,
-      );
-    }
   }
 
   getFeatureHoistedProviders(featureId: string): string[] {

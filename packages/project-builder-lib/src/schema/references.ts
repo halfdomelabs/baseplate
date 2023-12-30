@@ -10,7 +10,6 @@ import {
 import { notEmpty } from '@src/utils/array.js';
 
 export const REFERENCEABLE_CATEGORIES = [
-  'adminCrudEmbeddedForm',
   'test',
   'test-foreign-relation',
 ] as const;
