@@ -18,7 +18,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
     eslint: eslintProvider,
   },
   createGenerator(descriptor, { typescriptConfig, eslint }) {
-    typescriptConfig.setTypescriptVersion('5.1.6');
+    typescriptConfig.setTypescriptVersion('5.2.2');
     typescriptConfig.setTypescriptCompilerOptions({
       target: 'ES2020',
       lib: ['ES2020', 'DOM', 'DOM.Iterable'],
