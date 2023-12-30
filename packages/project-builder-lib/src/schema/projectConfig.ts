@@ -7,6 +7,7 @@ import {
 } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
 import { webAppSchema } from './apps/index.js';
+import { appEntityType } from './apps/types.js';
 import { authSchema } from './auth/index.js';
 import { featuresSchema } from './features/index.js';
 import { themeSchema } from './features/theme.js';
@@ -14,13 +15,22 @@ import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
 import { GetReferencesFunction, ReferencesBuilder } from './references.js';
 import { storageSchema } from './storage/index.js';
+import { zRefBuilder } from '@src/index.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
 
-export const appSchema = z.discriminatedUnion('type', [
-  backendAppSchema,
-  webAppSchema,
-  adminAppSchema,
-]);
+export const appSchema = zRefBuilder(
+  z.discriminatedUnion('type', [
+    backendAppSchema,
+    webAppSchema,
+    adminAppSchema,
+  ]),
+  (builder) => {
+    builder.addEntity({
+      type: appEntityType,
+      addContext: 'app',
+    });
+  },
+);
 
 export type AppConfig = z.infer<typeof appSchema>;
 

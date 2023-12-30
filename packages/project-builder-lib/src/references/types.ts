@@ -4,6 +4,7 @@ export type ReferencePath = (string | number)[];
 
 export class DefinitionEntityType<
   TParent extends DefinitionEntityType | undefined =
+    | DefinitionEntityType<DefinitionEntityType<undefined>>
     | DefinitionEntityType<undefined>
     | undefined,
 > {

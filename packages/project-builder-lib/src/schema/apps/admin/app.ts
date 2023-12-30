@@ -5,12 +5,22 @@ import {
   buildAdminCrudSectionReferences,
 } from './sections/crud.js';
 import { AdminCrudSectionConfig } from './sections/index.js';
+import { adminSectionEntityType } from './sections/types.js';
 import { baseAppValidators } from '../base.js';
-import { zRef } from '@src/references/index.js';
+import { zRef, zRefBuilder } from '@src/references/index.js';
 import { authRoleEntityType } from '@src/schema/auth/types.js';
 import { ReferencesBuilder } from '@src/schema/references.js';
 
-export const adminSectionSchema = adminCrudSectionSchema;
+export const adminSectionSchema = zRefBuilder(
+  adminCrudSectionSchema,
+  (builder) => {
+    builder.addEntity({
+      type: adminSectionEntityType,
+      parentPath: { context: 'app' },
+      addContext: 'admin-section',
+    });
+  },
+);
 
 export type AdminSectionConfig = AdminCrudSectionConfig;
 

@@ -1,10 +1,12 @@
 import { z } from 'zod';
 
+import { adminSectionEntityType } from './types.js';
 import { zRef } from '@src/references/index.js';
 import { featureEntityType } from '@src/schema/features/index.js';
 import { randomUid } from '@src/utils/randomUid.js';
 
 export const baseAdminSectionValidators = {
+  id: z.string().default(adminSectionEntityType.generateNewId()),
   uid: z.string().default(randomUid),
   name: z.string().min(1),
   feature: zRef(z.string().min(1), {

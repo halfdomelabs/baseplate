@@ -179,7 +179,9 @@ function compileAdminCrudEmbeddedInput(
     generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
     label: field.label,
     modelRelation: relationName,
-    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
+    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${builder.nameFromId(
+      field.embeddedFormName,
+    )}`,
   };
 }
 
@@ -208,7 +210,9 @@ function compileAdminCrudEmbeddedLocalInput(
     label: field.label,
     modelRelation: localRelationName,
     isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
-    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${field.embeddedFormName}`,
+    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${builder.nameFromId(
+      field.embeddedFormName,
+    )}`,
   };
 }
 

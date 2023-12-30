@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
 import { baseAdminSectionValidators } from './base.js';
-import { zRef, zRefBuilder } from '@src/references/index.js';
+import { adminSectionEntityType } from './types.js';
+import { createEntityType, zRef, zRefBuilder } from '@src/references/index.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
@@ -11,7 +12,13 @@ import {
 } from '@src/schema/models/index.js';
 import { ReferencesBuilder } from '@src/schema/references.js';
 import { notEmpty } from '@src/utils/array.js';
-import { randomUid } from '@src/utils/randomUid.js';
+
+export const adminCrudEmbeddedFormEntityType = createEntityType(
+  'admin-crud-embedded-form',
+  {
+    parentType: adminSectionEntityType,
+  },
+);
 
 // Table Columns
 export const adminCrudForeignDisplaySchema = z.object({
@@ -131,7 +138,11 @@ export const adminCrudEmbeddedInputSchema = z.object({
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
   }),
-  embeddedFormName: z.string().min(1),
+  embeddedFormName: zRef(z.string(), {
+    type: adminCrudEmbeddedFormEntityType,
+    parentPath: { context: 'admin-section' },
+    onDelete: 'RESTRICT',
+  }),
 });
 
 export type AdminCrudEmbeddedInputConfig = z.infer<
@@ -146,7 +157,11 @@ export const adminCrudEmbeddedLocalInputSchema = z.object({
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
   }),
-  embeddedFormName: z.string().min(1),
+  embeddedFormName: zRef(z.string(), {
+    type: adminCrudEmbeddedFormEntityType,
+    parentPath: { context: 'admin-section' },
+    onDelete: 'RESTRICT',
+  }),
 });
 
 export type AdminCrudEmbeddedLocalInputConfig = z.infer<
@@ -180,7 +195,7 @@ export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 
 // Embedded Crud
 export const adminCrudEmbeddedObjectSchema = z.object({
-  id: z.string().default(randomUid),
+  id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
   name: z.string().min(1),
   modelName: zRef(z.string().min(1), {
     type: modelEntityType,
@@ -194,7 +209,7 @@ export const adminCrudEmbeddedObjectSchema = z.object({
 });
 
 export const adminCrudEmbeddedListSchema = z.object({
-  id: z.string().default(randomUid),
+  id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
   name: z.string().min(1),
   modelName: zRef(z.string().min(1), {
     type: modelEntityType,
@@ -218,6 +233,10 @@ export const adminCrudEmbeddedFormSchema = zRefBuilder(
     adminCrudEmbeddedListSchema,
   ]),
   (builder) => {
+    builder.addEntity({
+      type: adminCrudEmbeddedFormEntityType,
+      parentPath: { context: 'admin-section' },
+    });
     builder.addPathToContext('modelName', modelEntityType, 'model');
   },
 );
@@ -267,17 +286,8 @@ export function buildAdminCrudSectionReferences(
       case 'enum':
         break;
       case 'embedded':
-        fieldBuilder.addReference('embeddedFormName', {
-          category: 'adminCrudEmbeddedForm',
-          key: `${config.name}#${field.embeddedFormName}`,
-        });
         break;
       case 'embeddedLocal':
-        // TODO: Not supported in backend generation yet (but can be manually created)
-        fieldBuilder.addReference('embeddedFormName', {
-          category: 'adminCrudEmbeddedForm',
-          key: `${config.name}#${field.embeddedFormName}`,
-        });
         break;
       case 'password':
         break;
