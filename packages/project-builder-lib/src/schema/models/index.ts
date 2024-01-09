@@ -4,6 +4,7 @@ import { transformerSchema } from './transformers.js';
 import {
   modelEntityType,
   modelEnumEntityType,
+  modelEnumValueEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
@@ -25,22 +26,37 @@ export const modelScalarFieldSchema = zEnt(
     isId: z.boolean().optional(),
     isOptional: z.boolean().optional(),
     isUnique: z.boolean().optional(),
-    options: z
-      .object({
-        // string options
-        default: z.string().optional(),
-        // uuid options
-        genUuid: z.boolean().optional(),
-        // date options
-        updatedAt: z.boolean().optional(),
-        defaultToNow: z.boolean().optional(),
-        // enum options
-        enumType: zRef(z.string().optional(), {
-          type: modelEnumEntityType,
+    options: zRefBuilder(
+      z
+        .object({
+          // string options
+          default: z.string().optional(),
+          // uuid options
+          genUuid: z.boolean().optional(),
+          // date options
+          updatedAt: z.boolean().optional(),
+          defaultToNow: z.boolean().optional(),
+          // enum options
+          enumType: zRef(z.string().optional(), {
+            type: modelEnumEntityType,
+            onDelete: 'RESTRICT',
+          }),
+          defaultEnumValue: z.string().optional(),
+        })
+        .transform((val) => ({
+          ...val,
+          ...(val.enumType ? {} : { defaultEnumValue: undefined }),
+        }))
+        .optional(),
+      (builder) => {
+        builder.addReference({
+          type: modelEnumValueEntityType,
           onDelete: 'RESTRICT',
-        }),
-      })
-      .optional(),
+          path: 'defaultEnumValue',
+          parentPath: 'enumType',
+        });
+      },
+    ),
   }),
   {
     type: modelScalarFieldEntityType,

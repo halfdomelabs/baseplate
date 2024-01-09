@@ -11,10 +11,10 @@ import { Combobox } from '../Combobox/Combobox.js';
 import { FormItem } from '../FormItem/FormItem.js';
 import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
 import {
+  FieldProps,
+  SelectOptionProps,
   AddOptionRequiredFields,
-  DropdownPropsBase,
-} from '@src/types/dropdown.js';
-import { FieldProps, SelectOptionProps } from '@src/types/form.js';
+} from '@src/types/form.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface ComboboxFieldProps<OptionType>
@@ -97,7 +97,7 @@ interface ComboboxFieldControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<DropdownPropsBase<OptionType>, 'register'> {
+> extends Omit<ComboboxFieldProps<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
@@ -141,7 +141,7 @@ const ComboboxFieldController = genericForwardRef(
           onChange?.(value);
         }}
         ref={ref}
-        value={field.value}
+        value={field.value ?? null}
         error={error?.message}
         {...restProps}
       />

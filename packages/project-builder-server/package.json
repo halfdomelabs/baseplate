@@ -21,7 +21,7 @@
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "watch": "pnpm build && concurrently pnpm:watch:*",
+    "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w"
   },

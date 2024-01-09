@@ -22,6 +22,9 @@ function buildScalarField(
       defaultToNow: options.defaultToNow,
       updatedAt: options.updatedAt,
       default: options.default,
+      defaultEnumValue: builder.definitionContainer.nameFromId(
+        options.defaultEnumValue,
+      ),
     },
     optional: field.isOptional,
     unique: field.isUnique,

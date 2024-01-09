@@ -1,7 +1,14 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { Button, Dropdown, InputField } from '@halfdomelabs/ui-components';
+import { ModelConfig, EnumUtils } from '@halfdomelabs/project-builder-lib';
+import {
+  Button,
+  ComboboxField,
+  Dropdown,
+  InputField,
+} from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
+
+import { useProjectConfig } from '@src/hooks/useProjectConfig';
 
 interface ModelFieldDefaultValueInputProps {
   control: Control<ModelConfig>;
@@ -12,6 +19,7 @@ export function ModelFieldDefaultValueInput({
   control,
   idx,
 }: ModelFieldDefaultValueInputProps): JSX.Element {
+  const { config } = useProjectConfig();
   const type = useWatch({
     control,
     name: `model.fields.${idx}.type`,
@@ -145,6 +153,44 @@ export function ModelFieldDefaultValueInput({
             </Dropdown.Group>
           </Dropdown.Content>
         </Dropdown>
+      </div>
+    );
+  }
+
+  if (type === 'enum' && optionsValue?.enumType) {
+    const fieldEnum = EnumUtils.byId(config, optionsValue.enumType);
+    const enumValues = fieldEnum.values.map((v) => ({
+      label: v.friendlyName,
+      value: v.id,
+    }));
+    return (
+      <div className="flex items-center space-x-1">
+        <ComboboxField
+          placeholder="NULL"
+          value={optionsValue.defaultEnumValue ?? null}
+          onChange={(value) => {
+            onOptionsChange({
+              ...optionsValue,
+              defaultEnumValue: value ? value : undefined,
+            });
+          }}
+          options={enumValues}
+        />
+        {optionsValue.defaultEnumValue && (
+          <Button
+            title="Reset"
+            onClick={() =>
+              onOptionsChange({
+                ...optionsValue,
+                defaultEnumValue: '',
+              })
+            }
+            variant="ghost"
+            size="icon"
+          >
+            <Button.Icon icon={HiOutlineX} />
+          </Button>
+        )}
       </div>
     );
   }

@@ -23,7 +23,7 @@
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "watch": "pnpm build && concurrently pnpm:watch:*",
+    "watch": "concurrently pnpm:watch:*",
     "watch:templates": "pnpm build:templates --watch",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w"
