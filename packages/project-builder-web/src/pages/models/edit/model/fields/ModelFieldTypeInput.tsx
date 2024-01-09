@@ -80,7 +80,7 @@ export function ModelFieldTypeInput({
 
   const enumOptions: TypeOption[] = parsedProject.getEnums().map((config) => ({
     label: config.name,
-    value: `enum-${config.name}`,
+    value: `enum-${config.id}`,
     description: 'Enum type',
   }));
 
@@ -99,21 +99,25 @@ export function ModelFieldTypeInput({
   });
 
   const {
-    field: { value: enumType, onChange: onEnumTypeChange },
+    field: { value: fieldOptions, onChange: onFieldOptionsChange },
   } = useController({
-    name: `model.fields.${idx}.options.enumType`,
+    name: `model.fields.${idx}.options`,
     control,
   });
 
   const handleChange = (value: string): void => {
     if (value.startsWith('enum-')) {
       const enumName = value.replace('enum-', '');
-      onEnumTypeChange(enumName);
+      onFieldOptionsChange({
+        enumType: enumName,
+      });
       onTypeChange('enum');
     } else {
       onTypeChange(value as ScalarFieldType);
     }
   };
+
+  const enumType = fieldOptions?.enumType;
 
   return (
     <div className="space-y-2">

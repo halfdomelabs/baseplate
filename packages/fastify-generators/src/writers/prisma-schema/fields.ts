@@ -134,6 +134,15 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
   }),
   enum: createConfig({
     prismaType: '',
+    optionsSchema: z.object({
+      defaultEnumValue: z.string().optional(),
+    }),
+    getAttributes: (config) => {
+      if (config?.defaultEnumValue) {
+        return [{ name: '@default', args: [config.defaultEnumValue] }];
+      }
+      return [];
+    },
   }),
 });
 
@@ -182,7 +191,7 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
   }
 
   attributes.push(
-    ...(typeConfig.getAttributes?.(typeOptions as Record<string, unknown>) ||
+    ...(typeConfig.getAttributes?.(typeOptions as Record<string, unknown>) ??
       []),
   );
 

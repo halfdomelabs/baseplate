@@ -1,4 +1,8 @@
-import { EnumConfig, enumSchema } from '@halfdomelabs/project-builder-lib';
+import {
+  EnumConfig,
+  enumSchema,
+  modelEnumValueEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';
@@ -95,6 +99,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
         type="button"
         onClick={() =>
           appendValue({
+            id: modelEnumValueEntityType.generateNewId(),
             name: '',
             friendlyName: '',
           })

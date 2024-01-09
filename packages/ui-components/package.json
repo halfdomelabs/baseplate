@@ -30,7 +30,7 @@
     "storybook": "storybook dev -p 6006",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "watch": "pnpm build:lib && concurrently pnpm:watch:*",
+    "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w"
   },

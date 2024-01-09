@@ -34,7 +34,8 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     return this;
   }
 
-  nameFromId(id: string): string {
+  nameFromId(id: string): string;
+  nameFromId(id: string | undefined): string | undefined {
     return this.definitionContainer.nameFromId(id);
   }
 

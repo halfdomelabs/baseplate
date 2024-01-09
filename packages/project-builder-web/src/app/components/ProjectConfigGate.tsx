@@ -171,7 +171,10 @@ export function ProjectConfigGate({
       let validatedProjectConfig = projectConfigSchema.parse(newProjectConfig);
 
       if (fixReferences) {
-        const result = fixRefDeletions(projectConfigSchema, oldProjectConfig);
+        const result = fixRefDeletions(
+          projectConfigSchema,
+          validatedProjectConfig,
+        );
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }

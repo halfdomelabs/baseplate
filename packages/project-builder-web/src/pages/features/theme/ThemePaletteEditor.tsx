@@ -75,7 +75,7 @@ export function ThemePaletteEditor({
         name={`palettes.${type}.paletteName`}
         control={control}
         options={paletteOptions}
-        noValueLabel="Choose a base palette"
+        placeholder="Choose a base palette"
         onChange={handlePaletteNameChange}
       />
       {paletteName === 'custom' && (

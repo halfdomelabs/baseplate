@@ -23,7 +23,10 @@ export class ProjectDefinitionContainer {
     this.entities = config.entities;
   }
 
-  nameFromId(id: string): string {
+  nameFromId(id: string | undefined): string | undefined;
+  nameFromId(id: string): string;
+  nameFromId(id: string | undefined): string | undefined {
+    if (!id) return undefined;
     const name = this.entities.find((e) => e.id === id)?.name;
 
     if (!name) {

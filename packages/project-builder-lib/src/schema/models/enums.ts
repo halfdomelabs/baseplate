@@ -1,13 +1,20 @@
 import { z } from 'zod';
 
-import { modelEnumEntityType } from './types.js';
+import { modelEnumEntityType, modelEnumValueEntityType } from './types.js';
 import { featureEntityType } from '../features/index.js';
 import { zEnt, zRef } from '@src/references/index.js';
 
-export const enumValueSchema = z.object({
-  name: z.string().min(1),
-  friendlyName: z.string().min(1),
-});
+export const enumValueSchema = zEnt(
+  z.object({
+    name: z.string().min(1),
+    friendlyName: z.string().min(1),
+  }),
+  {
+    type: modelEnumValueEntityType,
+    parentPath: { context: 'enum' },
+    stripIdWhenSerializing: true,
+  },
+);
 
 export type EnumValueConfig = z.infer<typeof enumSchema>;
 
@@ -23,6 +30,7 @@ export const enumSchema = zEnt(
   }),
   {
     type: modelEnumEntityType,
+    addContext: 'enum',
   },
 );
 

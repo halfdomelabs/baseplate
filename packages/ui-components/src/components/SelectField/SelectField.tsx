@@ -10,10 +10,10 @@ import {
 import { FormItem } from '../FormItem/FormItem.js';
 import { Select } from '../Select/Select.js';
 import {
+  FieldProps,
+  SelectOptionProps,
   AddOptionRequiredFields,
-  DropdownPropsBase,
-} from '@src/types/dropdown.js';
-import { FieldProps, SelectOptionProps } from '@src/types/form.js';
+} from '@src/types/form.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface SelectFieldProps<OptionType>
@@ -84,7 +84,7 @@ interface SelectFieldControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<DropdownPropsBase<OptionType>, 'register'> {
+> extends Omit<SelectFieldProps<OptionType>, 'register'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
