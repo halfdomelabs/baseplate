@@ -42,7 +42,6 @@ export function ModelGeneralForm({
         name="feature"
         options={featureOptions}
         className={horizontal ? 'flex-1' : undefined}
-        fixed
       />
     </div>
   );
