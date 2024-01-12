@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { Queue, QueueOptions } from 'bullmq';
+import { Queue, QueueOptions, ConnectionOptions } from 'bullmq';
 import { logError } from '%error-logger';
 import { getRedisClient } from '%fastify-redis';
 
@@ -8,7 +8,9 @@ const managedQueues: Record<string, Queue> = {};
 
 export function getOrCreateManagedQueue<DataType>(
   queueName: string,
-  options?: QueueOptions,
+  options?: Omit<QueueOptions, 'connection'> & {
+    connection?: ConnectionOptions;
+  },
 ): Queue<DataType> {
   if (managedQueues[queueName]) {
     return managedQueues[queueName] as Queue<DataType>;

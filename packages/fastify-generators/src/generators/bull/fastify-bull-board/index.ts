@@ -54,15 +54,15 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@bull-board/api': '5.6.0',
-      '@bull-board/fastify': '5.6.0',
+      '@bull-board/api': '5.13.0',
+      '@bull-board/fastify': '5.13.0',
       ms: '2.1.3',
     });
 
     // required for bull-board to compile
     node.addDevPackages({
-      '@types/redis-info': '3.0.0',
-      '@types/ms': '0.7.31',
+      '@types/redis-info': '3.0.3',
+      '@types/ms': '0.7.34',
     });
 
     return {

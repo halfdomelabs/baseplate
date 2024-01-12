@@ -209,7 +209,7 @@ const AuthServiceGenerator = createGeneratorWithTasks({
 
         node.addDevPackages({
           '@types/jsonwebtoken': '^8.5.8',
-          '@types/ms': '^0.7.31',
+          '@types/ms': '0.7.34',
         });
 
         const authServiceFile = typescript.createTemplate({
