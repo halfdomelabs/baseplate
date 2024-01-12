@@ -43,7 +43,7 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
     { node, reactError, typescript, reactComponents, reactApollo },
   ) {
     node.addPackages({
-      axios: '1.6.2',
+      axios: '1.6.5',
       'react-dropzone': '14.2.3',
       'react-circular-progressbar': '2.1.0',
     });
