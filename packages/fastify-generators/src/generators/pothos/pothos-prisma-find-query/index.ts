@@ -11,7 +11,10 @@ import { z } from 'zod';
 
 import { pothosSchemaProvider } from '../pothos/index.js';
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
-import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
+import {
+  getModelIdFieldName,
+  getPrimaryKeyDefinition,
+} from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
@@ -81,12 +84,17 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
           });
         });
 
+        const primaryKeyFieldName = getModelIdFieldName(modelOutput);
+
         const resolveFunction = TypescriptCodeUtils.formatExpression(
           `async (query, root, ARG_INPUT) => MODEL.findUniqueOrThrow({...query,where: WHERE_CLAUSE})`,
           {
             ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,
             MODEL: prismaOutput.getPrismaModelExpression(modelName),
-            WHERE_CLAUSE: `{ ${primaryKeyDefinition.name} }`,
+            WHERE_CLAUSE:
+              primaryKeyFieldName === primaryKeyDefinition.name
+                ? `{ ${primaryKeyFieldName} }`
+                : `{ ${primaryKeyFieldName}: ${primaryKeyDefinition.name} }`,
           },
         );
 

@@ -14,7 +14,7 @@ function ModelEditServicePage(): JSX.Element {
   const { form, onFormSubmit, originalModel, defaultValues } = useModelForm({
     setError,
   });
-  const { control, handleSubmit, watch } = form;
+  const { control, handleSubmit, watch, getValues } = form;
 
   const shouldBuild = watch('service.build');
 
@@ -47,7 +47,11 @@ function ModelEditServicePage(): JSX.Element {
   // TODO: Need to unset transformer options when reset
 
   return (
-    <EditedModelContextProvider initialModel={defaultValues} watch={watch}>
+    <EditedModelContextProvider
+      initialModel={defaultValues}
+      getValues={getValues}
+      watch={watch}
+    >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Alert.WithStatus status={status} />
         <CheckedInput.LabelledController
@@ -98,8 +102,8 @@ function ModelEditServicePage(): JSX.Element {
             )}
           </>
         )}
+        <ModelFormActionBar form={form} />
       </form>
-      <ModelFormActionBar form={form} />
     </EditedModelContextProvider>
   );
 }

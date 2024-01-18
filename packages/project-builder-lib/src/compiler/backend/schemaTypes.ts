@@ -14,6 +14,7 @@ function buildQuerySchemaTypeForModel(
   const {
     authorize,
     buildQuery,
+    buildMutations,
     exposedFields = [],
     exposedForeignRelations = [],
     exposedLocalRelations = [],
@@ -25,6 +26,15 @@ function buildQuerySchemaTypeForModel(
       fileName: `${paramCase(model.name)}.object-type`,
       generator: '@halfdomelabs/fastify/pothos/pothos-types-file',
       children: {
+        $primaryKey:
+          (!!buildMutations || !!buildQuery) &&
+          ModelUtils.getModelIdFields(model).length > 1
+            ? {
+                generator:
+                  '@halfdomelabs/fastify/pothos/pothos-prisma-primary-key',
+                modelName: model.name,
+              }
+            : undefined,
         $objectType: {
           generator: '@halfdomelabs/fastify/pothos/pothos-prisma-object',
           modelName: model.name,
