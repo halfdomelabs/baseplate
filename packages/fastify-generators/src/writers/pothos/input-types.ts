@@ -69,6 +69,7 @@ export function writePothosInputDefinitionFromDtoFields(
   name: string,
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
+  shouldExport?: boolean,
 ): PothosTypeDefinitionWithChildren {
   const pothosFields = writePothosInputFieldsFromDtoFields(fields, {
     ...options,
@@ -78,7 +79,9 @@ export function writePothosInputDefinitionFromDtoFields(
   const exportName = `${lowerCaseFirst(name)}InputType`;
 
   const definition = TypescriptCodeUtils.formatBlock(
-    `const EXPORT_NAME = BUILDER.inputType(NAME, {
+    `${
+      shouldExport ? `export ` : ''
+    }const EXPORT_NAME = BUILDER.inputType(NAME, {
       fields: (t) => FIELDS
     })`,
     {

@@ -21,7 +21,7 @@ function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({
     setError,
   });
-  const { control, handleSubmit, watch } = form;
+  const { control, handleSubmit, watch, getValues } = form;
 
   const { config } = useProjectConfig();
 
@@ -30,7 +30,11 @@ function ModelEditModelPage(): JSX.Element {
   const originalModel = id ? ModelUtils.byId(config, id) : undefined;
 
   return (
-    <EditedModelContextProvider initialModel={defaultValues} watch={watch}>
+    <EditedModelContextProvider
+      initialModel={defaultValues}
+      getValues={getValues}
+      watch={watch}
+    >
       <form
         onSubmit={handleSubmit(onFormSubmit)}
         className="min-w-[700px] max-w-6xl space-y-4"

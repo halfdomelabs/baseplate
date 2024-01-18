@@ -65,6 +65,21 @@ export function getPrimaryKeyDefinition(
   };
 }
 
+export function getModelIdFieldName(model: PrismaOutputModel): string {
+  const { idFields } = model;
+  if (!idFields?.length) {
+    throw new Error(`Model ${model.name} has no primary key`);
+  }
+
+  if (idFields.length === 1) {
+    // handle trivial one primary key case
+    return idFields[0];
+  }
+
+  // handle multiple primary key case
+  return idFields.join('_');
+}
+
 export function getPrimaryKeyExpressions(
   model: PrismaOutputModel,
 ): PrimaryKeyOutput {
@@ -73,9 +88,10 @@ export function getPrimaryKeyExpressions(
     throw new Error(`Model ${model.name} has no primary key`);
   }
 
+  const idFieldName = getModelIdFieldName(model);
+
   if (idFields.length === 1) {
     // handle trivial one primary key case
-    const idFieldName = idFields[0];
     const idField = fields.find((f) => f.name === idFieldName);
 
     if (!idField || idField.type !== 'scalar') {
@@ -94,7 +110,6 @@ export function getPrimaryKeyExpressions(
   }
 
   // handle multiple primary key case
-  const compoundUniqueName = idFields.join('_');
   const primaryKeyInputName = `${model.name}PrimaryKey`;
 
   const headerTypeBlock = TypescriptCodeUtils.createBlock(
@@ -108,8 +123,8 @@ export function getPrimaryKeyExpressions(
   );
 
   return {
-    argumentName: compoundUniqueName,
-    whereClause: `{ ${compoundUniqueName} }`,
+    argumentName: idFieldName,
+    whereClause: `{ ${idFieldName} }`,
     headerTypeBlock,
     argumentType: primaryKeyInputName,
   };

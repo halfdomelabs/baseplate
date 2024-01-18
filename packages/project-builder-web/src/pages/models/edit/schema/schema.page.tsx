@@ -124,8 +124,8 @@ function ModelEditSchemaPage(): JSX.Element {
             />
           </>
         )}
+        <ModelFormActionBar form={form} />
       </form>
-      <ModelFormActionBar form={form} />
     </>
   );
 }

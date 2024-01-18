@@ -49,9 +49,17 @@ function getModelsForFeature(
   return projectConfig.models.filter((m) => m.feature === featureId);
 }
 
+function getModelIdFields(model: ModelConfig): string[] {
+  return (
+    model.model.primaryKeys ??
+    model.model.fields.filter((f) => f.isId).map((f) => f.id)
+  );
+}
+
 export const ModelUtils = {
   byId,
   getScalarFieldById,
   getRelationsToModel,
   getModelsForFeature,
+  getModelIdFields,
 };

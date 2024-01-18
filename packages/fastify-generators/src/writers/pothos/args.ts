@@ -41,7 +41,7 @@ function writePothosArgFromDtoScalarField(
       {
         BUILDER: options.fieldBuilder,
         METHOD: methodName,
-        OPTIONS: argOptions || '',
+        OPTIONS: argOptions ?? '',
       },
     ),
     childDefinitions: [],
@@ -62,7 +62,7 @@ function writePothosArgFromDtoNestedField(
     'BUILDER.arg(OPTIONS)',
     {
       BUILDER: options.fieldBuilder,
-      OPTIONS: argOptions || '',
+      OPTIONS: argOptions ?? '',
     },
   );
 

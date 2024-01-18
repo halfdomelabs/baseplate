@@ -1,11 +1,12 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { createContext, useContext, useEffect, useMemo } from 'react';
-import { UseFormWatch } from 'react-hook-form';
+import { UseFormGetValues, UseFormWatch } from 'react-hook-form';
 import { StoreApi, createStore, useStore } from 'zustand';
 
 interface ModelConfigStore {
   model: ModelConfig;
   setModel: (model: ModelConfig) => void;
+  getValues: UseFormGetValues<ModelConfig>;
 }
 
 const EditedModelContext = createContext<
@@ -16,9 +17,11 @@ export function EditedModelContextProvider({
   children,
   watch,
   initialModel,
+  getValues,
 }: {
   children: React.ReactNode;
   watch: UseFormWatch<ModelConfig>;
+  getValues: UseFormGetValues<ModelConfig>;
   initialModel: ModelConfig;
 }): JSX.Element {
   const store = useMemo(
@@ -28,8 +31,9 @@ export function EditedModelContextProvider({
         setModel: (model) => {
           set({ model: model });
         },
+        getValues,
       })),
-    [initialModel],
+    [initialModel, getValues],
   );
 
   useEffect(() => {
@@ -55,5 +59,5 @@ export function useEditedModelConfig<T>(
       'useModelParsedProject must be used within a ModelParsedProjectConfigProvider',
     );
   }
-  return useStore(store, (state) => selector(state.model));
+  return useStore(store, (state) => selector(state.getValues()));
 }
