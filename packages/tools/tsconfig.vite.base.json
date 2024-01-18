@@ -18,7 +18,6 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    /* Using Node resolution instead of Bundler to support ESLint with react-icons */
-    "moduleResolution": "Node"
+    "moduleResolution": "Bundler"
   }
 }
