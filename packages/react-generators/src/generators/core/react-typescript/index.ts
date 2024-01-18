@@ -20,21 +20,29 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { typescriptConfig, eslint }) {
     typescriptConfig.setTypescriptVersion('5.2.2');
     typescriptConfig.setTypescriptCompilerOptions({
-      target: 'ES2020',
-      lib: ['ES2020', 'DOM', 'DOM.Iterable'],
+      /* Compilation */
+      lib: ['DOM', 'DOM.Iterable', 'ESNext'],
       module: 'ESNext',
-      types: ['vite/client', 'vite-plugin-svgr/client'],
+      target: 'ESNext',
       skipLibCheck: true,
-      /* Node module resolution to work with react-icons */
-      moduleResolution: 'Node',
+      esModuleInterop: false,
+      allowJs: false,
+      jsx: 'react-jsx',
+
+      /* Linting */
+      strict: true,
+
+      /* Resolution */
       allowSyntheticDefaultImports: true,
-      allowImportingTsExtensions: true,
+      forceConsistentCasingInFileNames: true,
       resolveJsonModule: true,
+      moduleResolution: 'Bundler',
+
+      /* Output */
       isolatedModules: true,
       noEmit: true,
-      jsx: 'react-jsx',
-      strict: true,
-      noFallthroughCasesInSwitch: true,
+
+      /* Paths */
       baseUrl: './',
       paths: {
         '@src/*': ['./src/*'],
@@ -55,9 +63,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
             contents: {
               compilerOptions: {
                 composite: true,
-                module: 'ESNext',
                 moduleResolution: 'Node',
-                allowSyntheticDefaultImports: true,
               },
               include: ['vite.config.ts'],
             },
