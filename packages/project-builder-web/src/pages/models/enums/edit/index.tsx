@@ -6,19 +6,21 @@ import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import EnumEditForm from './EnumEditForm';
+import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
+import { RefDeleteError } from '@src/utils/error';
 import { Alert, Button } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
-import { formatError } from 'src/services/error-formatter';
+import { formatError, logAndFormatError } from 'src/services/error-formatter';
 
 function EnumEditPage(): JSX.Element {
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfig, setConfigAndFixReferences } =
-    useProjectConfig();
+  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
   const { status, setError } = useStatus();
   const toast = useToast();
   const navigate = useNavigate();
+  const { showRefIssues } = useDeleteReferenceDialog();
 
   const id = uid ? modelEnumEntityType.fromUid(uid) : undefined;
 
@@ -35,12 +37,16 @@ function EnumEditPage(): JSX.Element {
       )
     ) {
       try {
-        setConfig((draftConfig) => {
+        setConfigAndFixReferences((draftConfig) => {
           draftConfig.enums = draftConfig.enums?.filter((m) => m.id !== id);
         });
         navigate('..');
       } catch (err) {
-        setError(formatError(err));
+        if (err instanceof RefDeleteError) {
+          showRefIssues({ issues: err.issues });
+          return;
+        }
+        setError(logAndFormatError(err));
       }
     }
   };

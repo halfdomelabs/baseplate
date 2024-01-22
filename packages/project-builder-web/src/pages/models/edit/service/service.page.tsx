@@ -1,6 +1,7 @@
 import {
   ModelConfig,
   ModelTransformerUtils,
+  modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
@@ -8,10 +9,13 @@ import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
 import { useProjectConfig } from '@src/hooks/useProjectConfig';
+import { registerEntityTypeUrl } from '@src/services/entity-type';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useStatus } from 'src/hooks/useStatus';
+
+registerEntityTypeUrl(modelTransformerEntityType, `/models/edit/{parentUid}`);
 
 function ModelEditServicePage(): JSX.Element {
   const { status, setError } = useStatus();

@@ -10,8 +10,10 @@ import { useState } from 'react';
 import { MdClear, MdDelete } from 'react-icons/md';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
+import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
-import { formatError } from '@src/services/error-formatter';
+import { logAndFormatError } from '@src/services/error-formatter';
+import { RefDeleteError } from '@src/utils/error';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface ModelsSidebarListProps {
@@ -24,7 +26,8 @@ export function ModelsSidebarList({
   const navigate = useNavigate();
   const { requestConfirm } = useConfirmDialog();
   const toast = useToast();
-  const { parsedProject, setConfig } = useProjectConfig();
+  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
+  const { showRefIssues } = useDeleteReferenceDialog();
 
   const models = parsedProject.getModels();
 
@@ -37,12 +40,16 @@ export function ModelsSidebarList({
 
   const handleDelete = (id: string): void => {
     try {
-      setConfig((draftConfig) => {
+      setConfigAndFixReferences((draftConfig) => {
         draftConfig.models = draftConfig.models?.filter((m) => m.id !== id);
       });
       navigate('..');
     } catch (err) {
-      toast.error(formatError(err));
+      if (err instanceof RefDeleteError) {
+        showRefIssues({ issues: err.issues });
+        return;
+      }
+      toast.error(logAndFormatError(err));
     }
   };
 

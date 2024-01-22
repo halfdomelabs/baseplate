@@ -69,7 +69,7 @@ export function RefIssueDialog(): JSX.Element {
                 ? issuePath.substring(referenceParent.path.join('.').length + 1)
                 : issuePath;
               const referenceParentUrl = referenceParent
-                ? getEntityTypeUrl(referenceParent)
+                ? getEntityTypeUrl(definitionContainer, referenceParent)
                 : undefined;
               return (
                 <Table.Row key={issuePath}>
