@@ -299,6 +299,16 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
           : undefined,
       };
 
+      const foreignModelName = upperCaseFirst(foreignModel.name);
+      const foreignRelationName = upperCaseFirst(foreignRelation.name);
+      const outputDataType = `{
+        where${
+          isOneToOne ? '?' : ''
+        }: Prisma.${foreignModelName}WhereUniqueInput;
+        create: Prisma.${foreignModelName}CreateWithout${foreignRelationName}Input;
+        update: Prisma.${foreignModelName}UpdateWithout${foreignRelationName}Input;
+      }`;
+
       const upsertFunction = !embeddedTransformerFactories.length
         ? undefined
         : createEmbeddedTransformFunction({
@@ -306,9 +316,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
               localRelationName,
             )}Data`,
             inputDataType: dataInputName,
-            outputDataType: `Prisma.${upperCaseFirst(foreignModel.name)}Upsert${
-              isOneToOne ? '' : 'WithWhereUnique'
-            }Without${upperCaseFirst(foreignRelation.name)}Input`,
+            outputDataType,
             dataMethodOptions,
             isOneToOne,
             prismaUtils,

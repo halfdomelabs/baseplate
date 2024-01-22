@@ -62,8 +62,9 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
       return produce((draftConfig: ProjectConfig) => {
         draftConfig.models.forEach((model) => {
           model.service?.transformers?.forEach((transformer) => {
+            const oldTransformer = transformer as unknown as { name: string };
             if (transformer.type === 'embeddedRelation') {
-              const localRelationName = transformer.name;
+              const localRelationName = oldTransformer.name;
               const foreignModel = draftConfig.models?.find(
                 (m) =>
                   m.model.relations?.some(
@@ -77,10 +78,10 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
                   `Could not find model associated with embedded relation ${model.name}/${localRelationName}`,
                 );
               }
-              transformer.foreignRelationRef = transformer.name;
+              transformer.foreignRelationRef = oldTransformer.name;
               transformer.modelRef = foreignModel.name;
             } else if (transformer.type === 'file') {
-              transformer.fileRelationRef = transformer.name;
+              transformer.fileRelationRef = oldTransformer.name;
             }
           });
         });

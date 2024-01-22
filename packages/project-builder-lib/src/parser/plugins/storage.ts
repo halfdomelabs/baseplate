@@ -25,7 +25,8 @@ export const StoragePlugin: ParserPlugin = {
               (r) => r.id === t.fileRelationRef,
             );
             // shouldn't happen as checked elsewhere
-            if (!relation) throw new Error(`Relation not found for ${t.name}`);
+            if (!relation)
+              throw new Error(`Relation not found for ${t.fileRelationRef}`);
             return relation.foreignId;
           })
           .filter(notEmpty) ?? [],
@@ -148,6 +149,9 @@ export const StoragePlugin: ParserPlugin = {
           ...c,
           usedByRelation: definitionContainer.nameFromId(c.usedByRelation),
           defaultAdapter: definitionContainer.nameFromId(c.defaultAdapter),
+          uploadRoles: c.uploadRoles.map((r) =>
+            definitionContainer.nameFromId(r),
+          ),
         })),
       },
     });

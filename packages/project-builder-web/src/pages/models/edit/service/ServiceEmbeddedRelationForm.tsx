@@ -1,6 +1,7 @@
 import {
   EmbeddedRelationTransformerConfig,
   ModelConfig,
+  ModelTransformerUtils,
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
@@ -28,7 +29,7 @@ function ServiceEmbeddedRelationForm({
 }: Props): JSX.Element {
   const { control, setValue } = formProps;
 
-  const { config } = useProjectConfig();
+  const { config, definitionContainer } = useProjectConfig();
 
   const availableRelations = useEditedModelConfig((model) => {
     const relationsToModel = ModelUtils.getRelationsToModel(config, model.id);
@@ -96,7 +97,10 @@ function ServiceEmbeddedRelationForm({
 
   const foreignTransformerOptions =
     relation?.model.service?.transformers?.map((transformer) => ({
-      label: transformer.name,
+      label: ModelTransformerUtils.getTransformName(
+        definitionContainer,
+        transformer,
+      ),
       value: transformer.id,
     })) ?? [];
 

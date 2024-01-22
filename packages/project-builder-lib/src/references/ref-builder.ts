@@ -18,11 +18,7 @@ import {
   DefinitionReference,
   ReferencePath,
 } from './types.js';
-import {
-  FieldPath,
-  FieldPathValue,
-  FieldValues,
-} from '@src/types/path/eager.js';
+import { FieldPath, FieldValues } from '@src/types/path/eager.js';
 
 export const zRefId = z.string().min(1).optional();
 
@@ -55,20 +51,13 @@ interface DefinitionEntityInputBase<
   path?: TPath;
   idPath?: TIdKey;
   namePath?: PathInput<TInput>;
+  /**
+   * Use name ref path when the path that contains the name is a ref
+   */
+  nameRefPath?: PathInput<TInput>;
   name?: string;
   addContext?: string;
   stripIdWhenSerializing?: boolean;
-  processPostSerialize?: (
-    input: TInput extends FieldValues
-      ? TPath extends PathInput<TInput>
-        ? FieldPathValue<TInput, TPath>
-        : TInput
-      : never,
-  ) => TInput extends FieldValues
-    ? TPath extends PathInput<TInput>
-      ? FieldPathValue<TInput, TPath>
-      : TInput
-    : never;
 }
 
 interface DefinitionEntityInputWithParent<
@@ -132,6 +121,10 @@ type DefinitionReferenceInput<
   ? DefinitionReferenceInputWithoutParent<TInput, TEntityType>
   : DefinitionReferenceInputWithParent<TInput, TEntityType>;
 
+interface DefinitionEntityWithNamePath extends Omit<DefinitionEntity, 'name'> {
+  nameRefPath: ReferencePath;
+}
+
 /**
  * Zod RefBuilder: Used for creating references for zod
  */
@@ -144,6 +137,7 @@ interface RefBuilderContext {
 class ZodRefBuilder<TInput> {
   references: DefinitionReference[];
   entities: DefinitionEntity[];
+  entitiesWithNamePath: DefinitionEntityWithNamePath[];
   pathPrefix: ReferencePath;
   context: RefBuilderContext;
   pathMap: Record<string, { path: ReferencePath; type: DefinitionEntityType }>;
@@ -156,6 +150,7 @@ class ZodRefBuilder<TInput> {
   ) {
     this.references = [];
     this.entities = [];
+    this.entitiesWithNamePath = [];
     this.pathPrefix = pathPrefix;
     this.context = context;
     this.pathMap = {};
@@ -258,6 +253,12 @@ class ZodRefBuilder<TInput> {
     TPath extends PathInput<TInput> | undefined = undefined,
     TIDKey extends string | PathInput<TInput> = 'id',
   >(entity: DefinitionEntityInput<TInput, TEntityType, TPath, TIDKey>): void {
+    if ((!!entity.name || !!entity.namePath) && entity.nameRefPath) {
+      throw new Error(
+        `Reference entity cannot have both name and nameRefPath at ${entity.path}`,
+      );
+    }
+
     const path = this._constructPath(entity.path);
 
     // attempt to fetch id from entity input
@@ -278,14 +279,13 @@ class ZodRefBuilder<TInput> {
         ],
       ) as string);
 
-    if (!name) {
+    if (!name && !entity.nameRefPath) {
       throw new Error(`Reference entity requires a name at ${path.join('.')}`);
     }
 
-    this.entities.push({
+    const entityBase = {
       id,
       type: entity.type,
-      name,
       path,
       idPath: [...this.pathPrefix, ...idPath],
       parentPath:
@@ -296,10 +296,19 @@ class ZodRefBuilder<TInput> {
           entity.type.parentType,
         ),
       stripIdWhenSerializing: entity.stripIdWhenSerializing,
-      processPostSerialize: entity.processPostSerialize as (
-        entity: unknown,
-      ) => unknown,
-    });
+    };
+
+    if (entity.nameRefPath) {
+      this.entitiesWithNamePath.push({
+        ...entityBase,
+        nameRefPath: this._constructPath(entity.nameRefPath),
+      });
+    } else {
+      this.entities.push({
+        ...entityBase,
+        name,
+      });
+    }
 
     if (entity.addContext) {
       this._addPathToContext(
@@ -354,6 +363,7 @@ interface ZodRefContext {
   context: RefBuilderContext;
   references: DefinitionReference[];
   entities: DefinitionEntity[];
+  entitiesWithNamePath: DefinitionEntityWithNamePath[];
 }
 
 interface ExtendedCommonContext {
@@ -381,6 +391,7 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
     this._def.builder(builder, input.data);
     zodRefContext.references.push(...builder.references);
     zodRefContext.entities.push(...builder.entities);
+    zodRefContext.entitiesWithNamePath.push(...builder.entitiesWithNamePath);
 
     const parseOutput = this._def.innerType._parse({
       ...input,
@@ -428,15 +439,9 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
     return transformParseOutput(parseOutput);
   }
 
-  static create = <T extends ZodTypeAny>(
-    type: T,
-    builder?: ZodBuilderFunction<TypeOf<T>>,
-  ): ZodRef<T> => {
-    return new ZodRef<T>({
-      innerType: type,
-      builder,
-    });
-  };
+  innerType(): T {
+    return this._def.innerType;
+  }
 
   addEntity<
     TEntityType extends DefinitionEntityType,
@@ -466,9 +471,19 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
     }) as unknown as ZodRef<T>;
   }
 
-  refBuilder(builder: ZodBuilderFunction<T>): ZodRef<T> {
+  refBuilder(builder: ZodBuilderFunction<input<T>>): ZodRef<T> {
     return ZodRef.create(this, builder) as unknown as ZodRef<T>;
   }
+
+  static create = <T extends ZodTypeAny>(
+    type: T,
+    builder?: ZodBuilderFunction<TypeOf<T>>,
+  ): ZodRef<T> => {
+    return new ZodRef<T>({
+      innerType: type,
+      builder,
+    });
+  };
 }
 
 export function zRefBuilder<T extends z.ZodType>(
@@ -539,13 +554,15 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
 > {
   _parse(input: ParseInput): ParseReturnType<ZodRefPayload<TypeOf<T>>> {
     // run builder
+    const shouldDeserialize = this._def.deserialize;
     const refContext: ZodRefContext = {
       context: {
         pathMap: {},
-        deserialize: this._def.deserialize,
+        deserialize: shouldDeserialize,
       },
       references: [],
       entities: [],
+      entitiesWithNamePath: [],
     };
 
     const parseOutput = this._def.innerType._parse({
@@ -563,11 +580,56 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
       output: SyncParseReturnType<unknown>,
     ): SyncParseReturnType<ZodRefPayload<TypeOf<T>>> {
       if (output.status === 'aborted') return output;
+
+      // resolve entities with name paths if we are not deserializing
+      const entities = [...refContext.entities];
+
+      if (refContext.entitiesWithNamePath.length) {
+        const entitiesById = _.keyBy(entities, 'id');
+        let entitiesLength = -1;
+        do {
+          if (entitiesLength === entities.length) {
+            throw new Error(
+              `Could not resolve all entities with name paths. Entities remaining: ${refContext.entitiesWithNamePath
+                .map((e) => e.id)
+                .join(', ')}`,
+            );
+          }
+          entitiesLength = entities.length;
+          const entitiesWithNamePath = [...refContext.entitiesWithNamePath];
+          entitiesWithNamePath.forEach((entity) => {
+            const newName = (() => {
+              const nameRefPath = entity.nameRefPath;
+              const nameRefValue = _.get(output.value, nameRefPath) as string;
+              if (nameRefValue === undefined) {
+                throw new Error(
+                  `Could not find name ref value at ${nameRefPath.join('.')}`,
+                );
+              }
+              // if we are deserializing, we can just return the name ref value
+              if (shouldDeserialize) {
+                return nameRefValue;
+              }
+              return entitiesById[nameRefValue]?.name;
+            })();
+            if (newName) {
+              const newEntity = {
+                ...entity,
+                name: newName,
+              };
+              entities.push(newEntity);
+              entitiesById[entity.id] = newEntity;
+              _.pull(refContext.entitiesWithNamePath, entity);
+            }
+          });
+        } while (refContext.entitiesWithNamePath.length);
+      }
+
       return {
         ...output,
         value: {
           data: output.value,
-          entities: refContext.entities,
+          entities: entities,
           references: refContext.references,
         },
       };

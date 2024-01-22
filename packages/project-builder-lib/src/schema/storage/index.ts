@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { featureEntityType } from '../features/index.js';
+import { authRoleEntityType } from '../index.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
@@ -50,7 +51,12 @@ export const storageSchema = zRefBuilder(
           onDelete: 'RESTRICT',
           parentPath: { context: 'fileModel' },
         }),
-        uploadRoles: z.array(z.string().min(1)),
+        uploadRoles: z.array(
+          zRef(z.string().min(1), {
+            type: authRoleEntityType,
+            onDelete: 'RESTRICT',
+          }),
+        ),
       }),
     ),
   }),
