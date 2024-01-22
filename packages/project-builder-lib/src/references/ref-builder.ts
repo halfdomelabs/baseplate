@@ -545,6 +545,10 @@ export interface ZodRefWrapperDef<T extends ZodTypeAny = ZodTypeAny>
   extends ZodTypeDef {
   innerType: T;
   deserialize: boolean;
+  /**
+   * Whether to allow name refs to be missing. Useful when testing deletions
+   */
+  allowMissingNameRefs?: boolean;
 }
 
 export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
@@ -555,6 +559,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
   _parse(input: ParseInput): ParseReturnType<ZodRefPayload<TypeOf<T>>> {
     // run builder
     const shouldDeserialize = this._def.deserialize;
+    const allowMissingNameRefs = this._def.allowMissingNameRefs ?? false;
     const refContext: ZodRefContext = {
       context: {
         pathMap: {},
@@ -589,6 +594,9 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
         let entitiesLength = -1;
         do {
           if (entitiesLength === entities.length) {
+            if (allowMissingNameRefs) {
+              break;
+            }
             throw new Error(
               `Could not resolve all entities with name paths. Entities remaining: ${refContext.entitiesWithNamePath
                 .map((e) => e.id)
@@ -645,10 +653,12 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
   static create = <T extends ZodTypeAny>(
     type: T,
     deserialize = false,
+    allowMissingNameRefs = false,
   ): ZodRefWrapper<T> => {
     return new ZodRefWrapper<T>({
       innerType: type,
       deserialize,
+      allowMissingNameRefs,
     });
   };
 }

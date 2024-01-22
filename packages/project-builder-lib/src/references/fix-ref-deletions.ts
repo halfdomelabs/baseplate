@@ -40,8 +40,11 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
     // find all references that do not have a corresponding entity
     let iterations;
     for (iterations = 0; iterations < 100; iterations++) {
-      const { references, entities } =
-        ZodRefWrapper.create(schema).parse(draftData);
+      const { references, entities } = ZodRefWrapper.create(
+        schema,
+        false,
+        true,
+      ).parse(draftData);
       const entitiesById = _.keyBy(entities, (e) => e.id);
       const referencesMissingEntity = references.filter((r) => {
         const id = _.get(draftData, r.path) as string;

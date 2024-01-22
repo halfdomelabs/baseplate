@@ -7,7 +7,13 @@ import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
 
 import AdminEditSectionForm from './AdminEditSectionForm';
+import { registerEntityTypeUrl } from '@src/services/entity-type';
 import { Sidebar } from 'src/components';
+
+registerEntityTypeUrl(
+  adminSectionEntityType,
+  `/apps/edit/{parentUid}/sections/edit/{uid}`,
+);
 
 interface Props {
   className?: string;

@@ -36,9 +36,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     : undefined;
 
   const existingSection = sectionId
-    ? appConfig.sections?.find(
-        (section) => section.id === adminSectionEntityType.fromUid(sectionId),
-      )
+    ? appConfig.sections?.find((section) => section.id === sectionId)
     : undefined;
 
   const { control, handleSubmit, watch, reset } =

@@ -10,6 +10,8 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
+import { RefDeleteError } from '@src/utils/error';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
@@ -57,6 +59,7 @@ export function useModelForm({
   const navigate = useNavigate();
   const id = uid ? modelEntityType.fromUid(uid) : undefined;
   const model = id ? parsedProject.getModelById(id) : undefined;
+  const { showRefIssues } = useDeleteReferenceDialog();
 
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);
@@ -95,6 +98,10 @@ export function useModelForm({
         }
         reset(data);
       } catch (err) {
+        if (err instanceof RefDeleteError) {
+          showRefIssues({ issues: err.issues });
+          return;
+        }
         logger.error(err);
         if (setError) {
           setError(formatError(err));
@@ -105,6 +112,7 @@ export function useModelForm({
     },
     [
       setConfigAndFixReferences,
+      showRefIssues,
       toast,
       id,
       model?.name,

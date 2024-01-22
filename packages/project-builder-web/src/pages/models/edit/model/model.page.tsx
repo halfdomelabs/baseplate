@@ -1,4 +1,9 @@
-import { ModelUtils, modelEntityType } from '@halfdomelabs/project-builder-lib';
+import {
+  ModelUtils,
+  modelEntityType,
+  modelLocalRelationEntityType,
+  modelScalarFieldEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { useParams } from 'react-router-dom';
 
 import { ModelGeneralForm } from './ModelGeneralForm';
@@ -10,17 +15,14 @@ import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
-import { Alert } from 'src/components';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
-import { useStatus } from 'src/hooks/useStatus';
 
 registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
+registerEntityTypeUrl(modelScalarFieldEntityType, `/models/edit/{parentUid}`);
+registerEntityTypeUrl(modelLocalRelationEntityType, `/models/edit/{parentUid}`);
 
 function ModelEditModelPage(): JSX.Element {
-  const { status, setError } = useStatus();
-  const { form, onFormSubmit, defaultValues } = useModelForm({
-    setError,
-  });
+  const { form, onFormSubmit, defaultValues } = useModelForm({});
   const { control, handleSubmit, watch, getValues } = form;
 
   const { config } = useProjectConfig();
@@ -39,7 +41,6 @@ function ModelEditModelPage(): JSX.Element {
         onSubmit={handleSubmit(onFormSubmit)}
         className="min-w-[700px] max-w-6xl space-y-4"
       >
-        <Alert.WithStatus status={status} />
         {!id && <ModelGeneralForm control={control} horizontal />}
         {!id && <h2>Fields</h2>}
         <ModelFieldsForm control={control} />
