@@ -1,5 +1,12 @@
 # @halfdomelabs/ui-components
 
+## 0.4.2
+
+### Patch Changes
+
+- 33f9df9e: Add empty state for combobox and avoid flash when closing combobox
+- af5d0c53: Upgrade react-icons to 5.0.1 and minor upgrades on component deps
+
 ## 0.4.1
 
 ### Patch Changes

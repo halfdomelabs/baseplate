@@ -1,5 +1,30 @@
 # @halfdomelabs/project-builder-web
 
+## 0.8.0
+
+### Minor Changes
+
+- e1091945: Adds fixed actions bar to bottom of model edit pages
+- ae358f50: Switch over project builder to new reference system
+
+### Patch Changes
+
+- 0583ca1e: Enable names of entities to be references to other fields
+- fdd80b5a: Improve reference errors when deleting fields/models/enums
+- 0ef0915d: Fix bug with adding fields and saving schema/services
+- 8c0a2d5b: Add ability to set defaults on enum fields
+- af5d0c53: Upgrade react-icons to 5.0.1 and minor upgrades on component deps
+- 9a9d4f2d: Upgrade Axios to 1.6.5
+- Updated dependencies [0583ca1e]
+- Updated dependencies [fdd80b5a]
+- Updated dependencies [0ef0915d]
+- Updated dependencies [33f9df9e]
+- Updated dependencies [8c0a2d5b]
+- Updated dependencies [af5d0c53]
+- Updated dependencies [ae358f50]
+  - @halfdomelabs/project-builder-lib@0.7.0
+  - @halfdomelabs/ui-components@0.4.2
+
 ## 0.7.0
 
 ### Minor Changes

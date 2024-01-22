@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.2
+
+### Patch Changes
+
+- af5d0c53: Switch from module resolution Node to Bundler and standardized tsconfig for React generators
+
 ## 0.5.1
 
 ### Patch Changes
