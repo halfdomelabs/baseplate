@@ -1,9 +1,13 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  ModelConfig,
+  ModelTransformerUtils,
+} from '@halfdomelabs/project-builder-lib';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
+import { useProjectConfig } from '@src/hooks/useProjectConfig';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
@@ -15,7 +19,7 @@ function ModelEditServicePage(): JSX.Element {
     setError,
   });
   const { control, handleSubmit, watch, getValues } = form;
-
+  const { definitionContainer } = useProjectConfig();
   const shouldBuild = watch('service.build');
 
   const onSubmit = (data: ModelConfig): void => {
@@ -40,7 +44,7 @@ function ModelEditServicePage(): JSX.Element {
 
   const transformers = watch(`service.transformers`);
   const transformerOptions = transformers?.map((f) => ({
-    label: f.name,
+    label: ModelTransformerUtils.getTransformName(definitionContainer, f),
     value: f.id,
   }));
 

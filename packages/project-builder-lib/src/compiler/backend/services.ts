@@ -24,7 +24,7 @@ function buildEmbeddedRelationTransformer(
 
   if (!foreignRelation) {
     throw new Error(
-      `Could not find relation ${transformer.name} for embedded relation transformer`,
+      `Could not find relation ${transformer.foreignRelationRef} for embedded relation transformer`,
     );
   }
 
@@ -91,7 +91,7 @@ function buildTransformer(
       return buildEmbeddedRelationTransformer(appBuilder, transformer, model);
     case 'password':
       return {
-        name: transformer.name,
+        name: 'password',
         generator: '@halfdomelabs/fastify/auth/prisma-password-transformer',
       };
     case 'file':

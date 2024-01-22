@@ -83,7 +83,6 @@ function ServiceEmbeddedRelationsForm({
                 onSelect={() =>
                   append({
                     id: modelTransformerEntityType.generateNewId(),
-                    name: 'password',
                     type: 'password',
                   })
                 }
@@ -96,7 +95,6 @@ function ServiceEmbeddedRelationsForm({
                 onSelect={() =>
                   append({
                     id: modelTransformerEntityType.generateNewId(),
-                    name: '',
                     fileRelationRef: '',
                     type: 'file',
                   })
@@ -110,7 +108,6 @@ function ServiceEmbeddedRelationsForm({
                 append({
                   id: modelTransformerEntityType.generateNewId(),
                   foreignRelationRef: '',
-                  name: '',
                   type: 'embeddedRelation',
                   embeddedFieldNames: [],
                   modelRef: '',

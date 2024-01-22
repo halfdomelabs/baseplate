@@ -165,7 +165,7 @@ function CrudFormFieldsForm({
   embeddedFormOptions,
 }: Props): JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
-  const { parsedProject } = useProjectConfig();
+  const { definitionContainer, parsedProject } = useProjectConfig();
   const model = modelName ? parsedProject.getModelById(modelName) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
@@ -195,7 +195,7 @@ function CrudFormFieldsForm({
     model?.service?.transformers
       ?.filter((t): t is FileTransformerConfig => t.type === 'file')
       .map((transformer) => ({
-        label: transformer.name,
+        label: definitionContainer.nameFromId(transformer.fileRelationRef),
         value: transformer.id,
       })) ?? [];
 
