@@ -11,7 +11,7 @@ export function setupViteNode(node: NodeProvider): void {
     '@types/react': '18.2.15',
     '@types/react-dom': '18.2.7',
     '@vitejs/plugin-react': '4.2.1',
-    vite: '4.5.1',
+    vite: '4.5.2',
     'vite-plugin-svgr': '4.2.0',
     'vite-tsconfig-paths': '4.2.2',
   });
