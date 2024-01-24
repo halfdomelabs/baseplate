@@ -1,5 +1,18 @@
 # @halfdomelabs/react-generators
 
+## 0.6.2
+
+### Patch Changes
+
+- af5d0c53: Switch from module resolution Node to Bundler and standardized tsconfig for React generators
+- af5d0c53: Upgrade date-fns to 3.2.0
+- 8b50e477: Upgrade Typescript to 5.2.2 for generation
+- af5d0c53: Upgrade react-icons to 5.0.1 and minor upgrades on component deps
+- 9a9d4f2d: Upgrade Axios to 1.6.5
+- 4e07d12a: Upgrade Vite to 4.5.2
+  - @halfdomelabs/core-generators@0.7.1
+  - @halfdomelabs/sync@0.7.0
+
 ## 0.6.1
 
 ### Patch Changes

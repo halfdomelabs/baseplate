@@ -1,5 +1,20 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.1
+
+### Patch Changes
+
+- ae358f50: Upgrade fastify to 4.25.2 to fix websocket issues
+- 0583ca1e: Fix embedded relation transform output type to use narrower type to work with new Prisma types
+- f2d0c7b6: Upgrade Prisma to 5.7.1
+- 0ef0915d: Fix generation of multi-column primary key queries and mutations
+- 8b50e477: Upgrade Typescript to 5.2.2 for generation
+- 8c0a2d5b: Add ability to set defaults on enum fields
+- 9a9d4f2d: Upgrade Axios to 1.6.5
+- 57216eab: Upgrade BullMQ to 5.1.1 and Bull Board to latest
+  - @halfdomelabs/core-generators@0.7.1
+  - @halfdomelabs/sync@0.7.0
+
 ## 0.8.0
 
 ### Minor Changes
