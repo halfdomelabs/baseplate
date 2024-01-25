@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.7.1
+
+### Patch Changes
+
+- 1e30f98b: Fix generation of admin display forms
+- 1e30f98b: Fix bug where not all IDs were being added to the entities
+
 ## 0.7.0
 
 ### Minor Changes

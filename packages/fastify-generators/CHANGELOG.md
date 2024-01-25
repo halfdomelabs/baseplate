@@ -1,5 +1,11 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.2
+
+### Patch Changes
+
+- 1e30f98b: Fix worker typings for new BullMQ version
+
 ## 0.8.1
 
 ### Patch Changes
