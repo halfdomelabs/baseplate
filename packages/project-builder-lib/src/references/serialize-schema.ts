@@ -26,7 +26,11 @@ export function serializeSchema<TSchema extends z.ZodType>(
       const entityId = _.get(draftData, reference.path) as string;
       const entity = entitiesById[entityId];
       if (!entity) {
-        throw new Error(`Could not find entity with ID: ${entityId}`);
+        throw new Error(
+          `Could not find entity with ID: ${entityId} at ${reference.path.join(
+            '.',
+          )}`,
+        );
       }
       _.set(draftData, reference.path, entity.name);
     });
