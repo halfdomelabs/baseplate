@@ -11,7 +11,6 @@ import { zodRefDiscriminatedUnionType } from '@src/references/discriminated-unio
 import { zEnt, zRef } from '@src/references/index.js';
 
 const baseTransformerFields = {
-  id: z.string().default(() => modelTransformerEntityType.generateNewId()),
   type: z.string().min(1),
 } as const;
 

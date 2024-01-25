@@ -420,8 +420,12 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
       if (output.status === 'aborted') return output;
 
       // replace IDs in parse output
-      if (builder.entities.length) {
-        builder.entities.forEach((entity) => {
+      const allEntities = [
+        ...builder.entities,
+        ...builder.entitiesWithNamePath,
+      ];
+      if (allEntities.length) {
+        allEntities.forEach((entity) => {
           _.set(
             output.value as object,
             entity.idPath.slice(input.path.length),
