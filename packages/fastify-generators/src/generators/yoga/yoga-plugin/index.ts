@@ -31,6 +31,7 @@ export interface YogaPluginConfig {
   postSchemaBlocks: TypescriptCodeBlock[];
   schema: TypescriptCodeExpression;
   customImports: TypescriptCodeBlock[];
+  skipLogErrors: TypescriptCodeExpression;
 }
 
 export interface YogaPluginSetupProvider {
@@ -64,25 +65,12 @@ const YogaPluginGenerator = createGeneratorWithTasks({
               `new GraphQLSchema({})`,
               `import { GraphQLSchema } from 'graphql';`,
             ),
+            skipLogErrors: TypescriptCodeUtils.createExpression(`false`),
           },
           {
             defaultsOverwriteable: true,
           },
         );
-
-        configMap.appendUnique('envelopPlugins', [
-          new TypescriptCodeExpression(
-            'useGraphLogger({ skipLogErrors: true })',
-            "import { useGraphLogger } from './useGraphLogger'",
-          ),
-        ]);
-
-        configMap.appendUnique('envelopPlugins', [
-          new TypescriptCodeExpression(
-            'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
-            "import { useDisableIntrospection } from '@envelop/disable-introspection';",
-          ),
-        ]);
 
         return {
           getProviders() {
@@ -94,6 +82,23 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             };
           },
           build() {
+            configMap.prepend(
+              'envelopPlugins',
+              new TypescriptCodeExpression(
+                'useDisableIntrospection({ disableIf: () => !IS_DEVELOPMENT })',
+                "import { useDisableIntrospection } from '@envelop/disable-introspection';",
+              ),
+            );
+            configMap.prepend(
+              'envelopPlugins',
+              configMap
+                .value()
+                .skipLogErrors.wrap(
+                  (contents) =>
+                    `useGraphLogger({ skipLogErrors: ${contents} })`,
+                  "import { useGraphLogger } from './useGraphLogger'",
+                ),
+            );
             return { configMap };
           },
         };

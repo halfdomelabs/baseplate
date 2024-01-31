@@ -468,10 +468,12 @@ const ReactApolloGenerator = createGeneratorWithTasks({
         reactErrorProvider,
       },
       run({ reactErrorProvider }) {
-        reactErrorProvider.addContextAction(
-          TypescriptCodeUtils.createBlock(
-            `
-          if (error instanceof GraphQLError) {
+        const headerBlock = TypescriptCodeUtils.createBlock(
+          `
+          function annotateGraphQLError(
+            error: GraphQLError,
+            context: Record<string, unknown>,
+          ): void {
             context.reqId = error.extensions?.reqId;
             context.code = error.extensions?.code;
             context.statusCode = error.extensions?.statusCode;
@@ -487,8 +489,55 @@ const ReactApolloGenerator = createGeneratorWithTasks({
               serverError.stack = \`[Original Error] \${originalError.stack}\`;
               logger.error(serverError);
             }
-          }`,
-            `import { GraphQLError } from 'graphql'`,
+          }
+  `,
+          `import { GraphQLError } from 'graphql'`,
+        );
+
+        reactErrorProvider.addContextAction(
+          TypescriptCodeUtils.createBlock(
+            `
+            if (error instanceof GraphQLError) {
+              annotateGraphQLError(error, context);
+            }
+          
+            if (error instanceof ApolloError) {
+              if (error.graphQLErrors.length >= 1) {
+                annotateGraphQLError(error.graphQLErrors[0], context);
+              }
+              if (error.networkError && 'result' in error.networkError) {
+                const result = error.networkError.result;
+                const message =
+                  typeof result === 'string'
+                    ? result
+                    : (
+                        result.errors as {
+                          message?: string;
+                        }[]
+                      )?.[0]?.message ?? JSON.stringify(result);
+          
+                context.networkErrorResponse = message;
+              }
+              // it's more useful to log the current stack trace than the one from
+              // ApolloError which is always the same
+              const currentStack = new Error().stack?.split('\\n');
+              error.stack = [
+                error.stack?.split('\\n')[0],
+                currentStack
+                  ?.slice(currentStack.findIndex((line) => line.includes('logError')) + 1)
+                  .join('\\n'),
+              ]
+                .filter(Boolean)
+                .join('\\n');
+            }
+          `,
+            [
+              `import { GraphQLError } from 'graphql'`,
+              `import { ApolloError } from '@apollo/client'`,
+            ],
+            {
+              headerBlocks: [headerBlock],
+            },
           ),
         );
         return {};

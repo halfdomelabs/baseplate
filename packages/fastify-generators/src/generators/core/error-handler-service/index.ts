@@ -8,8 +8,9 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
+  createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -33,10 +34,8 @@ const ERROR_MAP = {
   notFound: 'NotFoundError',
 };
 
-export interface ErrorHandlerServiceSetupProvider extends ImportMapper {
+export interface ErrorHandlerServiceSetupProvider {
   getHandlerFile(): TypescriptSourceFile<typeof errorHandlerFileConfig>;
-  getHttpErrorsImport(): string;
-  getErrorFunction(): TypescriptCodeExpression;
 }
 
 export const errorHandlerServiceSetupProvider =
@@ -57,9 +56,8 @@ export const errorHandlerServiceProvider =
     isReadOnly: true,
   });
 
-const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
-  descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
+const createSetupTask = createTaskConfigBuilder(() => ({
+  name: 'setup',
   dependencies: {
     loggerService: loggerServiceProvider,
     fastifyServer: fastifyServerProvider,
@@ -68,12 +66,8 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
   },
   exports: {
     errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
-    errorHandlerService: errorHandlerServiceProvider,
   },
-  createGenerator(
-    descriptor,
-    { loggerService, fastifyServer, typescript, configService },
-  ) {
+  run({ loggerService, fastifyServer, typescript, configService }) {
     const errorLoggerFile = typescript.createTemplate(errorHandlerFileConfig);
 
     fastifyServer.registerPlugin({
@@ -92,34 +86,10 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
 
     fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
 
-    const importMap = {
-      '%http-errors': {
-        path: `@/src/utils/http-errors`,
-        allowedImports: Object.values(ERROR_MAP),
-      },
-      '%error-logger': {
-        path: '@/src/services/error-logger',
-        allowedImports: ['logError'],
-      },
-    };
-
     return {
       getProviders: () => ({
         errorHandlerServiceSetup: {
           getHandlerFile: () => errorLoggerFile,
-          getImportMap: () => importMap,
-          getErrorFunction: () => errorFunction,
-          getHttpErrorsImport: () => '@/src/utils/http-errors',
-        },
-        errorHandlerService: {
-          getErrorFunction: () => errorFunction,
-          getHttpErrorsImport: () => '@/src/utils/http-errors',
-          getHttpErrorExpression: (error) =>
-            new TypescriptCodeExpression(
-              ERROR_MAP[error],
-              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`,
-            ),
-          getImportMap: () => importMap,
         },
       }),
       build: async (builder) => {
@@ -157,6 +127,55 @@ const ErrorHandlerServiceGenerator = createGeneratorWithChildren({
         );
       },
     };
+  },
+}));
+
+const createMainTask = createTaskConfigBuilder(() => ({
+  name: 'main',
+  exports: {
+    errorHandlerService: errorHandlerServiceProvider,
+  },
+  run() {
+    const errorFunction = TypescriptCodeUtils.createExpression(
+      'logError',
+      "import { logError } from '@/src/services/error-logger'",
+    );
+
+    const importMap = {
+      '%http-errors': {
+        path: `@/src/utils/http-errors`,
+        allowedImports: Object.values(ERROR_MAP),
+      },
+      '%error-logger': {
+        path: '@/src/services/error-logger',
+        allowedImports: ['logError'],
+      },
+    };
+
+    return {
+      getProviders: () => ({
+        errorHandlerService: {
+          getErrorFunction: () => errorFunction,
+          getHttpErrorsImport: () => '@/src/utils/http-errors',
+          getHttpErrorExpression: (error) =>
+            new TypescriptCodeExpression(
+              ERROR_MAP[error],
+              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`,
+            ),
+          getImportMap: () => importMap,
+        },
+      }),
+    };
+  },
+}));
+
+const ErrorHandlerServiceGenerator = createGeneratorWithTasks({
+  descriptorSchema,
+  getDefaultChildGenerators: () => ({}),
+
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask(createSetupTask(descriptor));
+    taskBuilder.addTask(createMainTask(descriptor));
   },
 });
 
