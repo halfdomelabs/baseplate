@@ -1,5 +1,11 @@
 # @halfdomelabs/react-generators
 
+## 0.6.3
+
+### Patch Changes
+
+- 8cbdc8cc: Improve Sentry logging of GraphQL errors
+
 ## 0.6.2
 
 ### Patch Changes
