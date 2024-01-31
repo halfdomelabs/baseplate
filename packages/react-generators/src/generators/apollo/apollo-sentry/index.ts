@@ -52,28 +52,46 @@ const createMainTask = createTaskConfigBuilder(() => ({
     reactSentry: reactSentryProvider,
   },
   run({ reactSentry }) {
+    const headerBlock = TypescriptCodeUtils.createBlock(
+      `
+      function configureSentryScopeForGraphqlError(
+        scope: Sentry.Scope,
+        error: GraphQLError,
+      ): void {
+        scope.setFingerprint(
+          [
+            '{{ default }}',
+            error.extensions?.code as string,
+            error.path?.join('.'),
+          ].filter((value): value is string => typeof value === 'string' && !!value),
+        );
+        if (error.path?.[0]) {
+          scope.setTransactionName(String(error.path[0]));
+          scope.setTag('path', String(error.path?.join('.')));
+        }
+      }
+      `,
+      "import { GraphQLError } from 'graphql'",
+    );
     return {
       build: () => {
         reactSentry.addSentryScopeAction(
           new TypescriptCodeBlock(
             `
-        if (error instanceof GraphQLError) {
-          scope.setFingerprint(
-            [
-              '{{ default }}',
-              error.extensions?.code as string,
-              error.path?.join('.'),
-            ].filter(
-              (value): value is string => typeof value === 'string' && !!value,
-            ),
-          );
-          if (error.path?.[0]) {
-            scope.setTransactionName(String(error.path[0]));
-            scope.setTag('path', String(error.path?.join('.')));
-          }
-        }
+            if (error instanceof ApolloError && error.graphQLErrors.length === 1) {
+              const graphqlError = error.graphQLErrors[0];
+              configureSentryScopeForGraphqlError(scope, graphqlError);
+            }
+        
+            if (error instanceof GraphQLError) {
+              configureSentryScopeForGraphqlError(scope, error);
+            }
         `,
-            "import { GraphQLError } from 'graphql'",
+            [
+              "import { GraphQLError } from 'graphql'",
+              "import { ApolloError } from '@apollo/client';",
+            ],
+            { headerBlocks: [headerBlock] },
           ),
         );
       },

@@ -3,7 +3,6 @@
 import {
   getDocumentString,
   handleStreamOrSingleExecutionResult,
-  isOriginalGraphQLError,
   OnExecuteDoneHookResultOnNextHook,
   type Plugin,
 } from '@envelop/core';
@@ -61,12 +60,9 @@ export interface SentryPluginOptions {
   skip?: (args: ExecutionArgs) => boolean;
   /**
    * Indicates whether or not to skip Sentry exception reporting for a given error.
-   * By default, this plugin skips all `GraphQLError` errors and does not report it to Sentry.
    */
   skipError?: (args: Error) => boolean;
 }
-
-export const defaultSkipError = isOriginalGraphQLError;
 
 interface TypedExecutionArgs extends ExecutionArgs {
   document: DocumentNode;
@@ -89,7 +85,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
     includeRawResult = false,
     includeExecuteVariables = false,
     skip: skipOperation = () => false,
-    skipError = defaultSkipError,
+    skipError,
   } = options;
 
   const eventIdKey = options.eventIdKey === null ? null : 'sentryEventId';
@@ -152,7 +148,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
 
       const errors = resultErrors.map((error) => {
         const err = error as GraphQLError;
-        if (skipError(err) === true) {
+        if (skipError && skipError(err) === true) {
           return err;
         }
 
@@ -167,7 +163,7 @@ export const useSentry = (options: SentryPluginOptions = {}): Plugin => {
           path: errorPath,
         });
 
-        const eventId = logError(err.originalError);
+        const eventId = logError(err.originalError ?? err);
 
         return addEventId(err, eventId);
       });

@@ -14,6 +14,16 @@ export interface NonOverwriteableMap<T extends object> {
    */
   set<Key extends keyof T>(key: Key, value: T[Key]): this;
   /**
+   * Prepends a value to an array in the map
+   *
+   * @param key Key of value in map
+   * @param value Array of values to prepend
+   */
+  prepend<Key extends ArrayKeys<T>>(
+    key: Key,
+    value: T[Key] extends (infer U)[] ? U : never,
+  ): this;
+  /**
    * Appends a value to an array in the map
    *
    * @param key Key of value in map
@@ -99,6 +109,20 @@ export function createNonOverwriteableMap<T extends object>(
       overrideValues = nonOverwriteableMerge(overrideValues, {
         [key]: value,
       }) as Partial<T>;
+      return this;
+    },
+    prepend(key, value) {
+      const arrValue = Array.isArray(value) ? value : [value];
+      const existingValue = overrideValues[key] ?? [];
+      if (!Array.isArray(existingValue)) {
+        throw new Error(
+          `Field ${key.toString()} is not array and cannot be prepended to in ${name}`,
+        );
+      }
+      overrideValues = {
+        ...overrideValues,
+        [key]: [...arrValue, ...existingValue],
+      };
       return this;
     },
     append(key, value) {

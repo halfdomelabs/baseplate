@@ -27,6 +27,13 @@ import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 
 const descriptorSchema = z.object({});
 
+export interface FastifyServerSentryProvider extends ImportMapper {
+  addShouldLogToSentryBlock(block: TypescriptCodeBlock): void;
+}
+
+export const fastifyServerSentryProvider =
+  createProviderType<FastifyServerSentryProvider>('fastify-server-sentry');
+
 export interface FastifySentryProvider extends ImportMapper {
   addScopeConfigurationBlock(block: TypescriptCodeBlock): void;
   addSentryIntegration(integration: TypescriptCodeExpression): void;
@@ -34,6 +41,8 @@ export interface FastifySentryProvider extends ImportMapper {
 
 export const fastifySentryProvider =
   createProviderType<FastifySentryProvider>('fastify-sentry');
+
+const sentryServicePath = 'src/services/sentry.ts';
 
 const FastifySentryGenerator = createGeneratorWithTasks({
   descriptorSchema,
@@ -44,8 +53,12 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       dependencies: {
         fastifyServer: fastifyServerProvider,
         errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
+        errorHandlerService: errorHandlerServiceProvider,
       },
-      run({ errorHandlerServiceSetup, fastifyServer }) {
+      exports: {
+        fastifyServerSentry: fastifyServerSentryProvider,
+      },
+      run({ errorHandlerServiceSetup, fastifyServer, errorHandlerService }) {
         fastifyServer.registerPlugin({
           name: 'sentryPlugin',
           plugin: TypescriptCodeUtils.createExpression(
@@ -55,10 +68,36 @@ const FastifySentryGenerator = createGeneratorWithTasks({
           orderPriority: 'EARLY',
         });
 
-        errorHandlerServiceSetup.getHandlerFile().addCodeBlock(
-          'HEADER',
-          TypescriptCodeUtils.createBlock(
-            `
+        const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
+
+        const [serviceImport] = makeImportAndFilePath(sentryServicePath);
+
+        const importMap: ImportMap = {
+          '%fastify-sentry/service': {
+            path: serviceImport,
+            allowedImports: [
+              'extractSentryRequestData',
+              'configureSentryScope',
+              'logErrorToSentry',
+              'isSentryEnabled',
+            ],
+          },
+        };
+
+        return {
+          getProviders: () => ({
+            fastifyServerSentry: {
+              addShouldLogToSentryBlock(block) {
+                shouldLogToSentryBlocks.push(block);
+              },
+              getImportMap: () => importMap,
+            },
+          }),
+          build: () => {
+            errorHandlerServiceSetup.getHandlerFile().addCodeBlock(
+              'HEADER',
+              TypescriptCodeUtils.formatBlock(
+                `
       export function shouldLogToSentry(error: Error): boolean {
         if (error instanceof HttpError) {
           return error.statusCode >= 500;
@@ -68,32 +107,41 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         if (fastifyError.statusCode) {
           return fastifyError.statusCode <= 500;
         }
+
+        SHOULD_LOG_TO_SENTRY_BLOCKS
       
         return true;
       }
               `,
-            [
-              `import { HttpError } from '${errorHandlerServiceSetup.getHttpErrorsImport()}'`,
-              "import { FastifyError } from 'fastify';",
-            ],
-          ),
-        );
+                {
+                  SHOULD_LOG_TO_SENTRY_BLOCKS: TypescriptCodeUtils.mergeBlocks(
+                    shouldLogToSentryBlocks,
+                  ),
+                },
+                {
+                  importText: [
+                    `import { HttpError } from '${errorHandlerService.getHttpErrorsImport()}'`,
+                    "import { FastifyError } from 'fastify';",
+                  ],
+                },
+              ),
+            );
 
-        errorHandlerServiceSetup.getHandlerFile().addCodeBlock(
-          'LOGGER_ACTIONS',
-          TypescriptCodeUtils.createBlock(
-            `
+            errorHandlerServiceSetup.getHandlerFile().addCodeBlock(
+              'LOGGER_ACTIONS',
+              TypescriptCodeUtils.createBlock(
+                `
 if (error instanceof Error && shouldLogToSentry(error)) {
   context.errorId = logErrorToSentry(error, context);
 } else if (typeof error === 'string') {
   context.errorId = logErrorToSentry(new Error(error), context);
 }
       `,
-            "import { logErrorToSentry } from '@/src/services/sentry'",
-          ),
-        );
-
-        return {};
+                "import { logErrorToSentry } from '@/src/services/sentry'",
+              ),
+            );
+          },
+        };
       },
     });
     taskBuilder.addTask({
@@ -139,9 +187,8 @@ if (error instanceof Error && shouldLogToSentry(error)) {
           },
         });
 
-        const [serviceImport, servicePath] = makeImportAndFilePath(
-          'src/services/sentry.ts',
-        );
+        const [serviceImport, servicePath] =
+          makeImportAndFilePath(sentryServicePath);
 
         const importMap: ImportMap = {
           '%fastify-sentry/service': {

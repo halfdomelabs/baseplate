@@ -19,6 +19,7 @@ import {
 import { z } from 'zod';
 
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
+import { fastifyServerSentryProvider } from '@src/generators/core/fastify-sentry/index.js';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
 import { rootModuleImportProvider } from '@src/generators/core/root-module/index.js';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
@@ -124,6 +125,44 @@ const PothosGenerator = createGeneratorWithTasks({
           },
           build: () => ({ schemaFiles }),
         };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'sentry',
+      dependencies: {
+        fastifyServerSentry: fastifyServerSentryProvider
+          .dependency()
+          .optional(),
+        yogaPluginSetupProvider: yogaPluginSetupProvider,
+      },
+      run({ fastifyServerSentry, yogaPluginSetupProvider }) {
+        if (fastifyServerSentry) {
+          fastifyServerSentry.addShouldLogToSentryBlock(
+            TypescriptCodeUtils.createBlock(
+              `
+          if (error instanceof GraphQLError) {
+            return (
+              !error.extensions?.http?.status || error.extensions?.http?.status >= 500
+            );
+          }
+          `,
+              `import { GraphQLError } from 'graphql';`,
+            ),
+          );
+          yogaPluginSetupProvider
+            .getConfig()
+            .set(
+              'skipLogErrors',
+              TypescriptCodeUtils.createExpression(
+                `isSentryEnabled()`,
+                `import { isSentryEnabled } from '%fastify-sentry/service';`,
+                { importMappers: [fastifyServerSentry] },
+              ),
+            );
+        }
+
+        return {};
       },
     });
 

@@ -31,10 +31,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
       new TypescriptCodeExpression(
         `useSentry({
             configureScope: (args, scope) => configureSentryScope(scope),
-            skipError: (error) =>
-              !shouldLogToSentry(
-                error instanceof GraphQLError ? error.originalError ?? error : error
-              ),
           })`,
         [
           `import { useSentry } from '${pluginImport}'`,

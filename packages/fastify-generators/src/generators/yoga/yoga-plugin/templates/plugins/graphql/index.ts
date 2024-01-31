@@ -36,7 +36,13 @@ export const graphqlPlugin = fp(async (fastify) => {
 
         const { originalError } = error;
 
-        if (originalError && originalError instanceof HttpError) {
+        // if we don't have an original error, it's a GraphQL error
+        // which we can just return as-is
+        if (!originalError) {
+          return error;
+        }
+
+        if (originalError instanceof HttpError) {
           return new GraphQLError(originalError.message, {
             ...error,
             extensions: {
