@@ -1,5 +1,12 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.3
+
+### Patch Changes
+
+- cd0fe8dd: Fix bug with cookies being stripped by Sentry extractRequestData
+- 8cbdc8cc: Improve Sentry logging of GraphQL errors
+
 ## 0.8.2
 
 ### Patch Changes
