@@ -24,12 +24,20 @@ declare module 'fastify' {
   }
 }
 
+const REQUEST_DATA_INCLUDES = [
+  'headers',
+  'method',
+  'query_string',
+  'url',
+  'cookies',
+];
+
 function getRequestData(req: FastifyRequest): ExtractedNodeRequestData {
   const requestData = Sentry.extractRequestData(req.raw, {
     include: REQUEST_DATA_INCLUDES,
   });
-  // strip authorization header from request data
-  const { authorization, ...rest } = requestData?.headers ?? {};
+  // strip authorization and cookies header from request data
+  const { authorization, cookies, ...rest } = requestData?.headers ?? {};
   requestData.headers = rest;
   return requestData;
 }
@@ -41,8 +49,6 @@ function getTransactionPath(req: FastifyRequest): [string, TransactionSource] {
     customRoute: req.routeOptions.url,
   });
 }
-
-const REQUEST_DATA_INCLUDES = ['headers', 'method', 'query_string', 'url'];
 
 /**
  * Wraps the request handler in a Sentry context so that errors are
