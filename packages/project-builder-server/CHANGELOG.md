@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-server
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies [114717fe]
+  - @halfdomelabs/sync@0.7.1
+
 ## 0.3.1
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @halfdomelabs/core-generators
 
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies [114717fe]
+  - @halfdomelabs/sync@0.7.1
+
 ## 0.7.1
 
 ### Patch Changes

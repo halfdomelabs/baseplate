@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.7.1
+
+### Patch Changes
+
+- 114717fe: Add prepend to non overwriteable map
+
 ## 0.7.0
 
 ### Minor Changes
