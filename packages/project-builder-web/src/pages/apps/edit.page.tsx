@@ -2,6 +2,7 @@ import {
   BaseAppConfig,
   appEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AdminAppForm from './edit/AdminAppForm';
@@ -13,6 +14,7 @@ import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function EditAppPage(): JSX.Element {
+  const { requestConfirm } = useConfirmDialog();
   const { uid } = useParams<'uid'>();
   const { parsedProject, setConfigAndFixReferences, config } =
     useProjectConfig();
@@ -28,18 +30,21 @@ function EditAppPage(): JSX.Element {
   }
 
   const handleDelete = (): void => {
-    if (!window.confirm('Are you sure you want to delete this app?')) {
-      return;
-    }
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        draftConfig.apps = draftConfig.apps.filter((a) => a.id !== id);
-      });
-      toast.success(`Successfully deleted app!`);
-      navigate('/apps/new');
-    } catch (err) {
-      toast.error(`Failed to delete app: ${formatError(err)}`);
-    }
+    requestConfirm({
+      title: 'Delete App',
+      content: `Are you sure you want to delete ${app.name}?`,
+      onConfirm: () => {
+        try {
+          setConfigAndFixReferences((draftConfig) => {
+            draftConfig.apps = draftConfig.apps.filter((a) => a.id !== id);
+          });
+          toast.success(`Successfully deleted app!`);
+          navigate('/apps/new');
+        } catch (err) {
+          toast.error(`Failed to delete app: ${formatError(err)}`);
+        }
+      },
+    });
   };
 
   const { packageScope } = parsedProject.projectConfig;
