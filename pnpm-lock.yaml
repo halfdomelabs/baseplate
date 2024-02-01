@@ -138,8 +138,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       sort-package-json:
-        specifier: ^2.5.1
-        version: 2.5.1
+        specifier: 2.7.0
+        version: 2.7.0
       ts-morph:
         specifier: 18.0.0
         version: 18.0.0
@@ -12313,19 +12313,6 @@ packages:
   /sort-object-keys@1.1.3:
     resolution: {integrity: sha512-855pvK+VkU7PaKYPc+Jjnmt4EzejQHyhhF33q31qG8x7maDzkeFhAAThdCYay11CISO+qAMwjOBP+fPZe0IPyg==}
 
-  /sort-package-json@2.5.1:
-    resolution: {integrity: sha512-vx/KoZxm8YNMUqdlw7SGTfqR5pqZ/sUfgOuRtDILiOy/3AvzhAibyUe2cY3OpLs3oRSow9up4yLVtQaM24rbDQ==}
-    hasBin: true
-    dependencies:
-      detect-indent: 7.0.1
-      detect-newline: 4.0.0
-      get-stdin: 9.0.0
-      git-hooks-list: 3.1.0
-      globby: 13.2.0
-      is-plain-obj: 4.1.0
-      sort-object-keys: 1.1.3
-    dev: false
-
   /sort-package-json@2.7.0:
     resolution: {integrity: sha512-6AayF8bp6L+WROgpbhTMUtB9JSFmpGHjmW7DyaNPS1HwlTw2oSVlUUtlkHSEZmg5o89F3zvLBZNvMeZ1T4fjQg==}
     hasBin: true
@@ -12337,7 +12324,6 @@ packages:
       globby: 13.2.0
       is-plain-obj: 4.1.0
       sort-object-keys: 1.1.3
-    dev: true
 
   /source-map-js@1.0.2:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
