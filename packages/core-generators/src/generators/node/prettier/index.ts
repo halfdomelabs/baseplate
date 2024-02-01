@@ -21,6 +21,7 @@ const descriptorSchema = z.object({
   singleQuote: z.boolean().default(true),
   trailingComma: z.string().default('all'),
   semi: z.boolean().default(true),
+  plugins: z.array(z.string()).default([]),
 });
 
 interface PrettierConfig {
@@ -28,6 +29,7 @@ interface PrettierConfig {
   singleQuote: boolean;
   trailingComma: string;
   semi: boolean;
+  plugins: string[];
 }
 
 export interface PrettierProvider {
@@ -101,6 +103,7 @@ const PrettierGenerator = createGeneratorWithChildren({
       singleQuote: descriptor.singleQuote,
       trailingComma: descriptor.trailingComma,
       semi: descriptor.semi,
+      plugins: descriptor.plugins,
     };
     const prettierIgnore: string[] = [
       '/coverage',
@@ -155,7 +158,10 @@ const PrettierGenerator = createGeneratorWithChildren({
         };
       },
       build: async (builder) => {
-        node.addDevPackage('prettier', PRETTIER_VERSION);
+        node.addDevPackages({
+          prettier: PRETTIER_VERSION,
+          'prettier-plugin-packagejson': '2.4.10',
+        });
 
         node.addScripts({
           'prettier:check': 'prettier --check .',
