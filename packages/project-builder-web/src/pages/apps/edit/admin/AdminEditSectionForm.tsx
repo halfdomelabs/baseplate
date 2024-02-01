@@ -56,7 +56,9 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   function handleDelete(): void {
     requestConfirm({
       title: 'Delete Section',
-      content: `Are you sure you want to delete ${existingSection?.name}?`,
+      content: `Are you sure you want to delete ${
+        existingSection?.name ?? 'this section'
+      }?`,
       onConfirm: () => {
         try {
           setConfigAndFixReferences((config) => {
