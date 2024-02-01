@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-web
 
+## 0.8.2
+
+### Patch Changes
+
+- 427f534f: Fix changing name of model modal
+
 ## 0.8.1
 
 ### Patch Changes
