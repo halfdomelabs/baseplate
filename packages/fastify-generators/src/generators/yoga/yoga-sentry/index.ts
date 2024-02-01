@@ -35,7 +35,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
         [
           `import { useSentry } from '${pluginImport}'`,
           "import { configureSentryScope } from '%fastify-sentry/service';",
-          "import { shouldLogToSentry } from '%fastify-sentry/logger';",
         ],
         { importMappers: [fastifySentry] },
       ),
