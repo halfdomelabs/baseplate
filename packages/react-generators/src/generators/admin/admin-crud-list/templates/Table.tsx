@@ -3,6 +3,7 @@
 import { Link } from 'react-router-dom';
 import { Alert, LinkButton, Table } from '%react-components';
 import { useToast } from '%react-components/useToast';
+import { useConfirmDialog } from '%react-components/useConfirmDialog';
 import { logAndFormatError } from '%react-error/formatter';
 
 interface Props {
@@ -16,19 +17,23 @@ function COMPONENT_NAME({
   deleteItem,
   EXTRA_PROP_SPREAD,
 }: Props): JSX.Element {
+  const { requestConfirm } = useConfirmDialog();
   const toast = useToast();
   async function handleDelete(item: ROW_FRAGMENT): Promise<void> {
-    if (!window.confirm(`Are you sure you want to delete this item?`)) {
-      return;
-    }
-    try {
-      await deleteItem(item);
-      toast.success('Successfully deleted the item!');
-    } catch (err) {
-      toast.error(
-        logAndFormatError(err, 'Sorry we could not delete the item.'),
-      );
-    }
+    requestConfirm({
+      title: 'Delete Item',
+      content: `Are you sure you want to delete this item?`,
+      onConfirm: async () => {
+        try {
+          await deleteItem(item);
+          toast.success('Successfully deleted the item!');
+        } catch (err) {
+          toast.error(
+            logAndFormatError(err, 'Sorry we could not delete the item.'),
+          );
+        }
+      },
+    });
   }
 
   if (!items.length) {

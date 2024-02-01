@@ -1,11 +1,12 @@
 // @ts-nocheck
+
 import classNames from 'classnames';
 
 type ButtonColor = 'blue' | 'green' | 'red' | 'light' | 'dark';
 
 type ButtonSize = 'small' | 'base' | 'large';
 
-interface Props {
+export interface ButtonProps {
   className?: string;
   children: React.ReactNode;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
@@ -46,7 +47,7 @@ function getButtonSizeClass(size: ButtonSize): string {
   }
 }
 
-function Button(props: Props): JSX.Element {
+function Button(props: ButtonProps): JSX.Element {
   const {
     className,
     children,
