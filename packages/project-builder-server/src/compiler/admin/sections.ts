@@ -1,7 +1,10 @@
+import {
+  FeatureUtils,
+  AdminAppConfig,
+} from '@halfdomelabs/project-builder-lib';
+
 import { compileAdminCrudSection } from './crud/index.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
-import { FeatureUtils } from '@src/definition/feature/feature-utils.js';
-import { AdminAppConfig } from '@src/schema/index.js';
 import { notEmpty } from '@src/utils/array.js';
 
 export function compileAdminSections(

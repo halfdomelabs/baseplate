@@ -1,4 +1,4 @@
-import { ProjectConfig } from '@src/schema/index.js';
+import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
 
 export function getPostgresSettings(projectConfig: ProjectConfig): {
   config: {
