@@ -22,8 +22,8 @@ export function ModelGeneralEditDialog({
   });
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <form onSubmit={handleSubmit(onFormSubmit)}>
-        <Dialog.Content>
+      <Dialog.Content>
+        <form onSubmit={handleSubmit(onFormSubmit)}>
           <Dialog.Header>
             <Dialog.Title>Edit Model</Dialog.Title>
           </Dialog.Header>
@@ -34,8 +34,8 @@ export function ModelGeneralEditDialog({
             </Button>
             <Button type="submit">Save</Button>
           </Dialog.Footer>
-        </Dialog.Content>
-      </form>
+        </form>
+      </Dialog.Content>
     </Dialog>
   );
 }

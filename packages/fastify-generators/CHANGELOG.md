@@ -1,5 +1,11 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.5
+
+### Patch Changes
+
+- 427f534f: Remove extra import from fastify-sentry
+
 ## 0.8.4
 
 ### Patch Changes

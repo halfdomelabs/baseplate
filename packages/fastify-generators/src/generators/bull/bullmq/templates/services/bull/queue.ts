@@ -25,7 +25,15 @@ export function getOrCreateManagedQueue<DataType>(
     },
   });
 
+  let connRefusedReported = false;
   queue.on('error', (err) => {
+    // If Redis is down, we don't want to spam the logs with errors
+    if (err.message.includes('ECONNREFUSED')) {
+      if (connRefusedReported) return;
+      connRefusedReported = true;
+    } else {
+      connRefusedReported = false;
+    }
     logError(err);
   });
 
