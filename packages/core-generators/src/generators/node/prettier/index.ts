@@ -6,6 +6,8 @@ import {
   createGeneratorWithChildren,
   writeJsonAction,
   createProviderType,
+  createNonOverwriteableMap,
+  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
 import { createRequire } from 'module';
@@ -28,10 +30,15 @@ interface PrettierConfig {
   singleQuote: boolean;
   trailingComma: string;
   semi: boolean;
+  plugins: string[];
 }
 
+const DEFAULT_PLUGINS = {
+  'prettier-plugin-packagejson': '2.4.10',
+};
+
 export interface PrettierProvider {
-  getConfig(): PrettierConfig;
+  getConfig(): NonOverwriteableMap<PrettierConfig>;
   addPrettierIgnore(path: string): void;
 }
 
@@ -96,12 +103,13 @@ const PrettierGenerator = createGeneratorWithChildren({
     prettier: prettierProvider,
   },
   createGenerator(descriptor, { node }) {
-    const prettierConfig = {
+    const prettierConfig = createNonOverwriteableMap<PrettierConfig>({
       tabWidth: descriptor.tabWidth,
       singleQuote: descriptor.singleQuote,
       trailingComma: descriptor.trailingComma,
       semi: descriptor.semi,
-    };
+      plugins: Object.keys(DEFAULT_PLUGINS),
+    });
     const prettierIgnore: string[] = [
       '/coverage',
       '/dist',
@@ -141,7 +149,7 @@ const PrettierGenerator = createGeneratorWithChildren({
 
               const prettierModule = await prettierModulePromise;
               return prettierModule.format(input, {
-                ...prettierConfig,
+                ...prettierConfig.value(),
                 filepath: fullPath,
               });
             },
@@ -155,7 +163,10 @@ const PrettierGenerator = createGeneratorWithChildren({
         };
       },
       build: async (builder) => {
-        node.addDevPackage('prettier', PRETTIER_VERSION);
+        node.addDevPackages({
+          prettier: PRETTIER_VERSION,
+          ...DEFAULT_PLUGINS,
+        });
 
         node.addScripts({
           'prettier:check': 'prettier --check .',
@@ -165,7 +176,7 @@ const PrettierGenerator = createGeneratorWithChildren({
         await builder.apply(
           writeJsonAction({
             destination: '.prettierrc',
-            contents: prettierConfig,
+            contents: prettierConfig.value(),
           }),
         );
 

@@ -1,4 +1,8 @@
-import { eslintProvider, nodeProvider } from '@halfdomelabs/core-generators';
+import {
+  eslintProvider,
+  nodeProvider,
+  prettierProvider,
+} from '@halfdomelabs/core-generators';
 import {
   createProviderType,
   createGeneratorWithChildren,
@@ -28,11 +32,12 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     react: reactProvider,
     node: nodeProvider,
     eslint: eslintProvider,
+    prettier: prettierProvider,
   },
   exports: {
     reactTailwind: reactTailwindProvider,
   },
-  createGenerator({ globalBodyClasses }, { node, react, eslint }) {
+  createGenerator({ globalBodyClasses }, { node, react, eslint, prettier }) {
     const srcFolder = react.getSrcFolder();
 
     node.addDevPackages({
@@ -49,6 +54,10 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
         'postcss.config.js',
         'tailwind.config.js',
       ]);
+
+    prettier
+      .getConfig()
+      .appendUnique('plugins', ['prettier-plugin-tailwindcss']);
 
     react.getIndexFile().addCodeBlock('IMPORTS', "import './index.css'");
 
