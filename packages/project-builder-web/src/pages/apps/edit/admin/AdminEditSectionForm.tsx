@@ -4,6 +4,7 @@ import {
   adminSectionEntityType,
   adminSectionSchema,
 } from '@halfdomelabs/project-builder-lib';
+import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 import _ from 'lodash';
@@ -26,6 +27,7 @@ interface Props {
 const SECTION_OPTIONS = [{ label: 'Crud', value: 'crud' }];
 
 function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
+  const { requestConfirm } = useConfirmDialog();
   const { sectionId: sectionUid } = useParams<{ sectionId: string }>();
   const { setConfigAndFixReferences, parsedProject } = useProjectConfig();
   const toast = useToast();
@@ -52,25 +54,30 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   const type = watch('type');
 
   function handleDelete(): void {
-    try {
-      if (!window.confirm(`Are you sure you want to delete this section?`)) {
-        return;
-      }
-      setConfigAndFixReferences((config) => {
-        const adminApp = config.apps.find((app) => app.id === appConfig.id);
-        if (adminApp?.type !== 'admin') {
-          throw new Error('Cannot add a section to a non-admin app');
-        }
+    requestConfirm({
+      title: 'Delete Section',
+      content: `Are you sure you want to delete ${
+        existingSection?.name ?? 'this section'
+      }?`,
+      onConfirm: () => {
+        try {
+          setConfigAndFixReferences((config) => {
+            const adminApp = config.apps.find((app) => app.id === appConfig.id);
+            if (adminApp?.type !== 'admin') {
+              throw new Error('Cannot add a section to a non-admin app');
+            }
 
-        adminApp.sections = (adminApp.sections ?? []).filter(
-          (section) => !sectionId || section.id !== sectionId,
-        );
-      });
-      navigate(`..`);
-      toast.success('Successfully deleted section!');
-    } catch (err) {
-      toast.error(formatError(err));
-    }
+            adminApp.sections = (adminApp.sections ?? []).filter(
+              (section) => !sectionId || section.id !== sectionId,
+            );
+          });
+          navigate(`..`);
+          toast.success('Successfully deleted section!');
+        } catch (err) {
+          toast.error(formatError(err));
+        }
+      },
+    });
   }
 
   function onSubmit(data: AdminSectionConfig): void {

@@ -32,6 +32,7 @@ const REACT_COMPONENTS: ReactComponentEntry[] = [
   { name: 'ButtonGroup' },
   { name: 'Card' },
   { name: 'CheckedInput' },
+  { name: 'ConfirmDialog' },
   { name: 'ErrorDisplay' },
   { name: 'ErrorableLoader' },
   { name: 'FormError' },
@@ -88,6 +89,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       'react-hot-toast': '2.4.1',
       'react-icons': '5.0.1',
       'react-select': '5.8.0',
+      zustand: '4.4.6',
     });
     const [useStatusImport, useStatusPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useStatus.ts`,
@@ -95,6 +97,9 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     const [useToastImport, useToastPath] = makeImportAndFilePath(
       `${srcFolder}/hooks/useToast.tsx`,
     );
+    const [useConfirmDialogImport, useConfirmDialogPath] =
+      makeImportAndFilePath(`${srcFolder}/hooks/useConfirmDialog.ts`);
+
     const coreReactComponents = [...REACT_COMPONENTS];
 
     if (includeDatePicker) {
@@ -118,6 +123,14 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
       ),
     );
 
+    // add confirm dialog root sibling component
+    reactApp.addRenderSibling(
+      TypescriptCodeUtils.createExpression(
+        '<ConfirmDialog />',
+        `import { ConfirmDialog } from "@/${srcFolder}/components";`,
+      ),
+    );
+
     return {
       getProviders: () => ({
         reactComponents: {
@@ -136,6 +149,10 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
             '%react-components/useToast': {
               path: useToastImport,
               allowedImports: ['useToast'],
+            },
+            '%react-components/useConfirmDialog': {
+              path: useConfirmDialogImport,
+              allowedImports: ['useConfirmDialog'],
             },
           }),
         },
@@ -162,6 +179,16 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
           typescript.createCopyAction({
             source: 'hooks/useToast.tsx',
             destination: useToastPath,
+            replacements: {
+              COMPONENT_FOLDER: `@/${srcFolder}/components`,
+            },
+          }),
+        );
+
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'hooks/useConfirmDialog.ts',
+            destination: useConfirmDialogPath,
             replacements: {
               COMPONENT_FOLDER: `@/${srcFolder}/components`,
             },

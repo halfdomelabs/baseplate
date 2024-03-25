@@ -2,6 +2,7 @@ import {
   EnumConfig,
   modelEnumEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -15,6 +16,7 @@ import { useToast } from 'src/hooks/useToast';
 import { formatError, logAndFormatError } from 'src/services/error-formatter';
 
 function EnumEditPage(): JSX.Element {
+  const { requestConfirm } = useConfirmDialog();
   const { uid } = useParams<'uid'>();
   const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
   const { status, setError } = useStatus();
@@ -29,26 +31,24 @@ function EnumEditPage(): JSX.Element {
   const enumBlock = parsedProject.getEnums().find((m) => m.id === id);
 
   const handleDelete = (): void => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete ${
-          enumBlock?.name ? enumBlock?.name : 'model'
-        }?`,
-      )
-    ) {
-      try {
-        setConfigAndFixReferences((draftConfig) => {
-          draftConfig.enums = draftConfig.enums?.filter((m) => m.id !== id);
-        });
-        navigate('..');
-      } catch (err) {
-        if (err instanceof RefDeleteError) {
-          showRefIssues({ issues: err.issues });
-          return;
+    requestConfirm({
+      title: 'Delete Model',
+      content: `Are you sure you want to delete ${enumBlock?.name ?? 'model'}?`,
+      onConfirm: () => {
+        try {
+          setConfigAndFixReferences((draftConfig) => {
+            draftConfig.enums = draftConfig.enums?.filter((m) => m.id !== id);
+          });
+          navigate('..');
+        } catch (err) {
+          if (err instanceof RefDeleteError) {
+            showRefIssues({ issues: err.issues });
+            return;
+          }
+          setError(logAndFormatError(err));
         }
-        setError(logAndFormatError(err));
-      }
-    }
+      },
+    });
   };
 
   const handleSubmit = (config: EnumConfig): void => {
