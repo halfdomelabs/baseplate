@@ -13,9 +13,9 @@
     "CHANGELOG"
   ],
   "scripts": {
-    "run:script": "tsx",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "run:script": "tsx",
     "transform": "jscodeshift --extensions=ts --parser=ts -t ",
     "transform:dry": "jscodeshift  --extensions=ts --parser=ts -d -p -t "
   },

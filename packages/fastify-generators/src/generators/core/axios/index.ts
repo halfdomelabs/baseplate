@@ -27,7 +27,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      axios: '1.6.5',
+      axios: '1.6.8',
     });
 
     return {
