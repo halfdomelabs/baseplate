@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { useCallback, React } from 'react';
+import { useCallback } from 'react';
 import { create } from 'zustand';
 
 import { ButtonProps } from 'COMPONENT_FOLDER/Button';

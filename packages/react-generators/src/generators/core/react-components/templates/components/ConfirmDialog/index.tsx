@@ -1,12 +1,12 @@
 // @ts-nocheck
 import * as React from 'react';
 
-import Button from '../Button';
-import Modal from '../Modal';
 import {
   UseConfirmDialogRequestOptions,
   useConfirmDialogState,
 } from '../../hooks/useConfirmDialog';
+import Button from '../Button';
+import Modal from '../Modal';
 
 /**
  * A confirm dialog that is placed at the top level of the page
@@ -51,6 +51,7 @@ export function ConfirmDialog(): JSX.Element {
     <Modal
       isOpen={!!confirmOptions}
       onClose={() => setConfirmOptions(undefined)}
+      width="small"
     >
       <Modal.Header>{title}</Modal.Header>
       <Modal.Body>{content}</Modal.Body>

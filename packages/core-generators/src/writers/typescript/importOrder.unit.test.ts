@@ -26,4 +26,12 @@ describe('sortByImportOrder', () => {
       './',
     ]);
   });
+
+  it('sorts folders and subfolders', () => {
+    const input = ['./', '../bar', '../../foo/bar'];
+    const expected = ['../../foo/bar', '../bar', './'];
+
+    expect(sortByImportOrder(input, {})).toEqual(expected);
+    expect(sortByImportOrder(R.reverse(input), {})).toEqual(expected);
+  });
 });

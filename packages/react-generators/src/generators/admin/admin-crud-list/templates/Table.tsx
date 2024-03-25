@@ -23,15 +23,16 @@ function COMPONENT_NAME({
     requestConfirm({
       title: 'Delete Item',
       content: `Are you sure you want to delete this item?`,
-      onConfirm: async () => {
-        try {
-          await deleteItem(item);
-          toast.success('Successfully deleted the item!');
-        } catch (err) {
-          toast.error(
-            logAndFormatError(err, 'Sorry we could not delete the item.'),
-          );
-        }
+      onConfirm: () => {
+        deleteItem(item)
+          .then(() => {
+            toast.success('Successfully deleted the item!');
+          })
+          .catch((err) => {
+            toast.error(
+              logAndFormatError(err, 'Sorry we could not delete the item.'),
+            );
+          });
       },
     });
   }
