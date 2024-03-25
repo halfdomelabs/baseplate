@@ -6,6 +6,8 @@ import {
   createGeneratorWithChildren,
   writeJsonAction,
   createProviderType,
+  createNonOverwriteableMap,
+  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
 import { createRequire } from 'module';
@@ -21,7 +23,6 @@ const descriptorSchema = z.object({
   singleQuote: z.boolean().default(true),
   trailingComma: z.string().default('all'),
   semi: z.boolean().default(true),
-  plugins: z.array(z.string()).default([]),
 });
 
 interface PrettierConfig {
@@ -32,8 +33,12 @@ interface PrettierConfig {
   plugins: string[];
 }
 
+const DEFAULT_PLUGINS = {
+  'prettier-plugin-packagejson': '2.4.10',
+};
+
 export interface PrettierProvider {
-  getConfig(): PrettierConfig;
+  getConfig(): NonOverwriteableMap<PrettierConfig>;
   addPrettierIgnore(path: string): void;
 }
 
@@ -98,13 +103,13 @@ const PrettierGenerator = createGeneratorWithChildren({
     prettier: prettierProvider,
   },
   createGenerator(descriptor, { node }) {
-    const prettierConfig = {
+    const prettierConfig = createNonOverwriteableMap<PrettierConfig>({
       tabWidth: descriptor.tabWidth,
       singleQuote: descriptor.singleQuote,
       trailingComma: descriptor.trailingComma,
       semi: descriptor.semi,
-      plugins: descriptor.plugins,
-    };
+      plugins: Object.keys(DEFAULT_PLUGINS),
+    });
     const prettierIgnore: string[] = [
       '/coverage',
       '/dist',
@@ -144,7 +149,7 @@ const PrettierGenerator = createGeneratorWithChildren({
 
               const prettierModule = await prettierModulePromise;
               return prettierModule.format(input, {
-                ...prettierConfig,
+                ...prettierConfig.value(),
                 filepath: fullPath,
               });
             },
@@ -160,7 +165,7 @@ const PrettierGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         node.addDevPackages({
           prettier: PRETTIER_VERSION,
-          'prettier-plugin-packagejson': '2.4.10',
+          ...DEFAULT_PLUGINS,
         });
 
         node.addScripts({
@@ -171,7 +176,7 @@ const PrettierGenerator = createGeneratorWithChildren({
         await builder.apply(
           writeJsonAction({
             destination: '.prettierrc',
-            contents: prettierConfig,
+            contents: prettierConfig.value(),
           }),
         );
 
