@@ -1,5 +1,12 @@
 # @halfdomelabs/tools
 
+## 0.5.3
+
+### Patch Changes
+
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+- 4c4cf8e5: Added sorting of package.json with prettier
+
 ## 0.5.2
 
 ### Patch Changes

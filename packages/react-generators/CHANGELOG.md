@@ -1,5 +1,20 @@
 # @halfdomelabs/react-generators
 
+## 0.7.0
+
+### Minor Changes
+
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+
+### Patch Changes
+
+- f69fbf50: Upgrade Axios to 1.6.8 to address security vuln
+- Updated dependencies [f69fbf50]
+- Updated dependencies [4c4cf8e5]
+- Updated dependencies [4c4cf8e5]
+  - @halfdomelabs/core-generators@0.7.3
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.6.4
 
 ### Patch Changes

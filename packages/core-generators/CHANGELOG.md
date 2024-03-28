@@ -1,5 +1,15 @@
 # @halfdomelabs/core-generators
 
+## 0.7.3
+
+### Patch Changes
+
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+- 4c4cf8e5: Fix prettier plugins not being activated
+- 4c4cf8e5: Added sorting of package.json with prettier
+- Updated dependencies [f69fbf50]
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.7.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.7.2
+
+### Patch Changes
+
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+
 ## 0.7.1
 
 ### Patch Changes
