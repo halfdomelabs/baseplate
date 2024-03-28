@@ -1,5 +1,13 @@
 # @halfdomelabs/ui-components
 
+## 0.4.3
+
+### Patch Changes
+
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+- f69fbf50: Upgrade Storybook to 8.0.4
+- e7f858ce: Add better dark mode support for storybook
+
 ## 0.4.2
 
 ### Patch Changes
