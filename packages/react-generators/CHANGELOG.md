@@ -1,5 +1,11 @@
 # @halfdomelabs/react-generators
 
+## 0.7.1
+
+### Patch Changes
+
+- da0179b1: Upgrade Apollo client to 3.9.9
+
 ## 0.7.0
 
 ### Minor Changes
