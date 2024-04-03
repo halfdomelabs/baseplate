@@ -14,6 +14,7 @@ import { GraphQLError } from 'graphql';
 CUSTOM_IMPORTS;
 
 const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
+const IS_PRODUCTION = config.APP_ENVIRONMENT === 'production';
 
 const schema = SCHEMA;
 
@@ -27,6 +28,7 @@ export const graphqlPlugin = fp(async (fastify) => {
     logging: logger,
     context: ({ req, reply }) => createContextFromRequest(req, reply),
     schema,
+    graphiql: !IS_PRODUCTION,
     maskedErrors: {
       isDev: IS_DEVELOPMENT,
       maskError: (error, message, isDev) => {
