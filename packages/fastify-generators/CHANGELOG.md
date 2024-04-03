@@ -1,5 +1,19 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.6
+
+### Patch Changes
+
+- f69fbf50: Upgrade Axios to 1.6.8 to address security vuln
+- eca44bc1: Fix embedded one-to-many helper to support composite primary keys that have UUID and a non-string secondary key e.g. an enum key
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+- b4219050: Suppress repeated Redis connection failure errors
+- Updated dependencies [f69fbf50]
+- Updated dependencies [4c4cf8e5]
+- Updated dependencies [4c4cf8e5]
+  - @halfdomelabs/core-generators@0.7.3
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.8.5
 
 ### Patch Changes
