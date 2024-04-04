@@ -11,7 +11,7 @@ export function generateRedisDockerCompose(
   return {
     services: [
       `  redis:
-    image: redis:6.2.7-alpine
+    image: redis:7.2.4-alpine
     restart: on-failure
     ports:
       - "\${REDIS_PORT:-${config.port}}:6379"
