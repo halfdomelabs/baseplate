@@ -21,8 +21,9 @@ export function usePreventDirtyForm<
 
   useEffect(() => {
     const isDirty = Object.keys(formState.dirtyFields).length > 0;
+    const { isDirty: formStateIsDirty } = formState;
+    console.debug({ isDirty, formStateIsDirty });
     setDirtyForm(isDirty);
-
     return () => {
       setDirtyForm(false);
     };
