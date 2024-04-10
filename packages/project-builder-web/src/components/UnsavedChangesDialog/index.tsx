@@ -1,14 +1,14 @@
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { useBlocker } from 'react-router-dom';
 
-interface Props {
-  blockNavigate: boolean;
-}
+import { useDirtyForm } from '@src/hooks/usePreventDirtyForm';
 
-function UnsavedChangesDialog({ blockNavigate }: Props): JSX.Element {
+function UnsavedChangesDialog(): JSX.Element {
+  const dirtyForm = useDirtyForm();
+
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      blockNavigate && currentLocation.pathname !== nextLocation.pathname,
+      dirtyForm && currentLocation.pathname !== nextLocation.pathname,
   );
 
   return (

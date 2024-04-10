@@ -14,9 +14,9 @@ import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { UnsavedChangesDialog } from '@src/components';
-import { registerEntityTypeUrl } from '@src/services/entity-type';
+import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
 registerEntityTypeUrl(modelScalarFieldEntityType, `/models/edit/{parentUid}`);
@@ -24,7 +24,7 @@ registerEntityTypeUrl(modelLocalRelationEntityType, `/models/edit/{parentUid}`);
 
 function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({});
-  const { control, handleSubmit, watch, getValues, formState } = form;
+  const { control, handleSubmit, watch, getValues } = form;
 
   const { config } = useProjectConfig();
 
@@ -32,7 +32,7 @@ function ModelEditModelPage(): JSX.Element {
   const id = modelEntityType.fromUid(uid);
   const originalModel = id ? ModelUtils.byId(config, id) : undefined;
 
-  const isDirty = Object.keys(formState.dirtyFields).length > 0;
+  usePreventDirtyForm(form);
 
   return (
     <EditedModelContextProvider
@@ -51,7 +51,6 @@ function ModelEditModelPage(): JSX.Element {
         <ModelPrimaryKeyForm control={control} />
         <ModelUniqueConstraintsField control={control} />
         <ModelFormActionBar form={form} />
-        <UnsavedChangesDialog blockNavigate={isDirty} />
       </form>
     </EditedModelContextProvider>
   );

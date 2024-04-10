@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import { Outlet } from 'react-router-dom';
 
+import UnsavedChangesDialog from '../UnsavedChangesDialog';
+
 interface AppLayoutProps {
   className?: string;
   topbar?: React.ReactNode;
@@ -15,6 +17,7 @@ export function AppLayout({ className, topbar }: AppLayoutProps): JSX.Element {
       <div className={classNames('flex flex-auto overflow-auto')}>
         <Outlet />
       </div>
+      <UnsavedChangesDialog />
     </div>
   );
 }
