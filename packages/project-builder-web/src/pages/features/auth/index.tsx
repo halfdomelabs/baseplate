@@ -10,7 +10,6 @@ import RoleEditorForm from './RoleEditorForm';
 import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
@@ -32,8 +31,6 @@ function AuthPage(): JSX.Element {
   const { control, reset, handleSubmit } = formProps;
   const toast = useToast();
   const { status, setError } = useStatus();
-
-  usePreventDirtyForm(formProps);
 
   const onSubmit = (data: AuthConfig): void => {
     try {
