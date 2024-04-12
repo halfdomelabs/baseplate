@@ -32,6 +32,7 @@
     "pkg-up": "^4.0.0"
   },
   "devDependencies": {
+    "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "^20.0.0",
     "tsc-alias": "1.8.8",

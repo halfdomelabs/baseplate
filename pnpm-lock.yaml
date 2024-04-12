@@ -208,6 +208,9 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
     devDependencies:
+      '@halfdomelabs/project-builder-lib':
+        specifier: workspace:*
+        version: link:../project-builder-lib
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools

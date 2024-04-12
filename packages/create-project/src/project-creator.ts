@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import type { ProjectConfigInput } from '@halfdomelabs/project-builder-lib';
 import chalk from 'chalk';
 import { execaCommand } from 'execa';
 import fs from 'node:fs/promises';
@@ -86,7 +87,7 @@ export async function generateBaseplateProject({
           features: [],
           models: [],
           portOffset: 3000,
-        },
+        } satisfies ProjectConfigInput,
         null,
         2,
       ),
