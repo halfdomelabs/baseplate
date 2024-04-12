@@ -1,30 +1,21 @@
-Copyright (c) 2023 Half Dome Labs LLC (https://halfdomelabs.com) and individual contributors. All rights reserved.
+The MIT License (MIT)
 
-HALF DOME LABS LLC SOFTWARE LICENSE AGREEMENT FOR BASEPLATE
+Copyright (c) 2024 Half Dome Labs
 
-DEFINITIONS:
-"Licensee" denotes the company that has entered into a contractual agreement with Half Dome Labs LLC for the development of applications.
-"User" signifies any employee or contractor of the Licensee who operates the Software.
-"Licensor" refers to Half Dome Labs LLC.
-"Software" designates the proprietary Baseplate code generator software provided under this License.
-"Generated Code" refers to the resultant code produced by the Software.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-GRANT OF LICENSE:
-The Licensor grants to the User a circumscribed, non-exclusive, non-transferable license to utilize the Software solely for the Licensee's application development purposes. The Licensee may deploy the Generated Code for commercial objectives, provided that such use is strictly confined to the Licensee's initiatives.
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
 
-OWNERSHIP:
-The Licensor maintains all rights, title, and interest in and to the Software, inclusive of all copies thereof.
-
-TERMINATION:
-This License may be discontinued by the Licensor at any juncture, for any reason, if the User departs from the contracting company, or if the Licensee terminates the contract with the Licensor.
-
-DISCLAIMER OF WARRANTIES:
-The Software is delivered "AS IS," devoid of any warranty of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement. The Licensor makes no warranty that the Software will meet your requirements or that the operation of the Software will be uninterrupted or error-free.
-
-LIMITATION OF LIABILITY:
-In no event shall the Licensor be liable for any damages, including but not limited to lost revenue or data, or other incidental, indirect, or consequential damages, arising out of the use, misuse or inability to use the Software, or any data accompanying it.
-
-GOVERNING LAW:
-This License shall be governed by and construed following the laws of the State of California, exclusive of its conflicts of law principles.
-
-By utilizing the Software, the Licensee acknowledges and agrees to be bound by the terms and stipulations of this license agreement.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
