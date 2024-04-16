@@ -27,6 +27,7 @@ export const graphqlPlugin = fp(async (fastify) => {
     logging: logger,
     context: ({ req, reply }) => createContextFromRequest(req, reply),
     schema,
+    graphiql: IS_DEVELOPMENT,
     maskedErrors: {
       isDev: IS_DEVELOPMENT,
       maskError: (error, message, isDev) => {

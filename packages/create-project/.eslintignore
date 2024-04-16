@@ -1,0 +1,6 @@
+/coverage
+/dist
+/lib
+/node_modules
+scripts/baseplate.js
+.eslintrc.cjs
