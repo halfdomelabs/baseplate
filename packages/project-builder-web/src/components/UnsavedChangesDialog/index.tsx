@@ -1,14 +1,14 @@
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { useBlocker } from 'react-router-dom';
 
-import { useDirtyForm } from '@src/hooks/usePreventDirtyForm';
+import { useDirtyFormsExist } from '@src/hooks/usePreventDirtyForm';
 
 function UnsavedChangesDialog(): JSX.Element {
-  const dirtyForm = useDirtyForm();
+  const dirtyFormsExist = useDirtyFormsExist();
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      dirtyForm && currentLocation.pathname !== nextLocation.pathname,
+      dirtyFormsExist && currentLocation.pathname !== nextLocation.pathname,
   );
 
   return (

@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
+import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
@@ -23,6 +24,8 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
   });
   const { control, handleSubmit } = formProps;
   const toast = useToast();
+  usePreventDirtyForm(formProps);
+
   const { parsedProject } = useProjectConfig();
 
   function onSubmit(data: WebAppConfig): void {

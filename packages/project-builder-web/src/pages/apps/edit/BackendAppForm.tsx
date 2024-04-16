@@ -7,6 +7,7 @@ import classNames from 'classnames';
 
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
+import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
@@ -24,6 +25,7 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
     defaultValues: appConfig,
   });
   const { control, handleSubmit } = formProps;
+  usePreventDirtyForm(formProps);
   const toast = useToast();
 
   function onSubmit(data: BackendAppConfig): void {
