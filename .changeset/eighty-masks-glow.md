@@ -1,7 +1,10 @@
 ---
 '@halfdomelabs/project-builder-web': minor
+'@halfdomelabs/react-generators': patch
 ---
 
-Refactor Project Builder Web App to use a data router (to allow the `useBlocker` hook).
+Update `react-router-dom` in Baseplate and generators.
 
-Add `UnsavedChangesDialog` component that prompts the user to confirm discarding unsaved changes before navigating away from a dirty form.
+Refactor Project Builder Web App to use a data router to allow the `useBlocker` hook.
+
+Add `UnsavedChangesDialog` component and `usePreventDirtyForm` hook.
