@@ -1,5 +1,11 @@
 # @halfdomelabs/react-generators
 
+## 0.7.2
+
+### Patch Changes
+
+- a4949e51: Update Vite to `5.2.8`
+
 ## 0.7.1
 
 ### Patch Changes
