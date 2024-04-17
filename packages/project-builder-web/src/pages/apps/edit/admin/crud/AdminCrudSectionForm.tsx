@@ -35,7 +35,7 @@ function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
       name: 'embeddedForms',
     })?.map((form) => ({
       label: form.name,
-      value: form.name,
+      value: form.id,
     })) ?? [];
 
   // TODO: Update embedded form names when form is added/removed
