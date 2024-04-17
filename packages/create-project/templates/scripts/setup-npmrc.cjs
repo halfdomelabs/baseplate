@@ -8,7 +8,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 module.exports = function generateNpmRc(dirname) {
-  const templatePath = path.join(dirname, '.npmrc.template');
+  const templatePath = path.join(dirname, '.template.npmrc');
   const npmrcPath = path.join(dirname, '.npmrc');
   const envPath = path.join(dirname, '.env');
 
