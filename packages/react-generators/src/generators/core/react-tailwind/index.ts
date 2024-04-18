@@ -10,7 +10,7 @@ import {
   copyFileAction,
 } from '@halfdomelabs/sync';
 import path from 'path';
-import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss'
+import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
 import { z } from 'zod';
 
 import { reactProvider } from '../react/index.js';
@@ -58,13 +58,11 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
         'tailwind.config.js',
       ]);
 
-    prettier
-      .addPlugin({
-        name:
-        'prettier-plugin-tailwindcss',
-        version: prettierPluginTailwindcssVersion,
-        default: prettierPluginTailwindcss
-      });
+    prettier.addPlugin({
+      name: 'prettier-plugin-tailwindcss',
+      version: prettierPluginTailwindcssVersion,
+      default: prettierPluginTailwindcss,
+    });
 
     react.getIndexFile().addCodeBlock('IMPORTS', "import './index.css'");
 
