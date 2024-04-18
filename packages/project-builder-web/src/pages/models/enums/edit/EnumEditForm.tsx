@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';
 
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
+import { hasDirtyFields } from '@src/utils/form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
@@ -112,7 +113,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
         Add Value
       </Button>
       <div>
-        <Button type="submit" disabled={!formState.isDirty}>
+        <Button type="submit" disabled={!hasDirtyFields(formState)}>
           Save
         </Button>
       </div>

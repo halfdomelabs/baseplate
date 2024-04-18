@@ -41,6 +41,9 @@ export function useBlockerDialog(options: UseBlockerDialogOptions): void {
   const { addBlocker, removeBlocker } = useBlockerDialogState();
 
   useEffect(() => {
+    if (options.disableBlock) {
+      return;
+    }
     addBlocker({
       disableBlock: options.disableBlock,
       title: options.title,
