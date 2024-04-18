@@ -5,9 +5,9 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
-import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
@@ -24,9 +24,10 @@ function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
     resolver: zodResolver(adminAppSchema),
     defaultValues: appConfig,
   });
-  const { control, handleSubmit } = formProps;
+  const { control, handleSubmit, formState } = formProps;
   const toast = useToast();
-  usePreventDirtyForm(formProps);
+
+  useBlockDirtyFormNavigate(formState);
 
   function onSubmit(data: AdminAppConfig): void {
     setConfigAndFixReferences((draftConfig) => {

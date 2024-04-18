@@ -1,6 +1,7 @@
 export { default as Alert } from './Alert';
 export { default as AlertIcon } from './AlertIcon';
 export { default as BackButton } from './BackButton';
+export * from './BlockerDialog/BlockerDialog';
 export { default as Button } from './Button';
 export { default as Card } from './Card';
 export { default as ErrorableLoader } from './ErrorableLoader';
@@ -18,4 +19,3 @@ export { default as Layout } from './Layout';
 export { default as FormError } from './FormError';
 export { default as Tabs } from './Tabs';
 export { default as NavigationTabs } from './NavigationTabs';
-export { default as UnsavedChangesDialog } from './UnsavedChangesDialog';

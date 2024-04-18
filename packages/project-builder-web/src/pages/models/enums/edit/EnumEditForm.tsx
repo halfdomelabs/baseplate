@@ -7,13 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';
 
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import {
-  formIsDirty,
-  usePreventDirtyForm,
-} from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { underscoreToTitleCase } from 'src/utils/casing';
@@ -24,14 +21,13 @@ interface Props {
 }
 
 function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
-  const form = useResettableForm({
-    defaultValues: config,
-    resolver: zodResolver(enumSchema),
-  });
+  const { control, handleSubmit, reset, watch, setValue, formState } =
+    useResettableForm({
+      defaultValues: config,
+      resolver: zodResolver(enumSchema),
+    });
 
-  const { control, handleSubmit, reset, watch, setValue } = form;
-
-  usePreventDirtyForm(form);
+  useBlockDirtyFormNavigate(formState);
 
   useEffect(() => {
     reset(config);
@@ -116,7 +112,7 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
         Add Value
       </Button>
       <div>
-        <Button type="submit" disabled={!formIsDirty(form)}>
+        <Button type="submit" disabled={!formState.isDirty}>
           Save
         </Button>
       </div>
