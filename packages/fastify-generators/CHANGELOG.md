@@ -1,5 +1,11 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.7
+
+### Patch Changes
+
+- 472c8663: Disable GraphQL Yoga UI in production
+
 ## 0.8.6
 
 ### Patch Changes

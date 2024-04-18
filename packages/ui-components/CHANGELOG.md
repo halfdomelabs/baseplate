@@ -1,5 +1,12 @@
 # @halfdomelabs/ui-components
 
+## 0.4.4
+
+### Patch Changes
+
+- a4949e51: Update Vite to `5.2.8`
+- fd51d48e: Update logo of Baseplate to latest
+
 ## 0.4.3
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-web",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "description": "Web interface for constructing project builder JSON",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
@@ -87,7 +87,7 @@
     "postcss-import": "^15.1.0",
     "tailwindcss": "3.3.2",
     "typescript": "5.2.2",
-    "vite": "5.2.4",
+    "vite": "5.2.8",
     "vite-plugin-svgr": "4.2.0",
     "vite-tsconfig-paths": "4.3.2"
   },

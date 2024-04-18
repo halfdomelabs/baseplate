@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-web
 
+## 0.8.4
+
+### Patch Changes
+
+- a4949e51: Update Vite to `5.2.8`
+- 4fb65f29: Fix bug with embedded form in admin CRUD UI
+- fd51d48e: Update logo of Baseplate to latest
+- Updated dependencies [a4949e51]
+- Updated dependencies [fd51d48e]
+  - @halfdomelabs/ui-components@0.4.4
+
 ## 0.8.3
 
 ### Patch Changes

@@ -20,17 +20,22 @@ async function runMain(): Promise<void> {
   const generatorSetupConfig = await getGeneratorSetupConfig();
 
   program.version(version ?? 'unknown');
+
   program
-    .command('generate <directory>')
+    .command('generate [directory]')
     .description('Builds project from project.json in baseplate/ directory')
     .option('--regen', 'Force regeneration of all files')
-    .action((directory: string, { regen }: BuildProjectForDirectoryOptions) =>
-      buildProjectForDirectory({
-        directory,
-        regen,
-        logger,
-        generatorSetupConfig,
-      }),
+    .action(
+      (
+        directory: string | undefined,
+        { regen }: BuildProjectForDirectoryOptions,
+      ) =>
+        buildProjectForDirectory({
+          directory: directory ?? '.',
+          regen,
+          logger,
+          generatorSetupConfig,
+        }),
     );
 
   program

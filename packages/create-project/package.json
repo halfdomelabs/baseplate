@@ -1,0 +1,52 @@
+{
+  "name": "@halfdomelabs/create-project",
+  "version": "0.1.2",
+  "description": "CLI starter kit for creating a new Baseplate project",
+  "license": "MIT",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "bin": "./dist/create-baseplate-project.js",
+  "files": [
+    "LICENSE",
+    "CHANGELOG",
+    "dist/**/*",
+    "scripts/**/*",
+    "templates/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "clean": "rm -rf ./dist",
+    "dev:start": "tsx ./src/create-baseplate-project.ts",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "start": "node ./dist/create-baseplate-project.js"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^4.3.2",
+    "axios": "1.6.8",
+    "chalk": "5.3.0",
+    "commander": "^11.0.0",
+    "execa": "^7.2.0",
+    "ora": "^8.0.1",
+    "pkg-up": "^4.0.0"
+  },
+  "devDependencies": {
+    "@halfdomelabs/project-builder-lib": "workspace:*",
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/node": "^20.0.0",
+    "tsc-alias": "1.8.8",
+    "tsx": "4.6.2",
+    "typescript": "5.2.2"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
