@@ -23,7 +23,7 @@ export function AppTopbar(): JSX.Element {
       />
       <div className="flex items-center space-x-8">
         <div className="flex items-center space-x-2">
-          <img src="/images/logo.png" alt="logo" className="h-6 w-6" />
+          <img src="/images/logo.png" alt="logo" className="h-12 w-12" />
           <Link to="/">
             <h3>{config.name}</h3>
           </Link>

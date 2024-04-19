@@ -6,15 +6,19 @@ import {
   createGeneratorWithChildren,
   writeJsonAction,
   createProviderType,
+  createNonOverwriteableMap,
+  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
 import { createRequire } from 'module';
 import path from 'path';
-import prettier from 'prettier';
+import prettier, { Plugin } from 'prettier';
+import prettierPluginPackageJson from 'prettier-plugin-packagejson';
 import requireResolve from 'resolve';
 import { z } from 'zod';
 
 import { nodeProvider } from '../node/index.js';
+import { notEmpty } from '@src/utils/array.js';
 
 const descriptorSchema = z.object({
   tabWidth: z.number().default(2),
@@ -23,6 +27,12 @@ const descriptorSchema = z.object({
   semi: z.boolean().default(true),
 });
 
+export interface PrettierPluginConfig {
+  name: string;
+  default: Plugin;
+  version: string;
+}
+
 interface PrettierConfig {
   tabWidth: number;
   singleQuote: boolean;
@@ -30,8 +40,17 @@ interface PrettierConfig {
   semi: boolean;
 }
 
+const DEFAULT_PLUGINS: PrettierPluginConfig[] = [
+  {
+    name: 'prettier-plugin-packagejson',
+    default: prettierPluginPackageJson as Plugin,
+    version: '2.5.0',
+  },
+];
+
 export interface PrettierProvider {
-  getConfig(): PrettierConfig;
+  getConfig(): NonOverwriteableMap<PrettierConfig>;
+  addPlugin: (plugin: PrettierPluginConfig) => void;
   addPrettierIgnore(path: string): void;
 }
 
@@ -96,12 +115,13 @@ const PrettierGenerator = createGeneratorWithChildren({
     prettier: prettierProvider,
   },
   createGenerator(descriptor, { node }) {
-    const prettierConfig = {
+    const prettierConfig = createNonOverwriteableMap<PrettierConfig>({
       tabWidth: descriptor.tabWidth,
       singleQuote: descriptor.singleQuote,
       trailingComma: descriptor.trailingComma,
       semi: descriptor.semi,
-    };
+    });
+    const plugins = DEFAULT_PLUGINS.slice();
     const prettierIgnore: string[] = [
       '/coverage',
       '/dist',
@@ -114,6 +134,13 @@ const PrettierGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => {
         let prettierModulePromise: Promise<PrettierModule> | undefined;
+        let prettierConfigPromise:
+          | Promise<
+              Omit<PrettierConfig, 'plugins'> & {
+                plugins?: Plugin[];
+              }
+            >
+          | undefined;
 
         return {
           formatter: {
@@ -140,8 +167,42 @@ const PrettierGenerator = createGeneratorWithChildren({
               }
 
               const prettierModule = await prettierModulePromise;
+
+              if (!prettierConfigPromise) {
+                prettierConfigPromise = (async () => {
+                  const resolvedPlugins = await Promise.all(
+                    plugins.map(async (plugin) => {
+                      const resolvedModule = await resolveModule(
+                        plugin.name,
+                        fullPath,
+                      );
+
+                      if (!resolvedModule) {
+                        logger.info(
+                          `Could not resolve prettier plugin ${plugin.name}. Run again once dependencies have been installed.`,
+                        );
+                        return plugin.default ?? undefined;
+                      }
+
+                      return plugin.version === resolvedModule.version
+                        ? (require(resolvedModule.modulePath) as Plugin)
+                        : plugin.default;
+                    }),
+                  );
+
+                  return {
+                    ...prettierConfig.value(),
+                    plugins: resolvedPlugins.length
+                      ? resolvedPlugins.filter(notEmpty)
+                      : [],
+                  };
+                })();
+              }
+
+              const config = await prettierConfigPromise;
+
               return prettierModule.format(input, {
-                ...prettierConfig,
+                ...config,
                 filepath: fullPath,
               });
             },
@@ -151,11 +212,23 @@ const PrettierGenerator = createGeneratorWithChildren({
             addPrettierIgnore(ignorePath) {
               prettierIgnore.push(ignorePath);
             },
+            addPlugin(plugin) {
+              plugins.push(plugin);
+            },
           },
         };
       },
       build: async (builder) => {
-        node.addDevPackage('prettier', PRETTIER_VERSION);
+        node.addDevPackages({
+          prettier: PRETTIER_VERSION,
+          ...DEFAULT_PLUGINS.reduce(
+            (acc, plugin) => ({
+              ...acc,
+              [plugin.name]: plugin.version,
+            }),
+            {},
+          ),
+        });
 
         node.addScripts({
           'prettier:check': 'prettier --check .',
@@ -165,7 +238,10 @@ const PrettierGenerator = createGeneratorWithChildren({
         await builder.apply(
           writeJsonAction({
             destination: '.prettierrc',
-            contents: prettierConfig,
+            contents: {
+              ...prettierConfig.value(),
+              plugins: plugins.map((plugin) => plugin.name),
+            },
           }),
         );
 

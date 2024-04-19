@@ -1,5 +1,30 @@
 # @halfdomelabs/project-builder-web
 
+## 0.8.4
+
+### Patch Changes
+
+- a4949e51: Update Vite to `5.2.8`
+- 4fb65f29: Fix bug with embedded form in admin CRUD UI
+- fd51d48e: Update logo of Baseplate to latest
+- Updated dependencies [a4949e51]
+- Updated dependencies [fd51d48e]
+  - @halfdomelabs/ui-components@0.4.4
+
+## 0.8.3
+
+### Patch Changes
+
+- f69fbf50: Upgrade Axios to 1.6.8 to address security vuln
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+- b28ae068: Use Confirmation Dialog in place of window.confirm
+- Updated dependencies [f69fbf50]
+- Updated dependencies [4c4cf8e5]
+- Updated dependencies [f69fbf50]
+- Updated dependencies [e7f858ce]
+  - @halfdomelabs/project-builder-lib@0.7.2
+  - @halfdomelabs/ui-components@0.4.3
+
 ## 0.8.2
 
 ### Patch Changes

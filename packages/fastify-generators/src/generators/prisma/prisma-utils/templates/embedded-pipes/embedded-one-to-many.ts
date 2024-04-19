@@ -79,8 +79,9 @@ interface UpsertManyPayload<
   UpsertData extends UpsertPayload<unknown, unknown>,
   WhereUniqueInput,
   IdField extends string | number | symbol,
+  IdType = string,
 > {
-  deleteMany?: { [key in IdField]: { notIn: string[] } };
+  deleteMany?: { [key in IdField]: { notIn: IdType[] } };
   upsert?: {
     where: WhereUniqueInput;
     create: UpsertData['create'];
@@ -151,7 +152,13 @@ export async function createOneToManyUpsertData<
       UpsertData
     >): Promise<
   DataPipeOutput<
-    UpsertManyPayload<UpsertData, WhereUniqueInput, IdField> | undefined
+    | UpsertManyPayload<
+        UpsertData,
+        WhereUniqueInput,
+        IdField,
+        Exclude<DataInput[IdField], undefined>
+      >
+    | undefined
   >
 > {
   if (!input) {
@@ -222,7 +229,11 @@ export async function createOneToManyUpsertData<
           [idField]: {
             notIn: input.map((data) => data[idField]).filter(notEmpty),
           },
-        } as unknown as { [key in IdField]: { notIn: string[] } }),
+        } as {
+          [key in IdField]: {
+            notIn: Exclude<DataInput[IdField], undefined>[];
+          };
+        }),
       upsert: upsertOutput.map((output) => output.data),
       create: createOutput.map((output) => output.data),
     },

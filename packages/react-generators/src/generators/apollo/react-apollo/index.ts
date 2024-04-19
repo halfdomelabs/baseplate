@@ -115,7 +115,7 @@ const ReactApolloGenerator = createGeneratorWithTasks({
         const gqlFiles: string[] = [];
 
         node.addPackages({
-          '@apollo/client': '3.8.7',
+          '@apollo/client': '3.9.9',
           graphql: '16.8.1',
         });
 
@@ -126,10 +126,10 @@ const ReactApolloGenerator = createGeneratorWithTasks({
         }
 
         node.addDevPackages({
-          '@graphql-codegen/cli': '5.0.0',
-          '@graphql-codegen/typescript': '4.0.1',
-          '@graphql-codegen/typescript-operations': '4.0.1',
-          '@graphql-codegen/typescript-react-apollo': '4.1.0',
+          '@graphql-codegen/cli': '5.0.2',
+          '@graphql-codegen/typescript': '4.0.6',
+          '@graphql-codegen/typescript-operations': '4.2.0',
+          '@graphql-codegen/typescript-react-apollo': '4.3.0',
         });
 
         node.addScripts({

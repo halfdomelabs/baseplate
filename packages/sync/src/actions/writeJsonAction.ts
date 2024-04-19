@@ -3,7 +3,7 @@ import { FormatFunction } from '../providers/formatter.js';
 
 interface Options {
   destination: string;
-  contents: Record<string, unknown>;
+  contents: unknown;
   noFormat?: boolean;
   preformat?: FormatFunction;
 }

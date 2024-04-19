@@ -33,11 +33,12 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
         const features: FeatureConfig[] = [];
         // find all features without a parent
         function addFeatureAndDescendents(parentFeature?: FeatureConfig): void {
-          const children = draftConfig.features.filter((f) =>
-            parentFeature
-              ? f.name.match(new RegExp(`^${parentFeature?.name}/[^/]+$`))
-              : !f.name.includes('/'),
-          );
+          const children =
+            draftConfig.features?.filter((f) =>
+              parentFeature
+                ? f.name.match(new RegExp(`^${parentFeature?.name}/[^/]+$`))
+                : !f.name.includes('/'),
+            ) ?? [];
           children.forEach((f) => {
             const newFeature: FeatureConfig = {
               id: featureEntityType.generateNewId(),
@@ -60,6 +61,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
     description: 'Add model to embedded transforms, file',
     migrate: (config: ProjectConfig) => {
       return produce((draftConfig: ProjectConfig) => {
+        draftConfig.models = draftConfig.models ?? [];
         draftConfig.models.forEach((model) => {
           model.service?.transformers?.forEach((transformer) => {
             const oldTransformer = transformer as unknown as { name: string };

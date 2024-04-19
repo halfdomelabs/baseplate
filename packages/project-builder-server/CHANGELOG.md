@@ -1,5 +1,15 @@
 # @halfdomelabs/project-builder-server
 
+## 0.3.3
+
+### Patch Changes
+
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+- Updated dependencies [f69fbf50]
+- Updated dependencies [4c4cf8e5]
+  - @halfdomelabs/project-builder-lib@0.7.2
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.3.2
 
 ### Patch Changes

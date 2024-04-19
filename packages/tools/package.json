@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/tools",
-  "version": "0.5.2",
+  "version": "0.5.4",
   "description": "Shared dev configurations for Baseplate projects",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
@@ -25,7 +25,8 @@
     "eslint-plugin-mdx": "^2.2.0",
     "eslint-plugin-storybook": "0.6.15",
     "eslint-plugin-vitest": "0.3.9",
-    "prettier-plugin-tailwindcss": "0.5.4"
+    "prettier-plugin-packagejson": "2.5.0",
+    "prettier-plugin-tailwindcss": "0.5.14"
   },
   "peerDependencies": {
     "typescript": "5.2.2"

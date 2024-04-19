@@ -1,5 +1,42 @@
 # @halfdomelabs/react-generators
 
+## 0.7.3
+
+### Patch Changes
+
+- 922f0bf9: Upgrade prettier plugins and fix bug when prettier plugins were not present
+- Updated dependencies [922f0bf9]
+- Updated dependencies [42beb73c]
+  - @halfdomelabs/core-generators@0.7.4
+  - @halfdomelabs/sync@0.7.2
+
+## 0.7.2
+
+### Patch Changes
+
+- a4949e51: Update Vite to `5.2.8`
+
+## 0.7.1
+
+### Patch Changes
+
+- da0179b1: Upgrade Apollo client to 3.9.9
+
+## 0.7.0
+
+### Minor Changes
+
+- f69fbf50: Upgrade vite to 5.2.4 and vitest to 1.4.0
+
+### Patch Changes
+
+- f69fbf50: Upgrade Axios to 1.6.8 to address security vuln
+- Updated dependencies [f69fbf50]
+- Updated dependencies [4c4cf8e5]
+- Updated dependencies [4c4cf8e5]
+  - @halfdomelabs/core-generators@0.7.3
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.6.4
 
 ### Patch Changes
