@@ -1,5 +1,17 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.6.9
+
+### Patch Changes
+
+- Updated dependencies [922f0bf9]
+- Updated dependencies [42beb73c]
+  - @halfdomelabs/react-generators@0.7.3
+  - @halfdomelabs/core-generators@0.7.4
+  - @halfdomelabs/fastify-generators@0.8.8
+  - @halfdomelabs/project-builder-server@0.3.3
+  - @halfdomelabs/project-builder-web@0.8.4
+
 ## 0.6.8
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @halfdomelabs/react-generators
 
+## 0.7.3
+
+### Patch Changes
+
+- 922f0bf9: Upgrade prettier plugins and fix bug when prettier plugins were not present
+- Updated dependencies [922f0bf9]
+- Updated dependencies [42beb73c]
+  - @halfdomelabs/core-generators@0.7.4
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.7.2
 
 ### Patch Changes

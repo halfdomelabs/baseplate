@@ -1,5 +1,13 @@
 # @halfdomelabs/core-generators
 
+## 0.7.4
+
+### Patch Changes
+
+- 922f0bf9: Upgrade prettier plugins and fix bug when prettier plugins were not present
+- 42beb73c: Upgrade local Docker Postgres to 16.2 and Redis to 7.2.4. See [Docker upgrade documentation](https://docs.hdlabs.dev/docs/guides/manual-upgrade-postgres) for upgrade instructions
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.7.3
 
 ### Patch Changes

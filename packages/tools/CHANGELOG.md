@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.4
+
+### Patch Changes
+
+- 922f0bf9: Upgrade prettier plugins and fix bug when prettier plugins were not present
+
 ## 0.5.3
 
 ### Patch Changes
