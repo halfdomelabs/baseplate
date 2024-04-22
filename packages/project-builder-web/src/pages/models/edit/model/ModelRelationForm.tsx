@@ -7,7 +7,6 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 
-
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';

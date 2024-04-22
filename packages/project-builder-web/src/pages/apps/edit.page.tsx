@@ -5,7 +5,6 @@ import {
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
 import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
 import WebAppForm from './edit/WebAppForm';

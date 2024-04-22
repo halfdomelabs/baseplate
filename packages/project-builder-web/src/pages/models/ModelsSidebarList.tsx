@@ -10,7 +10,6 @@ import { useState } from 'react';
 import { MdClear, MdDelete } from 'react-icons/md';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
-
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';

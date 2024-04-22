@@ -2,7 +2,6 @@ import { SidebarLayout, Tabs } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Outlet } from 'react-router-dom';
 
-
 import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';

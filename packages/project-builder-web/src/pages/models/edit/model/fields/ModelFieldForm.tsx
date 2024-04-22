@@ -12,7 +12,6 @@ import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 import { TbLink } from 'react-icons/tb';
 
-
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';

@@ -5,7 +5,6 @@ import {
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
-
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';

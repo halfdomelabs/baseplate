@@ -5,7 +5,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
-
 import AdapterEditorForm from './AdapterEditorForm';
 import CategoryEditorForm from './CategoryEditorForm';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';

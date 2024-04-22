@@ -11,7 +11,6 @@ import _ from 'lodash';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';

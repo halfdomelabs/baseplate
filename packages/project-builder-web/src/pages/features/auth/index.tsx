@@ -6,7 +6,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
-
 import RoleEditorForm from './RoleEditorForm';
 import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';

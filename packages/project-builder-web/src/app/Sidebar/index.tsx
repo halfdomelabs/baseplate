@@ -9,7 +9,6 @@ import {
   MdSettings,
 } from 'react-icons/md';
 
-
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { LinkButton, Sidebar } from 'src/components';

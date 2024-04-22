@@ -9,7 +9,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
-
 import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';

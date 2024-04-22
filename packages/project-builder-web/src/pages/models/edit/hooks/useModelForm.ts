@@ -10,7 +10,6 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';

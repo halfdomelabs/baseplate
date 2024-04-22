@@ -6,7 +6,6 @@ import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 
-
 import EnumEditForm from './EnumEditForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';

@@ -2,7 +2,6 @@ import { WebAppConfig, webAppSchema } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 
-
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';

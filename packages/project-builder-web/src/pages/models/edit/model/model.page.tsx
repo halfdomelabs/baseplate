@@ -6,7 +6,6 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { useParams } from 'react-router-dom';
 
-
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import { ModelRelationsForm } from './ModelRelationsForm';

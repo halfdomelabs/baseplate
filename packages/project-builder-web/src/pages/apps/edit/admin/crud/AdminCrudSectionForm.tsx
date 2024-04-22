@@ -2,7 +2,6 @@ import { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useWatch } from 'react-hook-form';
 
-
 import AdminCrudEmbeddedForm, {
   AdminCrudEmbeddedTable,
 } from './AdminCrudEmbeddedForm';

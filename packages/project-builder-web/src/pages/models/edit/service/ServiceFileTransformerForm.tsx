@@ -4,7 +4,6 @@ import { Control } from 'react-hook-form';
 import { LinkButton, SelectInput } from 'src/components';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
-
 interface Props {
   control: Control<ModelConfig>;
   idx: number;

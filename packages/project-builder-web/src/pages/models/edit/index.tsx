@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 
-
 import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';

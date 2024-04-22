@@ -1,7 +1,6 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useMemo } from 'react';
 
-
 import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../hooks/useModelForm';
 import { Alert } from 'src/components';

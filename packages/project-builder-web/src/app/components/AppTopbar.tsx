@@ -4,7 +4,6 @@ import { HiCollection, HiDatabase, HiSwitchHorizontal } from 'react-icons/hi';
 import { MdApps, MdSettings } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
-
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
