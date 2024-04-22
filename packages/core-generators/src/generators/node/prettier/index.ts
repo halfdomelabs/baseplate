@@ -185,8 +185,8 @@ const PrettierGenerator = createGeneratorWithChildren({
                       }
 
                       return plugin.version === resolvedModule.version
-                        ? (require(resolvedModule.modulePath) as Plugin)
-                        : plugin.default;
+                        ? plugin.default
+                        : (import(resolvedModule.modulePath) as Plugin);
                     }),
                   );
 
