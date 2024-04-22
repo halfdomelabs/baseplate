@@ -1,5 +1,7 @@
-import { ParsedProjectConfig } from '@src/parser/index.js';
-import { EnumConfig } from '@src/schema/models/enums.js';
+import {
+  ParsedProjectConfig,
+  EnumConfig,
+} from '@halfdomelabs/project-builder-lib';
 
 function buildEnum(enumConfig: EnumConfig): unknown {
   return {

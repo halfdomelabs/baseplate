@@ -1,5 +1,6 @@
+import { AppConfig } from '@halfdomelabs/project-builder-lib';
+
 import { AppEntryBuilder } from '../appEntryBuilder.js';
-import { AppConfig } from '@src/schema/index.js';
 
 export function compileAuthFeatures(
   builder: AppEntryBuilder<AppConfig>,

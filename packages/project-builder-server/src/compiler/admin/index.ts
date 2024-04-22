@@ -1,15 +1,15 @@
+import {
+  AppUtils,
+  FeatureUtils,
+  ProjectDefinitionContainer,
+  AdminAppConfig,
+  AppEntry,
+} from '@halfdomelabs/project-builder-lib';
 import { capitalize } from 'inflection';
 
 import { compileAdminFeatures } from './sections.js';
 import { AdminAppEntryBuilder, AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
-import {
-  AppUtils,
-  FeatureUtils,
-  ProjectDefinitionContainer,
-} from '@src/definition/index.js';
-import { AdminAppConfig } from '@src/schema/apps/admin/index.js';
-import { AppEntry } from '@src/types/files.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 
 export function buildNavigationLinks(

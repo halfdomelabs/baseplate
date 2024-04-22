@@ -1,8 +1,12 @@
+import {
+  AppEntry,
+  AppUtils,
+  ProjectDefinitionContainer,
+  WebAppConfig,
+} from '@halfdomelabs/project-builder-lib';
+
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
-import { AppUtils, ProjectDefinitionContainer } from '@src/definition/index.js';
-import { WebAppConfig } from '@src/schema/index.js';
-import { AppEntry } from '@src/types/files.js';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
   const { projectConfig, appConfig } = builder;

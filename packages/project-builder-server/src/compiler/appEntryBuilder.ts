@@ -3,11 +3,13 @@ import {
   BackendAppConfig,
   BaseAppConfig,
   ProjectConfig,
-} from '../schema/index.js';
-import { AppEntry, FileEntry } from '../types/files.js';
+  AppEntry,
+  FileEntry,
+  ProjectDefinitionContainer,
+  ParsedProjectConfig,
+} from '@halfdomelabs/project-builder-lib';
+
 import { stripObject } from '../utils/strip.js';
-import { ProjectDefinitionContainer } from '@src/definition/index.js';
-import { ParsedProjectConfig } from '@src/parser/index.js';
 
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public projectConfig: ProjectConfig;

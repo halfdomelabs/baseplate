@@ -1,8 +1,11 @@
+import {
+  FeatureUtils,
+  BackendAppConfig,
+} from '@halfdomelabs/project-builder-lib';
+
 import { buildFeature } from './feature.js';
 import { getPostgresSettings, getRedisSettings } from './utils.js';
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
-import { FeatureUtils } from '@src/definition/index.js';
-import { BackendAppConfig } from '@src/schema/index.js';
 
 export function buildFastify(
   builder: BackendAppEntryBuilder,

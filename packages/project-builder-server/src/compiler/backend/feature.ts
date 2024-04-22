@@ -1,9 +1,10 @@
+import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
+
 import { buildEnumsForFeature } from './enums.js';
 import { buildModelsForFeature } from './models.js';
 import { buildSchemaTypesForFeature } from './schemaTypes.js';
 import { buildServicesForFeature } from './services.js';
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
-import { FeatureUtils } from '@src/definition/feature/feature-utils.js';
 
 export function buildFeature(
   featureId: string,

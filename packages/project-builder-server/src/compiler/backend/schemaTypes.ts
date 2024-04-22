@@ -1,10 +1,12 @@
+import {
+  EnumConfig,
+  FeatureUtils,
+  ModelConfig,
+  ModelUtils,
+} from '@halfdomelabs/project-builder-lib';
 import { paramCase } from 'change-case';
 
-import { ModelConfig } from '../../schema/models/index.js';
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
-import { FeatureUtils } from '@src/definition/feature/feature-utils.js';
-import { ModelUtils } from '@src/definition/index.js';
-import { EnumConfig } from '@src/schema/models/enums.js';
 
 function buildQuerySchemaTypeForModel(
   appBuilder: BackendAppEntryBuilder,

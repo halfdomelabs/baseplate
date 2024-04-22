@@ -1,11 +1,14 @@
+import {
+  BaseAppConfig,
+  ProjectConfig,
+  AppEntry,
+  ProjectDefinitionContainer,
+} from '@halfdomelabs/project-builder-lib';
 import _ from 'lodash';
 
 import { compileAdmin } from './admin/index.js';
 import { compileBackend } from './backend/index.js';
 import { compileWeb } from './web/index.js';
-import { BaseAppConfig, ProjectConfig } from '../schema/index.js';
-import { AppEntry } from '../types/files.js';
-import { ProjectDefinitionContainer } from '@src/index.js';
 
 export * from './types.js';
 
