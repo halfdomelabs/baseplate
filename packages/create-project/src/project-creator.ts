@@ -107,6 +107,10 @@ export async function generateBaseplateProject({
       text: 'Installing dependencies...',
     }).start();
 
+    await execaCommand('node .pnpmfile.cjs --silent', {
+      cwd: directory,
+    });
+
     await execaCommand('pnpm install', {
       cwd: directory,
     });
