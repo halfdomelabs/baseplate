@@ -9,7 +9,11 @@ export const gracefulShutdownPlugin = fp((fastify, opts, done) => {
       process.exit(1);
     }, TIMEOUT).unref();
 
-    fastify.log.info(`Received ${signal} signal. Shutting down...`);
+    // when using fastify.log instead of console.log, the log message will be
+    // sent out after the process has been terminated. this avoids that.
+
+    // eslint-disable-next-line no-console
+    console.info(`Received ${signal} signal. Shutting down...`);
 
     fastify
       .close()
