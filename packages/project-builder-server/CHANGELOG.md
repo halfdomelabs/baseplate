@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-server
 
+## 0.3.4
+
+### Patch Changes
+
+- 6b368f5: Rename project config to project definition
+- 8046390: Refactor graceful shutdown to use console.info instead of fastify.log
+- Updated dependencies [6b368f5]
+  - @halfdomelabs/project-builder-lib@0.7.3
+
 ## 0.3.3
 
 ### Patch Changes

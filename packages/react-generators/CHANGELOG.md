@@ -1,5 +1,15 @@
 # @halfdomelabs/react-generators
 
+## 0.7.4
+
+### Patch Changes
+
+- a5bce9d: Update `react-router-dom` in Baseplate and generators.
+
+  Refactor Project Builder Web App to use a data router to allow the `useBlocker` hook.
+
+  Prevent navigation from dirty forms in modal and other forms.
+
 ## 0.7.3
 
 ### Patch Changes

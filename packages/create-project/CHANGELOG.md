@@ -1,5 +1,11 @@
 # @halfdomelabs/create-project
 
+## 0.1.4
+
+### Patch Changes
+
+- 6b368f5: Rename project config to project definition
+
 ## 0.1.3
 
 ### Patch Changes
