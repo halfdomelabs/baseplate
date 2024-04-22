@@ -2,6 +2,7 @@ import { WebAppConfig, webAppSchema } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
@@ -21,8 +22,11 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
     resolver: zodResolver(webAppSchema),
     defaultValues: appConfig,
   });
-  const { control, handleSubmit } = formProps;
+  const { control, handleSubmit, formState } = formProps;
   const toast = useToast();
+
+  useBlockDirtyFormNavigate(formState);
+
   const { parsedProject } = useProjectConfig();
 
   function onSubmit(data: WebAppConfig): void {

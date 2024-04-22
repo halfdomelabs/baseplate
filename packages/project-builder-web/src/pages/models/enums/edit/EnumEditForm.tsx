@@ -7,6 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useFieldArray } from 'react-hook-form';
 
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
+import { hasDirtyFields } from '@src/utils/form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
@@ -20,10 +22,13 @@ interface Props {
 }
 
 function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
-  const { control, handleSubmit, reset, watch, setValue } = useResettableForm({
-    defaultValues: config,
-    resolver: zodResolver(enumSchema),
-  });
+  const { control, handleSubmit, reset, watch, setValue, formState } =
+    useResettableForm({
+      defaultValues: config,
+      resolver: zodResolver(enumSchema),
+    });
+
+  useBlockDirtyFormNavigate(formState);
 
   useEffect(() => {
     reset(config);
@@ -108,7 +113,9 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
         Add Value
       </Button>
       <div>
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={!hasDirtyFields(formState)}>
+          Save
+        </Button>
       </div>
     </form>
   );

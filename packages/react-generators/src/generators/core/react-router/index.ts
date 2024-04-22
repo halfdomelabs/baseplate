@@ -58,7 +58,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     reactRouter: reactRouterProvider,
   },
   createGenerator(descriptor, { node, react, reactApp, typescript }) {
-    node.addPackage('react-router-dom', '6.14.1');
+    node.addPackage('react-router-dom', '6.22.3');
 
     const routes: ReactRoute[] = [];
     const layouts: ReactRouteLayout[] = [];

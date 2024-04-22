@@ -14,8 +14,9 @@ import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { registerEntityTypeUrl } from '@src/services/entity-type';
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
 registerEntityTypeUrl(modelScalarFieldEntityType, `/models/edit/{parentUid}`);
@@ -30,6 +31,8 @@ function ModelEditModelPage(): JSX.Element {
   const { uid } = useParams<'uid'>();
   const id = modelEntityType.fromUid(uid);
   const originalModel = id ? ModelUtils.byId(config, id) : undefined;
+
+  useBlockDirtyFormNavigate(form.formState);
 
   return (
     <EditedModelContextProvider

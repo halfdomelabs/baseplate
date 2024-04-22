@@ -74,3 +74,9 @@ html[data-theme='dark'] {
   --link: 214 100% 97%;
   --link-visited: 214 95% 93%;
 }
+
+@layer utilities {
+  .debug {
+    @apply outline outline-2 -outline-offset-1 outline-red-500/60;
+  }
+}

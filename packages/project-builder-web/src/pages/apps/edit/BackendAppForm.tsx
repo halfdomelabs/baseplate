@@ -5,6 +5,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
 
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
@@ -23,8 +24,10 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
     resolver: zodResolver(backendAppSchema),
     defaultValues: appConfig,
   });
-  const { control, handleSubmit } = formProps;
+  const { control, handleSubmit, formState } = formProps;
   const toast = useToast();
+
+  useBlockDirtyFormNavigate(formState);
 
   function onSubmit(data: BackendAppConfig): void {
     setConfigAndFixReferences((draftConfig) => {
