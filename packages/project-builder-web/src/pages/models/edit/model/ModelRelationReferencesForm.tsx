@@ -1,10 +1,11 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { Button, LinkButton } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;

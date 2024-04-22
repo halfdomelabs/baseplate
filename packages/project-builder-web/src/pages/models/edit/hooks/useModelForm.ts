@@ -9,10 +9,11 @@ import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';

@@ -1,8 +1,9 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { Control } from 'react-hook-form';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { LinkButton, SelectInput } from 'src/components';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 interface Props {
   control: Control<ModelConfig>;

@@ -6,13 +6,14 @@ import { Tabs } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
 import ModelEditServicePage from './service/service.page';
 import { NotFoundCard } from 'src/components';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function ModelEditPage(): JSX.Element {
   const { uid } = useParams<'uid'>();

@@ -1,11 +1,12 @@
 import { StorageConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { notEmpty } from 'src/utils/array';
 
 interface Props {

@@ -16,8 +16,9 @@ import { pluralize } from 'inflection';
 import { camelCase } from 'lodash';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { z } from 'zod';
+
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 const modelFieldRelationSchema = z.object({
   name: VALIDATORS.CAMEL_CASE_STRING,

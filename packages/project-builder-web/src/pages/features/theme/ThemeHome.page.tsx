@@ -8,12 +8,13 @@ import { Alert, Button, Tabs } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
 import { MdConstruction } from 'react-icons/md';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { logAndFormatError } from 'src/services/error-formatter';

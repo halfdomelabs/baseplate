@@ -15,20 +15,20 @@ import {
 import { produce } from 'immer';
 import { useEffect, useMemo, useRef } from 'react';
 import semver from 'semver';
+import { ZodError } from 'zod';
+
+import { NewProjectCard } from './NewProjectCard';
+import { websocketEvents } from '@src/services/api';
+import { useClientVersion } from 'src/hooks/useClientVersion';
 import {
   ProjectDefinitionContext,
   SetOrTransformConfig,
   SetProjectDefinitionOptions,
   UseProjectDefinitionResult,
 } from 'src/hooks/useProjectDefinition';
-import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
-import { ZodError } from 'zod';
-
-import { NewProjectCard } from './NewProjectCard';
-import { websocketEvents } from '@src/services/api';
-import { useClientVersion } from 'src/hooks/useClientVersion';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
+import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';

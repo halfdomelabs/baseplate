@@ -6,10 +6,11 @@ import {
 import classNames from 'classnames';
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;

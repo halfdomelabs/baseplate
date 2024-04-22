@@ -3,6 +3,7 @@ import { Button, Card, EmptyDisplay } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export function AppsListPage(): JSX.Element {

@@ -5,10 +5,11 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export type AdminCrudFormConfig = Pick<
   AdminCrudSectionConfig,

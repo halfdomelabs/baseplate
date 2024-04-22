@@ -9,12 +9,13 @@ import _ from 'lodash';
 import { useState } from 'react';
 import { MdClear, MdDelete } from 'react-icons/md';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface ModelsSidebarListProps {
   className?: string;

@@ -7,12 +7,13 @@ import {
 import classNames from 'classnames';
 import { useEffect } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
 import { LinkButton, SelectInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { usePrevious } from 'src/hooks/usePrevious';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;

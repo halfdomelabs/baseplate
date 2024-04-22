@@ -5,6 +5,7 @@ import _ from 'lodash';
 import { useState } from 'react';
 import { MdClear } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
+
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface EnumsSidebarListProps {

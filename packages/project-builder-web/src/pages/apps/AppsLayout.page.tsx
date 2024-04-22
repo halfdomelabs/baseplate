@@ -6,6 +6,7 @@ import {
 } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Link, NavLink, Outlet } from 'react-router-dom';
+
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function AppsLayout(): JSX.Element {

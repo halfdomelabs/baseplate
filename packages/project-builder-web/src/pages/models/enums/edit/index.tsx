@@ -5,12 +5,13 @@ import {
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import EnumEditForm from './EnumEditForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
 import { Alert, Button } from 'src/components';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError, logAndFormatError } from 'src/services/error-formatter';

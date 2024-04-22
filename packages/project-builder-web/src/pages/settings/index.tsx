@@ -2,9 +2,9 @@ import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
 import { Button, Card, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { z } from 'zod';
 
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';

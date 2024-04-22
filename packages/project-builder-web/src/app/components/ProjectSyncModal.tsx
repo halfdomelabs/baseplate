@@ -2,9 +2,9 @@ import { Button, Dialog } from '@halfdomelabs/ui-components';
 import classNames from 'classnames';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import Console, { ConsoleRef } from 'src/components/Console';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';

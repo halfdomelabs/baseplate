@@ -5,7 +5,7 @@ import {
   modelScalarFieldEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useParams } from 'react-router-dom';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
+
 
 import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
@@ -16,6 +16,7 @@ import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
