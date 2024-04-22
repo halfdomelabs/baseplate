@@ -12,9 +12,9 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
@@ -42,12 +42,13 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     ? appConfig.sections?.find((section) => section.id === sectionId)
     : undefined;
 
-  const formProps = useResettableForm<AdminSectionConfig>({
-    defaultValues: existingSection ?? { type: 'crud' },
-    resolver: zodResolver(adminSectionSchema),
-  });
-  const { control, handleSubmit, watch, reset } = formProps;
-  usePreventDirtyForm(formProps);
+  const { control, handleSubmit, watch, reset, formState } =
+    useResettableForm<AdminSectionConfig>({
+      defaultValues: existingSection ?? { type: 'crud' },
+      resolver: zodResolver(adminSectionSchema),
+    });
+
+  useBlockDirtyFormNavigate(formState);
 
   useEffect(() => {
     reset(existingSection ?? { type: 'crud' });

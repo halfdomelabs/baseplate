@@ -14,7 +14,7 @@ import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
@@ -32,7 +32,7 @@ function ModelEditModelPage(): JSX.Element {
   const id = modelEntityType.fromUid(uid);
   const originalModel = id ? ModelUtils.byId(config, id) : undefined;
 
-  usePreventDirtyForm(form);
+  useBlockDirtyFormNavigate(form.formState);
 
   return (
     <EditedModelContextProvider

@@ -7,9 +7,9 @@ import { useState } from 'react';
 
 import AdapterEditorForm from './AdapterEditorForm';
 import CategoryEditorForm from './CategoryEditorForm';
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Alert, Button } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
@@ -25,11 +25,11 @@ function StoragePage(): JSX.Element {
     resolver: zodResolver(storageSchema),
     defaultValues: config.storage,
   });
-  const { control, reset, handleSubmit } = formProps;
+  const { control, reset, handleSubmit, formState } = formProps;
   const toast = useToast();
   const { status, setError } = useStatus();
 
-  usePreventDirtyForm(formProps);
+  useBlockDirtyFormNavigate(formState);
 
   const onSubmit = (data: StorageConfig): void => {
     try {

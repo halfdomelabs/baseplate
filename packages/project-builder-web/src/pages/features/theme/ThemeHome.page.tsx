@@ -12,7 +12,7 @@ import { MdConstruction } from 'react-icons/md';
 import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
-import { usePreventDirtyForm } from 'src/hooks/usePreventDirtyForm';
+import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
@@ -27,12 +27,13 @@ export function ThemeHomePage(): JSX.Element {
     [config.theme],
   );
 
-  const formProps = useResettableForm<ThemeConfig>({
-    resolver: zodResolver(themeSchema),
-    defaultValues,
-  });
-  const { control, handleSubmit, setValue, getValues } = formProps;
-  usePreventDirtyForm(formProps);
+  const { control, handleSubmit, setValue, getValues, formState } =
+    useResettableForm<ThemeConfig>({
+      resolver: zodResolver(themeSchema),
+      defaultValues,
+    });
+
+  useBlockDirtyFormNavigate(formState);
 
   const generateNewThemeColors = useCallback(
     (resetColors?: boolean) => {
