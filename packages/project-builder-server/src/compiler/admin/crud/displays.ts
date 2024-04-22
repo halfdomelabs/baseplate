@@ -1,11 +1,12 @@
-import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
-import { ModelFieldUtils } from '@src/definition/model/model-field-utils.js';
 import {
   AdminAppConfig,
   AdminCrudDisplayConfig,
   AdminCrudForeignDisplayConfig,
   AdminCrudTextDisplayConfig,
-} from '@src/schema/index.js';
+  ModelFieldUtils,
+} from '@halfdomelabs/project-builder-lib';
+
+import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
 
 function compileAdminCrudForeignDisplay(
   builder: AppEntryBuilder<AdminAppConfig>,

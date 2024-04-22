@@ -1,4 +1,4 @@
-import { FileEntry } from '../types/files.js';
+import { FileEntry } from '@halfdomelabs/project-builder-lib';
 
 export interface CompilerOutput {
   config: unknown;

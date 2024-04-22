@@ -1,4 +1,3 @@
-export * from './compiler/index.js';
 export * from './parser/index.js';
 export * from './parser/types.js';
 export * from './references/index.js';

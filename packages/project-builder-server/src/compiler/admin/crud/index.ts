@@ -1,13 +1,13 @@
+import {
+  AdminAppConfig,
+  AdminCrudEmbeddedFormConfig,
+  AdminCrudSectionConfig,
+} from '@halfdomelabs/project-builder-lib';
 import inflection from 'inflection';
 
 import { compileAdminCrudDisplay } from './displays.js';
 import { compileAdminCrudInput } from './inputs.js';
 import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
-import {
-  AdminAppConfig,
-  AdminCrudEmbeddedFormConfig,
-  AdminCrudSectionConfig,
-} from '@src/schema/index.js';
 
 function compileAdminCrudEmbeddedForm(
   builder: AppEntryBuilder<AdminAppConfig>,

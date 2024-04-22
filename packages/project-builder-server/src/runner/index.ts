@@ -1,5 +1,4 @@
 import {
-  compileApplications,
   ProjectConfig,
   projectConfigSchema,
 } from '@halfdomelabs/project-builder-lib';
@@ -13,6 +12,7 @@ import {
   GeneratorEngineSetupConfig,
 } from '../sync/index.js';
 import { writeApplicationFiles } from '../writer/index.js';
+import { compileApplications } from '@src/compiler/index.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
 
 async function loadProjectJson(directory: string): Promise<ProjectConfig> {

@@ -1,12 +1,14 @@
 import {
+  BackendAppConfig,
+  FeatureUtils,
   ModelConfig,
+  ModelFieldUtils,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-} from '../../schema/models/index.js';
+  ModelUtils,
+} from '@halfdomelabs/project-builder-lib';
+
 import { AppEntryBuilder, BackendAppEntryBuilder } from '../appEntryBuilder.js';
-import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
-import { ModelFieldUtils } from '@src/definition/model/model-field-utils.js';
-import { BackendAppConfig } from '@src/index.js';
 
 function buildScalarField(
   builder: BackendAppEntryBuilder,

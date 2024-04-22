@@ -1,11 +1,12 @@
-import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
-import { ModelUtils } from '@src/definition/index.js';
-import { ParsedModel } from '@src/parser/types.js';
+import { ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { ParsedModel } from '@halfdomelabs/project-builder-lib';
 import {
   EmbeddedRelationTransformerConfig,
   FileTransformerConfig,
   TransformerConfig,
-} from '@src/schema/models/transformers.js';
+} from '@halfdomelabs/project-builder-lib';
+
+import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 
 function buildEmbeddedRelationTransformer(
   appBuilder: BackendAppEntryBuilder,

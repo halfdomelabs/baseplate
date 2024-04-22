@@ -1,5 +1,3 @@
-import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
-import { ModelFieldUtils } from '@src/definition/model/model-field-utils.js';
 import {
   AdminAppConfig,
   AdminCrudEmbeddedInputConfig,
@@ -12,7 +10,10 @@ import {
   AdminCrudTextInputConfig,
   FileTransformerConfig,
   ModelScalarFieldConfig,
-} from '@src/schema/index.js';
+  ModelFieldUtils,
+} from '@halfdomelabs/project-builder-lib';
+
+import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
 
 function compileAdminEnumInput(
   builder: AppEntryBuilder<AdminAppConfig>,
