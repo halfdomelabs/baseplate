@@ -16,7 +16,7 @@ import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 
 interface Props {
@@ -42,7 +42,7 @@ function ModelFieldForm({
     control,
   });
 
-  const { definitionContainer } = useProjectConfig();
+  const { definitionContainer } = useProjectDefinition();
   const toast = useToast();
 
   const removeError = useEditedModelConfig((model) => {

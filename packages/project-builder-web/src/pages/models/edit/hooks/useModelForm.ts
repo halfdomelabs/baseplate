@@ -12,7 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -54,7 +54,7 @@ export function useModelForm({
   defaultValues: ModelConfig;
 } {
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
+  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
   const toast = useToast();
   const navigate = useNavigate();
   const id = uid ? modelEntityType.fromUid(uid) : undefined;

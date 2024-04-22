@@ -14,7 +14,7 @@ import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface ModelsSidebarListProps {
   className?: string;
@@ -26,7 +26,7 @@ export function ModelsSidebarList({
   const navigate = useNavigate();
   const { requestConfirm } = useConfirmDialog();
   const toast = useToast();
-  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
+  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
   const { showRefIssues } = useDeleteReferenceDialog();
 
   const models = parsedProject.getModels();

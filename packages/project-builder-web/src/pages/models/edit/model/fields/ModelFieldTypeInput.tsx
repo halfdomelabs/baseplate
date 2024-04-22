@@ -6,7 +6,7 @@ import {
 import { ComboboxField } from '@halfdomelabs/ui-components';
 import { Control, useController } from 'react-hook-form';
 
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface ModelFieldTypeInputProps {
   control: Control<ModelConfig>;
@@ -76,7 +76,7 @@ export function ModelFieldTypeInput({
   control,
   idx,
 }: ModelFieldTypeInputProps): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const enumOptions: TypeOption[] = parsedProject.getEnums().map((config) => ({
     label: config.name,

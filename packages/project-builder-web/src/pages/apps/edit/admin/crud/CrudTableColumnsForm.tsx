@@ -7,7 +7,7 @@ import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,
@@ -83,7 +83,7 @@ function ColumnForm({
 
 function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
   const model = modelName ? parsedProject.getModelById(modelName) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,

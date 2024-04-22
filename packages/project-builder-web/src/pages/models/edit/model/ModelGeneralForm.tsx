@@ -3,7 +3,7 @@ import { ComboboxField, InputField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface ModelGeneralFormProps {
   className?: string;
@@ -16,8 +16,8 @@ export function ModelGeneralForm({
   control,
   horizontal,
 }: ModelGeneralFormProps): JSX.Element {
-  const { parsedProject } = useProjectConfig();
-  const featureOptions = (parsedProject.projectConfig.features ?? []).map(
+  const { parsedProject } = useProjectDefinition();
+  const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
     (f) => ({
       label: f.name,
       value: f.id,

@@ -14,12 +14,12 @@ import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function NewAppPage(): JSX.Element {
-  const { setConfigAndFixReferences } = useProjectConfig();
+  const { setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const formProps = useForm<AppConfig>({
     resolver: zodResolver(baseAppSchema),

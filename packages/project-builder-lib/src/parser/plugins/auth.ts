@@ -7,8 +7,8 @@ import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 
 export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',
-  run(projectConfig, hooks) {
-    const { auth } = projectConfig;
+  run(projectDefinition, hooks) {
+    const { auth } = projectDefinition;
     if (!auth || auth.useAuth0) {
       return;
     }
@@ -45,7 +45,7 @@ export const AuthPlugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectConfig, auth.userModel).name,
+      name: ModelUtils.byId(projectDefinition, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userFields,
@@ -80,7 +80,7 @@ export const AuthPlugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectConfig, auth.userRoleModel).name,
+      name: ModelUtils.byId(projectDefinition, auth.userRoleModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userRoleFields,
@@ -112,7 +112,7 @@ export const AuthPlugin: ParserPlugin = {
         peerProvider: true,
         authInfoRef: `${
           FeatureUtils.getFeatureByIdOrThrow(
-            projectConfig,
+            projectDefinition,
             auth.authFeaturePath,
           ).name
         }/root:$auth.service`,
@@ -131,7 +131,7 @@ export const AuthPlugin: ParserPlugin = {
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth-module',
-        userModelName: ModelUtils.byId(projectConfig, auth.userModel).name,
+        userModelName: ModelUtils.byId(projectDefinition, auth.userModel).name,
         children: {
           roleService: {
             name: 'AuthRoleService',
@@ -145,7 +145,7 @@ export const AuthPlugin: ParserPlugin = {
                   $authRoles: {
                     generator: '@halfdomelabs/fastify/auth/auth-roles',
                     userRoleModelName: ModelUtils.byId(
-                      projectConfig,
+                      projectDefinition,
                       auth.userRoleModel,
                     ).name,
                   },

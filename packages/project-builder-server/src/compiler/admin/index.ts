@@ -16,23 +16,24 @@ export function buildNavigationLinks(
   builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown[] {
   const config = builder.appConfig;
-  const projectConfig = builder.projectConfig;
+  const projectDefinition = builder.projectDefinition;
   return (
     config.sections?.map((section) => ({
       type: 'link',
       label: titleizeCamel(section.name),
       icon: section.icon ?? 'MdHome',
       path: `${
-        FeatureUtils.getFeatureByIdOrThrow(projectConfig, section.feature).name
+        FeatureUtils.getFeatureByIdOrThrow(projectDefinition, section.feature)
+          .name
       }/${dasherizeCamel(section.name)}`,
     })) ?? []
   );
 }
 
 export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
-  const { projectConfig, appConfig } = builder;
+  const { projectDefinition, appConfig } = builder;
 
-  const backendApp = AppUtils.getBackendApp(projectConfig);
+  const backendApp = AppUtils.getBackendApp(projectDefinition);
   const backendRelativePath = AppUtils.getBackendRelativePath(
     appConfig,
     backendApp,
@@ -41,7 +42,7 @@ export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
   return {
     name: 'react',
     generator: '@halfdomelabs/react/core/react',
-    title: `${capitalize(projectConfig.name)} Admin Dashboard`,
+    title: `${capitalize(projectDefinition.name)} Admin Dashboard`,
     children: {
       router: {
         children: {
@@ -58,7 +59,7 @@ export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
                     name: 'bull-board',
                     generator: '@halfdomelabs/react/admin/admin-bull-board',
                     bullBoardUrl: `http://localhost:${
-                      projectConfig.portOffset + 1
+                      projectDefinition.portOffset + 1
                     }`,
                   },
                 ]
@@ -75,7 +76,7 @@ export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
       },
       proxy: {
         // TODO: Extract out logic
-        devBackendHost: `http://localhost:${projectConfig.portOffset + 1}`,
+        devBackendHost: `http://localhost:${projectDefinition.portOffset + 1}`,
       },
       $adminLayout: {
         generator: '@halfdomelabs/react/admin/admin-layout',
@@ -112,11 +113,13 @@ export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
         generator: '@halfdomelabs/react/apollo/apollo-error',
         peerProvider: true,
       },
-      $uploadComponents: projectConfig.storage
+      $uploadComponents: projectDefinition.storage
         ? {
             generator: '@halfdomelabs/react/storage/upload-components',
             peerProvider: true,
-            fileModelName: builder.nameFromId(projectConfig.storage.fileModel),
+            fileModelName: builder.nameFromId(
+              projectDefinition.storage.fileModel,
+            ),
           }
         : undefined,
       ...compileAuthFeatures(builder),
@@ -130,18 +133,18 @@ export function compileAdmin(
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(definitionContainer, app);
 
-  const { projectConfig } = appBuilder;
+  const { projectDefinition } = appBuilder;
 
-  const packageName = projectConfig.packageScope
-    ? `@${projectConfig.packageScope}/${app.name}`
-    : `${projectConfig.name}-${app.name}`;
+  const packageName = projectDefinition.packageScope
+    ? `@${projectDefinition.packageScope}/${app.name}`
+    : `${projectDefinition.name}-${app.name}`;
 
   appBuilder.addDescriptor('root.json', {
     generator: '@halfdomelabs/core/node/node',
-    name: `${projectConfig.name}-${app.name}`,
+    name: `${projectDefinition.name}-${app.name}`,
     packageName,
-    description: `Admin web app for ${projectConfig.name}`,
-    version: projectConfig.version,
+    description: `Admin web app for ${projectDefinition.name}`,
+    version: projectDefinition.version,
     children: {
       projects: [buildAdmin(appBuilder)],
     },

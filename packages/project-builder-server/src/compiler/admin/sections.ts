@@ -34,12 +34,18 @@ function compileAdminFeatureRecursive(
   featureId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown {
-  const { projectConfig, parsedProject } = builder;
-  const feature = FeatureUtils.getFeatureByIdOrThrow(projectConfig, featureId);
+  const { projectDefinition, parsedProject } = builder;
+  const feature = FeatureUtils.getFeatureByIdOrThrow(
+    projectDefinition,
+    featureId,
+  );
   const descriptorLocation = `${feature.name}/root`;
   const featureName = feature.name.split('/').pop();
   // find sub-features
-  const subFeatures = FeatureUtils.getFeatureChildren(projectConfig, featureId);
+  const subFeatures = FeatureUtils.getFeatureChildren(
+    projectDefinition,
+    featureId,
+  );
 
   const subDescriptors = subFeatures
     .flatMap((subFeature) =>
@@ -75,8 +81,8 @@ function compileAdminFeatureRecursive(
 export function compileAdminFeatures(
   builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown[] {
-  const { projectConfig } = builder;
-  const rootFeatures = FeatureUtils.getRootFeatures(projectConfig);
+  const { projectDefinition } = builder;
+  const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
 
   return rootFeatures.flatMap((feature) =>
     compileAdminFeatureRecursive(feature.id, builder),

@@ -9,9 +9,9 @@ import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
-  const { projectConfig, appConfig } = builder;
+  const { projectDefinition, appConfig } = builder;
 
-  const backendApp = AppUtils.getBackendApp(projectConfig);
+  const backendApp = AppUtils.getBackendApp(projectDefinition);
   const backendRelativePath = AppUtils.getBackendRelativePath(
     appConfig,
     backendApp,
@@ -37,7 +37,7 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
       },
       proxy: {
         // TODO: Extract out logic
-        devBackendHost: `http://localhost:${projectConfig.portOffset + 1}`,
+        devBackendHost: `http://localhost:${projectDefinition.portOffset + 1}`,
       },
       $sentry: {
         generator: '@halfdomelabs/react/core/react-sentry',
@@ -55,12 +55,12 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
         peerProvider: true,
       },
       $uploadComponents:
-        projectConfig.storage && appConfig.includeUploadComponents
+        projectDefinition.storage && appConfig.includeUploadComponents
           ? {
               generator: '@halfdomelabs/react/storage/upload-components',
               peerProvider: true,
               fileModelName: builder.nameFromId(
-                projectConfig.storage.fileModel,
+                projectDefinition.storage.fileModel,
               ),
             }
           : undefined,
@@ -78,18 +78,18 @@ export function compileWeb(
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(definitionContainer, app);
 
-  const { projectConfig } = appBuilder;
+  const { projectDefinition } = appBuilder;
 
-  const packageName = projectConfig.packageScope
-    ? `@${projectConfig.packageScope}/${app.name}`
-    : `${projectConfig.name}-${app.name}`;
+  const packageName = projectDefinition.packageScope
+    ? `@${projectDefinition.packageScope}/${app.name}`
+    : `${projectDefinition.name}-${app.name}`;
 
   appBuilder.addDescriptor('root.json', {
     generator: '@halfdomelabs/core/node/node',
-    name: `${projectConfig.name}-${app.name}`,
+    name: `${projectDefinition.name}-${app.name}`,
     packageName,
-    description: `Web app for ${projectConfig.name}`,
-    version: projectConfig.version,
+    description: `Web app for ${projectDefinition.name}`,
+    version: projectDefinition.version,
     children: {
       projects: [buildReact(appBuilder)],
     },

@@ -11,8 +11,8 @@ export function buildFastify(
   builder: BackendAppEntryBuilder,
   app: BackendAppConfig,
 ): unknown {
-  const { projectConfig, parsedProject } = builder;
-  const rootFeatures = FeatureUtils.getRootFeatures(projectConfig);
+  const { projectDefinition, parsedProject } = builder;
+  const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
 
   // add graphql scalars
   builder.addDescriptor('graphql/root.json', {
@@ -44,7 +44,7 @@ export function buildFastify(
     generator: '@halfdomelabs/fastify/core/fastify',
     children: {
       server: {
-        defaultPort: projectConfig.portOffset + 1,
+        defaultPort: projectDefinition.portOffset + 1,
       },
       $sentry: {
         generator: '@halfdomelabs/fastify/core/fastify-sentry',
@@ -55,7 +55,7 @@ export function buildFastify(
         : {
             generator: '@halfdomelabs/fastify/core/fastify-redis',
             peerProvider: true,
-            defaultUrl: getRedisSettings(projectConfig).url,
+            defaultUrl: getRedisSettings(projectDefinition).url,
           },
       ...(!app.enableBullQueue
         ? {}
@@ -90,7 +90,7 @@ export function buildFastify(
       $prisma: {
         generator: '@halfdomelabs/fastify/prisma/prisma',
         peerProvider: true,
-        defaultDatabaseUrl: getPostgresSettings(projectConfig).url,
+        defaultDatabaseUrl: getPostgresSettings(projectDefinition).url,
       },
       $prismaJest: {
         generator: '@halfdomelabs/fastify/jest/prisma-jest',

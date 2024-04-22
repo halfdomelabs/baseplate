@@ -1,6 +1,6 @@
 import {
   FeatureConfig,
-  ProjectConfig,
+  ProjectDefinition,
   featureEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import {
@@ -15,7 +15,7 @@ import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
 import { FeatureForm } from './FeatureForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { useProjectConfig } from '@src/hooks/useProjectConfig';
+import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 
@@ -24,7 +24,8 @@ interface FeaturesFormProps {
 }
 
 export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
-  const { definitionContainer, setConfigAndFixReferences } = useProjectConfig();
+  const { definitionContainer, setConfigAndFixReferences } =
+    useProjectDefinition();
   const toast = useToast();
   const { requestConfirm } = useConfirmDialog();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -35,7 +36,7 @@ export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
   const features = definitionContainer.definition.features;
 
   const handleRemoveFeature = (feature: FeatureConfig): void => {
-    function deleteFeature(draftConfig: ProjectConfig): void {
+    function deleteFeature(draftConfig: ProjectDefinition): void {
       const idx = draftConfig.features.findIndex((f) => f.id === feature.id);
       if (idx === -1) {
         throw new Error('Feature not found');

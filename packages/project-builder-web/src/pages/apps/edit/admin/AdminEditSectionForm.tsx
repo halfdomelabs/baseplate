@@ -15,7 +15,7 @@ import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
@@ -30,7 +30,7 @@ const SECTION_OPTIONS = [{ label: 'Crud', value: 'crud' }];
 function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { sectionId: sectionUid } = useParams<{ sectionId: string }>();
-  const { setConfigAndFixReferences, parsedProject } = useProjectConfig();
+  const { setConfigAndFixReferences, parsedProject } = useProjectDefinition();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -111,7 +111,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     }
   }
 
-  const featureOptions = parsedProject.projectConfig.features.map((f) => ({
+  const featureOptions = parsedProject.projectDefinition.features.map((f) => ({
     label: f.name,
     value: f.id,
   }));

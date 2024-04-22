@@ -12,10 +12,10 @@ import {
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { LinkButton, Sidebar } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function AppSidebar(): JSX.Element {
-  const { config } = useProjectConfig();
+  const { config } = useProjectDefinition();
   const [showProjectChooserModal, setShowProjectChooserModal] = useState(false);
 
   return (

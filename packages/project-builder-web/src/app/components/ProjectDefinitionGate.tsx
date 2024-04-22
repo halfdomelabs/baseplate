@@ -1,9 +1,9 @@
 import {
-  ParsedProjectConfig,
-  ProjectConfig,
+  ParsedProjectDefinition,
+  ProjectDefinition,
   ProjectDefinitionContainer,
   fixRefDeletions,
-  projectConfigSchema,
+  projectDefinitionSchema,
   runSchemaMigrations,
   serializeSchema,
 } from '@halfdomelabs/project-builder-lib';
@@ -21,14 +21,14 @@ import { NewProjectCard } from './NewProjectCard';
 import { websocketEvents } from '@src/services/api';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import {
-  ProjectConfigContext,
+  ProjectDefinitionContext,
   SetOrTransformConfig,
-  SetProjectConfigOptions,
-  UseProjectConfigResult,
-} from 'src/hooks/useProjectConfig';
+  SetProjectDefinitionOptions,
+  UseProjectDefinitionResult,
+} from 'src/hooks/useProjectDefinition';
 import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
-import { useRemoteProjectConfig } from 'src/hooks/useRemoteProjectConfig';
+import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
@@ -40,13 +40,13 @@ import {
 } from 'src/utils/error';
 import { prettyStableStringify } from 'src/utils/json';
 
-interface ProjectConfigGateProps {
+interface ProjectDefinitionGateProps {
   children?: React.ReactNode;
 }
 
-export function ProjectConfigGate({
+export function ProjectDefinitionGate({
   children,
-}: ProjectConfigGateProps): JSX.Element {
+}: ProjectDefinitionGateProps): JSX.Element {
   const {
     value: remoteConfig,
     loaded,
@@ -55,7 +55,7 @@ export function ProjectConfigGate({
     projectId,
     externalChangeCounter,
     downloadConfig,
-  } = useRemoteProjectConfig();
+  } = useRemoteProjectDefinition();
   const { projects } = useProjects();
   const [, setProjectId] = useProjectIdState();
   const { version: cliVersion, refreshVersion } = useClientVersion();
@@ -73,7 +73,7 @@ export function ProjectConfigGate({
   );
 
   const savedConfigRef = useRef<{
-    project: ParsedProjectConfig;
+    project: ParsedProjectDefinition;
     definitionContainer: ProjectDefinitionContainer;
     externalChangeCounter: number;
     projectId: string;
@@ -82,7 +82,7 @@ export function ProjectConfigGate({
   const loadData = useMemo(():
     | {
         status: 'loaded';
-        parsedProject: ParsedProjectConfig;
+        parsedProject: ParsedProjectDefinition;
         definitionContainer: ProjectDefinitionContainer;
       }
     | { status: 'error'; configError: unknown }
@@ -101,10 +101,10 @@ export function ProjectConfigGate({
       };
     }
     try {
-      const projectConfig = JSON.parse(remoteConfig) as ProjectConfig;
+      const projectDefinition = JSON.parse(remoteConfig) as ProjectDefinition;
       // migrate config
-      const { newConfig: migratedProjectConfig, appliedMigrations } =
-        runSchemaMigrations(projectConfig);
+      const { newConfig: migratedProjectDefinition, appliedMigrations } =
+        runSchemaMigrations(projectDefinition);
       if (appliedMigrations.length) {
         logger.log(
           `Applied migrations:\n${appliedMigrations
@@ -114,10 +114,12 @@ export function ProjectConfigGate({
       }
       // validate config
       const definitionContainer =
-        ProjectDefinitionContainer.fromSerializedConfig(migratedProjectConfig);
-      const project = new ParsedProjectConfig(definitionContainer);
+        ProjectDefinitionContainer.fromSerializedConfig(
+          migratedProjectDefinition,
+        );
+      const project = new ParsedProjectDefinition(definitionContainer);
       // only save config if project is initialized
-      if (projectConfig.isInitialized) {
+      if (projectDefinition.isInitialized) {
         savedConfigRef.current = {
           project,
           externalChangeCounter,
@@ -148,13 +150,13 @@ export function ProjectConfigGate({
     }
   }, [remoteConfig, externalChangeCounter, projectId, loaded]);
 
-  const result: UseProjectConfigResult | undefined = useMemo(() => {
+  const result: UseProjectDefinitionResult | undefined = useMemo(() => {
     if (loadData.status !== 'loaded' || !projectId) {
       return undefined;
     }
     function setConfig(
       newConfig: SetOrTransformConfig,
-      { fixReferences }: SetProjectConfigOptions = {},
+      { fixReferences }: SetProjectDefinitionOptions = {},
     ): void {
       if (loadData.status !== 'loaded' || !projectId) {
         throw new Error(
@@ -162,33 +164,35 @@ export function ProjectConfigGate({
         );
       }
 
-      const oldProjectConfig = loadData.definitionContainer.definition;
-      const newProjectConfig =
+      const oldProjectDefinition = loadData.definitionContainer.definition;
+      const newProjectDefinition =
         typeof newConfig === 'function'
-          ? produce(oldProjectConfig, newConfig)
+          ? produce(oldProjectDefinition, newConfig)
           : newConfig;
 
-      let validatedProjectConfig = projectConfigSchema.parse(newProjectConfig);
+      let validatedProjectDefinition =
+        projectDefinitionSchema.parse(newProjectDefinition);
 
       if (fixReferences) {
         const result = fixRefDeletions(
-          projectConfigSchema,
-          validatedProjectConfig,
+          projectDefinitionSchema,
+          validatedProjectDefinition,
         );
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }
-        validatedProjectConfig = result.value;
+        validatedProjectDefinition = result.value;
       }
 
-      const parsedConfig = new ParsedProjectConfig(
-        ProjectDefinitionContainer.fromConfig(validatedProjectConfig),
+      const parsedConfig = new ParsedProjectDefinition(
+        ProjectDefinitionContainer.fromConfig(validatedProjectDefinition),
       );
-      parsedConfig.projectConfig.cliVersion = cliVersion;
+      parsedConfig.projectDefinition.cliVersion = cliVersion;
 
-      const exportedProjectConfig = parsedConfig.exportToProjectConfig();
+      const exportedProjectDefinition =
+        parsedConfig.exportToProjectDefinition();
       const definitionContainer = ProjectDefinitionContainer.fromConfig(
-        exportedProjectConfig,
+        exportedProjectDefinition,
       );
 
       saveRemoteConfig(
@@ -252,24 +256,24 @@ export function ProjectConfigGate({
     );
   }
 
-  if (!result || !result.parsedProject.projectConfig.isInitialized) {
+  if (!result?.parsedProject.projectDefinition.isInitialized) {
     return (
       <div className="flex h-full items-center justify-center">
         <NewProjectCard
-          existingProject={result?.parsedProject.projectConfig}
+          existingProject={result?.parsedProject.projectDefinition}
           saveProject={(data) => {
-            const oldProjectConfig =
-              result?.parsedProject.exportToProjectConfig() ?? {};
-            const newProjectConfig = {
-              ...oldProjectConfig,
+            const oldProjectDefinition =
+              result?.parsedProject.exportToProjectDefinition() ?? {};
+            const newProjectDefinition = {
+              ...oldProjectDefinition,
               ...data,
               isInitialized: true,
             };
             saveRemoteConfig(
               prettyStableStringify(
                 serializeSchema(
-                  projectConfigSchema,
-                  newProjectConfig as ProjectConfig,
+                  projectDefinitionSchema,
+                  newProjectDefinition as ProjectDefinition,
                 ),
               ),
               undefined,
@@ -316,8 +320,8 @@ export function ProjectConfigGate({
   }
 
   return (
-    <ProjectConfigContext.Provider value={result}>
+    <ProjectDefinitionContext.Provider value={result}>
       {children}
-    </ProjectConfigContext.Provider>
+    </ProjectDefinitionContext.Provider>
   );
 }

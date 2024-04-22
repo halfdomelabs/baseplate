@@ -39,7 +39,7 @@ function buildRelationField(
   relationConfig: ModelRelationFieldConfig,
   parentModel: ModelConfig,
 ): unknown {
-  const { projectConfig } = appBuilder;
+  const { projectDefinition } = appBuilder;
   const {
     name,
     references,
@@ -48,7 +48,7 @@ function buildRelationField(
     onDelete,
     onUpdate,
   } = relationConfig;
-  const foreignModel = ModelUtils.byId(projectConfig, modelName);
+  const foreignModel = ModelUtils.byId(projectDefinition, modelName);
 
   const optional = ModelFieldUtils.isRelationOptional(
     parentModel,
@@ -65,7 +65,7 @@ function buildRelationField(
   // If there are multiple relations between the same models, we need to specify the
   // relation name to avoid conflicts in Prisma
   const foreignRelations = ModelUtils.getRelationsToModel(
-    projectConfig,
+    projectDefinition,
     parentModel.id,
   ).filter(({ model }) => model.id === relationConfig.modelName);
   const needsRelationName =
@@ -73,7 +73,7 @@ function buildRelationField(
       relations.filter((r) => r.modelName === modelName).length >
     1;
   const foreignFeature = FeatureUtils.getFeatureByIdOrThrow(
-    projectConfig,
+    projectDefinition,
     foreignModel.feature,
   ).name;
 
@@ -129,7 +129,7 @@ export function buildModelsForFeature(
   featureId: string,
 ): unknown {
   const models = ModelUtils.getModelsForFeature(
-    appBuilder.projectConfig,
+    appBuilder.projectDefinition,
     featureId,
   );
   return models.map((m) => buildModel(appBuilder, m));

@@ -4,8 +4,8 @@ import { notEmpty } from '@src/utils/array.js';
 
 export const StoragePlugin: ParserPlugin = {
   name: 'StoragePlugin',
-  run(projectConfig, hooks, definitionContainer) {
-    const { storage, auth, models } = projectConfig;
+  run(projectDefinition, hooks, definitionContainer) {
+    const { storage, auth, models } = projectDefinition;
     if (!storage) {
       return;
     }
@@ -110,7 +110,7 @@ export const StoragePlugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectConfig, storage.fileModel).name,
+      name: ModelUtils.byId(projectDefinition, storage.fileModel).name,
       feature: storage.featurePath,
       model: {
         fields: fileFields,
@@ -129,7 +129,7 @@ export const StoragePlugin: ParserPlugin = {
     });
 
     const featurePath = FeatureUtils.getFeatureByIdOrThrow(
-      projectConfig,
+      projectDefinition,
       storage.featurePath,
     ).name;
 

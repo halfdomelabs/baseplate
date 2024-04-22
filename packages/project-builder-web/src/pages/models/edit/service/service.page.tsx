@@ -8,7 +8,7 @@ import ServiceTransformersForm from './ServiceTransformersForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { useProjectConfig } from '@src/hooks/useProjectConfig';
+import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
@@ -23,7 +23,7 @@ function ModelEditServicePage(): JSX.Element {
     setError,
   });
   const { control, handleSubmit, watch, getValues } = form;
-  const { definitionContainer } = useProjectConfig();
+  const { definitionContainer } = useProjectDefinition();
   const shouldBuild = watch('service.build');
 
   const onSubmit = (data: ModelConfig): void => {

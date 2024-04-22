@@ -5,7 +5,7 @@ import { Control, useFieldArray, useWatch } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { notEmpty } from 'src/utils/array';
 
 interface Props {
@@ -19,7 +19,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
     name: 'categories',
   });
 
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const fileModel = useWatch({ control, name: 'fileModel' });
   const adapters = useWatch({ control, name: 's3Adapters' });
@@ -43,7 +43,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
     .filter(notEmpty);
 
   const roleOptions =
-    parsedProject.projectConfig.auth?.roles.map((role) => ({
+    parsedProject.projectDefinition.auth?.roles.map((role) => ({
       label: role.name,
       value: role.id,
     })) ?? [];

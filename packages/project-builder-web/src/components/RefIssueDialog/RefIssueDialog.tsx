@@ -7,12 +7,12 @@ import {
   UseDeleteReferenceDialogRequestOptions,
   useDeleteReferenceDialogState,
 } from '@src/hooks/useDeleteReferenceDialog';
-import { useProjectConfig } from '@src/hooks/useProjectConfig';
+import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { getEntityTypeUrl } from '@src/services/entity-type';
 
 export function RefIssueDialog(): JSX.Element {
   const { dialogOptions, setDialogOptions } = useDeleteReferenceDialogState();
-  const { definitionContainer } = useProjectConfig();
+  const { definitionContainer } = useProjectDefinition();
   const entities = definitionContainer.entities;
 
   // We need to store the text content in a ref because the Dialog component

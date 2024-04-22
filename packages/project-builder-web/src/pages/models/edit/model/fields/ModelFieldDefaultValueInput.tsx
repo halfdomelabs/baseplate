@@ -8,7 +8,7 @@ import {
 import { Control, useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
-import { useProjectConfig } from '@src/hooks/useProjectConfig';
+import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 
 interface ModelFieldDefaultValueInputProps {
   control: Control<ModelConfig>;
@@ -19,7 +19,7 @@ export function ModelFieldDefaultValueInput({
   control,
   idx,
 }: ModelFieldDefaultValueInputProps): JSX.Element {
-  const { config } = useProjectConfig();
+  const { config } = useProjectDefinition();
   const type = useWatch({
     control,
     name: `model.fields.${idx}.type`,

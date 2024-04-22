@@ -12,7 +12,7 @@ import { hasDirtyFields } from '@src/utils/form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
@@ -34,9 +34,9 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
     reset(config);
   }, [config, reset]);
 
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
-  const featureOptions = (parsedProject.projectConfig.features ?? []).map(
+  const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
     (f) => ({
       label: f.name,
       value: f.id,

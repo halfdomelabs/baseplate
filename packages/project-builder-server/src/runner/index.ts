@@ -1,6 +1,6 @@
 import {
-  ProjectConfig,
-  projectConfigSchema,
+  ProjectDefinition,
+  projectDefinitionSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
@@ -15,7 +15,7 @@ import { writeApplicationFiles } from '../writer/index.js';
 import { compileApplications } from '@src/compiler/index.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
 
-async function loadProjectJson(directory: string): Promise<ProjectConfig> {
+async function loadProjectJson(directory: string): Promise<ProjectDefinition> {
   const projectJsonPath = expandPathWithTilde(
     path.join(directory, 'baseplate/project.json'),
   );
@@ -26,7 +26,7 @@ async function loadProjectJson(directory: string): Promise<ProjectConfig> {
   }
 
   const projectJson: unknown = await fs.readJson(projectJsonPath);
-  return projectConfigSchema.parse(projectJson);
+  return projectDefinitionSchema.parse(projectJson);
 }
 
 export interface BuildProjectForDirectoryOptions {
@@ -44,9 +44,9 @@ export async function buildProjectForDirectory({
 }: BuildProjectForDirectoryOptions): Promise<void> {
   const resolvedDirectory = expandPathWithTilde(directory);
   // load project.json file
-  const projectConfig = await loadProjectJson(resolvedDirectory);
+  const projectDefinition = await loadProjectJson(resolvedDirectory);
 
-  const apps = compileApplications(projectConfig);
+  const apps = compileApplications(projectDefinition);
 
   const modifiedApps = await writeApplicationFiles(
     resolvedDirectory,
@@ -85,9 +85,9 @@ export async function buildToCleanFolder({
 }: BuildToCleanFolderOptions): Promise<void> {
   const resolvedDirectory = path.resolve(process.cwd(), directory);
   // load project.json file
-  const projectConfig = await loadProjectJson(resolvedDirectory);
+  const projectDefinition = await loadProjectJson(resolvedDirectory);
 
-  const apps = compileApplications(projectConfig);
+  const apps = compileApplications(projectDefinition);
 
   // eslint-disable-next-line no-restricted-syntax
   for (const app of apps) {

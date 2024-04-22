@@ -1,4 +1,4 @@
-export * from './projectConfig.js';
+export * from './projectDefinition.js';
 export * from './auth/index.js';
 export * from './storage/index.js';
 export * from './models/index.js';

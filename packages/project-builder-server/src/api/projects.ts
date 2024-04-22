@@ -1,4 +1,4 @@
-import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
+import { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
 import { TRPCError } from '@trpc/server';
 import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
@@ -31,7 +31,9 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
           if (!config) {
             throw new Error(`File config missing for ${service.directory}`);
           }
-          const parsedContents = JSON.parse(config.contents) as ProjectConfig;
+          const parsedContents = JSON.parse(
+            config.contents,
+          ) as ProjectDefinition;
           return {
             id: service.id,
             name: parsedContents.name,

@@ -9,7 +9,7 @@ import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
 import ServiceFileTransformerForm from './ServiceFileTransformerForm';
 import { LinkButton } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;
@@ -27,7 +27,7 @@ function ServiceEmbeddedRelationsForm({
     control,
     name: `service.transformers`,
   });
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   return (
     <div className={classNames('space-y-4', className)}>
@@ -90,7 +90,7 @@ function ServiceEmbeddedRelationsForm({
                 Password
               </Dropdown.Item>
             )}
-            {parsedProject.projectConfig.storage && (
+            {parsedProject.projectDefinition.storage && (
               <Dropdown.Item
                 onSelect={() =>
                   append({

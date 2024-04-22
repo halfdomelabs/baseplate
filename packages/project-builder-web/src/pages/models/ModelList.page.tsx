@@ -2,10 +2,10 @@ import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function ModelListPage(): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
 

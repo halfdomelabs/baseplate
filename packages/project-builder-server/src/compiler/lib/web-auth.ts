@@ -5,7 +5,7 @@ import { AppEntryBuilder } from '../appEntryBuilder.js';
 export function compileAuthFeatures(
   builder: AppEntryBuilder<AppConfig>,
 ): Record<string, unknown> | null {
-  if (builder.projectConfig.auth?.useAuth0) {
+  if (builder.projectDefinition.auth?.useAuth0) {
     return {
       $auth: {
         generator: '@halfdomelabs/react/auth0/react-auth0',
@@ -58,7 +58,7 @@ export function compileAuthPages(
   builder: AppEntryBuilder<AppConfig>,
   allowedRoles: string[] = [],
 ): unknown {
-  if (builder.projectConfig.auth?.useAuth0) {
+  if (builder.projectDefinition.auth?.useAuth0) {
     builder.addDescriptor('auth/root.json', {
       name: 'auth',
       generator: '@halfdomelabs/react/core/react-routes',

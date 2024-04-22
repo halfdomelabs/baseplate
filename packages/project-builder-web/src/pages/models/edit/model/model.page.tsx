@@ -15,7 +15,7 @@ import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
@@ -26,7 +26,7 @@ function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({});
   const { control, handleSubmit, watch, getValues } = form;
 
-  const { config } = useProjectConfig();
+  const { config } = useProjectDefinition();
 
   const { uid } = useParams<'uid'>();
   const id = modelEntityType.fromUid(uid);

@@ -5,7 +5,7 @@ import {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-  ProjectConfig,
+  ProjectDefinition,
 } from '@src/schema/index.js';
 
 function isScalarUnique(field: ModelScalarFieldConfig): boolean {
@@ -55,12 +55,12 @@ function isRelationOneToOne(
 }
 
 function getModelFieldValidation(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   modelId: string,
   fieldId: string,
   preProcess?: boolean,
 ): string {
-  const model = ModelUtils.byId(projectConfig, modelId);
+  const model = ModelUtils.byId(projectDefinition, modelId);
   const field = model.model.fields.find((f) => f.id === fieldId);
   if (!field) {
     throw new Error(`Field ${fieldId} not found in model ${model.name}`);

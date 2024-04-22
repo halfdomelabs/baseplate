@@ -18,7 +18,7 @@ import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 const modelFieldRelationSchema = z.object({
   name: VALIDATORS.CAMEL_CASE_STRING,
@@ -49,7 +49,7 @@ export function ModelFieldRelationForm({
   onClose,
   onDelete,
 }: ModelFieldRelationFormProps): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const foreignModelOptions = parsedProject.getModels().map((type) => ({
     label: type.name,

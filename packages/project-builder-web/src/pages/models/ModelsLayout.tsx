@@ -4,10 +4,10 @@ import { Outlet } from 'react-router-dom';
 
 import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export function ModelsLayout(): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
   const enums = parsedProject.getEnums();

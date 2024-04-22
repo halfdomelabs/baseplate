@@ -13,13 +13,13 @@ import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 export function ThemeHomePage(): JSX.Element {
-  const { config, setConfigAndFixReferences } = useProjectConfig();
+  const { config, setConfigAndFixReferences } = useProjectDefinition();
   const toast = useToast();
 
   const defaultValues = useMemo(

@@ -10,14 +10,17 @@ import {
   fixRefDeletions,
   serializeSchema,
 } from '@src/references/index.js';
-import { ProjectConfig, projectConfigSchema } from '@src/schema/index.js';
+import {
+  ProjectDefinition,
+  projectDefinitionSchema,
+} from '@src/schema/index.js';
 
 export class ProjectDefinitionContainer {
-  definition: ProjectConfig;
+  definition: ProjectDefinition;
   references: DefinitionReference[];
   entities: DefinitionEntity[];
 
-  constructor(config: ZodRefPayload<ProjectConfig>) {
+  constructor(config: ZodRefPayload<ProjectDefinition>) {
     this.definition = config.data;
     this.references = config.references;
     this.entities = config.entities;
@@ -37,25 +40,25 @@ export class ProjectDefinitionContainer {
   }
 
   fixRefDeletions(
-    setter: (draftConfig: ProjectConfig) => void,
-  ): FixRefDeletionResult<typeof projectConfigSchema> {
+    setter: (draftConfig: ProjectDefinition) => void,
+  ): FixRefDeletionResult<typeof projectDefinitionSchema> {
     const newDefinition = produce(setter)(this.definition);
-    return fixRefDeletions(projectConfigSchema, newDefinition);
+    return fixRefDeletions(projectDefinitionSchema, newDefinition);
   }
 
   toSerializedConfig(): Record<string, unknown> {
-    return serializeSchema(projectConfigSchema, this.definition);
+    return serializeSchema(projectDefinitionSchema, this.definition);
   }
 
-  static fromConfig(config: ProjectConfig): ProjectDefinitionContainer {
+  static fromConfig(config: ProjectDefinition): ProjectDefinitionContainer {
     return new ProjectDefinitionContainer(
-      ZodRefWrapper.create(projectConfigSchema).parse(config),
+      ZodRefWrapper.create(projectDefinitionSchema).parse(config),
     );
   }
 
   static fromSerializedConfig(config: unknown): ProjectDefinitionContainer {
     return new ProjectDefinitionContainer(
-      deserializeSchemaWithReferences(projectConfigSchema, config),
+      deserializeSchemaWithReferences(projectDefinitionSchema, config),
     );
   }
 }

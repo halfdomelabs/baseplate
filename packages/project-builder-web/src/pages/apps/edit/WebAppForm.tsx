@@ -6,7 +6,7 @@ import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate'
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 
@@ -16,7 +16,7 @@ interface Props {
 }
 
 function WebAppForm({ className, appConfig }: Props): JSX.Element {
-  const { setConfigAndFixReferences } = useProjectConfig();
+  const { setConfigAndFixReferences } = useProjectDefinition();
 
   const formProps = useResettableForm<WebAppConfig>({
     resolver: zodResolver(webAppSchema),
@@ -27,7 +27,7 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
 
   useBlockDirtyFormNavigate(formState);
 
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   function onSubmit(data: WebAppConfig): void {
     setConfigAndFixReferences((draftConfig) => {
@@ -38,10 +38,12 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
     toast.success('Successfully saved app!');
   }
 
-  const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+  const roleOptions = parsedProject.projectDefinition.auth?.roles.map(
+    (role) => ({
+      label: role.name,
+      value: role.id,
+    }),
+  );
 
   return (
     <div className={classNames('', className)}>

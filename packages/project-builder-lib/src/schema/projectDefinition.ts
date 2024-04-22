@@ -29,7 +29,7 @@ export const appSchema = zRefBuilder(
 
 export type AppConfig = z.infer<typeof appSchema>;
 
-export const projectConfigSchema = z.object({
+export const projectDefinitionSchema = z.object({
   name: DASHED_NAME,
   packageScope: DASHED_NAME.optional(),
   version: z.string().min(1).default('0.1.0'),
@@ -55,6 +55,6 @@ export const projectConfigSchema = z.object({
   theme: themeSchema.optional(),
 });
 
-export type ProjectConfigInput = z.input<typeof projectConfigSchema>;
+export type ProjectDefinitionInput = z.input<typeof projectDefinitionSchema>;
 
-export type ProjectConfig = z.infer<typeof projectConfigSchema>;
+export type ProjectDefinition = z.infer<typeof projectDefinitionSchema>;

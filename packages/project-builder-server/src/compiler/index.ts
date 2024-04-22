@@ -1,6 +1,6 @@
 import {
   BaseAppConfig,
-  ProjectConfig,
+  ProjectDefinition,
   AppEntry,
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
@@ -13,10 +13,10 @@ import { compileWeb } from './web/index.js';
 export * from './types.js';
 
 export function compileApplications(
-  rawProjectConfig: ProjectConfig,
+  rawProjectDefinition: ProjectDefinition,
 ): AppEntry[] {
   const definitionContainer =
-    ProjectDefinitionContainer.fromSerializedConfig(rawProjectConfig);
+    ProjectDefinitionContainer.fromSerializedConfig(rawProjectDefinition);
   // Compile backend app first since it's likely the dependency for the other apps
   const appConfigs = _.sortBy(definitionContainer.definition.apps, [
     (a) => (a.type === 'backend' ? 0 : 1),

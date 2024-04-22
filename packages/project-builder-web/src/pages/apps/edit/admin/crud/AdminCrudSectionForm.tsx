@@ -12,7 +12,7 @@ import CrudTableColumnsForm, {
 import { SelectInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import EmbeddedListInput from 'src/components/EmbeddedListInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;
@@ -20,7 +20,7 @@ interface Props {
 }
 
 function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const modelOptions = parsedProject.getModels().map((model) => ({
     label: model.name,

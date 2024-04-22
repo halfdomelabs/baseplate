@@ -10,7 +10,7 @@ import RoleEditorForm from './RoleEditorForm';
 import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
@@ -19,7 +19,7 @@ import { logError } from 'src/services/error-logger';
 
 function AuthPage(): JSX.Element {
   const { config, parsedProject, setConfig, setConfigAndFixReferences } =
-    useProjectConfig();
+    useProjectDefinition();
 
   const formProps = useResettableForm<AuthConfig>({
     resolver: zodResolver(authSchema),

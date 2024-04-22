@@ -6,11 +6,11 @@ import { Link, NavLink } from 'react-router-dom';
 
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useProjects } from 'src/hooks/useProjects';
 
 export function AppTopbar(): JSX.Element {
-  const { config } = useProjectConfig();
+  const { config } = useProjectDefinition();
   const [showProjectChooserModal, setShowProjectChooserModal] = useState(false);
 
   const { projects } = useProjects();

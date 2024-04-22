@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 
@@ -18,7 +18,7 @@ interface Props {
 }
 
 function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
-  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
+  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
 
   const formProps = useResettableForm<AdminAppConfig>({
     resolver: zodResolver(adminAppSchema),
@@ -38,10 +38,12 @@ function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
     toast.success('Successfully saved app!');
   }
 
-  const roleOptions = parsedProject.projectConfig.auth?.roles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
+  const roleOptions = parsedProject.projectDefinition.auth?.roles.map(
+    (role) => ({
+      label: role.name,
+      value: role.id,
+    }),
+  );
 
   return (
     <div className={classNames('', className)}>
