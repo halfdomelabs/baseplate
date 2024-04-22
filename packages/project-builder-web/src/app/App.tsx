@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 
 import { ClientVersionGate } from './components/ClientVersionGate';
 import { ProjectChooserGate } from './components/ProjectChooserGate';
-import { ProjectConfigGate } from './components/ProjectConfigGate';
+import { ProjectDefinitionGate } from './components/ProjectDefinitionGate';
 import { BlockerDialog } from '@src/components';
 import { RefIssueDialog } from '@src/components/RefIssueDialog/RefIssueDialog';
 import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
@@ -14,10 +14,10 @@ function App(): JSX.Element {
     <ErrorBoundary>
       <ClientVersionGate>
         <ProjectChooserGate>
-          <ProjectConfigGate>
+          <ProjectDefinitionGate>
             <Outlet />
             <RefIssueDialog />
-          </ProjectConfigGate>
+          </ProjectDefinitionGate>
         </ProjectChooserGate>
         <Toaster />
         <ConfirmDialog />

@@ -1,20 +1,20 @@
 import {
   AppConfig,
   BackendAppConfig,
-  ProjectConfig,
+  ProjectDefinition,
 } from '@src/schema/index.js';
 import { computeRelativePath } from '@src/utils/path.js';
 
-function byId(projectConfig: ProjectConfig, id: string): AppConfig {
-  const config = projectConfig.apps.find((app) => app.id === id);
+function byId(projectDefinition: ProjectDefinition, id: string): AppConfig {
+  const config = projectDefinition.apps.find((app) => app.id === id);
   if (!config) {
     throw new Error(`Unable to find app with ID ${id}`);
   }
   return config;
 }
 
-function getBackendApp(projectConfig: ProjectConfig): BackendAppConfig {
-  const backendApps = projectConfig.apps.filter(
+function getBackendApp(projectDefinition: ProjectDefinition): BackendAppConfig {
+  const backendApps = projectDefinition.apps.filter(
     (a): a is BackendAppConfig => a.type === 'backend',
   );
 

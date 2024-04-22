@@ -5,10 +5,10 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 export type AdminCrudFormConfig = Pick<
   AdminCrudSectionConfig,
@@ -165,7 +165,7 @@ function CrudFormFieldsForm({
   embeddedFormOptions,
 }: Props): JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
-  const { definitionContainer, parsedProject } = useProjectConfig();
+  const { definitionContainer, parsedProject } = useProjectDefinition();
   const model = modelName ? parsedProject.getModelById(modelName) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,

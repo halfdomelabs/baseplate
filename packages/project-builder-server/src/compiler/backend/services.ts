@@ -17,7 +17,7 @@ function buildEmbeddedRelationTransformer(
 
   // find foreign relation
   const foreignRelation = ModelUtils.getRelationsToModel(
-    appBuilder.projectConfig,
+    appBuilder.projectDefinition,
     model.id,
   ).find(
     ({ relation }) => relation.foreignId === transformer.foreignRelationRef,
@@ -65,7 +65,7 @@ function buildFileTransformer(
     );
   }
 
-  const category = appBuilder.projectConfig.storage?.categories.find(
+  const category = appBuilder.projectDefinition.storage?.categories.find(
     (c) => c.usedByRelation === foreignRelation.foreignId,
   );
 
@@ -157,7 +157,7 @@ export function buildServicesForFeature(
   featureId: string,
 ): unknown {
   const models = ModelUtils.getModelsForFeature(
-    appBuilder.projectConfig,
+    appBuilder.projectDefinition,
     featureId,
   ).filter((m) => m.service?.build);
   return models.map((model) => buildServiceForModel(appBuilder, model));

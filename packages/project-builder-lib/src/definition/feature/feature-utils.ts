@@ -1,21 +1,23 @@
-import { FeatureConfig, ProjectConfig } from '@src/schema/index.js';
+import { FeatureConfig, ProjectDefinition } from '@src/schema/index.js';
 
-function getRootFeatures(projectConfig: ProjectConfig): FeatureConfig[] {
-  return projectConfig.features.filter((f) => !f.parentRef);
+function getRootFeatures(
+  projectDefinition: ProjectDefinition,
+): FeatureConfig[] {
+  return projectDefinition.features.filter((f) => !f.parentRef);
 }
 
 function getFeatureById(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   featureId: string,
 ): FeatureConfig | undefined {
-  return projectConfig.features.find((f) => f.id === featureId);
+  return projectDefinition.features.find((f) => f.id === featureId);
 }
 
 function getFeatureByIdOrThrow(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   featureId: string,
 ): FeatureConfig {
-  const feature = getFeatureById(projectConfig, featureId);
+  const feature = getFeatureById(projectDefinition, featureId);
   if (!feature) {
     throw new Error(`Could not find feature with ID ${featureId}`);
   }
@@ -23,10 +25,10 @@ function getFeatureByIdOrThrow(
 }
 
 function getFeatureChildren(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   featureId: string,
 ): FeatureConfig[] {
-  return projectConfig.features.filter((f) => f.parentRef === featureId);
+  return projectDefinition.features.filter((f) => f.parentRef === featureId);
 }
 
 function getFeatureName(featureConfig: FeatureConfig): string {
@@ -34,18 +36,18 @@ function getFeatureName(featureConfig: FeatureConfig): string {
 }
 
 function getFeatureNameById(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   featureId: string,
 ): string {
-  const feature = getFeatureByIdOrThrow(projectConfig, featureId);
+  const feature = getFeatureByIdOrThrow(projectDefinition, featureId);
   return getFeatureName(feature);
 }
 
 function getFeaturePathById(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   featureId: string,
 ): string {
-  const feature = getFeatureByIdOrThrow(projectConfig, featureId);
+  const feature = getFeatureByIdOrThrow(projectDefinition, featureId);
   return feature.name;
 }
 

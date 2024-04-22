@@ -2,11 +2,11 @@ import {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-  ProjectConfig,
+  ProjectDefinition,
 } from '@src/schema/index.js';
 
-function byId(projectConfig: ProjectConfig, id: string): ModelConfig {
-  const model = projectConfig.models.find((m) => m.id === id);
+function byId(projectDefinition: ProjectDefinition, id: string): ModelConfig {
+  const model = projectDefinition.models.find((m) => m.id === id);
   if (!model) {
     throw new Error(`Could not find model with ID ${id}`);
   }
@@ -26,10 +26,10 @@ function getScalarFieldById(
 }
 
 function getRelationsToModel(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   modelId: string,
 ): { model: ModelConfig; relation: ModelRelationFieldConfig }[] {
-  return projectConfig.models.flatMap((m) => {
+  return projectDefinition.models.flatMap((m) => {
     return (
       m.model.relations
         ?.filter((r) => {
@@ -43,10 +43,10 @@ function getRelationsToModel(
 }
 
 function getModelsForFeature(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   featureId: string,
 ): ModelConfig[] {
-  return projectConfig.models.filter((m) => m.feature === featureId);
+  return projectDefinition.models.filter((m) => m.feature === featureId);
 }
 
 function getModelIdFields(model: ModelConfig): string[] {

@@ -7,7 +7,7 @@ import {
   UseFormReturn,
 } from 'react-hook-form';
 
-import { useProjectConfig } from './useProjectConfig';
+import { useProjectDefinition } from './useProjectDefinition';
 import { useToast } from './useToast';
 
 export function useResettableForm<
@@ -20,7 +20,7 @@ export function useResettableForm<
   const { reset, formState } = formProps;
   const { isDirty } = formState;
   const toast = useToast();
-  const { externalChangeCounter } = useProjectConfig();
+  const { externalChangeCounter } = useProjectDefinition();
 
   const oldValues = useRef<{
     externalChangeCounter: number;

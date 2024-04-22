@@ -3,13 +3,12 @@ import { Button, Card, EmptyDisplay } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export function AppsListPage(): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
-  const { apps } = parsedProject.projectConfig;
+  const { apps } = parsedProject.projectDefinition;
   const sortedApps = _.sortBy(apps, (m) => m.name);
 
   if (!sortedApps.length) {

@@ -11,7 +11,7 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useProjectConfig } from '@src/hooks/useProjectConfig';
+import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { UserVisibleError } from '@src/utils/error';
@@ -41,7 +41,7 @@ export function FeatureForm({
   const {
     definitionContainer: { definition },
     setConfigAndFixReferences,
-  } = useProjectConfig();
+  } = useProjectDefinition();
   const toast = useToast();
   const defaultValues = useMemo(
     () => ({

@@ -10,12 +10,18 @@ export function buildFeature(
   featureId: string,
   builder: BackendAppEntryBuilder,
 ): unknown {
-  const { projectConfig, parsedProject } = builder;
-  const feature = FeatureUtils.getFeatureByIdOrThrow(projectConfig, featureId);
+  const { projectDefinition, parsedProject } = builder;
+  const feature = FeatureUtils.getFeatureByIdOrThrow(
+    projectDefinition,
+    featureId,
+  );
   const descriptorLocation = `${feature.name}/root`;
   const featureName = FeatureUtils.getFeatureName(feature);
   // find sub-features
-  const subFeatures = FeatureUtils.getFeatureChildren(projectConfig, featureId);
+  const subFeatures = FeatureUtils.getFeatureChildren(
+    projectDefinition,
+    featureId,
+  );
 
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,

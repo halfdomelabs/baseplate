@@ -8,14 +8,14 @@ import {
   MdPeople,
   MdSettings,
 } from 'react-icons/md';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { LinkButton, Sidebar } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 function AppSidebar(): JSX.Element {
-  const { config } = useProjectConfig();
+  const { config } = useProjectDefinition();
   const [showProjectChooserModal, setShowProjectChooserModal] = useState(false);
 
   return (

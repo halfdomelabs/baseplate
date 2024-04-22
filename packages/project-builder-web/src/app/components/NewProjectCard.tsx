@@ -1,13 +1,13 @@
 import {
-  ProjectConfig,
-  projectConfigSchema,
+  ProjectDefinition,
+  projectDefinitionSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { Button, Card, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const schema = projectConfigSchema.pick({
+const schema = projectDefinitionSchema.pick({
   name: true,
   portOffset: true,
 });
@@ -15,7 +15,7 @@ const schema = projectConfigSchema.pick({
 type FormData = z.infer<typeof schema>;
 
 interface NewProjectCardProps {
-  existingProject?: ProjectConfig;
+  existingProject?: ProjectDefinition;
   saveProject: (data: FormData) => void;
 }
 

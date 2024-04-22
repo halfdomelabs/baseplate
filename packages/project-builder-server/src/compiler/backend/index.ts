@@ -1,7 +1,7 @@
 import {
   ProjectDefinitionContainer,
   BackendAppConfig,
-  ProjectConfig,
+  ProjectDefinition,
   AppEntry,
 } from '@halfdomelabs/project-builder-lib';
 
@@ -10,15 +10,15 @@ import { getPostgresSettings, getRedisSettings } from './utils.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 
 export function buildDocker(
-  projectConfig: ProjectConfig,
+  projectDefinition: ProjectDefinition,
   app: BackendAppConfig,
 ): unknown {
   return {
     name: 'docker',
     generator: '@halfdomelabs/core/docker/docker-compose',
-    postgres: getPostgresSettings(projectConfig).config,
+    postgres: getPostgresSettings(projectDefinition).config,
     ...(app.enableRedis
-      ? { redis: getRedisSettings(projectConfig).config }
+      ? { redis: getRedisSettings(projectDefinition).config }
       : {}),
   };
 }
@@ -29,22 +29,22 @@ export function compileBackend(
 ): AppEntry {
   const appBuilder = new AppEntryBuilder(definitionContainer, app);
 
-  const { projectConfig, parsedProject } = appBuilder;
+  const { projectDefinition, parsedProject } = appBuilder;
 
-  const packageName = projectConfig.packageScope
-    ? `@${projectConfig.packageScope}/${app.name}`
-    : `${projectConfig.name}-${app.name}`;
+  const packageName = projectDefinition.packageScope
+    ? `@${projectDefinition.packageScope}/${app.name}`
+    : `${projectDefinition.name}-${app.name}`;
 
   appBuilder.addDescriptor('root.json', {
     generator: '@halfdomelabs/core/node/node',
-    name: `${projectConfig.name}-${app.name}`,
+    name: `${projectDefinition.name}-${app.name}`,
     packageName,
-    description: `Backend app for ${projectConfig.name}`,
-    version: projectConfig.version,
+    description: `Backend app for ${projectDefinition.name}`,
+    version: projectDefinition.version,
     hoistedProviders: parsedProject.globalHoistedProviders,
     children: {
       projects: [
-        buildDocker(projectConfig, app),
+        buildDocker(projectDefinition, app),
         buildFastify(appBuilder, app),
       ],
       jest: {

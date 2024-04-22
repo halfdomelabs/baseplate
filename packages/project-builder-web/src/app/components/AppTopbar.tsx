@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { HiCollection, HiDatabase, HiSwitchHorizontal } from 'react-icons/hi';
 import { MdApps, MdSettings } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useProjects } from 'src/hooks/useProjects';
 
 export function AppTopbar(): JSX.Element {
-  const { config } = useProjectConfig();
+  const { config } = useProjectDefinition();
   const [showProjectChooserModal, setShowProjectChooserModal] = useState(false);
 
   const { projects } = useProjects();

@@ -5,8 +5,7 @@ import _ from 'lodash';
 import { useState } from 'react';
 import { MdClear } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
-
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface EnumsSidebarListProps {
   className?: string;
@@ -15,7 +14,7 @@ interface EnumsSidebarListProps {
 export function EnumsSidebarList({
   className,
 }: EnumsSidebarListProps): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const enums = parsedProject.getEnums();
 

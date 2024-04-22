@@ -4,13 +4,13 @@ import {
   FeatureConfig,
   featureEntityType,
 } from '@src/schema/features/feature.js';
-import { ProjectConfig } from '@src/schema/index.js';
+import { ProjectDefinition } from '@src/schema/index.js';
 
 export interface SchemaMigration {
   version: number;
   description: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  migrate: (config: any) => ProjectConfig;
+  migrate: (config: any) => ProjectDefinition;
 }
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
@@ -20,7 +20,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
     migrate: ({
       portBase,
       ...config
-    }: ProjectConfig & { portBase: number }) => ({
+    }: ProjectDefinition & { portBase: number }) => ({
       ...config,
       portOffset: config.portOffset || portBase,
     }),
@@ -28,8 +28,8 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   {
     version: 2,
     description: `Add parent IDs to features`,
-    migrate: (config: ProjectConfig) => {
-      return produce((draftConfig: ProjectConfig) => {
+    migrate: (config: ProjectDefinition) => {
+      return produce((draftConfig: ProjectDefinition) => {
         const features: FeatureConfig[] = [];
         // find all features without a parent
         function addFeatureAndDescendents(parentFeature?: FeatureConfig): void {
@@ -59,8 +59,8 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   {
     version: 3,
     description: 'Add model to embedded transforms, file',
-    migrate: (config: ProjectConfig) => {
-      return produce((draftConfig: ProjectConfig) => {
+    migrate: (config: ProjectDefinition) => {
+      return produce((draftConfig: ProjectDefinition) => {
         draftConfig.models = draftConfig.models ?? [];
         draftConfig.models.forEach((model) => {
           model.service?.transformers?.forEach((transformer) => {

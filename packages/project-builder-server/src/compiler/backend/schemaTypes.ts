@@ -84,7 +84,7 @@ function buildMutationSchemaTypeForModel(
   const { authorize } = graphql ?? {};
 
   const featurePath = FeatureUtils.getFeaturePathById(
-    appBuilder.projectConfig,
+    appBuilder.projectDefinition,
     featureId,
   );
 
@@ -147,7 +147,7 @@ export function buildSchemaTypesForFeature(
   featureId: string,
 ): unknown {
   const models = ModelUtils.getModelsForFeature(
-    appBuilder.projectConfig,
+    appBuilder.projectDefinition,
     featureId,
   ).filter((m) => m.schema);
   const enums = appBuilder.parsedProject

@@ -1,10 +1,10 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import classNames from 'classnames';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { Button, LinkButton } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface Props {
   className?: string;
@@ -27,7 +27,7 @@ function ModelRelationReferencesForm({
     name: `model.relations.${relationIdx}.modelName`,
   });
   const localFields = useWatch({ control, name: `model.fields` });
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   if (!foreignModelName) {
     return <div />;

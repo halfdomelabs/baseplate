@@ -4,11 +4,11 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import classNames from 'classnames';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 
@@ -18,7 +18,7 @@ interface Props {
 }
 
 function BackendAppForm({ className, appConfig }: Props): JSX.Element {
-  const { setConfigAndFixReferences } = useProjectConfig();
+  const { setConfigAndFixReferences } = useProjectDefinition();
 
   const formProps = useResettableForm<BackendAppConfig>({
     resolver: zodResolver(backendAppSchema),

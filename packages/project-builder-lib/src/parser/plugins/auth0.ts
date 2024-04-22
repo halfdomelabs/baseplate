@@ -7,8 +7,8 @@ import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 
 export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
-  run(projectConfig, hooks, definitionContainer) {
-    const { auth } = projectConfig;
+  run(projectDefinition, hooks, definitionContainer) {
+    const { auth } = projectDefinition;
     if (!auth || !auth.useAuth0) {
       return;
     }
@@ -44,7 +44,7 @@ export const Auth0Plugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectConfig, auth.userModel).name,
+      name: ModelUtils.byId(projectDefinition, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userFields,
@@ -79,7 +79,7 @@ export const Auth0Plugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectConfig, auth.userRoleModel).name,
+      name: ModelUtils.byId(projectDefinition, auth.userRoleModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userRoleFields,
@@ -99,7 +99,7 @@ export const Auth0Plugin: ParserPlugin = {
         peerProvider: true,
         authInfoRef: `${
           FeatureUtils.getFeatureByIdOrThrow(
-            projectConfig,
+            projectDefinition,
             auth.authFeaturePath,
           ).name
         }/root:$auth0`,
@@ -133,7 +133,7 @@ export const Auth0Plugin: ParserPlugin = {
       },
       $auth0: {
         generator: '@halfdomelabs/fastify/auth0/auth0-module',
-        userModelName: ModelUtils.byId(projectConfig, auth.userModel).name,
+        userModelName: ModelUtils.byId(projectDefinition, auth.userModel).name,
         includeManagement: true,
       },
     });

@@ -1,4 +1,4 @@
-import { ProjectConfig } from '../schema/index.js';
+import { ProjectDefinition } from '../schema/index.js';
 import { ProjectDefinitionContainer } from '@src/index.js';
 import {
   ModelConfig,
@@ -53,7 +53,7 @@ export interface PluginHooks {
 export interface ParserPlugin {
   name: string;
   run(
-    projectConfig: ProjectConfig,
+    projectDefinition: ProjectDefinition,
     hooks: PluginHooks,
     container: ProjectDefinitionContainer,
   ): void;

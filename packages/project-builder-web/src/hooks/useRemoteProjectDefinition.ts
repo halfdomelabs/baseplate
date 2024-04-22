@@ -6,12 +6,12 @@ import { useToast } from './useToast';
 import { client } from '@src/services/api';
 import { logError } from 'src/services/error-logger';
 import {
-  downloadProjectConfig,
+  downloadProjectDefinition,
   FilePayload,
-  uploadProjectConfig,
+  uploadProjectDefinition,
 } from 'src/services/remote';
 
-interface UseRemoteProjectConfigResult {
+interface UseRemoteProjectDefinitionResult {
   value?: string | null;
   error?: Error;
   loaded: boolean;
@@ -29,7 +29,7 @@ interface UseRemoteProjectConfigResult {
   downloadConfig: () => Promise<void>;
 }
 
-export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
+export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   const [file, setFile] = useState<FilePayload | null>();
   const [error, setError] = useState<Error>();
   const [loaded, setLoaded] = useState(false);
@@ -73,7 +73,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       }
       setError(undefined);
       shouldTriggerRefetch.current = false;
-      const payload = await downloadProjectConfig(projectId);
+      const payload = await downloadProjectDefinition(projectId);
       updateConfig(payload);
 
       setLoaded(true);
@@ -120,7 +120,7 @@ export function useRemoteProjectConfig(): UseRemoteProjectConfigResult {
       const oldSavedValue = lastSavedValueRef.current;
       lastSavedValueRef.current = contents;
 
-      uploadProjectConfig(projectId, {
+      uploadProjectDefinition(projectId, {
         contents,
         lastModifiedAt:
           lastModifiedAt ?? file?.lastModifiedAt ?? new Date(0).toISOString(),

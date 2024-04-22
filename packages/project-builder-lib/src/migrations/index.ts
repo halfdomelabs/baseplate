@@ -1,8 +1,8 @@
 import { SchemaMigration, SCHEMA_MIGRATIONS } from './migrations.js';
-import { ProjectConfig } from '../schema/index.js';
+import { ProjectDefinition } from '../schema/index.js';
 
-export function runSchemaMigrations(config: ProjectConfig): {
-  newConfig: ProjectConfig;
+export function runSchemaMigrations(config: ProjectDefinition): {
+  newConfig: ProjectDefinition;
   appliedMigrations: SchemaMigration[];
 } {
   const schemaVersion = config.schemaVersion ?? 0;

@@ -1,8 +1,8 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { Control } from 'react-hook-form';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { LinkButton, SelectInput } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface Props {
   control: Control<ModelConfig>;
@@ -17,12 +17,13 @@ function ServiceFileTransformerForm({
   onRemove,
   originalModel,
 }: Props): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const fileRelations =
     originalModel.model.relations?.filter(
       (relation) =>
-        relation.modelName === parsedProject.projectConfig.storage?.fileModel,
+        relation.modelName ===
+        parsedProject.projectDefinition.storage?.fileModel,
     ) ?? [];
 
   const relationOptions = fileRelations.map((relation) => ({

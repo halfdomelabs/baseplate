@@ -118,7 +118,7 @@ function compileAdminCrudTextInput(
     type: getInputType(fieldConfig),
     validation: !field.validation
       ? ModelFieldUtils.getModelFieldValidation(
-          builder.projectConfig,
+          builder.projectDefinition,
           modelId,
           fieldConfig.id,
           true,
@@ -147,9 +147,10 @@ function compileAdminCrudFileInput(
     );
   }
 
-  const category = builder.parsedProject.projectConfig.storage?.categories.find(
-    (c) => c.usedByRelation === relation.foreignId,
-  );
+  const category =
+    builder.parsedProject.projectDefinition.storage?.categories.find(
+      (c) => c.usedByRelation === relation.foreignId,
+    );
 
   if (!category) {
     throw new Error(

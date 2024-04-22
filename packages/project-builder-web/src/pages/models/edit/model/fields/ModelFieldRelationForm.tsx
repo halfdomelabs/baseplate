@@ -16,9 +16,8 @@ import { pluralize } from 'inflection';
 import { camelCase } from 'lodash';
 import { useId } from 'react';
 import { useForm } from 'react-hook-form';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { z } from 'zod';
-
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 const modelFieldRelationSchema = z.object({
   name: VALIDATORS.CAMEL_CASE_STRING,
@@ -49,7 +48,7 @@ export function ModelFieldRelationForm({
   onClose,
   onDelete,
 }: ModelFieldRelationFormProps): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const foreignModelOptions = parsedProject.getModels().map((type) => ({
     label: type.name,

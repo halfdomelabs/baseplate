@@ -5,12 +5,12 @@ import {
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import EnumEditForm from './EnumEditForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
 import { Alert, Button } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError, logAndFormatError } from 'src/services/error-formatter';
@@ -18,7 +18,7 @@ import { formatError, logAndFormatError } from 'src/services/error-formatter';
 function EnumEditPage(): JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfigAndFixReferences } = useProjectConfig();
+  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
   const { status, setError } = useStatus();
   const toast = useToast();
   const navigate = useNavigate();

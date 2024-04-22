@@ -6,13 +6,12 @@ import {
 } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function AppsLayout(): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
-  const { apps } = parsedProject.projectConfig;
+  const { apps } = parsedProject.projectDefinition;
   const sortedApps = _.sortBy(apps, (m) => m.name);
 
   return (

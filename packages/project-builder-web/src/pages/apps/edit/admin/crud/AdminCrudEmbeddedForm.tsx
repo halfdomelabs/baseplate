@@ -4,6 +4,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Control } from 'react-hook-form';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import CrudFormFieldsForm, { AdminCrudFormConfig } from './CrudFormFieldsForm';
 import CrudTableColumnsForm, {
@@ -22,7 +23,6 @@ import {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
 } from 'src/components/EmbeddedListInput';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
@@ -32,7 +32,7 @@ export function AdminCrudEmbeddedTable({
   edit,
   remove,
 }: EmbeddedListTableProps<AdminCrudEmbeddedFormConfig>): JSX.Element {
-  const { definitionContainer } = useProjectConfig();
+  const { definitionContainer } = useProjectDefinition();
   return (
     <Table className="max-w-6xl">
       <Table.Head>
@@ -78,7 +78,7 @@ function AdminCrudEmbeddedForm({
   onSubmit,
   embeddedFormOptions,
 }: Props): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
   const { handleSubmit, control, watch } =
     useResettableForm<AdminCrudEmbeddedFormConfig>({
       resolver: zodResolver(adminCrudEmbeddedFormSchema),

@@ -11,12 +11,12 @@ import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 import { TbLink } from 'react-icons/tb';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 import { useToast } from 'src/hooks/useToast';
 
 interface Props {
@@ -42,7 +42,7 @@ function ModelFieldForm({
     control,
   });
 
-  const { definitionContainer } = useProjectConfig();
+  const { definitionContainer } = useProjectDefinition();
   const toast = useToast();
 
   const removeError = useEditedModelConfig((model) => {

@@ -1,4 +1,4 @@
-import { ProjectConfig } from '@halfdomelabs/project-builder-lib';
+import { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
 
 import { client } from './api';
 import { config as envConfig } from './config';
@@ -39,13 +39,13 @@ export interface FilePayload {
   lastModifiedAt: string;
 }
 
-export async function downloadProjectConfig(
+export async function downloadProjectDefinition(
   id: string,
 ): Promise<FilePayload | null> {
   if (IS_PREVIEW) {
     return {
       lastModifiedAt: new Date().toISOString(),
-      contents: JSON.stringify(PREVIEW_APP as ProjectConfig),
+      contents: JSON.stringify(PREVIEW_APP as ProjectDefinition),
     };
   }
   const response = await client.projects.get.query({ id });
@@ -56,7 +56,7 @@ type WriteResult =
   | { type: 'success'; lastModifiedAt: string }
   | { type: 'modified-more-recently' };
 
-export async function uploadProjectConfig(
+export async function uploadProjectDefinition(
   id: string,
   contents: FilePayload,
 ): Promise<WriteResult> {

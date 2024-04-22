@@ -1,13 +1,13 @@
 import { SidebarLayout, Tabs } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Outlet } from 'react-router-dom';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 export function ModelsLayout(): JSX.Element {
-  const { parsedProject } = useProjectConfig();
+  const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
   const enums = parsedProject.getEnums();

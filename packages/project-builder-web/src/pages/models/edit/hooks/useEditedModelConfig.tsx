@@ -56,7 +56,7 @@ export function useEditedModelConfig<T>(
   const store = useContext(EditedModelContext);
   if (!store) {
     throw new Error(
-      'useModelParsedProject must be used within a ModelParsedProjectConfigProvider',
+      'useModelParsedProject must be used within a ModelParsedProjectDefinitionProvider',
     );
   }
   return useStore(store, (state) => selector(state.getValues()));

@@ -2,19 +2,19 @@ import {
   AdminAppConfig,
   BackendAppConfig,
   BaseAppConfig,
-  ProjectConfig,
+  ProjectDefinition,
   AppEntry,
   FileEntry,
   ProjectDefinitionContainer,
-  ParsedProjectConfig,
+  ParsedProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
 
 import { stripObject } from '../utils/strip.js';
 
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
-  public projectConfig: ProjectConfig;
+  public projectDefinition: ProjectDefinition;
 
-  public parsedProject: ParsedProjectConfig;
+  public parsedProject: ParsedProjectDefinition;
 
   protected files: FileEntry[] = [];
 
@@ -22,8 +22,8 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     public definitionContainer: ProjectDefinitionContainer,
     public appConfig: AppConfig,
   ) {
-    this.projectConfig = definitionContainer.definition;
-    this.parsedProject = new ParsedProjectConfig(definitionContainer);
+    this.projectDefinition = definitionContainer.definition;
+    this.parsedProject = new ParsedProjectDefinition(definitionContainer);
     this.addDescriptor = this.addDescriptor.bind(this);
     this.toProjectEntry = this.toProjectEntry.bind(this);
   }
@@ -43,7 +43,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
 
   toProjectEntry(): AppEntry {
     return {
-      name: `${this.projectConfig.name}-${this.appConfig.name}`,
+      name: `${this.projectDefinition.name}-${this.appConfig.name}`,
       rootDirectory: this.appConfig.packageLocation
         ? this.appConfig.packageLocation
         : `packages/${this.appConfig.name}`,

@@ -6,7 +6,7 @@ import { StoragePlugin } from './plugins/storage.js';
 import { ParsedModel, ParsedRelationField } from './types.js';
 import { ProjectDefinitionContainer } from '@src/index.js';
 import {
-  ProjectConfig,
+  ProjectDefinition,
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
@@ -49,8 +49,8 @@ function upsertItems<T>(
   ];
 }
 
-function validateProjectConfig(projectConfig: ProjectConfig): void {
-  const features = projectConfig.features?.map((f) => f.name) ?? [];
+function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
+  const features = projectDefinition.features?.map((f) => f.name) ?? [];
 
   // validate features
   const missingParentFeatures = features.filter(
@@ -68,7 +68,7 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
   }
 
   // validate relations
-  const { models = [] } = projectConfig;
+  const { models = [] } = projectDefinition;
   models.forEach(
     (model) =>
       model.model.relations?.forEach((relation) => {
@@ -106,10 +106,10 @@ function validateProjectConfig(projectConfig: ProjectConfig): void {
   );
 }
 
-export class ParsedProjectConfig {
+export class ParsedProjectDefinition {
   protected models: ParsedModel[];
 
-  public projectConfig: ProjectConfig;
+  public projectDefinition: ProjectDefinition;
 
   public globalHoistedProviders: string[] = [];
 
@@ -120,16 +120,16 @@ export class ParsedProjectConfig {
   public featureChildren: Record<string, Record<string, unknown>> = {};
 
   constructor(public definitionContainer: ProjectDefinitionContainer) {
-    const projectConfig = definitionContainer.definition;
-    this.projectConfig = projectConfig;
-    validateProjectConfig(projectConfig);
-    const copiedProjectConfig = R.clone(projectConfig);
-    this.models = copiedProjectConfig.models ?? [];
+    const projectDefinition = definitionContainer.definition;
+    this.projectDefinition = projectDefinition;
+    validateProjectDefinition(projectDefinition);
+    const copiedProjectDefinition = R.clone(projectDefinition);
+    this.models = copiedProjectDefinition.models ?? [];
 
     // run plugins
     PARSER_PLUGINS.forEach((plugin) =>
       plugin.run(
-        projectConfig,
+        projectDefinition,
         {
           addGlobalHoistedProviders: (providers) => {
             this.globalHoistedProviders = [
@@ -236,11 +236,11 @@ export class ParsedProjectConfig {
     );
 
     // augment project config
-    const updatedProjectConfig = {
-      ...this.projectConfig,
+    const updatedProjectDefinition = {
+      ...this.projectDefinition,
       models: this.models,
     };
-    this.projectConfig = updatedProjectConfig;
+    this.projectDefinition = updatedProjectDefinition;
   }
 
   getFeatureHoistedProviders(featureId: string): string[] {
@@ -267,7 +267,7 @@ export class ParsedProjectConfig {
   }
 
   getEnums(): EnumConfig[] {
-    return this.projectConfig.enums ?? [];
+    return this.projectDefinition.enums ?? [];
   }
 
   getModelById(id: string): ParsedModel {
@@ -293,7 +293,7 @@ export class ParsedProjectConfig {
       : model.model.fields.filter((f) => f.isId).map((f) => f.name) ?? [];
   }
 
-  exportToProjectConfig(): ProjectConfig {
-    return this.projectConfig;
+  exportToProjectDefinition(): ProjectDefinition {
+    return this.projectDefinition;
   }
 }

@@ -6,10 +6,10 @@ import {
 import classNames from 'classnames';
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
+import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
-import { useProjectConfig } from 'src/hooks/useProjectConfig';
 
 interface Props {
   className?: string;
@@ -43,7 +43,7 @@ function ModelRelationForm({
 }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(!field.name);
 
-  const { parsedProject, definitionContainer } = useProjectConfig();
+  const { parsedProject, definitionContainer } = useProjectDefinition();
   const watchedField = useWatch({ name: `model.relations.${idx}`, control });
 
   function handleRemove(): void {
