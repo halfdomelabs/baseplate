@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies [6b368f5]
+- Updated dependencies [a5bce9d]
+- Updated dependencies [8046390]
+  - @halfdomelabs/project-builder-server@0.3.4
+  - @halfdomelabs/project-builder-web@0.9.0
+  - @halfdomelabs/react-generators@0.7.4
+
 ## 0.6.9
 
 ### Patch Changes

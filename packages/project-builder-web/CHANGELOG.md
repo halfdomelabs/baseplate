@@ -1,5 +1,21 @@
 # @halfdomelabs/project-builder-web
 
+## 0.9.0
+
+### Minor Changes
+
+- a5bce9d: Update `react-router-dom` in Baseplate and generators.
+
+  Refactor Project Builder Web App to use a data router to allow the `useBlocker` hook.
+
+  Prevent navigation from dirty forms in modal and other forms.
+
+### Patch Changes
+
+- 6b368f5: Rename project config to project definition
+- Updated dependencies [6b368f5]
+  - @halfdomelabs/project-builder-lib@0.7.3
+
 ## 0.8.4
 
 ### Patch Changes

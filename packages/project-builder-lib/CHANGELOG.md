@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.7.3
+
+### Patch Changes
+
+- 6b368f5: Rename project config to project definition
+
 ## 0.7.2
 
 ### Patch Changes

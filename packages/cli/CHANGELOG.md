@@ -1,5 +1,12 @@
 # @halfdomelabs/cli
 
+## 0.7.10
+
+### Patch Changes
+
+- Updated dependencies [a5bce9d]
+  - @halfdomelabs/react-generators@0.7.4
+
 ## 0.7.9
 
 ### Patch Changes
