@@ -9,7 +9,7 @@ const config: Config = {
   darkMode: ['class', '[data-mode="dark"]'],
   theme: {
     fontFamily: {
-      body: ['Open Sans', ...defaultTheme.fontFamily.sans],
+      body: ['Geist Sans', ...defaultTheme.fontFamily.sans],
     },
     extend: {
       colors: {

@@ -9,7 +9,8 @@
   "exports": {
     ".": "./dist/index.js",
     "./tailwind-base": "./tailwind.config.ts",
-    "./global.css": "./src/global.css"
+    "./global.css": "./src/global.css",
+    "./font.css": "./src/font.css"
   },
   "main": "./dist/index.js",
   "files": [
@@ -17,7 +18,8 @@
     "dist/**/*",
     "CHANGELOG",
     "tailwind.config.ts",
-    "./src/global.css"
+    "./src/global.css",
+    "./src/font.css"
   ],
   "scripts": {
     "build": "pnpm build:lib",
