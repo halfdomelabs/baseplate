@@ -2,6 +2,7 @@ import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
 import colors from 'tailwindcss/colors';
 import headlessUi from '@headlessui/tailwindcss';
+import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimate from 'tailwindcss-animate';
 
 const config: Config = {
@@ -10,6 +11,7 @@ const config: Config = {
   theme: {
     fontFamily: {
       body: ['Geist Sans', ...defaultTheme.fontFamily.sans],
+      mono: ['Geist Mono', ...defaultTheme.fontFamily.mono],
     },
     extend: {
       colors: {
@@ -62,7 +64,69 @@ const config: Config = {
       },
     },
   },
-  plugins: [headlessUi, tailwindCssAnimate],
+  plugins: [
+    headlessUi,
+    tailwindCssAnimate,
+    // custom typography plugin
+    plugin(function ({ addBase, addUtilities, theme }) {
+      addBase({
+        h1: {
+          fontSize: theme('fontSize.3xl'),
+          fontWeight: theme('fontWeight.semibold'),
+        },
+        h2: {
+          fontSize: theme('fontSize.2xl'),
+          fontWeight: theme('fontWeight.semibold'),
+          lineHeight: theme('lineHeight.7'),
+        },
+        h3: {
+          fontSize: theme('fontSize.xl'),
+          fontWeight: theme('fontWeight.semibold'),
+          lineHeight: theme('lineHeight.6'),
+        },
+        p: {
+          lineHeight: theme('lineHeight.6'),
+        },
+      });
+      addUtilities({
+        '.text-style-lead': {
+          fontSize: theme('fontSize.xl'),
+          fontWeight: theme('fontWeight.medium'),
+          lineHeight: theme('lineHeight.6'),
+          color: theme('colors.muted.foreground'),
+        },
+        '.text-style-large': {
+          fontSize: theme('fontSize.lg'),
+          fontWeight: theme('fontWeight.semibold'),
+          lineHeight: theme('lineHeight.6'),
+        },
+        '.text-style-small': {
+          fontSize: theme('fontSize.sm'),
+          fontWeight: theme('fontWeight.medium'),
+          lineHeight: theme('lineHeight.3'),
+        },
+        '.text-style-muted': {
+          fontSize: theme('fontSize.sm'),
+          lineHeight: theme('lineHeight.5'),
+          color: theme('colors.muted.foreground'),
+        },
+        '.text-style-prose': {
+          fontSize: theme('fontSize.base'),
+          lineHeight: theme('lineHeight.6'),
+          '& a': {
+            color: theme('colors.link.DEFAULT'),
+            fontWeight: theme('fontWeight.medium'),
+            '&:hover': {
+              textDecoration: 'underline',
+            },
+            '&:visited': {
+              color: theme('colors.link.visited'),
+            },
+          },
+        },
+      });
+    }),
+  ],
 } satisfies Config;
 
 export default config;

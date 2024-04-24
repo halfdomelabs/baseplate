@@ -75,7 +75,7 @@ export function RefIssueDialog(): JSX.Element {
                 <Table.Row key={issuePath}>
                   <Table.Cell>
                     {referenceParent ? (
-                      <div className="linkable">
+                      <div className="text-style-prose">
                         <div>
                           {referenceParentUrl ? (
                             <Link
