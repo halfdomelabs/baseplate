@@ -103,7 +103,7 @@ export function ThemeHomePage(): JSX.Element {
         structure but you can customize them as you wish.
       </p>
       <p>You can customize your theme by choosing one of several methods:</p>
-      <ul className="text-style-prose list-inside list-disc">
+      <ul className="list-inside list-disc text-style-prose">
         <li>
           <strong>Existing Tailwind Theme:</strong> Tailwind has some{' '}
           <a
