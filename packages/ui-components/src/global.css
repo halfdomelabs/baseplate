@@ -4,42 +4,9 @@
   }
 
   body {
-    @apply bg-background font-body text-foreground;
+    @apply bg-background font-body text-foreground antialiased;
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-semibold text-foreground;
-  }
-
-  h1 {
-    @apply text-2xl;
-  }
-
-  h2 {
-    @apply text-xl;
-  }
-
-  .subheading {
-    @apply text-lg text-muted-foreground;
-  }
-
-  h3 {
-    @apply text-lg;
-  }
-
-  h4 {
-    @apply text-base;
-  }
-
-  .linkable a {
-    @apply font-semibold text-link visited:text-link-visited;
   }
 }

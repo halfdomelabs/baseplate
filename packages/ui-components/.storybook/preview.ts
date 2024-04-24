@@ -4,6 +4,7 @@ import { useDarkMode } from 'storybook-dark-mode';
 import React from 'react';
 import { DocsContainer } from '@storybook/addon-docs';
 
+import '../src/font.css';
 import '../src/styles.css';
 import CustomTheme from './CustomTheme';
 

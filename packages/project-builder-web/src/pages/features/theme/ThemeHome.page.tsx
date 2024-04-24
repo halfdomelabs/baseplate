@@ -90,19 +90,27 @@ export function ThemeHomePage(): JSX.Element {
           generation at the moment.
         </Alert.Description>
       </Alert>
-      <p>
+      <p className="text-style-prose">
         The theme of the UI is based off color variables used with{' '}
-        <a href="https://ui.shadcn.com/docs/theming">
+        <a
+          href="https://ui.shadcn.com/docs/theming"
+          target="_blank"
+          rel="noreferrer"
+        >
           the Shadn UI component library
         </a>
         . We generate the color variables based off the Tailwind color palette
         structure but you can customize them as you wish.
       </p>
       <p>You can customize your theme by choosing one of several methods:</p>
-      <ul className="list-inside list-disc">
+      <ul className="list-inside list-disc text-style-prose">
         <li>
           <strong>Existing Tailwind Theme:</strong> Tailwind has some{' '}
-          <a href="https://tailwindcss.com/docs/customizing-colors">
+          <a
+            href="https://tailwindcss.com/docs/customizing-colors"
+            target="_blank"
+            rel="noreferrer"
+          >
             preset color themes
           </a>{' '}
           that you can use right off the bat.

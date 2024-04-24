@@ -1,0 +1,10 @@
+@font-face {
+  font-family: 'Geist Sans';
+  src: url('assets/geist-sans-vf.woff2') format('woff2-variations');
+  font-weight: 100 900;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('assets/geist-mono-vf.woff2') format('woff2-variations');
+  font-weight: 100 900;
+}

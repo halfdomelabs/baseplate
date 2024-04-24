@@ -41,7 +41,9 @@ export function NewProjectCard({
         />
         <div className="space-y-2">
           <h1 className="text-center">Welcome to Baseplate</h1>
-          <p className="subheading text-center">Let&apos;s get you set up!</p>
+          <p className="text-center text-style-lead">
+            Let&apos;s get you set up!
+          </p>
         </div>
         <form
           onSubmit={handleSubmit(saveProject)}
