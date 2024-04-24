@@ -1,0 +1,51 @@
+{
+  "name": "@halfdomelabs/baseplate-plugin-storage",
+  "version": "0.1.0",
+  "description": "Contains for the storage plugin for Baseplate",
+  "repository": "https://github.com/halfdomelabs/baseplate",
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "LICENSE",
+    "dist/**/*",
+    "CHANGELOG"
+  ],
+  "scripts": {
+    "build": "concurrently pnpm:build:*",
+    "build:tsc": "tsc -p tsconfig.build.json && tsc-alias",
+    "clean": "rm -rf ./dist",
+    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "watch": "concurrently pnpm:watch:*",
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "watch:tsc-alias": "tsc-alias -w"
+  },
+  "dependencies": {
+    "zod": "3.22.4"
+  },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "concurrently": "8.2.2",
+    "tsc-alias": "1.8.8",
+    "typescript": "5.2.2",
+    "vitest": "1.4.0"
+  },
+  "peerDependencies": {
+    "@halfdomelabs/project-builder-lib": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

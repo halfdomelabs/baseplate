@@ -9,3 +9,4 @@ export * from './utils/randomUid.js';
 export * from './migrations/index.js';
 export * from './definition/index.js';
 export * from './utils/colors.js';
+export * from './plugins/index.js';
