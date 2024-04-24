@@ -2,7 +2,12 @@
   "name": "@halfdomelabs/project-builder-cli",
   "version": "0.6.10",
   "description": "Full-stack CLI builder using Baseplate generators",
-  "repository": "https://github.com/halfdomelabs/baseplate",
+  "homepage": "https://www.halfdomelabs.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halfdomelabs/baseplate",
+    "directory": "packages/project-builder-cli"
+  },
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
