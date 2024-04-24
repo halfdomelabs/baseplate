@@ -2,9 +2,15 @@
   "name": "@halfdomelabs/sync",
   "version": "0.7.2",
   "description": "Library for syncing Baseplate descriptions",
-  "repository": "https://github.com/halfdomelabs/baseplate",
+  "homepage": "https://www.halfdomelabs.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halfdomelabs/baseplate",
+    "directory": "packages/sync"
+  },
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
+  "sideEffects": false,
   "type": "module",
   "main": "dist/index.js",
   "files": [
