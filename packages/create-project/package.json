@@ -30,7 +30,7 @@
     "commander": "^11.0.0",
     "execa": "^7.2.0",
     "ora": "^8.0.1",
-    "pkg-up": "^4.0.0"
+    "package-up": "^5.0.0"
   },
   "devDependencies": {
     "@halfdomelabs/project-builder-lib": "workspace:*",

@@ -42,12 +42,12 @@ importers:
       commander:
         specifier: ^11.0.0
         version: 11.1.0
+      package-up:
+        specifier: ^5.0.0
+        version: 5.0.0
       pkg-dir:
         specifier: ^7.0.0
         version: 7.0.0
-      pkg-up:
-        specifier: ^4.0.0
-        version: 4.0.0
       ramda:
         specifier: ^0.28.0
         version: 0.28.0
@@ -207,9 +207,9 @@ importers:
       ora:
         specifier: ^8.0.1
         version: 8.0.1
-      pkg-up:
-        specifier: ^4.0.0
-        version: 4.0.0
+      package-up:
+        specifier: ^5.0.0
+        version: 5.0.0
     devDependencies:
       '@halfdomelabs/project-builder-lib':
         specifier: workspace:*
@@ -314,6 +314,9 @@ importers:
       commander:
         specifier: ^11.0.0
         version: 11.1.0
+      package-up:
+        specifier: ^5.0.0
+        version: 5.0.0
       pino:
         specifier: 8.14.1
         version: 8.14.1
@@ -323,9 +326,6 @@ importers:
       pkg-dir:
         specifier: ^7.0.0
         version: 7.0.0
-      pkg-up:
-        specifier: ^4.0.0
-        version: 4.0.0
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -8989,6 +8989,11 @@ packages:
     resolution: {integrity: sha512-NKfW6bec6GfKc0SGx1e07QZY9PE99u0Bft/0rzSD5k3sO/vwkVUpDUKVm5Gpp5Ue3YfShPFTX2070tDs5kB9Ng==}
     dev: false
 
+  /find-up-simple@1.0.0:
+    resolution: {integrity: sha512-q7Us7kcjj2VMePAa02hDAF6d+MzsdsAWEwYyOpwUtlerRBkOEPBCRZrAV4XfcSN8fHAgaD0hP7miwoay6DCprw==}
+    engines: {node: '>=18'}
+    dev: false
+
   /find-up@3.0.0:
     resolution: {integrity: sha512-1yD6RmLI1XBfxugvORwlck6f75tYL+iR0jqwsOrOxMZyGYqUuDhJ0l4AXdO1iX/FTs9cBAMEk1gWSEx1kSbylg==}
     engines: {node: '>=6'}
@@ -11588,6 +11593,13 @@ packages:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
     engines: {node: '>=6'}
 
+  /package-up@5.0.0:
+    resolution: {integrity: sha512-MQEgDUvXCa3sGvqHg3pzHO8e9gqTCMPVrWUko3vPQGntwegmFo52mZb2abIVTjFnUcW0BcPz0D93jV5Cas1DWA==}
+    engines: {node: '>=18'}
+    dependencies:
+      find-up-simple: 1.0.0
+    dev: false
+
   /pako@0.2.9:
     resolution: {integrity: sha512-NUcwaKxUxWrZLpDG+z/xZaCgQITkA/Dv4V/T6bw7VON6l1Xz/VnrBqrYjZQ12TamKHzITTfOEIYUj48y2KXImA==}
     dev: true
@@ -11856,13 +11868,6 @@ packages:
       jsonc-parser: 3.2.1
       mlly: 1.6.1
       pathe: 1.1.2
-
-  /pkg-up@4.0.0:
-    resolution: {integrity: sha512-N4zdA4sfOe6yCv+ulPCmpnIBQ5I60xfhDr1otdBBhKte9QtEf3bhfrfkW7dTb+IQ0iEx4ZDzas0kc1o5rdWpYg==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    dependencies:
-      find-up: 6.3.0
-    dev: false
 
   /plimit-lit@1.6.1:
     resolution: {integrity: sha512-B7+VDyb8Tl6oMJT9oSO2CW8XC/T4UcJGrwOVoNGwOQsQYhlpfajmrMj5xeejqaASq3V/EqThyOeATEOMuSEXiA==}
