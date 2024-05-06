@@ -1,5 +1,12 @@
 # @halfdomelabs/react-generators
 
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies [988235d]
+  - @halfdomelabs/core-generators@0.7.5
+
 ## 0.7.4
 
 ### Patch Changes

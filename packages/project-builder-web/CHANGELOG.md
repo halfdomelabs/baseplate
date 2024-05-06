@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-web
 
+## 0.9.1
+
+### Patch Changes
+
+- 3ffb860: Switch font to Geist Sans and Geist Mono
+- Updated dependencies [3ffb860]
+- Updated dependencies [3ffb860]
+  - @halfdomelabs/ui-components@0.4.5
+
 ## 0.9.0
 
 ### Minor Changes

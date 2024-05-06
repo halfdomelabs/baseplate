@@ -1,5 +1,12 @@
 # @halfdomelabs/ui-components
 
+## 0.4.5
+
+### Patch Changes
+
+- 3ffb860: Update storybook for new typography styles
+- 3ffb860: Switch font to Geist Sans and Geist Mono
+
 ## 0.4.4
 
 ### Patch Changes
