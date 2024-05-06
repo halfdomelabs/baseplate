@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/cli",
-  "version": "0.7.10",
+  "version": "0.7.11",
   "description": "Command line tool for syncing Baseplate descriptions",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {

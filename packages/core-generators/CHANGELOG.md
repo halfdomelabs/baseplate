@@ -1,5 +1,11 @@
 # @halfdomelabs/core-generators
 
+## 0.7.5
+
+### Patch Changes
+
+- 988235d: Add fix for prettier plugin loading to use import instead of require
+
 ## 0.7.4
 
 ### Patch Changes
