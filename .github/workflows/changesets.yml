@@ -42,11 +42,34 @@ jobs:
 
       - name: Send a Slack notification if a publish happens
         if: steps.changesets.outputs.published == 'true'
-        uses: slackapi/slack-github-action@v1.23.0
+        uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
             {
-              "content": "A new version of Baseplate has been released!"
+              "text": "New versions of Baseplate packages was just released!",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "New versions of Baseplate packages was just released!"
+                  }
+                },
+                {
+                  "type": "rich_text",
+                  "elements": [
+                    {
+                      "type": "rich_text_preformatted",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": "${{ toJSON(fromJSON(steps.changesets.outputs.publishedPackages)) }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
