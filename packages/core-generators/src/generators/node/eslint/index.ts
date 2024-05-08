@@ -78,7 +78,7 @@ const EslintGenerator = createGeneratorWithChildren({
 
         await builder.apply(
           writeFormattedAction({
-            destination: '.eslintrc.js',
+            destination: config.react ? '.eslintrc.cjs' : '.eslintrc.js',
             contents: `module.exports = ${JSON.stringify(
               eslintConfig,
               null,
