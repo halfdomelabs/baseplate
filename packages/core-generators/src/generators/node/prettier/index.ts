@@ -1,16 +1,12 @@
-// because we manually require
-/* eslint-disable import/no-import-module-exports */
-
 import {
-  formatterProvider,
-  createGeneratorWithChildren,
-  writeJsonAction,
-  createProviderType,
-  createNonOverwriteableMap,
   NonOverwriteableMap,
+  createGeneratorWithChildren,
+  createNonOverwriteableMap,
+  createProviderType,
+  formatterProvider,
+  writeJsonAction,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
-import { createRequire } from 'module';
 import path from 'path';
 import prettier, { Plugin } from 'prettier';
 import prettierPluginPackageJson from 'prettier-plugin-packagejson';
@@ -71,6 +67,10 @@ const PARSEABLE_EXTENSIONS = [
   '.graphql',
   '.yml',
   '.yaml',
+  '.cjs',
+  '.mjs',
+  '.cts',
+  '.mts',
 ];
 
 const PRETTIER_VERSION = '3.1.0';
@@ -82,8 +82,6 @@ interface PrettierModule {
 interface ResolveError extends Error {
   code?: string;
 }
-
-const require = createRequire(import.meta.url);
 
 function resolveModule(
   name: string,
@@ -161,8 +159,9 @@ const PrettierGenerator = createGeneratorWithChildren({
                   if (result.version === prettier.version) {
                     return prettier;
                   }
-                  // eslint-disable-next-line import/no-dynamic-require
-                  return require(result.modulePath) as PrettierModule;
+                  return (await import(
+                    result.modulePath
+                  )) as Promise<PrettierModule>;
                 })();
               }
 
