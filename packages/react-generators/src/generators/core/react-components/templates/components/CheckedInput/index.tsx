@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   Control,
   FieldError,
@@ -51,7 +51,7 @@ function CheckedInput({
   };
   return (
     <input
-      className={classNames(
+      className={clsx(
         'h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500',
         { rounded: type === 'checkbox' },
         className,
@@ -77,9 +77,7 @@ CheckedInput.Labelled = function SelectInputLabelled({
   if (horizontalLabel) {
     return (
       <div>
-        <label
-          className={classNames('flex cursor-pointer items-center', className)}
-        >
+        <label className={clsx('flex cursor-pointer items-center', className)}>
           <CheckedInput {...rest} />
           {label && (
             <div className="ml-2 w-full py-3 text-sm font-medium text-gray-900">
@@ -92,7 +90,7 @@ CheckedInput.Labelled = function SelectInputLabelled({
     );
   }
   return (
-    <label className={classNames('block', className)}>
+    <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <CheckedInput {...rest} />
       {error && <FormError>{error}</FormError>}

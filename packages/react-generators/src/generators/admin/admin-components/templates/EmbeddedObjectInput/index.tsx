@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useState } from 'react';
 import {
   Control,
@@ -47,7 +47,7 @@ function EmbeddedObjectInput<InputType>({
   };
 
   return (
-    <div className={classNames('flex flex-row space-x-4', className)}>
+    <div className={clsx('flex flex-row space-x-4', className)}>
       <Button
         size="small"
         onClick={() =>
@@ -95,7 +95,7 @@ EmbeddedObjectInput.Labelled = function EmbeddedOneToOneInputLabelled<
   ...rest
 }: EmbeddedObjectInputLabelledProps<InputType>): JSX.Element {
   return (
-    <div className={classNames('', className)}>
+    <div className={clsx('', className)}>
       <div className={className}>
         {label && <FormLabel>{label}</FormLabel>}
         <EmbeddedObjectInput {...rest} />

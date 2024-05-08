@@ -50,7 +50,7 @@
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
     "axios": "1.6.8",
-    "clsx": "2.0.0",
+    "clsx": "2.1.1",
     "culori": "^3.2.0",
     "immer": "10.0.3",
     "inflection": "2.0.1",

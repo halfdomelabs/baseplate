@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
 
@@ -30,12 +30,7 @@ function ErrorDisplay({
   actions,
 }: ErrorDisplayProps): JSX.Element {
   return (
-    <div
-      className={classNames(
-        'flex h-full items-center justify-center',
-        className,
-      )}
-    >
+    <div className={clsx('flex h-full items-center justify-center', className)}>
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
           <MdOutlineErrorOutline className="text-foreground-300 dark:text-foreground-700 h-20 w-20" />

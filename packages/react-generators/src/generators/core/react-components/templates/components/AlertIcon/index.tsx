@@ -1,5 +1,5 @@
 // @ts-nocheck
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { IconType } from 'react-icons';
 import {
   MdErrorOutline,
@@ -52,7 +52,7 @@ function AlertIcon({ className, type }: Props): JSX.Element {
 
   return (
     <div
-      className={classNames(
+      className={clsx(
         'inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
         colorClasses,
         className,

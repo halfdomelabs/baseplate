@@ -1,5 +1,5 @@
 // @ts-nocheck
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 interface Props {
   className?: string;
@@ -11,7 +11,7 @@ interface Props {
 function ListGroup({ className, children }: Props): JSX.Element {
   return (
     <ul
-      className={classNames(
+      className={clsx(
         'rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white',
         className,
       )}
@@ -32,7 +32,7 @@ ListGroup.Item = function ListGroupItem({
 }: ListGroupItemProps): JSX.Element {
   return (
     <li
-      className={classNames(
+      className={clsx(
         'w-full border-b border-gray-200 px-4 py-2 last:border-none dark:border-gray-600',
         className,
       )}

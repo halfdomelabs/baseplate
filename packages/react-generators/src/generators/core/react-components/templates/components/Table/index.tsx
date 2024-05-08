@@ -1,5 +1,5 @@
 // @ts-nocheck
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 interface Props {
   className?: string;
@@ -10,7 +10,7 @@ interface Props {
 
 function Table({ className, children }: Props): JSX.Element {
   return (
-    <div className={classNames('flex flex-col', className)}>
+    <div className={clsx('flex flex-col', className)}>
       <div className="overflow-x-auto sm:-mx-2 lg:-mx-4">
         <div className="inline-block min-w-full py-2 sm:px-2 lg:px-4">
           <div className="overflow-hidden shadow-md sm:rounded-lg">
@@ -32,7 +32,7 @@ Table.Head = function TableHead({
   children,
 }: TableHeadProps): JSX.Element {
   return (
-    <thead className={classNames('bg-gray-50 dark:bg-gray-700', className)}>
+    <thead className={clsx('bg-gray-50 dark:bg-gray-700', className)}>
       {children}
     </thead>
   );
@@ -62,7 +62,7 @@ Table.HeadCell = function TableHeadCell({
   return (
     <th
       scope="col"
-      className={classNames(
+      className={clsx(
         'py-3 px-6 text-left text-xs font-medium uppercase tracking-wider text-gray-700 dark:text-gray-400',
         className,
       )}
@@ -81,7 +81,7 @@ Table.Body = function TableBody({
   className,
   children,
 }: TableBodyProps): JSX.Element {
-  return <tbody className={classNames('', className)}>{children}</tbody>;
+  return <tbody className={clsx('', className)}>{children}</tbody>;
 };
 
 interface TableRowProps {
@@ -95,7 +95,7 @@ Table.Row = function TableRow({
 }: TableRowProps): JSX.Element {
   return (
     <tr
-      className={classNames(
+      className={clsx(
         'border-b bg-white dark:border-gray-700 dark:bg-gray-800',
         className,
       )}
@@ -116,7 +116,7 @@ Table.Cell = function TableCell({
 }: TableCellProps): JSX.Element {
   return (
     <td
-      className={classNames(
+      className={clsx(
         'whitespace-nowrap py-4 px-6 text-sm text-gray-500 dark:text-gray-400',
         className,
       )}

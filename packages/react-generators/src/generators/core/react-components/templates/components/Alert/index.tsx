@@ -1,5 +1,5 @@
 // @ts-nocheck
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Status, StatusType } from '../../hooks/useStatus';
 import AlertIcon from '../AlertIcon';
 
@@ -32,7 +32,7 @@ function Alert({ type, icon, className, children }: Props): JSX.Element {
   const alertClasses = getAlertClasses(type);
   return (
     <div
-      className={classNames(
+      className={clsx(
         'flex items-center rounded-lg p-4',
         alertClasses,
         className,
