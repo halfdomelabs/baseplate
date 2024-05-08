@@ -67,6 +67,10 @@ const PARSEABLE_EXTENSIONS = [
   '.graphql',
   '.yml',
   '.yaml',
+  '.cjs',
+  '.mjs',
+  '.cts',
+  '.mts',
 ];
 
 const PRETTIER_VERSION = '3.1.0';
