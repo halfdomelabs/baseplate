@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   Control,
   FieldPath,
@@ -24,7 +24,7 @@ function CheckedArrayInput({
   value: values = [],
 }: Props): JSX.Element {
   return (
-    <div className={classNames('flex flex-row flex-wrap gap-4', className)}>
+    <div className={clsx('flex flex-row flex-wrap gap-4', className)}>
       {options.map((option) => (
         <CheckedInput.Labelled
           key={option.value}

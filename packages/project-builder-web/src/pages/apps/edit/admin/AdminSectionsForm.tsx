@@ -2,7 +2,7 @@ import {
   AdminAppConfig,
   adminSectionEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
 
@@ -27,7 +27,7 @@ function AdminSectionsForm({ className, appConfig }: Props): JSX.Element {
   ]);
 
   return (
-    <div className={classNames('flex items-stretch', className)}>
+    <div className={clsx('flex items-stretch', className)}>
       <Sidebar className="flex-none !bg-white">
         <Sidebar.Header className="mb-4">
           <h2>Sections</h2>

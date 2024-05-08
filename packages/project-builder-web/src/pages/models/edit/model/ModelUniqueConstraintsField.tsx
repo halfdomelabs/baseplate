@@ -1,5 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Control, useFieldArray } from 'react-hook-form';
 
 import ModelUniqueConstraintForm from './ModelUniqueConstraintForm';
@@ -20,7 +20,7 @@ function ModelUniqueConstraintsField({
   });
 
   return (
-    <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>
+    <div className={clsx('w-1/2 min-w-[400px] space-y-4', className)}>
       <h2>Unique Constraints</h2>
       {fields.map((field, i) => (
         <div key={field.id}>

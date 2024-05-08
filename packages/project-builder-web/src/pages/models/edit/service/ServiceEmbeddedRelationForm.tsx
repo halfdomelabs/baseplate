@@ -4,7 +4,7 @@ import {
   ModelTransformerUtils,
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useEffect } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 
@@ -105,7 +105,7 @@ function ServiceEmbeddedRelationForm({
     })) ?? [];
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       <SelectInput.LabelledController
         className="w-full"
         control={control}

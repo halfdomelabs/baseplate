@@ -1,5 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 
 import SelectArrayInput from 'src/components/SelectArrayInput';
@@ -19,7 +19,7 @@ function ModelPrimaryKeyForm({ className, control }: Props): JSX.Element {
     })) ?? [];
 
   return (
-    <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>
+    <div className={clsx('w-1/2 min-w-[400px] space-y-4', className)}>
       <div>
         <h2>Primary Keys</h2>
         <p className="text-xs text-muted-foreground">

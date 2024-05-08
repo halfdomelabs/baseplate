@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useState } from 'react';
 
 import LinkButton from '../LinkButton';
@@ -21,7 +21,7 @@ function CollapsibleRow({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className={classNames('', className)}>
+    <div className={clsx('', className)}>
       {!isOpen ? (
         <div className="flex flex-row items-center space-x-4">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>

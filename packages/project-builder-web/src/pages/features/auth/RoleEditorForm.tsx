@@ -3,7 +3,7 @@ import {
   AuthConfig,
   authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useEffect } from 'react';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
@@ -46,7 +46,7 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
     AUTH_DEFAULT_ROLES.some((role) => role.name === name);
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       <h3>Roles</h3>
       {fields.map((field, idx) => (
         <div key={field.id} className="space-y-4">

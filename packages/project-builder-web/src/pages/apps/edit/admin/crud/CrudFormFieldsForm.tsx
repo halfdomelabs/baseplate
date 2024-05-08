@@ -3,7 +3,7 @@ import {
   adminCrudInputTypes,
   FileTransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { Button, SelectInput, TextInput } from 'src/components';
@@ -208,7 +208,7 @@ function CrudFormFieldsForm({
       })) ?? [];
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       {fields.map((field, idx) => (
         <CollapsibleRow
           key={field.id}

@@ -1,5 +1,5 @@
 import { Tab } from '@headlessui/react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 interface Props {
   className?: string;
@@ -8,7 +8,7 @@ interface Props {
 
 function Tabs({ className, children }: Props): JSX.Element {
   return (
-    <div className={classNames('', className)}>
+    <div className={clsx('', className)}>
       <Tab.Group>{children}</Tab.Group>
     </div>
   );
@@ -26,7 +26,7 @@ Tabs.List = function TabsList({
   return (
     <Tab.List
       as="div"
-      className={classNames(
+      className={clsx(
         'border-b border-gray-200 text-center text-sm font-semibold text-gray-500 dark:border-gray-700 dark:text-gray-400',
         className,
       )}
@@ -46,10 +46,10 @@ Tabs.Tab = function TabsTab({
   children,
 }: TabsTabProps): JSX.Element {
   return (
-    <Tab as="li" className={classNames('mr-2 cursor-pointer', className)}>
+    <Tab as="li" className={clsx('mr-2 cursor-pointer', className)}>
       {({ selected }) => (
         <span
-          className={classNames(
+          className={clsx(
             'inline-block rounded-t-lg border-b-2 border-transparent p-4',
             {
               'active border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500':
@@ -77,7 +77,7 @@ Tabs.Panels = function TabsPanels({
 }: TabsPanelsProps): JSX.Element {
   return (
     <Tab.Panels
-      className={classNames(
+      className={clsx(
         'rounded-b-lg border border-gray-200 bg-gray-100 p-4',
         className,
       )}
@@ -96,9 +96,7 @@ Tabs.Panel = function TabsPanel({
   className,
   children,
 }: TabsPanelProps): JSX.Element {
-  return (
-    <Tab.Panel className={classNames('', className)}>{children}</Tab.Panel>
-  );
+  return <Tab.Panel className={clsx(className)}>{children}</Tab.Panel>;
 };
 
 export default Tabs;

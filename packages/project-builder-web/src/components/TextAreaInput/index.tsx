@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { ChangeEventHandler, HTMLInputTypeAttribute } from 'react';
 import { UseFormRegisterReturn } from 'react-hook-form';
 
@@ -44,7 +44,7 @@ const TextAreaInput = function TextAreaInput({
   };
   return (
     <textarea
-      className={classNames(
+      className={clsx(
         'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500',
         className,
       )}
@@ -66,7 +66,7 @@ TextAreaInput.Labelled = function TextAreaInputLabelled({
 }: TextAreaInputLabelledProps): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
-    <label className={classNames('block', className)}>
+    <label className={clsx('block', className)}>
       <FormLabel>{label}</FormLabel>
       <TextAreaInput {...rest} />
       {error && (

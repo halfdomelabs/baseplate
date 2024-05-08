@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -30,7 +30,7 @@ function Spinner({
   return (
     <svg
       role="status"
-      className={classNames(
+      className={clsx(
         'h-8 w-8 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600',
         {
           'h-4 w-4': size === 'small',

@@ -3,7 +3,7 @@ import {
   backendAppSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { zodResolver } from '@hookform/resolvers/zod';
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
@@ -39,7 +39,7 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
   }
 
   return (
-    <div className={classNames('', className)}>
+    <div className={clsx('', className)}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <TextInput.LabelledController
           label="Name"

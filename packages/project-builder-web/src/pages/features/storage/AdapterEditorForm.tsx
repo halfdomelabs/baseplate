@@ -2,7 +2,7 @@ import {
   storageAdapterEntityType,
   StorageConfig,
 } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Control, useFieldArray } from 'react-hook-form';
 
 import { Button, TextInput } from 'src/components';
@@ -19,7 +19,7 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
   });
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       <h3>S3 Adapters</h3>
       {fields.map((field, idx) => (
         <div key={field.id} className="space-y-4">

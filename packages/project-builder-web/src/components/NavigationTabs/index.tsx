@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 function NavigationTabs({ className, children }: Props): JSX.Element {
   return (
     <div
-      className={classNames(
+      className={clsx(
         'border-b border-gray-200 text-center text-sm font-semibold text-gray-500 dark:border-gray-700 dark:text-gray-400',
         className,
       )}
@@ -33,10 +33,10 @@ NavigationTabs.Tab = function TabsTab({
   const resolvedPath = useResolvedPath(to);
   const selected = useMatch({ path: resolvedPath.pathname, end: true });
   return (
-    <li className={classNames('mr-2 cursor-pointer', className)}>
+    <li className={clsx('mr-2 cursor-pointer', className)}>
       <Link
         to={to}
-        className={classNames(
+        className={clsx(
           'inline-block rounded-t-lg border-b-2 border-transparent p-4',
           {
             'active border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-500':
