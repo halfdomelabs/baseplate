@@ -7,10 +7,12 @@ import path from 'node:path';
 import ora from 'ora';
 
 export async function generateBaseplateProject({
+  packageName,
   directory,
   npmToken,
   cliVersion,
 }: {
+  packageName: string;
   directory: string;
   npmToken: string;
   cliVersion: string;
@@ -44,14 +46,12 @@ export async function generateBaseplateProject({
       await writeFile(destination, sourceFile);
     };
 
-    const directoryName = path.basename(directory);
-
     // write package.json
     await writeFile(
       'package.json',
       JSON.stringify(
         {
-          name: directoryName,
+          name: packageName,
           version: '0.1.0',
           private: true,
           description: 'A Baseplate project',
@@ -83,7 +83,7 @@ export async function generateBaseplateProject({
       'baseplate/project.json',
       JSON.stringify(
         {
-          name: directoryName,
+          name: packageName,
           features: [],
           models: [],
           portOffset: 3000,

@@ -36,13 +36,24 @@ async function runMain(): Promise<void> {
 
   const directory = program.processedArgs[0] as string;
 
-  console.log(
-    `Creating a new Baseplate project in ${
-      directory === '.' ? 'the current directory' : directory
-    }...\n`,
-  );
-
   const resolvedDirectory = path.resolve(directory);
+
+  const packageName = path
+    .basename(resolvedDirectory)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-');
+
+  if (packageName === '-' || !packageName) {
+    throw new Error(
+      'Directory must have at least one Latin alphanumeric character.',
+    );
+  }
+
+  const relativeDirectory = path.relative(process.cwd(), resolvedDirectory);
+
+  console.log(`Creating a new Baseplate project (${packageName})...`);
+  console.log(`Directory: ${relativeDirectory || '.'}`);
+  console.log();
 
   const hasPackageJson = await checkForPackageJson(resolvedDirectory);
 
@@ -61,6 +72,7 @@ async function runMain(): Promise<void> {
   const { npmToken, cliVersion } = await getNpmTokenAndVersion();
 
   await generateBaseplateProject({
+    packageName,
     directory: resolvedDirectory,
     npmToken,
     cliVersion,
