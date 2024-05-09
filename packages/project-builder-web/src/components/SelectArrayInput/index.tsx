@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import {
   Control,
@@ -40,7 +40,7 @@ function SelectArrayInput({
     }
   }, [availableOptions, selectedValue]);
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       {values.map((value) => (
         <div key={value}>
           <span>

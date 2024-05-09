@@ -1,5 +1,5 @@
 // @ts-nocheck
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   MouseEventHandler,
   KeyboardEventHandler,
@@ -64,7 +64,7 @@ const TextInput = function TextInput({
   };
   return (
     <input
-      className={classNames(
+      className={clsx(
         'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500',
         className,
       )}
@@ -86,7 +86,7 @@ TextInput.Labelled = function TextInputLabelled({
 }: TextInputLabelledProps): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
-    <label className={classNames('block', className)}>
+    <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <TextInput {...rest} />
       {error && <FormError>{error}</FormError>}

@@ -1,5 +1,5 @@
 import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useState } from 'react';
 import { Control, FieldArrayWithId } from 'react-hook-form';
 
@@ -36,7 +36,7 @@ function ModelUniqueConstraintForm({
   }
 
   return (
-    <div className={classNames('w-1/2 min-w-[400px] space-y-4', className)}>
+    <div className={clsx('w-1/2 min-w-[400px] space-y-4', className)}>
       {!isOpen ? (
         <div className="flex flex-row items-center space-x-4">
           <LinkButton onClick={() => setIsOpen(true)}>Edit</LinkButton>

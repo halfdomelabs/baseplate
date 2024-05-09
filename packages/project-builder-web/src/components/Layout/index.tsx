@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Outlet } from 'react-router-dom';
 
 interface Props {
@@ -15,10 +15,10 @@ function Layout({
   sidebar,
 }: Props): JSX.Element {
   return (
-    <div className={classNames('flex h-full items-stretch', className)}>
+    <div className={clsx('flex h-full items-stretch', className)}>
       {sidebar}
       <div
-        className={classNames(
+        className={clsx(
           'flex flex-auto flex-col overflow-auto',
           centered && 'items-center justify-center',
           !noPadding && 'p-4',

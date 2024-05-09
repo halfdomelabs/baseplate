@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useCallback } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { useDropzone } from 'react-dropzone';
@@ -139,7 +139,7 @@ const FileInput = function FileInput({
   };
 
   return (
-    <div className={classNames('max-w-md', className)}>
+    <div className={clsx('max-w-md', className)}>
       {(() => {
         if (value) {
           return (
@@ -185,7 +185,7 @@ const FileInput = function FileInput({
         return (
           <div
             {...getRootProps()}
-            className={classNames(
+            className={clsx(
               'flex h-12 w-full max-w-md items-center justify-center rounded-md border-2 border-dashed px-4',
               isDragActive
                 ? 'border-blue-300 text-blue-600'
@@ -260,7 +260,7 @@ FileInput.Labelled = function FileInputLabelled({
 }: FileInputLabelledProps): JSX.Element {
   return (
     // eslint-disable-next-line jsx-a11y/label-has-associated-control
-    <div className={classNames('block', className)}>
+    <div className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <FileInput {...rest} />
       {error && <FormError>{error}</FormError>}

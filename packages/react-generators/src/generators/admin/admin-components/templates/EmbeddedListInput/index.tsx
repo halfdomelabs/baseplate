@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { nanoid } from 'nanoid';
 import { useMemo, useState } from 'react';
 import {
@@ -76,7 +76,7 @@ function EmbeddedListInput<InputType>({
   );
 
   return (
-    <div className={classNames('space-y-2', className)}>
+    <div className={clsx('space-y-2', className)}>
       <Button
         size="small"
         onClick={() => setValueToEdit({ data: defaultValue })}
@@ -127,7 +127,7 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
   ...rest
 }: EmbeddedListInputLabelledProps<InputType>): JSX.Element {
   return (
-    <div className={classNames('', className)}>
+    <div className={clsx('', className)}>
       <div className={className}>
         {label && <FormLabel>{label}</FormLabel>}
         <EmbeddedListInput {...rest} />

@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 interface Props {
   className?: string;
@@ -9,7 +9,7 @@ interface Props {
 function Card({ className, padding, children }: Props): JSX.Element {
   return (
     <div
-      className={classNames(
+      className={clsx(
         'max-w-sm rounded-lg border border-gray-200 bg-white shadow-md dark:border-gray-700 dark:bg-gray-800',
         { 'sm:p-6 lg:p-8': padding },
         className,

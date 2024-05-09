@@ -1,5 +1,5 @@
 import { StorageConfig } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { Button, TextInput } from 'src/components';
@@ -49,7 +49,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
     })) ?? [];
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       <h3>Upload Categories</h3>
       {fields.map((field, idx) => (
         <div key={field.id} className="space-y-4">

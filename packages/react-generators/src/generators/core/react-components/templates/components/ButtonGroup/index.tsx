@@ -1,5 +1,5 @@
 // @ts-nocheck
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 interface Props {
   className?: string;
@@ -11,7 +11,7 @@ interface Props {
 function ButtonGroup({ className, children }: Props): JSX.Element {
   return (
     <div
-      className={classNames('inline-flex rounded-md shadow-sm', className)}
+      className={clsx('inline-flex rounded-md shadow-sm', className)}
       role="group"
     >
       {children}
@@ -34,7 +34,7 @@ ButtonGroup.Button = function ButtonGroupButton({
 }: ButtonGroupButtonProps): JSX.Element {
   return (
     <button
-      className={classNames(
+      className={clsx(
         'border-t border-b border-gray-200 bg-white py-2 px-4 text-sm font-medium text-gray-900 first:rounded-l-lg first:border last:rounded-r-lg last:border hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:text-blue-700 focus:ring-2 focus:ring-blue-700 ',
         className,
       )}

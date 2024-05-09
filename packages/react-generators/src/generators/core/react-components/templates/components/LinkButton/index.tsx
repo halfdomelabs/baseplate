@@ -1,5 +1,5 @@
 // @ts-nocheck
-import classNames from 'classnames';
+import clsx from 'clsx';
 import React from 'react';
 
 interface Props {
@@ -31,7 +31,7 @@ function LinkButton({
 
   return (
     <button
-      className={classNames(
+      className={clsx(
         'font-medium',
         { 'hover:underline': !disabled },
         colorClass,

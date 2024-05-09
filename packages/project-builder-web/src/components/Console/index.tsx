@@ -1,5 +1,5 @@
 import Ansi from '@cocalc/ansi-to-react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   UIEventHandler,
   useEffect,
@@ -78,7 +78,7 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
 
   return (
     <code
-      className={classNames(
+      className={clsx(
         'block h-72 w-full overflow-y-scroll whitespace-pre-wrap border border-gray-200 bg-slate-900 p-4 text-sm text-neutral-400 shadow-inner',
         className,
       )}

@@ -1,5 +1,5 @@
 import { Menu, Transition } from '@headlessui/react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 import { usePopper } from 'react-popper';
@@ -32,7 +32,7 @@ function Dropdown({
           <>
             <Menu.Button
               ref={setReferenceElement}
-              className={classNames(
+              className={clsx(
                 'inline-flex w-44 items-center rounded-lg bg-blue-700 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800',
                 buttonClassName,
               )}
@@ -87,7 +87,7 @@ Dropdown.ButtonItem = function DropdownItem({
         <button
           type="button"
           onClick={onClick}
-          className={classNames(
+          className={clsx(
             'block w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white',
             className,
           )}

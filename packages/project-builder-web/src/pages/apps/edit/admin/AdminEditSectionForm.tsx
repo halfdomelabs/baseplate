@@ -6,7 +6,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import _ from 'lodash';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -117,7 +117,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   }));
 
   return (
-    <div className={classNames('', className)}>
+    <div className={clsx('', className)}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {sectionId && (
           <LinkButton onClick={() => handleDelete()}>Delete Section</LinkButton>

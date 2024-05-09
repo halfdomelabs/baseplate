@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 import {
   Control,
   FieldPath,
@@ -60,7 +60,7 @@ function ReactSelectInput<ValueType>({
 
   return (
     <Select
-      className={classNames('shadow-sm', className)}
+      className={clsx('shadow-sm', className)}
       onChange={(newValue) => {
         onChange(newValue?.value);
       }}

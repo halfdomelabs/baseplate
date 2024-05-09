@@ -3,7 +3,7 @@ import {
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { Button, Dropdown } from '@halfdomelabs/ui-components';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
 
 import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
@@ -30,7 +30,7 @@ function ServiceEmbeddedRelationsForm({
   const { parsedProject } = useProjectDefinition();
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       <h2>Transformers</h2>
       {!fields.length && <div>No transformers</div>}
       {fields.map((field, idx) => {

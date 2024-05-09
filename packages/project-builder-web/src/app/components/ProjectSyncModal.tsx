@@ -1,5 +1,5 @@
 import { Button, Dialog } from '@halfdomelabs/ui-components';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
@@ -37,7 +37,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   };
 
   return (
-    <div className={classNames('', className)}>
+    <div className={clsx(className)}>
       <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <Dialog.Trigger asChild>
           <Button

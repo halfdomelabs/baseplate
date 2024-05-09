@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from '%react-components';
 import { useLogOut } from '%auth-hooks/useLogOut';
@@ -14,7 +14,7 @@ function AdminLayout({ className }: Props): JSX.Element {
   const logOut = useLogOut();
 
   return (
-    <div className={classNames('flex h-full items-stretch', className)}>
+    <div className={clsx('flex h-full items-stretch', className)}>
       <Sidebar className="flex-none">
         <Sidebar.Header className="mb-4 space-y-2">
           <h1>Admin Dashboard</h1>

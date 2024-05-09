@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Disclosure } from '@headlessui/react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
 
@@ -14,7 +14,7 @@ interface Props {
 function Sidebar({ className, children }: Props): JSX.Element {
   return (
     <aside
-      className={classNames('w-64 overflow-auto bg-gray-50', className)}
+      className={clsx('w-64 overflow-auto bg-gray-50', className)}
       aria-label="Sidebar"
     >
       <div className="min-h-full overflow-y-auto py-4 px-3 dark:bg-gray-800">
@@ -33,7 +33,7 @@ Sidebar.Header = function SidebarHeader({
   className,
   children,
 }: SidebarHeaderProps): JSX.Element {
-  return <div className={classNames('pl-2', className)}>{children}</div>;
+  return <div className={clsx('pl-2', className)}>{children}</div>;
 };
 
 interface SidebarLinkGroupProps {
@@ -45,7 +45,7 @@ Sidebar.LinkGroup = function SidebarLinkGroup({
   className,
   children,
 }: SidebarLinkGroupProps): JSX.Element {
-  return <ul className={classNames('space-y-2', className)}>{children}</ul>;
+  return <ul className={clsx('space-y-2', className)}>{children}</ul>;
 };
 
 interface SidebarButtonProps {
@@ -113,7 +113,7 @@ Sidebar.LinkItem = function SidebarLink({
     <li className={className}>
       <Link
         to={to}
-        className={classNames(
+        className={clsx(
           ' flex items-center rounded-lg p-2 text-base text-gray-900 no-underline hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
           match ? 'font-semibold' : 'font-normal',
         )}
@@ -194,7 +194,7 @@ Sidebar.DropdownLinkItem = function SidebarDropdownLinkItem({
     <li className={className}>
       <Link
         to={to}
-        className={classNames(
+        className={clsx(
           'group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700',
           withParentIcon ? 'pl-11' : 'pl-5',
           match ? 'font-semibold' : 'font-normal',

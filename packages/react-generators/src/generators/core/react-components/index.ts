@@ -84,7 +84,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     node.addPackages({
       '@headlessui/react': '1.7.18',
       '@hookform/resolvers': '3.3.4',
-      classnames: '2.3.2',
+      clsx: '2.1.1',
       'react-hook-form': '7.51.3',
       'react-hot-toast': '2.4.1',
       'react-icons': '5.0.1',

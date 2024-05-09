@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 // adapted from https://flowbite.com/docs/typography/lists/#description-list
 
@@ -12,10 +12,7 @@ interface Props {
 function DescriptionList({ className, children }: Props): JSX.Element {
   return (
     <dl
-      className={classNames(
-        'grid md:grid-cols-[minmax(100px,_1fr)_2fr]',
-        className,
-      )}
+      className={clsx('grid md:grid-cols-[minmax(100px,_1fr)_2fr]', className)}
     >
       {children}
     </dl>

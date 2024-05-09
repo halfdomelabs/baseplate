@@ -1,4 +1,4 @@
-import classNames from 'classnames';
+import clsx from 'clsx';
 
 interface Props {
   className?: string;
@@ -8,7 +8,7 @@ interface Props {
 function FormLabel({ className, children }: Props): JSX.Element {
   return (
     <div
-      className={classNames(
+      className={clsx(
         'mb-2 text-sm font-semibold text-gray-900 dark:text-gray-300',
         className,
       )}

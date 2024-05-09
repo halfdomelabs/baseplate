@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Transition } from '@headlessui/react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { MouseEventHandler } from 'react';
 
 interface Props {
@@ -29,7 +29,7 @@ function Toast({
       leaveTo="opacity-0"
     >
       <div
-        className={classNames(
+        className={clsx(
           'flex w-full max-w-xs items-center rounded-lg bg-white p-4 text-gray-500 shadow dark:bg-gray-800 dark:text-gray-400',
           visible && '-top-96',
           className,

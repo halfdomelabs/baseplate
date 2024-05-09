@@ -1,5 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { Button, LinkButton } from 'src/components';
@@ -29,7 +29,7 @@ function ModelUniqueConstraintFieldsField({
   }));
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       {fields.map((field, idx) => (
         <div key={field.id} className="flex flex-row justify-between space-x-4">
           <ReactSelectInput.LabelledController

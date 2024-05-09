@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { Dialog, Transition } from '@headlessui/react';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Fragment } from 'react';
 
 type ModalWidth = 'small' | 'base' | 'large';
@@ -61,7 +61,7 @@ function Modal({
             leaveTo="opacity-0 scale-95"
           >
             <Dialog.Panel
-              className={classNames(
+              className={clsx(
                 'max-h-full overflow-y-auto rounded-lg bg-white shadow md:max-w-7xl',
                 getModalWidthClass(width),
                 className,
@@ -89,7 +89,7 @@ Modal.Header = function ModalHeader({
 }: ModalHeaderProps): JSX.Element {
   return (
     <div
-      className={classNames(
+      className={clsx(
         'flex items-start justify-between rounded-t px-4 pt-4',
         className,
       )}
@@ -128,7 +128,7 @@ Modal.Body = function ModalBody({
   className,
   children,
 }: ModalBodyProps): JSX.Element {
-  return <div className={classNames('p-4', className)}>{children}</div>;
+  return <div className={clsx('p-4', className)}>{children}</div>;
 };
 
 interface ModalFooterProps {
@@ -142,7 +142,7 @@ Modal.Footer = function ModalFooter({
 }: ModalFooterProps): JSX.Element {
   return (
     <div
-      className={classNames(
+      className={clsx(
         'flex items-center justify-end space-x-2 rounded-b bg-gray-50 p-4',
         className,
       )}

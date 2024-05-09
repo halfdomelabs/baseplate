@@ -1,5 +1,5 @@
 import { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
-import classNames from 'classnames';
+import clsx from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 
 import AdminCrudEmbeddedForm, {
@@ -41,7 +41,7 @@ function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
   // TODO: Update embedded form names when form is added/removed
 
   return (
-    <div className={classNames('space-y-4', className)}>
+    <div className={clsx('space-y-4', className)}>
       <SelectInput.LabelledController
         label="Model"
         control={control}
