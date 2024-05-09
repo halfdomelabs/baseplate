@@ -54,8 +54,8 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@bull-board/api': '5.13.0',
-      '@bull-board/fastify': '5.13.0',
+      '@bull-board/api': '5.17.1',
+      '@bull-board/fastify': '5.17.1',
       ms: '2.1.3',
     });
 
