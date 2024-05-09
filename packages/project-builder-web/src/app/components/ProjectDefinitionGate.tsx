@@ -26,7 +26,6 @@ import {
   SetProjectDefinitionOptions,
   UseProjectDefinitionResult,
 } from 'src/hooks/useProjectDefinition';
-import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
 import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
@@ -56,8 +55,7 @@ export function ProjectDefinitionGate({
     externalChangeCounter,
     downloadConfig,
   } = useRemoteProjectDefinition();
-  const { projects } = useProjects();
-  const [, setProjectId] = useProjectIdState();
+  const { projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion, refreshVersion } = useClientVersion();
   const toast = useToast();
 
@@ -246,7 +244,10 @@ export function ProjectDefinitionGate({
               Try Again
             </Button>
             {projects.length > 1 && (
-              <Button variant="secondary" onClick={() => setProjectId(null)}>
+              <Button
+                variant="secondary"
+                onClick={() => resetCurrentProjectId()}
+              >
                 Switch Project
               </Button>
             )}
@@ -302,7 +303,10 @@ export function ProjectDefinitionGate({
               Refresh Page
             </Button>
             {projects.length > 1 && (
-              <Button variant="secondary" onClick={() => setProjectId(null)}>
+              <Button
+                variant="secondary"
+                onClick={() => resetCurrentProjectId()}
+              >
                 Switch Project
               </Button>
             )}
