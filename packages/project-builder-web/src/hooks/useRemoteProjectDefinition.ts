@@ -1,7 +1,7 @@
 import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useProjectIdState } from './useProjectIdState';
+import { useProjects } from './useProjects';
 import { useToast } from './useToast';
 import { client } from '@src/services/api';
 import { logError } from 'src/services/error-logger';
@@ -34,13 +34,13 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   const [error, setError] = useState<Error>();
   const [loaded, setLoaded] = useState(false);
 
-  const [projectId, setProjectId] = useProjectIdState();
-
   const isSavingRef = useRef(false);
   const lastSavedValueRef = useRef<string | null>(null);
   const shouldTriggerRefetch = useRef(false);
 
   const toast = useToast();
+
+  const { currentProjectId, resetCurrentProjectId } = useProjects();
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
   const loadedProjectId = useRef<string>();
@@ -51,7 +51,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
     setLoaded(false);
     setExternalChangeCounter(0);
     lastSavedValueRef.current = null;
-  }, [projectId]);
+  }, [currentProjectId]);
 
   const updateConfig = useCallback((payload: FilePayload | null): boolean => {
     // skip saving if we already have this value
@@ -68,23 +68,22 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
 
   const downloadConfig = useCallback(async (): Promise<void> => {
     try {
-      if (!projectId) {
+      if (!currentProjectId) {
         throw new Error('No project ID');
       }
       setError(undefined);
       shouldTriggerRefetch.current = false;
-      const payload = await downloadProjectDefinition(projectId);
+      const payload = await downloadProjectDefinition(currentProjectId);
       updateConfig(payload);
 
       setLoaded(true);
-      loadedProjectId.current = projectId;
+      loadedProjectId.current = currentProjectId;
     } catch (err) {
       if (
         err instanceof TRPCClientError &&
         (err.data as { code?: string })?.code === 'NOT_FOUND'
       ) {
-        toast.error(`Project not found: ${projectId ?? ''}`);
-        setProjectId(null);
+        resetCurrentProjectId();
         return;
       }
       setError(err as Error);
@@ -92,7 +91,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
         `Error downloading project config: ${(err as Error).message}`,
       );
     }
-  }, [toast, projectId, setProjectId, updateConfig]);
+  }, [toast, currentProjectId, resetCurrentProjectId, updateConfig]);
 
   useEffect(() => {
     downloadConfig().catch((err) => logError(err));
@@ -106,7 +105,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
       lastModifiedAt?: string,
       successCallback?: () => void,
     ) => {
-      if (!projectId) {
+      if (!currentProjectId) {
         throw new Error('No project ID');
       }
       if (isSavingRef.current) {
@@ -120,7 +119,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
       const oldSavedValue = lastSavedValueRef.current;
       lastSavedValueRef.current = contents;
 
-      uploadProjectDefinition(projectId, {
+      uploadProjectDefinition(currentProjectId, {
         contents,
         lastModifiedAt:
           lastModifiedAt ?? file?.lastModifiedAt ?? new Date(0).toISOString(),
@@ -159,15 +158,15 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
           }
         });
     },
-    [toast, projectId, file?.lastModifiedAt, downloadConfig],
+    [toast, currentProjectId, file?.lastModifiedAt, downloadConfig],
   );
 
   useEffect(() => {
     const unsubscribeMessage = client.projects.onProjectJsonChanged.subscribe(
-      { id: projectId ?? '' },
+      { id: currentProjectId ?? '' },
       {
         onData: (value) => {
-          if (!projectId) {
+          if (!currentProjectId) {
             return;
           }
           const didChange = updateConfig(value);
@@ -181,15 +180,15 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
     return () => {
       unsubscribeMessage.unsubscribe();
     };
-  }, [downloadConfig, updateConfig, projectId]);
+  }, [downloadConfig, updateConfig, currentProjectId]);
 
   return {
     value: file?.contents,
     error,
-    loaded: loaded && projectId === loadedProjectId.current,
+    loaded: loaded && currentProjectId === loadedProjectId.current,
     saveValue,
     externalChangeCounter,
-    projectId,
+    projectId: currentProjectId,
     downloadConfig,
   };
 }

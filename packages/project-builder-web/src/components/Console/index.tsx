@@ -9,7 +9,7 @@ import {
   useImperativeHandle,
 } from 'react';
 
-import { useProjectIdState } from '@src/hooks/useProjectIdState';
+import { useProjects } from '@src/hooks/useProjects';
 import { client } from '@src/services/api';
 
 interface Props {
@@ -32,14 +32,14 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
   const codeRef = useRef<HTMLElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  const [projectId] = useProjectIdState();
+  const { currentProjectId } = useProjects();
 
   useEffect(() => {
-    if (!projectId) {
+    if (!currentProjectId) {
       return undefined;
     }
     const unsubscribe = client.sync.onConsoleEmitted.subscribe(
-      { id: projectId },
+      { id: currentProjectId },
       {
         onData: (msg) => {
           setConsoleText((prev) =>
@@ -50,7 +50,7 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
     );
 
     return () => unsubscribe.unsubscribe();
-  }, [projectId]);
+  }, [currentProjectId]);
 
   useEffect(() => {
     // check if we should scroll to bottom

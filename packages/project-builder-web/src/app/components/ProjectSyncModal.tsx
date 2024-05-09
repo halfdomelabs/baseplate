@@ -3,9 +3,9 @@ import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
+import { useProjects } from '@src/hooks/useProjects';
 import Console, { ConsoleRef } from 'src/components/Console';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
-import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { startSync } from 'src/services/remote';
@@ -16,13 +16,13 @@ interface Props {
 
 function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-  const [projectId] = useProjectIdState();
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
   const { config, setConfig } = useProjectDefinition();
+  const { currentProjectId } = useProjects();
 
   const startSyncProject = (): void => {
-    if (!projectId) {
+    if (!currentProjectId) {
       return;
     }
     // save config when syncing to ensure any migrations/cli versions are set
@@ -31,7 +31,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
 
     setTimeout(() => {
       clearConsoleRef.current?.clearConsole();
-      startSync(projectId).catch((err) => toast.error(formatError(err)));
+      startSync(currentProjectId).catch((err) => toast.error(formatError(err)));
     }, 300);
     setIsOpen(true);
   };

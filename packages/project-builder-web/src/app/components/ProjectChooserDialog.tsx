@@ -7,7 +7,6 @@ import {
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useProjectIdState } from 'src/hooks/useProjectIdState';
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
 import { getProjects } from 'src/services/remote';
@@ -21,9 +20,9 @@ export function ProjectChooserDialog({
   onClose,
   isOpen,
 }: ProjectChooserDialogProps): JSX.Element {
-  const [projectId, setProjectId] = useProjectIdState();
+  const { currentProjectId, setCurrentProjectId, setProjects, projects } =
+    useProjects();
   const [error, setError] = useState<Error | null>(null);
-  const { projects, setProjects } = useProjects();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,7 +34,7 @@ export function ProjectChooserDialog({
         logError(err);
         setError(err as Error);
       });
-  }, [setProjects, setProjectId]);
+  }, [setProjects, isOpen]);
 
   if (!projects) {
     return <ErrorableLoader error={error} />;
@@ -71,7 +70,7 @@ export function ProjectChooserDialog({
                 </Table.Cell>
                 <Table.Cell>{project.directory}</Table.Cell>
                 <Table.Cell>
-                  {projectId === project.id ? (
+                  {currentProjectId === project.id ? (
                     <Button variant="link" disabled>
                       Selected
                     </Button>
@@ -79,7 +78,7 @@ export function ProjectChooserDialog({
                     <Button
                       variant="link"
                       onClick={() => {
-                        setProjectId(project.id);
+                        setCurrentProjectId(project.id);
                         navigate('/');
                         if (onClose) {
                           onClose();
