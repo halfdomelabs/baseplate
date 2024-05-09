@@ -30,11 +30,13 @@ export function useResettableForm<
   useEffect(() => {
     if (
       oldValues.current &&
-      !_.isEqual(oldValues.current.oldDefaultValues, props?.defaultValues) &&
-      oldValues.current.externalChangeCounter !== externalChangeCounter
+      !_.isEqual(oldValues.current.oldDefaultValues, props?.defaultValues)
     ) {
       reset(props?.defaultValues as TFieldValues);
-      if (isDirty) {
+      if (
+        isDirty &&
+        oldValues.current.externalChangeCounter !== externalChangeCounter
+      ) {
         toast.warning('Contents were updated externally so form was reset!');
       }
     }
