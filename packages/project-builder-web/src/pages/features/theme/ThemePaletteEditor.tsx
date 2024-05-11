@@ -1,4 +1,6 @@
 import {
+  COLOR_PALETTES,
+  ColorPaletteName,
   PALETTE_SHADES,
   PaletteShades,
   ThemeConfig,
@@ -18,7 +20,6 @@ import {
   useWatch,
 } from 'react-hook-form';
 
-import { COLOR_PALETTES } from './colors';
 import { generatePalette } from './palette-generator';
 
 interface ThemePaletteEditorProps {
@@ -52,7 +53,7 @@ export function ThemePaletteEditor({
   });
 
   const handlePaletteNameChange = useCallback(
-    (name: string) => {
+    (name: ColorPaletteName) => {
       if (COLOR_PALETTES[name]) {
         setValue(`palettes.${type}.shades`, COLOR_PALETTES[name]);
         onShadesChange?.(COLOR_PALETTES[name]);

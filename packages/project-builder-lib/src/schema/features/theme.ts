@@ -2,28 +2,21 @@ import { converter } from 'culori';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
 
+import {
+  COLOR_PALETTES,
+  PALETTE_SHADES,
+  PaletteShade,
+} from '@src/constants/colors.js';
+import { convertColorNameToHex } from '@src/utils/colors.js';
+
 export const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
-
-export const PALETTE_SHADES = [
-  '50',
-  '100',
-  '200',
-  '300',
-  '400',
-  '500',
-  '600',
-  '700',
-  '800',
-  '900',
-  '950',
-] as const;
-
-export type PaletteShade = (typeof PALETTE_SHADES)[number];
 
 type DefaultColor =
   | { baseShade: PaletteShade }
   | { primaryShade: PaletteShade }
   | { color: string };
+
+type ThemeColorCategory = 'surface' | 'interactive' | 'utility';
 
 /**
  * Configuration for a theme color.
@@ -41,88 +34,70 @@ export interface ThemeColorConfig {
    * Used to group colors in the theme editor.
    * Optional.
    */
-  categoryKey?: string;
+  groupKey?: string;
+  /** Category of the color */
+  category: ThemeColorCategory;
 }
 
-const themeColorKeys = [
-  'background',
-  'foreground',
-  'card',
-  'cardForeground',
-  'popover',
-  'popoverForeground',
-  'primary',
-  'primaryForeground',
-  'secondary',
-  'secondaryForeground',
-  'muted',
-  'mutedForeground',
-  'accent',
-  'accentForeground',
-  'destructive',
-  'destructiveForeground',
-  'border',
-  'input',
-  'accent',
-  'ring',
-  'link',
-  'linkVisited',
-] as const;
-
-type ThemeColorKey = (typeof themeColorKeys)[number];
-
-export const THEME_COLORS: Record<ThemeColorKey, ThemeColorConfig> = {
+export const THEME_COLORS = {
+  // Surface Colors
   background: {
     name: 'Background',
     description: 'The background color of the page',
-    lightDefault: { color: '#ffffff' },
+    lightDefault: { color: 'white' },
     darkDefault: { baseShade: '950' },
-    categoryKey: 'page',
+    groupKey: 'page',
+    category: 'surface',
   },
   foreground: {
     name: 'Foreground',
     description: 'The foreground color of the page',
     lightDefault: { baseShade: '950' },
     darkDefault: { baseShade: '50' },
-    categoryKey: 'page',
+    groupKey: 'page',
+    category: 'surface',
   },
   muted: {
     name: 'Muted Background',
     description:
-      'Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch />',
+      'Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch />, also used as background for containers on white background or vice versa',
     lightDefault: { baseShade: '100' },
-    darkDefault: { baseShade: '800' },
-    categoryKey: 'muted',
+    darkDefault: { baseShade: '900' },
+    groupKey: 'muted',
+    category: 'surface',
   },
   mutedForeground: {
     name: 'Muted Foreground',
-    description:
-      'Muted foregrounds such as <TabsList />, <Skeleton /> and <Switch />',
+    description: 'Used for secondary text and subtitles',
     lightDefault: { baseShade: '500' },
     darkDefault: { baseShade: '400' },
-    categoryKey: 'muted',
+    groupKey: 'muted',
+    category: 'surface',
   },
   card: {
     name: 'Card Background',
     description: 'Background color for <Card />',
-    lightDefault: { color: '#ffffff' },
+    lightDefault: { color: 'white' },
     darkDefault: { baseShade: '950' },
-    categoryKey: 'card',
+    groupKey: 'card',
+    category: 'surface',
   },
   cardForeground: {
     name: 'Card Foreground',
     description: 'Foreground color for <Card />',
     lightDefault: { baseShade: '950' },
     darkDefault: { baseShade: '50' },
-    categoryKey: 'card',
+    groupKey: 'card',
+    category: 'surface',
   },
   popover: {
     name: 'Popover Background',
     description:
       'Background color for popovers such as <DropdownMenu />, <HoverCard />, <Popover />',
-    lightDefault: { color: '#ffffff' },
+    lightDefault: { color: 'white' },
     darkDefault: { baseShade: '950' },
-    categoryKey: 'popover',
+    groupKey: 'popover',
+    category: 'surface',
   },
   popoverForeground: {
     name: 'Popover Foreground',
@@ -130,14 +105,174 @@ export const THEME_COLORS: Record<ThemeColorKey, ThemeColorConfig> = {
       'Foreground color for popovers such as <DropdownMenu />, <HoverCard />, <Popover />',
     lightDefault: { baseShade: '950' },
     darkDefault: { baseShade: '50' },
-    categoryKey: 'popover',
+    groupKey: 'popover',
+    category: 'surface',
   },
+  accent: {
+    name: 'Accent',
+    description:
+      'Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...',
+    lightDefault: { primaryShade: '100' },
+    darkDefault: { primaryShade: '800' },
+    groupKey: 'accent',
+    category: 'surface',
+  },
+  accentForeground: {
+    name: 'Accent Foreground',
+    description:
+      'Used for accent foregrounds such as hover effects on <DropdownMenuItem>, <SelectItem>...',
+    lightDefault: { baseShade: '700' },
+    darkDefault: { baseShade: '100' },
+    groupKey: 'accent',
+    category: 'surface',
+  },
+  success: {
+    name: 'Success',
+    description: 'Used for success state on input fields, toast or alerts',
+    lightDefault: { color: 'emerald-600' },
+    darkDefault: { baseShade: '50' },
+    groupKey: 'success',
+    category: 'surface',
+  },
+  successForeground: {
+    name: 'Success Foreground',
+    description: 'Used for success foregrounds',
+    lightDefault: { primaryShade: '50' },
+    darkDefault: { primaryShade: '50' },
+    groupKey: 'success',
+    category: 'surface',
+  },
+  warning: {
+    name: 'Warning',
+    description: 'Used for warning color on toast or alert',
+    lightDefault: { color: 'amber-600' },
+    darkDefault: { color: 'amber-700' },
+    groupKey: 'warning',
+    category: 'surface',
+  },
+  warningForeground: {
+    name: 'Warning Foreground',
+    description: 'Used for warning foregrounds',
+    lightDefault: { primaryShade: '50' },
+    darkDefault: { primaryShade: '50' },
+    groupKey: 'warning',
+    category: 'surface',
+  },
+  error: {
+    name: 'Error',
+    description: 'Used for error state on input fields, toast or alerts',
+    lightDefault: { color: 'red-600' },
+    darkDefault: { color: 'red-700' },
+    groupKey: 'error',
+    category: 'surface',
+  },
+  errorForeground: {
+    name: 'Error Foreground',
+    description: 'Used for error foregrounds',
+    lightDefault: { primaryShade: '50' },
+    darkDefault: { primaryShade: '50' },
+    groupKey: 'error',
+    category: 'surface',
+  },
+  // Interactive Element Colors
+  primary: {
+    name: 'Primary',
+    description:
+      'Primary colors for <Button /> and other active states for interactive elements such as checkbox',
+    lightDefault: { primaryShade: '700' },
+    darkDefault: { primaryShade: '600' },
+    groupKey: 'primary',
+    category: 'interactive',
+  },
+  primaryHover: {
+    name: 'Primary Hover',
+    description: 'Hover background for primary color',
+    lightDefault: { primaryShade: '900' },
+    darkDefault: { primaryShade: '800' },
+    groupKey: 'primary',
+    category: 'interactive',
+  },
+  primaryForeground: {
+    name: 'Primary Foreground',
+    description: 'Text color for primary button',
+    lightDefault: { baseShade: '50' },
+    darkDefault: { baseShade: '50' },
+    groupKey: 'primary',
+    category: 'interactive',
+  },
+  secondary: {
+    name: 'Secondary',
+    description: 'Secondary colors for <Button />',
+    lightDefault: { primaryShade: '100' },
+    darkDefault: { primaryShade: '800' },
+    groupKey: 'secondary',
+    category: 'interactive',
+  },
+  secondaryHover: {
+    name: 'Secondary Hover',
+    description: 'Hover background for secondary color',
+    lightDefault: { primaryShade: '300' },
+    darkDefault: { primaryShade: '600' },
+    groupKey: 'secondary',
+    category: 'interactive',
+  },
+  secondaryForeground: {
+    name: 'Secondary Foreground',
+    description: 'Text color for secondary button',
+    lightDefault: { baseShade: '700' },
+    darkDefault: { baseShade: '100' },
+    groupKey: 'secondary',
+    category: 'interactive',
+  },
+  destructive: {
+    name: 'Destructive',
+    description:
+      'Used for destructive actions such as <Button variant="destructive">',
+    lightDefault: { color: 'red-500' },
+    darkDefault: { color: 'red-900' },
+    groupKey: 'destructive',
+    category: 'interactive',
+  },
+  destructiveHover: {
+    name: 'Destructive Hover',
+    description: 'Hover color for destructive background',
+    lightDefault: { color: 'red-700' },
+    darkDefault: { color: 'red-700' },
+    groupKey: 'destructive',
+    category: 'interactive',
+  },
+  destructiveForeground: {
+    name: 'Destructive Foreground',
+    description: 'Hover color for destructive background',
+    lightDefault: { baseShade: '50' },
+    darkDefault: { baseShade: '50' },
+    groupKey: 'destructive',
+    category: 'interactive',
+  },
+  link: {
+    name: 'Link',
+    description: 'Used for interactive links mostly in text',
+    lightDefault: { primaryShade: '700' },
+    darkDefault: { primaryShade: '600' },
+    groupKey: 'link',
+    category: 'interactive',
+  },
+  linkVisited: {
+    name: 'Visited Link',
+    description: 'Color for link after being visited',
+    lightDefault: { primaryShade: '800' },
+    darkDefault: { primaryShade: '700' },
+    groupKey: 'link',
+    category: 'interactive',
+  },
+  // Utility Colors
   border: {
     name: 'Border',
     description: 'Default border color',
     lightDefault: { baseShade: '200' },
     darkDefault: { baseShade: '800' },
-    categoryKey: 'border',
+    groupKey: 'border',
+    category: 'utility',
   },
   input: {
     name: 'Input Border',
@@ -145,92 +280,28 @@ export const THEME_COLORS: Record<ThemeColorKey, ThemeColorConfig> = {
       'Border color for inputs such as <Input />, <Select />, <Textarea />',
     lightDefault: { baseShade: '200' },
     darkDefault: { baseShade: '800' },
-    categoryKey: 'border',
-  },
-  primary: {
-    name: 'Primary',
-    description: 'Primary colors for <Button />',
-    lightDefault: { primaryShade: '700' },
-    darkDefault: { primaryShade: '50' },
-    categoryKey: 'primary',
-  },
-  primaryForeground: {
-    name: 'Primary Foreground',
-    description: 'Primary foreground colors for <Button />',
-    lightDefault: { baseShade: '50' },
-    darkDefault: { baseShade: '900' },
-    categoryKey: 'primary',
-  },
-  secondary: {
-    name: 'Secondary',
-    description: 'Secondary colors for <Button />',
-    lightDefault: { baseShade: '100' },
-    darkDefault: { baseShade: '800' },
-    categoryKey: 'secondary',
-  },
-  secondaryForeground: {
-    name: 'Secondary Foreground',
-    description: 'Secondary foreground colors for <Button />',
-    lightDefault: { baseShade: '900' },
-    darkDefault: { baseShade: '50' },
-    categoryKey: 'secondary',
-  },
-  accent: {
-    name: 'Accent',
-    description:
-      'Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...etc',
-    lightDefault: { primaryShade: '100' },
-    darkDefault: { primaryShade: '800' },
-    categoryKey: 'accent',
-  },
-  accentForeground: {
-    name: 'Accent Foreground',
-    description:
-      'Used for accent foregrounds such as hover effects on <DropdownMenuItem>, <SelectItem>...etc',
-    lightDefault: { baseShade: '900' },
-    darkDefault: { baseShade: '50' },
-    categoryKey: 'accent',
-  },
-  destructive: {
-    name: 'Destructive',
-    description:
-      'Used for destructive actions such as <Button variant="destructive">',
-    lightDefault: { color: '#ef4444' },
-    darkDefault: { color: '#7f1d1d' },
-    categoryKey: 'destructive',
-  },
-  destructiveForeground: {
-    name: 'Destructive Foreground',
-    description:
-      'Used for destructive actions such as <Button variant="destructive">',
-    lightDefault: { primaryShade: '50' },
-    darkDefault: { primaryShade: '50' },
-    categoryKey: 'destructive',
+    groupKey: 'border',
+    category: 'utility',
   },
   ring: {
     name: 'Focus Ring',
-    description: 'Used for focus ring',
-    lightDefault: { primaryShade: '800' },
-    darkDefault: { primaryShade: '300' },
-    categoryKey: 'ring',
+    description:
+      'Used for focus ring. Will be 30% opacity on light and 50% on dark',
+    lightDefault: { primaryShade: '700' }, // 30% opacity
+    darkDefault: { primaryShade: '600' }, // 50% opacity
+    groupKey: 'ring',
+    category: 'utility',
   },
-  link: {
-    name: 'Link',
-    description: 'Used for links',
-    lightDefault: { primaryShade: '800' },
-    darkDefault: { primaryShade: '50' },
-    categoryKey: 'link',
-  },
-  linkVisited: {
-    name: 'Visited Link',
-    description: 'Used for visited links',
-    lightDefault: { primaryShade: '700' },
-    darkDefault: { primaryShade: '100' },
-    categoryKey: 'link',
-  },
-};
+} satisfies Record<string, ThemeColorConfig>;
 
-export const themeColorSchema = z.record(z.enum(themeColorKeys), hexColor);
+type ThemeColorKey = keyof typeof THEME_COLORS;
+
+export const themeColorKeys = Object.keys(THEME_COLORS) as ThemeColorKey[];
+
+export const themeColorSchema = z.record(
+  z.enum(themeColorKeys as [ThemeColorKey, ...ThemeColorKey[]]),
+  hexColor,
+);
 
 export type ThemeColorsConfig = z.infer<typeof themeColorSchema>;
 
@@ -272,7 +343,7 @@ function getDefaultHex(
   color: DefaultColor,
 ): string | undefined {
   if ('color' in color) {
-    return color.color;
+    return convertColorNameToHex(color.color);
   }
   if ('primaryShade' in color) {
     return palettes.primary.shades[color.primaryShade];
@@ -337,19 +408,7 @@ export function generateCssFromThemeConfig(
 export function generateDefaultTheme(): ThemeConfig {
   const slatePalette = {
     paletteName: 'slate',
-    shades: {
-      50: '#f8fafc',
-      100: '#f1f5f9',
-      200: '#e2e8f0',
-      300: '#cbd5e1',
-      400: '#94a3b8',
-      500: '#64748b',
-      600: '#475569',
-      700: '#334155',
-      800: '#1e293b',
-      900: '#0f172a',
-      950: '#020617',
-    },
+    shades: COLOR_PALETTES.slate,
   };
   const slatePalettes = {
     base: slatePalette,

@@ -1,9 +1,12 @@
+import {
+  ColorPalette,
+  PALETTE_SHADES,
+} from '@halfdomelabs/project-builder-lib';
 import { converter, Rgb, formatHex } from 'culori';
 
-import { ColorPalette, PALETTE_SHADES } from './colors';
 import { generatePaletteNN } from './palette-neural-net';
 
-function getPaletteKey(shade: number, component: string): string {
+function getPaletteKey(shade: string, component: string): string {
   return `${shade}-${component}`;
 }
 

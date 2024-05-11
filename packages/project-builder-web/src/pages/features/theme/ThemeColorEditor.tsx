@@ -1,4 +1,8 @@
-import { THEME_COLORS, ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  THEME_COLORS,
+  ThemeConfig,
+  convertHexToColorName,
+} from '@halfdomelabs/project-builder-lib';
 import { ColorPickerField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
@@ -24,8 +28,8 @@ export function ThemeColorEditor({
         {themeColorEntries.map(([key, config], idx) => {
           const themeKey = key as keyof typeof THEME_COLORS;
           const lastCategoryKey =
-            idx > 0 ? themeColorEntries[idx - 1][1].categoryKey : undefined;
-          const shouldStartNewColumn = lastCategoryKey !== config.categoryKey;
+            idx > 0 ? themeColorEntries[idx - 1][1].groupKey : undefined;
+          const shouldStartNewColumn = lastCategoryKey !== config.groupKey;
           return (
             <ColorPickerField.Controller
               className={shouldStartNewColumn ? 'col-start-1' : undefined}
@@ -45,7 +49,7 @@ export function ThemeColorEditor({
                 if (primaryShade) {
                   return `primary-${primaryShade}`;
                 }
-                return color;
+                return convertHexToColorName(color);
               }}
               name={`colors.${mode}.${themeKey}`}
             />
