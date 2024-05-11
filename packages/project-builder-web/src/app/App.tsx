@@ -1,4 +1,4 @@
-import { ConfirmDialog } from '@halfdomelabs/ui-components';
+import { ConfirmDialog, Tooltip } from '@halfdomelabs/ui-components';
 import { Toaster } from 'react-hot-toast';
 import { Outlet } from 'react-router-dom';
 
@@ -12,17 +12,19 @@ import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
 function App(): JSX.Element {
   return (
     <ErrorBoundary>
-      <ClientVersionGate>
-        <ProjectChooserGate>
-          <ProjectDefinitionGate>
-            <Outlet />
-            <RefIssueDialog />
-          </ProjectDefinitionGate>
-        </ProjectChooserGate>
-        <Toaster />
-        <ConfirmDialog />
-        <BlockerDialog />
-      </ClientVersionGate>
+      <Tooltip.Provider>
+        <ClientVersionGate>
+          <ProjectChooserGate>
+            <ProjectDefinitionGate>
+              <Outlet />
+              <RefIssueDialog />
+            </ProjectDefinitionGate>
+          </ProjectChooserGate>
+          <Toaster />
+          <ConfirmDialog />
+          <BlockerDialog />
+        </ClientVersionGate>
+      </Tooltip.Provider>
     </ErrorBoundary>
   );
 }

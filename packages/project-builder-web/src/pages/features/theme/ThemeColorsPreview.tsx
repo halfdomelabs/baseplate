@@ -29,7 +29,7 @@ export function ThemeColorsPreview({
   return (
     <div
       className={clsx(
-        'h-full w-full rounded-md bg-background p-4 shadow-inner',
+        'size-full rounded-md bg-background p-4 shadow-inner',
         className,
       )}
       style={colors && generateCssFromThemeConfig(colors)}

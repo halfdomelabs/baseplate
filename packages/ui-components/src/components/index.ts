@@ -32,3 +32,4 @@ export * from './Switch/Switch.js';
 export * from './SwitchField/SwitchField.js';
 export * from './Table/Table.js';
 export * from './Tabs/Tabs.js';
+export * from './Tooltip/Tooltip.js';

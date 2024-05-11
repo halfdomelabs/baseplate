@@ -4,10 +4,10 @@ import {
   convertHexToColorName,
   getDefaultThemeColorFromShade,
 } from '@halfdomelabs/project-builder-lib';
-import { Button, ColorPickerField } from '@halfdomelabs/ui-components';
+import { Button, ColorPickerField, Tooltip } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
-import { MdRestartAlt } from 'react-icons/md';
+import { MdInfo, MdRestartAlt } from 'react-icons/md';
 
 import { ThemeColorsPreview } from './ThemeColorsPreview';
 
@@ -42,12 +42,39 @@ export function ThemeColorEditor({
             themeKey,
           );
           return (
-            <div className="relative" key={key}>
+            <div
+              className={clsx(
+                shouldStartNewColumn ? 'col-start-1' : undefined,
+                'relative',
+              )}
+              key={key}
+            >
               <ColorPickerField.Controller
-                className={shouldStartNewColumn ? 'col-start-1' : undefined}
                 control={control}
-                label={config.name}
-                formatLabel={(color) => {
+                label={
+                  <div className="flex items-center space-x-1">
+                    <div>{config.name}</div>
+                    <Tooltip delayDuration={500}>
+                      <Tooltip.Trigger asChild>
+                        <Button.WithIcon
+                          variant="ghost"
+                          size="icon"
+                          icon={MdInfo}
+                          aria-label="Color Info"
+                          className="opacity-30"
+                        />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content
+                        align="start"
+                        side="bottom"
+                        className="max-w-[400px]"
+                      >
+                        <div className="font-normal">{config.description}</div>
+                      </Tooltip.Content>
+                    </Tooltip>
+                  </div>
+                }
+                formatColorName={(color) => {
                   const baseShade = Object.entries(
                     palettes.base.shades ?? {},
                   ).find(([, shadeColor]) => shadeColor === color)?.[0];
