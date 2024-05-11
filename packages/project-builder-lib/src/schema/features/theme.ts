@@ -351,6 +351,18 @@ function getDefaultHex(
   return palettes.base.shades[color.baseShade];
 }
 
+export function getDefaultThemeColorFromShade(
+  palettes: PalettesConfig,
+  mode: 'light' | 'dark',
+  themeColorKey: ThemeColorKey,
+): string | undefined {
+  const defaultColorConfig =
+    THEME_COLORS[themeColorKey][
+      mode === 'light' ? 'lightDefault' : 'darkDefault'
+    ];
+  return getDefaultHex(palettes, defaultColorConfig);
+}
+
 export function generateThemeColorsFromShade(
   palettes: PalettesConfig,
   mode: 'light' | 'dark',

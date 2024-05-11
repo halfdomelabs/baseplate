@@ -168,10 +168,18 @@ export function ThemeHomePage(): JSX.Element {
             <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content value="light">
-            <ThemeColorEditor control={control} mode="light" />
+            <ThemeColorEditor
+              control={control}
+              setValue={setValue}
+              mode="light"
+            />
           </Tabs.Content>
           <Tabs.Content value="dark">
-            <ThemeColorEditor control={control} mode="dark" />
+            <ThemeColorEditor
+              control={control}
+              setValue={setValue}
+              mode="dark"
+            />
           </Tabs.Content>
         </Tabs>
 
