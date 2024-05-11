@@ -44,10 +44,10 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     const prettierPluginTailwindcssVersion = '0.5.14';
 
     node.addDevPackages({
-      autoprefixer: '10.4.14',
-      tailwindcss: '3.3.2',
+      autoprefixer: '10.4.19',
+      tailwindcss: '3.4.3',
       'prettier-plugin-tailwindcss': prettierPluginTailwindcssVersion,
-      '@tailwindcss/forms': '0.5.3',
+      '@tailwindcss/forms': '0.5.7',
     });
 
     eslint
