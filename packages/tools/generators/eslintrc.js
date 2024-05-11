@@ -103,9 +103,8 @@ module.exports = function createEslintConfig(options) {
       'no-unused-vars': ['error', { ignoreRestSiblings: true }],
       ...(react
         ? {
-            'tailwindcss/no-custom-classname': react
-              ? ['error', {}]
-              : undefined,
+            'tailwindcss/no-custom-classname': ['error', {}],
+            'tailwindcss/classnames-order': 'off',
           }
         : {}),
     },
