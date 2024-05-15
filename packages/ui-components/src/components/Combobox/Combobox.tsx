@@ -217,7 +217,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
               }
             }}
           >
-            <RxCaretSort className="h-4 w-4" />
+            <RxCaretSort className="size-4" />
           </Button>
         </div>
       </PopoverAnchor>
@@ -227,16 +227,19 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
 
 ComboboxInput.displayName = 'ComboboxInput';
 
-interface ComboboxContentProps {
+interface ComboboxContentProps extends React.RefAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   className?: string;
   maxHeight?: string;
+  style?: React.CSSProperties;
 }
 
 function ComboboxContent({
   children,
   className,
   maxHeight = '320px',
+  style,
+  ...rest
 }: ComboboxContentProps): React.JSX.Element {
   const { inputId } = useComboboxContext();
   return (
@@ -256,9 +259,11 @@ function ComboboxContent({
         style={
           {
             '--max-popover-height': maxHeight,
+            ...style,
           } as Record<string, string>
         }
         data-combobox-content=""
+        {...rest}
       >
         <ScrollAreaPrimitive.Root
           type="auto"

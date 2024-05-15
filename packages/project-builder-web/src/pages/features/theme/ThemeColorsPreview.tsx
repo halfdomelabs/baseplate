@@ -2,12 +2,7 @@ import {
   ThemeConfig,
   generateCssFromThemeConfig,
 } from '@halfdomelabs/project-builder-lib';
-import {
-  Badge,
-  Button,
-  Card,
-  ComboboxField,
-} from '@halfdomelabs/ui-components';
+import { Badge, Button, Card, Combobox } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 
@@ -26,13 +21,14 @@ export function ThemeColorsPreview({
     control,
     name: `colors.${mode}`,
   });
+  const colorCss = colors && generateCssFromThemeConfig(colors);
   return (
     <div
       className={clsx(
         'size-full rounded-md bg-background p-4 shadow-inner',
         className,
       )}
-      style={colors && generateCssFromThemeConfig(colors)}
+      style={colorCss}
     >
       <Card>
         <Card.Header>
@@ -41,15 +37,22 @@ export function ThemeColorsPreview({
         </Card.Header>
         <Card.Content className="space-y-4">
           <p>Hello Hello!</p>
-          <ComboboxField
-            label="What is your favorite color?"
-            description="Choose anything you want"
-            options={[
-              { label: 'Red', value: 'red' },
-              { label: 'Green', value: 'green' },
-              { label: 'Blue', value: 'blue' },
-            ]}
-          />
+          <Combobox>
+            <Combobox.Input placeholder={'Select a color'} />
+            <Combobox.Content style={colorCss}>
+              <Combobox.Item value="red" label="Red">
+                Red
+              </Combobox.Item>
+              <Combobox.Item value="green" label="Green">
+                Green
+              </Combobox.Item>
+              <Combobox.Item value="blue" label="Blue">
+                Blue
+              </Combobox.Item>
+              <Combobox.Empty>No results found</Combobox.Empty>
+            </Combobox.Content>
+          </Combobox>
+
           <h2>Badges</h2>
           <Badge variant="default">Default</Badge>
           <Badge variant="secondary">Secondary</Badge>
