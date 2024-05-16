@@ -1,12 +1,29 @@
 // obtained from Tailwind (https://github.com/tailwindlabs/tailwindcss/blob/master/src/public/colors.js)
 
 export const PALETTE_SHADES = [
-  50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950,
+  '50',
+  '100',
+  '200',
+  '300',
+  '400',
+  '500',
+  '600',
+  '700',
+  '800',
+  '900',
+  '950',
 ] as const;
+
+export type PaletteShade = (typeof PALETTE_SHADES)[number];
 
 export type ColorPalette = Record<(typeof PALETTE_SHADES)[number], string>;
 
-export const COLOR_PALETTES: Record<string, ColorPalette> = {
+export const FIXED_COLOR_MAPPINGS: Record<string, string> = {
+  white: '#ffffff',
+  black: '#000000',
+};
+
+export const COLOR_PALETTES = {
   slate: {
     50: '#f8fafc',
     100: '#f1f5f9',
@@ -293,4 +310,6 @@ export const COLOR_PALETTES: Record<string, ColorPalette> = {
     900: '#881337',
     950: '#4c0519',
   },
-};
+} satisfies Record<string, ColorPalette>;
+
+export type ColorPaletteName = keyof typeof COLOR_PALETTES;

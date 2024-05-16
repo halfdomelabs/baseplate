@@ -20,7 +20,7 @@ export interface ColorPickerFieldProps extends FieldProps {
   disabled?: boolean;
   placeholder?: string;
   onChange?: (value: string) => void;
-  formatLabel?: (color: string) => string;
+  formatColorName?: (color: string) => string;
   value?: string;
   hideText?: boolean;
 }
@@ -40,7 +40,7 @@ function ColorPickerFieldFn(
     error,
     description,
     hideText,
-    formatLabel,
+    formatColorName,
   }: ColorPickerFieldProps,
   ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
@@ -72,7 +72,7 @@ function ColorPickerFieldFn(
             />
           )}
           {hideText ? null : value ? (
-            <div>{formatLabel ? formatLabel(value) : value}</div>
+            <div>{formatColorName ? formatColorName(value) : value}</div>
           ) : (
             <div className="opacity-75">{placeholder}</div>
           )}

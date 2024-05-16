@@ -54,7 +54,7 @@ function EditAppPage(): JSX.Element {
       <div className="flex items-center justify-between space-x-4">
         <div>
           <h2>{packageScope ? `@${packageScope}/${app.name}` : app.name}</h2>
-          <p className="text-base text-foreground-600">{app.type} app</p>
+          <p className="text-base text-muted-foreground">{app.type} app</p>
         </div>
         <Button color="light" onClick={handleDelete}>
           Delete

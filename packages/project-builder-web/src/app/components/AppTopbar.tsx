@@ -16,14 +16,14 @@ export function AppTopbar(): JSX.Element {
   const { projects } = useProjects();
 
   return (
-    <div className="flex items-center justify-between border-b border-foreground-200 bg-white p-4 dark:bg-background-800">
+    <div className="flex items-center justify-between border-b bg-background p-4">
       <ProjectChooserDialog
         onClose={() => setShowProjectChooserModal(false)}
         isOpen={showProjectChooserModal}
       />
       <div className="flex items-center space-x-8">
         <div className="flex items-center space-x-2">
-          <img src="/images/logo.png" alt="logo" className="h-12 w-12" />
+          <img src="/images/logo.png" alt="logo" className="size-12" />
           <Link to="/">
             <h3>{config.name}</h3>
           </Link>

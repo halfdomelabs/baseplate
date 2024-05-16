@@ -69,7 +69,7 @@ export function ModelsSidebarList({
         {filterQuery && (
           <Button
             variant="ghost"
-            className="absolute right-4 top-1/2 -translate-y-1/2 transform"
+            className="absolute right-4 top-1/2 -translate-y-1/2"
             onClick={() => setFilterQuery('')}
             size="icon"
           >
@@ -86,10 +86,10 @@ export function ModelsSidebarList({
                 to={`/models/edit/${modelEntityType.toUid(model.id)}`}
                 className={({ isActive }) =>
                   clsx(
-                    'block w-full p-2 text-sm group-hover:bg-background-100 dark:group-hover:bg-background-700',
+                    'block w-full p-2 text-sm',
                     isActive
-                      ? 'bg-background-100 font-semibold text-primary-700 dark:bg-background-700'
-                      : 'font-normal text-foreground-700',
+                      ? 'bg-accent font-semibold text-accent-foreground'
+                      : 'font-normal group-hover:bg-accent/50',
                   )
                 }
                 title={model.name}
@@ -99,7 +99,7 @@ export function ModelsSidebarList({
 
                   <MdDelete
                     title="Delete Model"
-                    className="z-10 hidden h-4 w-4 shrink-0 text-foreground-700 opacity-75 group-hover:inline-flex"
+                    className="z-10 hidden size-4 shrink-0 opacity-50 group-hover:inline-flex"
                     onClick={(e) => {
                       e.preventDefault();
                       requestConfirm({

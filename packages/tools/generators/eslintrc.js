@@ -92,6 +92,7 @@ module.exports = function createEslintConfig(options) {
             'plugin:react-hooks/recommended',
             'plugin:react/jsx-runtime',
             'plugin:jsx-a11y/recommended',
+            'plugin:tailwindcss/recommended',
           ]
         : []),
       ...(storybook ? ['plugin:storybook/recommended'] : []),
@@ -100,6 +101,12 @@ module.exports = function createEslintConfig(options) {
     rules: {
       // useful for replacing _.omit e.g. const { a, ...rest } = obj
       'no-unused-vars': ['error', { ignoreRestSiblings: true }],
+      ...(react
+        ? {
+            'tailwindcss/no-custom-classname': ['error', {}],
+            'tailwindcss/classnames-order': 'off',
+          }
+        : {}),
     },
     overrides: [
       ...typescriptOverrides,

@@ -42,7 +42,7 @@ export function EnumsSidebarList({
         {filterQuery && (
           <Button
             variant="ghost"
-            className="absolute right-4 top-1/2 -translate-y-1/2 transform"
+            className="absolute right-4 top-1/2 -translate-y-1/2"
             size="icon"
             onClick={() => setFilterQuery('')}
           >
@@ -58,10 +58,10 @@ export function EnumsSidebarList({
                 to={`/models/enums/edit/${modelEnumEntityType.toUid(item.id)}`}
                 className={({ isActive }) =>
                   clsx(
-                    'block w-full p-2 text-sm hover:bg-background-100 dark:hover:bg-background-700',
+                    'block w-full p-2 text-sm',
                     isActive
-                      ? 'bg-background-100 font-semibold text-primary-700 dark:bg-background-700'
-                      : 'font-normal text-foreground-700',
+                      ? 'bg-accent font-semibold text-accent-foreground'
+                      : 'font-normal group-hover:bg-accent/50',
                   )
                 }
                 title={item.name}
