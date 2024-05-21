@@ -13,3 +13,4 @@ export { eslintProvider, EslintProvider } from './eslint/index.js';
 export { tsUtilsProvider, TsUtilsProvider } from './ts-utils/index.js';
 export { jestProvider, JestProvider } from './jest/index.js';
 export { prettierProvider, PrettierProvider } from './prettier/index.js';
+export { vitestProvider, VitestProvider } from './vitest/index.js';

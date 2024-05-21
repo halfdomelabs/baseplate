@@ -95,6 +95,14 @@ const NodeGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
+    vitest: {
+      provider: 'vitest',
+      defaultToNullIfEmpty: true,
+      defaultDescriptor: {
+        generator: '@halfdomelabs/core/node/vitest',
+        peerProvider: true,
+      },
+    },
   }),
   exports: {
     node: nodeProvider,

@@ -105,6 +105,13 @@ const FastifyGenerator = createGeneratorWithTasks({
         peerProvider: true,
       },
     },
+    vitest: {
+      provider: 'fastify-vitest',
+      defaultDescriptor: {
+        generator: '@halfdomelabs/fastify/vitest/fastify-vitest',
+        peerProvider: true,
+      },
+    },
     serviceContext: {
       provider: 'service-context',
       defaultDescriptor: {
