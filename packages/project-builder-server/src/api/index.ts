@@ -1,4 +1,5 @@
 import { authRouter } from './auth.js';
+import { createPluginsRouter } from './plugins.js';
 import { createProjectsRouter } from './projects.js';
 import { createSyncRouter } from './sync.js';
 import { publicProcedure, router } from './trpc.js';
@@ -14,6 +15,7 @@ export function createAppRouter(context: BaseplateApiContext) {
     version: publicProcedure.query(() => {
       return context.cliVersion;
     }),
+    plugins: createPluginsRouter(context),
   });
 }
 

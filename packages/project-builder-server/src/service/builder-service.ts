@@ -1,4 +1,7 @@
-import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
+import {
+  getLatestMigrationVersion,
+  PluginConfigWithModule,
+} from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
@@ -6,6 +9,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { GeneratorEngineSetupConfig } from '@src/index.js';
+import { discoverPlugins } from '@src/plugins/plugin-discovery.js';
 import { buildProjectForDirectory } from '@src/runner/index.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter.js';
@@ -66,6 +70,8 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
   private generatorSetupConfig: GeneratorEngineSetupConfig;
 
   private cliVersion: string;
+
+  private cachedAvailablePlugins: PluginConfigWithModule[] | null = null;
 
   constructor({
     directory,
@@ -199,5 +205,15 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
     } finally {
       this.isRunningCommand = false;
     }
+  }
+
+  public async getAvailablePlugins(): Promise<PluginConfigWithModule[]> {
+    if (!this.cachedAvailablePlugins) {
+      this.cachedAvailablePlugins = await discoverPlugins(
+        this.directory,
+        this.logger,
+      );
+    }
+    return this.cachedAvailablePlugins;
   }
 }

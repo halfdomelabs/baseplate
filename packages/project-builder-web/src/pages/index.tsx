@@ -9,6 +9,7 @@ import AppsPages from './apps';
 import { FeaturesPage } from './features';
 import HomePage from './home/home.page';
 import ModelsPage from './models';
+import { PluginsPage } from './plugins';
 import SettingsPage from './settings';
 import App from '@src/app/App';
 import { AppTopbar } from 'src/app/components/AppTopbar';
@@ -22,6 +23,7 @@ export const router = createBrowserRouter(
         <Route path="/apps/*" element={<AppsPages />} />
         <Route path="/models/*" element={<ModelsPage />} />
         <Route path="/features/*" element={<FeaturesPage />} />
+        <Route path="/plugins/*" element={<PluginsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

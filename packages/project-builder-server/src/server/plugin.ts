@@ -74,7 +74,7 @@ export async function baseplatePlugin(
     if (
       !host.startsWith('localhost:') &&
       host !== 'localhost' &&
-      !host.startsWith('127.0.0.1') &&
+      !host.startsWith('127.0.0.1:') &&
       host !== '127.0.0.1'
     ) {
       throw new Error(`Must connect from localhost`);

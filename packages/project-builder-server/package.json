@@ -49,6 +49,7 @@
     "json-stringify-pretty-compact": "^4.0.0",
     "lodash": "^4.17.21",
     "open": "^9.1.0",
+    "package-up": "^5.0.0",
     "pino": "8.14.1",
     "pino-pretty": "10.0.1",
     "ramda": "^0.28.0",
