@@ -34,7 +34,7 @@
   --link-visited: 226 71% 40%;
   --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 224 76% 48%;
+  --ring: 224 76% 48% / 50%;
 }
 
 .dark,
@@ -68,5 +68,5 @@ html[data-theme='dark'] {
   --link-visited: 224 76% 48%;
   --border: 217 33% 17%;
   --input: 217 33% 17%;
-  --ring: 221 83% 53%;
+  --ring: 221 83% 53% / 50%;
 }

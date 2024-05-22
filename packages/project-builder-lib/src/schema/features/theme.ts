@@ -37,6 +37,8 @@ export interface ThemeColorConfig {
   groupKey?: string;
   /** Category of the color */
   category: ThemeColorCategory;
+  /** Opacity of color (out of 100) */
+  opacity?: number;
 }
 
 export const THEME_COLORS = {
@@ -287,9 +289,10 @@ export const THEME_COLORS = {
     name: 'Focus Ring',
     description: 'Used for focus ring. Will be 30% opacity.',
     lightDefault: { primaryShade: '700' }, // 30% opacity
-    darkDefault: { primaryShade: '600' }, // 50% opacity
+    darkDefault: { primaryShade: '600' }, // 30% opacity
     groupKey: 'ring',
     category: 'utility',
+    opacity: 50,
   },
 } satisfies Record<string, ThemeColorConfig>;
 
@@ -408,10 +411,16 @@ export function generateCssFromThemeConfig(
   config: ThemeColorsConfig,
 ): Record<string, string> {
   return Object.entries(config).reduce<Record<string, string>>(
-    (acc, [key, value]) => ({
-      ...acc,
-      [`--${dasherize(underscore(key))}`]: convertHexToHsl(value),
-    }),
+    (acc, [key, value]) => {
+      const themeColorKey = key as ThemeColorKey;
+      const config = THEME_COLORS[themeColorKey];
+      return {
+        ...acc,
+        [`--${dasherize(underscore(key))}`]: `${convertHexToHsl(value)}${
+          'opacity' in config ? ` / ${config.opacity}%` : ''
+        }`,
+      };
+    },
     {},
   );
 }
