@@ -10,6 +10,7 @@ import { eslintProvider } from '../eslint/index.js';
 import { nodeProvider } from '../node/index.js';
 import { typescriptProvider } from '../typescript/index.js';
 import { TypescriptCodeUtils } from '@src/writers/index.js';
+import { quot } from '@src/utils/string.js';
 
 const descriptorSchema = z.object({});
 
@@ -37,11 +38,7 @@ const VitestGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node, typescript, eslint }) {
     const configMap = createNonOverwriteableMap<VitestGeneratorConfig>(
       {
-        exclude: [
-          '<rootDir>/baseplate/',
-          '<rootDir>/dist/',
-          '<rootDir>/node_modules/',
-        ],
+        exclude: ['baseplate/**', 'dist/**', 'node_modules/**'],
       },
       { name: 'vitest-config', mergeArraysUniquely: true },
     );
@@ -67,7 +64,13 @@ const VitestGenerator = createGeneratorWithChildren({
           ? `<rootDir>/${typescriptOptions.rootDir}`
           : '<rootDir>';
 
-        const vitestConfig = {};
+        const vitestConfig = {
+          environment: quot('node'),
+          clearMocks: 'true',
+          exclude: TypescriptCodeUtils.mergeExpressionsAsArray(
+            config.exclude.map((str) => quot(str)),
+          ),
+        };
 
         const vitestConfigFile = typescript.createTemplate({
           VITEST_CONFIG: { type: 'code-expression' },
