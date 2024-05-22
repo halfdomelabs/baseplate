@@ -14,7 +14,6 @@ if (SENTRY_ENABLED) {
     environment: CONFIG.APP_ENVIRONMENT,
     serverName: os.hostname(),
     integrations: SENTRY_INTEGRATIONS,
-    tracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
     tracesSampler: (samplingContext) => {
       if (
         samplingContext?.request?.url &&
@@ -22,7 +21,7 @@ if (SENTRY_ENABLED) {
       ) {
         return false;
       }
-      return true;
+      return SENTRY_TRACES_SAMPLE_RATE;
     },
   });
 }
