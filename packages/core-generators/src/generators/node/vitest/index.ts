@@ -9,8 +9,8 @@ import { z } from 'zod';
 import { eslintProvider } from '../eslint/index.js';
 import { nodeProvider } from '../node/index.js';
 import { typescriptProvider } from '../typescript/index.js';
-import { TypescriptCodeUtils } from '@src/writers/index.js';
 import { quot } from '@src/utils/string.js';
+import { TypescriptCodeUtils } from '@src/writers/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -60,16 +60,23 @@ const VitestGenerator = createGeneratorWithChildren({
 
         const typescriptOptions = typescript.getCompilerOptions();
 
-        const prefix = typescriptOptions.rootDir
-          ? `<rootDir>/${typescriptOptions.rootDir}`
-          : '<rootDir>';
+        const alias = Object.fromEntries(
+          Object.entries(typescriptOptions.paths ?? {}).map(([key, value]) => [
+            key.replace('/*', ''),
+            value[0].replace('/*', ''),
+          ]),
+        );
 
         const vitestConfig = {
           environment: quot('node'),
           clearMocks: 'true',
+          include: "['src/**/*.test.{js,ts}']",
           exclude: TypescriptCodeUtils.mergeExpressionsAsArray(
             config.exclude.map((str) => quot(str)),
           ),
+          alias: Object.keys(alias ?? {}).length
+            ? JSON.stringify(alias)
+            : undefined,
         };
 
         const vitestConfigFile = typescript.createTemplate({
