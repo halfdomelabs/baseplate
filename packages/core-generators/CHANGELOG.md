@@ -1,5 +1,12 @@
 # @halfdomelabs/core-generators
 
+## 0.7.6
+
+### Patch Changes
+
+- 9f33a18: Switch Vite projects to use ESM instead of CJS
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.7.5
 
 ### Patch Changes

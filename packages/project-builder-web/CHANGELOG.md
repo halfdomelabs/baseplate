@@ -1,5 +1,22 @@
 # @halfdomelabs/project-builder-web
 
+## 0.9.2
+
+### Patch Changes
+
+- d07213f: feat: Update project builder web components to use useProjects hook
+- a4fb47d: Update npm dependencies for tailwindcss to 3.4.3 and associated packages
+- 12c83b2: Fix buggy navigation blocker.
+- 377b433: Update project builder to use new color system from updated design system
+- 994b7d2: Dismiss blocker dialog if no active blocker dialog present
+- 9cab58f: Replace classnames with clsx.
+- Updated dependencies [a4fb47d]
+- Updated dependencies [377b433]
+- Updated dependencies [e701e1d]
+- Updated dependencies [9cab58f]
+  - @halfdomelabs/ui-components@0.4.6
+  - @halfdomelabs/project-builder-lib@0.7.4
+
 ## 0.9.1
 
 ### Patch Changes

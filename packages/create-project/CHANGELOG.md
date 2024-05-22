@@ -1,5 +1,11 @@
 # @halfdomelabs/create-project
 
+## 0.1.5
+
+### Patch Changes
+
+- 0ebac7a: Add naming constraints to created project and lowercase package name
+
 ## 0.1.4
 
 ### Patch Changes

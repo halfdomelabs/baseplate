@@ -1,5 +1,14 @@
 # @halfdomelabs/ui-components
 
+## 0.4.6
+
+### Patch Changes
+
+- a4fb47d: Update npm dependencies for tailwindcss to 3.4.3 and associated packages
+- 377b433: Update project builder to use new color system from updated design system
+- e701e1d: Upgrade Storybook to 8.1.2 and add vite.config.ts
+- 9cab58f: Replace classnames with clsx.
+
 ## 0.4.5
 
 ### Patch Changes

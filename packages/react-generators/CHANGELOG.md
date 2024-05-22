@@ -1,5 +1,16 @@
 # @halfdomelabs/react-generators
 
+## 0.7.6
+
+### Patch Changes
+
+- a4fb47d: Update npm dependencies for tailwindcss to 3.4.3 and associated packages
+- 9f33a18: Switch Vite projects to use ESM instead of CJS
+- 9cab58f: Replace classnames with clsx.
+- Updated dependencies [9f33a18]
+  - @halfdomelabs/core-generators@0.7.6
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.7.5
 
 ### Patch Changes
