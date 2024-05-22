@@ -50,6 +50,7 @@ function Typography(): JSX.Element {
 const meta: Meta<typeof Typography> = {
   title: 'Typography',
   component: Typography,
+  tags: ['!autodocs'],
 };
 
 export default meta;
