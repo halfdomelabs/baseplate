@@ -32,6 +32,7 @@
     "start": "tsx -r dotenv/config ./src"
   },
   "dependencies": {
+    "@halfdomelabs/baseplate-plugin-storage": "workspace:*",
     "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/fastify-generators": "workspace:*",
     "@halfdomelabs/project-builder-server": "workspace:*",

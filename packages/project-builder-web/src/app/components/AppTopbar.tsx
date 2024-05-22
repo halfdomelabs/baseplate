@@ -1,14 +1,7 @@
 import { Button, NavigationMenu } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { HiCollection, HiDatabase, HiSwitchHorizontal } from 'react-icons/hi';
-import {
-  MdApps,
-  MdOutlineSplitscreen,
-  MdOutlineVerticalSplit,
-  MdPlumbing,
-  MdSettings,
-  MdSplitscreen,
-} from 'react-icons/md';
+import { MdApps, MdSettings, MdWidgets } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
@@ -58,7 +51,7 @@ export function AppTopbar(): JSX.Element {
             </NavigationMenu.ItemWithLink>
             <NavigationMenu.ItemWithLink asChild>
               <NavLink to="/plugins">
-                <MdOutlineSplitscreen />
+                <MdWidgets />
                 Plugins
               </NavLink>
             </NavigationMenu.ItemWithLink>

@@ -147,8 +147,8 @@ importers:
         specifier: 18.0.0
         version: 18.0.0
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -175,8 +175,8 @@ importers:
         specifier: 8.2.2
         version: 8.2.2
       cpx2:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: 7.0.1
+        version: 7.0.1
       tsc-alias:
         specifier: 1.8.8
         version: 1.8.8
@@ -269,8 +269,8 @@ importers:
         specifier: 18.0.0
         version: 18.0.0
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -285,8 +285,8 @@ importers:
         specifier: 8.2.2
         version: 8.2.2
       cpx2:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: 7.0.1
+        version: 7.0.1
       tsc-alias:
         specifier: 1.8.8
         version: 1.8.8
@@ -296,6 +296,9 @@ importers:
 
   packages/project-builder-cli:
     dependencies:
+      '@halfdomelabs/baseplate-plugin-storage':
+        specifier: workspace:*
+        version: link:../../plugins/baseplate-plugin-storage
       '@halfdomelabs/core-generators':
         specifier: workspace:*
         version: link:../core-generators
@@ -376,8 +379,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -445,6 +448,9 @@ importers:
       fastify-plugin:
         specifier: ^4.5.1
         version: 4.5.1
+      fastify-type-provider-zod:
+        specifier: ^1.2.0
+        version: 1.2.0(fastify@4.25.2)(zod@3.23.8)
       fs-extra:
         specifier: 11.1.1
         version: 11.1.1
@@ -460,6 +466,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      mime:
+        specifier: ^4.0.3
+        version: 4.0.3
       open:
         specifier: ^9.1.0
         version: 9.1.0
@@ -479,8 +488,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -627,8 +636,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.4
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
       zustand:
         specifier: 4.4.6
         version: 4.4.6(@types/react@18.2.15)(immer@10.0.3)(react@18.2.0)
@@ -712,8 +721,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -734,8 +743,8 @@ importers:
         specifier: 8.2.2
         version: 8.2.2
       cpx2:
-        specifier: ^5.0.0
-        version: 5.0.0
+        specifier: 7.0.1
+        version: 7.0.1
       tsc-alias:
         specifier: 1.8.8
         version: 1.8.8
@@ -779,8 +788,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -1055,8 +1064,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/sync
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*
@@ -1064,6 +1073,9 @@ importers:
       concurrently:
         specifier: 8.2.2
         version: 8.2.2
+      cpx2:
+        specifier: 7.0.1
+        version: 7.0.1
       tsc-alias:
         specifier: 1.8.8
         version: 1.8.8
@@ -7559,16 +7571,16 @@ packages:
       typescript: 5.2.2
     dev: true
 
-  /cpx2@5.0.0:
-    resolution: {integrity: sha512-43LMini/KvlKMHjU7solCgVgNBspCmQ1noP5ckMa0VApaXrJFLcdfSxZxcdvH3wWcOvCwFGvOPBawOesI3oWMQ==}
-    engines: {node: '>=16'}
+  /cpx2@7.0.1:
+    resolution: {integrity: sha512-ZgK/DRvPFM5ATZ5DQ5UzY6ajkBrI/p9Uc7VyLHc7b4OSFeBO4yOQz/GEmccc4Om6capGYlY4K1XX+BtYQiPPIA==}
+    engines: {node: '>=18', npm: '>=10'}
     hasBin: true
     dependencies:
-      debounce: 1.2.1
+      debounce: 2.0.0
       debug: 4.3.4
       duplexer: 0.1.2
       fs-extra: 11.1.1
-      glob-gitignore: 1.0.14
+      glob: 10.3.12
       glob2base: 0.0.12
       ignore: 5.3.1
       minimatch: 9.0.4
@@ -7682,8 +7694,9 @@ packages:
     resolution: {integrity: sha512-2P0p0pFGzHS5EMnhdxQi7aJN+iMheud0UhG4dlE1DLAlvL8JHjJJTX/CSm4JXwV0Ka5nGk3zC5mcb5bUQUxxMA==}
     dev: false
 
-  /debounce@1.2.1:
-    resolution: {integrity: sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug==}
+  /debounce@2.0.0:
+    resolution: {integrity: sha512-xRetU6gL1VJbs85Mc4FoEGSjQxzpdxRyFhe3lmWFyy2EzydIcD4xzUvRJMD+NPDfMwKNhxa3PvsIOU32luIWeA==}
+    engines: {node: '>=18'}
     dev: true
 
   /debug@2.6.9:
@@ -8875,6 +8888,17 @@ packages:
     resolution: {integrity: sha512-stRHYGeuqpEZTL1Ef0Ovr2ltazUT9g844X5z/zEBFLG8RYlpDiOCIG+ATvYEp+/zmc7sN29mcIMp8gvYplYPIQ==}
     dev: false
 
+  /fastify-type-provider-zod@1.2.0(fastify@4.25.2)(zod@3.23.8):
+    resolution: {integrity: sha512-2zkPEWFIBYzkGQ0kmn8gOW5tlQOmdDWn5edF5LQ2r0RiydFGhD86FVZX6wLraXAmdFm8P1CMmo19lwlGb0mZrA==}
+    peerDependencies:
+      fastify: ^4.0.0
+      zod: ^3.14.2
+    dependencies:
+      fastify: 4.25.2
+      zod: 3.23.8
+      zod-to-json-schema: 3.23.0(zod@3.23.8)
+    dev: false
+
   /fastify@4.25.2:
     resolution: {integrity: sha512-SywRouGleDHvRh054onj+lEZnbC1sBCLkR0UY3oyJwjD4BdZJUrxBqfkfCaqn74pVCwBaRHGuL3nEWeHbHzAfw==}
     dependencies:
@@ -9247,18 +9271,6 @@ packages:
 
   /github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
-    dev: true
-
-  /glob-gitignore@1.0.14:
-    resolution: {integrity: sha512-YuAEPqL58bOQDqDF2kMv009rIjSAtPs+WPzyGbwRWK+wD0UWQVRoP34Pz6yJ6ivco65C9tZnaIt0I3JCuQ8NZQ==}
-    engines: {node: '>= 6'}
-    dependencies:
-      glob: 7.2.3
-      ignore: 5.3.1
-      lodash.difference: 4.5.0
-      lodash.union: 4.6.0
-      make-array: 1.0.5
-      util.inherits: 1.0.3
     dev: true
 
   /glob-parent@5.1.2:
@@ -10371,10 +10383,6 @@ packages:
   /lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
 
-  /lodash.difference@4.5.0:
-    resolution: {integrity: sha512-dS2j+W26TQ7taQBGN8Lbbq04ssV3emRw4NY58WErlTO29pIqS0HmoT5aJ9+TUQ1N3G+JOZSji4eugsWwGp9yPA==}
-    dev: true
-
   /lodash.isequal@4.5.0:
     resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
     dev: true
@@ -10388,10 +10396,6 @@ packages:
 
   /lodash.truncate@4.4.2:
     resolution: {integrity: sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==}
-    dev: true
-
-  /lodash.union@4.6.0:
-    resolution: {integrity: sha512-c4pB2CdGrGdjMKYLA+XiRDO7Y0PRQbm/Gzg8qMj+QH+pFVAoTp5sBpO0odL3FjoPCGjK96p6qsP+yQoiLoOBcw==}
     dev: true
 
   /lodash@4.17.21:
@@ -10476,11 +10480,6 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
-
-  /make-array@1.0.5:
-    resolution: {integrity: sha512-sgK2SAzxT19rWU+qxKUcn6PAh/swiIiz2F8C2cZjLc1z4iwYIfdoihqFIDQ8BDzAGtWPYJ6Sr13K1j/DXynDLA==}
-    engines: {node: '>=0.10.0'}
-    dev: true
 
   /make-dir@2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
@@ -10992,6 +10991,12 @@ packages:
   /mime@3.0.0:
     resolution: {integrity: sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==}
     engines: {node: '>=10.0.0'}
+    hasBin: true
+    dev: false
+
+  /mime@4.0.3:
+    resolution: {integrity: sha512-KgUb15Oorc0NEKPbvfa0wRU+PItIEZmiv+pyAO2i0oTIVTJhlzMclU7w4RXWQrSOVH5ax/p/CkIO7KI4OyFJTQ==}
+    engines: {node: '>=16'}
     hasBin: true
     dev: false
 
@@ -14204,11 +14209,6 @@ packages:
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  /util.inherits@1.0.3:
-    resolution: {integrity: sha512-gMirHcfcq5D87nXDwbZqf5vl65S0mpMZBsHXJsXOO3Hc3G+JoQLwgaJa1h+PL7h3WhocnuLqoe8CuvMlztkyCA==}
-    engines: {node: '>=4'}
-    dev: true
-
   /util@0.12.5:
     resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
     dependencies:
@@ -14698,8 +14698,16 @@ packages:
     resolution: {integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==}
     engines: {node: '>=12.20'}
 
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+  /zod-to-json-schema@3.23.0(zod@3.23.8):
+    resolution: {integrity: sha512-az0uJ243PxsRIa2x1WmNE/pnuA05gUq/JB8Lwe1EDCCL/Fz9MgjYQ0fPlyc2Tcv6aF2ZA7WM5TWaRZVEFaAIag==}
+    peerDependencies:
+      zod: ^3.23.3
+    dependencies:
+      zod: 3.23.8
+    dev: false
+
+  /zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
     dev: false
 
   /zustand@4.4.6(@types/react@18.2.15)(immer@10.0.3)(react@18.2.0):

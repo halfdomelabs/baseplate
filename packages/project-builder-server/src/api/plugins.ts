@@ -28,15 +28,7 @@ export function createPluginsRouter({ services }: BaseplateApiContext) {
       .mutation(async ({ input: { id } }) => {
         const api = getApi(id);
 
-        const plugins = await api.getAvailablePlugins();
-
-        return plugins.map((plugin) => ({
-          name: plugin.name,
-          displayName: plugin.displayName,
-          icon: plugin.icon,
-          description: plugin.description,
-          version: plugin.version,
-        }));
+        return api.getAvailablePlugins();
       }),
   });
 }

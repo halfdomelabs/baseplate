@@ -1,5 +1,5 @@
 import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
-import { MdOutlineSplitscreen } from 'react-icons/md';
+import { MdWidgets } from 'react-icons/md';
 import { NavLink, Outlet } from 'react-router-dom';
 
 function PluginsLayout(): JSX.Element {
@@ -11,7 +11,7 @@ function PluginsLayout(): JSX.Element {
           <NavigationMenu.List>
             <NavigationMenu.ItemWithLink asChild>
               <NavLink to="/plugins">
-                <MdOutlineSplitscreen />
+                <MdWidgets />
                 Manage Plugins
               </NavLink>
             </NavigationMenu.ItemWithLink>

@@ -48,6 +48,7 @@ interface ProjectBuilderServiceOptions {
   directory: string;
   id: string;
   generatorSetupConfig: GeneratorEngineSetupConfig;
+  preinstalledPlugins: PluginConfigWithModule[];
   cliVersion: string;
 }
 
@@ -73,11 +74,14 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   private cachedAvailablePlugins: PluginConfigWithModule[] | null = null;
 
+  private preinstalledPlugins: PluginConfigWithModule[];
+
   constructor({
     directory,
     id,
     generatorSetupConfig,
     cliVersion,
+    preinstalledPlugins,
   }: ProjectBuilderServiceOptions) {
     super();
 
@@ -102,6 +106,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
         message,
       });
     });
+    this.preinstalledPlugins = preinstalledPlugins;
   }
 
   public async init(): Promise<void> {
@@ -209,10 +214,17 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   public async getAvailablePlugins(): Promise<PluginConfigWithModule[]> {
     if (!this.cachedAvailablePlugins) {
-      this.cachedAvailablePlugins = await discoverPlugins(
-        this.directory,
-        this.logger,
-      );
+      const projectPlugins = await discoverPlugins(this.directory, this.logger);
+      this.cachedAvailablePlugins = [
+        ...this.preinstalledPlugins.filter(
+          (plugin) =>
+            !projectPlugins.some(
+              (projectPlugin) =>
+                projectPlugin.packageName === plugin.packageName,
+            ),
+        ),
+        ...projectPlugins,
+      ];
     }
     return this.cachedAvailablePlugins;
   }

@@ -1,6 +1,10 @@
-import { startWebServer } from '@halfdomelabs/project-builder-server';
+import {
+  discoverPlugins,
+  startWebServer,
+} from '@halfdomelabs/project-builder-server';
 import { Command } from 'commander';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { packageDirectory } from 'pkg-dir';
 
 import { getGeneratorSetupConfig } from './services/generator-modules.js';
@@ -39,6 +43,10 @@ export function addServeCommand(program: Command, version: string): void {
           cwd: resolveModule('@halfdomelabs/project-builder-web/package.json'),
         });
         const generatorSetupConfig = await getGeneratorSetupConfig();
+        const preinstalledPlugins = await discoverPlugins(
+          fileURLToPath(import.meta.url),
+          logger,
+        );
 
         if (!projectBuilderWebDir) {
           throw new Error(
@@ -54,6 +62,7 @@ export function addServeCommand(program: Command, version: string): void {
           projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
           logger,
           generatorSetupConfig,
+          preinstalledPlugins,
         });
       },
     );
