@@ -44,7 +44,7 @@ function ModelEditPage(): JSX.Element {
             type="button"
           >
             <h1>{model.name}</h1>
-            <MdEdit className="invisible h-4 w-4 group-hover:visible" />
+            <MdEdit className="invisible size-4 group-hover:visible" />
           </button>
           {model?.feature && (
             <div className="text-xs text-muted-foreground">
