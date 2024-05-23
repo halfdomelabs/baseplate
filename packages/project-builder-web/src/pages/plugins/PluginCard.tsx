@@ -2,19 +2,51 @@ import { PluginConfigWithModule } from '@halfdomelabs/project-builder-lib';
 import { Button, Card } from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
 
+import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useProjects } from '@src/hooks/useProjects';
+import { useToast } from '@src/hooks/useToast';
 import { getPluginStaticUrl } from '@src/services/plugins';
 
 interface PluginCardProps {
   className?: string;
   plugin: PluginConfigWithModule;
+  isActive: boolean;
 }
 
 export function PluginCard({
   className,
   plugin,
+  isActive,
 }: PluginCardProps): JSX.Element {
   const { currentProjectId } = useProjects();
+  const { setConfigAndFixReferences } = useProjectDefinition();
+  const toast = useToast();
+
+  function enablePlugin(): void {
+    setConfigAndFixReferences((draft) => {
+      draft.plugins = [
+        ...(draft.plugins ?? []).filter(
+          (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
+        ),
+        {
+          packageName: plugin.packageName,
+          name: plugin.name,
+          version: plugin.version,
+        },
+      ];
+    });
+    toast.success(`Enabled ${plugin.displayName}!`);
+  }
+
+  function disablePlugin(): void {
+    setConfigAndFixReferences((draft) => {
+      draft.plugins = (draft.plugins ?? []).filter(
+        (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
+      );
+    });
+    toast.success(`Disabled ${plugin.displayName}!`);
+  }
+
   return (
     <Card className={className}>
       <Card.Header>
@@ -41,7 +73,15 @@ export function PluginCard({
             </div>
           </div>
           <div>
-            <Button variant="secondary">Manage</Button>
+            {isActive ? (
+              <Button variant="secondary" onClick={disablePlugin}>
+                Disable
+              </Button>
+            ) : (
+              <Button variant="secondary" onClick={enablePlugin}>
+                Enable
+              </Button>
+            )}
           </div>
         </div>
       </Card.Header>
