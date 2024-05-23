@@ -1,4 +1,7 @@
-import { PluginConfigWithModule } from '@halfdomelabs/project-builder-lib';
+import {
+  FeatureFlag,
+  PluginConfigWithModule,
+} from '@halfdomelabs/project-builder-lib';
 import {
   FastifyTRPCPluginOptions,
   fastifyTRPCPlugin,
@@ -28,9 +31,16 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
   cliVersion: string;
   generatorSetupConfig: GeneratorEngineSetupConfig;
   preinstalledPlugins: PluginConfigWithModule[];
+  featureFlags: FeatureFlag[];
 }> = async function (
   fastify,
-  { directories, cliVersion, generatorSetupConfig, preinstalledPlugins },
+  {
+    directories,
+    cliVersion,
+    generatorSetupConfig,
+    preinstalledPlugins,
+    featureFlags,
+  },
 ) {
   const csrfToken = getCsrfToken();
   const services = await Promise.all(
@@ -67,6 +77,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         services,
         cliVersion,
         logger: fastify.log,
+        featureFlags,
       }),
       createContext,
       onError: ({ error }) => {

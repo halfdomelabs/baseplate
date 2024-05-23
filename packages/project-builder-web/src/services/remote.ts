@@ -1,4 +1,5 @@
 import { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 
 import { client } from './api';
 import { config as envConfig } from './config';
@@ -26,9 +27,12 @@ export async function getProjects(): Promise<Project[]> {
   return response;
 }
 
-export async function getVersion(): Promise<string> {
+export async function getVersionInfo(): Promise<ClientVersionInfo> {
   if (IS_PREVIEW) {
-    return 'preview';
+    return {
+      version: 'preview',
+      featureFlags: [],
+    };
   }
   const response = await client.version.query();
   return response;

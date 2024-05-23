@@ -305,6 +305,9 @@ importers:
       '@halfdomelabs/fastify-generators':
         specifier: workspace:*
         version: link:../fastify-generators
+      '@halfdomelabs/project-builder-lib':
+        specifier: workspace:*
+        version: link:../project-builder-lib
       '@halfdomelabs/project-builder-server':
         specifier: workspace:*
         version: link:../project-builder-server

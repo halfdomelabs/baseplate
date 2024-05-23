@@ -1,7 +1,10 @@
 import fastifyHelmet from '@fastify/helmet';
 import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
-import { PluginConfigWithModule } from '@halfdomelabs/project-builder-lib';
+import {
+  FeatureFlag,
+  PluginConfigWithModule,
+} from '@halfdomelabs/project-builder-lib';
 import { FastifyBaseLogger, FastifyInstance, fastify } from 'fastify';
 import {
   serializerCompiler,
@@ -21,6 +24,7 @@ export interface WebServerOptions {
   logger: Logger;
   generatorSetupConfig: GeneratorEngineSetupConfig;
   preinstalledPlugins: PluginConfigWithModule[];
+  featureFlags: FeatureFlag[];
 }
 
 export async function buildServer({
@@ -30,6 +34,7 @@ export async function buildServer({
   logger,
   generatorSetupConfig,
   preinstalledPlugins,
+  featureFlags,
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
     forceCloseConnections: 'idle',
@@ -56,6 +61,7 @@ export async function buildServer({
     cliVersion,
     generatorSetupConfig,
     preinstalledPlugins,
+    featureFlags,
   });
 
   if (projectBuilderStaticDir) {

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { packageDirectory } from 'pkg-dir';
 
+import { getEnabledFeatureFlags } from './services/feature-flags.js';
 import { getGeneratorSetupConfig } from './services/generator-modules.js';
 import { logger } from './services/logger.js';
 import { resolveModule } from './utils/resolve.js';
@@ -63,6 +64,7 @@ export function addServeCommand(program: Command, version: string): void {
           logger,
           generatorSetupConfig,
           preinstalledPlugins,
+          featureFlags: getEnabledFeatureFlags(),
         });
       },
     );

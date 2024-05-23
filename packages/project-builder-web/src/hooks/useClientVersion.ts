@@ -1,8 +1,10 @@
+import { FeatureFlag } from '@halfdomelabs/project-builder-lib';
 import React from 'react';
 
 export interface UseClientVersionResult {
   version: string;
   refreshVersion: () => Promise<void>;
+  featureFlags: FeatureFlag[];
 }
 
 export const ClientVersionContext =
