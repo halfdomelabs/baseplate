@@ -61,7 +61,7 @@ const ReactConfigGenerator = createGeneratorWithChildren({
     const customEnvVars: { name: string; value: string }[] = [];
 
     node.addPackages({
-      zod: '3.22.4',
+      zod: '3.23.8',
     });
     return {
       getProviders: () => ({

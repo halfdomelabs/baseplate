@@ -1,4 +1,5 @@
 export * from './constants/index.js';
+export * from './feature-flags/index.js';
 export * from './parser/index.js';
 export * from './parser/types.js';
 export * from './references/index.js';
@@ -9,3 +10,4 @@ export * from './utils/randomUid.js';
 export * from './migrations/index.js';
 export * from './definition/index.js';
 export * from './utils/colors.js';
+export * from './plugins/index.js';

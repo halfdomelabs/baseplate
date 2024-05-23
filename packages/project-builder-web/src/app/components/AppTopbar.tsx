@@ -1,9 +1,10 @@
 import { Button, NavigationMenu } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { HiCollection, HiDatabase, HiSwitchHorizontal } from 'react-icons/hi';
-import { MdApps, MdSettings } from 'react-icons/md';
+import { MdApps, MdSettings, MdWidgets } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
+import { useFeatureFlag } from '@src/hooks/useFeatureFlag';
 import { ProjectChooserDialog } from 'src/app/components/ProjectChooserDialog';
 import ProjectSyncModal from 'src/app/components/ProjectSyncModal';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
@@ -12,6 +13,7 @@ import { useProjects } from 'src/hooks/useProjects';
 export function AppTopbar(): JSX.Element {
   const { config } = useProjectDefinition();
   const [showProjectChooserModal, setShowProjectChooserModal] = useState(false);
+  const isPluginEnabled = useFeatureFlag('plugins');
 
   const { projects } = useProjects();
 
@@ -49,6 +51,14 @@ export function AppTopbar(): JSX.Element {
                 Features
               </NavLink>
             </NavigationMenu.ItemWithLink>
+            {isPluginEnabled && (
+              <NavigationMenu.ItemWithLink asChild>
+                <NavLink to="/plugins">
+                  <MdWidgets />
+                  Plugins
+                </NavLink>
+              </NavigationMenu.ItemWithLink>
+            )}
           </NavigationMenu.List>
         </NavigationMenu>
       </div>

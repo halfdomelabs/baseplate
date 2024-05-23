@@ -1,7 +1,15 @@
 import fastifyHelmet from '@fastify/helmet';
 import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
+import {
+  FeatureFlag,
+  PluginConfigWithModule,
+} from '@halfdomelabs/project-builder-lib';
 import { FastifyBaseLogger, FastifyInstance, fastify } from 'fastify';
+import {
+  serializerCompiler,
+  validatorCompiler,
+} from 'fastify-type-provider-zod';
 import { Logger } from 'pino';
 
 import { gracefulShutdownPlugin } from './graceful-shutdown.js';
@@ -15,6 +23,8 @@ export interface WebServerOptions {
   cliVersion: string;
   logger: Logger;
   generatorSetupConfig: GeneratorEngineSetupConfig;
+  preinstalledPlugins: PluginConfigWithModule[];
+  featureFlags: FeatureFlag[];
 }
 
 export async function buildServer({
@@ -23,6 +33,8 @@ export async function buildServer({
   cliVersion,
   logger,
   generatorSetupConfig,
+  preinstalledPlugins,
+  featureFlags,
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
     forceCloseConnections: 'idle',
@@ -30,6 +42,10 @@ export async function buildServer({
     logger: logger as FastifyBaseLogger,
     maxParamLength: 10000,
   });
+
+  server.setValidatorCompiler(validatorCompiler);
+  server.setSerializerCompiler(serializerCompiler);
+
   const resolvedDirectories = directories.map((directory) =>
     expandPathWithTilde(directory),
   );
@@ -44,6 +60,8 @@ export async function buildServer({
     directories: resolvedDirectories,
     cliVersion,
     generatorSetupConfig,
+    preinstalledPlugins,
+    featureFlags,
   });
 
   if (projectBuilderStaticDir) {
@@ -51,9 +69,12 @@ export async function buildServer({
       root: projectBuilderStaticDir,
     });
 
-    server.setNotFoundHandler(async (request, reply) =>
-      reply.sendFile('index.html'),
-    );
+    server.setNotFoundHandler(async (request, reply) => {
+      if (request.url.startsWith('/trpc') || request.url.startsWith('/api')) {
+        return reply.code(404).send({ error: 'Not found' });
+      }
+      return reply.sendFile('index.html');
+    });
   }
 
   return server;
