@@ -69,13 +69,31 @@ export function useModelForm({
     resolver: zodResolver(modelSchema),
     defaultValues,
   });
-  const { reset } = form;
+  const { reset, formState, getValues } = form;
 
   const lastFixedModel = useRef<ModelConfig | undefined>();
 
   useEffect(() => {
     lastFixedModel.current = undefined;
   }, [model]);
+
+  useEffect(() => {
+    const { name, id } = getValues();
+    if (formState.isSubmitSuccessful) {
+      if (!id || model?.name !== name) {
+        navigate(`../edit/${modelEntityType.toUid(id)}`);
+      }
+      if (onSubmitSuccess) {
+        onSubmitSuccess();
+      }
+    }
+  }, [
+    formState.isSubmitSuccessful,
+    getValues,
+    model?.name,
+    navigate,
+    onSubmitSuccess,
+  ]);
 
   const onFormSubmit = useCallback(
     (data: ModelConfig) => {
@@ -90,12 +108,6 @@ export function useModelForm({
           );
         });
         toast.success('Successfully saved model!');
-        if (!id || model?.name !== data.name) {
-          navigate(`../edit/${modelEntityType.toUid(data.id)}`);
-        }
-        if (onSubmitSuccess) {
-          onSubmitSuccess();
-        }
         reset(data);
       } catch (err) {
         if (err instanceof RefDeleteError) {
@@ -110,17 +122,7 @@ export function useModelForm({
         }
       }
     },
-    [
-      setConfigAndFixReferences,
-      showRefIssues,
-      toast,
-      id,
-      model?.name,
-      onSubmitSuccess,
-      reset,
-      navigate,
-      setError,
-    ],
+    [setConfigAndFixReferences, showRefIssues, toast, reset, setError],
   );
 
   return {

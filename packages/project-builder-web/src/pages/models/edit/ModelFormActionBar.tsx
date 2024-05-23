@@ -11,7 +11,7 @@ const ModelFormActionBar = ({ form }: ModelFormActionBarProps): JSX.Element => {
   const isDirty = Object.keys(formState.dirtyFields).length > 0;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50 flex min-h-[65px] items-center space-x-4 border-t border-border bg-white pl-4">
+    <div className="absolute inset-x-0 bottom-0 z-50 flex min-h-[65px] items-center space-x-4 border-t border-border bg-white pl-4">
       <Button
         variant="secondary"
         type="button"
