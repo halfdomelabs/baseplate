@@ -1,7 +1,7 @@
-const { default: tsconfigPaths } = require('vite-tsconfig-paths');
-const { defineConfig } = require('vitest/config');
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from 'vitest/config';
 
-module.exports = defineConfig({
+export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
     watch: false,

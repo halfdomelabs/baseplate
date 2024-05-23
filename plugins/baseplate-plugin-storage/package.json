@@ -21,8 +21,6 @@
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "test": "vitest",
-    "test:coverage": "vitest run --coverage",
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
