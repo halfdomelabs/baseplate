@@ -27,14 +27,10 @@ export type ProviderDependencyMap<T = Record<string, Provider>> = {
   [key in keyof T]: ProviderType<T[key]> | ProviderDependency<T[key]>;
 };
 
-export type InferExportProviderMap<T> = T extends ProviderExportMap<infer P>
-  ? P
-  : never;
-export type InferDependencyProviderMap<T> = T extends ProviderDependencyMap<
-  infer P
->
-  ? P
-  : never;
+export type InferExportProviderMap<T> =
+  T extends ProviderExportMap<infer P> ? P : never;
+export type InferDependencyProviderMap<T> =
+  T extends ProviderDependencyMap<infer P> ? P : never;
 
 export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
 

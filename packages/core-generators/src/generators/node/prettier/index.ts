@@ -73,7 +73,7 @@ const PARSEABLE_EXTENSIONS = [
   '.mts',
 ];
 
-const PRETTIER_VERSION = '3.1.0';
+const PRETTIER_VERSION = '3.2.5';
 
 interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;
@@ -159,9 +159,10 @@ const PrettierGenerator = createGeneratorWithChildren({
                   if (result.version === prettier.version) {
                     return prettier;
                   }
-                  return (await import(
-                    result.modulePath
-                  )) as Promise<PrettierModule>;
+                  const rawImport = (await import(result.modulePath)) as {
+                    default: PrettierModule;
+                  };
+                  return rawImport.default;
                 })();
               }
 
