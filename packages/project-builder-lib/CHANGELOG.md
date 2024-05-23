@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.7.4
+
+### Patch Changes
+
+- 377b433: Update project builder to use new color system from updated design system
+
 ## 0.7.3
 
 ### Patch Changes

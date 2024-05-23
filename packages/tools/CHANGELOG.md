@@ -1,5 +1,13 @@
 # @halfdomelabs/tools
 
+## 0.5.5
+
+### Patch Changes
+
+- a4fb47d: Update npm dependencies for tailwindcss to 3.4.3 and associated packages
+- 377b433: Update project builder to use new color system from updated design system
+- 9cab58f: Replace classnames with clsx.
+
 ## 0.5.4
 
 ### Patch Changes
