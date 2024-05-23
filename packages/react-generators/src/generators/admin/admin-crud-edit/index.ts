@@ -222,14 +222,13 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
             );
 
             const inputLoaderExtraProps = inputFields
-              .flatMap(
-                (field) =>
-                  field.dataDependencies?.map(
-                    (d) =>
-                      `${d.propName}={${d.propLoaderValueGetter(
-                        d.loader.loaderValueName,
-                      )}}`,
-                  ),
+              .flatMap((field) =>
+                field.dataDependencies?.map(
+                  (d) =>
+                    `${d.propName}={${d.propLoaderValueGetter(
+                      d.loader.loaderValueName,
+                    )}}`,
+                ),
               )
               .join(' ');
 

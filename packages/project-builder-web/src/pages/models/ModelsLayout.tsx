@@ -11,8 +11,10 @@ export function ModelsLayout(): JSX.Element {
 
   const models = parsedProject.getModels();
   const enums = parsedProject.getEnums();
-  const longestName = _.maxBy([...models, ...enums], (m) => m.name.length)
-    ?.name;
+  const longestName = _.maxBy(
+    [...models, ...enums],
+    (m) => m.name.length,
+  )?.name;
 
   return (
     <SidebarLayout className="flex-1">

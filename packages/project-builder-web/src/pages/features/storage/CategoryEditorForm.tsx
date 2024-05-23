@@ -31,14 +31,13 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
 
   const foreignKeyOptions = parsedProject
     .getModels()
-    .flatMap(
-      (m) =>
-        m.model.relations
-          ?.filter((r) => r.modelName === fileModel)
-          .map((r) => ({
-            label: r.foreignRelationName,
-            value: r.foreignId,
-          })),
+    .flatMap((m) =>
+      m.model.relations
+        ?.filter((r) => r.modelName === fileModel)
+        .map((r) => ({
+          label: r.foreignRelationName,
+          value: r.foreignId,
+        })),
     )
     .filter(notEmpty);
 

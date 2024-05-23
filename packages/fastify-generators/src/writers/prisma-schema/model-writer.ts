@@ -104,8 +104,8 @@ export class PrismaModelBlockWriter {
   }
 
   private extractIdFields(): string[] | null {
-    const singleIdFields = this.fields.filter(
-      (field) => field.attributes?.some((attr) => attr.name === '@id'),
+    const singleIdFields = this.fields.filter((field) =>
+      field.attributes?.some((attr) => attr.name === '@id'),
     );
     if (singleIdFields.length > 1) {
       throw new Error(`Model ${this.name} has more than one @id field`);
