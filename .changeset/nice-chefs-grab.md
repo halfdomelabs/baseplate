@@ -11,4 +11,4 @@
 '@halfdomelabs/cli': patch
 ---
 
-Lay groundwork for initial plugin system with plugin discovery [feature-flagged]
+Lay groundwork for initial plugin system with plugin discovery [in development]
