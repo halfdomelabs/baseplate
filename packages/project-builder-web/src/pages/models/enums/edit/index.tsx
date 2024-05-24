@@ -9,15 +9,14 @@ import { Alert, Button } from 'src/components';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function EnumEditPage(): JSX.Element {
+  const { status, setError } = useStatus();
+  const { form, handleSubmit, handleDelete } = useEnumForm({ setError });
+  const { formState } = form;
   const { uid } = useParams<'uid'>();
   const id = uid ? modelEnumEntityType.fromUid(uid) : undefined;
   const isNew = !id;
   const { parsedProject } = useProjectDefinition();
   const enumBlock = parsedProject.getEnums().find((m) => m.id === id);
-  const { status, setError } = useStatus();
-
-  const { form, handleSubmit, handleDelete } = useEnumForm({ setError });
-  const { formState } = form;
 
   useBlockDirtyFormNavigate(formState);
 
