@@ -57,18 +57,20 @@ export function useModelForm({
   const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
   const toast = useToast();
   const navigate = useNavigate();
-  const id = uid ? modelEntityType.fromUid(uid) : undefined;
-  const model = id ? parsedProject.getModelById(id) : undefined;
+  const urlModelId = uid ? modelEntityType.fromUid(uid) : undefined;
+  const model = urlModelId ? parsedProject.getModelById(urlModelId) : undefined;
   const { showRefIssues } = useDeleteReferenceDialog();
 
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);
 
   const defaultValues = model ?? newModel;
+
   const form = useResettableForm<ModelConfig>({
     resolver: zodResolver(modelSchema),
     defaultValues,
   });
+
   const { reset, formState, getValues } = form;
 
   const lastFixedModel = useRef<ModelConfig | undefined>();
@@ -80,7 +82,7 @@ export function useModelForm({
   useEffect(() => {
     const { name, id } = getValues();
     if (formState.isSubmitSuccessful) {
-      if (!id || model?.name !== name) {
+      if (!urlModelId || model?.name !== name) {
         navigate(`../edit/${modelEntityType.toUid(id)}`);
       }
       if (onSubmitSuccess) {
@@ -93,6 +95,7 @@ export function useModelForm({
     model?.name,
     navigate,
     onSubmitSuccess,
+    urlModelId,
   ]);
 
   const onFormSubmit = useCallback(
