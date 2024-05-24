@@ -40,36 +40,64 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Format Packages for Slack
+        if: steps.changesets.outputs.published == 'true'
+        id: format-packages
+        run: |
+          {
+            echo "FORMATTED_PACKAGES<<EOF"
+            echo '${{ steps.changesets.outputs.publishedPackages }}' | jq 'map(
+              {
+                type: "rich_text_section",
+                elements: [
+                  {
+                    type: "text",
+                    text: .name,
+                    style: { bold: true }
+                  },
+                  {
+                    type: "text",
+                    text: ": "
+                  },
+                  {
+                    type: "text",
+                    text: .version
+                  }
+                ]
+              }
+            )'
+            echo EOF
+            } >> "$GITHUB_OUTPUT"
+
       - name: Send a Slack notification if a publish happens
         if: steps.changesets.outputs.published == 'true'
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
             {
-              "text": "New versions of Baseplate packages was just released!",
+              "text": "New versions of Baseplate packages were just released!",
               "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "New versions of Baseplate packages was just released!"
-                  }
-                },
                 {
                   "type": "rich_text",
                   "elements": [
                     {
-                      "type": "rich_text_preformatted",
+                      "type": "rich_text_section",
                       "elements": [
                         {
                           "type": "text",
-                          "text": "${{ toJSON(fromJSON(steps.changesets.outputs.publishedPackages)) }}"
+                          "text": "New versions of Baseplate packages were just released:"
                         }
                       ]
+                    },
+                    {
+                      "type": "rich_text_list",
+                      "elements": ${{ steps.format-packages.outputs.FORMATTED_PACKAGES}},
+                      "style": "bullet"
                     }
                   ]
                 }
-              ]
+              ]            
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
