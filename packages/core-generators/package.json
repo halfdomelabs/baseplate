@@ -38,6 +38,7 @@
     "@halfdomelabs/sync": "workspace:*",
     "@types/eslint": "^8.44.1",
     "@types/resolve": "^1.20.2",
+    "eta": "^3.4.0",
     "fs-extra": "11.1.1",
     "is-core-module": "2.12.1",
     "lodash": "^4.17.21",
