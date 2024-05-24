@@ -1,5 +1,30 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.6.13
+
+### Patch Changes
+
+- 082dfc3: Use package-up instead of pkg-up
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+- Updated dependencies [3b720a2]
+- Updated dependencies [3b720a2]
+- Updated dependencies [8819162]
+- Updated dependencies [4ad2639]
+- Updated dependencies [082dfc3]
+- Updated dependencies [082dfc3]
+- Updated dependencies [eda7e94]
+- Updated dependencies [3f95dc6]
+- Updated dependencies [3b720a2]
+- Updated dependencies [3f95dc6]
+  - @halfdomelabs/core-generators@0.8.0
+  - @halfdomelabs/project-builder-server@0.3.6
+  - @halfdomelabs/project-builder-web@0.9.3
+  - @halfdomelabs/fastify-generators@0.8.11
+  - @halfdomelabs/baseplate-plugin-storage@0.1.1
+  - @halfdomelabs/project-builder-lib@0.7.5
+  - @halfdomelabs/react-generators@0.7.7
+
 ## 0.6.12
 
 ### Patch Changes

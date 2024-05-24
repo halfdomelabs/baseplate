@@ -1,5 +1,12 @@
 # @halfdomelabs/sync
 
+## 0.7.3
+
+### Patch Changes
+
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+
 ## 0.7.2
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # @halfdomelabs/cli
 
+## 0.7.13
+
+### Patch Changes
+
+- 082dfc3: Use package-up instead of pkg-up
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+- Updated dependencies [3b720a2]
+- Updated dependencies [4ad2639]
+- Updated dependencies [082dfc3]
+- Updated dependencies [082dfc3]
+- Updated dependencies [eda7e94]
+- Updated dependencies [3f95dc6]
+- Updated dependencies [3b720a2]
+- Updated dependencies [3f95dc6]
+  - @halfdomelabs/core-generators@0.8.0
+  - @halfdomelabs/fastify-generators@0.8.11
+  - @halfdomelabs/react-generators@0.7.7
+  - @halfdomelabs/sync@0.7.3
+
 ## 0.7.12
 
 ### Patch Changes

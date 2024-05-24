@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.4.7
+
+### Patch Changes
+
+- 925f887: Small typography changes to heading 1 and small-text line height
+
 ## 0.4.6
 
 ### Patch Changes

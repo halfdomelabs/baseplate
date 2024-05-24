@@ -1,5 +1,22 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.11
+
+### Patch Changes
+
+- 4ad2639: Upgrade graphql-yoga to 5.3.1
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+- 3b720a2: Fix up websockets not to depend on auth service being available
+- Updated dependencies [3b720a2]
+- Updated dependencies [082dfc3]
+- Updated dependencies [082dfc3]
+- Updated dependencies [eda7e94]
+- Updated dependencies [3f95dc6]
+- Updated dependencies [3f95dc6]
+  - @halfdomelabs/core-generators@0.8.0
+  - @halfdomelabs/sync@0.7.3
+
 ## 0.8.10
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @halfdomelabs/core-generators
 
+## 0.8.0
+
+### Minor Changes
+
+- 3f95dc6: Upgrade PNPM to 9.1.2
+
+### Patch Changes
+
+- 3b720a2: Enable ETA templating from Typescript code files
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+- eda7e94: Fix expression replacement to support web app without auth
+- 3f95dc6: Upgrade prettier to 3.2.5
+- Updated dependencies [082dfc3]
+- Updated dependencies [082dfc3]
+  - @halfdomelabs/sync@0.7.3
+
 ## 0.7.6
 
 ### Patch Changes
