@@ -83,6 +83,7 @@ const config: Config = {
           fontSize: theme('fontSize.3xl'),
           fontWeight: theme('fontWeight.semibold'),
           letterSpacing: theme('letterSpacing.tight'),
+          lineHeight: theme('lineHeight.none'),
         },
         h2: {
           fontSize: theme('fontSize.2xl'),
@@ -115,7 +116,7 @@ const config: Config = {
         '.text-style-small': {
           fontSize: theme('fontSize.sm'),
           fontWeight: theme('fontWeight.medium'),
-          lineHeight: theme('lineHeight.3'),
+          lineHeight: theme('lineHeight.none'),
         },
         '.text-style-muted': {
           fontSize: theme('fontSize.sm'),
