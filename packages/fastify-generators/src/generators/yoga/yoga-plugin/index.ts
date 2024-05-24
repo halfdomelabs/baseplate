@@ -154,7 +154,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           graphql: '16.8.1',
           '@envelop/core': '5.0.0',
           '@envelop/disable-introspection': '6.0.0',
-          'graphql-yoga': '5.0.0',
+          'graphql-yoga': '5.3.1',
         });
 
         node.addDevPackages({

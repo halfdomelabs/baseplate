@@ -77,10 +77,14 @@ export const graphqlPlugin = fp(async (fastify) => {
   });
 
   const httpHandler: RouteHandlerMethod = async (request, reply) => {
-    const response = await graphQLServer.handleNodeRequest(request, {
-      req: request,
+    const response = await graphQLServer.handleNodeRequestAndResponse(
+      request,
       reply,
-    });
+      {
+        req: request,
+        reply,
+      },
+    );
 
     // Fastify replies with promises that should not be awaited (https://github.com/typescript-eslint/typescript-eslint/issues/2640)
     /* eslint-disable @typescript-eslint/no-floating-promises */
