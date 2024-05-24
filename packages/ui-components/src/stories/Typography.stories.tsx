@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 function Typography(): JSX.Element {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 py-4">
       <h1>Heading 1 (h1)</h1>
       <p className="text-style-lead">
         Some example lead text (.text-style-lead)
