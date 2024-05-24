@@ -152,7 +152,7 @@ const createMainTask = createTaskConfigBuilder(
           authServiceImport: {
             getImportMap: () => ({
               '%auth-service': {
-                path: authServicePath,
+                path: authServiceImport,
                 allowedImports: [
                   'createAuthInfoFromRequest',
                   'createAuthInfoFromAuthorization',

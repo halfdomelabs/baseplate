@@ -3,13 +3,14 @@
 import { WebsocketHandler } from '@fastify/websocket';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { ExecutionArgs, ExecutionResult, GraphQLError } from 'graphql';
-import { CloseCode } from 'graphql-ws';
 import { makeHandler } from 'graphql-ws/lib/use/@fastify/websocket';
 import { YogaServerInstance } from 'graphql-yoga';
-import { createAuthInfoFromAuthorization } from '@src/modules/accounts/auth/services/auth-service';
-import { logError } from '@src/services/error-logger';
-import { logger } from '@src/services/logger';
+// <% if (it.authEnabled) { %>
+import { CloseCode } from 'graphql-ws';
 import { HttpError } from '@src/utils/http-errors';
+import { logger } from '@src/services/logger';
+// <% } %>
+import { logError } from '@src/services/error-logger';
 import { createContextFromRequest } from '@src/utils/request-service-context';
 
 interface RootValueWithExecutor {
@@ -29,16 +30,12 @@ export function getGraphqlWsHandler(
 ): WebsocketHandler {
   return makeHandler({
     execute: (args) => (args.rootValue as RootValueWithExecutor).execute(args),
+    // <% if (it.authEnabled) { %>
     onConnect: async (ctx) => {
       try {
         // attach auth info to request
         const authorizationHeader = ctx.connectionParams?.authorization;
-        const authInfo = await createAuthInfoFromAuthorization(
-          ctx.extra.request,
-          typeof authorizationHeader === 'string'
-            ? authorizationHeader
-            : undefined,
-        );
+        const authInfo = AUTH_INFO_CREATOR;
         ctx.extra.request.auth = authInfo;
 
         // set expiry for socket based on auth token expiry
@@ -83,6 +80,7 @@ export function getGraphqlWsHandler(
         }
       }
     },
+    // <% } %>
     subscribe: (args) =>
       (args.rootValue as RootValueWithExecutor).subscribe(args),
     onSubscribe: (ctx, msg) => {

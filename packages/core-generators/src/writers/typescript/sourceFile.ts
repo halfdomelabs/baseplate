@@ -2,6 +2,7 @@
 /* eslint-disable max-classes-per-file */
 
 import { BuilderAction, writeFormattedAction } from '@halfdomelabs/sync';
+import { Eta } from 'eta';
 import path from 'path';
 import * as R from 'ramda';
 import {
@@ -319,7 +320,7 @@ export abstract class TypescriptSourceContent<
       const replacementValue = values
         ? TypescriptCodeUtils.mergeStringReplacements(
             values,
-            config.multiple?.separator || '',
+            config.multiple?.separator ?? '',
           ).content
         : '';
       const transformedReplacement =
@@ -430,7 +431,7 @@ export abstract class TypescriptSourceContent<
               ? ''
               : TypescriptCodeUtils.mergeExpressions(
                   providedExpressions,
-                  configEntry.multiple?.separator || '',
+                  configEntry.multiple?.separator ?? '',
                 ).content;
             expressionReplacements.push({
               identifier: node as Identifier,
@@ -544,17 +545,29 @@ export class TypescriptSourceBlock<
 }
 
 export interface TypescriptSourceFileOptions {
-  importMappers?: ImportMapper[];
+  importMappers?: (ImportMapper | undefined)[];
   pathMappings?: PathMapEntry[];
+}
+
+interface EtaPreprocessOptions {
+  data: Record<string, unknown>;
 }
 
 interface FileWriteOptions {
   neverOverwrite?: boolean;
+  /**
+   * Preprocess template with Eta to allow for more powerful templating options
+   * beyond just find-replace.
+   *
+   * Note: Any comments with // DELIMITER will be replaced with DELIMITER so you can write
+   * Eta code in comments.
+   */
+  preprocessWithEta?: EtaPreprocessOptions;
 }
 
 function unnestHeaderBlocks(block: TypescriptCodeBlock): TypescriptCodeBlock[] {
   return [
-    ...(block.options.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) ||
+    ...(block.options.headerBlocks?.flatMap((b) => unnestHeaderBlocks(b)) ??
       []),
     block,
   ];
@@ -644,7 +657,7 @@ export class TypescriptSourceFile<
     file.insertText(0, (writer) => {
       writeImportDeclarations(writer, allImports, path.dirname(destination), {
         pathMapEntries: this.sourceFileOptions.pathMappings,
-        importMappers,
+        importMappers: importMappers.filter(notEmpty),
       });
       writer.writeLine('');
     });
@@ -675,6 +688,16 @@ export class TypescriptSourceFile<
     return `${text.trim()}\n`;
   }
 
+  preprocessWithEta(text: string, options: EtaPreprocessOptions): string {
+    const { data } = options;
+    const eta = new Eta({
+      autoEscape: false,
+      rmWhitespace: false,
+    });
+    const cleanedText = text.replaceAll(/^\s*\/\/\s*<%/gm, `<%`);
+    return eta.renderString(cleanedText, data);
+  }
+
   renderToActionFromText(
     template: string,
     destination: string,
@@ -683,6 +706,12 @@ export class TypescriptSourceFile<
     return {
       execute: async (builder) => {
         const fullPath = builder.resolvePath(destination);
+        if (options?.preprocessWithEta) {
+          template = this.preprocessWithEta(
+            template,
+            options.preprocessWithEta,
+          );
+        }
         const contents = this.renderToText(template, fullPath);
         await builder.apply(
           writeFormattedAction({
@@ -702,12 +731,18 @@ export class TypescriptSourceFile<
   ): BuilderAction {
     return {
       execute: async (builder) => {
-        const fullPath = builder.resolvePath(destination || templateFile);
-        const template = await builder.readTemplate(templateFile);
+        const fullPath = builder.resolvePath(destination ?? templateFile);
+        let template = await builder.readTemplate(templateFile);
+        if (options?.preprocessWithEta) {
+          template = this.preprocessWithEta(
+            template,
+            options.preprocessWithEta,
+          );
+        }
         const contents = this.renderToText(template, fullPath);
         await builder.apply(
           writeFormattedAction({
-            destination: destination || templateFile,
+            destination: destination ?? templateFile,
             contents,
             ...options,
           }),
