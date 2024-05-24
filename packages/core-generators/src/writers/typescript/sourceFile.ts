@@ -9,6 +9,7 @@ import {
   CallExpression,
   ExportDeclaration,
   Identifier,
+  Node,
   Project,
   SourceFile,
   SyntaxKind,
@@ -460,12 +461,15 @@ export abstract class TypescriptSourceContent<
     expressionReplacements.forEach(({ identifier, contents }) => {
       // Check if expression is in self-enclosing element <IDENTIFIER /> and
       // replace whole element if so
-      if (
-        identifier.getParent().getKind() === SyntaxKind.JsxSelfClosingElement
-      ) {
-        identifier.getParent().replaceWithText(contents);
-      } else if (identifier.getParent().getKind() === SyntaxKind.Parameter) {
-        identifier.getParent().replaceWithText(contents);
+      const parent = identifier.getParent();
+      if (Node.isJsxSelfClosingElement(parent)) {
+        parent.replaceWithText(contents);
+      } else if (Node.isParameterDeclaration(parent)) {
+        if (contents === '') {
+          parent.remove();
+        } else {
+          parent.replaceWithText(contents);
+        }
       } else {
         identifier.replaceWithText(contents);
       }
