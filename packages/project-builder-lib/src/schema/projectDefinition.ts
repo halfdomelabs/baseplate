@@ -9,8 +9,9 @@ import { featuresSchema } from './features/index.js';
 import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
+import { pluginsSchema } from './plugins/index.js';
 import { storageSchema } from './storage/index.js';
-import { zRefBuilder } from '@src/index.js';
+import { zRefBuilder } from '@src/references/index.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const appSchema = zRefBuilder(
@@ -53,6 +54,7 @@ export const projectDefinitionSchema = z.object({
   isInitialized: z.boolean().default(false),
   schemaVersion: z.number().nullish(),
   theme: themeSchema.optional(),
+  plugins: pluginsSchema.optional(),
 });
 
 export type ProjectDefinitionInput = z.input<typeof projectDefinitionSchema>;

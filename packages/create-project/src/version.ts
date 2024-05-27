@@ -1,13 +1,13 @@
 import { promises as fs } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { pkgUp } from 'pkg-up';
+import { packageUp } from 'package-up';
 
 let cachedVersion: string | undefined | null;
 
 export async function getPackageVersion(): Promise<string | null> {
   if (cachedVersion === undefined) {
     // Construct the path to the package.json file.
-    const packageJsonPath = await pkgUp({
+    const packageJsonPath = await packageUp({
       cwd: fileURLToPath(import.meta.url),
     });
 

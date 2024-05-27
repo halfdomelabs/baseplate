@@ -1,5 +1,15 @@
 # @halfdomelabs/fastify-generators
 
+## 0.8.10
+
+### Patch Changes
+
+- 9ffa848: Update @bull-board/api and @bull-board/fastify to version 5.17.1
+- 725e0a9: Remove usage of tracesSampleRate which is overriden by tracesSampler with Sentry
+- Updated dependencies [9f33a18]
+  - @halfdomelabs/core-generators@0.7.6
+  - @halfdomelabs/sync@0.7.2
+
 ## 0.8.9
 
 ### Patch Changes

@@ -67,13 +67,12 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
             const oldTransformer = transformer as unknown as { name: string };
             if (transformer.type === 'embeddedRelation') {
               const localRelationName = oldTransformer.name;
-              const foreignModel = draftConfig.models?.find(
-                (m) =>
-                  m.model.relations?.some(
-                    (relation) =>
-                      relation.modelName === model.name &&
-                      relation.foreignRelationName === localRelationName,
-                  ),
+              const foreignModel = draftConfig.models?.find((m) =>
+                m.model.relations?.some(
+                  (relation) =>
+                    relation.modelName === model.name &&
+                    relation.foreignRelationName === localRelationName,
+                ),
               );
               if (!foreignModel) {
                 throw new Error(

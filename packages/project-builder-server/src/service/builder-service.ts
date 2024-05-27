@@ -1,4 +1,7 @@
-import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
+import {
+  getLatestMigrationVersion,
+  PluginConfigWithModule,
+} from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
@@ -6,6 +9,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { GeneratorEngineSetupConfig } from '@src/index.js';
+import { discoverPlugins } from '@src/plugins/plugin-discovery.js';
 import { buildProjectForDirectory } from '@src/runner/index.js';
 import { expandPathWithTilde } from '@src/utils/path.js';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter.js';
@@ -44,6 +48,7 @@ interface ProjectBuilderServiceOptions {
   directory: string;
   id: string;
   generatorSetupConfig: GeneratorEngineSetupConfig;
+  preinstalledPlugins: PluginConfigWithModule[];
   cliVersion: string;
 }
 
@@ -67,11 +72,16 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   private cliVersion: string;
 
+  private cachedAvailablePlugins: PluginConfigWithModule[] | null = null;
+
+  private preinstalledPlugins: PluginConfigWithModule[];
+
   constructor({
     directory,
     id,
     generatorSetupConfig,
     cliVersion,
+    preinstalledPlugins,
   }: ProjectBuilderServiceOptions) {
     super();
 
@@ -96,6 +106,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
         message,
       });
     });
+    this.preinstalledPlugins = preinstalledPlugins;
   }
 
   public async init(): Promise<void> {
@@ -199,5 +210,22 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
     } finally {
       this.isRunningCommand = false;
     }
+  }
+
+  public async getAvailablePlugins(): Promise<PluginConfigWithModule[]> {
+    if (!this.cachedAvailablePlugins) {
+      const projectPlugins = await discoverPlugins(this.directory, this.logger);
+      this.cachedAvailablePlugins = [
+        ...this.preinstalledPlugins.filter(
+          (plugin) =>
+            !projectPlugins.some(
+              (projectPlugin) =>
+                projectPlugin.packageName === plugin.packageName,
+            ),
+        ),
+        ...projectPlugins,
+      ];
+    }
+    return this.cachedAvailablePlugins;
   }
 }

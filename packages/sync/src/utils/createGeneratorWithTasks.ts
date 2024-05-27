@@ -35,11 +35,8 @@ type TaskOutputDependencyMap<T = Record<string, unknown>> = {
   [key in keyof T]: SimpleGeneratorTaskOutput<T[key]>;
 };
 
-export type InferTaskOutputDependencyMap<T> = T extends TaskOutputDependencyMap<
-  infer P
->
-  ? P
-  : never;
+export type InferTaskOutputDependencyMap<T> =
+  T extends TaskOutputDependencyMap<infer P> ? P : never;
 
 export interface SimpleGeneratorTaskConfig<
   ExportMap extends ProviderExportMap,
@@ -76,14 +73,15 @@ type TaskConfigBuilder<
   TaskOutput
 >;
 
-export type ExtractTaskOutputFromBuilder<T> = T extends TaskConfigBuilder<
-  ProviderExportMap<Record<string, Provider>>,
-  ProviderDependencyMap<Record<string, Provider>>,
-  TaskOutputDependencyMap<Record<string, unknown>>,
-  infer TaskOutput
->
-  ? TaskOutput
-  : never;
+export type ExtractTaskOutputFromBuilder<T> =
+  T extends TaskConfigBuilder<
+    ProviderExportMap<Record<string, Provider>>,
+    ProviderDependencyMap<Record<string, Provider>>,
+    TaskOutputDependencyMap<Record<string, unknown>>,
+    infer TaskOutput
+  >
+    ? TaskOutput
+    : never;
 
 type TaskBuilderMap<T> = {
   [key in keyof T]: TaskConfigBuilder<
@@ -94,9 +92,10 @@ type TaskBuilderMap<T> = {
   >;
 };
 
-export type InferTaskBuilderMap<T> = T extends TaskBuilderMap<infer P>
-  ? { [key in keyof P]: SimpleGeneratorTaskOutput<P[key]> }
-  : never;
+export type InferTaskBuilderMap<T> =
+  T extends TaskBuilderMap<infer P>
+    ? { [key in keyof P]: SimpleGeneratorTaskOutput<P[key]> }
+    : never;
 
 export function createTaskConfigBuilder<
   ExportMap extends ProviderExportMap,

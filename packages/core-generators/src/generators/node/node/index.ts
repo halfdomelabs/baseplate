@@ -21,7 +21,7 @@ const descriptorSchema = z.object({
   private: z.boolean().default(true),
   path: z.string().default(''),
   nodeVersion: z.string().default('20.9.0'),
-  pnpmVersion: z.string().default('8.10.5'),
+  pnpmVersion: z.string().default('9.1.2'),
 });
 
 export interface NodeProvider {

@@ -1,12 +1,13 @@
+import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 import { ErrorableLoader } from '@halfdomelabs/ui-components';
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   ClientVersionContext,
   UseClientVersionResult,
 } from 'src/hooks/useClientVersion';
 import { logError } from 'src/services/error-logger';
-import { getVersion } from 'src/services/remote';
+import { getVersionInfo } from 'src/services/remote';
 
 interface ClientVersionGateProps {
   children?: React.ReactNode;
@@ -15,13 +16,15 @@ interface ClientVersionGateProps {
 export function ClientVersionGate({
   children,
 }: ClientVersionGateProps): JSX.Element {
-  const [clientVersion, setClientVersion] = useState<string | undefined>();
+  const [clientVersionInfo, setClientVersionInfo] = useState<
+    ClientVersionInfo | undefined
+  >();
   const [error, setError] = useState<Error | undefined>();
 
   useEffect(() => {
-    getVersion()
+    getVersionInfo()
       .then((version) => {
-        setClientVersion(version);
+        setClientVersionInfo(version);
       })
       .catch((err) => {
         logError(err);
@@ -32,24 +35,27 @@ export function ClientVersionGate({
   const previousClientVersion = useRef<string | undefined>();
   useEffect(() => {
     if (
-      clientVersion &&
+      clientVersionInfo &&
       previousClientVersion.current &&
-      previousClientVersion.current !== clientVersion
+      previousClientVersion.current !== clientVersionInfo.version
     ) {
       window.location.reload();
     }
-    previousClientVersion.current = clientVersion;
-  }, [clientVersion]);
+    if (clientVersionInfo) {
+      previousClientVersion.current = clientVersionInfo.version;
+    }
+  }, [clientVersionInfo]);
 
   const clientVersionResult: UseClientVersionResult | undefined = useMemo(
     () =>
-      clientVersion
+      clientVersionInfo
         ? {
-            version: clientVersion,
-            refreshVersion: () => getVersion().then(setClientVersion),
+            version: clientVersionInfo.version,
+            featureFlags: clientVersionInfo.featureFlags,
+            refreshVersion: () => getVersionInfo().then(setClientVersionInfo),
           }
         : undefined,
-    [clientVersion],
+    [clientVersionInfo],
   );
 
   if (!clientVersionResult) {

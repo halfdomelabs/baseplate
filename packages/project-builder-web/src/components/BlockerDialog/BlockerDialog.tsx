@@ -1,4 +1,5 @@
 import { Button, Dialog } from '@halfdomelabs/ui-components';
+import { useEffect } from 'react';
 import { useBlocker } from 'react-router-dom';
 
 import { useBlockerDialogState } from '@src/hooks/useBlockerDialog';
@@ -16,6 +17,12 @@ export function BlockerDialog(): JSX.Element {
     ({ currentLocation, nextLocation }) =>
       !!activeBlocker && currentLocation.pathname !== nextLocation.pathname,
   );
+
+  useEffect(() => {
+    if (blocker.state === 'blocked' && !activeBlocker) {
+      blocker.proceed();
+    }
+  }, [blocker, activeBlocker]);
 
   return (
     <Dialog

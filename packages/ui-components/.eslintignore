@@ -4,5 +4,6 @@
 /storybook-static
 /node_modules
 
+vite.config.ts
 vitest.config.ts
 tailwind.config.ts

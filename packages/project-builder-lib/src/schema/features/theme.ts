@@ -37,6 +37,8 @@ export interface ThemeColorConfig {
   groupKey?: string;
   /** Category of the color */
   category: ThemeColorCategory;
+  /** Opacity of color (out of 100) */
+  opacity?: number;
 }
 
 export const THEME_COLORS = {
@@ -112,8 +114,8 @@ export const THEME_COLORS = {
     name: 'Accent',
     description:
       'Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...',
-    lightDefault: { primaryShade: '100' },
-    darkDefault: { primaryShade: '800' },
+    lightDefault: { baseShade: '100' },
+    darkDefault: { baseShade: '800' },
     groupKey: 'accent',
     category: 'surface',
   },
@@ -129,48 +131,48 @@ export const THEME_COLORS = {
   success: {
     name: 'Success',
     description: 'Used for success state on input fields, toast or alerts',
-    lightDefault: { color: 'emerald-600' },
-    darkDefault: { baseShade: '50' },
+    lightDefault: { color: 'emerald-50' },
+    darkDefault: { color: 'emerald-950' },
     groupKey: 'success',
     category: 'surface',
   },
   successForeground: {
     name: 'Success Foreground',
     description: 'Used for success foregrounds',
-    lightDefault: { primaryShade: '50' },
-    darkDefault: { primaryShade: '50' },
+    lightDefault: { color: 'emerald-700' },
+    darkDefault: { color: 'emerald-600' },
     groupKey: 'success',
     category: 'surface',
   },
   warning: {
     name: 'Warning',
     description: 'Used for warning color on toast or alert',
-    lightDefault: { color: 'amber-600' },
-    darkDefault: { color: 'amber-700' },
+    lightDefault: { color: 'amber-50' },
+    darkDefault: { color: 'amber-950' },
     groupKey: 'warning',
     category: 'surface',
   },
   warningForeground: {
     name: 'Warning Foreground',
     description: 'Used for warning foregrounds',
-    lightDefault: { primaryShade: '50' },
-    darkDefault: { primaryShade: '50' },
+    lightDefault: { color: 'amber-600' },
+    darkDefault: { color: 'amber-700' },
     groupKey: 'warning',
     category: 'surface',
   },
   error: {
     name: 'Error',
     description: 'Used for error state on input fields, toast or alerts',
-    lightDefault: { color: 'red-600' },
-    darkDefault: { color: 'red-700' },
+    lightDefault: { color: 'red-50' },
+    darkDefault: { color: 'red-950' },
     groupKey: 'error',
     category: 'surface',
   },
   errorForeground: {
     name: 'Error Foreground',
     description: 'Used for error foregrounds',
-    lightDefault: { primaryShade: '50' },
-    darkDefault: { primaryShade: '50' },
+    lightDefault: { color: 'red-700' },
+    darkDefault: { color: 'red-600' },
     groupKey: 'error',
     category: 'surface',
   },
@@ -285,12 +287,12 @@ export const THEME_COLORS = {
   },
   ring: {
     name: 'Focus Ring',
-    description:
-      'Used for focus ring. Will be 30% opacity on light and 50% on dark',
+    description: 'Used for focus ring. Will be 30% opacity.',
     lightDefault: { primaryShade: '700' }, // 30% opacity
-    darkDefault: { primaryShade: '600' }, // 50% opacity
+    darkDefault: { primaryShade: '600' }, // 30% opacity
     groupKey: 'ring',
     category: 'utility',
+    opacity: 50,
   },
 } satisfies Record<string, ThemeColorConfig>;
 
@@ -409,10 +411,16 @@ export function generateCssFromThemeConfig(
   config: ThemeColorsConfig,
 ): Record<string, string> {
   return Object.entries(config).reduce<Record<string, string>>(
-    (acc, [key, value]) => ({
-      ...acc,
-      [`--${dasherize(underscore(key))}`]: convertHexToHsl(value),
-    }),
+    (acc, [key, value]) => {
+      const themeColorKey = key as ThemeColorKey;
+      const config = THEME_COLORS[themeColorKey];
+      return {
+        ...acc,
+        [`--${dasherize(underscore(key))}`]: `${convertHexToHsl(value)}${
+          'opacity' in config ? ` / ${config.opacity}%` : ''
+        }`,
+      };
+    },
     {},
   );
 }

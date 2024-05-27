@@ -64,8 +64,8 @@ export const authSchema = z.object({
   roles: z.array(authRoleSchema).refine(
     (roles) =>
       // TODO: Add system role
-      ['anonymous', 'user'].every(
-        (name) => roles?.some((r) => r.name === name),
+      ['anonymous', 'user'].every((name) =>
+        roles?.some((r) => r.name === name),
       ),
     { message: 'Anonymous, user, system role required' },
   ),
