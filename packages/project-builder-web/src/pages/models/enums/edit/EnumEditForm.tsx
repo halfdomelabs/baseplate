@@ -2,12 +2,12 @@ import {
   EnumConfig,
   modelEnumValueEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { ComboboxField } from '@halfdomelabs/ui-components';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
 
 import { hasDirtyFields } from '@src/utils/form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
@@ -45,11 +45,12 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
         control={control}
         name="name"
       />
-      <ReactSelectInput.LabelledController
+      <ComboboxField.Controller
         label="Feature"
         control={control}
         name="feature"
         options={featureOptions}
+        placeholder="Select a feature"
       />
       <CheckedInput.LabelledController
         label="Is Exposed?"
