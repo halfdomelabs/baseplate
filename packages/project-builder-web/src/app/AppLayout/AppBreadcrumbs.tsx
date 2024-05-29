@@ -1,7 +1,10 @@
-import { Breadcrumb } from '@halfdomelabs/ui-components';
-import { Fragment } from 'react';
+import { Breadcrumb, Button } from '@halfdomelabs/ui-components';
+import { upperFirst } from 'lodash';
+import { Fragment, useState } from 'react';
+import { MdKeyboardArrowDown } from 'react-icons/md';
 import { Link, useMatches } from 'react-router-dom';
 
+import { ProjectChooserDialog } from '../components/ProjectChooserDialog';
 import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { RouteCrumbOrFunction } from '@src/types/routes';
 import { notEmpty } from '@src/utils/array';
@@ -24,12 +27,22 @@ export function AppBreadcrumbs(): JSX.Element {
       return { id: match.id, label, url };
     })
     .filter(notEmpty);
+  const [showProjectChooser, setShowProjectChooser] = useState(false);
 
   return (
     <Breadcrumb>
       <Breadcrumb.List>
         <Breadcrumb.Item>
-          <Link to="/">{definitionContainer.definition.name} project</Link>
+          <div className="flex items-center">
+            <div>{upperFirst(definitionContainer.definition.name)} project</div>
+            <Button
+              onClick={() => setShowProjectChooser(true)}
+              size="icon"
+              variant="ghost"
+            >
+              <Button.Icon icon={MdKeyboardArrowDown} />
+            </Button>
+          </div>
         </Breadcrumb.Item>
         {crumbs.map((crumb, index) => (
           <Fragment key={crumb.id}>
@@ -49,6 +62,10 @@ export function AppBreadcrumbs(): JSX.Element {
             )}
           </Fragment>
         ))}
+        <ProjectChooserDialog
+          isOpen={showProjectChooser}
+          onClose={() => setShowProjectChooser(false)}
+        />
       </Breadcrumb.List>
     </Breadcrumb>
   );
