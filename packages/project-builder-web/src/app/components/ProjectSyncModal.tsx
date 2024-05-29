@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
 import { useProjects } from '@src/hooks/useProjects';
+import { useSyncStatusStore } from '@src/hooks/useSyncStatus';
 import Console, { ConsoleRef } from 'src/components/Console';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
@@ -20,6 +21,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const toast = useToast();
   const { config, setConfig } = useProjectDefinition();
   const { currentProjectId } = useProjects();
+  const setLastSyncedAt = useSyncStatusStore((state) => state.setLastSyncedAt);
 
   const startSyncProject = (): void => {
     if (!currentProjectId) {
@@ -34,6 +36,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
       startSync(currentProjectId).catch((err) => toast.error(formatError(err)));
     }, 300);
     setIsOpen(true);
+    setLastSyncedAt(new Date());
   };
 
   return (
@@ -44,6 +47,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
             onClick={() => {
               startSyncProject();
             }}
+            size="sm"
           >
             <Button.Icon icon={MdSync} />
             Sync

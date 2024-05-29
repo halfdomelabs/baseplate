@@ -7,6 +7,7 @@ import { AppBreadcrumbs } from './AppBreadcrumbs';
 import { AppDesktopSidebar } from './AppDesktopSidebar';
 import { AppMobileSidebar } from './AppMobileSidebar';
 import ProjectSyncModal from '../components/ProjectSyncModal';
+import { ProjectSyncStatus } from '../components/ProjectSyncStatus';
 
 interface AppLayoutProps {
   className?: string;
@@ -43,7 +44,10 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
           </Sheet>
           <div className="flex w-full items-center justify-between py-4">
             <AppBreadcrumbs />
-            <ProjectSyncModal />
+            <div className="flex items-center gap-4">
+              <ProjectSyncStatus />
+              <ProjectSyncModal />
+            </div>
           </div>
         </header>
         <main>
