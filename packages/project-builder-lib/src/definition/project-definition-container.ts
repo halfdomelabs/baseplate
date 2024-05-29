@@ -39,6 +39,13 @@ export class ProjectDefinitionContainer {
     return name;
   }
 
+  safeNameFromId(id: string | undefined): string | undefined {
+    if (!id) return undefined;
+    const name = this.entities.find((e) => e.id === id)?.name;
+
+    return name;
+  }
+
   fixRefDeletions(
     setter: (draftConfig: ProjectDefinition) => void,
   ): FixRefDeletionResult<typeof projectDefinitionSchema> {

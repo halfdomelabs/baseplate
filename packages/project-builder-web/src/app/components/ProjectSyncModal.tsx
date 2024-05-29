@@ -19,9 +19,10 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
   const { config, setConfig } = useProjectDefinition();
-  const { currentProjectId } = useProjects();
+  const { currentProjectId, setLastSyncedAt } = useProjects();
 
   const startSyncProject = (): void => {
+    setLastSyncedAt(new Date());
     if (!currentProjectId) {
       return;
     }
@@ -44,6 +45,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
             onClick={() => {
               startSyncProject();
             }}
+            size="sm"
           >
             <Button.Icon icon={MdSync} />
             Sync
