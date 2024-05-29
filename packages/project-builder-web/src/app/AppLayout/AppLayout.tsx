@@ -1,14 +1,12 @@
-import { Breadcrumb, Button, Sheet } from '@halfdomelabs/ui-components';
+import { Button, Sheet } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import { Fragment } from 'react';
 import { MdMenu } from 'react-icons/md';
-import { Link, NavLink, Outlet, useMatches } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
+import { AppBreadcrumbs } from './AppBreadcrumbs';
 import { AppDesktopSidebar } from './AppDesktopSidebar';
 import { AppMobileSidebar } from './AppMobileSidebar';
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
-import { RouteCrumbOrFunction } from '@src/types/routes';
-import { notEmpty } from '@src/utils/array';
+import ProjectSyncModal from '../components/ProjectSyncModal';
 
 interface AppLayoutProps {
   className?: string;
@@ -20,24 +18,6 @@ interface AppLayoutProps {
  * See https://ui.shadcn.com/blocks
  */
 export function AppLayout({ className }: AppLayoutProps): JSX.Element {
-  const { definitionContainer } = useProjectDefinition();
-  const matches = useMatches();
-  const crumbs = matches
-    .map((match) => {
-      const crumbOrFunction = (
-        match.handle as { crumb?: RouteCrumbOrFunction } | undefined
-      )?.crumb;
-      if (!crumbOrFunction) return null;
-      const crumb =
-        typeof crumbOrFunction === 'function'
-          ? crumbOrFunction(match.params, definitionContainer)
-          : crumbOrFunction;
-      const { label, url } =
-        typeof crumb === 'string' ? { label: crumb, url: undefined } : crumb;
-      return { id: match.id, label, url };
-    })
-    .filter(notEmpty);
-
   return (
     <div
       className={clsx(
@@ -61,34 +41,9 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
               <AppMobileSidebar />
             </Sheet.Content>
           </Sheet>
-          <div className="py-4">
-            <Breadcrumb>
-              <Breadcrumb.List>
-                <Breadcrumb.Item>
-                  <Link to="/">
-                    {definitionContainer.definition.name} project
-                  </Link>
-                </Breadcrumb.Item>
-                {crumbs.map((crumb, index) => (
-                  <Fragment key={crumb.id}>
-                    <Breadcrumb.Separator />
-                    {index === crumbs.length - 1 ? (
-                      <Breadcrumb.Page>{crumb.label}</Breadcrumb.Page>
-                    ) : (
-                      <Breadcrumb.Item>
-                        {crumb.url ? (
-                          <Breadcrumb.Link asChild>
-                            <NavLink to={crumb.url}>{crumb.label}</NavLink>
-                          </Breadcrumb.Link>
-                        ) : (
-                          crumb.label
-                        )}
-                      </Breadcrumb.Item>
-                    )}
-                  </Fragment>
-                ))}
-              </Breadcrumb.List>
-            </Breadcrumb>
+          <div className="flex w-full items-center justify-between py-4">
+            <AppBreadcrumbs />
+            <ProjectSyncModal />
           </div>
         </header>
         <main>
