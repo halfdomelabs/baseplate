@@ -48,7 +48,7 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-[70px] flex-col border-r bg-background sm:flex">
         <AppDesktopSidebar />
       </aside>
-      <div className="flex flex-col gap-4 pl-[70px]">
+      <div className="flex flex-col gap-4 sm:pl-[70px]">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:px-6">
           <Sheet>
             <Sheet.Trigger asChild>
@@ -57,7 +57,7 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
                 <span className="sr-only">Toggle Menu</span>
               </Button>
             </Sheet.Trigger>
-            <Sheet.Content side="left" className="sm:max-w-xs">
+            <Sheet.Content side="left" className="max-w-xs">
               <AppMobileSidebar />
             </Sheet.Content>
           </Sheet>
