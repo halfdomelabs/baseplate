@@ -21,16 +21,19 @@ interface AppLayoutProps {
 export function AppLayout({ className }: AppLayoutProps): JSX.Element {
   return (
     <div
-      className={clsx(
-        'flex min-h-screen w-full flex-col bg-background',
-        className,
-      )}
+      className={clsx('flex h-screen w-full flex-col bg-background', className)}
+      style={
+        {
+          '--sidebar-width': '70px',
+          '--topbar-height': '60px',
+        } as React.CSSProperties
+      }
     >
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[70px] flex-col border-r bg-background sm:flex">
+      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[var(--sidebar-width)] flex-col border-r bg-background sm:flex">
         <AppDesktopSidebar />
       </aside>
-      <div className="flex flex-col gap-4 sm:pl-[70px]">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:px-6">
+      <div className="flex flex-col pt-[var(--topbar-height)] sm:pl-[var(--sidebar-width)]">
+        <header className="fixed right-0 top-0 z-30 flex h-[var(--topbar-height)] items-center gap-4 border-b bg-background px-4 sm:left-[var(--sidebar-width)] sm:px-6">
           <Sheet>
             <Sheet.Trigger asChild>
               <Button size="icon" variant="outline" className="sm:hidden">
@@ -50,7 +53,7 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
             </div>
           </div>
         </header>
-        <main>
+        <main className="h-[calc(100vh-var(--topbar-height)-1px)] overflow-auto">
           <Outlet />
         </main>
       </div>
