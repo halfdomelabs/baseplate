@@ -1,14 +1,20 @@
-import { Route, Routes } from 'react-router-dom';
+import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
+import { RouteObject } from 'react-router-dom';
 
 import EnumEditPage from './edit';
+import { createCrumbFromUid } from '@src/types/routes';
 
-function EnumRoutes(): JSX.Element {
-  return (
-    <Routes>
-      <Route path="new" element={<EnumEditPage />} />
-      <Route path="edit/:uid/*" element={<EnumEditPage />} />
-    </Routes>
-  );
-}
-
-export default EnumRoutes;
+export const EnumRoutes: RouteObject[] = [
+  {
+    path: 'new',
+    element: <EnumEditPage />,
+    handle: {
+      crumb: 'New Enum',
+    },
+  },
+  {
+    path: 'edit/:uid/*',
+    element: <EnumEditPage />,
+    handle: { crumb: createCrumbFromUid(modelEnumEntityType, 'Edit Enum') },
+  },
+];

@@ -13,7 +13,9 @@ import { cn } from '@src/utils';
 
 /* eslint-disable react/prop-types */
 
-const PopoverRoot = PopoverPrimitive.Root;
+const PopoverRoot = (props: PopoverPrimitive.PopoverProps): JSX.Element => (
+  <PopoverPrimitive.Root {...props} />
+);
 
 const PopoverTrigger = PopoverPrimitive.Trigger;
 

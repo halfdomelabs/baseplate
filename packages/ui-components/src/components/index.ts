@@ -1,5 +1,6 @@
 export * from './Alert/Alert.js';
 export * from './Badge/Badge.js';
+export * from './Breadcrumb/Breadcrumb.js';
 export * from './Button/Button.js';
 export * from './ButtonGroup/ButtonGroup.js';
 export * from './Card/Card.js';
@@ -24,6 +25,7 @@ export * from './Loader/Loader.js';
 export * from './NavigationMenu/NavigationMenu.js';
 export * from './Popover/Popover.js';
 export * from './ScrollArea/ScrollArea.js';
+export * from './Sheet/Sheet.js';
 export * from './Select/Select.js';
 export * from './SelectField/SelectField.js';
 export * from './SidebarLayout/SidebarLayout.js';
