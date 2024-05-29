@@ -24,6 +24,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const setLastSyncedAt = useSyncStatusStore((state) => state.setLastSyncedAt);
 
   const startSyncProject = (): void => {
+    setLastSyncedAt(new Date());
     if (!currentProjectId) {
       return;
     }
@@ -36,7 +37,6 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
       startSync(currentProjectId).catch((err) => toast.error(formatError(err)));
     }, 300);
     setIsOpen(true);
-    setLastSyncedAt(new Date());
   };
 
   return (
