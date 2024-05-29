@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import ReactTimeAgo from 'react-time-ago';
 
-import { useSyncStatusStore } from '@src/hooks/useSyncStatus';
+import { useProjects } from '@src/hooks/useProjects';
 import { initializeTimeAgo } from '@src/utils/time-ago';
 
 interface ProjectSyncStatusProps {
@@ -13,15 +13,15 @@ initializeTimeAgo();
 export function ProjectSyncStatus({
   className,
 }: ProjectSyncStatusProps): JSX.Element | null {
-  const store = useSyncStatusStore();
+  const lastSyncedAt = useProjects((store) => store.lastSyncedAt);
 
-  if (!store.lastSyncedAt) {
+  if (!lastSyncedAt) {
     return null;
   }
 
   return (
     <div className={clsx('text-style-muted', className)}>
-      Last Sync: <ReactTimeAgo date={store.lastSyncedAt} />
+      Last Sync: <ReactTimeAgo date={lastSyncedAt} />
     </div>
   );
 }

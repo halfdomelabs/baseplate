@@ -4,7 +4,6 @@ import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
 import { useProjects } from '@src/hooks/useProjects';
-import { useSyncStatusStore } from '@src/hooks/useSyncStatus';
 import Console, { ConsoleRef } from 'src/components/Console';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
@@ -20,8 +19,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
   const { config, setConfig } = useProjectDefinition();
-  const { currentProjectId } = useProjects();
-  const setLastSyncedAt = useSyncStatusStore((state) => state.setLastSyncedAt);
+  const { currentProjectId, setLastSyncedAt } = useProjects();
 
   const startSyncProject = (): void => {
     setLastSyncedAt(new Date());
