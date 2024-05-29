@@ -1,4 +1,8 @@
-import { nodeProvider, vitestProvider } from '@halfdomelabs/core-generators';
+import {
+  TypescriptCodeUtils,
+  nodeProvider,
+  vitestProvider,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
@@ -24,9 +28,20 @@ const FastifyVitestGenerator = createGeneratorWithChildren({
   exports: {
     fastifyVitest: fastifyVitestProvider,
   },
-  createGenerator(descriptor, { node }) {
-    node.addScript('test-vitest', 'vitest --threads=1');
-    node.addScript('test-vitest:unit', "vitest --include '**/*.unit.*'");
+  createGenerator(descriptor, { node, vitest }) {
+    // add config to vitest setup
+
+    vitest
+      .getConfig()
+      .appendUnique('customSetupBlocks', [
+        TypescriptCodeUtils.createBlock(
+          'config()',
+          "import { config } from 'dotenv'",
+        ),
+      ]);
+
+    node.addScript('test-vitest', 'vitest run');
+    node.addScript('test-vitest:unit', 'vitest run .unit.');
 
     return {
       getProviders: () => ({

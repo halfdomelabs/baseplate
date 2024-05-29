@@ -9,13 +9,15 @@ import { z } from 'zod';
 import { eslintProvider } from '../eslint/index.js';
 import { nodeProvider } from '../node/index.js';
 import { typescriptProvider } from '../typescript/index.js';
-import { quot } from '@src/utils/string.js';
-import { TypescriptCodeUtils } from '@src/writers/index.js';
+import {
+  TypescriptCodeBlock,
+  TypescriptCodeUtils,
+} from '@src/writers/index.js';
 
 const descriptorSchema = z.object({});
 
 export interface VitestGeneratorConfig {
-  exclude: string[];
+  customSetupBlocks: TypescriptCodeBlock[];
 }
 
 export interface VitestProvider {
@@ -38,13 +40,14 @@ const VitestGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node, typescript, eslint }) {
     const configMap = createNonOverwriteableMap<VitestGeneratorConfig>(
       {
-        exclude: ['baseplate/**', 'dist/**', 'node_modules/**'],
+        customSetupBlocks: [],
       },
       { name: 'vitest-config', mergeArraysUniquely: true },
     );
 
     node.addDevPackages({
       vitest: '1.6.0',
+      'vite-tsconfig-paths': '4.3.2',
     });
 
     eslint.getConfig().appendUnique('eslintIgnore', ['vitest.config.ts']);
@@ -58,25 +61,39 @@ const VitestGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         const config = configMap.value();
 
-        const typescriptOptions = typescript.getCompilerOptions();
+        const customSetupPath = 'src/tests/scripts/globalSetup.ts';
+        if (config.customSetupBlocks.length) {
+          const customSetupFile = typescript.createTemplate({
+            CUSTOM_SETUP: { type: 'code-block' },
+          });
+          customSetupFile.addCodeEntries({
+            CUSTOM_SETUP: config.customSetupBlocks,
+          });
+          await builder.apply(
+            customSetupFile.renderToAction('globalSetup.ts', customSetupPath),
+          );
+        }
 
-        const alias = Object.fromEntries(
-          Object.entries(typescriptOptions.paths ?? {}).map(([key, value]) => [
-            key.replace('/*', ''),
-            value[0].replace('/*', ''),
+        const plugins = [
+          TypescriptCodeUtils.createExpression('tsconfigPaths()', [
+            "import tsconfigPaths from 'vite-tsconfig-paths'",
           ]),
-        );
+        ];
+
+        const testMap = {
+          globals: true,
+          clearMocks: true,
+          root: './src',
+          ...(config.customSetupBlocks.length
+            ? {
+                globalSetup: `./${customSetupPath}`,
+              }
+            : {}),
+        };
 
         const vitestConfig = {
-          environment: quot('node'),
-          clearMocks: 'true',
-          include: "['src/**/*.test.{js,ts}']",
-          exclude: TypescriptCodeUtils.mergeExpressionsAsArray(
-            config.exclude.map((str) => quot(str)),
-          ),
-          alias: Object.keys(alias ?? {}).length
-            ? JSON.stringify(alias)
-            : undefined,
+          plugins: TypescriptCodeUtils.mergeExpressionsAsArray(plugins),
+          test: TypescriptCodeUtils.createExpression(JSON.stringify(testMap)),
         };
 
         const vitestConfigFile = typescript.createTemplate({

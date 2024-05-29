@@ -96,6 +96,10 @@ export function buildFastify(
         generator: '@halfdomelabs/fastify/jest/prisma-jest',
         peerProvider: true,
       },
+      $prismaVitest: {
+        generator: '@halfdomelabs/fastify/vitest/prisma-vitest',
+        peerProvider: true,
+      },
       $prismaUtils: {
         generator: '@halfdomelabs/fastify/prisma/prisma-utils',
         peerProvider: true,
