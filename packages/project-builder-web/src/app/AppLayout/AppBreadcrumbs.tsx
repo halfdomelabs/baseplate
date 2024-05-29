@@ -6,6 +6,7 @@ import { Link, useMatches } from 'react-router-dom';
 
 import { ProjectChooserDialog } from '../components/ProjectChooserDialog';
 import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
+import { useProjects } from '@src/hooks/useProjects';
 import { RouteCrumbOrFunction } from '@src/types/routes';
 import { notEmpty } from '@src/utils/array';
 
@@ -28,6 +29,7 @@ export function AppBreadcrumbs(): JSX.Element {
     })
     .filter(notEmpty);
   const [showProjectChooser, setShowProjectChooser] = useState(false);
+  const projectsLength = useProjects((state) => state.projects.length);
 
   return (
     <Breadcrumb>
@@ -35,13 +37,16 @@ export function AppBreadcrumbs(): JSX.Element {
         <Breadcrumb.Item>
           <div className="flex items-center">
             <div>{upperFirst(definitionContainer.definition.name)} project</div>
-            <Button
-              onClick={() => setShowProjectChooser(true)}
-              size="icon"
-              variant="ghost"
-            >
-              <Button.Icon icon={MdKeyboardArrowDown} />
-            </Button>
+            {projectsLength > 1 && (
+              <Button
+                onClick={() => setShowProjectChooser(true)}
+                size="icon"
+                variant="ghost"
+                className="-mr-2"
+              >
+                <Button.Icon icon={MdKeyboardArrowDown} />
+              </Button>
+            )}
           </div>
         </Breadcrumb.Item>
         {crumbs.map((crumb, index) => (
