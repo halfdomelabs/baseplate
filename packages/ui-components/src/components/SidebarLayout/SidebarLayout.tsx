@@ -14,7 +14,7 @@ export function SidebarLayout({
   className,
   children,
 }: SidebarLayoutProps): JSX.Element {
-  return <div className={clsx('flex', className)}>{children}</div>;
+  return <div className={clsx('flex h-full', className)}>{children}</div>;
 }
 
 interface SidebarLayoutSidebarProps {
@@ -31,7 +31,7 @@ SidebarLayout.Sidebar = function SidebarLayoutSidebar({
   return (
     <aside
       className={cn(
-        'flex-shrink-0 overflow-y-auto border-r border-border p-4',
+        'sticky flex-shrink-0 overflow-y-auto border-r border-border p-4',
         {
           'w-64': width === 'sm',
           'w-72': width === 'md',
