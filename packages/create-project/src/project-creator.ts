@@ -65,10 +65,9 @@ export async function generateBaseplateProject({
           devDependencies: {
             '@halfdomelabs/project-builder-cli': cliVersion,
           },
-          packageManager: 'pnpm@9.1.2',
           engines: {
             node: '^20.9.0',
-            pnpm: '^8.10.0',
+            pnpm: '^9.10.0',
           },
           volta: {
             node: '20.9.0',
