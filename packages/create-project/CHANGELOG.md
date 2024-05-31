@@ -1,5 +1,11 @@
 # @halfdomelabs/create-project
 
+## 0.2.1
+
+### Patch Changes
+
+- 5fb3447: Fix up PNPM configuration for create project
+
 ## 0.2.0
 
 ### Minor Changes
