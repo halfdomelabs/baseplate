@@ -14,6 +14,7 @@ interface EslintConfig {
   eslintIgnore: string[];
   extraTsconfigProjects: string[];
   disableJest?: boolean;
+  disableVitest?: boolean;
 }
 
 export interface EslintProvider {
@@ -50,6 +51,7 @@ const EslintGenerator = createGeneratorWithChildren({
           react: config.react,
           extraTsconfigProjects: config.extraTsconfigProjects,
           disableJest: config.disableJest,
+          disableVitest: config.disableVitest,
         });
 
         const reactPackages: Record<string, string> = config.react
@@ -72,6 +74,11 @@ const EslintGenerator = createGeneratorWithChildren({
             ? {}
             : {
                 'eslint-plugin-jest': '27.6.0',
+              }),
+          ...(config.disableVitest
+            ? {}
+            : {
+                'eslint-plugin-vitest': '0.5.4',
               }),
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');

@@ -5,6 +5,7 @@ interface EslintConfig {
   extraRules?: Linter.RulesRecord;
   react?: boolean;
   disableJest?: boolean;
+  disableVitest?: boolean;
 }
 
 export function generateConfig({

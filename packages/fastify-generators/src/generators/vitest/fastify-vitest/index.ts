@@ -41,7 +41,10 @@ const FastifyVitestGenerator = createGeneratorWithChildren({
       ]);
 
     node.addScript('test-vitest', 'vitest run');
-    node.addScript('test-vitest:unit', 'vitest run .unit.');
+    node.addScript(
+      'test-vitest:unit',
+      'cross-env TEST_MODE=unit vitest run .unit.',
+    );
 
     return {
       getProviders: () => ({

@@ -71,6 +71,7 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
 
         node.addPackages({
           zod: '3.23.8',
+          'cross-env': '7.0.3',
         });
 
         node.addDevPackages({

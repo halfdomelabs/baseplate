@@ -3,6 +3,7 @@
 import { PrismaClient } from '@prisma/client';
 import { mockDeep, mockReset, DeepMockProxy } from 'vitest-mock-extended';
 import { prisma } from '%prisma-service';
+import { vi, beforeEach } from 'vitest';
 
 vi.mock('PRISMA_SERVICE_PATH', () => ({
   __esModule: true,

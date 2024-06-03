@@ -3,13 +3,14 @@
 import Fastify from 'fastify';
 import rawBodyPlugin from 'fastify-raw-body';
 import { Stripe } from 'stripe';
+import { describe, it, expect, vi } from 'vitest';
 import { stripe } from '@/src/services/stripe';
 import { stripeEventService } from '@/src/services/stripe-events';
 import { stripeWebhookPlugin } from './stripe-webhook';
 
-jest.mock('@src/services/stripe');
+vi.mock('@src/services/stripe');
 
-const mockedStripe = jest.mocked(stripe);
+const mockedStripe = vi.mocked(stripe, true);
 
 function createFakeWebhookEvent(data?: Partial<Stripe.Event>): Stripe.Event {
   return {
@@ -40,7 +41,7 @@ describe('stripeWebhookPlugin', () => {
     await fastify.register(rawBodyPlugin, { global: false });
     await fastify.register(stripeWebhookPlugin);
 
-    const eventHandler = jest.fn();
+    const eventHandler = vi.fn();
     stripeEventService.registerHandler(
       'payment_intent.succeeded',
       eventHandler,

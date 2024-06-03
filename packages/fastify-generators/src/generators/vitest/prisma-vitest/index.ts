@@ -70,8 +70,10 @@ const PrismaVitestGenerator = createGeneratorWithChildren({
     vitest.getConfig().appendUnique('customSetupBlocks', [
       TypescriptCodeUtils.createBlock(
         `
+const { TEST_MODE } = process.env;
+
 // don't run database set-up if only running unit tests
-if (!globalConfig.testPathPattern.includes('.unit.')) {
+if (TEST_MODE !== 'unit') {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
   }
