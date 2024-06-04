@@ -12,7 +12,7 @@ export function generateConfig({
   extraTsconfigProjects = [],
   extraRules = {},
   react,
-  disableJest,
+  disableVitest,
 }: EslintConfig): Linter.Config {
   return {
     root: true,
@@ -30,7 +30,12 @@ export function generateConfig({
             'plugin:jsx-a11y/recommended',
           ]
         : []),
-      ...(disableJest ? [] : ['plugin:jest/recommended', 'plugin:jest/style']),
+      ...(disableVitest
+        ? []
+        : [
+            'plugin:vitest/legacy-recommended',
+            'plugin:vitest-globals/recommended',
+          ]),
     ],
     overrides: [
       {
@@ -130,7 +135,11 @@ export function generateConfig({
     env: {
       node: true,
       browser: false,
-      ...(disableJest ? {} : { jest: true }),
+      ...(disableVitest
+        ? {}
+        : {
+            'vitest-globals/env': true,
+          }),
     },
     settings: {
       'import/resolver': {

@@ -13,11 +13,13 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
 } from '@src/writers/index.js';
+import { quot } from '@src/utils/string.js';
 
 const descriptorSchema = z.object({});
 
 export interface VitestGeneratorConfig {
   customSetupBlocks: TypescriptCodeBlock[];
+  setupFiles: string[];
 }
 
 export interface VitestProvider {
@@ -41,6 +43,7 @@ const VitestGenerator = createGeneratorWithChildren({
     const configMap = createNonOverwriteableMap<VitestGeneratorConfig>(
       {
         customSetupBlocks: [],
+        setupFiles: [],
       },
       { name: 'vitest-config', mergeArraysUniquely: true },
     );
@@ -51,6 +54,10 @@ const VitestGenerator = createGeneratorWithChildren({
     });
 
     eslint.getConfig().appendUnique('eslintIgnore', ['vitest.config.ts']);
+
+    // typescriptConfig.setTypescriptCompilerOptions({
+    //   types: ['vitest/globals'],
+    // });
 
     return {
       getProviders: () => ({
@@ -87,6 +94,11 @@ const VitestGenerator = createGeneratorWithChildren({
           ...(config.customSetupBlocks.length
             ? {
                 globalSetup: `./${customSetupPath}`,
+              }
+            : {}),
+          ...(config.setupFiles.length
+            ? {
+                setupFiles: config.setupFiles,
               }
             : {}),
         };

@@ -73,12 +73,13 @@ const EslintGenerator = createGeneratorWithChildren({
           ...(config.disableJest
             ? {}
             : {
-                'eslint-plugin-jest': '27.6.0',
+                // 'eslint-plugin-jest': '27.6.0',
               }),
           ...(config.disableVitest
             ? {}
             : {
                 'eslint-plugin-vitest': '0.5.4',
+                'eslint-plugin-vitest-globals': '1.5.0',
               }),
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');

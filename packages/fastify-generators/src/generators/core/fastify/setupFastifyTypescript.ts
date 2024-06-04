@@ -9,6 +9,7 @@ export function setupFastifyTypescript(
 ): void {
   typescriptConfig.setTypescriptVersion('5.2.2');
   typescriptConfig.setTypescriptCompilerOptions({
+    types: ['vitest/globals'],
     outDir: 'dist',
     declaration: true,
     baseUrl: './',
