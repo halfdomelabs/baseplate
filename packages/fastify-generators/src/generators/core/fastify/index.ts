@@ -98,13 +98,13 @@ const FastifyGenerator = createGeneratorWithTasks({
         generator: '@halfdomelabs/fastify/core/fastify-graceful-shutdown',
       },
     },
-    jest: {
-      provider: 'fastify-jest',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/jest/fastify-jest',
-        peerProvider: true,
-      },
-    },
+    // jest: {
+    //   provider: 'fastify-jest',
+    //   defaultDescriptor: {
+    //     generator: '@halfdomelabs/fastify/jest/fastify-jest',
+    //     peerProvider: true,
+    //   },
+    // },
     vitest: {
       provider: 'fastify-vitest',
       defaultDescriptor: {

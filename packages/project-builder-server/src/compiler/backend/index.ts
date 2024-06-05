@@ -47,9 +47,9 @@ export function compileBackend(
         buildDocker(projectDefinition, app),
         buildFastify(appBuilder, app),
       ],
-      jest: {
-        generator: '@halfdomelabs/core/node/jest',
-      },
+      // jest: {
+      //   generator: '@halfdomelabs/core/node/jest',
+      // },
       vitest: {
         generator: '@halfdomelabs/core/node/vitest',
       },
