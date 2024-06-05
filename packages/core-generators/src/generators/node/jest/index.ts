@@ -55,13 +55,13 @@ const JestGenerator = createGeneratorWithChildren({
     );
 
     node.addDevPackages({
-      // jest: '29.7.0',
-      // 'ts-jest': '29.1.1',
+      jest: '29.7.0',
+      'ts-jest': '29.1.1',
       'ts-node': '10.9.1',
-      // '@types/jest': '29.5.8',
+      '@types/jest': '29.5.8',
     });
 
-    // eslint.getConfig().appendUnique('eslintIgnore', ['jest.config.ts']);
+    eslint.getConfig().appendUnique('eslintIgnore', ['jest.config.ts']);
 
     return {
       getProviders: () => ({
@@ -128,7 +128,7 @@ const JestGenerator = createGeneratorWithChildren({
         jestConfigFile.addCodeEntries({
           JEST_CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject(jestConfig),
         });
-        // await builder.apply(jestConfigFile.renderToAction('jest.config.ts'));
+        await builder.apply(jestConfigFile.renderToAction('jest.config.ts'));
       },
     };
   },
