@@ -13,7 +13,6 @@ interface EslintConfig {
   react?: boolean;
   eslintIgnore: string[];
   extraTsconfigProjects: string[];
-  disableJest?: boolean;
   disableVitest?: boolean;
 }
 
@@ -50,7 +49,6 @@ const EslintGenerator = createGeneratorWithChildren({
         const eslintConfig = generateConfig({
           react: config.react,
           extraTsconfigProjects: config.extraTsconfigProjects,
-          disableJest: config.disableJest,
           disableVitest: config.disableVitest,
         });
 
@@ -70,11 +68,6 @@ const EslintGenerator = createGeneratorWithChildren({
           'eslint-config-prettier': '9.0.0',
           'eslint-import-resolver-typescript': '3.6.1',
           'eslint-plugin-import': '2.29.0',
-          ...(config.disableJest
-            ? {}
-            : {
-                // 'eslint-plugin-jest': '27.6.0',
-              }),
           ...(config.disableVitest
             ? {}
             : {

@@ -13,7 +13,6 @@ import {
   TypescriptCodeBlock,
   TypescriptCodeUtils,
 } from '@src/writers/index.js';
-import { quot } from '@src/utils/string.js';
 
 const descriptorSchema = z.object({});
 

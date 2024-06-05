@@ -4,7 +4,6 @@ interface EslintConfig {
   extraTsconfigProjects?: string[];
   extraRules?: Linter.RulesRecord;
   react?: boolean;
-  disableJest?: boolean;
   disableVitest?: boolean;
 }
 
