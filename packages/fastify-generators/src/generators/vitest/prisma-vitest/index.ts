@@ -49,11 +49,11 @@ const PrismaVitestGenerator = createGeneratorWithChildren({
     });
 
     const [dbHelperImport, dbHelperPath] = makeImportAndFilePath(
-      'src/tests/helpers/db.vitest-helper.ts',
+      'src/tests/helpers/db.test-helper.ts',
     );
 
     const [prismaHelperImport, prismaHelperPath] = makeImportAndFilePath(
-      'src/tests/helpers/prisma.vitest-helper.ts',
+      'src/tests/helpers/prisma.test-helper.ts',
     );
 
     const importMap = {
@@ -102,7 +102,7 @@ if (TEST_MODE !== 'unit') {
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyAction({
-            source: 'db.vitest-helper.ts',
+            source: 'db.test-helper.ts',
             destination: dbHelperPath,
             replacements: {
               TEST_DATABASE_NAME_VALUE: `${project
@@ -114,7 +114,7 @@ if (TEST_MODE !== 'unit') {
 
         await builder.apply(
           typescript.createCopyAction({
-            source: 'prisma.vitest-helper.ts',
+            source: 'prisma.test-helper.ts',
             destination: prismaHelperPath,
             importMappers: [prismaOutput],
             replacements: {

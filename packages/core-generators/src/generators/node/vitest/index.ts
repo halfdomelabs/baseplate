@@ -54,10 +54,6 @@ const VitestGenerator = createGeneratorWithChildren({
 
     eslint.getConfig().appendUnique('eslintIgnore', ['vitest.config.ts']);
 
-    // typescriptConfig.setTypescriptCompilerOptions({
-    //   types: ['vitest/globals'],
-    // });
-
     return {
       getProviders: () => ({
         vitest: {
@@ -87,7 +83,6 @@ const VitestGenerator = createGeneratorWithChildren({
         ];
 
         const testMap = {
-          globals: true,
           clearMocks: true,
           root: './src',
           ...(config.customSetupBlocks.length
