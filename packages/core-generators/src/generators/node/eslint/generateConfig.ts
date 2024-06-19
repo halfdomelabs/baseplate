@@ -15,7 +15,7 @@ export function generateConfig({
 }: EslintConfig): Linter.Config {
   return {
     root: true,
-    plugins: ['import'],
+    plugins: ['import', ...(disableVitest ? [] : ['vitest'])],
     parserOptions: {
       ecmaVersion: 2021,
     },
@@ -29,7 +29,6 @@ export function generateConfig({
             'plugin:jsx-a11y/recommended',
           ]
         : []),
-      ...(disableVitest ? [] : ['plugin:vitest/legacy-recommended']),
     ],
     overrides: [
       {
