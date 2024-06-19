@@ -1,4 +1,4 @@
-import { PluginConfigWithModule } from '@halfdomelabs/project-builder-lib';
+import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
 import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
@@ -9,7 +9,9 @@ import { client } from '@src/services/api';
 
 export function PluginsHomePage(): JSX.Element {
   const { currentProjectId } = useProjects();
-  const [plugins, setPlugins] = useState<PluginConfigWithModule[] | null>(null);
+  const [plugins, setPlugins] = useState<PluginMetadataWithPaths[] | null>(
+    null,
+  );
   const { parsedProject } = useProjectDefinition();
   const [error, setError] = useState<unknown>(null);
 

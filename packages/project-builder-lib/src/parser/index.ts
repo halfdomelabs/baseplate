@@ -15,6 +15,8 @@ import {
 import { EnumConfig } from '@src/schema/models/enums.js';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
 
+export * from './parser.js';
+
 const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
 
 function upsertItems<T>(

@@ -1,6 +1,6 @@
 import {
-  PluginConfigWithModule,
-  pluginConfigSchema,
+  PluginMetadataWithPaths,
+  pluginMetadataSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
@@ -12,16 +12,20 @@ import { z } from 'zod';
 import { notEmpty } from '@src/utils/array.js';
 import { InitializeServerError, formatError } from '@src/utils/errors.js';
 
-const pluginsJsonSchema = z.object({
-  directories: z.array(z.string()),
+const manifestJsonSchema = z.object({
+  plugins: z.array(z.string()),
+  web_build: z.string(),
 });
 
-type PluginJson = z.infer<typeof pluginsJsonSchema>;
+type ManifestJson = z.infer<typeof manifestJsonSchema>;
 
-async function loadPluginJson(
+async function loadManifestJson(
   requireResolvePath: string,
   logger: Logger,
-): Promise<{ config: PluginJson; rootDirectory: string } | null> {
+): Promise<{
+  manifest: ManifestJson;
+  rootDirectory: string;
+} | null> {
   const packageJsonPath = await packageUp({ cwd: requireResolvePath });
   const packagePath = packageJsonPath && path.dirname(packageJsonPath);
   if (!packagePath) {
@@ -31,70 +35,78 @@ async function loadPluginJson(
     return null;
   }
 
-  const pluginsJsonPath = path.join(packagePath, 'plugins.json');
+  const manifestJsonPath = path.join(packagePath, 'manifest.json');
 
-  if (!(await fs.pathExists(pluginsJsonPath))) {
+  if (!(await fs.pathExists(manifestJsonPath))) {
     logger.warn(
-      `Package ${packagePath} does not have a valid plugins.json file. Ignoring...`,
+      `Package ${packagePath} does not have a valid manifest.json file. Ignoring...`,
     );
     return null;
   }
-  const config = await fs
-    .readJson(pluginsJsonPath)
-    .then((data) => pluginsJsonSchema.parse(data))
+  const manifest = await fs
+    .readJson(manifestJsonPath)
+    .then((data) => manifestJsonSchema.parse(data))
     .catch(() => {
       logger.warn(
-        `Could not read the plugins.json file for the package ${packagePath}. Ignoring...`,
+        `Could not read the manifest.json file for the package ${packagePath}. Ignoring...`,
       );
       return null;
     });
 
-  if (!config) {
+  if (!manifest) {
     return null;
   }
 
-  return { config, rootDirectory: packagePath };
+  return {
+    manifest,
+    rootDirectory: packagePath,
+  };
 }
 
 export async function loadPluginFromDirectory(
   packageName: string,
   pluginDirectory: string,
+  webBuildDirectory: string,
   logger: Logger,
-): Promise<PluginConfigWithModule | null> {
+): Promise<PluginMetadataWithPaths | null> {
   try {
-    const pluginConfig = (await import(
-      path.join(pluginDirectory, 'index.js')
+    const pluginMetadata = (await import(
+      path.join(pluginDirectory, 'metadata.js')
     )) as unknown;
 
-    if (typeof pluginConfig !== 'object' || pluginConfig === null) {
+    if (typeof pluginMetadata !== 'object' || pluginMetadata === null) {
       logger.warn(
-        `Plugin at ${pluginDirectory} does not export a valid configuration object. Ignoring...`,
+        `Plugin at ${pluginDirectory} does not export a valid metadata object. Ignoring...`,
       );
       return null;
     }
 
-    if (!('default' in pluginConfig)) {
+    if (!('default' in pluginMetadata)) {
       logger.warn(
-        `Plugin at ${pluginDirectory} does not export a default configuration object. Ignoring...`,
+        `Plugin at ${pluginDirectory} does not export a default metadata object. Ignoring...`,
       );
       return null;
     }
 
-    const parsedConfig = pluginConfigSchema.parse(pluginConfig.default);
+    const parsedMetadata = pluginMetadataSchema.parse(pluginMetadata.default);
 
     return {
-      ...parsedConfig,
+      ...parsedMetadata,
       // URL safe ID
       id: `${packageName
         .replace(/^@/, '')
         .replace(/[^a-z0-9/]+/g, '-')
-        .replace(/\//g, '_')}_${parsedConfig.name.replace(/[^a-z0-9]+/g, '-')}`,
+        .replace(
+          /\//g,
+          '_',
+        )}_${parsedMetadata.name.replace(/[^a-z0-9]+/g, '-')}`,
       packageName,
       pluginDirectory,
+      webBuildDirectory,
     };
   } catch (err) {
     logger.warn(
-      `Unable to read plugin configuration at ${pluginDirectory}: ${formatError(
+      `Unable to read plugin metadata at ${pluginDirectory}: ${formatError(
         err,
       )}. Ignoring...`,
     );
@@ -108,7 +120,7 @@ export async function loadPluginFromDirectory(
 export async function discoverPlugins(
   projectDirectory: string,
   logger: Logger,
-): Promise<PluginConfigWithModule[]> {
+): Promise<PluginMetadataWithPaths[]> {
   const packageJsonPath = await packageUp({ cwd: projectDirectory });
 
   if (!packageJsonPath) {
@@ -139,7 +151,7 @@ export async function discoverPlugins(
       name.match(/^@[^/]+\/baseplate-plugin-/),
   );
 
-  // Load all valid plugins and their configurations
+  // Load all valid plugins and their metadata
   const require = createRequire(projectDirectory);
   return (
     await Promise.all(
@@ -150,21 +162,22 @@ export async function discoverPlugins(
           }),
         );
 
-        // Look for plugins.json file
-        const pluginJsonResult = await loadPluginJson(packagePath, logger);
+        // Look for manifest.json file
+        const manifestJsonResult = await loadManifestJson(packagePath, logger);
 
-        if (!pluginJsonResult) {
+        if (!manifestJsonResult) {
           return null;
         }
 
-        const { config, rootDirectory } = pluginJsonResult;
+        const { manifest, rootDirectory } = manifestJsonResult;
 
         // Load the plugins
         return Promise.all(
-          config.directories.map(async (directory) =>
+          manifest.plugins.map(async (directory) =>
             loadPluginFromDirectory(
               packageName,
               path.join(rootDirectory, directory),
+              path.join(rootDirectory, manifest.web_build),
               logger,
             ),
           ),

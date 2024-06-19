@@ -54,6 +54,7 @@ export function ProjectDefinitionGate({
     projectId,
     externalChangeCounter,
     downloadConfig,
+    schemaParserContext,
   } = useRemoteProjectDefinition();
   const { projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion, refreshVersion } = useClientVersion();
@@ -85,7 +86,7 @@ export function ProjectDefinitionGate({
       }
     | { status: 'error'; configError: unknown }
     | { status: 'loading' } => {
-    if (!remoteConfig || !projectId || !loaded) {
+    if (!remoteConfig || !projectId || !loaded || !schemaParserContext) {
       return { status: 'loading' };
     }
     if (
@@ -114,6 +115,7 @@ export function ProjectDefinitionGate({
       const definitionContainer =
         ProjectDefinitionContainer.fromSerializedConfig(
           migratedProjectDefinition,
+          schemaParserContext,
         );
       const project = new ParsedProjectDefinition(definitionContainer);
       // only save config if project is initialized
@@ -146,17 +148,23 @@ export function ProjectDefinitionGate({
       logError(err);
       return { status: 'error', configError: err };
     }
-  }, [remoteConfig, externalChangeCounter, projectId, loaded]);
+  }, [
+    remoteConfig,
+    externalChangeCounter,
+    projectId,
+    loaded,
+    schemaParserContext,
+  ]);
 
   const result: UseProjectDefinitionResult | undefined = useMemo(() => {
-    if (loadData.status !== 'loaded' || !projectId) {
+    if (loadData.status !== 'loaded' || !projectId || !schemaParserContext) {
       return undefined;
     }
     function setConfig(
       newConfig: SetOrTransformConfig,
       { fixReferences }: SetProjectDefinitionOptions = {},
     ): void {
-      if (loadData.status !== 'loaded' || !projectId) {
+      if (loadData.status !== 'loaded' || !projectId || !schemaParserContext) {
         throw new Error(
           'Cannot set config when project config is not yet loaded',
         );
@@ -183,14 +191,18 @@ export function ProjectDefinitionGate({
       }
 
       const parsedConfig = new ParsedProjectDefinition(
-        ProjectDefinitionContainer.fromConfig(validatedProjectDefinition),
+        ProjectDefinitionContainer.fromDefinition(
+          validatedProjectDefinition,
+          schemaParserContext,
+        ),
       );
       parsedConfig.projectDefinition.cliVersion = cliVersion;
 
       const exportedProjectDefinition =
         parsedConfig.exportToProjectDefinition();
-      const definitionContainer = ProjectDefinitionContainer.fromConfig(
+      const definitionContainer = ProjectDefinitionContainer.fromDefinition(
         exportedProjectDefinition,
+        schemaParserContext,
       );
 
       saveRemoteConfig(
@@ -219,6 +231,7 @@ export function ProjectDefinitionGate({
     cliVersion,
     externalChangeCounter,
     projectId,
+    schemaParserContext,
   ]);
 
   const compositeError =

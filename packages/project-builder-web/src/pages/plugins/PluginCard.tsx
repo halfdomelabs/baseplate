@@ -1,4 +1,8 @@
-import { PluginConfigWithModule } from '@halfdomelabs/project-builder-lib';
+import {
+  PluginMetadata,
+  PluginMetadataWithPaths,
+  pluginEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { Button, Card } from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
 
@@ -9,7 +13,7 @@ import { getPluginStaticUrl } from '@src/services/plugins';
 
 interface PluginCardProps {
   className?: string;
-  plugin: PluginConfigWithModule;
+  plugin: PluginMetadataWithPaths;
   isActive: boolean;
 }
 
@@ -29,9 +33,11 @@ export function PluginCard({
           (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
         ),
         {
+          id: pluginEntityType.generateNewId(),
           packageName: plugin.packageName,
           name: plugin.name,
           version: plugin.version,
+          config: {},
         },
       ];
     });

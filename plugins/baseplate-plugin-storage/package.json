@@ -15,8 +15,9 @@
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
-    "build:static": "cpx \"src/*/{templates,static}/**\" \"dist/\" --clean",
+    "build:static": "cpx \"src/*/{templates,static,metadata.json}/**\" \"dist/\" --clean",
     "build:tsc": "tsc -p tsconfig.build.json && tsc-alias",
+    "build:vite": "vite build",
     "clean": "rm -rf ./dist",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
     "prettier:check": "prettier --check .",
@@ -24,17 +25,25 @@
     "watch": "concurrently pnpm:watch:*",
     "watch:static": "pnpm build:static --watch",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w"
+    "watch:tsc-alias": "tsc-alias -w",
+    "watch:vite": "vite build --watch"
   },
   "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
+    "@originjs/vite-plugin-federation": "^1.3.5",
+    "@vitejs/plugin-react": "4.2.1",
     "concurrently": "8.2.2",
     "cpx2": "7.0.1",
+    "globby": "^14.0.0",
     "tsc-alias": "1.8.8",
     "typescript": "5.2.2",
+    "vite": "5.2.8",
+    "vite-plugin-static-copy": "^1.0.5",
     "vitest": "1.4.0"
   },
   "peerDependencies": {

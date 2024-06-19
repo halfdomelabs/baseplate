@@ -1,13 +1,16 @@
+import { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useProjects } from './useProjects';
 import { useToast } from './useToast';
 import { client } from '@src/services/api';
+import { createWebSchemaParserContext } from '@src/services/schema-parser-context';
 import { logError } from 'src/services/error-logger';
 import {
   downloadProjectDefinition,
   FilePayload,
+  getPluginsMetadata,
   uploadProjectDefinition,
 } from 'src/services/remote';
 
@@ -27,12 +30,15 @@ interface UseRemoteProjectDefinitionResult {
   externalChangeCounter: number;
   projectId?: string | null;
   downloadConfig: () => Promise<void>;
+  schemaParserContext?: SchemaParserContext;
 }
 
 export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   const [file, setFile] = useState<FilePayload | null>();
   const [error, setError] = useState<Error>();
   const [loaded, setLoaded] = useState(false);
+  const [schemaParserContext, setSchemaParserContext] =
+    useState<SchemaParserContext>();
 
   const isSavingRef = useRef(false);
   const lastSavedValueRef = useRef<string | null>(null);
@@ -50,8 +56,29 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
     setError(undefined);
     setLoaded(false);
     setExternalChangeCounter(0);
+    setSchemaParserContext(undefined);
     lastSavedValueRef.current = null;
   }, [currentProjectId]);
+
+  useEffect(() => {
+    if (!currentProjectId) {
+      return;
+    }
+    getPluginsMetadata(currentProjectId)
+      .then((plugins) =>
+        createWebSchemaParserContext(currentProjectId, plugins),
+      )
+      .then((schemaParserContext) =>
+        setSchemaParserContext(schemaParserContext),
+      )
+      .catch((err) => {
+        setError(err as Error);
+        logError(err);
+        toast.error(
+          `Error loading project plugin configs: ${(err as Error).message}`,
+        );
+      });
+  }, [currentProjectId, toast]);
 
   const updateConfig = useCallback((payload: FilePayload | null): boolean => {
     // skip saving if we already have this value
@@ -190,5 +217,6 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
     externalChangeCounter,
     projectId: currentProjectId,
     downloadConfig,
+    schemaParserContext,
   };
 }

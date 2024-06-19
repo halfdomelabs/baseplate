@@ -1,6 +1,6 @@
 import {
-  ProjectDefinition,
-  projectDefinitionSchema,
+  AppEntry,
+  SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
@@ -13,12 +13,9 @@ import {
 } from '../sync/index.js';
 import { writeApplicationFiles } from '../writer/index.js';
 import { compileApplications } from '@src/compiler/index.js';
-import { expandPathWithTilde } from '@src/utils/path.js';
 
-async function loadProjectJson(directory: string): Promise<ProjectDefinition> {
-  const projectJsonPath = expandPathWithTilde(
-    path.join(directory, 'baseplate/project.json'),
-  );
+async function loadProjectJson(directory: string): Promise<unknown> {
+  const projectJsonPath = path.join(directory, 'baseplate/project.json');
   const fileExists = await fs.pathExists(projectJsonPath);
 
   if (!fileExists) {
@@ -26,7 +23,19 @@ async function loadProjectJson(directory: string): Promise<ProjectDefinition> {
   }
 
   const projectJson: unknown = await fs.readJson(projectJsonPath);
-  return projectDefinitionSchema.parse(projectJson);
+  return projectJson;
+}
+
+async function compileApplicationsFromDirectory({
+  directory,
+  context,
+}: {
+  directory: string;
+  context: SchemaParserContext;
+}): Promise<AppEntry[]> {
+  const projectJson = await loadProjectJson(directory);
+
+  return compileApplications(projectJson, context);
 }
 
 export interface BuildProjectForDirectoryOptions {
@@ -34,6 +43,7 @@ export interface BuildProjectForDirectoryOptions {
   generatorSetupConfig: GeneratorEngineSetupConfig;
   regen?: boolean;
   logger: Logger;
+  context: SchemaParserContext;
 }
 
 export async function buildProjectForDirectory({
@@ -41,18 +51,14 @@ export async function buildProjectForDirectory({
   generatorSetupConfig,
   regen,
   logger,
+  context,
 }: BuildProjectForDirectoryOptions): Promise<void> {
-  const resolvedDirectory = expandPathWithTilde(directory);
-  // load project.json file
-  const projectDefinition = await loadProjectJson(resolvedDirectory);
+  const apps = await compileApplicationsFromDirectory({
+    directory,
+    context,
+  });
 
-  const apps = compileApplications(projectDefinition);
-
-  const modifiedApps = await writeApplicationFiles(
-    resolvedDirectory,
-    apps,
-    logger,
-  );
+  const modifiedApps = await writeApplicationFiles(directory, apps, logger);
 
   const shouldRegen = regen ?? process.env.FORCE_REGEN === 'true';
 
@@ -62,43 +68,44 @@ export async function buildProjectForDirectory({
   for (const app of appsToRegenerate) {
     // eslint-disable-next-line no-await-in-loop
     await generateForDirectory({
-      baseDirectory: resolvedDirectory,
+      baseDirectory: directory,
       appEntry: app,
       logger,
       generatorSetupConfig,
     });
   }
 
-  logger.info(`Project written to ${resolvedDirectory}!`);
+  logger.info(`Project written to ${directory}!`);
 }
 
 interface BuildToCleanFolderOptions {
   directory: string;
   logger: Logger;
   generatorSetupConfig: GeneratorEngineSetupConfig;
+  context: SchemaParserContext;
 }
 
 export async function buildToCleanFolder({
   directory,
   logger,
   generatorSetupConfig,
+  context,
 }: BuildToCleanFolderOptions): Promise<void> {
-  const resolvedDirectory = path.resolve(process.cwd(), directory);
-  // load project.json file
-  const projectDefinition = await loadProjectJson(resolvedDirectory);
-
-  const apps = compileApplications(projectDefinition);
+  const apps = await compileApplicationsFromDirectory({
+    directory,
+    context,
+  });
 
   // eslint-disable-next-line no-restricted-syntax
   for (const app of apps) {
     // eslint-disable-next-line no-await-in-loop
     await generateCleanAppForDirectory({
-      baseDirectory: resolvedDirectory,
+      baseDirectory: directory,
       appEntry: app,
       logger,
       generatorSetupConfig,
     });
   }
 
-  logger.info(`Project written to ${resolvedDirectory}!`);
+  logger.info(`Project written to ${directory}!`);
 }
