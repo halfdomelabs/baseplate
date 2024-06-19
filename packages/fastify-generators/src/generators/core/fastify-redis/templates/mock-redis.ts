@@ -1,5 +1,6 @@
 // @ts-nocheck
 import Redis from 'ioredis';
+import { vi } from 'vitest';
 
 // We need to mock Redis otherwise open connections may prevent Vitest from exiting
 

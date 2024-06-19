@@ -29,12 +29,7 @@ export function generateConfig({
             'plugin:jsx-a11y/recommended',
           ]
         : []),
-      ...(disableVitest
-        ? []
-        : [
-            'plugin:vitest/legacy-recommended',
-            'plugin:vitest-globals/recommended',
-          ]),
+      ...(disableVitest ? [] : ['plugin:vitest/legacy-recommended']),
     ],
     overrides: [
       {
@@ -134,11 +129,6 @@ export function generateConfig({
     env: {
       node: true,
       browser: false,
-      ...(disableVitest
-        ? {}
-        : {
-            'vitest-globals/env': true,
-          }),
     },
     settings: {
       'import/resolver': {
