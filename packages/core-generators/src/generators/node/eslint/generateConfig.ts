@@ -125,6 +125,16 @@ export function generateConfig({
           'no-console': 'off',
         },
       },
+      ...(disableVitest
+        ? []
+        : [
+            {
+              files: ['*.test.*'],
+              rules: {
+                'vitest/no-commented-out-tests': 'warn',
+              } as Linter.RulesRecord,
+            },
+          ]),
     ],
     env: {
       node: true,
