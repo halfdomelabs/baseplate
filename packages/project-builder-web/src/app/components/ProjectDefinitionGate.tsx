@@ -2,8 +2,9 @@ import {
   ParsedProjectDefinition,
   ProjectDefinition,
   ProjectDefinitionContainer,
+  createProjectDefinitionSchemaWithContext,
   fixRefDeletions,
-  projectDefinitionSchema,
+  parseProjectDefinitionWithContext,
   runSchemaMigrations,
   serializeSchema,
 } from '@halfdomelabs/project-builder-lib';
@@ -176,12 +177,20 @@ export function ProjectDefinitionGate({
           ? produce(oldProjectDefinition, newConfig)
           : newConfig;
 
-      let validatedProjectDefinition =
-        projectDefinitionSchema.parse(newProjectDefinition);
+      const projectDefinitionSchemaWithContext =
+        createProjectDefinitionSchemaWithContext(
+          newProjectDefinition,
+          schemaParserContext,
+        );
+
+      let validatedProjectDefinition = parseProjectDefinitionWithContext(
+        newProjectDefinition,
+        schemaParserContext,
+      );
 
       if (fixReferences) {
         const result = fixRefDeletions(
-          projectDefinitionSchema,
+          projectDefinitionSchemaWithContext,
           validatedProjectDefinition,
         );
         if (result.type === 'failure') {
@@ -276,6 +285,9 @@ export function ProjectDefinitionGate({
         <NewProjectCard
           existingProject={result?.parsedProject.projectDefinition}
           saveProject={(data) => {
+            if (!schemaParserContext) {
+              return;
+            }
             const oldProjectDefinition =
               result?.parsedProject.exportToProjectDefinition() ?? {};
             const newProjectDefinition = {
@@ -283,10 +295,15 @@ export function ProjectDefinitionGate({
               ...data,
               isInitialized: true,
             };
+            const projectDefinitionSchemaWithContext =
+              createProjectDefinitionSchemaWithContext(
+                newProjectDefinition,
+                schemaParserContext,
+              );
             saveRemoteConfig(
               prettyStableStringify(
                 serializeSchema(
-                  projectDefinitionSchema,
+                  projectDefinitionSchemaWithContext,
                   newProjectDefinition as ProjectDefinition,
                 ),
               ),

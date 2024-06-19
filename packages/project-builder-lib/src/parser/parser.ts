@@ -82,6 +82,17 @@ export function createProjectDefinitionSchemaWithContext(
   return zPluginWrapper(projectDefinitionSchema, pluginImplementationStore);
 }
 
+export function parseProjectDefinitionWithContext(
+  projectDefinition: unknown,
+  context: SchemaParserContext,
+): ProjectDefinition {
+  const schema = createProjectDefinitionSchemaWithContext(
+    projectDefinition,
+    context,
+  );
+  return schema.parse(projectDefinition);
+}
+
 /**
  * Parses a project definition and obtains entities/references from it.
  *
