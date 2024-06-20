@@ -64,12 +64,11 @@ export default defineConfig((): UserConfig => {
   return {
     build: {
       outDir: 'dist/web',
-      lib: {
-        entry: 'src/web-export.ts',
-        formats: ['es'],
-        fileName: 'web-export.ts',
-      },
       sourcemap: true,
+      modulePreload: false,
+      target: 'esnext',
+      minify: false,
+      cssCodeSplit: false,
     },
     plugins: [
       federation({

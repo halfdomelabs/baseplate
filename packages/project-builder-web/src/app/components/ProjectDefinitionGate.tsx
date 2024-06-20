@@ -2,6 +2,7 @@ import {
   ParsedProjectDefinition,
   ProjectDefinition,
   ProjectDefinitionContainer,
+  createPluginImplementationStore,
   createProjectDefinitionSchemaWithContext,
   fixRefDeletions,
   parseProjectDefinitionWithContext,
@@ -224,6 +225,12 @@ export function ProjectDefinitionGate({
         definitionContainer,
       };
     }
+
+    const pluginContainer = createPluginImplementationStore(
+      schemaParserContext.pluginStore,
+      loadData.definitionContainer.definition,
+    );
+
     return {
       config: loadData.definitionContainer.definition,
       parsedProject: loadData.parsedProject,
@@ -233,6 +240,8 @@ export function ProjectDefinitionGate({
         setConfig(config, { fixReferences: true });
       },
       setConfig,
+      pluginContainer,
+      schemaParserContext,
     };
   }, [
     loadData,

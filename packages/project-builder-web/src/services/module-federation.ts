@@ -34,13 +34,13 @@ export async function loadPluginModule(
     __federation_method_getRemote(pluginKey, `${pluginMetadata.name}/web`),
     __federation_method_getRemote(pluginKey, `${pluginMetadata.name}/common`),
   ]);
-  const [nodeModule, commonModule] = wrappedModules.map(
+  const [webModule, commonModule] = wrappedModules.map(
     (module) =>
       __federation_method_unwrapDefault(module) as PluginPlatformModule,
   );
 
   const pluginModules = [
-    { key: 'node', module: nodeModule },
+    { key: 'web', module: webModule },
     { key: 'common', module: commonModule },
   ];
 

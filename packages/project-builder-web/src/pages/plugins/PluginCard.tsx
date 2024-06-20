@@ -1,11 +1,12 @@
 import {
-  PluginMetadata,
   PluginMetadataWithPaths,
-  pluginEntityType,
+  webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 import { Button, Card } from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
+import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useProjects } from '@src/hooks/useProjects';
 import { useToast } from '@src/hooks/useToast';
@@ -23,17 +24,35 @@ export function PluginCard({
   isActive,
 }: PluginCardProps): JSX.Element {
   const { currentProjectId } = useProjects();
-  const { setConfigAndFixReferences } = useProjectDefinition();
+  const {
+    setConfigAndFixReferences,
+    schemaParserContext,
+    definitionContainer,
+  } = useProjectDefinition();
   const toast = useToast();
+  const navigate = useNavigate();
 
   function enablePlugin(): void {
+    const implementations = loadPluginImplementationStoreWithNewPlugin(
+      schemaParserContext.pluginStore,
+      plugin,
+      definitionContainer.definition,
+    );
+    const webConfigImplementation =
+      implementations.getPluginSpec(webConfigSpec);
+    const webConfig = webConfigImplementation.getWebConfigComponent(plugin.id);
+    if (webConfig) {
+      // redirect to plugin config page
+      navigate(`/plugins/edit/${plugin.id}`);
+      return;
+    }
     setConfigAndFixReferences((draft) => {
       draft.plugins = [
         ...(draft.plugins ?? []).filter(
           (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
         ),
         {
-          id: pluginEntityType.generateNewId(),
+          id: plugin.id,
           packageName: plugin.packageName,
           name: plugin.name,
           version: plugin.version,

@@ -92,7 +92,7 @@ export function initializeOrderedPluginModules(
 ): Record<string, PluginSpecImplementation> {
   const specImplementations = { ...initialSpecImplementations };
 
-  orderedPluginModules.forEach(({ id, name, module }) => {
+  orderedPluginModules.forEach(({ name, module, pluginId }) => {
     const dependencies = _.mapValues(module.dependencies, (dep) => {
       const implementation = specImplementations[dep.name];
       if (!implementation && !dep.isOptional) {
@@ -100,7 +100,7 @@ export function initializeOrderedPluginModules(
       }
       return implementation;
     });
-    const context = { pluginId: id };
+    const context = { pluginId };
     const exports = module.initialize(dependencies, context) ?? {};
     Object.entries(module.exports ?? {}).map(([key, spec]) => {
       const exportedImplementation = exports[key];
@@ -123,13 +123,13 @@ export function initializePlugins(
   const pluginModules = extractPlatformModulesFromPlugins(plugins);
 
   const pluginModulesById = _.keyBy(pluginModules, (p) => p.id);
-  const orderedPlugins = getOrderedPluginModuleInitializationSteps(
+  const orderedModuleIds = getOrderedPluginModuleInitializationSteps(
     pluginModules,
     initialSpecImplementations,
   );
 
   const specImplementations = initializeOrderedPluginModules(
-    orderedPlugins.map((p) => pluginModulesById[p]),
+    orderedModuleIds.map((p) => pluginModulesById[p]),
     initialSpecImplementations,
   );
   return new ZodPluginImplementationStore(specImplementations);

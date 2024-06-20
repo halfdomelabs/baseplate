@@ -17,6 +17,9 @@ export function createPluginConfigImplementation(): PluginConfigSpec {
 
   return {
     registerSchema(pluginId, schema) {
+      if (schemas[pluginId]) {
+        throw new Error(`Schema for plugin ${pluginId} is already registered`);
+      }
       schemas[pluginId] = schema;
     },
     getSchema(pluginId) {

@@ -1,6 +1,8 @@
 import {
   PluginMetadataWithPaths,
   SchemaParserContext,
+  createWebConfigImplementation,
+  webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 
 import { loadPluginModule } from './module-federation';
@@ -20,6 +22,9 @@ export async function createWebSchemaParserContext(
           };
         }),
       ),
+      getInitialSpecImplementations() {
+        return { [webConfigSpec.name]: createWebConfigImplementation() };
+      },
     },
   };
 }

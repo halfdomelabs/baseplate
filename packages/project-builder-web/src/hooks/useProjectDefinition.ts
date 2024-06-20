@@ -3,6 +3,8 @@ import {
   ProjectDefinitionInput,
   ParsedProjectDefinition,
   ProjectDefinitionContainer,
+  ZodPluginImplementationStore,
+  SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import React from 'react';
 
@@ -24,6 +26,8 @@ export interface UseProjectDefinitionResult {
     options?: SetProjectDefinitionOptions,
   ) => void;
   externalChangeCounter: number;
+  pluginContainer: ZodPluginImplementationStore;
+  schemaParserContext: SchemaParserContext;
 }
 
 export const ProjectDefinitionContext =

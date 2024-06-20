@@ -1,9 +1,17 @@
-import { createPlatformPluginExport } from '@halfdomelabs/project-builder-lib';
+import {
+  createPlatformPluginExport,
+  webConfigSpec,
+} from '@halfdomelabs/project-builder-lib';
+
+import { StorageConfig } from './components/StorageConfig';
 
 export default createPlatformPluginExport({
-  dependencies: {},
+  dependencies: {
+    webConfig: webConfigSpec,
+  },
   exports: {},
-  initialize: () => {
+  initialize: ({ webConfig }, { pluginId }) => {
+    webConfig.registerWebConfigComponent(pluginId, StorageConfig);
     return {};
   },
 });
