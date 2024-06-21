@@ -105,9 +105,9 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
             );
           });
       };
-      import.meta.hot.on('vite:afterUpdate', eventHandler);
+      import.meta.hot.on('plugin-assets-changed', eventHandler);
       return () => {
-        import.meta.hot?.off('vite:afterUpdate', eventHandler);
+        import.meta.hot?.off('plugin-assets-changed', eventHandler);
       };
     }
   }, [currentProjectId, pluginsMetadata, toast]);

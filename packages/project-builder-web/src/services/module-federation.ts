@@ -14,7 +14,9 @@ export async function loadPluginModule(
   pluginMetadata: PluginMetadataWithPaths,
 ): Promise<KeyedPluginPlatformModule[]> {
   const pluginKey = `${projectId}/${pluginMetadata.id}`;
-  const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.id}/web/assets/remoteEntry.js`;
+  // use random entry to bust cache
+  const randomEntry = Math.random();
+  const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.id}/web/assets/remoteEntry.js?rnd=${randomEntry}`;
 
   __federation_method_setRemote(pluginKey, {
     url: remoteEntry,

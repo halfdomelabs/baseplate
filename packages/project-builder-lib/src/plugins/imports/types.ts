@@ -11,7 +11,7 @@ export type ExtractPluginImplementationFromSpecMap<T extends PluginSpecMap> = {
   [TKey in keyof T]: PluginSpecImplementationFromSpec<T[TKey]>;
 };
 
-interface PluginInitializerContext {
+export interface PluginInitializerContext {
   pluginId: string;
 }
 

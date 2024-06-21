@@ -159,6 +159,7 @@ module.exports = function createEslintConfig(options) {
                 'postcss.config.cjs',
                 'tailwind.config.js',
                 'tailwind.config.cjs',
+                'plugins/**/*.ts',
               ],
             },
           ],

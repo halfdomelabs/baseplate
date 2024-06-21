@@ -4,6 +4,8 @@ import { defineConfig, loadEnv } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
+import { pluginDevServerPlugin } from './plugins/plugin-dev-server';
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const envVars = { ...process.env, ...loadEnv(mode, process.cwd(), '') };
@@ -28,6 +30,7 @@ export default defineConfig(({ mode }) => {
           },
         },
       }),
+      pluginDevServerPlugin(),
     ],
     server: {
       port: envVars.PORT ? parseInt(envVars.PORT, 10) : 3000,
