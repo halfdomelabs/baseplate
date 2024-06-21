@@ -1,8 +1,8 @@
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function ModelListPage(): JSX.Element {
   const { parsedProject } = useProjectDefinition();

@@ -1,10 +1,10 @@
 import { PluginUtils, webConfigSpec } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 import NotFoundPage from '../NotFound.page';
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 
 export function PluginConfigPage(): JSX.Element {
   const { definitionContainer, pluginContainer, schemaParserContext } =

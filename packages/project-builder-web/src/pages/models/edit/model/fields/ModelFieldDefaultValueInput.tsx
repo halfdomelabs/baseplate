@@ -1,4 +1,5 @@
 import { ModelConfig, EnumUtils } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
@@ -8,7 +9,6 @@ import {
 import { Control, useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 
 interface ModelFieldDefaultValueInputProps {
   control: Control<ModelConfig>;

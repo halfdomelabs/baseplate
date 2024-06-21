@@ -4,6 +4,7 @@ import {
   generateThemeColorsFromShade,
   themeSchema,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Alert, Button, Tabs } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
@@ -13,7 +14,6 @@ import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { logAndFormatError } from 'src/services/error-formatter';

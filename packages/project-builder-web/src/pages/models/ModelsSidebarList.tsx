@@ -1,4 +1,5 @@
 import { modelEntityType } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   InputField,
@@ -14,7 +15,6 @@ import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface ModelsSidebarListProps {
   className?: string;

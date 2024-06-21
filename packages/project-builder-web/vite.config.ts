@@ -18,7 +18,15 @@ export default defineConfig(({ mode }) => {
         remotes: {
           placeholder: 'http://localhost:3001/remoteEntry.js',
         },
-        shared: ['react', 'react-dom', 'zod'],
+        shared: {
+          react: {},
+          'react-dom': {},
+          zod: {},
+          '@halfdomelabs/project-builder-lib': { version: '*' },
+          '@halfdomelabs/project-builder-lib/web': {
+            version: '*',
+          },
+        },
       }),
     ],
     server: {

@@ -3,10 +3,10 @@ import {
   ScalarFieldType,
   SCALAR_FIELD_TYPES,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { ComboboxField } from '@halfdomelabs/ui-components';
 import { Control, useController } from 'react-hook-form';
 
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface ModelFieldTypeInputProps {
   control: Control<ModelConfig>;

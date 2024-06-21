@@ -4,6 +4,7 @@ import {
   REFERENTIAL_ACTIONS,
   VALIDATORS,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
@@ -18,7 +19,6 @@ import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 const modelFieldRelationSchema = z.object({
   name: VALIDATORS.CAMEL_CASE_STRING,

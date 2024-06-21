@@ -1,3 +1,4 @@
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
@@ -5,7 +6,6 @@ import { MdSync } from 'react-icons/md';
 
 import { useProjects } from '@src/hooks/useProjects';
 import Console, { ConsoleRef } from 'src/components/Console';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { startSync } from 'src/services/remote';

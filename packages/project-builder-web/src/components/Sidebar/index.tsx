@@ -79,7 +79,7 @@ Sidebar.ButtonItem = function SidebarButton({
       >
         {Icon ? (
           <>
-            <Icon className="h-6 w-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
+            <Icon className="size-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
             <span className="ml-3">{children}</span>
           </>
         ) : (
@@ -117,7 +117,7 @@ Sidebar.LinkItem = function SidebarLink({
       >
         {Icon ? (
           <>
-            <Icon className="h-6 w-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
+            <Icon className="size-6 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
             <span className="ml-3">{children}</span>
           </>
         ) : (
@@ -148,7 +148,7 @@ Sidebar.Dropdown = function SidebarDropdown({
           <Disclosure.Button className="group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
             {Icon ? (
               <>
-                <Icon className="h-6 w-6 flex-shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
+                <Icon className="size-6 shrink-0 text-gray-500 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white" />
                 <span className="ml-3 flex-1 whitespace-nowrap text-left">
                   {label}
                 </span>
@@ -157,9 +157,9 @@ Sidebar.Dropdown = function SidebarDropdown({
               <span>{label}</span>
             )}
             {open ? (
-              <MdKeyboardArrowUp className="h-6 w-6" />
+              <MdKeyboardArrowUp className="size-6" />
             ) : (
-              <MdKeyboardArrowDown className="h-6 w-6" />
+              <MdKeyboardArrowDown className="size-6" />
             )}
           </Disclosure.Button>
           <Disclosure.Panel as="ul" className="space-y-2 py-2">

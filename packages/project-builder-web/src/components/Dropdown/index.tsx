@@ -38,7 +38,7 @@ function Dropdown({
               )}
             >
               {buttonLabel}
-              <MdExpandMore className="ml-2 h-4 w-4" />
+              <MdExpandMore className="ml-2 size-4" />
             </Menu.Button>
             <div
               ref={popperElementRef}

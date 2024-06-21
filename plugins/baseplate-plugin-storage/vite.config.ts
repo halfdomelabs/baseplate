@@ -69,13 +69,26 @@ export default defineConfig((): UserConfig => {
       target: 'esnext',
       minify: false,
       cssCodeSplit: false,
+      rollupOptions: {
+        external: ['@halfdomelabs/project-builder-lib'],
+      },
     },
     plugins: [
       federation({
         name: 'baseplate-plugin-storage',
         filename: 'remoteEntry.js',
         exposes: viteTargets,
-        shared: ['react', 'react-dom'],
+        shared: {
+          react: {},
+          'react-dom': {},
+          zod: {},
+          '@halfdomelabs/project-builder-lib': {
+            version: '*',
+          },
+          '@halfdomelabs/project-builder-lib/web': {
+            version: '*',
+          },
+        },
       }),
       react(),
     ],

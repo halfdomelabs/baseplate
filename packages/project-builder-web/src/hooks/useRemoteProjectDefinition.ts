@@ -1,4 +1,7 @@
-import { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
+import {
+  PluginMetadataWithPaths,
+  SchemaParserContext,
+} from '@halfdomelabs/project-builder-lib';
 import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -49,6 +52,8 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   const { currentProjectId, resetCurrentProjectId } = useProjects();
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
+  const [pluginsMetadata, setPluginsMetadata] =
+    useState<PluginMetadataWithPaths[]>();
   const loadedProjectId = useRef<string>();
 
   useEffect(() => {
@@ -65,9 +70,10 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
       return;
     }
     getPluginsMetadata(currentProjectId)
-      .then((plugins) =>
-        createWebSchemaParserContext(currentProjectId, plugins),
-      )
+      .then((plugins) => {
+        setPluginsMetadata(plugins);
+        return createWebSchemaParserContext(currentProjectId, plugins);
+      })
       .then((schemaParserContext) =>
         setSchemaParserContext(schemaParserContext),
       )
@@ -79,6 +85,32 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
         );
       });
   }, [currentProjectId, toast]);
+
+  useEffect(() => {
+    if (!pluginsMetadata || !currentProjectId) {
+      return;
+    }
+    if (import.meta.hot) {
+      // recreate web schema parser context when we hot reload
+      const eventHandler = (): void => {
+        createWebSchemaParserContext(currentProjectId, pluginsMetadata)
+          .then((schemaParserContext) =>
+            setSchemaParserContext(schemaParserContext),
+          )
+          .catch((err) => {
+            setError(err as Error);
+            logError(err);
+            toast.error(
+              `Error reloading project plugin configs: ${(err as Error).message}`,
+            );
+          });
+      };
+      import.meta.hot.on('vite:afterUpdate', eventHandler);
+      return () => {
+        import.meta.hot?.off('vite:afterUpdate', eventHandler);
+      };
+    }
+  }, [currentProjectId, pluginsMetadata, toast]);
 
   const updateConfig = useCallback((payload: FilePayload | null): boolean => {
     // skip saving if we already have this value

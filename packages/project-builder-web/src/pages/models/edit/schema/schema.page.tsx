@@ -1,4 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 
 import ModelFormActionBar from '../ModelFormActionBar';
@@ -6,7 +7,6 @@ import { useModelForm } from '../hooks/useModelForm';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditSchemaPage(): JSX.Element {

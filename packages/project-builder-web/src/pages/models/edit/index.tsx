@@ -2,6 +2,7 @@ import {
   FeatureUtils,
   modelEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Tabs } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { MdEdit } from 'react-icons/md';
@@ -12,7 +13,6 @@ import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
 import ModelEditServicePage from './service/service.page';
 import { NotFoundCard } from 'src/components';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function ModelEditPage(): JSX.Element {
   const { uid } = useParams<'uid'>();

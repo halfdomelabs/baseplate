@@ -1,3 +1,4 @@
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import _ from 'lodash';
 import { useEffect, useRef } from 'react';
 import {
@@ -7,7 +8,6 @@ import {
   UseFormReturn,
 } from 'react-hook-form';
 
-import { useProjectDefinition } from './useProjectDefinition';
 import { useToast } from './useToast';
 
 export function useResettableForm<

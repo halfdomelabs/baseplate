@@ -10,6 +10,12 @@ import {
   serializeSchema,
 } from '@halfdomelabs/project-builder-lib';
 import {
+  ProjectDefinitionContext,
+  SetOrTransformConfig,
+  SetProjectDefinitionOptions,
+  UseProjectDefinitionResult,
+} from '@halfdomelabs/project-builder-lib/web';
+import {
   Button,
   ErrorDisplay,
   ErrorableLoader,
@@ -22,12 +28,6 @@ import { ZodError } from 'zod';
 import { NewProjectCard } from './NewProjectCard';
 import { websocketEvents } from '@src/services/api';
 import { useClientVersion } from 'src/hooks/useClientVersion';
-import {
-  ProjectDefinitionContext,
-  SetOrTransformConfig,
-  SetProjectDefinitionOptions,
-  UseProjectDefinitionResult,
-} from 'src/hooks/useProjectDefinition';
 import { useProjects } from 'src/hooks/useProjects';
 import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
 import { useToast } from 'src/hooks/useToast';

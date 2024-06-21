@@ -4,6 +4,7 @@ import {
   modelScalarFieldEntityType,
   modelSchema,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -12,7 +13,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';

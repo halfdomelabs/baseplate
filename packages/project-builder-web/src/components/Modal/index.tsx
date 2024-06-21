@@ -100,7 +100,7 @@ Modal.Header = function ModalHeader({
           onClick={onClose}
         >
           <svg
-            className="h-5 w-5"
+            className="size-5"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"

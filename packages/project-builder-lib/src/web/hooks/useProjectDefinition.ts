@@ -1,12 +1,13 @@
+import React from 'react';
+
+import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import { ParsedProjectDefinition } from '@src/parser/index.js';
+import { SchemaParserContext } from '@src/parser/types.js';
+import { ZodPluginImplementationStore } from '@src/plugins/index.js';
 import {
   ProjectDefinition,
   ProjectDefinitionInput,
-  ParsedProjectDefinition,
-  ProjectDefinitionContainer,
-  ZodPluginImplementationStore,
-  SchemaParserContext,
-} from '@halfdomelabs/project-builder-lib';
-import React from 'react';
+} from '@src/schema/projectDefinition.js';
 
 export type SetOrTransformConfig =
   | ProjectDefinitionInput

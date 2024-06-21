@@ -3,6 +3,7 @@ import {
   appEntityType,
   baseAppSchema,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Card,
@@ -14,7 +15,6 @@ import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 

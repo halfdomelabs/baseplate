@@ -2,6 +2,7 @@ import {
   ModelConfig,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dropdown } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, UseFormReturn } from 'react-hook-form';
@@ -9,7 +10,6 @@ import { useFieldArray, UseFormReturn } from 'react-hook-form';
 import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
 import ServiceFileTransformerForm from './ServiceFileTransformerForm';
 import { LinkButton } from 'src/components';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;

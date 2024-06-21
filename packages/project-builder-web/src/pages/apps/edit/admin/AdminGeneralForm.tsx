@@ -2,13 +2,13 @@ import {
   AdminAppConfig,
   adminAppSchema,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 

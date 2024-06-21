@@ -1,4 +1,5 @@
 import { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
 import { Control, useWatch } from 'react-hook-form';
 
@@ -12,7 +13,6 @@ import CrudTableColumnsForm, {
 import { SelectInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import EmbeddedListInput from 'src/components/EmbeddedListInput';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;

@@ -1,9 +1,9 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { ComboboxField, InputField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface ModelGeneralFormProps {
   className?: string;

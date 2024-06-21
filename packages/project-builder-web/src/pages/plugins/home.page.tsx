@@ -1,9 +1,9 @@
 import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
 import { PluginCard } from './PluginCard';
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useProjects } from '@src/hooks/useProjects';
 import { client } from '@src/services/api';
 

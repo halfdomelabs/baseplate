@@ -9,18 +9,12 @@ import {
   __federation_method_unwrapDefault,
 } from 'virtual:__federation__';
 
-const pluginModuleCache = new Map<string, KeyedPluginPlatformModule[]>();
-
 export async function loadPluginModule(
   projectId: string,
   pluginMetadata: PluginMetadataWithPaths,
 ): Promise<KeyedPluginPlatformModule[]> {
   const pluginKey = `${projectId}/${pluginMetadata.id}`;
   const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.id}/web/assets/remoteEntry.js`;
-
-  if (pluginModuleCache.has(pluginKey)) {
-    return pluginModuleCache.get(pluginKey)!;
-  }
 
   __federation_method_setRemote(pluginKey, {
     url: remoteEntry,
@@ -43,8 +37,6 @@ export async function loadPluginModule(
     { key: 'web', module: webModule },
     { key: 'common', module: commonModule },
   ];
-
-  pluginModuleCache.set(pluginKey, pluginModules);
 
   return pluginModules;
 }

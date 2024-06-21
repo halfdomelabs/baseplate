@@ -1,4 +1,5 @@
 import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, InputField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
@@ -6,7 +7,6 @@ import { useState } from 'react';
 import { MdClear } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface EnumsSidebarListProps {
   className?: string;

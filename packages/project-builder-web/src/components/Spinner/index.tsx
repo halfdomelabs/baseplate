@@ -31,7 +31,7 @@ function Spinner({
     <svg
       role="status"
       className={clsx(
-        'h-8 w-8 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600',
+        'size-8 animate-spin fill-blue-600 text-gray-200 dark:text-gray-600',
         {
           'h-4 w-4': size === 'small',
           'h-8 w-8': size === 'medium',
