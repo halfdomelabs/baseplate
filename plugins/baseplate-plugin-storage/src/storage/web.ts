@@ -5,6 +5,8 @@ import {
 
 import { StorageConfig } from './components/StorageConfig';
 
+import '../index.css';
+
 export default createPlatformPluginExport({
   dependencies: {
     webConfig: webConfigSpec,

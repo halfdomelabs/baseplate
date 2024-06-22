@@ -5,6 +5,7 @@ import { globbySync } from 'globby';
 import fs from 'node:fs';
 import path from 'node:path';
 import { UserConfig, defineConfig } from 'vite';
+import viteTsconfigPaths from 'vite-tsconfig-paths';
 import z from 'zod';
 
 const metadataJsonSchema = z.object({
@@ -16,13 +17,11 @@ const metadataJsonSchema = z.object({
 
 function readMetadataJson(
   directory: string,
-): z.TypeOf<typeof metadataJsonSchema> {
+): z.TypeOf<typeof metadataJsonSchema> | undefined {
   const metadataJsonFilename = path.join(directory, 'metadata.json');
   try {
     if (!fs.existsSync(metadataJsonFilename)) {
-      throw new Error(
-        `A ${metadataJsonFilename} is required to describe the plugin, but none was found`,
-      );
+      return;
     }
     const metadataContents = fs.readFileSync(metadataJsonFilename, 'utf-8');
     return metadataJsonSchema.parse(JSON.parse(metadataContents));
@@ -45,7 +44,11 @@ function loadViteTargets(pluginSrc: string[]): Record<string, string> {
   const pluginTargets = pluginDirectories.map(
     (pluginDirectory): Record<string, string>[] => {
       // look for metadata.json
-      const { name: pluginName } = readMetadataJson(pluginDirectory);
+      const { name: pluginName } = readMetadataJson(pluginDirectory) ?? {};
+
+      if (!pluginName) {
+        return [];
+      }
 
       const createEntryWithAlias = (name: string): Record<string, string> => ({
         [`${pluginName}/${name}`]: `${pluginDirectory}/${name}.ts`,
@@ -74,6 +77,7 @@ export default defineConfig((): UserConfig => {
       },
     },
     plugins: [
+      viteTsconfigPaths(),
       federation({
         name: 'baseplate-plugin-storage',
         filename: 'remoteEntry.js',
