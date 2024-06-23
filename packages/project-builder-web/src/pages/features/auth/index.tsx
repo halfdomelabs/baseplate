@@ -18,14 +18,14 @@ import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
 function AuthPage(): JSX.Element {
-  const { config, parsedProject, setConfig, setConfigAndFixReferences } =
+  const { definition, parsedProject, setConfig, setConfigAndFixReferences } =
     useProjectDefinition();
 
   const formProps = useResettableForm<AuthConfig>({
     resolver: zodResolver(authSchema),
     defaultValues: {
-      ...config.auth,
-      roles: config.auth?.roles ?? AUTH_DEFAULT_ROLES,
+      ...definition.auth,
+      roles: definition.auth?.roles ?? AUTH_DEFAULT_ROLES,
     },
   });
   const { control, reset, handleSubmit } = formProps;
@@ -44,7 +44,7 @@ function AuthPage(): JSX.Element {
     }
   };
 
-  const [isAuthEnabled, setIsAuthEnabled] = useState(!!config.auth);
+  const [isAuthEnabled, setIsAuthEnabled] = useState(!!definition.auth);
 
   const disableAuth = (): void => {
     setConfig((draftConfig) => {
@@ -60,7 +60,7 @@ function AuthPage(): JSX.Element {
   }));
 
   const featureOptions =
-    config.features?.map((m) => ({
+    definition.features?.map((m) => ({
       label: m.name,
       value: m.id,
     })) ?? [];

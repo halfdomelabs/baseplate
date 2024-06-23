@@ -1,9 +1,16 @@
-import { createPlatformPluginExport } from '@halfdomelabs/project-builder-lib';
+import {
+  createPlatformPluginExport,
+  pluginConfigSpec,
+} from '@halfdomelabs/project-builder-lib';
+
+import { storagePluginConfigSchema } from './schema/plugin-config';
 
 export default createPlatformPluginExport({
-  dependencies: {},
+  dependencies: {
+    config: pluginConfigSpec,
+  },
   exports: {},
-  initialize: () => {
-    return {};
+  initialize: ({ config }, { pluginId }) => {
+    return config.registerSchema(pluginId, storagePluginConfigSchema);
   },
 });

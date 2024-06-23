@@ -29,10 +29,13 @@ function ServiceEmbeddedRelationForm({
 }: Props): JSX.Element {
   const { control, setValue } = formProps;
 
-  const { config, definitionContainer } = useProjectDefinition();
+  const { definition, definitionContainer } = useProjectDefinition();
 
   const availableRelations = useEditedModelConfig((model) => {
-    const relationsToModel = ModelUtils.getRelationsToModel(config, model.id);
+    const relationsToModel = ModelUtils.getRelationsToModel(
+      definition,
+      model.id,
+    );
     const otherEmbeddedRelations = model.service?.transformers?.filter(
       (t, transformerIdx): t is EmbeddedRelationTransformerConfig =>
         t.type === 'embeddedRelation' && idx !== transformerIdx,

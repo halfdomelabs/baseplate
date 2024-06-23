@@ -20,10 +20,10 @@ const validationSchema = projectDefinitionSchema.pick({
 type FormData = z.infer<typeof validationSchema>;
 
 function SettingsPage(): JSX.Element {
-  const { config, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const { handleSubmit, control } = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
-    defaultValues: _.pick(config, [
+    defaultValues: _.pick(definition, [
       'name',
       'version',
       'portOffset',

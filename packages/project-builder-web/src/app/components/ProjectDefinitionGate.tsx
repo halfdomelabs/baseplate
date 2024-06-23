@@ -232,7 +232,7 @@ export function ProjectDefinitionGate({
     );
 
     return {
-      config: loadData.definitionContainer.definition,
+      definition: loadData.definitionContainer.definition,
       parsedProject: loadData.parsedProject,
       definitionContainer: loadData.definitionContainer,
       externalChangeCounter,
@@ -328,10 +328,10 @@ export function ProjectDefinitionGate({
   }
 
   if (
-    result.config.cliVersion &&
+    result.definition.cliVersion &&
     cliVersion &&
     cliVersion !== 'preview' &&
-    semver.gt(result.config.cliVersion, cliVersion)
+    semver.gt(result.definition.cliVersion, cliVersion)
   ) {
     return (
       <ErrorDisplay
@@ -354,8 +354,8 @@ export function ProjectDefinitionGate({
         error={
           <>
             This project requires a newer version of the client (
-            {result.config.cliVersion}). Please upgrade your client by running{' '}
-            <strong>pnpm install</strong>.
+            {result.definition.cliVersion}). Please upgrade your client by
+            running <strong>pnpm install</strong>.
           </>
         }
       />

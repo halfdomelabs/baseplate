@@ -18,7 +18,7 @@ export interface SetProjectDefinitionOptions {
 }
 
 export interface UseProjectDefinitionResult {
-  config: ProjectDefinition;
+  definition: ProjectDefinition;
   parsedProject: ParsedProjectDefinition;
   definitionContainer: ProjectDefinitionContainer;
   setConfigAndFixReferences: (configOrTransform: SetOrTransformConfig) => void;

@@ -18,7 +18,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
-  const { config, setConfig } = useProjectDefinition();
+  const { definition, setConfig } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
 
   const startSyncProject = (): void => {
@@ -27,7 +27,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
       return;
     }
     // save config when syncing to ensure any migrations/cli versions are set
-    setConfig(config);
+    setConfig(definition);
     // TODO: this is a hack to ensure we don't attempt to read from the file while we write to it
 
     setTimeout(() => {

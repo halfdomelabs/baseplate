@@ -9,7 +9,6 @@ import {
 import { Control, useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
-
 interface ModelFieldDefaultValueInputProps {
   control: Control<ModelConfig>;
   idx: number;
@@ -19,7 +18,7 @@ export function ModelFieldDefaultValueInput({
   control,
   idx,
 }: ModelFieldDefaultValueInputProps): JSX.Element {
-  const { config } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
   const type = useWatch({
     control,
     name: `model.fields.${idx}.type`,
@@ -158,7 +157,7 @@ export function ModelFieldDefaultValueInput({
   }
 
   if (type === 'enum' && optionsValue?.enumType) {
-    const fieldEnum = EnumUtils.byId(config, optionsValue.enumType);
+    const fieldEnum = EnumUtils.byId(definition, optionsValue.enumType);
     const enumValues = fieldEnum.values.map((v) => ({
       label: v.friendlyName,
       value: v.id,

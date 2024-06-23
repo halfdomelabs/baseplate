@@ -18,12 +18,12 @@ import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
 function StoragePage(): JSX.Element {
-  const { config, parsedProject, setConfig, setConfigAndFixReferences } =
+  const { definition, parsedProject, setConfig, setConfigAndFixReferences } =
     useProjectDefinition();
 
   const formProps = useResettableForm<StorageConfig>({
     resolver: zodResolver(storageSchema),
-    defaultValues: config.storage,
+    defaultValues: definition.storage,
   });
   const { control, reset, handleSubmit, formState } = formProps;
   const toast = useToast();
@@ -43,7 +43,9 @@ function StoragePage(): JSX.Element {
     }
   };
 
-  const [isStorageEnabled, setIsStorageEnabled] = useState(!!config.storage);
+  const [isStorageEnabled, setIsStorageEnabled] = useState(
+    !!definition.storage,
+  );
 
   const disableStorage = (): void => {
     setConfig((draftConfig) => {
@@ -59,7 +61,7 @@ function StoragePage(): JSX.Element {
   }));
 
   const featureOptions =
-    config.features?.map((m) => ({
+    definition.features?.map((m) => ({
       label: m.name,
       value: m.id,
     })) ?? [];

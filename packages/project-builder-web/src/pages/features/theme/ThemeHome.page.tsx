@@ -19,12 +19,12 @@ import { useToast } from 'src/hooks/useToast';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 export function ThemeHomePage(): JSX.Element {
-  const { config, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const toast = useToast();
 
   const defaultValues = useMemo(
-    () => config.theme ?? generateDefaultTheme(),
-    [config.theme],
+    () => definition.theme ?? generateDefaultTheme(),
+    [definition.theme],
   );
 
   const { control, handleSubmit, setValue, getValues, formState } =

@@ -25,11 +25,11 @@ registerEntityTypeUrl(modelLocalRelationEntityType, `/models/edit/{parentUid}`);
 function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({});
   const { control, handleSubmit, watch, getValues } = form;
-  const { config } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
   const { uid } = useParams<'uid'>();
 
   const id = modelEntityType.fromUid(uid);
-  const originalModel = id ? ModelUtils.byId(config, id) : undefined;
+  const originalModel = id ? ModelUtils.byId(definition, id) : undefined;
 
   useBlockDirtyFormNavigate(form.formState);
 
