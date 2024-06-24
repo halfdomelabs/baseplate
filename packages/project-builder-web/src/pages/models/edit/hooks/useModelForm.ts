@@ -5,6 +5,7 @@ import {
   modelSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
 import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
@@ -14,7 +15,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { formatError } from 'src/services/error-formatter';
 import { logger } from 'src/services/logger';
 

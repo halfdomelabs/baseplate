@@ -5,6 +5,7 @@ import {
   adminSectionSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -16,7 +17,6 @@ import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 

@@ -3,6 +3,7 @@ import {
   adminCrudEmbeddedFormSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Control } from 'react-hook-form';
 
@@ -23,7 +24,6 @@ import {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
 } from 'src/components/EmbeddedListInput';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
 
