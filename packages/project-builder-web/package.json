@@ -17,6 +17,7 @@
     "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "refactor": "cd ../code-morph && pnpm run:morpher",
     "serve": "vite preview"
   },
   "browserslist": {

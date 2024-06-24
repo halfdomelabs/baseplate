@@ -6,6 +6,7 @@
  * @param {boolean} options.typescript - Indicates whether the configuration should include TypeScript rules.
  * @param {boolean} options.mdx - Indicates whether the configuration should include MDX rules.
  * @param {string[]} options.additionalTsConfigs - Additional TypeScript configuration files to include.
+ * @param {string} options.tsconfigRootDir - The root directory for the TypeScript configuration.
  * @returns {import("eslint").Linter.Config} The generated ESLint configuration.
  */
 module.exports = function createEslintConfig(options) {
@@ -14,6 +15,7 @@ module.exports = function createEslintConfig(options) {
   const storybook = options.storybook || false;
   const additionalTsConfigs = options.additionalTsConfigs || [];
   const mdx = options.mdx || false;
+  const tsconfigRootDir = options.tsconfigRootDir ?? undefined;
 
   const typescriptOverrides = typescript
     ? [
@@ -43,6 +45,7 @@ module.exports = function createEslintConfig(options) {
           },
           parserOptions: {
             project: ['./tsconfig.json', ...additionalTsConfigs],
+            tsconfigRootDir,
           },
           settings: {
             'import/resolver': {
