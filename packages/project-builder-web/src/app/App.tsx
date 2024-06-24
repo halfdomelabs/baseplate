@@ -1,5 +1,5 @@
-import { ConfirmDialog, Tooltip } from '@halfdomelabs/ui-components';
-import { Toaster } from 'react-hot-toast';
+import { ConfirmDialog, Toaster, Tooltip } from '@halfdomelabs/ui-components';
+import { Toaster as ReactHotToaster } from 'react-hot-toast';
 import { Outlet } from 'react-router-dom';
 
 import { ClientVersionGate } from './components/ClientVersionGate';
@@ -20,6 +20,7 @@ function App(): JSX.Element {
               <RefIssueDialog />
             </ProjectDefinitionGate>
           </ProjectChooserGate>
+          <ReactHotToaster />
           <Toaster />
           <ConfirmDialog />
           <BlockerDialog />

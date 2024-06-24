@@ -1,12 +1,40 @@
 import type { Preview } from '@storybook/react';
 import { themes } from '@storybook/theming';
 import { useDarkMode } from 'storybook-dark-mode';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { DocsContainer } from '@storybook/addon-docs';
+import { createPortal } from 'react-dom';
 
 import '../src/font.css';
 import '../src/styles.css';
 import CustomTheme from './CustomTheme';
+
+import { Toaster } from '../src/components/Toaster/Toaster';
+
+let hasToasterRendered = false;
+
+const ToasterPortal = () => {
+  const [shouldRender, setShouldRender] = useState(false);
+  useEffect(() => {
+    if (hasToasterRendered) return;
+    hasToasterRendered = true;
+    setShouldRender(true);
+    return () => {
+      hasToasterRendered = false;
+    };
+  }, []);
+  if (!shouldRender) return null;
+  return createPortal(<Toaster />, document.body);
+};
+
+export const decorators = [
+  (Story) => (
+    <>
+      <Story />
+      <ToasterPortal />
+    </>
+  ),
+];
 
 const preview: Preview = {
   parameters: {
