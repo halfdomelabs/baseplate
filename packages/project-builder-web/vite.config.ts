@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
           '@halfdomelabs/project-builder-lib/web': {
             version: '*',
           },
+          '@halfdomelabs/ui-components': { version: '*' },
         },
       }),
       pluginDevServerPlugin(),

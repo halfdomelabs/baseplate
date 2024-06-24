@@ -92,6 +92,7 @@ export default defineConfig((): UserConfig => {
           '@halfdomelabs/project-builder-lib/web': {
             version: '*',
           },
+          '@halfdomelabs/ui-components': { version: '*' },
         },
       }),
       react(),
