@@ -1,15 +1,19 @@
 import {
   authRoleEntityType,
+  createEntityType,
   featureEntityType,
   modelEntityType,
   modelForeignRelationEntityType,
-  storageAdapterEntityType,
   zEnt,
   zRef,
 } from '@halfdomelabs/project-builder-lib';
 import z from 'zod';
 
-export const storagePluginConfigSchema = z.object({
+export const storageAdapterEntityType = createEntityType(
+  'baseplate-plugin-storage/storage-adapter',
+);
+
+export const storagePluginDefinitionSchema = z.object({
   fileModel: zRef(z.string(), {
     type: modelEntityType,
     onDelete: 'RESTRICT',
@@ -53,3 +57,7 @@ export const storagePluginConfigSchema = z.object({
     }),
   ),
 });
+
+export type StoragePluginDefinition = z.infer<
+  typeof storagePluginDefinitionSchema
+>;

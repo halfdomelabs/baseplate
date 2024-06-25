@@ -76,6 +76,12 @@ export function PluginConfigPage(): JSX.Element {
     navigate('/plugins');
   }
 
+  function onSave(): void {
+    if (!pluginDefinition) {
+      navigate('/plugins');
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -105,7 +111,11 @@ export function PluginConfigPage(): JSX.Element {
           </Dropdown>
         )}
       </div>
-      <Container plugin={pluginDefinition} />
+      <Container
+        definition={pluginDefinition}
+        metadata={metadata}
+        onSave={onSave}
+      />
     </div>
   );
 }

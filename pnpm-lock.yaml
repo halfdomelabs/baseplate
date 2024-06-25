@@ -1126,6 +1126,9 @@ importers:
       '@halfdomelabs/ui-components':
         specifier: workspace:*
         version: link:../../packages/ui-components
+      '@hookform/resolvers':
+        specifier: 3.3.4
+        version: 3.3.4(react-hook-form@7.51.3(react@18.2.0))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -1135,6 +1138,9 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
+      react-hook-form:
+        specifier: 7.51.3
+        version: 7.51.3(react@18.2.0)
       zod:
         specifier: 3.23.8
         version: 3.23.8

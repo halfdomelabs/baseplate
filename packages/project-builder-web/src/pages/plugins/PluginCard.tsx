@@ -5,7 +5,7 @@ import {
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Card } from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 import { useProjects } from '@src/hooks/useProjects';
@@ -28,6 +28,7 @@ export function PluginCard({
     setConfigAndFixReferences,
     schemaParserContext,
     definitionContainer,
+    pluginContainer,
   } = useProjectDefinition();
   const toast = useToast();
   const navigate = useNavigate();
@@ -72,6 +73,9 @@ export function PluginCard({
     toast.success(`Disabled ${plugin.displayName}!`);
   }
 
+  const webConfigImplementation = pluginContainer.getPluginSpec(webConfigSpec);
+  const webConfig = webConfigImplementation.getWebConfigComponent(plugin.id);
+
   return (
     <Card className={className}>
       <Card.Header>
@@ -98,15 +102,27 @@ export function PluginCard({
             </div>
           </div>
           <div>
-            {isActive ? (
-              <Button variant="secondary" onClick={disablePlugin}>
-                Disable
-              </Button>
-            ) : (
-              <Button variant="secondary" onClick={enablePlugin}>
-                Enable
-              </Button>
-            )}
+            {(() => {
+              if (!isActive) {
+                return (
+                  <Button variant="secondary" onClick={enablePlugin}>
+                    Enable
+                  </Button>
+                );
+              } else if (webConfig) {
+                return (
+                  <Link to={`/plugins/edit/${plugin.id}`}>
+                    <Button variant="secondary">Configure</Button>
+                  </Link>
+                );
+              } else {
+                return (
+                  <Button variant="secondary" onClick={disablePlugin}>
+                    Disable
+                  </Button>
+                );
+              }
+            })()}
           </div>
         </div>
       </Card.Header>

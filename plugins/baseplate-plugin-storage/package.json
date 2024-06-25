@@ -30,9 +30,11 @@
   },
   "dependencies": {
     "@halfdomelabs/ui-components": "workspace:*",
+    "@hookform/resolvers": "3.3.4",
     "clsx": "2.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "7.51.3",
     "zod": "3.23.8"
   },
   "devDependencies": {
