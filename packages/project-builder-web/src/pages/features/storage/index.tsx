@@ -2,14 +2,13 @@ import {
   StorageConfig,
   storageSchema,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
+import { useProjectDefinition, useResettableForm } from '@halfdomelabs/project-builder-lib/web';
+import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
 import AdapterEditorForm from './AdapterEditorForm';
 import CategoryEditorForm from './CategoryEditorForm';
-import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Alert, Button } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useStatus } from 'src/hooks/useStatus';

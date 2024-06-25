@@ -1,8 +1,7 @@
+import { useBlockerDialogState } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { useBlocker } from 'react-router-dom';
-
-import { useBlockerDialogState } from '@src/hooks/useBlockerDialog';
 
 /**
  * A blocker dialog that is placed at the top level of the page
