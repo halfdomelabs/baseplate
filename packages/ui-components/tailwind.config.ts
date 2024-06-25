@@ -1,6 +1,5 @@
 import type { Config } from 'tailwindcss';
 import defaultTheme from 'tailwindcss/defaultTheme';
-import colors from 'tailwindcss/colors';
 import headlessUi from '@headlessui/tailwindcss';
 import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimate from 'tailwindcss-animate';
