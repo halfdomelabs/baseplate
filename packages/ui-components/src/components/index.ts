@@ -29,6 +29,7 @@ export * from './Sheet/Sheet.js';
 export * from './Select/Select.js';
 export * from './SelectField/SelectField.js';
 export * from './SidebarLayout/SidebarLayout.js';
+export * from './SidebarTabs/SidebarTabs.js';
 export * from './Skeleton/Skeleton.js';
 export * from './Switch/Switch.js';
 export * from './SwitchField/SwitchField.js';
