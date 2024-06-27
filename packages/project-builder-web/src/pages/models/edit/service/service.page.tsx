@@ -23,7 +23,7 @@ function ModelEditServicePage(): JSX.Element {
     setError,
   });
   const { control, handleSubmit, watch, getValues } = form;
-  const { definitionContainer } = useProjectDefinition();
+  const { definitionContainer, pluginContainer } = useProjectDefinition();
   const shouldBuild = watch('service.build');
 
   const onSubmit = (data: ModelConfig): void => {
@@ -48,8 +48,12 @@ function ModelEditServicePage(): JSX.Element {
 
   const transformers = watch(`service.transformers`);
   const transformerOptions = transformers?.map((f) => ({
-    label: ModelTransformerUtils.getTransformName(definitionContainer, f),
-    value: f.id,
+    label: ModelTransformerUtils.getTransformName(
+      definitionContainer,
+      f,
+      pluginContainer,
+    ),
+    value: f.id ?? '',
   }));
 
   // TODO: Need to unset transformer options when reset

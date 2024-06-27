@@ -44,4 +44,7 @@ export function createWebConfigImplementation(): WebConfigSpec {
 /**
  * Spec for adding config component for plugin
  */
-export const webConfigSpec = createPluginSpec<WebConfigSpec>('core/web-config');
+export const webConfigSpec = createPluginSpec<WebConfigSpec>(
+  'core/web-config',
+  'web',
+);

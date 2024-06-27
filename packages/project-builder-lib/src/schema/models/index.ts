@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { transformerSchema } from './transformers.js';
+import { transformerSchema } from './transformers/transformers.js';
 import {
   modelEntityType,
   modelEnumEntityType,
@@ -18,6 +18,7 @@ import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 
 export * from './enums.js';
 export * from './types.js';
+export * from './transformers/index.js';
 
 export const modelScalarFieldSchema = zEnt(
   z.object({

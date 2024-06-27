@@ -14,6 +14,10 @@ import {
   zPluginWrapper,
 } from '@src/plugins/index.js';
 import { ZodRefPayload, ZodRefWrapper } from '@src/references/ref-builder.js';
+import {
+  createModelTransformerImplementation,
+  modelTransformerSpec,
+} from '@src/schema/index.js';
 import { basePluginSchema } from '@src/schema/plugins/index.js';
 import {
   ProjectDefinition,
@@ -44,6 +48,7 @@ export function createPluginImplementationStore(
   const specImplementations = {
     ...getInitialSpecImplementations(),
     [pluginConfigSpec.name]: createPluginConfigImplementation(),
+    [modelTransformerSpec.name]: createModelTransformerImplementation(),
   };
   const pluginsWithModules = plugins.map((p): PluginWithPlatformModules => {
     const plugin = availablePlugins.find(

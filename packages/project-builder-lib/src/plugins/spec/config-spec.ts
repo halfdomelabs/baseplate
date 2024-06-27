@@ -1,19 +1,17 @@
-// Interfaces for Node / Web entry point
-
 import { z } from 'zod';
 
 import { PluginSpecImplementation, createPluginSpec } from './types.js';
 
 /**
- * Shared Entry point
+ * Spec for registering plugin config schema
  */
 export interface PluginConfigSpec extends PluginSpecImplementation {
-  registerSchema: (pluginId: string, schema: z.AnyZodObject) => void;
-  getSchema(pluginId: string): z.AnyZodObject | undefined;
+  registerSchema: (pluginId: string, schema: z.ZodTypeAny) => void;
+  getSchema(pluginId: string): z.ZodTypeAny | undefined;
 }
 
 export function createPluginConfigImplementation(): PluginConfigSpec {
-  const schemas: Record<string, z.AnyZodObject> = {};
+  const schemas: Record<string, z.ZodTypeAny> = {};
 
   return {
     registerSchema(pluginId, schema) {

@@ -27,9 +27,16 @@ function ServiceEmbeddedRelationForm({
   idx,
   onRemove,
 }: Props): JSX.Element {
-  const { control, setValue } = formProps;
+  // force type cast to avoid TS error
+  const formPropsTyped = formProps as unknown as UseFormReturn<{
+    service: {
+      transformers: EmbeddedRelationTransformerConfig[];
+    };
+  }>;
+  const { control, setValue } = formPropsTyped;
 
-  const { definition, definitionContainer } = useProjectDefinition();
+  const { definition, definitionContainer, pluginContainer } =
+    useProjectDefinition();
 
   const availableRelations = useEditedModelConfig((model) => {
     const relationsToModel = ModelUtils.getRelationsToModel(
@@ -103,6 +110,7 @@ function ServiceEmbeddedRelationForm({
       label: ModelTransformerUtils.getTransformName(
         definitionContainer,
         transformer,
+        pluginContainer,
       ),
       value: transformer.id,
     })) ?? [];

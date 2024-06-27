@@ -1,18 +1,16 @@
 import { ProjectDefinitionContainer } from '../project-definition-container.js';
-import { TransformerConfig } from '@src/schema/index.js';
+import { ZodPluginImplementationStore } from '@src/plugins/index.js';
+import { TransformerConfig, modelTransformerSpec } from '@src/schema/index.js';
 
 function getTransformName(
   definitionContainer: ProjectDefinitionContainer,
   transformer: TransformerConfig,
+  pluginStore: ZodPluginImplementationStore,
 ): string {
-  switch (transformer.type) {
-    case 'password':
-      return 'Password';
-    case 'embeddedRelation':
-      return definitionContainer.nameFromId(transformer.foreignRelationRef);
-    case 'file':
-      return definitionContainer.nameFromId(transformer.fileRelationRef);
-  }
+  const transformers = pluginStore.getPluginSpec(modelTransformerSpec);
+  return transformers
+    .getModelTransformer(transformer.type)
+    .getName(definitionContainer, transformer);
 }
 
 export const ModelTransformerUtils = {

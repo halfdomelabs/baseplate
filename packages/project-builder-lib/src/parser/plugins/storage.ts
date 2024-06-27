@@ -1,11 +1,10 @@
 import { ParserPlugin, PluginMergeModelFieldInput } from '../types.js';
 import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
-import { notEmpty } from '@src/utils/array.js';
 
 export const StoragePlugin: ParserPlugin = {
   name: 'StoragePlugin',
   run(projectDefinition, hooks, definitionContainer) {
-    const { storage, auth, models } = projectDefinition;
+    const { storage, auth } = projectDefinition;
     if (!storage) {
       return;
     }
@@ -13,32 +12,32 @@ export const StoragePlugin: ParserPlugin = {
       throw new Error(`Auth required for storage to be enabled`);
     }
 
-    const transformerRelationNames = models.flatMap(
-      (m) =>
-        m.service?.transformers
-          ?.map((t) => {
-            if (t.type !== 'file') {
-              return undefined;
-            }
-            // look up relation
-            const relation = m.model.relations?.find(
-              (r) => r.id === t.fileRelationRef,
-            );
-            // shouldn't happen as checked elsewhere
-            if (!relation)
-              throw new Error(`Relation not found for ${t.fileRelationRef}`);
-            return relation.foreignId;
-          })
-          .filter(notEmpty) ?? [],
-    );
+    // const transformerRelationNames = models.flatMap(
+    //   (m) =>
+    //     m.service?.transformers
+    //       ?.map((t) => {
+    //         if (t.type !== 'file') {
+    //           return undefined;
+    //         }
+    //         // look up relation
+    //         const relation = m.model.relations?.find(
+    //           (r) => r.id === t.fileRelationRef,
+    //         );
+    //         // shouldn't happen as checked elsewhere
+    //         if (!relation)
+    //           throw new Error(`Relation not found for ${t.fileRelationRef}`);
+    //         return relation.foreignId;
+    //       })
+    //       .filter(notEmpty) ?? [],
+    // );
 
-    const invalidTransformer = transformerRelationNames.find(
-      (name) => !storage.categories.find((c) => c.usedByRelation === name),
-    );
+    // const invalidTransformer = transformerRelationNames.find(
+    //   (name) => !storage.categories.find((c) => c.usedByRelation === name),
+    // );
 
-    if (invalidTransformer) {
-      throw new Error(`No storage category found for ${invalidTransformer}`);
-    }
+    // if (invalidTransformer) {
+    //   throw new Error(`No storage category found for ${invalidTransformer}`);
+    // }
 
     // annotate file model
     const fileFields: PluginMergeModelFieldInput[] = [

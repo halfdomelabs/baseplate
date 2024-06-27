@@ -1,18 +1,14 @@
 import { z } from 'zod';
 
+import { baseTransformerFields, createModelTransformerType } from './types.js';
 import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelTransformerEntityType,
-} from './types.js';
-import { zodRefDiscriminatedUnionType } from '@src/references/discriminated-union.js';
+} from '../types.js';
 import { zEnt, zRef } from '@src/references/index.js';
-
-const baseTransformerFields = {
-  type: z.string().min(1),
-} as const;
 
 export const passwordTransformerSchema = zEnt(
   z.object({
@@ -94,10 +90,17 @@ export const fileTransformerSchema = zEnt(
 
 export type FileTransformerConfig = z.infer<typeof fileTransformerSchema>;
 
-export const transformerSchema = zodRefDiscriminatedUnionType('type', [
-  passwordTransformerSchema,
-  embeddedRelationTransformerSchema,
-  fileTransformerSchema,
-]);
-
-export type TransformerConfig = z.infer<typeof transformerSchema>;
+export const BUILT_IN_TRANSFORMERS = [
+  createModelTransformerType({
+    name: 'password',
+    schema: passwordTransformerSchema,
+    getName: () => 'Password',
+  }),
+  createModelTransformerType({
+    name: 'embeddedRelation',
+    schema: embeddedRelationTransformerSchema,
+    getName: (definitionContainer, definition) => {
+      return definitionContainer.nameFromId(definition.foreignRelationRef);
+    },
+  }),
+];
