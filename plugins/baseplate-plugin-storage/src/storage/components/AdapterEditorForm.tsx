@@ -27,7 +27,6 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
             label="Name"
             control={control}
             name={`s3Adapters.${idx}.name`}
-            description="The name of the "
           />
           <div className={cn('flex gap-4 [&>*]:flex-1 w-full')}>
             <InputField.Controller
