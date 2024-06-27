@@ -14,6 +14,7 @@ import {
   StoragePluginDefinition,
   storagePluginDefinitionSchema,
 } from '../schema/plugin-definition';
+import { cn } from '@src/utils/cn';
 
 export function StorageConfig({
   definition: pluginMetadata,
@@ -60,20 +61,25 @@ export function StorageConfig({
 
   return (
     <div className="space-y-4">
-      <h2>Storage Configuration</h2>
-      <form onSubmit={onSubmit} className="space-y-4">
-        <ComboboxField.Controller
-          label="File Model"
-          options={modelOptions}
-          name="fileModel"
-          control={control}
-        />
-        <ComboboxField.Controller
-          label="Storage Feature Path"
-          options={featureOptions}
-          name="featurePath"
-          control={control}
-        />
+      <form onSubmit={onSubmit} className={cn('space-y-4 max-w-4xl')}>
+        <div className="flex gap-4">
+          <ComboboxField.Controller
+            label="File Model"
+            options={modelOptions}
+            name="fileModel"
+            control={control}
+            className="flex-1"
+            description="The model to use for file storage."
+          />
+          <ComboboxField.Controller
+            label="Storage Feature Path"
+            options={featureOptions}
+            name="featurePath"
+            control={control}
+            className="flex-1"
+            description="The feature to use for storage functionality."
+          />
+        </div>
         <AdapterEditorForm control={control} />
         <CategoryEditorForm control={control} />
         <Button type="submit">Save</Button>

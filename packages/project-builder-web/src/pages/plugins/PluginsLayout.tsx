@@ -33,26 +33,24 @@ function PluginsLayout(): JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar className="space-y-4" width="sm">
+        <Link to="/plugins">
+          <Button.WithIcon
+            variant="secondary"
+            icon={MdAdd}
+            className="w-full"
+            size="sm"
+          >
+            Add new plugin
+          </Button.WithIcon>
+        </Link>
         <NavigationMenu orientation="vertical">
           <NavigationMenu.List>
-            <NavigationMenu.Item>
-              <Link to="/plugins">
-                <Button.WithIcon
-                  variant="secondary"
-                  icon={MdAdd}
-                  className="w-full"
-                  size="sm"
-                >
-                  Add new plugin
-                </Button.WithIcon>
-              </Link>
-            </NavigationMenu.Item>
             {enabledPlugins.map((plugin) => (
-              <NavigationMenu.Item key={plugin.id}>
+              <NavigationMenu.ItemWithLink key={plugin.id} asChild>
                 <NavLink to={`/plugins/edit/${plugin.id}`}>
-                  <span>{plugin.name}</span>
+                  {plugin.displayName}
                 </NavLink>
-              </NavigationMenu.Item>
+              </NavigationMenu.ItemWithLink>
             ))}
             {!enabledPlugins.length && (
               <NavigationMenu.Item className="mt-4 w-full text-center opacity-80">

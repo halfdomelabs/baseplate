@@ -1,7 +1,12 @@
 import { StorageConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, ComboboxField, InputField } from '@halfdomelabs/ui-components';
-import clsx from 'clsx';
+import {
+  Button,
+  ComboboxField,
+  InputField,
+  MultiComboboxField,
+  cn,
+} from '@halfdomelabs/ui-components';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { notEmpty } from '@src/utils/array';
@@ -39,45 +44,48 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
     )
     .filter(notEmpty);
 
-  // const roleOptions =
-  //   parsedProject.projectDefinition.auth?.roles.map((role) => ({
-  //     label: role.name,
-  //     value: role.id,
-  //   })) ?? [];
+  const roleOptions =
+    parsedProject.projectDefinition.auth?.roles.map((role) => ({
+      label: role.name,
+      value: role.id,
+    })) ?? [];
 
   return (
-    <div className={clsx('space-y-4', className)}>
+    <div className={cn('space-y-4', className)}>
       <h3>Upload Categories</h3>
       {fields.map((field, idx) => (
-        <div key={field.id} className="space-y-4">
-          <InputField.Controller
-            label="Name"
-            control={control}
-            name={`categories.${idx}.name`}
-          />
-          <ComboboxField.Controller
-            label="Default Adapter"
-            control={control}
-            name={`categories.${idx}.defaultAdapter`}
-            options={adapterOptions}
-          />
-          <InputField.Controller
-            label="Max File Size (MB)"
-            control={control}
-            name={`categories.${idx}.maxFileSize`}
-          />
-          <ComboboxField.Controller
-            label="Used By Relation"
-            control={control}
-            name={`categories.${idx}.usedByRelation`}
-            options={foreignKeyOptions}
-          />
-          {/* <CheckedArrayInput.LabelledController
-            label="Upload Roles"
-            control={control}
-            options={roleOptions}
-            name={`categories.${idx}.uploadRoles`}
-          /> */}
+        <div key={field.id} className={cn('space-y-4')}>
+          <div className={cn('grid gap-4 grid-cols-3')}>
+            <InputField.Controller
+              label="Name"
+              control={control}
+              name={`categories.${idx}.name`}
+            />
+            <ComboboxField.Controller
+              label="Default Adapter"
+              control={control}
+              name={`categories.${idx}.defaultAdapter`}
+              options={adapterOptions}
+            />
+            <InputField.Controller
+              label="Max File Size (MB)"
+              control={control}
+              name={`categories.${idx}.maxFileSize`}
+            />
+            <ComboboxField.Controller
+              label="Used By Relation"
+              control={control}
+              name={`categories.${idx}.usedByRelation`}
+              options={foreignKeyOptions}
+            />
+            <MultiComboboxField.Controller
+              label="Upload Roles"
+              control={control}
+              options={roleOptions}
+              name={`categories.${idx}.uploadRoles`}
+              className={cn('col-span-2')}
+            />
+          </div>
           <Button variant="secondary" onClick={() => remove(idx)}>
             Remove
           </Button>

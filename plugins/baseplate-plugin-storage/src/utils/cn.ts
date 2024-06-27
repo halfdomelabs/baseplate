@@ -1,9 +1,9 @@
 // merges class names with the storage- prefix
 // https://malcolmkee.com/blog/using-tailwindcss-with-module-federation/
 
-export const cn = (...classes: string[]): string =>
+export const cn = (...classes: (string | undefined | false)[]): string =>
   classes
-    .filter(Boolean)
+    .filter((x): x is string => !!x)
     .map((cls) =>
       cls
         .split(' ')

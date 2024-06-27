@@ -1,4 +1,5 @@
 import {
+  VALIDATORS,
   authRoleEntityType,
   createEntityType,
   featureEntityType,
@@ -25,9 +26,9 @@ export const storagePluginDefinitionSchema = z.object({
   s3Adapters: z.array(
     zEnt(
       z.object({
-        name: z.string().min(1),
-        bucketConfigVar: z.string().min(1),
-        hostedUrlConfigVar: z.string().optional(),
+        name: VALIDATORS.CAMEL_CASE_STRING,
+        bucketConfigVar: VALIDATORS.CONSTANT_CASE_STRING,
+        hostedUrlConfigVar: VALIDATORS.OPTIONAL_CONSTANT_CASE_STRING,
       }),
       { type: storageAdapterEntityType },
     ),
