@@ -1,4 +1,4 @@
-import { PluginMetadata, PluginMetadataWithPaths } from '@src/plugins/index.js';
+import { PluginMetadataWithPaths } from '@src/plugins/index.js';
 import { BasePlugin, ProjectDefinition } from '@src/schema/index.js';
 
 function byId(
