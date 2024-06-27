@@ -89,4 +89,24 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
       })(config);
     },
   },
+  {
+    version: 4,
+    description: 'Move storage into plugin system',
+    migrate: (config: ProjectDefinition) => {
+      return produce((draftConfig: ProjectDefinition) => {
+        if (!draftConfig.storage) {
+          return;
+        }
+        draftConfig.plugins = draftConfig.plugins ?? [];
+        draftConfig.plugins.push({
+          id: 'halfdomelabs_baseplate-plugin-storage_storage',
+          name: 'storage',
+          packageName: '@halfdomelabs/baseplate-plugin-storage',
+          version: '0.1.0',
+          config: draftConfig.storage,
+        });
+        draftConfig.storage = undefined;
+      })(config);
+    },
+  },
 ];

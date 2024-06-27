@@ -7,6 +7,7 @@ import {
   modelForeignRelationEntityType,
   zEnt,
   zRef,
+  zRefBuilder,
 } from '@halfdomelabs/project-builder-lib';
 import z from 'zod';
 
@@ -14,50 +15,55 @@ export const storageAdapterEntityType = createEntityType(
   'baseplate-plugin-storage/storage-adapter',
 );
 
-export const storagePluginDefinitionSchema = z.object({
-  fileModel: zRef(z.string(), {
-    type: modelEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  featurePath: zRef(z.string().min(1), {
-    type: featureEntityType,
-    onDelete: 'RESTRICT',
-  }),
-  s3Adapters: z.array(
-    zEnt(
-      z.object({
-        name: VALIDATORS.CAMEL_CASE_STRING,
-        bucketConfigVar: VALIDATORS.CONSTANT_CASE_STRING,
-        hostedUrlConfigVar: VALIDATORS.OPTIONAL_CONSTANT_CASE_STRING,
-      }),
-      { type: storageAdapterEntityType },
-    ),
-  ),
-  categories: z.array(
-    z.object({
-      name: z.string().min(1),
-      defaultAdapter: zRef(z.string(), {
-        type: storageAdapterEntityType,
-        onDelete: 'RESTRICT',
-      }),
-      maxFileSize: z.preprocess(
-        (a) => a && parseInt(a as string, 10),
-        z.number().positive().optional(),
+export const storagePluginDefinitionSchema = zRefBuilder(
+  z.object({
+    fileModel: zRef(z.string(), {
+      type: modelEntityType,
+      onDelete: 'RESTRICT',
+    }),
+    featurePath: zRef(z.string().min(1), {
+      type: featureEntityType,
+      onDelete: 'RESTRICT',
+    }),
+    s3Adapters: z.array(
+      zEnt(
+        z.object({
+          name: VALIDATORS.CAMEL_CASE_STRING,
+          bucketConfigVar: VALIDATORS.CONSTANT_CASE_STRING,
+          hostedUrlConfigVar: VALIDATORS.OPTIONAL_CONSTANT_CASE_STRING,
+        }),
+        { type: storageAdapterEntityType },
       ),
-      usedByRelation: zRef(z.string(), {
-        type: modelForeignRelationEntityType,
-        onDelete: 'RESTRICT',
-        parentPath: { context: 'fileModel' },
-      }),
-      uploadRoles: z.array(
-        zRef(z.string().min(1), {
-          type: authRoleEntityType,
+    ),
+    categories: z.array(
+      z.object({
+        name: z.string().min(1),
+        defaultAdapter: zRef(z.string(), {
+          type: storageAdapterEntityType,
           onDelete: 'RESTRICT',
         }),
-      ),
-    }),
-  ),
-});
+        maxFileSize: z.preprocess(
+          (a) => a && parseInt(a as string, 10),
+          z.number().positive().optional(),
+        ),
+        usedByRelation: zRef(z.string(), {
+          type: modelForeignRelationEntityType,
+          onDelete: 'RESTRICT',
+          parentPath: { context: 'fileModel' },
+        }),
+        uploadRoles: z.array(
+          zRef(z.string().min(1), {
+            type: authRoleEntityType,
+            onDelete: 'RESTRICT',
+          }),
+        ),
+      }),
+    ),
+  }),
+  (builder) => {
+    builder.addPathToContext('fileModel', modelEntityType, 'fileModel');
+  },
+);
 
 export type StoragePluginDefinition = z.infer<
   typeof storagePluginDefinitionSchema
