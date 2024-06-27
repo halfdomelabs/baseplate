@@ -126,7 +126,7 @@ const SelectItem = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <SelectPrimitive.Item
     ref={ref}
-    className={cn(selectItemVariants(), className)}
+    className={cn(selectItemVariants({ withFocus: 'highlight' }), className)}
     {...props}
   >
     <span className={selectCheckVariants()}>

@@ -22,6 +22,8 @@ export * from './Input/Input.js';
 export * from './InputField/InputField.js';
 export * from './Label/Label.js';
 export * from './Loader/Loader.js';
+export * from './MultiCombobox/MultiCombobox.js';
+export * from './MultiComboboxField/MultiComboboxField.js';
 export * from './NavigationMenu/NavigationMenu.js';
 export * from './Popover/Popover.js';
 export * from './ScrollArea/ScrollArea.js';

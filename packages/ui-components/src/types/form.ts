@@ -13,6 +13,16 @@ export type SelectOptionStringExtractor<OptionType> = (
   value: OptionType,
 ) => string;
 
+export interface MultiSelectOptionProps<OptionType> {
+  options: OptionType[];
+  onChange?(value: string[]): void;
+  value?: string[];
+  renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
+  getOptionLabel?: SelectOptionStringExtractor<OptionType>;
+  getOptionValue?: SelectOptionStringExtractor<OptionType>;
+  placeholder?: string;
+}
+
 export interface SelectOptionProps<OptionType> {
   options: OptionType[];
   onChange?(value: string | null): void;
