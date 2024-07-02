@@ -32,11 +32,13 @@ export async function loadPluginModule(
   ]);
   const [webModule, commonModule] = wrappedModules.map(
     (module) =>
-      __federation_method_unwrapDefault(module) as PluginPlatformModule,
+      __federation_method_unwrapDefault(module) as
+        | PluginPlatformModule
+        | PluginPlatformModule[],
   );
 
   const pluginModules = [
-    { key: 'web', module: webModule },
+    { key: webModule.name, module: webModule },
     { key: 'common', module: commonModule },
   ];
 

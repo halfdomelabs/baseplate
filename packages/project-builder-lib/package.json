@@ -14,7 +14,8 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.js",
-    "./web": "./dist/web/index.js"
+    "./web": "./dist/web/index.js",
+    "./plugin-tools": "./dist/plugin-tools/index.js"
   },
   "main": "dist/index.js",
   "files": [
@@ -38,6 +39,7 @@
     "@halfdomelabs/ui-components": "workspace:*",
     "change-case": "^4.1.2",
     "culori": "^3.2.0",
+    "globby": "^14.0.0",
     "immer": "10.0.3",
     "inflection": "2.0.1",
     "lodash": "^4.17.21",

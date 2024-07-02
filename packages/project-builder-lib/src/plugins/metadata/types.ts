@@ -29,6 +29,10 @@ export const pluginMetadataSchema = z.object({
     .min(1)
     .regex(/^[a-z0-9-]+$/),
   /**
+   * A list of directories with entrypoints in them. Defaults to ['.']
+   */
+  moduleDirectories: z.array(z.string()).optional(),
+  /**
    * The display name of the plugin
    */
   displayName: z.string().min(1),
@@ -80,4 +84,12 @@ export interface PluginMetadataWithPaths extends PluginMetadata {
    * The path to the web build directory for the plugin
    */
   webBuildDirectory: string;
+  /**
+   * Absolute paths to the node modules
+   */
+  nodeModulePaths: string[];
+  /**
+   * Relative imports of available web modules
+   */
+  webModulePaths: string[];
 }

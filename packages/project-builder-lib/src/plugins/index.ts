@@ -1,3 +1,4 @@
+export * from './manifest/manifest.js';
 export * from './metadata/index.js';
 export * from './schema/index.js';
 export * from './spec/index.js';

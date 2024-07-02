@@ -1,4 +1,4 @@
 {
   "plugins": ["dist/storage"],
-  "web_build": "dist/web"
+  "webBuild": "dist/web"
 }

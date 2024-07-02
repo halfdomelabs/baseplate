@@ -1,118 +1,13 @@
-import {
-  PluginMetadataWithPaths,
-  pluginMetadataSchema,
-} from '@halfdomelabs/project-builder-lib';
+import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import { loadPluginsInPackage } from '@halfdomelabs/project-builder-lib/plugin-tools';
 import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { packageUp } from 'package-up';
-import { z } from 'zod';
 
 import { notEmpty } from '@src/utils/array.js';
-import { InitializeServerError, formatError } from '@src/utils/errors.js';
-
-const manifestJsonSchema = z.object({
-  plugins: z.array(z.string()),
-  web_build: z.string(),
-});
-
-type ManifestJson = z.infer<typeof manifestJsonSchema>;
-
-async function loadManifestJson(
-  requireResolvePath: string,
-  logger: Logger,
-): Promise<{
-  manifest: ManifestJson;
-  rootDirectory: string;
-} | null> {
-  const packageJsonPath = await packageUp({ cwd: requireResolvePath });
-  const packagePath = packageJsonPath && path.dirname(packageJsonPath);
-  if (!packagePath) {
-    logger.warn(
-      `Package ${packagePath} does not have a valid package.json file. Ignoring...`,
-    );
-    return null;
-  }
-
-  const manifestJsonPath = path.join(packagePath, 'manifest.json');
-
-  if (!(await fs.pathExists(manifestJsonPath))) {
-    logger.warn(
-      `Package ${packagePath} does not have a valid manifest.json file. Ignoring...`,
-    );
-    return null;
-  }
-  const manifest = await fs
-    .readJson(manifestJsonPath)
-    .then((data) => manifestJsonSchema.parse(data))
-    .catch(() => {
-      logger.warn(
-        `Could not read the manifest.json file for the package ${packagePath}. Ignoring...`,
-      );
-      return null;
-    });
-
-  if (!manifest) {
-    return null;
-  }
-
-  return {
-    manifest,
-    rootDirectory: packagePath,
-  };
-}
-
-export async function loadPluginFromDirectory(
-  packageName: string,
-  pluginDirectory: string,
-  webBuildDirectory: string,
-  logger: Logger,
-): Promise<PluginMetadataWithPaths | null> {
-  try {
-    const pluginMetadata = (await import(
-      path.join(pluginDirectory, 'metadata.js')
-    )) as unknown;
-
-    if (typeof pluginMetadata !== 'object' || pluginMetadata === null) {
-      logger.warn(
-        `Plugin at ${pluginDirectory} does not export a valid metadata object. Ignoring...`,
-      );
-      return null;
-    }
-
-    if (!('default' in pluginMetadata)) {
-      logger.warn(
-        `Plugin at ${pluginDirectory} does not export a default metadata object. Ignoring...`,
-      );
-      return null;
-    }
-
-    const parsedMetadata = pluginMetadataSchema.parse(pluginMetadata.default);
-
-    return {
-      ...parsedMetadata,
-      // URL safe ID
-      id: `${packageName
-        .replace(/^@/, '')
-        .replace(/[^a-z0-9/]+/g, '-')
-        .replace(
-          /\//g,
-          '_',
-        )}_${parsedMetadata.name.replace(/[^a-z0-9]+/g, '-')}`,
-      packageName,
-      pluginDirectory,
-      webBuildDirectory,
-    };
-  } catch (err) {
-    logger.warn(
-      `Unable to read plugin metadata at ${pluginDirectory}: ${formatError(
-        err,
-      )}. Ignoring...`,
-    );
-    return null;
-  }
-}
+import { InitializeServerError } from '@src/utils/errors.js';
 
 /**
  * Finds the available plugins in the project.
@@ -162,25 +57,18 @@ export async function discoverPlugins(
           }),
         );
 
-        // Look for manifest.json file
-        const manifestJsonResult = await loadManifestJson(packagePath, logger);
+        const pluginPackageJsonPath = await packageUp({ cwd: packagePath });
 
-        if (!manifestJsonResult) {
-          return null;
+        if (!pluginPackageJsonPath) {
+          logger.error(
+            `Could not find package.json file for the plugin ${packageName}.`,
+          );
+          return undefined;
         }
 
-        const { manifest, rootDirectory } = manifestJsonResult;
-
-        // Load the plugins
-        return Promise.all(
-          manifest.plugins.map(async (directory) =>
-            loadPluginFromDirectory(
-              packageName,
-              path.join(rootDirectory, directory),
-              path.join(rootDirectory, manifest.web_build),
-              logger,
-            ),
-          ),
+        return loadPluginsInPackage(
+          path.dirname(pluginPackageJsonPath),
+          packageName,
         );
       }),
     )
