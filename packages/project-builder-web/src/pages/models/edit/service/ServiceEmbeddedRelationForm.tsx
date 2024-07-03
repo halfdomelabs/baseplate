@@ -1,42 +1,40 @@
 import {
   EmbeddedRelationTransformerConfig,
-  ModelConfig,
   ModelTransformerUtils,
   ModelUtils,
+  modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import clsx from 'clsx';
+import {
+  ModelTransformerWebConfig,
+  ModelTransformerWebFormProps,
+  useProjectDefinition,
+} from '@halfdomelabs/project-builder-lib/web';
+import { SelectField } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 
 import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
-import { LinkButton, SelectInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { usePrevious } from 'src/hooks/usePrevious';
 
-interface Props {
-  className?: string;
-  formProps: UseFormReturn<ModelConfig>;
-  idx: number;
-  onRemove: () => void;
-}
-
 function ServiceEmbeddedRelationForm({
-  className,
   formProps,
-  idx,
-  onRemove,
-}: Props): JSX.Element {
+  name,
+}: ModelTransformerWebFormProps): JSX.Element {
   // force type cast to avoid TS error
+  const prefix = name as 'prefix';
   const formPropsTyped = formProps as unknown as UseFormReturn<{
-    service: {
-      transformers: EmbeddedRelationTransformerConfig[];
-    };
+    prefix: EmbeddedRelationTransformerConfig;
   }>;
   const { control, setValue } = formPropsTyped;
 
   const { definition, definitionContainer, pluginContainer } =
     useProjectDefinition();
+
+  const transformer = useWatch({
+    control,
+    name: `${prefix}`,
+  });
 
   const availableRelations = useEditedModelConfig((model) => {
     const relationsToModel = ModelUtils.getRelationsToModel(
@@ -44,8 +42,8 @@ function ServiceEmbeddedRelationForm({
       model.id,
     );
     const otherEmbeddedRelations = model.service?.transformers?.filter(
-      (t, transformerIdx): t is EmbeddedRelationTransformerConfig =>
-        t.type === 'embeddedRelation' && idx !== transformerIdx,
+      (t): t is EmbeddedRelationTransformerConfig =>
+        t.type === 'embeddedRelation' && t.id !== transformer.id,
     );
     return relationsToModel.filter(({ relation }) => {
       return !otherEmbeddedRelations?.some(
@@ -58,11 +56,6 @@ function ServiceEmbeddedRelationForm({
     label: `${relation.relation.foreignRelationName} (${relation.model.name})`,
     value: relation.relation.foreignId,
   }));
-
-  const transformer = useWatch({
-    control,
-    name: `service.transformers.${idx}`,
-  });
 
   const embeddedTransformer =
     transformer?.type === 'embeddedRelation' ? transformer : null;
@@ -78,13 +71,13 @@ function ServiceEmbeddedRelationForm({
       previousForeignModelId !== undefined &&
       previousForeignModelId !== embeddedTransformer?.foreignRelationRef
     ) {
-      setValue(`service.transformers.${idx}.embeddedFieldNames`, []);
+      setValue(`${prefix}.embeddedFieldNames`, []);
       if (relation?.model.id) {
-        setValue(`service.transformers.${idx}.modelRef`, relation?.model.id);
+        setValue(`${prefix}.modelRef`, relation?.model.id);
       }
     }
   }, [
-    idx,
+    prefix,
     setValue,
     relation,
     embeddedTransformer?.foreignRelationRef,
@@ -116,19 +109,20 @@ function ServiceEmbeddedRelationForm({
     })) ?? [];
 
   return (
-    <div className={clsx('space-y-4', className)}>
-      <SelectInput.LabelledController
+    <div className={'space-y-4'}>
+      <SelectField.Controller
         className="w-full"
         control={control}
-        name={`service.transformers.${idx}.foreignRelationRef`}
+        name={`${prefix}.foreignRelationRef`}
         options={relationOptions}
         label="Relation"
+        placeholder="Select relation"
       />
       <CheckedArrayInput.LabelledController
         className="w-full"
         control={control}
         options={foreignFieldOptions}
-        name={`service.transformers.${idx}.embeddedFieldNames`}
+        name={`${prefix}.embeddedFieldNames`}
         label="Embedded Field Names"
       />
       {!!foreignTransformerOptions.length && (
@@ -136,13 +130,33 @@ function ServiceEmbeddedRelationForm({
           className="w-full"
           control={control}
           options={foreignTransformerOptions}
-          name={`service.transformers.${idx}.embeddedTransformerNames`}
+          name={`${prefix}.embeddedTransformerNames`}
           label="Embedded Transformers"
         />
       )}
-      <LinkButton onClick={onRemove}>Remove</LinkButton>
     </div>
   );
 }
 
-export default ServiceEmbeddedRelationForm;
+export const embeddedRelationTransformerWebConfig: ModelTransformerWebConfig<EmbeddedRelationTransformerConfig> =
+  {
+    name: 'embeddedRelation',
+    label: 'Embedded Relation',
+    getSummary(definition, container) {
+      return [
+        {
+          label: 'Embedded Relation',
+          description: container.nameFromId(definition.foreignRelationRef),
+        },
+      ];
+    },
+    getNewTransformer: () => ({
+      id: modelTransformerEntityType.generateNewId(),
+      foreignRelationRef: '',
+      type: 'embeddedRelation',
+      embeddedFieldNames: [],
+      modelRef: '',
+    }),
+    Form: ServiceEmbeddedRelationForm,
+    pluginId: undefined,
+  };

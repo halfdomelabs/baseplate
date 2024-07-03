@@ -3,9 +3,12 @@ import {
   modelEntityType,
   modelScalarFieldEntityType,
   modelSchema,
+  zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
 import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
@@ -54,7 +57,8 @@ export function useModelForm({
   defaultValues: ModelConfig;
 } {
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
+  const { parsedProject, setConfigAndFixReferences, pluginContainer } =
+    useProjectDefinition();
   const navigate = useNavigate();
   const urlModelId = uid ? modelEntityType.fromUid(uid) : undefined;
   const model = urlModelId ? parsedProject.getModelById(urlModelId) : undefined;
@@ -65,8 +69,13 @@ export function useModelForm({
 
   const defaultValues = model ?? newModel;
 
+  const modelSchemaWithPlugins = useMemo(
+    () => zPluginWrapper(modelSchema, pluginContainer),
+    [pluginContainer],
+  );
+
   const form = useResettableForm<ModelConfig>({
-    resolver: zodResolver(modelSchema),
+    resolver: zodResolver(modelSchemaWithPlugins),
     defaultValues,
   });
 

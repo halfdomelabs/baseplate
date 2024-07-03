@@ -52,7 +52,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
         <FormItem.Control>
           <Select.Trigger>
             <Select.Value placeholder={placeholder}>
-              {selectedOption && getOptionLabel(selectedOption)}
+              {selectedOption ? getOptionLabel(selectedOption) : null}
             </Select.Value>
           </Select.Trigger>
         </FormItem.Control>

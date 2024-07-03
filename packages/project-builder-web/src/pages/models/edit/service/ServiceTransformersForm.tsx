@@ -2,13 +2,16 @@ import {
   ModelConfig,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import {
+  createNewModelTransformerWebConfig,
+  modelTransformerWebSpec,
+  useProjectDefinition,
+} from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dropdown } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import { useFieldArray, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, useFieldArray } from 'react-hook-form';
 
-import ServiceEmbeddedRelationForm from './ServiceEmbeddedRelationForm';
-import ServiceFileTransformerForm from './ServiceFileTransformerForm';
+import { embeddedRelationTransformerWebConfig } from './ServiceEmbeddedRelationForm';
 import { LinkButton } from 'src/components';
 
 interface Props {
@@ -16,6 +19,25 @@ interface Props {
   formProps: UseFormReturn<ModelConfig>;
   originalModel: ModelConfig;
 }
+
+const BUILT_IN_TRANSFORMERS = [
+  embeddedRelationTransformerWebConfig,
+  createNewModelTransformerWebConfig({
+    name: 'password',
+    label: 'Password',
+    getNewTransformer: () => ({
+      id: modelTransformerEntityType.generateNewId(),
+      type: 'password',
+    }),
+    getSummary: () => [
+      {
+        label: 'Password',
+        description: 'Password',
+      },
+    ],
+    pluginId: undefined,
+  }),
+];
 
 function ServiceEmbeddedRelationsForm({
   className,
@@ -27,98 +49,69 @@ function ServiceEmbeddedRelationsForm({
     control,
     name: `service.transformers`,
   });
-  const { parsedProject } = useProjectDefinition();
+  const { pluginContainer, definitionContainer } = useProjectDefinition();
+
+  const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
+
+  const addableTransformers = transformerWeb
+    .getTransformerWebConfigs(BUILT_IN_TRANSFORMERS)
+    .filter((transformer) =>
+      transformer.allowNewTransformer
+        ? !transformer.allowNewTransformer(definitionContainer)
+        : true,
+    );
 
   return (
     <div className={clsx('space-y-4', className)}>
       <h2>Transformers</h2>
       {!fields.length && <div>No transformers</div>}
       {fields.map((field, idx) => {
-        switch (field.type) {
-          case 'embeddedRelation':
-            return (
-              <ServiceEmbeddedRelationForm
-                key={field.id}
-                formProps={formProps}
-                onRemove={() => remove(idx)}
-                idx={idx}
-              />
-            );
-          case 'password':
-            return (
-              <div className="flex flex-row space-x-4" key={field.id}>
-                <div>
-                  <strong>Password Transformer</strong>
-                </div>
-                <LinkButton onClick={() => remove(idx)}>Remove</LinkButton>
-              </div>
-            );
-          case 'file':
-            return (
-              <ServiceFileTransformerForm
-                key={field.id}
-                control={control}
-                onRemove={() => remove(idx)}
-                idx={idx}
-                originalModel={originalModel}
-              />
-            );
-          default:
-            return (
-              <div key={(field as { id: string }).id}>
-                Unknown transformer type {(field as { type: string }).type}
-                <LinkButton onClick={() => remove(idx)}>Remove</LinkButton>
-              </div>
-            );
-        }
+        const transformerConfig = transformerWeb.getTransformerWebConfig(
+          field.type,
+          BUILT_IN_TRANSFORMERS,
+        );
+
+        const Form = transformerConfig.Form;
+
+        return (
+          <div className="flex flex-row items-start space-x-4" key={field.id}>
+            <div>
+              {Form ? (
+                <Form
+                  formProps={formProps}
+                  name={`service.transformers.${idx}`}
+                  originalModel={originalModel}
+                  pluginId={transformerConfig.pluginId}
+                />
+              ) : (
+                transformerConfig.label
+              )}
+            </div>
+            <LinkButton onClick={() => remove(idx)}>Remove</LinkButton>
+          </div>
+        );
       })}
-      <Dropdown>
-        <Dropdown.Trigger asChild>
-          <Button>Add Transformer</Button>
-        </Dropdown.Trigger>
-        <Dropdown.Content>
-          <Dropdown.Group>
-            {!fields.some((f) => f.type === 'password') && (
-              <Dropdown.Item
-                onSelect={() =>
-                  append({
-                    id: modelTransformerEntityType.generateNewId(),
-                    type: 'password',
-                  })
-                }
-              >
-                Password
-              </Dropdown.Item>
-            )}
-            {parsedProject.projectDefinition.storage && (
-              <Dropdown.Item
-                onSelect={() =>
-                  append({
-                    id: modelTransformerEntityType.generateNewId(),
-                    fileRelationRef: '',
-                    type: 'file',
-                  })
-                }
-              >
-                File
-              </Dropdown.Item>
-            )}
-            <Dropdown.Item
-              onSelect={() =>
-                append({
-                  id: modelTransformerEntityType.generateNewId(),
-                  foreignRelationRef: '',
-                  type: 'embeddedRelation',
-                  embeddedFieldNames: [],
-                  modelRef: '',
-                })
-              }
-            >
-              Embedded Relation
-            </Dropdown.Item>
-          </Dropdown.Group>
-        </Dropdown.Content>
-      </Dropdown>
+      {!!addableTransformers.length && (
+        <Dropdown>
+          <Dropdown.Trigger asChild>
+            <Button>Add Transformer</Button>
+          </Dropdown.Trigger>
+          <Dropdown.Content>
+            <Dropdown.Group>
+              {addableTransformers.map((transformer) => {
+                return (
+                  <Dropdown.Item
+                    key={transformer.name}
+                    onSelect={() => append(transformer.getNewTransformer())}
+                  >
+                    {transformer.label}
+                  </Dropdown.Item>
+                );
+              })}
+            </Dropdown.Group>
+          </Dropdown.Content>
+        </Dropdown>
+      )}
     </div>
   );
 }

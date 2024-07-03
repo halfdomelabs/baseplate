@@ -3,6 +3,7 @@ import {
   SchemaParserContext,
   webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
+import { modelTransformerWebSpec } from '@halfdomelabs/project-builder-lib/web';
 
 import { loadPluginModule } from './module-federation';
 
@@ -21,7 +22,7 @@ export async function createWebSchemaParserContext(
           };
         }),
       ),
-      builtinSpecImplementations: [webConfigSpec],
+      builtinSpecImplementations: [webConfigSpec, modelTransformerWebSpec],
     },
   };
 }
