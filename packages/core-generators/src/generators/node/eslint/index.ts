@@ -72,7 +72,6 @@ const EslintGenerator = createGeneratorWithChildren({
             ? {}
             : {
                 'eslint-plugin-vitest': '0.5.4',
-                'eslint-plugin-vitest-globals': '1.5.0',
               }),
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
