@@ -16,12 +16,12 @@ import {
 } from 'zod';
 
 import { ZodPluginContext, zodPluginSymbol } from './common.js';
-import { ZodPluginImplementationStore } from './store.js';
+import { PluginImplementationStore } from './store.js';
 
 export interface ZodPluginWrapperDef<T extends ZodTypeAny = ZodTypeAny>
   extends ZodTypeDef {
   innerType: T;
-  pluginStore: ZodPluginImplementationStore;
+  pluginStore: PluginImplementationStore;
 }
 
 export class ZodPluginWrapper<T extends ZodTypeAny> extends ZodType<
@@ -49,7 +49,7 @@ export class ZodPluginWrapper<T extends ZodTypeAny> extends ZodType<
 
   static create = <T extends ZodTypeAny>(
     type: T,
-    pluginStore: ZodPluginImplementationStore,
+    pluginStore: PluginImplementationStore,
   ): ZodPluginWrapper<T> => {
     return new ZodPluginWrapper<T>({
       innerType: type,
@@ -60,7 +60,7 @@ export class ZodPluginWrapper<T extends ZodTypeAny> extends ZodType<
 
 export function zPluginWrapper<T extends ZodTypeAny>(
   type: T,
-  pluginStore: ZodPluginImplementationStore,
+  pluginStore: PluginImplementationStore,
 ): ZodPluginWrapper<T> {
   return ZodPluginWrapper.create(type, pluginStore);
 }

@@ -37,5 +37,6 @@ export function createPluginConfigImplementation(): PluginConfigSpec {
  *  }]
  * }
  */
-export const pluginConfigSpec =
-  createPluginSpec<PluginConfigSpec>('core/plugin-config');
+export const pluginConfigSpec = createPluginSpec('core/plugin-config', {
+  defaultInitializer: createPluginConfigImplementation,
+});

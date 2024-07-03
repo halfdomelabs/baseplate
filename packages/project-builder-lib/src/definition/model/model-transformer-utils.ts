@@ -1,11 +1,11 @@
 import { ProjectDefinitionContainer } from '../project-definition-container.js';
-import { ZodPluginImplementationStore } from '@src/plugins/index.js';
+import { PluginImplementationStore } from '@src/plugins/index.js';
 import { TransformerConfig, modelTransformerSpec } from '@src/schema/index.js';
 
 function getTransformName(
   definitionContainer: ProjectDefinitionContainer,
   transformer: TransformerConfig,
-  pluginStore: ZodPluginImplementationStore,
+  pluginStore: PluginImplementationStore,
 ): string {
   const transformers = pluginStore.getPluginSpec(modelTransformerSpec);
   return transformers

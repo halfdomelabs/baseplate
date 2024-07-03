@@ -7,22 +7,26 @@ import {
 } from '@src/plugins/imports/loader.js';
 import { PluginStore } from '@src/plugins/imports/types.js';
 import {
-  ZodPluginImplementationStore,
+  InitializedPluginSpec,
+  PluginSpecImplementation,
+  PluginSpecWithInitializer,
+  PluginImplementationStore,
   ZodPluginWrapper,
-  createPluginConfigImplementation,
   pluginConfigSpec,
   zPluginWrapper,
 } from '@src/plugins/index.js';
 import { ZodRefPayload, ZodRefWrapper } from '@src/references/ref-builder.js';
-import {
-  createModelTransformerImplementation,
-  modelTransformerSpec,
-} from '@src/schema/index.js';
+import { modelTransformerSpec } from '@src/schema/index.js';
 import { basePluginSchema } from '@src/schema/plugins/index.js';
 import {
   ProjectDefinition,
   projectDefinitionSchema,
 } from '@src/schema/projectDefinition.js';
+
+const COMMON_SPEC_IMPLEMENTATIONS: (
+  | InitializedPluginSpec
+  | PluginSpecWithInitializer
+)[] = [pluginConfigSpec, modelTransformerSpec];
 
 /**
  * Creates a plugin implementation store from the project definition and plugin store,
@@ -35,9 +39,8 @@ import {
 export function createPluginImplementationStore(
   pluginStore: PluginStore,
   projectDefinition: unknown,
-): ZodPluginImplementationStore {
-  const { availablePlugins, getInitialSpecImplementations = () => ({}) } =
-    pluginStore;
+): PluginImplementationStore {
+  const { availablePlugins, builtinSpecImplementations = [] } = pluginStore;
   const pluginData = z
     .object({
       plugins: z.array(basePluginSchema).optional(),
@@ -45,11 +48,26 @@ export function createPluginImplementationStore(
     .parse(projectDefinition);
   const { plugins = [] } = pluginData;
   // initialize plugins
-  const specImplementations = {
-    ...getInitialSpecImplementations(),
-    [pluginConfigSpec.name]: createPluginConfigImplementation(),
-    [modelTransformerSpec.name]: createModelTransformerImplementation(),
-  };
+  const initialImplementations = [
+    ...COMMON_SPEC_IMPLEMENTATIONS,
+    ...builtinSpecImplementations,
+  ];
+  const specImplementations = initialImplementations.reduce(
+    (acc, spec) => {
+      if ('type' in spec) {
+        if (!spec.defaultInitializer) {
+          throw new Error(
+            `Spec ${spec.type} does not have a defaultInitializer!`,
+          );
+        }
+        acc[spec.name] = spec.defaultInitializer();
+      } else {
+        acc[spec.spec.name] = spec.implementation;
+      }
+      return acc;
+    },
+    {} as Record<string, PluginSpecImplementation>,
+  );
   const pluginsWithModules = plugins.map((p): PluginWithPlatformModules => {
     const plugin = availablePlugins.find(
       ({ metadata }) =>
@@ -108,10 +126,14 @@ export function parseProjectDefinitionWithContext(
 export function parseProjectDefinitionWithReferences(
   projectDefinition: unknown,
   context: SchemaParserContext,
-): ZodRefPayload<ProjectDefinition> {
+): {
+  definition: ZodRefPayload<ProjectDefinition>;
+  pluginStore: PluginImplementationStore;
+} {
   const schema = createProjectDefinitionSchemaWithContext(
     projectDefinition,
     context,
   );
-  return ZodRefWrapper.create(schema).parse(projectDefinition);
+  const definition = ZodRefWrapper.create(schema).parse(projectDefinition);
+  return { definition, pluginStore: schema._def.pluginStore };
 }

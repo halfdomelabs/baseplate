@@ -219,24 +219,55 @@ export async function loadPluginsInPackage(
   return plugins.filter(notEmpty);
 }
 
+/**
+ * Look for source file equivalent of compiled file
+ */
+async function findSourceFileEquivalent(
+  compiledFilePath: string,
+  pluginPackageDirectory: string,
+): Promise<string | undefined> {
+  const sourceFilePath = path
+    .relative(pluginPackageDirectory, compiledFilePath)
+    .replace(/^dist\//, 'src/');
+
+  const candidatePaths = ['ts', 'js', 'tsx', 'jsx'].map((extension) =>
+    sourceFilePath.replace(/\.js$/, `.${extension}`),
+  );
+
+  for (const path of candidatePaths) {
+    if (await fileExists(path)) {
+      return path;
+    }
+  }
+
+  return compiledFilePath;
+}
+
 async function getModuleFederationTargetsForPlugin(
   metadata: PluginMetadata,
   pluginDirectory: string,
+  pluginPackageDirectory: string,
 ): Promise<Record<string, string>> {
   const entrypoints = await getPluginEntrypoints(metadata, pluginDirectory);
 
-  const pluginTargets = entrypoints
-    .filter((e) => WEB_ENTRYPOINT_TYPES.includes(e.type))
-    .map((entrypoint) => {
-      const entrypointImport = getWebEntrypointImport(
-        metadata.name,
-        pluginDirectory,
-        entrypoint.path,
-      );
-      return {
-        [entrypointImport]: entrypoint.path,
-      };
-    });
+  const pluginTargets = await Promise.all(
+    entrypoints
+      .filter((e) => WEB_ENTRYPOINT_TYPES.includes(e.type))
+      .map(async (entrypoint) => {
+        const entrypointImport = getWebEntrypointImport(
+          metadata.name,
+          pluginDirectory,
+          entrypoint.path,
+        );
+        const sourceFileEquivalent = await findSourceFileEquivalent(
+          entrypoint.path,
+          pluginPackageDirectory,
+        );
+        return {
+          [entrypointImport]: sourceFileEquivalent,
+        };
+      }),
+  );
 
   return Object.assign({}, ...pluginTargets.flat()) as Record<string, string>;
 }
@@ -255,7 +286,11 @@ export async function getModuleFederationTargets(
       if (!metadata) {
         return undefined;
       }
-      return getModuleFederationTargetsForPlugin(metadata, directory);
+      return getModuleFederationTargetsForPlugin(
+        metadata,
+        directory,
+        pluginPackageDirectory,
+      );
     }),
   );
   return Object.assign(

@@ -1,7 +1,7 @@
-import { ZodPluginImplementationStore } from './store.js';
+import { PluginImplementationStore } from './store.js';
 
 export const zodPluginSymbol = Symbol('zod-plugin');
 
 export interface ZodPluginContext {
-  pluginStore: ZodPluginImplementationStore;
+  pluginStore: PluginImplementationStore;
 }

@@ -26,21 +26,20 @@ export async function loadPluginModule(
   });
 
   // load module
-  const wrappedModules = await Promise.all([
-    __federation_method_getRemote(pluginKey, `${pluginMetadata.name}/web`),
-    __federation_method_getRemote(pluginKey, `${pluginMetadata.name}/common`),
-  ]);
-  const [webModule, commonModule] = wrappedModules.map(
+  const wrappedModules = await Promise.all(
+    pluginMetadata.webModulePaths.map((path) =>
+      __federation_method_getRemote(pluginKey, path),
+    ),
+  );
+  const modules = wrappedModules.map(
     (module) =>
-      __federation_method_unwrapDefault(module) as
-        | PluginPlatformModule
-        | PluginPlatformModule[],
+      __federation_method_unwrapDefault(module) as PluginPlatformModule,
   );
 
-  const pluginModules = [
-    { key: webModule.name, module: webModule },
-    { key: 'common', module: commonModule },
-  ];
+  const pluginModules = modules.map((module, index) => ({
+    key: pluginMetadata.webModulePaths[index],
+    module,
+  }));
 
   return pluginModules;
 }

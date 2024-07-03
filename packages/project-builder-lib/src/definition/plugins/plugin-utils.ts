@@ -20,6 +20,14 @@ function byIdOrThrow(
   return plugin;
 }
 
+function configByIdOrThrow<T>(
+  projectDefinition: ProjectDefinition,
+  id: string,
+): T {
+  const def = byIdOrThrow(projectDefinition, id);
+  return def.config as T;
+}
+
 function setPluginConfig(
   projectDefinition: ProjectDefinition,
   plugin: PluginMetadataWithPaths,
@@ -49,4 +57,5 @@ export const PluginUtils = {
   byId,
   byIdOrThrow,
   setPluginConfig,
+  configByIdOrThrow,
 };

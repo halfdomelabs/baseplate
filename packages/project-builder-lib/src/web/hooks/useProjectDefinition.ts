@@ -3,7 +3,7 @@ import React from 'react';
 import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import { ParsedProjectDefinition } from '@src/parser/index.js';
 import { SchemaParserContext } from '@src/parser/types.js';
-import { ZodPluginImplementationStore } from '@src/plugins/index.js';
+import { PluginImplementationStore } from '@src/plugins/index.js';
 import {
   ProjectDefinition,
   ProjectDefinitionInput,
@@ -27,7 +27,7 @@ export interface UseProjectDefinitionResult {
     options?: SetProjectDefinitionOptions,
   ) => void;
   externalChangeCounter: number;
-  pluginContainer: ZodPluginImplementationStore;
+  pluginContainer: PluginImplementationStore;
   schemaParserContext: SchemaParserContext;
 }
 

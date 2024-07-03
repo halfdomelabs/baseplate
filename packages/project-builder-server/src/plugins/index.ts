@@ -1,2 +1,2 @@
 export * from './plugin-discovery.js';
-export * from './plugin-store.js';
+export * from './node-plugin-store.js';

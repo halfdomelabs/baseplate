@@ -5,6 +5,7 @@ import {
   parseProjectDefinitionWithReferences,
 } from '@src/parser/parser.js';
 import { SchemaParserContext } from '@src/parser/types.js';
+import { PluginImplementationStore } from '@src/plugins/index.js';
 import {
   DefinitionEntity,
   DefinitionReference,
@@ -35,6 +36,7 @@ export class ProjectDefinitionContainer {
   constructor(
     config: ZodRefPayload<ProjectDefinition>,
     parserContext: SchemaParserContext,
+    public pluginStore: PluginImplementationStore,
   ) {
     this.refPayload = config;
     this.definition = config.data;
@@ -113,11 +115,13 @@ export class ProjectDefinitionContainer {
     definition: ProjectDefinition,
     context: SchemaParserContext,
   ): ProjectDefinitionContainer {
-    const parsedDefinition = parseProjectDefinitionWithReferences(
-      definition,
+    const { definition: parsedDefinition, pluginStore } =
+      parseProjectDefinitionWithReferences(definition, context);
+    return new ProjectDefinitionContainer(
+      parsedDefinition,
       context,
+      pluginStore,
     );
-    return new ProjectDefinitionContainer(parsedDefinition, context);
   }
 
   /**
@@ -139,6 +143,7 @@ export class ProjectDefinitionContainer {
         config,
       ),
       context,
+      projectDefinitionSchemaWithContext._def.pluginStore,
     );
   }
 }

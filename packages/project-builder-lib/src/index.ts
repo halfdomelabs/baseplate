@@ -1,3 +1,4 @@
+export * from './compiler/index.js';
 export * from './constants/index.js';
 export * from './feature-flags/index.js';
 export * from './parser/index.js';

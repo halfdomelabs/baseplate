@@ -7,6 +7,7 @@ import {
   FileEntry,
   ProjectDefinitionContainer,
   ParsedProjectDefinition,
+  PluginImplementationStore,
 } from '@halfdomelabs/project-builder-lib';
 
 import { stripObject } from '../utils/strip.js';
@@ -15,6 +16,8 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public projectDefinition: ProjectDefinition;
 
   public parsedProject: ParsedProjectDefinition;
+
+  public pluginStore: PluginImplementationStore;
 
   protected files: FileEntry[] = [];
 
@@ -26,6 +29,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     this.parsedProject = new ParsedProjectDefinition(definitionContainer);
     this.addDescriptor = this.addDescriptor.bind(this);
     this.toProjectEntry = this.toProjectEntry.bind(this);
+    this.pluginStore = definitionContainer.pluginStore;
   }
 
   addDescriptor(path: string, jsonContent: unknown): this {

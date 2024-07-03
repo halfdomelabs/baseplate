@@ -12,12 +12,14 @@ import { compileWeb } from './web/index.js';
 
 export * from './types.js';
 
-export async function compileApplications(
+export function compileApplications(
   projectJson: unknown,
   context: SchemaParserContext,
-): Promise<AppEntry[]> {
-  const definitionContainer =
-    await ProjectDefinitionContainer.fromSerializedConfig(projectJson, context);
+): AppEntry[] {
+  const definitionContainer = ProjectDefinitionContainer.fromSerializedConfig(
+    projectJson,
+    context,
+  );
   // Compile backend app first since it's likely the dependency for the other apps
   const appConfigs = _.sortBy(definitionContainer.definition.apps, [
     (a) => (a.type === 'backend' ? 0 : 1),

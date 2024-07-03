@@ -1,6 +1,6 @@
 import { PluginSpec, PluginSpecImplementation } from '../spec/types.js';
 
-export class ZodPluginImplementationStore {
+export class PluginImplementationStore {
   constructor(
     public implementations: Record<string, PluginSpecImplementation>,
   ) {}

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import toposort from 'toposort';
 
 import { KeyedPluginPlatformModule } from './types.js';
-import { ZodPluginImplementationStore } from '../schema/store.js';
+import { PluginImplementationStore } from '../schema/store.js';
 import { PluginSpecImplementation } from '../spec/types.js';
 import { notEmpty } from '@src/utils/array.js';
 
@@ -119,7 +119,7 @@ export function initializeOrderedPluginModules(
 export function initializePlugins(
   plugins: PluginWithPlatformModules[],
   initialSpecImplementations: Record<string, PluginSpecImplementation>,
-): ZodPluginImplementationStore {
+): PluginImplementationStore {
   const pluginModules = extractPlatformModulesFromPlugins(plugins);
 
   const pluginModulesById = _.keyBy(pluginModules, (p) => p.id);
@@ -132,5 +132,5 @@ export function initializePlugins(
     orderedModuleIds.map((p) => pluginModulesById[p]),
     initialSpecImplementations,
   );
-  return new ZodPluginImplementationStore(specImplementations);
+  return new PluginImplementationStore(specImplementations);
 }

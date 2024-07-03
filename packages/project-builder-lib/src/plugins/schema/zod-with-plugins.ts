@@ -9,7 +9,7 @@ import {
 } from 'zod';
 
 import { ZodPluginContext, zodPluginSymbol } from './common.js';
-import { ZodPluginImplementationStore } from './store.js';
+import { PluginImplementationStore } from './store.js';
 
 interface ZodPluginExtendedContext {
   [zodPluginSymbol]?: ZodPluginContext;
@@ -17,7 +17,7 @@ interface ZodPluginExtendedContext {
 
 export interface ZodWithPluginsDef<T extends ZodTypeAny = ZodTypeAny>
   extends ZodTypeDef {
-  getter: (plugins: ZodPluginImplementationStore, data: unknown) => T;
+  getter: (plugins: PluginImplementationStore, data: unknown) => T;
 }
 
 export class ZodWithPlugins<T extends ZodTypeAny> extends ZodType<
@@ -42,7 +42,7 @@ export class ZodWithPlugins<T extends ZodTypeAny> extends ZodType<
   }
 
   static create = <T extends ZodTypeAny>(
-    getter: (plugins: ZodPluginImplementationStore, data: unknown) => T,
+    getter: (plugins: PluginImplementationStore, data: unknown) => T,
   ): ZodWithPlugins<T> => {
     return new ZodWithPlugins<T>({
       getter,
@@ -51,7 +51,7 @@ export class ZodWithPlugins<T extends ZodTypeAny> extends ZodType<
 }
 
 export function zWithPlugins<T extends ZodTypeAny>(
-  getter: (plugins: ZodPluginImplementationStore, data: unknown) => T,
+  getter: (plugins: PluginImplementationStore, data: unknown) => T,
 ): ZodWithPlugins<T> {
   return ZodWithPlugins.create(getter);
 }

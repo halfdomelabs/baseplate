@@ -13,6 +13,25 @@ export interface PluginSpec<T = PluginSpecImplementation> {
   readonly isOptional: boolean;
 
   optional(): PluginSpec<T | undefined>;
+
+  defaultInitializer?: () => T;
+}
+
+export interface PluginSpecWithInitializer<T = PluginSpecImplementation>
+  extends PluginSpec<T> {
+  defaultInitializer: () => T;
+}
+
+export interface InitializedPluginSpec<T = PluginSpecImplementation> {
+  spec: PluginSpec<T>;
+  implementation: T;
+}
+
+export function createInitializedPluginSpec<T = PluginSpecImplementation>(
+  spec: PluginSpec<T>,
+  implementation: T,
+): InitializedPluginSpec<T> {
+  return { spec, implementation };
 }
 
 export type PluginSpecImplementationFromSpec<T extends PluginSpec> =
@@ -20,8 +39,25 @@ export type PluginSpecImplementationFromSpec<T extends PluginSpec> =
 
 export function createPluginSpec<T = PluginSpecImplementation>(
   name: string,
-  platforms?: PluginSpecPlatform | PluginSpecPlatform[],
+  options: {
+    platforms?: PluginSpecPlatform | PluginSpecPlatform[];
+    defaultInitializer: () => T;
+  },
+): PluginSpecWithInitializer<T>;
+export function createPluginSpec<T = PluginSpecImplementation>(
+  name: string,
+  options?: {
+    platforms?: PluginSpecPlatform | PluginSpecPlatform[];
+  },
+): PluginSpec<T>;
+export function createPluginSpec<T = PluginSpecImplementation>(
+  name: string,
+  options?: {
+    platforms?: PluginSpecPlatform | PluginSpecPlatform[];
+    defaultInitializer?: () => T;
+  },
 ): PluginSpec<T> {
+  const { platforms, defaultInitializer } = options ?? {};
   return {
     type: 'plugin-spec',
     name,
@@ -31,5 +67,6 @@ export function createPluginSpec<T = PluginSpecImplementation>(
     optional() {
       return { ...this, isOptional: true };
     },
+    defaultInitializer,
   };
 }

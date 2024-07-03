@@ -36,6 +36,7 @@
     "watch:tsc-alias": "tsc-alias -w"
   },
   "dependencies": {
+    "@halfdomelabs/sync": "workspace:*",
     "@halfdomelabs/ui-components": "workspace:*",
     "change-case": "^4.1.2",
     "culori": "^3.2.0",

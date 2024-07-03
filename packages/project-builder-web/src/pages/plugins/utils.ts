@@ -2,7 +2,7 @@ import {
   PluginMetadataWithPaths,
   PluginStore,
   ProjectDefinition,
-  ZodPluginImplementationStore,
+  PluginImplementationStore,
   createPluginImplementationStore,
 } from '@halfdomelabs/project-builder-lib';
 
@@ -10,7 +10,7 @@ export function loadPluginImplementationStoreWithNewPlugin(
   pluginStore: PluginStore,
   plugin: PluginMetadataWithPaths,
   projectDefinition: ProjectDefinition,
-): ZodPluginImplementationStore {
+): PluginImplementationStore {
   const newProjectDefinition: ProjectDefinition = {
     ...projectDefinition,
     plugins: [

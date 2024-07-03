@@ -8,7 +8,6 @@ import {
   AdminCrudInputConfig,
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
-  FileTransformerConfig,
   ModelScalarFieldConfig,
   ModelFieldUtils,
 } from '@halfdomelabs/project-builder-lib';
@@ -125,6 +124,13 @@ function compileAdminCrudTextInput(
         )
       : field.validation,
   };
+}
+
+// TODO: Move to plugin spec
+interface FileTransformerConfig {
+  id: string;
+  type: 'file';
+  fileRelationRef: string;
 }
 
 function compileAdminCrudFileInput(

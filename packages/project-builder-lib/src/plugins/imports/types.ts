@@ -1,8 +1,9 @@
 import { PluginMetadataWithPaths } from '../metadata/types.js';
 import {
+  InitializedPluginSpec,
   PluginSpec,
-  PluginSpecImplementation,
   PluginSpecImplementationFromSpec,
+  PluginSpecWithInitializer,
 } from '../spec/types.js';
 
 export type PluginSpecMap = Record<string, PluginSpec>;
@@ -46,8 +47,8 @@ export interface PluginStore {
     metadata: PluginMetadataWithPaths;
     modules: KeyedPluginPlatformModule[];
   }[];
-  getInitialSpecImplementations?: () => Record<
-    string,
-    PluginSpecImplementation
-  >;
+  builtinSpecImplementations?: (
+    | InitializedPluginSpec
+    | PluginSpecWithInitializer
+  )[];
 }

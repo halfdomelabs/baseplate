@@ -1,9 +1,9 @@
 import {
+  AdminAppConfig,
+  AppEntry,
   AppUtils,
   FeatureUtils,
   ProjectDefinitionContainer,
-  AdminAppConfig,
-  AppEntry,
 } from '@halfdomelabs/project-builder-lib';
 import { capitalize } from 'inflection';
 

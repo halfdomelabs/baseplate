@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { BUILT_IN_TRANSFORMERS } from './built-in-transformers.js';
 import { ModelTransformerType } from './types.js';
 import {
@@ -10,7 +12,9 @@ import { ZodRef } from '@src/references/ref-builder.js';
  * Spec for registering additional model transformer types
  */
 export interface ModelTransformerSpec extends PluginSpecImplementation {
-  registerModelTransformer: (transformer: ModelTransformerType) => void;
+  registerModelTransformer: <T extends z.ZodTypeAny>(
+    transformer: ModelTransformerType<T>,
+  ) => void;
   getModelTransformers: () => Record<string, ModelTransformerType>;
   getModelTransformer: (name: string) => ModelTransformerType;
 }
@@ -37,7 +41,8 @@ export function createModelTransformerImplementation(): ModelTransformerSpec {
           `Model transformer schema for ${transformer.name} is not a zEnt`,
         );
       }
-      transformers[transformer.name] = transformer;
+      transformers[transformer.name] =
+        transformer as unknown as ModelTransformerType;
     },
     getModelTransformers() {
       return transformers;
@@ -55,6 +60,6 @@ export function createModelTransformerImplementation(): ModelTransformerSpec {
 /**
  * Spec for adding config component for plugin
  */
-export const modelTransformerSpec = createPluginSpec<ModelTransformerSpec>(
-  'core/model-transformer',
-);
+export const modelTransformerSpec = createPluginSpec('core/model-transformer', {
+  defaultInitializer: createModelTransformerImplementation,
+});

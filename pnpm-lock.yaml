@@ -372,6 +372,9 @@ importers:
 
   packages/project-builder-lib:
     dependencies:
+      '@halfdomelabs/sync':
+        specifier: workspace:*
+        version: link:../sync
       '@halfdomelabs/ui-components':
         specifier: workspace:*
         version: link:../ui-components

@@ -1,7 +1,6 @@
 import {
   AdminCrudSectionConfig,
   adminCrudInputTypes,
-  FileTransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
@@ -28,7 +27,6 @@ function FieldForm({
   localRelationOptions,
   foreignRelationOptions,
   enumFieldOptions,
-  fileTransformerOptions,
   embeddedFormOptions,
 }: {
   idx: number;
@@ -37,13 +35,15 @@ function FieldForm({
   fieldOptions: { label: string; value: string }[];
   localRelationOptions: { label: string; value: string }[];
   foreignRelationOptions: { label: string; value: string }[];
-  fileTransformerOptions: { label: string; value: string }[];
   embeddedFormOptions: { label: string; value: string }[];
 }): JSX.Element {
-  const fieldTypeOptions = adminCrudInputTypes.map((t) => ({
-    label: t,
-    value: t,
-  }));
+  const fieldTypeOptions = adminCrudInputTypes
+    .map((t) => ({
+      label: t,
+      value: t,
+    }))
+    // TODO: Enable file type as plugin
+    .filter((t) => t.value !== 'file');
   const type = useWatch({
     control,
     name: `form.fields.${idx}.type`,
@@ -100,14 +100,14 @@ function FieldForm({
           />
         </>
       )}
-      {type === 'file' && (
+      {/* {type === 'file' && (
         <SelectInput.LabelledController
           label="File Transformer Name"
           control={control}
           name={`form.fields.${idx}.modelRelation`}
           options={fileTransformerOptions}
         />
-      )}
+      )} */}
       {type === 'text' && (
         <>
           <SelectInput.LabelledController
@@ -165,7 +165,7 @@ function CrudFormFieldsForm({
   embeddedFormOptions,
 }: Props): JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
-  const { definitionContainer, parsedProject } = useProjectDefinition();
+  const { parsedProject } = useProjectDefinition();
   const model = modelName ? parsedProject.getModelById(modelName) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
@@ -190,14 +190,6 @@ function CrudFormFieldsForm({
       label: `${r.relation.foreignRelationName} (${r.model.name})`,
       value: r.relation.foreignId,
     }));
-
-  const fileTransformerOptions =
-    model?.service?.transformers
-      ?.filter((t): t is FileTransformerConfig => t.type === 'file')
-      .map((transformer) => ({
-        label: definitionContainer.nameFromId(transformer.fileRelationRef),
-        value: transformer.id,
-      })) ?? [];
 
   const enumFieldOptions =
     model?.model.fields
@@ -227,7 +219,6 @@ function CrudFormFieldsForm({
             fieldOptions={fieldOptions}
             localRelationOptions={localRelationOptions}
             enumFieldOptions={enumFieldOptions}
-            fileTransformerOptions={fileTransformerOptions}
             foreignRelationOptions={foreignRelationOptions}
             embeddedFormOptions={embeddedFormOptions}
           />

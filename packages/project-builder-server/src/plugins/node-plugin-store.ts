@@ -1,13 +1,15 @@
 import {
-  PluginStore,
   PluginMetadataWithPaths,
+  PluginStore,
   SchemaParserContext,
+  modelTransformerCompilerSpec,
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
-import path from 'node:path';
 import { PluginPlatformModule } from 'node_modules/@halfdomelabs/project-builder-lib/dist/plugins/imports/types.js';
 
 import { discoverPlugins } from './plugin-discovery.js';
+
+const NODE_SPEC_IMPLEMENTATIONS = [modelTransformerCompilerSpec];
 
 export async function createNodePluginStore(
   plugins: PluginMetadataWithPaths[],
@@ -16,25 +18,25 @@ export async function createNodePluginStore(
     plugins.map(async (plugin) => {
       return {
         metadata: plugin,
-        modules: [
-          {
-            key: 'node',
-            module: (await import(
-              path.join(plugin.pluginDirectory, 'node')
-            )) as PluginPlatformModule,
-          },
-          {
-            key: 'common',
-            module: (await import(
-              path.join(plugin.pluginDirectory, 'common')
-            )) as PluginPlatformModule,
-          },
-        ],
+        modules: await Promise.all(
+          plugin.nodeModulePaths.map(async (modulePath) => {
+            const mod = (await import(modulePath)) as
+              | { default: PluginPlatformModule }
+              | PluginPlatformModule;
+            const unwrappedModule = 'default' in mod ? mod.default : mod;
+
+            return {
+              key: modulePath,
+              module: unwrappedModule,
+            };
+          }),
+        ),
       };
     }),
   );
   return {
     availablePlugins: pluginsWithModules,
+    builtinSpecImplementations: NODE_SPEC_IMPLEMENTATIONS,
   };
 }
 
