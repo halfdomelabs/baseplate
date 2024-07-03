@@ -12,7 +12,9 @@ import { cn } from '@src/utils';
  *
  * https://ui.shadcn.com/docs/components/tabs
  */
-const TabsRoot = TabsPrimitive.Root;
+const TabsRoot = (props: TabsPrimitive.TabsProps): JSX.Element => (
+  <TabsPrimitive.Root {...props} />
+);
 
 const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,

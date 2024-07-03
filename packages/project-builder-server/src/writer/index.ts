@@ -72,6 +72,18 @@ export async function writeApplicationFiles(
   apps: AppEntry[],
   logger: Logger,
 ): Promise<AppEntry[]> {
+  // make sure we don't write out files for duplicate directories
+  const directories = apps.map((app) =>
+    path.resolve(path.join(baseDirectory, app.rootDirectory)),
+  );
+
+  const uniqueDirectories = Array.from(new Set(directories));
+  if (directories.length !== uniqueDirectories.length) {
+    throw new Error(
+      'Duplicate directories found in app entries, cannot write files',
+    );
+  }
+
   const modifiedApps = await Promise.all(
     apps.map(async (app) => {
       const wasModified = await writeAppFiles(baseDirectory, app, logger);

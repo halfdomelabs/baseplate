@@ -1,0 +1,80 @@
+import { IconElement } from '@halfdomelabs/ui-components';
+import React from 'react';
+import { HiCollection, HiDatabase } from 'react-icons/hi';
+import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
+import { Link, NavLink } from 'react-router-dom';
+
+import { useFeatureFlag } from '@src/hooks/useFeatureFlag';
+
+function SidebarNavigationIcon({
+  icon: Icon,
+  to,
+  label,
+  end,
+}: {
+  to: string;
+  icon: IconElement;
+  label: React.ReactNode;
+  end?: boolean;
+}): JSX.Element {
+  return (
+    <NavLink
+      to={to}
+      className={`flex size-14 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`}
+      end={end}
+    >
+      <div className="flex flex-col items-center space-y-1">
+        <Icon className="size-5" />
+        <div className="text-xs font-medium">{label}</div>
+      </div>
+    </NavLink>
+  );
+}
+
+export function AppDesktopSidebar(): JSX.Element {
+  const isPluginEnabled = useFeatureFlag('plugins');
+  return (
+    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
+      <div className="space-y-6">
+        <Link
+          to="/"
+          className="group flex shrink-0 items-center justify-center"
+        >
+          <img
+            src="/images/logo.png"
+            className="size-8 transition-all group-hover:scale-110"
+            alt="Baseplate Home"
+          />
+        </Link>
+        <div className="space-y-3">
+          <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
+          <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
+          <SidebarNavigationIcon
+            to="/models"
+            icon={HiDatabase}
+            label="Models"
+          />
+          <SidebarNavigationIcon
+            to="/features"
+            icon={HiCollection}
+            label="Features"
+          />
+          {isPluginEnabled && (
+            <SidebarNavigationIcon
+              to="/plugins"
+              icon={MdWidgets}
+              label="Plugins"
+            />
+          )}
+        </div>
+      </div>
+      <div className="space-y-3">
+        <SidebarNavigationIcon
+          to="/settings"
+          icon={MdOutlineSettings}
+          label="Settings"
+        />
+      </div>
+    </nav>
+  );
+}

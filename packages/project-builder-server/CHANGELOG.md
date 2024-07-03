@@ -1,5 +1,24 @@
 # @halfdomelabs/project-builder-server
 
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies [6f7b930]
+  - @halfdomelabs/project-builder-lib@0.7.6
+
+## 0.3.6
+
+### Patch Changes
+
+- 3b720a2: Prevent projects from being generated for the same folder
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+- Updated dependencies [082dfc3]
+- Updated dependencies [082dfc3]
+  - @halfdomelabs/project-builder-lib@0.7.5
+  - @halfdomelabs/sync@0.7.3
+
 ## 0.3.5
 
 ### Patch Changes

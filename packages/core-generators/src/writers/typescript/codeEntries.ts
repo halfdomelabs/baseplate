@@ -410,7 +410,7 @@ export const TypescriptCodeUtils = {
     const mergedExpression = keys
       .filter((key) => obj[key] != null)
       .map((key) => {
-        const value = obj[key] || '';
+        const value = obj[key] ?? '';
         const content = typeof value === 'string' ? value : value.content;
         if (key.startsWith('...')) {
           return `...${content}`;

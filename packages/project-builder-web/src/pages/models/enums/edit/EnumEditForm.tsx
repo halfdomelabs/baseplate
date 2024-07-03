@@ -1,40 +1,24 @@
 import {
   EnumConfig,
-  enumSchema,
   modelEnumValueEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
-import { useFieldArray } from 'react-hook-form';
+import { ComboboxField } from '@halfdomelabs/ui-components';
+import { UseFormReturn, useFieldArray } from 'react-hook-form';
 
-import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { hasDirtyFields } from '@src/utils/form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
 interface Props {
-  config: EnumConfig | undefined;
+  form: UseFormReturn<EnumConfig>;
   onSubmit: (config: EnumConfig) => void;
 }
 
-function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
-  const { control, handleSubmit, reset, watch, setValue, formState } =
-    useResettableForm({
-      defaultValues: config,
-      resolver: zodResolver(enumSchema),
-    });
-
-  useBlockDirtyFormNavigate(formState);
-
-  useEffect(() => {
-    reset(config);
-  }, [config, reset]);
-
+function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
   const { parsedProject } = useProjectDefinition();
+  const { control, handleSubmit, setValue, formState, watch } = form;
 
   const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
     (f) => ({
@@ -61,11 +45,12 @@ function EnumEditForm({ config, onSubmit }: Props): JSX.Element {
         control={control}
         name="name"
       />
-      <ReactSelectInput.LabelledController
+      <ComboboxField.Controller
         label="Feature"
         control={control}
         name="feature"
         options={featureOptions}
+        placeholder="Select a feature"
       />
       <CheckedInput.LabelledController
         label="Is Exposed?"

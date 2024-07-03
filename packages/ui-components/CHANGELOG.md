@@ -1,5 +1,17 @@
 # @halfdomelabs/ui-components
 
+## 0.4.8
+
+### Patch Changes
+
+- 6f7b930: Fix usage of root primitives in compound components
+
+## 0.4.7
+
+### Patch Changes
+
+- 925f887: Small typography changes to heading 1 and small-text line height
+
 ## 0.4.6
 
 ### Patch Changes

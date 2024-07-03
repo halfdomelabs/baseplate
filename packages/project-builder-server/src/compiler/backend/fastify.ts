@@ -46,6 +46,11 @@ export function buildFastify(
       server: {
         defaultPort: projectDefinition.portOffset + 1,
       },
+      $readme: {
+        generator: '@halfdomelabs/fastify/core/readme',
+        peerProvider: true,
+        projectName: `${projectDefinition.name} backend`,
+      },
       $sentry: {
         generator: '@halfdomelabs/fastify/core/fastify-sentry',
         peerProvider: true,

@@ -309,7 +309,7 @@ export function writeImportDeclarations(
   options?: ResolveModuleOptions,
 ): void {
   // map out imports
-  const importMap = buildImportMap(options?.importMappers || []);
+  const importMap = buildImportMap(options?.importMappers ?? []);
   const mappedImports = imports.map((importDeclaration) =>
     resolveImportFromImportMap(importDeclaration, importMap),
   );

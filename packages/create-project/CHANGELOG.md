@@ -1,5 +1,23 @@
 # @halfdomelabs/create-project
 
+## 0.2.1
+
+### Patch Changes
+
+- 5fb3447: Fix up PNPM configuration for create project
+
+## 0.2.0
+
+### Minor Changes
+
+- 3f95dc6: Upgrade PNPM to 9.1.2
+
+### Patch Changes
+
+- 082dfc3: Use package-up instead of pkg-up
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+
 ## 0.1.5
 
 ### Patch Changes

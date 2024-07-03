@@ -1,5 +1,32 @@
 # @halfdomelabs/project-builder-web
 
+## 0.10.0
+
+### Minor Changes
+
+- 6f7b930: Implement new Baseplate design with sidebar instead of topbar
+
+### Patch Changes
+
+- b4f0584: Fix a bug with the unsaved changes dialog on the new enum form.
+- Updated dependencies [6f7b930]
+- Updated dependencies [6f7b930]
+  - @halfdomelabs/project-builder-lib@0.7.6
+  - @halfdomelabs/ui-components@0.4.8
+
+## 0.9.3
+
+### Patch Changes
+
+- 8819162: Fixed a bug that caused a navigation blocker modal to appear when saving a model.
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+- Updated dependencies [082dfc3]
+- Updated dependencies [082dfc3]
+- Updated dependencies [925f887]
+  - @halfdomelabs/project-builder-lib@0.7.5
+  - @halfdomelabs/ui-components@0.4.7
+
 ## 0.9.2
 
 ### Patch Changes

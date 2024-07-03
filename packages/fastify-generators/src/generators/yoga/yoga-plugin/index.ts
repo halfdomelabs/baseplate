@@ -154,7 +154,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           graphql: '16.8.1',
           '@envelop/core': '5.0.0',
           '@envelop/disable-introspection': '6.0.0',
-          'graphql-yoga': '5.0.0',
+          'graphql-yoga': '5.3.1',
         });
 
         node.addDevPackages({
@@ -281,7 +281,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           node: nodeProvider,
           typescript: typescriptProvider,
           fastifyRedis: fastifyRedisProvider,
-          authServiceImport: authServiceImportProvider,
+          authServiceImport: authServiceImportProvider.dependency().optional(),
           errorLoggerService: errorHandlerServiceProvider,
           loggerService: loggerServiceProvider,
           requestServiceContext: requestServiceContextProvider,
@@ -319,18 +319,23 @@ const YogaPluginGenerator = createGeneratorWithTasks({
 
               const websocketFile = typescript.createTemplate(
                 {
-                  AUTH_INFO_CREATOR: authServiceImport.getAuthInfoCreator(
-                    TypescriptCodeUtils.createExpression('ctx.extra.request'),
-                    TypescriptCodeUtils.createExpression(
-                      `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`,
-                    ),
-                  ),
+                  AUTH_INFO_CREATOR: authServiceImport
+                    ? authServiceImport.getAuthInfoCreator(
+                        TypescriptCodeUtils.createExpression(
+                          'ctx.extra.request',
+                        ),
+                        TypescriptCodeUtils.createExpression(
+                          `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`,
+                        ),
+                      )
+                    : { type: 'code-expression' },
                 },
                 {
                   importMappers: [
                     errorLoggerService,
                     loggerService,
                     requestServiceContext,
+                    authServiceImport,
                   ],
                 },
               );
@@ -339,6 +344,11 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                 websocketFile.renderToAction(
                   'plugins/graphql/websocket.ts',
                   websocketPath,
+                  {
+                    preprocessWithEta: {
+                      data: { authEnabled: !!authServiceImport },
+                    },
+                  },
                 ),
               );
             },

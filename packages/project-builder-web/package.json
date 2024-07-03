@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-web",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "Web interface for constructing project builder JSON",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
@@ -54,6 +54,7 @@
     "culori": "^3.2.0",
     "immer": "10.0.3",
     "inflection": "2.0.1",
+    "javascript-time-ago": "^2.5.10",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.0",
     "react": "18.2.0",
@@ -65,6 +66,7 @@
     "react-popper": "^2.3.0",
     "react-router-dom": "6.22.3",
     "react-select": "5.8.0",
+    "react-time-ago": "^7.3.3",
     "semver": "^7.5.4",
     "sort-keys": "^5.0.0",
     "use-local-storage-state": "^18.3.2",

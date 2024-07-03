@@ -20,7 +20,9 @@ import { cn } from '@src/utils';
  * https://ui.shadcn.com/docs/components/select
  */
 
-const SelectRoot = SelectPrimitive.Root;
+const SelectRoot = (props: SelectPrimitive.SelectProps): JSX.Element => (
+  <SelectPrimitive.Root {...props} />
+);
 
 const SelectGroup = SelectPrimitive.Group;
 
@@ -41,7 +43,7 @@ const SelectTrigger = React.forwardRef<
   >
     {children}
     <SelectPrimitive.Icon asChild className="text-foreground">
-      <RxCaretSort className="h-4 w-4 opacity-50" />
+      <RxCaretSort className="size-4 opacity-50" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -129,7 +131,7 @@ const SelectItem = React.forwardRef<
   >
     <span className={selectCheckVariants()}>
       <SelectPrimitive.ItemIndicator>
-        <RxCheck className="h-4 w-4" />
+        <RxCheck className="size-4" />
       </SelectPrimitive.ItemIndicator>
     </span>
     <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

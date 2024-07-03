@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.6
+
+### Patch Changes
+
+- 3f95dc6: Upgrade prettier to 3.2.5
+
 ## 0.5.5
 
 ### Patch Changes

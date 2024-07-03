@@ -1,0 +1,62 @@
+import { Button, Sheet } from '@halfdomelabs/ui-components';
+import clsx from 'clsx';
+import { MdMenu } from 'react-icons/md';
+import { Outlet } from 'react-router-dom';
+
+import { AppBreadcrumbs } from './AppBreadcrumbs';
+import { AppDesktopSidebar } from './AppDesktopSidebar';
+import { AppMobileSidebar } from './AppMobileSidebar';
+import ProjectSyncModal from '../components/ProjectSyncModal';
+import { ProjectSyncStatus } from '../components/ProjectSyncStatus';
+
+interface AppLayoutProps {
+  className?: string;
+}
+
+/**
+ * App layout with sidebar based on ShadnCn blocks
+ *
+ * See https://ui.shadcn.com/blocks
+ */
+export function AppLayout({ className }: AppLayoutProps): JSX.Element {
+  return (
+    <div
+      className={clsx('flex h-screen w-full flex-col bg-background', className)}
+      style={
+        {
+          '--sidebar-width': '70px',
+          '--topbar-height': '60px',
+        } as React.CSSProperties
+      }
+    >
+      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[var(--sidebar-width)] flex-col border-r bg-background sm:flex">
+        <AppDesktopSidebar />
+      </aside>
+      <div className="flex flex-col pt-[var(--topbar-height)] sm:pl-[var(--sidebar-width)]">
+        <header className="fixed right-0 top-0 z-30 flex h-[var(--topbar-height)] items-center gap-4 border-b bg-background px-4 sm:left-[var(--sidebar-width)] sm:px-6">
+          <Sheet>
+            <Sheet.Trigger asChild>
+              <Button size="icon" variant="outline" className="sm:hidden">
+                <MdMenu className="size-5" />
+                <span className="sr-only">Toggle Menu</span>
+              </Button>
+            </Sheet.Trigger>
+            <Sheet.Content side="left" className="max-w-xs">
+              <AppMobileSidebar />
+            </Sheet.Content>
+          </Sheet>
+          <div className="flex w-full items-center justify-between py-4">
+            <AppBreadcrumbs />
+            <div className="flex items-center gap-4">
+              <ProjectSyncStatus />
+              <ProjectSyncModal />
+            </div>
+          </div>
+        </header>
+        <main className="h-[calc(100vh-var(--topbar-height)-1px)] overflow-auto">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}

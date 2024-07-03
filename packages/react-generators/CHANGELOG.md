@@ -1,5 +1,20 @@
 # @halfdomelabs/react-generators
 
+## 0.7.7
+
+### Patch Changes
+
+- 082dfc3: Upgrade Zod to 3.23.8
+- 082dfc3: Lay groundwork for initial plugin system with plugin discovery [in development]
+- Updated dependencies [3b720a2]
+- Updated dependencies [082dfc3]
+- Updated dependencies [082dfc3]
+- Updated dependencies [eda7e94]
+- Updated dependencies [3f95dc6]
+- Updated dependencies [3f95dc6]
+  - @halfdomelabs/core-generators@0.8.0
+  - @halfdomelabs/sync@0.7.3
+
 ## 0.7.6
 
 ### Patch Changes
