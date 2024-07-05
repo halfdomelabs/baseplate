@@ -16,7 +16,7 @@ import {
   zPluginWrapper,
 } from '@src/plugins/index.js';
 import { ZodRefPayload, ZodRefWrapper } from '@src/references/ref-builder.js';
-import { modelTransformerSpec } from '@src/schema/index.js';
+import { adminCrudInputSpec, modelTransformerSpec } from '@src/schema/index.js';
 import { basePluginSchema } from '@src/schema/plugins/index.js';
 import {
   ProjectDefinition,
@@ -26,7 +26,7 @@ import {
 const COMMON_SPEC_IMPLEMENTATIONS: (
   | InitializedPluginSpec
   | PluginSpecWithInitializer
-)[] = [pluginConfigSpec, modelTransformerSpec];
+)[] = [pluginConfigSpec, modelTransformerSpec, adminCrudInputSpec];
 
 /**
  * Creates a plugin implementation store from the project definition and plugin store,

@@ -1,10 +1,8 @@
 import { z } from 'zod';
 
 import { baseAdminSectionValidators } from './base.js';
-import {
-  adminCrudEmbeddedFormEntityType,
-  baseAdminCrudInputSchema,
-} from './crud-form/types.js';
+import { adminCrudInputSchema } from './crud-form/admin-crud-input.js';
+import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
 import { zRef, zRefBuilder } from '@src/references/index.js';
 import {
   modelEntityType,
@@ -77,7 +75,7 @@ export const adminCrudEmbeddedObjectSchema = z.object({
   includeIdField: z.boolean().optional(),
   type: z.literal('object'),
   form: z.object({
-    fields: z.array(baseAdminCrudInputSchema),
+    fields: z.array(adminCrudInputSchema),
   }),
 });
 
@@ -96,7 +94,7 @@ export const adminCrudEmbeddedListSchema = z.object({
     columns: z.array(adminCrudTableColumnSchema),
   }),
   form: z.object({
-    fields: z.array(baseAdminCrudInputSchema),
+    fields: z.array(adminCrudInputSchema),
   }),
 });
 
@@ -133,7 +131,7 @@ export const adminCrudSectionSchema = zRefBuilder(
       columns: z.array(adminCrudTableColumnSchema),
     }),
     form: z.object({
-      fields: z.array(baseAdminCrudInputSchema),
+      fields: z.array(adminCrudInputSchema),
     }),
     embeddedForms: z.array(adminCrudEmbeddedFormSchema).optional(),
   }),

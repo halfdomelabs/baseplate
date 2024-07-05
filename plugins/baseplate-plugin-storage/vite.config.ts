@@ -5,9 +5,8 @@ import react from '@vitejs/plugin-react';
 import { UserConfig, defineConfig } from 'vite';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
-const viteTargets = await getModuleFederationTargets(__dirname);
-
-export default defineConfig((): UserConfig => {
+export default defineConfig(async (): Promise<UserConfig> => {
+  const viteTargets = await getModuleFederationTargets(__dirname);
   return {
     build: {
       outDir: 'dist/web',

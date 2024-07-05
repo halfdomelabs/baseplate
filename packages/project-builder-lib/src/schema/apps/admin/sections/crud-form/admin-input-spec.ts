@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
-import { BUILT_IN_ADMIN_CRUD_INPUTS } from './built-in-crud-admin-inputs.js';
+import { BUILT_IN_ADMIN_CRUD_INPUTS } from './built-in-input.js';
 import { AdminCrudInputType } from './types.js';
 import {
   PluginSpecImplementation,
   createPluginSpec,
 } from '@src/plugins/spec/types.js';
-import { ZodRef } from '@src/references/ref-builder.js';
 
 /**
  * Spec for registering additional model input types
@@ -33,12 +32,6 @@ export function createAdminCrudInputImplementation(): AdminCrudInputSpec {
       if (adminCrudInputs[input.name]) {
         throw new Error(
           `Admin CRUD input with name ${input.name} is already registered`,
-        );
-      }
-      // check schema is a zEnt
-      if (!(input.schema instanceof ZodRef)) {
-        throw new Error(
-          `Admin CRUD input schema for ${input.name} is not a zEnt`,
         );
       }
       adminCrudInputs[input.name] = input as unknown as AdminCrudInputType;

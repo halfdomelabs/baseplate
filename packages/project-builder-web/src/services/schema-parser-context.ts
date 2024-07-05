@@ -3,7 +3,10 @@ import {
   SchemaParserContext,
   webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
-import { modelTransformerWebSpec } from '@halfdomelabs/project-builder-lib/web';
+import {
+  adminCrudInputWebSpec,
+  modelTransformerWebSpec,
+} from '@halfdomelabs/project-builder-lib/web';
 
 import { loadPluginModule } from './module-federation';
 
@@ -22,7 +25,11 @@ export async function createWebSchemaParserContext(
           };
         }),
       ),
-      builtinSpecImplementations: [webConfigSpec, modelTransformerWebSpec],
+      builtinSpecImplementations: [
+        webConfigSpec,
+        modelTransformerWebSpec,
+        adminCrudInputWebSpec,
+      ],
     },
   };
 }

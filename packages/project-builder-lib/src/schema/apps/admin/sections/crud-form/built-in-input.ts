@@ -10,7 +10,6 @@ import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
-  modelTransformerEntityType,
 } from '@src/schema/models/index.js';
 
 export const adminCrudTextInputSchema = z.object({
