@@ -37,13 +37,10 @@ function FieldForm({
   foreignRelationOptions: { label: string; value: string }[];
   embeddedFormOptions: { label: string; value: string }[];
 }): JSX.Element {
-  const fieldTypeOptions = adminCrudInputTypes
-    .map((t) => ({
-      label: t,
-      value: t,
-    }))
-    // TODO: Enable file type as plugin
-    .filter((t) => t.value !== 'file');
+  const fieldTypeOptions = adminCrudInputTypes.map((t) => ({
+    label: t,
+    value: t,
+  }));
   const type = useWatch({
     control,
     name: `form.fields.${idx}.type`,

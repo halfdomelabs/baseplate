@@ -2,6 +2,7 @@ import {
   PluginMetadataWithPaths,
   PluginStore,
   SchemaParserContext,
+  adminCrudInputCompilerSpec,
   modelTransformerCompilerSpec,
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
@@ -9,7 +10,10 @@ import { PluginPlatformModule } from 'node_modules/@halfdomelabs/project-builder
 
 import { discoverPlugins } from './plugin-discovery.js';
 
-const NODE_SPEC_IMPLEMENTATIONS = [modelTransformerCompilerSpec];
+const NODE_SPEC_IMPLEMENTATIONS = [
+  modelTransformerCompilerSpec,
+  adminCrudInputCompilerSpec,
+];
 
 export async function createNodePluginStore(
   plugins: PluginMetadataWithPaths[],
