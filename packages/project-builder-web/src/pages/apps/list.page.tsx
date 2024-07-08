@@ -5,7 +5,6 @@ import _ from 'lodash';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
-
 export function AppsListPage(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
 

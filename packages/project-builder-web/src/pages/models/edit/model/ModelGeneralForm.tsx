@@ -4,7 +4,6 @@ import { ComboboxField, InputField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 
-
 interface ModelGeneralFormProps {
   className?: string;
   control: Control<ModelConfig>;

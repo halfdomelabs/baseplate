@@ -7,7 +7,6 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { ComboboxField } from '@halfdomelabs/ui-components';
 import { Control, useController } from 'react-hook-form';
 
-
 interface ModelFieldTypeInputProps {
   control: Control<ModelConfig>;
   idx: number;

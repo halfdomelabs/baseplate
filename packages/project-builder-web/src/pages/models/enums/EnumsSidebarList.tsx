@@ -7,7 +7,6 @@ import { useState } from 'react';
 import { MdClear } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
-
 interface EnumsSidebarListProps {
   className?: string;
 }

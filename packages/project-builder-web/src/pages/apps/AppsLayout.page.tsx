@@ -8,7 +8,6 @@ import {
 import _ from 'lodash';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
-
 function AppsLayout(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
 

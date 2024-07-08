@@ -3,7 +3,6 @@ import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 
-
 function ModelListPage(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
