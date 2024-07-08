@@ -23,7 +23,8 @@
     "run:morpher": "tsx scripts/run-morpher.ts",
     "run:script": "tsx",
     "transform": "jscodeshift --extensions=ts --parser=ts -t ",
-    "transform:dry": "jscodeshift  --extensions=ts --parser=ts -d -p -t "
+    "transform:dry": "jscodeshift  --extensions=ts --parser=ts -d -p -t ",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "ast-types": "^0.14.2",

@@ -18,7 +18,8 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "refactor": "cd ../code-morph && pnpm run:morpher",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "browserslist": {
     "production": [

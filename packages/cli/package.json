@@ -24,7 +24,8 @@
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx ./src"
+    "start": "tsx ./src",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",

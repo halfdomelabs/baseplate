@@ -15,6 +15,7 @@
     "release": "pnpm build && pnpm changeset publish",
     "serve": "nx run @halfdomelabs/project-builder-cli:start serve",
     "test": "nx affected --target=test",
+    "typecheck": "nx affected --target=typecheck",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
     "watch": "nx run-many --target=watch --parallel=100 --output-style=stream"

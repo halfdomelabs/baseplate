@@ -31,6 +31,7 @@
     "prettier:write": "prettier -w .",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w"

@@ -5,7 +5,7 @@ import {
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Control } from 'react-hook-form';
+import { Control, UseFormReturn } from 'react-hook-form';
 
 import CrudFormFieldsForm, { AdminCrudFormConfig } from './CrudFormFieldsForm';
 import CrudTableColumnsForm, {
@@ -79,11 +79,11 @@ function AdminCrudEmbeddedForm({
   embeddedFormOptions,
 }: Props): JSX.Element {
   const { parsedProject } = useProjectDefinition();
-  const { handleSubmit, control, watch } =
-    useResettableForm<AdminCrudEmbeddedFormConfig>({
-      resolver: zodResolver(adminCrudEmbeddedFormSchema),
-      defaultValues: initialData,
-    });
+  const formProps = useResettableForm<AdminCrudEmbeddedFormConfig>({
+    resolver: zodResolver(adminCrudEmbeddedFormSchema),
+    defaultValues: initialData,
+  });
+  const { handleSubmit, control, watch } = formProps;
   const { status, setError } = useStatus();
 
   const modelOptions = parsedProject.getModels().map((model) => ({
@@ -134,7 +134,7 @@ function AdminCrudEmbeddedForm({
       )}
       <h2>Form</h2>
       <CrudFormFieldsForm
-        control={control as unknown as Control<AdminCrudFormConfig>}
+        formProps={formProps as unknown as UseFormReturn<AdminCrudFormConfig>}
         embeddedFormOptions={embeddedFormOptions}
       />
       <Button type="submit">Save</Button>
