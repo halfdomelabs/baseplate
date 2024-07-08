@@ -66,7 +66,7 @@ export function StorageConfig({
           <ComboboxField.Controller
             label="File Model"
             options={modelOptions}
-            name="fileModel"
+            name="fileModelRef"
             control={control}
             className="flex-1"
             description="The model to use for file storage."
@@ -74,7 +74,7 @@ export function StorageConfig({
           <ComboboxField.Controller
             label="Storage Feature Path"
             options={featureOptions}
-            name="featurePath"
+            name="featureRef"
             control={control}
             className="flex-1"
             description="The feature to use for storage functionality."

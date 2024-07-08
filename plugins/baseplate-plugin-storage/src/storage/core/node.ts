@@ -27,12 +27,14 @@ export default createPlatformPluginExport({
         );
         const featurePath = FeatureUtils.getFeatureByIdOrThrow(
           projectDefinition,
-          storage.featurePath,
+          storage.featureRef,
         ).name;
 
         // add feature providers
-        const fileModelName = definitionContainer.nameFromId(storage.fileModel);
-        appCompiler.addChildrenToFeature(storage.featurePath, {
+        const fileModelName = definitionContainer.nameFromId(
+          storage.fileModelRef,
+        );
+        appCompiler.addChildrenToFeature(storage.featureRef, {
           $storage: {
             generator: '@halfdomelabs/fastify/storage/storage-module',
             fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${fileModelName}ObjectType.$objectType`,
@@ -79,7 +81,7 @@ export default createPlatformPluginExport({
           $uploadComponents: {
             generator: '@halfdomelabs/react/storage/upload-components',
             peerProvider: true,
-            fileModelName: definitionContainer.nameFromId(storage.fileModel),
+            fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
         });
       },
@@ -98,7 +100,7 @@ export default createPlatformPluginExport({
           $uploadComponents: {
             generator: '@halfdomelabs/react/storage/upload-components',
             peerProvider: true,
-            fileModelName: definitionContainer.nameFromId(storage.fileModel),
+            fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
         });
       },

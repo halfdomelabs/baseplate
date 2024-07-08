@@ -1,4 +1,3 @@
-import { StorageConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -9,11 +8,12 @@ import {
 } from '@halfdomelabs/ui-components';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
+import { StoragePluginDefinition } from '../schema/plugin-definition';
 import { notEmpty } from '@src/utils/array';
 
 interface Props {
   className?: string;
-  control: Control<StorageConfig>;
+  control: Control<StoragePluginDefinition>;
 }
 
 function CategoryEditorForm({ className, control }: Props): JSX.Element {
@@ -24,7 +24,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
 
   const { parsedProject } = useProjectDefinition();
 
-  const fileModel = useWatch({ control, name: 'fileModel' });
+  const fileModel = useWatch({ control, name: 'fileModelRef' });
   const adapters = useWatch({ control, name: 's3Adapters' });
 
   const adapterOptions = (adapters ?? []).map((adapter) => ({

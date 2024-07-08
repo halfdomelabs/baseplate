@@ -105,12 +105,18 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
           return;
         }
         draftConfig.plugins = draftConfig.plugins ?? [];
+        const { featurePath, fileModel, ...storageConfig } =
+          draftConfig.storage;
         draftConfig.plugins.push({
           id: 'halfdomelabs_baseplate-plugin-storage_storage',
           name: 'storage',
           packageName: '@halfdomelabs/baseplate-plugin-storage',
           version: '0.1.0',
-          config: draftConfig.storage,
+          config: {
+            fileModelRef: fileModel,
+            featureRef: featurePath,
+            ...storageConfig,
+          },
         });
         draftConfig.storage = undefined;
       })(config);
