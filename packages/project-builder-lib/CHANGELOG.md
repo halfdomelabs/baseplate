@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.7.6
+
+### Patch Changes
+
+- 6f7b930: Add safeNameFromId to project definition container
+
 ## 0.7.5
 
 ### Patch Changes

@@ -30,7 +30,7 @@ async function runMain(): Promise<void> {
 
   const generatorSetupConfig = await getGeneratorSetupConfig();
 
-  program.version(version ?? 'unknown');
+  program.version(version ?? 'unknown', '-v, --version');
 
   program
     .command('generate [directory]')

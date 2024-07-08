@@ -21,7 +21,7 @@ import {
   ErrorableLoader,
 } from '@halfdomelabs/ui-components';
 import { produce } from 'immer';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import semver from 'semver';
 import { ZodError } from 'zod';
 
@@ -73,12 +73,12 @@ export function ProjectDefinitionGate({
     [refreshVersion],
   );
 
-  const savedConfigRef = useRef<{
+  const [savedConfig, setSavedConfig] = useState<{
     project: ParsedProjectDefinition;
     definitionContainer: ProjectDefinitionContainer;
     externalChangeCounter: number;
     projectId: string;
-  }>();
+  } | null>(null);
 
   const loadData = useMemo(():
     | {
@@ -92,13 +92,13 @@ export function ProjectDefinitionGate({
       return { status: 'loading' };
     }
     if (
-      externalChangeCounter === savedConfigRef.current?.externalChangeCounter &&
-      projectId === savedConfigRef.current?.projectId
+      externalChangeCounter === savedConfig?.externalChangeCounter &&
+      projectId === savedConfig?.projectId
     ) {
       return {
         status: 'loaded',
-        parsedProject: savedConfigRef.current.project,
-        definitionContainer: savedConfigRef.current.definitionContainer,
+        parsedProject: savedConfig.project,
+        definitionContainer: savedConfig.definitionContainer,
       };
     }
     try {
@@ -122,12 +122,12 @@ export function ProjectDefinitionGate({
       const project = new ParsedProjectDefinition(definitionContainer);
       // only save config if project is initialized
       if (projectDefinition.isInitialized) {
-        savedConfigRef.current = {
+        setSavedConfig({
           project,
           externalChangeCounter,
           projectId,
           definitionContainer,
-        };
+        });
       }
       return { status: 'loaded', parsedProject: project, definitionContainer };
     } catch (err) {
@@ -151,6 +151,7 @@ export function ProjectDefinitionGate({
       return { status: 'error', configError: err };
     }
   }, [
+    savedConfig,
     remoteConfig,
     externalChangeCounter,
     projectId,
@@ -218,12 +219,12 @@ export function ProjectDefinitionGate({
       saveRemoteConfig(
         prettyStableStringify(definitionContainer.toSerializedConfig()),
       );
-      savedConfigRef.current = {
+      setSavedConfig({
         project: parsedConfig,
         externalChangeCounter,
         projectId,
         definitionContainer,
-      };
+      });
     }
 
     const pluginContainer = createPluginImplementationStore(
@@ -254,6 +255,7 @@ export function ProjectDefinitionGate({
 
   const compositeError =
     error ?? (loadData.status === 'error' ? loadData.configError : undefined);
+
   if (!loaded || compositeError) {
     return (
       <ErrorableLoader

@@ -1,5 +1,19 @@
 # @halfdomelabs/project-builder-web
 
+## 0.10.0
+
+### Minor Changes
+
+- 6f7b930: Implement new Baseplate design with sidebar instead of topbar
+
+### Patch Changes
+
+- b4f0584: Fix a bug with the unsaved changes dialog on the new enum form.
+- Updated dependencies [6f7b930]
+- Updated dependencies [6f7b930]
+  - @halfdomelabs/project-builder-lib@0.7.6
+  - @halfdomelabs/ui-components@0.4.8
+
 ## 0.9.3
 
 ### Patch Changes
