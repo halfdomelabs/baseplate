@@ -3,9 +3,11 @@ import {
   PluginStore,
   SchemaParserContext,
   adminCrudInputCompilerSpec,
+  appCompilerSpec,
   modelTransformerCompilerSpec,
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { PluginPlatformModule } from 'node_modules/@halfdomelabs/project-builder-lib/dist/plugins/imports/types.js';
 
 import { discoverPlugins } from './plugin-discovery.js';
@@ -13,6 +15,7 @@ import { discoverPlugins } from './plugin-discovery.js';
 const NODE_SPEC_IMPLEMENTATIONS = [
   modelTransformerCompilerSpec,
   adminCrudInputCompilerSpec,
+  appCompilerSpec,
 ];
 
 export async function createNodePluginStore(
@@ -30,7 +33,7 @@ export async function createNodePluginStore(
             const unwrappedModule = 'default' in mod ? mod.default : mod;
 
             return {
-              key: modulePath,
+              key: path.relative(plugin.pluginDirectory, modulePath),
               module: unwrappedModule,
             };
           }),

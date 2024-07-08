@@ -8,6 +8,10 @@ import {
   ProjectDefinitionContainer,
   ParsedProjectDefinition,
   PluginImplementationStore,
+  appCompilerSpec,
+  AppEntryType,
+  createAppCompiler,
+  AppCompiler,
 } from '@halfdomelabs/project-builder-lib';
 
 import { stripObject } from '../utils/strip.js';
@@ -19,20 +23,41 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
 
   public pluginStore: PluginImplementationStore;
 
+  public appCompiler: AppCompiler;
+
   protected files: FileEntry[] = [];
 
   constructor(
     public definitionContainer: ProjectDefinitionContainer,
     public appConfig: AppConfig,
+    public appConfigType: AppEntryType<AppConfig>,
   ) {
     this.projectDefinition = definitionContainer.definition;
     this.parsedProject = new ParsedProjectDefinition(definitionContainer);
     this.addDescriptor = this.addDescriptor.bind(this);
     this.toProjectEntry = this.toProjectEntry.bind(this);
     this.pluginStore = definitionContainer.pluginStore;
+
+    // initialize app compiler
+    this.appCompiler = createAppCompiler();
+    const appCompilerStore = this.pluginStore.getPluginSpec(appCompilerSpec);
+
+    const pluginCompilers = appCompilerStore.getAppCompilers(appConfigType);
+    pluginCompilers.forEach((compiler) => {
+      compiler.compile({
+        appDefinition: appConfig,
+        appCompiler: this.appCompiler,
+        projectDefinition: this.projectDefinition,
+        definitionContainer: this.definitionContainer,
+      });
+    });
   }
 
   addDescriptor(path: string, jsonContent: unknown): this {
+    // check for existing paths
+    if (this.files.find((f) => f.path === `baseplate/${path}`)) {
+      throw new Error(`File already exists at path ${path}`);
+    }
     this.files.push({
       path: `baseplate/${path}`,
       jsonContent: stripObject(jsonContent),

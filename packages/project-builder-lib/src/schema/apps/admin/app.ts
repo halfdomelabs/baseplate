@@ -4,6 +4,7 @@ import { adminCrudSectionSchema } from './sections/crud.js';
 import { AdminCrudSectionConfig } from './sections/index.js';
 import { adminSectionEntityType } from './sections/types.js';
 import { baseAppValidators } from '../base.js';
+import { createAppEntryType } from '../types.js';
 import { zRef, zRefBuilder } from '@src/references/index.js';
 import { authRoleEntityType } from '@src/schema/auth/types.js';
 
@@ -35,3 +36,5 @@ export const adminAppSchema = z.object({
 });
 
 export type AdminAppConfig = z.infer<typeof adminAppSchema>;
+
+export const adminAppEntryType = createAppEntryType<AdminAppConfig>('admin');

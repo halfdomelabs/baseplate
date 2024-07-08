@@ -1,9 +1,9 @@
 import { ParserPlugin, PluginMergeModelFieldInput } from '../types.js';
-import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
+import { ModelUtils } from '@src/definition/index.js';
 
 export const StoragePlugin: ParserPlugin = {
   name: 'StoragePlugin',
-  run(projectDefinition, hooks, definitionContainer) {
+  run(projectDefinition, hooks) {
     const { storage, auth } = projectDefinition;
     if (!storage) {
       return;
@@ -11,33 +11,6 @@ export const StoragePlugin: ParserPlugin = {
     if (!auth) {
       throw new Error(`Auth required for storage to be enabled`);
     }
-
-    // const transformerRelationNames = models.flatMap(
-    //   (m) =>
-    //     m.service?.transformers
-    //       ?.map((t) => {
-    //         if (t.type !== 'file') {
-    //           return undefined;
-    //         }
-    //         // look up relation
-    //         const relation = m.model.relations?.find(
-    //           (r) => r.id === t.fileRelationRef,
-    //         );
-    //         // shouldn't happen as checked elsewhere
-    //         if (!relation)
-    //           throw new Error(`Relation not found for ${t.fileRelationRef}`);
-    //         return relation.foreignId;
-    //       })
-    //       .filter(notEmpty) ?? [],
-    // );
-
-    // const invalidTransformer = transformerRelationNames.find(
-    //   (name) => !storage.categories.find((c) => c.usedByRelation === name),
-    // );
-
-    // if (invalidTransformer) {
-    //   throw new Error(`No storage category found for ${invalidTransformer}`);
-    // }
 
     // annotate file model
     const fileFields: PluginMergeModelFieldInput[] = [
@@ -126,35 +99,5 @@ export const StoragePlugin: ParserPlugin = {
         ],
       },
     });
-
-    const featurePath = FeatureUtils.getFeatureByIdOrThrow(
-      projectDefinition,
-      storage.featurePath,
-    ).name;
-
-    // add feature providers
-    const fileModelName = definitionContainer.nameFromId(storage.fileModel);
-    hooks.addFeatureChildren(storage.featurePath, {
-      $storage: {
-        generator: '@halfdomelabs/fastify/storage/storage-module',
-        fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${fileModelName}ObjectType.$objectType`,
-        fileModel: fileModelName,
-        s3Adapters: storage.s3Adapters.map((a) => ({
-          name: a.name,
-          bucketConfigVar: a.bucketConfigVar,
-          hostedUrlConfigVar: a.hostedUrlConfigVar,
-        })),
-        categories: storage.categories.map((c) => ({
-          ...c,
-          usedByRelation: definitionContainer.nameFromId(c.usedByRelation),
-          defaultAdapter: definitionContainer.nameFromId(c.defaultAdapter),
-          uploadRoles: c.uploadRoles.map((r) =>
-            definitionContainer.nameFromId(r),
-          ),
-        })),
-      },
-    });
-
-    hooks.addGlobalHoistedProviders('storage-module');
   },
 };

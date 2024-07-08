@@ -11,7 +11,7 @@ export function buildFastify(
   builder: BackendAppEntryBuilder,
   app: BackendAppConfig,
 ): unknown {
-  const { projectDefinition, parsedProject } = builder;
+  const { projectDefinition, parsedProject, appCompiler } = builder;
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
 
   // add graphql scalars
@@ -126,6 +126,7 @@ export function buildFastify(
             peerProvider: true,
           },
       ...parsedProject.fastifyChildren,
+      ...appCompiler.getRootChildren(),
     },
   };
 }
