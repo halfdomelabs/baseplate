@@ -1,7 +1,4 @@
-import {
-  PluginMetadataWithPaths,
-  ProjectDefinition,
-} from '@halfdomelabs/project-builder-lib';
+import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
 import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 
 import { client } from './api';
@@ -52,7 +49,7 @@ export async function downloadProjectDefinition(
   if (IS_PREVIEW) {
     return {
       lastModifiedAt: new Date().toISOString(),
-      contents: JSON.stringify(PREVIEW_APP as ProjectDefinition),
+      contents: JSON.stringify(PREVIEW_APP),
     };
   }
   const response = await client.projects.get.query({ id });
