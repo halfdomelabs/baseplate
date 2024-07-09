@@ -1,15 +1,28 @@
-import { PluginUtils, WebConfigProps } from '@halfdomelabs/project-builder-lib';
+import {
+  ModelUtils,
+  PluginUtils,
+  WebConfigProps,
+  applyModelPatchInPlace,
+  diffModel,
+} from '@halfdomelabs/project-builder-lib';
 import {
   useBlockDirtyFormNavigate,
   useErrorHandler,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, ComboboxField, toast } from '@halfdomelabs/ui-components';
+import {
+  Alert,
+  Button,
+  ComboboxField,
+  toast,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useMemo } from 'react';
 
 import AdapterEditorForm from './AdapterEditorForm';
 import CategoryEditorForm from './CategoryEditorForm';
+import { createStorageModels } from '../schema/models';
 import {
   StoragePluginDefinition,
   storagePluginDefinitionSchema,
@@ -21,10 +34,11 @@ export function StorageConfig({
   metadata,
   onSave,
 }: WebConfigProps): JSX.Element {
-  const { definition, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, definitionContainer, setConfigAndFixReferences } =
+    useProjectDefinition();
   const { logAndFormatError } = useErrorHandler();
 
-  const { control, handleSubmit, formState } =
+  const { control, handleSubmit, formState, watch } =
     useResettableForm<StoragePluginDefinition>({
       resolver: zodResolver(storagePluginDefinitionSchema),
       values: pluginMetadata?.config as StoragePluginDefinition,
@@ -32,9 +46,27 @@ export function StorageConfig({
 
   useBlockDirtyFormNavigate(formState);
 
+  const fileModelRef = watch('fileModelRef');
+
+  const pendingModelChanges = useMemo(() => {
+    if (!fileModelRef) return undefined;
+
+    const model = ModelUtils.byId(definition, fileModelRef);
+    const desiredModel = createStorageModels(definitionContainer);
+    return diffModel(model.model, desiredModel.file, definitionContainer);
+  }, [fileModelRef, definitionContainer, definition]);
+
   const onSubmit = handleSubmit((data) => {
     try {
       setConfigAndFixReferences((draftConfig) => {
+        if (pendingModelChanges) {
+          const model = ModelUtils.byId(draftConfig, data.fileModelRef);
+          applyModelPatchInPlace(
+            model.model,
+            pendingModelChanges,
+            definitionContainer,
+          );
+        }
         PluginUtils.setPluginConfig(draftConfig, metadata, data);
       });
       if (!pluginMetadata) {
@@ -62,6 +94,32 @@ export function StorageConfig({
   return (
     <div className="space-y-4">
       <form onSubmit={onSubmit} className={cn('space-y-4 max-w-4xl')}>
+        {pendingModelChanges && (
+          <Alert>
+            <Alert.Title>Model Changes</Alert.Title>
+            <Alert.Description>
+              <p>
+                The selected file model will be updated to include the required
+                fields for the storage plugin. The following changes will be
+                applied:
+              </p>
+              <ul>
+                {pendingModelChanges.fields.length > 0 && (
+                  <li>
+                    {pendingModelChanges.fields.length} field(s) will be added
+                    or updated.
+                  </li>
+                )}
+                {pendingModelChanges.relations?.length > 0 && (
+                  <li>
+                    {pendingModelChanges.relations.length} relation(s) will be
+                    added or updated.
+                  </li>
+                )}
+              </ul>
+            </Alert.Description>
+          </Alert>
+        )}
         <div className="flex gap-4">
           <ComboboxField.Controller
             label="File Model"
