@@ -10,8 +10,8 @@ export function setupViteNode(node: NodeProvider): void {
     '@types/node': `^${nodeVersion}.0.0`,
     '@types/react': '18.2.15',
     '@types/react-dom': '18.2.7',
-    '@vitejs/plugin-react': '4.2.1',
-    vite: '5.2.8',
+    '@vitejs/plugin-react': '4.3.1',
+    vite: '5.3.3',
     'vite-plugin-svgr': '4.2.0',
     'vite-tsconfig-paths': '4.3.2',
   });

@@ -91,7 +91,7 @@
     "@storybook/theming": "^8.1.11",
     "@tailwindcss/forms": "0.5.7",
     "@types/node": "^20.0.0",
-    "@vitejs/plugin-react": "4.2.1",
+    "@vitejs/plugin-react": "4.3.1",
     "autoprefixer": "10.4.19",
     "concurrently": "8.2.2",
     "postcss": "8.4.38",
@@ -103,7 +103,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tsc-alias": "1.8.8",
     "typescript": "5.2.2",
-    "vite": "5.2.8",
+    "vite": "5.3.3",
     "vite-plugin-svgr": "4.2.0",
     "vite-tsconfig-paths": "4.3.2",
     "vitest": "1.4.0"
