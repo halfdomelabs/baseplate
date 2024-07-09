@@ -1,4 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Badge,
   Button,
@@ -16,7 +17,6 @@ import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 
 interface Props {

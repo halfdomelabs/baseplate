@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { baseAppValidators } from '../base.js';
+import { createAppEntryType } from '../types.js';
 import { zRef } from '@src/references/index.js';
 import { authRoleEntityType } from '@src/schema/auth/types.js';
 
@@ -24,3 +25,5 @@ export const webAppSchema = z.object({
 });
 
 export type WebAppConfig = z.infer<typeof webAppSchema>;
+
+export const webAppEntryType = createAppEntryType<WebAppConfig>('web');

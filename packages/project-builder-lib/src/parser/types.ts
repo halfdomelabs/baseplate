@@ -1,5 +1,6 @@
 import { ProjectDefinition } from '../schema/index.js';
 import { ProjectDefinitionContainer } from '@src/index.js';
+import { PluginStore } from '@src/plugins/imports/types.js';
 import {
   ModelConfig,
   ModelRelationFieldConfig,
@@ -57,4 +58,11 @@ export interface ParserPlugin {
     hooks: PluginHooks,
     container: ProjectDefinitionContainer,
   ): void;
+}
+
+/**
+ * The context available to the schema parser, including the plugin store.
+ */
+export interface SchemaParserContext {
+  pluginStore: PluginStore;
 }

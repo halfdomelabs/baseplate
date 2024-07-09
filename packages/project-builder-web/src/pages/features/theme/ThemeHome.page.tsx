@@ -4,6 +4,11 @@ import {
   generateThemeColorsFromShade,
   themeSchema,
 } from '@halfdomelabs/project-builder-lib';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
+import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { Alert, Button, Tabs } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
@@ -12,19 +17,16 @@ import { MdConstruction } from 'react-icons/md';
 import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
-import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 export function ThemeHomePage(): JSX.Element {
-  const { config, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const toast = useToast();
 
   const defaultValues = useMemo(
-    () => config.theme ?? generateDefaultTheme(),
-    [config.theme],
+    () => definition.theme ?? generateDefaultTheme(),
+    [definition.theme],
   );
 
   const { control, handleSubmit, setValue, getValues, formState } =

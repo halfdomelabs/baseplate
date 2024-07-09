@@ -1,6 +1,7 @@
 import {
   getLatestMigrationVersion,
-  PluginConfigWithModule,
+  PluginMetadataWithPaths,
+  SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
@@ -9,9 +10,11 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { GeneratorEngineSetupConfig } from '@src/index.js';
-import { discoverPlugins } from '@src/plugins/plugin-discovery.js';
+import {
+  discoverPlugins,
+  createNodeSchemaParserContext,
+} from '@src/plugins/index.js';
 import { buildProjectForDirectory } from '@src/runner/index.js';
-import { expandPathWithTilde } from '@src/utils/path.js';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter.js';
 
 export interface FilePayload {
@@ -48,7 +51,7 @@ interface ProjectBuilderServiceOptions {
   directory: string;
   id: string;
   generatorSetupConfig: GeneratorEngineSetupConfig;
-  preinstalledPlugins: PluginConfigWithModule[];
+  builtInPlugins: PluginMetadataWithPaths[];
   cliVersion: string;
 }
 
@@ -72,24 +75,24 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   private cliVersion: string;
 
-  private cachedAvailablePlugins: PluginConfigWithModule[] | null = null;
+  private cachedAvailablePlugins: PluginMetadataWithPaths[] | null = null;
 
-  private preinstalledPlugins: PluginConfigWithModule[];
+  private builtInPlugins: PluginMetadataWithPaths[];
+
+  private schemaParserContext: SchemaParserContext | undefined;
 
   constructor({
     directory,
     id,
     generatorSetupConfig,
     cliVersion,
-    preinstalledPlugins,
+    builtInPlugins,
   }: ProjectBuilderServiceOptions) {
     super();
 
     this.directory = directory;
-    this.projectJsonPath = expandPathWithTilde(
-      path.join(directory, 'baseplate/project.json'),
-    );
-    this.id = id;
+    (this.projectJsonPath = path.join(directory, 'baseplate/project.json')),
+      (this.id = id);
     this.generatorSetupConfig = generatorSetupConfig;
     this.cliVersion = cliVersion;
 
@@ -106,7 +109,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
         message,
       });
     });
-    this.preinstalledPlugins = preinstalledPlugins;
+    this.builtInPlugins = builtInPlugins;
   }
 
   public async init(): Promise<void> {
@@ -193,6 +196,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
         directory: this.directory,
         logger: this.logger,
         generatorSetupConfig: this.generatorSetupConfig,
+        context: await this.getSchemaParserContext(),
       });
     } catch (err) {
       this.logger.error(err instanceof Error ? err.toString() : typeof err);
@@ -212,11 +216,22 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
     }
   }
 
-  public async getAvailablePlugins(): Promise<PluginConfigWithModule[]> {
+  public async getSchemaParserContext(): Promise<SchemaParserContext> {
+    if (!this.schemaParserContext) {
+      this.schemaParserContext = await createNodeSchemaParserContext(
+        this.directory,
+        this.logger,
+        this.builtInPlugins,
+      );
+    }
+    return this.schemaParserContext;
+  }
+
+  public async getAvailablePlugins(): Promise<PluginMetadataWithPaths[]> {
     if (!this.cachedAvailablePlugins) {
       const projectPlugins = await discoverPlugins(this.directory, this.logger);
       this.cachedAvailablePlugins = [
-        ...this.preinstalledPlugins.filter(
+        ...this.builtInPlugins.filter(
           (plugin) =>
             !projectPlugins.some(
               (projectPlugin) =>

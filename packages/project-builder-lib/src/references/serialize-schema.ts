@@ -2,15 +2,11 @@ import { produce } from 'immer';
 import _ from 'lodash';
 import { TypeOf, z } from 'zod';
 
-import { ZodRefWrapper } from './ref-builder.js';
+import { ZodRefPayload, ZodRefWrapper } from './ref-builder.js';
 
-export function serializeSchema<TSchema extends z.ZodType>(
-  schema: TSchema,
-  value: TypeOf<TSchema>,
-): TypeOf<TSchema> {
-  const payload = ZodRefWrapper.create(schema).parse(value);
-
-  // resolve all references
+export function serializeSchemaFromRefPayload<TValue>(
+  payload: ZodRefPayload<TValue>,
+): TValue {
   const { references, entities, data } = payload;
 
   const entitiesById = _.keyBy(entities, (e) => e.id);
@@ -34,5 +30,14 @@ export function serializeSchema<TSchema extends z.ZodType>(
       }
       _.set(draftData, reference.path, entity.name);
     });
-  })(data) as unknown;
+  })(data) as TValue;
+}
+
+export function serializeSchema<TSchema extends z.ZodType>(
+  schema: TSchema,
+  value: TypeOf<TSchema>,
+): TypeOf<TSchema> {
+  const payload = ZodRefWrapper.create(schema).parse(value);
+
+  return serializeSchemaFromRefPayload(payload) as unknown;
 }

@@ -1,107 +1,85 @@
-import { ModelUtils } from '@halfdomelabs/project-builder-lib';
+import {
+  ModelTransformerCompiler,
+  ModelUtils,
+  modelTransformerCompilerSpec,
+} from '@halfdomelabs/project-builder-lib';
 import { ParsedModel } from '@halfdomelabs/project-builder-lib';
 import {
   EmbeddedRelationTransformerConfig,
-  FileTransformerConfig,
   TransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
 
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 
-function buildEmbeddedRelationTransformer(
-  appBuilder: BackendAppEntryBuilder,
-  transformer: EmbeddedRelationTransformerConfig,
-  model: ParsedModel,
-): unknown {
-  const { type, ...config } = transformer;
+export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRelationTransformerConfig> =
+  {
+    name: 'embeddedRelation',
+    compileTransformer(definition, { definitionContainer, model }) {
+      // find foreign relation
+      const foreignRelation = ModelUtils.getRelationsToModel(
+        definitionContainer.definition,
+        model.id,
+      ).find(
+        ({ relation }) => relation.foreignId === definition.foreignRelationRef,
+      );
 
-  // find foreign relation
-  const foreignRelation = ModelUtils.getRelationsToModel(
-    appBuilder.projectDefinition,
-    model.id,
-  ).find(
-    ({ relation }) => relation.foreignId === transformer.foreignRelationRef,
-  );
+      if (!foreignRelation) {
+        throw new Error(
+          `Could not find relation ${definition.foreignRelationRef} for embedded relation transformer`,
+        );
+      }
 
-  if (!foreignRelation) {
-    throw new Error(
-      `Could not find relation ${transformer.foreignRelationRef} for embedded relation transformer`,
-    );
-  }
+      const foreignModel = foreignRelation.model;
 
-  const foreignModel = foreignRelation.model;
+      const foreignModelFeature = definitionContainer.nameFromId(
+        foreignModel.feature,
+      );
 
-  const foreignModelFeature = appBuilder.nameFromId(foreignModel.feature);
-
-  return {
-    generator: '@halfdomelabs/fastify/prisma/embedded-relation-transformer',
-    name: foreignRelation.relation.foreignRelationName,
-    embeddedFieldNames: config.embeddedFieldNames.map((e) =>
-      appBuilder.nameFromId(e),
-    ),
-    embeddedTransformerNames: config.embeddedTransformerNames?.map((t) =>
-      appBuilder.nameFromId(t),
-    ),
-    foreignCrudServiceRef: !transformer.embeddedTransformerNames
-      ? undefined
-      : `${foreignModelFeature}/root:$services.${foreignModel.name}Service.$crud`,
+      return {
+        generator: '@halfdomelabs/fastify/prisma/embedded-relation-transformer',
+        name: foreignRelation.relation.foreignRelationName,
+        embeddedFieldNames: definition.embeddedFieldNames.map((e) =>
+          definitionContainer.nameFromId(e),
+        ),
+        embeddedTransformerNames: definition.embeddedTransformerNames?.map(
+          (t) => definitionContainer.nameFromId(t),
+        ),
+        foreignCrudServiceRef: !definition.embeddedTransformerNames
+          ? undefined
+          : `${foreignModelFeature}/root:$services.${foreignModel.name}Service.$crud`,
+      };
+    },
   };
-}
 
-function buildFileTransformer(
-  appBuilder: BackendAppEntryBuilder,
-  transformer: FileTransformerConfig,
-  model: ParsedModel,
-): unknown {
-  const { fileRelationRef } = transformer;
-
-  const foreignRelation = model.model.relations?.find(
-    (relation) => relation.id === fileRelationRef,
-  );
-
-  if (!foreignRelation) {
-    throw new Error(
-      `Could not find relation ${fileRelationRef} for file transformer`,
-    );
-  }
-
-  const category = appBuilder.projectDefinition.storage?.categories.find(
-    (c) => c.usedByRelation === foreignRelation.foreignId,
-  );
-
-  if (!category) {
-    throw new Error(
-      `Could not find category for relation ${foreignRelation.name}`,
-    );
-  }
-
-  return {
-    generator: '@halfdomelabs/fastify/storage/prisma-file-transformer',
-    category: category.name,
-    name: foreignRelation.name,
-  };
-}
+const passwordTransformerCompiler: ModelTransformerCompiler = {
+  name: 'password',
+  compileTransformer() {
+    return {
+      name: 'password',
+      generator: '@halfdomelabs/fastify/auth/prisma-password-transformer',
+    };
+  },
+};
 
 function buildTransformer(
   appBuilder: BackendAppEntryBuilder,
   transformer: TransformerConfig,
   model: ParsedModel,
 ): unknown {
-  switch (transformer.type) {
-    case 'embeddedRelation':
-      return buildEmbeddedRelationTransformer(appBuilder, transformer, model);
-    case 'password':
-      return {
-        name: 'password',
-        generator: '@halfdomelabs/fastify/auth/prisma-password-transformer',
-      };
-    case 'file':
-      return buildFileTransformer(appBuilder, transformer, model);
-    default:
-      throw new Error(
-        `Unknown transformer type: ${(transformer as { type: string }).type}`,
-      );
-  }
+  const { pluginStore } = appBuilder;
+  const compilerImplementation = pluginStore.getPluginSpec(
+    modelTransformerCompilerSpec,
+  );
+
+  const compiler = compilerImplementation.getModelTransformerCompiler(
+    transformer.type,
+    [embeddedRelationTransformerCompiler, passwordTransformerCompiler],
+  );
+
+  return compiler.compileTransformer(transformer, {
+    definitionContainer: appBuilder.definitionContainer,
+    model,
+  });
 }
 
 function buildServiceForModel(

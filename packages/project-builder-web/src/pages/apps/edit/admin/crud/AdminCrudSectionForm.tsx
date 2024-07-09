@@ -1,6 +1,7 @@
 import { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
-import { Control, useWatch } from 'react-hook-form';
+import { Control, UseFormReturn, useWatch } from 'react-hook-form';
 
 import AdminCrudEmbeddedForm, {
   AdminCrudEmbeddedTable,
@@ -12,14 +13,14 @@ import CrudTableColumnsForm, {
 import { SelectInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import EmbeddedListInput from 'src/components/EmbeddedListInput';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;
-  control: Control<AdminCrudSectionConfig>;
+  formProps: UseFormReturn<AdminCrudSectionConfig>;
 }
 
-function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
+function AdminCrudSectionForm({ className, formProps }: Props): JSX.Element {
+  const { control } = formProps;
   const { parsedProject } = useProjectDefinition();
 
   const modelOptions = parsedProject.getModels().map((model) => ({
@@ -59,7 +60,7 @@ function AdminCrudSectionForm({ className, control }: Props): JSX.Element {
       />
       <h2>Form</h2>
       <CrudFormFieldsForm
-        control={control as unknown as Control<AdminCrudFormConfig>}
+        formProps={formProps as unknown as UseFormReturn<AdminCrudFormConfig>}
         embeddedFormOptions={embeddedFormOptions}
       />
       <h2>Embedded Forms</h2>

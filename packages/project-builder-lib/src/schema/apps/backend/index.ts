@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { baseAppValidators } from '../base.js';
+import { createAppEntryType } from '../types.js';
 
 export const backendAppSchema = z.object({
   ...baseAppValidators,
@@ -15,3 +16,6 @@ export const backendAppSchema = z.object({
 });
 
 export type BackendAppConfig = z.infer<typeof backendAppSchema>;
+
+export const backendAppEntryType =
+  createAppEntryType<BackendAppConfig>('backend');

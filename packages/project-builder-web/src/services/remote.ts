@@ -1,4 +1,7 @@
-import { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+import {
+  PluginMetadataWithPaths,
+  ProjectDefinition,
+} from '@halfdomelabs/project-builder-lib';
 import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 
 import { client } from './api';
@@ -54,6 +57,15 @@ export async function downloadProjectDefinition(
   }
   const response = await client.projects.get.query({ id });
   return response.file;
+}
+
+export async function getPluginsMetadata(
+  id: string,
+): Promise<PluginMetadataWithPaths[]> {
+  if (IS_PREVIEW) {
+    return [];
+  }
+  return client.plugins.getAvailablePlugins.mutate({ id });
 }
 
 type WriteResult =

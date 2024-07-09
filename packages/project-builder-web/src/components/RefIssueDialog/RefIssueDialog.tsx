@@ -1,4 +1,5 @@
 import { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -7,7 +8,6 @@ import {
   UseDeleteReferenceDialogRequestOptions,
   useDeleteReferenceDialogState,
 } from '@src/hooks/useDeleteReferenceDialog';
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { getEntityTypeUrl } from '@src/services/entity-type';
 
 export function RefIssueDialog(): JSX.Element {

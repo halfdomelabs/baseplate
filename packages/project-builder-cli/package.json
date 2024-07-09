@@ -29,7 +29,8 @@
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx -r dotenv/config ./src"
+    "start": "tsx -r dotenv/config ./src",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@halfdomelabs/baseplate-plugin-storage": "workspace:*",

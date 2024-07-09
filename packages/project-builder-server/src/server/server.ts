@@ -3,7 +3,7 @@ import fastifyStaticPlugin from '@fastify/static';
 import fastifyWebsocketPlugin from '@fastify/websocket';
 import {
   FeatureFlag,
-  PluginConfigWithModule,
+  PluginMetadataWithPaths,
 } from '@halfdomelabs/project-builder-lib';
 import { FastifyBaseLogger, FastifyInstance, fastify } from 'fastify';
 import {
@@ -15,7 +15,6 @@ import { Logger } from 'pino';
 import { gracefulShutdownPlugin } from './graceful-shutdown.js';
 import { baseplatePlugin } from './plugin.js';
 import { GeneratorEngineSetupConfig } from '@src/index.js';
-import { expandPathWithTilde } from '@src/utils/path.js';
 
 export interface WebServerOptions {
   directories: string[];
@@ -23,7 +22,7 @@ export interface WebServerOptions {
   cliVersion: string;
   logger: Logger;
   generatorSetupConfig: GeneratorEngineSetupConfig;
-  preinstalledPlugins: PluginConfigWithModule[];
+  builtInPlugins: PluginMetadataWithPaths[];
   featureFlags: FeatureFlag[];
 }
 
@@ -33,7 +32,7 @@ export async function buildServer({
   cliVersion,
   logger,
   generatorSetupConfig,
-  preinstalledPlugins,
+  builtInPlugins,
   featureFlags,
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
@@ -46,10 +45,6 @@ export async function buildServer({
   server.setValidatorCompiler(validatorCompiler);
   server.setSerializerCompiler(serializerCompiler);
 
-  const resolvedDirectories = directories.map((directory) =>
-    expandPathWithTilde(directory),
-  );
-
   await server.register(gracefulShutdownPlugin);
 
   await server.register(fastifyHelmet);
@@ -57,10 +52,10 @@ export async function buildServer({
   await server.register(fastifyWebsocketPlugin);
 
   await server.register(baseplatePlugin, {
-    directories: resolvedDirectories,
+    directories,
     cliVersion,
     generatorSetupConfig,
-    preinstalledPlugins,
+    builtInPlugins,
     featureFlags,
   });
 

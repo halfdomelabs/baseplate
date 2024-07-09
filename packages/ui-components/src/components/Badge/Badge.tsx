@@ -1,4 +1,3 @@
-import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
@@ -25,10 +24,8 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof badgeVariants> {
-  asChild?: boolean;
-}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
 
 /**
  * Displays a badge or a component that looks like a badge.
@@ -39,18 +36,10 @@ export interface BadgeProps
 function Badge({
   className,
   variant,
-  asChild,
   ...props
 }: BadgeProps): React.JSX.Element {
-  const Comp = asChild ? Slot : 'button';
-
   return (
-    <Comp
-      type="button"
-      disabled={!props.onClick}
-      className={cn(badgeVariants({ variant }), className)}
-      {...props}
-    />
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
   );
 }
 
@@ -66,7 +55,7 @@ Badge.WithIcon = function BadgeWithIcon({
 }: BadgeWithIconProps): JSX.Element {
   return (
     <Badge className={cn('flex items-center space-x-2', className)} {...rest}>
-      {Icon && <Icon className="h-4 w-4 flex-shrink-0" />}
+      {Icon && <Icon className="size-4 shrink-0" />}
       <div className="flex-1 overflow-hidden text-ellipsis">{children}</div>
     </Badge>
   );

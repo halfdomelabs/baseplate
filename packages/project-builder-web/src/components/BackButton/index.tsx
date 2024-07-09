@@ -12,7 +12,7 @@ function BackButton({ className }: Props): JSX.Element {
 
   return (
     <LinkButton className={className} onClick={() => navigate(-1)}>
-      <MdArrowBack className="h-6 w-6 text-gray-600" />
+      <MdArrowBack className="size-6 text-gray-600" />
       <span className="sr-only">Back</span>
     </LinkButton>
   );

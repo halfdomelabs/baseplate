@@ -44,7 +44,7 @@ export const router = createBrowserRouter([
             path: '/plugins/*',
             children: PluginRoutes,
             handle: {
-              crumb: 'Plugins',
+              crumb: createRouteCrumb({ label: 'Plugins', url: '/plugins' }),
             },
           },
           {

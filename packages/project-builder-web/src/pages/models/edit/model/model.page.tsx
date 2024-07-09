@@ -4,6 +4,8 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { useParams } from 'react-router-dom';
 
 import { ModelGeneralForm } from './ModelGeneralForm';
@@ -14,8 +16,6 @@ import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
@@ -25,11 +25,11 @@ registerEntityTypeUrl(modelLocalRelationEntityType, `/models/edit/{parentUid}`);
 function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({});
   const { control, handleSubmit, watch, getValues } = form;
-  const { config } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
   const { uid } = useParams<'uid'>();
 
   const id = modelEntityType.fromUid(uid);
-  const originalModel = id ? ModelUtils.byId(config, id) : undefined;
+  const originalModel = id ? ModelUtils.byId(definition, id) : undefined;
 
   useBlockDirtyFormNavigate(form.formState);
 

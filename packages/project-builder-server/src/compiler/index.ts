@@ -1,8 +1,8 @@
 import {
-  BaseAppConfig,
-  ProjectDefinition,
   AppEntry,
+  BaseAppConfig,
   ProjectDefinitionContainer,
+  SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import _ from 'lodash';
 
@@ -13,10 +13,13 @@ import { compileWeb } from './web/index.js';
 export * from './types.js';
 
 export function compileApplications(
-  rawProjectDefinition: ProjectDefinition,
+  projectJson: unknown,
+  context: SchemaParserContext,
 ): AppEntry[] {
-  const definitionContainer =
-    ProjectDefinitionContainer.fromSerializedConfig(rawProjectDefinition);
+  const definitionContainer = ProjectDefinitionContainer.fromSerializedConfig(
+    projectJson,
+    context,
+  );
   // Compile backend app first since it's likely the dependency for the other apps
   const appConfigs = _.sortBy(definitionContainer.definition.apps, [
     (a) => (a.type === 'backend' ? 0 : 1),

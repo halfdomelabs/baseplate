@@ -2,12 +2,12 @@ import {
   adminCrudDisplayTypes,
   AdminCrudSectionConfig,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
 import { Control, useFieldArray, useWatch } from 'react-hook-form';
 
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,

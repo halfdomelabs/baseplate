@@ -3,7 +3,13 @@ import {
   modelEntityType,
   modelScalarFieldEntityType,
   modelSchema,
+  zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
+import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -12,9 +18,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { RefDeleteError } from '@src/utils/error';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
-import { useResettableForm } from 'src/hooks/useResettableForm';
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logger } from 'src/services/logger';
 
@@ -54,8 +57,8 @@ export function useModelForm({
   defaultValues: ModelConfig;
 } {
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
-  const toast = useToast();
+  const { parsedProject, setConfigAndFixReferences, pluginContainer } =
+    useProjectDefinition();
   const navigate = useNavigate();
   const urlModelId = uid ? modelEntityType.fromUid(uid) : undefined;
   const model = urlModelId ? parsedProject.getModelById(urlModelId) : undefined;
@@ -66,8 +69,13 @@ export function useModelForm({
 
   const defaultValues = model ?? newModel;
 
+  const modelSchemaWithPlugins = useMemo(
+    () => zPluginWrapper(modelSchema, pluginContainer),
+    [pluginContainer],
+  );
+
   const form = useResettableForm<ModelConfig>({
-    resolver: zodResolver(modelSchema),
+    resolver: zodResolver(modelSchemaWithPlugins),
     defaultValues,
   });
 
@@ -125,7 +133,7 @@ export function useModelForm({
         }
       }
     },
-    [setConfigAndFixReferences, showRefIssues, toast, reset, setError],
+    [setConfigAndFixReferences, showRefIssues, reset, setError],
   );
 
   return {

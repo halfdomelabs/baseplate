@@ -1,4 +1,5 @@
 import { FeatureConfig } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
@@ -11,7 +12,6 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { UserVisibleError } from '@src/utils/error';

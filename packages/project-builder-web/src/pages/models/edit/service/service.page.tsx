@@ -3,12 +3,12 @@ import {
   ModelTransformerUtils,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
 import { useModelForm } from '../hooks/useModelForm';
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
@@ -23,7 +23,7 @@ function ModelEditServicePage(): JSX.Element {
     setError,
   });
   const { control, handleSubmit, watch, getValues } = form;
-  const { definitionContainer } = useProjectDefinition();
+  const { definitionContainer, pluginContainer } = useProjectDefinition();
   const shouldBuild = watch('service.build');
 
   const onSubmit = (data: ModelConfig): void => {
@@ -48,8 +48,12 @@ function ModelEditServicePage(): JSX.Element {
 
   const transformers = watch(`service.transformers`);
   const transformerOptions = transformers?.map((f) => ({
-    label: ModelTransformerUtils.getTransformName(definitionContainer, f),
-    value: f.id,
+    label: ModelTransformerUtils.getTransformName(
+      definitionContainer,
+      f,
+      pluginContainer,
+    ),
+    value: f.id ?? '',
   }));
 
   // TODO: Need to unset transformer options when reset

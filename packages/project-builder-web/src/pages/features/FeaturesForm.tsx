@@ -3,6 +3,7 @@ import {
   ProjectDefinition,
   featureEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Card,
@@ -15,7 +16,6 @@ import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
 import { FeatureForm } from './FeatureForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 
@@ -88,7 +88,7 @@ export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
                 }}
               >
                 <div
-                  className="flex w-56 items-center overflow-hidden text-ellipsis whitespace-nowrap"
+                  className="flex w-56 items-center truncate"
                   title={feature.name.split('/').pop() ?? ''}
                 >
                   {feature.name.includes('/') && (
@@ -99,10 +99,10 @@ export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
                         .map((name) => (
                           <FiCornerDownRight
                             key={name}
-                            className="invisible mr-2 h-4 w-4"
+                            className="invisible mr-2 size-4"
                           />
                         ))}
-                      <FiCornerDownRight className="mr-2 h-4 w-4" />
+                      <FiCornerDownRight className="mr-2 size-4" />
                     </>
                   )}
                   <div>{feature.name.split('/').pop() ?? ''}</div>

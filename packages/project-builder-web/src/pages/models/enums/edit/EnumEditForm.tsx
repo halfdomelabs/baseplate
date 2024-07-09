@@ -2,13 +2,13 @@ import {
   EnumConfig,
   modelEnumValueEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { ComboboxField } from '@halfdomelabs/ui-components';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
 
 import { hasDirtyFields } from '@src/utils/form';
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
 interface Props {

@@ -1,29 +1,62 @@
-import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
-import { MdWidgets } from 'react-icons/md';
-import { NavLink, Outlet } from 'react-router-dom';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import {
+  Button,
+  NavigationMenu,
+  SidebarLayout,
+} from '@halfdomelabs/ui-components';
+import { MdAdd } from 'react-icons/md';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 
 import NotFoundPage from '../NotFound.page';
 import { useFeatureFlag } from '@src/hooks/useFeatureFlag';
+import { notEmpty } from '@src/utils/array';
 
 function PluginsLayout(): JSX.Element {
   const isPluginsEnabled = useFeatureFlag('plugins');
+  const { definition, schemaParserContext } = useProjectDefinition();
 
   if (!isPluginsEnabled) {
     return <NotFoundPage />;
   }
 
+  const availablePlugins = schemaParserContext.pluginStore.availablePlugins;
+
+  const enabledPlugins = (definition.plugins ?? [])
+    .map((plugin) => {
+      const pluginWithMetadata = availablePlugins.find(
+        (p) => p.metadata.id === plugin.id,
+      );
+      return pluginWithMetadata?.metadata;
+    })
+    .filter(notEmpty);
+
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar className="space-y-4" width="sm">
-        <h2>Plugins</h2>
+        <Link to="/plugins">
+          <Button.WithIcon
+            variant="secondary"
+            icon={MdAdd}
+            className="w-full"
+            size="sm"
+          >
+            Add new plugin
+          </Button.WithIcon>
+        </Link>
         <NavigationMenu orientation="vertical">
           <NavigationMenu.List>
-            <NavigationMenu.ItemWithLink asChild>
-              <NavLink to="/plugins">
-                <MdWidgets />
-                Manage Plugins
-              </NavLink>
-            </NavigationMenu.ItemWithLink>
+            {enabledPlugins.map((plugin) => (
+              <NavigationMenu.ItemWithLink key={plugin.id} asChild>
+                <NavLink to={`/plugins/edit/${plugin.id}`}>
+                  {plugin.displayName}
+                </NavLink>
+              </NavigationMenu.ItemWithLink>
+            ))}
+            {!enabledPlugins.length && (
+              <NavigationMenu.Item className="mt-4 w-full text-center opacity-80">
+                No plugins enabled
+              </NavigationMenu.Item>
+            )}
           </NavigationMenu.List>
         </NavigationMenu>
       </SidebarLayout.Sidebar>

@@ -32,7 +32,7 @@ export function NewProjectCard({
   });
 
   return (
-    <Card className="animate-fade-in-and-grow w-[20rem] sm:w-[30rem]">
+    <Card className="animate-fade-in-and-grow w-80 sm:w-[30rem]">
       <Card.Content className="flex flex-col space-y-4">
         <img
           className="mx-auto w-16"

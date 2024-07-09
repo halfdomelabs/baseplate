@@ -1,0 +1,65 @@
+import {
+  ModelTransformerCompiler,
+  PluginUtils,
+  createPlatformPluginExport,
+  modelTransformerCompilerSpec,
+} from '@halfdomelabs/project-builder-lib';
+
+import { FileTransformerConfig } from './types';
+import { StoragePluginDefinition } from '../core/schema/plugin-definition';
+
+function buildFileTransformerCompiler(
+  pluginId: string,
+): ModelTransformerCompiler<FileTransformerConfig> {
+  return {
+    name: 'file',
+    compileTransformer(definition, { definitionContainer, model }) {
+      const { fileRelationRef } = definition;
+
+      const foreignRelation = model.model.relations?.find(
+        (relation) => relation.id === fileRelationRef,
+      );
+
+      if (!foreignRelation) {
+        throw new Error(
+          `Could not find relation ${fileRelationRef} for file transformer`,
+        );
+      }
+
+      const storageDefinition =
+        PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+          definitionContainer.definition,
+          pluginId,
+        );
+
+      const category = storageDefinition.categories.find(
+        (c) => c.usedByRelation === foreignRelation.foreignId,
+      );
+
+      if (!category) {
+        throw new Error(
+          `Could not find category for relation ${foreignRelation.name}`,
+        );
+      }
+
+      return {
+        generator: '@halfdomelabs/fastify/storage/prisma-file-transformer',
+        category: category.name,
+        name: foreignRelation.name,
+      };
+    },
+  };
+}
+
+export default createPlatformPluginExport({
+  dependencies: {
+    transformerCompiler: modelTransformerCompilerSpec,
+  },
+  exports: {},
+  initialize: ({ transformerCompiler }, { pluginId }) => {
+    transformerCompiler.registerTransformerCompiler(
+      buildFileTransformerCompiler(pluginId),
+    );
+    return {};
+  },
+});

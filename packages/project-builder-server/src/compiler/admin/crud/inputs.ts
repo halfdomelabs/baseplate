@@ -3,86 +3,93 @@ import {
   AdminCrudEmbeddedInputConfig,
   AdminCrudEmbeddedLocalInputConfig,
   AdminCrudEnumInputConfig,
-  AdminCrudFileInputConfig,
   AdminCrudForeignInputConfig,
-  AdminCrudInputConfig,
+  AdminCrudInputCompiler,
+  AdminCrudInputDefinition,
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
-  FileTransformerConfig,
-  ModelScalarFieldConfig,
+  EnumUtils,
   ModelFieldUtils,
+  ModelScalarFieldConfig,
+  ModelUtils,
+  adminCrudInputCompilerSpec,
 } from '@halfdomelabs/project-builder-lib';
 
 import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
 
-function compileAdminEnumInput(
-  builder: AppEntryBuilder<AdminAppConfig>,
-  field: AdminCrudEnumInputConfig,
-  modelId: string,
-): unknown {
-  const model = builder.parsedProject.getModelById(modelId);
-  const fieldConfig = model.model.fields.find((f) => f.id === field.modelField);
-  if (fieldConfig?.type !== 'enum') {
-    throw new Error(`Admin enum input ${field.modelField} is not an enum`);
-  }
-  const enumBlock = builder.parsedProject
-    .getEnums()
-    .find((e) => e.id === fieldConfig.options?.enumType);
-  if (!enumBlock) {
-    throw new Error(
-      `Could not find enum type ${fieldConfig.options?.enumType ?? ''}`,
-    );
-  }
-  const fieldName = builder.nameFromId(field.modelField);
-  return {
-    name: fieldName,
-    generator: '@halfdomelabs/react/admin/admin-crud-enum-input',
-    modelField: fieldName,
-    label: field.label,
-    isOptional: fieldConfig.isOptional,
-    options: enumBlock.values.map((v) => ({
-      label: v.friendlyName,
-      value: v.name,
-    })),
+const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
+  {
+    name: 'enum',
+    compileInput: (definition, { definitionContainer, model }) => {
+      const fieldConfig = model.model.fields.find(
+        (f) => f.id === definition.modelField,
+      );
+      if (fieldConfig?.type !== 'enum' || !fieldConfig.options?.enumType) {
+        throw new Error(
+          `Admin enum input ${definition.modelField} is not an enum`,
+        );
+      }
+      const enumBlock = EnumUtils.byId(
+        definitionContainer.definition,
+        fieldConfig.options.enumType,
+      );
+      if (!enumBlock) {
+        throw new Error(
+          `Could not find enum type ${fieldConfig.options?.enumType ?? ''}`,
+        );
+      }
+      const fieldName = definitionContainer.nameFromId(definition.modelField);
+      return {
+        name: fieldName,
+        generator: '@halfdomelabs/react/admin/admin-crud-enum-input',
+        modelField: fieldName,
+        label: definition.label,
+        isOptional: fieldConfig.isOptional,
+        options: enumBlock.values.map((v) => ({
+          label: v.friendlyName,
+          value: v.name,
+        })),
+      };
+    },
   };
-}
 
-function compileAdminForeignInput(
-  builder: AppEntryBuilder<AdminAppConfig>,
-  field: AdminCrudForeignInputConfig,
-  modelId: string,
-): unknown {
-  const model = builder.parsedProject.getModelById(modelId);
-  const relation = model.model.relations?.find(
-    (r) => r.id === field.localRelationName,
-  );
+const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputConfig> =
+  {
+    name: 'foreign',
+    compileInput: (definition, { definitionContainer, model }) => {
+      const relation = model.model.relations?.find(
+        (r) => r.id === definition.localRelationName,
+      );
 
-  if (!relation) {
-    throw new Error(
-      `Could not find relation ${field.localRelationName} in model ${model.name}`,
-    );
-  }
+      if (!relation) {
+        throw new Error(
+          `Could not find relation ${definition.localRelationName} in model ${model.name}`,
+        );
+      }
 
-  if (relation.references.length !== 1) {
-    throw new Error(`Only relations with a single reference are supported`);
-  }
+      if (relation.references.length !== 1) {
+        throw new Error(`Only relations with a single reference are supported`);
+      }
 
-  const localField = builder.nameFromId(relation.references[0].local);
+      const localField = definitionContainer.nameFromId(
+        relation.references[0].local,
+      );
 
-  return {
-    name: relation.name,
-    generator: '@halfdomelabs/react/admin/admin-crud-foreign-input',
-    label: field.label,
-    localRelationName: relation.name,
-    isOptional: ModelFieldUtils.isRelationOptional(model, relation),
-    localField,
-    foreignModelName: builder.nameFromId(relation.modelName),
-    labelExpression: field.labelExpression,
-    valueExpression: field.valueExpression,
-    defaultLabel: field.defaultLabel,
-    nullLabel: field.nullLabel,
+      return {
+        name: relation.name,
+        generator: '@halfdomelabs/react/admin/admin-crud-foreign-input',
+        label: definition.label,
+        localRelationName: relation.name,
+        isOptional: ModelFieldUtils.isRelationOptional(model, relation),
+        localField,
+        foreignModelName: definitionContainer.nameFromId(relation.modelName),
+        labelExpression: definition.labelExpression,
+        valueExpression: definition.valueExpression,
+        defaultLabel: definition.defaultLabel,
+        nullLabel: definition.nullLabel,
+      };
+    },
   };
-}
 
 function getInputType(fieldConfig: ModelScalarFieldConfig): string {
   switch (fieldConfig.type) {
@@ -97,166 +104,123 @@ function getInputType(fieldConfig: ModelScalarFieldConfig): string {
   }
 }
 
-function compileAdminCrudTextInput(
-  builder: AppEntryBuilder<AdminAppConfig>,
-  field: AdminCrudTextInputConfig,
-  modelId: string,
-): unknown {
-  const model = builder.parsedProject.getModelById(modelId);
-  const fieldConfig = model.model.fields.find((f) => f.id === field.modelField);
-  if (!fieldConfig) {
-    throw new Error(
-      `Field ${field.modelField} cannot be found in ${model.name}`,
-    );
-  }
-  const fieldName = builder.nameFromId(field.modelField);
-  return {
-    name: fieldName,
-    generator: '@halfdomelabs/react/admin/admin-crud-text-input',
-    label: field.label,
-    modelField: fieldName,
-    type: getInputType(fieldConfig),
-    validation: !field.validation
-      ? ModelFieldUtils.getModelFieldValidation(
-          builder.projectDefinition,
-          modelId,
-          fieldConfig.id,
-          true,
-        )
-      : field.validation,
+const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfig> =
+  {
+    name: 'text',
+    compileInput: (definition, { definitionContainer, model }) => {
+      const fieldConfig = model.model.fields.find(
+        (f) => f.id === definition.modelField,
+      );
+      if (!fieldConfig) {
+        throw new Error(
+          `Field ${definition.modelField} cannot be found in ${model.name}`,
+        );
+      }
+      const fieldName = definitionContainer.nameFromId(definition.modelField);
+      return {
+        name: fieldName,
+        generator: '@halfdomelabs/react/admin/admin-crud-text-input',
+        label: definition.label,
+        modelField: fieldName,
+        type: getInputType(fieldConfig),
+        validation: !definition.validation
+          ? ModelFieldUtils.getModelFieldValidation(
+              definitionContainer.definition,
+              model.id,
+              fieldConfig.id,
+              true,
+            )
+          : definition.validation,
+      };
+    },
   };
-}
 
-function compileAdminCrudFileInput(
-  builder: AppEntryBuilder<AdminAppConfig>,
-  field: AdminCrudFileInputConfig,
-  modelId: string,
-): unknown {
-  const model = builder.parsedProject.getModelById(modelId);
-  const transformer = model.service?.transformers?.find(
-    (t): t is FileTransformerConfig =>
-      t.id === field.modelRelation && t.type === 'file',
-  );
-  const relation = model.model.relations?.find(
-    (r) => r.id === transformer?.fileRelationRef,
-  );
-
-  if (!relation) {
-    throw new Error(
-      `Could not find relation ${field.modelRelation} in model ${model.name}`,
-    );
-  }
-
-  const category =
-    builder.parsedProject.projectDefinition.storage?.categories.find(
-      (c) => c.usedByRelation === relation.foreignId,
-    );
-
-  if (!category) {
-    throw new Error(
-      `Could not find category for relation ${relation.foreignRelationName}`,
-    );
-  }
-  const isOptional = ModelFieldUtils.isRelationOptional(model, relation);
-  const relationName = builder.nameFromId(field.modelRelation);
-
-  return {
-    name: relationName,
-    generator: '@halfdomelabs/react/admin/admin-crud-file-input',
-    label: field.label,
-    isOptional,
-    category: category.name,
-    modelRelation: relationName,
+const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedInputConfig> =
+  {
+    name: 'embedded',
+    compileInput: (definition, { definitionContainer, crudSectionId }) => {
+      const relationName = definitionContainer.nameFromId(
+        definition.modelRelation,
+      );
+      return {
+        name: relationName,
+        generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
+        label: definition.label,
+        modelRelation: relationName,
+        embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${definitionContainer.nameFromId(
+          definition.embeddedFormName,
+        )}`,
+      };
+    },
   };
-}
 
-function compileAdminCrudEmbeddedInput(
-  builder: AppEntryBuilder<AdminAppConfig>,
-  field: AdminCrudEmbeddedInputConfig,
-  crudSectionId: string,
-): unknown {
-  const relationName = builder.nameFromId(field.modelRelation);
-  return {
-    name: relationName,
-    generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
-    label: field.label,
-    modelRelation: relationName,
-    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${builder.nameFromId(
-      field.embeddedFormName,
-    )}`,
+const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedLocalInputConfig> =
+  {
+    name: 'embeddedLocal',
+    compileInput(definition, { definitionContainer, model, crudSectionId }) {
+      const localRelation = model.model.relations?.find(
+        (r) => r.id === definition.localRelation,
+      );
+
+      if (!localRelation) {
+        throw new Error(
+          `Could not find relation ${definition.localRelation} in model ${model.name}`,
+        );
+      }
+
+      const localRelationName = definitionContainer.nameFromId(
+        definition.localRelation,
+      );
+
+      return {
+        name: localRelationName,
+        generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
+        label: definition.label,
+        modelRelation: localRelationName,
+        isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
+        embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${definitionContainer.nameFromId(
+          definition.embeddedFormName,
+        )}`,
+      };
+    },
   };
-}
 
-function compileAdminCrudEmbeddedLocalInput(
-  builder: AppEntryBuilder<AdminAppConfig>,
-  field: AdminCrudEmbeddedLocalInputConfig,
-  modelId: string,
-  crudSectionId: string,
-): unknown {
-  const model = builder.parsedProject.getModelById(modelId);
-  const localRelation = model.model.relations?.find(
-    (r) => r.id === field.localRelation,
-  );
-
-  if (!localRelation) {
-    throw new Error(
-      `Could not find relation ${field.localRelation} in model ${model.name}`,
-    );
-  }
-
-  const localRelationName = builder.nameFromId(field.localRelation);
-
-  return {
-    name: localRelationName,
-    generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
-    label: field.label,
-    modelRelation: localRelationName,
-    isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
-    embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${builder.nameFromId(
-      field.embeddedFormName,
-    )}`,
-  };
-}
-
-function compileAdminCrudPasswordInput(
-  field: AdminCrudPasswordInputConfig,
-): unknown {
-  return {
+const adminCrudPasswordInputCompiler: AdminCrudInputCompiler<AdminCrudPasswordInputConfig> =
+  {
     name: 'password',
-    generator: '@halfdomelabs/react/admin/admin-crud-password-input',
-    label: field.label,
+    compileInput: (definition) => {
+      return {
+        name: 'password',
+        generator: '@halfdomelabs/react/admin/admin-crud-password-input',
+        label: definition.label,
+      };
+    },
   };
-}
+
+const builtInCompilers = [
+  adminEnumInputCompiler,
+  adminForeignInputCompiler,
+  adminCrudTextInputCompiler,
+  adminCrudEmbeddedInputCompiler,
+  adminCrudEmbeddedLocalInputCompiler,
+  adminCrudPasswordInputCompiler,
+];
 
 export function compileAdminCrudInput(
-  field: AdminCrudInputConfig,
+  field: AdminCrudInputDefinition,
   modelId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   crudSectionId: string,
 ): unknown {
-  switch (field.type) {
-    case 'foreign':
-      return compileAdminForeignInput(builder, field, modelId);
-    case 'enum':
-      return compileAdminEnumInput(builder, field, modelId);
-    case 'text':
-      return compileAdminCrudTextInput(builder, field, modelId);
-    case 'file':
-      return compileAdminCrudFileInput(builder, field, modelId);
-    case 'password':
-      return compileAdminCrudPasswordInput(field);
-    case 'embedded':
-      return compileAdminCrudEmbeddedInput(builder, field, crudSectionId);
-    case 'embeddedLocal':
-      return compileAdminCrudEmbeddedLocalInput(
-        builder,
-        field,
-        modelId,
-        crudSectionId,
-      );
-    default:
-      throw new Error(
-        `Unknown admin crud input ${(field as { type: string }).type}`,
-      );
-  }
+  const inputCompiler = builder.pluginStore.getPluginSpec(
+    adminCrudInputCompilerSpec,
+  );
+
+  const compiler = inputCompiler.getCompiler(field.type, builtInCompilers);
+
+  return compiler.compileInput(field, {
+    definitionContainer: builder.definitionContainer,
+    model: ModelUtils.byId(builder.projectDefinition, modelId),
+    crudSectionId,
+  });
 }

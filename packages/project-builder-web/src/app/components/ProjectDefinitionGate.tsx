@@ -2,11 +2,19 @@ import {
   ParsedProjectDefinition,
   ProjectDefinition,
   ProjectDefinitionContainer,
+  createPluginImplementationStore,
+  createProjectDefinitionSchemaWithContext,
   fixRefDeletions,
-  projectDefinitionSchema,
+  parseProjectDefinitionWithContext,
   runSchemaMigrations,
   serializeSchema,
 } from '@halfdomelabs/project-builder-lib';
+import {
+  ProjectDefinitionContext,
+  SetOrTransformConfig,
+  SetProjectDefinitionOptions,
+  UseProjectDefinitionResult,
+} from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ErrorDisplay,
@@ -20,12 +28,6 @@ import { ZodError } from 'zod';
 import { NewProjectCard } from './NewProjectCard';
 import { websocketEvents } from '@src/services/api';
 import { useClientVersion } from 'src/hooks/useClientVersion';
-import {
-  ProjectDefinitionContext,
-  SetOrTransformConfig,
-  SetProjectDefinitionOptions,
-  UseProjectDefinitionResult,
-} from 'src/hooks/useProjectDefinition';
 import { useProjects } from 'src/hooks/useProjects';
 import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
@@ -54,6 +56,7 @@ export function ProjectDefinitionGate({
     projectId,
     externalChangeCounter,
     downloadConfig,
+    schemaParserContext,
   } = useRemoteProjectDefinition();
   const { projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion, refreshVersion } = useClientVersion();
@@ -85,7 +88,7 @@ export function ProjectDefinitionGate({
       }
     | { status: 'error'; configError: unknown }
     | { status: 'loading' } => {
-    if (!remoteConfig || !projectId || !loaded) {
+    if (!remoteConfig || !projectId || !loaded || !schemaParserContext) {
       return { status: 'loading' };
     }
     if (
@@ -114,6 +117,7 @@ export function ProjectDefinitionGate({
       const definitionContainer =
         ProjectDefinitionContainer.fromSerializedConfig(
           migratedProjectDefinition,
+          schemaParserContext,
         );
       const project = new ParsedProjectDefinition(definitionContainer);
       // only save config if project is initialized
@@ -146,17 +150,24 @@ export function ProjectDefinitionGate({
       logError(err);
       return { status: 'error', configError: err };
     }
-  }, [savedConfig, remoteConfig, externalChangeCounter, projectId, loaded]);
+  }, [
+    savedConfig,
+    remoteConfig,
+    externalChangeCounter,
+    projectId,
+    loaded,
+    schemaParserContext,
+  ]);
 
   const result: UseProjectDefinitionResult | undefined = useMemo(() => {
-    if (loadData.status !== 'loaded' || !projectId) {
+    if (loadData.status !== 'loaded' || !projectId || !schemaParserContext) {
       return undefined;
     }
     function setConfig(
       newConfig: SetOrTransformConfig,
       { fixReferences }: SetProjectDefinitionOptions = {},
     ): void {
-      if (loadData.status !== 'loaded' || !projectId) {
+      if (loadData.status !== 'loaded' || !projectId || !schemaParserContext) {
         throw new Error(
           'Cannot set config when project config is not yet loaded',
         );
@@ -168,12 +179,20 @@ export function ProjectDefinitionGate({
           ? produce(oldProjectDefinition, newConfig)
           : newConfig;
 
-      let validatedProjectDefinition =
-        projectDefinitionSchema.parse(newProjectDefinition);
+      const projectDefinitionSchemaWithContext =
+        createProjectDefinitionSchemaWithContext(
+          newProjectDefinition,
+          schemaParserContext,
+        );
+
+      let validatedProjectDefinition = parseProjectDefinitionWithContext(
+        newProjectDefinition,
+        schemaParserContext,
+      );
 
       if (fixReferences) {
         const result = fixRefDeletions(
-          projectDefinitionSchema,
+          projectDefinitionSchemaWithContext,
           validatedProjectDefinition,
         );
         if (result.type === 'failure') {
@@ -183,14 +202,18 @@ export function ProjectDefinitionGate({
       }
 
       const parsedConfig = new ParsedProjectDefinition(
-        ProjectDefinitionContainer.fromConfig(validatedProjectDefinition),
+        ProjectDefinitionContainer.fromDefinition(
+          validatedProjectDefinition,
+          schemaParserContext,
+        ),
       );
       parsedConfig.projectDefinition.cliVersion = cliVersion;
 
       const exportedProjectDefinition =
         parsedConfig.exportToProjectDefinition();
-      const definitionContainer = ProjectDefinitionContainer.fromConfig(
+      const definitionContainer = ProjectDefinitionContainer.fromDefinition(
         exportedProjectDefinition,
+        schemaParserContext,
       );
 
       saveRemoteConfig(
@@ -203,8 +226,14 @@ export function ProjectDefinitionGate({
         definitionContainer,
       });
     }
+
+    const pluginContainer = createPluginImplementationStore(
+      schemaParserContext.pluginStore,
+      loadData.definitionContainer.definition,
+    );
+
     return {
-      config: loadData.definitionContainer.definition,
+      definition: loadData.definitionContainer.definition,
       parsedProject: loadData.parsedProject,
       definitionContainer: loadData.definitionContainer,
       externalChangeCounter,
@@ -212,6 +241,8 @@ export function ProjectDefinitionGate({
         setConfig(config, { fixReferences: true });
       },
       setConfig,
+      pluginContainer,
+      schemaParserContext,
     };
   }, [
     loadData,
@@ -219,6 +250,7 @@ export function ProjectDefinitionGate({
     cliVersion,
     externalChangeCounter,
     projectId,
+    schemaParserContext,
   ]);
 
   const compositeError =
@@ -264,6 +296,9 @@ export function ProjectDefinitionGate({
         <NewProjectCard
           existingProject={result?.parsedProject.projectDefinition}
           saveProject={(data) => {
+            if (!schemaParserContext) {
+              return;
+            }
             const oldProjectDefinition =
               result?.parsedProject.exportToProjectDefinition() ?? {};
             const newProjectDefinition = {
@@ -271,10 +306,15 @@ export function ProjectDefinitionGate({
               ...data,
               isInitialized: true,
             };
+            const projectDefinitionSchemaWithContext =
+              createProjectDefinitionSchemaWithContext(
+                newProjectDefinition,
+                schemaParserContext,
+              );
             saveRemoteConfig(
               prettyStableStringify(
                 serializeSchema(
-                  projectDefinitionSchema,
+                  projectDefinitionSchemaWithContext,
                   newProjectDefinition as ProjectDefinition,
                 ),
               ),
@@ -290,10 +330,10 @@ export function ProjectDefinitionGate({
   }
 
   if (
-    result.config.cliVersion &&
+    result.definition.cliVersion &&
     cliVersion &&
     cliVersion !== 'preview' &&
-    semver.gt(result.config.cliVersion, cliVersion)
+    semver.gt(result.definition.cliVersion, cliVersion)
   ) {
     return (
       <ErrorDisplay
@@ -316,8 +356,8 @@ export function ProjectDefinitionGate({
         error={
           <>
             This project requires a newer version of the client (
-            {result.config.cliVersion}). Please upgrade your client by running{' '}
-            <strong>pnpm install</strong>.
+            {result.definition.cliVersion}). Please upgrade your client by
+            running <strong>pnpm install</strong>.
           </>
         }
       />

@@ -3,13 +3,14 @@ import {
   AppUtils,
   ProjectDefinitionContainer,
   WebAppConfig,
+  webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
-  const { projectDefinition, appConfig } = builder;
+  const { projectDefinition, appConfig, appCompiler } = builder;
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);
   const backendRelativePath = AppUtils.getBackendRelativePath(
@@ -54,20 +55,11 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
         generator: '@halfdomelabs/react/apollo/apollo-error',
         peerProvider: true,
       },
-      $uploadComponents:
-        projectDefinition.storage && appConfig.includeUploadComponents
-          ? {
-              generator: '@halfdomelabs/react/storage/upload-components',
-              peerProvider: true,
-              fileModelName: builder.nameFromId(
-                projectDefinition.storage.fileModel,
-              ),
-            }
-          : undefined,
       $datadogLogger: appConfig.enableDatadog
         ? { generator: '@halfdomelabs/react/core/react-datadog' }
         : undefined,
       ...compileAuthFeatures(builder),
+      ...appCompiler.getRootChildren(),
     },
   };
 }
@@ -76,7 +68,11 @@ export function compileWeb(
   definitionContainer: ProjectDefinitionContainer,
   app: WebAppConfig,
 ): AppEntry {
-  const appBuilder = new AppEntryBuilder(definitionContainer, app);
+  const appBuilder = new AppEntryBuilder(
+    definitionContainer,
+    app,
+    webAppEntryType,
+  );
 
   const { projectDefinition } = appBuilder;
 

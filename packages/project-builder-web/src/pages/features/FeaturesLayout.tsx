@@ -1,6 +1,6 @@
 import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
 import { FaPalette } from 'react-icons/fa';
-import { MdAttachFile, MdPeople } from 'react-icons/md';
+import { MdPeople } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
 function FeaturesLayout(): JSX.Element {
@@ -16,12 +16,6 @@ function FeaturesLayout(): JSX.Element {
               <NavLink to="/features/auth">
                 <MdPeople />
                 Authentication
-              </NavLink>
-            </NavigationMenu.ItemWithLink>
-            <NavigationMenu.ItemWithLink asChild>
-              <NavLink to="/features/storage">
-                <MdAttachFile />
-                Storage
               </NavLink>
             </NavigationMenu.ItemWithLink>
             <NavigationMenu.ItemWithLink asChild>
