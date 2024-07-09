@@ -28,11 +28,6 @@
               },
               { "label": "Status", "modelField": "status", "type": "enum" },
               {
-                "label": "Cover Photo",
-                "modelRelation": "coverPhoto",
-                "type": "file"
-              },
-              {
                 "label": "Created At",
                 "modelField": "createdAt",
                 "type": "text",
@@ -848,20 +843,11 @@
       "service": {
         "build": true,
         "create": {
-          "fields": ["position", "name", "ownerId", "status", "createdAt"],
-          "transformerNames": ["coverPhoto"]
+          "fields": ["position", "name", "ownerId", "status", "createdAt"]
         },
         "delete": { "disabled": false },
-        "transformers": [
-          {
-            "fileRelationRef": "coverPhoto",
-            "id": "model-transformer:Kv0etvmd0wuR",
-            "type": "file"
-          }
-        ],
         "update": {
-          "fields": ["position", "name", "ownerId", "status", "createdAt"],
-          "transformerNames": ["coverPhoto"]
+          "fields": ["position", "name", "ownerId", "status", "createdAt"]
         }
       }
     },
@@ -1049,7 +1035,6 @@
           },
           {
             "embeddedFieldNames": ["id", "bio", "birthDay"],
-            "embeddedTransformerNames": ["avatar"],
             "foreignRelationRef": "userProfile",
             "id": "model-transformer:Ll9gvoax1ly4",
             "modelRef": "UserProfile",
@@ -1057,7 +1042,6 @@
           },
           {
             "embeddedFieldNames": ["id", "caption"],
-            "embeddedTransformerNames": ["file"],
             "foreignRelationRef": "images",
             "id": "model-transformer:WOmEwc6e0ygN",
             "modelRef": "UserImage",
@@ -1134,13 +1118,6 @@
         "build": true,
         "create": {},
         "delete": { "disabled": false },
-        "transformers": [
-          {
-            "fileRelationRef": "file",
-            "id": "model-transformer:GBWoZ4NkxkpJ",
-            "type": "file"
-          }
-        ],
         "update": { "fields": [] }
       }
     },
@@ -1242,13 +1219,6 @@
         "build": true,
         "create": {},
         "delete": { "disabled": false },
-        "transformers": [
-          {
-            "fileRelationRef": "avatar",
-            "id": "model-transformer:cbjBj3IacjKA",
-            "type": "file"
-          }
-        ],
         "update": {}
       }
     },
@@ -1313,49 +1283,7 @@
   ],
   "name": "todoer",
   "packageScope": "prisma-crud",
-  "plugins": [
-    {
-      "config": {
-        "categories": [
-          {
-            "defaultAdapter": "uploads",
-            "maxFileSize": 10,
-            "name": "userProfileAvatar",
-            "uploadRoles": ["user"],
-            "usedByRelation": "userProfileAvatar"
-          },
-          {
-            "defaultAdapter": "uploads",
-            "maxFileSize": 10,
-            "name": "todoListCoverPhoto",
-            "uploadRoles": ["user"],
-            "usedByRelation": "todoListCoverPhoto"
-          },
-          {
-            "defaultAdapter": "uploads",
-            "maxFileSize": 10,
-            "name": "userImageFile",
-            "uploadRoles": ["user"],
-            "usedByRelation": "userImages"
-          }
-        ],
-        "featureRef": "storage",
-        "fileModelRef": "File",
-        "s3Adapters": [
-          {
-            "bucketConfigVar": "AWS_UPLOADS_BUCKET",
-            "hostedUrlConfigVar": "AWS_UPLOADS_URL",
-            "id": "storage-adapter:sG0zrvD_Uak9",
-            "name": "uploads"
-          }
-        ]
-      },
-      "id": "halfdomelabs_baseplate-plugin-storage_storage",
-      "name": "storage",
-      "packageName": "@halfdomelabs/baseplate-plugin-storage",
-      "version": "0.1.0"
-    }
-  ],
+  "plugins": [],
   "portOffset": 6000,
   "schemaVersion": 4,
   "theme": {
