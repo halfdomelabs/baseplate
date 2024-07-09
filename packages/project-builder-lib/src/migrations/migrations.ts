@@ -100,13 +100,18 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
     version: 4,
     description: 'Move storage into plugin system',
     migrate: (config: ProjectDefinition) => {
+      interface OldStorage extends Record<string, unknown> {
+        fileModel: string;
+        featurePath: string;
+      }
       return produce((draftConfig: ProjectDefinition) => {
-        if (!draftConfig.storage) {
+        const draftConfigTyped = draftConfig as { storage?: OldStorage };
+        const storage = draftConfigTyped.storage;
+        if (!storage) {
           return;
         }
+        const { featurePath, fileModel, ...storageConfig } = storage;
         draftConfig.plugins = draftConfig.plugins ?? [];
-        const { featurePath, fileModel, ...storageConfig } =
-          draftConfig.storage;
         draftConfig.plugins.push({
           id: 'halfdomelabs_baseplate-plugin-storage_storage',
           name: 'storage',
@@ -118,7 +123,7 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
             ...storageConfig,
           },
         });
-        draftConfig.storage = undefined;
+        draftConfigTyped.storage = undefined;
       })(config);
     },
   },

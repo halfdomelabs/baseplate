@@ -2,7 +2,6 @@ import * as R from 'ramda';
 
 import { AuthPlugin } from './plugins/auth.js';
 import { Auth0Plugin } from './plugins/auth0.js';
-import { StoragePlugin } from './plugins/storage.js';
 import { ParsedModel, ParsedRelationField } from './types.js';
 import { ProjectDefinitionContainer } from '@src/index.js';
 import {
@@ -17,7 +16,7 @@ import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
 
 export * from './parser.js';
 
-const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin, StoragePlugin];
+const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin];
 
 function upsertItems<T>(
   items: T[] | undefined,

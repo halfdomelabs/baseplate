@@ -10,7 +10,6 @@ import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
 import { pluginsSchema } from './plugins/index.js';
-import { storageSchema } from './storage/index.js';
 import { zRefBuilder } from '@src/references/index.js';
 import { DASHED_NAME } from '@src/utils/validations.js';
 
@@ -50,7 +49,6 @@ export const projectDefinitionSchema = z.object({
   models: z.array(modelSchema).default([]),
   enums: z.array(enumSchema).optional(),
   auth: authSchema.optional(),
-  storage: storageSchema.optional(),
   isInitialized: z.boolean().default(false),
   schemaVersion: z.number().nullish(),
   theme: themeSchema.optional(),
