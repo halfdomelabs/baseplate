@@ -81,7 +81,8 @@ export default createPlatformPluginExport({
 
         appCompiler.addRootChildren({
           $uploadComponents: {
-            generator: '@halfdomelabs/react/storage/upload-components',
+            generator:
+              '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
             peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
@@ -100,7 +101,8 @@ export default createPlatformPluginExport({
 
         appCompiler.addRootChildren({
           $uploadComponents: {
-            generator: '@halfdomelabs/react/storage/upload-components',
+            generator:
+              '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
             peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
