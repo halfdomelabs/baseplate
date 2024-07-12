@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { GeneratorEngine, loadGeneratorsForModule } from '@halfdomelabs/sync';
+import { GeneratorEngine } from '@halfdomelabs/sync';
 import { program } from 'commander';
 import { packageDirectory } from 'pkg-dir';
 import * as R from 'ramda';
@@ -28,14 +28,10 @@ async function getGeneratorEngine(): Promise<GeneratorEngine> {
         ],
       ),
     );
-    const generators = await Promise.all(
-      resolvedGeneratorPaths.map(([moduleName, modulePath]) =>
-        loadGeneratorsForModule(moduleName, modulePath),
-      ),
-    );
-    const generatorMap = R.mergeAll(generators);
 
-    cachedEngine = new GeneratorEngine(generatorMap);
+    const generatorPathDictionary = R.fromPairs(resolvedGeneratorPaths);
+
+    cachedEngine = new GeneratorEngine(generatorPathDictionary);
   }
   return cachedEngine;
 }

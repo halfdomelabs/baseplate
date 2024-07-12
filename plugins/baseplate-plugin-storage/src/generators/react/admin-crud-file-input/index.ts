@@ -1,9 +1,9 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
-import { uploadComponentsProvider } from '@src/generators/storage/upload-components/index.js';
+import { uploadComponentsProvider } from '../upload-components/index.js';
 
 const descriptorSchema = z.object({
   label: z.string().min(1),

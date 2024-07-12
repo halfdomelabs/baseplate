@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { BaseGeneratorDescriptor } from '../core/index.js';
 
 export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
@@ -9,6 +11,9 @@ export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
     | string[]
   >;
 }
+
+export type GeneratorDescriptor<TSchema extends z.ZodType> =
+  DescriptorWithChildren & z.infer<TSchema>;
 
 export interface ChildGeneratorConfig {
   provider?: string;

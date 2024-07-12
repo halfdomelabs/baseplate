@@ -51,7 +51,8 @@ function buildFileTransformerCompiler(
 
       return {
         name: relationName,
-        generator: '@halfdomelabs/react/admin/admin-crud-file-input',
+        generator:
+          '@halfdomelabs/baseplate-plugin-storage/react/admin-crud-file-input',
         label: definition.label,
         isOptional,
         category: category.name,

@@ -9,6 +9,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 
 import { StoragePluginDefinition } from './schema/plugin-definition';
+import { StorageModuleDescriptor } from '@src/generators/fastify';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -36,7 +37,8 @@ export default createPlatformPluginExport({
         );
         appCompiler.addChildrenToFeature(storage.featureRef, {
           $storage: {
-            generator: '@halfdomelabs/fastify/storage/storage-module',
+            generator:
+              '@halfdomelabs/baseplate-plugin-storage/fastify/storage-module',
             fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${fileModelName}ObjectType.$objectType`,
             fileModel: fileModelName,
             s3Adapters: storage.s3Adapters.map((a) => ({
@@ -52,7 +54,7 @@ export default createPlatformPluginExport({
                 definitionContainer.nameFromId(r),
               ),
             })),
-          },
+          } satisfies StorageModuleDescriptor,
         });
 
         appCompiler.addGlobalHoistedProviders('storage-module');
@@ -79,7 +81,8 @@ export default createPlatformPluginExport({
 
         appCompiler.addRootChildren({
           $uploadComponents: {
-            generator: '@halfdomelabs/react/storage/upload-components',
+            generator:
+              '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
             peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
@@ -98,7 +101,8 @@ export default createPlatformPluginExport({
 
         appCompiler.addRootChildren({
           $uploadComponents: {
-            generator: '@halfdomelabs/react/storage/upload-components',
+            generator:
+              '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
             peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
