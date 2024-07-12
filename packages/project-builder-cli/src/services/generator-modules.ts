@@ -1,6 +1,8 @@
 import { GeneratorEngineSetupConfig } from '@halfdomelabs/project-builder-server';
+import _ from 'lodash';
 import { packageDirectory } from 'pkg-dir';
 
+import { getBuiltInPlugins } from './plugins.js';
 import { resolveModule } from '../utils/resolve.js';
 
 const GENERATOR_MODULES = [
@@ -10,8 +12,13 @@ const GENERATOR_MODULES = [
 ];
 
 export async function getGeneratorSetupConfig(): Promise<GeneratorEngineSetupConfig> {
+  const builtInPlugins = await getBuiltInPlugins();
+  const generatorPackages = [
+    ...GENERATOR_MODULES,
+    ..._.uniq(builtInPlugins.map((plugin) => plugin.packageName)),
+  ];
   const resolvedGeneratorPaths = await Promise.all(
-    GENERATOR_MODULES.map(async (moduleName) => {
+    generatorPackages.map(async (moduleName) => {
       const packagePath = await packageDirectory({
         cwd: resolveModule(moduleName),
       });

@@ -338,6 +338,9 @@ importers:
       commander:
         specifier: ^11.0.0
         version: 11.1.0
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       package-up:
         specifier: ^5.0.0
         version: 5.0.0
@@ -354,6 +357,9 @@ importers:
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
+      '@types/lodash':
+        specifier: 4.14.196
+        version: 4.14.196
       '@types/node':
         specifier: ^20.0.0
         version: 20.12.7
