@@ -1,18 +1,20 @@
 import {
   AdminAppConfig,
+  AppCompiler,
+  appCompilerSpec,
+  AppEntry,
+  AppEntryType,
   BackendAppConfig,
   BaseAppConfig,
-  ProjectDefinition,
-  AppEntry,
+  createAppCompiler,
   FileEntry,
-  ProjectDefinitionContainer,
   ParsedProjectDefinition,
   PluginImplementationStore,
-  appCompilerSpec,
-  AppEntryType,
-  createAppCompiler,
-  AppCompiler,
+  ProjectDefinition,
+  ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
+import { AppPluginConfig } from '@halfdomelabs/sync';
+import _ from 'lodash';
 
 import { stripObject } from '../utils/strip.js';
 
@@ -51,6 +53,15 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
         definitionContainer: this.definitionContainer,
       });
     });
+
+    // add plugin.json to root
+    this.addDescriptor('plugins.json', {
+      plugins: _.uniq(
+        this.projectDefinition.plugins?.map((p) => ({
+          name: p.packageName,
+        })) ?? [],
+      ),
+    } satisfies AppPluginConfig);
   }
 
   addDescriptor(path: string, jsonContent: unknown): this {

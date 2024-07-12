@@ -192,8 +192,8 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
 
   // pre-warm up generator engine so syncing is faster on first request
   setTimeout(() => {
-    getGeneratorEngine(generatorSetupConfig).catch((err) =>
-      fastify.log.error(err),
-    );
+    getGeneratorEngine(generatorSetupConfig)
+      .preloadGenerators()
+      .catch((err) => fastify.log.error(err));
   }, 500);
 };

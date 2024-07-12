@@ -841,6 +841,9 @@ importers:
       p-limit:
         specifier: ^4.0.0
         version: 4.0.0
+      package-up:
+        specifier: ^5.0.0
+        version: 5.0.0
       ramda:
         specifier: ^0.28.0
         version: 0.28.0
@@ -1123,6 +1126,12 @@ importers:
 
   plugins/baseplate-plugin-storage:
     dependencies:
+      '@halfdomelabs/core-generators':
+        specifier: workspace:*
+        version: link:../../packages/core-generators
+      '@halfdomelabs/fastify-generators':
+        specifier: workspace:*
+        version: link:../../packages/fastify-generators
       '@halfdomelabs/project-builder-lib':
         specifier: workspace:*
         version: link:../../packages/project-builder-lib

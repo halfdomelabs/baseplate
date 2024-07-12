@@ -11,11 +11,12 @@
     "LICENSE",
     "dist/**/*",
     "CHANGELOG",
-    "plugins.json"
+    "manifest.json",
+    "generator.json"
   ],
   "scripts": {
     "build": "concurrently pnpm:build:*",
-    "build:static": "cpx \"src/*/{templates,static,metadata.json}/**\" \"dist/\" --clean",
+    "build:static": "cpx \"src/**/{templates,static,metadata.json}/**\" \"dist/\" --clean",
     "build:tsc": "tsc -p tsconfig.build.json && tsc-alias",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
@@ -30,6 +31,8 @@
     "watch:vite": "vite build --watch"
   },
   "dependencies": {
+    "@halfdomelabs/core-generators": "workspace:*",
+    "@halfdomelabs/fastify-generators": "workspace:*",
     "@halfdomelabs/ui-components": "workspace:*",
     "@hookform/resolvers": "3.3.4",
     "clsx": "2.1.1",
