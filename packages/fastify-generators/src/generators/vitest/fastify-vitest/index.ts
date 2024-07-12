@@ -1,7 +1,7 @@
 import {
-  jestProvider,
-  nodeProvider,
   TypescriptCodeUtils,
+  nodeProvider,
+  vitestProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
@@ -13,24 +13,25 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-export type FastifyJestProvider = unknown;
+export type FastifyVitestProvider = unknown;
 
-export const fastifyJestProvider =
-  createProviderType<FastifyJestProvider>('fastify-jest');
+export const fastifyVitestProvider =
+  createProviderType<FastifyVitestProvider>('fastify-vitest');
 
-const FastifyJestGenerator = createGeneratorWithChildren({
+const FastifyVitestGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    jest: jestProvider,
+    vitest: vitestProvider,
     node: nodeProvider,
   },
   exports: {
-    fastifyJest: fastifyJestProvider,
+    fastifyVitest: fastifyVitestProvider,
   },
-  createGenerator(descriptor, { jest, node }) {
-    // add config to jest setup
-    jest
+  createGenerator(descriptor, { node, vitest }) {
+    // add config to vitest setup
+
+    vitest
       .getConfig()
       .appendUnique('customSetupBlocks', [
         TypescriptCodeUtils.createBlock(
@@ -39,16 +40,15 @@ const FastifyJestGenerator = createGeneratorWithChildren({
         ),
       ]);
 
-    // have to run in band until we figure out how to parallelize integration tests
-    node.addScript('test', 'jest --runInBand');
-    node.addScript('test:unit', 'jest .unit.');
+    node.addScript('test', 'vitest run');
+    node.addScript('test:unit', 'cross-env TEST_MODE=unit vitest run .unit.');
 
     return {
       getProviders: () => ({
-        fastifyJest: {},
+        fastifyVitest: {},
       }),
     };
   },
 });
 
-export default FastifyJestGenerator;
+export default FastifyVitestGenerator;

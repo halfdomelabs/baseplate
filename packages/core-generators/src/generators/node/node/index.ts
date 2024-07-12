@@ -87,11 +87,11 @@ const NodeGenerator = createGeneratorWithChildren({
         peerProvider: true,
       },
     },
-    jest: {
-      provider: 'jest',
+    vitest: {
+      provider: 'vitest',
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
-        generator: '@halfdomelabs/core/node/jest',
+        generator: '@halfdomelabs/core/node/vitest',
         peerProvider: true,
       },
     },

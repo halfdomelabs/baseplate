@@ -4,18 +4,18 @@ interface EslintConfig {
   extraTsconfigProjects?: string[];
   extraRules?: Linter.RulesRecord;
   react?: boolean;
-  disableJest?: boolean;
+  disableVitest?: boolean;
 }
 
 export function generateConfig({
   extraTsconfigProjects = [],
   extraRules = {},
   react,
-  disableJest,
+  disableVitest,
 }: EslintConfig): Linter.Config {
   return {
     root: true,
-    plugins: ['import'],
+    plugins: ['import', ...(disableVitest ? [] : ['vitest'])],
     parserOptions: {
       ecmaVersion: 2021,
     },
@@ -29,7 +29,6 @@ export function generateConfig({
             'plugin:jsx-a11y/recommended',
           ]
         : []),
-      ...(disableJest ? [] : ['plugin:jest/recommended', 'plugin:jest/style']),
     ],
     overrides: [
       {
@@ -125,11 +124,20 @@ export function generateConfig({
           'no-console': 'off',
         },
       },
+      ...(disableVitest
+        ? []
+        : [
+            {
+              files: ['*.test.*'],
+              rules: {
+                'vitest/no-commented-out-tests': 'warn',
+              } as Linter.RulesRecord,
+            },
+          ]),
     ],
     env: {
       node: true,
       browser: false,
-      ...(disableJest ? {} : { jest: true }),
     },
     settings: {
       'import/resolver': {

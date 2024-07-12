@@ -25,6 +25,7 @@ export function setupFastifyTypescript(
     forceConsistentCasingInFileNames: true,
     resolveJsonModule: true,
     sourceMap: true,
+    skipLibCheck: true,
   });
 
   const nodeVersion = node.getNodeVersion().split('.')[0];

@@ -97,8 +97,8 @@ export function buildFastify(
         peerProvider: true,
         defaultDatabaseUrl: getPostgresSettings(projectDefinition).url,
       },
-      $prismaJest: {
-        generator: '@halfdomelabs/fastify/jest/prisma-jest',
+      $prismaVitest: {
+        generator: '@halfdomelabs/fastify/vitest/prisma-vitest',
         peerProvider: true,
       },
       $prismaUtils: {

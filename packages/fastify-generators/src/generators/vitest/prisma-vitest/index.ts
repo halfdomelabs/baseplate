@@ -1,11 +1,11 @@
 import {
   ImportMapper,
-  jestProvider,
   makeImportAndFilePath,
   nodeProvider,
   projectProvider,
   TypescriptCodeUtils,
   typescriptProvider,
+  vitestProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createProviderType,
@@ -13,39 +13,38 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { fastifyJestProvider } from '../fastify-jest/index.js';
+import { fastifyVitestProvider } from '../fastify-vitest/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-export type PrismaJestProvider = ImportMapper;
+export type PrismaVitestProvider = ImportMapper;
 
-export const prismaJestProvider =
-  createProviderType<PrismaJestProvider>('prisma-jest');
+export const prismaVitestProvider =
+  createProviderType<PrismaVitestProvider>('prisma-vitest');
 
-const PrismaJestGenerator = createGeneratorWithChildren({
+const PrismaVitestGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     node: nodeProvider,
-    jest: jestProvider,
+    vitest: vitestProvider,
     typescript: typescriptProvider,
     prismaOutput: prismaOutputProvider,
     project: projectProvider,
-    // TOOD: Figure out how to order fastify jest block before prisma custom setup block
-    fastifyJest: fastifyJestProvider,
+    fastifyVitest: fastifyVitestProvider,
   },
   exports: {
-    prismaJest: prismaJestProvider,
+    prismaVitest: prismaVitestProvider,
   },
   createGenerator(
     descriptor,
-    { node, jest, project, typescript, prismaOutput },
+    { node, vitest, project, typescript, prismaOutput },
   ) {
     node.addDevPackages({
-      'jest-mock-extended': '3.0.4',
+      'vitest-mock-extended': '1.3.1',
       'pg-connection-string': '2.6.1',
     });
 
@@ -58,21 +57,23 @@ const PrismaJestGenerator = createGeneratorWithChildren({
     );
 
     const importMap = {
-      '%prisma-jest/db': {
+      '%prisma-vitest/db': {
         path: dbHelperImport,
         allowedImports: ['createTestDatabase', 'destroyTestDatabase'],
       },
-      '%prisma-jest/prisma': {
+      '%prisma-vitest/prisma': {
         path: prismaHelperImport,
         allowedImports: ['prismaMock'],
       },
     };
 
-    jest.getConfig().appendUnique('customSetupBlocks', [
+    vitest.getConfig().appendUnique('customSetupBlocks', [
       TypescriptCodeUtils.createBlock(
         `
+const { TEST_MODE } = process.env;
+
 // don't run database set-up if only running unit tests
-if (!globalConfig.testPathPattern.includes('.unit.')) {
+if (TEST_MODE !== 'unit') {
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
   }
@@ -87,14 +88,14 @@ if (!globalConfig.testPathPattern.includes('.unit.')) {
   console.log('\\nDatabase migrations ran!');
 }
 `,
-        [`import { createTestDatabase } from '%prisma-jest/db'`],
+        [`import { createTestDatabase } from '%prisma-vitest/db'`],
         { importMappers: [{ getImportMap: () => importMap }] },
       ),
     ]);
 
     return {
       getProviders: () => ({
-        prismaJest: {
+        prismaVitest: {
           getImportMap: () => importMap,
         },
       }),
@@ -129,4 +130,4 @@ if (!globalConfig.testPathPattern.includes('.unit.')) {
   },
 });
 
-export default PrismaJestGenerator;
+export default PrismaVitestGenerator;

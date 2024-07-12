@@ -1,11 +1,11 @@
 import {
   ImportMap,
   ImportMapper,
-  jestProvider,
   makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
+  vitestProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
@@ -38,12 +38,12 @@ const createMainTask = createTaskConfigBuilder(
       configService: configServiceProvider,
       fastifyHealthCheck: fastifyHealthCheckProvider,
       typescript: typescriptProvider,
-      jest: jestProvider.dependency().optional(),
+      vitest: vitestProvider.dependency().optional(),
     },
     exports: {
       fastifyRedis: fastifyRedisProvider,
     },
-    run({ node, configService, fastifyHealthCheck, typescript, jest }) {
+    run({ node, configService, fastifyHealthCheck, typescript, vitest }) {
       node.addPackages({ ioredis: '5.3.2' });
       node.addDevPackages({ 'ioredis-mock': '8.7.0' });
 
@@ -90,16 +90,16 @@ const createMainTask = createTaskConfigBuilder(
           });
           await builder.apply(redisFile.renderToAction('redis.ts', redisPath));
 
-          if (jest) {
+          if (vitest) {
             await builder.apply(
               typescript.createCopyAction({
                 source: 'mock-redis.ts',
                 destination: 'src/tests/scripts/mock-redis.ts',
               }),
             );
-            jest
+            vitest
               .getConfig()
-              .appendUnique('setupFilesAfterEnv', [
+              .appendUnique('setupFiles', [
                 './src/tests/scripts/mock-redis.ts',
               ]);
           }
