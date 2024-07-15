@@ -7,7 +7,6 @@ import {
 import { MdAdd } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
-import NotFoundPage from '../NotFound.page';
 import { notEmpty } from '@src/utils/array';
 
 function PluginsLayout(): JSX.Element {
