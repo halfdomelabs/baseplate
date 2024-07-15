@@ -4,8 +4,6 @@ import { HiCollection, HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
-import { useFeatureFlag } from '@src/hooks/useFeatureFlag';
-
 function SidebarNavigationIcon({
   icon: Icon,
   to,
@@ -32,7 +30,6 @@ function SidebarNavigationIcon({
 }
 
 export function AppDesktopSidebar(): JSX.Element {
-  const isPluginEnabled = useFeatureFlag('plugins');
   return (
     <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
       <div className="space-y-6">
@@ -59,13 +56,11 @@ export function AppDesktopSidebar(): JSX.Element {
             icon={HiCollection}
             label="Features"
           />
-          {isPluginEnabled && (
-            <SidebarNavigationIcon
-              to="/plugins"
-              icon={MdWidgets}
-              label="Plugins"
-            />
-          )}
+          <SidebarNavigationIcon
+            to="/plugins"
+            icon={MdWidgets}
+            label="Plugins"
+          />
         </div>
       </div>
       <div className="space-y-3">
