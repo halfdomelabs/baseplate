@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.1
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+- Updated dependencies [d8374b4]
+  - @halfdomelabs/ui-components@0.4.10
+  - @halfdomelabs/sync@0.7.5
+
 ## 0.8.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.4.10
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+
 ## 0.4.9
 
 ### Patch Changes

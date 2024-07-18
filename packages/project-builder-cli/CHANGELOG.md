@@ -1,5 +1,21 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.7.1
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+- Updated dependencies [3f700cb]
+- Updated dependencies [d8374b4]
+- Updated dependencies [e27c549]
+  - @halfdomelabs/baseplate-plugin-storage@1.0.1
+  - @halfdomelabs/project-builder-server@0.4.1
+  - @halfdomelabs/project-builder-lib@0.8.1
+  - @halfdomelabs/fastify-generators@0.9.1
+  - @halfdomelabs/react-generators@0.7.9
+  - @halfdomelabs/core-generators@0.9.1
+  - @halfdomelabs/project-builder-web@0.11.1
+
 ## 0.7.0
 
 ### Minor Changes

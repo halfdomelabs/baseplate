@@ -1,5 +1,20 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 1.0.1
+
+### Patch Changes
+
+- 3f700cb: Fix resolution of compiled typescript
+- d8374b4: Upgrade tsc-alias to 1.8.10
+- Updated dependencies [d8374b4]
+- Updated dependencies [e27c549]
+  - @halfdomelabs/project-builder-lib@0.8.1
+  - @halfdomelabs/fastify-generators@0.9.1
+  - @halfdomelabs/react-generators@0.7.9
+  - @halfdomelabs/core-generators@0.9.1
+  - @halfdomelabs/ui-components@0.4.10
+  - @halfdomelabs/sync@0.7.5
+
 ## 1.0.0
 
 ### Minor Changes
