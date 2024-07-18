@@ -1005,9 +1005,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: 1.1.2
         version: 1.1.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@storybook/test':
-        specifier: ^8.1.11
-        version: 8.1.11(vitest@1.4.0(@types/node@20.12.7))
       '@types/react':
         specifier: 18.3.3
         version: 18.3.3
@@ -1072,6 +1069,9 @@ importers:
       '@storybook/react-vite':
         specifier: ^8.1.11
         version: 8.1.11(prettier@3.2.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rollup@4.14.3)(typescript@5.4.4)(vite@5.3.3(@types/node@20.12.7))
+      '@storybook/test':
+        specifier: ^8.1.11
+        version: 8.1.11(vitest@1.4.0(@types/node@20.12.7))
       '@storybook/theming':
         specifier: ^8.1.11
         version: 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
