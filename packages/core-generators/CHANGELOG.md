@@ -1,5 +1,13 @@
 # @halfdomelabs/core-generators
 
+## 0.9.1
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+- Updated dependencies [d8374b4]
+  - @halfdomelabs/sync@0.7.5
+
 ## 0.9.0
 
 ### Minor Changes

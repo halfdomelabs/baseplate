@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.7.5
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+
 ## 0.7.4
 
 ### Patch Changes

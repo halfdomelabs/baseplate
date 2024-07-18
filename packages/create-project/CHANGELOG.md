@@ -1,5 +1,11 @@
 # @halfdomelabs/create-project
 
+## 0.2.3
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+
 ## 0.2.2
 
 ### Patch Changes
