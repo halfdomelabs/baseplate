@@ -87,8 +87,6 @@ ${volumeEntries.join('\n')}`.trim();
         builder.writeFile(
           dockerComposePath,
           `${`
-version: '3.9'
-
 ${entries.join('\n')}`.trim()}\n`,
           { shouldFormat: true },
         );
