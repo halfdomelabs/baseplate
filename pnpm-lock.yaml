@@ -178,8 +178,8 @@ importers:
         specifier: ^2.2.0
         version: 2.2.2
       '@types/lodash':
-        specifier: 4.14.196
-        version: 4.14.196
+        specifier: 4.17.7
+        version: 4.17.7
       '@types/prettier':
         specifier: ^2.7.3
         version: 2.7.3
@@ -358,8 +358,8 @@ importers:
         specifier: workspace:*
         version: link:../tools
       '@types/lodash':
-        specifier: 4.14.196
-        version: 4.14.196
+        specifier: 4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: ^20.0.0
         version: 20.12.7
@@ -434,8 +434,8 @@ importers:
         specifier: ^2.0.1
         version: 2.1.0
       '@types/lodash':
-        specifier: 4.14.196
-        version: 4.14.196
+        specifier: 4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: ^20.0.0
         version: 20.12.7
@@ -546,8 +546,8 @@ importers:
         specifier: 11.0.4
         version: 11.0.4
       '@types/lodash':
-        specifier: 4.14.196
-        version: 4.14.196
+        specifier: 4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: ^20.0.0
         version: 20.12.7
@@ -706,8 +706,8 @@ importers:
         specifier: ^2.0.1
         version: 2.1.0
       '@types/lodash':
-        specifier: 4.14.196
-        version: 4.14.196
+        specifier: 4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: ^20.0.0
         version: 20.12.7
@@ -794,8 +794,8 @@ importers:
         specifier: workspace:*
         version: link:../tools
       '@types/lodash':
-        specifier: 4.14.196
-        version: 4.14.196
+        specifier: 4.17.7
+        version: 4.17.7
       '@types/node':
         specifier: ^20.0.0
         version: 20.12.7
@@ -867,8 +867,8 @@ importers:
         specifier: ^3.1.2
         version: 3.1.5
       '@types/lodash':
-        specifier: 4.14.196
-        version: 4.14.196
+        specifier: 4.17.7
+        version: 4.17.7
       '@types/ms':
         specifier: 0.7.34
         version: 0.7.34
@@ -3637,8 +3637,8 @@ packages:
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
-  '@types/lodash@4.14.196':
-    resolution: {integrity: sha512-22y3o88f4a94mKljsZcanlNWPzO0uBsBdzLAngf2tp533LzZcQzb6+eZPJ+vCTt+bqF2XnvT9gejTLsAcJAJyQ==}
+  '@types/lodash@4.17.7':
+    resolution: {integrity: sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==}
 
   '@types/mdast@3.0.15':
     resolution: {integrity: sha512-LnwD+mUEfxWMa1QpDraczIn6k0Ee3SMicuYSSzS6ZYl2gKS09EClnJYGd8Du6rfc5r/GZEk5o1mRb8TaTj03sQ==}
@@ -10883,7 +10883,7 @@ snapshots:
       '@storybook/preview-api': 8.1.11
       '@storybook/theming': 8.1.11(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@storybook/types': 8.1.11
-      '@types/lodash': 4.14.196
+      '@types/lodash': 4.17.7
       color-convert: 2.0.1
       dequal: 2.0.3
       lodash: 4.17.21
@@ -11658,7 +11658,7 @@ snapshots:
     dependencies:
       '@types/node': 20.12.7
 
-  '@types/lodash@4.14.196': {}
+  '@types/lodash@4.17.7': {}
 
   '@types/mdast@3.0.15':
     dependencies:
