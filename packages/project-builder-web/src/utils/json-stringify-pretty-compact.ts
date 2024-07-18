@@ -163,7 +163,7 @@ export function stringify(
         Object.keys(obj).forEach((key, index, array) => {
           const keyPart = `${JSON.stringify(key)}: `;
           const value = stringifyRecursive(
-            (obj as Record<string, unknown>)[key],
+            obj[key],
             nextIndent,
             keyPart.length + atEndOfArray(array, index),
           );
