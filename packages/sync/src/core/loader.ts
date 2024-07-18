@@ -103,11 +103,13 @@ export function loadGeneratorsForModules(
 }
 
 export const appPluginConfigSchema = z.object({
-  plugins: z.array(
-    z.object({
-      name: z.string(),
-    }),
-  ),
+  plugins: z
+    .array(
+      z.object({
+        name: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 export type AppPluginConfig = z.infer<typeof appPluginConfigSchema>;
@@ -131,7 +133,7 @@ export async function loadGeneratorsForProject(
 
   const generatorModulePaths = { ...builtInGeneratorPaths };
 
-  if (pluginConfig) {
+  if (pluginConfig?.plugins) {
     await Promise.all(
       pluginConfig.plugins.map(async (plugin): Promise<void> => {
         if (!generatorModulePaths[plugin.name]) {
