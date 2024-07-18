@@ -297,7 +297,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         }) {
           node.addPackages({
             '@graphql-yoga/redis-event-target': '2.0.0',
-            'graphql-ws': '5.14.2',
+            'graphql-ws': '5.16.0',
           });
 
           const [, pubsubPath] = makeImportAndFilePath(
