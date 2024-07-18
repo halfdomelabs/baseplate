@@ -1,5 +1,29 @@
 # @halfdomelabs/fastify-generators
 
+## 0.9.0
+
+### Minor Changes
+
+- 7e95126: Replace 'jest' with 'vitest'.
+- dafb793: Generate Fastify backend README
+
+### Patch Changes
+
+- bcc68c0: Upgrade Pothos to v4
+- 94feb66: Upgrade @types/lodash to 4.17.7
+- 94feb66: Upgrade Typescript to 5.4.4
+- c0b42fc: Upgrade eslint and plugins to latest v8 versions
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+- Updated dependencies [e32a926]
+- Updated dependencies [bcc68c0]
+- Updated dependencies [94feb66]
+- Updated dependencies [7e95126]
+- Updated dependencies [c0b42fc]
+- Updated dependencies [e32a926]
+- Updated dependencies [a6f01ea]
+  - @halfdomelabs/core-generators@0.9.0
+  - @halfdomelabs/sync@0.7.4
+
 ## 0.8.11
 
 ### Patch Changes

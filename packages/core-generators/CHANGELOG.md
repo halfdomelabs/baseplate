@@ -1,5 +1,23 @@
 # @halfdomelabs/core-generators
 
+## 0.9.0
+
+### Minor Changes
+
+- 7e95126: Replace 'jest' with 'vitest'.
+
+### Patch Changes
+
+- e32a926: Upgrade Node to 20.15.1
+- bcc68c0: Upgrade Pothos to v4
+- 94feb66: Upgrade Typescript to 5.4.4
+- c0b42fc: Upgrade eslint and plugins to latest v8 versions
+- e32a926: Upgrade PNPM to 9.5.0
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+- Updated dependencies [94feb66]
+- Updated dependencies [a6f01ea]
+  - @halfdomelabs/sync@0.7.4
+
 ## 0.8.0
 
 ### Minor Changes
