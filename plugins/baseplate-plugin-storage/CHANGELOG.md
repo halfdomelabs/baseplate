@@ -1,5 +1,12 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [b86ae48]
+  - @halfdomelabs/project-builder-lib@0.8.2
+
 ## 1.0.1
 
 ### Patch Changes

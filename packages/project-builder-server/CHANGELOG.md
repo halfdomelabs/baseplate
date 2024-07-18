@@ -1,5 +1,13 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.2
+
+### Patch Changes
+
+- b86ae48: Fix loading of web plugin paths
+- Updated dependencies [b86ae48]
+  - @halfdomelabs/project-builder-lib@0.8.2
+
 ## 0.4.1
 
 ### Patch Changes
