@@ -39,7 +39,7 @@ function AppsLayout(): JSX.Element {
           </NavigationMenu.List>
         </NavigationMenu>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className=" p-4">
+      <SidebarLayout.Content className="p-4">
         <div className="max-w-3xl">
           <Outlet />
         </div>
