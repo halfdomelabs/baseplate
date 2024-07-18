@@ -6,8 +6,7 @@ import SchemaBuilder, { BasePlugin, SchemaTypes } from '@pothos/core';
 
 export * from './types';
 
-export const pothosFieldWithInputPayloadPlugin =
-  'fieldWithInputPayload' as const;
+export const pothosFieldWithInputPayloadPlugin = 'fieldWithInputPayload';
 
 export class PothosFieldWithInputPayloadPlugin<
   Types extends SchemaTypes,

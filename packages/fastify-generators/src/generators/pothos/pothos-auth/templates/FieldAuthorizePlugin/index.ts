@@ -11,7 +11,7 @@ import { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
 import { ForbiddenError } from '%http-errors';
 import { AuthorizeRoleRuleFunction, AuthorizeRoleRuleOption } from './types';
 
-export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles' as const;
+export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles';
 
 export class PothosAuthorizeByRolesPlugin<
   Types extends SchemaTypes,

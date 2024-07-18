@@ -18,7 +18,7 @@ function AdminAppForm({ className, appConfig }: Props): JSX.Element {
         <NavigationTabs.Tab to="">General</NavigationTabs.Tab>
         <NavigationTabs.Tab to="sections">Sections</NavigationTabs.Tab>
       </NavigationTabs>
-      <div className=" bg-slate-200">
+      <div className="bg-slate-200">
         <Routes>
           <Route
             index

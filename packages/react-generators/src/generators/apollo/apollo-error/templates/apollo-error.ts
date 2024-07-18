@@ -2,7 +2,7 @@
 
 import { ApolloError } from '@apollo/client';
 
-export function getApolloErrorCode<T extends Readonly<string[]>>(
+export function getApolloErrorCode<T extends readonly string[]>(
   error: unknown,
   allowedCodes: T,
 ): T[number] | null {
