@@ -173,7 +173,7 @@ if (error instanceof Error && shouldLogToSentry(error)) {
 
         node.addDevPackages({
           '@sentry/types': '7.81.1',
-          '@types/lodash': '4.14.194',
+          '@types/lodash': '4.17.7',
         });
 
         configService.getConfigEntries().merge({

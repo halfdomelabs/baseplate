@@ -23,14 +23,12 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json && tsc-alias",
-    "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
     "clean": "rm -rf ./dist",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
-    "watch:templates": "pnpm build:templates --watch",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
     "watch:tsc-alias": "tsc-alias -w"
   },
@@ -64,13 +62,13 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/fs-extra": "11.0.4",
-    "@types/lodash": "4.14.196",
+    "@types/lodash": "4.17.7",
     "@types/node": "^20.0.0",
     "@types/ramda": "^0.29.3",
     "@types/ws": "^8.5.3",
     "concurrently": "8.2.2",
     "tsc-alias": "1.8.8",
-    "typescript": "5.2.2",
+    "typescript": "5.4.4",
     "vitest": "1.4.0"
   },
   "engines": {

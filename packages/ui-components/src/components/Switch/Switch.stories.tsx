@@ -7,7 +7,6 @@ const meta = {
   tags: ['autodocs'],
   argTypes: {
     className: { control: { type: 'text' } },
-    placeholder: { control: { type: 'text' } },
   },
 } satisfies Meta<typeof Switch>;
 
