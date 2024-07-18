@@ -180,7 +180,7 @@ export function createNonOverwriteableMap<T extends object>(
       ) {
         return R.uniq([...def, ...override]) as T[K];
       }
-      return override || def;
+      return (override || def) as T[K] | undefined;
     },
   };
 }

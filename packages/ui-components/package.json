@@ -102,7 +102,7 @@
     "tailwindcss": "3.4.3",
     "tailwindcss-animate": "^1.0.7",
     "tsc-alias": "1.8.8",
-    "typescript": "5.2.2",
+    "typescript": "5.4.4",
     "vite": "5.3.3",
     "vite-plugin-svgr": "4.2.0",
     "vite-tsconfig-paths": "4.3.2",

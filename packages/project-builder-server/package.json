@@ -70,7 +70,7 @@
     "@types/ws": "^8.5.3",
     "concurrently": "8.2.2",
     "tsc-alias": "1.8.8",
-    "typescript": "5.2.2",
+    "typescript": "5.4.4",
     "vitest": "1.4.0"
   },
   "engines": {

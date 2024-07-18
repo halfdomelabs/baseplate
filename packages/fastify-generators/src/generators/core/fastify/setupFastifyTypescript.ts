@@ -7,7 +7,7 @@ export function setupFastifyTypescript(
   node: NodeProvider,
   typescriptConfig: TypescriptConfigProvider,
 ): void {
-  typescriptConfig.setTypescriptVersion('5.2.2');
+  typescriptConfig.setTypescriptVersion('5.4.4');
   typescriptConfig.setTypescriptCompilerOptions({
     outDir: 'dist',
     declaration: true,
@@ -32,7 +32,7 @@ export function setupFastifyTypescript(
 
   node.addDevPackages({
     'tsc-alias': '1.8.8',
-    tsx: '4.6.2',
+    tsx: '4.16.2',
     '@types/node': `^${nodeVersion}.0.0`,
   });
 }
