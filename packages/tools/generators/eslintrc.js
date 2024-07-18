@@ -83,7 +83,7 @@ module.exports = function createEslintConfig(options) {
       'README.md',
       'templates/',
     ],
-    plugins: ['import'],
+    plugins: ['import', '@typescript-eslint'],
     settings: {
       react: { version: 'detect' },
     },
