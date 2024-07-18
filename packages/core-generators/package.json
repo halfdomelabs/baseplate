@@ -63,7 +63,7 @@
     "@types/semver": "^7.5.0",
     "concurrently": "8.2.2",
     "cpx2": "7.0.1",
-    "tsc-alias": "1.8.8",
+    "tsc-alias": "1.8.10",
     "typescript": "5.4.4",
     "vitest": "1.4.0"
   },

@@ -67,7 +67,7 @@
     "@types/ramda": "^0.29.3",
     "@types/ws": "^8.5.3",
     "concurrently": "8.2.2",
-    "tsc-alias": "1.8.8",
+    "tsc-alias": "1.8.10",
     "typescript": "5.4.4",
     "vitest": "1.4.0"
   },

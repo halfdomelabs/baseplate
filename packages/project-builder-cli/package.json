@@ -52,7 +52,7 @@
     "@types/lodash": "4.17.7",
     "@types/node": "^20.0.0",
     "dotenv": "^16.0.3",
-    "tsc-alias": "1.8.8",
+    "tsc-alias": "1.8.10",
     "tsx": "4.16.2",
     "typescript": "5.4.4"
   },
