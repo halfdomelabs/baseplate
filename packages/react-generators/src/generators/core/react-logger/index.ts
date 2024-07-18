@@ -36,7 +36,7 @@ const ReactLoggerGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { node, react }) {
     node.addPackages({
-      loglevel: '^1.8.0',
+      loglevel: '1.9.1',
     });
 
     return {
