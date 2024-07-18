@@ -115,20 +115,20 @@ const ReactApolloGenerator = createGeneratorWithTasks({
         const gqlFiles: string[] = [];
 
         node.addPackages({
-          '@apollo/client': '3.10.8',
-          graphql: '16.9.0',
+          '@apollo/client': '3.9.9',
+          graphql: '16.8.1',
         });
 
         if (enableSubscriptions) {
           node.addPackages({
-            'graphql-ws': '5.16.0',
+            'graphql-ws': '5.14.2',
           });
         }
 
         node.addDevPackages({
           '@graphql-codegen/cli': '5.0.2',
-          '@graphql-codegen/typescript': '4.0.9',
-          '@graphql-codegen/typescript-operations': '4.2.3',
+          '@graphql-codegen/typescript': '4.0.6',
+          '@graphql-codegen/typescript-operations': '4.2.0',
           '@graphql-codegen/typescript-react-apollo': '4.3.0',
         });
 
