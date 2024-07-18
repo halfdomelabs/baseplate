@@ -198,9 +198,9 @@ const PothosGenerator = createGeneratorWithTasks({
         },
       ) {
         node.addPackages({
-          '@pothos/core': '3.40.1',
-          '@pothos/plugin-simple-objects': '3.7.0',
-          '@pothos/plugin-relay': '3.45.1',
+          '@pothos/core': '4.0.2',
+          '@pothos/plugin-simple-objects': '4.0.3',
+          '@pothos/plugin-relay': '4.0.2',
         });
 
         // ignore prettier for schema.graphql
@@ -235,6 +235,7 @@ const PothosGenerator = createGeneratorWithTasks({
                     )
                   : undefined,
                 DefaultEdgesNullability: 'false',
+                DefaultFieldNullability: 'false',
                 ...Object.fromEntries(
                   config.schemaTypeOptions.map((option) => [
                     option.key,
@@ -263,11 +264,13 @@ const PothosGenerator = createGeneratorWithTasks({
                 ...DEFAULT_PLUGINS,
                 ...config.pothosPlugins,
               ]),
-              relayOptions: TypescriptCodeUtils.mergeExpressionsAsObject({
+              relay: TypescriptCodeUtils.mergeExpressionsAsObject({
                 clientMutationId: "'omit'",
                 cursorType: "'String'",
                 edgesFieldOptions: '{ nullable: false }',
               }),
+              defaultFieldNullability:
+                TypescriptCodeUtils.createExpression('false'),
               ...Object.fromEntries(
                 config.schemaBuilderOptions.map((option) => [
                   option.key,

@@ -1,14 +1,15 @@
 // @ts-nocheck
 
 import {
+  ArgumentRef,
+  FieldKind,
   FieldNullability,
   FieldRef,
   InputFieldMap,
   InputFieldRef,
   SchemaTypes,
-  TypeParam,
   ShapeFromTypeParam,
-  FieldKind,
+  TypeParam,
 } from '@pothos/core';
 import {
   MutationWithInputPayloadOptions,
@@ -58,18 +59,15 @@ declare global {
       input: InputFieldBuilder<Types, 'InputObject'>;
       payload: RootFieldBuilder<Types, unknown, 'PayloadObject'>;
       fieldWithInputPayload: <
-        InputFields extends Record<
-          string,
-          InputFieldRef<unknown, 'InputObject'>
-        >,
+        InputFields extends Record<string, InputFieldRef<Types, unknown>>,
         PayloadFields extends Record<
           string,
-          FieldRef<unknown, 'PayloadObject'>
+          FieldRef<Types, unknown, 'PayloadObject'>
         >,
         ResolveShape,
         ResolveReturnShape,
         // eslint-disable-next-line @typescript-eslint/ban-types
-        Args extends Record<string, InputFieldRef<unknown, 'Arg'>> = {},
+        Args extends Record<string, ArgumentRef<Types, unknown>> = {},
       >(
         options: MutationWithInputPayloadOptions<
           Types,
@@ -82,9 +80,10 @@ declare global {
           ResolveReturnShape
         >,
       ) => FieldRef<
+        Types,
         ShapeFromTypeParam<
           Types,
-          ObjectRef<OutputShapeFromFields<PayloadFields>>,
+          ObjectRef<Types, OutputShapeFromFields<PayloadFields>>,
           false
         >
       >;
