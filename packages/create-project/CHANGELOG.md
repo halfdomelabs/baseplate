@@ -1,5 +1,13 @@
 # @halfdomelabs/create-project
 
+## 0.2.2
+
+### Patch Changes
+
+- e32a926: Upgrade Node to 20.15.1
+- 94feb66: Upgrade Typescript to 5.4.4
+- e32a926: Upgrade PNPM to 9.5.0
+
 ## 0.2.1
 
 ### Patch Changes

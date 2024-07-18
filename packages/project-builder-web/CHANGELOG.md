@@ -1,5 +1,27 @@
 # @halfdomelabs/project-builder-web
 
+## 0.11.0
+
+### Minor Changes
+
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+
+### Patch Changes
+
+- 0cadfee: Enable plugin functionality by default
+- 267b839: Upgrade Vite to 5.3.3
+- 94feb66: Upgrade Typescript to 5.4.4
+- ece4355: Fix flash of error after saving a new enum
+- 94feb66: Upgrade React to 18.3.1
+- 94feb66: Upgrade loglevel to 1.9.1
+- Updated dependencies [0cadfee]
+- Updated dependencies [267b839]
+- Updated dependencies [94feb66]
+- Updated dependencies [c0b42fc]
+- Updated dependencies [a6f01ea]
+  - @halfdomelabs/project-builder-lib@0.8.0
+  - @halfdomelabs/ui-components@0.4.9
+
 ## 0.10.0
 
 ### Minor Changes

@@ -1,5 +1,27 @@
 # @halfdomelabs/react-generators
 
+## 0.7.8
+
+### Patch Changes
+
+- 267b839: Upgrade Vite to 5.3.3
+- bcc68c0: Upgrade Pothos to v4
+- 94feb66: Upgrade Typescript to 5.4.4
+- 7e95126: Replace 'jest' with 'vitest'.
+- c0b42fc: Upgrade eslint and plugins to latest v8 versions
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+- 94feb66: Upgrade React to 18.3.1
+- 94feb66: Upgrade loglevel to 1.9.1
+- Updated dependencies [e32a926]
+- Updated dependencies [bcc68c0]
+- Updated dependencies [94feb66]
+- Updated dependencies [7e95126]
+- Updated dependencies [c0b42fc]
+- Updated dependencies [e32a926]
+- Updated dependencies [a6f01ea]
+  - @halfdomelabs/core-generators@0.9.0
+  - @halfdomelabs/sync@0.7.4
+
 ## 0.7.7
 
 ### Patch Changes
