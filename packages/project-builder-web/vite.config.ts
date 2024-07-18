@@ -4,7 +4,7 @@ import { defineConfig, loadEnv } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
-import { pluginDevServerPlugin } from './plugins/plugin-dev-server';
+import { pluginDevServerPlugin } from './plugins/plugin-dev-server.js';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
