@@ -6,6 +6,27 @@ import path from 'node:path';
 import { ViteDevServer, Plugin } from 'vite';
 
 /**
+ * Safely concatenate two paths and prevent directory traversal attacks.
+ * @param {string} basePath - The base directory path.
+ * @param {string} relativePath - The relative path to concatenate to the base path.
+ * @returns {string} The safely concatenated and normalized absolute path.
+ */
+export function pathSafeJoin(
+  basePath: string,
+  relativePath: string,
+): string | undefined {
+  const normalizedBasePath = path.resolve(basePath);
+  const combinedPath = path.join(normalizedBasePath, relativePath);
+
+  // Ensure that the combined path is within the base path
+  if (!combinedPath.startsWith(normalizedBasePath)) {
+    return undefined;
+  }
+
+  return combinedPath;
+}
+
+/**
  * Serves plugin web assets dynamically so that they can be loaded independently of
  * project-builder-server which can be restarted.
  */
@@ -39,7 +60,7 @@ export function pluginDevServerPlugin(): Plugin {
       if (
         modules.some((module) => module.file?.includes('project-builder-lib'))
       ) {
-        server.hot.send({ type: 'full-reload' });
+        server.ws.send({ type: 'full-reload' });
         return [];
       }
     },
@@ -62,7 +83,7 @@ export function pluginDevServerPlugin(): Plugin {
             clearTimeout(timeout);
           }
           timeout = setTimeout(() => {
-            server.hot.send({
+            server.ws.send({
               type: 'custom',
               event: 'plugin-assets-changed',
             });
@@ -72,7 +93,6 @@ export function pluginDevServerPlugin(): Plugin {
 
       server.middlewares.use(
         (req: IncomingMessage, res: ServerResponse, next: () => void) => {
-          // /api/plugins/UcCSJcl8csS8/halfdomelabs_baseplate-plugin-storage_storage/web/assets/__federation_fn_import-DAWAs3g6.js
           if (req.url?.startsWith('/api/plugins/')) {
             const urlMatch = req.url.match(
               /^\/api\/plugins\/([^/]+)\/([^/]+)\/web\/([^?]*)(.*)$/,
@@ -89,12 +109,14 @@ export function pluginDevServerPlugin(): Plugin {
                 return;
               }
 
-              const fullAssetPath = path.join(
-                pluginMatch.location,
-                'dist',
-                'web',
-                assetPath,
-              );
+              const basePath = path.join(pluginMatch.location, 'dist', 'web');
+              const fullAssetPath = pathSafeJoin(basePath, assetPath);
+
+              if (!fullAssetPath) {
+                res.statusCode = 404;
+                res.end('Not found');
+                return;
+              }
 
               if (fs.existsSync(fullAssetPath)) {
                 res.setHeader(

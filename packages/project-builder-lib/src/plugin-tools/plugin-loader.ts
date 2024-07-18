@@ -212,7 +212,7 @@ export async function loadPluginsInPackage(
         metadata,
         packageName,
         directory,
-        path.join(directory, manifest.webBuild),
+        path.join(pluginPackageDirectory, manifest.webBuild),
       );
     }),
   );
