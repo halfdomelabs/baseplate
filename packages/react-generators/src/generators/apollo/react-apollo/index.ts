@@ -130,6 +130,7 @@ const ReactApolloGenerator = createGeneratorWithTasks({
           '@graphql-codegen/typescript': '4.0.9',
           '@graphql-codegen/typescript-operations': '4.2.3',
           '@graphql-codegen/typescript-react-apollo': '4.3.0',
+          '@parcel/watcher': '2.4.1',
         });
 
         node.addScripts({
