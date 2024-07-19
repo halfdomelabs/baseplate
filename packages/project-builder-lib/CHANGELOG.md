@@ -1,5 +1,43 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.3
+
+### Patch Changes
+
+- 64bc313: Fix web entry target sourcing to source plugins from source folder instead of dist
+
+## 0.8.2
+
+### Patch Changes
+
+- b86ae48: Fix loading of web plugin paths
+
+## 0.8.1
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+- Updated dependencies [d8374b4]
+  - @halfdomelabs/ui-components@0.4.10
+  - @halfdomelabs/sync@0.7.5
+
+## 0.8.0
+
+### Minor Changes
+
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+
+### Patch Changes
+
+- 0cadfee: Enable plugin functionality by default
+- 94feb66: Upgrade Typescript to 5.4.4
+- c0b42fc: Upgrade eslint and plugins to latest v8 versions
+- Updated dependencies [267b839]
+- Updated dependencies [94feb66]
+- Updated dependencies [a6f01ea]
+  - @halfdomelabs/ui-components@0.4.9
+  - @halfdomelabs/sync@0.7.4
+
 ## 0.7.6
 
 ### Patch Changes

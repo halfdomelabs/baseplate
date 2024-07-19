@@ -1,5 +1,73 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.7.3
+
+### Patch Changes
+
+- Updated dependencies [64bc313]
+  - @halfdomelabs/baseplate-plugin-storage@1.0.3
+  - @halfdomelabs/project-builder-server@0.4.3
+  - @halfdomelabs/project-builder-lib@0.8.3
+  - @halfdomelabs/project-builder-web@0.11.3
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies [b86ae48]
+  - @halfdomelabs/project-builder-server@0.4.2
+  - @halfdomelabs/project-builder-lib@0.8.2
+  - @halfdomelabs/project-builder-web@0.11.2
+  - @halfdomelabs/baseplate-plugin-storage@1.0.2
+
+## 0.7.1
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+- Updated dependencies [3f700cb]
+- Updated dependencies [d8374b4]
+- Updated dependencies [e27c549]
+  - @halfdomelabs/baseplate-plugin-storage@1.0.1
+  - @halfdomelabs/project-builder-server@0.4.1
+  - @halfdomelabs/project-builder-lib@0.8.1
+  - @halfdomelabs/fastify-generators@0.9.1
+  - @halfdomelabs/react-generators@0.7.9
+  - @halfdomelabs/core-generators@0.9.1
+  - @halfdomelabs/project-builder-web@0.11.1
+
+## 0.7.0
+
+### Minor Changes
+
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+
+### Patch Changes
+
+- 52f71fc: Use shorthand "-v" instead of "-V" for version option
+- 94feb66: Upgrade Typescript to 5.4.4
+- Updated dependencies [0cadfee]
+- Updated dependencies [e32a926]
+- Updated dependencies [267b839]
+- Updated dependencies [bcc68c0]
+- Updated dependencies [94feb66]
+- Updated dependencies [94feb66]
+- Updated dependencies [7e95126]
+- Updated dependencies [c0b42fc]
+- Updated dependencies [e32a926]
+- Updated dependencies [a6f01ea]
+- Updated dependencies [dafb793]
+- Updated dependencies [ece4355]
+- Updated dependencies [94feb66]
+- Updated dependencies [94feb66]
+  - @halfdomelabs/project-builder-lib@0.8.0
+  - @halfdomelabs/project-builder-web@0.11.0
+  - @halfdomelabs/core-generators@0.9.0
+  - @halfdomelabs/baseplate-plugin-storage@1.0.0
+  - @halfdomelabs/react-generators@0.7.8
+  - @halfdomelabs/fastify-generators@0.9.0
+  - @halfdomelabs/project-builder-server@0.4.0
+
 ## 0.6.14
 
 ### Patch Changes

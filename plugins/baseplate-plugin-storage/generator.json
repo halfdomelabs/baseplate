@@ -1,0 +1,4 @@
+{
+  "generatorBaseDirectory": "dist/generators",
+  "generatorPatterns": ["*/*"]
+}

@@ -1,5 +1,38 @@
 # @halfdomelabs/cli
 
+## 0.7.15
+
+### Patch Changes
+
+- Updated dependencies [d8374b4]
+- Updated dependencies [e27c549]
+  - @halfdomelabs/fastify-generators@0.9.1
+  - @halfdomelabs/react-generators@0.7.9
+  - @halfdomelabs/core-generators@0.9.1
+  - @halfdomelabs/sync@0.7.5
+
+## 0.7.14
+
+### Patch Changes
+
+- 94feb66: Upgrade Typescript to 5.4.4
+- Updated dependencies [e32a926]
+- Updated dependencies [267b839]
+- Updated dependencies [bcc68c0]
+- Updated dependencies [94feb66]
+- Updated dependencies [94feb66]
+- Updated dependencies [7e95126]
+- Updated dependencies [c0b42fc]
+- Updated dependencies [e32a926]
+- Updated dependencies [a6f01ea]
+- Updated dependencies [dafb793]
+- Updated dependencies [94feb66]
+- Updated dependencies [94feb66]
+  - @halfdomelabs/core-generators@0.9.0
+  - @halfdomelabs/react-generators@0.7.8
+  - @halfdomelabs/fastify-generators@0.9.0
+  - @halfdomelabs/sync@0.7.4
+
 ## 0.7.13
 
 ### Patch Changes

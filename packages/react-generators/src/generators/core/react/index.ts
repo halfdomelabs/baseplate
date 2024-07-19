@@ -133,7 +133,7 @@ const ReactGenerator = createGeneratorWithChildren({
       '.env.production.local',
     ]);
 
-    eslint?.getConfig().set('react', true).set('disableJest', true);
+    eslint?.getConfig().set('react', true).set('disableVitest', true);
 
     const vitePlugins: TypescriptCodeExpression[] = [
       TypescriptCodeUtils.createExpression(

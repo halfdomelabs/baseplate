@@ -9,7 +9,7 @@ export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
   run(projectDefinition, hooks, definitionContainer) {
     const { auth } = projectDefinition;
-    if (!auth || !auth.useAuth0) {
+    if (!auth?.useAuth0) {
       return;
     }
 

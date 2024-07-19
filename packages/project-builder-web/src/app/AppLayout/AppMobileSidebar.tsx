@@ -3,8 +3,6 @@ import { HiCollection, HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
-import { useFeatureFlag } from '@src/hooks/useFeatureFlag';
-
 function SidebarNavigationIcon({
   icon: Icon,
   to,
@@ -31,8 +29,6 @@ function SidebarNavigationIcon({
 }
 
 export function AppMobileSidebar(): JSX.Element {
-  const isPluginEnabled = useFeatureFlag('plugins');
-
   return (
     <nav className="grid gap-6 text-lg font-medium">
       <div className="flex items-center space-x-2">
@@ -48,13 +44,7 @@ export function AppMobileSidebar(): JSX.Element {
           icon={HiCollection}
           label="Features"
         />
-        {isPluginEnabled && (
-          <SidebarNavigationIcon
-            to="/plugins"
-            icon={MdWidgets}
-            label="Plugins"
-          />
-        )}
+        <SidebarNavigationIcon to="/plugins" icon={MdWidgets} label="Plugins" />
         <SidebarNavigationIcon
           to="/settings"
           icon={MdOutlineSettings}

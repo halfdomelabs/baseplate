@@ -1,10 +1,13 @@
+import { createRequire } from 'module';
 import multimatch from 'multimatch';
+import { packageUp } from 'package-up';
 import path from 'path';
 import * as R from 'ramda';
 import { z } from 'zod';
 
 import { GeneratorConfig } from './generator.js';
 import { getModuleDefault } from '../utils/require.js';
+import { notEmpty } from '@src/utils/arrays.js';
 import { listDirectories, pathExists, readJSON } from '@src/utils/fs.js';
 
 export interface GeneratorConfigWithLocation extends GeneratorConfig {
@@ -28,13 +31,14 @@ const GENERATOR_LOADER_CONFIG_SCHEMA = z.object({
 export async function loadGeneratorsForModule(
   moduleName: string,
   modulePath: string,
-): Promise<GeneratorConfigMap> {
+): Promise<GeneratorConfigMap | null> {
   // look for a generator.json in the root of the module
   const moduleConfigPath = path.join(modulePath, 'generator.json');
   const moduleConfigExists = await pathExists(moduleConfigPath);
-  const generatorLoaderConfig = moduleConfigExists
-    ? await readJSON(moduleConfigPath)
-    : {};
+  if (!moduleConfigExists) {
+    return null;
+  }
+  const generatorLoaderConfig = await readJSON(moduleConfigPath);
 
   const validatedConfig = GENERATOR_LOADER_CONFIG_SCHEMA.parse(
     generatorLoaderConfig,
@@ -86,4 +90,64 @@ export async function loadGeneratorsForModule(
   );
 
   return R.mergeAll(generators);
+}
+
+export function loadGeneratorsForModules(
+  modulePaths: Record<string, string>,
+): Promise<GeneratorConfigMap> {
+  return Promise.all(
+    Object.entries(modulePaths).map(([moduleName, modulePath]) =>
+      loadGeneratorsForModule(moduleName, modulePath),
+    ),
+  ).then((generators) => R.mergeAll(generators.filter(notEmpty)));
+}
+
+export const appPluginConfigSchema = z.object({
+  plugins: z
+    .array(
+      z.object({
+        name: z.string(),
+      }),
+    )
+    .optional(),
+});
+
+export type AppPluginConfig = z.infer<typeof appPluginConfigSchema>;
+
+export async function loadGeneratorsForProject(
+  builtInGeneratorPaths: Record<string, string>,
+  projectDirectory: string,
+): Promise<GeneratorConfigMap> {
+  const pluginConfigPath = path.join(
+    projectDirectory,
+    'baseplate/plugins.json',
+  );
+  const pluginConfigExists = await pathExists(pluginConfigPath);
+
+  const pluginConfig = pluginConfigExists
+    ? appPluginConfigSchema.parse(await readJSON(pluginConfigPath))
+    : undefined;
+
+  // attempt to resolve all plugin paths
+  const require = createRequire(projectDirectory);
+
+  const generatorModulePaths = { ...builtInGeneratorPaths };
+
+  if (pluginConfig?.plugins) {
+    await Promise.all(
+      pluginConfig.plugins.map(async (plugin): Promise<void> => {
+        if (!generatorModulePaths[plugin.name]) {
+          const pluginIndex = require.resolve(plugin.name);
+          const pluginPath = await packageUp({
+            cwd: path.dirname(pluginIndex),
+          });
+          if (pluginPath) {
+            generatorModulePaths[plugin.name] = path.dirname(pluginPath);
+          }
+        }
+      }),
+    );
+  }
+
+  return loadGeneratorsForModules(generatorModulePaths);
 }

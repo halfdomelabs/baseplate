@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-cli",
-  "version": "0.6.14",
+  "version": "0.7.3",
   "description": "Full-stack CLI builder using Baseplate generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -41,6 +41,7 @@
     "@halfdomelabs/project-builder-web": "workspace:*",
     "@halfdomelabs/react-generators": "workspace:*",
     "commander": "^11.0.0",
+    "lodash": "^4.17.21",
     "package-up": "^5.0.0",
     "pino": "8.14.1",
     "pino-pretty": "10.0.1",
@@ -48,11 +49,12 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
+    "@types/lodash": "4.17.7",
     "@types/node": "^20.0.0",
     "dotenv": "^16.0.3",
-    "tsc-alias": "1.8.8",
-    "tsx": "4.6.2",
-    "typescript": "5.2.2"
+    "tsc-alias": "1.8.10",
+    "tsx": "4.16.2",
+    "typescript": "5.4.4"
   },
   "engines": {
     "node": "^20.0.0"

@@ -9,14 +9,18 @@ import {
   writeGeneratorOutput,
 } from '../generator-output-writer.js';
 import { GeneratorOutput } from '../generator-output.js';
-import { GeneratorConfigMap } from '../loader.js';
+import {
+  loadGeneratorsForModules,
+  loadGeneratorsForProject,
+} from '../loader.js';
 import { Logger } from '@src/utils/evented-logger.js';
 
 export class GeneratorEngine {
-  generators: GeneratorConfigMap = {};
+  constructor(public builtInGeneratorModulePaths: Record<string, string>) {}
 
-  constructor(generators: GeneratorConfigMap) {
-    this.generators = generators;
+  async preloadGenerators(): Promise<void> {
+    // Preload all generators for faster generations
+    await loadGeneratorsForModules(this.builtInGeneratorModulePaths);
   }
 
   /**
@@ -32,10 +36,15 @@ export class GeneratorEngine {
     const rootDescriptor = await loadDescriptorFromFile(
       path.join(projectPath, 'root'),
     );
+    const generators = await loadGeneratorsForProject(
+      this.builtInGeneratorModulePaths,
+      directory,
+    );
+
     const rootGeneratorEntry = await buildGeneratorEntry(
       rootDescriptor,
       'root',
-      { baseDirectory: projectPath, generatorMap: this.generators, logger },
+      { baseDirectory: projectPath, generatorMap: generators, logger },
     );
 
     return rootGeneratorEntry;

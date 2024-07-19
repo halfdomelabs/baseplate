@@ -1,5 +1,19 @@
 # @halfdomelabs/ui-components
 
+## 0.4.10
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+
+## 0.4.9
+
+### Patch Changes
+
+- 267b839: Upgrade Vite to 5.3.3
+- 94feb66: Upgrade Typescript to 5.4.4
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+
 ## 0.4.8
 
 ### Patch Changes

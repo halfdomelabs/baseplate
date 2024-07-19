@@ -1,5 +1,48 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.3
+
+### Patch Changes
+
+- 64bc313: Fix web entry target sourcing to source plugins from source folder instead of dist
+- Updated dependencies [64bc313]
+  - @halfdomelabs/project-builder-lib@0.8.3
+
+## 0.4.2
+
+### Patch Changes
+
+- b86ae48: Fix loading of web plugin paths
+- Updated dependencies [b86ae48]
+  - @halfdomelabs/project-builder-lib@0.8.2
+
+## 0.4.1
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+- Updated dependencies [d8374b4]
+  - @halfdomelabs/project-builder-lib@0.8.1
+  - @halfdomelabs/sync@0.7.5
+
+## 0.4.0
+
+### Minor Changes
+
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+- dafb793: Generate Fastify backend README
+
+### Patch Changes
+
+- 94feb66: Upgrade Typescript to 5.4.4
+- 7e95126: Replace 'jest' with 'vitest'.
+- Updated dependencies [0cadfee]
+- Updated dependencies [94feb66]
+- Updated dependencies [c0b42fc]
+- Updated dependencies [a6f01ea]
+  - @halfdomelabs/project-builder-lib@0.8.0
+  - @halfdomelabs/sync@0.7.4
+
 ## 0.3.7
 
 ### Patch Changes

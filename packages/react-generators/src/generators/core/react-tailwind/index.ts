@@ -41,7 +41,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
   createGenerator({ globalBodyClasses }, { node, react, eslint, prettier }) {
     const srcFolder = react.getSrcFolder();
 
-    const prettierPluginTailwindcssVersion = '0.5.14';
+    const prettierPluginTailwindcssVersion = '0.6.5';
 
     node.addDevPackages({
       autoprefixer: '10.4.19',

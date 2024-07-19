@@ -1,12 +1,17 @@
 /* eslint-disable no-console */
-import { getModuleFederationTargets } from '@halfdomelabs/project-builder-lib/plugin-tools';
+import {
+  getModuleFederationTargets,
+  rewriteDistToSrc,
+} from '@halfdomelabs/project-builder-lib/plugin-tools';
 import federation from '@originjs/vite-plugin-federation';
 import react from '@vitejs/plugin-react';
 import { UserConfig, defineConfig } from 'vite';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(async (): Promise<UserConfig> => {
-  const viteTargets = await getModuleFederationTargets(__dirname);
+  const viteTargets = await getModuleFederationTargets(__dirname, {
+    rewritePluginDirectory: rewriteDistToSrc,
+  });
   return {
     build: {
       outDir: 'dist/web',

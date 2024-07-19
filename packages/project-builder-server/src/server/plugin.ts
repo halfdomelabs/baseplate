@@ -21,6 +21,7 @@ import {
   GeneratorEngineSetupConfig,
   getGeneratorEngine,
 } from '@src/sync/index.js';
+import { pathSafeJoin } from '@src/utils/paths.js';
 
 /* eslint-disable @typescript-eslint/no-floating-promises */
 // FastifyReply has a then method but it's not a promise
@@ -109,8 +110,11 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         reply.status(404).send('No plugin with provided ID found');
         return;
       }
-      const fullPath = path.join(plugin.pluginDirectory, 'static', staticPath);
-      if (!fs.existsSync(fullPath)) {
+      const fullPath = pathSafeJoin(
+        path.join(plugin.pluginDirectory, 'static'),
+        staticPath,
+      );
+      if (!fullPath || !fs.existsSync(fullPath)) {
         reply.status(404).send('File not found');
         return;
       }
@@ -148,8 +152,8 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         reply.status(404).send('No plugin with provided ID found');
         return;
       }
-      const fullPath = path.join(plugin.webBuildDirectory, staticPath);
-      if (!fs.existsSync(fullPath)) {
+      const fullPath = pathSafeJoin(plugin.webBuildDirectory, staticPath);
+      if (!fullPath || !fs.existsSync(fullPath)) {
         reply.status(404).send('File not found');
         return;
       }
@@ -192,8 +196,8 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
 
   // pre-warm up generator engine so syncing is faster on first request
   setTimeout(() => {
-    getGeneratorEngine(generatorSetupConfig).catch((err) =>
-      fastify.log.error(err),
-    );
+    getGeneratorEngine(generatorSetupConfig)
+      .preloadGenerators()
+      .catch((err) => fastify.log.error(err));
   }, 500);
 };

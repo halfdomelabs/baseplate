@@ -13,7 +13,7 @@ interface EslintConfig {
   react?: boolean;
   eslintIgnore: string[];
   extraTsconfigProjects: string[];
-  disableJest?: boolean;
+  disableVitest?: boolean;
 }
 
 export interface EslintProvider {
@@ -49,29 +49,29 @@ const EslintGenerator = createGeneratorWithChildren({
         const eslintConfig = generateConfig({
           react: config.react,
           extraTsconfigProjects: config.extraTsconfigProjects,
-          disableJest: config.disableJest,
+          disableVitest: config.disableVitest,
         });
 
         const reactPackages: Record<string, string> = config.react
           ? {
-              'eslint-plugin-jsx-a11y': '6.7.1',
-              'eslint-plugin-react': '7.33.2',
-              'eslint-plugin-react-hooks': '4.6.0',
+              'eslint-plugin-jsx-a11y': '6.9.0',
+              'eslint-plugin-react': '7.34.4',
+              'eslint-plugin-react-hooks': '4.6.2',
             }
           : {};
 
         node.addDevPackages({
-          '@typescript-eslint/eslint-plugin': '6.11.0',
-          '@typescript-eslint/parser': '6.11.0',
-          eslint: '8.53.0',
+          '@typescript-eslint/eslint-plugin': '7.16.1',
+          '@typescript-eslint/parser': '7.16.1',
+          eslint: '8.57.0',
           ...reactPackages,
-          'eslint-config-prettier': '9.0.0',
+          'eslint-config-prettier': '9.1.0',
           'eslint-import-resolver-typescript': '3.6.1',
-          'eslint-plugin-import': '2.29.0',
-          ...(config.disableJest
+          'eslint-plugin-import': '2.29.1',
+          ...(config.disableVitest
             ? {}
             : {
-                'eslint-plugin-jest': '27.6.0',
+                'eslint-plugin-vitest': '0.4.1',
               }),
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');

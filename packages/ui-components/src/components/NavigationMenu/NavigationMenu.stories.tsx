@@ -124,7 +124,7 @@ function NavigationMenuContainer(
         <NavigationMenu.Item>
           <NavigationMenu.Trigger>Components</NavigationMenu.Trigger>
           <NavigationMenu.Content>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
               {components.map((component) => (
                 <ListItem
                   key={component.title}

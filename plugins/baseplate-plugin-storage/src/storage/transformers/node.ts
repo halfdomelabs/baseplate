@@ -7,6 +7,7 @@ import {
 
 import { FileTransformerConfig } from './types';
 import { StoragePluginDefinition } from '../core/schema/plugin-definition';
+import { PrismaFileTransformerDescriptor } from '@src/generators/fastify';
 
 function buildFileTransformerCompiler(
   pluginId: string,
@@ -43,10 +44,11 @@ function buildFileTransformerCompiler(
       }
 
       return {
-        generator: '@halfdomelabs/fastify/storage/prisma-file-transformer',
+        generator:
+          '@halfdomelabs/baseplate-plugin-storage/fastify/prisma-file-transformer',
         category: category.name,
         name: foreignRelation.name,
-      };
+      } satisfies PrismaFileTransformerDescriptor;
     },
   };
 }

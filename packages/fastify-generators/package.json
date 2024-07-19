@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/fastify-generators",
-  "version": "0.8.11",
+  "version": "0.9.1",
   "description": "Fastify generators for Baseplate",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -54,8 +54,8 @@
     "@types/semver": "^7.5.0",
     "concurrently": "8.2.2",
     "cpx2": "7.0.1",
-    "tsc-alias": "1.8.8",
-    "typescript": "5.2.2"
+    "tsc-alias": "1.8.10",
+    "typescript": "5.4.4"
   },
   "engines": {
     "node": "^20.0.0"

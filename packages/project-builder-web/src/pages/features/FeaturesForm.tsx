@@ -81,7 +81,7 @@ export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
               className="flex flex-row space-x-2 hover:bg-muted"
             >
               <button
-                className="mr-1 flex flex-row items-center space-x-2 rounded-md p-1 "
+                className="mr-1 flex flex-row items-center space-x-2 rounded-md p-1"
                 onClick={() => {
                   setFeatureToEdit(feature);
                   setShowFeatureForm(true);

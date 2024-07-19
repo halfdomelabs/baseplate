@@ -1,5 +1,18 @@
 # @halfdomelabs/sync
 
+## 0.7.5
+
+### Patch Changes
+
+- d8374b4: Upgrade tsc-alias to 1.8.10
+
+## 0.7.4
+
+### Patch Changes
+
+- 94feb66: Upgrade Typescript to 5.4.4
+- a6f01ea: Set up new plugin architecture and migrate storage plugin to new plugin architecture
+
 ## 0.7.3
 
 ### Patch Changes

@@ -3,13 +3,13 @@ import { NodeProvider } from '@halfdomelabs/core-generators';
 export function setupViteNode(node: NodeProvider): void {
   const nodeVersion = node.getNodeVersion().split('.')[0];
   node.addPackages({
-    react: '18.2.0',
-    'react-dom': '18.2.0',
+    react: '18.3.1',
+    'react-dom': '18.3.1',
   });
   node.addDevPackages({
     '@types/node': `^${nodeVersion}.0.0`,
-    '@types/react': '18.2.15',
-    '@types/react-dom': '18.2.7',
+    '@types/react': '18.3.3',
+    '@types/react-dom': '18.3.0',
     '@vitejs/plugin-react': '4.3.1',
     vite: '5.3.3',
     'vite-plugin-svgr': '4.2.0',

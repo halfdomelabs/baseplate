@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/create-project",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "CLI starter kit for creating a new Baseplate project",
   "license": "MIT",
   "author": "Half Dome Labs LLC",
@@ -37,9 +37,9 @@
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "^20.0.0",
-    "tsc-alias": "1.8.8",
-    "tsx": "4.6.2",
-    "typescript": "5.2.2"
+    "tsc-alias": "1.8.10",
+    "tsx": "4.16.2",
+    "typescript": "5.4.4"
   },
   "engines": {
     "node": "^20.0.0"

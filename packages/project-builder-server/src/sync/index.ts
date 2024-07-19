@@ -1,10 +1,5 @@
 import { AppEntry } from '@halfdomelabs/project-builder-lib';
-import {
-  FileData,
-  GeneratorEngine,
-  loadGeneratorsForModule,
-  Logger,
-} from '@halfdomelabs/sync';
+import { FileData, GeneratorEngine, Logger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { globby } from 'globby';
@@ -15,27 +10,13 @@ export interface GeneratorEngineSetupConfig {
   generatorPackages: { name: string; path: string }[];
 }
 
-let cachedEnginePromise: Promise<GeneratorEngine> | undefined;
-
-export async function getGeneratorEngine(
+export function getGeneratorEngine(
   config: GeneratorEngineSetupConfig,
-): Promise<GeneratorEngine> {
-  if (!cachedEnginePromise) {
-    if (!config.generatorPackages) {
-      throw new Error(`No generator packages specified!`);
-    }
-    cachedEnginePromise = (async () => {
-      const generators = await Promise.all(
-        config.generatorPackages.map(({ name, path: modulePath }) =>
-          loadGeneratorsForModule(name, modulePath),
-        ),
-      );
-      const generatorMap = R.mergeAll(generators);
-
-      return new GeneratorEngine(generatorMap);
-    })();
-  }
-  return cachedEnginePromise;
+): GeneratorEngine {
+  const generatorMap = R.fromPairs(
+    config.generatorPackages.map(({ name, path }) => [name, path]),
+  );
+  return new GeneratorEngine(generatorMap);
 }
 
 interface BuildResultFile {
@@ -56,7 +37,7 @@ export async function generateForDirectory({
   logger,
 }: GenerateForDirectoryOptions): Promise<void> {
   const { rootDirectory, name } = appEntry;
-  const engine = await getGeneratorEngine(generatorSetupConfig);
+  const engine = getGeneratorEngine(generatorSetupConfig);
 
   const projectDirectory = path.join(baseDirectory, rootDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
@@ -197,7 +178,7 @@ export async function generateCleanAppForDirectory({
   logger,
   generatorSetupConfig,
 }: GenerateForDirectoryOptions): Promise<void> {
-  const engine = await getGeneratorEngine(generatorSetupConfig);
+  const engine = getGeneratorEngine(generatorSetupConfig);
 
   const projectDirectory = path.join(baseDirectory, rootDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');

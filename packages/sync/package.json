@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/sync",
-  "version": "0.7.3",
+  "version": "0.7.5",
   "description": "Library for syncing Baseplate descriptions",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -41,6 +41,7 @@
     "multimatch": "^6.0.0",
     "node-diff3": "3.1.2",
     "p-limit": "^4.0.0",
+    "package-up": "^5.0.0",
     "ramda": "^0.28.0",
     "toposort": "^2.0.2",
     "zod": "3.23.8"
@@ -48,15 +49,15 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/ejs": "^3.1.2",
-    "@types/lodash": "4.14.196",
+    "@types/lodash": "4.17.7",
     "@types/ms": "0.7.34",
     "@types/node": "^20.0.0",
     "@types/ramda": "^0.29.3",
     "@types/toposort": "^2.0.3",
     "concurrently": "8.2.2",
     "memfs": "4.2.0",
-    "tsc-alias": "1.8.8",
-    "typescript": "5.2.2",
+    "tsc-alias": "1.8.10",
+    "typescript": "5.4.4",
     "vitest": "1.4.0"
   },
   "engines": {

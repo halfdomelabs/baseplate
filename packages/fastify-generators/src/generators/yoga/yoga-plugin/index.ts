@@ -150,11 +150,11 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         { setupTask: { configMap } },
       ) {
         node.addPackages({
-          'altair-fastify-plugin': '5.2.7',
-          graphql: '16.8.1',
-          '@envelop/core': '5.0.0',
+          'altair-fastify-plugin': '7.2.4',
+          graphql: '16.9.0',
+          '@envelop/core': '5.0.1',
           '@envelop/disable-introspection': '6.0.0',
-          'graphql-yoga': '5.3.1',
+          'graphql-yoga': '5.6.1',
         });
 
         node.addDevPackages({
@@ -163,7 +163,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
 
         // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
         node.addDevPackages({
-          '@types/ws': '8.5.9',
+          '@types/ws': '8.5.11',
         });
 
         return {
@@ -297,7 +297,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         }) {
           node.addPackages({
             '@graphql-yoga/redis-event-target': '2.0.0',
-            'graphql-ws': '5.14.2',
+            'graphql-ws': '5.16.0',
           });
 
           const [, pubsubPath] = makeImportAndFilePath(

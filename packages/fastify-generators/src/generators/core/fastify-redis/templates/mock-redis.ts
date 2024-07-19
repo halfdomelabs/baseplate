@@ -1,7 +1,8 @@
 // @ts-nocheck
 import Redis from 'ioredis';
+import { vi } from 'vitest';
 
-// We need to mock Redis otherwise open connections may prevent Jest from exiting
+// We need to mock Redis otherwise open connections may prevent Vitest from exiting
 
 // Require allows us to avoid using ioredis-mock types which are out of date
 
@@ -32,4 +33,4 @@ Object.keys(IoRedisMock).forEach((key) => {
   )[key];
 });
 
-jest.mock('ioredis', () => IoRedisMockAugmented);
+vi.mock('ioredis', () => ({ default: IoRedisMockAugmented }));

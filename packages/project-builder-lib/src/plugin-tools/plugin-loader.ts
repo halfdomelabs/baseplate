@@ -48,27 +48,17 @@ async function readManifestJson(
 
 export async function readMetadataJson(
   directory: string,
-): Promise<PluginMetadata | undefined> {
-  const metadataJsonFilename = path.join(directory, 'metadata.js');
+): Promise<PluginMetadata> {
+  const metadataJsonFilename = path.join(directory, 'metadata.json');
   try {
-    const fileExistsResult = await fileExists(metadataJsonFilename);
-    if (!fileExistsResult) {
-      return;
-    }
-    const metadataContents = (await import(metadataJsonFilename)) as unknown;
-    if (typeof metadataContents !== 'object' || metadataContents === null) {
+    if (!(await fileExists(metadataJsonFilename))) {
       throw new Error(
-        `Plugin at ${directory} does not export a valid metadata object.`,
+        `Plugin metadata file not found: ${metadataJsonFilename}`,
       );
     }
-
-    if (!('default' in metadataContents)) {
-      throw new Error(
-        `Plugin at ${directory} does not export a default metadata object.`,
-      );
-    }
-
-    return pluginMetadataSchema.parse(metadataContents.default);
+    return fs
+      .readFile(metadataJsonFilename, 'utf-8')
+      .then((data) => pluginMetadataSchema.parse(JSON.parse(data)));
   } catch (err) {
     throw new PluginLoaderError(
       `Unable to read plugin metadata ${metadataJsonFilename}`,
@@ -88,6 +78,25 @@ interface EntrypointInfo {
   path: string;
 }
 
+/**
+ * Look for a file that exists with a JS extension (.js(x), .ts(x))
+ */
+async function findJavascriptFile(
+  pathWithoutExtension: string,
+): Promise<string | undefined> {
+  const candidatePaths = ['ts', 'js', 'tsx', 'jsx'].map(
+    (extension) => `${pathWithoutExtension}.${extension}`,
+  );
+
+  for (const path of candidatePaths) {
+    if (await fileExists(path)) {
+      return path;
+    }
+  }
+
+  return undefined;
+}
+
 export async function getPluginEntrypoints(
   metadata: PluginMetadata,
   pluginDirectory: string,
@@ -104,11 +113,10 @@ export async function getPluginEntrypoints(
       moduleDirectoryPaths.map(async (moduleDirectoryPath) => {
         return await Promise.all(
           ENTRYPOINT_TYPES.map(async (entrypoint) => {
-            const entrypointPath = path.join(
-              moduleDirectoryPath,
-              `${entrypoint}.js`,
+            const entrypointPath = await findJavascriptFile(
+              path.join(moduleDirectoryPath, entrypoint),
             );
-            if (!(await fileExists(entrypointPath))) {
+            if (!entrypointPath) {
               return;
             }
             return { type: entrypoint, path: entrypointPath };
@@ -131,7 +139,11 @@ function getWebEntrypointImport(
   pluginDirectory: string,
   entrypointPath: string,
 ): string {
-  const relativeEntrypoint = path.relative(pluginDirectory, entrypointPath);
+  const pathWithoutExtension = entrypointPath.replace(/\.[jt]sx?$/, '');
+  const relativeEntrypoint = path.relative(
+    pluginDirectory,
+    pathWithoutExtension,
+  );
   return `${pluginName}/${relativeEntrypoint}`;
 }
 
@@ -212,35 +224,11 @@ export async function loadPluginsInPackage(
         metadata,
         packageName,
         directory,
-        path.join(directory, manifest.webBuild),
+        path.join(pluginPackageDirectory, manifest.webBuild),
       );
     }),
   );
   return plugins.filter(notEmpty);
-}
-
-/**
- * Look for source file equivalent of compiled file
- */
-async function findSourceFileEquivalent(
-  compiledFilePath: string,
-  pluginPackageDirectory: string,
-): Promise<string | undefined> {
-  const sourceFilePath = path
-    .relative(pluginPackageDirectory, compiledFilePath)
-    .replace(/^dist\//, 'src/');
-
-  const candidatePaths = ['ts', 'js', 'tsx', 'jsx'].map((extension) =>
-    sourceFilePath.replace(/\.js$/, `.${extension}`),
-  );
-
-  for (const path of candidatePaths) {
-    if (await fileExists(path)) {
-      return path;
-    }
-  }
-
-  return compiledFilePath;
 }
 
 async function getModuleFederationTargetsForPlugin(
@@ -250,42 +238,63 @@ async function getModuleFederationTargetsForPlugin(
 ): Promise<Record<string, string>> {
   const entrypoints = await getPluginEntrypoints(metadata, pluginDirectory);
 
-  const pluginTargets = await Promise.all(
-    entrypoints
-      .filter((e) => WEB_ENTRYPOINT_TYPES.includes(e.type))
-      .map(async (entrypoint) => {
-        const entrypointImport = getWebEntrypointImport(
-          metadata.name,
-          pluginDirectory,
-          entrypoint.path,
-        );
-        const sourceFileEquivalent = await findSourceFileEquivalent(
-          entrypoint.path,
-          pluginPackageDirectory,
-        );
-        return {
-          [entrypointImport]: sourceFileEquivalent,
-        };
-      }),
-  );
+  const pluginTargets = entrypoints
+    .filter((e) => WEB_ENTRYPOINT_TYPES.includes(e.type))
+    .map((entrypoint) => {
+      const entrypointImport = getWebEntrypointImport(
+        metadata.name,
+        pluginDirectory,
+        entrypoint.path,
+      );
+      const relativePath = path.relative(
+        pluginPackageDirectory,
+        entrypoint.path,
+      );
+      return {
+        [entrypointImport]: relativePath,
+      };
+    });
 
   return Object.assign({}, ...pluginTargets.flat()) as Record<string, string>;
 }
 
+export function rewriteDistToSrc(directory: string): string {
+  return directory.replace(/^dist\//, 'src/');
+}
+
+interface GetModuleFederationTargetsOptions {
+  /**
+   * Rewrites the plugin directory to a different path. Useful when
+   * the source plugin directory is different than the compiled code.
+   */
+  rewritePluginDirectory?: (directory: string) => string;
+}
+
 export async function getModuleFederationTargets(
   pluginPackageDirectory: string,
+  options: GetModuleFederationTargetsOptions = {},
 ): Promise<Record<string, string>> {
+  const { rewritePluginDirectory } = options;
   const manifest = await readManifestJson(pluginPackageDirectory);
   const pluginDirectories = await getPluginDirectories(
     pluginPackageDirectory,
     manifest,
   );
+  const rewrittenPluginDirectories = rewritePluginDirectory
+    ? pluginDirectories.map((directory) => {
+        const relativeDirectory = path.relative(
+          pluginPackageDirectory,
+          directory,
+        );
+        return path.join(
+          pluginPackageDirectory,
+          rewritePluginDirectory(relativeDirectory),
+        );
+      })
+    : pluginDirectories;
   const federationTargets = await Promise.all(
-    pluginDirectories.map(async (directory) => {
+    rewrittenPluginDirectories.map(async (directory) => {
       const metadata = await readMetadataJson(directory);
-      if (!metadata) {
-        return undefined;
-      }
       return getModuleFederationTargetsForPlugin(
         metadata,
         directory,
