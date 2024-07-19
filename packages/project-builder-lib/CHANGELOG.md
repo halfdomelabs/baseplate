@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.3
+
+### Patch Changes
+
+- 64bc313: Fix web entry target sourcing to source plugins from source folder instead of dist
+
 ## 0.8.2
 
 ### Patch Changes
