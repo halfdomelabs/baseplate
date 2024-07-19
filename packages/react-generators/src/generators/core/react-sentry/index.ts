@@ -14,6 +14,7 @@ import { z } from 'zod';
 
 import { reactConfigProvider } from '../react-config/index.js';
 import { reactErrorProvider } from '../react-error/index.js';
+import { reactRouterProvider } from '../react-router/index.js';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
 
 const descriptorSchema = z.object({});
@@ -51,7 +52,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@sentry/react': '7.81.1',
+      '@sentry/react': '8.19.0',
     });
 
     reactError.addErrorReporter(
@@ -96,6 +97,29 @@ const ReactSentryGenerator = createGeneratorWithTasks({
   getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
+
+    taskBuilder.addTask({
+      name: 'add-router-dom-integration',
+      dependencies: {
+        reactRouter: reactRouterProvider,
+      },
+      run({ reactRouter }) {
+        reactRouter.setRoutesComponent(
+          TypescriptCodeUtils.createExpression('SentryRoutes', [], {
+            headerBlocks: [
+              TypescriptCodeUtils.createBlock(
+                `const SentryRoutes = Sentry.withSentryReactRouterV6Routing(Routes);`,
+                [
+                  "import * as Sentry from '@sentry/react'",
+                  "import { Routes } from 'react-router-dom'",
+                ],
+              ),
+            ],
+          }),
+        );
+        return {};
+      },
+    });
   },
 });
 
