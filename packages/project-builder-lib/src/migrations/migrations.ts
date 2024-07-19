@@ -4,7 +4,10 @@ import {
   FeatureConfig,
   featureEntityType,
 } from '@src/schema/features/feature.js';
-import { ProjectDefinition } from '@src/schema/index.js';
+import {
+  EmbeddedRelationTransformerConfig,
+  ProjectDefinition,
+} from '@src/schema/index.js';
 
 export interface SchemaMigration {
   version: number;
@@ -66,6 +69,8 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
           model.service?.transformers?.forEach((transformer) => {
             const oldTransformer = transformer as unknown as { name: string };
             if (transformer.type === 'embeddedRelation') {
+              const embeddedTransformer =
+                transformer as EmbeddedRelationTransformerConfig;
               const localRelationName = oldTransformer.name;
               const foreignModel = draftConfig.models?.find((m) =>
                 m.model.relations?.some(
@@ -79,13 +84,46 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
                   `Could not find model associated with embedded relation ${model.name}/${localRelationName}`,
                 );
               }
-              transformer.foreignRelationRef = oldTransformer.name;
-              transformer.modelRef = foreignModel.name;
+              embeddedTransformer.foreignRelationRef = oldTransformer.name;
+              embeddedTransformer.modelRef = foreignModel.name;
             } else if (transformer.type === 'file') {
-              transformer.fileRelationRef = oldTransformer.name;
+              (
+                transformer as unknown as Record<string, unknown>
+              ).fileRelationRef = oldTransformer.name;
             }
           });
         });
+      })(config);
+    },
+  },
+  {
+    version: 4,
+    description: 'Move storage into plugin system',
+    migrate: (config: ProjectDefinition) => {
+      interface OldStorage extends Record<string, unknown> {
+        fileModel: string;
+        featurePath: string;
+      }
+      return produce((draftConfig: ProjectDefinition) => {
+        const draftConfigTyped = draftConfig as { storage?: OldStorage };
+        const storage = draftConfigTyped.storage;
+        if (!storage) {
+          return;
+        }
+        const { featurePath, fileModel, ...storageConfig } = storage;
+        draftConfig.plugins = draftConfig.plugins ?? [];
+        draftConfig.plugins.push({
+          id: 'halfdomelabs_baseplate-plugin-storage_storage',
+          name: 'storage',
+          packageName: '@halfdomelabs/baseplate-plugin-storage',
+          version: '0.1.0',
+          config: {
+            fileModelRef: fileModel,
+            featureRef: featurePath,
+            ...storageConfig,
+          },
+        });
+        draftConfigTyped.storage = undefined;
       })(config);
     },
   },

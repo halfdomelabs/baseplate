@@ -28,11 +28,6 @@
               },
               { "label": "Status", "modelField": "status", "type": "enum" },
               {
-                "label": "Cover Photo",
-                "modelRelation": "coverPhoto",
-                "type": "file"
-              },
-              {
                 "label": "Created At",
                 "modelField": "createdAt",
                 "type": "text",
@@ -223,7 +218,7 @@
     "userModel": "User",
     "userRoleModel": "UserRole"
   },
-  "cliVersion": "0.6.0",
+  "cliVersion": "0.6.14",
   "enums": [
     {
       "feature": "todos",
@@ -568,12 +563,11 @@
             "foreignRelationRef": "attachments",
             "id": "model-transformer:Mtnj8pArKxUi",
             "modelRef": "TodoItemAttachment",
-            "name": "attachments",
             "type": "embeddedRelation"
           }
         ],
         "update": {
-          "fields": ["todoListId", "position", "text", "done", "assigneeId"],
+          "fields": ["position", "text", "done", "assigneeId", "todoListId"],
           "transformerNames": ["attachments"]
         }
       }
@@ -666,7 +660,6 @@
             "foreignRelationRef": "tags",
             "id": "model-transformer:_dqWIm8tRhcj",
             "modelRef": "TodoItemAttachmentTag",
-            "name": "tags",
             "type": "embeddedRelation"
           }
         ],
@@ -743,7 +736,7 @@
             "isOptional": false,
             "isUnique": false,
             "name": "ownerId",
-            "options": { "genUuid": false },
+            "options": { "default": "", "genUuid": false },
             "type": "uuid"
           },
           {
@@ -752,6 +745,7 @@
             "isOptional": false,
             "isUnique": false,
             "name": "position",
+            "options": { "default": "" },
             "type": "int"
           },
           {
@@ -760,6 +754,7 @@
             "isOptional": false,
             "isUnique": false,
             "name": "name",
+            "options": { "default": "" },
             "type": "string"
           },
           {
@@ -780,7 +775,11 @@
             "isOptional": true,
             "isUnique": false,
             "name": "status",
-            "options": { "default": "", "enumType": "TodoListStatus" },
+            "options": {
+              "default": "",
+              "defaultEnumValue": "ACTIVE",
+              "enumType": "TodoListStatus"
+            },
             "type": "enum"
           },
           {
@@ -844,21 +843,90 @@
       "service": {
         "build": true,
         "create": {
-          "fields": ["position", "name", "ownerId", "status", "createdAt"],
-          "transformerNames": ["coverPhoto"]
+          "fields": ["position", "name", "ownerId", "status", "createdAt"]
         },
         "delete": { "disabled": false },
-        "transformers": [
+        "update": {
+          "fields": ["position", "name", "ownerId", "status", "createdAt"]
+        }
+      }
+    },
+    {
+      "feature": "todos",
+      "id": "model:nmsOHh3rZMmE",
+      "model": {
+        "fields": [
           {
-            "fileRelationRef": "coverPhoto",
-            "id": "model-transformer:Kv0etvmd0wuR",
-            "name": "coverPhoto",
-            "type": "file"
+            "id": "model-scalar-field:YWYJp8Oqc0Mm",
+            "isId": false,
+            "name": "todoListId",
+            "options": { "default": "", "genUuid": false },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:6p27da_jaUp5",
+            "isId": false,
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:ggaHhb6o9uoP",
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:BHLcoCM4ZnYz",
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
           }
         ],
+        "primaryKeys": ["todoListId", "userId"],
+        "relations": [
+          {
+            "foreignRelationName": "todoListShares",
+            "modelName": "TodoList",
+            "name": "todoList",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "todoListId" }]
+          },
+          {
+            "foreignRelationName": "todoListShares",
+            "modelName": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "userId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "TodoListShare",
+      "schema": {
+        "authorize": {
+          "create": ["user"],
+          "delete": ["user"],
+          "read": ["user"],
+          "update": ["user"]
+        },
+        "buildMutations": true,
+        "buildObjectType": true,
+        "buildQuery": true,
+        "exposedFields": ["todoListId", "userId", "createdAt", "updatedAt"],
+        "exposedLocalRelations": ["todoList", "user"]
+      },
+      "service": {
+        "build": true,
+        "create": {
+          "fields": ["todoListId", "userId", "updatedAt", "createdAt"]
+        },
+        "delete": { "disabled": false },
+        "transformers": [],
         "update": {
-          "fields": ["position", "name", "ownerId", "status", "createdAt"],
-          "transformerNames": ["coverPhoto"]
+          "fields": ["todoListId", "userId", "updatedAt", "createdAt"]
         }
       }
     },
@@ -947,7 +1015,7 @@
         "build": true,
         "create": {
           "fields": ["name", "email"],
-          "transformerNames": ["roles", "customer", "userProfile"]
+          "transformerNames": ["roles", "customer", "userProfile", "images"]
         },
         "delete": { "disabled": false },
         "transformers": [
@@ -956,7 +1024,6 @@
             "foreignRelationRef": "roles",
             "id": "model-transformer:RyrON6XkHBhF",
             "modelRef": "UserRole",
-            "name": "roles",
             "type": "embeddedRelation"
           },
           {
@@ -964,23 +1031,94 @@
             "foreignRelationRef": "customer",
             "id": "model-transformer:oysUVIW3QbY2",
             "modelRef": "Customer",
-            "name": "customer",
             "type": "embeddedRelation"
           },
           {
             "embeddedFieldNames": ["id", "bio", "birthDay"],
-            "embeddedTransformerNames": ["avatar"],
             "foreignRelationRef": "userProfile",
             "id": "model-transformer:Ll9gvoax1ly4",
             "modelRef": "UserProfile",
-            "name": "userProfile",
+            "type": "embeddedRelation"
+          },
+          {
+            "embeddedFieldNames": ["id", "caption"],
+            "foreignRelationRef": "images",
+            "id": "model-transformer:WOmEwc6e0ygN",
+            "modelRef": "UserImage",
             "type": "embeddedRelation"
           }
         ],
         "update": {
           "fields": ["name", "email"],
-          "transformerNames": ["roles", "customer", "userProfile"]
+          "transformerNames": ["roles", "customer", "userProfile", "images"]
         }
+      }
+    },
+    {
+      "feature": "accounts/users",
+      "id": "model:VBQ_nqxAJc7X",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:5Dgu6vVGYWl4",
+            "isId": true,
+            "name": "id",
+            "options": { "default": "", "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:U2_vbz2coSuE",
+            "name": "userId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:vyEmASkz_ZtS",
+            "name": "fileId",
+            "options": { "default": "" },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:V2jUWUwG96YA",
+            "name": "caption",
+            "options": { "default": "" },
+            "type": "string"
+          }
+        ],
+        "relations": [
+          {
+            "foreignRelationName": "userImages",
+            "modelName": "File",
+            "name": "file",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "fileId" }]
+          },
+          {
+            "foreignRelationName": "images",
+            "modelName": "User",
+            "name": "user",
+            "onDelete": "Cascade",
+            "onUpdate": "Restrict",
+            "references": [{ "foreign": "id", "local": "userId" }]
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "UserImage",
+      "schema": {
+        "authorize": {},
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": false,
+        "exposedFields": ["id", "userId", "fileId"],
+        "exposedLocalRelations": ["file"]
+      },
+      "service": {
+        "build": true,
+        "create": {},
+        "delete": { "disabled": false },
+        "update": { "fields": [] }
       }
     },
     {
@@ -1081,14 +1219,6 @@
         "build": true,
         "create": {},
         "delete": { "disabled": false },
-        "transformers": [
-          {
-            "fileRelationRef": "avatar",
-            "id": "model-transformer:cbjBj3IacjKA",
-            "name": "avatar",
-            "type": "file"
-          }
-        ],
         "update": {}
       }
     },
@@ -1153,83 +1283,74 @@
   ],
   "name": "todoer",
   "packageScope": "prisma-crud",
+  "plugins": [],
   "portOffset": 6000,
-  "schemaVersion": 3,
-  "storage": {
-    "categories": [
-      {
-        "defaultAdapter": "uploads",
-        "maxFileSize": 10,
-        "name": "userProfileAvatar",
-        "uploadRoles": ["user"],
-        "usedByRelation": "userProfileAvatar"
-      },
-      {
-        "defaultAdapter": "uploads",
-        "maxFileSize": 10,
-        "name": "todoListCoverPhoto",
-        "uploadRoles": ["user"],
-        "usedByRelation": "todoListCoverPhoto"
-      }
-    ],
-    "featurePath": "storage",
-    "fileModel": "File",
-    "s3Adapters": [
-      {
-        "bucketConfigVar": "AWS_UPLOADS_BUCKET",
-        "hostedUrlConfigVar": "AWS_UPLOADS_URL",
-        "id": "storage-adapter:sG0zrvD_Uak9",
-        "name": "uploads"
-      }
-    ]
-  },
+  "schemaVersion": 4,
   "theme": {
     "colors": {
       "dark": {
-        "accent": "#1e40af",
-        "accentForeground": "#f8fafc",
+        "accent": "#1e293b",
+        "accentForeground": "#f1f5f9",
         "background": "#020617",
         "border": "#1e293b",
         "card": "#020617",
         "cardForeground": "#f8fafc",
         "destructive": "#7f1d1d",
-        "destructiveForeground": "#eff6ff",
+        "destructiveForeground": "#f8fafc",
+        "destructiveHover": "#b91c1c",
+        "error": "#450a0a",
+        "errorForeground": "#dc2626",
         "foreground": "#f8fafc",
         "input": "#1e293b",
-        "link": "#eff6ff",
-        "linkVisited": "#dbeafe",
-        "muted": "#1e293b",
+        "link": "#2563eb",
+        "linkVisited": "#1d4ed8",
+        "muted": "#0f172a",
         "mutedForeground": "#94a3b8",
         "popover": "#020617",
         "popoverForeground": "#f8fafc",
-        "primary": "#eff6ff",
-        "primaryForeground": "#0f172a",
-        "ring": "#93c5fd",
+        "primary": "#2563eb",
+        "primaryForeground": "#f8fafc",
+        "primaryHover": "#1e40af",
+        "ring": "#2563eb",
         "secondary": "#1e293b",
-        "secondaryForeground": "#f8fafc"
+        "secondaryForeground": "#f1f5f9",
+        "secondaryHover": "#475569",
+        "success": "#022c22",
+        "successForeground": "#059669",
+        "warning": "#451a03",
+        "warningForeground": "#b45309"
       },
       "light": {
-        "accent": "#dbeafe",
-        "accentForeground": "#0f172a",
+        "accent": "#f1f5f9",
+        "accentForeground": "#334155",
         "background": "#ffffff",
         "border": "#e2e8f0",
         "card": "#ffffff",
         "cardForeground": "#020617",
         "destructive": "#ef4444",
-        "destructiveForeground": "#eff6ff",
+        "destructiveForeground": "#f8fafc",
+        "destructiveHover": "#b91c1c",
+        "error": "#fef2f2",
+        "errorForeground": "#b91c1c",
         "foreground": "#020617",
         "input": "#e2e8f0",
-        "link": "#1e40af",
-        "linkVisited": "#1d4ed8",
+        "link": "#1d4ed8",
+        "linkVisited": "#1e40af",
         "muted": "#f1f5f9",
         "mutedForeground": "#64748b",
         "popover": "#ffffff",
         "popoverForeground": "#020617",
         "primary": "#1d4ed8",
         "primaryForeground": "#f8fafc",
-        "ring": "#1e40af",
+        "primaryHover": "#1e3a8a",
+        "ring": "#1d4ed8",
         "secondary": "#f1f5f9",
-        "secondaryForeground": "#0f172a"
+        "secondaryForeground": "#334155",
+        "secondaryHover": "#cbd5e1",
+        "success": "#ecfdf5",
+        "successForeground": "#047857",
+        "warning": "#fffbeb",
+        "warningForeground": "#d97706"
       }
     },
     "palettes": {

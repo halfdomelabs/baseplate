@@ -1,9 +1,10 @@
 import {
+  AdminAppConfig,
+  AppEntry,
   AppUtils,
   FeatureUtils,
   ProjectDefinitionContainer,
-  AdminAppConfig,
-  AppEntry,
+  adminAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 import { capitalize } from 'inflection';
 
@@ -31,7 +32,7 @@ export function buildNavigationLinks(
 }
 
 export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
-  const { projectDefinition, appConfig } = builder;
+  const { projectDefinition, appConfig, appCompiler } = builder;
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);
   const backendRelativePath = AppUtils.getBackendRelativePath(
@@ -113,16 +114,8 @@ export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
         generator: '@halfdomelabs/react/apollo/apollo-error',
         peerProvider: true,
       },
-      $uploadComponents: projectDefinition.storage
-        ? {
-            generator: '@halfdomelabs/react/storage/upload-components',
-            peerProvider: true,
-            fileModelName: builder.nameFromId(
-              projectDefinition.storage.fileModel,
-            ),
-          }
-        : undefined,
       ...compileAuthFeatures(builder),
+      ...appCompiler.getRootChildren(),
     },
   };
 }
@@ -131,7 +124,11 @@ export function compileAdmin(
   definitionContainer: ProjectDefinitionContainer,
   app: AdminAppConfig,
 ): AppEntry {
-  const appBuilder = new AppEntryBuilder(definitionContainer, app);
+  const appBuilder = new AppEntryBuilder(
+    definitionContainer,
+    app,
+    adminAppEntryType,
+  );
 
   const { projectDefinition } = appBuilder;
 

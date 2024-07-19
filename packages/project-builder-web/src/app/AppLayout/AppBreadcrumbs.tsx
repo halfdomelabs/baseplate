@@ -1,3 +1,4 @@
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Breadcrumb, Button } from '@halfdomelabs/ui-components';
 import { upperFirst } from 'lodash';
 import { Fragment, useState } from 'react';
@@ -5,7 +6,6 @@ import { MdKeyboardArrowDown } from 'react-icons/md';
 import { Link, useMatches } from 'react-router-dom';
 
 import { ProjectChooserDialog } from '../components/ProjectChooserDialog';
-import { useProjectDefinition } from '@src/hooks/useProjectDefinition';
 import { useProjects } from '@src/hooks/useProjects';
 import { RouteCrumbOrFunction } from '@src/types/routes';
 import { notEmpty } from '@src/utils/array';

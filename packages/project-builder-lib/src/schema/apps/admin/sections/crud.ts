@@ -1,23 +1,15 @@
 import { z } from 'zod';
 
 import { baseAdminSectionValidators } from './base.js';
-import { adminSectionEntityType } from './types.js';
-import { createEntityType, zRef, zRefBuilder } from '@src/references/index.js';
+import { adminCrudInputSchema } from './crud-form/admin-crud-input.js';
+import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
+import { zRef, zRefBuilder } from '@src/references/index.js';
 import {
   modelEntityType,
-  modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
-  modelTransformerEntityType,
 } from '@src/schema/models/index.js';
 import { notEmpty } from '@src/utils/array.js';
-
-export const adminCrudEmbeddedFormEntityType = createEntityType(
-  'admin-crud-embedded-form',
-  {
-    parentType: adminSectionEntityType,
-  },
-);
 
 // Table Columns
 export const adminCrudForeignDisplaySchema = z.object({
@@ -71,126 +63,6 @@ export const adminCrudTableColumnSchema = z.object({
   label: z.string().min(1),
   display: adminCrudDisplaySchema,
 });
-
-// Form Fields
-
-export const adminCrudTextInputSchema = z.object({
-  type: z.literal('text'),
-  label: z.string().min(1),
-  modelField: zRef(z.string(), {
-    type: modelScalarFieldEntityType,
-    onDelete: 'RESTRICT',
-    parentPath: { context: 'model' },
-  }),
-  validation: z.string().optional(),
-});
-
-export type AdminCrudTextInputConfig = z.infer<typeof adminCrudTextInputSchema>;
-
-export const adminCrudForeignInputSchema = z.object({
-  type: z.literal('foreign'),
-  label: z.string().min(1),
-  localRelationName: zRef(z.string(), {
-    type: modelLocalRelationEntityType,
-    onDelete: 'RESTRICT',
-    parentPath: { context: 'model' },
-  }),
-  labelExpression: z.string().min(1),
-  valueExpression: z.string().min(1),
-  defaultLabel: z.string().optional(),
-  nullLabel: z.string().optional(),
-});
-
-export type AdminCrudForeignInputConfig = z.infer<
-  typeof adminCrudForeignInputSchema
->;
-
-export const adminCrudEnumInputSchema = z.object({
-  type: z.literal('enum'),
-  label: z.string().min(1),
-  modelField: zRef(z.string(), {
-    type: modelScalarFieldEntityType,
-    onDelete: 'RESTRICT',
-    parentPath: { context: 'model' },
-  }),
-});
-
-export type AdminCrudEnumInputConfig = z.infer<typeof adminCrudEnumInputSchema>;
-
-export const adminCrudFileInputSchema = z.object({
-  type: z.literal('file'),
-  label: z.string().min(1),
-  modelRelation: zRef(z.string(), {
-    type: modelTransformerEntityType,
-    onDelete: 'RESTRICT',
-    parentPath: { context: 'model' },
-  }),
-});
-
-export type AdminCrudFileInputConfig = z.infer<typeof adminCrudFileInputSchema>;
-
-export const adminCrudEmbeddedInputSchema = z.object({
-  type: z.literal('embedded'),
-  label: z.string().min(1),
-  modelRelation: zRef(z.string(), {
-    type: modelForeignRelationEntityType,
-    onDelete: 'RESTRICT',
-    parentPath: { context: 'model' },
-  }),
-  embeddedFormName: zRef(z.string(), {
-    type: adminCrudEmbeddedFormEntityType,
-    parentPath: { context: 'admin-section' },
-    onDelete: 'RESTRICT',
-  }),
-});
-
-export type AdminCrudEmbeddedInputConfig = z.infer<
-  typeof adminCrudEmbeddedInputSchema
->;
-
-export const adminCrudEmbeddedLocalInputSchema = z.object({
-  type: z.literal('embeddedLocal'),
-  label: z.string().min(1),
-  localRelation: zRef(z.string(), {
-    type: modelLocalRelationEntityType,
-    onDelete: 'RESTRICT',
-    parentPath: { context: 'model' },
-  }),
-  embeddedFormName: zRef(z.string(), {
-    type: adminCrudEmbeddedFormEntityType,
-    parentPath: { context: 'admin-section' },
-    onDelete: 'RESTRICT',
-  }),
-});
-
-export type AdminCrudEmbeddedLocalInputConfig = z.infer<
-  typeof adminCrudEmbeddedLocalInputSchema
->;
-
-export const adminCrudPasswordInputSchema = z.object({
-  type: z.literal('password'),
-  label: z.string().min(1),
-});
-
-export type AdminCrudPasswordInputConfig = z.infer<
-  typeof adminCrudPasswordInputSchema
->;
-
-export const adminCrudInputSchema = z.discriminatedUnion('type', [
-  adminCrudForeignInputSchema,
-  adminCrudTextInputSchema,
-  adminCrudEnumInputSchema,
-  adminCrudFileInputSchema,
-  adminCrudEmbeddedInputSchema,
-  adminCrudEmbeddedLocalInputSchema,
-  adminCrudPasswordInputSchema,
-]);
-
-export const adminCrudInputTypes = primitiveMapToKeys(
-  adminCrudInputSchema.optionsMap,
-);
-
-export type AdminCrudInputConfig = z.infer<typeof adminCrudInputSchema>;
 
 // Embedded Crud
 export const adminCrudEmbeddedObjectSchema = z.object({

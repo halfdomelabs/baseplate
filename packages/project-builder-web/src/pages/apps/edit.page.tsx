@@ -2,6 +2,7 @@ import {
   BaseAppConfig,
   appEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -9,18 +10,17 @@ import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
 import WebAppForm from './edit/WebAppForm';
 import { Alert, Button, NotFoundCard } from 'src/components';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function EditAppPage(): JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfigAndFixReferences, config } =
+  const { parsedProject, setConfigAndFixReferences, definition } =
     useProjectDefinition();
 
   const id = uid ? appEntityType.fromUid(uid) : undefined;
-  const app = id && config.apps.find((a) => a.id === id);
+  const app = id && definition.apps.find((a) => a.id === id);
 
   const toast = useToast();
   const navigate = useNavigate();

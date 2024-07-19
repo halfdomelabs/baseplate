@@ -7,5 +7,5 @@
       "@scripts/*": ["scripts/*"]
     }
   },
-  "include": ["scripts/**/*", "transforms/**/*"]
+  "include": ["scripts/**/*", "transforms/**/*", "morphers/**/*", "lib/**/*"]
 }

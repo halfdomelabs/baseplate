@@ -1,6 +1,6 @@
 import {
   FeatureFlag,
-  PluginConfigWithModule,
+  PluginMetadataWithPaths,
 } from '@halfdomelabs/project-builder-lib';
 import {
   FastifyTRPCPluginOptions,
@@ -30,7 +30,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
   directories: string[];
   cliVersion: string;
   generatorSetupConfig: GeneratorEngineSetupConfig;
-  preinstalledPlugins: PluginConfigWithModule[];
+  builtInPlugins: PluginMetadataWithPaths[];
   featureFlags: FeatureFlag[];
 }> = async function (
   fastify,
@@ -38,7 +38,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
     directories,
     cliVersion,
     generatorSetupConfig,
-    preinstalledPlugins,
+    builtInPlugins,
     featureFlags,
   },
 ) {
@@ -56,7 +56,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         id,
         generatorSetupConfig,
         cliVersion,
-        preinstalledPlugins,
+        builtInPlugins,
       });
       await service.init();
       return service;
@@ -110,6 +110,45 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         return;
       }
       const fullPath = path.join(plugin.pluginDirectory, 'static', staticPath);
+      if (!fs.existsSync(fullPath)) {
+        reply.status(404).send('File not found');
+        return;
+      }
+      const stream = fs.createReadStream(fullPath);
+
+      reply.header(
+        'Content-Type',
+        mime.getType(fullPath) ?? 'application/octet-stream',
+      );
+      return reply.send(stream);
+    },
+  });
+
+  // serve remoteEntry.js for plugins
+  fastify.get('/api/plugins/:projectId/:pluginId/web/*', {
+    schema: {
+      params: z.object({
+        projectId: z.string().min(1),
+        pluginId: z.string().min(1),
+        '*': z.string(),
+      }),
+    },
+    handler: async (req, reply) => {
+      const { projectId, '*': staticPath } = req.params;
+      const service = services.find((service) => service.id === projectId);
+      if (!service) {
+        reply.status(404).send('No project with provided ID found');
+        return;
+      }
+      const plugins = await service.getAvailablePlugins();
+      const plugin = plugins.find(
+        (plugin) => plugin.id === req.params.pluginId,
+      );
+      if (!plugin) {
+        reply.status(404).send('No plugin with provided ID found');
+        return;
+      }
+      const fullPath = path.join(plugin.webBuildDirectory, staticPath);
       if (!fs.existsSync(fullPath)) {
         reply.status(404).send('File not found');
         return;

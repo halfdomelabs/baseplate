@@ -1,3 +1,4 @@
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
@@ -5,7 +6,6 @@ import { MdSync } from 'react-icons/md';
 
 import { useProjects } from '@src/hooks/useProjects';
 import Console, { ConsoleRef } from 'src/components/Console';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { startSync } from 'src/services/remote';
@@ -18,7 +18,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
-  const { config, setConfig } = useProjectDefinition();
+  const { definition, setConfig } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
 
   const startSyncProject = (): void => {
@@ -27,7 +27,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
       return;
     }
     // save config when syncing to ensure any migrations/cli versions are set
-    setConfig(config);
+    setConfig(definition);
     // TODO: this is a hack to ensure we don't attempt to read from the file while we write to it
 
     setTimeout(() => {

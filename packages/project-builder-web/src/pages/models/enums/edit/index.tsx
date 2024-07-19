@@ -1,12 +1,12 @@
 import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { useParams } from 'react-router-dom';
 
 import EnumEditForm from './EnumEditForm';
 import { useEnumForm } from '../hooks/useEnumForm';
-import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { useStatus } from '@src/hooks/useStatus';
 import { Alert, Button } from 'src/components';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 function EnumEditPage(): JSX.Element {
   const { status, setError } = useStatus();

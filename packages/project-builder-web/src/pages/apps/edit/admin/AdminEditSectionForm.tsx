@@ -3,7 +3,13 @@ import {
   AdminSectionConfig,
   adminSectionEntityType,
   adminSectionSchema,
+  zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
+import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -12,11 +18,8 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
-import { useBlockDirtyFormNavigate } from '@src/hooks/useBlockDirtyFormNavigate';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
@@ -30,7 +33,8 @@ const SECTION_OPTIONS = [{ label: 'Crud', value: 'crud' }];
 function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { sectionId: sectionUid } = useParams<{ sectionId: string }>();
-  const { setConfigAndFixReferences, parsedProject } = useProjectDefinition();
+  const { setConfigAndFixReferences, parsedProject, pluginContainer } =
+    useProjectDefinition();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -42,11 +46,14 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     ? appConfig.sections?.find((section) => section.id === sectionId)
     : undefined;
 
-  const { control, handleSubmit, watch, reset, formState } =
-    useResettableForm<AdminSectionConfig>({
-      defaultValues: existingSection ?? { type: 'crud' },
-      resolver: zodResolver(adminSectionSchema),
-    });
+  const schemaWithPlugins = zPluginWrapper(adminSectionSchema, pluginContainer);
+
+  const formProps = useResettableForm<AdminSectionConfig>({
+    defaultValues: existingSection ?? { type: 'crud' },
+    resolver: zodResolver(schemaWithPlugins),
+  });
+
+  const { control, handleSubmit, watch, reset, formState } = formProps;
 
   useBlockDirtyFormNavigate(formState);
 
@@ -147,7 +154,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
         {(() => {
           switch (type) {
             case 'crud':
-              return <AdminCrudSectionForm control={control} />;
+              return <AdminCrudSectionForm formProps={formProps} />;
             default:
               return <div>Unsupported type {type}</div>;
           }

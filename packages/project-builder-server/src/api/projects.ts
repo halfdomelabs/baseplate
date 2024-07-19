@@ -26,20 +26,24 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
   return router({
     list: privateProcedure.query(async () => {
       return Promise.all(
-        services.map(async (service) => {
-          const config = await service.readConfig();
-          if (!config) {
-            throw new Error(`File config missing for ${service.directory}`);
-          }
-          const parsedContents = JSON.parse(
-            config.contents,
-          ) as ProjectDefinition;
-          return {
-            id: service.id,
-            name: parsedContents.name,
-            directory: service.directory,
-          };
-        }),
+        services.map(
+          async (
+            service,
+          ): Promise<{ id: string; name: string; directory: string }> => {
+            const config = await service.readConfig();
+            if (!config) {
+              throw new Error(`File config missing for ${service.directory}`);
+            }
+            const parsedContents = JSON.parse(
+              config.contents,
+            ) as ProjectDefinition;
+            return {
+              id: service.id,
+              name: parsedContents.name,
+              directory: service.directory,
+            };
+          },
+        ),
       );
     }),
 

@@ -1,14 +1,17 @@
 import {
   AdminCrudSectionConfig,
-  adminCrudInputTypes,
-  FileTransformerConfig,
+  ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
+import {
+  adminCrudInputWebSpec,
+  useProjectDefinition,
+} from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
-import { Control, useFieldArray, useWatch } from 'react-hook-form';
+import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
 
+import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export type AdminCrudFormConfig = Pick<
   AdminCrudSectionConfig,
@@ -17,37 +20,42 @@ export type AdminCrudFormConfig = Pick<
 
 interface Props {
   className?: string;
-  control: Control<AdminCrudFormConfig>;
+  formProps: UseFormReturn<AdminCrudFormConfig>;
   embeddedFormOptions: { label: string; value: string }[];
 }
 
 function FieldForm({
   idx,
-  control,
-  fieldOptions,
-  localRelationOptions,
-  foreignRelationOptions,
-  enumFieldOptions,
-  fileTransformerOptions,
+  formProps,
   embeddedFormOptions,
 }: {
   idx: number;
-  control: Control<AdminCrudFormConfig>;
-  enumFieldOptions: { label: string; value: string }[];
-  fieldOptions: { label: string; value: string }[];
-  localRelationOptions: { label: string; value: string }[];
-  foreignRelationOptions: { label: string; value: string }[];
-  fileTransformerOptions: { label: string; value: string }[];
+  formProps: UseFormReturn<AdminCrudFormConfig>;
   embeddedFormOptions: { label: string; value: string }[];
 }): JSX.Element {
-  const fieldTypeOptions = adminCrudInputTypes.map((t) => ({
-    label: t,
-    value: t,
-  }));
+  const control = formProps.control;
+  const modelName = useWatch({ control, name: 'modelName' });
+  const { definition, pluginContainer } = useProjectDefinition();
+  const model = modelName ? ModelUtils.byId(definition, modelName) : undefined;
+
+  const inputWeb = pluginContainer.getPluginSpec(adminCrudInputWebSpec);
+
+  const fieldTypeOptions = inputWeb
+    .getInputWebConfigs(BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS)
+    .map((config) => ({
+      label: config.label,
+      value: config.name,
+    }));
+
   const type = useWatch({
     control,
     name: `form.fields.${idx}.type`,
   });
+  const inputWebConfig = inputWeb.getInputWebConfig(
+    type,
+    BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS,
+  );
+  const WebForm = inputWebConfig.Form;
 
   return (
     <div className="space-y-4">
@@ -62,98 +70,14 @@ function FieldForm({
         control={control}
         name={`form.fields.${idx}.label`}
       />
-      {type === 'enum' && (
-        <SelectInput.LabelledController
-          label="Enum Field"
-          control={control}
-          name={`form.fields.${idx}.modelField`}
-          options={enumFieldOptions}
+      {WebForm && model && (
+        <WebForm
+          formProps={formProps}
+          name={`form.fields.${idx}`}
+          model={model}
+          embeddedFormOptions={embeddedFormOptions}
+          pluginId={inputWebConfig.pluginId}
         />
-      )}
-      {type === 'foreign' && (
-        <>
-          <SelectInput.LabelledController
-            label="Local Relation Name"
-            control={control}
-            name={`form.fields.${idx}.localRelationName`}
-            options={localRelationOptions}
-          />
-          <TextInput.LabelledController
-            label="Label Expression (e.g. name)"
-            control={control}
-            name={`form.fields.${idx}.labelExpression`}
-          />
-          <TextInput.LabelledController
-            label="Value Expression (e.g. id)"
-            control={control}
-            name={`form.fields.${idx}.valueExpression`}
-          />
-          <TextInput.LabelledController
-            label="Default Label (optional)"
-            control={control}
-            name={`form.fields.${idx}.defaultLabel`}
-          />
-          <TextInput.LabelledController
-            label="Empty Label (optional) - only if field is nullable"
-            control={control}
-            name={`form.fields.${idx}.nullLabel`}
-          />
-        </>
-      )}
-      {type === 'file' && (
-        <SelectInput.LabelledController
-          label="File Transformer Name"
-          control={control}
-          name={`form.fields.${idx}.modelRelation`}
-          options={fileTransformerOptions}
-        />
-      )}
-      {type === 'text' && (
-        <>
-          <SelectInput.LabelledController
-            label="Field"
-            control={control}
-            name={`form.fields.${idx}.modelField`}
-            options={fieldOptions}
-          />
-          <TextInput.LabelledController
-            label="Validation (zod), e.g. z.string().min(1) (optional)"
-            control={control}
-            name={`form.fields.${idx}.validation`}
-          />
-        </>
-      )}
-      {type === 'embedded' && (
-        <>
-          <SelectInput.LabelledController
-            label="Relation Name"
-            control={control}
-            name={`form.fields.${idx}.modelRelation`}
-            options={foreignRelationOptions}
-          />
-          <SelectInput.LabelledController
-            label="Embedded Form"
-            control={control}
-            name={`form.fields.${idx}.embeddedFormName`}
-            options={embeddedFormOptions}
-          />
-        </>
-      )}
-      {type === 'embeddedLocal' && (
-        <>
-          <SelectInput.LabelledController
-            label="Relation Name"
-            control={control}
-            name={`form.fields.${idx}.localRelation`}
-            options={localRelationOptions}
-          />
-          <SelectInput.LabelledController
-            label="Embedded Form"
-            control={control}
-            name={`form.fields.${idx}.embeddedFormName`}
-            options={embeddedFormOptions}
-          />
-        </>
       )}
     </div>
   );
@@ -161,51 +85,14 @@ function FieldForm({
 
 function CrudFormFieldsForm({
   className,
-  control,
+  formProps,
   embeddedFormOptions,
 }: Props): JSX.Element {
-  const modelName = useWatch({ control, name: 'modelName' });
-  const { definitionContainer, parsedProject } = useProjectDefinition();
-  const model = modelName ? parsedProject.getModelById(modelName) : undefined;
+  const { control } = formProps;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'form.fields',
   });
-
-  const fieldOptions =
-    model?.model.fields.map((field) => ({
-      label: field.name,
-      value: field.id,
-    })) ?? [];
-
-  const localRelationOptions =
-    model?.model.relations?.map((relation) => ({
-      label: `${relation.name} (${relation.modelName})`,
-      value: relation.id,
-    })) ?? [];
-
-  const foreignRelationOptions = parsedProject
-    .getModelForeignRelations(modelName)
-    .map((r) => ({
-      label: `${r.relation.foreignRelationName} (${r.model.name})`,
-      value: r.relation.foreignId,
-    }));
-
-  const fileTransformerOptions =
-    model?.service?.transformers
-      ?.filter((t): t is FileTransformerConfig => t.type === 'file')
-      .map((transformer) => ({
-        label: definitionContainer.nameFromId(transformer.fileRelationRef),
-        value: transformer.id,
-      })) ?? [];
-
-  const enumFieldOptions =
-    model?.model.fields
-      .filter((f) => f.type === 'enum')
-      .map((field) => ({
-        label: field.name,
-        value: field.id,
-      })) ?? [];
 
   return (
     <div className={clsx('space-y-4', className)}>
@@ -223,19 +110,12 @@ function CrudFormFieldsForm({
           <FieldForm
             key={field.id}
             idx={idx}
-            control={control}
-            fieldOptions={fieldOptions}
-            localRelationOptions={localRelationOptions}
-            enumFieldOptions={enumFieldOptions}
-            fileTransformerOptions={fileTransformerOptions}
-            foreignRelationOptions={foreignRelationOptions}
+            formProps={formProps}
             embeddedFormOptions={embeddedFormOptions}
           />
         </CollapsibleRow>
       ))}
-      <Button
-        onClick={() => append({ type: 'text', modelField: '', label: '' })}
-      >
+      <Button onClick={() => append({ type: 'text', label: '' })}>
         Add Field
       </Button>
     </div>

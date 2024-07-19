@@ -1,10 +1,9 @@
 import { appEntityType } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Card, EmptyDisplay } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export function AppsListPage(): JSX.Element {
   const { parsedProject } = useProjectDefinition();

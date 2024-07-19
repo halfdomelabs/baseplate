@@ -1,106 +1,13 @@
-import {
-  PluginConfigWithModule,
-  pluginConfigSchema,
-} from '@halfdomelabs/project-builder-lib';
+import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import { loadPluginsInPackage } from '@halfdomelabs/project-builder-lib/plugin-tools';
 import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import { packageUp } from 'package-up';
-import { z } from 'zod';
 
 import { notEmpty } from '@src/utils/array.js';
-import { InitializeServerError, formatError } from '@src/utils/errors.js';
-
-const pluginsJsonSchema = z.object({
-  directories: z.array(z.string()),
-});
-
-type PluginJson = z.infer<typeof pluginsJsonSchema>;
-
-async function loadPluginJson(
-  requireResolvePath: string,
-  logger: Logger,
-): Promise<{ config: PluginJson; rootDirectory: string } | null> {
-  const packageJsonPath = await packageUp({ cwd: requireResolvePath });
-  const packagePath = packageJsonPath && path.dirname(packageJsonPath);
-  if (!packagePath) {
-    logger.warn(
-      `Package ${packagePath} does not have a valid package.json file. Ignoring...`,
-    );
-    return null;
-  }
-
-  const pluginsJsonPath = path.join(packagePath, 'plugins.json');
-
-  if (!(await fs.pathExists(pluginsJsonPath))) {
-    logger.warn(
-      `Package ${packagePath} does not have a valid plugins.json file. Ignoring...`,
-    );
-    return null;
-  }
-  const config = await fs
-    .readJson(pluginsJsonPath)
-    .then((data) => pluginsJsonSchema.parse(data))
-    .catch(() => {
-      logger.warn(
-        `Could not read the plugins.json file for the package ${packagePath}. Ignoring...`,
-      );
-      return null;
-    });
-
-  if (!config) {
-    return null;
-  }
-
-  return { config, rootDirectory: packagePath };
-}
-
-export async function loadPluginFromDirectory(
-  packageName: string,
-  pluginDirectory: string,
-  logger: Logger,
-): Promise<PluginConfigWithModule | null> {
-  try {
-    const pluginConfig = (await import(
-      path.join(pluginDirectory, 'index.js')
-    )) as unknown;
-
-    if (typeof pluginConfig !== 'object' || pluginConfig === null) {
-      logger.warn(
-        `Plugin at ${pluginDirectory} does not export a valid configuration object. Ignoring...`,
-      );
-      return null;
-    }
-
-    if (!('default' in pluginConfig)) {
-      logger.warn(
-        `Plugin at ${pluginDirectory} does not export a default configuration object. Ignoring...`,
-      );
-      return null;
-    }
-
-    const parsedConfig = pluginConfigSchema.parse(pluginConfig.default);
-
-    return {
-      ...parsedConfig,
-      // URL safe ID
-      id: `${packageName
-        .replace(/^@/, '')
-        .replace(/[^a-z0-9/]+/g, '-')
-        .replace(/\//g, '_')}_${parsedConfig.name.replace(/[^a-z0-9]+/g, '-')}`,
-      packageName,
-      pluginDirectory,
-    };
-  } catch (err) {
-    logger.warn(
-      `Unable to read plugin configuration at ${pluginDirectory}: ${formatError(
-        err,
-      )}. Ignoring...`,
-    );
-    return null;
-  }
-}
+import { InitializeServerError } from '@src/utils/errors.js';
 
 /**
  * Finds the available plugins in the project.
@@ -108,7 +15,7 @@ export async function loadPluginFromDirectory(
 export async function discoverPlugins(
   projectDirectory: string,
   logger: Logger,
-): Promise<PluginConfigWithModule[]> {
+): Promise<PluginMetadataWithPaths[]> {
   const packageJsonPath = await packageUp({ cwd: projectDirectory });
 
   if (!packageJsonPath) {
@@ -139,7 +46,7 @@ export async function discoverPlugins(
       name.match(/^@[^/]+\/baseplate-plugin-/),
   );
 
-  // Load all valid plugins and their configurations
+  // Load all valid plugins and their metadata
   const require = createRequire(projectDirectory);
   return (
     await Promise.all(
@@ -150,24 +57,18 @@ export async function discoverPlugins(
           }),
         );
 
-        // Look for plugins.json file
-        const pluginJsonResult = await loadPluginJson(packagePath, logger);
+        const pluginPackageJsonPath = await packageUp({ cwd: packagePath });
 
-        if (!pluginJsonResult) {
-          return null;
+        if (!pluginPackageJsonPath) {
+          logger.error(
+            `Could not find package.json file for the plugin ${packageName}.`,
+          );
+          return undefined;
         }
 
-        const { config, rootDirectory } = pluginJsonResult;
-
-        // Load the plugins
-        return Promise.all(
-          config.directories.map(async (directory) =>
-            loadPluginFromDirectory(
-              packageName,
-              path.join(rootDirectory, directory),
-              logger,
-            ),
-          ),
+        return loadPluginsInPackage(
+          path.dirname(pluginPackageJsonPath),
+          packageName,
         );
       }),
     )

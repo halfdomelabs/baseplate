@@ -1,0 +1,164 @@
+import { ForwardedRef } from 'react';
+import {
+  Control,
+  FieldPath,
+  FieldValues,
+  PathValue,
+  useController,
+} from 'react-hook-form';
+
+import { FormItem } from '../FormItem/FormItem.js';
+import { MultiCombobox } from '../MultiCombobox/MultiCombobox.js';
+import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
+import {
+  FieldProps,
+  MultiSelectOptionProps,
+  AddOptionRequiredFields,
+} from '@src/types/form.js';
+import { notEmpty } from '@src/utils/array.js';
+import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+export interface MultiComboboxFieldProps<OptionType>
+  extends MultiSelectOptionProps<OptionType>,
+    FieldProps {
+  className?: string;
+  noResultsText?: React.ReactNode;
+}
+
+/**
+ * Field with label and error states that wraps a MultiCombobox component.
+ */
+
+const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
+  OptionType,
+>(
+  {
+    label,
+    description,
+    error,
+    value,
+    placeholder,
+    options,
+    renderItemLabel,
+    onChange,
+    getOptionLabel = (val) => (val as { label: string }).label,
+    getOptionValue = (val) => (val as { value: string }).value,
+    className,
+    noResultsText,
+    ...props
+  }: MultiComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
+  ref: ForwardedRef<HTMLDivElement>,
+): JSX.Element {
+  const selectedOptions = value
+    ?.map((val) => options.find((option) => getOptionValue(option) === val))
+    .filter(notEmpty);
+  const selectedValues = selectedOptions?.map((option) => ({
+    label: getOptionLabel(option),
+    value: getOptionValue(option),
+  }));
+  const { comboboxNoResults } = useComponentStrings();
+
+  return (
+    <FormItem ref={ref} error={error} className={className}>
+      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <MultiCombobox
+        value={selectedValues}
+        onChange={(value) => {
+          const newValues = value.map((val) => val.value);
+          onChange?.(
+            options
+              ?.map(getOptionValue)
+              .filter((val) => newValues.includes(val)),
+          );
+        }}
+        {...props}
+      >
+        <FormItem.Control>
+          <MultiCombobox.Input placeholder={placeholder} />
+        </FormItem.Control>
+        <MultiCombobox.Content>
+          {options.map((option) => {
+            const val = getOptionValue(option);
+            const label = getOptionLabel(option);
+            return (
+              <MultiCombobox.Item value={val} key={val} label={label}>
+                {renderItemLabel
+                  ? renderItemLabel(option, {
+                      selected: value?.includes(val) ?? false,
+                    })
+                  : label}
+              </MultiCombobox.Item>
+            );
+          })}
+          <MultiCombobox.Empty>
+            {noResultsText ?? comboboxNoResults}
+          </MultiCombobox.Empty>
+        </MultiCombobox.Content>
+      </MultiCombobox>
+      {description && (
+        <FormItem.Description>{description}</FormItem.Description>
+      )}
+      {error && <FormItem.Error>{error}</FormItem.Error>}
+    </FormItem>
+  );
+});
+
+interface MultiComboboxFieldControllerPropsBase<
+  OptionType,
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> extends Omit<MultiComboboxFieldProps<OptionType>, 'register'> {
+  control: Control<TFieldValues>;
+  name: TFieldName;
+}
+
+type MultiComboboxFieldControllerProps<
+  OptionType,
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = MultiComboboxFieldControllerPropsBase<OptionType, TFieldValues, TFieldName>;
+
+const MultiComboboxFieldController = genericForwardRef(
+  function MultiComboboxFieldController<
+    OptionType,
+    TFieldValues extends FieldValues = FieldValues,
+    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  >(
+    {
+      name,
+      control,
+      onChange,
+      ...rest
+    }: MultiComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
+      AddOptionRequiredFields<OptionType>,
+    ref: ForwardedRef<HTMLDivElement>,
+  ): JSX.Element {
+    const {
+      field,
+      fieldState: { error },
+    } = useController({
+      name,
+      control,
+    });
+
+    const restProps = rest as MultiComboboxFieldProps<OptionType> &
+      AddOptionRequiredFields<OptionType>;
+
+    return (
+      <MultiComboboxFieldRoot
+        onChange={(value) => {
+          field.onChange(value as PathValue<TFieldValues, TFieldName>);
+          onChange?.(value);
+        }}
+        ref={ref}
+        value={field.value ?? null}
+        error={error?.message}
+        {...restProps}
+      />
+    );
+  },
+);
+
+export const MultiComboboxField = Object.assign(MultiComboboxFieldRoot, {
+  Controller: MultiComboboxFieldController,
+});

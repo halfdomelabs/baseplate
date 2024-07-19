@@ -10,7 +10,7 @@ export function buildFeature(
   featureId: string,
   builder: BackendAppEntryBuilder,
 ): unknown {
-  const { projectDefinition, parsedProject } = builder;
+  const { projectDefinition, parsedProject, appCompiler } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
     projectDefinition,
     featureId,
@@ -36,6 +36,7 @@ export function buildFeature(
         buildFeature(subFeature.id, builder),
       ),
       ...parsedProject.getFeatureChildren(featureId),
+      ...appCompiler.getChildrenForFeature(featureId),
     },
   });
 

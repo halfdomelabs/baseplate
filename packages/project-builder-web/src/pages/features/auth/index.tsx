@@ -1,8 +1,10 @@
 import {
+  AUTH_DEFAULT_ROLES,
   AuthConfig,
   authSchema,
-  AUTH_DEFAULT_ROLES,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
@@ -10,22 +12,20 @@ import RoleEditorForm from './RoleEditorForm';
 import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useStatus } from 'src/hooks/useStatus';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
 function AuthPage(): JSX.Element {
-  const { config, parsedProject, setConfig, setConfigAndFixReferences } =
+  const { definition, parsedProject, setConfig, setConfigAndFixReferences } =
     useProjectDefinition();
 
   const formProps = useResettableForm<AuthConfig>({
     resolver: zodResolver(authSchema),
     defaultValues: {
-      ...config.auth,
-      roles: config.auth?.roles ?? AUTH_DEFAULT_ROLES,
+      ...definition.auth,
+      roles: definition.auth?.roles ?? AUTH_DEFAULT_ROLES,
     },
   });
   const { control, reset, handleSubmit } = formProps;
@@ -44,7 +44,7 @@ function AuthPage(): JSX.Element {
     }
   };
 
-  const [isAuthEnabled, setIsAuthEnabled] = useState(!!config.auth);
+  const [isAuthEnabled, setIsAuthEnabled] = useState(!!definition.auth);
 
   const disableAuth = (): void => {
     setConfig((draftConfig) => {
@@ -60,7 +60,7 @@ function AuthPage(): JSX.Element {
   }));
 
   const featureOptions =
-    config.features?.map((m) => ({
+    definition.features?.map((m) => ({
       label: m.name,
       value: m.id,
     })) ?? [];

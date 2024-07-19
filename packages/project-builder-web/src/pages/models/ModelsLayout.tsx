@@ -1,10 +1,10 @@
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { SidebarLayout, Tabs } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Outlet } from 'react-router-dom';
 
 import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 export function ModelsLayout(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
@@ -39,7 +39,7 @@ export function ModelsLayout(): JSX.Element {
           {longestName}
         </div>
       </SidebarLayout.Sidebar>
-      <div className="relative h-full w-full pb-[65px]">
+      <div className="relative size-full pb-[65px]">
         <SidebarLayout.Content className="h-full p-4">
           <Outlet />
         </SidebarLayout.Content>

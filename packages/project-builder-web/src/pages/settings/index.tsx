@@ -1,11 +1,13 @@
 import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
 import { Button, Card, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { z } from 'zod';
 
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
-import { useResettableForm } from 'src/hooks/useResettableForm';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
@@ -20,10 +22,10 @@ const validationSchema = projectDefinitionSchema.pick({
 type FormData = z.infer<typeof validationSchema>;
 
 function SettingsPage(): JSX.Element {
-  const { config, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const { handleSubmit, control } = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
-    defaultValues: _.pick(config, [
+    defaultValues: _.pick(definition, [
       'name',
       'version',
       'portOffset',

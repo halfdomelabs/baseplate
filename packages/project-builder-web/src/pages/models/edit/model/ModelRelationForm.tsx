@@ -3,13 +3,13 @@ import {
   ModelRelationFieldConfig,
   REFERENTIAL_ACTIONS,
 } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { Control, useWatch } from 'react-hook-form';
 
 import ModelRelationReferencesForm from './ModelRelationReferencesForm';
 import { LinkButton, SelectInput, TextInput } from 'src/components';
-import { useProjectDefinition } from 'src/hooks/useProjectDefinition';
 
 interface Props {
   className?: string;

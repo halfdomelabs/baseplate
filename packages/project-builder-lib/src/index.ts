@@ -1,3 +1,4 @@
+export * from './compiler/index.js';
 export * from './constants/index.js';
 export * from './feature-flags/index.js';
 export * from './parser/index.js';
@@ -11,3 +12,4 @@ export * from './migrations/index.js';
 export * from './definition/index.js';
 export * from './utils/colors.js';
 export * from './plugins/index.js';
+export * from './tools/index.js';

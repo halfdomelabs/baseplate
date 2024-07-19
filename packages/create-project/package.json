@@ -21,7 +21,8 @@
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "node ./dist/create-baseplate-project.js"
+    "start": "node ./dist/create-baseplate-project.js",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@inquirer/prompts": "^4.3.2",
