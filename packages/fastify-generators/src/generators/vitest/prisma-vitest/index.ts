@@ -44,8 +44,8 @@ const PrismaVitestGenerator = createGeneratorWithChildren({
     { node, vitest, project, typescript, prismaOutput },
   ) {
     node.addDevPackages({
-      'vitest-mock-extended': '1.3.1',
-      'pg-connection-string': '2.6.1',
+      'vitest-mock-extended': '1.3.2',
+      'pg-connection-string': '2.6.4',
     });
 
     const [dbHelperImport, dbHelperPath] = makeImportAndFilePath(
