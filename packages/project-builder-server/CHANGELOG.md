@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies [a6a6653]
+  - @halfdomelabs/project-builder-lib@0.8.6
+
 ## 0.4.6
 
 ### Patch Changes
