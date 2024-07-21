@@ -69,7 +69,7 @@
     "concurrently": "8.2.2",
     "tsc-alias": "1.8.10",
     "typescript": "5.4.4",
-    "vitest": "1.4.0"
+    "vitest": "2.0.3"
   },
   "engines": {
     "node": "^20.0.0"
