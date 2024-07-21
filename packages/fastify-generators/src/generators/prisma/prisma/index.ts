@@ -90,11 +90,12 @@ const PrismaGenerator = createGeneratorWithTasks({
         typescript,
       }) {
         node.addDevPackages({
-          prisma: '5.7.1',
+          prisma: '5.17.0',
+          '@prisma/instrumentation': '5.17.0',
         });
 
         node.addPackages({
-          '@prisma/client': '5.7.1',
+          '@prisma/client': '5.17.0',
         });
 
         // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
@@ -114,6 +115,9 @@ const PrismaGenerator = createGeneratorWithTasks({
           createPrismaSchemaGeneratorBlock({
             name: 'client',
             provider: 'prisma-client-js',
+            additionalOptions: {
+              previewFeatures: '["tracing"]',
+            },
           }),
         );
 

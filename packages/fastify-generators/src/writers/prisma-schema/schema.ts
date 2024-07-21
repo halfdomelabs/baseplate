@@ -43,8 +43,8 @@ export function createPrismaSchemaGeneratorBlock({
     name,
     type: 'generator',
     contents: mapObjectToContents({
-      ...additionalOptions,
       provider: `"${provider}"`,
+      ...additionalOptions,
     }),
   };
 }

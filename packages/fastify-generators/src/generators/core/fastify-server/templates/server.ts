@@ -14,6 +14,8 @@ export async function buildServer(
     ...options,
   });
 
+  PRE_PLUGIN_BLOCKS;
+
   PLUGINS;
 
   // register app plugins

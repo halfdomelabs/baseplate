@@ -581,10 +581,17 @@ export class TypescriptSourceFile<
   T extends TypescriptTemplateConfigOrEntry<any>,
 > extends TypescriptSourceContent<T> {
   protected sourceFileOptions: TypescriptSourceFileOptions;
+  protected preImportBlocks: string[] = [];
 
   constructor(config: T, options: TypescriptSourceFileOptions = {}) {
     super(config);
     this.sourceFileOptions = options;
+  }
+
+  addPreImportBlock(block: string): this {
+    this.checkNotGenerated();
+    this.preImportBlocks.push(block);
+    return this;
   }
 
   renderToText(template: string, destination: string): string {
@@ -664,6 +671,12 @@ export class TypescriptSourceFile<
         importMappers: importMappers.filter(notEmpty),
       });
       writer.writeLine('');
+    });
+
+    file.insertText(0, (writer) => {
+      this.preImportBlocks.forEach((block) => {
+        writer.writeLine(block);
+      });
     });
 
     // fill in code blocks

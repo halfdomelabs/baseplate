@@ -1,6 +1,7 @@
 import {
   nodeProvider,
   TypescriptCodeBlock,
+  TypescriptCodeExpression,
   TypescriptCodeUtils,
   TypescriptCodeWrapper,
   typescriptProvider,
@@ -28,6 +29,7 @@ const descriptorSchema = z.object({
 
 export interface ReactRouterProvider {
   addRouteHeader(block: TypescriptCodeBlock): void;
+  setRoutesComponent(component: TypescriptCodeExpression): void;
 }
 
 export const reactRouterProvider =
@@ -64,6 +66,8 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     const layouts: ReactRouteLayout[] = [];
     const headerBlocks: TypescriptCodeBlock[] = [];
 
+    let routesComponent: TypescriptCodeExpression | undefined = undefined;
+
     return {
       getProviders: () => ({
         reactRoutes: {
@@ -84,9 +88,22 @@ const ReactRouterGenerator = createGeneratorWithChildren({
           addRouteHeader(block) {
             headerBlocks.push(block);
           },
+          setRoutesComponent(component) {
+            if (routesComponent) {
+              throw new Error('Routes component already set');
+            }
+            routesComponent = component;
+          },
         },
       }),
       build: async (builder) => {
+        routesComponent =
+          routesComponent ??
+          TypescriptCodeUtils.createExpression(
+            'Routes',
+            `import { Routes } from 'react-router-dom'`,
+          );
+
         builder.setBaseDirectory(react.getSrcFolder());
 
         reactApp
@@ -109,6 +126,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
         const pagesRootFile = typescript.createTemplate({
           ROUTE_HEADER: { type: 'code-block' },
           ROUTES: { type: 'code-expression' },
+          ROUTES_COMPONENT: { type: 'code-expression' },
         });
 
         // TODO: Make sure we don't have more than one layout key
@@ -122,6 +140,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
             ...layouts.map((layout) => layout.header).filter(notEmpty),
           ],
           ROUTES: renderedRoutes,
+          ROUTES_COMPONENT: routesComponent,
         });
 
         await builder.apply(pagesRootFile.renderToAction('pages/index.tsx'));

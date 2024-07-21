@@ -10,6 +10,7 @@ import {
   OperationDefinitionNode,
 } from 'graphql';
 import { logger } from '%logger-service';
+import { logError } from '%error-logger';
 
 function getOperationType(document: DocumentNode): string | undefined {
   const operationDefinition = document.definitions.find(
@@ -40,7 +41,7 @@ export const useGraphLogger = (options?: UseGraphLoggerOptions): Plugin => {
 
     if (!skipLogErrors) {
       errors.forEach((error: GraphQLError) =>
-        logger.error(error.originalError ?? error),
+        logError(error.originalError ?? error),
       );
     }
 
