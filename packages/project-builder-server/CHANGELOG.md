@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.4
+
+### Patch Changes
+
+- 02a4d70: Upgrade Sentry to 8.19.0 (https://docs.sentry.io/platforms/javascript/migration/v7-to-v8/)
+
 ## 0.4.3
 
 ### Patch Changes

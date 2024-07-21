@@ -1,5 +1,18 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.0
+
+### Minor Changes
+
+- 02a4d70: Upgrade Sentry to 8.19.0 (https://docs.sentry.io/platforms/javascript/migration/v7-to-v8/)
+
+### Patch Changes
+
+- 02a4d70: Upgrade Prisma to 5.17.0
+- e559b45: Update with correct README for Fastify
+- Updated dependencies [02a4d70]
+  - @halfdomelabs/core-generators@0.9.2
+
 ## 0.9.1
 
 ### Patch Changes
