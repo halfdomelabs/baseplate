@@ -89,6 +89,11 @@ export type AdminCrudEmbeddedInputConfig = z.infer<
   typeof adminCrudEmbeddedInputSchema
 >;
 
+export const adminCrudEmbeddedInputType = createAdminCrudInputType({
+  name: 'embedded',
+  schema: adminCrudEmbeddedInputSchema,
+});
+
 export const adminCrudEmbeddedLocalInputSchema = z.object({
   type: z.literal('embeddedLocal'),
   label: z.string().min(1),
@@ -108,9 +113,9 @@ export type AdminCrudEmbeddedLocalInputConfig = z.infer<
   typeof adminCrudEmbeddedLocalInputSchema
 >;
 
-export const adminCrudEmbeddedInputType = createAdminCrudInputType({
-  name: 'embedded',
-  schema: adminCrudEmbeddedInputSchema,
+export const adminCrudEmbeddedLocalInputType = createAdminCrudInputType({
+  name: 'embeddedLocal',
+  schema: adminCrudEmbeddedLocalInputSchema,
 });
 
 export const adminCrudPasswordInputSchema = z.object({
@@ -132,5 +137,6 @@ export const BUILT_IN_ADMIN_CRUD_INPUTS: AdminCrudInputType[] = [
   adminCrudForeignInputType,
   adminCrudEnumInputType,
   adminCrudEmbeddedInputType,
+  adminCrudEmbeddedLocalInputType,
   adminCrudPasswordInputType,
 ];
