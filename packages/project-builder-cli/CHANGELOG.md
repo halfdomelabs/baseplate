@@ -1,5 +1,15 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies [ab0b4f0]
+  - @halfdomelabs/project-builder-lib@0.8.4
+  - @halfdomelabs/project-builder-server@0.4.5
+  - @halfdomelabs/project-builder-web@0.11.4
+  - @halfdomelabs/baseplate-plugin-storage@1.0.5
+
 ## 0.7.4
 
 ### Patch Changes
