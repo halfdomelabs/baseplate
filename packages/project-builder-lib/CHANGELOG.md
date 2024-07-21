@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.6
+
+### Patch Changes
+
+- a6a6653: Throw error when fetching plugin targets but no targets found
+
 ## 0.8.5
 
 ### Patch Changes
