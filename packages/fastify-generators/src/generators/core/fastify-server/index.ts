@@ -37,6 +37,8 @@ interface FastifyServerPlugin {
 export interface FastifyServerProvider {
   getConfig(): NonOverwriteableMap<FastifyServerConfig>;
   registerPlugin(plugin: FastifyServerPlugin): void;
+  addInitializerBlock(block: string): void;
+  addPrePluginBlock(block: TypescriptCodeBlock): void;
 }
 
 export const fastifyServerProvider =
@@ -67,6 +69,8 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       { name: 'fastify-server-config', defaultsOverwriteable: true },
     );
     const plugins: FastifyServerPlugin[] = [];
+    const initializerBlocks: string[] = [];
+    const prePluginBlocks: TypescriptCodeBlock[] = [];
 
     node.addPackages({
       fastify: '4.25.2',
@@ -119,6 +123,12 @@ const FastifyServerGenerator = createGeneratorWithChildren({
         fastifyServer: {
           getConfig: () => configMap,
           registerPlugin: (plugin) => plugins.push(plugin),
+          addPrePluginBlock(block) {
+            prePluginBlocks.push(block);
+          },
+          addInitializerBlock(block) {
+            initializerBlocks.push(block);
+          },
         },
       }),
       build: async (builder) => {
@@ -129,6 +139,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
           SERVER_PORT: { type: 'code-expression' },
           SERVER_HOST: { type: 'code-expression' },
         });
+        indexFile.addPreImportBlock(initializerBlocks.join('\n'));
         indexFile.addCodeExpression('LOG_ERROR', config.errorHandlerFunction);
         indexFile.addCodeExpression(
           'SERVER_OPTIONS',
@@ -157,6 +168,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
         );
 
         const serverFile = typescript.createTemplate({
+          PRE_PLUGIN_BLOCKS: TypescriptCodeUtils.mergeBlocks(prePluginBlocks),
           PLUGINS: { type: 'code-block' },
           ROOT_MODULE: { type: 'code-expression' },
         });

@@ -117,8 +117,8 @@ export function buildFastify(
       $pothosPrisma: {
         generator: '@halfdomelabs/fastify/pothos/pothos-prisma',
       },
-      $yogaSentry: {
-        generator: '@halfdomelabs/fastify/yoga/yoga-sentry',
+      $pothosSentry: {
+        generator: '@halfdomelabs/fastify/pothos/pothos-sentry',
       },
       $modules: [
         ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),

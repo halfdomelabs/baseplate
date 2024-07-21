@@ -1,5 +1,4 @@
 import {
-  copyTypescriptFileAction,
   ImportMap,
   ImportMapper,
   makeImportAndFilePath,
@@ -23,7 +22,7 @@ import {
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { requestContextProvider } from '../request-context/index.js';
 import { authInfoImportProvider } from '@src/generators/auth/auth-service/index.js';
-import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -59,14 +58,17 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         fastifyServerSentry: fastifyServerSentryProvider,
       },
       run({ errorHandlerServiceSetup, fastifyServer, errorHandlerService }) {
-        fastifyServer.registerPlugin({
-          name: 'sentryPlugin',
-          plugin: TypescriptCodeUtils.createExpression(
-            'sentryPlugin',
-            "import {sentryPlugin} from '@/src/plugins/sentry'",
+        fastifyServer.addInitializerBlock(`import './instrument';`);
+        fastifyServer.addPrePluginBlock(
+          TypescriptCodeUtils.createBlock(
+            `Sentry.setupFastifyErrorHandler(fastify);
+          registerSentryEventProcessor();`,
+            [
+              `import { registerSentryEventProcessor } from '@/src/services/sentry';`,
+              `import * as Sentry from '@sentry/node';`,
+            ],
           ),
-          orderPriority: 'EARLY',
-        });
+        );
 
         const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
 
@@ -158,21 +160,18 @@ if (error instanceof Error && shouldLogToSentry(error)) {
       },
       run({ node, configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate({
-          CONFIG: { type: 'code-expression' },
-          REQUEST_INFO_TYPE: { type: 'code-expression' },
           SCOPE_CONFIGURATION_BLOCKS: { type: 'code-block' },
-          SENTRY_INTEGRATIONS: { type: 'code-expression' },
         });
 
         node.addPackages({
-          '@sentry/node': '7.81.1',
-          '@sentry/core': '7.81.1',
-          '@sentry/utils': '7.81.1',
+          '@sentry/core': '8.19.0',
+          '@sentry/node': '8.19.0',
+          '@sentry/profiling-node': '8.19.0',
           lodash: '4.17.21',
         });
 
         node.addDevPackages({
-          '@sentry/types': '7.81.1',
+          '@sentry/types': '8.19.0',
           '@types/lodash': '4.17.7',
         });
 
@@ -212,7 +211,12 @@ if (error instanceof Error && shouldLogToSentry(error)) {
 
         sentryIntegrations.push(
           TypescriptCodeUtils.createExpression(
-            `new Sentry.Integrations.Http({ tracing: true })`,
+            `nodeProfilingIntegration()`,
+            `import { nodeProfilingIntegration } from '@sentry/profiling-node'`,
+          ),
+          TypescriptCodeUtils.createExpression(
+            `Sentry.requestDataIntegration({ include: { ip: true } })`,
+            `import * as Sentry from '@sentry/node'`,
           ),
         );
 
@@ -230,10 +234,7 @@ if (error instanceof Error && shouldLogToSentry(error)) {
           }),
           build: async (builder) => {
             sentryServiceFile.addCodeEntries({
-              CONFIG: configService.getConfigExpression(),
               SCOPE_CONFIGURATION_BLOCKS: scopeConfigurationBlocks,
-              SENTRY_INTEGRATIONS:
-                TypescriptCodeUtils.mergeExpressionsAsArray(sentryIntegrations),
             });
 
             await builder.apply(
@@ -243,14 +244,43 @@ if (error instanceof Error && shouldLogToSentry(error)) {
               ),
             );
 
+            const sentryInstrumentFile = typescript.createTemplate(
+              {
+                SENTRY_INTEGRATIONS:
+                  TypescriptCodeUtils.mergeExpressionsAsArray(
+                    sentryIntegrations,
+                  ),
+              },
+              { importMappers: [configService] },
+            );
+
             await builder.apply(
-              copyTypescriptFileAction({
-                source: 'plugins/sentry.ts',
-                destination: 'src/plugins/sentry.ts',
-              }),
+              sentryInstrumentFile.renderToAction(
+                'instrument.ts',
+                'src/instrument.ts',
+              ),
             );
           },
         };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'prisma',
+      dependencies: {
+        prismaSchemaProvider: prismaSchemaProvider.dependency().optional(),
+        fastifySentryProvider,
+      },
+      run({ prismaSchemaProvider, fastifySentryProvider }) {
+        if (prismaSchemaProvider) {
+          fastifySentryProvider.addSentryIntegration(
+            TypescriptCodeUtils.createExpression(
+              `Sentry.prismaIntegration()`,
+              `import * as Sentry from '@sentry/node'`,
+            ),
+          );
+        }
+        return {};
       },
     });
 
@@ -265,37 +295,16 @@ if (error instanceof Error && shouldLogToSentry(error)) {
           fastifySentry.addScopeConfigurationBlock(
             TypescriptCodeUtils.createBlock(
               `const userData = requestContext.get('user');
-      if (userData) {
-        scope.setUser({
-          ...scope.getUser(),
-          id: userData.id,
-        });
-      }`,
+    if (userData) {
+      event.user = {
+        ...event.user,
+        id: userData.id,
+      };
+    }`,
               `import { requestContext } from '@fastify/request-context';`,
             ),
           );
         }
-        return {};
-      },
-    });
-
-    taskBuilder.addTask({
-      name: 'prisma',
-      dependencies: {
-        fastifySentry: fastifySentryProvider,
-        prismaOutput: prismaOutputProvider,
-      },
-      run({ fastifySentry, prismaOutput }) {
-        fastifySentry.addSentryIntegration(
-          TypescriptCodeUtils.createExpression(
-            `new Sentry.Integrations.Prisma({ client: prisma })`,
-            [
-              `import * as Sentry from '@sentry/node';`,
-              `import { prisma } from '%prisma-service';`,
-            ],
-            { importMappers: [prismaOutput] },
-          ),
-        );
         return {};
       },
     });
