@@ -302,8 +302,13 @@ export async function getModuleFederationTargets(
       );
     }),
   );
-  return Object.assign(
-    {},
-    ...federationTargets.filter(notEmpty).flat(),
-  ) as Record<string, string>;
+  const targets = federationTargets.filter(notEmpty).flat();
+
+  if (!targets.length) {
+    throw new Error(
+      `No module federation targets found in ${pluginPackageDirectory}`,
+    );
+  }
+
+  return Object.assign({}, ...targets) as Record<string, string>;
 }
