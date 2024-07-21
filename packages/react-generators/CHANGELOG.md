@@ -1,5 +1,17 @@
 # @halfdomelabs/react-generators
 
+## 0.8.0
+
+### Minor Changes
+
+- 02a4d70: Upgrade Sentry to 8.19.0 (https://docs.sentry.io/platforms/javascript/migration/v7-to-v8/)
+
+### Patch Changes
+
+- 80100bd: Add @parcel/watcher to codegen dependencies to allow GraphQL watcher
+- Updated dependencies [02a4d70]
+  - @halfdomelabs/core-generators@0.9.2
+
 ## 0.7.9
 
 ### Patch Changes
