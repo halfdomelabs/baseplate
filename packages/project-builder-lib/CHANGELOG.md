@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.4
+
+### Patch Changes
+
+- ab0b4f0: Restore embedded local admin input to config schema
+
 ## 0.8.3
 
 ### Patch Changes
