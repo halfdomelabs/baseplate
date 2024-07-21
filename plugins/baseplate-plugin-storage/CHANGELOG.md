@@ -1,5 +1,18 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 1.0.6
+
+### Patch Changes
+
+- ddbbead: Upgrade vitest to 2.0.3
+- Updated dependencies [ddbbead]
+  - @halfdomelabs/project-builder-lib@0.8.5
+  - @halfdomelabs/core-generators@0.9.3
+  - @halfdomelabs/ui-components@0.4.11
+  - @halfdomelabs/sync@0.7.6
+  - @halfdomelabs/fastify-generators@0.10.1
+  - @halfdomelabs/react-generators@0.8.1
+
 ## 1.0.5
 
 ### Patch Changes

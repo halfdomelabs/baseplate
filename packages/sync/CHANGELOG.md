@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.7.6
+
+### Patch Changes
+
+- ddbbead: Upgrade vitest to 2.0.3
+
 ## 0.7.5
 
 ### Patch Changes

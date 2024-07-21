@@ -1,5 +1,13 @@
 # @halfdomelabs/core-generators
 
+## 0.9.3
+
+### Patch Changes
+
+- ddbbead: Upgrade vitest to 2.0.3
+- Updated dependencies [ddbbead]
+  - @halfdomelabs/sync@0.7.6
+
 ## 0.9.2
 
 ### Patch Changes

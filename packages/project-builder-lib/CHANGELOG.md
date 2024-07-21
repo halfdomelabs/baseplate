@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.5
+
+### Patch Changes
+
+- ddbbead: Upgrade vitest to 2.0.3
+- Updated dependencies [ddbbead]
+  - @halfdomelabs/ui-components@0.4.11
+  - @halfdomelabs/sync@0.7.6
+
 ## 0.8.4
 
 ### Patch Changes

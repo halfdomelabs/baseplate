@@ -1,5 +1,13 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.1
+
+### Patch Changes
+
+- Updated dependencies [ddbbead]
+  - @halfdomelabs/core-generators@0.9.3
+  - @halfdomelabs/sync@0.7.6
+
 ## 0.10.0
 
 ### Minor Changes
