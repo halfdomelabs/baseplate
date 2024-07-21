@@ -1,5 +1,18 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.7.6
+
+### Patch Changes
+
+- Updated dependencies [ddbbead]
+  - @halfdomelabs/baseplate-plugin-storage@1.0.6
+  - @halfdomelabs/project-builder-server@0.4.6
+  - @halfdomelabs/project-builder-lib@0.8.5
+  - @halfdomelabs/core-generators@0.9.3
+  - @halfdomelabs/project-builder-web@0.11.5
+  - @halfdomelabs/fastify-generators@0.10.1
+  - @halfdomelabs/react-generators@0.8.1
+
 ## 0.7.5
 
 ### Patch Changes

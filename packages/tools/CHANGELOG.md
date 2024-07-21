@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.8
+
+### Patch Changes
+
+- ddbbead: Upgrade vitest to 2.0.3
+
 ## 0.5.7
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.4.11
+
+### Patch Changes
+
+- ddbbead: Upgrade vitest to 2.0.3
+
 ## 0.4.10
 
 ### Patch Changes
