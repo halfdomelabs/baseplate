@@ -42,7 +42,7 @@
     "chalk": "5.3.0",
     "change-case": "^4.1.2",
     "chokidar": "^3.5.3",
-    "fastify": "4.25.2",
+    "fastify": "4.28.1",
     "fastify-plugin": "^4.5.1",
     "fastify-type-provider-zod": "^1.2.0",
     "fs-extra": "11.1.1",
