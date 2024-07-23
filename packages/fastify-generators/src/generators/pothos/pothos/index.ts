@@ -271,19 +271,28 @@ const PothosGenerator = createGeneratorWithTasks({
 
             yogaConfig.appendUnique('postSchemaBlocks', [
               TypescriptCodeUtils.createBlock(
-                `if (IS_DEVELOPMENT) {
-                fs.writeFileSync(
-                  './schema.graphql',
-                  printSchema(lexicographicSortSchema(schema))
-                );
+                `
+async function writeSchemaToFile(): Promise<void> {
+  // only write the schema to file if it has changed to avoid unnecessary GraphQL codegen generations
+  const existingSchema = await fs
+    .readFile('./schema.graphql', 'utf-8')
+    .catch(() => undefined);
+  const newSchema = printSchema(lexicographicSortSchema(schema));
+  if (existingSchema !== newSchema) {
+    await fs.writeFile('./schema.graphql', newSchema);
+  }
 
-                if (process.argv.includes('--exit-after-generate-schema')) {
-                  process.exit(0);
-                }
-              }`,
+  if (process.argv.includes('--exit-after-generate-schema')) {
+    process.exit(0);
+  }
+}
+
+if (IS_DEVELOPMENT) {
+  writeSchemaToFile().catch((err) => logger.error(err));
+}`,
                 [
                   `import { printSchema, lexicographicSortSchema } from 'graphql';`,
-                  `import fs from 'fs';`,
+                  `import fs from 'fs/promises';`,
                 ],
               ),
             ]);

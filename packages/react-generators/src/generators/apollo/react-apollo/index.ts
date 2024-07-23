@@ -135,6 +135,7 @@ const ReactApolloGenerator = createGeneratorWithTasks({
 
         node.addScripts({
           generate: 'graphql-codegen',
+          'watch:gql': 'graphql-codegen --watch',
         });
 
         reactConfig.getConfigMap().set('VITE_GRAPH_API_ENDPOINT', {
