@@ -104,7 +104,7 @@ const NexusPrismaListQueryGenerator = createGeneratorWithChildren({
     objectTypeBlock.addCodeEntries({
       QUERY_EXPORT: `${lowerFirstModelName}Query`,
       QUERY_NAME: quot(lowerFirstModelName),
-      OBJECT_TYPE_NAME: `'${objectTypeName || modelName}'`,
+      OBJECT_TYPE_NAME: `'${objectTypeName ?? modelName}'`,
       QUERY_ARGS: nexusArgs.expression,
       MODEL: prismaOutput.getPrismaModelExpression(modelName),
       ARG_INPUT: `{ ${primaryKeyDefinition.name} }`,

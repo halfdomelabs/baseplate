@@ -191,7 +191,7 @@ const NodeGenerator = createGeneratorWithChildren({
             ).map((d) => ({ [d.name]: d.version })),
           );
         const packageJson = {
-          name: descriptor.packageName || descriptor.name,
+          name: descriptor.packageName ?? descriptor.name,
           description: descriptor.description,
           license: descriptor.license,
           version: descriptor.version,

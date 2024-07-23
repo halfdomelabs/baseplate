@@ -94,7 +94,7 @@ function writeNexusInputDefinitionFromDtoNestedField(
 
   components.push(
     `.field("${field.name}", { type: '${
-      field.schemaFieldName || `${field.nestedType.name}Input`
+      field.schemaFieldName ?? `${field.nestedType.name}Input`
     }' })`,
   );
 

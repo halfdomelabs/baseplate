@@ -14,7 +14,7 @@ export function renderRoutes(
   // group routes by layout key
   const routesByLayoutKey = _.groupBy(
     routes,
-    (route) => route.layoutKey || 'no-layout',
+    (route) => route.layoutKey ?? 'no-layout',
   );
 
   const renderedRoutes = Object.keys(routesByLayoutKey).flatMap((layoutKey) => {

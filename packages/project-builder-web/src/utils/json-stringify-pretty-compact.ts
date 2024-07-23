@@ -82,12 +82,12 @@ function prettify(
     ':': ': ',
   };
 
-  if (options.addMargin || options.addObjectMargin) {
+  if (!!options.addMargin || !!options.addObjectMargin) {
     tokens['{'] = '{ ';
     tokens['}'] = ' }';
   }
 
-  if (options.addMargin || options.addArrayMargin) {
+  if (!!options.addMargin || !!options.addArrayMargin) {
     tokens['['] = '[ ';
     tokens[']'] = ' ]';
   }

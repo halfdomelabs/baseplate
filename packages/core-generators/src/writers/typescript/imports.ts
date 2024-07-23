@@ -138,13 +138,13 @@ export function writeImportDeclaration(
     isTypeOnly,
   } = importDeclaration;
   const hasNamedImports = !!namedImports.length;
-  if (namespaceImport && (defaultImport || hasNamedImports)) {
+  if (!!namespaceImport && (!!defaultImport || hasNamedImports)) {
     throw new Error(
       'Cannot have an import with both namespace and named/default imports!',
     );
   }
   writer.write('import');
-  if (namespaceImport || defaultImport || hasNamedImports) {
+  if (!!namespaceImport || !!defaultImport || hasNamedImports) {
     writer.conditionalWrite(isTypeOnly, ' type');
     if (namespaceImport) {
       writer.write(` * as ${namespaceImport}`);

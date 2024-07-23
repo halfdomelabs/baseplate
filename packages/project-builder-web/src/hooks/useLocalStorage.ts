@@ -11,7 +11,7 @@ export function useLocalStorage(
     );
   }
 
-  const [value, setValue] = useState(localStorage.getItem(key) || '');
+  const [value, setValue] = useState(localStorage.getItem(key) ?? '');
   const saveValue = useCallback(
     (newValue: string) => {
       setValue(newValue);

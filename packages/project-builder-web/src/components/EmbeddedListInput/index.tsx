@@ -87,7 +87,7 @@ function EmbeddedListInput<InputType>({
       )}
       <Modal isOpen={!!valueToEdit} onClose={() => setValueToEdit(undefined)}>
         <Modal.Header onClose={() => setValueToEdit(undefined)}>
-          Edit {itemName || 'Item'}
+          Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
           {renderForm({

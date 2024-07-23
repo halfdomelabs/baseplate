@@ -459,9 +459,12 @@ export const TypescriptCodeUtils = {
     const attributesStr = keys
       .filter((key) => rest[key] !== false && rest[key] !== undefined)
       .map((key) => {
-        const value = rest[key] || '';
+        const value = rest[key];
         if (value === true) {
           return `${key}`;
+        }
+        if (!value) {
+          throw new Error(`Invalid value for attribute ${key}`);
         }
         const content = getExpressionContent(value);
         if (content === 'true') {
@@ -508,7 +511,7 @@ export const TypescriptCodeUtils = {
       .map(
         (key) =>
           `${key}: ${
-            normalizeTypescriptCodeExpression(obj[key] || '').content
+            normalizeTypescriptCodeExpression(obj[key] ?? '').content
           };`,
       )
       .join('\n');

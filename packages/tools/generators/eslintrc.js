@@ -41,7 +41,6 @@ module.exports = function createEslintConfig(options) {
               'error',
               { allowExpressions: true, allowTypedFunctionExpressions: true },
             ],
-            '@typescript-eslint/prefer-nullish-coalescing': 'warn',
           },
           parserOptions: {
             project: ['./tsconfig.json', ...additionalTsConfigs],

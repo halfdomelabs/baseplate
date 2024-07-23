@@ -33,7 +33,7 @@ export function writePothosInputFieldFromDtoNestedField(
   return {
     expression: TypescriptCodeUtils.formatExpression(`BUILDER.field(OPTIONS)`, {
       BUILDER: options.fieldBuilder,
-      OPTIONS: fieldOptions || '',
+      OPTIONS: fieldOptions ?? '',
     }),
     childDefinitions: pothosType.childDefinitions,
   };
