@@ -31,7 +31,7 @@ export function writePothosInputFieldFromDtoScalarField(
     {
       BUILDER: options.fieldBuilder,
       POTHOS_METHOD: methodName,
-      OPTIONS: fieldOptions || '',
+      OPTIONS: fieldOptions ?? '',
     },
   );
 }
@@ -54,7 +54,7 @@ export function writePothosObjectFieldFromDtoScalarField(
     {
       BUILDER: options.fieldBuilder,
       POTHOS_METHOD: methodName,
-      OPTIONS: fieldOptions || '',
+      OPTIONS: fieldOptions ?? '',
     },
   );
 }
@@ -80,7 +80,7 @@ export function writePothosExposeFieldFromDtoScalarField(
       BUILDER: options.fieldBuilder,
       FIELD_NAME: quot(field.name),
       POTHOS_METHOD: exposeMethodName,
-      OPTIONS: fieldOptions || '',
+      OPTIONS: fieldOptions ?? '',
     },
   );
 }

@@ -131,11 +131,11 @@ export class PrismaModelBlockWriter {
       fields: this.fields.map((field) => {
         const sharedFields = {
           name: field.name,
-          id: field.attributes?.some((attr) => attr.name === '@id') || false,
+          id: field.attributes?.some((attr) => attr.name === '@id') ?? false,
           isOptional: field.type.endsWith('?'),
           isList: /\[\]\??$/.test(field.type),
           hasDefault:
-            field.attributes?.some((attr) => attr.name === '@default') || false,
+            field.attributes?.some((attr) => attr.name === '@default') ?? false,
         };
         if (field.fieldType === 'relation') {
           const relationAttribute = field.attributes?.find(

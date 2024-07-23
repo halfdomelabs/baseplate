@@ -161,7 +161,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
               if (!areFieldsIdentical(existingRoot.fields, root.fields)) {
                 throw new Error(
                   `Root ${
-                    root.name || 'unnamed'
+                    root.name ?? 'unnamed'
                   } already exists with different fields`,
                 );
               }

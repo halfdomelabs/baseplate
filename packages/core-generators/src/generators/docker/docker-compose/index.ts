@@ -44,7 +44,7 @@ const DockerComposeGenerator = createGeneratorWithChildren({
       outputs.push(
         generatePostgresDockerCompose({
           port: postgres.port.toString(),
-          password: postgres.password || `${projectName}-password`,
+          password: postgres.password ?? `${projectName}-password`,
         }),
       );
     }
@@ -53,7 +53,7 @@ const DockerComposeGenerator = createGeneratorWithChildren({
       outputs.push(
         generateRedisDockerCompose({
           port: redis.port.toString(),
-          password: redis.password || `${projectName}-password`,
+          password: redis.password ?? `${projectName}-password`,
         }),
       );
     }

@@ -78,7 +78,7 @@ const PrismaModelGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { prisma }) {
     const { name } = descriptor;
-    const tableName = descriptor.tableName || snakeCase(name);
+    const tableName = descriptor.tableName ?? snakeCase(name);
 
     const prismaModel = new PrismaModelBlockWriter({ name, tableName });
 

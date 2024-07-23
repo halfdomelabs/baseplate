@@ -377,7 +377,7 @@ TRANSFORMERS`,
       ...augmentedTransformers.flatMap((t) =>
         t.outputFields.map((f): [string, TypescriptCodeExpression | string] => [
           f.name,
-          expressionExtractor(f) ||
+          expressionExtractor(f) ??
             (f.pipeOutputName ? `${f.pipeOutputName}.data` : f.name),
         ]),
       ),

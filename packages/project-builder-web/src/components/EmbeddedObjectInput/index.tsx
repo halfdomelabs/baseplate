@@ -51,7 +51,7 @@ function EmbeddedObjectInput<InputType>({
         size="small"
         onClick={() =>
           setValueToEdit(
-            (value || defaultValue) as DefaultValues<
+            (value ?? defaultValue) as DefaultValues<
               Exclude<InputType, undefined | null>
             >,
           )
@@ -66,7 +66,7 @@ function EmbeddedObjectInput<InputType>({
       )}
       <Modal isOpen={!!valueToEdit} onClose={() => setValueToEdit(undefined)}>
         <Modal.Header onClose={() => setValueToEdit(undefined)}>
-          Edit {itemName || 'Item'}
+          Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
           {renderForm({ initialData: valueToEdit, onSubmit: handleSubmit })}

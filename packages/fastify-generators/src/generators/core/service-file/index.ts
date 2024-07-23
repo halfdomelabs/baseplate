@@ -68,7 +68,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
         const [servicesImport, servicesPath] = makeImportAndFilePath(
           path.join(
             servicesFolder,
-            `${descriptor.fileName || paramCase(descriptor.name)}.ts`,
+            `${descriptor.fileName ?? paramCase(descriptor.name)}.ts`,
           ),
         );
 
