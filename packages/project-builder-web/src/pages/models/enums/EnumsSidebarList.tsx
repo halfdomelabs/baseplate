@@ -5,7 +5,9 @@ import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
 import { MdClear } from 'react-icons/md';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
+
+import AddEnumButton from './AddEnumButton';
 
 interface EnumsSidebarListProps {
   className?: string;
@@ -27,11 +29,9 @@ export function EnumsSidebarList({
 
   return (
     <div className={clsx(className, 'flex flex-col space-y-4')}>
-      <Link to="/models/enums/new" className="block w-full">
-        <Button variant="secondary" className="w-full">
-          New Enum
-        </Button>
-      </Link>
+      {/* <Link to="/models/enums/new" className="block w-full"> */}
+      <AddEnumButton />
+      {/* </Link> */}
       <div className="relative">
         <InputField
           value={filterQuery}

@@ -10,7 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useCallback, useEffect, useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
@@ -21,6 +21,7 @@ import { RefDeleteError } from '@src/utils/error';
 interface UseEnumFormOptions {
   setError?: (error: string) => void;
   onSubmitSuccess?: () => void;
+  uid?: string;
 }
 
 function createNewEnum(): EnumConfig {
@@ -36,12 +37,12 @@ function createNewEnum(): EnumConfig {
 export function useEnumForm({
   setError,
   onSubmitSuccess,
+  uid,
 }: UseEnumFormOptions): {
   form: UseFormReturn<EnumConfig>;
   handleSubmit: (data: EnumConfig) => void;
   handleDelete: () => void;
 } {
-  const { uid } = useParams<'uid'>();
   const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
   const toast = useToast();
   const navigate = useNavigate();
@@ -65,7 +66,7 @@ export function useEnumForm({
     const { id } = getValues();
     if (formState.isSubmitSuccessful) {
       if (!urlEnumId) {
-        navigate(`../edit/${modelEnumEntityType.toUid(id)}`);
+        navigate(`/models/enums/edit/${modelEnumEntityType.toUid(id)}`);
       }
       if (onSubmitSuccess) {
         onSubmitSuccess();
