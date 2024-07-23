@@ -73,7 +73,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     const prePluginBlocks: TypescriptCodeBlock[] = [];
 
     node.addPackages({
-      fastify: '4.25.2',
+      fastify: '4.28.1',
       '@fastify/helmet': '11.1.1',
       'fastify-plugin': '4.5.1',
       nanoid: '3.3.7',
