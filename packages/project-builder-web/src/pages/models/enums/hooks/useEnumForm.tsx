@@ -21,6 +21,7 @@ import { RefDeleteError } from '@src/utils/error';
 interface UseEnumFormOptions {
   setError?: (error: string) => void;
   onSubmitSuccess?: () => void;
+  clearOnSubmit?: boolean;
   uid?: string;
 }
 
@@ -37,10 +38,11 @@ function createNewEnum(): EnumConfig {
 export function useEnumForm({
   setError,
   onSubmitSuccess,
+  clearOnSubmit,
   uid,
 }: UseEnumFormOptions): {
   form: UseFormReturn<EnumConfig>;
-  handleSubmit: (data: EnumConfig) => void;
+  submitHandler: (data: EnumConfig) => void;
   handleDelete: () => void;
 } {
   const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
@@ -90,7 +92,7 @@ export function useEnumForm({
     });
   };
 
-  const handleSubmit = useCallback(
+  const submitHandler = useCallback(
     (data: EnumConfig): void => {
       try {
         setConfigAndFixReferences((draftConfig) => {
@@ -104,7 +106,7 @@ export function useEnumForm({
         });
         toast.success(`Successfully saved enum ${data.name}`);
         const id = data.id;
-        reset(data);
+        clearOnSubmit ? reset() : reset(data);
         onSubmitSuccess?.();
         navigate(`/models/enums/edit/${modelEnumEntityType.toUid(id)}`);
       } catch (err) {
@@ -121,6 +123,7 @@ export function useEnumForm({
       }
     },
     [
+      clearOnSubmit,
       navigate,
       onSubmitSuccess,
       reset,
@@ -131,5 +134,5 @@ export function useEnumForm({
     ],
   );
 
-  return { form, handleSubmit, handleDelete };
+  return { form, submitHandler, handleDelete };
 }

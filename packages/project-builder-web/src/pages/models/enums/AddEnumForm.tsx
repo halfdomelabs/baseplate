@@ -1,4 +1,3 @@
-import { EnumConfig } from '@halfdomelabs/project-builder-lib';
 import {
   hasDirtyFields,
   useProjectDefinition,
@@ -8,17 +7,19 @@ import {
   ComboboxField,
   SwitchField,
 } from '@halfdomelabs/ui-components';
-import { UseFormReturn } from 'react-hook-form';
 
+import { useEnumForm } from './hooks/useEnumForm';
 import { TextInput } from '@src/components';
 
 interface Props {
-  form: UseFormReturn<EnumConfig>;
-  onSubmit: (config: EnumConfig) => void;
+  onSubmit: () => void;
 }
 
-function AddEnumForm({ form, onSubmit }: Props): JSX.Element {
+function AddEnumForm({ onSubmit }: Props): JSX.Element {
   const { parsedProject } = useProjectDefinition();
+  const { form, submitHandler } = useEnumForm({
+    onSubmitSuccess: onSubmit,
+  });
   const { control, handleSubmit, formState } = form;
 
   const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
@@ -29,7 +30,7 @@ function AddEnumForm({ form, onSubmit }: Props): JSX.Element {
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
       <TextInput.LabelledController
         label="Name"
         control={control}

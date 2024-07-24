@@ -29,9 +29,7 @@ export function EnumsSidebarList({
 
   return (
     <div className={clsx(className, 'flex flex-col space-y-4')}>
-      {/* <Link to="/models/enums/new" className="block w-full"> */}
       <AddEnumButton />
-      {/* </Link> */}
       <div className="relative">
         <InputField
           value={filterQuery}
