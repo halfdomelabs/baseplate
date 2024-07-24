@@ -8,7 +8,7 @@ import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -60,25 +60,7 @@ export function useEnumForm({
     resolver: zodResolver(enumSchema),
   });
 
-  const { getValues, formState, reset } = form;
-
-  useEffect(() => {
-    const { id } = getValues();
-    if (formState.isSubmitSuccessful) {
-      if (!urlEnumId) {
-        navigate(`/models/enums/edit/${modelEnumEntityType.toUid(id)}`);
-      }
-      if (onSubmitSuccess) {
-        onSubmitSuccess();
-      }
-    }
-  }, [
-    formState.isSubmitSuccessful,
-    getValues,
-    navigate,
-    onSubmitSuccess,
-    urlEnumId,
-  ]);
+  const { reset } = form;
 
   const handleDelete = (): void => {
     requestConfirm({
@@ -121,7 +103,10 @@ export function useEnumForm({
           );
         });
         toast.success(`Successfully saved enum ${data.name}`);
+        const id = data.id;
         reset(data);
+        onSubmitSuccess?.();
+        navigate(`/models/enums/edit/${modelEnumEntityType.toUid(id)}`);
       } catch (err) {
         if (err instanceof RefDeleteError) {
           showRefIssues({ issues: err.issues });
@@ -135,7 +120,15 @@ export function useEnumForm({
         }
       }
     },
-    [reset, setConfigAndFixReferences, setError, showRefIssues, toast],
+    [
+      navigate,
+      onSubmitSuccess,
+      reset,
+      setConfigAndFixReferences,
+      setError,
+      showRefIssues,
+      toast,
+    ],
   );
 
   return { form, handleSubmit, handleDelete };
