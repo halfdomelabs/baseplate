@@ -13,7 +13,7 @@ import { z } from 'zod';
 
 import { pothosSetupProvider } from '../pothos/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
-import { fastifyServerSentryProvider } from '@src/generators/core/fastify-sentry/index.js';
+import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/index.js';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
 
 const descriptorSchema = z.object({});
@@ -68,7 +68,7 @@ const PothosSentryGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'sentry',
       dependencies: {
-        fastifyServerSentry: fastifyServerSentryProvider.dependency(),
+        fastifyServerSentry: fastifySentryProvider.dependency(),
       },
       run({ fastifyServerSentry }) {
         fastifyServerSentry.addShouldLogToSentryBlock(
