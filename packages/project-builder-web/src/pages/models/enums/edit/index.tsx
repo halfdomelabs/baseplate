@@ -10,9 +10,9 @@ import { Alert, Button } from 'src/components';
 
 function EnumEditPage(): JSX.Element {
   const { status, setError } = useStatus();
-  const { form, handleSubmit, handleDelete } = useEnumForm({ setError });
-  const { formState } = form;
   const { uid } = useParams<'uid'>();
+  const { form, submitHandler, handleDelete } = useEnumForm({ setError, uid });
+  const { formState } = form;
   const id = uid ? modelEnumEntityType.fromUid(uid) : undefined;
   const isNew = !id;
   const { parsedProject } = useProjectDefinition();
@@ -35,7 +35,7 @@ function EnumEditPage(): JSX.Element {
         )}
       </div>
       <Alert.WithStatus status={status} />
-      <EnumEditForm onSubmit={handleSubmit} form={form} />
+      <EnumEditForm onSubmit={submitHandler} form={form} />
     </div>
   );
 }

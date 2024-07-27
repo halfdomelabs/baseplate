@@ -8,9 +8,9 @@ import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
@@ -21,6 +21,8 @@ import { RefDeleteError } from '@src/utils/error';
 interface UseEnumFormOptions {
   setError?: (error: string) => void;
   onSubmitSuccess?: () => void;
+  clearOnSubmit?: boolean;
+  uid?: string;
 }
 
 function createNewEnum(): EnumConfig {
@@ -36,12 +38,13 @@ function createNewEnum(): EnumConfig {
 export function useEnumForm({
   setError,
   onSubmitSuccess,
+  clearOnSubmit,
+  uid,
 }: UseEnumFormOptions): {
   form: UseFormReturn<EnumConfig>;
-  handleSubmit: (data: EnumConfig) => void;
+  submitHandler: (data: EnumConfig) => void;
   handleDelete: () => void;
 } {
-  const { uid } = useParams<'uid'>();
   const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
   const toast = useToast();
   const navigate = useNavigate();
@@ -59,25 +62,7 @@ export function useEnumForm({
     resolver: zodResolver(enumSchema),
   });
 
-  const { getValues, formState, reset } = form;
-
-  useEffect(() => {
-    const { id } = getValues();
-    if (formState.isSubmitSuccessful) {
-      if (!urlEnumId) {
-        navigate(`../edit/${modelEnumEntityType.toUid(id)}`);
-      }
-      if (onSubmitSuccess) {
-        onSubmitSuccess();
-      }
-    }
-  }, [
-    formState.isSubmitSuccessful,
-    getValues,
-    navigate,
-    onSubmitSuccess,
-    urlEnumId,
-  ]);
+  const { reset } = form;
 
   const handleDelete = (): void => {
     requestConfirm({
@@ -107,7 +92,7 @@ export function useEnumForm({
     });
   };
 
-  const handleSubmit = useCallback(
+  const submitHandler = useCallback(
     (data: EnumConfig): void => {
       try {
         setConfigAndFixReferences((draftConfig) => {
@@ -120,7 +105,10 @@ export function useEnumForm({
           );
         });
         toast.success(`Successfully saved enum ${data.name}`);
-        reset(data);
+        const id = data.id;
+        clearOnSubmit ? reset() : reset(data);
+        onSubmitSuccess?.();
+        navigate(`/models/enums/edit/${modelEnumEntityType.toUid(id)}`);
       } catch (err) {
         if (err instanceof RefDeleteError) {
           showRefIssues({ issues: err.issues });
@@ -134,8 +122,17 @@ export function useEnumForm({
         }
       }
     },
-    [reset, setConfigAndFixReferences, setError, showRefIssues, toast],
+    [
+      clearOnSubmit,
+      navigate,
+      onSubmitSuccess,
+      reset,
+      setConfigAndFixReferences,
+      setError,
+      showRefIssues,
+      toast,
+    ],
   );
 
-  return { form, handleSubmit, handleDelete };
+  return { form, submitHandler, handleDelete };
 }
