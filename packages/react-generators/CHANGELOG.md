@@ -1,5 +1,11 @@
 # @halfdomelabs/react-generators
 
+## 0.8.2
+
+### Patch Changes
+
+- 380bc35: Add watch:gql to watch for graphql changes
+
 ## 0.8.1
 
 ### Patch Changes

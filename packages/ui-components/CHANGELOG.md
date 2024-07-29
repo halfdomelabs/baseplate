@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.4.12
+
+### Patch Changes
+
+- 53fd56d: Migrate @halfdomelabs/cmdk to original cmdk version
+
 ## 0.4.11
 
 ### Patch Changes

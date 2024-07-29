@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-web
 
+## 0.11.7
+
+### Patch Changes
+
+- 94ce7ac: Refactor the new enum form to appear in a dialog.
+- b06f805: Add unsaved changes blocker to sync button and create enum button
+- Updated dependencies [53fd56d]
+- Updated dependencies [b06f805]
+  - @halfdomelabs/ui-components@0.4.12
+  - @halfdomelabs/project-builder-lib@0.8.7
+
 ## 0.11.6
 
 ### Patch Changes
