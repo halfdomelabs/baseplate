@@ -13,20 +13,24 @@ import {
   selectContentVariants,
   selectItemVariants,
 } from '@src/styles';
-import { cn } from '@src/utils';
+import { cn, mergeRefs } from '@src/utils';
 
 /* eslint-disable react/prop-types */
 
 interface MultiComboboxContextValue {
   selectedValues: MultiComboboxOption[];
-  onSelect: (value: string, label: string, selected: boolean) => void;
+  onSelect: (
+    value: string,
+    label: string | undefined,
+    selected: boolean,
+  ) => void;
 }
 
 const MultiComboboxContext =
   React.createContext<MultiComboboxContextValue | null>(null);
 
 interface MultiComboboxOption {
-  label: string;
+  label?: string;
   value: string;
 }
 
@@ -212,17 +216,18 @@ const MultiComboboxItem = React.forwardRef<
 
   const isSelected = selectedValues.some((v) => v.value === value);
 
+  const itemRef = React.useRef<HTMLDivElement>(null);
+
   return (
     <Command.Item
       value={value}
-      label={label}
-      initiallySelected={false}
-      onSelect={(value, label) => {
-        onSelect(value, label, !isSelected);
+      onSelect={(value) => {
+        const itemLabel = label ?? itemRef.current?.textContent ?? undefined;
+        onSelect(value, itemLabel, !isSelected);
       }}
       className={cn(selectItemVariants(), className)}
       {...rest}
-      ref={ref}
+      ref={mergeRefs([ref, itemRef])}
     >
       <div
         className={cn(
