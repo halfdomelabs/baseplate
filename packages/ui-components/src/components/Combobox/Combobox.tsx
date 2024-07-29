@@ -1,7 +1,6 @@
 /* eslint-disable react/prop-types */
 'use client';
 
-import { Command } from '@halfdomelabs/cmdk';
 import {
   Popover,
   PopoverAnchor,
@@ -9,6 +8,7 @@ import {
   PopoverPortal,
 } from '@radix-ui/react-popover';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
+import { Command } from 'cmdk';
 import * as React from 'react';
 import { MdCheck } from 'react-icons/md';
 import { RxCaretSort } from 'react-icons/rx';
@@ -22,24 +22,26 @@ import {
   selectContentVariants,
   selectItemVariants,
 } from '@src/styles';
-import { cn } from '@src/utils';
+import { cn, mergeRefs } from '@src/utils';
 
 interface ComboboxContextValue {
   selectedValue: string | undefined | null;
-  onSelect: (value: string, label: string) => void;
+  selectedLabel: string | undefined | null;
+  onSelect: (value: string, label: string | undefined) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  setOpen: (open: boolean) => void;
-  open: boolean;
+  setIsOpen: (open: boolean) => void;
+  isOpen: boolean;
   inputId: string;
-  selectedLabel: string;
-  inputRef: React.RefObject<HTMLInputElement>;
+  activeDescendentId: string | undefined;
+  listRef: React.RefObject<HTMLDivElement>;
+  shouldShowItem: (label: string) => boolean;
 }
 
 const ComboboxContext = React.createContext<ComboboxContextValue | null>(null);
 
 interface ComboboxOption {
-  label: string;
+  label?: string;
   value: string;
 }
 
@@ -49,6 +51,7 @@ interface ComboboxProps {
   onChange?: (value: ComboboxOption | null) => void;
   searchQuery?: string;
   onSearchQueryChange?: (query: string) => void;
+  label?: string;
 }
 
 /**
@@ -61,13 +64,18 @@ function ComboboxRoot({
   onChange,
   searchQuery: defaultSearchQuery,
   onSearchQueryChange,
+  label,
 }: ComboboxProps): React.JSX.Element {
-  const [open, setOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
   const [value, setValue] = useControlledState(controlledValue, onChange, null);
   const [searchQuery, setSearchQuery] = useControlledState(
     defaultSearchQuery,
     onSearchQueryChange,
     '',
+  );
+  // the value of the combobox that is currently active
+  const [activeValue, setActiveValue] = React.useState<string | undefined>(
+    value?.value ?? '',
   );
   // Caches the filter query so we can maintain
   // the query when animating the combobox open/close
@@ -75,6 +83,21 @@ function ComboboxRoot({
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const inputId = React.useId();
+
+  const listRef = React.useRef<HTMLDivElement>(null);
+
+  const [activeDescendentId, setActiveDescendentId] = React.useState<
+    string | undefined
+  >();
+
+  // workaround for https://github.com/pacocoursey/cmdk/issues/253
+  function fixActiveDescendant(newActiveValue: string | undefined): void {
+    if (!newActiveValue) return;
+    const item = listRef.current?.querySelector(
+      `[cmdk-item=""][data-value="${encodeURIComponent(newActiveValue)}"]`,
+    );
+    setActiveDescendentId(item?.id);
+  }
 
   const contextValue: ComboboxContextValue = React.useMemo(
     () => ({
@@ -84,33 +107,57 @@ function ComboboxRoot({
         setValue({ value: val, label: lab });
         setFilterQuery(searchQuery);
         setSearchQuery('');
-        setOpen(false);
+        setIsOpen(false);
       },
       searchQuery,
       setSearchQuery: (query) => {
+        setFilterQuery(query);
         setSearchQuery(query);
-        setOpen(true);
+        setIsOpen(true);
       },
-      setOpen: (open) => {
+      setIsOpen: (open) => {
         setFilterQuery(searchQuery);
         if (!open) {
+          setActiveValue(value?.value);
           setSearchQuery('');
         }
-        setOpen(open);
+        setIsOpen(open);
       },
-      open,
+      isOpen,
       inputId,
       inputRef,
+      listRef,
+      activeDescendentId,
+      shouldShowItem: (label) => {
+        if (!filterQuery) {
+          return true;
+        }
+        return label.toLowerCase().includes(filterQuery.toLowerCase());
+      },
     }),
-    [value, inputId, searchQuery, setSearchQuery, setValue, open],
+    [
+      value,
+      inputId,
+      searchQuery,
+      setSearchQuery,
+      setValue,
+      isOpen,
+      filterQuery,
+      activeDescendentId,
+    ],
   );
 
   return (
     <ComboboxContext.Provider value={contextValue}>
-      <Popover open={open} onOpenChange={contextValue.setOpen}>
+      <Popover open={isOpen} onOpenChange={contextValue.setIsOpen}>
         <Command
-          shouldSort={false}
-          filterSearch={open ? undefined : filterQuery}
+          shouldFilter={false}
+          value={activeValue}
+          onValueChange={(val) => {
+            setActiveValue(val);
+            fixActiveDescendant(val);
+          }}
+          label={label}
         >
           {children}
         </Command>
@@ -141,33 +188,40 @@ interface ComboboxInputProps
 const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
   ({ className, placeholder, ...rest }: ComboboxInputProps, ref) => {
     const {
-      setOpen,
-      open,
+      setIsOpen,
+      isOpen,
       inputId,
       searchQuery,
       setSearchQuery,
       selectedLabel,
+      activeDescendentId,
     } = useComboboxContext();
 
     const selectedLabelId = React.useId();
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
     const handleKeydown: React.KeyboardEventHandler<HTMLInputElement> =
       React.useCallback(
         (e) => {
           const specialKeys = ['ArrowDown', 'ArrowUp', 'Home', 'End', 'Enter'];
           if (e.key === 'Escape') {
-            setOpen(false);
+            setIsOpen(false);
           } else if (specialKeys.includes(e.key)) {
-            setOpen(true);
+            setIsOpen(true);
+            // if we pass through the event, the Command component will error out if the portal is not open
+            if (!isOpen) {
+              e.preventDefault();
+            }
           }
         },
-        [setOpen],
+        [setIsOpen, isOpen],
       );
 
     return (
       <PopoverAnchor>
         <div className="relative" data-cmdk-input-id={inputId}>
           <Command.Input
+            asChild
             onKeyDown={handleKeydown}
             onBlur={(e) => {
               if (
@@ -180,39 +234,69 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             }}
             value={searchQuery}
             onValueChange={setSearchQuery}
-            className={cn(inputVariants(), className)}
-            placeholder={selectedLabel ? undefined : placeholder}
-            onClick={() => setOpen(!open)}
-            {...rest}
-            aria-describedby={`${rest['aria-describedby']} ${selectedLabelId}`}
-            ref={ref}
-          />
-          <div
-            id={selectedLabelId}
             className={cn(
-              inputVariants({
-                border: 'none',
-                background: 'transparent',
-              }),
-              searchQuery ? 'hidden' : '',
-              // the top-[1px] is a hack to prevent the text from jumping when the
-              // input is focused
-              'pointer-events-none absolute inset-0 top-[1px] overflow-hidden text-ellipsis',
+              inputVariants({ rightPadding: 'none' }),
+              'pr-8',
+              className,
             )}
+            placeholder={selectedLabel ? undefined : placeholder}
+            onClick={() => {
+              if (!isOpen) {
+                setIsOpen(true);
+              } else if (inputRef.current) {
+                // avoid closing the combobox if the user is selecting text
+                const hasSelectedEnd =
+                  inputRef.current.selectionStart ===
+                    inputRef.current.selectionEnd &&
+                  inputRef.current.selectionEnd ===
+                    inputRef.current.value.length;
+                if (hasSelectedEnd) {
+                  setIsOpen(false);
+                }
+              }
+            }}
+            {...rest}
+            aria-describedby={`${rest['aria-describedby'] ?? ''} ${selectedLabelId}`}
+            ref={mergeRefs([ref, inputRef])}
           >
-            {selectedLabel}
+            <input
+              aria-activedescendant={activeDescendentId}
+              // allow aria-labelledby to be overridden
+              {...(rest['aria-labelledby']
+                ? { 'aria-labelledby': rest['aria-labelledby'] }
+                : undefined)}
+            />
+          </Command.Input>
+          <div
+            // the top-[1px] is a hack to prevent the text from jumping when the
+            // input is focused
+            className="pointer-events-none absolute inset-0 top-px pr-8"
+          >
+            <div
+              id={selectedLabelId}
+              className={cn(
+                inputVariants({
+                  border: 'none',
+                  background: 'transparent',
+                }),
+                searchQuery ? 'hidden' : '',
+                'pointer-events-none truncate',
+              )}
+            >
+              {selectedLabel}
+            </div>
           </div>
           <Button
             className="absolute right-2 top-1/2 -translate-y-1/2 opacity-50"
             type="button"
             variant="ghost"
             size="icon"
-            aria-label={`${open ? 'Close' : 'Open'} combobox`}
+            aria-label={`${isOpen ? 'Close' : 'Open'} combobox`}
             onClick={() => {
-              setOpen(!open);
+              setIsOpen(!isOpen);
             }}
             onKeyDown={(e) => {
-              if (!open) {
+              if (!isOpen) {
                 e.stopPropagation();
               }
             }}
@@ -241,7 +325,7 @@ function ComboboxContent({
   style,
   ...rest
 }: ComboboxContentProps): React.JSX.Element {
-  const { inputId } = useComboboxContext();
+  const { inputId, listRef } = useComboboxContext();
   return (
     <PopoverPortal>
       <PopoverContent
@@ -280,7 +364,7 @@ function ComboboxContent({
               } as Record<string, string>
             }
           >
-            <Command.List>{children}</Command.List>
+            <Command.List ref={listRef}>{children}</Command.List>
           </ScrollAreaPrimitive.Viewport>
           <ScrollArea.ScrollBar />
           <ScrollAreaPrimitive.Corner />
@@ -315,19 +399,25 @@ interface ComboboxItemProps
 
 const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
   ({ value, className, label, children, ...rest }, ref) => {
-    const { selectedValue, onSelect } = useComboboxContext();
+    const { selectedValue, onSelect, shouldShowItem } = useComboboxContext();
+    const itemRef = React.useRef<HTMLDivElement>(null);
+
+    const extractedLabel =
+      label ?? (typeof children === 'string' ? children.trim() : undefined);
+
+    if (!shouldShowItem(extractedLabel ?? value)) {
+      return null;
+    }
 
     return (
       <Command.Item
         value={value}
-        label={label}
-        initiallySelected={value === selectedValue}
-        onSelect={(value, label) => {
-          onSelect(value, label);
+        onSelect={(value) => {
+          onSelect(value, extractedLabel);
         }}
         className={cn(selectItemVariants(), className)}
         {...rest}
-        ref={ref}
+        ref={mergeRefs([ref, itemRef])}
       >
         {children}
         <MdCheck

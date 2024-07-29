@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority';
 
 export const inputVariants = cva(
-  'flex h-10 w-full rounded-md px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+  'h-10 w-full rounded-md py-2 pl-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       border: {
@@ -13,10 +13,15 @@ export const inputVariants = cva(
         default: 'bg-background',
         transparent: '',
       },
+      rightPadding: {
+        default: 'pr-3',
+        none: '',
+      },
     },
     defaultVariants: {
       border: 'default',
       background: 'default',
+      rightPadding: 'default',
     },
   },
 );
