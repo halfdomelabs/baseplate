@@ -26,10 +26,10 @@ function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
     resolver: zodResolver(adminAppSchema),
     defaultValues: appConfig,
   });
-  const { control, handleSubmit, formState } = formProps;
+  const { control, handleSubmit, formState, reset } = formProps;
   const toast = useToast();
 
-  useBlockDirtyFormNavigate(formState);
+  useBlockDirtyFormNavigate(formState, reset);
 
   function onSubmit(data: AdminAppConfig): void {
     setConfigAndFixReferences((draftConfig) => {

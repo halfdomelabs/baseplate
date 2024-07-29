@@ -1,6 +1,6 @@
 import { useBlockerDialogState } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useBlocker } from 'react-router-dom';
 
 /**
@@ -11,24 +11,47 @@ export function BlockerDialog(): JSX.Element {
   const activeBlocker = useBlockerDialogState((state) =>
     state.activeBlockers.length ? state.activeBlockers[0] : null,
   );
+  const requestedBlockers = useBlockerDialogState(
+    (state) => state.requestedBlockers,
+  );
+  const clearRequestedBlockers = useBlockerDialogState(
+    (state) => state.clearRequestedBlockers,
+  );
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       !!activeBlocker && currentLocation.pathname !== nextLocation.pathname,
   );
 
-  useEffect(() => {
-    if (blocker.state === 'blocked' && !activeBlocker) {
+  const continueBlockers = useCallback(() => {
+    if (blocker.state === 'blocked') {
       blocker.proceed();
     }
-  }, [blocker, activeBlocker]);
+    activeBlocker?.onContinue?.();
+    requestedBlockers.forEach((request) => request.onContinue());
+    clearRequestedBlockers();
+  }, [blocker, requestedBlockers, clearRequestedBlockers, activeBlocker]);
+
+  const resetBlockers = useCallback(() => {
+    blocker.reset?.();
+    clearRequestedBlockers();
+  }, [blocker, clearRequestedBlockers]);
+
+  const shouldShowBlocker =
+    blocker.state === 'blocked' || requestedBlockers.length > 0;
+
+  useEffect(() => {
+    if (shouldShowBlocker && !activeBlocker) {
+      continueBlockers();
+    }
+  }, [shouldShowBlocker, continueBlockers, activeBlocker]);
 
   return (
     <Dialog
-      open={blocker.state === 'blocked'}
+      open={shouldShowBlocker}
       onOpenChange={(open) => {
         if (!open) {
-          blocker.reset?.();
+          resetBlockers();
         }
       }}
     >
@@ -39,10 +62,10 @@ export function BlockerDialog(): JSX.Element {
           </Dialog.Header>
           <Dialog.Description>{activeBlocker?.content}</Dialog.Description>
           <Dialog.Footer>
-            <Button onClick={() => blocker.reset?.()} variant="secondary">
+            <Button onClick={resetBlockers} variant="secondary">
               {activeBlocker?.buttonCancelText ?? 'Stay on Page'}
             </Button>
-            <Button onClick={() => blocker.proceed?.()}>
+            <Button onClick={continueBlockers}>
               {activeBlocker?.buttonCancelText ?? 'Continue'}
             </Button>
           </Dialog.Footer>

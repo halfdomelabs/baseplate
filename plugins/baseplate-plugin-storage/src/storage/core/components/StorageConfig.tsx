@@ -38,13 +38,13 @@ export function StorageConfig({
     useProjectDefinition();
   const { logAndFormatError } = useErrorHandler();
 
-  const { control, handleSubmit, formState, watch } =
+  const { control, handleSubmit, formState, watch, reset } =
     useResettableForm<StoragePluginDefinition>({
       resolver: zodResolver(storagePluginDefinitionSchema),
       values: pluginMetadata?.config as StoragePluginDefinition,
     });
 
-  useBlockDirtyFormNavigate(formState);
+  useBlockDirtyFormNavigate(formState, reset);
 
   const fileModelRef = watch('fileModelRef');
 

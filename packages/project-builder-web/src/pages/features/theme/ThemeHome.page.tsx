@@ -29,13 +29,13 @@ export function ThemeHomePage(): JSX.Element {
     [definition.theme],
   );
 
-  const { control, handleSubmit, setValue, getValues, formState } =
+  const { control, handleSubmit, setValue, getValues, formState, reset } =
     useResettableForm<ThemeConfig>({
       resolver: zodResolver(themeSchema),
       defaultValues,
     });
 
-  useBlockDirtyFormNavigate(formState);
+  useBlockDirtyFormNavigate(formState, reset);
 
   const generateNewThemeColors = useCallback(
     (resetColors?: boolean) => {

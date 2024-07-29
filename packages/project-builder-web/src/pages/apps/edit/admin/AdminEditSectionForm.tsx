@@ -55,7 +55,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
 
   const { control, handleSubmit, watch, reset, formState } = formProps;
 
-  useBlockDirtyFormNavigate(formState);
+  useBlockDirtyFormNavigate(formState, reset);
 
   useEffect(() => {
     reset(existingSection ?? { type: 'crud' });
