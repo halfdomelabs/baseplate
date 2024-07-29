@@ -26,10 +26,10 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
     resolver: zodResolver(backendAppSchema),
     defaultValues: appConfig,
   });
-  const { control, handleSubmit, formState } = formProps;
+  const { control, handleSubmit, formState, reset } = formProps;
   const toast = useToast();
 
-  useBlockDirtyFormNavigate(formState);
+  useBlockDirtyFormNavigate(formState, reset);
 
   function onSubmit(data: BackendAppConfig): void {
     setConfigAndFixReferences((draftConfig) => {

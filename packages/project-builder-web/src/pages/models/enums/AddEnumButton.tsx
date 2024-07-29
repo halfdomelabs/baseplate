@@ -1,3 +1,4 @@
+import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { HiOutlinePlus } from 'react-icons/hi';
@@ -7,12 +8,20 @@ import AddEnumForm from './AddEnumForm';
 function AddEnumButton(): JSX.Element {
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  const blockBeforeContinue = useBlockBeforeContinue();
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <Button
         variant="secondary"
         className="text-primary"
-        onClick={() => setDialogOpen(true)}
+        onClick={() => {
+          blockBeforeContinue({
+            onContinue: () => {
+              setDialogOpen(true);
+            },
+          });
+        }}
       >
         <HiOutlinePlus /> Add Enum
       </Button>

@@ -24,10 +24,10 @@ function WebAppForm({ className, appConfig }: Props): JSX.Element {
     resolver: zodResolver(webAppSchema),
     defaultValues: appConfig,
   });
-  const { control, handleSubmit, formState } = formProps;
+  const { control, handleSubmit, formState, reset } = formProps;
   const toast = useToast();
 
-  useBlockDirtyFormNavigate(formState);
+  useBlockDirtyFormNavigate(formState, reset);
 
   const { parsedProject } = useProjectDefinition();
 

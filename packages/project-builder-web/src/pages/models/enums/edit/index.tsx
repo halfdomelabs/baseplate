@@ -12,13 +12,13 @@ function EnumEditPage(): JSX.Element {
   const { status, setError } = useStatus();
   const { uid } = useParams<'uid'>();
   const { form, submitHandler, handleDelete } = useEnumForm({ setError, uid });
-  const { formState } = form;
+  const { formState, reset } = form;
   const id = uid ? modelEnumEntityType.fromUid(uid) : undefined;
   const isNew = !id;
   const { parsedProject } = useProjectDefinition();
   const enumBlock = parsedProject.getEnums().find((m) => m.id === id);
 
-  useBlockDirtyFormNavigate(formState);
+  useBlockDirtyFormNavigate(formState, reset);
 
   if (!enumBlock && id) {
     return <Alert type="error">Unable to find enum {id}</Alert>;

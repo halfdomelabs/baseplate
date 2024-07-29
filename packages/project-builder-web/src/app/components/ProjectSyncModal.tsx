@@ -1,4 +1,7 @@
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import {
+  useBlockBeforeContinue,
+  useProjectDefinition,
+} from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
@@ -20,6 +23,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const toast = useToast();
   const { definition, setConfig } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
+  const blockBeforeContinue = useBlockBeforeContinue();
 
   const startSyncProject = (): void => {
     setLastSyncedAt(new Date());
@@ -42,8 +46,11 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
       <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <Dialog.Trigger asChild>
           <Button
-            onClick={() => {
-              startSyncProject();
+            onClick={(e) => {
+              blockBeforeContinue({
+                onContinue: startSyncProject,
+              });
+              e.preventDefault();
             }}
             size="sm"
           >
@@ -54,6 +61,10 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
         <Dialog.Content width="lg">
           <Dialog.Header>
             <Dialog.Title>Sync Project</Dialog.Title>
+            <Dialog.Description>
+              Syncing your project will update the project with the latest
+              changes.
+            </Dialog.Description>
           </Dialog.Header>
           <Console ref={clearConsoleRef} />
           <Dialog.Footer>

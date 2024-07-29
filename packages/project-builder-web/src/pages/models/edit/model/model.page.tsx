@@ -31,7 +31,7 @@ function ModelEditModelPage(): JSX.Element {
   const id = modelEntityType.fromUid(uid);
   const originalModel = id ? ModelUtils.byId(definition, id) : undefined;
 
-  useBlockDirtyFormNavigate(form.formState);
+  useBlockDirtyFormNavigate(form.formState, form.reset);
 
   return (
     <EditedModelContextProvider
