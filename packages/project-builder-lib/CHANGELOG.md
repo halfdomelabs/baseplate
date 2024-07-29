@@ -1,5 +1,13 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.7
+
+### Patch Changes
+
+- b06f805: Add unsaved changes blocker to sync button and create enum button
+- Updated dependencies [53fd56d]
+  - @halfdomelabs/ui-components@0.4.12
+
 ## 0.8.6
 
 ### Patch Changes

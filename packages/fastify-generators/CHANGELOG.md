@@ -1,5 +1,13 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.2
+
+### Patch Changes
+
+- 380bc35: Don't regenerate schema.graphql if schema does not change
+- c58b1ab: Refactor Sentry generators to move sentry logging to event processor
+- 3256d45: Upgrade fastify to 4.28.1
+
 ## 0.10.1
 
 ### Patch Changes

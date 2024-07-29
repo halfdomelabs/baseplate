@@ -1,5 +1,13 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.8
+
+### Patch Changes
+
+- 3256d45: Upgrade fastify to 4.28.1
+- Updated dependencies [b06f805]
+  - @halfdomelabs/project-builder-lib@0.8.7
+
 ## 0.4.7
 
 ### Patch Changes
