@@ -1,0 +1,77 @@
+{
+  "generator": "@halfdomelabs/core/node/node",
+  "name": "simple-admin",
+  "packageName": "simple-admin",
+  "description": "Admin web app for simple",
+  "version": "0.1.0",
+  "children": {
+    "projects": [
+      {
+        "name": "react",
+        "generator": "@halfdomelabs/react/core/react",
+        "title": "Simple Admin Dashboard",
+        "children": {
+          "router": {
+            "children": {
+              "routes": [
+                "auth/root",
+                {
+                  "name": "home",
+                  "generator": "@halfdomelabs/react/admin/admin-home"
+                }
+              ]
+            }
+          },
+          "components": {"includeDatePicker": true},
+          "$tailwind": {
+            "generator": "@halfdomelabs/react/core/react-tailwind",
+            "peerProvider": true
+          },
+          "proxy": {"devBackendHost": "http://localhost:3001"},
+          "$adminLayout": {
+            "generator": "@halfdomelabs/react/admin/admin-layout",
+            "links": [
+              {"type": "link", "label": "Home", "icon": "MdHome", "path": "/"}
+            ]
+          },
+          "$adminComponents": {
+            "generator": "@halfdomelabs/react/admin/admin-components",
+            "peerProvider": true
+          },
+          "$sentry": {
+            "generator": "@halfdomelabs/react/core/react-sentry",
+            "peerProvider": true
+          },
+          "$apollo": {
+            "generator": "@halfdomelabs/react/apollo/react-apollo",
+            "devApiEndpoint": "/api/graphql",
+            "schemaLocation": "../backend/schema.graphql",
+            "peerProvider": true
+          },
+          "$apolloError": {
+            "generator": "@halfdomelabs/react/apollo/apollo-error",
+            "peerProvider": true
+          },
+          "$authService": {
+            "generator": "@halfdomelabs/react/auth/auth-service",
+            "peerProvider": true
+          },
+          "$authHooks": {
+            "generator": "@halfdomelabs/react/auth/auth-hooks",
+            "peerProvider": true
+          },
+          "$authIdentify": {
+            "generator": "@halfdomelabs/react/auth/auth-identify",
+            "peerProvider": true
+          },
+          "$authApollo": {"generator": "@halfdomelabs/react/auth/auth-apollo"},
+          "$authComponents": {
+            "generator": "@halfdomelabs/react/auth/auth-components",
+            "loginPath": "/auth/login",
+            "peerProvider": true
+          }
+        }
+      }
+    ]
+  }
+}

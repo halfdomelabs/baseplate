@@ -1,0 +1,64 @@
+{
+  "apps": [
+    { "id": "app:MoLC98AHPCog", "name": "admin", "type": "admin" },
+    { "id": "app:mR1UDTfwWdRw", "name": "backend", "type": "backend" },
+    {
+      "description": "",
+      "enableDatadog": false,
+      "enableSubscriptions": false,
+      "id": "app:UBXtvxZtQ4ap",
+      "includeAuth": false,
+      "includeUploadComponents": false,
+      "name": "web",
+      "packageLocation": "",
+      "title": "",
+      "type": "web"
+    }
+  ],
+  "cliVersion": "0.7.8",
+  "features": [
+    { "id": "feature:TiknfMFTxvFA", "name": "accounts", "parentRef": null }
+  ],
+  "isInitialized": true,
+  "models": [
+    {
+      "feature": "accounts",
+      "id": "model:IKZ9T0mV7Eaq",
+      "model": {
+        "fields": [
+          {
+            "id": "model-scalar-field:29HRog9ZUn2U",
+            "isId": true,
+            "name": "id",
+            "options": { "genUuid": true },
+            "type": "uuid"
+          },
+          {
+            "id": "model-scalar-field:6FL_ANoi_Ur4",
+            "name": "email",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:bwVcLPcgAoXH",
+            "name": "updatedAt",
+            "options": { "defaultToNow": true, "updatedAt": true },
+            "type": "dateTime"
+          },
+          {
+            "id": "model-scalar-field:7Nx_g2iWk1aG",
+            "name": "createdAt",
+            "options": { "defaultToNow": true },
+            "type": "dateTime"
+          }
+        ],
+        "uniqueConstraints": []
+      },
+      "name": "User"
+    }
+  ],
+  "name": "simple",
+  "portOffset": 3000,
+  "schemaVersion": 4,
+  "version": "0.1.0"
+}

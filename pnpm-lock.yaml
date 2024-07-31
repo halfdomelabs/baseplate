@@ -33,6 +33,9 @@ importers:
       '@halfdomelabs/fastify-generators':
         specifier: workspace:*
         version: link:../fastify-generators
+      '@halfdomelabs/project-builder-common':
+        specifier: workspace:*
+        version: link:../project-builder-common
       '@halfdomelabs/react-generators':
         specifier: workspace:*
         version: link:../react-generators
@@ -323,6 +326,9 @@ importers:
       '@halfdomelabs/fastify-generators':
         specifier: workspace:*
         version: link:../fastify-generators
+      '@halfdomelabs/project-builder-common':
+        specifier: workspace:*
+        version: link:../project-builder-common
       '@halfdomelabs/project-builder-lib':
         specifier: workspace:*
         version: link:../project-builder-lib
@@ -375,6 +381,34 @@ importers:
       typescript:
         specifier: 5.4.4
         version: 5.4.4
+
+  packages/project-builder-common:
+    dependencies:
+      '@halfdomelabs/baseplate-plugin-storage':
+        specifier: workspace:*
+        version: link:../../plugins/baseplate-plugin-storage
+      '@halfdomelabs/core-generators':
+        specifier: workspace:*
+        version: link:../core-generators
+      '@halfdomelabs/fastify-generators':
+        specifier: workspace:*
+        version: link:../fastify-generators
+      '@halfdomelabs/project-builder-lib':
+        specifier: workspace:*
+        version: link:../project-builder-lib
+      '@halfdomelabs/project-builder-server':
+        specifier: workspace:*
+        version: link:../project-builder-server
+      '@halfdomelabs/react-generators':
+        specifier: workspace:*
+        version: link:../react-generators
+      '@halfdomelabs/sync':
+        specifier: workspace:*
+        version: link:../sync
+    devDependencies:
+      '@halfdomelabs/tools':
+        specifier: workspace:*
+        version: link:../tools
 
   packages/project-builder-lib:
     dependencies:
@@ -569,6 +603,67 @@ importers:
       vitest:
         specifier: 2.0.3
         version: 2.0.3(@types/node@20.12.7)
+
+  packages/project-builder-test:
+    dependencies:
+      '@halfdomelabs/core-generators':
+        specifier: workspace:*
+        version: link:../core-generators
+      '@halfdomelabs/fastify-generators':
+        specifier: workspace:*
+        version: link:../fastify-generators
+      '@halfdomelabs/project-builder-common':
+        specifier: workspace:*
+        version: link:../project-builder-common
+      '@halfdomelabs/project-builder-lib':
+        specifier: workspace:*
+        version: link:../project-builder-lib
+      '@halfdomelabs/project-builder-server':
+        specifier: workspace:*
+        version: link:../project-builder-server
+      '@halfdomelabs/project-builder-web':
+        specifier: workspace:*
+        version: link:../project-builder-web
+      '@halfdomelabs/react-generators':
+        specifier: workspace:*
+        version: link:../react-generators
+      '@halfdomelabs/sync':
+        specifier: workspace:*
+        version: link:../sync
+      commander:
+        specifier: ^11.0.0
+        version: 11.1.0
+      globby:
+        specifier: ^14.0.0
+        version: 14.0.1
+      ora:
+        specifier: ^8.0.1
+        version: 8.0.1
+      package-up:
+        specifier: ^5.0.0
+        version: 5.0.0
+      pino:
+        specifier: 8.14.1
+        version: 8.14.1
+      pino-pretty:
+        specifier: 10.0.1
+        version: 10.0.1
+      pkg-dir:
+        specifier: ^7.0.0
+        version: 7.0.0
+    devDependencies:
+      '@halfdomelabs/tools':
+        specifier: workspace:*
+        version: link:../tools
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.12.7
+      tsx:
+        specifier: 4.16.2
+        version: 4.16.2
+      typescript:
+        specifier: 5.4.4
+        version: 5.4.4
 
   packages/project-builder-web:
     dependencies:

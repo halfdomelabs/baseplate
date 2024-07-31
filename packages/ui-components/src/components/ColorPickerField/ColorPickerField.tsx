@@ -54,7 +54,7 @@ function ColorPickerFieldFn(
         <button
           className={cn(
             inputVariants(),
-            'items-center space-x-2',
+            'flex items-center space-x-2',
             hideText ? 'justify-center' : undefined,
             disabled ? 'opacity-75' : undefined,
             addWrapper ? null : className,

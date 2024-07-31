@@ -1,39 +1,29 @@
 {
-  "name": "@halfdomelabs/project-builder-cli",
-  "version": "0.7.8",
-  "description": "Full-stack CLI builder using Baseplate generators",
-  "homepage": "https://www.halfdomelabs.com/",
+  "name": "@halfdomelabs/project-builder-test",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Automated E2E testing for the project builder projects",
   "repository": {
     "type": "git",
     "url": "https://github.com/halfdomelabs/baseplate",
-    "directory": "packages/project-builder-cli"
+    "directory": "packages/project-builder-test"
   },
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
-  "main": "dist/index.js",
-  "bin": {
-    "baseplate": "./scripts/baseplate.js"
-  },
   "files": [
     "LICENSE",
-    "CHANGELOG",
     "dist/**/*",
-    "scripts/**/*"
+    "CHANGELOG"
   ],
   "scripts": {
-    "build": "tsc && tsc-alias",
-    "clean": "rm -rf ./dist",
-    "dev": "tsx watch -r dotenv/config ./src",
-    "dev:serve": "pnpm dev serve",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "start": "tsx -r dotenv/config ./src",
+    "start": "tsx ./src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@halfdomelabs/baseplate-plugin-storage": "workspace:*",
     "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/fastify-generators": "workspace:*",
     "@halfdomelabs/project-builder-common": "workspace:*",
@@ -41,8 +31,10 @@
     "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/project-builder-web": "workspace:*",
     "@halfdomelabs/react-generators": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*",
     "commander": "^11.0.0",
-    "lodash": "^4.17.21",
+    "globby": "^14.0.0",
+    "ora": "^8.0.1",
     "package-up": "^5.0.0",
     "pino": "8.14.1",
     "pino-pretty": "10.0.1",
@@ -50,10 +42,7 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/lodash": "4.17.7",
     "@types/node": "^20.0.0",
-    "dotenv": "^16.0.3",
-    "tsc-alias": "1.8.10",
     "tsx": "4.16.2",
     "typescript": "5.4.4"
   },
@@ -62,8 +51,5 @@
   },
   "volta": {
     "extends": "../../package.json"
-  },
-  "publishConfig": {
-    "access": "restricted"
   }
 }

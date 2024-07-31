@@ -1,0 +1,5 @@
+{
+  "name": "auth",
+  "generator": "@halfdomelabs/react/core/react-routes",
+  "children": {"$auth": {"generator": "@halfdomelabs/react/auth/auth-pages"}}
+}

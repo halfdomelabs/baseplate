@@ -1,0 +1,11 @@
+{
+  "name": "@halfdomelabs/test-simple",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Baseplate test project",
+  "license": "UNLICENSED",
+  "author": "Half Dome Labs LLC",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  }
+}

@@ -1,12 +1,14 @@
+import {
+  getDefaultPlugins,
+  getDefaultGeneratorSetupConfig,
+} from '@halfdomelabs/project-builder-common';
 import { startWebServer } from '@halfdomelabs/project-builder-server';
 import { Command } from 'commander';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
 import { getEnabledFeatureFlags } from './services/feature-flags.js';
-import { getGeneratorSetupConfig } from './services/generator-modules.js';
 import { logger } from './services/logger.js';
-import { getBuiltInPlugins } from './services/plugins.js';
 import { expandPathWithTilde } from './utils/path.js';
 import { resolveModule } from './utils/resolve.js';
 
@@ -41,11 +43,12 @@ export function addServeCommand(program: Command, version: string): void {
         const projectBuilderWebDir = await packageDirectory({
           cwd: resolveModule('@halfdomelabs/project-builder-web/package.json'),
         });
-        const generatorSetupConfig = await getGeneratorSetupConfig();
+        const generatorSetupConfig =
+          await getDefaultGeneratorSetupConfig(logger);
         const resolvedDirectories = directories.map((dir) =>
           expandPathWithTilde(dir),
         );
-        const builtInPlugins = await getBuiltInPlugins();
+        const builtInPlugins = await getDefaultPlugins(logger);
 
         if (!projectBuilderWebDir) {
           throw new Error(

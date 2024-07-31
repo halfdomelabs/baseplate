@@ -1,0 +1,33 @@
+{
+  "name": "accounts",
+  "generator": "@halfdomelabs/fastify/core/app-module",
+  "children": {
+    "$models": [
+      {
+        "name": "User",
+        "generator": "@halfdomelabs/fastify/prisma/prisma-model",
+        "children": {
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid",
+              "id": true,
+              "options": {"autoGenerate": true}
+            },
+            {"name": "email", "type": "string", "options": {"default": ""}},
+            {
+              "name": "updatedAt",
+              "type": "dateTime",
+              "options": {"defaultToNow": true, "updatedAt": true}
+            },
+            {
+              "name": "createdAt",
+              "type": "dateTime",
+              "options": {"defaultToNow": true}
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
