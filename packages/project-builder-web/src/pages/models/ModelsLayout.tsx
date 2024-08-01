@@ -1,10 +1,11 @@
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SidebarLayout, Tabs } from '@halfdomelabs/ui-components';
+import { SidebarLayout } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useMatches } from 'react-router-dom';
 
 import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
+import { TabNavigation } from '@src/components/TabNavigation/TabNavigation';
 
 export function ModelsLayout(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
@@ -16,24 +17,35 @@ export function ModelsLayout(): JSX.Element {
     (m) => m.name.length,
   )?.name;
 
+  const matches = useMatches();
+
+  const enumsActive =
+    matches.filter((match) => match.pathname.startsWith('/models/enums'))
+      .length !== 0;
+
+  // enums are nested under models, so we need to manually
+  // ensure enums are not matched when activating the models tab
+  const modelsActive =
+    !enumsActive &&
+    matches.filter((match) => match.pathname.startsWith('/models')).length !==
+      0;
+
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar
         className="flex h-full max-w-sm flex-col space-y-4"
         width="auto"
       >
-        <Tabs defaultValue="models">
-          <Tabs.List className="w-full">
-            <Tabs.Trigger value="models">Models</Tabs.Trigger>
-            <Tabs.Trigger value="enums">Enums</Tabs.Trigger>
-          </Tabs.List>
-          <Tabs.Content value="models">
-            <ModelsSidebarList />
-          </Tabs.Content>
-          <Tabs.Content value="enums">
-            <EnumsSidebarList />
-          </Tabs.Content>
-        </Tabs>
+        <TabNavigation.Container className="w-full">
+          <TabNavigation.Link to="." isActive={modelsActive}>
+            Models
+          </TabNavigation.Link>
+          <TabNavigation.Link to="./enums" isActive={enumsActive}>
+            Enums
+          </TabNavigation.Link>
+        </TabNavigation.Container>
+        {modelsActive ? <ModelsSidebarList /> : null}
+        {enumsActive ? <EnumsSidebarList /> : null}
         {/* Allows us to ensure the width doesn't change when selected is semi-bold or search filter is active */}
         <div className="invisible block h-1 overflow-hidden overflow-y-scroll font-semibold text-transparent">
           {longestName}
