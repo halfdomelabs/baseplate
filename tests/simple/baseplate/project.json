@@ -1,6 +1,5 @@
 {
   "apps": [
-    { "id": "app:MoLC98AHPCog", "name": "admin", "type": "admin" },
     { "id": "app:mR1UDTfwWdRw", "name": "backend", "type": "backend" },
     {
       "description": "",
@@ -17,36 +16,42 @@
   ],
   "cliVersion": "0.7.8",
   "features": [
-    { "id": "feature:TiknfMFTxvFA", "name": "accounts", "parentRef": null }
+    { "id": "feature:EHdFHsD17AHI", "name": "blog", "parentRef": null }
   ],
   "isInitialized": true,
   "models": [
     {
-      "feature": "accounts",
-      "id": "model:IKZ9T0mV7Eaq",
+      "feature": "blog",
+      "id": "model:f114nGvsZGt9",
       "model": {
         "fields": [
           {
-            "id": "model-scalar-field:29HRog9ZUn2U",
+            "id": "model-scalar-field:fbIBoKK_DQIj",
             "isId": true,
             "name": "id",
             "options": { "genUuid": true },
             "type": "uuid"
           },
           {
-            "id": "model-scalar-field:6FL_ANoi_Ur4",
-            "name": "email",
+            "id": "model-scalar-field:xMyexPrN92E3",
+            "name": "title",
             "options": { "default": "" },
             "type": "string"
           },
           {
-            "id": "model-scalar-field:bwVcLPcgAoXH",
+            "id": "model-scalar-field:cKhKDU3JESoo",
+            "name": "content",
+            "options": { "default": "" },
+            "type": "string"
+          },
+          {
+            "id": "model-scalar-field:clW4YVGSeDyB",
             "name": "updatedAt",
             "options": { "defaultToNow": true, "updatedAt": true },
             "type": "dateTime"
           },
           {
-            "id": "model-scalar-field:7Nx_g2iWk1aG",
+            "id": "model-scalar-field:DIlyj8ZH6CMW",
             "name": "createdAt",
             "options": { "defaultToNow": true },
             "type": "dateTime"
@@ -54,7 +59,13 @@
         ],
         "uniqueConstraints": []
       },
-      "name": "User"
+      "name": "BlogPost",
+      "schema": {
+        "buildMutations": false,
+        "buildObjectType": true,
+        "buildQuery": true,
+        "exposedFields": ["id", "title", "content"]
+      }
     }
   ],
   "name": "simple",

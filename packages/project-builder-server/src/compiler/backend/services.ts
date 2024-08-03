@@ -2,6 +2,7 @@ import {
   ModelTransformerCompiler,
   ModelUtils,
   modelTransformerCompilerSpec,
+  undefinedIfEmpty,
 } from '@halfdomelabs/project-builder-lib';
 import { ParsedModel } from '@halfdomelabs/project-builder-lib';
 import {
@@ -100,8 +101,10 @@ function buildServiceForModel(
         generator: '@halfdomelabs/fastify/prisma/prisma-crud-service',
         modelName: model.name,
         children: {
-          transformers: service.transformers?.map((transfomer) =>
-            buildTransformer(appBuilder, transfomer, model),
+          transformers: undefinedIfEmpty(
+            service.transformers?.map((transfomer) =>
+              buildTransformer(appBuilder, transfomer, model),
+            ),
           ),
           create: service.create?.fields?.length
             ? {

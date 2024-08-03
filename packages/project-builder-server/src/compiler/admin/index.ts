@@ -11,6 +11,7 @@ import { capitalize } from 'inflection';
 import { compileAdminFeatures } from './sections.js';
 import { AdminAppEntryBuilder, AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
+import { notEmpty } from '@src/utils/array.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
 
 export function buildNavigationLinks(
@@ -65,7 +66,7 @@ export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
                   },
                 ]
               : []),
-          ],
+          ].filter(notEmpty),
         },
       },
       components: {

@@ -100,6 +100,7 @@ const VitestGenerator = createGeneratorWithChildren({
         const vitestConfig = {
           plugins: TypescriptCodeUtils.mergeExpressionsAsArray(plugins),
           test: TypescriptCodeUtils.createExpression(JSON.stringify(testMap)),
+          passWithNoTests: 'true',
         };
 
         const vitestConfigFile = typescript.createTemplate({

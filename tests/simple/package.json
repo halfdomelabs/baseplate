@@ -6,6 +6,21 @@
   "license": "UNLICENSED",
   "author": "Half Dome Labs LLC",
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "build": "nx run-many --target=build",
+    "dev": "nx run-many --target=dev,watch:gql --output-style=stream --parallel=100",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "nx run-many --target=lint",
+    "prettier": "nx run-many --target=prettier",
+    "test": "nx run-many --target=test"
+  },
+  "devDependencies": {
+    "nx": "19.5.0"
+  },
+  "engines": {
+    "node": "^20.15.0",
+    "pnpm": "^9.1.0"
+  },
+  "volta": {
+    "node": "20.15.1"
   }
 }

@@ -4,6 +4,7 @@
   "packageName": "simple-backend",
   "description": "Backend app for simple",
   "version": "0.1.0",
+  "hoistedProviders": [],
   "children": {
     "projects": [
       {
@@ -52,7 +53,7 @@
           "$pothosSentry": {
             "generator": "@halfdomelabs/fastify/pothos/pothos-sentry"
           },
-          "$modules": ["accounts/root", "graphql/root"]
+          "$modules": ["blog/root", "graphql/root"]
         }
       }
     ],

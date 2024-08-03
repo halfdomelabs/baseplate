@@ -79,7 +79,7 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
 
   return startWebServer({
     directories: [projectDirectory],
-    browser: true,
+    browser: false,
     port: 3230,
     cliVersion,
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),

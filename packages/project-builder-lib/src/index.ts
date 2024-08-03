@@ -13,3 +13,4 @@ export * from './definition/index.js';
 export * from './utils/colors.js';
 export * from './plugins/index.js';
 export * from './tools/index.js';
+export * from './utils/index.js';

@@ -1,0 +1,7 @@
+query GetBlogPosts {
+  blogPosts {
+    id
+    title
+    content
+  }
+}

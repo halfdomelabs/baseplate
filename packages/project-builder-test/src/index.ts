@@ -1,6 +1,7 @@
 import { program } from 'commander';
 
 import { addCliCommands } from './commands/index.js';
+import { HandledError } from './errors/handled-error.js';
 import { logger } from './utils/console.js';
 
 export async function main(): Promise<void> {
@@ -10,5 +11,8 @@ export async function main(): Promise<void> {
 }
 
 main().catch((err) => {
+  if (err instanceof HandledError) {
+    return;
+  }
   logger.error(err);
 });

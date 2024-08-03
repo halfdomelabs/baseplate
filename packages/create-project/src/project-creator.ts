@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import type { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
 import chalk from 'chalk';
-import { execaCommand } from 'execa';
+import { execa } from 'execa';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import ora from 'ora';
@@ -106,13 +106,9 @@ export async function generateBaseplateProject({
       text: 'Installing dependencies...',
     }).start();
 
-    await execaCommand('node .pnpmfile.cjs --silent', {
-      cwd: directory,
-    });
+    await execa({ cwd: directory })`node .pnpmfile.cjs --silent`;
 
-    await execaCommand('pnpm install', {
-      cwd: directory,
-    });
+    await execa({ cwd: directory })`pnpm install`;
 
     spinner.succeed();
 
