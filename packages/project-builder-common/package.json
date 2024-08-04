@@ -11,10 +11,10 @@
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
   "type": "module",
-  "main": "./index.js",
   "exports": {
     ".": "./index.js"
   },
+  "main": "./index.js",
   "types": "./index.d.ts",
   "files": [
     "*"
