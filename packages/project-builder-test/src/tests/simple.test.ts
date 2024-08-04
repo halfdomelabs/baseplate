@@ -21,7 +21,11 @@ export default {
     await helpers.runCommand('pnpm prisma db seed', {
       cwd: 'packages/backend',
     });
-    helpers.startCommand('pnpm dev');
+    await helpers.startBackgroundCommand('pnpm dev', {
+      waitForURL: {
+        urls: ['http://localhost:3000', 'http://localhost:3001/healthz'],
+      },
+    });
   },
   async runTests(context, helpers) {
     await helpers.runCommand('pnpm test', {

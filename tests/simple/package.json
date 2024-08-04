@@ -7,7 +7,7 @@
   "author": "Half Dome Labs LLC",
   "scripts": {
     "build": "nx run-many --target=build",
-    "dev": "nx run-many --target=dev,watch:gql --output-style=stream --parallel=100",
+    "dev": "pnpm run --parallel --stream -r \"/(^watch:.*|^dev$)/\"",
     "preinstall": "npx only-allow pnpm",
     "lint": "nx run-many --target=lint",
     "prettier": "nx run-many --target=prettier",

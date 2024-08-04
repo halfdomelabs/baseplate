@@ -28,7 +28,7 @@ export function createContextFromRequest(
   }
 
   return {
-    ...createServiceContext({}),
+    ...createServiceContext(),
     reqInfo: request.reqInfo,
     cookieStore: {
       get: (name) => request.cookies[name],

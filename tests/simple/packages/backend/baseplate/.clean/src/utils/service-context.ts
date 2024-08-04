@@ -1,5 +1,7 @@
-export interface ServiceContext {}
+export interface ServiceContext {
+  placeholder?: never;
+}
 
-export function createServiceContext({}: {}): ServiceContext {
+export function createServiceContext(): ServiceContext {
   return {};
 }

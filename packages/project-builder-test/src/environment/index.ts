@@ -5,18 +5,23 @@ import {
   parseCommandString,
 } from 'execa';
 import path from 'node:path';
-import ora from 'ora';
+import ora, { oraPromise } from 'ora';
 import { DockerComposeEnvironment } from 'testcontainers';
 
 import { HandledError } from '@src/errors/handled-error.js';
 import { SetupEnvironmentHelpers, TestRunnerContext } from '@src/types.js';
 import { logger } from '@src/utils/console.js';
+import { safeKillProcessGroup } from '@src/utils/kill-process-group.js';
+import { shouldEnableOra } from '@src/utils/ora.js';
+import { isExitingProcess, onProcessExit } from '@src/utils/process.js';
+import { waitForHealthyUrl } from '@src/utils/url.js';
 
 export function createEnvironmentHelpers({
   projectDirectoryPath,
   streamCommandOutput,
 }: TestRunnerContext): SetupEnvironmentHelpers {
   const shutdownCommands: ((showOutput: boolean) => unknown)[] = [];
+  const isOraEnabled = shouldEnableOra() && !streamCommandOutput;
   return {
     async startDockerCompose(relativeComposeFilePath: string): Promise<void> {
       const composeFilePath = path.join(
@@ -29,33 +34,33 @@ export function createEnvironmentHelpers({
         composePath,
         composeFilename,
       );
-      const spinner = ora({
-        text: `Starting Docker Compose for ${relativeComposeFilePath}...`,
-        isEnabled: !streamCommandOutput,
-      }).start();
-      try {
-        const startedEnvironment = await environment.up();
-        shutdownCommands.push(() => startedEnvironment.down());
-        spinner.succeed(
-          `Docker Compose for ${relativeComposeFilePath} started!`,
-        );
-      } catch (error) {
-        spinner.fail(
-          `Failed to start Docker Compose for ${relativeComposeFilePath}`,
-        );
-        throw error;
+      const startedEnvironment = await oraPromise(environment.up(), {
+        text: `Starting Docker Compose...`,
+        isEnabled: isOraEnabled,
+        successText: `Docker Compose for ${relativeComposeFilePath} started!`,
+        failText: `Failed to start Docker Compose for ${relativeComposeFilePath}`,
+      });
+      shutdownCommands.push(() => startedEnvironment.down());
+      if (isExitingProcess()) {
+        throw new HandledError();
       }
     },
     async runCommand(command, options = {}): Promise<void> {
+      const spinner = ora({
+        text: `Running command: ${path.join(options.cwd ?? '', command)}`,
+        isEnabled: isOraEnabled,
+      }).start();
+      const [file, ...commandArguments] = parseCommandString(command);
+      const controller = new AbortController();
+
+      const removeListener = onProcessExit(() => {
+        controller.abort();
+      });
       const execAOptions: ExecaOptions = {
         cwd: path.join(projectDirectoryPath, options.cwd ?? ''),
         timeout: options?.timeout ?? 30000,
+        cancelSignal: controller.signal,
       };
-      const spinner = ora({
-        text: `Running command: ${path.join(options.cwd ?? '', command)}`,
-        isEnabled: !streamCommandOutput,
-      }).start();
-      const [file, ...commandArguments] = parseCommandString(command);
       try {
         await execa(
           file,
@@ -74,6 +79,10 @@ export function createEnvironmentHelpers({
                 env: { CI: 'true' },
               },
         ).catch((err) => {
+          if (isExitingProcess()) {
+            spinner.fail(`Command aborted before finishing: ${command}`);
+            throw new HandledError();
+          }
           if (err instanceof Error) {
             const execErr = err as ExecaError;
             spinner.fail(
@@ -94,12 +103,20 @@ export function createEnvironmentHelpers({
         }
         spinner.fail(`Failed to run command: ${command}`);
         throw err;
+      } finally {
+        removeListener();
+      }
+
+      if (isExitingProcess()) {
+        throw new HandledError();
       }
     },
-    startCommand(command, options = {}): void {
+    async startBackgroundCommand(command, options = {}): Promise<void> {
       const execAOptions: ExecaOptions = {
         cwd: path.join(projectDirectoryPath, options.cwd ?? ''),
-        forceKillAfterDelay: 5000,
+        forceKillAfterDelay: 10000,
+        detached: true,
+        reject: false,
       };
       const [file, ...commandArguments] = parseCommandString(command);
       const childProcess = execa(
@@ -114,28 +131,37 @@ export function createEnvironmentHelpers({
           : {
               ...execAOptions,
               all: true,
-              stdout: 'ignore',
-              stderr: 'ignore',
               extendEnv: true,
               env: { CI: 'true' },
             },
       );
-      logger.log(`Started command in background: ${command}`);
+
+      if (options.waitForURL) {
+        const { urls, timeout = 5000 } = options.waitForURL;
+        const urlArray = Array.isArray(urls) ? urls : [urls];
+        await oraPromise(
+          Promise.all(urlArray.map((url) => waitForHealthyUrl(url, timeout))),
+          {
+            text: `Waiting for URL(s) to be available: ${urlArray.join(', ')}`,
+            isEnabled: isOraEnabled,
+            successText: `Command started successfully in background: ${command}`,
+            failText: `Failed to wait for URL(s) to be available: ${urlArray.join(', ')}`,
+          },
+        );
+      } else {
+        logger.log(`Started command in background: ${command}`);
+      }
 
       shutdownCommands.push(async (showOutput) => {
-        childProcess.kill();
+        await safeKillProcessGroup(childProcess);
         if (showOutput && !streamCommandOutput) {
-          console.log('why did we not get a result');
           const all = await childProcess
             .then((result) => {
-              console.log('reached then!');
               return result.all;
             })
             .catch((err) => {
-              console.log('execerro');
               return (err as ExecaError).all;
             });
-          console.log('we got a result');
           logger.log(all);
         }
       });
@@ -143,7 +169,7 @@ export function createEnvironmentHelpers({
     async shutdown(showOutput: boolean): Promise<void> {
       const spinner = ora({
         text: `Shutting down project environment...`,
-        isEnabled: !streamCommandOutput && false,
+        isEnabled: isOraEnabled,
         discardStdin: false,
       }).start();
       try {

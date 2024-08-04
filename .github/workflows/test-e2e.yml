@@ -1,0 +1,32 @@
+name: Test E2E
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test E2E
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.45.1-jammy
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v4.0.4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.0.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: 'pnpm'
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test...
+
+      - run: pnpm test:e2e

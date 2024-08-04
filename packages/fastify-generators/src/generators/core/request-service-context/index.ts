@@ -124,11 +124,14 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
                 ),
                 CONTEXT_CREATOR: TypescriptCodeUtils.mergeExpressions(
                   [
-                    TypescriptCodeUtils.mergeExpressionsAsObject(
-                      R.mapObjIndexed(
-                        (field) => field.creator('request', 'reply'),
-                        contextPassthroughs,
-                      ),
+                    (Object.keys(contextPassthroughs).length === 0
+                      ? TypescriptCodeUtils.createExpression('')
+                      : TypescriptCodeUtils.mergeExpressionsAsObject(
+                          R.mapObjIndexed(
+                            (field) => field.creator('request', 'reply'),
+                            contextPassthroughs,
+                          ),
+                        )
                     ).wrap(
                       (contents) => `...createServiceContext(${contents})`,
                     ),

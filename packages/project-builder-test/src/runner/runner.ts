@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 import { discoverTests } from './discover-tests.js';
+import { generateProject } from './generate.js';
 import { createEnvironmentHelpers } from '@src/environment/index.js';
 import {
   ProjectBuilderTest,
@@ -19,6 +20,11 @@ async function runTest(test: ProjectBuilderTest): Promise<void> {
     testProjectsDirectory,
     test.projectDirectory,
   );
+
+  // Generate project
+  logger.log(`Generating project for ${test.projectDirectory}...`);
+  await generateProject(projectDirectoryPath);
+  logger.log(`Project generated for ${test.projectDirectory}!`);
 
   const context: TestRunnerContext = {
     projectDirectoryPath,

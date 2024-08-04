@@ -317,15 +317,6 @@ importers:
 
   packages/project-builder-cli:
     dependencies:
-      '@halfdomelabs/baseplate-plugin-storage':
-        specifier: workspace:*
-        version: link:../../plugins/baseplate-plugin-storage
-      '@halfdomelabs/core-generators':
-        specifier: workspace:*
-        version: link:../core-generators
-      '@halfdomelabs/fastify-generators':
-        specifier: workspace:*
-        version: link:../fastify-generators
       '@halfdomelabs/project-builder-common':
         specifier: workspace:*
         version: link:../project-builder-common
@@ -338,9 +329,6 @@ importers:
       '@halfdomelabs/project-builder-web':
         specifier: workspace:*
         version: link:../project-builder-web
-      '@halfdomelabs/react-generators':
-        specifier: workspace:*
-        version: link:../react-generators
       commander:
         specifier: ^11.0.0
         version: 11.1.0

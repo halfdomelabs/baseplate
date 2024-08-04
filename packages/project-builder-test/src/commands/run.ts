@@ -1,7 +1,6 @@
 import { Command } from 'commander';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import ora from 'ora';
 
 import { createEnvironmentHelpers } from '@src/environment/index.js';
 import { discoverTests } from '@src/runner/discover-tests.js';

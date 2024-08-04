@@ -22,6 +22,7 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "start": "tsx ./src",
+    "test:e2e": "tsx ./src test",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

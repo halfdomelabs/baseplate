@@ -9,10 +9,27 @@ export interface RunCommandOptions {
   timeout?: number;
 }
 
+interface WaitForURLOptions {
+  urls: string | string[];
+  /**
+   * Timeout in milliseconds after which the checking should stop if not successful.
+   *
+   * @default 10000
+   */
+  timeout?: number;
+}
+
+export interface StartBackgroundCommandOptions extends RunCommandOptions {
+  waitForURL?: WaitForURLOptions;
+}
+
 export interface SetupEnvironmentHelpers {
   startDockerCompose: (composeFilePath: string) => Promise<void>;
   runCommand: (command: string, options?: RunCommandOptions) => Promise<void>;
-  startCommand: (command: string, options?: RunCommandOptions) => void;
+  startBackgroundCommand: (
+    command: string,
+    options?: StartBackgroundCommandOptions,
+  ) => Promise<void>;
   shutdown: (showOutput: boolean) => Promise<void>;
 }
 

@@ -3,6 +3,6 @@ import {
   createServiceContext,
 } from '@src/utils/service-context';
 
-export function createTestServiceContext({}: {} = {}): ServiceContext {
-  return createServiceContext({});
+export function createTestServiceContext(): ServiceContext {
+  return createServiceContext();
 }
