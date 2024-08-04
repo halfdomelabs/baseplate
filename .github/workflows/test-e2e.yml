@@ -28,6 +28,7 @@ jobs:
           cache: 'pnpm'
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/root
-
+      - name: Print working directory
+        run: pwd
       - run: git diff main
       - run: pnpm test:e2e

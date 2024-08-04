@@ -175,7 +175,7 @@ importers:
   packages/e2e:
     devDependencies:
       '@playwright/test':
-        specifier: ^1.45.3
+        specifier: 1.45.3
         version: 1.45.3
       '@types/node':
         specifier: ^20.0.0
