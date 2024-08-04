@@ -8,6 +8,7 @@ export default {
     await helpers.runCommand('pnpm install');
     await helpers.runCommand('pnpm playwright install --with-deps', {
       cwd: 'packages/e2e',
+      timeout: 180000,
     });
     await helpers.startDockerCompose(
       'packages/backend/docker/docker-compose.yml',
