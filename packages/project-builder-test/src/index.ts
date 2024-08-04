@@ -12,7 +12,8 @@ export async function main(): Promise<void> {
 
 main().catch((err) => {
   if (err instanceof HandledError) {
-    return;
+    process.exit(1);
   }
   logger.error(err);
+  process.exit(1);
 });

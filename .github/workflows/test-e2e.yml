@@ -17,6 +17,7 @@ jobs:
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+        # See https://github.com/nrwl/nx-set-shas?tab=readme-ov-file#self-hosted-runners
       - name: Fix Git permissions
         run: |
           git config --system --add safe.directory "$GITHUB_WORKSPACE"
@@ -30,8 +31,6 @@ jobs:
         with:
           node-version-file: package.json
           cache: 'pnpm'
-      # See https://github.com/actions/checkout/issues/766
-      - run: git branch
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/root
       - run: pnpm test:e2e
