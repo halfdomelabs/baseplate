@@ -27,8 +27,9 @@ jobs:
           node-version-file: package.json
           cache: 'pnpm'
       # See https://github.com/actions/checkout/issues/766
-      - name: Fix permissions
+      - name: Fix Git permissions
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - run: git branch
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/root
       - run: pnpm test:e2e
