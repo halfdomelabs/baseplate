@@ -1,0 +1,62 @@
+{
+  "generator": "@halfdomelabs/core/node/node",
+  "name": "simple-backend",
+  "packageName": "simple-backend",
+  "description": "Backend app for simple",
+  "version": "0.1.0",
+  "hoistedProviders": [],
+  "children": {
+    "projects": [
+      {
+        "name": "docker",
+        "generator": "@halfdomelabs/core/docker/docker-compose",
+        "postgres": {"port": 3432, "password": "simple-backend-password"}
+      },
+      {
+        "name": "fastify",
+        "generator": "@halfdomelabs/fastify/core/fastify",
+        "children": {
+          "server": {"defaultPort": 3001},
+          "$readme": {
+            "generator": "@halfdomelabs/fastify/core/readme",
+            "peerProvider": true,
+            "projectName": "simple backend"
+          },
+          "$sentry": {
+            "generator": "@halfdomelabs/fastify/core/fastify-sentry",
+            "peerProvider": true
+          },
+          "$prisma": {
+            "generator": "@halfdomelabs/fastify/prisma/prisma",
+            "peerProvider": true,
+            "defaultDatabaseUrl": "postgres://postgres:simple-backend-password@localhost:3432/postgres?schema=public"
+          },
+          "$prismaVitest": {
+            "generator": "@halfdomelabs/fastify/vitest/prisma-vitest",
+            "peerProvider": true
+          },
+          "$prismaUtils": {
+            "generator": "@halfdomelabs/fastify/prisma/prisma-utils",
+            "peerProvider": true
+          },
+          "$yoga": {
+            "generator": "@halfdomelabs/fastify/yoga/yoga-plugin",
+            "peerProvider": true
+          },
+          "$pothos": {
+            "generator": "@halfdomelabs/fastify/pothos/pothos",
+            "peerProvider": true
+          },
+          "$pothosPrisma": {
+            "generator": "@halfdomelabs/fastify/pothos/pothos-prisma"
+          },
+          "$pothosSentry": {
+            "generator": "@halfdomelabs/fastify/pothos/pothos-sentry"
+          },
+          "$modules": ["blog/root", "graphql/root"]
+        }
+      }
+    ],
+    "vitest": {"generator": "@halfdomelabs/core/node/vitest"}
+  }
+}

@@ -33,7 +33,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     reactError: reactErrorProvider,
     reactConfig: reactConfigProvider,
     node: nodeProvider,
-    authIdentify: authIdentifyProvider,
+    authIdentify: authIdentifyProvider.dependency().optional(),
   },
   exports: {
     reactSentryProvider,
@@ -68,14 +68,16 @@ const createMainTask = createTaskConfigBuilder(() => ({
       devValue: '',
     });
 
-    authIdentify.addBlock(
-      TypescriptCodeUtils.createBlock(
-        `identifySentryUser({
+    if (authIdentify) {
+      authIdentify.addBlock(
+        TypescriptCodeUtils.createBlock(
+          `identifySentryUser({
         id: userId,
       });`,
-        `import { identifySentryUser } from '${sentryImport}';`,
-      ),
-    );
+          `import { identifySentryUser } from '${sentryImport}';`,
+        ),
+      );
+    }
 
     return {
       getProviders: () => ({

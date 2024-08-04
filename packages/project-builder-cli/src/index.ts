@@ -1,3 +1,7 @@
+import {
+  getDefaultGeneratorSetupConfig,
+  getDefaultPlugins,
+} from '@halfdomelabs/project-builder-common';
 import { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 import {
   buildProjectForDirectory,
@@ -8,16 +12,14 @@ import {
 import { program } from 'commander';
 
 import { addServeCommand } from './server.js';
-import { getGeneratorSetupConfig } from './services/generator-modules.js';
 import { logger } from './services/logger.js';
-import { getBuiltInPlugins } from './services/plugins.js';
 import { expandPathWithTilde } from './utils/path.js';
 import { getPackageVersion } from './utils/version.js';
 
 async function createSchemaParserContext(
   directory: string,
 ): Promise<SchemaParserContext> {
-  const builtInPlugins = await getBuiltInPlugins();
+  const builtInPlugins = await getDefaultPlugins(logger);
   return createNodeSchemaParserContext(directory, logger, builtInPlugins);
 }
 
@@ -28,7 +30,7 @@ async function runMain(): Promise<void> {
     throw new Error('Could not determine package version');
   }
 
-  const generatorSetupConfig = await getGeneratorSetupConfig();
+  const generatorSetupConfig = await getDefaultGeneratorSetupConfig(logger);
 
   program.version(version ?? 'unknown', '-v, --version');
 

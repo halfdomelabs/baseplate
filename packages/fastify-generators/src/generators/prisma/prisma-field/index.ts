@@ -46,6 +46,8 @@ const descriptorSchema = z
     return obj;
   });
 
+export type PrismaFieldDescriptor = z.infer<typeof descriptorSchema>;
+
 export type PrismaFieldProvider = unknown;
 
 export const prismaFieldProvider =

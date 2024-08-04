@@ -1,0 +1,19 @@
+type BlogPost {
+  content: String!
+  id: ID!
+  title: String!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+"""Scalar with date and time information"""
+scalar DateTime
+
+type Query {
+  blogPost(id: Uuid!): BlogPost!
+  blogPosts: [BlogPost!]!
+}
+
+"""Scalar representing a UUID"""
+scalar Uuid

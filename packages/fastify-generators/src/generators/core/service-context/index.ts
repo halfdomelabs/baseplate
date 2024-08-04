@@ -97,19 +97,23 @@ const ServiceContextGenerator = createGeneratorWithTasks({
             );
 
             const contextFile = typescript.createTemplate({
-              CONTEXT_FIELDS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                R.mapObjIndexed((field) => field.type, contextFields),
-              ),
-              CREATE_CONTEXT_ARGS: TypescriptCodeUtils.mergeExpressions(
-                contextArgs.map((arg) =>
-                  arg.type.wrap((contents) => `${arg.name}: ${contents}`),
-                ),
-                '; ',
-              ).wrap(
-                (contents) => `
+              CONTEXT_FIELDS: !contextFields.length
+                ? TypescriptCodeUtils.createExpression('placeholder?: never')
+                : TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+                    R.mapObjIndexed((field) => field.type, contextFields),
+                  ),
+              CREATE_CONTEXT_ARGS: !contextArgs.length
+                ? TypescriptCodeUtils.createExpression('')
+                : TypescriptCodeUtils.mergeExpressions(
+                    contextArgs.map((arg) =>
+                      arg.type.wrap((contents) => `${arg.name}: ${contents}`),
+                    ),
+                    '; ',
+                  ).wrap(
+                    (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
           `,
-              ),
+                  ),
               CONTEXT_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
                 R.mapObjIndexed((field) => field.value, contextFields),
               ),
@@ -121,29 +125,33 @@ const ServiceContextGenerator = createGeneratorWithTasks({
 
             const testHelperFile = typescript.createTemplate(
               {
-                TEST_ARGS: TypescriptCodeUtils.mergeExpressions(
-                  contextArgs.map((arg) =>
-                    arg.type.wrap(
-                      (contents) =>
-                        `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`,
-                    ),
-                  ),
-                  '; ',
-                ).wrap(
-                  (contents) => `
+                TEST_ARGS: !contextArgs.length
+                  ? TypescriptCodeUtils.createExpression('')
+                  : TypescriptCodeUtils.mergeExpressions(
+                      contextArgs.map((arg) =>
+                        arg.type.wrap(
+                          (contents) =>
+                            `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`,
+                        ),
+                      ),
+                      '; ',
+                    ).wrap(
+                      (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}} = {}
           `,
-                ),
-                TEST_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-                  R.fromPairs(
-                    contextArgs.map((arg) => [
-                      arg.name,
-                      arg.testDefault
-                        ? arg.testDefault.prepend(`${arg.name} ?? `)
-                        : TypescriptCodeUtils.createExpression(arg.name),
-                    ]),
-                  ),
-                ),
+                    ),
+                TEST_OBJECT: !contextArgs.length
+                  ? TypescriptCodeUtils.createExpression('')
+                  : TypescriptCodeUtils.mergeExpressionsAsObject(
+                      R.fromPairs(
+                        contextArgs.map((arg) => [
+                          arg.name,
+                          arg.testDefault
+                            ? arg.testDefault.prepend(`${arg.name} ?? `)
+                            : TypescriptCodeUtils.createExpression(arg.name),
+                        ]),
+                      ),
+                    ),
               },
               { importMappers: [{ getImportMap: () => importMap }] },
             );

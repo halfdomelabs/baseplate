@@ -1,0 +1,16 @@
+overwrite: true
+schema: ../backend/schema.graphql
+documents: 'src/**/*.gql'
+config:
+  scalars:
+    DateTime: string
+    Date: string
+    Uuid: string
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typescript-react-apollo'
+    config:
+      enumsAsTypes: true

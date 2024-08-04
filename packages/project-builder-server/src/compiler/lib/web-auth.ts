@@ -5,6 +5,9 @@ import { AppEntryBuilder } from '../appEntryBuilder.js';
 export function compileAuthFeatures(
   builder: AppEntryBuilder<AppConfig>,
 ): Record<string, unknown> | null {
+  if (builder.appConfig.type === 'web' && !builder.appConfig.includeAuth) {
+    return null;
+  }
   if (builder.projectDefinition.auth?.useAuth0) {
     return {
       $auth: {

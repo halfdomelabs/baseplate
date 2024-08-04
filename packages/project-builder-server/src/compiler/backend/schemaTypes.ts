@@ -3,10 +3,12 @@ import {
   FeatureUtils,
   ModelConfig,
   ModelUtils,
+  stripChildren,
 } from '@halfdomelabs/project-builder-lib';
 import { paramCase } from 'change-case';
 
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import { notEmpty } from '@src/utils/array.js';
 
 function buildQuerySchemaTypeForModel(
   appBuilder: BackendAppEntryBuilder,
@@ -55,22 +57,30 @@ function buildQuerySchemaTypeForModel(
           fileName: `${paramCase(model.name)}.queries`,
           generator: '@halfdomelabs/fastify/pothos/pothos-prisma-query-file',
           modelName: model.name,
-          children: {
+          children: stripChildren({
             findQuery: {
               children: {
-                authorize: {
-                  roles: authorize?.read?.map((r) => appBuilder.nameFromId(r)),
-                },
+                authorize: !authorize?.read?.length
+                  ? undefined
+                  : {
+                      roles: authorize?.read?.map((r) =>
+                        appBuilder.nameFromId(r),
+                      ),
+                    },
               },
             },
             listQuery: {
               children: {
-                authorize: {
-                  roles: authorize?.read?.map((r) => appBuilder.nameFromId(r)),
-                },
+                authorize: !authorize?.read?.length
+                  ? undefined
+                  : {
+                      roles: authorize?.read?.map((r) =>
+                        appBuilder.nameFromId(r),
+                      ),
+                    },
               },
             },
-          },
+          }),
         },
   ];
 }
@@ -164,5 +174,5 @@ export function buildSchemaTypesForFeature(
         : undefined,
     ]),
     ...buildEnumSchema(enums),
-  ];
+  ].filter(notEmpty);
 }

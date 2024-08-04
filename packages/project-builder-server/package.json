@@ -60,6 +60,7 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@halfdomelabs/fastify-generators": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/fs-extra": "11.0.4",
     "@types/lodash": "4.17.7",

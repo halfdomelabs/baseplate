@@ -1,4 +1,4 @@
-import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
+import { FeatureUtils, stripChildren } from '@halfdomelabs/project-builder-lib';
 
 import { buildEnumsForFeature } from './enums.js';
 import { buildModelsForFeature } from './models.js';
@@ -27,7 +27,7 @@ export function buildFeature(
     name: featureName,
     generator: '@halfdomelabs/fastify/core/app-module',
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featureId),
-    children: {
+    children: stripChildren({
       $enums: buildEnumsForFeature(featureId, parsedProject),
       $models: buildModelsForFeature(builder, featureId),
       $services: buildServicesForFeature(builder, featureId),
@@ -37,7 +37,7 @@ export function buildFeature(
       ),
       ...parsedProject.getFeatureChildren(featureId),
       ...appCompiler.getChildrenForFeature(featureId),
-    },
+    }),
   });
 
   return descriptorLocation;

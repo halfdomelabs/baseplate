@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16.2-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_PASSWORD: simple-backend-password
+    ports:
+      - '${POSTGRES_PORT:-3432}:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 2s
+      retries: 2
+volumes:
+  db-data:

@@ -1,6 +1,7 @@
 import {
   FeatureUtils,
   AdminAppConfig,
+  stripChildren,
 } from '@halfdomelabs/project-builder-lib';
 
 import { compileAdminCrudSection } from './crud/index.js';
@@ -69,10 +70,10 @@ function compileAdminFeatureRecursive(
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featureId),
     // add admin layout to any root features
     layoutKey: feature.parentRef ? undefined : 'admin',
-    children: {
+    children: stripChildren({
       $sections: sectionDescriptors,
       $childRoutes: subDescriptors,
-    },
+    }),
   });
 
   return descriptorLocation;
