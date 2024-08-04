@@ -6,6 +6,9 @@ export default {
   projectDirectory: 'simple',
   async setupEnvironment(context, helpers) {
     await helpers.runCommand('pnpm install');
+    await helpers.runCommand('pnpm playwright install --with-deps', {
+      cwd: 'packages/e2e',
+    });
     await helpers.startDockerCompose(
       'packages/backend/docker/docker-compose.yml',
     );

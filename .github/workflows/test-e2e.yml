@@ -8,8 +8,6 @@ jobs:
   test:
     name: Test E2E
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.45.1-jammy
 
     steps:
       - name: Checkout Repo
@@ -17,11 +15,6 @@ jobs:
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
-        # See https://github.com/nrwl/nx-set-shas?tab=readme-ov-file#self-hosted-runners
-      - name: Fix Git permissions
-        run: |
-          git config --system --add safe.directory "$GITHUB_WORKSPACE"
-        shell: bash
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         uses: nrwl/nx-set-shas@v4.0.4
       - name: Setup pnpm
