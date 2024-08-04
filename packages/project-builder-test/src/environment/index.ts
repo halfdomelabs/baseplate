@@ -151,7 +151,7 @@ export function createEnvironmentHelpers({
       });
 
       if (options.waitForURL) {
-        const { urls, timeout = 5000 } = options.waitForURL;
+        const { urls, timeout = 10000 } = options.waitForURL;
         const urlArray = Array.isArray(urls) ? urls : [urls];
         await oraPromise(
           Promise.all(urlArray.map((url) => waitForHealthyUrl(url, timeout))),
