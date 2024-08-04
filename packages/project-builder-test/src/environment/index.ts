@@ -136,6 +136,20 @@ export function createEnvironmentHelpers({
             },
       );
 
+      shutdownCommands.push(async (showOutput) => {
+        await safeKillProcessGroup(childProcess);
+        if (showOutput && !streamCommandOutput) {
+          const all = await childProcess
+            .then((result) => {
+              return result.all;
+            })
+            .catch((err) => {
+              return (err as ExecaError).all;
+            });
+          logger.log(all);
+        }
+      });
+
       if (options.waitForURL) {
         const { urls, timeout = 5000 } = options.waitForURL;
         const urlArray = Array.isArray(urls) ? urls : [urls];
@@ -151,20 +165,6 @@ export function createEnvironmentHelpers({
       } else {
         logger.log(`Started command in background: ${command}`);
       }
-
-      shutdownCommands.push(async (showOutput) => {
-        await safeKillProcessGroup(childProcess);
-        if (showOutput && !streamCommandOutput) {
-          const all = await childProcess
-            .then((result) => {
-              return result.all;
-            })
-            .catch((err) => {
-              return (err as ExecaError).all;
-            });
-          logger.log(all);
-        }
-      });
     },
     async shutdown(showOutput: boolean): Promise<void> {
       const spinner = ora({
