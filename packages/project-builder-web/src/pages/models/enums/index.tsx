@@ -5,6 +5,7 @@ import EnumsIndexPage from './EnumsIndexPage';
 import EnumEditPage from './edit';
 import { createCrumbFromUid } from '@src/types/routes';
 
+// currently unused, will probably remove
 export const EnumRoutes: RouteObject[] = [
   { index: true, element: <EnumsIndexPage /> },
   {

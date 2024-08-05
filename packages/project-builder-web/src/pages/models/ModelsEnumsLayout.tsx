@@ -7,7 +7,7 @@ import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
 import { TabNavigation } from '@src/components/TabNavigation/TabNavigation';
 
-export function ModelsLayout(): JSX.Element {
+export function ModelsEnumsLayout(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
@@ -20,15 +20,11 @@ export function ModelsLayout(): JSX.Element {
   const matches = useMatches();
 
   const enumsActive =
-    matches.filter((match) => match.pathname.startsWith('/models/enums'))
-      .length !== 0;
+    matches.filter((match) => match.pathname.startsWith('/enums')).length !== 0;
 
-  // enums are nested under models, so we need to manually
-  // ensure enums are not matched when activating the models tab
   const modelsActive =
-    !enumsActive &&
     matches.filter((match) => match.pathname.startsWith('/models')).length !==
-      0;
+    0;
 
   return (
     <SidebarLayout className="flex-1">
@@ -37,7 +33,7 @@ export function ModelsLayout(): JSX.Element {
         width="auto"
       >
         <TabNavigation.Container className="w-full">
-          <TabNavigation.Link to="." isActive={modelsActive}>
+          <TabNavigation.Link to="./models" isActive={modelsActive}>
             Models
           </TabNavigation.Link>
           <TabNavigation.Link to="./enums" isActive={enumsActive}>

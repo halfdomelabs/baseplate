@@ -52,7 +52,7 @@ export function EnumsSidebarList({
           {sortedEnums.map((item) => (
             <li key={item.id}>
               <NavLink
-                to={`/models/enums/edit/${modelEnumEntityType.toUid(item.id)}`}
+                to={`/enums/edit/${modelEnumEntityType.toUid(item.id)}`}
                 className={({ isActive }) =>
                   clsx(
                     'block w-full p-2 text-sm',

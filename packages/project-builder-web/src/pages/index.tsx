@@ -4,7 +4,7 @@ import NotFoundPage from './NotFound.page';
 import { AppsRoutes } from './apps';
 import { FeatureRoutes } from './features';
 import HomePage from './home/home.page';
-import { ModelRoutes } from './models';
+import { ModelsEnumsRoutes } from './models';
 import { PluginRoutes } from './plugins';
 import SettingsPage from './settings';
 import App from '@src/app/App';
@@ -26,13 +26,14 @@ export const router = createBrowserRouter([
               crumb: createRouteCrumb({ label: 'Apps', url: '/apps' }),
             },
           },
-          {
-            path: '/models/*',
-            children: ModelRoutes,
-            handle: {
-              crumb: createRouteCrumb({ label: 'Models', url: '/models' }),
-            },
-          },
+          ModelsEnumsRoutes,
+          // {
+          //   path: '/models/*',
+          //   children: ModelRoutes,
+          //   handle: {
+          //     crumb: createRouteCrumb({ label: 'Models', url: '/models' }),
+          //   },
+          // },
           {
             path: '/features/*',
             children: FeatureRoutes,
