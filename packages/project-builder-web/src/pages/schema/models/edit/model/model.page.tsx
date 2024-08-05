@@ -13,9 +13,9 @@ import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import { ModelRelationsForm } from './ModelRelationsForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
+import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
+import { useModelForm } from '../../hooks/useModelForm';
 import ModelFormActionBar from '../ModelFormActionBar';
-import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
-import { useModelForm } from '../hooks/useModelForm';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);

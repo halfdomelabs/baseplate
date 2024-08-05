@@ -3,7 +3,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 
 import ModelFormActionBar from '../ModelFormActionBar';
-import { useModelForm } from '../hooks/useModelForm';
+import { useModelForm } from '../../hooks/useModelForm';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';

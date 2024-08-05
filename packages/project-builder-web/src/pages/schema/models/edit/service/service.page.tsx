@@ -7,8 +7,8 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 
 import ServiceTransformersForm from './ServiceTransformersForm';
 import ModelFormActionBar from '../ModelFormActionBar';
-import { EditedModelContextProvider } from '../hooks/useEditedModelConfig';
-import { useModelForm } from '../hooks/useModelForm';
+import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
+import { useModelForm } from '../../hooks/useModelForm';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';

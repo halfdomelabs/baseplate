@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Control, FieldArrayWithId } from 'react-hook-form';
 
 import ModelUniqueConstraintFieldsField from './ModelUniqueConstraintFieldsField';
-import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 import { LinkButton, TextInput } from 'src/components';
 
 interface Props {

@@ -2,20 +2,22 @@ import {
   modelEntityType,
   modelEnumEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { RouteObject } from 'react-router-dom';
+import { Navigate, RouteObject } from 'react-router-dom';
 
-import ModelListPage from './ModelList.page';
-import { ModelsEnumsLayout } from './ModelsEnumsLayout';
-import ModelEditPage from './edit';
+import { SchemaLayout } from './SchemaLayout';
 import EnumsIndexPage from './enums/EnumsIndexPage';
 import EnumEditPage from './enums/edit';
+import ModelListPage from './models/ModelList.page';
+import ModelEditPage from './models/edit';
 import { createCrumbFromUid } from '@src/types/routes';
 
-export const ModelsEnumsRoutes: RouteObject = {
-  element: <ModelsEnumsLayout />,
+export const SchemaRoutes: RouteObject = {
+  element: <SchemaLayout />,
+  path: '/schema',
   children: [
+    { index: true, element: <Navigate to="/schema/models" /> },
     {
-      path: '/models/*',
+      path: 'models/*',
       children: [
         { index: true, element: <ModelListPage /> },
         {

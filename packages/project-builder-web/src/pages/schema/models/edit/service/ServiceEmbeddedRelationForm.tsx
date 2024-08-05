@@ -13,7 +13,7 @@ import { SelectField } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 
-import { useEditedModelConfig } from '../hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { usePrevious } from 'src/hooks/usePrevious';
 

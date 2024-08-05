@@ -3,11 +3,11 @@ import { SidebarLayout } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { Outlet, useMatches } from 'react-router-dom';
 
-import { ModelsSidebarList } from './ModelsSidebarList';
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
+import { ModelsSidebarList } from './models/ModelsSidebarList';
 import { TabNavigation } from '@src/components/TabNavigation/TabNavigation';
 
-export function ModelsEnumsLayout(): JSX.Element {
+export function SchemaLayout(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
@@ -20,11 +20,12 @@ export function ModelsEnumsLayout(): JSX.Element {
   const matches = useMatches();
 
   const enumsActive =
-    matches.filter((match) => match.pathname.startsWith('/enums')).length !== 0;
+    matches.filter((match) => match.pathname.startsWith('/schema/enums'))
+      .length !== 0;
 
   const modelsActive =
-    matches.filter((match) => match.pathname.startsWith('/models')).length !==
-    0;
+    matches.filter((match) => match.pathname.startsWith('/schema/models'))
+      .length !== 0;
 
   return (
     <SidebarLayout className="flex-1">

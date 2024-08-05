@@ -83,7 +83,7 @@ export function ModelsSidebarList({
           {sortedModels.map((model) => (
             <li key={model.id} className="group">
               <NavLink
-                to={`/models/edit/${modelEntityType.toUid(model.id)}`}
+                to={`./models/edit/${modelEntityType.toUid(model.id)}`}
                 className={({ isActive }) =>
                   clsx(
                     'block w-full p-2 text-sm',

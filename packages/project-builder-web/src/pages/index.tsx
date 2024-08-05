@@ -4,8 +4,8 @@ import NotFoundPage from './NotFound.page';
 import { AppsRoutes } from './apps';
 import { FeatureRoutes } from './features';
 import HomePage from './home/home.page';
-import { ModelsEnumsRoutes } from './models';
 import { PluginRoutes } from './plugins';
+import { SchemaRoutes } from './schema';
 import SettingsPage from './settings';
 import App from '@src/app/App';
 import { AppLayout } from '@src/app/AppLayout/AppLayout';
@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
               crumb: createRouteCrumb({ label: 'Apps', url: '/apps' }),
             },
           },
-          ModelsEnumsRoutes,
+          SchemaRoutes,
           // {
           //   path: '/models/*',
           //   children: ModelRoutes,

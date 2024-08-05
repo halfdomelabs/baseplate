@@ -1,6 +1,6 @@
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 
-import { useModelForm } from './hooks/useModelForm';
+import { useModelForm } from '../hooks/useModelForm';
 import { ModelGeneralForm } from './model/ModelGeneralForm';
 
 interface ModelGeneralEditDialogProps {
