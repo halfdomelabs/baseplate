@@ -1,5 +1,16 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.3
+
+### Patch Changes
+
+- 3dbb454: Add new plugin to strip empty query and mutations from schema.graphql
+- Updated dependencies [3dbb454]
+- Updated dependencies [3dbb454]
+- Updated dependencies [3dbb454]
+  - @halfdomelabs/core-generators@0.9.4
+  - @halfdomelabs/sync@0.7.7
+
 ## 0.10.2
 
 ### Patch Changes
