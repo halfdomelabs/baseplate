@@ -1,57 +1,40 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
-// having a field day with anys :)
-
-function isObjectEmpty(obj: any): boolean {
-  if (obj === undefined) {
-    return true;
-  }
-  if (obj === null) {
-    return false;
-  }
-  if (Array.isArray(obj)) {
-    return obj.length === 0;
-  }
-  if (typeof obj === 'object') {
-    return Object.keys(obj).length === 0;
-  }
-  return false;
+/**
+ * Strip object of any values that are empty arrays, empty objects, null, or undefined
+ */
+export function stripChildren(
+  children: Record<string, unknown>,
+): Record<string, unknown> {
+  return Object.keys(children).reduce((acc, key) => {
+    const item = children[key];
+    if (
+      item === undefined ||
+      item === null ||
+      (Array.isArray(item) && item.length === 0)
+    ) {
+      return acc;
+    }
+    return {
+      ...acc,
+      [key]: item,
+    };
+  }, {});
 }
 
 /**
- * Cleans up object recursively to remove any properties that are undefined/null/empty arrays/objects
- *
- * @param obj Object to clean up
- * @returns
+ * Returns undefined if the value is an empty object (as defined by all values are undefined)/array/null, otherwise return value.
  */
-export function stripObject(obj: any): any {
-  if (obj === null || obj === undefined) {
-    return obj;
+export function undefinedIfEmpty<T>(value: T): T | undefined {
+  if (value === null) return undefined;
+  if (Array.isArray(value) && value.length === 0) {
+    return undefined;
   }
-  if (Array.isArray(obj)) {
-    const strippedArray = obj
-      .map(stripObject)
-      .filter((subItem) => !isObjectEmpty(subItem));
-    if (strippedArray.length === 0) {
-      return undefined;
-    }
-    return strippedArray;
+  if (
+    typeof value === 'object' &&
+    Object.keys(value).every(
+      (key) => (value as Record<string, unknown>)[key] === undefined,
+    )
+  ) {
+    return undefined;
   }
-  if (typeof obj === 'object') {
-    return Object.keys(obj).reduce((acc, key) => {
-      const item = stripObject(obj[key]);
-      if (isObjectEmpty(item)) {
-        return acc;
-      }
-      return {
-        ...acc,
-        [key]: item,
-      };
-    }, {});
-  }
-  return obj;
+  return value;
 }

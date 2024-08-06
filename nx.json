@@ -41,6 +41,10 @@
     "test": {
       "inputs": ["default", "^production"],
       "dependsOn": ["build"]
+    },
+    "test:e2e": {
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^build"]
     }
   },
   "defaultBase": "main"

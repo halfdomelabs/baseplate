@@ -84,6 +84,7 @@ const VitestGenerator = createGeneratorWithChildren({
 
         const testMap = {
           clearMocks: true,
+          passWithNoTests: true,
           root: './src',
           ...(config.customSetupBlocks.length
             ? {

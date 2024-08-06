@@ -1,0 +1,59 @@
+{
+  "name": "@halfdomelabs/project-builder-test",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Automated E2E testing for the project builder projects",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halfdomelabs/baseplate",
+    "directory": "packages/project-builder-test"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "files": [
+    "LICENSE",
+    "dist/**/*",
+    "CHANGELOG"
+  ],
+  "scripts": {
+    "dev": "tsx watch ./src",
+    "lint": "eslint --ext .ts,.tsx,.js.,.jsx ./src",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "start": "tsx ./src",
+    "test:e2e": "tsx ./src test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@halfdomelabs/core-generators": "workspace:*",
+    "@halfdomelabs/fastify-generators": "workspace:*",
+    "@halfdomelabs/project-builder-common": "workspace:*",
+    "@halfdomelabs/project-builder-lib": "workspace:*",
+    "@halfdomelabs/project-builder-server": "workspace:*",
+    "@halfdomelabs/project-builder-web": "workspace:*",
+    "@halfdomelabs/react-generators": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*",
+    "commander": "^11.0.0",
+    "execa": "9.3.0",
+    "globby": "^14.0.0",
+    "ora": "^8.0.1",
+    "package-up": "^5.0.0",
+    "pino": "8.14.1",
+    "pino-pretty": "10.0.1",
+    "pkg-dir": "^7.0.0",
+    "testcontainers": "10.11.0"
+  },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/node": "^20.0.0",
+    "tsx": "4.16.2",
+    "typescript": "5.4.4"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
+}

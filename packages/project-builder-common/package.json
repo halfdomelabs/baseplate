@@ -1,0 +1,48 @@
+{
+  "name": "@halfdomelabs/project-builder-common",
+  "version": "0.1.0",
+  "description": "Holds common packages for plugins and generators",
+  "homepage": "https://www.halfdomelabs.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halfdomelabs/baseplate",
+    "directory": "packages/project-builder-common"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Half Dome Labs LLC",
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "files": [
+    "*"
+  ],
+  "scripts": {
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "start": "tsx -r dotenv/config ./src"
+  },
+  "dependencies": {
+    "@halfdomelabs/baseplate-plugin-storage": "workspace:*",
+    "@halfdomelabs/core-generators": "workspace:*",
+    "@halfdomelabs/fastify-generators": "workspace:*",
+    "@halfdomelabs/project-builder-lib": "workspace:*",
+    "@halfdomelabs/project-builder-server": "workspace:*",
+    "@halfdomelabs/react-generators": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*"
+  },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

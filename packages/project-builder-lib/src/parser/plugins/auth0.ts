@@ -123,9 +123,11 @@ export const Auth0Plugin: ParserPlugin = {
             roles: auth.roles.map((r) => ({
               name: r.name,
               comment: r.comment,
-              inherits: r.inherits?.map((inheritRole) =>
-                definitionContainer.nameFromId(inheritRole),
-              ),
+              inherits: !r.inherits?.length
+                ? undefined
+                : r.inherits?.map((inheritRole) =>
+                    definitionContainer.nameFromId(inheritRole),
+                  ),
             })),
             peerProvider: true,
           },

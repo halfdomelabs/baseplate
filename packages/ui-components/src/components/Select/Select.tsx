@@ -36,7 +36,7 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       inputVariants(),
-      'group items-center justify-between data-[placeholder]:text-muted-foreground',
+      'group flex items-center justify-between data-[placeholder]:text-muted-foreground',
       className,
     )}
     {...props}

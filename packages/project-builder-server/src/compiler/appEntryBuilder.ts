@@ -16,8 +16,6 @@ import {
 import { AppPluginConfig } from '@halfdomelabs/sync';
 import _ from 'lodash';
 
-import { stripObject } from '../utils/strip.js';
-
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public projectDefinition: ProjectDefinition;
 
@@ -71,7 +69,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     }
     this.files.push({
       path: `baseplate/${path}`,
-      jsonContent: stripObject(jsonContent),
+      jsonContent: jsonContent,
     });
     return this;
   }

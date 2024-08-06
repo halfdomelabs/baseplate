@@ -1,4 +1,4 @@
-import { execaCommand } from 'execa';
+import { execa, parseCommandString } from 'execa';
 
 export class ExecError extends Error {
   constructor(
@@ -18,7 +18,8 @@ export async function executeCommand(
   command: string,
   options: ExecOptions,
 ): Promise<string> {
-  const result = await execaCommand(command, {
+  const [file, ...commandArguments] = parseCommandString(command);
+  const result = await execa(file, commandArguments, {
     cwd: options.cwd,
     stdio: 'inherit',
     // strip out npm_* env vars

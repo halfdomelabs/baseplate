@@ -211,6 +211,10 @@ const PothosGenerator = createGeneratorWithTasks({
                 `import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin'`,
               ),
               TypescriptCodeUtils.createExpression(
+                'pothosStripQueryMutationPlugin',
+                `import { pothosStripQueryMutationPlugin } from './stripQueryMutationPlugin'`,
+              ),
+              TypescriptCodeUtils.createExpression(
                 `SimpleObjectsPlugin`,
                 `import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';`,
               ),
@@ -309,6 +313,13 @@ if (IS_DEVELOPMENT) {
                   'types.ts',
                 ],
                 importMappers: [tsUtils],
+              }),
+            );
+
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'stripQueryMutationPlugin.ts',
+                destination: 'src/plugins/graphql/stripQueryMutationPlugin.ts',
               }),
             );
 

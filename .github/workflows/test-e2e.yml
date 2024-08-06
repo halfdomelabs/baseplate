@@ -1,0 +1,42 @@
+name: Test E2E
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test E2E
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          # We need to fetch all branches and commits so that Nx affected has a base to compare against.
+          fetch-depth: 0
+      - name: Get Playwright version
+        id: get-playwright-version
+        run: echo "PLAYWRIGHT_VERSION=$(jq '.devDependencies["@playwright/test"]' package.json -r)" >> $GITHUB_OUTPUT
+        working-directory: tests/simple/packages/e2e
+      - name: Cache Playwright Browsers
+        id: cache-playwright-browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-browsers-${{ runner.os }}-${{ steps.get-playwright-version.outputs.PLAYWRIGHT_VERSION }}
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v4.0.4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.0.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: 'pnpm'
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/root
+      - run: pnpm test:e2e
+        # workaround for https://github.com/nrwl/nx/issues/27040
+        env:
+          NX_ISOLATE_PLUGINS: false

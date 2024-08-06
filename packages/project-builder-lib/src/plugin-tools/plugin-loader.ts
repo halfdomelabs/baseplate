@@ -186,9 +186,9 @@ export async function populatePluginMetadataWithPaths(
 
 export async function getPluginDirectories(
   pluginPackageDirectory: string,
-  manifest: PluginManifestJson,
+  plugins: string | string[],
 ): Promise<string[]> {
-  const pluginDirectories = await globby(manifest.plugins, {
+  const pluginDirectories = await globby(plugins, {
     cwd: pluginPackageDirectory,
     onlyDirectories: true,
     expandDirectories: false,
@@ -210,7 +210,7 @@ export async function loadPluginsInPackage(
   const manifest = await readManifestJson(pluginPackageDirectory);
   const pluginDirectories = await getPluginDirectories(
     pluginPackageDirectory,
-    manifest,
+    manifest.plugins,
   );
 
   // Load the plugins
@@ -278,7 +278,9 @@ export async function getModuleFederationTargets(
   const manifest = await readManifestJson(pluginPackageDirectory);
   const pluginDirectories = await getPluginDirectories(
     pluginPackageDirectory,
-    manifest,
+    manifest.plugins.map((plugin) =>
+      rewritePluginDirectory ? rewritePluginDirectory(plugin) : plugin,
+    ),
   );
   const rewrittenPluginDirectories = rewritePluginDirectory
     ? pluginDirectories.map((directory) => {

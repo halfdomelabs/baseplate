@@ -1,0 +1,26 @@
+{
+  "name": "@halfdomelabs/test-simple",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A Baseplate test project",
+  "license": "UNLICENSED",
+  "author": "Half Dome Labs LLC",
+  "scripts": {
+    "build": "nx run-many --target=build",
+    "dev": "pnpm run --parallel --stream -r \"/(^watch:.*|^dev$)/\"",
+    "preinstall": "npx only-allow pnpm",
+    "lint": "nx run-many --target=lint",
+    "prettier": "nx run-many --target=prettier",
+    "test": "nx run-many --target=test"
+  },
+  "devDependencies": {
+    "nx": "19.5.0"
+  },
+  "engines": {
+    "node": "^20.15.0",
+    "pnpm": "^9.1.0"
+  },
+  "volta": {
+    "node": "20.15.1"
+  }
+}

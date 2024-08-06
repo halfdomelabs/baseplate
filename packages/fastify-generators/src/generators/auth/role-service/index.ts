@@ -88,7 +88,7 @@ const RoleServiceGenerator = createGeneratorWithChildren({
           roles.map(({ name, comment, inherits }) => ({
             [name]: {
               comment,
-              inherits,
+              inherits: inherits?.length ? inherits : undefined,
             },
           })),
         ),

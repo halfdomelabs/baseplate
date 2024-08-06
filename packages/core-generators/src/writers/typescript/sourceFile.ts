@@ -519,7 +519,9 @@ export class TypescriptSourceBlock<
   }
 
   renderToBlock(template: string): TypescriptCodeBlock {
-    const project = new Project();
+    const project = new Project({
+      useInMemoryFileSystem: true,
+    });
 
     const entriesWithDefault = this.getCodeEntriesWithDefaults();
     // run through string replacements
@@ -597,7 +599,9 @@ export class TypescriptSourceFile<
   renderToText(template: string, destination: string): string {
     this.hasCodeGenerated = true;
 
-    const project = new Project();
+    const project = new Project({
+      useInMemoryFileSystem: true,
+    });
 
     const entriesWithDefault = this.getCodeEntriesWithDefaults();
 

@@ -30,6 +30,7 @@
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/fastify-generators": "workspace:*",
+    "@halfdomelabs/project-builder-common": "workspace:*",
     "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
     "commander": "^11.0.0",
