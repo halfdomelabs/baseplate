@@ -6,6 +6,7 @@ import {
   webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
+import { NodeGeneratorDescriptor } from '../../../../core-generators/dist/index.js';
 import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
@@ -80,7 +81,7 @@ export function compileWeb(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  appBuilder.addDescriptor('root.json', {
+  appBuilder.addDescriptor<NodeGeneratorDescriptor>('root.json', {
     generator: '@halfdomelabs/core/node/node',
     name: `${projectDefinition.name}-${app.name}`,
     packageName,

@@ -3,6 +3,7 @@ import {
   createGeneratorWithChildren,
   createNonOverwriteableMap,
   writeJsonAction,
+  InferGeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import semver from 'semver';
@@ -23,6 +24,10 @@ const descriptorSchema = z.object({
   nodeVersion: z.string().default('20.15.1'),
   pnpmVersion: z.string().default('9.5.0'),
 });
+
+export type NodeGeneratorDescriptor = InferGeneratorDescriptor<
+  typeof descriptorSchema
+>;
 
 export interface NodeProvider {
   addPackage(name: string, version: string): void;

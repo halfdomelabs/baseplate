@@ -561,9 +561,15 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
+      '@halfdomelabs/core-generators':
+        specifier: workspace:*
+        version: link:../core-generators
       '@halfdomelabs/fastify-generators':
         specifier: workspace:*
         version: link:../fastify-generators
+      '@halfdomelabs/react-generators':
+        specifier: workspace:*
+        version: link:../react-generators
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
