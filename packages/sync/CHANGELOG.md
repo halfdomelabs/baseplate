@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.7.7
+
+### Patch Changes
+
+- 3dbb454: Upgrade execa package to 9.3.0
+
 ## 0.7.6
 
 ### Patch Changes

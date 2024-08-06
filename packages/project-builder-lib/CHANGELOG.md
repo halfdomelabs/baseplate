@@ -1,5 +1,15 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.8
+
+### Patch Changes
+
+- 3dbb454: Introduce new @halfdomelabs/project-builder-common library to contain all default plugins and generators
+- Updated dependencies [3dbb454]
+- Updated dependencies [3dbb454]
+  - @halfdomelabs/ui-components@0.4.13
+  - @halfdomelabs/sync@0.7.7
+
 ## 0.8.7
 
 ### Patch Changes

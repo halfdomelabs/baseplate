@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.4.13
+
+### Patch Changes
+
+- 3dbb454: Fix visual layout of select and others
+
 ## 0.4.12
 
 ### Patch Changes
