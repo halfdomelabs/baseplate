@@ -55,7 +55,7 @@ export function ModelsSidebarList({
 
   return (
     <div className={clsx(className, 'flex flex-col space-y-4')}>
-      <Link to="/models/new" className="block w-full">
+      <Link to="models/new" className="block w-full">
         <Button variant="secondary" className="w-full">
           New Model
         </Button>
