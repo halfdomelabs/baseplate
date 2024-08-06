@@ -14,10 +14,16 @@ import { createCrumbFromUid } from '@src/types/routes';
 export const SchemaRoutes: RouteObject = {
   element: <SchemaLayout />,
   path: '/schema',
+  handle: {
+    crumb: 'DB Schema',
+  },
   children: [
     { index: true, element: <Navigate to="/schema/models" /> },
     {
       path: 'models/*',
+      handle: {
+        crumb: 'Models',
+      },
       children: [
         { index: true, element: <ModelListPage /> },
         {
@@ -38,6 +44,9 @@ export const SchemaRoutes: RouteObject = {
     },
     {
       path: 'enums/*',
+      handle: {
+        crumb: 'Enums',
+      },
       children: [
         { index: true, element: <EnumsIndexPage /> },
         {
