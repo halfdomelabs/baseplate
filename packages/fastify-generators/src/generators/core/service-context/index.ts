@@ -97,7 +97,7 @@ const ServiceContextGenerator = createGeneratorWithTasks({
             );
 
             const contextFile = typescript.createTemplate({
-              CONTEXT_FIELDS: !contextFields.length
+              CONTEXT_FIELDS: !Object.keys(contextFields).length
                 ? TypescriptCodeUtils.createExpression('placeholder?: never')
                 : TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
                     R.mapObjIndexed((field) => field.type, contextFields),
