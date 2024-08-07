@@ -15,6 +15,7 @@ import {
   writeTemplateAction,
   createProviderType,
   createNonOverwriteableMap,
+  InferGeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -24,6 +25,10 @@ const descriptorSchema = z.object({
   title: z.string().default('React App'),
   description: z.string().default('A React app'),
 });
+
+export type ReactGeneratorDescriptor = InferGeneratorDescriptor<
+  typeof descriptorSchema
+>;
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   APP: { type: 'code-expression', default: '<div />' },

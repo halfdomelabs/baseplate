@@ -1,5 +1,16 @@
 # @halfdomelabs/react-generators
 
+## 0.8.3
+
+### Patch Changes
+
+- 3dbb454: Ensure auth is optional for web generator
+- Updated dependencies [3dbb454]
+- Updated dependencies [3dbb454]
+- Updated dependencies [3dbb454]
+  - @halfdomelabs/core-generators@0.9.4
+  - @halfdomelabs/sync@0.7.7
+
 ## 0.8.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.9
+
+### Patch Changes
+
+- 3dbb454: Introduce new @halfdomelabs/project-builder-common library to contain all default plugins and generators
+- 3dbb454: Refactor project builder compiler not to strip objects from compiled output
+- Updated dependencies [3dbb454]
+- Updated dependencies [3dbb454]
+  - @halfdomelabs/project-builder-lib@0.8.8
+  - @halfdomelabs/sync@0.7.7
+
 ## 0.4.8
 
 ### Patch Changes

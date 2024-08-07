@@ -62,7 +62,7 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     } satisfies AppPluginConfig);
   }
 
-  addDescriptor(path: string, jsonContent: unknown): this {
+  addDescriptor<Descriptor>(path: string, jsonContent: Descriptor): this {
     // check for existing paths
     if (this.files.find((f) => f.path === `baseplate/${path}`)) {
       throw new Error(`File already exists at path ${path}`);

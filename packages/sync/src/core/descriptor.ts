@@ -8,3 +8,9 @@ export const baseDescriptorSchema = z.object({
 });
 
 export type BaseGeneratorDescriptor = z.infer<typeof baseDescriptorSchema>;
+
+export type InferGeneratorDescriptor<TSchema extends z.AnyZodObject> =
+  BaseGeneratorDescriptor &
+    z.input<TSchema> & {
+      children?: Record<string, unknown>;
+    };

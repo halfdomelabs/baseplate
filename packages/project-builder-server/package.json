@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-server",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "Server for Project Builder using Baseplate generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -60,7 +60,9 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/fastify-generators": "workspace:*",
+    "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/fs-extra": "11.0.4",
     "@types/lodash": "4.17.7",

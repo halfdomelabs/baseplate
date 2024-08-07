@@ -1,5 +1,11 @@
 # @halfdomelabs/create-project
 
+## 0.2.4
+
+### Patch Changes
+
+- 3dbb454: Upgrade execa package to 9.3.0
+
 ## 0.2.3
 
 ### Patch Changes

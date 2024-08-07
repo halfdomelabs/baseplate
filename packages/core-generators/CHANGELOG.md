@@ -1,5 +1,14 @@
 # @halfdomelabs/core-generators
 
+## 0.9.4
+
+### Patch Changes
+
+- 3dbb454: Allow vitest to pass even if there are no tests
+- 3dbb454: Expose prisma field descriptor
+- Updated dependencies [3dbb454]
+  - @halfdomelabs/sync@0.7.7
+
 ## 0.9.3
 
 ### Patch Changes

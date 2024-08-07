@@ -1,3 +1,4 @@
+import type { NodeGeneratorDescriptor } from '@halfdomelabs/core-generators';
 import {
   AdminAppConfig,
   AppEntry,
@@ -6,6 +7,7 @@ import {
   ProjectDefinitionContainer,
   adminAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
+import type { ReactGeneratorDescriptor } from '@halfdomelabs/react-generators';
 import { capitalize } from 'inflection';
 
 import { compileAdminFeatures } from './sections.js';
@@ -32,7 +34,9 @@ export function buildNavigationLinks(
   );
 }
 
-export function buildAdmin(builder: AdminAppEntryBuilder): unknown {
+export function buildAdmin(
+  builder: AdminAppEntryBuilder,
+): ReactGeneratorDescriptor {
   const { projectDefinition, appConfig, appCompiler } = builder;
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);
@@ -137,7 +141,7 @@ export function compileAdmin(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  appBuilder.addDescriptor('root.json', {
+  appBuilder.addDescriptor<NodeGeneratorDescriptor>('root.json', {
     generator: '@halfdomelabs/core/node/node',
     name: `${projectDefinition.name}-${app.name}`,
     packageName,

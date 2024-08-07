@@ -1,5 +1,17 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.7.9
+
+### Patch Changes
+
+- 3dbb454: Introduce new @halfdomelabs/project-builder-common library to contain all default plugins and generators
+- Updated dependencies [3dbb454]
+- Updated dependencies [3dbb454]
+  - @halfdomelabs/project-builder-common@0.1.1
+  - @halfdomelabs/project-builder-server@0.4.9
+  - @halfdomelabs/project-builder-lib@0.8.8
+  - @halfdomelabs/project-builder-web@0.11.8
+
 ## 0.7.8
 
 ### Patch Changes

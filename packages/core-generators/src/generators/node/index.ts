@@ -1,4 +1,4 @@
-export { nodeProvider, NodeProvider } from './node/index.js';
+export * from './node/index.js';
 export {
   nodeGitIgnoreProvider,
   NodeGitIgnoreProvider,
