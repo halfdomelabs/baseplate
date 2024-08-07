@@ -2,8 +2,8 @@ import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 
-import ModelFormActionBar from '../ModelFormActionBar';
 import { useModelForm } from '../../hooks/useModelForm';
+import ModelFormActionBar from '../ModelFormActionBar';
 import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
