@@ -4,21 +4,21 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { Navigate, RouteObject } from 'react-router-dom';
 
-import { SchemaLayout } from './SchemaLayout';
+import { DatabaseLayout } from './DatabaseLayout';
 import EnumsIndexPage from './enums/EnumsIndexPage';
 import EnumEditPage from './enums/edit';
 import ModelListPage from './models/ModelList.page';
 import ModelEditPage from './models/edit';
 import { createCrumbFromUid } from '@src/types/routes';
 
-export const SchemaRoutes: RouteObject = {
-  element: <SchemaLayout />,
-  path: '/schema',
+export const DatabaseRoutes: RouteObject = {
+  element: <DatabaseLayout />,
+  path: '/db',
   handle: {
-    crumb: 'DB Schema',
+    crumb: 'Database',
   },
   children: [
-    { index: true, element: <Navigate to="/schema/models" /> },
+    { index: true, element: <Navigate to="/db/models" /> },
     {
       path: 'models/*',
       handle: {
