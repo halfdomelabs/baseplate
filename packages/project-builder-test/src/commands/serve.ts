@@ -41,7 +41,7 @@ async function createTestProject(
   );
 
   await fs.writeFile(
-    path.join(projectDirectory, 'baseplate/project.json'),
+    path.join(projectDirectory, 'baseplate/project-definition.json'),
     JSON.stringify({
       name: projectName,
       isInitialized: true,

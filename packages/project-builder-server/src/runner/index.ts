@@ -15,11 +15,21 @@ import { writeApplicationFiles } from '../writer/index.js';
 import { compileApplications } from '@src/compiler/index.js';
 
 async function loadProjectJson(directory: string): Promise<unknown> {
-  const projectJsonPath = path.join(directory, 'baseplate/project.json');
+  const projectJsonPath = path.join(
+    directory,
+    'baseplate/project-definition.json',
+  );
+
   const fileExists = await fs.pathExists(projectJsonPath);
 
   if (!fileExists) {
-    throw new Error(`Could not find project.json file at ${projectJsonPath}`);
+    // previously, json file lived in project.json so search for that and migrate if needed
+    const oldProjectJsonPath = path.join(directory, 'baseplate/project.json');
+    if (await fs.pathExists(oldProjectJsonPath)) {
+      await fs.move(oldProjectJsonPath, projectJsonPath);
+    } else {
+      throw new Error(`Could not find definition file at ${projectJsonPath}`);
+    }
   }
 
   const projectJson: unknown = await fs.readJson(projectJsonPath);
