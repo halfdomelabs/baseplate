@@ -1,22 +1,30 @@
-import { ModelConfig, EnumUtils } from '@halfdomelabs/project-builder-lib';
+import { EnumUtils, ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   ComboboxField,
   Dropdown,
   InputField,
+  SelectField,
 } from '@halfdomelabs/ui-components';
-import { Control, useController, useWatch } from 'react-hook-form';
+import {
+  Control,
+  UseFormSetValue,
+  useController,
+  useWatch,
+} from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
 interface ModelFieldDefaultValueInputProps {
   control: Control<ModelConfig>;
+  setValue: UseFormSetValue<ModelConfig>;
   idx: number;
 }
 
 export function ModelFieldDefaultValueInput({
   control,
   idx,
+  setValue,
 }: ModelFieldDefaultValueInputProps): JSX.Element {
   const { definition } = useProjectDefinition();
   const type = useWatch({
@@ -31,13 +39,59 @@ export function ModelFieldDefaultValueInput({
     control,
   });
 
-  if (['string', 'int', 'float', 'boolean'].includes(type)) {
+  const defaultValue = useWatch({
+    control,
+    name: `model.fields.${idx}.options.default`,
+  });
+
+  if (type === 'boolean') {
     return (
-      <InputField.Controller
-        control={control}
-        placeholder="NULL"
-        name={`model.fields.${idx}.options.default`}
-      />
+      <div className="flex items-center space-x-1">
+        <SelectField.Controller
+          control={control}
+          className="flex-1"
+          name={`model.fields.${idx}.options.default`}
+          options={[
+            { label: 'True', value: 'true' },
+            { label: 'False', value: 'false' },
+          ]}
+          placeholder="NULL"
+        />
+        {defaultValue && (
+          <Button
+            title="Reset"
+            onClick={() => setValue(`model.fields.${idx}.options.default`, '')}
+            variant="ghost"
+            size="icon"
+          >
+            <Button.Icon icon={HiOutlineX} />
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  if (['string', 'int', 'float'].includes(type)) {
+    return (
+      <div className="flex items-center space-x-1">
+        <InputField.Controller
+          control={control}
+          placeholder="NULL"
+          name={`model.fields.${idx}.options.default`}
+        />
+        {defaultValue && (
+          <Button
+            title="Reset"
+            onClick={() =>
+              setValue(`model.fields.${idx}.options.default`, undefined)
+            }
+            variant="ghost"
+            size="icon"
+          >
+            <Button.Icon icon={HiOutlineX} />
+          </Button>
+        )}
+      </div>
     );
   }
   if (type === 'uuid') {

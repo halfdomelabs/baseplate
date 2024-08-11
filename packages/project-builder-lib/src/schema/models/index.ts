@@ -63,18 +63,34 @@ export const modelScalarFieldSchema = zEnt(
     type: modelScalarFieldEntityType,
     parentPath: { context: 'model' },
   },
-).transform((value) => {
-  if (value.type !== 'enum' && value.options?.enumType) {
-    return {
-      ...value,
-      options: {
-        ...value.options,
-        enumType: undefined,
-      },
-    };
-  }
-  return value;
-});
+)
+  .superRefine((arg, ctx) => {
+    // check default values
+    const defaultValue = arg.options?.default;
+    const type = arg.type;
+    if (!defaultValue) {
+      return;
+    }
+    if (type === 'boolean' && !['true', 'false'].includes(defaultValue)) {
+      ctx.addIssue({
+        path: ['options', 'default'],
+        code: 'custom',
+        message: 'Default value must be true or false',
+      });
+    }
+  })
+  .transform((value) => {
+    if (value.type !== 'enum' && value.options?.enumType) {
+      return {
+        ...value,
+        options: {
+          ...value.options,
+          enumType: undefined,
+        },
+      };
+    }
+    return value;
+  });
 
 export type ModelScalarFieldConfig = z.infer<typeof modelScalarFieldSchema>;
 
