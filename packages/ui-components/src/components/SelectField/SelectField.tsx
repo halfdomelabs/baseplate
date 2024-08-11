@@ -45,7 +45,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
     <FormItem ref={ref} error={error} className={className}>
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <Select
-        value={selectedOption ? value ?? undefined : undefined}
+        value={selectedOption ? value ?? '' : ''}
         onValueChange={(val) => onChange?.(val)}
         {...props}
       >

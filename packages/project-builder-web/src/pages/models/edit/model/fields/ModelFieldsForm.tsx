@@ -8,6 +8,7 @@ import { useMemo } from 'react';
 import {
   Control,
   FieldArrayWithId,
+  UseFormSetValue,
   useFieldArray,
   useWatch,
 } from 'react-hook-form';
@@ -19,6 +20,7 @@ import { SortableList } from 'src/components/SortableList';
 interface ModelFieldsFormProps {
   className?: string;
   control: Control<ModelConfig>;
+  setValue: UseFormSetValue<ModelConfig>;
 }
 
 interface AutoAddField {
@@ -48,6 +50,7 @@ export function TableHeader({
 export function ModelFieldsForm({
   className,
   control,
+  setValue,
 }: ModelFieldsFormProps): JSX.Element {
   const {
     fields: fieldFields,
@@ -127,6 +130,7 @@ export function ModelFieldsForm({
         className={gridClassNames}
         key={f.id}
         control={control}
+        setValue={setValue}
         idx={i}
         onRemove={removeField}
       />

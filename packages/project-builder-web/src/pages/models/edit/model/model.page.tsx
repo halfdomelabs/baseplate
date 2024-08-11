@@ -24,7 +24,7 @@ registerEntityTypeUrl(modelLocalRelationEntityType, `/models/edit/{parentUid}`);
 
 function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({});
-  const { control, handleSubmit, watch, getValues } = form;
+  const { control, handleSubmit, watch, getValues, setValue } = form;
   const { definition } = useProjectDefinition();
   const { uid } = useParams<'uid'>();
 
@@ -45,7 +45,7 @@ function ModelEditModelPage(): JSX.Element {
       >
         {!id && <ModelGeneralForm control={control} horizontal />}
         {!id && <h2>Fields</h2>}
-        <ModelFieldsForm control={control} />
+        <ModelFieldsForm control={control} setValue={setValue} />
         <ModelRelationsForm control={control} originalModel={originalModel} />
         <ModelPrimaryKeyForm control={control} />
         <ModelUniqueConstraintsField control={control} />
