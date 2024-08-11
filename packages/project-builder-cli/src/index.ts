@@ -36,7 +36,9 @@ async function runMain(): Promise<void> {
 
   program
     .command('generate [directory]')
-    .description('Builds project from project.json in baseplate/ directory')
+    .description(
+      'Builds project from project-definition.json in baseplate/ directory',
+    )
     .option('--regen', 'Force regeneration of all files')
     .action(
       async (
@@ -60,7 +62,7 @@ async function runMain(): Promise<void> {
   program
     .command('buildClean [directory]')
     .description(
-      'Writes a clean project from project.json in baseplate/ directory to sub-apps',
+      'Writes a clean project from project-definition.json in baseplate/ directory to sub-apps',
     )
     .action(async (directory: string) => {
       const resolvedDirectory = directory

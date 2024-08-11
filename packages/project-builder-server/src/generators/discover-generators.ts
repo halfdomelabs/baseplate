@@ -20,7 +20,7 @@ export async function discoverGenerators(
   if (!packageJsonPath) {
     throw new InitializeServerError(
       'Could not find root package.json file for the Baseplate project',
-      'Make sure the project.json file is inside a valid Node package with @halfdomelabs/project-builder-cli.',
+      'Make sure the project-definition.json file is inside a valid Node package with @halfdomelabs/project-builder-cli.',
     );
   }
 

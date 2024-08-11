@@ -91,8 +91,11 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
     super();
 
     this.directory = directory;
-    (this.projectJsonPath = path.join(directory, 'baseplate/project.json')),
-      (this.id = id);
+    this.projectJsonPath = path.join(
+      directory,
+      'baseplate/project-definition.json',
+    );
+    this.id = id;
     this.generatorSetupConfig = generatorSetupConfig;
     this.cliVersion = cliVersion;
 
@@ -115,10 +118,14 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
   public async init(): Promise<void> {
     const fileExists = await fs.pathExists(this.projectJsonPath);
     if (!fileExists) {
-      if (!fileExists) {
-        // auto-create a simple project.json file
+      // check if old version of the file exists
+      const oldJsonPath = path.join(this.directory, 'baseplate/project.json');
+      if (await fs.pathExists(oldJsonPath)) {
+        await fs.move(oldJsonPath, this.projectJsonPath);
+      } else {
+        // auto-create a simple project-definition.json file
         this.logger.info(
-          `project.json not found. Creating project.json file in ${this.projectJsonPath}`,
+          `project-definition.json not found. Creating project-definition.json file in ${this.projectJsonPath}`,
         );
         const starterName =
           getFirstNonBaseplateParentFolder(this.projectJsonPath) ?? 'project';
