@@ -31,7 +31,7 @@ function SidebarNavigationIcon({
 
 export function AppDesktopSidebar(): JSX.Element {
   return (
-    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
+    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-3.5">
       <div className="space-y-8">
         <Link
           to="/"
@@ -43,7 +43,7 @@ export function AppDesktopSidebar(): JSX.Element {
             alt="Baseplate Home"
           />
         </Link>
-        <div className="space-y-6">
+        <div className="space-y-4">
           <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
           <div className="space-y-2">
             <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />

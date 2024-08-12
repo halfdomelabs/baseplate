@@ -1,11 +1,10 @@
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Breadcrumb, Button } from '@halfdomelabs/ui-components';
-import { upperFirst } from 'lodash';
-import { Fragment, useState } from 'react';
+import { Breadcrumb, Button, Dropdown } from '@halfdomelabs/ui-components';
+import _, { upperFirst } from 'lodash';
+import { Fragment } from 'react';
 import { MdKeyboardArrowDown } from 'react-icons/md';
-import { Link, useMatches } from 'react-router-dom';
+import { Link, useMatches, useNavigate } from 'react-router-dom';
 
-import { ProjectChooserDialog } from '../components/ProjectChooserDialog';
 import { useProjects } from '@src/hooks/useProjects';
 import { RouteCrumbOrFunction } from '@src/types/routes';
 import { notEmpty } from '@src/utils/array';
@@ -28,50 +27,83 @@ export function AppBreadcrumbs(): JSX.Element {
       return { id: match.id, label, url };
     })
     .filter(notEmpty);
-  const [showProjectChooser, setShowProjectChooser] = useState(false);
-  const projectsLength = useProjects((state) => state.projects.length);
+  const projects = useProjects((state) => state.projects);
+  const setCurrentProjectId = useProjects((state) => state.setCurrentProjectId);
+  const navigate = useNavigate();
+
+  const orderedProjects = _.orderBy(projects, ['name'], ['asc']);
 
   return (
-    <Breadcrumb>
-      <Breadcrumb.List>
-        <Breadcrumb.Item>
-          <div className="flex items-center">
-            <div>{upperFirst(definitionContainer.definition.name)} project</div>
-            {projectsLength > 1 && (
-              <Button
-                onClick={() => setShowProjectChooser(true)}
-                size="icon"
-                variant="ghost"
-                className="-mr-2"
-              >
-                <Button.Icon icon={MdKeyboardArrowDown} />
-              </Button>
-            )}
-          </div>
-        </Breadcrumb.Item>
-        {crumbs.map((crumb, index) => (
-          <Fragment key={crumb.id}>
-            <Breadcrumb.Separator />
-            {index === crumbs.length - 1 ? (
-              <Breadcrumb.Page>{crumb.label}</Breadcrumb.Page>
-            ) : (
+    <div className="flex items-center space-x-2">
+      {projects.length > 1 && (
+        <Dropdown>
+          <Dropdown.Trigger asChild>
+            <Button
+              variant="ghost"
+              size="none"
+              className="-ml-2 h-8 px-2 text-muted-foreground"
+            >
+              <div className="flex items-center text-sm">
+                {upperFirst(definitionContainer.definition.name)} project
+              </div>
+              <Button.Icon icon={MdKeyboardArrowDown} />
+            </Button>
+          </Dropdown.Trigger>
+          <Dropdown.Content>
+            <Dropdown.Group>
+              {orderedProjects.map((project) => (
+                <Dropdown.Item
+                  key={project.id}
+                  onSelect={() => {
+                    setCurrentProjectId(project.id);
+                    navigate('/');
+                  }}
+                >
+                  <div className="flex flex-col space-y-1">
+                    <div>
+                      <strong>{project.name}</strong>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {project.directory}
+                    </div>
+                  </div>
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Group>
+          </Dropdown.Content>
+        </Dropdown>
+      )}
+
+      <Breadcrumb>
+        <Breadcrumb.List>
+          {projects.length <= 1 && (
+            <>
               <Breadcrumb.Item>
-                {crumb.url ? (
-                  <Breadcrumb.Link asChild>
-                    <Link to={crumb.url}>{crumb.label}</Link>
-                  </Breadcrumb.Link>
-                ) : (
-                  crumb.label
-                )}
+                {upperFirst(definitionContainer.definition.name)} project
               </Breadcrumb.Item>
-            )}
-          </Fragment>
-        ))}
-        <ProjectChooserDialog
-          isOpen={showProjectChooser}
-          onClose={() => setShowProjectChooser(false)}
-        />
-      </Breadcrumb.List>
-    </Breadcrumb>
+              <Breadcrumb.Separator />
+            </>
+          )}
+          {crumbs.map((crumb, index) => (
+            <Fragment key={crumb.id}>
+              {index !== 0 && <Breadcrumb.Separator />}
+              {index === crumbs.length - 1 ? (
+                <Breadcrumb.Page>{crumb.label}</Breadcrumb.Page>
+              ) : (
+                <Breadcrumb.Item>
+                  {crumb.url ? (
+                    <Breadcrumb.Link asChild>
+                      <Link to={crumb.url}>{crumb.label}</Link>
+                    </Breadcrumb.Link>
+                  ) : (
+                    crumb.label
+                  )}
+                </Breadcrumb.Item>
+              )}
+            </Fragment>
+          ))}
+        </Breadcrumb.List>
+      </Breadcrumb>
+    </div>
   );
 }
