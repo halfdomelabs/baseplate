@@ -33,7 +33,7 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
         <AppDesktopSidebar />
       </aside>
       <div className="flex flex-col pt-[var(--topbar-height)] sm:pl-[var(--sidebar-width)]">
-        <header className="fixed right-0 top-0 z-30 flex h-[var(--topbar-height)] items-center gap-4 border-b bg-background px-4 sm:left-[var(--sidebar-width)] sm:px-6">
+        <header className="fixed inset-x-0 top-0 z-30 flex h-[var(--topbar-height)] items-center gap-4 border-b bg-background px-4 sm:left-[var(--sidebar-width)] sm:px-6">
           <Sheet>
             <Sheet.Trigger asChild>
               <Button size="icon" variant="outline" className="sm:hidden">
