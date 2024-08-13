@@ -1,6 +1,7 @@
 import {
   getLatestMigrationVersion,
   PluginMetadataWithPaths,
+  ProjectDefinitionInput,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
@@ -131,9 +132,10 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
           getFirstNonBaseplateParentFolder(this.projectJsonPath) ?? 'project';
         await fs.writeJson(this.projectJsonPath, {
           name: starterName,
-          cliVerison: this.cliVersion,
+          cliVersion: this.cliVersion,
+          portOffset: 5000,
           schemaVersion: getLatestMigrationVersion(),
-        });
+        } satisfies ProjectDefinitionInput);
       }
     }
 
