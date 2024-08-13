@@ -111,8 +111,10 @@ function buildServiceForModel(
                 prismaFields: service.create.fields.map((f) =>
                   appBuilder.nameFromId(f),
                 ),
-                transformerNames: service.create.transformerNames?.map((f) =>
-                  appBuilder.nameFromId(f),
+                transformerNames: undefinedIfEmpty(
+                  service.create.transformerNames?.map((f) =>
+                    appBuilder.nameFromId(f),
+                  ),
                 ),
               }
             : null,
@@ -121,8 +123,10 @@ function buildServiceForModel(
                 prismaFields: service.update.fields.map((f) =>
                   appBuilder.nameFromId(f),
                 ),
-                transformerNames: service.update.transformerNames?.map((f) =>
-                  appBuilder.nameFromId(f),
+                transformerNames: undefinedIfEmpty(
+                  service.update.transformerNames?.map((f) =>
+                    appBuilder.nameFromId(f),
+                  ),
                 ),
               }
             : null,
