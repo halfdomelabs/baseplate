@@ -98,6 +98,12 @@ function buildMutationSchemaTypeForModel(
     featureId,
   );
 
+  const isAuthEnabled = !!appBuilder.definitionContainer.definition.auth;
+
+  const hasCreateRoles = !isAuthEnabled || !!authorize?.create?.length;
+  const hasUpdateRoles = !isAuthEnabled || !!authorize?.update?.length;
+  const hasDeleteRoles = !isAuthEnabled || !!authorize?.delete?.length;
+
   return {
     name: `${model.name}PothosMutations`,
     fileName: `${paramCase(model.name)}.mutations`,
@@ -106,29 +112,44 @@ function buildMutationSchemaTypeForModel(
     objectTypeRef: `${featurePath}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
     crudServiceRef: `${featurePath}/root:$services.${model.name}Service`,
     children: {
-      create: model.service?.create?.fields?.length
-        ? {
-            children: {
-              authorize: {
-                roles: authorize?.create?.map((r) => appBuilder.nameFromId(r)),
+      create:
+        !model.service?.create?.fields?.length || !hasCreateRoles
+          ? undefined
+          : {
+              children: {
+                authorize: {
+                  roles: authorize?.create?.map((r) =>
+                    appBuilder.nameFromId(r),
+                  ),
+                },
               },
             },
-          }
-        : null,
-      update: {
-        children: {
-          authorize: {
-            roles: authorize?.update?.map((r) => appBuilder.nameFromId(r)),
+      update: !hasUpdateRoles
+        ? undefined
+        : {
+            children: {
+              authorize: !authorize?.update?.length
+                ? undefined
+                : {
+                    roles: authorize?.update?.map((r) =>
+                      appBuilder.nameFromId(r),
+                    ),
+                  },
+            },
           },
-        },
-      },
-      delete: {
-        children: {
-          authorize: {
-            roles: authorize?.delete?.map((r) => appBuilder.nameFromId(r)),
+      delete: !hasDeleteRoles
+        ? undefined
+        : {
+            children: {
+              authorize: !authorize?.delete?.length
+                ? undefined
+                : {
+                    roles: authorize?.delete?.map((r) =>
+                      appBuilder.nameFromId(r),
+                    ),
+                  },
+            },
           },
-        },
-      },
     },
   };
 }
