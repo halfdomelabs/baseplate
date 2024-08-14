@@ -47,11 +47,7 @@ export function AppDesktopSidebar(): JSX.Element {
           <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
           <div className="space-y-2">
             <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
-            <SidebarNavigationIcon
-              to="/models"
-              icon={HiDatabase}
-              label="Models"
-            />
+            <SidebarNavigationIcon to="/data" icon={HiDatabase} label="Data" />
             <SidebarNavigationIcon
               to="/features"
               icon={HiCollection}

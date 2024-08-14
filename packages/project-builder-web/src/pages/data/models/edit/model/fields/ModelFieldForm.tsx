@@ -16,7 +16,7 @@ import { TbLink } from 'react-icons/tb';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
-import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
 import { useToast } from 'src/hooks/useToast';
 
 interface Props {
