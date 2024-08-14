@@ -41,7 +41,12 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
   int: {
     prismaType: 'Int',
     optionsSchema: z.object({
-      default: z.string().optional(),
+      default: z
+        .string()
+        .regex(/^-?\d*$/, {
+          message: 'Default value must be a number',
+        })
+        .optional(),
     }),
     getAttributes: (config) => {
       if (config?.default) {
@@ -53,7 +58,12 @@ export const PRISMA_SCALAR_FIELD_TYPES = createConfigMap({
   float: {
     prismaType: 'Float',
     optionsSchema: z.object({
-      default: z.string().optional(),
+      default: z
+        .string()
+        .regex(/^-?\d*\.?\d*$/, {
+          message: 'Default value must be a float',
+        })
+        .optional(),
     }),
     getAttributes: (config) => {
       if (config?.default) {

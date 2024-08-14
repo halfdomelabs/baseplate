@@ -3,18 +3,17 @@ import {
   appEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useConfirmDialog } from '@halfdomelabs/ui-components';
+import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
 import WebAppForm from './edit/WebAppForm';
-import { Alert, Button, NotFoundCard } from 'src/components';
+import { Alert, NotFoundCard } from 'src/components';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function EditAppPage(): JSX.Element {
-  const { requestConfirm } = useConfirmDialog();
   const { uid } = useParams<'uid'>();
   const { parsedProject, setConfigAndFixReferences, definition } =
     useProjectDefinition();
@@ -30,21 +29,15 @@ function EditAppPage(): JSX.Element {
   }
 
   const handleDelete = (): void => {
-    requestConfirm({
-      title: 'Delete App',
-      content: `Are you sure you want to delete ${app.name}?`,
-      onConfirm: () => {
-        try {
-          setConfigAndFixReferences((draftConfig) => {
-            draftConfig.apps = draftConfig.apps.filter((a) => a.id !== id);
-          });
-          toast.success(`Successfully deleted app!`);
-          navigate('/apps/new');
-        } catch (err) {
-          toast.error(`Failed to delete app: ${formatError(err)}`);
-        }
-      },
-    });
+    try {
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.apps = draftConfig.apps.filter((a) => a.id !== id);
+      });
+      toast.success(`Successfully unlinked app!`);
+      navigate('/apps/new');
+    } catch (err) {
+      toast.error(`Failed to unlink app: ${formatError(err)}`);
+    }
   };
 
   const { packageScope } = parsedProject.projectDefinition;
@@ -56,9 +49,34 @@ function EditAppPage(): JSX.Element {
           <h2>{packageScope ? `@${packageScope}/${app.name}` : app.name}</h2>
           <p className="text-base text-muted-foreground">{app.type} app</p>
         </div>
-        <Button color="light" onClick={handleDelete}>
-          Delete
-        </Button>
+        <Dialog>
+          <Dialog.Trigger>
+            <Button variant="secondary">Delete</Button>
+          </Dialog.Trigger>
+          <Dialog.Content>
+            <Dialog.Header>
+              <Dialog.Title>Delete {app.name}</Dialog.Title>
+            </Dialog.Header>
+            <p>
+              Are you sure you want to delete <strong>{app.name}</strong>?
+            </p>
+            <p className="text-style-muted">
+              This action will unlink the app from the generation process, so it
+              will no longer be updated or managed through Baseplate. If already
+              generated, the app will remain on the file system. You can
+              manually delete it afterwards if no longer needed.
+            </p>
+
+            <Dialog.Footer>
+              <Dialog.Close>
+                <Button variant="secondary">Cancel</Button>
+              </Dialog.Close>
+              <Button variant="destructive" onClick={handleDelete}>
+                Unlink App
+              </Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog>
       </div>
       <div>
         {(() => {

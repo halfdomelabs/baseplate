@@ -9,7 +9,7 @@ import {
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { Control, useWatch } from 'react-hook-form';
+import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 import { TbLink } from 'react-icons/tb';
 
@@ -22,6 +22,7 @@ import { useToast } from 'src/hooks/useToast';
 interface Props {
   className?: string;
   control: Control<ModelConfig>;
+  setValue: UseFormSetValue<ModelConfig>;
   idx: number;
   onRemove: (idx: number) => void;
 }
@@ -30,6 +31,7 @@ function ModelFieldForm({
   className,
   control,
   idx,
+  setValue,
   onRemove,
 }: Props): JSX.Element {
   const watchedField = useWatch({
@@ -99,7 +101,11 @@ function ModelFieldForm({
         <ModelFieldTypeInput control={control} idx={idx} />
       </div>
       <div className="mr-4">
-        <ModelFieldDefaultValueInput control={control} idx={idx} />
+        <ModelFieldDefaultValueInput
+          control={control}
+          idx={idx}
+          setValue={setValue}
+        />
       </div>
       <div>
         <SwitchField.Controller

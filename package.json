@@ -7,7 +7,7 @@
     "build": "nx run-many --target=build",
     "build:affected": "nx affected --target=build",
     "clean": "nx reset && nx run-many --target=clean",
-    "dev:serve": "nx run @halfdomelabs/project-builder-cli:dev:serve",
+    "dev:serve": "pnpm --filter @halfdomelabs/project-builder-cli dev:serve",
     "preinstall": "npx only-allow pnpm",
     "lint": "nx affected --target=lint",
     "prettier:check": "nx affected --target=prettier:check",

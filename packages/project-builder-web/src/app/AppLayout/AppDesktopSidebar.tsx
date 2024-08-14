@@ -18,7 +18,7 @@ function SidebarNavigationIcon({
   return (
     <NavLink
       to={to}
-      className={`flex size-14 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`}
+      className={`flex h-12 w-[50px] items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground aria-[current="page"]:bg-accent/80 aria-[current="page"]:text-accent-foreground aria-[current="page"]:hover:bg-accent`}
       end={end}
     >
       <div className="flex flex-col items-center space-y-1">
@@ -31,32 +31,34 @@ function SidebarNavigationIcon({
 
 export function AppDesktopSidebar(): JSX.Element {
   return (
-    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
-      <div className="space-y-6">
+    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-3.5">
+      <div className="space-y-8">
         <Link
           to="/"
           className="group flex shrink-0 items-center justify-center"
         >
           <img
             src="/images/logo.png"
-            className="size-8 transition-all group-hover:scale-110"
+            className="size-7 transition-all group-hover:scale-110"
             alt="Baseplate Home"
           />
         </Link>
-        <div className="space-y-3">
+        <div className="space-y-4">
           <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
-          <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
-          <SidebarNavigationIcon to="/data" icon={HiDatabase} label="Data" />
-          <SidebarNavigationIcon
-            to="/features"
-            icon={HiCollection}
-            label="Features"
-          />
-          <SidebarNavigationIcon
-            to="/plugins"
-            icon={MdWidgets}
-            label="Plugins"
-          />
+          <div className="space-y-2">
+            <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
+            <SidebarNavigationIcon to="/data" icon={HiDatabase} label="Data" />
+            <SidebarNavigationIcon
+              to="/features"
+              icon={HiCollection}
+              label="Features"
+            />
+            <SidebarNavigationIcon
+              to="/plugins"
+              icon={MdWidgets}
+              label="Plugins"
+            />
+          </div>
         </div>
       </div>
       <div className="space-y-3">

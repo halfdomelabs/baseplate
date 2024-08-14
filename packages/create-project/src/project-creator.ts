@@ -79,7 +79,7 @@ export async function generateBaseplateProject({
     );
 
     await writeFile(
-      'baseplate/project.json',
+      'baseplate/project-definition.json',
       JSON.stringify(
         {
           name: packageName,

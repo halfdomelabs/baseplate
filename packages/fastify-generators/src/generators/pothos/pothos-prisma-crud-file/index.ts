@@ -21,18 +21,21 @@ const PothosPrismaCrudFileGenerator = createGeneratorWithTasks({
     };
     return {
       create: {
+        defaultToNullIfEmpty: true,
         defaultDescriptor: {
           ...sharedValues,
           type: 'create',
         },
       },
       update: {
+        defaultToNullIfEmpty: true,
         defaultDescriptor: {
           ...sharedValues,
           type: 'update',
         },
       },
       delete: {
+        defaultToNullIfEmpty: true,
         defaultDescriptor: {
           ...sharedValues,
           type: 'delete',

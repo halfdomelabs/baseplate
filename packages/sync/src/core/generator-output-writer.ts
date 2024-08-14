@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import _ from 'lodash';
 import ms from 'ms';
@@ -12,7 +13,7 @@ import {
 } from './generator-output.js';
 import { getErrorMessage } from '@src/utils/errors.js';
 import { Logger } from '@src/utils/evented-logger.js';
-import { ExecError, executeCommand } from '@src/utils/exec.js';
+import { executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
 
@@ -345,7 +346,7 @@ export async function writeGeneratorOutput(
         });
       } catch (err) {
         logger.error(chalk.red(`Unable to run ${commandString}`));
-        if (err instanceof ExecError) {
+        if (err instanceof ExecaError) {
           logger.error(err.stderr);
         } else {
           logger.error(getErrorMessage(err));
