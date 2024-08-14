@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import NotFoundPage from './NotFound.page';
 import { AppsRoutes } from './apps';
-import { DatabaseRoutes } from './database';
+import { DataRoutes } from './data';
 import { FeatureRoutes } from './features';
 import HomePage from './home/home.page';
 import { PluginRoutes } from './plugins';
@@ -26,7 +26,7 @@ export const router = createBrowserRouter([
               crumb: createRouteCrumb({ label: 'Apps', url: '/apps' }),
             },
           },
-          DatabaseRoutes,
+          DataRoutes,
           // {
           //   path: '/models/*',
           //   children: ModelRoutes,

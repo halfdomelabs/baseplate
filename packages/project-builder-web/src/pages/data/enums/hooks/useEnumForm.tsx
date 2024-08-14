@@ -108,7 +108,7 @@ export function useEnumForm({
         const id = data.id;
         clearOnSubmit ? reset() : reset(data);
         onSubmitSuccess?.();
-        navigate(`/db/enums/edit/${modelEnumEntityType.toUid(id)}`);
+        navigate(`/data/enums/edit/${modelEnumEntityType.toUid(id)}`);
       } catch (err) {
         if (err instanceof RefDeleteError) {
           showRefIssues({ issues: err.issues });

@@ -7,7 +7,7 @@ import { EnumsSidebarList } from './enums/EnumsSidebarList';
 import { ModelsSidebarList } from './models/ModelsSidebarList';
 import { TabNavigation } from '@src/components/TabNavigation/TabNavigation';
 
-export function DatabaseLayout(): JSX.Element {
+export function DataLayout(): JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
@@ -20,11 +20,11 @@ export function DatabaseLayout(): JSX.Element {
   const matches = useMatches();
 
   const enumsActive =
-    matches.filter((match) => match.pathname.startsWith('/db/enums')).length !==
-    0;
+    matches.filter((match) => match.pathname.startsWith('/data/enums'))
+      .length !== 0;
 
   const modelsActive =
-    matches.filter((match) => match.pathname.startsWith('/db/models'))
+    matches.filter((match) => match.pathname.startsWith('/data/models'))
       .length !== 0;
 
   return (
