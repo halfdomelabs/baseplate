@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const Container = React.forwardRef<
   HTMLElement,
@@ -17,22 +17,24 @@ const Container = React.forwardRef<
 ));
 Container.displayName = 'TabNavigation.Container';
 
-const NavLink = React.forwardRef<
-  React.ElementRef<typeof Link>,
-  React.ComponentPropsWithoutRef<typeof Link> & { isActive: boolean }
->(({ isActive, ...props }, ref) => (
-  <Link
+const Link = React.forwardRef<
+  React.ElementRef<typeof NavLink>,
+  React.ComponentPropsWithoutRef<typeof NavLink>
+>(({ ...props }, ref) => (
+  <NavLink
     ref={ref}
-    className={clsx(
-      'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-      isActive ? 'bg-background text-foreground shadow' : '',
-    )}
+    className={({ isActive }) =>
+      clsx(
+        'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+        isActive ? 'bg-background text-foreground shadow' : '',
+      )
+    }
     {...props}
   />
 ));
-NavLink.displayName = 'TabNavigation.Link';
+Link.displayName = 'TabNavigation.Link';
 
 export const TabNavigation = {
-  Container: Container,
-  Link: NavLink,
+  Container,
+  Link,
 };

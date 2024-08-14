@@ -1,7 +1,7 @@
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { SidebarLayout } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
-import { Outlet, useMatches } from 'react-router-dom';
+import { Outlet, useMatch } from 'react-router-dom';
 
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
 import { ModelsSidebarList } from './models/ModelsSidebarList';
@@ -17,15 +17,8 @@ export function DataLayout(): JSX.Element {
     (m) => m.name.length,
   )?.name;
 
-  const matches = useMatches();
-
-  const enumsActive =
-    matches.filter((match) => match.pathname.startsWith('/data/enums'))
-      .length !== 0;
-
-  const modelsActive =
-    matches.filter((match) => match.pathname.startsWith('/data/models'))
-      .length !== 0;
+  const modelsActive = useMatch('/data/models/*');
+  const enumsActive = useMatch('/data/enums/*');
 
   return (
     <SidebarLayout className="flex-1">
@@ -34,12 +27,8 @@ export function DataLayout(): JSX.Element {
         width="auto"
       >
         <TabNavigation.Container className="w-full">
-          <TabNavigation.Link to="./models" isActive={modelsActive}>
-            Models
-          </TabNavigation.Link>
-          <TabNavigation.Link to="./enums" isActive={enumsActive}>
-            Enums
-          </TabNavigation.Link>
+          <TabNavigation.Link to="./models">Models</TabNavigation.Link>
+          <TabNavigation.Link to="./enums">Enums</TabNavigation.Link>
         </TabNavigation.Container>
         {modelsActive ? <ModelsSidebarList /> : null}
         {enumsActive ? <EnumsSidebarList /> : null}
