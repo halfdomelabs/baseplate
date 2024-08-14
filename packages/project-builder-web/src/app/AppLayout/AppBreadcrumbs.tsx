@@ -81,7 +81,7 @@ export function AppBreadcrumbs(): JSX.Element {
               <Breadcrumb.Item>
                 {upperFirst(definitionContainer.definition.name)} project
               </Breadcrumb.Item>
-              <Breadcrumb.Separator />
+              {crumbs.length > 0 && <Breadcrumb.Separator />}
             </>
           )}
           {crumbs.map((crumb, index) => (
