@@ -27,13 +27,6 @@ export const router = createBrowserRouter([
             },
           },
           DataRoutes,
-          // {
-          //   path: '/models/*',
-          //   children: ModelRoutes,
-          //   handle: {
-          //     crumb: createRouteCrumb({ label: 'Models', url: '/models' }),
-          //   },
-          // },
           {
             path: '/features/*',
             children: FeatureRoutes,
