@@ -15,7 +15,7 @@ export const DataRoutes: RouteObject = {
   element: <DataLayout />,
   path: '/data',
   handle: {
-    crumb: 'Database',
+    crumb: 'Data',
   },
   children: [
     { index: true, element: <Navigate to="./models" /> },
