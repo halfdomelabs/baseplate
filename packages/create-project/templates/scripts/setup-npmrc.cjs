@@ -63,11 +63,11 @@ ${npmrc}`.trimStart();
   fs.writeFileSync(npmrcPath, npmrcContents);
 
   if (!process.argv.includes('--silent')) {
-    console.log('Generated .npmrc file from .template.npmrc!');
-    console.log('');
-    console.log(
-      'Please run your command again so it can use the latest .npmrc.',
-    );
+    console.log(`
+Generated .npmrc file from .template.npmrc!
+      
+Please run your command again so it can use the latest .npmrc.
+      `);
 
     process.exit(1);
   }
