@@ -39,7 +39,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
     renderItemLabel,
     onChange,
     getOptionLabel = (val) => (val as { label: string }).label,
-    getOptionValue = (val) => (val as { value: string }).value,
+    getOptionValue = (val) => (val as { value: string | null }).value,
     className,
     noResultsText,
     ...props
@@ -47,7 +47,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
   ref: ForwardedRef<HTMLDivElement>,
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
-  const selectedValue = (() => {
+  const selectedComboboxOption = (() => {
     if (value === undefined) return undefined;
     if (!selectedOption) return null;
     return {
@@ -61,9 +61,9 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
     <FormItem ref={ref} error={error} className={className}>
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <Combobox
-        value={selectedValue}
+        value={selectedComboboxOption}
         onChange={(value) => {
-          onChange?.(value ? value.value : null);
+          onChange?.(value.value);
         }}
         {...props}
       >
