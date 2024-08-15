@@ -22,6 +22,10 @@ export interface SelectFieldProps<OptionType>
   className?: string;
 }
 
+// we have to use a sentinel value to detect null values since Radix Select doesn't support empty values
+// https://github.com/radix-ui/primitives/issues/2706
+const NULL_SENTINEL = '__NULL_VALUE__';
+
 const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
   {
     label,
@@ -41,12 +45,17 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
+  const selectedValue = (() => {
+    if (!selectedOption || value === undefined) return '';
+    return value ?? NULL_SENTINEL;
+  })();
+
   return (
     <FormItem ref={ref} error={error} className={className}>
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <Select
-        value={selectedOption ? value ?? '' : ''}
-        onValueChange={(val) => onChange?.(val)}
+        value={selectedValue}
+        onValueChange={(val) => onChange?.(val === NULL_SENTINEL ? null : val)}
         {...props}
       >
         <FormItem.Control>
@@ -62,7 +71,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
               const val = getOptionValue(option);
               const label = getOptionLabel(option);
               return (
-                <Select.Item value={val} key={val}>
+                <Select.Item value={val ?? NULL_SENTINEL} key={val}>
                   {renderItemLabel
                     ? renderItemLabel(option, { selected: val === value })
                     : label}
