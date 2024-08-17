@@ -9,7 +9,7 @@ import EnumsIndexPage from './enums/EnumsIndexPage';
 import EnumEditPage from './enums/edit';
 import ModelListPage from './models/ModelList.page';
 import ModelEditPage from './models/edit';
-import { createCrumbFromUid } from '@src/types/routes';
+import { createCrumbFromUid, createRouteCrumb } from '@src/types/routes';
 
 export const DataRoutes: RouteObject = {
   element: <DataLayout />,
@@ -22,7 +22,7 @@ export const DataRoutes: RouteObject = {
     {
       path: 'models/*',
       handle: {
-        crumb: 'Models',
+        crumb: createRouteCrumb({ label: 'Models', url: '/data/models' }),
       },
       children: [
         { index: true, element: <ModelListPage /> },
@@ -45,7 +45,7 @@ export const DataRoutes: RouteObject = {
     {
       path: 'enums/*',
       handle: {
-        crumb: 'Enums',
+        crumb: createRouteCrumb({ label: 'Enums', url: '/data/enums' }),
       },
       children: [
         { index: true, element: <EnumsIndexPage /> },
