@@ -1,5 +1,19 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.4
+
+### Patch Changes
+
+- a5dbd3a: Update docker-compose command to docker compose to reflect v2 changes
+- c86aaaf: Ensure schema does not get generated if no authorize
+- fb031a3: Add validation of float/int defaults
+- 1835934: Update tsconfig to support Node 20 target/lib
+- 085932d: Upgrade axios to 1.7.4 to address security vulnerability
+- Updated dependencies [1835934]
+- Updated dependencies [f44674a]
+  - @halfdomelabs/core-generators@0.9.5
+  - @halfdomelabs/sync@0.7.8
+
 ## 0.10.3
 
 ### Patch Changes

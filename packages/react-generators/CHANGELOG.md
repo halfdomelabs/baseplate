@@ -1,5 +1,14 @@
 # @halfdomelabs/react-generators
 
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies [1835934]
+- Updated dependencies [f44674a]
+  - @halfdomelabs/core-generators@0.9.5
+  - @halfdomelabs/sync@0.7.8
+
 ## 0.8.3
 
 ### Patch Changes

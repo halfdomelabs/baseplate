@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.7.8
+
+### Patch Changes
+
+- f44674a: Fix propagation of post-generate commands error logs to command output
+
 ## 0.7.7
 
 ### Patch Changes
