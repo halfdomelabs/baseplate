@@ -1,5 +1,17 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.10
+
+### Patch Changes
+
+- 95105c3: Fix auto-generated JSON to match project definition input
+- 1dc5a63: Rename project.json to project-definition.json
+- e2bc878: Refactor initial generation to log output correctly
+- c86aaaf: Ensure schema does not get generated if no authorize
+- Updated dependencies [f44674a]
+  - @halfdomelabs/sync@0.7.8
+  - @halfdomelabs/project-builder-lib@0.8.9
+
 ## 0.4.9
 
 ### Patch Changes

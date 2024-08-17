@@ -1,5 +1,26 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 1.0.10
+
+### Patch Changes
+
+- 085932d: Upgrade axios to 1.7.4 to address security vulnerability
+- Updated dependencies [ccff8f1]
+- Updated dependencies [fb031a3]
+- Updated dependencies [a5dbd3a]
+- Updated dependencies [5f8af00]
+- Updated dependencies [c86aaaf]
+- Updated dependencies [fb031a3]
+- Updated dependencies [1835934]
+- Updated dependencies [f44674a]
+- Updated dependencies [085932d]
+  - @halfdomelabs/ui-components@0.4.14
+  - @halfdomelabs/fastify-generators@0.10.4
+  - @halfdomelabs/core-generators@0.9.5
+  - @halfdomelabs/sync@0.7.8
+  - @halfdomelabs/project-builder-lib@0.8.9
+  - @halfdomelabs/react-generators@0.8.4
+
 ## 1.0.9
 
 ### Patch Changes
