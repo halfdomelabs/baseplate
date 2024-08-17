@@ -15,8 +15,8 @@ export function setupFastifyTypescript(
     paths: {
       '@src/*': ['./src/*'],
     },
-    target: 'ES2020',
-    lib: ['ES2020'],
+    target: 'ES2022',
+    lib: ['ES2023'],
     esModuleInterop: true,
     module: 'commonjs',
     moduleResolution: 'node',
