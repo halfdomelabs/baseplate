@@ -43,7 +43,7 @@ export function ModelsSidebarList({
       setConfigAndFixReferences((draftConfig) => {
         draftConfig.models = draftConfig.models?.filter((m) => m.id !== id);
       });
-      navigate('..');
+      navigate('/data/models');
     } catch (err) {
       if (err instanceof RefDeleteError) {
         showRefIssues({ issues: err.issues });
