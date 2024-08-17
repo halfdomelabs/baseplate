@@ -214,8 +214,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.3
       axios:
-        specifier: 1.6.8
-        version: 1.6.8
+        specifier: 1.7.4
+        version: 1.7.4
       chalk:
         specifier: 5.3.0
         version: 5.3.0
@@ -719,8 +719,8 @@ importers:
         specifier: 18.3.0
         version: 18.3.0
       axios:
-        specifier: 1.6.8
-        version: 1.6.8
+        specifier: 1.7.4
+        version: 1.7.4
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -4421,8 +4421,8 @@ packages:
     resolution: {integrity: sha512-QbUdXJVTpvUTHU7871ppZkdOLBeGUKBQWHkHrvN2V9IQWGMt61zf3B45BtzjxEJzYuj0JBjBZP/hmYS/R9pmAw==}
     engines: {node: '>=4'}
 
-  axios@1.6.8:
-    resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
+  axios@1.7.4:
+    resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
 
   axobject-query@3.1.1:
     resolution: {integrity: sha512-goKlv8DZrK9hUh975fnHzhNIO4jUnFCfv/dszV5VwUGDFjI6vQ2VwoyjYjYNEbBE8AH87TduWP5uyDR1D+Iteg==}
@@ -12909,7 +12909,7 @@ snapshots:
 
   axe-core@4.9.1: {}
 
-  axios@1.6.8:
+  axios@1.7.4:
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -15937,7 +15937,7 @@ snapshots:
       '@yarnpkg/lockfile': 1.1.0
       '@yarnpkg/parsers': 3.0.0-rc.46
       '@zkochan/js-yaml': 0.0.7
-      axios: 1.6.8
+      axios: 1.7.4
       chalk: 4.1.2
       cli-cursor: 3.1.0
       cli-spinners: 2.6.1
