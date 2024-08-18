@@ -11,13 +11,13 @@ export function Loader({ className }: LoaderProps): JSX.Element {
   return (
     <div className={cn('flex h-full items-center justify-center', className)}>
       <div className="flex items-center space-x-2">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-muted-foreground" />
+        <div className="size-3 animate-pulse rounded-full bg-muted-foreground" />
         <div
-          className="h-3 w-3 animate-pulse rounded-full bg-muted-foreground"
+          className="size-3 animate-pulse rounded-full bg-muted-foreground"
           style={{ animationDelay: '300ms' }}
         />
         <div
-          className="h-3 w-3 animate-pulse rounded-full bg-muted-foreground"
+          className="size-3 animate-pulse rounded-full bg-muted-foreground"
           style={{ animationDelay: '600ms' }}
         />
       </div>

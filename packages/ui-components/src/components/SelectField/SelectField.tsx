@@ -1,19 +1,13 @@
 import { ForwardedRef } from 'react';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  PathValue,
-  useController,
-} from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormItem } from '../FormItem/FormItem.js';
 import { Select } from '../Select/Select.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import {
+  AddOptionRequiredFields,
   FieldProps,
   SelectOptionProps,
-  AddOptionRequiredFields,
 } from '@src/types/form.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
