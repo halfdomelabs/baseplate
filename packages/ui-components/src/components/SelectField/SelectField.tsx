@@ -1,18 +1,13 @@
 import { ForwardedRef } from 'react';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  PathValue,
-  useController,
-} from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormItem } from '../FormItem/FormItem.js';
 import { Select } from '../Select/Select.js';
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import {
+  AddOptionRequiredFields,
   FieldProps,
   SelectOptionProps,
-  AddOptionRequiredFields,
 } from '@src/types/form.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
@@ -41,7 +36,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
     onChange,
     ...props
   }: SelectFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
@@ -51,7 +46,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
   })();
 
   return (
-    <FormItem ref={ref} error={error} className={className}>
+    <FormItem error={error} className={className}>
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <Select
         value={selectedValue}
@@ -59,7 +54,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
         {...props}
       >
         <FormItem.Control>
-          <Select.Trigger>
+          <Select.Trigger ref={ref}>
             <Select.Value placeholder={placeholder}>
               {selectedOption ? getOptionLabel(selectedOption) : null}
             </Select.Value>
@@ -93,7 +88,7 @@ interface SelectFieldControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<SelectFieldProps<OptionType>, 'register'> {
+> extends Omit<SelectFieldProps<OptionType>, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
@@ -112,35 +107,20 @@ const SelectFieldController = genericForwardRef(function SelectFieldController<
   {
     name,
     control,
-    onChange,
     ...rest
   }: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
     AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const {
     field,
     fieldState: { error },
-  } = useController({
-    name,
-    control,
-  });
+  } = useControllerMerged({ name, control }, rest, ref);
 
   const restProps = rest as SelectFieldProps<OptionType> &
     AddOptionRequiredFields<OptionType>;
 
-  return (
-    <SelectFieldRoot
-      onChange={(value) => {
-        field.onChange(value as PathValue<TFieldValues, TFieldName>);
-        onChange?.(value);
-      }}
-      ref={ref}
-      value={field.value}
-      error={error?.message}
-      {...restProps}
-    />
-  );
+  return <SelectFieldRoot error={error?.message} {...restProps} {...field} />;
 });
 
 export const SelectField = Object.assign(SelectFieldRoot, {

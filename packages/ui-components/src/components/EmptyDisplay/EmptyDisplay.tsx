@@ -45,7 +45,7 @@ export function EmptyDisplay({
     <div className={cn('flex h-full items-center justify-center', className)}>
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
-          <Icon className="h-20 w-20 text-muted-foreground" />
+          <Icon className="size-20 text-muted-foreground" />
         </div>
         <h1>{header ?? strings.emptyDisplayDefaultHeader}</h1>
         <p className="text-muted-foreground">

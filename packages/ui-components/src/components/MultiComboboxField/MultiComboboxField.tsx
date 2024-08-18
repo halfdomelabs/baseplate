@@ -1,19 +1,14 @@
 import { ForwardedRef } from 'react';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  PathValue,
-  useController,
-} from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormItem } from '../FormItem/FormItem.js';
 import { MultiCombobox } from '../MultiCombobox/MultiCombobox.js';
 import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import {
+  AddOptionRequiredFields,
   FieldProps,
   MultiSelectOptionProps,
-  AddOptionRequiredFields,
 } from '@src/types/form.js';
 import { notEmpty } from '@src/utils/array.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
@@ -47,7 +42,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
     noResultsText,
     ...props
   }: MultiComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const selectedOptions = value
     ?.map((val) => options.find((option) => getOptionValue(option) === val))
@@ -59,7 +54,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
   const { comboboxNoResults } = useComponentStrings();
 
   return (
-    <FormItem ref={ref} error={error} className={className}>
+    <FormItem error={error} className={className}>
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <MultiCombobox
         value={selectedValues}
@@ -74,7 +69,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
         {...props}
       >
         <FormItem.Control>
-          <MultiCombobox.Input placeholder={placeholder} />
+          <MultiCombobox.Input ref={ref} placeholder={placeholder} />
         </FormItem.Control>
         <MultiCombobox.Content>
           {options.map((option) => {
@@ -107,7 +102,7 @@ interface MultiComboboxFieldControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<MultiComboboxFieldProps<OptionType>, 'register'> {
+> extends Omit<MultiComboboxFieldProps<OptionType>, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
@@ -127,33 +122,24 @@ const MultiComboboxFieldController = genericForwardRef(
     {
       name,
       control,
-      onChange,
       ...rest
     }: MultiComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
-    ref: ForwardedRef<HTMLDivElement>,
+    ref: ForwardedRef<HTMLButtonElement>,
   ): JSX.Element {
     const {
       field,
       fieldState: { error },
-    } = useController({
-      name,
-      control,
-    });
+    } = useControllerMerged({ name, control }, rest, ref);
 
     const restProps = rest as MultiComboboxFieldProps<OptionType> &
       AddOptionRequiredFields<OptionType>;
 
     return (
       <MultiComboboxFieldRoot
-        onChange={(value) => {
-          field.onChange(value as PathValue<TFieldValues, TFieldName>);
-          onChange?.(value);
-        }}
-        ref={ref}
-        value={field.value ?? null}
         error={error?.message}
         {...restProps}
+        {...field}
       />
     );
   },
