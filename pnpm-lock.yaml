@@ -1061,6 +1061,9 @@ importers:
 
   packages/ui-components:
     dependencies:
+      '@hookform/resolvers':
+        specifier: 3.3.4
+        version: 3.3.4(react-hook-form@7.51.3(react@18.3.1))
       '@radix-ui/react-checkbox':
         specifier: 1.1.1
         version: 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1133,6 +1136,9 @@ importers:
       sonner:
         specifier: ^1.5.0
         version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      zod:
+        specifier: 3.23.8
+        version: 3.23.8
       zustand:
         specifier: 4.4.6
         version: 4.4.6(@types/react@18.3.3)(immer@10.0.3)(react@18.3.1)
