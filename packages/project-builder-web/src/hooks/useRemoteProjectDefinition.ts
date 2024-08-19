@@ -20,6 +20,7 @@ import {
 interface UseRemoteProjectDefinitionResult {
   value?: string | null;
   error?: Error;
+  lastModifiedAt?: string;
   loaded: boolean;
   saveValue: (
     newValue: string,
@@ -244,6 +245,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   return {
     value: file?.contents,
     error,
+    lastModifiedAt: file?.lastModifiedAt,
     loaded: loaded && currentProjectId === loadedProjectId.current,
     saveValue,
     externalChangeCounter,

@@ -1,15 +1,18 @@
 import {
   AdminAppConfig,
   adminAppSchema,
+  zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
 import {
-  useBlockDirtyFormNavigate,
+  useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
+import { useMemo } from 'react';
 
+import { logAndFormatError } from '@src/services/error-formatter';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { useToast } from 'src/hooks/useToast';
@@ -20,25 +23,35 @@ interface Props {
 }
 
 function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
-  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
+  const { parsedProject, setConfigAndFixReferences, pluginContainer } =
+    useProjectDefinition();
+  const schemaWithPlugins = useMemo(
+    () => zPluginWrapper(adminAppSchema, pluginContainer),
+    [pluginContainer],
+  );
 
   const formProps = useResettableForm<AdminAppConfig>({
-    resolver: zodResolver(adminAppSchema),
+    resolver: zodResolver(schemaWithPlugins),
     defaultValues: appConfig,
   });
   const { control, handleSubmit, formState, reset } = formProps;
   const toast = useToast();
 
-  useBlockDirtyFormNavigate(formState, reset);
+  const onSubmit = handleSubmit((data) => {
+    try {
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.apps = draftConfig.apps.map((app) =>
+          app.id === appConfig.id ? data : app,
+        );
+      });
+      toast.success('Successfully saved app!');
+      reset(data);
+    } catch (err) {
+      toast.error(logAndFormatError(err));
+    }
+  });
 
-  function onSubmit(data: AdminAppConfig): void {
-    setConfigAndFixReferences((draftConfig) => {
-      draftConfig.apps = draftConfig.apps.map((app) =>
-        app.id === appConfig.id ? data : app,
-      );
-    });
-    toast.success('Successfully saved app!');
-  }
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
   const roleOptions = parsedProject.projectDefinition.auth?.roles.map(
     (role) => ({
@@ -49,7 +62,7 @@ function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
 
   return (
     <div className={clsx('', className)}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <TextInput.LabelledController
           label="Name"
           control={control}

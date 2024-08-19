@@ -4,8 +4,10 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
+import {
+  useProjectDefinition,
+  useBlockUnsavedChangesNavigate,
+} from '@halfdomelabs/project-builder-lib/web';
 import { useParams } from 'react-router-dom';
 
 import { ModelGeneralForm } from './ModelGeneralForm';
@@ -24,14 +26,17 @@ registerEntityTypeUrl(modelLocalRelationEntityType, `/models/edit/{parentUid}`);
 
 function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({});
-  const { control, handleSubmit, watch, getValues, setValue } = form;
+  const { control, watch, getValues, setValue } = form;
   const { definition } = useProjectDefinition();
   const { uid } = useParams<'uid'>();
 
   const id = modelEntityType.fromUid(uid);
   const originalModel = id ? ModelUtils.byId(definition, id) : undefined;
 
-  useBlockDirtyFormNavigate(form.formState, form.reset);
+  useBlockUnsavedChangesNavigate(form.formState, {
+    reset: form.reset,
+    onSubmit: onFormSubmit,
+  });
 
   return (
     <EditedModelContextProvider
@@ -40,7 +45,7 @@ function ModelEditModelPage(): JSX.Element {
       watch={watch}
     >
       <form
-        onSubmit={handleSubmit(onFormSubmit)}
+        onSubmit={onFormSubmit}
         className="min-w-[700px] max-w-6xl space-y-4"
       >
         {!id && <ModelGeneralForm control={control} horizontal />}

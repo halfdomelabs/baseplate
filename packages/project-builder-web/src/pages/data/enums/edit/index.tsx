@@ -1,6 +1,8 @@
 import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
+import {
+  useBlockUnsavedChangesNavigate,
+  useProjectDefinition,
+} from '@halfdomelabs/project-builder-lib/web';
 import { useParams } from 'react-router-dom';
 
 import EnumEditForm from './EnumEditForm';
@@ -11,14 +13,14 @@ import { Alert, Button } from 'src/components';
 function EnumEditPage(): JSX.Element {
   const { status, setError } = useStatus();
   const { uid } = useParams<'uid'>();
-  const { form, submitHandler, handleDelete } = useEnumForm({ setError, uid });
+  const { form, onSubmit, handleDelete } = useEnumForm({ setError, uid });
   const { formState, reset } = form;
   const id = uid ? modelEnumEntityType.fromUid(uid) : undefined;
   const isNew = !id;
   const { parsedProject } = useProjectDefinition();
   const enumBlock = parsedProject.getEnums().find((m) => m.id === id);
 
-  useBlockDirtyFormNavigate(formState, reset);
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
   if (!enumBlock && id) {
     return <Alert type="error">Unable to find enum {id}</Alert>;
@@ -35,7 +37,7 @@ function EnumEditPage(): JSX.Element {
         )}
       </div>
       <Alert.WithStatus status={status} />
-      <EnumEditForm onSubmit={submitHandler} form={form} />
+      <EnumEditForm onSubmit={onSubmit} form={form} />
     </div>
   );
 }

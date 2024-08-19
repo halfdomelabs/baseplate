@@ -12,11 +12,11 @@ import { underscoreToTitleCase } from 'src/utils/casing';
 
 interface Props {
   form: UseFormReturn<EnumConfig>;
-  onSubmit: (config: EnumConfig) => void;
+  onSubmit: () => Promise<void>;
 }
 
 function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
-  const { control, handleSubmit, setValue, formState, watch } = form;
+  const { control, setValue, formState, watch } = form;
 
   const {
     fields: valueFields,
@@ -30,7 +30,7 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
   const values = watch('values');
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
       <TextInput.LabelledController
         label="Name (e.g. User)"
         control={control}

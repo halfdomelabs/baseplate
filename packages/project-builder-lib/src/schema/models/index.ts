@@ -22,7 +22,7 @@ export * from './transformers/index.js';
 
 export const modelScalarFieldSchema = zEnt(
   z.object({
-    name: z.string().min(1),
+    name: VALIDATORS.CAMEL_CASE_STRING,
     type: z.enum(SCALAR_FIELD_TYPES),
     isId: z.boolean().optional(),
     isOptional: z.boolean().optional(),

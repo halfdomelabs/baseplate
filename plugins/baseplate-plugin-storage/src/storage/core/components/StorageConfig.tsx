@@ -6,7 +6,7 @@ import {
   diffModel,
 } from '@halfdomelabs/project-builder-lib';
 import {
-  useBlockDirtyFormNavigate,
+  useBlockUnsavedChangesNavigate,
   useErrorHandler,
   useProjectDefinition,
   useResettableForm,
@@ -44,18 +44,6 @@ export function StorageConfig({
       values: pluginMetadata?.config as StoragePluginDefinition,
     });
 
-  useBlockDirtyFormNavigate(formState, reset);
-
-  const fileModelRef = watch('fileModelRef');
-
-  const pendingModelChanges = useMemo(() => {
-    if (!fileModelRef) return undefined;
-
-    const model = ModelUtils.byId(definition, fileModelRef);
-    const desiredModel = createStorageModels(definitionContainer);
-    return diffModel(model.model, desiredModel.file, definitionContainer);
-  }, [fileModelRef, definitionContainer, definition]);
-
   const onSubmit = handleSubmit((data) => {
     try {
       setConfigAndFixReferences((draftConfig) => {
@@ -74,11 +62,24 @@ export function StorageConfig({
       } else {
         toast.success('Successfully saved plugin!');
       }
+      reset(data);
       onSave();
     } catch (err) {
       toast.error(logAndFormatError(err));
     }
   });
+
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+
+  const fileModelRef = watch('fileModelRef');
+
+  const pendingModelChanges = useMemo(() => {
+    if (!fileModelRef) return undefined;
+
+    const model = ModelUtils.byId(definition, fileModelRef);
+    const desiredModel = createStorageModels(definitionContainer);
+    return diffModel(model.model, desiredModel.file, definitionContainer);
+  }, [fileModelRef, definitionContainer, definition]);
 
   const modelOptions = definition.models.map((m) => ({
     label: m.name,

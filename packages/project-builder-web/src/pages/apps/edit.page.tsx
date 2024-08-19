@@ -50,7 +50,7 @@ function EditAppPage(): JSX.Element {
           <p className="text-base text-muted-foreground">{app.type} app</p>
         </div>
         <Dialog>
-          <Dialog.Trigger>
+          <Dialog.Trigger asChild>
             <Button variant="secondary">Delete</Button>
           </Dialog.Trigger>
           <Dialog.Content>
