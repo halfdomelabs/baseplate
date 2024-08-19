@@ -1,7 +1,7 @@
 import { ForwardedRef } from 'react';
 import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { Combobox } from '../Combobox/Combobox.js';
+import { Combobox, ComboboxProps } from '../Combobox/Combobox.js';
 import { FormItem } from '../FormItem/FormItem.js';
 import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
@@ -13,7 +13,8 @@ import {
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface ComboboxFieldProps<OptionType>
-  extends SelectOptionProps<OptionType>,
+  extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
+    SelectOptionProps<OptionType>,
     FieldProps {
   className?: string;
   noResultsText?: React.ReactNode;

@@ -28,6 +28,9 @@ function AddEnumButton(): JSX.Element {
       <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>Add Enum</Dialog.Title>
+          <Dialog.Description>
+            Create a new enum to use in your project
+          </Dialog.Description>
         </Dialog.Header>
         <AddEnumForm onSubmit={() => setDialogOpen(false)} />
       </Dialog.Content>

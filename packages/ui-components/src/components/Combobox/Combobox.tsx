@@ -45,7 +45,7 @@ interface ComboboxOption {
   value: string | null;
 }
 
-interface ComboboxProps {
+export interface ComboboxProps {
   children: React.ReactNode;
   value?: ComboboxOption | null;
   onChange?: (value: ComboboxOption) => void;
@@ -441,6 +441,34 @@ const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
 );
 
 ComboboxItem.displayName = 'ComboboxItem';
+
+interface ComboboxActionProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect' | 'onClick'> {
+  disabled?: boolean;
+  value: string;
+  label?: string;
+  onClick?: () => void;
+}
+
+const ComboboxAction = React.forwardRef<HTMLDivElement, ComboboxActionProps>(
+  ({ value, className, label, children, onClick, ...rest }, ref) => {
+    const itemRef = React.useRef<HTMLDivElement>(null);
+
+    return (
+      <Command.Item
+        value={value}
+        onSelect={onClick}
+        className={cn(selectItemVariants(), className)}
+        {...rest}
+        ref={mergeRefs([ref, itemRef])}
+      >
+        {children}
+      </Command.Item>
+    );
+  },
+);
+
+ComboboxAction.displayName = 'ComboboxAction';
 
 export const Combobox = Object.assign(ComboboxRoot, {
   Input: ComboboxInput,

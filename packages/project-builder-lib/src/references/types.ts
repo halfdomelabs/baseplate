@@ -27,6 +27,10 @@ export class DefinitionEntityType<THasParent extends boolean = boolean> {
   toUid(id: string): string {
     return id.split(':')[1];
   }
+
+  isUid(id: string): boolean {
+    return id.startsWith(`${this.prefix ?? this.name}:`);
+  }
 }
 
 export interface DefinitionEntity {

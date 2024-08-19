@@ -1,5 +1,6 @@
 import {
   EnumConfig,
+  FeatureUtils,
   enumSchema,
   modelEnumEntityType,
 } from '@halfdomelabs/project-builder-lib';
@@ -96,6 +97,10 @@ export function useEnumForm({
     (data: EnumConfig): void => {
       try {
         setConfigAndFixReferences((draftConfig) => {
+          data.feature = FeatureUtils.ensureFeatureByNameRecursively(
+            draftConfig,
+            data.feature,
+          );
           draftConfig.enums = _.sortBy(
             [
               ...(draftConfig.enums?.filter((e) => e.id !== data.id) ?? []),
