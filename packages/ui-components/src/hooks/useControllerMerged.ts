@@ -29,7 +29,7 @@ export function useControllerMerged<
 >(
   props: UseControllerProps<TFieldValues, TName>,
   options: UseControllerMergedOptions<TValue, TRef>,
-  ref: ForwardedRef<TRef>,
+  ref?: ForwardedRef<TRef>,
 ): Omit<UseControllerReturn<TFieldValues, TName>, 'field'> & {
   field: Omit<
     ControllerRenderProps,

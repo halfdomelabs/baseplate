@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
 export const VALIDATORS = {
+  DASHED_NAME: z
+    .string()
+    .min(1)
+    .regex(
+      /^[a-z0-9-]+$/,
+      'The name should be all lowercase letters, numbers, and dashes, e.g. my-project',
+    ),
   PASCAL_CASE_STRING: z
     .string()
     .regex(/^[A-Z][a-zA-Z0-9]*$/, "Should be PascalCase, e.g. 'MyModel'"),

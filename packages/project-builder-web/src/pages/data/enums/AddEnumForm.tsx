@@ -1,12 +1,8 @@
 import {
+  FeatureComboboxField,
   hasDirtyFields,
-  useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Button,
-  ComboboxField,
-  SwitchField,
-} from '@halfdomelabs/ui-components';
+import { Button, SwitchField } from '@halfdomelabs/ui-components';
 
 import { useEnumForm } from './hooks/useEnumForm';
 import { TextInput } from '@src/components';
@@ -16,18 +12,10 @@ interface Props {
 }
 
 function AddEnumForm({ onSubmit }: Props): JSX.Element {
-  const { parsedProject } = useProjectDefinition();
   const { form, submitHandler } = useEnumForm({
     onSubmitSuccess: onSubmit,
   });
   const { control, handleSubmit, formState } = form;
-
-  const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
-    (f) => ({
-      label: f.name,
-      value: f.id,
-    }),
-  );
 
   return (
     <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
@@ -36,12 +24,12 @@ function AddEnumForm({ onSubmit }: Props): JSX.Element {
         control={control}
         name="name"
       />
-      <ComboboxField.Controller
+      <FeatureComboboxField.Controller
         label="Feature"
         control={control}
         name="feature"
-        options={featureOptions}
         placeholder="Select a feature"
+        canCreate
       />
       <SwitchField.Controller
         control={control}

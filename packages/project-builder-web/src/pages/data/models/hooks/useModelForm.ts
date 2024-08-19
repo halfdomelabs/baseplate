@@ -1,4 +1,5 @@
 import {
+  FeatureUtils,
   ModelConfig,
   modelEntityType,
   modelScalarFieldEntityType,
@@ -110,6 +111,11 @@ export function useModelForm({
     (data: ModelConfig) => {
       try {
         setConfigAndFixReferences((draftConfig) => {
+          // create feature if a new feature exists
+          data.feature = FeatureUtils.ensureFeatureByNameRecursively(
+            draftConfig,
+            data.feature,
+          );
           draftConfig.models = _.sortBy(
             [
               ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),

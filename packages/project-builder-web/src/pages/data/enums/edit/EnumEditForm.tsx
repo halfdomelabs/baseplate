@@ -2,8 +2,7 @@ import {
   EnumConfig,
   modelEnumValueEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { ComboboxField } from '@halfdomelabs/ui-components';
+import { FeatureComboboxField } from '@halfdomelabs/project-builder-lib/web';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
 
 import { hasDirtyFields } from '@src/utils/form';
@@ -17,15 +16,7 @@ interface Props {
 }
 
 function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
-  const { parsedProject } = useProjectDefinition();
   const { control, handleSubmit, setValue, formState, watch } = form;
-
-  const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
-    (f) => ({
-      label: f.name,
-      value: f.id,
-    }),
-  );
 
   const {
     fields: valueFields,
@@ -45,12 +36,11 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
         control={control}
         name="name"
       />
-      <ComboboxField.Controller
+      <FeatureComboboxField.Controller
         label="Feature"
         control={control}
         name="feature"
-        options={featureOptions}
-        placeholder="Select a feature"
+        canCreate
       />
       <CheckedInput.LabelledController
         label="Is Exposed?"
