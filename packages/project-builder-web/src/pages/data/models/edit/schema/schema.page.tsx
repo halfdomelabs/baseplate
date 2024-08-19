@@ -1,4 +1,3 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 
@@ -12,12 +11,8 @@ import { useStatus } from 'src/hooks/useStatus';
 function ModelEditSchemaPage(): JSX.Element {
   const { status, setError } = useStatus();
   const { form, onFormSubmit, originalModel } = useModelForm({ setError });
-  const { control, handleSubmit, watch } = form;
+  const { control, watch } = form;
   const { parsedProject } = useProjectDefinition();
-
-  const onSubmit = (data: ModelConfig): void => {
-    onFormSubmit(data);
-  };
 
   const localFields = watch(`model.fields`);
   const localFieldOptions = localFields.map((f) => ({
@@ -58,7 +53,7 @@ function ModelEditSchemaPage(): JSX.Element {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onFormSubmit} className="space-y-4">
         <Alert.WithStatus status={status} />
         <CheckedInput.LabelledController
           label="Build Object Type?"

@@ -5,10 +5,10 @@ import {
   themeSchema,
 } from '@halfdomelabs/project-builder-lib';
 import {
+  useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { Alert, Button, Tabs } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
@@ -35,7 +35,19 @@ export function ThemeHomePage(): JSX.Element {
       defaultValues,
     });
 
-  useBlockDirtyFormNavigate(formState, reset);
+  const onSubmit = handleSubmit((data) => {
+    try {
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.theme = data;
+      });
+      toast.success('Successfully saved configuration!');
+      reset(data);
+    } catch (err) {
+      toast.error(logAndFormatError(err));
+    }
+  });
+
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
   const generateNewThemeColors = useCallback(
     (resetColors?: boolean) => {
@@ -69,17 +81,6 @@ export function ThemeHomePage(): JSX.Element {
   const handleShadesChange = useCallback(() => {
     generateNewThemeColors();
   }, [generateNewThemeColors]);
-
-  const onSubmit = (data: ThemeConfig): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        draftConfig.theme = data;
-      });
-      toast.success('Successfully saved configuration!');
-    } catch (err) {
-      toast.error(logAndFormatError(err));
-    }
-  };
 
   return (
     <div className="max-w-4xl space-y-4">
@@ -127,11 +128,11 @@ export function ThemeHomePage(): JSX.Element {
         </li>
       </ul>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <h2>Theme Palettes</h2>
         <Tabs defaultValue="base">
           <Tabs.List>
-            <Tabs.Trigger value="base">Base</Tabs.Trigger>
+            s<Tabs.Trigger value="base">Base</Tabs.Trigger>
             <Tabs.Trigger value="primary">Primary</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content value="base">

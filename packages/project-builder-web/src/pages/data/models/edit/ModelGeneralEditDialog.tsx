@@ -13,7 +13,7 @@ export function ModelGeneralEditDialog({
   isOpen,
 }: ModelGeneralEditDialogProps): JSX.Element {
   const {
-    form: { control, handleSubmit },
+    form: { control },
     onFormSubmit,
   } = useModelForm({
     onSubmitSuccess() {
@@ -23,7 +23,7 @@ export function ModelGeneralEditDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <Dialog.Content>
-        <form onSubmit={handleSubmit(onFormSubmit)}>
+        <form onSubmit={onFormSubmit}>
           <Dialog.Header>
             <Dialog.Title>Edit Model</Dialog.Title>
           </Dialog.Header>

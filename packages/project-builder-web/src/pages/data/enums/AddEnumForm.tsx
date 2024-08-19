@@ -11,14 +11,14 @@ interface Props {
   onSubmit: () => void;
 }
 
-function AddEnumForm({ onSubmit }: Props): JSX.Element {
-  const { form, submitHandler } = useEnumForm({
-    onSubmitSuccess: onSubmit,
+function AddEnumForm({ onSubmit: onSubmitSuccess }: Props): JSX.Element {
+  const { form, onSubmit } = useEnumForm({
+    onSubmitSuccess,
   });
-  const { control, handleSubmit, formState } = form;
+  const { control, formState } = form;
 
   return (
-    <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
       <TextInput.LabelledController
         label="Name"
         control={control}

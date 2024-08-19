@@ -1,5 +1,4 @@
 import {
-  ModelConfig,
   ModelTransformerUtils,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
@@ -22,23 +21,9 @@ function ModelEditServicePage(): JSX.Element {
   const { form, onFormSubmit, originalModel, defaultValues } = useModelForm({
     setError,
   });
-  const { control, handleSubmit, watch, getValues } = form;
+  const { control, watch, getValues } = form;
   const { definitionContainer, pluginContainer } = useProjectDefinition();
   const shouldBuild = watch('service.build');
-
-  const onSubmit = (data: ModelConfig): void => {
-    if (!data.service?.build) {
-      // clean any service data on save to avoid unused references
-      onFormSubmit({
-        ...data,
-        service: {
-          build: false,
-        },
-      });
-    } else {
-      onFormSubmit(data);
-    }
-  };
 
   const localFields = watch(`model.fields`);
   const localFieldOptions = localFields.map((f) => ({
@@ -64,7 +49,7 @@ function ModelEditServicePage(): JSX.Element {
       getValues={getValues}
       watch={watch}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onFormSubmit} className="space-y-4">
         <Alert.WithStatus status={status} />
         <CheckedInput.LabelledController
           label="Build controller?"

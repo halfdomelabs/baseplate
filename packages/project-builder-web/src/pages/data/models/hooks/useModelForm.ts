@@ -13,7 +13,7 @@ import {
 import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -53,7 +53,7 @@ export function useModelForm({
   onSubmitSuccess,
 }: UseModelFormOptions): {
   form: UseFormReturn<ModelConfig>;
-  onFormSubmit: (data: ModelConfig) => void;
+  onFormSubmit: () => Promise<void>;
   originalModel?: ModelConfig;
   defaultValues: ModelConfig;
 } {
@@ -80,7 +80,7 @@ export function useModelForm({
     defaultValues,
   });
 
-  const { reset, formState, getValues } = form;
+  const { reset, formState, getValues, handleSubmit } = form;
 
   const lastFixedModel = useRef<ModelConfig | undefined>();
 
@@ -107,39 +107,43 @@ export function useModelForm({
     urlModelId,
   ]);
 
-  const onFormSubmit = useCallback(
-    (data: ModelConfig) => {
-      try {
-        setConfigAndFixReferences((draftConfig) => {
-          // create feature if a new feature exists
-          data.feature = FeatureUtils.ensureFeatureByNameRecursively(
-            draftConfig,
-            data.feature,
-          );
-          draftConfig.models = _.sortBy(
-            [
-              ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),
-              data,
-            ],
-            (m) => m.name,
-          );
-        });
-        toast.success('Successfully saved model!');
-        reset(data);
-      } catch (err) {
-        if (err instanceof RefDeleteError) {
-          showRefIssues({ issues: err.issues });
-          return;
+  const onFormSubmit = useMemo(
+    () =>
+      handleSubmit((data: ModelConfig) => {
+        try {
+          if (!data.service?.build) {
+            data.service = undefined;
+          }
+          setConfigAndFixReferences((draftConfig) => {
+            // create feature if a new feature exists
+            data.feature = FeatureUtils.ensureFeatureByNameRecursively(
+              draftConfig,
+              data.feature,
+            );
+            draftConfig.models = _.sortBy(
+              [
+                ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),
+                data,
+              ],
+              (m) => m.name,
+            );
+          });
+          toast.success('Successfully saved model!');
+          reset(data);
+        } catch (err) {
+          if (err instanceof RefDeleteError) {
+            showRefIssues({ issues: err.issues });
+            return;
+          }
+          logger.error(err);
+          if (setError) {
+            setError(formatError(err));
+          } else {
+            toast.error(formatError(err));
+          }
         }
-        logger.error(err);
-        if (setError) {
-          setError(formatError(err));
-        } else {
-          toast.error(formatError(err));
-        }
-      }
-    },
-    [setConfigAndFixReferences, showRefIssues, reset, setError],
+      }),
+    [setConfigAndFixReferences, showRefIssues, reset, setError, handleSubmit],
   );
 
   return {

@@ -10,6 +10,10 @@ export function useBlockDirtyFormNavigate<
     disableBlock: !hasDirtyFields(formState),
     title: 'Unsaved Changes',
     content: 'You have unsaved changes. Are you sure you want to continue?',
-    onContinue: reset,
+    buttonContinueText: 'Discard Changes',
+    onContinue: () => {
+      reset();
+      return true;
+    },
   });
 }

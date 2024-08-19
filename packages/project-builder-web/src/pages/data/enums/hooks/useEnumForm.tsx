@@ -4,12 +4,14 @@ import {
   enumSchema,
   modelEnumEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
@@ -43,7 +45,7 @@ export function useEnumForm({
   uid,
 }: UseEnumFormOptions): {
   form: UseFormReturn<EnumConfig>;
-  submitHandler: (data: EnumConfig) => void;
+  onSubmit: () => Promise<void>;
   handleDelete: () => void;
 } {
   const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
@@ -63,7 +65,7 @@ export function useEnumForm({
     resolver: zodResolver(enumSchema),
   });
 
-  const { reset } = form;
+  const { handleSubmit, reset } = form;
 
   const handleDelete = (): void => {
     requestConfirm({
@@ -93,40 +95,41 @@ export function useEnumForm({
     });
   };
 
-  const submitHandler = useCallback(
-    (data: EnumConfig): void => {
-      try {
-        setConfigAndFixReferences((draftConfig) => {
-          data.feature = FeatureUtils.ensureFeatureByNameRecursively(
-            draftConfig,
-            data.feature,
-          );
-          draftConfig.enums = _.sortBy(
-            [
-              ...(draftConfig.enums?.filter((e) => e.id !== data.id) ?? []),
-              data,
-            ],
-            (e) => e.name,
-          );
-        });
-        toast.success(`Successfully saved enum ${data.name}`);
-        const id = data.id;
-        clearOnSubmit ? reset() : reset(data);
-        onSubmitSuccess?.();
-        navigate(`/data/enums/edit/${modelEnumEntityType.toUid(id)}`);
-      } catch (err) {
-        if (err instanceof RefDeleteError) {
-          showRefIssues({ issues: err.issues });
-          return;
+  const onSubmit = useMemo(
+    () =>
+      handleSubmit((data: EnumConfig): void => {
+        try {
+          setConfigAndFixReferences((draftConfig) => {
+            data.feature = FeatureUtils.ensureFeatureByNameRecursively(
+              draftConfig,
+              data.feature,
+            );
+            draftConfig.enums = _.sortBy(
+              [
+                ...(draftConfig.enums?.filter((e) => e.id !== data.id) ?? []),
+                data,
+              ],
+              (e) => e.name,
+            );
+          });
+          toast.success(`Successfully saved enum ${data.name}`);
+          const id = data.id;
+          clearOnSubmit ? reset() : reset(data);
+          onSubmitSuccess?.();
+          navigate(`/data/enums/edit/${modelEnumEntityType.toUid(id)}`);
+        } catch (err) {
+          if (err instanceof RefDeleteError) {
+            showRefIssues({ issues: err.issues });
+            return;
+          }
+          logger.error(err);
+          if (setError) {
+            setError(formatError(err));
+          } else {
+            toast.error(formatError(err));
+          }
         }
-        logger.error(err);
-        if (setError) {
-          setError(formatError(err));
-        } else {
-          toast.error(formatError(err));
-        }
-      }
-    },
+      }),
     [
       clearOnSubmit,
       navigate,
@@ -136,8 +139,9 @@ export function useEnumForm({
       setError,
       showRefIssues,
       toast,
+      handleSubmit,
     ],
   );
 
-  return { form, submitHandler, handleDelete };
+  return { form, onSubmit, handleDelete };
 }
