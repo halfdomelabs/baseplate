@@ -25,7 +25,7 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
       style={
         {
           '--sidebar-width': '70px',
-          '--topbar-height': '60px',
+          '--topbar-height': '52px',
         } as React.CSSProperties
       }
     >
@@ -45,7 +45,7 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
               <AppMobileSidebar />
             </Sheet.Content>
           </Sheet>
-          <div className="flex w-full items-center justify-between py-2.5">
+          <div className="flex w-full items-center justify-between py-3">
             <AppBreadcrumbs />
             <div className="flex items-center gap-4">
               <ProjectSyncStatus />

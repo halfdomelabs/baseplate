@@ -18,7 +18,13 @@ export const router = createBrowserRouter([
       {
         element: <AppLayout />,
         children: [
-          { path: '/', element: <HomePage /> },
+          {
+            path: '/',
+            element: <HomePage />,
+            handle: {
+              crumb: createRouteCrumb({ label: 'Home', url: '/' }),
+            },
+          },
           {
             path: '/apps/*',
             children: AppsRoutes,
