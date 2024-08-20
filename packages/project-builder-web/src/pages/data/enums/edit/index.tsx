@@ -1,12 +1,14 @@
 import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
+import { Button } from '@halfdomelabs/ui-components';
+import { HiOutlineTrash } from 'react-icons/hi';
 import { useParams } from 'react-router-dom';
 
 import EnumEditForm from './EnumEditForm';
 import { useEnumForm } from '../hooks/useEnumForm';
 import { useStatus } from '@src/hooks/useStatus';
-import { Alert, Button } from 'src/components';
+import { Alert } from 'src/components';
 
 function EnumEditPage(): JSX.Element {
   const { status, setError } = useStatus();
@@ -28,9 +30,15 @@ function EnumEditPage(): JSX.Element {
     <div className="space-y-4" key={id}>
       <div className="flex flex-row space-x-8">
         <h1>{enumBlock?.name ?? 'New Enum'}</h1>
+        <div className="flex-1" />
         {!isNew && (
-          <Button color="light" onClick={handleDelete}>
-            Delete
+          <Button
+            variant="outline"
+            onClick={handleDelete}
+            size="icon"
+            className="hover:text-red-600"
+          >
+            <Button.Icon icon={HiOutlineTrash} />
           </Button>
         )}
       </div>
