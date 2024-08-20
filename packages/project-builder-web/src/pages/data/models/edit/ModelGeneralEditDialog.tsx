@@ -4,34 +4,43 @@ import { ModelGeneralForm } from './model/ModelGeneralForm';
 import { useModelForm } from '../hooks/useModelForm';
 
 interface ModelGeneralEditDialogProps {
-  onClose: () => void;
-  isOpen: boolean;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function ModelGeneralEditDialog({
-  onClose,
-  isOpen,
+  open,
+  onOpenChange,
 }: ModelGeneralEditDialogProps): JSX.Element {
   const {
-    form: { control },
+    form: { control, reset },
     onFormSubmit,
+    defaultValues,
   } = useModelForm({
     onSubmitSuccess() {
-      onClose();
+      onOpenChange(false);
     },
   });
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <Dialog.Content>
-        <form onSubmit={onFormSubmit}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        onOpenChange(isOpen);
+        if (!isOpen) {
+          reset(defaultValues);
+        }
+      }}
+    >
+      <Dialog.Content aria-describedby={undefined}>
+        <form onSubmit={onFormSubmit} className="space-y-4">
           <Dialog.Header>
-            <Dialog.Title>Edit Model</Dialog.Title>
+            <Dialog.Title>Edit Model Info</Dialog.Title>
           </Dialog.Header>
           <ModelGeneralForm control={control} />
           <Dialog.Footer>
-            <Button variant="secondary" onClick={onClose}>
-              Cancel
-            </Button>
+            <Dialog.Close asChild>
+              <Button variant="secondary">Cancel</Button>
+            </Dialog.Close>
             <Button type="submit">Save</Button>
           </Dialog.Footer>
         </form>

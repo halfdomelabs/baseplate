@@ -1,12 +1,13 @@
 import {
   ModelUtils,
+  modelBaseSchema,
   modelEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import {
-  useProjectDefinition,
   useBlockUnsavedChangesNavigate,
+  useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
 import { useParams } from 'react-router-dom';
 
@@ -30,7 +31,9 @@ registerEntityTypeUrl(
 );
 
 function ModelEditModelPage(): JSX.Element {
-  const { form, onFormSubmit, defaultValues } = useModelForm({});
+  const { form, onFormSubmit, defaultValues } = useModelForm({
+    schema: modelBaseSchema.omit({ name: true, feature: true }),
+  });
   const { control, watch, getValues, setValue } = form;
   const { definition } = useProjectDefinition();
   const { uid } = useParams<'uid'>();

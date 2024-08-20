@@ -1,15 +1,9 @@
-import {
-  FeatureUtils,
-  ModelUtils,
-  modelEntityType,
-} from '@halfdomelabs/project-builder-lib';
+import { ModelUtils, modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Tabs } from '@halfdomelabs/ui-components';
-import { useState } from 'react';
-import { MdEdit } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 
-import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
+import { ModelHeaderBar } from './ModelHeaderBar';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
 import ModelEditServicePage from './service/service.page';
@@ -23,37 +17,13 @@ function ModelEditPage(): JSX.Element {
 
   const model = ModelUtils.byId(definition, id ?? '');
 
-  const [showNameModal, setShowNameModal] = useState(false);
-
   if (!model) {
     return <NotFoundCard />;
   }
 
   return (
     <div className="space-y-4" key={id}>
-      <div className="flex flex-col items-start">
-        <button
-          className="group flex items-center space-x-2 hover:cursor-pointer"
-          onClick={() => {
-            setShowNameModal(true);
-          }}
-          type="button"
-        >
-          <h1>{model.name}</h1>
-          <MdEdit className="invisible size-4 group-hover:visible" />
-        </button>
-        {model?.feature && (
-          <div className="text-xs text-muted-foreground">
-            {FeatureUtils.getFeatureById(definition, model.feature)?.name}
-          </div>
-        )}
-        <ModelGeneralEditDialog
-          isOpen={showNameModal}
-          onClose={() => {
-            setShowNameModal(false);
-          }}
-        />
-      </div>
+      <ModelHeaderBar model={model} />
       <Tabs defaultValue="fields">
         <Tabs.List>
           <Tabs.Trigger value="fields">Fields</Tabs.Trigger>

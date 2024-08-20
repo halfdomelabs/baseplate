@@ -1,3 +1,4 @@
+import { modelBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 
@@ -10,7 +11,10 @@ import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditSchemaPage(): JSX.Element {
   const { status, setError } = useStatus();
-  const { form, onFormSubmit, originalModel } = useModelForm({ setError });
+  const { form, onFormSubmit, originalModel } = useModelForm({
+    setError,
+    schema: modelBaseSchema.omit({ name: true, feature: true }),
+  });
   const { control, watch } = form;
   const { parsedProject } = useProjectDefinition();
 

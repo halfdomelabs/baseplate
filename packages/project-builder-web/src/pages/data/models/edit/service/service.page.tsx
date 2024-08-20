@@ -1,5 +1,6 @@
 import {
   ModelTransformerUtils,
+  modelBaseSchema,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
@@ -23,6 +24,7 @@ function ModelEditServicePage(): JSX.Element {
   const { status, setError } = useStatus();
   const { form, onFormSubmit, originalModel, defaultValues } = useModelForm({
     setError,
+    schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
   const { control, watch, getValues } = form;
   const { definitionContainer, pluginContainer } = useProjectDefinition();
