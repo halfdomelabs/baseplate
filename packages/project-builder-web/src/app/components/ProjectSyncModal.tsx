@@ -8,7 +8,6 @@ import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
 import { useProjects } from '@src/hooks/useProjects';
-import { useRemoteProjectDefinition } from '@src/hooks/useRemoteProjectDefinition';
 import { prettyStableStringify } from '@src/utils/json';
 import Console, { ConsoleRef } from 'src/components/Console';
 import { useToast } from 'src/hooks/useToast';
@@ -23,8 +22,7 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
-  const { definitionContainer } = useProjectDefinition();
-  const { lastModifiedAt } = useRemoteProjectDefinition();
+  const { definitionContainer, lastModifiedAt } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
 
