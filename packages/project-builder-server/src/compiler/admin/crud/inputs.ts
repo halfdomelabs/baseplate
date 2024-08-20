@@ -220,7 +220,7 @@ export function compileAdminCrudInput(
 
   return compiler.compileInput(field, {
     definitionContainer: builder.definitionContainer,
-    model: ModelUtils.byId(builder.projectDefinition, modelId),
+    model: ModelUtils.byIdOrThrow(builder.projectDefinition, modelId),
     crudSectionId,
   });
 }

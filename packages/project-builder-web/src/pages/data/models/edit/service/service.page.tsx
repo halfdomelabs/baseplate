@@ -14,7 +14,10 @@ import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 import { useStatus } from 'src/hooks/useStatus';
 
-registerEntityTypeUrl(modelTransformerEntityType, `/models/edit/{parentUid}`);
+registerEntityTypeUrl(
+  modelTransformerEntityType,
+  `/data/models/edit/{parentUid}`,
+);
 
 function ModelEditServicePage(): JSX.Element {
   const { status, setError } = useStatus();

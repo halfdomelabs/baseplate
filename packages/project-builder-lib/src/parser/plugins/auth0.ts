@@ -44,7 +44,7 @@ export const Auth0Plugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectDefinition, auth.userModel).name,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userFields,
@@ -79,7 +79,7 @@ export const Auth0Plugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectDefinition, auth.userRoleModel).name,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userRoleModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userRoleFields,
@@ -135,7 +135,8 @@ export const Auth0Plugin: ParserPlugin = {
       },
       $auth0: {
         generator: '@halfdomelabs/fastify/auth0/auth0-module',
-        userModelName: ModelUtils.byId(projectDefinition, auth.userModel).name,
+        userModelName: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel)
+          .name,
         includeManagement: true,
       },
     });

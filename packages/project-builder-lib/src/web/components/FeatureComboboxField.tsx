@@ -59,6 +59,7 @@ const FeatureComboboxFieldRoot = forwardRef<
 
   return (
     <ComboboxField
+      placeholder="Select a feature"
       {...rest}
       searchQuery={canCreate ? searchQuery : undefined}
       onSearchQueryChange={setSearchQuery}

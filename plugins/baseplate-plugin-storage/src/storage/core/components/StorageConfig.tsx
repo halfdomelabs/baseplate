@@ -48,7 +48,7 @@ export function StorageConfig({
     try {
       setConfigAndFixReferences((draftConfig) => {
         if (pendingModelChanges) {
-          const model = ModelUtils.byId(draftConfig, data.fileModelRef);
+          const model = ModelUtils.byIdOrThrow(draftConfig, data.fileModelRef);
           applyModelPatchInPlace(
             model.model,
             pendingModelChanges,
@@ -76,7 +76,7 @@ export function StorageConfig({
   const pendingModelChanges = useMemo(() => {
     if (!fileModelRef) return undefined;
 
-    const model = ModelUtils.byId(definition, fileModelRef);
+    const model = ModelUtils.byIdOrThrow(definition, fileModelRef);
     const desiredModel = createStorageModels(definitionContainer);
     return diffModel(model.model, desiredModel.file, definitionContainer);
   }, [fileModelRef, definitionContainer, definition]);

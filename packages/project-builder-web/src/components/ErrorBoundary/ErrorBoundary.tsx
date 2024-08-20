@@ -5,6 +5,8 @@ import {
   ErrorBoundaryContext,
 } from 'react-error-boundary';
 
+import { formatError } from '@src/services/error-formatter';
+import { UserVisibleError } from '@src/utils/error';
 import { logError } from 'src/services/error-logger';
 
 interface ErrorBoundaryProps {
@@ -37,10 +39,19 @@ function ErrorBoundaryFallback({
     },
     error: undefined,
   };
+  const title = error instanceof UserVisibleError ? error.title : undefined;
+  // If the error is a UserVisibleError, it is not likely recoverable.
+  const isRecoverable = !(error instanceof UserVisibleError);
+  const errorString = formatError(error, '');
   return (
     <ErrorDisplay
-      error={error}
-      actions={<Button onClick={resetErrorBoundary}>{resetButtonLabel}</Button>}
+      header={title}
+      error={errorString}
+      actions={
+        isRecoverable && (
+          <Button onClick={resetErrorBoundary}>{resetButtonLabel}</Button>
+        )
+      }
     />
   );
 }

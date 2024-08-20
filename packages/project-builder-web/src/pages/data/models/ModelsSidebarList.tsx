@@ -8,9 +8,10 @@ import {
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
-import { MdClear, MdDelete } from 'react-icons/md';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { MdAdd, MdClear, MdDelete } from 'react-icons/md';
+import { NavLink, useNavigate } from 'react-router-dom';
 
+import { NewModelDialog } from './NewModelDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
@@ -55,11 +56,11 @@ export function ModelsSidebarList({
 
   return (
     <div className={clsx(className, 'flex flex-col space-y-4')}>
-      <Link to="models/new" className="block w-full">
-        <Button variant="secondary" className="w-full">
+      <NewModelDialog>
+        <Button.WithIcon icon={MdAdd} variant="secondary" className="w-full">
           New Model
-        </Button>
-      </Link>
+        </Button.WithIcon>
+      </NewModelDialog>
       <div className="relative">
         <InputField
           value={filterQuery}

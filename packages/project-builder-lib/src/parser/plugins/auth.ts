@@ -45,7 +45,7 @@ export const AuthPlugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectDefinition, auth.userModel).name,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userFields,
@@ -80,7 +80,7 @@ export const AuthPlugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byId(projectDefinition, auth.userRoleModel).name,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userRoleModel).name,
       feature: auth.accountsFeaturePath,
       model: {
         fields: userRoleFields,
@@ -131,7 +131,8 @@ export const AuthPlugin: ParserPlugin = {
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth-module',
-        userModelName: ModelUtils.byId(projectDefinition, auth.userModel).name,
+        userModelName: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel)
+          .name,
         children: {
           roleService: {
             name: 'AuthRoleService',
@@ -144,7 +145,7 @@ export const AuthPlugin: ParserPlugin = {
                 children: {
                   $authRoles: {
                     generator: '@halfdomelabs/fastify/auth/auth-roles',
-                    userRoleModelName: ModelUtils.byId(
+                    userRoleModelName: ModelUtils.byIdOrThrow(
                       projectDefinition,
                       auth.userRoleModel,
                     ).name,
