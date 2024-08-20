@@ -6,9 +6,8 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { ComboboxField } from '@halfdomelabs/ui-components';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
 
-import { hasDirtyFields } from '@src/utils/form';
+import EnumFormActionBar from './EnumFormActionBar';
 import { Button, TextInput } from 'src/components';
-import CheckedInput from 'src/components/CheckedInput';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
 interface Props {
@@ -18,7 +17,7 @@ interface Props {
 
 function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
   const { parsedProject } = useProjectDefinition();
-  const { control, handleSubmit, setValue, formState, watch } = form;
+  const { control, handleSubmit, setValue, watch } = form;
 
   const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
     (f) => ({
@@ -51,11 +50,6 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
         name="feature"
         options={featureOptions}
         placeholder="Select a feature"
-      />
-      <CheckedInput.LabelledController
-        label="Is Exposed?"
-        control={control}
-        name="isExposed"
       />
       <h3>Values</h3>
       {valueFields.map((field, i) => (
@@ -97,11 +91,7 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
       >
         Add Value
       </Button>
-      <div>
-        <Button type="submit" disabled={!hasDirtyFields(formState)}>
-          Save
-        </Button>
-      </div>
+      <EnumFormActionBar form={form} />
     </form>
   );
 }

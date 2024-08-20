@@ -34,7 +34,7 @@ const SwitchFieldRoot = React.forwardRef<HTMLDivElement, SwitchFieldProps>(
   ) => {
     return (
       <FormItem ref={ref} error={error} className={cn('space-y-2', className)}>
-        <div className="flex flex-row items-center space-x-4">
+        <div className="flex flex-row items-center space-x-2">
           <FormItem.Control>
             <Switch
               onCheckedChange={(checked) => onChange?.(checked)}
