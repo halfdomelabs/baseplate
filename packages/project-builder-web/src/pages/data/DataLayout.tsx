@@ -38,7 +38,7 @@ export function DataLayout(): JSX.Element {
         </div>
       </SidebarLayout.Sidebar>
       <div className="relative size-full pb-[65px]">
-        <SidebarLayout.Content className="h-full p-4">
+        <SidebarLayout.Content className="h-full p-6">
           <Outlet />
         </SidebarLayout.Content>
       </div>

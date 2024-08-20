@@ -4,6 +4,7 @@ import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web
 import { Button, SwitchField } from '@halfdomelabs/ui-components';
 import { HiOutlineTrash } from 'react-icons/hi';
 import { useParams } from 'react-router-dom';
+import { Separator } from '@halfdomelabs/ui-components';
 
 import EnumEditForm from './EnumEditForm';
 import { useEnumForm } from '../hooks/useEnumForm';
@@ -26,7 +27,7 @@ function EnumEditPage(): JSX.Element {
   }
 
   return (
-    <div className="space-y-4" key={id}>
+    <div className="space-y-6" key={id}>
       <div className="flex flex-row items-center space-x-8">
         <h1>{enumBlock?.name ?? 'New Enum'}</h1>
         <div className="flex-1" />
@@ -44,6 +45,7 @@ function EnumEditPage(): JSX.Element {
           <Button.Icon icon={HiOutlineTrash} />
         </Button>
       </div>
+      <Separator />
       <Alert.WithStatus status={status} />
       <EnumEditForm onSubmit={submitHandler} form={form} />
     </div>
