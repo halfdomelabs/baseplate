@@ -1,5 +1,6 @@
 import {
   FeatureUtils,
+  ModelUtils,
   modelEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
@@ -16,71 +17,59 @@ import { NotFoundCard } from 'src/components';
 
 function ModelEditPage(): JSX.Element {
   const { uid } = useParams<'uid'>();
-  const {
-    parsedProject,
-    definitionContainer: { definition },
-  } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
   const id = modelEntityType.fromUid(uid);
-  const isNew = !id;
 
-  const model = parsedProject.getModels().find((m) => m.id === id);
+  const model = ModelUtils.byId(definition, id ?? '');
 
   const [showNameModal, setShowNameModal] = useState(false);
 
-  if (!model && id) {
+  if (!model) {
     return <NotFoundCard />;
   }
 
   return (
     <div className="space-y-4" key={id}>
-      {model ? (
-        <div className="flex flex-col items-start">
-          <button
-            className="group flex items-center space-x-2 hover:cursor-pointer"
-            onClick={() => {
-              setShowNameModal(true);
-            }}
-            type="button"
-          >
-            <h1>{model.name}</h1>
-            <MdEdit className="invisible size-4 group-hover:visible" />
-          </button>
-          {model?.feature && (
-            <div className="text-xs text-muted-foreground">
-              {FeatureUtils.getFeatureById(definition, model.feature)?.name}
-            </div>
-          )}
-          <ModelGeneralEditDialog
-            isOpen={showNameModal}
-            onClose={() => {
-              setShowNameModal(false);
-            }}
-          />
-        </div>
-      ) : (
-        <h1>New Model</h1>
-      )}
-      {isNew ? (
-        <ModelEditModelPage />
-      ) : (
-        <Tabs defaultValue="fields">
-          <Tabs.List>
-            <Tabs.Trigger value="fields">Fields</Tabs.Trigger>
-            <Tabs.Trigger value="service">Service</Tabs.Trigger>
-            <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
-          </Tabs.List>
-          <Tabs.Content value="fields">
-            <ModelEditModelPage />
-          </Tabs.Content>
-          <Tabs.Content value="service">
-            <ModelEditServicePage />
-          </Tabs.Content>
-          <Tabs.Content value="schema">
-            <ModelEditSchemaPage />
-          </Tabs.Content>
-        </Tabs>
-      )}
+      <div className="flex flex-col items-start">
+        <button
+          className="group flex items-center space-x-2 hover:cursor-pointer"
+          onClick={() => {
+            setShowNameModal(true);
+          }}
+          type="button"
+        >
+          <h1>{model.name}</h1>
+          <MdEdit className="invisible size-4 group-hover:visible" />
+        </button>
+        {model?.feature && (
+          <div className="text-xs text-muted-foreground">
+            {FeatureUtils.getFeatureById(definition, model.feature)?.name}
+          </div>
+        )}
+        <ModelGeneralEditDialog
+          isOpen={showNameModal}
+          onClose={() => {
+            setShowNameModal(false);
+          }}
+        />
+      </div>
+      <Tabs defaultValue="fields">
+        <Tabs.List>
+          <Tabs.Trigger value="fields">Fields</Tabs.Trigger>
+          <Tabs.Trigger value="service">Service</Tabs.Trigger>
+          <Tabs.Trigger value="schema">Schema</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="fields">
+          <ModelEditModelPage />
+        </Tabs.Content>
+        <Tabs.Content value="service">
+          <ModelEditServicePage />
+        </Tabs.Content>
+        <Tabs.Content value="schema">
+          <ModelEditSchemaPage />
+        </Tabs.Content>
+      </Tabs>
     </div>
   );
 }

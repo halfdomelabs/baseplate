@@ -10,7 +10,6 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import { useParams } from 'react-router-dom';
 
-import { ModelGeneralForm } from './ModelGeneralForm';
 import ModelPrimaryKeyForm from './ModelPrimaryKeyForm';
 import { ModelRelationsForm } from './ModelRelationsForm';
 import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
@@ -20,9 +19,15 @@ import { useModelForm } from '../../hooks/useModelForm';
 import ModelFormActionBar from '../ModelFormActionBar';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
-registerEntityTypeUrl(modelEntityType, `/models/edit/{uid}`);
-registerEntityTypeUrl(modelScalarFieldEntityType, `/models/edit/{parentUid}`);
-registerEntityTypeUrl(modelLocalRelationEntityType, `/models/edit/{parentUid}`);
+registerEntityTypeUrl(modelEntityType, `/data/models/edit/{uid}`);
+registerEntityTypeUrl(
+  modelScalarFieldEntityType,
+  `/data/models/edit/{parentUid}`,
+);
+registerEntityTypeUrl(
+  modelLocalRelationEntityType,
+  `/data/models/edit/{parentUid}`,
+);
 
 function ModelEditModelPage(): JSX.Element {
   const { form, onFormSubmit, defaultValues } = useModelForm({});
@@ -31,7 +36,7 @@ function ModelEditModelPage(): JSX.Element {
   const { uid } = useParams<'uid'>();
 
   const id = modelEntityType.fromUid(uid);
-  const originalModel = id ? ModelUtils.byId(definition, id) : undefined;
+  const originalModel = ModelUtils.byIdOrThrow(definition, id ?? '');
 
   useBlockUnsavedChangesNavigate(form.formState, {
     reset: form.reset,
@@ -48,8 +53,6 @@ function ModelEditModelPage(): JSX.Element {
         onSubmit={onFormSubmit}
         className="min-w-[700px] max-w-6xl space-y-4"
       >
-        {!id && <ModelGeneralForm control={control} horizontal />}
-        {!id && <h2>Fields</h2>}
         <ModelFieldsForm control={control} setValue={setValue} />
         <ModelRelationsForm control={control} originalModel={originalModel} />
         <ModelPrimaryKeyForm control={control} />

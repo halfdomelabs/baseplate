@@ -50,7 +50,7 @@ function buildRelationField(
     onDelete,
     onUpdate,
   } = relationConfig;
-  const foreignModel = ModelUtils.byId(projectDefinition, modelName);
+  const foreignModel = ModelUtils.byIdOrThrow(projectDefinition, modelName);
 
   const optional = ModelFieldUtils.isRelationOptional(
     parentModel,

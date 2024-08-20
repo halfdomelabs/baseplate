@@ -5,7 +5,8 @@ import { ProjectBuilderTest } from '@src/types.js';
 export default {
   projectDirectory: 'simple',
   async setupEnvironment(context, helpers) {
-    await helpers.runCommand('pnpm install');
+    // disable frozen lockfile to test migrations
+    await helpers.runCommand('pnpm install --no-frozen-lockfile');
     await helpers.runCommand('pnpm playwright install --with-deps', {
       cwd: 'packages/e2e',
       timeout: 180000,

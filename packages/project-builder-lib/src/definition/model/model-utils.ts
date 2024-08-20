@@ -5,8 +5,18 @@ import {
   ProjectDefinition,
 } from '@src/schema/index.js';
 
-function byId(projectDefinition: ProjectDefinition, id: string): ModelConfig {
-  const model = projectDefinition.models.find((m) => m.id === id);
+function byId(
+  projectDefinition: ProjectDefinition,
+  id: string,
+): ModelConfig | undefined {
+  return projectDefinition.models.find((m) => m.id === id);
+}
+
+function byIdOrThrow(
+  projectDefinition: ProjectDefinition,
+  id: string,
+): ModelConfig {
+  const model = byId(projectDefinition, id);
   if (!model) {
     throw new Error(`Could not find model with ID ${id}`);
   }
@@ -58,6 +68,7 @@ function getModelIdFields(model: ModelConfig): string[] {
 
 export const ModelUtils = {
   byId,
+  byIdOrThrow,
   getScalarFieldById,
   getRelationsToModel,
   getModelsForFeature,

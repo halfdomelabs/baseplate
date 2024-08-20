@@ -65,7 +65,7 @@ function ensureFeatureByNameRecursively(
   projectDefinition: ProjectDefinition,
   nameOrId: string,
 ): string {
-  if (featureEntityType.isUid(nameOrId)) {
+  if (featureEntityType.isId(nameOrId)) {
     return nameOrId;
   }
   const nameParts = nameOrId.split('/');

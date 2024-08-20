@@ -5,6 +5,7 @@ import { Outlet, useMatch } from 'react-router-dom';
 
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
 import { ModelsSidebarList } from './models/ModelsSidebarList';
+import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 import { TabNavigation } from '@src/components/TabNavigation/TabNavigation';
 
 export function DataLayout(): JSX.Element {
@@ -39,7 +40,9 @@ export function DataLayout(): JSX.Element {
       </SidebarLayout.Sidebar>
       <div className="relative size-full pb-[65px]">
         <SidebarLayout.Content className="h-full p-4">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </SidebarLayout.Content>
       </div>
     </SidebarLayout>

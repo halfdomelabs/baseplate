@@ -171,7 +171,7 @@ export function applyModelPatchInPlace(
     return field.id;
   };
   const resolveForeignName = (name: string, foreignModel: string): string => {
-    const field = ModelUtils.byId(
+    const field = ModelUtils.byIdOrThrow(
       definitionContainer.definition,
       foreignModel,
     ).model.fields.find((f) => f.name === name);

@@ -60,7 +60,7 @@ function getModelFieldValidation(
   fieldId: string,
   preProcess?: boolean,
 ): string {
-  const model = ModelUtils.byId(projectDefinition, modelId);
+  const model = ModelUtils.byIdOrThrow(projectDefinition, modelId);
   const field = model.model.fields.find((f) => f.id === fieldId);
   if (!field) {
     throw new Error(`Field ${fieldId} not found in model ${model.name}`);

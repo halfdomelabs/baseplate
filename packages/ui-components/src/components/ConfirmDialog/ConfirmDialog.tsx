@@ -57,7 +57,7 @@ export function ConfirmDialog(): JSX.Element {
         <Dialog.Header>
           <Dialog.Title>{title}</Dialog.Title>
         </Dialog.Header>
-        <p>{content}</p>
+        <Dialog.Description>{content}</Dialog.Description>
         <Dialog.Footer>
           <Button
             variant="secondary"
