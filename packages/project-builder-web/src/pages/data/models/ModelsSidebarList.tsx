@@ -1,21 +1,13 @@
 import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Button,
-  InputField,
-  useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+import { Button, InputField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
-import { MdAdd, MdClear, MdDelete } from 'react-icons/md';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { MdAdd, MdClear } from 'react-icons/md';
+import { NavLink } from 'react-router-dom';
 
 import { NewModelDialog } from './NewModelDialog';
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { useToast } from '@src/hooks/useToast';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { RefDeleteError } from '@src/utils/error';
 
 interface ModelsSidebarListProps {
   className?: string;
@@ -24,11 +16,7 @@ interface ModelsSidebarListProps {
 export function ModelsSidebarList({
   className,
 }: ModelsSidebarListProps): JSX.Element {
-  const navigate = useNavigate();
-  const { requestConfirm } = useConfirmDialog();
-  const toast = useToast();
-  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
-  const { showRefIssues } = useDeleteReferenceDialog();
+  const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
 
@@ -38,21 +26,6 @@ export function ModelsSidebarList({
   );
 
   const sortedModels = _.sortBy(filteredModels, (m) => m.name);
-
-  const handleDelete = (id: string): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        draftConfig.models = draftConfig.models?.filter((m) => m.id !== id);
-      });
-      navigate('/data/models');
-    } catch (err) {
-      if (err instanceof RefDeleteError) {
-        showRefIssues({ issues: err.issues });
-        return;
-      }
-      toast.error(logAndFormatError(err));
-    }
-  };
 
   return (
     <div className={clsx(className, 'flex flex-col space-y-4')}>
@@ -95,25 +68,7 @@ export function ModelsSidebarList({
                 }
                 title={model.name}
               >
-                <div className="flex items-center justify-between space-x-2">
-                  {model.name}
-
-                  <MdDelete
-                    title="Delete Model"
-                    className="z-10 hidden size-4 shrink-0 opacity-50 group-hover:inline-flex"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      requestConfirm({
-                        title: 'Confirm delete',
-                        content: `Are you sure you want to delete ${
-                          model?.name ?? 'the model'
-                        }?`,
-                        buttonConfirmText: 'Delete',
-                        onConfirm: () => handleDelete(model.id),
-                      });
-                    }}
-                  />
-                </div>
+                <div>{model.name}</div>
               </NavLink>
             </li>
           ))}

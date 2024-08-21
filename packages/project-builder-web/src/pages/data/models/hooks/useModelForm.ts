@@ -17,6 +17,7 @@ import _ from 'lodash';
 import { useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
+import { z } from 'zod';
 
 import { createModelEditLink } from '../utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
@@ -25,6 +26,7 @@ import { formatError } from 'src/services/error-formatter';
 import { logger } from 'src/services/logger';
 
 interface UseModelFormOptions {
+  schema?: z.ZodTypeAny;
   setError?: (error: string) => void;
   onSubmitSuccess?: () => void;
   isCreate?: boolean;
@@ -51,15 +53,13 @@ function createNewModel(): ModelConfig {
   };
 }
 
-export function useModelForm({
-  setError,
-  onSubmitSuccess,
-  isCreate,
-}: UseModelFormOptions = {}): {
-  form: UseFormReturn<ModelConfig>;
+export function useModelForm<
+  TDefinition extends Partial<ModelConfig> = ModelConfig,
+>({ setError, onSubmitSuccess, isCreate, schema }: UseModelFormOptions = {}): {
+  form: UseFormReturn<TDefinition>;
   onFormSubmit: () => Promise<void>;
   originalModel?: ModelConfig;
-  defaultValues: ModelConfig;
+  defaultValues: TDefinition;
 } {
   const { uid } = useParams<'uid'>();
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
@@ -81,9 +81,14 @@ export function useModelForm({
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);
 
-  const defaultValues = model ?? newModel;
+  const modelSchemaWithPlugins = usePluginEnhancedSchema(schema ?? modelSchema);
 
-  const modelSchemaWithPlugins = usePluginEnhancedSchema(modelSchema);
+  const defaultValues = useMemo(() => {
+    const modelToUse = model ?? newModel;
+    return !schema
+      ? modelToUse
+      : (modelSchemaWithPlugins.parse(modelToUse) as ModelConfig);
+  }, [model, newModel, schema, modelSchemaWithPlugins]);
 
   const form = useResettableForm<ModelConfig>({
     resolver: zodResolver(modelSchemaWithPlugins),
@@ -98,35 +103,41 @@ export function useModelForm({
     () =>
       handleSubmit((data: ModelConfig) => {
         try {
-          if (!data.service?.build) {
-            data.service = undefined;
+          const updatedModel = {
+            ...model,
+            ...data,
+          };
+          if (!updatedModel.service?.build && updatedModel.service) {
+            updatedModel.service = undefined;
           }
           // check for models with the same name
           const existingModel = definition.models.find(
-            (m) => m.id !== data.id && m.name === data.name,
+            (m) => m.id !== data.id && m.name === newModel.name,
           );
           if (existingModel) {
             setFormError('name', {
-              message: `Model with name ${data.name} already exists.`,
+              message: `Model with name ${updatedModel.name} already exists.`,
             });
             return;
           }
           setConfigAndFixReferences((draftConfig) => {
             // create feature if a new feature exists
-            data.feature = FeatureUtils.ensureFeatureByNameRecursively(
+            updatedModel.feature = FeatureUtils.ensureFeatureByNameRecursively(
               draftConfig,
-              data.feature,
+              updatedModel.feature,
             );
             draftConfig.models = _.sortBy(
               [
-                ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),
-                data,
+                ...(draftConfig.models?.filter(
+                  (m) => m.id !== updatedModel.id,
+                ) ?? []),
+                updatedModel,
               ],
               (m) => m.name,
             );
           });
           if (isCreate) {
-            navigate(createModelEditLink(data.id));
+            navigate(createModelEditLink(updatedModel.id));
             reset(newModel);
             toast.success('Successfully created model!');
           } else {
@@ -159,13 +170,14 @@ export function useModelForm({
       setFormError,
       definition,
       newModel,
+      model,
     ],
   );
 
   return {
-    form,
+    form: form as unknown as UseFormReturn<TDefinition>,
     onFormSubmit,
     originalModel: model,
-    defaultValues,
+    defaultValues: defaultValues as TDefinition,
   };
 }

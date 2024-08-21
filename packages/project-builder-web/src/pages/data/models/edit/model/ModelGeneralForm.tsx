@@ -7,31 +7,24 @@ import { Control } from 'react-hook-form';
 interface ModelGeneralFormProps {
   className?: string;
   control: Control<ModelConfig>;
-  horizontal?: boolean;
 }
 
 export function ModelGeneralForm({
   className,
   control,
-  horizontal,
 }: ModelGeneralFormProps): JSX.Element {
   return (
-    <div
-      className={clsx(horizontal ? 'flex space-x-4' : 'space-y-4', className)}
-    >
+    <div className={clsx('space-y-4', className)}>
       <InputField.Controller
-        label="Name"
-        description="The name of the model (PascalCase)"
         control={control}
+        label="Name"
         name="name"
-        className={horizontal ? 'flex-1' : undefined}
+        description="The name of the model (PascalCase)"
       />
       <FeatureComboboxField.Controller
-        label="Feature"
-        description="The feature this model belongs to"
         control={control}
         name="feature"
-        className={horizontal ? 'flex-1' : undefined}
+        description="The feature this model belongs to"
         canCreate
       />
     </div>

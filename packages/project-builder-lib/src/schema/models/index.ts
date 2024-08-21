@@ -277,31 +277,33 @@ export const modelSchemaSchema = z.object({
 
 export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
 
-export const modelSchema = zEnt(
-  z.object({
-    name: VALIDATORS.PASCAL_CASE_STRING,
-    feature: zRef(z.string().min(1), {
-      type: featureEntityType,
-      onDelete: 'RESTRICT',
-    }),
-    model: z.object({
-      fields: z.array(modelScalarFieldSchema),
-      relations: z.array(modelRelationFieldSchema).optional(),
-      primaryKeys: z
-        .array(
-          zRef(z.string(), {
-            type: modelScalarFieldEntityType,
-            onDelete: 'RESTRICT',
-            parentPath: { context: 'model' },
-          }),
-        )
-        .optional(),
-      uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
-    }),
-    service: modelServiceSchema.optional(),
-    schema: modelSchemaSchema.optional(),
+export const modelBaseSchema = z.object({
+  name: VALIDATORS.PASCAL_CASE_STRING,
+  feature: zRef(z.string().min(1), {
+    type: featureEntityType,
+    onDelete: 'RESTRICT',
   }),
-  { type: modelEntityType, addContext: 'model' },
-);
+  model: z.object({
+    fields: z.array(modelScalarFieldSchema),
+    relations: z.array(modelRelationFieldSchema).optional(),
+    primaryKeys: z
+      .array(
+        zRef(z.string(), {
+          type: modelScalarFieldEntityType,
+          onDelete: 'RESTRICT',
+          parentPath: { context: 'model' },
+        }),
+      )
+      .optional(),
+    uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
+  }),
+  service: modelServiceSchema.optional(),
+  schema: modelSchemaSchema.optional(),
+});
+
+export const modelSchema = zEnt(modelBaseSchema, {
+  type: modelEntityType,
+  addContext: 'model',
+});
 
 export type ModelConfig = z.infer<typeof modelSchema>;

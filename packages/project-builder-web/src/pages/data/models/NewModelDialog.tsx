@@ -1,11 +1,10 @@
-import { FeatureComboboxField } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Dialog,
-  InputField,
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
+import { ModelGeneralForm } from './edit/model/ModelGeneralForm';
 import { useModelForm } from './hooks/useModelForm';
 
 interface NewModelDialogProps {
@@ -32,17 +31,7 @@ export function NewModelDialog({
           <Dialog.Title>New Model</Dialog.Title>
         </Dialog.Header>
         <form onSubmit={onFormSubmit} className="space-y-4">
-          <InputField.Controller
-            control={control}
-            label="Name"
-            name="name"
-            description="The name of the model (PascalCase)"
-          />
-          <FeatureComboboxField.Controller
-            control={control}
-            name="feature"
-            description="The feature this model belongs to"
-          />
+          <ModelGeneralForm control={control} />
           <Dialog.Footer>
             <Dialog.Close asChild>
               <Button variant="secondary">Cancel</Button>
