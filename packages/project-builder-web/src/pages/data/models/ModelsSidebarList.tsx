@@ -1,21 +1,13 @@
 import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Button,
-  InputField,
-  useConfirmDialog,
-} from '@halfdomelabs/ui-components';
+import { Button, InputField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useState } from 'react';
-import { MdAdd, MdClear, MdDelete } from 'react-icons/md';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { MdAdd, MdClear } from 'react-icons/md';
+import { NavLink } from 'react-router-dom';
 
 import { NewModelDialog } from './NewModelDialog';
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { useToast } from '@src/hooks/useToast';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { RefDeleteError } from '@src/utils/error';
 
 interface ModelsSidebarListProps {
   className?: string;
@@ -24,7 +16,6 @@ interface ModelsSidebarListProps {
 export function ModelsSidebarList({
   className,
 }: ModelsSidebarListProps): JSX.Element {
-  const { requestConfirm } = useConfirmDialog();
   const { parsedProject } = useProjectDefinition();
 
   const models = parsedProject.getModels();
