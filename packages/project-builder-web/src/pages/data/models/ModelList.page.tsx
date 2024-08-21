@@ -24,7 +24,7 @@ function ModelListPage(): JSX.Element {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4 text-style-prose">
       <h1>Models</h1>
       <p>
         Models are the building blocks of your app. They define the data

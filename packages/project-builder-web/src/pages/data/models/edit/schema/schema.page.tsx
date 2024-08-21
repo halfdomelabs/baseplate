@@ -57,7 +57,7 @@ function ModelEditSchemaPage(): JSX.Element {
 
   return (
     <>
-      <form onSubmit={onFormSubmit} className="space-y-4">
+      <form onSubmit={onFormSubmit} className="space-y-4 p-4">
         <Alert.WithStatus status={status} />
         <CheckedInput.LabelledController
           label="Build Object Type?"

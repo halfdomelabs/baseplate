@@ -1,10 +1,10 @@
 import { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import { NavigationTabs } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import { Route, Routes } from 'react-router-dom';
+import { NavLink, Route, Routes } from 'react-router-dom';
 
 import AdminGeneralForm from './admin/AdminGeneralForm';
 import AdminSectionsForm from './admin/AdminSectionsForm';
-import { NavigationTabs } from 'src/components';
 
 interface Props {
   className?: string;
@@ -15,8 +15,14 @@ function AdminAppForm({ className, appConfig }: Props): JSX.Element {
   return (
     <div className={clsx('', className)}>
       <NavigationTabs>
-        <NavigationTabs.Tab to="">General</NavigationTabs.Tab>
-        <NavigationTabs.Tab to="sections">Sections</NavigationTabs.Tab>
+        <NavigationTabs.Item asChild>
+          <NavLink to="" end>
+            General
+          </NavLink>
+        </NavigationTabs.Item>
+        <NavigationTabs.Item asChild>
+          <NavLink to="sections">Sections</NavLink>
+        </NavigationTabs.Item>
       </NavigationTabs>
       <div className="bg-slate-200">
         <Routes>

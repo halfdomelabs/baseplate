@@ -1,10 +1,14 @@
 import { FeatureUtils, ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, useConfirmDialog } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  NavigationTabs,
+  useConfirmDialog,
+} from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
@@ -44,7 +48,7 @@ export function ModelHeaderBar({
   };
 
   return (
-    <div className={clsx('flex items-center justify-between', className)}>
+    <div className={clsx('flex items-center justify-between px-4', className)}>
       <div>
         <button
           className="group flex items-center space-x-2 hover:cursor-pointer"
@@ -66,7 +70,7 @@ export function ModelHeaderBar({
           onOpenChange={setIsGeneralEditDialogOpen}
         />
       </div>
-      <div className="space-x-4">
+      <div className="flex gap-8">
         <Button
           variant="outline"
           size="icon"

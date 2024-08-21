@@ -103,7 +103,7 @@ const NavigationMenuItemWithLink = React.forwardRef<
   </NavigationMenuItem>
 ));
 
-NavigationMenuItemWithLink.displayName = 'NavigationMenuItemLinkWithIcon';
+NavigationMenuItemWithLink.displayName = 'NavigationMenuItemWithLink';
 
 const NavigationMenuViewport = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Viewport>,

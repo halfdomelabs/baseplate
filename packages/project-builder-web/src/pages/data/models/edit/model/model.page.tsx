@@ -54,7 +54,7 @@ function ModelEditModelPage(): JSX.Element {
     >
       <form
         onSubmit={onFormSubmit}
-        className="min-w-[700px] max-w-6xl space-y-4"
+        className="min-w-[700px] max-w-7xl flex-1 space-y-4 px-4 pb-4"
       >
         <ModelFieldsForm control={control} setValue={setValue} />
         <ModelRelationsForm control={control} originalModel={originalModel} />
