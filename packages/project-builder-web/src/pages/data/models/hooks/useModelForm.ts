@@ -107,6 +107,10 @@ export function useModelForm<
             // generate new ID if new
             id: model?.id ?? modelEntityType.generateNewId(),
           };
+          if (!updatedModel.model?.fields?.length) {
+            toast.error('Model must have at least one field.');
+            return;
+          }
           if (!updatedModel.service?.build && updatedModel.service) {
             updatedModel.service = undefined;
           }

@@ -43,7 +43,7 @@ function ModelEditModelPage(): JSX.Element {
 
   useBlockUnsavedChangesNavigate(form.formState, {
     reset: form.reset,
-    onSubmit: onSubmit,
+    onSubmit,
   });
 
   return (

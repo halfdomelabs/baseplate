@@ -1,10 +1,5 @@
-import {
-  ModelConfig,
-  modelScalarFieldEntityType,
-} from '@halfdomelabs/project-builder-lib';
-import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { clsx } from 'clsx';
-import { useMemo } from 'react';
 import {
   Control,
   FieldArrayWithId,
@@ -12,8 +7,8 @@ import {
   useFieldArray,
   useWatch,
 } from 'react-hook-form';
-import { MdExpandMore } from 'react-icons/md';
 
+import { ModelAddFieldButton } from './ModelAddFieldButton';
 import ModelFieldForm from './ModelFieldForm';
 import { SortableList } from 'src/components/SortableList';
 
@@ -21,11 +16,6 @@ interface ModelFieldsFormProps {
   className?: string;
   control: Control<ModelConfig>;
   setValue: UseFormSetValue<ModelConfig>;
-}
-
-interface AutoAddField {
-  name: string;
-  addField: () => void;
 }
 
 export function TableHeader({
@@ -64,63 +54,8 @@ export function ModelFieldsForm({
 
   const fields = useWatch({ control, name: 'model.fields' });
 
-  const availableAutoFields = useMemo(() => {
-    const autoFields: AutoAddField[] = [];
-    if (!fields?.find((f) => f.name === 'id')) {
-      autoFields.push({
-        name: 'ID (uuid)',
-        addField: () =>
-          appendField({
-            id: modelScalarFieldEntityType.generateNewId(),
-            name: 'id',
-            type: 'uuid',
-            isId: true,
-            options: {
-              genUuid: true,
-            },
-          }),
-      });
-    }
-    const hasCreatedAt = fields?.find((f) => f.name === 'createdAt');
-    const hasUpdatedAt = fields?.find((f) => f.name === 'updatedAt');
-    if (!hasCreatedAt || !hasUpdatedAt) {
-      autoFields.push({
-        name: 'Timestamps',
-        addField: () =>
-          appendField([
-            ...(hasUpdatedAt
-              ? []
-              : [
-                  {
-                    id: modelScalarFieldEntityType.generateNewId(),
-                    name: 'updatedAt',
-                    type: 'dateTime' as const,
-                    options: {
-                      updatedAt: true,
-                      defaultToNow: true,
-                    },
-                  },
-                ]),
-            ...(hasCreatedAt
-              ? []
-              : [
-                  {
-                    id: modelScalarFieldEntityType.generateNewId(),
-                    name: 'createdAt',
-                    type: 'dateTime' as const,
-                    options: {
-                      defaultToNow: true,
-                    },
-                  },
-                ]),
-          ]),
-      });
-    }
-    return autoFields;
-  }, [fields, appendField]);
-
   const gridClassNames = clsx(
-    'grid grid-cols-[repeat(3,1fr)_repeat(3,60px)_100px_80px] gap-2',
+    'grid grid-cols-[repeat(2,1fr)_60px_1fr_repeat(2,60px)_1fr_80px] gap-3',
   );
 
   const fieldListItems = fieldFields.map((f: FieldArrayWithId, i: number) => ({
@@ -139,7 +74,9 @@ export function ModelFieldsForm({
 
   return (
     <div className={clsx('space-y-4', className)}>
-      {!fields.length ? undefined : (
+      {!fields.length ? (
+        <p className="pt-4 text-style-muted">Add some fields to get started</p>
+      ) : (
         <div className="-m-2 flex w-full flex-col gap-2 bg-white p-2">
           <div
             className={clsx(
@@ -151,9 +88,9 @@ export function ModelFieldsForm({
           >
             <div>Name</div>
             <div>Type</div>
+            <div>Optional</div>
             <div>Default Value</div>
             <div>Primary</div>
-            <div>Optional</div>
             <div>Unique</div>
             <div className="sr-only">Tags</div>
             <div className="sr-only">Actions</div>
@@ -161,39 +98,7 @@ export function ModelFieldsForm({
           <SortableList listItems={fieldListItems} sortItems={sortFields} />
         </div>
       )}
-      <div className="flex flex-row space-x-4">
-        <ButtonGroup>
-          <ButtonGroup.Button
-            variant="secondary"
-            onClick={() =>
-              appendField({
-                id: modelScalarFieldEntityType.generateNewId(),
-                name: '',
-                type: 'string',
-              })
-            }
-          >
-            Add Field
-          </ButtonGroup.Button>
-          <Dropdown>
-            <Dropdown.Trigger
-              disabled={availableAutoFields.length === 0}
-              asChild
-            >
-              <ButtonGroup.Button variant="secondary">
-                <Button.Icon icon={MdExpandMore} />
-              </ButtonGroup.Button>
-            </Dropdown.Trigger>
-            <Dropdown.Content>
-              {availableAutoFields.map((field) => (
-                <Dropdown.Item key={field.name} onClick={field.addField}>
-                  {field.name}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Content>
-          </Dropdown>
-        </ButtonGroup>
-      </div>
+      <ModelAddFieldButton control={control} appendField={appendField} />
     </div>
   );
 }

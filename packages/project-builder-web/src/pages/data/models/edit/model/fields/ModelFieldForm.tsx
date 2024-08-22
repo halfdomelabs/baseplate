@@ -99,6 +99,12 @@ function ModelFieldForm({
       <div>
         <ModelFieldTypeInput control={control} idx={idx} />
       </div>
+      <div>
+        <SwitchField.Controller
+          control={control}
+          name={`model.fields.${idx}.isOptional`}
+        />
+      </div>
       <div className="mr-4">
         <ModelFieldDefaultValueInput
           control={control}
@@ -110,12 +116,6 @@ function ModelFieldForm({
         <SwitchField.Controller
           control={control}
           name={`model.fields.${idx}.isId`}
-        />
-      </div>
-      <div>
-        <SwitchField.Controller
-          control={control}
-          name={`model.fields.${idx}.isOptional`}
         />
       </div>
       <div>
