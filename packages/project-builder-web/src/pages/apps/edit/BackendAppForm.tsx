@@ -3,7 +3,7 @@ import {
   backendAppSchema,
 } from '@halfdomelabs/project-builder-lib';
 import {
-  useBlockDirtyFormNavigate,
+  useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
@@ -29,20 +29,21 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
   const { control, handleSubmit, formState, reset } = formProps;
   const toast = useToast();
 
-  useBlockDirtyFormNavigate(formState, reset);
-
-  function onSubmit(data: BackendAppConfig): void {
+  const onSubmit = handleSubmit((data) => {
     setConfigAndFixReferences((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
         app.id === appConfig.id ? data : app,
       );
     });
+    reset(data);
     toast.success('Successfully saved app!');
-  }
+  });
+
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
   return (
     <div className={clsx('', className)}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         <TextInput.LabelledController
           label="Name"
           control={control}

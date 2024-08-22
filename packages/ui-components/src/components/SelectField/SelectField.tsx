@@ -1,18 +1,13 @@
 import { ForwardedRef } from 'react';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  PathValue,
-  useController,
-} from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormItem } from '../FormItem/FormItem.js';
 import { Select } from '../Select/Select.js';
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import {
+  AddOptionRequiredFields,
   FieldProps,
   SelectOptionProps,
-  AddOptionRequiredFields,
 } from '@src/types/form.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
@@ -21,6 +16,10 @@ export interface SelectFieldProps<OptionType>
     FieldProps {
   className?: string;
 }
+
+// we have to use a sentinel value to detect null values since Radix Select doesn't support empty values
+// https://github.com/radix-ui/primitives/issues/2706
+const NULL_SENTINEL = '__NULL_VALUE__';
 
 const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
   {
@@ -37,20 +36,25 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
     onChange,
     ...props
   }: SelectFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
+  const selectedValue = (() => {
+    if (!selectedOption || value === undefined) return '';
+    return value ?? NULL_SENTINEL;
+  })();
+
   return (
-    <FormItem ref={ref} error={error} className={className}>
+    <FormItem error={error} className={className}>
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <Select
-        value={selectedOption ? value ?? '' : ''}
-        onValueChange={(val) => onChange?.(val)}
+        value={selectedValue}
+        onValueChange={(val) => onChange?.(val === NULL_SENTINEL ? null : val)}
         {...props}
       >
         <FormItem.Control>
-          <Select.Trigger>
+          <Select.Trigger ref={ref}>
             <Select.Value placeholder={placeholder}>
               {selectedOption ? getOptionLabel(selectedOption) : null}
             </Select.Value>
@@ -62,7 +66,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
               const val = getOptionValue(option);
               const label = getOptionLabel(option);
               return (
-                <Select.Item value={val} key={val}>
+                <Select.Item value={val ?? NULL_SENTINEL} key={val}>
                   {renderItemLabel
                     ? renderItemLabel(option, { selected: val === value })
                     : label}
@@ -84,7 +88,7 @@ interface SelectFieldControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<SelectFieldProps<OptionType>, 'register'> {
+> extends Omit<SelectFieldProps<OptionType>, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
@@ -103,35 +107,20 @@ const SelectFieldController = genericForwardRef(function SelectFieldController<
   {
     name,
     control,
-    onChange,
     ...rest
   }: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
     AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const {
     field,
     fieldState: { error },
-  } = useController({
-    name,
-    control,
-  });
+  } = useControllerMerged({ name, control }, rest, ref);
 
   const restProps = rest as SelectFieldProps<OptionType> &
     AddOptionRequiredFields<OptionType>;
 
-  return (
-    <SelectFieldRoot
-      onChange={(value) => {
-        field.onChange(value as PathValue<TFieldValues, TFieldName>);
-        onChange?.(value);
-      }}
-      ref={ref}
-      value={field.value}
-      error={error?.message}
-      {...restProps}
-    />
-  );
+  return <SelectFieldRoot error={error?.message} {...restProps} {...field} />;
 });
 
 export const SelectField = Object.assign(SelectFieldRoot, {

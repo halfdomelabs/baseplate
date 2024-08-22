@@ -87,7 +87,7 @@ export function pluginDevServerPlugin(): Plugin {
               type: 'custom',
               event: 'plugin-assets-changed',
             });
-          }, 300);
+          }, 500);
         });
       }
 
@@ -118,27 +118,33 @@ export function pluginDevServerPlugin(): Plugin {
                 return;
               }
 
-              if (fs.existsSync(fullAssetPath)) {
+              const respondWithAsset = (): void => {
                 res.setHeader(
                   'Content-Type',
                   mime.getType(fullAssetPath) ?? 'application/octet-stream',
                 );
                 res.end(fs.readFileSync(fullAssetPath));
+              };
+
+              if (fs.existsSync(fullAssetPath)) {
+                respondWithAsset();
                 return;
               } else {
-                // wait 1 second to load the file sync in case it's still being written
-                setTimeout(() => {
+                // try for 10 seconds in case it's still being written
+                let tries = 0;
+                const interval = setInterval(() => {
                   if (fs.existsSync(fullAssetPath)) {
-                    res.setHeader(
-                      'Content-Type',
-                      mime.getType(fullAssetPath) ?? 'application/octet-stream',
-                    );
-                    res.end(fs.readFileSync(fullAssetPath));
+                    clearInterval(interval);
+                    respondWithAsset();
                   } else {
-                    res.statusCode = 404;
-                    res.end('Not found');
+                    tries++;
+                    if (tries > 50) {
+                      clearInterval(interval);
+                      res.statusCode = 404;
+                      res.end('Not found');
+                    }
                   }
-                }, 1000);
+                }, 200);
                 return;
               }
             }

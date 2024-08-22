@@ -1,30 +1,16 @@
-import {
-  EnumConfig,
-  modelEnumValueEntityType,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { ComboboxField } from '@halfdomelabs/ui-components';
-import { UseFormReturn, useFieldArray } from 'react-hook-form';
+import { modelEnumValueEntityType } from '@halfdomelabs/project-builder-lib';
+import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
+import { useFieldArray } from 'react-hook-form';
 
-import EnumFormActionBar from './EnumFormActionBar';
+import { EnumInfoForm } from './EnumInfoForm';
+import DataFormActionBar from '../../components/DataFormActionBar';
+import { useEnumForm } from '../hooks/useEnumForm';
 import { Button, TextInput } from 'src/components';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
-interface Props {
-  form: UseFormReturn<EnumConfig>;
-  onSubmit: (config: EnumConfig) => void;
-}
-
-function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
-  const { parsedProject } = useProjectDefinition();
-  const { control, handleSubmit, setValue, watch } = form;
-
-  const featureOptions = (parsedProject.projectDefinition.features ?? []).map(
-    (f) => ({
-      label: f.name,
-      value: f.id,
-    }),
-  );
+function EnumEditForm(): JSX.Element {
+  const { form, onSubmit } = useEnumForm();
+  const { control, setValue, formState, watch, reset } = form;
 
   const {
     fields: valueFields,
@@ -37,15 +23,11 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
 
   const values = watch('values');
 
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <ComboboxField.Controller
-        label="Feature"
-        control={control}
-        name="feature"
-        options={featureOptions}
-        placeholder="Select a feature"
-      />
+    <form onSubmit={onSubmit} className="space-y-4 p-4">
+      <EnumInfoForm control={control} />
       <h3>Values</h3>
       {valueFields.map((field, i) => (
         <div key={field.id}>
@@ -86,7 +68,7 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
       >
         Add Value
       </Button>
-      <EnumFormActionBar form={form} />
+      <DataFormActionBar form={form} />
     </form>
   );
 }

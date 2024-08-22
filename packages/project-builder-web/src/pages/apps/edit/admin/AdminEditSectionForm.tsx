@@ -6,10 +6,10 @@ import {
   zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
 import {
+  useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
@@ -55,11 +55,40 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
 
   const { control, handleSubmit, watch, reset, formState } = formProps;
 
-  useBlockDirtyFormNavigate(formState, reset);
-
   useEffect(() => {
     reset(existingSection ?? { type: 'crud' });
   }, [reset, existingSection]);
+
+  const onSubmit = handleSubmit((data) => {
+    try {
+      const id = data.id || adminSectionEntityType.generateNewId();
+      setConfigAndFixReferences((config) => {
+        const adminApp = config.apps.find((app) => app.id === appConfig.id);
+        if (adminApp?.type !== 'admin') {
+          throw new Error('Cannot add a section to a non-admin app');
+        }
+
+        adminApp.sections = _.sortBy(
+          [
+            ...(adminApp.sections ?? []).filter(
+              (section) => !sectionId || section.id !== sectionId,
+            ),
+            { ...data, id },
+          ],
+          'name',
+        );
+      });
+      if (!sectionId) {
+        navigate(`edit/${adminSectionEntityType.toUid(id)}`);
+      }
+      toast.success('Successfully saved section!');
+      reset(data);
+    } catch (err) {
+      toast.error(formatError(err));
+    }
+  });
+
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
   const type = watch('type');
 
@@ -90,34 +119,6 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     });
   }
 
-  function onSubmit(data: AdminSectionConfig): void {
-    try {
-      const id = data.id || adminSectionEntityType.generateNewId();
-      setConfigAndFixReferences((config) => {
-        const adminApp = config.apps.find((app) => app.id === appConfig.id);
-        if (adminApp?.type !== 'admin') {
-          throw new Error('Cannot add a section to a non-admin app');
-        }
-
-        adminApp.sections = _.sortBy(
-          [
-            ...(adminApp.sections ?? []).filter(
-              (section) => !sectionId || section.id !== sectionId,
-            ),
-            { ...data, id },
-          ],
-          'name',
-        );
-      });
-      if (!sectionId) {
-        navigate(`edit/${adminSectionEntityType.toUid(id)}`);
-      }
-      toast.success('Successfully saved section!');
-    } catch (err) {
-      toast.error(formatError(err));
-    }
-  }
-
   const featureOptions = parsedProject.projectDefinition.features.map((f) => ({
     label: f.name,
     value: f.id,
@@ -125,7 +126,7 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
 
   return (
     <div className={clsx('', className)}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={onSubmit} className="space-y-4">
         {sectionId && (
           <LinkButton onClick={() => handleDelete()}>Delete Section</LinkButton>
         )}

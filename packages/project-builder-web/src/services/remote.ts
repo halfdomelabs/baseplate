@@ -85,9 +85,12 @@ export async function uploadProjectDefinition(
   return response.result;
 }
 
-export async function startSync(id: string): Promise<void> {
+export async function startSync(
+  id: string,
+  payload: FilePayload,
+): Promise<void> {
   if (IS_PREVIEW) {
     return;
   }
-  await client.sync.startSync.mutate({ id });
+  await client.sync.startSync.mutate({ id, payload });
 }

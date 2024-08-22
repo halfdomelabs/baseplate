@@ -1,17 +1,17 @@
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SidebarLayout } from '@halfdomelabs/ui-components';
+import { SidebarLayout, NavigationTabs } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
-import { Outlet, useMatch } from 'react-router-dom';
+import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
 import { ModelsSidebarList } from './models/ModelsSidebarList';
-import { TabNavigation } from '@src/components/TabNavigation/TabNavigation';
+import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 
 export function DataLayout(): JSX.Element {
-  const { parsedProject } = useProjectDefinition();
+  const {
+    definition: { models = [], enums = [] },
+  } = useProjectDefinition();
 
-  const models = parsedProject.getModels();
-  const enums = parsedProject.getEnums();
   const longestName = _.maxBy(
     [...models, ...enums],
     (m) => m.name.length,
@@ -23,25 +23,32 @@ export function DataLayout(): JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar
-        className="flex h-full max-w-sm flex-col space-y-4"
+        className="flex h-[calc(100vh-var(--topbar-height)-1px)] min-w-[230px] max-w-sm flex-col space-y-4"
         width="auto"
+        noPadding
       >
-        <TabNavigation.Container className="w-full">
-          <TabNavigation.Link to="./models">Models</TabNavigation.Link>
-          <TabNavigation.Link to="./enums">Enums</TabNavigation.Link>
-        </TabNavigation.Container>
-        {modelsActive ? <ModelsSidebarList /> : null}
-        {enumsActive ? <EnumsSidebarList /> : null}
         {/* Allows us to ensure the width doesn't change when selected is semi-bold or search filter is active */}
-        <div className="invisible block h-1 overflow-hidden overflow-y-scroll font-semibold text-transparent">
+        <div className="invisible block h-1 overflow-hidden font-semibold text-transparent">
           {longestName}
         </div>
+        <div className="px-4">
+          <NavigationTabs className="w-full">
+            <NavigationTabs.Item asChild>
+              <NavLink to="models">Models</NavLink>
+            </NavigationTabs.Item>
+            <NavigationTabs.Item asChild>
+              <NavLink to="enums">Enums</NavLink>
+            </NavigationTabs.Item>
+          </NavigationTabs>
+        </div>
+        {modelsActive ? <ModelsSidebarList /> : null}
+        {enumsActive ? <EnumsSidebarList /> : null}
       </SidebarLayout.Sidebar>
-      <div className="relative size-full pb-[65px]">
-        <SidebarLayout.Content className="h-full p-6">
+      <SidebarLayout.Content className="h-[calc(100vh-var(--topbar-height)-1px)]">
+        <ErrorBoundary>
           <Outlet />
-        </SidebarLayout.Content>
-      </div>
+        </ErrorBoundary>
+      </SidebarLayout.Content>
     </SidebarLayout>
   );
 }

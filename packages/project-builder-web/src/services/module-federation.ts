@@ -9,14 +9,23 @@ import {
   __federation_method_unwrapDefault,
 } from 'virtual:__federation__';
 
+let randomSeed = Math.random();
+
+/**
+ * Reset the seed used to load plugin modules. This is useful during development
+ * if plugin assets have changed.
+ */
+export function resetPluginModuleSeed(): void {
+  randomSeed = Math.random();
+}
+
 export async function loadPluginModule(
   projectId: string,
   pluginMetadata: PluginMetadataWithPaths,
 ): Promise<KeyedPluginPlatformModule[]> {
   const pluginKey = `${projectId}/${pluginMetadata.id}`;
   // use random entry to bust cache
-  const randomEntry = Math.random();
-  const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.id}/web/assets/remoteEntry.js?rnd=${randomEntry}`;
+  const remoteEntry = `/api/plugins/${projectId}/${pluginMetadata.id}/web/assets/remoteEntry.js?rnd=${randomSeed}`;
 
   __federation_method_setRemote(pluginKey, {
     url: remoteEntry,

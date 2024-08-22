@@ -1,28 +1,32 @@
 import {
   EnumConfig,
+  EnumUtils,
+  FeatureUtils,
   enumSchema,
   modelEnumEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
-import { useConfirmDialog } from '@halfdomelabs/ui-components';
+import {
+  usePluginEnhancedSchema,
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
+import { toast, useEventCallback } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { z } from 'zod';
 
+import { createEnumEditLink } from '../../models/utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { useToast } from '@src/hooks/useToast';
-import { formatError } from '@src/services/error-formatter';
-import { logger } from '@src/services/logger';
-import { RefDeleteError } from '@src/utils/error';
+import { logAndFormatError } from '@src/services/error-formatter';
+import { NotFoundError, RefDeleteError } from '@src/utils/error';
 
 interface UseEnumFormOptions {
-  setError?: (error: string) => void;
+  schema?: z.ZodTypeAny;
   onSubmitSuccess?: () => void;
-  clearOnSubmit?: boolean;
-  uid?: string;
+  isCreate?: boolean;
 }
 
 function createNewEnum(): EnumConfig {
@@ -36,103 +40,119 @@ function createNewEnum(): EnumConfig {
 }
 
 export function useEnumForm({
-  setError,
+  schema,
   onSubmitSuccess,
-  clearOnSubmit,
-  uid,
-}: UseEnumFormOptions): {
+  isCreate,
+}: UseEnumFormOptions = {}): {
   form: UseFormReturn<EnumConfig>;
-  submitHandler: (data: EnumConfig) => void;
-  handleDelete: () => void;
+  onSubmit: () => Promise<void>;
 } {
-  const { parsedProject, setConfigAndFixReferences } = useProjectDefinition();
-  const toast = useToast();
+  const { uid } = useParams<'uid'>();
+  const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
-  const urlEnumId = uid ? modelEnumEntityType.fromUid(uid) : undefined;
-  const enumBlock = parsedProject.getEnums().find((m) => m.id === urlEnumId);
+
+  const urlEnumId = isCreate ? undefined : modelEnumEntityType.fromUid(uid);
+  const enumDefinition = urlEnumId
+    ? EnumUtils.byId(definition, urlEnumId)
+    : undefined;
+
+  if (!isCreate && !enumDefinition) {
+    throw new NotFoundError('Enum not found');
+  }
+
   const { showRefIssues } = useDeleteReferenceDialog();
-  const { requestConfirm } = useConfirmDialog();
 
-  const newEnumBlock = useMemo(() => createNewEnum(), []);
+  // memoize it to keep the same UID when resetting
+  const newEnumDefinition = useMemo(() => createNewEnum(), []);
 
-  const defaultValues = enumBlock ?? newEnumBlock;
+  const enumSchemaWithPlugins = usePluginEnhancedSchema(schema ?? enumSchema);
+
+  const defaultValues = useMemo(() => {
+    const enumToUse = enumDefinition ?? newEnumDefinition;
+    return !schema
+      ? enumToUse
+      : (enumSchemaWithPlugins.parse(enumToUse) as EnumConfig);
+  }, [enumDefinition, newEnumDefinition, schema, enumSchemaWithPlugins]);
 
   const form = useResettableForm({
+    resolver: zodResolver(enumSchemaWithPlugins),
     defaultValues,
-    resolver: zodResolver(enumSchema),
   });
 
-  const { reset } = form;
+  const { reset, handleSubmit, setError } = form;
 
-  const handleDelete = (): void => {
-    requestConfirm({
-      title: 'Delete Model',
-      content: `Are you sure you want to delete ${enumBlock?.name ?? 'model'}?`,
-      onConfirm: () => {
+  const handleSubmitSuccess = useEventCallback(onSubmitSuccess);
+
+  const onSubmit = useMemo(
+    () =>
+      handleSubmit((data) => {
         try {
+          const updatedDefinition = {
+            ...enumDefinition,
+            ...data,
+            // generate new ID if new
+            id: enumDefinition?.id ?? modelEnumEntityType.generateNewId(),
+          };
+          // check for enums with the same name
+          const existingEnum = definition.enums?.find(
+            (e) =>
+              e.id !== updatedDefinition.id &&
+              e.name.toLowerCase() === data.name.toLowerCase(),
+          );
+          if (existingEnum) {
+            setError('name', {
+              message: `Enum with name ${updatedDefinition.name} already exists.`,
+            });
+            return;
+          }
+
           setConfigAndFixReferences((draftConfig) => {
-            draftConfig.enums = draftConfig.enums?.filter(
-              (m) => m.id !== enumBlock?.id,
+            // create feature if a new feature exists
+            data.feature = FeatureUtils.ensureFeatureByNameRecursively(
+              draftConfig,
+              data.feature,
+            );
+            draftConfig.enums = _.sortBy(
+              [
+                ...(draftConfig.enums?.filter((e) => e.id !== data.id) ?? []),
+                data,
+              ],
+              (e) => e.name,
             );
           });
-          navigate('..');
+
+          if (isCreate) {
+            navigate(createEnumEditLink(updatedDefinition.id));
+            reset(newEnumDefinition);
+            toast.success('Successfully created model!');
+          } else {
+            reset(data);
+            toast.success('Successfully saved model!');
+          }
+
+          handleSubmitSuccess?.();
         } catch (err) {
           if (err instanceof RefDeleteError) {
             showRefIssues({ issues: err.issues });
             return;
           }
-          logger.error(err);
-          if (setError) {
-            setError(formatError(err));
-          } else {
-            toast.error(formatError(err));
-          }
+          toast.error(logAndFormatError(err));
         }
-      },
-    });
-  };
-
-  const submitHandler = useCallback(
-    (data: EnumConfig): void => {
-      try {
-        setConfigAndFixReferences((draftConfig) => {
-          draftConfig.enums = _.sortBy(
-            [
-              ...(draftConfig.enums?.filter((e) => e.id !== data.id) ?? []),
-              data,
-            ],
-            (e) => e.name,
-          );
-        });
-        toast.success(`Successfully saved enum ${data.name}`);
-        const id = data.id;
-        clearOnSubmit ? reset() : reset(data);
-        onSubmitSuccess?.();
-        navigate(`/data/enums/edit/${modelEnumEntityType.toUid(id)}`);
-      } catch (err) {
-        if (err instanceof RefDeleteError) {
-          showRefIssues({ issues: err.issues });
-          return;
-        }
-        logger.error(err);
-        if (setError) {
-          setError(formatError(err));
-        } else {
-          toast.error(formatError(err));
-        }
-      }
-    },
+      }),
     [
-      clearOnSubmit,
       navigate,
-      onSubmitSuccess,
       reset,
       setConfigAndFixReferences,
       setError,
       showRefIssues,
-      toast,
+      handleSubmit,
+      definition,
+      isCreate,
+      enumDefinition,
+      newEnumDefinition,
+      handleSubmitSuccess,
     ],
   );
 
-  return { form, submitHandler, handleDelete };
+  return { form, onSubmit };
 }

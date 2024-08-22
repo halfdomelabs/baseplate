@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/create-project",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "CLI starter kit for creating a new Baseplate project",
   "license": "MIT",
   "author": "Half Dome Labs LLC",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^4.3.2",
-    "axios": "1.6.8",
+    "axios": "1.7.4",
     "chalk": "5.3.0",
     "commander": "^11.0.0",
     "execa": "9.3.0",

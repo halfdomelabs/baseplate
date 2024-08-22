@@ -29,6 +29,7 @@ export interface UseProjectDefinitionResult {
   externalChangeCounter: number;
   pluginContainer: PluginImplementationStore;
   schemaParserContext: SchemaParserContext;
+  lastModifiedAt?: string;
 }
 
 export const ProjectDefinitionContext =

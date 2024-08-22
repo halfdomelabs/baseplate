@@ -8,10 +8,11 @@ import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
 import { useProjects } from '@src/hooks/useProjects';
+import { prettyStableStringify } from '@src/utils/json';
 import Console, { ConsoleRef } from 'src/components/Console';
 import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
-import { startSync } from 'src/services/remote';
+import { FilePayload, startSync } from 'src/services/remote';
 
 interface Props {
   className?: string;
@@ -21,23 +22,30 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const toast = useToast();
-  const { definition, setConfig } = useProjectDefinition();
+  const { definitionContainer, lastModifiedAt } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
+
+  const definitionContainerRef = useRef(definitionContainer);
+  definitionContainerRef.current = definitionContainer;
 
   const startSyncProject = (): void => {
     setLastSyncedAt(new Date());
     if (!currentProjectId) {
       return;
     }
-    // save config when syncing to ensure any migrations/cli versions are set
-    setConfig(definition);
-    // TODO: this is a hack to ensure we don't attempt to read from the file while we write to it
+    const serializedConfig = prettyStableStringify(
+      definitionContainerRef.current.toSerializedConfig(),
+    );
+    const payload: FilePayload = {
+      contents: serializedConfig,
+      lastModifiedAt: lastModifiedAt ?? new Date(0).toISOString(),
+    };
 
-    setTimeout(() => {
-      clearConsoleRef.current?.clearConsole();
-      startSync(currentProjectId).catch((err) => toast.error(formatError(err)));
-    }, 300);
+    clearConsoleRef.current?.clearConsole();
+    startSync(currentProjectId, payload).catch((err) =>
+      toast.error(formatError(err)),
+    );
     setIsOpen(true);
   };
 

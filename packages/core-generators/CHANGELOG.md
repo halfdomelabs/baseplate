@@ -1,5 +1,13 @@
 # @halfdomelabs/core-generators
 
+## 0.9.5
+
+### Patch Changes
+
+- 1835934: Update tsconfig to support Node 20 target/lib
+- Updated dependencies [f44674a]
+  - @halfdomelabs/sync@0.7.8
+
 ## 0.9.4
 
 ### Patch Changes

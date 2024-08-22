@@ -23,7 +23,7 @@ export interface FilePayload {
   lastModifiedAt: string;
 }
 
-type WriteResult =
+export type WriteResult =
   | { type: 'success'; lastModifiedAt: string }
   | { type: 'modified-more-recently' };
 

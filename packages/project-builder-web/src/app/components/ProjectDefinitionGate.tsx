@@ -57,6 +57,7 @@ export function ProjectDefinitionGate({
     externalChangeCounter,
     downloadConfig,
     schemaParserContext,
+    lastModifiedAt,
   } = useRemoteProjectDefinition();
   const { projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion, refreshVersion } = useClientVersion();
@@ -243,6 +244,7 @@ export function ProjectDefinitionGate({
       setConfig,
       pluginContainer,
       schemaParserContext,
+      lastModifiedAt,
     };
   }, [
     loadData,
@@ -251,12 +253,13 @@ export function ProjectDefinitionGate({
     externalChangeCounter,
     projectId,
     schemaParserContext,
+    lastModifiedAt,
   ]);
 
   const compositeError =
     error ?? (loadData.status === 'error' ? loadData.configError : undefined);
 
-  if (!loaded || compositeError) {
+  if (!loaded || compositeError || !result) {
     return (
       <ErrorableLoader
         error={
@@ -290,7 +293,7 @@ export function ProjectDefinitionGate({
     );
   }
 
-  if (!result?.parsedProject.projectDefinition.isInitialized) {
+  if (!result.definition.isInitialized) {
     return (
       <div className="flex h-full items-center justify-center">
         <NewProjectCard

@@ -36,7 +36,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ reactApp, reactError, reactComponents, typescript, node }) {
     node.addPackages({
-      'react-error-boundary': '4.0.10',
+      'react-error-boundary': '4.0.13',
     });
     const [errorBoundaryImport, errorBoundaryPath] = makeImportAndFilePath(
       'src/components/ErrorBoundary/index.tsx',

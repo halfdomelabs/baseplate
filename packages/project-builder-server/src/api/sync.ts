@@ -7,6 +7,7 @@ import { BaseplateApiContext } from './types.js';
 import {
   CommandConsoleEmittedPayload,
   ProjectBuilderService,
+  WriteResult,
 } from '@src/service/builder-service.js';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -27,14 +28,25 @@ export function createSyncRouter({ services, logger }: BaseplateApiContext) {
       .input(
         z.object({
           id: z.string(),
+          payload: z
+            .object({
+              contents: z.string(),
+              lastModifiedAt: z.string(),
+            })
+            .optional(),
         }),
       )
-      .mutation(({ input: { id } }) => {
+      .mutation(async ({ input: { id, payload } }) => {
         const api = getApi(id);
+        let writeResult: WriteResult | null = null;
+
+        if (payload) {
+          writeResult = await api.writeConfig(payload);
+        }
 
         api.buildProject().catch((err) => logger.error(err));
 
-        return { success: true };
+        return { success: true, writeResult };
       }),
 
     onConsoleEmitted: websocketProcedure

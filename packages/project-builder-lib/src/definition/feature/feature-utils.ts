@@ -1,4 +1,9 @@
-import { FeatureConfig, ProjectDefinition } from '@src/schema/index.js';
+import {
+  FeatureConfig,
+  ProjectDefinition,
+  featureEntityType,
+  featureNameSchema,
+} from '@src/schema/index.js';
 
 function getRootFeatures(
   projectDefinition: ProjectDefinition,
@@ -51,6 +56,45 @@ function getFeaturePathById(
   return feature.name;
 }
 
+function validateFeatureName(name: string): boolean {
+  const nameParts = name.split('/');
+  return nameParts.every((part) => featureNameSchema.safeParse(part).success);
+}
+
+function ensureFeatureByNameRecursively(
+  projectDefinition: ProjectDefinition,
+  nameOrId: string,
+): string {
+  if (featureEntityType.isId(nameOrId)) {
+    return nameOrId;
+  }
+  const nameParts = nameOrId.split('/');
+  let lastName = '';
+  let parentRef: string | null = null;
+  for (const part of nameParts) {
+    const feature = projectDefinition.features.find(
+      (f) => f.name === part && f.parentRef === parentRef,
+    );
+    const name = [lastName, part].filter(Boolean).join('/');
+    if (feature) {
+      parentRef = feature.id;
+    } else {
+      const newFeature: FeatureConfig = {
+        id: featureEntityType.generateNewId(),
+        name,
+        parentRef,
+      };
+      projectDefinition.features.push(newFeature);
+      parentRef = newFeature.id;
+    }
+    lastName = name;
+  }
+  if (!parentRef) {
+    throw new Error('Failed to create feature');
+  }
+  return parentRef;
+}
+
 export const FeatureUtils = {
   getRootFeatures,
   getFeatureById,
@@ -59,4 +103,6 @@ export const FeatureUtils = {
   getFeatureName,
   getFeatureNameById,
   getFeaturePathById,
+  validateFeatureName,
+  ensureFeatureByNameRecursively,
 };

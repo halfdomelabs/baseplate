@@ -86,11 +86,13 @@ export function AppBreadcrumbs(): JSX.Element {
           )}
           {crumbs.map((crumb, index) => (
             <Fragment key={crumb.id}>
-              {index !== 0 && <Breadcrumb.Separator />}
+              {index !== 0 && (
+                <Breadcrumb.Separator className="hidden sm:block" />
+              )}
               {index === crumbs.length - 1 ? (
                 <Breadcrumb.Page>{crumb.label}</Breadcrumb.Page>
               ) : (
-                <Breadcrumb.Item>
+                <Breadcrumb.Item className="hidden sm:block">
                   {crumb.url ? (
                     <Breadcrumb.Link asChild>
                       <Link to={crumb.url}>{crumb.label}</Link>

@@ -13,6 +13,10 @@ export type SelectOptionStringExtractor<OptionType> = (
   value: OptionType,
 ) => string;
 
+export type SelectOptionStringOrNullExtractor<OptionType> = (
+  value: OptionType,
+) => string | null;
+
 export interface MultiSelectOptionProps<OptionType> {
   options: OptionType[];
   onChange?(value: string[]): void;
@@ -29,7 +33,7 @@ export interface SelectOptionProps<OptionType> {
   value?: string | null;
   renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
   getOptionLabel?: SelectOptionStringExtractor<OptionType>;
-  getOptionValue?: SelectOptionStringExtractor<OptionType>;
+  getOptionValue?: SelectOptionStringOrNullExtractor<OptionType>;
   placeholder?: string;
 }
 
@@ -41,8 +45,8 @@ export type AddOptionRequiredFields<OptionType> = (OptionType extends {
       renderItemLabel?: SelectOptionLabelRenderer<OptionType>;
       getOptionLabel: SelectOptionStringExtractor<OptionType>;
     }) &
-  (OptionType extends { value: string | number }
+  (OptionType extends { value: string }
     ? unknown
     : {
-        getOptionValue: SelectOptionStringExtractor<OptionType>;
+        getOptionValue: SelectOptionStringOrNullExtractor<OptionType>;
       });

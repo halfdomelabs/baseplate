@@ -2,4 +2,4 @@
 "@halfdomelabs/project-builder-web": patch
 ---
 
-Update topbar/sidebar styles and spacing
+Deleting model should take you to models home

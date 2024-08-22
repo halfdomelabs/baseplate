@@ -1,29 +1,33 @@
 import {
+  FeatureUtils,
   ModelConfig,
+  ModelUtils,
   modelEntityType,
   modelScalarFieldEntityType,
   modelSchema,
-  zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
 import {
+  usePluginEnhancedSchema,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { toast } from '@halfdomelabs/ui-components';
+import { toast, useEventCallback } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
+import { z } from 'zod';
 
+import { createModelEditLink } from '../utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { RefDeleteError } from '@src/utils/error';
-import { formatError } from 'src/services/error-formatter';
-import { logger } from 'src/services/logger';
+import { NotFoundError, RefDeleteError } from '@src/utils/error';
+import { logAndFormatError } from 'src/services/error-formatter';
 
 interface UseModelFormOptions {
-  setError?: (error: string) => void;
+  schema?: z.ZodTypeAny;
   onSubmitSuccess?: () => void;
+  isCreate?: boolean;
 }
 
 function createNewModel(): ModelConfig {
@@ -47,99 +51,129 @@ function createNewModel(): ModelConfig {
   };
 }
 
-export function useModelForm({
-  setError,
-  onSubmitSuccess,
-}: UseModelFormOptions): {
-  form: UseFormReturn<ModelConfig>;
-  onFormSubmit: (data: ModelConfig) => void;
+export function useModelForm<
+  TDefinition extends Partial<ModelConfig> = ModelConfig,
+>({ onSubmitSuccess, isCreate, schema }: UseModelFormOptions = {}): {
+  form: UseFormReturn<TDefinition>;
+  onSubmit: () => Promise<void>;
   originalModel?: ModelConfig;
-  defaultValues: ModelConfig;
+  defaultValues: TDefinition;
 } {
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfigAndFixReferences, pluginContainer } =
-    useProjectDefinition();
+  const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
-  const urlModelId = uid ? modelEntityType.fromUid(uid) : undefined;
-  const model = urlModelId ? parsedProject.getModelById(urlModelId) : undefined;
+
+  const urlModelId = isCreate ? undefined : modelEntityType.fromUid(uid);
+  const model = urlModelId
+    ? ModelUtils.byIdOrThrow(definition, urlModelId)
+    : undefined;
+
+  if (!isCreate && !model) {
+    throw new NotFoundError(
+      'The model you were looking for could not be found.',
+    );
+  }
+
   const { showRefIssues } = useDeleteReferenceDialog();
 
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);
 
-  const defaultValues = model ?? newModel;
+  const modelSchemaWithPlugins = usePluginEnhancedSchema(schema ?? modelSchema);
 
-  const modelSchemaWithPlugins = useMemo(
-    () => zPluginWrapper(modelSchema, pluginContainer),
-    [pluginContainer],
-  );
+  const defaultValues = useMemo(() => {
+    const modelToUse = model ?? newModel;
+    return !schema
+      ? modelToUse
+      : (modelSchemaWithPlugins.parse(modelToUse) as ModelConfig);
+  }, [model, newModel, schema, modelSchemaWithPlugins]);
 
   const form = useResettableForm<ModelConfig>({
     resolver: zodResolver(modelSchemaWithPlugins),
     defaultValues,
   });
 
-  const { reset, formState, getValues } = form;
+  const { reset, handleSubmit, setError } = form;
 
-  const lastFixedModel = useRef<ModelConfig | undefined>();
+  const handleSubmitSuccess = useEventCallback(onSubmitSuccess);
 
-  useEffect(() => {
-    lastFixedModel.current = undefined;
-  }, [model]);
-
-  useEffect(() => {
-    const { name, id } = getValues();
-    if (formState.isSubmitSuccessful) {
-      if (!urlModelId || model?.name !== name) {
-        navigate(`../edit/${modelEntityType.toUid(id)}`);
-      }
-      if (onSubmitSuccess) {
-        onSubmitSuccess();
-      }
-    }
-  }, [
-    formState.isSubmitSuccessful,
-    getValues,
-    model?.name,
-    navigate,
-    onSubmitSuccess,
-    urlModelId,
-  ]);
-
-  const onFormSubmit = useCallback(
-    (data: ModelConfig) => {
-      try {
-        setConfigAndFixReferences((draftConfig) => {
-          draftConfig.models = _.sortBy(
-            [
-              ...(draftConfig.models?.filter((m) => m.id !== data.id) ?? []),
-              data,
-            ],
-            (m) => m.name,
+  const onSubmit = useMemo(
+    () =>
+      handleSubmit((data) => {
+        try {
+          const updatedModel = {
+            ...model,
+            ...data,
+            // generate new ID if new
+            id: model?.id ?? modelEntityType.generateNewId(),
+          };
+          if (!updatedModel.service?.build && updatedModel.service) {
+            updatedModel.service = undefined;
+          }
+          // check for models with the same name
+          const existingModel = definition.models.find(
+            (m) =>
+              m.id !== data.id &&
+              m.name.toLowerCase() === newModel.name.toLowerCase(),
           );
-        });
-        toast.success('Successfully saved model!');
-        reset(data);
-      } catch (err) {
-        if (err instanceof RefDeleteError) {
-          showRefIssues({ issues: err.issues });
-          return;
+          if (existingModel) {
+            setError('name', {
+              message: `Model with name ${updatedModel.name} already exists.`,
+            });
+            return;
+          }
+          setConfigAndFixReferences((draftConfig) => {
+            // create feature if a new feature exists
+            updatedModel.feature = FeatureUtils.ensureFeatureByNameRecursively(
+              draftConfig,
+              updatedModel.feature,
+            );
+            draftConfig.models = _.sortBy(
+              [
+                ...(draftConfig.models?.filter(
+                  (m) => m.id !== updatedModel.id,
+                ) ?? []),
+                updatedModel,
+              ],
+              (m) => m.name,
+            );
+          });
+          if (isCreate) {
+            navigate(createModelEditLink(updatedModel.id));
+            reset(newModel);
+            toast.success('Successfully created model!');
+          } else {
+            reset(data);
+            toast.success('Successfully saved model!');
+          }
+          handleSubmitSuccess?.();
+        } catch (err) {
+          if (err instanceof RefDeleteError) {
+            showRefIssues({ issues: err.issues });
+            return;
+          }
+          toast.error(logAndFormatError(err));
         }
-        logger.error(err);
-        if (setError) {
-          setError(formatError(err));
-        } else {
-          toast.error(formatError(err));
-        }
-      }
-    },
-    [setConfigAndFixReferences, showRefIssues, reset, setError],
+      }),
+    [
+      setConfigAndFixReferences,
+      showRefIssues,
+      reset,
+      setError,
+      handleSubmit,
+      isCreate,
+      navigate,
+      handleSubmitSuccess,
+      definition,
+      newModel,
+      model,
+    ],
   );
 
   return {
-    form,
-    onFormSubmit,
+    form: form as unknown as UseFormReturn<TDefinition>,
+    onSubmit,
     originalModel: model,
-    defaultValues,
+    defaultValues: defaultValues as TDefinition,
   };
 }

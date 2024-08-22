@@ -8,6 +8,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useProjects } from './useProjects';
 import { useToast } from './useToast';
 import { client } from '@src/services/api';
+import { resetPluginModuleSeed } from '@src/services/module-federation';
 import { createWebSchemaParserContext } from '@src/services/schema-parser-context';
 import { logError } from 'src/services/error-logger';
 import {
@@ -20,6 +21,7 @@ import {
 interface UseRemoteProjectDefinitionResult {
   value?: string | null;
   error?: Error;
+  lastModifiedAt?: string;
   loaded: boolean;
   saveValue: (
     newValue: string,
@@ -93,6 +95,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
     if (import.meta.hot) {
       // recreate web schema parser context when we hot reload
       const eventHandler = (): void => {
+        resetPluginModuleSeed();
         createWebSchemaParserContext(currentProjectId, pluginsMetadata)
           .then((schemaParserContext) =>
             setSchemaParserContext(schemaParserContext),
@@ -244,6 +247,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   return {
     value: file?.contents,
     error,
+    lastModifiedAt: file?.lastModifiedAt,
     loaded: loaded && currentProjectId === loadedProjectId.current,
     saveValue,
     externalChangeCounter,

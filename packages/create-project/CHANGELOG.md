@@ -1,5 +1,13 @@
 # @halfdomelabs/create-project
 
+## 0.2.5
+
+### Patch Changes
+
+- 6ef5db6: Clean up .npmrc script
+- 1dc5a63: Rename project.json to project-definition.json
+- 085932d: Upgrade axios to 1.7.4 to address security vulnerability
+
 ## 0.2.4
 
 ### Patch Changes

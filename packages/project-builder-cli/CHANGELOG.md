@@ -1,5 +1,24 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.7.10
+
+### Patch Changes
+
+- 1dc5a63: Rename project.json to project-definition.json
+- Updated dependencies [95105c3]
+- Updated dependencies [1dc5a63]
+- Updated dependencies [e2bc878]
+- Updated dependencies [4fa549d]
+- Updated dependencies [21b04f1]
+- Updated dependencies [fb031a3]
+- Updated dependencies [5f8af00]
+- Updated dependencies [c86aaaf]
+- Updated dependencies [085932d]
+  - @halfdomelabs/project-builder-server@0.4.10
+  - @halfdomelabs/project-builder-web@0.12.0
+  - @halfdomelabs/project-builder-common@0.1.2
+  - @halfdomelabs/project-builder-lib@0.8.9
+
 ## 0.7.9
 
 ### Patch Changes

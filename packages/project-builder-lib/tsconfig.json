@@ -6,7 +6,8 @@
     "noEmit": true,
     "paths": {
       "@src/*": ["src/*"]
-    }
+    },
+    "jsx": "react-jsx"
   },
   "include": ["src/**/*"]
 }

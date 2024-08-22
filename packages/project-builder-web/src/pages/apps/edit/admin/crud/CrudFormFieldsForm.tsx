@@ -36,7 +36,9 @@ function FieldForm({
   const control = formProps.control;
   const modelName = useWatch({ control, name: 'modelName' });
   const { definition, pluginContainer } = useProjectDefinition();
-  const model = modelName ? ModelUtils.byId(definition, modelName) : undefined;
+  const model = modelName
+    ? ModelUtils.byIdOrThrow(definition, modelName)
+    : undefined;
 
   const inputWeb = pluginContainer.getPluginSpec(adminCrudInputWebSpec);
 

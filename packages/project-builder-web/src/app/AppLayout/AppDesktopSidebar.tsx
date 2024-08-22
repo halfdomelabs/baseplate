@@ -1,7 +1,7 @@
 import { IconElement } from '@halfdomelabs/ui-components';
 import React from 'react';
 import { HiCollection, HiDatabase } from 'react-icons/hi';
-import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
+import { MdApps, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
 
 function SidebarNavigationIcon({
@@ -31,7 +31,7 @@ function SidebarNavigationIcon({
 
 export function AppDesktopSidebar(): JSX.Element {
   return (
-    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-3.5">
+    <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
       <div className="space-y-8">
         <Link
           to="/"
@@ -39,34 +39,29 @@ export function AppDesktopSidebar(): JSX.Element {
         >
           <img
             src="/images/logo.png"
-            className="size-7 transition-all group-hover:scale-110"
+            className="size-8 transition-all group-hover:scale-110"
             alt="Baseplate Home"
           />
         </Link>
-        <div className="space-y-4">
-          <SidebarNavigationIcon to="/" icon={MdHome} label="Home" end />
-          <div className="space-y-2">
-            <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
-            <SidebarNavigationIcon to="/data" icon={HiDatabase} label="Data" />
-            <SidebarNavigationIcon
-              to="/features"
-              icon={HiCollection}
-              label="Features"
-            />
-            <SidebarNavigationIcon
-              to="/plugins"
-              icon={MdWidgets}
-              label="Plugins"
-            />
-          </div>
+        <div className="space-y-2">
+          <SidebarNavigationIcon to="/apps" icon={MdApps} label="Apps" />
+          <SidebarNavigationIcon to="/data" icon={HiDatabase} label="Data" />
+          <SidebarNavigationIcon
+            to="/features"
+            icon={HiCollection}
+            label="Features"
+          />
+          <SidebarNavigationIcon
+            to="/plugins"
+            icon={MdWidgets}
+            label="Plugins"
+          />
+          <SidebarNavigationIcon
+            to="/settings"
+            icon={MdOutlineSettings}
+            label="Settings"
+          />
         </div>
-      </div>
-      <div className="space-y-3">
-        <SidebarNavigationIcon
-          to="/settings"
-          icon={MdOutlineSettings}
-          label="Settings"
-        />
       </div>
     </nav>
   );

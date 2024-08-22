@@ -1,7 +1,9 @@
 import { useBlockerDialogState } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useBlocker } from 'react-router-dom';
+
+import { logError } from '@src/services/error-logger';
 
 /**
  * A blocker dialog that is placed at the top level of the page
@@ -23,28 +25,81 @@ export function BlockerDialog(): JSX.Element {
       !!activeBlocker && currentLocation.pathname !== nextLocation.pathname,
   );
 
-  const continueBlockers = useCallback(() => {
-    if (blocker.state === 'blocked') {
-      blocker.proceed();
-    }
-    activeBlocker?.onContinue?.();
-    requestedBlockers.forEach((request) => request.onContinue());
-    clearRequestedBlockers();
-  }, [blocker, requestedBlockers, clearRequestedBlockers, activeBlocker]);
+  const [isContinuing, setIsContinuing] = useState(false);
 
   const resetBlockers = useCallback(() => {
     blocker.reset?.();
     clearRequestedBlockers();
   }, [blocker, clearRequestedBlockers]);
 
+  const continueBlockers = useCallback(
+    async (
+      continueCallback?: () => Promise<boolean> | boolean,
+    ): Promise<void> => {
+      setIsContinuing(true);
+      try {
+        if (continueCallback) {
+          const shouldContinue = await continueCallback();
+          if (!shouldContinue) {
+            resetBlockers();
+            return;
+          }
+        }
+        if (blocker.state === 'blocked') {
+          blocker.proceed();
+        }
+        requestedBlockers.forEach((request) => request.onContinue());
+        clearRequestedBlockers();
+      } finally {
+        setIsContinuing(false);
+      }
+    },
+    [blocker, requestedBlockers, clearRequestedBlockers, resetBlockers],
+  );
+
   const shouldShowBlocker =
     blocker.state === 'blocked' || requestedBlockers.length > 0;
 
   useEffect(() => {
-    if (shouldShowBlocker && !activeBlocker) {
-      continueBlockers();
+    if (shouldShowBlocker && !activeBlocker && !isContinuing) {
+      continueBlockers().catch((err) => logError(err));
     }
-  }, [shouldShowBlocker, continueBlockers, activeBlocker]);
+  }, [shouldShowBlocker, continueBlockers, activeBlocker, isContinuing]);
+
+  const cancelButton = (
+    <Button onClick={resetBlockers} variant="secondary">
+      Cancel
+    </Button>
+  );
+
+  const continueWithoutSaveButton =
+    activeBlocker?.buttonContinueWithoutSaveText && (
+      <Button
+        onClick={() =>
+          continueBlockers(activeBlocker.onContinueWithoutSave).catch((err) =>
+            logError(err),
+          )
+        }
+        disabled={isContinuing}
+        variant="secondary"
+      >
+        {activeBlocker.buttonContinueWithoutSaveText ??
+          'Continue without saving'}
+      </Button>
+    );
+
+  const continueButton = (
+    <Button
+      disabled={isContinuing}
+      onClick={() => {
+        continueBlockers(activeBlocker?.onContinue).catch((err) =>
+          logError(err),
+        );
+      }}
+    >
+      {activeBlocker?.buttonContinueText ?? 'Continue'}
+    </Button>
+  );
 
   return (
     <Dialog
@@ -62,12 +117,20 @@ export function BlockerDialog(): JSX.Element {
           </Dialog.Header>
           <Dialog.Description>{activeBlocker?.content}</Dialog.Description>
           <Dialog.Footer>
-            <Button onClick={resetBlockers} variant="secondary">
-              {activeBlocker?.buttonCancelText ?? 'Stay on Page'}
-            </Button>
-            <Button onClick={continueBlockers}>
-              {activeBlocker?.buttonCancelText ?? 'Continue'}
-            </Button>
+            {continueWithoutSaveButton ? (
+              <div className="flex w-full justify-between">
+                {continueWithoutSaveButton}
+                <div className="space-x-2">
+                  {cancelButton}
+                  {continueButton}
+                </div>
+              </div>
+            ) : (
+              <>
+                {cancelButton}
+                {continueButton}
+              </>
+            )}
           </Dialog.Footer>
         </div>
       </Dialog.Content>

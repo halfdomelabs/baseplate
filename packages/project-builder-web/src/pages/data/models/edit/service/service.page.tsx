@@ -1,6 +1,6 @@
 import {
-  ModelConfig,
   ModelTransformerUtils,
+  modelBaseSchema,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
@@ -8,37 +8,23 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import ServiceTransformersForm from './ServiceTransformersForm';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
-import ModelFormActionBar from '../ModelFormActionBar';
+import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
-import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
-import { useStatus } from 'src/hooks/useStatus';
 
-registerEntityTypeUrl(modelTransformerEntityType, `/models/edit/{parentUid}`);
+registerEntityTypeUrl(
+  modelTransformerEntityType,
+  `/data/models/edit/{parentUid}`,
+);
 
 function ModelEditServicePage(): JSX.Element {
-  const { status, setError } = useStatus();
-  const { form, onFormSubmit, originalModel, defaultValues } = useModelForm({
-    setError,
+  const { form, onSubmit, originalModel, defaultValues } = useModelForm({
+    schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
-  const { control, handleSubmit, watch, getValues } = form;
+  const { control, watch, getValues } = form;
   const { definitionContainer, pluginContainer } = useProjectDefinition();
   const shouldBuild = watch('service.build');
-
-  const onSubmit = (data: ModelConfig): void => {
-    if (!data.service?.build) {
-      // clean any service data on save to avoid unused references
-      onFormSubmit({
-        ...data,
-        service: {
-          build: false,
-        },
-      });
-    } else {
-      onFormSubmit(data);
-    }
-  };
 
   const localFields = watch(`model.fields`);
   const localFieldOptions = localFields.map((f) => ({
@@ -64,8 +50,7 @@ function ModelEditServicePage(): JSX.Element {
       getValues={getValues}
       watch={watch}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Alert.WithStatus status={status} />
+      <form onSubmit={onSubmit} className="space-y-4 p-4">
         <CheckedInput.LabelledController
           label="Build controller?"
           control={control}
@@ -114,7 +99,7 @@ function ModelEditServicePage(): JSX.Element {
             )}
           </>
         )}
-        <ModelFormActionBar form={form} />
+        <DataFormActionBar form={form} />
       </form>
     </EditedModelContextProvider>
   );

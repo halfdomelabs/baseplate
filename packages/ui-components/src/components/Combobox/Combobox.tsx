@@ -27,7 +27,7 @@ import { cn, mergeRefs } from '@src/utils';
 interface ComboboxContextValue {
   selectedValue: string | undefined | null;
   selectedLabel: string | undefined | null;
-  onSelect: (value: string, label: string | undefined) => void;
+  onSelect: (value: string | null, label: string | undefined) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   setIsOpen: (open: boolean) => void;
@@ -35,20 +35,20 @@ interface ComboboxContextValue {
   inputId: string;
   activeDescendentId: string | undefined;
   listRef: React.RefObject<HTMLDivElement>;
-  shouldShowItem: (label: string) => boolean;
+  shouldShowItem: (label: string | null) => boolean;
 }
 
 const ComboboxContext = React.createContext<ComboboxContextValue | null>(null);
 
 interface ComboboxOption {
   label?: string;
-  value: string;
+  value: string | null;
 }
 
-interface ComboboxProps {
+export interface ComboboxProps {
   children: React.ReactNode;
   value?: ComboboxOption | null;
-  onChange?: (value: ComboboxOption | null) => void;
+  onChange?: (value: ComboboxOption) => void;
   searchQuery?: string;
   onSearchQueryChange?: (query: string) => void;
   label?: string;
@@ -57,6 +57,8 @@ interface ComboboxProps {
 /**
  * A control that allows users to select an option from a list of options and type to search.
  */
+
+const DEFAULT_OPTION = { value: null, label: '' };
 
 function ComboboxRoot({
   children,
@@ -67,7 +69,11 @@ function ComboboxRoot({
   label,
 }: ComboboxProps): React.JSX.Element {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [value, setValue] = useControlledState(controlledValue, onChange, null);
+  const [value, setValue] = useControlledState(
+    controlledValue === null ? DEFAULT_OPTION : controlledValue,
+    onChange,
+    DEFAULT_OPTION,
+  );
   const [searchQuery, setSearchQuery] = useControlledState(
     defaultSearchQuery,
     onSearchQueryChange,
@@ -118,7 +124,7 @@ function ComboboxRoot({
       setIsOpen: (open) => {
         setFilterQuery(searchQuery);
         if (!open) {
-          setActiveValue(value?.value);
+          setActiveValue(value?.value ?? '');
           setSearchQuery('');
         }
         setIsOpen(open);
@@ -131,6 +137,9 @@ function ComboboxRoot({
       shouldShowItem: (label) => {
         if (!filterQuery) {
           return true;
+        }
+        if (!label) {
+          return false;
         }
         return label.toLowerCase().includes(filterQuery.toLowerCase());
       },
@@ -393,7 +402,7 @@ const ComboboxGroup = Command.Group;
 interface ComboboxItemProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect'> {
   disabled?: boolean;
-  value: string;
+  value: string | null;
   label?: string;
 }
 
@@ -411,8 +420,8 @@ const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
 
     return (
       <Command.Item
-        value={value}
-        onSelect={(value) => {
+        value={value ?? ''}
+        onSelect={() => {
           onSelect(value, extractedLabel);
         }}
         className={cn(selectItemVariants(), className)}
@@ -432,6 +441,34 @@ const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
 );
 
 ComboboxItem.displayName = 'ComboboxItem';
+
+interface ComboboxActionProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSelect' | 'onClick'> {
+  disabled?: boolean;
+  value: string;
+  label?: string;
+  onClick?: () => void;
+}
+
+const ComboboxAction = React.forwardRef<HTMLDivElement, ComboboxActionProps>(
+  ({ value, className, label, children, onClick, ...rest }, ref) => {
+    const itemRef = React.useRef<HTMLDivElement>(null);
+
+    return (
+      <Command.Item
+        value={value}
+        onSelect={onClick}
+        className={cn(selectItemVariants(), className)}
+        {...rest}
+        ref={mergeRefs([ref, itemRef])}
+      >
+        {children}
+      </Command.Item>
+    );
+  },
+);
+
+ComboboxAction.displayName = 'ComboboxAction';
 
 export const Combobox = Object.assign(ComboboxRoot, {
   Input: ComboboxInput,

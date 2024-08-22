@@ -1,24 +1,20 @@
 import { ForwardedRef } from 'react';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  PathValue,
-  useController,
-} from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { Combobox } from '../Combobox/Combobox.js';
+import { Combobox, ComboboxProps } from '../Combobox/Combobox.js';
 import { FormItem } from '../FormItem/FormItem.js';
 import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import {
+  AddOptionRequiredFields,
   FieldProps,
   SelectOptionProps,
-  AddOptionRequiredFields,
 } from '@src/types/form.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface ComboboxFieldProps<OptionType>
-  extends SelectOptionProps<OptionType>,
+  extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
+    SelectOptionProps<OptionType>,
     FieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
@@ -39,15 +35,15 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
     renderItemLabel,
     onChange,
     getOptionLabel = (val) => (val as { label: string }).label,
-    getOptionValue = (val) => (val as { value: string }).value,
+    getOptionValue = (val) => (val as { value: string | null }).value,
     className,
     noResultsText,
     ...props
   }: ComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLInputElement>,
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
-  const selectedValue = (() => {
+  const selectedComboboxOption = (() => {
     if (value === undefined) return undefined;
     if (!selectedOption) return null;
     return {
@@ -58,17 +54,17 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
   const { comboboxNoResults } = useComponentStrings();
 
   return (
-    <FormItem ref={ref} error={error} className={className}>
+    <FormItem error={error} className={className}>
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <Combobox
-        value={selectedValue}
+        value={selectedComboboxOption}
         onChange={(value) => {
-          onChange?.(value ? value.value : null);
+          onChange?.(value.value);
         }}
         {...props}
       >
         <FormItem.Control>
-          <Combobox.Input placeholder={placeholder} />
+          <Combobox.Input placeholder={placeholder} ref={ref} />
         </FormItem.Control>
         <Combobox.Content>
           {options.map((option) => {
@@ -97,7 +93,7 @@ interface ComboboxFieldControllerPropsBase<
   OptionType,
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends Omit<ComboboxFieldProps<OptionType>, 'register'> {
+> extends Omit<ComboboxFieldProps<OptionType>, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
@@ -117,33 +113,25 @@ const ComboboxFieldController = genericForwardRef(
     {
       name,
       control,
-      onChange,
       ...rest
     }: ComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
-    ref: ForwardedRef<HTMLDivElement>,
+    ref: ForwardedRef<HTMLInputElement>,
   ): JSX.Element {
     const {
       field,
       fieldState: { error },
-    } = useController({
-      name,
-      control,
-    });
+    } = useControllerMerged({ name, control }, rest, ref);
 
     const restProps = rest as ComboboxFieldProps<OptionType> &
       AddOptionRequiredFields<OptionType>;
 
     return (
       <ComboboxFieldRoot
-        onChange={(value) => {
-          field.onChange(value as PathValue<TFieldValues, TFieldName>);
-          onChange?.(value);
-        }}
-        ref={ref}
-        value={field.value ?? null}
         error={error?.message}
         {...restProps}
+        {...field}
+        value={field.value ?? null}
       />
     );
   },

@@ -3,7 +3,7 @@ import {
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
 
-export type RouteCrumb = string | { label: string; url: string };
+export type RouteCrumb = string | { label: string; url?: string };
 
 export type RouteCrumbOrFunction =
   | RouteCrumb
@@ -21,11 +21,13 @@ export function createRouteCrumb(
 export function createCrumbFromUid(
   entityType: DefinitionEntityType,
   defaultName: string,
+  url?: string,
 ): RouteCrumbOrFunction {
-  return createRouteCrumb(
-    (params, definition) =>
+  return createRouteCrumb((params, definition) => ({
+    label:
       (params.uid &&
         definition.safeNameFromId(entityType.fromUid(params.uid))) ??
       defaultName,
-  );
+    url: url?.replace(':uid', params.uid ?? ''),
+  }));
 }

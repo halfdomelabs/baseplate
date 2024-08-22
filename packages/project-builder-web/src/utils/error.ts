@@ -2,7 +2,10 @@ import { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
 import { ZodError, ZodIssue } from 'zod';
 
 export class UserVisibleError extends Error {
-  constructor(message: string) {
+  constructor(
+    message: string,
+    public title?: string,
+  ) {
     super(message);
     this.name = 'UserVisibleError';
   }
@@ -15,6 +18,12 @@ export class RefDeleteError extends UserVisibleError {
         .map((i) => i.ref.path.join('.'))
         .join(', ')}`,
     );
+  }
+}
+
+export class NotFoundError extends UserVisibleError {
+  constructor(message = 'The item you are looking for could not be found') {
+    super(message, 'Not found');
   }
 }
 

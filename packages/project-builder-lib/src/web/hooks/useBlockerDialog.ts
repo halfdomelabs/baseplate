@@ -5,9 +5,26 @@ export interface UseBlockerDialogOptions {
   disableBlock?: boolean;
   title: string;
   content: string;
-  buttonCancelText?: string;
+  /**
+   * Text for button enabling the user to continue without saving (discarding changes). If blank, no button with show.
+   */
+  buttonContinueWithoutSaveText?: string;
+  /**
+   * Action handler for when the user clicks the continue without saving button
+   *
+   * @returns true if the user should be allowed to continue, false if the user should be blocked from continuing
+   */
+  onContinueWithoutSave?: () => Promise<boolean> | boolean;
+  /**
+   * Text for button enabling the user to continue
+   */
   buttonContinueText?: string;
-  onContinue?: () => void;
+  /**
+   * Action handler for when the user clicks the continue button
+   *
+   * @returns true if the user should be allowed to continue, false if the user should be blocked from continuing
+   */
+  onContinue?: () => Promise<boolean> | boolean;
 }
 
 interface UseBlockerDialogOptionsWithId extends UseBlockerDialogOptions {
@@ -93,7 +110,8 @@ export function useBlockerDialog(options: UseBlockerDialogOptions): void {
       disableBlock: options.disableBlock,
       title: options.title,
       content: options.content,
-      buttonCancelText: options.buttonCancelText,
+      buttonContinueWithoutSaveText: options.buttonContinueWithoutSaveText,
+      onContinueWithoutSave: options.onContinueWithoutSave,
       buttonContinueText: options.buttonContinueText,
       onContinue: options.onContinue,
       id,
@@ -105,7 +123,8 @@ export function useBlockerDialog(options: UseBlockerDialogOptions): void {
     addBlocker,
     removeBlocker,
     options.disableBlock,
-    options.buttonCancelText,
+    options.buttonContinueWithoutSaveText,
+    options.onContinueWithoutSave,
     options.buttonContinueText,
     options.content,
     options.title,

@@ -1,5 +1,23 @@
 # @halfdomelabs/project-builder-web
 
+## 0.12.0
+
+### Minor Changes
+
+- 21b04f1: New navigation paths for Models/Enums pages.
+
+### Patch Changes
+
+- 4fa549d: Update confirm modal for deleting app to accurately reflect changes
+- fb031a3: Add dropdown for boolean field defaults and option to clear field defaults
+- 5f8af00: Update topbar/sidebar styles and spacing
+- 085932d: Upgrade axios to 1.7.4 to address security vulnerability
+- Updated dependencies [ccff8f1]
+- Updated dependencies [fb031a3]
+- Updated dependencies [5f8af00]
+  - @halfdomelabs/ui-components@0.4.14
+  - @halfdomelabs/project-builder-lib@0.8.9
+
 ## 0.11.8
 
 ### Patch Changes

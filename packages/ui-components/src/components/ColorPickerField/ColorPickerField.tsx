@@ -1,15 +1,10 @@
 import * as Popover from '@radix-ui/react-popover';
 import { ForwardedRef, useId } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  PathValue,
-  useController,
-} from 'react-hook-form';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import { FormItem } from '../FormItem/FormItem';
+import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { inputVariants } from '@src/styles';
 import { FieldProps } from '@src/types/form.js';
 import { cn } from '@src/utils';
@@ -81,6 +76,7 @@ function ColorPickerFieldFn(
       <Popover.Portal>
         <Popover.Content
           sideOffset={5}
+          align="start"
           className="space-y-2 rounded-md border border-border bg-white p-4"
         >
           <HexColorInput
@@ -97,7 +93,7 @@ function ColorPickerFieldFn(
 
   if (addWrapper) {
     return (
-      <FormItem className={className}>
+      <FormItem error={error} className={className}>
         {label && <FormItem.Label>{label}</FormItem.Label>}
         <FormItem.Control>{inputComponent}</FormItem.Control>
         {error ? (
@@ -121,7 +117,7 @@ const ColorPickerFieldRoot = genericForwardRef(ColorPickerFieldFn);
 export interface ColorPickerFieldControllerProps<
   TFieldValues extends FieldValues = FieldValues,
   TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> extends ColorPickerFieldProps {
+> extends Omit<ColorPickerFieldProps, 'value'> {
   control: Control<TFieldValues>;
   name: TFieldName;
 }
@@ -133,30 +129,24 @@ function ColorPickerFieldControllerFn<
   {
     control,
     name,
-    onChange: providedOnChange,
     ...rest
   }: ColorPickerFieldControllerProps<TFieldValues, TFieldName>,
   ref: ForwardedRef<HTMLButtonElement>,
 ): JSX.Element {
   const {
-    field: { value, onChange },
+    field: fieldProps,
     fieldState: { error },
-  } = useController({
-    control,
-    name,
-  });
+  } = useControllerMerged(
+    {
+      control,
+      name,
+    },
+    rest,
+    ref,
+  );
 
   return (
-    <ColorPickerFieldRoot
-      error={error?.message}
-      value={value}
-      onChange={(val) => {
-        onChange(val as PathValue<TFieldValues, TFieldName>);
-        providedOnChange?.(val);
-      }}
-      ref={ref}
-      {...rest}
-    />
+    <ColorPickerFieldRoot error={error?.message} {...rest} {...fieldProps} />
   );
 }
 

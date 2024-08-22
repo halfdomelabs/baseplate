@@ -20,9 +20,7 @@ import { cn } from '@src/utils';
  * https://ui.shadcn.com/docs/components/select
  */
 
-const SelectRoot = (props: SelectPrimitive.SelectProps): JSX.Element => (
-  <SelectPrimitive.Root {...props} />
-);
+const SelectRoot = SelectPrimitive.Root;
 
 const SelectGroup = SelectPrimitive.Group;
 

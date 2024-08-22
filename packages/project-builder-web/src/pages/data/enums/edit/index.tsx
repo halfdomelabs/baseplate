@@ -1,56 +1,44 @@
-import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
+import {
+  EnumUtils,
+  modelEnumEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { Button, SwitchField } from '@halfdomelabs/ui-components';
-import { Separator } from '@halfdomelabs/ui-components';
-import { HiOutlineTrash } from 'react-icons/hi';
 import { useParams } from 'react-router-dom';
 
 import EnumEditForm from './EnumEditForm';
-import { EditableTitle } from '../../EditableTitle';
-import { useEnumForm } from '../hooks/useEnumForm';
-import { useStatus } from '@src/hooks/useStatus';
-import { Alert } from 'src/components';
+import { EnumHeaderBar } from './EnumHeaderBar';
+import { NotFoundCard } from 'src/components';
 
 function EnumEditPage(): JSX.Element {
-  const { status, setError } = useStatus();
   const { uid } = useParams<'uid'>();
-  const { form, submitHandler, handleDelete } = useEnumForm({ setError, uid });
-  const { control, formState, reset } = form;
-  const id = uid ? modelEnumEntityType.fromUid(uid) : undefined;
-  const { parsedProject } = useProjectDefinition();
-  const enumBlock = parsedProject.getEnums().find((m) => m.id === id);
+  const { definition } = useProjectDefinition();
 
-  useBlockDirtyFormNavigate(formState, reset);
+  const id = modelEnumEntityType.fromUid(uid);
 
-  if (!enumBlock || !id) {
-    return <Alert type="error">Unable to find enum {id}</Alert>;
+  const enumDefinition = EnumUtils.byId(definition, id ?? '');
+
+  if (!enumDefinition) {
+    return <NotFoundCard />;
   }
 
   return (
-    <div className="space-y-6" key={id}>
-      <div className="flex flex-row items-center space-x-8">
-        <h1>
-          <EditableTitle.Controller name="name" control={control} />
-        </h1>
-        <div className="flex-1" />
-        <SwitchField.Controller
-          control={control}
-          name="isExposed"
-          label="Is Exposed?"
-        />
-        <Button
-          variant="outline"
-          onClick={handleDelete}
-          size="icon"
-          className="hover:text-red-600"
-        >
-          <Button.Icon icon={HiOutlineTrash} />
-        </Button>
+    <div
+      className="relative flex h-full flex-1 flex-col overflow-hidden"
+      key={id}
+    >
+      <div className="border-b py-4">
+        <EnumHeaderBar enumDefinition={enumDefinition} className="max-w-3xl" />
       </div>
-      <Separator />
-      <Alert.WithStatus status={status} />
-      <EnumEditForm onSubmit={submitHandler} form={form} />
+      <div
+        className="mb-[var(--action-bar-height)] max-w-3xl flex-1 overflow-y-auto"
+        style={
+          {
+            '--action-bar-height': '65px',
+          } as React.CSSProperties
+        }
+      >
+        <EnumEditForm />
+      </div>
     </div>
   );
 }

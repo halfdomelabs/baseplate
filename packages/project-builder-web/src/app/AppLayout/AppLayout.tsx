@@ -8,6 +8,7 @@ import { AppDesktopSidebar } from './AppDesktopSidebar';
 import { AppMobileSidebar } from './AppMobileSidebar';
 import ProjectSyncModal from '../components/ProjectSyncModal';
 import { ProjectSyncStatus } from '../components/ProjectSyncStatus';
+import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 
 interface AppLayoutProps {
   className?: string;
@@ -21,11 +22,15 @@ interface AppLayoutProps {
 export function AppLayout({ className }: AppLayoutProps): JSX.Element {
   return (
     <div
-      className={clsx('flex h-screen w-full flex-col bg-background', className)}
+      className={clsx(
+        'flex h-screen w-full min-w-[var(--min-app-width)] flex-col bg-background',
+        className,
+      )}
       style={
         {
           '--sidebar-width': '70px',
-          '--topbar-height': '60px',
+          '--topbar-height': '52px',
+          '--min-app-width': '800px',
         } as React.CSSProperties
       }
     >
@@ -45,7 +50,7 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
               <AppMobileSidebar />
             </Sheet.Content>
           </Sheet>
-          <div className="flex w-full items-center justify-between py-2.5">
+          <div className="flex w-full items-center justify-between py-3">
             <AppBreadcrumbs />
             <div className="flex items-center gap-4">
               <ProjectSyncStatus />
@@ -54,7 +59,9 @@ export function AppLayout({ className }: AppLayoutProps): JSX.Element {
           </div>
         </header>
         <main className="h-[calc(100vh-var(--topbar-height)-1px)] overflow-auto">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>

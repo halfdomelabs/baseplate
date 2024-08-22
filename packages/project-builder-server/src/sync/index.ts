@@ -30,6 +30,28 @@ interface GenerateForDirectoryOptions {
   logger: Logger;
 }
 
+async function getCleanDirectoryFiles(
+  cleanDirectory: string,
+): Promise<{ filePath: string; contents: Buffer }[] | null> {
+  // check if the project directory exists
+  const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
+
+  if (!cleanDirectoryExists) {
+    return null;
+  }
+
+  const files = await globby('**/*', { cwd: cleanDirectory, dot: true });
+  return Promise.all(
+    files.map(async (filePath) => {
+      const contents = await fs.readFile(path.join(cleanDirectory, filePath));
+      return {
+        filePath,
+        contents,
+      };
+    }),
+  );
+}
+
 export async function generateForDirectory({
   generatorSetupConfig,
   baseDirectory,
@@ -48,37 +70,31 @@ export async function generateForDirectory({
   const output = await engine.build(project, logger);
   logger.info('Project built! Writing output....');
 
-  // check if the project directory exists
-  const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
+  // look for previous build result
+  const buildResultPath = path.join(
+    projectDirectory,
+    'baseplate/.build_result.json',
+  );
 
-  if (!cleanDirectoryExists) {
-    await engine.writeOutput(output, projectDirectory, { cleanDirectory });
-  } else {
+  const buildResultExists = await fs.pathExists(buildResultPath);
+  const oldBuildResult: BuildResultFile = buildResultExists
+    ? ((await fs.readJSON(buildResultPath)) as BuildResultFile)
+    : {};
+
+  // load clean directory contents
+  const cleanProjectFiles = await getCleanDirectoryFiles(cleanDirectory);
+
+  if (cleanProjectFiles) {
     logger.info(
       'Detected project clean folder. Attempting 3-way mediocre-merge...',
     );
-    const cleanTmpDirectory = path.join(
-      projectDirectory,
-      'baseplate/.clean_tmp',
-    );
+  }
 
-    try {
-      // load clean directory contents
-      const files = await globby('**/*', { cwd: cleanDirectory, dot: true });
-      const cleanProjectFiles: { filePath: string; contents: Buffer }[] =
-        await Promise.all(
-          files.map(async (filePath) => {
-            const contents = await fs.readFile(
-              path.join(cleanDirectory, filePath),
-            );
-            return {
-              filePath,
-              contents,
-            };
-          }),
-        );
+  const cleanTmpDirectory = path.join(projectDirectory, 'baseplate/.clean_tmp');
 
-      const augmentedOutput = {
+  const augmentedOutput = !cleanProjectFiles
+    ? output
+    : {
         ...output,
         files: R.mergeAll(
           Object.entries(output.files).map(
@@ -101,75 +117,72 @@ export async function generateForDirectory({
         ),
       };
 
-      // look for previous build result
-      const buildResultPath = path.join(
-        projectDirectory,
-        'baseplate/.build_result.json',
-      );
+  try {
+    const writeOutput = await engine.writeOutput(
+      augmentedOutput,
+      projectDirectory,
+      {
+        cleanDirectory: cleanTmpDirectory,
+        rerunCommands: oldBuildResult.failedCommands,
+      },
+      logger,
+    );
 
-      const buildResultExists = await fs.pathExists(buildResultPath);
-      const oldBuildResult: BuildResultFile = buildResultExists
-        ? ((await fs.readJSON(buildResultPath)) as BuildResultFile)
-        : {};
+    if (buildResultExists) {
+      await fs.rm(buildResultPath);
+    }
 
-      const writeOutput = await engine.writeOutput(
-        augmentedOutput,
-        projectDirectory,
-        {
-          cleanDirectory: cleanTmpDirectory,
-          rerunCommands: oldBuildResult.failedCommands,
-        },
-        logger,
-      );
+    if (writeOutput.failedCommands) {
+      // write failed commands to a temporary file
+      const buildResult: BuildResultFile = {
+        failedCommands: writeOutput.failedCommands,
+      };
+      await fs.writeJSON(buildResultPath, buildResult, { spaces: 2 });
+    }
 
-      if (buildResultExists) {
-        await fs.rm(buildResultPath);
-      }
-
-      if (writeOutput.failedCommands) {
-        // write failed commands to a temporary file
-        const buildResult: BuildResultFile = {
-          failedCommands: writeOutput.failedCommands,
-        };
-        await fs.writeJSON(buildResultPath, buildResult, { spaces: 2 });
-      }
-
+    if (cleanProjectFiles) {
       // swap out clean directory with clean_tmp
       await fs.rm(cleanDirectory, { recursive: true });
-      await fs.move(cleanTmpDirectory, cleanDirectory);
-
-      // find deleted files
-      const deletedCleanFiles = cleanProjectFiles.filter(
-        (f) => !output.files[f.filePath],
-      );
-
-      await Promise.all(
-        deletedCleanFiles.map(async (file) => {
-          const pathToDelete = path.join(projectDirectory, file.filePath);
-          const pathExists = await fs.pathExists(pathToDelete);
-          if (!pathExists) {
-            return;
-          }
-          const existingContents = await fs.readFile(pathToDelete);
-          if (existingContents.equals(file.contents)) {
-            logger.info(`Deleting ${file.filePath}...`);
-            await fs.remove(pathToDelete);
-          } else {
-            logger.info(
-              chalk.red(`${file.filePath} has been modified. Skipping delete.`),
-            );
-          }
-        }),
-      );
-    } finally {
-      // attempt to remove any temporary directory
-      await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {
-        /* ignore errors */
-      });
     }
-  }
 
-  logger.info('Project successfully generated!');
+    await fs.move(cleanTmpDirectory, cleanDirectory);
+
+    // find deleted files
+    const deletedCleanFiles =
+      cleanProjectFiles?.filter((f) => !output.files[f.filePath]) ?? [];
+
+    await Promise.all(
+      deletedCleanFiles.map(async (file) => {
+        const pathToDelete = path.join(projectDirectory, file.filePath);
+        const pathExists = await fs.pathExists(pathToDelete);
+        if (!pathExists) {
+          return;
+        }
+        const existingContents = await fs.readFile(pathToDelete);
+        if (existingContents.equals(file.contents)) {
+          logger.info(`Deleting ${file.filePath}...`);
+          await fs.remove(pathToDelete);
+        } else {
+          logger.info(
+            chalk.red(`${file.filePath} has been modified. Skipping delete.`),
+          );
+        }
+      }),
+    );
+
+    if (writeOutput.failedCommands.length) {
+      logger.error(
+        `Project successfully written but with failed commands! Please check logs for more info.`,
+      );
+    } else {
+      logger.info('Project successfully generated!');
+    }
+  } finally {
+    // attempt to remove any temporary directory
+    await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {
+      /* ignore errors */
+    });
+  }
 }
 
 export async function generateCleanAppForDirectory({
