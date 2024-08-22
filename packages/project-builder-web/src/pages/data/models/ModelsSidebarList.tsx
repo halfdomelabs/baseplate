@@ -1,4 +1,3 @@
-import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -13,6 +12,7 @@ import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
 import { NewModelDialog } from './NewModelDialog';
+import { createModelEditLink } from './utils/url';
 
 interface ModelsSidebarListProps {
   className?: string;
@@ -47,23 +47,25 @@ export function ModelsSidebarList({
             New Model
           </Button.WithIcon>
         </NewModelDialog>
-        <div className="relative">
-          <InputField
-            value={filterQuery}
-            onChange={(text) => setFilterQuery(text)}
-            placeholder="Search"
-          />
-          {filterQuery && (
-            <Button
-              variant="ghost"
-              className="absolute right-4 top-1/2 -translate-y-1/2"
-              onClick={() => setFilterQuery('')}
-              size="icon"
-            >
-              <Button.Icon icon={MdClear} />
-            </Button>
-          )}
-        </div>
+        {models.length > 0 && (
+          <div className="relative">
+            <InputField
+              value={filterQuery}
+              onChange={(text) => setFilterQuery(text)}
+              placeholder="Search"
+            />
+            {filterQuery && (
+              <Button
+                variant="ghost"
+                className="absolute right-4 top-1/2 -translate-y-1/2"
+                onClick={() => setFilterQuery('')}
+                size="icon"
+              >
+                <Button.Icon icon={MdClear} />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
       <ScrollArea
@@ -75,14 +77,17 @@ export function ModelsSidebarList({
           }
         }}
       >
+        {sortedModels.length === 0 && filterQuery && (
+          <div className="py-4 text-center text-style-muted">
+            No models found
+          </div>
+        )}
         <NavigationMenu orientation="vertical">
           <NavigationMenu.List>
             {sortedModels.map((model) => (
               <li key={model.id}>
                 <NavigationMenu.ItemWithLink asChild size="skinny">
-                  <NavLink
-                    to={`./models/edit/${modelEntityType.toUid(model.id)}`}
-                  >
+                  <NavLink to={createModelEditLink(model.id)}>
                     {model.name}
                   </NavLink>
                 </NavigationMenu.ItemWithLink>

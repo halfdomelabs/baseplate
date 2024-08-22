@@ -3,16 +3,12 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 
 import { useModelForm } from '../../hooks/useModelForm';
-import ModelFormActionBar from '../ModelFormActionBar';
-import { Alert } from 'src/components';
+import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
-import { useStatus } from 'src/hooks/useStatus';
 
 function ModelEditSchemaPage(): JSX.Element {
-  const { status, setError } = useStatus();
-  const { form, onFormSubmit, originalModel } = useModelForm({
-    setError,
+  const { form, onSubmit, originalModel } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
   const { control, watch } = form;
@@ -57,8 +53,7 @@ function ModelEditSchemaPage(): JSX.Element {
 
   return (
     <>
-      <form onSubmit={onFormSubmit} className="space-y-4 p-4">
-        <Alert.WithStatus status={status} />
+      <form onSubmit={onSubmit} className="space-y-4 p-4">
         <CheckedInput.LabelledController
           label="Build Object Type?"
           control={control}
@@ -125,7 +120,7 @@ function ModelEditSchemaPage(): JSX.Element {
             />
           </>
         )}
-        <ModelFormActionBar form={form} />
+        <DataFormActionBar form={form} />
       </form>
     </>
   );

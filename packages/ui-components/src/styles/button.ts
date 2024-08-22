@@ -1,19 +1,19 @@
 import { cva } from 'class-variance-authority';
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:brightness-95 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:brightness-95 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
         default:
-          'border border-input bg-primary text-primary-foreground hover:bg-primary-hover',
+          'border border-input bg-primary text-sm text-primary-foreground hover:bg-primary-hover',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive-hover',
+          'bg-destructive text-sm text-destructive-foreground hover:bg-destructive-hover',
         outline:
-          'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+          'border border-input bg-background text-sm hover:bg-accent hover:text-accent-foreground',
         secondary:
-          'border border-input bg-secondary text-secondary-foreground hover:bg-secondary-hover',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
+          'border border-input bg-secondary text-sm text-secondary-foreground hover:bg-secondary-hover',
+        ghost: 'text-sm hover:bg-accent hover:text-accent-foreground',
         link: 'text-link underline-offset-4 hover:underline',
       },
       size: {

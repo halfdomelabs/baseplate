@@ -8,12 +8,10 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import ServiceTransformersForm from './ServiceTransformersForm';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
-import ModelFormActionBar from '../ModelFormActionBar';
+import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
-import { Alert } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
-import { useStatus } from 'src/hooks/useStatus';
 
 registerEntityTypeUrl(
   modelTransformerEntityType,
@@ -21,9 +19,7 @@ registerEntityTypeUrl(
 );
 
 function ModelEditServicePage(): JSX.Element {
-  const { status, setError } = useStatus();
-  const { form, onFormSubmit, originalModel, defaultValues } = useModelForm({
-    setError,
+  const { form, onSubmit, originalModel, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
   const { control, watch, getValues } = form;
@@ -54,8 +50,7 @@ function ModelEditServicePage(): JSX.Element {
       getValues={getValues}
       watch={watch}
     >
-      <form onSubmit={onFormSubmit} className="space-y-4 p-4">
-        <Alert.WithStatus status={status} />
+      <form onSubmit={onSubmit} className="space-y-4 p-4">
         <CheckedInput.LabelledController
           label="Build controller?"
           control={control}
@@ -104,7 +99,7 @@ function ModelEditServicePage(): JSX.Element {
             )}
           </>
         )}
-        <ModelFormActionBar form={form} />
+        <DataFormActionBar form={form} />
       </form>
     </EditedModelContextProvider>
   );

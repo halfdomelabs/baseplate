@@ -17,7 +17,7 @@ import ModelUniqueConstraintsField from './ModelUniqueConstraintsField';
 import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
-import ModelFormActionBar from '../ModelFormActionBar';
+import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/data/models/edit/{uid}`);
@@ -31,7 +31,7 @@ registerEntityTypeUrl(
 );
 
 function ModelEditModelPage(): JSX.Element {
-  const { form, onFormSubmit, defaultValues } = useModelForm({
+  const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
   const { control, watch, getValues, setValue } = form;
@@ -43,7 +43,7 @@ function ModelEditModelPage(): JSX.Element {
 
   useBlockUnsavedChangesNavigate(form.formState, {
     reset: form.reset,
-    onSubmit: onFormSubmit,
+    onSubmit: onSubmit,
   });
 
   return (
@@ -53,14 +53,14 @@ function ModelEditModelPage(): JSX.Element {
       watch={watch}
     >
       <form
-        onSubmit={onFormSubmit}
+        onSubmit={onSubmit}
         className="min-w-[700px] max-w-7xl flex-1 space-y-4 px-4 pb-4"
       >
         <ModelFieldsForm control={control} setValue={setValue} />
         <ModelRelationsForm control={control} originalModel={originalModel} />
         <ModelPrimaryKeyForm control={control} />
         <ModelUniqueConstraintsField control={control} />
-        <ModelFormActionBar form={form} />
+        <DataFormActionBar form={form} />
       </form>
     </EditedModelContextProvider>
   );

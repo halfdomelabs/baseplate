@@ -1,30 +1,29 @@
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
 import { HiDatabase } from 'react-icons/hi';
-import { Link } from 'react-router-dom';
+
+import { NewModelDialog } from './NewModelDialog';
 
 function ModelListPage(): JSX.Element {
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
-  const models = parsedProject.getModels();
-
-  if (!models.length) {
+  if (!definition.models.length) {
     return (
       <EmptyDisplay
         icon={HiDatabase}
         header="No Models"
         subtitle="Create a model to get started"
         actions={
-          <Link to="/models/new" className="inline-block">
+          <NewModelDialog>
             <Button>New Model</Button>
-          </Link>
+          </NewModelDialog>
         }
       />
     );
   }
 
   return (
-    <div className="space-y-4 p-4 text-style-prose">
+    <div className="max-w-4xl space-y-4 p-4 text-style-prose">
       <h1>Models</h1>
       <p>
         Models are the building blocks of your app. They define the data
@@ -32,7 +31,12 @@ function ModelListPage(): JSX.Element {
       </p>
       <p>
         Choose a model to edit from the sidebar or{' '}
-        <Link to="new">create a new one</Link>.
+        <NewModelDialog>
+          <Button variant="link" size="none">
+            create a new model
+          </Button>
+        </NewModelDialog>
+        .
       </p>
     </div>
   );

@@ -1,23 +1,32 @@
 import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
 import { RouteObject } from 'react-router-dom';
 
-import EnumsIndexPage from './EnumsIndexPage';
+import EnumsListPage from './EnumsList.page';
 import EnumEditPage from './edit';
-import { createCrumbFromUid } from '@src/types/routes';
+import { NotFoundRoute } from '@src/pages/NotFound.page';
+import { createCrumbFromUid, createRouteCrumb } from '@src/types/routes';
 
-// currently unused, will probably remove
-export const EnumRoutes: RouteObject[] = [
-  { index: true, element: <EnumsIndexPage /> },
-  {
-    path: 'new',
-    element: <EnumEditPage />,
-    handle: {
-      crumb: 'New Enum',
+export const EnumRoutes: RouteObject = {
+  path: 'enums/*',
+  handle: {
+    crumb: createRouteCrumb({ label: 'Enums', url: '/data/enums' }),
+  },
+  children: [
+    { index: true, element: <EnumsListPage /> },
+    {
+      path: 'new',
+      element: <EnumEditPage />,
+      handle: {
+        crumb: 'New Enum',
+      },
     },
-  },
-  {
-    path: 'edit/:uid/*',
-    element: <EnumEditPage />,
-    handle: { crumb: createCrumbFromUid(modelEnumEntityType, 'Edit Enum') },
-  },
-];
+    {
+      path: 'edit/:uid/*',
+      element: <EnumEditPage />,
+      handle: {
+        crumb: createCrumbFromUid(modelEnumEntityType, 'Edit Enum'),
+      },
+    },
+    NotFoundRoute,
+  ],
+};

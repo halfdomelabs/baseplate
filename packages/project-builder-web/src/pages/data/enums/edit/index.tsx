@@ -1,43 +1,44 @@
-import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
 import {
-  useBlockUnsavedChangesNavigate,
-  useProjectDefinition,
-} from '@halfdomelabs/project-builder-lib/web';
+  EnumUtils,
+  modelEnumEntityType,
+} from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useParams } from 'react-router-dom';
 
 import EnumEditForm from './EnumEditForm';
-import { useEnumForm } from '../hooks/useEnumForm';
-import { useStatus } from '@src/hooks/useStatus';
-import { Alert, Button } from 'src/components';
+import { EnumHeaderBar } from './EnumHeaderBar';
+import { NotFoundCard } from 'src/components';
 
 function EnumEditPage(): JSX.Element {
-  const { status, setError } = useStatus();
   const { uid } = useParams<'uid'>();
-  const { form, onSubmit, handleDelete } = useEnumForm({ setError, uid });
-  const { formState, reset } = form;
-  const id = uid ? modelEnumEntityType.fromUid(uid) : undefined;
-  const isNew = !id;
-  const { parsedProject } = useProjectDefinition();
-  const enumBlock = parsedProject.getEnums().find((m) => m.id === id);
+  const { definition } = useProjectDefinition();
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  const id = modelEnumEntityType.fromUid(uid);
 
-  if (!enumBlock && id) {
-    return <Alert type="error">Unable to find enum {id}</Alert>;
+  const enumDefinition = EnumUtils.byId(definition, id ?? '');
+
+  if (!enumDefinition) {
+    return <NotFoundCard />;
   }
 
   return (
-    <div className="space-y-4" key={id}>
-      <div className="flex flex-row space-x-8">
-        <h1>{enumBlock?.name ?? 'New Enum'}</h1>
-        {!isNew && (
-          <Button color="light" onClick={handleDelete}>
-            Delete
-          </Button>
-        )}
+    <div
+      className="relative flex h-full flex-1 flex-col overflow-hidden"
+      key={id}
+    >
+      <div className="border-b py-4">
+        <EnumHeaderBar enumDefinition={enumDefinition} className="max-w-3xl" />
       </div>
-      <Alert.WithStatus status={status} />
-      <EnumEditForm onSubmit={onSubmit} form={form} />
+      <div
+        className="mb-[var(--action-bar-height)] max-w-3xl flex-1 overflow-y-auto"
+        style={
+          {
+            '--action-bar-height': '65px',
+          } as React.CSSProperties
+        }
+      >
+        <EnumEditForm />
+      </div>
     </div>
   );
 }

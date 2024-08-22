@@ -211,7 +211,7 @@ export function ModelFieldDefaultValueInput({
   }
 
   if (type === 'enum' && optionsValue?.enumType) {
-    const fieldEnum = EnumUtils.byId(definition, optionsValue.enumType);
+    const fieldEnum = EnumUtils.byIdOrThrow(definition, optionsValue.enumType);
     const enumValues = fieldEnum.values.map((v) => ({
       label: v.friendlyName,
       value: v.id,

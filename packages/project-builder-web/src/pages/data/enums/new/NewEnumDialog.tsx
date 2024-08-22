@@ -5,25 +5,25 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { ModelGeneralForm } from './edit/model/ModelGeneralForm';
-import { useModelForm } from './hooks/useModelForm';
+import { EnumInfoForm } from '../edit/EnumInfoForm';
+import { useEnumForm } from '../hooks/useEnumForm';
 
-interface NewModelDialogProps {
+interface NewEnumDialogProps {
   children: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function NewModelDialog({
+export function NewEnumDialog({
   children,
   open,
   onOpenChange,
-}: NewModelDialogProps): JSX.Element {
+}: NewEnumDialogProps): JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   const {
     onSubmit,
     form: { control },
-  } = useModelForm({ isCreate: true, onSubmitSuccess: () => setIsOpen(false) });
+  } = useEnumForm({ isCreate: true, onSubmitSuccess: () => setIsOpen(false) });
 
   const blockBeforeContinue = useBlockBeforeContinue();
 
@@ -44,18 +44,18 @@ export function NewModelDialog({
       <Dialog.Trigger asChild>{children}</Dialog.Trigger>
       <Dialog.Content>
         <Dialog.Header>
-          <Dialog.Title>New Model</Dialog.Title>
+          <Dialog.Title>New Enum</Dialog.Title>
           <Dialog.Description>
-            Models define the structure of your data.
+            Enums are a list of values that can be used in your data models.
           </Dialog.Description>
         </Dialog.Header>
         <form onSubmit={onSubmit} className="space-y-4">
-          <ModelGeneralForm control={control} />
+          <EnumInfoForm control={control} />
           <Dialog.Footer>
             <Dialog.Close asChild>
               <Button variant="secondary">Cancel</Button>
             </Dialog.Close>
-            <Button type="submit">Create Model</Button>
+            <Button type="submit">Create Enum</Button>
           </Dialog.Footer>
         </form>
       </Dialog.Content>

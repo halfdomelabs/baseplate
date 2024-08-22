@@ -20,10 +20,10 @@ export function ModelEditLayout(): JSX.Element {
 
   return (
     <div
-      className="relative flex h-full flex-1 flex-col overflow-hidden pt-4"
+      className="relative flex h-full flex-1 flex-col overflow-hidden"
       key={id}
     >
-      <div className="space-y-4 border-b pb-4">
+      <div className="space-y-4 border-b py-4">
         <ModelHeaderBar model={model} className="max-w-7xl" />
         <NavigationTabs className="mx-4">
           <NavigationTabs.Item asChild>
