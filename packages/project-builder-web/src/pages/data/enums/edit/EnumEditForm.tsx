@@ -39,11 +39,6 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <TextInput.LabelledController
-        label="Name (e.g. User)"
-        control={control}
-        name="name"
-      />
       <ComboboxField.Controller
         label="Feature"
         control={control}

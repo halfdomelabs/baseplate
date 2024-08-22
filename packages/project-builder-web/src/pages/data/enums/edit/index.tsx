@@ -2,11 +2,12 @@ import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useBlockDirtyFormNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { Button, SwitchField } from '@halfdomelabs/ui-components';
+import { Separator } from '@halfdomelabs/ui-components';
 import { HiOutlineTrash } from 'react-icons/hi';
 import { useParams } from 'react-router-dom';
-import { Separator } from '@halfdomelabs/ui-components';
 
 import EnumEditForm from './EnumEditForm';
+import { EditableTitle } from '../../EditableTitle';
 import { useEnumForm } from '../hooks/useEnumForm';
 import { useStatus } from '@src/hooks/useStatus';
 import { Alert } from 'src/components';
@@ -29,7 +30,9 @@ function EnumEditPage(): JSX.Element {
   return (
     <div className="space-y-6" key={id}>
       <div className="flex flex-row items-center space-x-8">
-        <h1>{enumBlock?.name ?? 'New Enum'}</h1>
+        <h1>
+          <EditableTitle.Controller name="name" control={control} />
+        </h1>
         <div className="flex-1" />
         <SwitchField.Controller
           control={control}
