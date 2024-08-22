@@ -67,7 +67,7 @@ export function ModelsSidebarList({
       </div>
 
       <ScrollArea
-        className={clsx('flex-1 px-4', isScrolled && 'border-t')}
+        className={clsx('flex-1 px-2', isScrolled && 'border-t')}
         onScrollCapture={(e) => {
           const hasScrolled = e.currentTarget.scrollTop > 0;
           if (hasScrolled !== isScrolled) {
@@ -79,7 +79,7 @@ export function ModelsSidebarList({
           <NavigationMenu.List>
             {sortedModels.map((model) => (
               <li key={model.id}>
-                <NavigationMenu.ItemWithLink asChild>
+                <NavigationMenu.ItemWithLink asChild size="skinny">
                   <NavLink
                     to={`./models/edit/${modelEntityType.toUid(model.id)}`}
                   >

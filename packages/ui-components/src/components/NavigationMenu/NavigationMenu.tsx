@@ -1,5 +1,5 @@
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
-import { cva } from 'class-variance-authority';
+import { VariantProps, cva } from 'class-variance-authority';
 import * as React from 'react';
 import { RxChevronDown } from 'react-icons/rx';
 
@@ -50,16 +50,25 @@ NavigationMenuList.displayName = NavigationMenuPrimitive.List.displayName;
 const NavigationMenuItem = NavigationMenuPrimitive.Item;
 
 export const navigationMenuTriggerStyle = cva(
-  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 aria-[current="page"]:bg-accent/50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 group-data-[orientation="vertical"]:w-full group-data-[orientation="vertical"]:justify-start',
+  'group inline-flex h-9 w-max items-center justify-center rounded-md bg-background p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 aria-[current="page"]:bg-accent/50 data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 group-data-[orientation="vertical"]:w-full group-data-[orientation="vertical"]:justify-start',
+  {
+    variants: {
+      size: {
+        default: 'px-4 py-2',
+        skinny: 'p-2',
+      },
+    },
+  },
 );
 
 const NavigationMenuTrigger = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Trigger> &
+    VariantProps<typeof navigationMenuTriggerStyle>
+>(({ className, children, size, ...props }, ref) => (
   <NavigationMenuPrimitive.Trigger
     ref={ref}
-    className={cn(navigationMenuTriggerStyle(), 'group', className)}
+    className={cn(navigationMenuTriggerStyle({ size }), 'group', className)}
     {...props}
   >
     {children}{' '}
@@ -90,11 +99,12 @@ const NavigationMenuLink = NavigationMenuPrimitive.Link;
 
 const NavigationMenuItemWithLink = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link>
->(({ className, children, asChild, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Link> &
+    VariantProps<typeof navigationMenuTriggerStyle>
+>(({ className, children, asChild, size, ...props }, ref) => (
   <NavigationMenuItem
     ref={ref}
-    className={cn(navigationMenuTriggerStyle(), className)}
+    className={cn(navigationMenuTriggerStyle({ size }), className)}
     asChild
   >
     <NavigationMenuLink className="flex gap-2" asChild={asChild} {...props}>
