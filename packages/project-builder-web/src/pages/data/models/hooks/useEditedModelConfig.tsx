@@ -2,6 +2,7 @@ import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { UseFormGetValues, UseFormWatch } from 'react-hook-form';
 import { StoreApi, createStore, useStore } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ModelConfigStore {
   model: ModelConfig;
@@ -59,5 +60,8 @@ export function useEditedModelConfig<T>(
       'useModelParsedProject must be used within a ModelParsedProjectDefinitionProvider',
     );
   }
-  return useStore(store, (state) => selector(state.getValues()));
+  return useStore(
+    store,
+    useShallow((state) => selector(state.getValues())),
+  );
 }

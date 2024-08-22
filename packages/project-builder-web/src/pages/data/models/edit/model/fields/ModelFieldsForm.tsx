@@ -5,7 +5,6 @@ import {
   FieldArrayWithId,
   UseFormSetValue,
   useFieldArray,
-  useWatch,
 } from 'react-hook-form';
 
 import { ModelAddFieldButton } from './ModelAddFieldButton';
@@ -52,8 +51,6 @@ export function ModelFieldsForm({
     name: 'model.fields',
   });
 
-  const fields = useWatch({ control, name: 'model.fields' });
-
   const gridClassNames = clsx(
     'grid grid-cols-[repeat(2,1fr)_60px_1fr_repeat(2,60px)_1fr_80px] gap-3',
   );
@@ -74,7 +71,7 @@ export function ModelFieldsForm({
 
   return (
     <div className={clsx('space-y-4', className)}>
-      {!fields.length ? (
+      {!fieldFields.length ? (
         <p className="pt-4 text-style-muted">Add some fields to get started</p>
       ) : (
         <div className="-m-2 flex w-full flex-col gap-2 bg-white p-2">
@@ -98,7 +95,7 @@ export function ModelFieldsForm({
           <SortableList listItems={fieldListItems} sortItems={sortFields} />
         </div>
       )}
-      <ModelAddFieldButton control={control} appendField={appendField} />
+      <ModelAddFieldButton appendField={appendField} />
     </div>
   );
 }

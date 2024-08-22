@@ -1,80 +1,86 @@
 import {
   ModelConfig,
+  ModelScalarFieldConfig,
   modelScalarFieldEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
-import { Control, UseFieldArrayAppend, useWatch } from 'react-hook-form';
+import { UseFieldArrayAppend } from 'react-hook-form';
 import { MdExpandMore } from 'react-icons/md';
+
+import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
 
 interface ModelAddFieldButtonProps {
   className?: string;
-  control: Control<ModelConfig>;
   appendField: UseFieldArrayAppend<ModelConfig, 'model.fields'>;
 }
 
 interface AutoAddField {
   name: string;
-  addField: () => void;
+  fields: Omit<ModelScalarFieldConfig, 'id'>[];
 }
 
 export function ModelAddFieldButton({
   className,
-  control,
   appendField,
 }: ModelAddFieldButtonProps): JSX.Element {
-  const fields = useWatch({ control, name: 'model.fields' });
-
+  const fieldNames = useEditedModelConfig((model) => {
+    return model.model.fields.map((f) => f.name);
+  });
   const availableAutoFields = useMemo(() => {
     const autoFields: AutoAddField[] = [];
-    if (!fields?.find((f) => f.name === 'id')) {
+    if (!fieldNames.includes('id')) {
       autoFields.push({
         name: 'ID (uuid)',
-        addField: () =>
-          appendField({
-            id: modelScalarFieldEntityType.generateNewId(),
+        fields: [
+          {
             name: 'id',
             type: 'uuid',
             isId: true,
             options: {
               genUuid: true,
             },
-          }),
+          },
+        ],
       });
     }
-    const hasCreatedAt = fields?.find((f) => f.name === 'createdAt');
-    const hasUpdatedAt = fields?.find((f) => f.name === 'updatedAt');
+    const hasCreatedAt = fieldNames.includes('createdAt');
+    const hasUpdatedAt = fieldNames.includes('updatedAt');
     if (!hasCreatedAt || !hasUpdatedAt) {
       autoFields.push({
         name: 'Timestamps',
-        addField: () => {
-          if (!hasUpdatedAt) {
-            appendField({
-              id: modelScalarFieldEntityType.generateNewId(),
-              name: 'updatedAt',
-              type: 'dateTime',
-              options: {
-                updatedAt: true,
-                defaultToNow: true,
-              },
-            });
-          }
-          if (!hasCreatedAt) {
-            appendField({
-              id: modelScalarFieldEntityType.generateNewId(),
-              name: 'createdAt',
-              type: 'dateTime',
-              options: {
-                defaultToNow: true,
-              },
-            });
-          }
-        },
+        fields: [
+          {
+            name: 'createdAt',
+            type: 'dateTime',
+            options: {
+              defaultToNow: true,
+            },
+          },
+          {
+            name: 'updatedAt',
+            type: 'dateTime',
+            options: {
+              updatedAt: true,
+              defaultToNow: true,
+            },
+          },
+        ],
       });
     }
     return autoFields;
-  }, [fields, appendField]);
+  }, [fieldNames]);
 
+  const applyAutoField = (autoField: AutoAddField): void => {
+    autoField.fields.forEach((field) => {
+      if (!fieldNames.includes(field.name)) {
+        appendField({
+          id: modelScalarFieldEntityType.generateNewId(),
+          ...field,
+        });
+      }
+    });
+  };
   return (
     <ButtonGroup className={className}>
       <ButtonGroup.Button
@@ -98,7 +104,10 @@ export function ModelAddFieldButton({
         </Dropdown.Trigger>
         <Dropdown.Content>
           {availableAutoFields.map((field) => (
-            <Dropdown.Item key={field.name} onClick={field.addField}>
+            <Dropdown.Item
+              key={field.name}
+              onClick={() => applyAutoField(field)}
+            >
               {field.name}
             </Dropdown.Item>
           ))}
