@@ -1,22 +1,16 @@
-import {
-  EnumConfig,
-  modelEnumValueEntityType,
-} from '@halfdomelabs/project-builder-lib';
-import { FeatureComboboxField } from '@halfdomelabs/project-builder-lib/web';
-import { UseFormReturn, useFieldArray } from 'react-hook-form';
+import { modelEnumValueEntityType } from '@halfdomelabs/project-builder-lib';
+import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
+import { useFieldArray } from 'react-hook-form';
 
-import { hasDirtyFields } from '@src/utils/form';
+import { EnumInfoForm } from './EnumInfoForm';
+import DataFormActionBar from '../../components/DataFormActionBar';
+import { useEnumForm } from '../hooks/useEnumForm';
 import { Button, TextInput } from 'src/components';
-import CheckedInput from 'src/components/CheckedInput';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
-interface Props {
-  form: UseFormReturn<EnumConfig>;
-  onSubmit: () => Promise<void>;
-}
-
-function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
-  const { control, setValue, formState, watch } = form;
+function EnumEditForm(): JSX.Element {
+  const { form, onSubmit } = useEnumForm();
+  const { control, setValue, formState, watch, reset } = form;
 
   const {
     fields: valueFields,
@@ -29,24 +23,11 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
 
   const values = watch('values');
 
+  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+
   return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <TextInput.LabelledController
-        label="Name (e.g. User)"
-        control={control}
-        name="name"
-      />
-      <FeatureComboboxField.Controller
-        label="Feature"
-        control={control}
-        name="feature"
-        canCreate
-      />
-      <CheckedInput.LabelledController
-        label="Is Exposed?"
-        control={control}
-        name="isExposed"
-      />
+    <form onSubmit={onSubmit} className="space-y-4 p-4">
+      <EnumInfoForm control={control} />
       <h3>Values</h3>
       {valueFields.map((field, i) => (
         <div key={field.id}>
@@ -87,11 +68,7 @@ function EnumEditForm({ form, onSubmit }: Props): JSX.Element {
       >
         Add Value
       </Button>
-      <div>
-        <Button type="submit" disabled={!hasDirtyFields(formState)}>
-          Save
-        </Button>
-      </div>
+      <DataFormActionBar form={form} />
     </form>
   );
 }

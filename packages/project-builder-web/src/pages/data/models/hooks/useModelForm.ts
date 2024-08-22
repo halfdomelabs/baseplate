@@ -22,12 +22,10 @@ import { z } from 'zod';
 import { createModelEditLink } from '../utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { NotFoundError, RefDeleteError } from '@src/utils/error';
-import { formatError } from 'src/services/error-formatter';
-import { logger } from 'src/services/logger';
+import { logAndFormatError } from 'src/services/error-formatter';
 
 interface UseModelFormOptions {
   schema?: z.ZodTypeAny;
-  setError?: (error: string) => void;
   onSubmitSuccess?: () => void;
   isCreate?: boolean;
 }
@@ -55,17 +53,17 @@ function createNewModel(): ModelConfig {
 
 export function useModelForm<
   TDefinition extends Partial<ModelConfig> = ModelConfig,
->({ setError, onSubmitSuccess, isCreate, schema }: UseModelFormOptions = {}): {
+>({ onSubmitSuccess, isCreate, schema }: UseModelFormOptions = {}): {
   form: UseFormReturn<TDefinition>;
-  onFormSubmit: () => Promise<void>;
+  onSubmit: () => Promise<void>;
   originalModel?: ModelConfig;
   defaultValues: TDefinition;
 } {
   const { uid } = useParams<'uid'>();
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
-  const urlModelId = isCreate ? undefined : modelEntityType.fromUid(uid);
 
+  const urlModelId = isCreate ? undefined : modelEntityType.fromUid(uid);
   const model = urlModelId
     ? ModelUtils.byIdOrThrow(definition, urlModelId)
     : undefined;
@@ -95,27 +93,31 @@ export function useModelForm<
     defaultValues,
   });
 
-  const { reset, handleSubmit, setError: setFormError } = form;
+  const { reset, handleSubmit, setError } = form;
 
   const handleSubmitSuccess = useEventCallback(onSubmitSuccess);
 
-  const onFormSubmit = useMemo(
+  const onSubmit = useMemo(
     () =>
-      handleSubmit((data: ModelConfig) => {
+      handleSubmit((data) => {
         try {
           const updatedModel = {
             ...model,
             ...data,
+            // generate new ID if new
+            id: model?.id ?? modelEntityType.generateNewId(),
           };
           if (!updatedModel.service?.build && updatedModel.service) {
             updatedModel.service = undefined;
           }
           // check for models with the same name
           const existingModel = definition.models.find(
-            (m) => m.id !== data.id && m.name === newModel.name,
+            (m) =>
+              m.id !== data.id &&
+              m.name.toLowerCase() === newModel.name.toLowerCase(),
           );
           if (existingModel) {
-            setFormError('name', {
+            setError('name', {
               message: `Model with name ${updatedModel.name} already exists.`,
             });
             return;
@@ -150,12 +152,7 @@ export function useModelForm<
             showRefIssues({ issues: err.issues });
             return;
           }
-          logger.error(err);
-          if (setError) {
-            setError(formatError(err));
-          } else {
-            toast.error(formatError(err));
-          }
+          toast.error(logAndFormatError(err));
         }
       }),
     [
@@ -167,7 +164,6 @@ export function useModelForm<
       isCreate,
       navigate,
       handleSubmitSuccess,
-      setFormError,
       definition,
       newModel,
       model,
@@ -176,7 +172,7 @@ export function useModelForm<
 
   return {
     form: form as unknown as UseFormReturn<TDefinition>,
-    onFormSubmit,
+    onSubmit,
     originalModel: model,
     defaultValues: defaultValues as TDefinition,
   };

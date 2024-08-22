@@ -21,21 +21,24 @@ interface SidebarLayoutSidebarProps {
   className?: string;
   children: React.ReactNode;
   width?: 'sm' | 'md' | 'lg' | 'auto';
+  noPadding?: boolean;
 }
 
 SidebarLayout.Sidebar = function SidebarLayoutSidebar({
   className,
   children,
   width = 'md',
+  noPadding,
 }: SidebarLayoutSidebarProps): JSX.Element {
   return (
     <aside
       className={cn(
-        'sticky flex-shrink-0 overflow-y-auto border-r border-border p-4',
+        'sticky flex-shrink-0 overflow-y-auto border-r border-border',
         {
           'w-64': width === 'sm',
           'w-72': width === 'md',
           'w-96': width === 'lg',
+          'p-4': !noPadding,
         },
         className,
       )}

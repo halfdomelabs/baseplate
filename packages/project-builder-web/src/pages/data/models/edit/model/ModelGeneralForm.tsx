@@ -24,7 +24,7 @@ export function ModelGeneralForm({
       <FeatureComboboxField.Controller
         control={control}
         name="feature"
-        description="The feature this model belongs to"
+        description="The feature this model belongs to (dash-case)"
         canCreate
       />
     </div>

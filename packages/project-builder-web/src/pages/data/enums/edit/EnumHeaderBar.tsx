@@ -1,12 +1,10 @@
-import { FeatureUtils, ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { EnumConfig, FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { useState } from 'react';
-import { MdDeleteOutline, MdEdit } from 'react-icons/md';
+import { MdDeleteOutline } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
@@ -14,14 +12,13 @@ import { RefDeleteError } from '@src/utils/error';
 
 interface ModelHeaderBarProps {
   className?: string;
-  model: ModelConfig;
+  enumDefinition: EnumConfig;
 }
 
-export function ModelHeaderBar({
+export function EnumHeaderBar({
   className,
-  model,
+  enumDefinition,
 }: ModelHeaderBarProps): JSX.Element {
-  const [isGeneralEditDialogOpen, setIsGeneralEditDialogOpen] = useState(false);
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -31,9 +28,9 @@ export function ModelHeaderBar({
   const handleDelete = (id: string): void => {
     try {
       setConfigAndFixReferences((draftConfig) => {
-        draftConfig.models = draftConfig.models?.filter((m) => m.id !== id);
+        draftConfig.enums = draftConfig.enums?.filter((m) => m.id !== id);
       });
-      navigate('/data/models');
+      navigate('/data/enums');
     } catch (err) {
       if (err instanceof RefDeleteError) {
         showRefIssues({ issues: err.issues });
@@ -46,25 +43,15 @@ export function ModelHeaderBar({
   return (
     <div className={clsx('flex items-center justify-between px-4', className)}>
       <div>
-        <button
-          className="group flex items-center space-x-2 hover:cursor-pointer"
-          onClick={() => {
-            setIsGeneralEditDialogOpen(true);
-          }}
-          type="button"
-        >
-          <h1>{model.name}</h1>
-          <MdEdit className="invisible size-4 group-hover:visible" />
-        </button>
-        {model?.feature && (
+        <h1>{enumDefinition.name}</h1>
+        {enumDefinition?.feature && (
           <div className="text-xs text-muted-foreground">
-            {FeatureUtils.getFeatureById(definition, model.feature)?.name}
+            {
+              FeatureUtils.getFeatureById(definition, enumDefinition.feature)
+                ?.name
+            }
           </div>
         )}
-        <ModelGeneralEditDialog
-          open={isGeneralEditDialogOpen}
-          onOpenChange={setIsGeneralEditDialogOpen}
-        />
       </div>
       <div className="flex gap-8">
         <Button
@@ -74,15 +61,15 @@ export function ModelHeaderBar({
             requestConfirm({
               title: 'Confirm delete',
               content: `Are you sure you want to delete ${
-                model?.name ?? 'the model'
+                enumDefinition?.name ?? 'the enum'
               }?`,
               buttonConfirmText: 'Delete',
-              onConfirm: () => handleDelete(model.id),
+              onConfirm: () => handleDelete(enumDefinition.id),
             });
           }}
         >
           <Button.Icon icon={MdDeleteOutline} className="text-destructive" />
-          <div className="sr-only">Delete Model</div>
+          <div className="sr-only">Delete Enum</div>
         </Button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-import NotFoundPage from './NotFound.page';
+import { NotFoundRoute } from './NotFound.page';
 import { AppsRoutes } from './apps';
 import { DataRoutes } from './data';
 import { FeatureRoutes } from './features';
@@ -54,7 +54,7 @@ export const router = createBrowserRouter([
               crumb: 'Settings',
             },
           },
-          { path: '*', element: <NotFoundPage /> },
+          NotFoundRoute,
         ],
       },
     ],

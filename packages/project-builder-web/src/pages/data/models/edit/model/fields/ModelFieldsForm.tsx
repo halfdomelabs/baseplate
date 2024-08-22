@@ -144,9 +144,9 @@ export function ModelFieldsForm({
           <div
             className={clsx(
               gridClassNames,
-              'sticky -top-4 z-10 bg-white py-2 text-sm font-semibold',
+              'sticky -top-0 z-10 bg-white py-2 text-sm font-semibold',
               // account for handle in sortable list
-              'ml-12',
+              'pl-12',
             )}
           >
             <div>Name</div>

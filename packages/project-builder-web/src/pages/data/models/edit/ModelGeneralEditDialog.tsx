@@ -14,7 +14,7 @@ export function ModelGeneralEditDialog({
 }: ModelGeneralEditDialogProps): JSX.Element {
   const {
     form: { control, reset },
-    onFormSubmit,
+    onSubmit,
     defaultValues,
   } = useModelForm({
     onSubmitSuccess() {
@@ -32,7 +32,7 @@ export function ModelGeneralEditDialog({
       }}
     >
       <Dialog.Content aria-describedby={undefined}>
-        <form onSubmit={onFormSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <Dialog.Header>
             <Dialog.Title>Edit Model Info</Dialog.Title>
           </Dialog.Header>
