@@ -124,7 +124,7 @@ export const modelRelationFieldSchema = zRefBuilder(
       }),
     ),
     modelName: z.string().min(1),
-    foreignRelationName: z.string().min(1),
+    foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
     onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
     onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
   }),

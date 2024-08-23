@@ -1,7 +1,5 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
-  Badge,
   Button,
   Dropdown,
   InputField,
@@ -12,11 +10,11 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
-import { TbLink } from 'react-icons/tb';
 
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
-import { ModalRelationsModal } from './ModelFieldRelationModal';
+import { ModelFieldRelationsDialog } from './ModelFieldRelationsDialog';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
+import { ModelFieldBadges } from './badges/ModelFieldBadges';
 import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
 
 interface Props {
@@ -43,8 +41,6 @@ function ModelFieldForm({
     name: `model.relations`,
     control,
   });
-
-  const { definitionContainer } = useProjectDefinition();
 
   const removeError = useEditedModelConfig((model) => {
     const field = model.model.fields[idx];
@@ -113,34 +109,7 @@ function ModelFieldForm({
         />
       </div>
       <div>
-        <SwitchField.Controller
-          control={control}
-          name={`model.fields.${idx}.isId`}
-        />
-      </div>
-      <div>
-        <SwitchField.Controller
-          control={control}
-          name={`model.fields.${idx}.isUnique`}
-        />
-      </div>
-      <div>
-        {modelFieldRelation && (
-          <Badge.WithIcon
-            className="max-w-[100px]"
-            variant="secondary"
-            icon={TbLink}
-            onClick={() => setIsRelationFormOpen(true)}
-          >
-            {definitionContainer.nameFromId(modelFieldRelation.modelName)}
-          </Badge.WithIcon>
-        )}
-        <ModalRelationsModal
-          isOpen={isRelationFormOpen}
-          onClose={() => setIsRelationFormOpen(false)}
-          fieldIdx={idx}
-          control={control}
-        />
+        <ModelFieldBadges control={control} idx={idx} />
       </div>
       <div>
         <div className="space-x-4">
@@ -163,6 +132,12 @@ function ModelFieldForm({
           </Button>
         </div>
       </div>
+      <ModelFieldRelationsDialog
+        fieldIdx={idx}
+        open={isRelationFormOpen}
+        onOpenChange={setIsRelationFormOpen}
+        control={control}
+      />
     </div>
   );
 }
