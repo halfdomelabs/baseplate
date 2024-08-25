@@ -7,12 +7,12 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
+import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import { useToast } from 'src/hooks/useToast';
 
 interface Props {
   className?: string;
@@ -27,7 +27,6 @@ function BackendAppForm({ className, appConfig }: Props): JSX.Element {
     defaultValues: appConfig,
   });
   const { control, handleSubmit, formState, reset } = formProps;
-  const toast = useToast();
 
   const onSubmit = handleSubmit((data) => {
     setConfigAndFixReferences((draftConfig) => {

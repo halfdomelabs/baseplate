@@ -5,6 +5,7 @@ import {
   ComboboxField,
   Dialog,
   InputField,
+  toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
@@ -12,7 +13,6 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { UserVisibleError } from '@src/utils/error';
 
@@ -42,7 +42,6 @@ export function FeatureForm({
     definitionContainer: { definition },
     setConfigAndFixReferences,
   } = useProjectDefinition();
-  const toast = useToast();
   const defaultValues = useMemo(
     () => ({
       id: feature?.id ?? '',

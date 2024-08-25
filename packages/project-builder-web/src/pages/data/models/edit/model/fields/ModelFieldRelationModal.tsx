@@ -4,14 +4,13 @@ import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { Dialog } from '@halfdomelabs/ui-components';
+import { Dialog, toast } from '@halfdomelabs/ui-components';
 import { Control, useController, useWatch } from 'react-hook-form';
 
 import {
   ModelFieldRelationForm,
   ModelFieldRelationFormValues,
 } from './ModelFieldRelationForm';
-import { useToast } from 'src/hooks/useToast';
 
 interface ModalRelationsModalProps {
   isOpen?: boolean;
@@ -26,7 +25,6 @@ export function ModalRelationsModal({
   fieldIdx,
   control,
 }: ModalRelationsModalProps): JSX.Element {
-  const toast = useToast();
   const watchedField = useWatch({
     name: `model.fields.${fieldIdx}`,
     control,

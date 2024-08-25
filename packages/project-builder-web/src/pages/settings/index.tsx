@@ -3,12 +3,11 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Card, InputField } from '@halfdomelabs/ui-components';
+import { Button, Card, InputField, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { z } from 'zod';
 
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
@@ -32,7 +31,6 @@ function SettingsPage(): JSX.Element {
       'packageScope',
     ]),
   });
-  const toast = useToast();
 
   const onSubmit = (data: FormData): void => {
     try {
