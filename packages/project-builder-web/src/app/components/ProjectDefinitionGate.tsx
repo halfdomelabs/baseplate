@@ -19,6 +19,7 @@ import {
   Button,
   ErrorDisplay,
   ErrorableLoader,
+  toast,
 } from '@halfdomelabs/ui-components';
 import { produce } from 'immer';
 import { useEffect, useMemo, useState } from 'react';
@@ -30,7 +31,6 @@ import { websocketEvents } from '@src/services/api';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import { useProjects } from 'src/hooks/useProjects';
 import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 import { logger } from 'src/services/logger';
@@ -61,7 +61,6 @@ export function ProjectDefinitionGate({
   } = useRemoteProjectDefinition();
   const { projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion, refreshVersion } = useClientVersion();
-  const toast = useToast();
 
   const selectedProject = projects.find((p) => p.id === projectId);
 

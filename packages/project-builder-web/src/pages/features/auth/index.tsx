@@ -5,6 +5,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
+import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 
@@ -13,7 +14,6 @@ import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useStatus } from 'src/hooks/useStatus';
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
@@ -29,7 +29,6 @@ function AuthPage(): JSX.Element {
     },
   });
   const { control, reset, handleSubmit } = formProps;
-  const toast = useToast();
   const { status, setError } = useStatus();
 
   const onSubmit = (data: AuthConfig): void => {

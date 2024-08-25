@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   cn,
+  toast,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
@@ -16,7 +17,6 @@ import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
 import { FeatureForm } from './FeatureForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 interface FeaturesFormProps {
@@ -26,7 +26,6 @@ interface FeaturesFormProps {
 export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
   const { definitionContainer, setConfigAndFixReferences } =
     useProjectDefinition();
-  const toast = useToast();
   const { requestConfirm } = useConfirmDialog();
   const { showRefIssues } = useDeleteReferenceDialog();
 

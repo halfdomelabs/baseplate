@@ -3,6 +3,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Dropdown,
+  toast,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
@@ -11,7 +12,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 import NotFoundPage from '../NotFound.page';
-import { useToast } from '@src/hooks/useToast';
 
 export function PluginConfigPage(): JSX.Element {
   const {
@@ -20,7 +20,6 @@ export function PluginConfigPage(): JSX.Element {
     schemaParserContext,
     setConfigAndFixReferences,
   } = useProjectDefinition();
-  const toast = useToast();
   const { id } = useParams<'id'>();
   const { requestConfirm } = useConfirmDialog();
   const navigate = useNavigate();

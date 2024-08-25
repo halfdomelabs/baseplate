@@ -3,14 +3,13 @@ import {
   appEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog } from '@halfdomelabs/ui-components';
+import { Button, Dialog, toast } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
 import WebAppForm from './edit/WebAppForm';
 import { Alert, NotFoundCard } from 'src/components';
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function EditAppPage(): JSX.Element {
@@ -21,7 +20,6 @@ function EditAppPage(): JSX.Element {
   const id = uid ? appEntityType.fromUid(uid) : undefined;
   const app = id && definition.apps.find((a) => a.id === id);
 
-  const toast = useToast();
   const navigate = useNavigate();
 
   if (!uid || !app) {

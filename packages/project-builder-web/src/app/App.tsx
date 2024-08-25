@@ -4,7 +4,6 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import { ConfirmDialog, Toaster, Tooltip } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
-import { Toaster as ReactHotToaster } from 'react-hot-toast';
 import { Outlet } from 'react-router-dom';
 
 import { ClientVersionGate } from './components/ClientVersionGate';
@@ -36,7 +35,6 @@ function App(): JSX.Element {
                 <RefIssueDialog />
               </ProjectDefinitionGate>
             </ProjectChooserGate>
-            <ReactHotToaster />
             <Toaster />
             <ConfirmDialog />
             <BlockerDialog />

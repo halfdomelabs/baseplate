@@ -6,6 +6,7 @@ import {
   Dropdown,
   InputField,
   SwitchField,
+  toast,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
@@ -17,7 +18,6 @@ import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModalRelationsModal } from './ModelFieldRelationModal';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
-import { useToast } from 'src/hooks/useToast';
 
 interface Props {
   className?: string;
@@ -45,7 +45,6 @@ function ModelFieldForm({
   });
 
   const { definitionContainer } = useProjectDefinition();
-  const toast = useToast();
 
   const removeError = useEditedModelConfig((model) => {
     const field = model.model.fields[idx];

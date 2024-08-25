@@ -2,7 +2,7 @@ import {
   useBlockBeforeContinue,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog } from '@halfdomelabs/ui-components';
+import { Button, Dialog, toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
@@ -10,7 +10,6 @@ import { MdSync } from 'react-icons/md';
 import { useProjects } from '@src/hooks/useProjects';
 import { prettyStableStringify } from '@src/utils/json';
 import Console, { ConsoleRef } from 'src/components/Console';
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 import { FilePayload, startSync } from 'src/services/remote';
 
@@ -21,7 +20,6 @@ interface Props {
 function ProjectSyncModal({ className }: Props): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const clearConsoleRef = useRef<ConsoleRef>(null);
-  const toast = useToast();
   const { definitionContainer, lastModifiedAt } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
