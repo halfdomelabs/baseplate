@@ -56,7 +56,9 @@ Badge.WithIcon = function BadgeWithIcon({
   return (
     <Badge className={cn('flex items-center space-x-2', className)} {...rest}>
       {Icon && <Icon className="size-4 shrink-0" />}
-      <div className="flex-1 overflow-hidden text-ellipsis">{children}</div>
+      {children && (
+        <div className="flex-1 overflow-hidden text-ellipsis">{children}</div>
+      )}
     </Badge>
   );
 };

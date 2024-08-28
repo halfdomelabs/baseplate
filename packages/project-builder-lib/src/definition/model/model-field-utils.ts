@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEqual } from 'es-toolkit';
 
 import { ModelUtils } from './model-utils.js';
 import {
@@ -17,6 +17,20 @@ function isScalarUnique(model: ModelConfig, fieldId: string): boolean {
     uniqueConstraints.some(
       (c) => c.fields.length === 1 && c.fields[0].fieldRef === fieldId,
     )
+  );
+}
+
+function areScalarsUnique(model: ModelConfig, fieldIds: string[]): boolean {
+  const sortedFieldIds = fieldIds.toSorted();
+  return (
+    (isEqual(model.model.primaryKeyFieldRefs.toSorted(), sortedFieldIds) ||
+      model.model.uniqueConstraints?.some((c) => {
+        return isEqual(
+          c.fields.map((f) => f.fieldRef).toSorted(),
+          sortedFieldIds,
+        );
+      })) ??
+    false
   );
 }
 
@@ -48,21 +62,9 @@ function isRelationOneToOne(
   relation: ModelRelationFieldConfig,
 ): boolean {
   const localFields = getRelationLocalFields(model, relation);
-  if (localFields.length === 1 && isScalarUnique(model, localFields[0].id)) {
-    return true;
-  }
-  const localFieldNames = localFields.map((f) => f.id).sort();
+  const localFieldIds = localFields.map((f) => f.id).sort();
   // check if the local fields are a primary key or unique constraint
-  return (
-    (_.isEqual([...model.model.primaryKeyFieldRefs].sort(), localFieldNames) ||
-      model.model.uniqueConstraints?.some((c) => {
-        return _.isEqual(
-          c.fields.map((f) => f.fieldRef).sort(),
-          localFieldNames,
-        );
-      })) ??
-    false
-  );
+  return areScalarsUnique(model, localFieldIds);
 }
 
 function getModelFieldValidation(
@@ -114,6 +116,7 @@ function getModelFieldValidation(
 
 export const ModelFieldUtils = {
   isScalarUnique,
+  areScalarsUnique,
   getRelationLocalFields,
   isRelationOptional,
   isRelationOneToOne,

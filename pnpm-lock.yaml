@@ -415,6 +415,9 @@ importers:
       culori:
         specifier: ^3.2.0
         version: 3.3.0
+      es-toolkit:
+        specifier: 1.16.0
+        version: 1.16.0
       globby:
         specifier: ^14.0.0
         version: 14.0.1

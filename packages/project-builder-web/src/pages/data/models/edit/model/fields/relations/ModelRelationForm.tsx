@@ -126,9 +126,12 @@ function getRelationDefaultsFromModel(
     if (editedRelation.foreignRelationName) {
       return editedRelation.foreignRelationName;
     }
-    const isOneToOne = references?.every((ref) =>
-      ModelFieldUtils.isScalarUnique(editedModel, ref.local),
-    );
+    const isOneToOne =
+      references?.every((ref) => ref.local) &&
+      ModelFieldUtils.areScalarsUnique(
+        editedModel,
+        references.map((r) => r.local),
+      );
     return camelCase(
       isOneToOne ? editedModel.name : pluralize(editedModel.name),
     );

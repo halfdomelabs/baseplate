@@ -123,7 +123,7 @@ describe('isRelationOneToOne', () => {
   it('should return true if the relation is a primary key', () => {
     const model = generateMockModel({
       model: {
-        primaryKeyFieldRefs: ['localField'],
+        primaryKeyFieldRefs: ['local-id'],
         fields: [
           generateMockModelScalarField({
             id: 'local-id',

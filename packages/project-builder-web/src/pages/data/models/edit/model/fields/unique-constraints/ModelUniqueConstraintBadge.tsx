@@ -1,6 +1,7 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { Badge } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
+import { useState } from 'react';
 import { Control } from 'react-hook-form';
 import { MdStar } from 'react-icons/md';
 
@@ -11,13 +12,17 @@ interface ModelFieldUniqueBadgeProps {
   className?: string;
   control: Control<ModelConfig>;
   constraintId: string;
+  autoCollapse?: boolean;
 }
 
 export function ModelFieldUniqueBadge({
   className,
   control,
   constraintId,
+  autoCollapse,
 }: ModelFieldUniqueBadgeProps): JSX.Element {
+  const [isHovered, setIsHovered] = useState(false);
+  const shouldShowText = !autoCollapse || isHovered;
   const fieldsLength = useEditedModelConfig(
     (model) =>
       model.model.uniqueConstraints?.find((uc) => uc.id === constraintId)
@@ -29,8 +34,13 @@ export function ModelFieldUniqueBadge({
         variant="secondary"
         icon={MdStar}
         className={clsx('', className)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        aria-label="Unique Constraint"
+        title="Unique Constraint"
       >
-        Unique {fieldsLength > 1 ? `(${fieldsLength})` : ''}
+        {shouldShowText &&
+          `Unique ${fieldsLength > 1 ? `(${fieldsLength})` : ''}`}
       </Badge.WithIcon>
     </ModelUniqueConstraintDialog>
   );

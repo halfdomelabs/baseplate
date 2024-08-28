@@ -39,16 +39,32 @@ export function ModelFieldBadges({
     );
   });
 
+  const totalBadges =
+    (isPrimary ? 1 : 0) + uniqueConstraints.length + modelFieldRelations.length;
+  const autoCollapse = totalBadges > 2;
+
   const badges = [
-    isPrimary && <ModelPrimaryKeyBadge key={'primary'} control={control} />,
+    isPrimary && (
+      <ModelPrimaryKeyBadge
+        key={'primary'}
+        control={control}
+        autoCollapse={autoCollapse}
+      />
+    ),
     ...uniqueConstraints.map((uc) => (
-      <ModelFieldUniqueBadge key="unique" control={control} constraintId={uc} />
+      <ModelFieldUniqueBadge
+        key="unique"
+        control={control}
+        constraintId={uc}
+        autoCollapse={autoCollapse}
+      />
     )),
     ...modelFieldRelations.map((relation) => (
       <ModelRelationsBadge
         key={relation.id}
         control={control}
         relation={relation}
+        autoCollapse={autoCollapse}
       />
     )),
   ];
