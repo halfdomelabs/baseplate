@@ -8,6 +8,7 @@ import {
   parseProjectDefinitionWithContext,
   runSchemaMigrations,
   serializeSchema,
+  prettyStableStringify,
 } from '@halfdomelabs/project-builder-lib';
 import {
   ProjectDefinitionContext,
@@ -39,7 +40,6 @@ import {
   UserVisibleError,
   formatZodError,
 } from 'src/utils/error';
-import { prettyStableStringify } from 'src/utils/json';
 
 interface ProjectDefinitionGateProps {
   children?: React.ReactNode;
