@@ -15,7 +15,6 @@ export function generateMockUniqueConstraint(
 ): ModelUniqueConstraintConfig {
   return {
     id: modelUniqueConstraintEntityType.generateNewId(),
-    name: 'mockConstraint',
     fields: [],
     ...constraint,
   };
