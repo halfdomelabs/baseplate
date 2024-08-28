@@ -1,7 +1,9 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { createContext, useContext, useEffect, useMemo } from 'react';
 import { UseFormGetValues, UseFormWatch } from 'react-hook-form';
 import { StoreApi, createStore, useStore } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ModelConfigStore {
   model: ModelConfig;
@@ -24,16 +26,26 @@ export function EditedModelContextProvider({
   getValues: UseFormGetValues<ModelConfig>;
   initialModel: ModelConfig;
 }): JSX.Element {
+  const { definition } = useProjectDefinition();
+  const existingModel = ModelUtils.byIdOrThrow(definition, initialModel.id);
   const store = useMemo(
     () =>
       createStore<ModelConfigStore>((set) => ({
-        model: initialModel,
+        model: {
+          ...existingModel,
+          ...initialModel,
+        },
         setModel: (model) => {
-          set({ model: model });
+          set({
+            model: {
+              ...existingModel,
+              ...model,
+            },
+          });
         },
         getValues,
       })),
-    [initialModel, getValues],
+    [initialModel, getValues, existingModel],
   );
 
   useEffect(() => {
@@ -59,5 +71,8 @@ export function useEditedModelConfig<T>(
       'useModelParsedProject must be used within a ModelParsedProjectDefinitionProvider',
     );
   }
-  return useStore(store, (state) => selector(state.getValues()));
+  return useStore(
+    store,
+    useShallow((state) => selector({ ...state.model, ...state.getValues() })),
+  );
 }

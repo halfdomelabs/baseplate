@@ -224,8 +224,8 @@ export class ParsedProjectDefinition {
               });
             });
 
-            existingModel.model.primaryKeys =
-              existingModel.model.primaryKeys?.map(
+            existingModel.model.primaryKeyFieldRefs =
+              existingModel.model.primaryKeyFieldRefs?.map(
                 (key) =>
                   existingModel.model.fields.find((f) => f.name === key)?.id ??
                   key,
@@ -285,13 +285,6 @@ export class ParsedProjectDefinition {
       throw new Error(`Model ${name} not found`);
     }
     return model;
-  }
-
-  getModelPrimaryKeys(modelId: string): string[] {
-    const model = this.getModelById(modelId);
-    return model.model.primaryKeys?.length
-      ? model.model.primaryKeys
-      : model.model.fields.filter((f) => f.isId).map((f) => f.name) ?? [];
   }
 
   exportToProjectDefinition(): ProjectDefinition {

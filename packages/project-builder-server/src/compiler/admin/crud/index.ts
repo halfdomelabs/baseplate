@@ -2,6 +2,7 @@ import {
   AdminAppConfig,
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
+  ModelUtils,
   stripChildren,
 } from '@halfdomelabs/project-builder-lib';
 import inflection from 'inflection';
@@ -15,7 +16,10 @@ function compileAdminCrudEmbeddedForm(
   form: AdminCrudEmbeddedFormConfig,
   crudSectionId: string,
 ): unknown {
-  const idFields = builder.parsedProject.getModelPrimaryKeys(form.modelName);
+  const idFields = ModelUtils.byIdOrThrow(
+    builder.projectDefinition,
+    form.modelName,
+  ).model.primaryKeyFieldRefs;
   if (form.includeIdField && idFields.length !== 1) {
     throw new Error(
       `Embedded form ${form.modelName} has ${idFields.length} primary keys, but only one is allowed`,

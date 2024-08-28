@@ -47,10 +47,12 @@ function SortableItem({ id, children }: SortableItemProps): JSX.Element {
     </div>
   );
 }
+
 interface SortableListProps {
   listItems: SortableListItem[];
   sortItems: (dragIndex: number, hoverIndex: number) => void;
 }
+
 export function SortableList({
   listItems,
   sortItems,

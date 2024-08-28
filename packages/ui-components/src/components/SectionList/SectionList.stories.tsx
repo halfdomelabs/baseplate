@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { SectionList } from './SectionList.js';
-import { Button } from '../Button/Button.js';
+
 const meta = {
   component: SectionList,
   tags: ['autodocs'],
@@ -15,21 +15,39 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <SectionList.Section
-          title="Section Title 1"
-          description="This is the description for section 1."
-        >
-          <p>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Consectetur quidem qui architecto placeat nihil officia veritatis
-            obcaecati quod reiciendis.
-          </p>
+        <SectionList.Section>
+          <SectionList.SectionHeader>
+            <SectionList.SectionTitle>
+              Subsection Title
+            </SectionList.SectionTitle>
+            <SectionList.SectionDescription>
+              This is the description for the subsection.
+            </SectionList.SectionDescription>
+          </SectionList.SectionHeader>
+          <SectionList.SectionContent>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Consectetur quidem qui architecto placeat nihil officia veritatis
+              obcaecati quod reiciendis.
+            </p>
+          </SectionList.SectionContent>
         </SectionList.Section>
-        <SectionList.Section
-          title="Section Title 2"
-          description="This is the description for section 2."
-        >
-          <Button type="button">Click Me</Button>
+        <SectionList.Section>
+          <SectionList.SectionHeader>
+            <SectionList.SectionTitle>
+              Subsection Title
+            </SectionList.SectionTitle>
+            <SectionList.SectionDescription>
+              This is the description for the subsection.
+            </SectionList.SectionDescription>
+          </SectionList.SectionHeader>
+          <SectionList.SectionContent>
+            <p>
+              Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+              Consectetur quidem qui architecto placeat nihil officia veritatis
+              obcaecati quod reiciendis.
+            </p>
+          </SectionList.SectionContent>
         </SectionList.Section>
       </>
     ),

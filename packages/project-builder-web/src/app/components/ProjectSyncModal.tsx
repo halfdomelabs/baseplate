@@ -1,3 +1,4 @@
+import { prettyStableStringify } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockBeforeContinue,
   useProjectDefinition,
@@ -8,7 +9,6 @@ import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 
 import { useProjects } from '@src/hooks/useProjects';
-import { prettyStableStringify } from '@src/utils/json';
 import Console, { ConsoleRef } from 'src/components/Console';
 import { formatError } from 'src/services/error-formatter';
 import { FilePayload, startSync } from 'src/services/remote';

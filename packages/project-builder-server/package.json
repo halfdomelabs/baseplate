@@ -56,7 +56,6 @@
     "pino": "8.14.1",
     "pino-pretty": "10.0.1",
     "ramda": "^0.28.0",
-    "sort-keys": "^5.0.0",
     "zod": "3.23.8"
   },
   "devDependencies": {

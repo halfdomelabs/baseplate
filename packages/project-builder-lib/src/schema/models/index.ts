@@ -9,6 +9,7 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
   modelTransformerEntityType,
+  modelUniqueConstraintEntityType,
 } from './types.js';
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';
@@ -24,9 +25,7 @@ export const modelScalarFieldSchema = zEnt(
   z.object({
     name: VALIDATORS.CAMEL_CASE_STRING,
     type: z.enum(SCALAR_FIELD_TYPES),
-    isId: z.boolean().optional(),
     isOptional: z.boolean().optional(),
-    isUnique: z.boolean().optional(),
     options: zRefBuilder(
       z
         .object({
@@ -124,7 +123,7 @@ export const modelRelationFieldSchema = zRefBuilder(
       }),
     ),
     modelName: z.string().min(1),
-    foreignRelationName: z.string().min(1),
+    foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
     onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
     onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
   }),
@@ -153,10 +152,10 @@ export const modelRelationFieldSchema = zRefBuilder(
 export type ModelRelationFieldConfig = z.infer<typeof modelRelationFieldSchema>;
 
 export const modelUniqueConstraintSchema = z.object({
-  name: z.string().min(1),
+  id: z.string().default(() => modelUniqueConstraintEntityType.generateNewId()),
   fields: z.array(
     z.object({
-      name: zRef(z.string().min(1), {
+      fieldRef: zRef(z.string().min(1), {
         type: modelScalarFieldEntityType,
         onDelete: 'RESTRICT',
         parentPath: { context: 'model' },
@@ -278,6 +277,7 @@ export const modelSchemaSchema = z.object({
 export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
 
 export const modelBaseSchema = z.object({
+  id: z.string().default(() => modelEntityType.generateNewId()),
   name: VALIDATORS.PASCAL_CASE_STRING,
   feature: zRef(z.string().min(1), {
     type: featureEntityType,
@@ -286,7 +286,7 @@ export const modelBaseSchema = z.object({
   model: z.object({
     fields: z.array(modelScalarFieldSchema),
     relations: z.array(modelRelationFieldSchema).optional(),
-    primaryKeys: z
+    primaryKeyFieldRefs: z
       .array(
         zRef(z.string(), {
           type: modelScalarFieldEntityType,
@@ -294,7 +294,7 @@ export const modelBaseSchema = z.object({
           parentPath: { context: 'model' },
         }),
       )
-      .optional(),
+      .min(1),
     uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
   }),
   service: modelServiceSchema.optional(),

@@ -1,5 +1,8 @@
 import {
   AppEntry,
+  prettyStableStringify,
+  ProjectDefinition,
+  runSchemaMigrations,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
 import { Logger } from '@halfdomelabs/sync';
@@ -33,7 +36,17 @@ async function loadProjectJson(directory: string): Promise<unknown> {
   }
 
   const projectJson: unknown = await fs.readJson(projectJsonPath);
-  return projectJson;
+
+  const { newConfig: migratedProjectJson, appliedMigrations } =
+    runSchemaMigrations(projectJson as ProjectDefinition);
+  if (appliedMigrations.length > 0) {
+    await fs.writeFile(
+      projectJsonPath,
+      prettyStableStringify(migratedProjectJson),
+    );
+  }
+
+  return migratedProjectJson;
 }
 
 async function compileApplicationsFromDirectory({

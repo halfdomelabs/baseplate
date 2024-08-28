@@ -27,7 +27,6 @@
         "fields": [
           {
             "id": "model-scalar-field:fbIBoKK_DQIj",
-            "isId": true,
             "name": "id",
             "options": { "genUuid": true },
             "type": "uuid"
@@ -57,6 +56,7 @@
             "type": "dateTime"
           }
         ],
+        "primaryKeyFieldRefs": ["id"],
         "uniqueConstraints": []
       },
       "name": "BlogPost",
@@ -70,6 +70,6 @@
   ],
   "name": "simple",
   "portOffset": 3000,
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "version": "0.1.0"
 }

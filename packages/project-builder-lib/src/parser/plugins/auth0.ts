@@ -4,6 +4,7 @@ import {
   PluginMergeModelRelationInput,
 } from '../types.js';
 import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
+import { modelUniqueConstraintEntityType } from '@src/schema/index.js';
 
 export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -25,21 +26,18 @@ export const Auth0Plugin: ParserPlugin = {
         name: 'id',
         isLocked: true,
         type: 'uuid',
-        isId: true,
         options: { genUuid: true },
       },
       {
         name: 'email',
         isLocked: true,
         type: 'string',
-        isUnique: false,
       },
       {
         name: 'auth0Id',
         isLocked: true,
         type: 'string',
         isOptional: true,
-        isUnique: true,
       },
     ];
 
@@ -47,6 +45,13 @@ export const Auth0Plugin: ParserPlugin = {
       name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
+        primaryKeyFieldRefs: ['id'],
+        uniqueConstraints: [
+          {
+            id: modelUniqueConstraintEntityType.generateNewId(),
+            fields: [{ fieldRef: 'auth0Id' }],
+          },
+        ],
         fields: userFields,
       },
     });
@@ -84,7 +89,7 @@ export const Auth0Plugin: ParserPlugin = {
       model: {
         fields: userRoleFields,
         relations: userRoleRelations,
-        primaryKeys: ['userId', 'role'],
+        primaryKeyFieldRefs: ['userId', 'role'],
       },
     });
 

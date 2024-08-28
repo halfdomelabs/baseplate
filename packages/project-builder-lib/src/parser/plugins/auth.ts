@@ -19,14 +19,12 @@ export const AuthPlugin: ParserPlugin = {
         name: 'id',
         isLocked: true,
         type: 'uuid',
-        isId: true,
         options: { genUuid: true },
       },
       {
         name: 'email',
         isLocked: true,
         type: 'string',
-        isUnique: true,
       },
       {
         name: 'tokensNotBefore',
@@ -48,6 +46,7 @@ export const AuthPlugin: ParserPlugin = {
       name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel).name,
       feature: auth.accountsFeaturePath,
       model: {
+        primaryKeyFieldRefs: ['id'],
         fields: userFields,
       },
     });
@@ -85,7 +84,7 @@ export const AuthPlugin: ParserPlugin = {
       model: {
         fields: userRoleFields,
         relations: userRoleRelations,
-        primaryKeys: ['userId', 'role'],
+        primaryKeyFieldRefs: ['userId', 'role'],
       },
     });
 
