@@ -4,35 +4,36 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Badge } from '@halfdomelabs/ui-components';
-import { clsx } from 'clsx';
+import clsx from 'clsx';
 import { Control } from 'react-hook-form';
 import { MdLink } from 'react-icons/md';
 
-import { ModelFieldRelationsDialog } from '../ModelFieldRelationsDialog';
+import { ModelRelationDialog } from './ModelRelationDialog';
 
-interface ModelFieldRelationBadgeProps {
+interface ModelRelationBadgeProps {
   className?: string;
   control: Control<ModelConfig>;
-  fieldIdx: number;
   relation: ModelRelationFieldConfig;
 }
 
-export function ModelFieldRelationBadge({
+export function ModelRelationsBadge({
   className,
   control,
-  fieldIdx,
   relation,
-}: ModelFieldRelationBadgeProps): JSX.Element {
+}: ModelRelationBadgeProps): JSX.Element {
   const { definitionContainer } = useProjectDefinition();
   return (
-    <ModelFieldRelationsDialog control={control} fieldIdx={fieldIdx}>
+    <ModelRelationDialog control={control} relationId={relation.id}>
       <Badge.WithIcon
-        className={clsx('max-w-[100px]', className)}
-        variant="secondary"
         icon={MdLink}
+        variant="secondary"
+        className={clsx('max-w-[100px]', className)}
       >
         {definitionContainer.nameFromId(relation.modelName)}
+        {relation.references.length > 1
+          ? ` (${relation.references.length})`
+          : ''}
       </Badge.WithIcon>
-    </ModelFieldRelationsDialog>
+    </ModelRelationDialog>
   );
 }

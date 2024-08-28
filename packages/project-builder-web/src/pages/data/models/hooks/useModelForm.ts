@@ -31,17 +31,18 @@ interface UseModelFormOptions {
 }
 
 function createNewModel(): ModelConfig {
+  const idFieldId = modelScalarFieldEntityType.generateNewId();
   return {
     id: modelEntityType.generateNewId(),
     name: '',
     feature: '',
     model: {
+      primaryKeyFieldRefs: [idFieldId],
       fields: [
         {
-          id: modelScalarFieldEntityType.generateNewId(),
+          id: idFieldId,
           name: 'id',
           type: 'uuid',
-          isId: true,
           options: {
             genUuid: true,
           },
@@ -109,6 +110,10 @@ export function useModelForm<
           };
           if (!updatedModel.model?.fields?.length) {
             toast.error('Model must have at least one field.');
+            return;
+          }
+          if (!updatedModel.model?.primaryKeyFieldRefs?.length) {
+            toast.error('Model must have at least one primary key field.');
             return;
           }
           if (!updatedModel.service?.build && updatedModel.service) {

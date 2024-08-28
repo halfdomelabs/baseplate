@@ -1,37 +1,40 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { Dialog, useControlledState } from '@halfdomelabs/ui-components';
-import { useState } from 'react';
 import { Control } from 'react-hook-form';
 
-import { ModelFieldRelationForm } from './ModelFieldRelationForm';
+import { ModelPrimaryKeyForm } from './ModelPrimaryKeyForm';
 
-interface ModalRelationsModalProps {
+interface ModelPrimaryKeyDialogProps {
   control: Control<ModelConfig>;
-  fieldIdx: number;
-  children?: React.ReactNode;
   asChild?: boolean;
   open?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
+  children?: React.ReactNode;
 }
 
-export function ModelFieldRelationsDialog({
-  fieldIdx,
+export function ModelPrimaryKeyDialog({
   control,
   children,
   asChild,
   open,
   onOpenChange,
-}: ModalRelationsModalProps): JSX.Element {
+}: ModelPrimaryKeyDialogProps): JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {children && (
         <Dialog.Trigger asChild={asChild}>{children}</Dialog.Trigger>
       )}
-      <Dialog.Content aria-describedby={undefined}>
-        <ModelFieldRelationForm
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Primary Keys</Dialog.Title>
+          <Dialog.Description>
+            Select the fields that will be used as the primary key for this
+            model
+          </Dialog.Description>
+        </Dialog.Header>
+        <ModelPrimaryKeyForm
           control={control}
-          fieldIdx={fieldIdx}
           onSubmitSuccess={() => {
             setIsOpen(false);
           }}

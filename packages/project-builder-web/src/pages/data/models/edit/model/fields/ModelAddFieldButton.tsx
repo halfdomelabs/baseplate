@@ -5,7 +5,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
-import { UseFieldArrayAppend } from 'react-hook-form';
+import { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
 import { MdExpandMore } from 'react-icons/md';
 
 import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
@@ -13,33 +13,38 @@ import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
 interface ModelAddFieldButtonProps {
   className?: string;
   appendField: UseFieldArrayAppend<ModelConfig, 'model.fields'>;
+  setValue: UseFormSetValue<ModelConfig>;
 }
 
 interface AutoAddField {
   name: string;
-  fields: Omit<ModelScalarFieldConfig, 'id'>[];
+  fields: (Omit<ModelScalarFieldConfig, 'id'> & { isPrimaryKey?: boolean })[];
 }
 
 export function ModelAddFieldButton({
   className,
   appendField,
+  setValue,
 }: ModelAddFieldButtonProps): JSX.Element {
   const fieldNames = useEditedModelConfig((model) => {
     return model.model.fields.map((f) => f.name);
   });
+  const primaryKeyFieldLength = useEditedModelConfig((model) => {
+    return model.model.primaryKeyFieldRefs.length;
+  });
   const availableAutoFields = useMemo(() => {
     const autoFields: AutoAddField[] = [];
-    if (!fieldNames.includes('id')) {
+    if (!primaryKeyFieldLength) {
       autoFields.push({
         name: 'ID (uuid)',
         fields: [
           {
             name: 'id',
             type: 'uuid',
-            isId: true,
             options: {
               genUuid: true,
             },
+            isPrimaryKey: true,
           },
         ],
       });
@@ -69,15 +74,19 @@ export function ModelAddFieldButton({
       });
     }
     return autoFields;
-  }, [fieldNames]);
+  }, [fieldNames, primaryKeyFieldLength]);
 
   const applyAutoField = (autoField: AutoAddField): void => {
-    autoField.fields.forEach((field) => {
+    autoField.fields.forEach(({ isPrimaryKey, ...field }) => {
+      const fieldId = modelScalarFieldEntityType.generateNewId();
       if (!fieldNames.includes(field.name)) {
         appendField({
-          id: modelScalarFieldEntityType.generateNewId(),
+          id: fieldId,
           ...field,
         });
+      }
+      if (isPrimaryKey) {
+        setValue('model.primaryKeyFieldRefs', [fieldId]);
       }
     });
   };

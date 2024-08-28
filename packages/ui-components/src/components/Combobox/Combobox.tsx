@@ -36,6 +36,7 @@ interface ComboboxContextValue {
   activeDescendentId: string | undefined;
   listRef: React.RefObject<HTMLDivElement>;
   shouldShowItem: (label: string | null) => boolean;
+  disabled: boolean;
 }
 
 const ComboboxContext = React.createContext<ComboboxContextValue | null>(null);
@@ -52,6 +53,7 @@ export interface ComboboxProps {
   searchQuery?: string;
   onSearchQueryChange?: (query: string) => void;
   label?: string;
+  disabled?: boolean;
 }
 
 /**
@@ -67,6 +69,7 @@ function ComboboxRoot({
   searchQuery: defaultSearchQuery,
   onSearchQueryChange,
   label,
+  disabled = false,
 }: ComboboxProps): React.JSX.Element {
   const [isOpen, setIsOpen] = React.useState(false);
   const [value, setValue] = useControlledState(
@@ -143,6 +146,7 @@ function ComboboxRoot({
         }
         return label.toLowerCase().includes(filterQuery.toLowerCase());
       },
+      disabled,
     }),
     [
       value,
@@ -153,6 +157,7 @@ function ComboboxRoot({
       isOpen,
       filterQuery,
       activeDescendentId,
+      disabled,
     ],
   );
 
@@ -160,6 +165,7 @@ function ComboboxRoot({
     <ComboboxContext.Provider value={contextValue}>
       <Popover open={isOpen} onOpenChange={contextValue.setIsOpen}>
         <Command
+          aria-disabled={disabled}
           shouldFilter={false}
           value={activeValue}
           onValueChange={(val) => {
@@ -204,6 +210,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
       setSearchQuery,
       selectedLabel,
       activeDescendentId,
+      disabled,
     } = useComboboxContext();
 
     const selectedLabelId = React.useId();
@@ -232,6 +239,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
           <Command.Input
             asChild
             onKeyDown={handleKeydown}
+            disabled={disabled}
             onBlur={(e) => {
               if (
                 e.relatedTarget &&
@@ -250,6 +258,9 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             )}
             placeholder={selectedLabel ? undefined : placeholder}
             onClick={() => {
+              if (disabled) {
+                return;
+              }
               if (!isOpen) {
                 setIsOpen(true);
               } else if (inputRef.current) {
@@ -288,6 +299,7 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
                   border: 'none',
                   background: 'transparent',
                 }),
+                disabled ? 'opacity-50' : '',
                 searchQuery ? 'hidden' : '',
                 'pointer-events-none truncate',
               )}
@@ -300,8 +312,12 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             type="button"
             variant="ghost"
             size="icon"
+            disabled={disabled}
             aria-label={`${isOpen ? 'Close' : 'Open'} combobox`}
             onClick={() => {
+              if (disabled) {
+                return;
+              }
               setIsOpen(!isOpen);
             }}
             onKeyDown={(e) => {

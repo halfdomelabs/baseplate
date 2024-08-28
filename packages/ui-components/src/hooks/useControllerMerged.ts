@@ -44,7 +44,7 @@ export function useControllerMerged<
   const { onChange, onBlur, disabled } = options;
   const controllerReturnValue = useController({
     ...props,
-    disabled: props.disabled ?? disabled,
+    disabled: props.disabled,
   });
   const { field } = controllerReturnValue;
 
@@ -61,6 +61,7 @@ export function useControllerMerged<
         field.onBlur();
         onBlur?.(e);
       },
+      disabled: disabled ?? field.disabled,
     },
   };
 }

@@ -1,11 +1,11 @@
-import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
+import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 
-import { ModelFieldPrimaryBadge } from './ModelFieldPrimaryBadge';
-import { ModelFieldRelationBadge } from './ModelFieldRelationBadge';
-import { ModelFieldUniqueBadge } from './ModelFieldUniqueBadge';
 import { useEditedModelConfig } from '../../../../hooks/useEditedModelConfig';
+import { ModelPrimaryKeyBadge } from '../primary-key/ModelPrimaryKeyBadge';
+import { ModelRelationsBadge } from '../relations/ModelRelationBadge';
+import { ModelFieldUniqueBadge } from '../unique-constraints/ModelUniqueConstraintBadge';
 
 interface ModelFieldBadgesProps {
   className?: string;
@@ -19,10 +19,17 @@ export function ModelFieldBadges({
   idx,
 }: ModelFieldBadgesProps): JSX.Element {
   const field = useEditedModelConfig((model) => model.model.fields[idx]);
-  const isPrimary = useEditedModelConfig((model) => {
-    return ModelUtils.getModelIdFields(model).includes(field.id);
+  const { isPrimary, uniqueConstraints } = useEditedModelConfig((model) => {
+    return {
+      isPrimary: model.model.primaryKeyFieldRefs.includes(field.id),
+      uniqueConstraints:
+        model.model.uniqueConstraints
+          ?.filter((constraint) =>
+            constraint.fields.some((f) => f.fieldRef === field.id),
+          )
+          .map((uc) => uc.id) ?? [],
+    };
   });
-  const isUnique = field.isUnique;
   const modelFieldRelations = useEditedModelConfig(({ model }) => {
     const field = model.fields[idx];
     return (
@@ -33,13 +40,14 @@ export function ModelFieldBadges({
   });
 
   const badges = [
-    isPrimary && <ModelFieldPrimaryBadge />,
-    isUnique && <ModelFieldUniqueBadge />,
+    isPrimary && <ModelPrimaryKeyBadge key={'primary'} control={control} />,
+    ...uniqueConstraints.map((uc) => (
+      <ModelFieldUniqueBadge key="unique" control={control} constraintId={uc} />
+    )),
     ...modelFieldRelations.map((relation) => (
-      <ModelFieldRelationBadge
+      <ModelRelationsBadge
         key={relation.id}
         control={control}
-        fieldIdx={idx}
         relation={relation}
       />
     )),

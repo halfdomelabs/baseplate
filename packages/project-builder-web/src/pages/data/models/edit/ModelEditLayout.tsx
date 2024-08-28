@@ -23,9 +23,9 @@ export function ModelEditLayout(): JSX.Element {
       className="relative flex h-full flex-1 flex-col overflow-hidden"
       key={id}
     >
-      <div className="space-y-4 border-b py-4">
-        <ModelHeaderBar model={model} className="max-w-7xl" />
-        <NavigationTabs className="mx-4">
+      <div className="mx-4 max-w-7xl space-y-4 border-b py-4">
+        <ModelHeaderBar model={model} />
+        <NavigationTabs>
           <NavigationTabs.Item asChild>
             <NavLink to="" end>
               Fields

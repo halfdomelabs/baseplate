@@ -117,6 +117,9 @@ export function StorageConfig({
                     added or updated.
                   </li>
                 )}
+                {pendingModelChanges.primaryKeyFieldRefs && (
+                  <li>The primary key will be updated.</li>
+                )}
               </ul>
             </Alert.Description>
           </Alert>

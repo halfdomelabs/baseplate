@@ -15,6 +15,7 @@ describe('getRelationLocalFields', () => {
   it('should return a single local field of a relation', () => {
     const model = generateMockModel({
       model: {
+        primaryKeyFieldRefs: ['localField'],
         fields: [
           generateMockModelScalarField({
             id: 'local',
@@ -37,6 +38,7 @@ describe('getRelationLocalFields', () => {
   it('should return the local fields of a relation', () => {
     const model = generateMockModel({
       model: {
+        primaryKeyFieldRefs: ['local-id', 'local-id2'],
         fields: [
           generateMockModelScalarField({
             id: 'local-id',
@@ -69,6 +71,7 @@ describe('isRelationOptional', () => {
   it('should return true if any local field is optional', () => {
     const model = generateMockModel({
       model: {
+        primaryKeyFieldRefs: ['local-id'],
         fields: [
           generateMockModelScalarField({
             id: 'local-id',
@@ -92,6 +95,7 @@ describe('isRelationOptional', () => {
   it('should return false if no local field is optional', () => {
     const model = generateMockModel({
       model: {
+        primaryKeyFieldRefs: ['local-id'],
         fields: [
           generateMockModelScalarField({
             id: 'local-id',
@@ -119,12 +123,11 @@ describe('isRelationOneToOne', () => {
   it('should return true if the relation is a primary key', () => {
     const model = generateMockModel({
       model: {
-        primaryKeys: ['localField'],
+        primaryKeyFieldRefs: ['localField'],
         fields: [
           generateMockModelScalarField({
             id: 'local-id',
             name: 'localField',
-            isId: true,
           }),
           generateMockModelScalarField({
             name: 'otherField',
@@ -145,9 +148,10 @@ describe('isRelationOneToOne', () => {
   it('should return true if the relation is a unique constraint', () => {
     const model = generateMockModel({
       model: {
+        primaryKeyFieldRefs: ['local-id'],
         uniqueConstraints: [
           generateMockUniqueConstraint({
-            fields: [{ name: 'local-id' }, { name: 'local-id2' }],
+            fields: [{ fieldRef: 'local-id' }, { fieldRef: 'local-id2' }],
           }),
         ],
         fields: [

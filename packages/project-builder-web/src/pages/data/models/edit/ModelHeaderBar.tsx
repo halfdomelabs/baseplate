@@ -42,7 +42,7 @@ export function ModelHeaderBar({
   };
 
   return (
-    <div className={clsx('flex items-center justify-between px-4', className)}>
+    <div className={clsx('flex items-center justify-between', className)}>
       <div>
         <button
           className="group flex items-center space-x-2 hover:cursor-pointer"

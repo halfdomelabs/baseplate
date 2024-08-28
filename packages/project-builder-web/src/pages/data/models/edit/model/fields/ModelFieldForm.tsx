@@ -1,4 +1,7 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import {
+  ModelConfig,
+  modelUniqueConstraintEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   Dropdown,
@@ -12,9 +15,11 @@ import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
 
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
-import { ModelFieldRelationsDialog } from './ModelFieldRelationsDialog';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
 import { ModelFieldBadges } from './badges/ModelFieldBadges';
+import { ModelPrimaryKeyDialog } from './primary-key/ModelPrimaryKeyDialog';
+import { ModelRelationDialog } from './relations/ModelRelationDialog';
+import { ModelUniqueConstraintDialog } from './unique-constraints/ModelUniqueConstraintDialog';
 import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
 
 interface Props {
@@ -42,25 +47,39 @@ function ModelFieldForm({
     control,
   });
 
+  const { isPartOfPrimaryKey, hasCompositePrimaryKey, uniqueConstraints } =
+    useEditedModelConfig((model) => {
+      const { primaryKeyFieldRefs, uniqueConstraints } = model.model;
+      return {
+        isPartOfPrimaryKey: primaryKeyFieldRefs.includes(watchedField.id),
+        hasCompositePrimaryKey: primaryKeyFieldRefs.length > 1,
+        uniqueConstraints: uniqueConstraints ?? [],
+      };
+    });
+
+  const ownUniqueConstraints = uniqueConstraints.filter((uc) =>
+    uc.fields.some((f) => f.fieldRef === watchedField.id),
+  );
+  const usedRelations =
+    watchedRelations?.filter((relation) =>
+      relation.references.some((r) => r.local === watchedField.id),
+    ) ?? [];
+
   const removeError = useEditedModelConfig((model) => {
-    const field = model.model.fields[idx];
     // check local references
-    const usedRelations = model.model.relations?.filter((relation) =>
-      relation.references.some((r) => r.local === field.id),
-    );
     if (usedRelations?.length) {
       return `Unable to remove field as it is being used in relations ${usedRelations
         .map((r) => r.name)
         .join(', ')}`;
     }
     // check primary keys
-    if (model.model.primaryKeys?.includes(field.id)) {
+    if (isPartOfPrimaryKey && hasCompositePrimaryKey) {
       return `Unable to remove field as it is being used in in the primary key`;
     }
     // check unique constraints
     if (
       model.model.uniqueConstraints?.some((constraint) =>
-        constraint.fields.some((f) => f.name === watchedField.id),
+        constraint.fields.some((f) => f.fieldRef === watchedField.id),
       )
     ) {
       return `Unable to remove field as it is being used in in a unique constraint`;
@@ -75,14 +94,22 @@ function ModelFieldForm({
     }
 
     onRemove(idx);
+
+    if (isPartOfPrimaryKey && !hasCompositePrimaryKey) {
+      setValue('model.primaryKeyFieldRefs', []);
+    }
   }
 
-  const modelFieldRelation = watchedRelations?.find(
-    (r) =>
-      r.references.length === 1 && r.references[0].local === watchedField.id,
-  );
+  const [isPrimaryKeyDialogOpen, setIsPrimaryKeyDialogOpen] = useState(false);
 
-  const [isRelationFormOpen, setIsRelationFormOpen] = useState(false);
+  const [isUniqueConstraintDialogOpen, setIsUniqueConstraintDialogOpen] =
+    useState(false);
+  const [uniqueConstriantId, setUniqueConstraintId] = useState<
+    string | undefined
+  >(undefined);
+
+  const [isRelationDialogOpen, setIsRelationDialogOpen] = useState(false);
+  const [relationId, setRelationId] = useState<string | undefined>(undefined);
 
   return (
     <div className={clsx('items-center', className)}>
@@ -121,23 +148,101 @@ function ModelFieldForm({
             </Dropdown.Trigger>
             <Dropdown.Content>
               <Dropdown.Group>
-                <Dropdown.Item onSelect={() => setIsRelationFormOpen(true)}>
-                  {modelFieldRelation ? 'Edit' : 'Add'} Relation
-                </Dropdown.Item>
+                {usedRelations.length === 0 && (
+                  <Dropdown.Item
+                    onSelect={() => {
+                      setIsRelationDialogOpen(true);
+                      setRelationId(undefined);
+                    }}
+                  >
+                    Add Relation
+                  </Dropdown.Item>
+                )}
+                {usedRelations.length > 0 &&
+                  usedRelations.map((relation) => (
+                    <Dropdown.Item
+                      key={relation.id}
+                      onSelect={() => {
+                        setIsRelationDialogOpen(true);
+                        setRelationId(relation.id);
+                      }}
+                    >
+                      Edit Relation {usedRelations.length > 1 && relation.name}
+                    </Dropdown.Item>
+                  ))}
+                {!hasCompositePrimaryKey && !isPartOfPrimaryKey && (
+                  <Dropdown.Item
+                    onSelect={() => {
+                      setValue('model.primaryKeyFieldRefs', [watchedField.id]);
+                    }}
+                  >
+                    Set as Primary Key
+                  </Dropdown.Item>
+                )}
+                {isPartOfPrimaryKey && (
+                  <Dropdown.Item
+                    onSelect={() => {
+                      setIsPrimaryKeyDialogOpen(true);
+                    }}
+                  >
+                    Edit Primary Key
+                  </Dropdown.Item>
+                )}
+                {ownUniqueConstraints.length === 0 &&
+                  (hasCompositePrimaryKey || !isPartOfPrimaryKey) && (
+                    <Dropdown.Item
+                      onSelect={() => {
+                        setValue('model.uniqueConstraints', [
+                          ...uniqueConstraints,
+                          {
+                            id: modelUniqueConstraintEntityType.generateNewId(),
+                            fields: [{ fieldRef: watchedField.id }],
+                          },
+                        ]);
+                      }}
+                    >
+                      Make Unique
+                    </Dropdown.Item>
+                  )}
+                {ownUniqueConstraints.length > 0 &&
+                  ownUniqueConstraints.map((uc, idx) => (
+                    <Dropdown.Item
+                      key={uc.id}
+                      onSelect={() => {
+                        setUniqueConstraintId(uc.id);
+                        setIsUniqueConstraintDialogOpen(true);
+                      }}
+                    >
+                      Edit Unique Constraint{' '}
+                      {ownUniqueConstraints.length > 1 && idx + 1}
+                    </Dropdown.Item>
+                  ))}
               </Dropdown.Group>
             </Dropdown.Content>
           </Dropdown>
+          <ModelPrimaryKeyDialog
+            control={control}
+            open={isPrimaryKeyDialogOpen}
+            onOpenChange={setIsPrimaryKeyDialogOpen}
+          />
+          <ModelUniqueConstraintDialog
+            control={control}
+            open={isUniqueConstraintDialogOpen}
+            onOpenChange={setIsUniqueConstraintDialogOpen}
+            constraintId={uniqueConstriantId}
+          />
+          <ModelRelationDialog
+            control={control}
+            open={isRelationDialogOpen}
+            onOpenChange={setIsRelationDialogOpen}
+            relationId={relationId}
+            defaultFieldName={watchedField.name}
+          />
           <Button variant="ghost" onClick={() => handleRemove()} size="icon">
             <Button.Icon icon={HiOutlineTrash} />
           </Button>
         </div>
       </div>
-      <ModelFieldRelationsDialog
-        fieldIdx={idx}
-        open={isRelationFormOpen}
-        onOpenChange={setIsRelationFormOpen}
-        control={control}
-      />
     </div>
   );
 }

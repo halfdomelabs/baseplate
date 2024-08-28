@@ -17,25 +17,6 @@ interface ModelFieldsFormProps {
   setValue: UseFormSetValue<ModelConfig>;
 }
 
-export function TableHeader({
-  className,
-  children,
-  width,
-}: {
-  className?: string;
-  children: React.ReactNode;
-  width?: string;
-}): JSX.Element {
-  return (
-    <th
-      className={clsx('bg-white p-2 text-sm font-semibold', className)}
-      style={{ width }}
-    >
-      {children}
-    </th>
-  );
-}
-
 export function ModelFieldsForm({
   className,
   control,
@@ -51,9 +32,8 @@ export function ModelFieldsForm({
     name: 'model.fields',
   });
 
-  const gridClassNames = clsx(
-    'grid grid-cols-[repeat(2,1fr)_60px_1fr_repeat(2,60px)_1fr_80px] gap-3',
-  );
+  const gridClassNames =
+    'grid grid-cols-[repeat(2,minmax(130px,1fr))_60px_minmax(130px,1fr)_minmax(100px,1fr)_80px] gap-3';
 
   const fieldListItems = fieldFields.map((f: FieldArrayWithId, i: number) => ({
     id: f.id,
@@ -74,7 +54,7 @@ export function ModelFieldsForm({
       {!fieldFields.length ? (
         <p className="pt-4 text-style-muted">Add some fields to get started</p>
       ) : (
-        <div className="-m-2 flex w-full flex-col gap-2 bg-white p-2">
+        <div className="flex w-full flex-col gap-2 bg-white">
           <div
             className={clsx(
               gridClassNames,
@@ -87,15 +67,13 @@ export function ModelFieldsForm({
             <div>Type</div>
             <div>Optional</div>
             <div>Default Value</div>
-            <div>Primary</div>
-            <div>Unique</div>
-            <div className="sr-only">Tags</div>
+            <div className="sr-only">Badges</div>
             <div className="sr-only">Actions</div>
           </div>
           <SortableList listItems={fieldListItems} sortItems={sortFields} />
         </div>
       )}
-      <ModelAddFieldButton appendField={appendField} />
+      <ModelAddFieldButton appendField={appendField} setValue={setValue} />
     </div>
   );
 }
