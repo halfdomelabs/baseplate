@@ -169,9 +169,9 @@ export type ModelUniqueConstraintConfig = z.infer<
 >;
 
 export const modelServiceSchema = z.object({
-  build: z.boolean().optional(),
   create: z
     .object({
+      enabled: z.boolean().optional(),
       fields: z
         .array(
           zRef(z.string(), {
@@ -194,6 +194,7 @@ export const modelServiceSchema = z.object({
     .optional(),
   update: z
     .object({
+      enabled: z.boolean().optional(),
       fields: z
         .array(
           zRef(z.string(), {
@@ -216,7 +217,7 @@ export const modelServiceSchema = z.object({
     .optional(),
   delete: z
     .object({
-      disabled: z.boolean().optional(),
+      enabled: z.boolean().optional(),
     })
     .optional(),
   transformers: z.array(transformerSchema).optional(),

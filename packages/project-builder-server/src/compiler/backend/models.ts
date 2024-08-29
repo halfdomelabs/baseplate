@@ -8,6 +8,7 @@ import {
   ModelScalarFieldConfig,
   ModelUtils,
   undefinedIfEmpty,
+  undefinedIfFalsy,
 } from '@halfdomelabs/project-builder-lib';
 
 import { AppEntryBuilder, BackendAppEntryBuilder } from '../appEntryBuilder.js';
@@ -28,7 +29,7 @@ function buildScalarField(
   return {
     name: field.name,
     type: field.type,
-    id: undefinedIfEmpty(isId),
+    id: undefinedIfFalsy(isId),
     options: undefinedIfEmpty({
       autoGenerate: options.genUuid,
       defaultToNow: options.defaultToNow,
@@ -38,8 +39,8 @@ function buildScalarField(
         options.defaultEnumValue,
       ),
     }),
-    optional: field.isOptional,
-    unique: undefinedIfEmpty(isUnique),
+    optional: undefinedIfFalsy(field.isOptional),
+    unique: undefinedIfFalsy(isUnique),
     enumType: options.enumType && builder.nameFromId(options.enumType),
   };
 }

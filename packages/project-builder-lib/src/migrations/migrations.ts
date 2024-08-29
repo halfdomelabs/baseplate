@@ -198,4 +198,53 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
       })(config);
     },
   },
+  {
+    version: 6,
+    description: 'Make service controller fields individually enabled',
+    migrate: (config: ProjectDefinition) => {
+      interface OldService {
+        build?: boolean;
+      }
+      interface OldDeleteOp {
+        disabled?: boolean;
+      }
+      return produce((draftConfig: ProjectDefinition) => {
+        draftConfig.models = draftConfig.models ?? [];
+        draftConfig.models.forEach((model) => {
+          const oldService = model.service as unknown as OldService;
+          if (model.service && oldService?.build) {
+            const { create, update, delete: deleteOp } = model.service;
+            if (
+              create &&
+              (!!create.fields?.length || !!create.transformerNames?.length)
+            ) {
+              create.fields = create.fields ?? [];
+              create.transformerNames = create.transformerNames ?? [];
+              create.enabled = true;
+            } else {
+              model.service.create = undefined;
+            }
+            if (
+              update &&
+              (!!update.fields?.length || !!update.transformerNames?.length)
+            ) {
+              update.fields = update.fields ?? [];
+              update.transformerNames = update.transformerNames ?? [];
+              update.enabled = true;
+            } else {
+              model.service.update = undefined;
+            }
+            const oldDeleteOp = deleteOp as OldDeleteOp;
+            if (!deleteOp || !oldDeleteOp.disabled) {
+              model.service.delete = {
+                enabled: true,
+              };
+            } else {
+              model.service.delete = undefined;
+            }
+          }
+        });
+      })(config);
+    },
+  },
 ];

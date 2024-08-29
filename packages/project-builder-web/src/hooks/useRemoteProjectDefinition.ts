@@ -49,7 +49,8 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   const lastSavedValueRef = useRef<string | null>(null);
   const shouldTriggerRefetch = useRef(false);
 
-  const { currentProjectId, resetCurrentProjectId } = useProjects();
+  const { currentProjectId, resetCurrentProjectId, projectsLoaded } =
+    useProjects();
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
   const [pluginsMetadata, setPluginsMetadata] =
@@ -66,7 +67,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   }, [currentProjectId]);
 
   useEffect(() => {
-    if (!currentProjectId) {
+    if (!currentProjectId || !projectsLoaded) {
       return;
     }
     getPluginsMetadata(currentProjectId)
@@ -84,7 +85,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
           `Error loading project plugin configs: ${(err as Error).message}`,
         );
       });
-  }, [currentProjectId]);
+  }, [currentProjectId, projectsLoaded]);
 
   useEffect(() => {
     if (!pluginsMetadata || !currentProjectId) {

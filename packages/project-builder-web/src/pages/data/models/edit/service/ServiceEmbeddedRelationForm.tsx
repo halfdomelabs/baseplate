@@ -9,12 +9,11 @@ import {
   ModelTransformerWebFormProps,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
+import { MultiComboboxField, SelectField } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
-import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import { usePrevious } from 'src/hooks/usePrevious';
 
 function ServiceEmbeddedRelationForm({
@@ -111,23 +110,21 @@ function ServiceEmbeddedRelationForm({
   return (
     <div className={'space-y-4'}>
       <SelectField.Controller
-        className="w-full"
         control={control}
         name={`${prefix}.foreignRelationRef`}
         options={relationOptions}
         label="Relation"
         placeholder="Select relation"
       />
-      <CheckedArrayInput.LabelledController
-        className="w-full"
+      <MultiComboboxField.Controller
         control={control}
+        disabled={!foreignFieldOptions.length}
         options={foreignFieldOptions}
         name={`${prefix}.embeddedFieldNames`}
         label="Embedded Field Names"
       />
       {!!foreignTransformerOptions.length && (
-        <CheckedArrayInput.LabelledController
-          className="w-full"
+        <MultiComboboxField.Controller
           control={control}
           options={foreignTransformerOptions}
           name={`${prefix}.embeddedTransformerNames`}
@@ -149,6 +146,22 @@ export const embeddedRelationTransformerWebConfig: ModelTransformerWebConfig<Emb
           description: container.nameFromId(definition.foreignRelationRef),
         },
       ];
+    },
+    allowNewTransformer(projectContainer, model) {
+      const { definition } = projectContainer;
+      const relationsToModel = ModelUtils.getRelationsToModel(
+        definition,
+        model.id,
+      );
+      const otherEmbeddedRelations = model.service?.transformers?.filter(
+        (t): t is EmbeddedRelationTransformerConfig =>
+          t.type === 'embeddedRelation',
+      );
+      return relationsToModel.some(({ relation }) => {
+        return !otherEmbeddedRelations?.some(
+          (o) => o.foreignRelationRef === relation.foreignId,
+        );
+      });
     },
     getNewTransformer: () => ({
       id: modelTransformerEntityType.generateNewId(),
