@@ -2,10 +2,11 @@ import {
   modelBaseSchema,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
 
 import { ServiceMethodFieldsSection } from './ServiceMethodFieldsSection';
-import ServiceTransformersForm from './ServiceTransformersForm';
+import { ServiceTransformersSection } from './ServiceTransformersSection';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
 import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
@@ -17,10 +18,15 @@ registerEntityTypeUrl(
 );
 
 function ModelEditServicePage(): JSX.Element {
-  const { form, onSubmit, originalModel, defaultValues } = useModelForm({
+  const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
   const { control, watch, getValues, setValue } = form;
+
+  useBlockUnsavedChangesNavigate(form.formState, {
+    reset: form.reset,
+    onSubmit,
+  });
 
   // TODO: Need to unset transformer options when reset
 
@@ -30,7 +36,7 @@ function ModelEditServicePage(): JSX.Element {
       getValues={getValues}
       watch={watch}
     >
-      <form onSubmit={onSubmit} className="space-y-4 p-4">
+      <form onSubmit={onSubmit} className="max-w-5xl space-y-4 p-4">
         <SectionList>
           <SectionList.Section>
             <SectionList.SectionHeader>
@@ -58,27 +64,7 @@ function ModelEditServicePage(): JSX.Element {
             </SectionList.SectionContent>
           </SectionList.Section>
           <ServiceMethodFieldsSection control={control} setValue={setValue} />
-          {originalModel && (
-            <SectionList.Section>
-              <SectionList.SectionHeader>
-                <SectionList.SectionTitle>
-                  Transformers
-                </SectionList.SectionTitle>
-                <SectionList.SectionDescription>
-                  Transformers are used to operate on the data from the client
-                  into the shape that the database ORM expects.
-                </SectionList.SectionDescription>
-              </SectionList.SectionHeader>
-              <SectionList.SectionContent>
-                {originalModel && (
-                  <ServiceTransformersForm
-                    formProps={form}
-                    originalModel={originalModel}
-                  />
-                )}
-              </SectionList.SectionContent>
-            </SectionList.Section>
-          )}
+          <ServiceTransformersSection formProps={form} />
         </SectionList>
         <DataFormActionBar form={form} />
       </form>

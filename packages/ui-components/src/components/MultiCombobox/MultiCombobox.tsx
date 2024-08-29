@@ -24,6 +24,7 @@ interface MultiComboboxContextValue {
     label: string | undefined,
     selected: boolean,
   ) => void;
+  disabled?: boolean;
 }
 
 const MultiComboboxContext =
@@ -38,12 +39,14 @@ interface MultiComboboxProps {
   children?: React.ReactNode;
   value?: MultiComboboxOption[];
   onChange?: (value: MultiComboboxOption[]) => void;
+  disabled?: boolean;
 }
 
 function MultiComboboxRoot({
   children,
   value,
   onChange,
+  disabled,
 }: MultiComboboxProps): JSX.Element {
   const [selectedValues, setSelectedValues] = useControlledState(
     value,
@@ -60,8 +63,9 @@ function MultiComboboxRoot({
           setSelectedValues(selectedValues.filter((v) => v.value !== value));
         }
       },
+      disabled,
     }),
-    [selectedValues, setSelectedValues],
+    [selectedValues, setSelectedValues, disabled],
   );
 
   return (
@@ -92,7 +96,7 @@ const MultiComboboxInput = React.forwardRef<
   HTMLButtonElement,
   MultiComboboxInputProps
 >(({ className, placeholder }, ref) => {
-  const { selectedValues } = useMultiComboboxContext();
+  const { selectedValues, disabled } = useMultiComboboxContext();
 
   return (
     <Popover.Trigger asChild>
@@ -102,9 +106,15 @@ const MultiComboboxInput = React.forwardRef<
           'flex items-center space-x-2',
           className,
         )}
+        disabled={disabled}
         ref={ref}
       >
-        <div className="flex flex-1 items-center gap-2">
+        <div
+          className={cn(
+            'flex flex-1 items-center gap-2',
+            disabled && 'opacity-50',
+          )}
+        >
           {selectedValues.length === 0 && (
             <div className="text-muted-foreground">{placeholder}</div>
           )}

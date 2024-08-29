@@ -18,6 +18,7 @@ export interface MultiComboboxFieldProps<OptionType>
     FieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
+  disabled?: boolean;
 }
 
 /**

@@ -7,7 +7,7 @@ import {
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { Control, UseFormSetValue } from 'react-hook-form';
-import { MdDeleteOutline, MdEdit } from 'react-icons/md';
+import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import { ModelRelationDialog } from './fields/relations/ModelRelationDialog';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
@@ -87,9 +87,9 @@ export function ModelRelationsSection({
           </RecordView>
         ))}
         <ModelRelationDialog control={control} asChild>
-          <Button variant="secondary" size="sm">
+          <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
             Add Relation
-          </Button>
+          </Button.WithIcon>
         </ModelRelationDialog>
       </SectionList.SectionContent>
     </SectionList.Section>

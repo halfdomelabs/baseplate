@@ -79,6 +79,7 @@ export function ServiceMethodFieldsSection({
                           value
                             ? [...createFields, field.id]
                             : createFields.filter((id) => id !== field.id),
+                          { shouldDirty: true },
                         )
                       }
                     />
@@ -94,6 +95,7 @@ export function ServiceMethodFieldsSection({
                           value
                             ? [...updateFields, field.id]
                             : updateFields.filter((id) => id !== field.id),
+                          { shouldDirty: true },
                         )
                       }
                     />
@@ -131,6 +133,7 @@ export function ServiceMethodFieldsSection({
                             : createTransformers.filter(
                                 (id) => id !== transformer.id,
                               ),
+                          { shouldDirty: true },
                         )
                       }
                     />
@@ -148,6 +151,7 @@ export function ServiceMethodFieldsSection({
                             : updateTransformers.filter(
                                 (id) => id !== transformer.id,
                               ),
+                          { shouldDirty: true },
                         )
                       }
                     />

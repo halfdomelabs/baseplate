@@ -6,7 +6,7 @@ import {
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { Control, UseFormSetValue } from 'react-hook-form';
-import { MdDeleteOutline, MdEdit } from 'react-icons/md';
+import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import { ModelUniqueConstraintDialog } from './fields/unique-constraints/ModelUniqueConstraintDialog';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
@@ -83,9 +83,9 @@ export function ModelUniqueConstraintsSection({
           </RecordView>
         ))}
         <ModelUniqueConstraintDialog control={control} asChild>
-          <Button variant="secondary" size="sm">
+          <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
             Add Unique Constraint
-          </Button>
+          </Button.WithIcon>
         </ModelUniqueConstraintDialog>
       </SectionList.SectionContent>
     </SectionList.Section>
