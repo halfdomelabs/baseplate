@@ -116,9 +116,6 @@ export function useModelForm<
             toast.error('Model must have at least one primary key field.');
             return;
           }
-          if (!updatedModel.service?.build && updatedModel.service) {
-            updatedModel.service = undefined;
-          }
           // check for models with the same name
           const existingModel = definition.models.find(
             (m) =>
@@ -131,6 +128,44 @@ export function useModelForm<
             });
             return;
           }
+
+          // clear out any service methods that are disabled
+          const { service } = updatedModel;
+          if (service) {
+            if (!service.create?.enabled) {
+              service.create = undefined;
+            } else {
+              if (
+                !service.create?.fields?.length &&
+                !service.create?.transformerNames?.length
+              ) {
+                toast.error(
+                  'Create method must have at least one field or transformer.',
+                );
+                return;
+              }
+            }
+            if (!service.update?.enabled) {
+              service.update = undefined;
+            } else {
+              if (
+                !service.update?.fields?.length &&
+                !service.update?.transformerNames?.length
+              ) {
+                toast.error(
+                  'Update method must have at least one field or transformer.',
+                );
+                return;
+              }
+            }
+            if (!service.delete?.enabled) {
+              service.delete = undefined;
+            }
+            if (!service.create && !service.update && !service.delete) {
+              updatedModel.service = undefined;
+            }
+          }
+
           setConfigAndFixReferences((draftConfig) => {
             // create feature if a new feature exists
             updatedModel.feature = FeatureUtils.ensureFeatureByNameRecursively(

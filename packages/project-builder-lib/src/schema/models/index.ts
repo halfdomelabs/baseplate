@@ -169,54 +169,47 @@ export type ModelUniqueConstraintConfig = z.infer<
 >;
 
 export const modelServiceSchema = z.object({
-  build: z.boolean().optional(),
   create: z
     .object({
-      fields: z
-        .array(
-          zRef(z.string(), {
-            type: modelScalarFieldEntityType,
-            onDelete: 'DELETE',
-            parentPath: { context: 'model' },
-          }),
-        )
-        .optional(),
-      transformerNames: z
-        .array(
-          zRef(z.string(), {
-            type: modelTransformerEntityType,
-            onDelete: 'DELETE',
-            parentPath: { context: 'model' },
-          }),
-        )
-        .optional(),
+      enabled: z.boolean().optional(),
+      fields: z.array(
+        zRef(z.string(), {
+          type: modelScalarFieldEntityType,
+          onDelete: 'DELETE',
+          parentPath: { context: 'model' },
+        }),
+      ),
+      transformerNames: z.array(
+        zRef(z.string(), {
+          type: modelTransformerEntityType,
+          onDelete: 'DELETE',
+          parentPath: { context: 'model' },
+        }),
+      ),
     })
     .optional(),
   update: z
     .object({
-      fields: z
-        .array(
-          zRef(z.string(), {
-            type: modelScalarFieldEntityType,
-            onDelete: 'DELETE',
-            parentPath: { context: 'model' },
-          }),
-        )
-        .optional(),
-      transformerNames: z
-        .array(
-          zRef(z.string(), {
-            type: modelTransformerEntityType,
-            onDelete: 'DELETE',
-            parentPath: { context: 'model' },
-          }),
-        )
-        .optional(),
+      enabled: z.boolean().optional(),
+      fields: z.array(
+        zRef(z.string(), {
+          type: modelScalarFieldEntityType,
+          onDelete: 'DELETE',
+          parentPath: { context: 'model' },
+        }),
+      ),
+      transformerNames: z.array(
+        zRef(z.string(), {
+          type: modelTransformerEntityType,
+          onDelete: 'DELETE',
+          parentPath: { context: 'model' },
+        }),
+      ),
     })
     .optional(),
   delete: z
     .object({
-      disabled: z.boolean().optional(),
+      enabled: z.boolean().optional(),
     })
     .optional(),
   transformers: z.array(transformerSchema).optional(),
