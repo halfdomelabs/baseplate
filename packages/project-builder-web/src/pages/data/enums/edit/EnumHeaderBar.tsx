@@ -1,10 +1,9 @@
 import { EnumConfig, FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { MdDeleteOutline } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
+import { EnumOptionsDropdown } from './EnumOptionsDropdown';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { useToast } from '@src/hooks/useToast';
 import { logAndFormatError } from '@src/services/error-formatter';
@@ -23,7 +22,6 @@ export function EnumHeaderBar({
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
   const toast = useToast();
-  const { requestConfirm } = useConfirmDialog();
 
   const handleDelete = (id: string): void => {
     try {
@@ -54,23 +52,10 @@ export function EnumHeaderBar({
         )}
       </div>
       <div className="flex gap-8">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => {
-            requestConfirm({
-              title: 'Confirm delete',
-              content: `Are you sure you want to delete ${
-                enumDefinition?.name ?? 'the enum'
-              }?`,
-              buttonConfirmText: 'Delete',
-              onConfirm: () => handleDelete(enumDefinition.id),
-            });
-          }}
-        >
-          <Button.Icon icon={MdDeleteOutline} className="text-destructive" />
-          <div className="sr-only">Delete Enum</div>
-        </Button>
+        <EnumOptionsDropdown
+          enumDefinition={enumDefinition}
+          handleDelete={handleDelete}
+        />
       </div>
     </div>
   );
