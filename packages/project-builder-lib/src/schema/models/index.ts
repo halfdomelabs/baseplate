@@ -172,39 +172,47 @@ export const modelServiceSchema = z.object({
   create: z
     .object({
       enabled: z.boolean().optional(),
-      fields: z.array(
-        zRef(z.string(), {
-          type: modelScalarFieldEntityType,
-          onDelete: 'DELETE',
-          parentPath: { context: 'model' },
-        }),
-      ),
-      transformerNames: z.array(
-        zRef(z.string(), {
-          type: modelTransformerEntityType,
-          onDelete: 'DELETE',
-          parentPath: { context: 'model' },
-        }),
-      ),
+      fields: z
+        .array(
+          zRef(z.string(), {
+            type: modelScalarFieldEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
+      transformerNames: z
+        .array(
+          zRef(z.string(), {
+            type: modelTransformerEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
     })
     .optional(),
   update: z
     .object({
       enabled: z.boolean().optional(),
-      fields: z.array(
-        zRef(z.string(), {
-          type: modelScalarFieldEntityType,
-          onDelete: 'DELETE',
-          parentPath: { context: 'model' },
-        }),
-      ),
-      transformerNames: z.array(
-        zRef(z.string(), {
-          type: modelTransformerEntityType,
-          onDelete: 'DELETE',
-          parentPath: { context: 'model' },
-        }),
-      ),
+      fields: z
+        .array(
+          zRef(z.string(), {
+            type: modelScalarFieldEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
+      transformerNames: z
+        .array(
+          zRef(z.string(), {
+            type: modelTransformerEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
     })
     .optional(),
   delete: z
