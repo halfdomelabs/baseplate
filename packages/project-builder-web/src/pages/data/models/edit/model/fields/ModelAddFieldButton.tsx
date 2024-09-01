@@ -86,7 +86,7 @@ export function ModelAddFieldButton({
         });
       }
       if (isPrimaryKey) {
-        setValue('model.primaryKeyFieldRefs', [fieldId]);
+        setValue('model.primaryKeyFieldRefs', [fieldId], { shouldDirty: true });
       }
     });
   };
