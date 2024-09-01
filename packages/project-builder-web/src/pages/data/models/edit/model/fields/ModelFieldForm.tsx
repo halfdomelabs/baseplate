@@ -96,7 +96,7 @@ function ModelFieldForm({
     onRemove(idx);
 
     if (isPartOfPrimaryKey && !hasCompositePrimaryKey) {
-      setValue('model.primaryKeyFieldRefs', []);
+      setValue('model.primaryKeyFieldRefs', [], { shouldDirty: true });
     }
   }
 
@@ -173,7 +173,9 @@ function ModelFieldForm({
                 {!hasCompositePrimaryKey && !isPartOfPrimaryKey && (
                   <Dropdown.Item
                     onSelect={() => {
-                      setValue('model.primaryKeyFieldRefs', [watchedField.id]);
+                      setValue('model.primaryKeyFieldRefs', [watchedField.id], {
+                        shouldDirty: true,
+                      });
                     }}
                   >
                     Set as Primary Key
@@ -192,13 +194,17 @@ function ModelFieldForm({
                   (hasCompositePrimaryKey || !isPartOfPrimaryKey) && (
                     <Dropdown.Item
                       onSelect={() => {
-                        setValue('model.uniqueConstraints', [
-                          ...uniqueConstraints,
-                          {
-                            id: modelUniqueConstraintEntityType.generateNewId(),
-                            fields: [{ fieldRef: watchedField.id }],
-                          },
-                        ]);
+                        setValue(
+                          'model.uniqueConstraints',
+                          [
+                            ...uniqueConstraints,
+                            {
+                              id: modelUniqueConstraintEntityType.generateNewId(),
+                              fields: [{ fieldRef: watchedField.id }],
+                            },
+                          ],
+                          { shouldDirty: true },
+                        );
                       }}
                     >
                       Make Unique

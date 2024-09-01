@@ -60,7 +60,11 @@ export function ModelFieldDefaultValueInput({
         {defaultValue && (
           <Button
             title="Reset"
-            onClick={() => setValue(`model.fields.${idx}.options.default`, '')}
+            onClick={() =>
+              setValue(`model.fields.${idx}.options.default`, '', {
+                shouldDirty: true,
+              })
+            }
             variant="ghost"
             size="icon"
           >
@@ -83,7 +87,9 @@ export function ModelFieldDefaultValueInput({
           <Button
             title="Reset"
             onClick={() =>
-              setValue(`model.fields.${idx}.options.default`, undefined)
+              setValue(`model.fields.${idx}.options.default`, undefined, {
+                shouldDirty: true,
+              })
             }
             variant="ghost"
             size="icon"
