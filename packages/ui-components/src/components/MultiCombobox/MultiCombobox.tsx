@@ -306,8 +306,7 @@ const MultiComboboxItem = React.forwardRef<
 
   return (
     <Command.Item
-      value={value}
-      onSelect={(value) => {
+      onSelect={() => {
         const itemLabel = label ?? itemRef.current?.textContent ?? undefined;
         onSelect(value, itemLabel, !isSelected);
       }}
