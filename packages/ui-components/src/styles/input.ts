@@ -1,9 +1,13 @@
 import { cva } from 'class-variance-authority';
 
 export const inputVariants = cva(
-  'h-10 w-full rounded-md py-2 pl-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+  'w-full rounded-md py-2 pl-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
+      height: {
+        default: 'h-10',
+        flexible: 'min-h-10',
+      },
       border: {
         default:
           'border border-input ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',

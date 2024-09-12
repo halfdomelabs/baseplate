@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { MdCheck } from 'react-icons/md';
+import React, { useId, useMemo, useState } from 'react';
+import { MdCheck, MdClose } from 'react-icons/md';
 import { RxCaretSort } from 'react-icons/rx';
 
 import { Badge } from '../Badge/Badge';
@@ -25,6 +25,12 @@ interface MultiComboboxContextValue {
     selected: boolean,
   ) => void;
   disabled?: boolean;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+  inputId: string;
+  filterId: string;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
 }
 
 const MultiComboboxContext =
@@ -53,10 +59,15 @@ function MultiComboboxRoot({
     onChange,
     [],
   );
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const inputId = useId();
+  const filterId = useId();
   const contextValue: MultiComboboxContextValue = useMemo(
     () => ({
       selectedValues,
       onSelect: (value, label, selected) => {
+        setSearchQuery('');
         if (selected) {
           setSelectedValues([...selectedValues, { label, value }]);
         } else {
@@ -64,13 +75,33 @@ function MultiComboboxRoot({
         }
       },
       disabled,
+      isOpen,
+      setIsOpen: (open) => {
+        setSearchQuery('');
+        setIsOpen(open);
+      },
+      inputId,
+      filterId,
+      searchQuery,
+      setSearchQuery,
     }),
-    [selectedValues, setSelectedValues, disabled],
+    [
+      selectedValues,
+      setSelectedValues,
+      disabled,
+      isOpen,
+      inputId,
+      filterId,
+      searchQuery,
+      setSearchQuery,
+    ],
   );
 
   return (
     <MultiComboboxContext.Provider value={contextValue}>
-      <Popover>{children}</Popover>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        {children}
+      </Popover>
     </MultiComboboxContext.Provider>
   );
 }
@@ -93,65 +124,91 @@ interface MultiComboboxInputProps {
 }
 
 const MultiComboboxInput = React.forwardRef<
-  HTMLButtonElement,
+  HTMLDivElement,
   MultiComboboxInputProps
 >(({ className, placeholder }, ref) => {
-  const { selectedValues, disabled } = useMultiComboboxContext();
+  const {
+    selectedValues,
+    onSelect,
+    disabled,
+    setIsOpen,
+    isOpen,
+    inputId,
+    filterId,
+  } = useMultiComboboxContext();
+
+  const handleClick = (): void => {
+    if (disabled) return;
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <Popover.Trigger asChild>
-      <button
+    <Popover.Anchor asChild>
+      <div
         className={cn(
-          inputVariants(),
-          'flex items-center space-x-2',
+          inputVariants({
+            height: 'flexible',
+          }),
+          'flex items-center gap-2',
+          disabled && 'opacity-50',
           className,
         )}
-        disabled={disabled}
+        onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            handleClick();
+          }
+        }}
+        role="button"
+        tabIndex={0}
         ref={ref}
+        data-cmdk-input-id={inputId}
       >
-        <div
-          className={cn(
-            'flex flex-1 items-center gap-2',
-            disabled && 'opacity-50',
-          )}
-        >
+        <div className="flex flex-1 flex-wrap items-center gap-1">
           {selectedValues.length === 0 && (
             <div className="text-muted-foreground">{placeholder}</div>
           )}
           {selectedValues.length > 0 && (
             <>
-              <Badge
-                variant="secondary"
-                className="rounded-sm px-1 font-normal sm:hidden"
-              >
-                {selectedValues.length} selected
-              </Badge>
-              <div className="hidden space-x-1 sm:flex">
-                {selectedValues.length > 3 ? (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
+              {selectedValues.map((option) => (
+                <Badge
+                  variant="secondary"
+                  key={option.value}
+                  className="flex items-center gap-1 rounded-sm px-1 font-normal"
+                >
+                  <div>{option.label}</div>
+                  <button
+                    className="-mr-1 rounded-full p-0.5 hover:bg-secondary-hover"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        onSelect(option.value, option.label, false);
+                        e.stopPropagation();
+                      }
+                    }}
+                    onClick={(e) => {
+                      onSelect(option.value, option.label, false);
+                      if (isOpen) {
+                        document
+                          .querySelector<HTMLInputElement>(
+                            `[data-cmdk-filter-id="${filterId}"]`,
+                          )
+                          ?.focus();
+                      }
+                      e.stopPropagation();
+                    }}
                   >
-                    {selectedValues.length} selected
-                  </Badge>
-                ) : (
-                  selectedValues.map((option) => (
-                    <Badge
-                      variant="secondary"
-                      key={option.value}
-                      className="rounded-sm px-1 font-normal"
-                    >
-                      {option.label}
-                    </Badge>
-                  ))
-                )}
-              </div>
+                    <MdClose />
+                  </button>
+                </Badge>
+              ))}
             </>
           )}
         </div>
-        <RxCaretSort className="size-4" />
-      </button>
-    </Popover.Trigger>
+        <Popover.Trigger>
+          <RxCaretSort className="size-4" />
+        </Popover.Trigger>
+      </div>
+    </Popover.Anchor>
   );
 });
 
@@ -172,22 +229,41 @@ function MultiComboboxContent({
   style,
   ...rest
 }: MultiComboboxContentProps): React.JSX.Element {
+  const { inputId, filterId, searchQuery, setSearchQuery } =
+    useMultiComboboxContext();
+
   return (
     <Popover.Content
       align="start"
+      width="none"
       padding="none"
+      sideOffset={0}
       className={cn(selectContentVariants({ popper: 'active' }), className)}
       style={
         {
           '--max-popover-height': maxHeight,
+          width: 'var(--radix-popover-trigger-width)',
           ...style,
         } as Record<string, string>
       }
+      onInteractOutside={(e) => {
+        if (
+          e.target &&
+          e.target instanceof Element &&
+          e.target.closest(`[data-cmdk-input-id="${inputId}"]`)
+        ) {
+          e.preventDefault();
+        }
+      }}
       {...rest}
       data-combobox-content=""
     >
       <Command>
-        <Command.Input />
+        <Command.Input
+          data-cmdk-filter-id={filterId}
+          value={searchQuery}
+          onValueChange={setSearchQuery}
+        />
         <Command.List>{children}</Command.List>
       </Command>
     </Popover.Content>
@@ -230,8 +306,7 @@ const MultiComboboxItem = React.forwardRef<
 
   return (
     <Command.Item
-      value={value}
-      onSelect={(value) => {
+      onSelect={() => {
         const itemLabel = label ?? itemRef.current?.textContent ?? undefined;
         onSelect(value, itemLabel, !isSelected);
       }}
