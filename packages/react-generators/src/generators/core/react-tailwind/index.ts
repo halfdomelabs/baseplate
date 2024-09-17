@@ -41,13 +41,13 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
   createGenerator({ globalBodyClasses }, { node, react, eslint, prettier }) {
     const srcFolder = react.getSrcFolder();
 
-    const prettierPluginTailwindcssVersion = '0.6.5';
+    const prettierPluginTailwindcssVersion = '0.6.6';
 
     node.addDevPackages({
-      autoprefixer: '10.4.19',
-      tailwindcss: '3.4.3',
+      autoprefixer: '10.4.20',
+      tailwindcss: '3.4.11',
       'prettier-plugin-tailwindcss': prettierPluginTailwindcssVersion,
-      '@tailwindcss/forms': '0.5.7',
+      '@tailwindcss/forms': '0.5.9',
     });
 
     eslint

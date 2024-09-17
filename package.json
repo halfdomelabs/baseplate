@@ -23,7 +23,7 @@
     "watch": "nx run-many --target=watch --parallel=100 --output-style=stream"
   },
   "dependencies": {
-    "@changesets/cli": "^2.26.2",
+    "@changesets/cli": "2.26.2",
     "@halfdomelabs/tools": "workspace:*"
   },
   "devDependencies": {
