@@ -1,8 +1,9 @@
 import type { Preview } from '@storybook/react';
 import { themes } from '@storybook/theming';
-import { useDarkMode } from 'storybook-dark-mode';
+import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 import React, { useEffect, useState } from 'react';
 import { DocsContainer } from '@storybook/addon-docs';
+import { addons } from '@storybook/preview-api';
 import { createPortal } from 'react-dom';
 
 import '../src/font.css';
@@ -36,6 +37,8 @@ export const decorators = [
   ),
 ];
 
+const channel = addons.getChannel();
+
 const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
@@ -53,10 +56,20 @@ const preview: Preview = {
     },
     docs: {
       container: (props) => {
-        const isDark = useDarkMode();
-        const currentProps = { ...props };
-        currentProps.theme = isDark ? themes.dark : themes.light;
-        return React.createElement(DocsContainer, currentProps);
+        // workaround for https://github.com/hipstersmoothie/storybook-dark-mode/issues/282
+        const [isDark, setIsDark] = useState(false);
+
+        useEffect(() => {
+          channel.on(DARK_MODE_EVENT_NAME, setIsDark);
+          return () => {
+            channel.off(DARK_MODE_EVENT_NAME, setIsDark);
+          };
+        }, []);
+
+        return React.createElement(DocsContainer, {
+          ...props,
+          theme: isDark ? themes.dark : themes.light,
+        });
       },
     },
   },
