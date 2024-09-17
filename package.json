@@ -30,10 +30,10 @@
     "nx": "19.5.0",
     "typescript": "5.4.4"
   },
-  "packageManager": "pnpm@9.5.0",
+  "packageManager": "pnpm@9.10.0",
   "engines": {
     "node": "^20.0.0",
-    "pnpm": "^9.5.0"
+    "pnpm": "^9.10.0"
   },
   "volta": {
     "node": "20.15.1"

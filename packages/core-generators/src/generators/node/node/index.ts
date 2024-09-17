@@ -22,7 +22,7 @@ const descriptorSchema = z.object({
   private: z.boolean().default(true),
   path: z.string().default(''),
   nodeVersion: z.string().default('20.15.1'),
-  pnpmVersion: z.string().default('9.5.0'),
+  pnpmVersion: z.string().default('9.10.0'),
 });
 
 export type NodeGeneratorDescriptor = InferGeneratorDescriptor<
