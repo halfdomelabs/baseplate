@@ -7,7 +7,7 @@ export function setupFastifyTypescript(
   node: NodeProvider,
   typescriptConfig: TypescriptConfigProvider,
 ): void {
-  typescriptConfig.setTypescriptVersion('5.4.4');
+  typescriptConfig.setTypescriptVersion('5.5.4');
   typescriptConfig.setTypescriptCompilerOptions({
     outDir: 'dist',
     declaration: true,

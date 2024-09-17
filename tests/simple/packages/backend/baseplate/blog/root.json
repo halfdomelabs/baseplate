@@ -12,36 +12,19 @@
               "name": "id",
               "type": "uuid",
               "id": true,
-              "options": {"autoGenerate": true},
-              "unique": false
+              "options": {"autoGenerate": true}
             },
-            {
-              "name": "title",
-              "type": "string",
-              "id": false,
-              "options": {"default": ""},
-              "unique": false
-            },
-            {
-              "name": "content",
-              "type": "string",
-              "id": false,
-              "options": {"default": ""},
-              "unique": false
-            },
+            {"name": "title", "type": "string", "options": {"default": ""}},
+            {"name": "content", "type": "string", "options": {"default": ""}},
             {
               "name": "updatedAt",
               "type": "dateTime",
-              "id": false,
-              "options": {"defaultToNow": true, "updatedAt": true},
-              "unique": false
+              "options": {"defaultToNow": true, "updatedAt": true}
             },
             {
               "name": "createdAt",
               "type": "dateTime",
-              "id": false,
-              "options": {"defaultToNow": true},
-              "unique": false
+              "options": {"defaultToNow": true}
             }
           ]
         }

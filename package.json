@@ -16,6 +16,7 @@
     "serve": "nx run @halfdomelabs/project-builder-cli:start serve",
     "test": "nx affected --target=test",
     "test:e2e": "nx affected --target=test:e2e --output-style=stream",
+    "test:generate": "nx run @halfdomelabs/project-builder-test:start generate",
     "typecheck": "nx affected --target=typecheck",
     "versions:check": "check-dependency-version-consistency .",
     "versions:fix": "check-dependency-version-consistency . --fix",
@@ -28,7 +29,7 @@
   "devDependencies": {
     "check-dependency-version-consistency": "^4.1.0",
     "nx": "19.5.0",
-    "typescript": "5.4.4"
+    "typescript": "catalog:"
   },
   "packageManager": "pnpm@9.5.0",
   "engines": {

@@ -64,7 +64,7 @@
     "concurrently": "8.2.2",
     "cpx2": "7.0.1",
     "tsc-alias": "1.8.10",
-    "typescript": "5.4.4",
+    "typescript": "catalog:",
     "vitest": "2.0.3"
   },
   "engines": {
