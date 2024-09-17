@@ -48,6 +48,8 @@ export default createPlatformPluginExport({
     transformerWeb.registerTransformerWebConfig<FileTransformerConfig>({
       name: 'file',
       label: 'File',
+      description: 'Validates and associates file ID to field',
+      instructions: 'Select a file relation to transform',
       pluginId,
       Form: FileTransformerForm,
       allowNewTransformer(projectContainer, modelConfig) {

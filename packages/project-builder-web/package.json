@@ -19,6 +19,7 @@
     "prettier:write": "prettier -w .",
     "refactor": "cd ../code-morph && pnpm run:morpher",
     "serve": "vite preview",
+    "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
   "browserslist": {
@@ -53,7 +54,7 @@
     "axios": "1.7.4",
     "clsx": "2.1.1",
     "culori": "^3.2.0",
-    "es-toolkit": "1.16.0",
+    "es-toolkit": "1.18.0",
     "immer": "10.0.3",
     "inflection": "2.0.1",
     "javascript-time-ago": "^2.5.10",
@@ -95,7 +96,8 @@
     "typescript": "5.4.4",
     "vite": "5.3.3",
     "vite-plugin-svgr": "4.2.0",
-    "vite-tsconfig-paths": "4.3.2"
+    "vite-tsconfig-paths": "4.3.2",
+    "vitest": "2.0.3"
   },
   "engines": {
     "node": "^20.0.0"

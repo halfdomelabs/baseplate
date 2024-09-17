@@ -416,8 +416,8 @@ importers:
         specifier: ^3.2.0
         version: 3.3.0
       es-toolkit:
-        specifier: 1.16.0
-        version: 1.16.0
+        specifier: 1.18.0
+        version: 1.18.0
       globby:
         specifier: ^14.0.0
         version: 14.0.1
@@ -734,8 +734,8 @@ importers:
         specifier: ^3.2.0
         version: 3.3.0
       es-toolkit:
-        specifier: 1.16.0
-        version: 1.16.0
+        specifier: 1.18.0
+        version: 1.18.0
       immer:
         specifier: 10.0.3
         version: 10.0.3
@@ -857,6 +857,9 @@ importers:
       vite-tsconfig-paths:
         specifier: 4.3.2
         version: 4.3.2(typescript@5.4.4)(vite@5.3.3(@types/node@20.12.7))
+      vitest:
+        specifier: 2.0.3
+        version: 2.0.3(@types/node@20.12.7)
 
   packages/react-generators:
     dependencies:
@@ -5249,8 +5252,8 @@ packages:
     resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
     engines: {node: '>= 0.4'}
 
-  es-toolkit@1.16.0:
-    resolution: {integrity: sha512-eNJh3zF1KmAHRYd1D8rFi1cMFMCjrC6tumBfwuuZdSur97mED/ifyeBoGzxS11L4owCMx3XSmWTo6oxJQkdGng==}
+  es-toolkit@1.18.0:
+    resolution: {integrity: sha512-J/KKeqozMvgpPSUqZSpt59ZOTku2UrU9cmqmLBt4TmFQ2KCLGf3fXK6Xb2ud5CrpCUHFl/ThijjJkXwa/8sf2g==}
 
   esbuild-plugin-alias@0.2.1:
     resolution: {integrity: sha512-jyfL/pwPqaFXyKnj8lP8iLk6Z0m099uXR45aSN8Av1XD4vhvQutxxPzgA2bTcAwQpa1zCXDcWOlhFgyP3GKqhQ==}
@@ -13866,7 +13869,7 @@ snapshots:
       is-date-object: 1.0.5
       is-symbol: 1.0.4
 
-  es-toolkit@1.16.0: {}
+  es-toolkit@1.18.0: {}
 
   esbuild-plugin-alias@0.2.1: {}
 
