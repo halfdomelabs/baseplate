@@ -67,7 +67,7 @@ export async function generateBaseplateProject({
           },
           engines: {
             node: '^20.15.0',
-            pnpm: '^9.5.0',
+            pnpm: '^9.10.0',
           },
           volta: {
             node: '20.15.1',
