@@ -22,6 +22,8 @@ export interface ModelTransformerWebConfig<
   name: string;
   pluginId: string | undefined;
   label: string;
+  description: string;
+  instructions?: string;
   Form?: React.ComponentType<ModelTransformerWebFormProps>;
   allowNewTransformer?: (
     projectContainer: ProjectDefinitionContainer,

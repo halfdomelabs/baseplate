@@ -1,10 +1,8 @@
 import {
   ModelConfig,
   TransformerConfig,
-  modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import {
-  createNewModelTransformerWebConfig,
   modelTransformerWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
@@ -18,28 +16,14 @@ import { useState } from 'react';
 import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
-import { embeddedRelationTransformerWebConfig } from './ServiceEmbeddedRelationForm';
 import { ServiceTransformerDialog } from './ServiceTransformerDialog';
+import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../constants/built-in-transformers';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 
 interface Props {
   className?: string;
   formProps: UseFormReturn<ModelConfig>;
 }
-
-const BUILT_IN_TRANSFORMERS = [
-  embeddedRelationTransformerWebConfig,
-  createNewModelTransformerWebConfig({
-    name: 'password',
-    label: 'Password',
-    getNewTransformer: () => ({
-      id: modelTransformerEntityType.generateNewId(),
-      type: 'password',
-    }),
-    getSummary: () => [],
-    pluginId: undefined,
-  }),
-];
 
 function ServiceTransformerRecord({
   formProps,
@@ -63,7 +47,7 @@ function ServiceTransformerRecord({
   const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
   const transformerConfig = transformerWeb.getTransformerWebConfig(
     field.type,
-    BUILT_IN_TRANSFORMERS,
+    BUILT_IN_TRANSFORMER_WEB_CONFIGS,
   );
   const summary = transformerConfig.getSummary(field, definitionContainer);
   return (
@@ -117,7 +101,7 @@ export function ServiceTransformersSection({
   const modelConfig = useEditedModelConfig((model) => model);
 
   const addableTransformers = transformerWeb
-    .getTransformerWebConfigs(BUILT_IN_TRANSFORMERS)
+    .getTransformerWebConfigs(BUILT_IN_TRANSFORMER_WEB_CONFIGS)
     .filter((transformer) =>
       transformer.allowNewTransformer
         ? transformer.allowNewTransformer(definitionContainer, modelConfig)
@@ -178,7 +162,12 @@ export function ServiceTransformersSection({
                         }
                       }}
                     >
-                      {transformer.label}
+                      <div className="flex flex-col gap-1">
+                        <div>{transformer.label}</div>
+                        <div className="text-style-muted">
+                          {transformer.description}
+                        </div>
+                      </div>
                     </Dropdown.Item>
                   );
                 })}

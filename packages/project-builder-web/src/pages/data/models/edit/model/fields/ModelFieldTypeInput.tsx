@@ -7,69 +7,15 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { ComboboxField } from '@halfdomelabs/ui-components';
 import { Control, useController } from 'react-hook-form';
 
+import {
+  SCALAR_FIELD_TYPE_OPTIONS,
+  ScalarFieldTypeOption,
+} from '../../../constants/scalar-types';
+
 interface ModelFieldTypeInputProps {
   control: Control<ModelConfig>;
   idx: number;
 }
-
-interface TypeOption {
-  label: string;
-  value: string;
-  description: string;
-}
-
-const scalarOptions: Record<ScalarFieldType, TypeOption> = {
-  string: {
-    label: 'String',
-    value: 'string',
-    description: 'Variable length text',
-  },
-  int: {
-    label: 'Integer',
-    value: 'int',
-    description: 'Whole number',
-  },
-  float: {
-    label: 'Float',
-    value: 'float',
-    description: 'Decimal number',
-  },
-  decimal: {
-    label: 'Decimal',
-    value: 'decimal',
-    description: 'Precise decimal number',
-  },
-  boolean: {
-    label: 'Boolean',
-    value: 'boolean',
-    description: 'True or false value',
-  },
-  json: {
-    label: 'JSON',
-    value: 'json',
-    description: 'JSON data',
-  },
-  uuid: {
-    label: 'UUID',
-    value: 'uuid',
-    description: 'Unique identifier',
-  },
-  dateTime: {
-    label: 'DateTime',
-    value: 'dateTime',
-    description: 'Date and time',
-  },
-  date: {
-    label: 'Date',
-    value: 'date',
-    description: 'Calendar date',
-  },
-  enum: {
-    label: 'Enum',
-    value: 'enum',
-    description: 'List of values',
-  },
-};
 
 export function ModelFieldTypeInput({
   control,
@@ -77,15 +23,17 @@ export function ModelFieldTypeInput({
 }: ModelFieldTypeInputProps): JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
-  const enumOptions: TypeOption[] = parsedProject.getEnums().map((config) => ({
-    label: config.name,
-    value: `enum-${config.id}`,
-    description: 'Enum type',
-  }));
+  const enumOptions: ScalarFieldTypeOption[] = parsedProject
+    .getEnums()
+    .map((config) => ({
+      label: config.name,
+      value: `enum-${config.id}`,
+      description: 'Enum type',
+    }));
 
   const typeOptions = [
     ...SCALAR_FIELD_TYPES.filter((t) => t !== 'enum').map(
-      (fieldType) => scalarOptions[fieldType],
+      (fieldType) => SCALAR_FIELD_TYPE_OPTIONS[fieldType],
     ),
     ...enumOptions,
   ];

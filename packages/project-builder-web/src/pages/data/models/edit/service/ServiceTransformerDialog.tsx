@@ -32,10 +32,11 @@ export function ServiceTransformerDialog({
       <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>
-            {transformer?.id ? 'Edit Transformer' : 'Create Transformer'}
+            {transformer?.id ? 'Edit' : 'Create'} {webConfig?.label} Transformer
           </Dialog.Title>
           <Dialog.Description>
-            Set up a transformer for the service
+            {webConfig?.instructions ??
+              'Manage the transformer for the service'}
           </Dialog.Description>
         </Dialog.Header>
         {webConfig && (

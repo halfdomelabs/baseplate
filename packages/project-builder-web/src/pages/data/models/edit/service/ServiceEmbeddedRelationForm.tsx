@@ -139,6 +139,10 @@ export const embeddedRelationTransformerWebConfig: ModelTransformerWebConfig<Emb
   {
     name: 'embeddedRelation',
     label: 'Embedded Relation',
+    description: 'Upsert records to a related model table',
+    instructions: `This transformer allows you to upsert related records to a related model's table
+      e.g. UserRole records for a User. It will create, update, delete related records to fit the provided
+      input.`,
     getSummary(definition, container) {
       return [
         {
