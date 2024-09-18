@@ -1,6 +1,6 @@
 import { EnumConfig } from '@halfdomelabs/project-builder-lib';
 import { FeatureComboboxField } from '@halfdomelabs/project-builder-lib/web';
-import { InputField, SwitchField } from '@halfdomelabs/ui-components';
+import { InputField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 
@@ -24,11 +24,6 @@ export function EnumInfoForm({ className, control }: Props): JSX.Element {
         name="feature"
         description="The feature this enum belongs to (dash-case)"
         canCreate
-      />
-      <SwitchField.Controller
-        control={control}
-        name="isExposed"
-        label="Expose in GraphQL schema?"
       />
     </div>
   );

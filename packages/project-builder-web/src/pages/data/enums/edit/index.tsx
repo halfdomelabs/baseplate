@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 
 import EnumEditForm from './EnumEditForm';
 import { EnumHeaderBar } from './EnumHeaderBar';
+import { useEnumForm } from '../hooks/useEnumForm';
 import { NotFoundCard } from 'src/components';
 
 function EnumEditPage(): JSX.Element {
@@ -16,6 +17,8 @@ function EnumEditPage(): JSX.Element {
   const id = modelEnumEntityType.fromUid(uid);
 
   const enumDefinition = EnumUtils.byId(definition, id ?? '');
+
+  const { form, onSubmit } = useEnumForm();
 
   if (!enumDefinition) {
     return <NotFoundCard />;
@@ -27,7 +30,11 @@ function EnumEditPage(): JSX.Element {
       key={id}
     >
       <div className="border-b py-4">
-        <EnumHeaderBar enumDefinition={enumDefinition} className="max-w-3xl" />
+        <EnumHeaderBar
+          form={form}
+          enumDefinition={enumDefinition}
+          className="max-w-3xl"
+        />
       </div>
       <div
         className="mb-[var(--action-bar-height)] max-w-3xl flex-1 overflow-y-auto"
@@ -37,7 +44,7 @@ function EnumEditPage(): JSX.Element {
           } as React.CSSProperties
         }
       >
-        <EnumEditForm />
+        <EnumEditForm form={form} onSubmit={onSubmit} />
       </div>
     </div>
   );

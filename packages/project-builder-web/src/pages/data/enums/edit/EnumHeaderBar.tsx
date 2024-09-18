@@ -2,20 +2,22 @@ import { EnumConfig, FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { SwitchField, toast } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
+import { UseFormReturn } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 import { EnumOptionsDropdown } from './EnumOptionsDropdown';
-import { useEnumForm } from '../hooks/useEnumForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
 
 interface ModelHeaderBarProps {
+  form: UseFormReturn<EnumConfig>;
   className?: string;
   enumDefinition: EnumConfig;
 }
 
 export function EnumHeaderBar({
+  form,
   className,
   enumDefinition,
 }: ModelHeaderBarProps): JSX.Element {
@@ -23,7 +25,6 @@ export function EnumHeaderBar({
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
 
-  const { form } = useEnumForm();
   const { control } = form;
 
   const handleDelete = (id: string): void => {

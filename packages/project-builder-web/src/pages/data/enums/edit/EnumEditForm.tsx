@@ -1,15 +1,21 @@
-import { modelEnumValueEntityType } from '@halfdomelabs/project-builder-lib';
+import {
+  EnumConfig,
+  modelEnumValueEntityType,
+} from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
-import { useFieldArray } from 'react-hook-form';
+import { useFieldArray, UseFormReturn } from 'react-hook-form';
 
-import { EnumInfoForm } from './EnumInfoForm';
 import DataFormActionBar from '../../components/DataFormActionBar';
-import { useEnumForm } from '../hooks/useEnumForm';
 import { Button, TextInput } from 'src/components';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
-function EnumEditForm(): JSX.Element {
-  const { form, onSubmit } = useEnumForm();
+function EnumEditForm({
+  form,
+  onSubmit,
+}: {
+  form: UseFormReturn<EnumConfig>;
+  onSubmit: () => Promise<void>;
+}): JSX.Element {
   const { control, setValue, formState, watch, reset } = form;
 
   const {
@@ -27,7 +33,6 @@ function EnumEditForm(): JSX.Element {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4 p-4">
-      <EnumInfoForm control={control} />
       <h3>Values</h3>
       {valueFields.map((field, i) => (
         <div key={field.id}>
