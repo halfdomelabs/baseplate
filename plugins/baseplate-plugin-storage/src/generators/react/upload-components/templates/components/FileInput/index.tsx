@@ -47,7 +47,7 @@ function truncateFilenameWithExtension(filename: string, length = 20): string {
     return filename;
   }
   const extension = filename.includes('.')
-    ? filename.split('.').pop()?.slice(0, 5) ?? ''
+    ? (filename.split('.').pop()?.slice(0, 5) ?? '')
     : '';
   const truncatedFilename = filename.slice(0, length - extension.length - 1);
   return `${truncatedFilename}...${extension}`;

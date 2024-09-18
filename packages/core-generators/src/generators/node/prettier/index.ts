@@ -73,7 +73,7 @@ const PARSEABLE_EXTENSIONS = [
   '.mts',
 ];
 
-const PRETTIER_VERSION = '3.2.5';
+const PRETTIER_VERSION = '3.3.3';
 
 interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;

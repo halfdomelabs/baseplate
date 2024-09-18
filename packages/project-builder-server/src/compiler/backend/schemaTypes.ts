@@ -187,7 +187,7 @@ export function buildSchemaTypesForFeature(
 
   return [
     ...models.flatMap((model) => [
-      ...(model.schema?.buildObjectType ?? model.schema?.buildQuery
+      ...((model.schema?.buildObjectType ?? model.schema?.buildQuery)
         ? buildQuerySchemaTypeForModel(appBuilder, model)
         : []),
       model.schema?.buildMutations
