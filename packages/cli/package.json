@@ -35,7 +35,7 @@
     "@halfdomelabs/sync": "workspace:*",
     "commander": "^12.1.0",
     "package-up": "^5.0.0",
-    "pkg-dir": "^7.0.0",
+    "pkg-dir": "^8.0.0",
     "ramda": "^0.28.0"
   },
   "devDependencies": {
