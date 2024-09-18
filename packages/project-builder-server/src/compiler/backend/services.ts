@@ -106,31 +106,33 @@ function buildServiceForModel(
               buildTransformer(appBuilder, transfomer, model),
             ),
           ),
-          create: service.create?.fields?.length
-            ? {
-                prismaFields: service.create.fields.map((f) =>
-                  appBuilder.nameFromId(f),
-                ),
-                transformerNames: undefinedIfEmpty(
-                  service.create.transformerNames?.map((f) =>
+          create:
+            service.create?.fields?.length && service.create?.enabled
+              ? {
+                  prismaFields: service.create.fields.map((f) =>
                     appBuilder.nameFromId(f),
                   ),
-                ),
-              }
-            : null,
-          update: service.update?.fields?.length
-            ? {
-                prismaFields: service.update.fields.map((f) =>
-                  appBuilder.nameFromId(f),
-                ),
-                transformerNames: undefinedIfEmpty(
-                  service.update.transformerNames?.map((f) =>
+                  transformerNames: undefinedIfEmpty(
+                    service.create.transformerNames?.map((f) =>
+                      appBuilder.nameFromId(f),
+                    ),
+                  ),
+                }
+              : null,
+          update:
+            service.update?.fields?.length && service.update?.enabled
+              ? {
+                  prismaFields: service.update.fields.map((f) =>
                     appBuilder.nameFromId(f),
                   ),
-                ),
-              }
-            : null,
-          delete: service.delete?.disabled ? null : undefined,
+                  transformerNames: undefinedIfEmpty(
+                    service.update.transformerNames?.map((f) =>
+                      appBuilder.nameFromId(f),
+                    ),
+                  ),
+                }
+              : null,
+          delete: service.delete?.enabled ? {} : null,
         },
       },
     },
@@ -144,6 +146,12 @@ export function buildServicesForFeature(
   const models = ModelUtils.getModelsForFeature(
     appBuilder.projectDefinition,
     featureId,
-  ).filter((m) => m.service?.build);
+  ).filter(
+    (m) =>
+      !!m.service?.create?.enabled ||
+      !!m.service?.update?.enabled ||
+      !!m.service?.delete?.enabled ||
+      m.service?.transformers?.length,
+  );
   return models.map((model) => buildServiceForModel(appBuilder, model));
 }

@@ -60,10 +60,7 @@ function getModelsForFeature(
 }
 
 function getModelIdFields(model: ModelConfig): string[] {
-  return (
-    model.model.primaryKeys ??
-    model.model.fields.filter((f) => f.isId).map((f) => f.id)
-  );
+  return model.model.primaryKeyFieldRefs;
 }
 
 export const ModelUtils = {

@@ -9,13 +9,13 @@ import {
   Card,
   InputField,
   SelectField,
+  toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 function NewAppPage(): JSX.Element {
@@ -36,7 +36,6 @@ function NewAppPage(): JSX.Element {
     { label: 'Web App', value: 'web' },
     { label: 'Admin App', value: 'admin' },
   ];
-  const toast = useToast();
 
   const onSubmit = (data: AppConfig): void => {
     try {

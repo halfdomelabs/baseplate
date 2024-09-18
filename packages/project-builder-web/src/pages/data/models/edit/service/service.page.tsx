@@ -1,17 +1,16 @@
 import {
-  ModelTransformerUtils,
   modelBaseSchema,
   modelTransformerEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
+import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
 
-import ServiceTransformersForm from './ServiceTransformersForm';
+import { ServiceMethodFieldsSection } from './ServiceMethodFieldsSection';
+import { ServiceTransformersSection } from './ServiceTransformersSection';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
 import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
-import CheckedArrayInput from 'src/components/CheckedArrayInput';
-import CheckedInput from 'src/components/CheckedInput';
 
 registerEntityTypeUrl(
   modelTransformerEntityType,
@@ -19,28 +18,15 @@ registerEntityTypeUrl(
 );
 
 function ModelEditServicePage(): JSX.Element {
-  const { form, onSubmit, originalModel, defaultValues } = useModelForm({
+  const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
-  const { control, watch, getValues } = form;
-  const { definitionContainer, pluginContainer } = useProjectDefinition();
-  const shouldBuild = watch('service.build');
+  const { control, watch, getValues, setValue } = form;
 
-  const localFields = watch(`model.fields`);
-  const localFieldOptions = localFields.map((f) => ({
-    label: f.name,
-    value: f.id,
-  }));
-
-  const transformers = watch(`service.transformers`);
-  const transformerOptions = transformers?.map((f) => ({
-    label: ModelTransformerUtils.getTransformName(
-      definitionContainer,
-      f,
-      pluginContainer,
-    ),
-    value: f.id ?? '',
-  }));
+  useBlockUnsavedChangesNavigate(form.formState, {
+    reset: form.reset,
+    onSubmit,
+  });
 
   // TODO: Need to unset transformer options when reset
 
@@ -50,55 +36,36 @@ function ModelEditServicePage(): JSX.Element {
       getValues={getValues}
       watch={watch}
     >
-      <form onSubmit={onSubmit} className="space-y-4 p-4">
-        <CheckedInput.LabelledController
-          label="Build controller?"
-          control={control}
-          name="service.build"
-        />
-        {shouldBuild && (
-          <>
-            <CheckedArrayInput.LabelledController
-              label="Createable Fields"
-              control={control}
-              options={localFieldOptions}
-              name="service.create.fields"
-            />
-            {!!transformerOptions?.length && (
-              <CheckedArrayInput.LabelledController
-                label="Create Transformers"
+      <form onSubmit={onSubmit} className="max-w-5xl space-y-4 p-4">
+        <SectionList>
+          <SectionList.Section>
+            <SectionList.SectionHeader>
+              <SectionList.SectionTitle>Methods</SectionList.SectionTitle>
+              <SectionList.SectionDescription>
+                Enable or disable which service methods will be generated
+              </SectionList.SectionDescription>
+            </SectionList.SectionHeader>
+            <SectionList.SectionContent className="flex gap-8">
+              <SwitchField.Controller
+                label="Create"
+                name="service.create.enabled"
                 control={control}
-                options={transformerOptions}
-                name="service.create.transformerNames"
               />
-            )}
-            <CheckedArrayInput.LabelledController
-              label="Updateable Fields"
-              control={control}
-              options={localFieldOptions}
-              name="service.update.fields"
-            />
-            {!!transformerOptions?.length && (
-              <CheckedArrayInput.LabelledController
-                label="Update Transformers"
+              <SwitchField.Controller
+                label="Update"
+                name="service.update.enabled"
                 control={control}
-                options={transformerOptions}
-                name="service.update.transformerNames"
               />
-            )}
-            <CheckedInput.LabelledController
-              label="Disable Delete?"
-              control={control}
-              name="service.delete.disabled"
-            />
-            {originalModel && (
-              <ServiceTransformersForm
-                formProps={form}
-                originalModel={originalModel}
+              <SwitchField.Controller
+                label="Delete"
+                name="service.delete.enabled"
+                control={control}
               />
-            )}
-          </>
-        )}
+            </SectionList.SectionContent>
+          </SectionList.Section>
+          <ServiceMethodFieldsSection control={control} setValue={setValue} />
+          <ServiceTransformersSection formProps={form} />
+        </SectionList>
         <DataFormActionBar form={form} />
       </form>
     </EditedModelContextProvider>

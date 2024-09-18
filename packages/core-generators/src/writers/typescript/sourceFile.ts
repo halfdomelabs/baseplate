@@ -291,7 +291,9 @@ export abstract class TypescriptSourceContent<
             this.addStringReplacement(key, entry);
             break;
           default:
-            throw new Error(`Unknown config type ${this.config[key].type}`);
+            throw new Error(
+              `Unknown config type ${(this.config[key] as { type: string }).type}`,
+            );
         }
       });
     });

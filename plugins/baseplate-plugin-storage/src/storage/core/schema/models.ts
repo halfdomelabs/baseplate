@@ -8,7 +8,6 @@ export const FILE_MODEL_FIELDS: ModelScalarFieldDefinitionInput[] = [
   {
     name: 'id',
     type: 'uuid',
-    isId: true,
     options: { genUuid: true },
   },
   {
@@ -70,6 +69,7 @@ export function createStorageModels(
   return {
     file: {
       fields: FILE_MODEL_FIELDS,
+      primaryKeyFieldRefs: ['id'],
       relations: [
         {
           name: 'uploader',

@@ -19,6 +19,11 @@ export const modelForeignRelationEntityType = createEntityType(
   { parentType: modelEntityType },
 );
 
+export const modelUniqueConstraintEntityType = createEntityType(
+  'model-unique-constraint',
+  { parentType: modelEntityType },
+);
+
 export const modelTransformerEntityType = createEntityType(
   'model-transformer',
   { parentType: modelEntityType },

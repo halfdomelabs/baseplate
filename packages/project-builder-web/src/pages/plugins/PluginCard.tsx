@@ -3,13 +3,12 @@ import {
   webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Card } from '@halfdomelabs/ui-components';
+import { Button, Card, toast } from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 import { useProjects } from '@src/hooks/useProjects';
-import { useToast } from '@src/hooks/useToast';
 import { getPluginStaticUrl } from '@src/services/plugins';
 
 interface PluginCardProps {
@@ -30,7 +29,6 @@ export function PluginCard({
     definitionContainer,
     pluginContainer,
   } = useProjectDefinition();
-  const toast = useToast();
   const navigate = useNavigate();
 
   function enablePlugin(): void {

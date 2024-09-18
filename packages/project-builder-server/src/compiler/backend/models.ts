@@ -8,19 +8,28 @@ import {
   ModelScalarFieldConfig,
   ModelUtils,
   undefinedIfEmpty,
+  undefinedIfFalsy,
 } from '@halfdomelabs/project-builder-lib';
 
 import { AppEntryBuilder, BackendAppEntryBuilder } from '../appEntryBuilder.js';
 
 function buildScalarField(
   builder: BackendAppEntryBuilder,
+  model: ModelConfig,
   field: ModelScalarFieldConfig,
 ): PrismaFieldDescriptor {
   const { options = {} } = field;
+  const { primaryKeyFieldRefs, uniqueConstraints } = model.model;
+  const isId =
+    primaryKeyFieldRefs.length === 1 && primaryKeyFieldRefs.includes(field.id);
+  const isUnique = uniqueConstraints?.some(
+    (c) =>
+      c.fields.length === 1 && c.fields.some((f) => f.fieldRef === field.id),
+  );
   return {
     name: field.name,
     type: field.type,
-    id: field.isId,
+    id: undefinedIfFalsy(isId),
     options: undefinedIfEmpty({
       autoGenerate: options.genUuid,
       defaultToNow: options.defaultToNow,
@@ -30,8 +39,8 @@ function buildScalarField(
         options.defaultEnumValue,
       ),
     }),
-    optional: field.isOptional,
-    unique: field.isUnique,
+    optional: undefinedIfFalsy(field.isOptional),
+    unique: undefinedIfFalsy(isUnique),
     enumType: options.enumType && builder.nameFromId(options.enumType),
   };
 }
@@ -106,27 +115,36 @@ function buildModel(
     generator: '@halfdomelabs/fastify/prisma/prisma-model',
     children: {
       fields: undefinedIfEmpty(
-        model.model.fields?.map((field) => buildScalarField(appBuilder, field)),
+        model.model.fields?.map((field) =>
+          buildScalarField(appBuilder, model, field),
+        ),
       ),
       relations: undefinedIfEmpty(
         model.model.relations?.map((r) =>
           buildRelationField(appBuilder, r, model),
         ),
       ),
-      primaryKey: !model.model.primaryKeys?.length
-        ? undefined
-        : {
-            fields: model.model.primaryKeys?.map((f) =>
-              appBuilder.nameFromId(f),
-            ),
-          },
+      primaryKey:
+        model.model.primaryKeyFieldRefs.length <= 1
+          ? undefined
+          : {
+              fields: model.model.primaryKeyFieldRefs.map((f) =>
+                appBuilder.nameFromId(f),
+              ),
+            },
       uniqueConstraints: undefinedIfEmpty(
-        model.model.uniqueConstraints?.map(({ name, fields }) => ({
-          name,
-          fields: fields.map((f) => ({
-            name: appBuilder.nameFromId(f.name),
+        model.model.uniqueConstraints
+          ?.filter(({ fields }) => {
+            return fields.length > 1;
+          })
+          .map(({ fields }) => ({
+            name: fields
+              .map((f) => appBuilder.nameFromId(f.fieldRef))
+              .join('_'),
+            fields: fields.map((f) => ({
+              name: appBuilder.nameFromId(f.fieldRef),
+            })),
           })),
-        })),
       ),
     },
   };

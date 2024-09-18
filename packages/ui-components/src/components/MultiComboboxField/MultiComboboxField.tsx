@@ -18,6 +18,7 @@ export interface MultiComboboxFieldProps<OptionType>
     FieldProps {
   className?: string;
   noResultsText?: React.ReactNode;
+  disabled?: boolean;
 }
 
 /**
@@ -42,7 +43,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
     noResultsText,
     ...props
   }: MultiComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
-  ref: ForwardedRef<HTMLButtonElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ): JSX.Element {
   const selectedOptions = value
     ?.map((val) => options.find((option) => getOptionValue(option) === val))
@@ -125,7 +126,7 @@ const MultiComboboxFieldController = genericForwardRef(
       ...rest
     }: MultiComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
-    ref: ForwardedRef<HTMLButtonElement>,
+    ref: ForwardedRef<HTMLDivElement>,
   ): JSX.Element {
     const {
       field,

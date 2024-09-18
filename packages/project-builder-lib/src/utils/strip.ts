@@ -38,3 +38,11 @@ export function undefinedIfEmpty<T>(value: T): T | undefined {
   }
   return value;
 }
+
+/**
+ * Returns undefined if the value is falsy, otherwise return value.
+ */
+export function undefinedIfFalsy<T>(value: T): T | undefined {
+  if (!value) return undefined;
+  return value;
+}

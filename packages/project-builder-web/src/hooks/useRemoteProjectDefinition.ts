@@ -2,11 +2,11 @@ import {
   PluginMetadataWithPaths,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
+import { toast } from '@halfdomelabs/ui-components';
 import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useProjects } from './useProjects';
-import { useToast } from './useToast';
 import { client } from '@src/services/api';
 import { resetPluginModuleSeed } from '@src/services/module-federation';
 import { createWebSchemaParserContext } from '@src/services/schema-parser-context';
@@ -49,9 +49,8 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   const lastSavedValueRef = useRef<string | null>(null);
   const shouldTriggerRefetch = useRef(false);
 
-  const toast = useToast();
-
-  const { currentProjectId, resetCurrentProjectId } = useProjects();
+  const { currentProjectId, resetCurrentProjectId, projectsLoaded } =
+    useProjects();
 
   const [externalChangeCounter, setExternalChangeCounter] = useState(0);
   const [pluginsMetadata, setPluginsMetadata] =
@@ -68,7 +67,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   }, [currentProjectId]);
 
   useEffect(() => {
-    if (!currentProjectId) {
+    if (!currentProjectId || !projectsLoaded) {
       return;
     }
     getPluginsMetadata(currentProjectId)
@@ -86,7 +85,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
           `Error loading project plugin configs: ${(err as Error).message}`,
         );
       });
-  }, [currentProjectId, toast]);
+  }, [currentProjectId, projectsLoaded]);
 
   useEffect(() => {
     if (!pluginsMetadata || !currentProjectId) {
@@ -113,7 +112,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
         import.meta.hot?.off('plugin-assets-changed', eventHandler);
       };
     }
-  }, [currentProjectId, pluginsMetadata, toast]);
+  }, [currentProjectId, pluginsMetadata]);
 
   const updateConfig = useCallback((payload: FilePayload | null): boolean => {
     // skip saving if we already have this value
@@ -153,7 +152,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
         `Error downloading project config: ${(err as Error).message}`,
       );
     }
-  }, [toast, currentProjectId, resetCurrentProjectId, updateConfig]);
+  }, [currentProjectId, resetCurrentProjectId, updateConfig]);
 
   useEffect(() => {
     downloadConfig().catch((err) => logError(err));
@@ -220,7 +219,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
           }
         });
     },
-    [toast, currentProjectId, file?.lastModifiedAt, downloadConfig],
+    [currentProjectId, file?.lastModifiedAt, downloadConfig],
   );
 
   useEffect(() => {

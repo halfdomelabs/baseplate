@@ -8,6 +8,7 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
+import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { useMemo } from 'react';
@@ -15,7 +16,6 @@ import { useMemo } from 'react';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
-import { useToast } from 'src/hooks/useToast';
 
 interface Props {
   className?: string;
@@ -35,7 +35,6 @@ function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
     defaultValues: appConfig,
   });
   const { control, handleSubmit, formState, reset } = formProps;
-  const toast = useToast();
 
   const onSubmit = handleSubmit((data) => {
     try {

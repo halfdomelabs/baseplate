@@ -26,12 +26,14 @@ export type ModelRelationFieldDefinitionInput = Omit<
 
 export interface ModelDefinitionInput {
   fields: ModelScalarFieldDefinitionInput[];
+  primaryKeyFieldRefs: string[];
   relations?: ModelRelationFieldDefinitionInput[];
 }
 
 export interface ModelDiffOutput {
   fields: DiffOperation<ModelScalarFieldDefinitionInput>[];
   relations: DiffOperation<ModelRelationFieldDefinitionInput>[];
+  primaryKeyFieldRefs?: string[];
 }
 
 export interface ModelDiffOptions {
@@ -141,6 +143,12 @@ export function diffModel(
       desired.relations ?? [],
       options,
     ),
+    primaryKeyFieldRefs: _.isEqual(
+      current.primaryKeyFieldRefs,
+      desired.primaryKeyFieldRefs,
+    )
+      ? undefined
+      : desired.primaryKeyFieldRefs,
   };
   return diff.fields.length || diff.relations.length ? diff : undefined;
 }
@@ -162,6 +170,11 @@ export function applyModelPatchInPlace(
     current.relations ?? [],
     patch.relations,
   );
+
+  if (patch.primaryKeyFieldRefs) {
+    current.primaryKeyFieldRefs = patch.primaryKeyFieldRefs;
+  }
+
   // resolve references in relations
   const resolveLocalName = (name: string): string => {
     const field = fieldsWithId.find((f) => f.name === name);

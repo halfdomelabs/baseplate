@@ -7,6 +7,7 @@ import {
 import {
   EmbeddedRelationTransformerConfig,
   ProjectDefinition,
+  modelUniqueConstraintEntityType,
 } from '@src/schema/index.js';
 
 export interface SchemaMigration {
@@ -124,6 +125,125 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
           },
         });
         draftConfigTyped.storage = undefined;
+      })(config);
+    },
+  },
+  {
+    version: 5,
+    description:
+      'Store primary key in primaryKeyFieldRefs field and unique constraints in unique constraints field',
+    migrate: (config: ProjectDefinition) => {
+      interface OldField {
+        isId?: boolean;
+        isUnique?: boolean;
+      }
+      interface OldUniqueConstraint {
+        name: string;
+        fields: {
+          name: string;
+        }[];
+      }
+      return produce((draftConfig: ProjectDefinition) => {
+        draftConfig.models = draftConfig.models ?? [];
+        // set primary keys
+        draftConfig.models.forEach((model) => {
+          const oldModel = model.model as unknown as { primaryKeys?: string[] };
+          model.model.primaryKeyFieldRefs = oldModel.primaryKeys ?? [];
+          delete oldModel.primaryKeys;
+          if (!model.model.primaryKeyFieldRefs?.length) {
+            model.model.primaryKeyFieldRefs = model.model.fields
+              .filter((f) => (f as OldField).isId)
+              .map((f) => f.name);
+          }
+          model.model.fields.forEach((f) => {
+            delete (f as OldField).isId;
+          });
+        });
+
+        // clear up any isUnique fields
+        draftConfig.models.forEach((model) => {
+          const modelFields = model.model.fields;
+          const uniqueFields = modelFields.filter(
+            (f) => (f as OldField).isUnique,
+          );
+          if (model.model.uniqueConstraints) {
+            model.model.uniqueConstraints = model.model.uniqueConstraints.map(
+              (c) => {
+                const oldConstraint = c as unknown as OldUniqueConstraint;
+                return {
+                  id: modelUniqueConstraintEntityType.generateNewId(),
+                  fields: oldConstraint.fields.map((f) => ({
+                    fieldRef: f.name,
+                  })),
+                };
+              },
+            );
+          }
+          if (uniqueFields.length) {
+            const constraints = model.model.uniqueConstraints ?? [];
+            model.model.uniqueConstraints = [
+              ...constraints,
+              ...model.model.fields
+                .filter((f) => (f as OldField).isUnique)
+                .map((f) => ({
+                  id: modelUniqueConstraintEntityType.generateNewId(),
+                  fields: [{ fieldRef: f.name }],
+                })),
+            ];
+          }
+          model.model.fields.forEach((f) => {
+            delete (f as OldField).isUnique;
+          });
+        });
+      })(config);
+    },
+  },
+  {
+    version: 6,
+    description: 'Make service controller fields individually enabled',
+    migrate: (config: ProjectDefinition) => {
+      interface OldService {
+        build?: boolean;
+      }
+      interface OldDeleteOp {
+        disabled?: boolean;
+      }
+      return produce((draftConfig: ProjectDefinition) => {
+        draftConfig.models = draftConfig.models ?? [];
+        draftConfig.models.forEach((model) => {
+          const oldService = model.service as unknown as OldService;
+          if (model.service && oldService?.build) {
+            const { create, update, delete: deleteOp } = model.service;
+            if (
+              create &&
+              (!!create.fields?.length || !!create.transformerNames?.length)
+            ) {
+              create.fields = create.fields ?? [];
+              create.transformerNames = create.transformerNames ?? [];
+              create.enabled = true;
+            } else {
+              model.service.create = undefined;
+            }
+            if (
+              update &&
+              (!!update.fields?.length || !!update.transformerNames?.length)
+            ) {
+              update.fields = update.fields ?? [];
+              update.transformerNames = update.transformerNames ?? [];
+              update.enabled = true;
+            } else {
+              model.service.update = undefined;
+            }
+            const oldDeleteOp = deleteOp as OldDeleteOp;
+            if (!deleteOp || !oldDeleteOp.disabled) {
+              model.service.delete = {
+                enabled: true,
+              };
+            } else {
+              model.service.delete = undefined;
+            }
+          }
+        });
       })(config);
     },
   },

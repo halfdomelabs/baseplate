@@ -10,7 +10,7 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { useConfirmDialog } from '@halfdomelabs/ui-components';
+import { toast, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import _ from 'lodash';
@@ -20,7 +20,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useToast } from 'src/hooks/useToast';
 import { formatError } from 'src/services/error-formatter';
 
 interface Props {
@@ -35,7 +34,6 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
   const { sectionId: sectionUid } = useParams<{ sectionId: string }>();
   const { setConfigAndFixReferences, parsedProject, pluginContainer } =
     useProjectDefinition();
-  const toast = useToast();
   const navigate = useNavigate();
 
   const sectionId = sectionUid

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEqual } from 'es-toolkit';
 
 import { ModelUtils } from './model-utils.js';
 import {
@@ -8,8 +8,30 @@ import {
   ProjectDefinition,
 } from '@src/schema/index.js';
 
-function isScalarUnique(field: ModelScalarFieldConfig): boolean {
-  return !!field.isId || !!field.isUnique;
+function isScalarUnique(model: ModelConfig, fieldId: string): boolean {
+  const primaryKeyFieldRefs = model.model.primaryKeyFieldRefs ?? [];
+  const uniqueConstraints = model.model.uniqueConstraints ?? [];
+  return (
+    (primaryKeyFieldRefs.length === 1 &&
+      primaryKeyFieldRefs.includes(fieldId)) ||
+    uniqueConstraints.some(
+      (c) => c.fields.length === 1 && c.fields[0].fieldRef === fieldId,
+    )
+  );
+}
+
+function areScalarsUnique(model: ModelConfig, fieldIds: string[]): boolean {
+  const sortedFieldIds = fieldIds.toSorted();
+  return (
+    (isEqual(model.model.primaryKeyFieldRefs.toSorted(), sortedFieldIds) ||
+      model.model.uniqueConstraints?.some((c) => {
+        return isEqual(
+          c.fields.map((f) => f.fieldRef).toSorted(),
+          sortedFieldIds,
+        );
+      })) ??
+    false
+  );
 }
 
 function getRelationLocalFields(
@@ -40,18 +62,9 @@ function isRelationOneToOne(
   relation: ModelRelationFieldConfig,
 ): boolean {
   const localFields = getRelationLocalFields(model, relation);
-  if (localFields.length === 1 && isScalarUnique(localFields[0])) {
-    return true;
-  }
-  const localFieldNames = localFields.map((f) => f.id).sort();
+  const localFieldIds = localFields.map((f) => f.id).sort();
   // check if the local fields are a primary key or unique constraint
-  return (
-    (_.isEqual([...(model.model.primaryKeys ?? [])].sort(), localFieldNames) ||
-      model.model.uniqueConstraints?.some((c) => {
-        return _.isEqual(c.fields.map((f) => f.name).sort(), localFieldNames);
-      })) ??
-    false
-  );
+  return areScalarsUnique(model, localFieldIds);
 }
 
 function getModelFieldValidation(
@@ -103,6 +116,7 @@ function getModelFieldValidation(
 
 export const ModelFieldUtils = {
   isScalarUnique,
+  areScalarsUnique,
   getRelationLocalFields,
   isRelationOptional,
   isRelationOneToOne,

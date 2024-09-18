@@ -9,7 +9,7 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Alert, Button, Tabs } from '@halfdomelabs/ui-components';
+import { Alert, Button, Tabs, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
 import { MdConstruction } from 'react-icons/md';
@@ -17,12 +17,10 @@ import { MdConstruction } from 'react-icons/md';
 import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
-import { useToast } from 'src/hooks/useToast';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 export function ThemeHomePage(): JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
-  const toast = useToast();
 
   const defaultValues = useMemo(
     () => definition.theme ?? generateDefaultTheme(),

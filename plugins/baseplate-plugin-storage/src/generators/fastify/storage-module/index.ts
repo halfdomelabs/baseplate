@@ -24,7 +24,7 @@ import {
   createProviderType,
   GeneratorDescriptor,
 } from '@halfdomelabs/sync';
-import path from 'path';
+import path from 'node:path';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({

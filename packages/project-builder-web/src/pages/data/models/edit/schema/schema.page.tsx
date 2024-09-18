@@ -1,5 +1,8 @@
 import { modelBaseSchema } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import {
+  useBlockUnsavedChangesNavigate,
+  useProjectDefinition,
+} from '@halfdomelabs/project-builder-lib/web';
 import { useMemo } from 'react';
 
 import { useModelForm } from '../../hooks/useModelForm';
@@ -11,6 +14,12 @@ function ModelEditSchemaPage(): JSX.Element {
   const { form, onSubmit, originalModel } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
+
+  useBlockUnsavedChangesNavigate(form.formState, {
+    reset: form.reset,
+    onSubmit,
+  });
+
   const { control, watch } = form;
   const { parsedProject } = useProjectDefinition();
 

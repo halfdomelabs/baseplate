@@ -31,17 +31,18 @@ interface UseModelFormOptions {
 }
 
 function createNewModel(): ModelConfig {
+  const idFieldId = modelScalarFieldEntityType.generateNewId();
   return {
     id: modelEntityType.generateNewId(),
     name: '',
     feature: '',
     model: {
+      primaryKeyFieldRefs: [idFieldId],
       fields: [
         {
-          id: modelScalarFieldEntityType.generateNewId(),
+          id: idFieldId,
           name: 'id',
           type: 'uuid',
-          isId: true,
           options: {
             genUuid: true,
           },
@@ -107,8 +108,13 @@ export function useModelForm<
             // generate new ID if new
             id: model?.id ?? modelEntityType.generateNewId(),
           };
-          if (!updatedModel.service?.build && updatedModel.service) {
-            updatedModel.service = undefined;
+          if (!updatedModel.model?.fields?.length) {
+            toast.error('Model must have at least one field.');
+            return;
+          }
+          if (!updatedModel.model?.primaryKeyFieldRefs?.length) {
+            toast.error('Model must have at least one primary key field.');
+            return;
           }
           // check for models with the same name
           const existingModel = definition.models.find(
@@ -122,6 +128,44 @@ export function useModelForm<
             });
             return;
           }
+
+          // clear out any service methods that are disabled
+          const { service } = updatedModel;
+          if (service) {
+            if (!service.create?.enabled) {
+              service.create = undefined;
+            } else {
+              if (
+                !service.create?.fields?.length &&
+                !service.create?.transformerNames?.length
+              ) {
+                toast.error(
+                  'Create method must have at least one field or transformer.',
+                );
+                return;
+              }
+            }
+            if (!service.update?.enabled) {
+              service.update = undefined;
+            } else {
+              if (
+                !service.update?.fields?.length &&
+                !service.update?.transformerNames?.length
+              ) {
+                toast.error(
+                  'Update method must have at least one field or transformer.',
+                );
+                return;
+              }
+            }
+            if (!service.delete?.enabled) {
+              service.delete = undefined;
+            }
+            if (!service.create && !service.update && !service.delete) {
+              updatedModel.service = undefined;
+            }
+          }
+
           setConfigAndFixReferences((draftConfig) => {
             // create feature if a new feature exists
             updatedModel.feature = FeatureUtils.ensureFeatureByNameRecursively(

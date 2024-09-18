@@ -67,7 +67,34 @@ const ButtonWithIcon = React.forwardRef<HTMLButtonElement, ButtonWithIconProps>(
 
 ButtonWithIcon.displayName = 'ButtonWithIcon';
 
+interface ButtonWithOnlyIconProps extends ButtonProps {
+  icon: IconElement;
+  title: string;
+  iconClassName?: string;
+}
+
+const ButtonWithOnlyIcon = React.forwardRef<
+  HTMLButtonElement,
+  ButtonWithOnlyIconProps
+>(({ icon, title, iconClassName, ...rest }, ref) => {
+  return (
+    <Button
+      ref={ref}
+      variant="ghost"
+      size="icon"
+      aria-label={title}
+      title={title}
+      {...rest}
+    >
+      <ButtonIcon className={iconClassName} icon={icon} />
+    </Button>
+  );
+});
+
+ButtonWithOnlyIcon.displayName = 'ButtonWithOnlyIcon';
+
 export const Button = Object.assign(ButtonBase, {
   Icon: ButtonIcon,
   WithIcon: ButtonWithIcon,
+  WithOnlyIcon: ButtonWithOnlyIcon,
 });

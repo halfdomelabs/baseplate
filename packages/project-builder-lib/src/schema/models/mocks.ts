@@ -7,13 +7,14 @@ import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
+  modelUniqueConstraintEntityType,
 } from './index.js';
 
 export function generateMockUniqueConstraint(
   constraint?: Partial<ModelUniqueConstraintConfig>,
 ): ModelUniqueConstraintConfig {
   return {
-    name: 'mockConstraint',
+    id: modelUniqueConstraintEntityType.generateNewId(),
     fields: [],
     ...constraint,
   };
@@ -52,6 +53,7 @@ export function generateMockModel(model?: Partial<ModelConfig>): ModelConfig {
     name: 'mockModel',
     feature: 'mockFeature',
     model: {
+      primaryKeyFieldRefs: [model?.model?.fields[0]?.id ?? ''],
       fields: [],
       ...model?.model,
     },
