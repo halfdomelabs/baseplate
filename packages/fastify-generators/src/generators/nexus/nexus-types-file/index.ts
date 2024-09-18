@@ -9,7 +9,7 @@ import {
   createGeneratorWithTasks,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import * as R from 'ramda';
 import { z } from 'zod';
 
@@ -48,7 +48,7 @@ export const createNexusTypesFileTask = createTaskConfigBuilder(
       nexusTypes: nexusTypesFileProvider,
     },
     run({ appModule, typescript, nexusSchema }) {
-      const typesPath = `${appModule.getModuleFolder()}/schema/${paramCase(
+      const typesPath = `${appModule.getModuleFolder()}/schema/${kebabCase(
         name,
       )}.ts`;
 

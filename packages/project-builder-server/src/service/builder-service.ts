@@ -6,7 +6,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
 import chalk from 'chalk';
-import chokidar from 'chokidar';
+import chokidar, { FSWatcher } from 'chokidar';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -64,7 +64,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   private projectJsonPath: string;
 
-  private watcher: chokidar.FSWatcher | undefined;
+  private watcher: FSWatcher | undefined;
 
   public readonly id: string;
 
@@ -163,7 +163,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
     if (this.watcher) {
       this.watcher
         .close()
-        .catch((err) =>
+        ?.catch((err) =>
           this.logger.error(err instanceof Error ? err.toString() : typeof err),
         );
     }
