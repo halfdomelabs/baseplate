@@ -45,7 +45,7 @@
     "fastify": "4.28.1",
     "fastify-plugin": "^4.5.1",
     "fastify-type-provider-zod": "^1.2.0",
-    "fs-extra": "11.1.1",
+    "fs-extra": "11.2.0",
     "globby": "^14.0.2",
     "inflection": "2.0.1",
     "json-stringify-pretty-compact": "^4.0.0",

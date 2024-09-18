@@ -40,7 +40,7 @@ const DEFAULT_PLUGINS: PrettierPluginConfig[] = [
   {
     name: 'prettier-plugin-packagejson',
     default: prettierPluginPackageJson as Plugin,
-    version: '2.5.0',
+    version: '2.5.2',
   },
 ];
 

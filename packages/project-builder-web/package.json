@@ -55,7 +55,7 @@
     "clsx": "2.1.1",
     "culori": "^3.2.0",
     "es-toolkit": "1.18.0",
-    "immer": "10.0.3",
+    "immer": "10.1.1",
     "inflection": "2.0.1",
     "javascript-time-ago": "^2.5.10",
     "lodash": "^4.17.21",
