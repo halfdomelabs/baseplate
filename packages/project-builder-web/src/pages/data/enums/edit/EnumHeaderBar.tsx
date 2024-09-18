@@ -1,10 +1,11 @@
 import { EnumConfig, FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { SwitchField, toast } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useNavigate } from 'react-router-dom';
 
 import { EnumOptionsDropdown } from './EnumOptionsDropdown';
+import { useEnumForm } from '../hooks/useEnumForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
@@ -21,7 +22,9 @@ export function EnumHeaderBar({
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
-  const { requestConfirm } = useConfirmDialog();
+
+  const { form } = useEnumForm();
+  const { control } = form;
 
   const handleDelete = (id: string): void => {
     try {
@@ -51,7 +54,12 @@ export function EnumHeaderBar({
           </div>
         )}
       </div>
-      <div className="flex gap-8">
+      <div className="flex items-center gap-8">
+        <SwitchField.Controller
+          control={control}
+          name="isExposed"
+          label="Expose in GraphQL schema?"
+        />
         <EnumOptionsDropdown
           enumDefinition={enumDefinition}
           handleDelete={handleDelete}

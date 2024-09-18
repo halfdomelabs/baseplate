@@ -33,7 +33,7 @@ function EnumEditPage(): JSX.Element {
         className="mb-[var(--action-bar-height)] max-w-3xl flex-1 overflow-y-auto"
         style={
           {
-            '--action-bar-height': '65px',
+            '--action-bar-height': '52px',
           } as React.CSSProperties
         }
       >
