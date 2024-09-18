@@ -37,7 +37,7 @@
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/project-builder-web": "workspace:*",
-    "commander": "^11.0.0",
+    "commander": "^12.1.0",
     "lodash": "^4.17.21",
     "package-up": "^5.0.0",
     "pino": "8.14.1",

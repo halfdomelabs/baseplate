@@ -34,7 +34,7 @@
     "@halfdomelabs/project-builder-web": "workspace:*",
     "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
-    "commander": "^11.0.0",
+    "commander": "^12.1.0",
     "execa": "9.3.0",
     "globby": "^14.0.2",
     "ora": "^8.0.1",
