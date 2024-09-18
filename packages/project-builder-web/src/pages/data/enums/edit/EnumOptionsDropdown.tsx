@@ -26,7 +26,8 @@ export function EnumOptionsDropdown({
     form: { control },
   } = useEnumForm({ onSubmitSuccess: () => setIsOpen(false) });
 
-  // TODO: refactor this to another component
+  // NOTE: this is a bit messy, but the Dialog and Dropdown components
+  //       need to be intertwined to work properly
   return (
     <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
       <Dropdown>
