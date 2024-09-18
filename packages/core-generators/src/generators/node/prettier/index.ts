@@ -40,7 +40,7 @@ const DEFAULT_PLUGINS: PrettierPluginConfig[] = [
   {
     name: 'prettier-plugin-packagejson',
     default: prettierPluginPackageJson as Plugin,
-    version: '2.5.0',
+    version: '2.5.2',
   },
 ];
 
@@ -73,7 +73,7 @@ const PARSEABLE_EXTENSIONS = [
   '.mts',
 ];
 
-const PRETTIER_VERSION = '3.2.5';
+const PRETTIER_VERSION = '3.3.3';
 
 interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;

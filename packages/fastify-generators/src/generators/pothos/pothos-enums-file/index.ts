@@ -9,7 +9,7 @@ import {
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import * as R from 'ramda';
 import { z } from 'zod';
 
@@ -49,7 +49,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
     },
     run({ appModule, typescript, pothosSetup }) {
       const [typesImport, typesPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/schema/${paramCase(name)}.ts`,
+        `${appModule.getModuleFolder()}/schema/${kebabCase(name)}.ts`,
       );
 
       appModule.addModuleImport(typesImport);
