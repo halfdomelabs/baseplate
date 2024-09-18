@@ -68,7 +68,7 @@
     "@types/node": "^20.0.0",
     "@types/ramda": "^0.29.3",
     "@types/ws": "8.5.12",
-    "concurrently": "8.2.2",
+    "concurrently": "9.0.1",
     "tsc-alias": "1.8.10",
     "typescript": "catalog:",
     "vitest": "2.0.3"

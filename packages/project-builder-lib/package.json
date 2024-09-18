@@ -40,7 +40,7 @@
     "@halfdomelabs/sync": "workspace:*",
     "@halfdomelabs/ui-components": "workspace:*",
     "clsx": "2.1.1",
-    "culori": "^3.2.0",
+    "culori": "^4.0.1",
     "es-toolkit": "1.18.0",
     "globby": "^14.0.2",
     "immer": "10.1.1",
@@ -64,7 +64,7 @@
     "@types/ramda": "^0.29.3",
     "@types/react": "18.3.3",
     "@types/toposort": "^2.0.3",
-    "concurrently": "8.2.2",
+    "concurrently": "9.0.1",
     "tsc-alias": "1.8.10",
     "typescript": "catalog:",
     "vitest": "2.0.3"

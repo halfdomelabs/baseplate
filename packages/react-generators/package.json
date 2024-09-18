@@ -51,7 +51,7 @@
     "@types/node": "^20.0.0",
     "@types/ramda": "^0.29.3",
     "@types/toposort": "^2.0.3",
-    "concurrently": "8.2.2",
+    "concurrently": "9.0.1",
     "cpx2": "7.0.1",
     "tsc-alias": "1.8.10",
     "typescript": "catalog:"
