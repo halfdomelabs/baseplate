@@ -5,7 +5,7 @@ import {
   ModelUtils,
   stripChildren,
 } from '@halfdomelabs/project-builder-lib';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 import { notEmpty } from '@src/utils/array.js';
@@ -27,7 +27,7 @@ function buildQuerySchemaTypeForModel(
   return [
     {
       name: `${model.name}ObjectType`,
-      fileName: `${paramCase(model.name)}.object-type`,
+      fileName: `${kebabCase(model.name)}.object-type`,
       generator: '@halfdomelabs/fastify/pothos/pothos-types-file',
       children: {
         $primaryKey:
@@ -54,7 +54,7 @@ function buildQuerySchemaTypeForModel(
       ? undefined
       : {
           name: `${model.name}PothosQueries`,
-          fileName: `${paramCase(model.name)}.queries`,
+          fileName: `${kebabCase(model.name)}.queries`,
           generator: '@halfdomelabs/fastify/pothos/pothos-prisma-query-file',
           modelName: model.name,
           children: stripChildren({
@@ -106,7 +106,7 @@ function buildMutationSchemaTypeForModel(
 
   return {
     name: `${model.name}PothosMutations`,
-    fileName: `${paramCase(model.name)}.mutations`,
+    fileName: `${kebabCase(model.name)}.mutations`,
     generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-file',
     modelName: model.name,
     objectTypeRef: `${featurePath}/root:$schemaTypes.${model.name}ObjectType.$objectType`,
@@ -187,7 +187,7 @@ export function buildSchemaTypesForFeature(
 
   return [
     ...models.flatMap((model) => [
-      ...(model.schema?.buildObjectType ?? model.schema?.buildQuery
+      ...((model.schema?.buildObjectType ?? model.schema?.buildQuery)
         ? buildQuerySchemaTypeForModel(appBuilder, model)
         : []),
       model.schema?.buildMutations

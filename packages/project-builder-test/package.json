@@ -34,14 +34,14 @@
     "@halfdomelabs/project-builder-web": "workspace:*",
     "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
-    "commander": "^11.0.0",
+    "commander": "^12.1.0",
     "execa": "9.3.0",
     "globby": "^14.0.2",
     "ora": "^8.0.1",
     "package-up": "^5.0.0",
     "pino": "8.14.1",
     "pino-pretty": "10.0.1",
-    "pkg-dir": "^7.0.0",
+    "pkg-dir": "^8.0.0",
     "testcontainers": "10.11.0"
   },
   "devDependencies": {

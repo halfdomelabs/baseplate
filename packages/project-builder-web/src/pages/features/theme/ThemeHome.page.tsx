@@ -130,7 +130,7 @@ export function ThemeHomePage(): JSX.Element {
         <h2>Theme Palettes</h2>
         <Tabs defaultValue="base">
           <Tabs.List>
-            s<Tabs.Trigger value="base">Base</Tabs.Trigger>
+            <Tabs.Trigger value="base">Base</Tabs.Trigger>
             <Tabs.Trigger value="primary">Primary</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content value="base">

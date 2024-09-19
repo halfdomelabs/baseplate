@@ -9,7 +9,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import { paramCase } from 'change-case';
+import { kebabCase } from 'change-case';
 import path from 'path';
 import { z } from 'zod';
 
@@ -68,7 +68,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
         const [servicesImport, servicesPath] = makeImportAndFilePath(
           path.join(
             servicesFolder,
-            `${descriptor.fileName ?? paramCase(descriptor.name)}.ts`,
+            `${descriptor.fileName ?? kebabCase(descriptor.name)}.ts`,
           ),
         );
 
