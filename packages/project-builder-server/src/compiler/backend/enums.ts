@@ -3,7 +3,7 @@ import {
   EnumConfig,
 } from '@halfdomelabs/project-builder-lib';
 
-function buildEnum(enumConfig: EnumConfig): unknown {
+function buildEnum(enumConfig: EnumConfig): Record<string, unknown> {
   return {
     name: enumConfig.name,
     generator: '@halfdomelabs/fastify/prisma/prisma-enum',
@@ -16,7 +16,7 @@ function buildEnum(enumConfig: EnumConfig): unknown {
 export function buildEnumsForFeature(
   featureId: string,
   parsedProject: ParsedProjectDefinition,
-): unknown {
+): Record<string, unknown>[] | undefined {
   const enums =
     parsedProject.getEnums().filter((m) => m.feature === featureId) ?? [];
   if (!enums.length) {

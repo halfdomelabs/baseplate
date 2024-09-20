@@ -28,8 +28,6 @@ function ModelEditServicePage(): JSX.Element {
     onSubmit,
   });
 
-  // TODO: Need to unset transformer options when reset
-
   return (
     <EditedModelContextProvider
       initialModel={defaultValues}

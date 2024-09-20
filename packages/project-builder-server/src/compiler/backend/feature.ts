@@ -1,15 +1,15 @@
 import { FeatureUtils, stripChildren } from '@halfdomelabs/project-builder-lib';
 
 import { buildEnumsForFeature } from './enums.js';
+import { buildGraphqlForFeature } from './graphql.js';
 import { buildModelsForFeature } from './models.js';
-import { buildSchemaTypesForFeature } from './schemaTypes.js';
 import { buildServicesForFeature } from './services.js';
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 
 export function buildFeature(
   featureId: string,
   builder: BackendAppEntryBuilder,
-): unknown {
+): string {
   const { projectDefinition, parsedProject, appCompiler } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
     projectDefinition,
@@ -31,7 +31,7 @@ export function buildFeature(
       $enums: buildEnumsForFeature(featureId, parsedProject),
       $models: buildModelsForFeature(builder, featureId),
       $services: buildServicesForFeature(builder, featureId),
-      $schemaTypes: buildSchemaTypesForFeature(builder, featureId),
+      $graphql: buildGraphqlForFeature(builder, featureId),
       $submodules: subFeatures.map((subFeature) =>
         buildFeature(subFeature.id, builder),
       ),

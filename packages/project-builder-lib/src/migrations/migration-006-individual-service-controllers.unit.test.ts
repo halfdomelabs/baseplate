@@ -1,7 +1,6 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { migration006IndividualServiceControllers } from './migration-006-individual-service-controllers.js';
-import { ProjectDefinition } from '../schema/index.js';
 
 describe('migration006IndividualServiceControllers', () => {
   it('migrates service fields to new format', () => {
@@ -53,9 +52,6 @@ describe('migration006IndividualServiceControllers', () => {
     const migratedConfig =
       migration006IndividualServiceControllers.migrate(oldConfig);
     expect(migratedConfig).toEqual(expectedNewConfig);
-
-    // simple type test to make sure the destination type matches ProjectDefinition (can remove once migrations are done)
-    expectTypeOf(migratedConfig).toMatchTypeOf<ProjectDefinition>();
   });
 
   it('handles missing service fields gracefully', () => {

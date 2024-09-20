@@ -1,7 +1,6 @@
-import { describe, expect, expectTypeOf, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { migration005PrimaryUniqueRefs } from './migration-005-primaryUniqueRefs.js';
-import { ProjectDefinition } from '../schema/index.js';
 
 describe('migration005PrimaryUniqueRefs', () => {
   it('migrates primaryKeys to primaryKeyFieldRefs and unique constraints to new format', () => {
@@ -44,9 +43,6 @@ describe('migration005PrimaryUniqueRefs', () => {
 
     const migratedConfig = migration005PrimaryUniqueRefs.migrate(oldConfig);
     expect(migratedConfig).toEqual(expectedNewConfig);
-
-    // simple type test to make sure the destination type matches ProjectDefinition (can remove once migrations are done)
-    expectTypeOf(migratedConfig).toMatchTypeOf<ProjectDefinition>();
   });
 
   it('migrates single primary key / unique constraints', () => {

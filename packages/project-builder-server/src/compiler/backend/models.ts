@@ -109,7 +109,7 @@ function buildRelationField(
 function buildModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
-): unknown {
+): Record<string, unknown> {
   return {
     name: model.name,
     generator: '@halfdomelabs/fastify/prisma/prisma-model',
@@ -153,7 +153,7 @@ function buildModel(
 export function buildModelsForFeature(
   appBuilder: BackendAppEntryBuilder,
   featureId: string,
-): unknown {
+): Record<string, unknown>[] {
   const models = ModelUtils.getModelsForFeature(
     appBuilder.projectDefinition,
     featureId,

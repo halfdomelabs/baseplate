@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { modelGraphqlSchema } from './graphql.js';
 import { transformerSchema } from './transformers/transformers.js';
 import {
   modelEntityType,
@@ -20,6 +21,7 @@ import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 export * from './enums.js';
 export * from './types.js';
 export * from './transformers/index.js';
+export * from './graphql.js';
 
 export const modelScalarFieldSchema = zEnt(
   z.object({
@@ -299,7 +301,7 @@ export const modelBaseSchema = z.object({
     uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
   }),
   service: modelServiceSchema.optional(),
-  schema: modelSchemaSchema.optional(),
+  graphql: modelGraphqlSchema.optional(),
 });
 
 export const modelSchema = zEnt(modelBaseSchema, {

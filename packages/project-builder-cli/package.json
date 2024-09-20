@@ -24,7 +24,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "clean": "rm -rf ./dist",
-    "dev": "tsx watch -r dotenv/config ./src",
+    "dev": "tsx watch --ignore /**/node_modules/** -r dotenv/config ./src",
     "dev:serve": "pnpm dev serve",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
