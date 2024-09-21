@@ -15,7 +15,7 @@ function compileAdminCrudEmbeddedForm(
   builder: AppEntryBuilder<AdminAppConfig>,
   form: AdminCrudEmbeddedFormConfig,
   crudSectionId: string,
-): unknown {
+): Record<string, unknown> {
   const idFields = ModelUtils.byIdOrThrow(
     builder.projectDefinition,
     form.modelName,
@@ -70,7 +70,7 @@ export function compileAdminCrudSection(
   crudSection: AdminCrudSectionConfig,
   builder: AppEntryBuilder<AdminAppConfig>,
   parentId: string,
-): unknown {
+): Record<string, unknown> {
   const sectionName = inflection.camelize(
     crudSection.name.replace(/ /g, '_'),
     true,

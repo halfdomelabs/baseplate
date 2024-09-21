@@ -39,7 +39,7 @@ export default createPlatformPluginExport({
           $storage: {
             generator:
               '@halfdomelabs/baseplate-plugin-storage/fastify/storage-module',
-            fileObjectTypeRef: `${featurePath}/root:$schemaTypes.${fileModelName}ObjectType.$objectType`,
+            fileObjectTypeRef: `${featurePath}/root:$graphql.${fileModelName}ObjectType.$objectType`,
             fileModel: fileModelName,
             s3Adapters: storage.s3Adapters.map((a) => ({
               name: a.name,

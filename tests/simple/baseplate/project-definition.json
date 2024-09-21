@@ -22,6 +22,18 @@
   "models": [
     {
       "feature": "blog",
+      "graphql": {
+        "objectType": {
+          "enabled": true,
+          "fields": ["id", "title", "content"],
+          "foreignRelations": [],
+          "localRelations": []
+        },
+        "queries": {
+          "get": { "enabled": true, "roles": [] },
+          "list": { "enabled": true, "roles": [] }
+        }
+      },
       "id": "model:f114nGvsZGt9",
       "model": {
         "fields": [
@@ -59,17 +71,11 @@
         "primaryKeyFieldRefs": ["id"],
         "uniqueConstraints": []
       },
-      "name": "BlogPost",
-      "schema": {
-        "buildMutations": false,
-        "buildObjectType": true,
-        "buildQuery": true,
-        "exposedFields": ["id", "title", "content"]
-      }
+      "name": "BlogPost"
     }
   ],
   "name": "simple",
   "portOffset": 3000,
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "version": "0.1.0"
 }

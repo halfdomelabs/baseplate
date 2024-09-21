@@ -8,6 +8,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
   createTaskConfigBuilder,
+  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -24,7 +25,9 @@ const descriptorSchema = z.object({
   exposedFields: z.array(z.string().min(1)),
 });
 
-type Descriptor = z.infer<typeof descriptorSchema>;
+export type PothosPrismaObjectDescriptor = GeneratorDescriptor<
+  typeof descriptorSchema
+>;
 
 export interface PothosPrismaObjectProvider {
   addCustomField: (name: string, expression: TypescriptCodeExpression) => void;
@@ -34,7 +37,7 @@ export const pothosPrismaObjectProvider =
   createProviderType<PothosPrismaObjectProvider>('pothos-prisma-object');
 
 const createMainTask = createTaskConfigBuilder(
-  ({ modelName, exposedFields }: Descriptor) => ({
+  ({ modelName, exposedFields }: PothosPrismaObjectDescriptor) => ({
     name: 'main',
     dependencies: {
       prismaOutput: prismaOutputProvider,

@@ -8,6 +8,7 @@ import {
   AdminCrudInputDefinition,
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
+  DescriptorWithChildren,
   EnumUtils,
   ModelFieldUtils,
   ModelScalarFieldConfig,
@@ -211,7 +212,7 @@ export function compileAdminCrudInput(
   modelId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   crudSectionId: string,
-): unknown {
+): DescriptorWithChildren {
   const inputCompiler = builder.pluginStore.getPluginSpec(
     adminCrudInputCompilerSpec,
   );

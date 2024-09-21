@@ -11,6 +11,7 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 
 import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import { notEmpty } from '@src/utils/array.js';
 
 export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRelationTransformerConfig> =
   {
@@ -86,7 +87,7 @@ function buildTransformer(
 function buildServiceForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ParsedModel,
-): unknown {
+): Record<string, unknown> | undefined {
   const { service } = model;
   if (!service) {
     return undefined;
@@ -142,7 +143,7 @@ function buildServiceForModel(
 export function buildServicesForFeature(
   appBuilder: BackendAppEntryBuilder,
   featureId: string,
-): unknown {
+): Record<string, unknown>[] {
   const models = ModelUtils.getModelsForFeature(
     appBuilder.projectDefinition,
     featureId,
@@ -153,5 +154,7 @@ export function buildServicesForFeature(
       !!m.service?.delete?.enabled ||
       m.service?.transformers?.length,
   );
-  return models.map((model) => buildServiceForModel(appBuilder, model));
+  return models
+    .map((model) => buildServiceForModel(appBuilder, model))
+    .filter(notEmpty);
 }

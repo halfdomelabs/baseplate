@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { modelGraphqlSchema } from './graphql.js';
 import { transformerSchema } from './transformers/transformers.js';
 import {
   modelEntityType,
@@ -14,12 +15,12 @@ import {
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';
 import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
-import { authRoleEntityType } from '@src/schema/auth/types.js';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 
 export * from './enums.js';
 export * from './types.js';
 export * from './transformers/index.js';
+export * from './graphql.js';
 
 export const modelScalarFieldSchema = zEnt(
   z.object({
@@ -225,58 +226,6 @@ export const modelServiceSchema = z.object({
 
 export type ModelServiceConfig = z.infer<typeof modelServiceSchema>;
 
-const roleArray = z
-  .array(
-    zRef(z.string(), {
-      type: authRoleEntityType,
-      onDelete: 'DELETE',
-    }),
-  )
-  .optional();
-
-export const modelSchemaSchema = z.object({
-  buildObjectType: z.boolean().optional(),
-  exposedFields: z
-    .array(
-      zRef(z.string(), {
-        type: modelScalarFieldEntityType,
-        onDelete: 'DELETE',
-        parentPath: { context: 'model' },
-      }),
-    )
-    .optional(),
-  exposedLocalRelations: z
-    .array(
-      zRef(z.string(), {
-        type: modelLocalRelationEntityType,
-        onDelete: 'DELETE',
-        parentPath: { context: 'model' },
-      }),
-    )
-    .optional(),
-  exposedForeignRelations: z
-    .array(
-      zRef(z.string(), {
-        type: modelForeignRelationEntityType,
-        onDelete: 'DELETE',
-        parentPath: { context: 'model' },
-      }),
-    )
-    .optional(),
-  buildQuery: z.boolean().optional(),
-  buildMutations: z.boolean().optional(),
-  authorize: z
-    .object({
-      read: roleArray,
-      create: roleArray,
-      update: roleArray,
-      delete: roleArray,
-    })
-    .optional(),
-});
-
-export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
-
 export const modelBaseSchema = z.object({
   id: z.string().default(() => modelEntityType.generateNewId()),
   name: VALIDATORS.PASCAL_CASE_STRING,
@@ -299,7 +248,7 @@ export const modelBaseSchema = z.object({
     uniqueConstraints: z.array(modelUniqueConstraintSchema).optional(),
   }),
   service: modelServiceSchema.optional(),
-  schema: modelSchemaSchema.optional(),
+  graphql: modelGraphqlSchema.optional(),
 });
 
 export const modelSchema = zEnt(modelBaseSchema, {

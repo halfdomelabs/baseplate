@@ -1,9 +1,11 @@
+import { GeneratorDescriptorChildren } from '@halfdomelabs/sync';
+
 /**
  * Strip object of any values that are empty arrays, empty objects, null, or undefined
  */
 export function stripChildren(
-  children: Record<string, unknown>,
-): Record<string, unknown> {
+  children: GeneratorDescriptorChildren,
+): GeneratorDescriptorChildren {
   return Object.keys(children).reduce((acc, key) => {
     const item = children[key];
     if (

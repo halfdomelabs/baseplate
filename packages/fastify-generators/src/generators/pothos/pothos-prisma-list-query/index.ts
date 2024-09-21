@@ -6,6 +6,7 @@ import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createTaskConfigBuilder,
+  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
@@ -20,7 +21,9 @@ const descriptorSchema = z.object({
   modelName: z.string().min(1),
 });
 
-type Descriptor = z.infer<typeof descriptorSchema>;
+type Descriptor = GeneratorDescriptor<typeof descriptorSchema>;
+
+export type PothosPrismaListQueryDescriptor = Descriptor;
 
 const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
   name: 'main',
