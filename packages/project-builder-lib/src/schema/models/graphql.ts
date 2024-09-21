@@ -20,7 +20,7 @@ const roleArray = z
 export const modelGraphqlSchema = z.object({
   objectType: z
     .object({
-      enabled: z.boolean(),
+      enabled: z.boolean().optional(),
       fields: z.array(
         zRef(z.string(), {
           type: modelScalarFieldEntityType,
@@ -28,33 +28,37 @@ export const modelGraphqlSchema = z.object({
           parentPath: { context: 'model' },
         }),
       ),
-      localRelations: z.array(
-        zRef(z.string(), {
-          type: modelLocalRelationEntityType,
-          onDelete: 'DELETE',
-          parentPath: { context: 'model' },
-        }),
-      ),
-      foreignRelations: z.array(
-        zRef(z.string(), {
-          type: modelForeignRelationEntityType,
-          onDelete: 'DELETE',
-          parentPath: { context: 'model' },
-        }),
-      ),
+      localRelations: z
+        .array(
+          zRef(z.string(), {
+            type: modelLocalRelationEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
+      foreignRelations: z
+        .array(
+          zRef(z.string(), {
+            type: modelForeignRelationEntityType,
+            onDelete: 'DELETE',
+            parentPath: { context: 'model' },
+          }),
+        )
+        .optional(),
     })
     .optional(),
   queries: z
     .object({
       get: z
         .object({
-          enabled: z.boolean(),
+          enabled: z.boolean().optional(),
           roles: roleArray,
         })
         .optional(),
       list: z
         .object({
-          enabled: z.boolean(),
+          enabled: z.boolean().optional(),
           roles: roleArray,
         })
         .optional(),
@@ -64,19 +68,19 @@ export const modelGraphqlSchema = z.object({
     .object({
       create: z
         .object({
-          enabled: z.boolean(),
+          enabled: z.boolean().optional(),
           roles: roleArray,
         })
         .optional(),
       update: z
         .object({
-          enabled: z.boolean(),
+          enabled: z.boolean().optional(),
           roles: roleArray,
         })
         .optional(),
       delete: z
         .object({
-          enabled: z.boolean(),
+          enabled: z.boolean().optional(),
           roles: roleArray,
         })
         .optional(),

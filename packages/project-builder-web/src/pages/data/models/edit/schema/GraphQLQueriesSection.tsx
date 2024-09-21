@@ -1,11 +1,13 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
+  Alert,
   MultiCheckboxField,
   SectionList,
   SwitchField,
 } from '@halfdomelabs/ui-components';
 import { Control, useWatch } from 'react-hook-form';
+import { MdInfo } from 'react-icons/md';
 
 interface GraphQLQueriesSectionProps {
   className?: string;
@@ -52,6 +54,15 @@ export function GraphQLQueriesSection({
         </div>
       </SectionList.SectionHeader>
       <SectionList.SectionContent className="space-y-6">
+        {!isObjectTypeEnabled && (
+          <Alert className="max-w-md">
+            <MdInfo />
+            <Alert.Title>Object type missing</Alert.Title>
+            <Alert.Description>
+              Enable the object type to expose queries and mutations
+            </Alert.Description>
+          </Alert>
+        )}
         <div className="space-y-2">
           <SwitchField.Controller
             control={control}
