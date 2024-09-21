@@ -48,7 +48,7 @@
     "@originjs/vite-plugin-federation": "1.3.6",
     "@types/inflection": "^1.13.2",
     "@types/node": "^20.0.0",
-    "@types/react": "18.3.3",
+    "@types/react": "18.3.8",
     "@types/react-dom": "18.3.0",
     "@vitejs/plugin-react": "4.3.1",
     "concurrently": "9.0.1",
@@ -58,10 +58,10 @@
     "tailwindcss": "3.4.11",
     "tsc-alias": "1.8.10",
     "typescript": "catalog:",
-    "vite": "5.3.3",
+    "vite": "5.4.7",
     "vite-plugin-static-copy": "^1.0.5",
     "vite-tsconfig-paths": "4.3.2",
-    "vitest": "2.0.3"
+    "vitest": "2.1.1"
   },
   "peerDependencies": {
     "@halfdomelabs/project-builder-lib": "workspace:*",
