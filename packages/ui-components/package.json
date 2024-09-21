@@ -64,7 +64,7 @@
     "@radix-ui/react-switch": "1.1.0",
     "@radix-ui/react-tabs": "1.1.0",
     "@radix-ui/react-tooltip": "1.1.2",
-    "@types/react": "18.3.3",
+    "@types/react": "18.3.8",
     "@types/react-dom": "18.3.0",
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.1",
@@ -106,10 +106,10 @@
     "tailwindcss-animate": "^1.0.7",
     "tsc-alias": "1.8.10",
     "typescript": "catalog:",
-    "vite": "5.3.3",
+    "vite": "5.4.7",
     "vite-plugin-svgr": "4.2.0",
     "vite-tsconfig-paths": "4.3.2",
-    "vitest": "2.0.3"
+    "vitest": "2.1.1"
   },
   "engines": {
     "node": "^20.0.0"

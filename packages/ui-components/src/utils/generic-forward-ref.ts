@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, PropsWithoutRef } from 'react';
 
 /**
  * Typed wrapper around forwardRef for generic components
@@ -11,9 +11,12 @@ export function genericForwardRef<T, P = {}>(
   render: (props: P, ref: React.Ref<T>) => React.ReactElement | null,
   displayName?: string,
 ): (props: P & React.RefAttributes<T>) => React.ReactElement | null {
-  const newElem = forwardRef(render) as (
-    props: P & React.RefAttributes<T>,
-  ) => React.ReactElement | null;
+  const newElem = forwardRef(
+    render as (
+      props: PropsWithoutRef<P>,
+      ref: React.Ref<T>,
+    ) => React.ReactElement | null,
+  ) as (props: P & React.RefAttributes<T>) => React.ReactElement | null;
 
   if (displayName) {
     (newElem as { displayName?: string }).displayName = displayName;
