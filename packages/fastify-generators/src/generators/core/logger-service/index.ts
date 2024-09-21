@@ -67,11 +67,11 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
     fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
 
     node.addPackages({
-      pino: '8.14.1',
+      pino: '9.4.0',
     });
 
     node.addDevPackages({
-      'pino-pretty': '10.0.1',
+      'pino-pretty': '11.2.2',
     });
 
     const importMap = {

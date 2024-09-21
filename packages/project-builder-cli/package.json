@@ -40,8 +40,8 @@
     "commander": "^12.1.0",
     "lodash": "^4.17.21",
     "package-up": "^5.0.0",
-    "pino": "8.14.1",
-    "pino-pretty": "10.0.1",
+    "pino": "9.4.0",
+    "pino-pretty": "11.2.2",
     "pkg-dir": "^8.0.0"
   },
   "devDependencies": {
