@@ -89,7 +89,7 @@ function buildQueriesFileForModel(
     categoryOrder: ['find-query', 'list-query'],
     children: stripChildren({
       $findQuery: {
-        generator: '@halfdomelabs/fastify/pothos/pothos-prisma-find-query',
+        generator: '@halfdomelabs/fastify/pothos/pothos-prisma-get-query',
         modelName: model.name,
         children: {
           authorize:
