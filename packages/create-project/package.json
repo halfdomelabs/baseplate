@@ -38,7 +38,7 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "^20.0.0",
     "tsc-alias": "1.8.10",
-    "tsx": "4.16.2",
+    "tsx": "4.19.1",
     "typescript": "catalog:"
   },
   "engines": {
