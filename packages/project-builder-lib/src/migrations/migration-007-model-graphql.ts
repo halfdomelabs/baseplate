@@ -65,7 +65,7 @@ export const migration007ModelGraphql = createSchemaMigration<
 >({
   version: 7,
   name: 'modelGraphql',
-  description: 'Make service controller fields individually enabled',
+  description: 'Migrate model schema to GraphQL schema',
   migrate: (config) => {
     return {
       ...config,

@@ -12,7 +12,7 @@ import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../constants/built-in-transformers';
 import { SCALAR_FIELD_TYPE_OPTIONS } from '../../constants/scalar-types';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
-import { ellipsisStringFromMiddle } from '@src/utils/string';
+import { BadgeWithTypeLabel } from '../components/BadgeWithTypeLabel';
 
 interface ServiceMethodFieldsSectionProps {
   className?: string;
@@ -45,7 +45,7 @@ export function ServiceMethodFieldsSection({
   const updateTransformers = update?.transformerNames ?? [];
 
   const tableClassName =
-    'border-collapse text-left [&_td]:py-1 [&_th]:sticky [&_th]:top-0 [&_th]:bg-background [&_th]:z-10';
+    'border-collapse text-left [&_td]:py-1 [&_th]:sticky [&_th]:top-0 [&_th]:bg-background [&_th]:z-10 [&_th]:py-2';
 
   const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
 
@@ -65,26 +65,23 @@ export function ServiceMethodFieldsSection({
           <thead>
             <tr>
               <th>Fields</th>
-              {isCreateEnabled && <th className="pl-8">Creatable</th>}
-              {isUpdateEnabled && <th className="pl-8">Updatable</th>}
+              {isCreateEnabled && <th className="pl-8">Create</th>}
+              {isUpdateEnabled && <th className="pl-8">Update</th>}
             </tr>
           </thead>
           <tbody>
             {fields.map((field) => (
               <tr key={field.id}>
                 <td>
-                  <div className="flex w-full justify-between gap-4 rounded-md border bg-muted px-2 py-1">
-                    <div>{field.name}</div>
-                    <div className="rounded-full border px-2 py-1 text-xs text-muted-foreground">
-                      {ellipsisStringFromMiddle(
-                        field.type === 'enum' && field.options?.enumType
-                          ? definitionContainer.nameFromId(
-                              field.options.enumType,
-                            )
-                          : SCALAR_FIELD_TYPE_OPTIONS[field.type].label,
-                      )}
-                    </div>
-                  </div>
+                  <BadgeWithTypeLabel
+                    type={
+                      field.type === 'enum' && field.options?.enumType
+                        ? definitionContainer.nameFromId(field.options.enumType)
+                        : SCALAR_FIELD_TYPE_OPTIONS[field.type].label
+                    }
+                  >
+                    {field.name}
+                  </BadgeWithTypeLabel>
                 </td>
                 {isCreateEnabled && (
                   <td className="pl-8">
@@ -122,7 +119,7 @@ export function ServiceMethodFieldsSection({
             ))}
             {!!transformers.length && (
               <tr>
-                <th className="pt-8">Transformers</th>
+                <th>Transformers</th>
                 {isCreateEnabled && <th className="pl-8 pt-8">Creatable</th>}
                 {isUpdateEnabled && <th className="pl-8 pt-8">Updatable</th>}
               </tr>
@@ -130,23 +127,20 @@ export function ServiceMethodFieldsSection({
             {transformers.map((transformer) => (
               <tr key={transformer.id}>
                 <td>
-                  <div className="flex w-full justify-between gap-4 rounded-md border bg-muted px-2 py-1">
-                    <div>
-                      {ModelTransformerUtils.getTransformName(
-                        definitionContainer,
-                        transformer,
-                        pluginContainer,
-                      )}
-                    </div>
-                    <div className="rounded-full border px-2 py-1 text-xs text-muted-foreground">
-                      {
-                        transformerWeb.getTransformerWebConfig(
-                          transformer.type,
-                          BUILT_IN_TRANSFORMER_WEB_CONFIGS,
-                        ).label
-                      }
-                    </div>
-                  </div>
+                  <BadgeWithTypeLabel
+                    type={
+                      transformerWeb.getTransformerWebConfig(
+                        transformer.type,
+                        BUILT_IN_TRANSFORMER_WEB_CONFIGS,
+                      ).label
+                    }
+                  >
+                    {ModelTransformerUtils.getTransformName(
+                      definitionContainer,
+                      transformer,
+                      pluginContainer,
+                    )}
+                  </BadgeWithTypeLabel>
                 </td>
                 {isCreateEnabled && (
                   <td className="pl-8">

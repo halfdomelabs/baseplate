@@ -15,7 +15,6 @@ import {
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';
 import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
-import { authRoleEntityType } from '@src/schema/auth/types.js';
 import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 
 export * from './enums.js';
@@ -226,58 +225,6 @@ export const modelServiceSchema = z.object({
 });
 
 export type ModelServiceConfig = z.infer<typeof modelServiceSchema>;
-
-const roleArray = z
-  .array(
-    zRef(z.string(), {
-      type: authRoleEntityType,
-      onDelete: 'DELETE',
-    }),
-  )
-  .optional();
-
-export const modelSchemaSchema = z.object({
-  buildObjectType: z.boolean().optional(),
-  exposedFields: z
-    .array(
-      zRef(z.string(), {
-        type: modelScalarFieldEntityType,
-        onDelete: 'DELETE',
-        parentPath: { context: 'model' },
-      }),
-    )
-    .optional(),
-  exposedLocalRelations: z
-    .array(
-      zRef(z.string(), {
-        type: modelLocalRelationEntityType,
-        onDelete: 'DELETE',
-        parentPath: { context: 'model' },
-      }),
-    )
-    .optional(),
-  exposedForeignRelations: z
-    .array(
-      zRef(z.string(), {
-        type: modelForeignRelationEntityType,
-        onDelete: 'DELETE',
-        parentPath: { context: 'model' },
-      }),
-    )
-    .optional(),
-  buildQuery: z.boolean().optional(),
-  buildMutations: z.boolean().optional(),
-  authorize: z
-    .object({
-      read: roleArray,
-      create: roleArray,
-      update: roleArray,
-      delete: roleArray,
-    })
-    .optional(),
-});
-
-export type ModelSchemaConfig = z.infer<typeof modelSchemaSchema>;
 
 export const modelBaseSchema = z.object({
   id: z.string().default(() => modelEntityType.generateNewId()),

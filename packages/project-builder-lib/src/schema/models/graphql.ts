@@ -83,3 +83,5 @@ export const modelGraphqlSchema = z.object({
     })
     .optional(),
 });
+
+export type ModelGraphqlDefinition = z.infer<typeof modelGraphqlSchema>;
