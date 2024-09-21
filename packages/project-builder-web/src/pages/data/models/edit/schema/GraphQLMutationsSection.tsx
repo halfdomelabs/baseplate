@@ -1,11 +1,16 @@
 import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
+  Alert,
   MultiCheckboxField,
   SectionList,
   SwitchField,
 } from '@halfdomelabs/ui-components';
 import { Control, useWatch } from 'react-hook-form';
+import { MdInfo } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+
+import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 
 interface GraphQLMutationsSectionProps {
   className?: string;
@@ -31,18 +36,22 @@ export function GraphQLMutationsSection({
     name: 'graphql.objectType.enabled',
   });
 
+  const controllerConfig = useEditedModelConfig((m) => m.service ?? {});
   const isCreateEnabled = useWatch({
     control,
     name: 'graphql.mutations.create.enabled',
   });
+  const isCreateControllerEnabled = controllerConfig.create?.enabled;
   const isUpdateEnabled = useWatch({
     control,
     name: 'graphql.mutations.update.enabled',
   });
+  const isUpdateControllerEnabled = controllerConfig.update?.enabled;
   const isDeleteEnabled = useWatch({
     control,
     name: 'graphql.mutations.delete.enabled',
   });
+  const isDeleteControllerEnabled = controllerConfig.delete?.enabled;
 
   return (
     <SectionList.Section className={className}>
@@ -55,11 +64,36 @@ export function GraphQLMutationsSection({
         </div>
       </SectionList.SectionHeader>
       <SectionList.SectionContent className="space-y-6">
+        {(!isCreateControllerEnabled ||
+          !isUpdateControllerEnabled ||
+          !isDeleteControllerEnabled) && (
+          <Alert className="max-w-md">
+            <MdInfo />
+            <Alert.Title>
+              Service methods disabled (
+              {[
+                !isCreateControllerEnabled && 'Create',
+                !isUpdateControllerEnabled && 'Update',
+                !isDeleteControllerEnabled && 'Delete',
+              ]
+                .filter(Boolean)
+                .join(', ')}
+              )
+            </Alert.Title>
+            <Alert.Description>
+              Enable the appropriate methods on the{' '}
+              <Link to="../service" className="font-semibold">
+                the service tab
+              </Link>{' '}
+              to expose mutations
+            </Alert.Description>
+          </Alert>
+        )}
         <div className="space-y-2">
           <SwitchField.Controller
             control={control}
             name="graphql.mutations.create.enabled"
-            disabled={!isObjectTypeEnabled}
+            disabled={!isObjectTypeEnabled || !isCreateControllerEnabled}
             label="Create Mutation"
             description="Expose the create method in the GraphQL schema, e.g. createUser(input: $input)."
           />
@@ -78,7 +112,7 @@ export function GraphQLMutationsSection({
             control={control}
             name="graphql.mutations.update.enabled"
             label="Update Mutation"
-            disabled={!isObjectTypeEnabled}
+            disabled={!isObjectTypeEnabled || !isUpdateControllerEnabled}
             description="Expose the update method in the GraphQL schema, e.g. updateUser(id: $id, input: $input)."
           />
           {isUpdateEnabled && isAuthEnabled && (
@@ -96,7 +130,7 @@ export function GraphQLMutationsSection({
             control={control}
             name="graphql.mutations.delete.enabled"
             label="Delete Mutation"
-            disabled={!isObjectTypeEnabled}
+            disabled={!isObjectTypeEnabled || !isDeleteControllerEnabled}
             description="Expose the delete method in the GraphQL schema, e.g. deleteUser(id: $id)."
           />
           {isDeleteEnabled && isAuthEnabled && (
