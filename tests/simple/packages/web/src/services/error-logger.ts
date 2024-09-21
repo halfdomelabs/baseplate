@@ -53,11 +53,11 @@ export function logError(
       const message =
         typeof result === 'string'
           ? result
-          : (
+          : ((
               result.errors as {
                 message?: string;
               }[]
-            )?.[0]?.message ?? JSON.stringify(result);
+            )?.[0]?.message ?? JSON.stringify(result));
 
       context.networkErrorResponse = message;
     }
