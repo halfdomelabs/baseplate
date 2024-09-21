@@ -32,7 +32,7 @@ export function setupFastifyTypescript(
 
   node.addDevPackages({
     'tsc-alias': '1.8.10',
-    tsx: '4.16.2',
+    tsx: '4.19.1',
     '@types/node': `^${nodeVersion}.0.0`,
   });
 }
