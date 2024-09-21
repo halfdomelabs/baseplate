@@ -40,7 +40,7 @@ function buildObjectTypeFile(
     return undefined;
   }
 
-  const { fields, localRelations, foreignRelations } = objectType;
+  const { fields, localRelations = [], foreignRelations = [] } = objectType;
 
   return {
     name: `${model.name}ObjectType`,
