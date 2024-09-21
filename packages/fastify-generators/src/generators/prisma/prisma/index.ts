@@ -90,12 +90,12 @@ const PrismaGenerator = createGeneratorWithTasks({
         typescript,
       }) {
         node.addDevPackages({
-          prisma: '5.17.0',
-          '@prisma/instrumentation': '5.17.0',
+          prisma: '5.19.1',
+          '@prisma/instrumentation': '5.19.1',
         });
 
         node.addPackages({
-          '@prisma/client': '5.17.0',
+          '@prisma/client': '5.19.1',
         });
 
         // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)
