@@ -48,7 +48,7 @@ const VitestGenerator = createGeneratorWithChildren({
     );
 
     node.addDevPackages({
-      vitest: '2.0.3',
+      vitest: '2.1.1',
       'vite-tsconfig-paths': '4.3.2',
     });
 

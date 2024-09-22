@@ -28,7 +28,7 @@
     "@inquirer/prompts": "^4.3.2",
     "axios": "1.7.4",
     "chalk": "5.3.0",
-    "commander": "^11.0.0",
+    "commander": "^12.1.0",
     "execa": "9.3.0",
     "ora": "^8.0.1",
     "package-up": "^5.0.0"
@@ -38,7 +38,7 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "^20.0.0",
     "tsc-alias": "1.8.10",
-    "tsx": "4.16.2",
+    "tsx": "4.19.1",
     "typescript": "catalog:"
   },
   "engines": {

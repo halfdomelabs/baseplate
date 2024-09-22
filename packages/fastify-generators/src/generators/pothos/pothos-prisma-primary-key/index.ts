@@ -1,6 +1,7 @@
 import {
   createGeneratorWithTasks,
   createTaskConfigBuilder,
+  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -19,69 +20,73 @@ const descriptorSchema = z.object({
   modelName: z.string().min(1),
 });
 
-type Descriptor = z.infer<typeof descriptorSchema>;
+export type PothosPrismaPrimaryKeyDescriptor = GeneratorDescriptor<
+  typeof descriptorSchema
+>;
 
-const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
-  name: 'main',
-  dependencies: {
-    prismaOutput: prismaOutputProvider,
-    pothosTypeFile: pothosTypesFileProvider,
-    pothosSchema: pothosSchemaProvider,
-  },
-  exports: {
-    pothosTypeOutput: pothosTypeOutputProvider,
-  },
-  run({ prismaOutput, pothosTypeFile, pothosSchema }) {
-    const model = prismaOutput.getPrismaModel(modelName);
+const createMainTask = createTaskConfigBuilder(
+  ({ modelName }: PothosPrismaPrimaryKeyDescriptor) => ({
+    name: 'main',
+    dependencies: {
+      prismaOutput: prismaOutputProvider,
+      pothosTypeFile: pothosTypesFileProvider,
+      pothosSchema: pothosSchemaProvider,
+    },
+    exports: {
+      pothosTypeOutput: pothosTypeOutputProvider,
+    },
+    run({ prismaOutput, pothosTypeFile, pothosSchema }) {
+      const model = prismaOutput.getPrismaModel(modelName);
 
-    const inputName = `${model.name}PrimaryKey`;
+      const inputName = `${model.name}PrimaryKey`;
 
-    const writerOptions: PothosWriterOptions = {
-      schemaBuilder: 'builder',
-      fieldBuilder: 't',
-      typeReferences: pothosSchema.getTypeReferences(),
-    };
-    const primaryKeyDefinition = getPrimaryKeyDefinition(model);
+      const writerOptions: PothosWriterOptions = {
+        schemaBuilder: 'builder',
+        fieldBuilder: 't',
+        typeReferences: pothosSchema.getTypeReferences(),
+      };
+      const primaryKeyDefinition = getPrimaryKeyDefinition(model);
 
-    if (
-      primaryKeyDefinition.type === 'scalar' ||
-      primaryKeyDefinition.isPrismaType === true
-    ) {
-      throw new Error(`Primary key for ${model.name} is not an object`);
-    }
+      if (
+        primaryKeyDefinition.type === 'scalar' ||
+        primaryKeyDefinition.isPrismaType === true
+      ) {
+        throw new Error(`Primary key for ${model.name} is not an object`);
+      }
 
-    const inputDefinition = writePothosInputDefinitionFromDtoFields(
-      inputName,
-      primaryKeyDefinition.nestedType.fields,
-      writerOptions,
-      true,
-    );
+      const inputDefinition = writePothosInputDefinitionFromDtoFields(
+        inputName,
+        primaryKeyDefinition.nestedType.fields,
+        writerOptions,
+        true,
+      );
 
-    const typeReference = {
-      typeName: inputName,
-      exportName: `${lowerCaseFirst(inputName)}InputType`,
-      moduleName: pothosTypeFile.getModuleName(),
-    };
+      const typeReference = {
+        typeName: inputName,
+        exportName: `${lowerCaseFirst(inputName)}InputType`,
+        moduleName: pothosTypeFile.getModuleName(),
+      };
 
-    return {
-      getProviders: () => ({
-        pothosTypeOutput: {
-          getTypeReference: () => typeReference,
+      return {
+        getProviders: () => ({
+          pothosTypeOutput: {
+            getTypeReference: () => typeReference,
+          },
+        }),
+        build: () => {
+          const typeReferences = pothosSchema.getTypeReferences();
+
+          typeReferences.addInputType(typeReference);
+
+          pothosTypeFile.registerType({
+            block: inputDefinition.definition,
+            category: 'input-type',
+          });
         },
-      }),
-      build: () => {
-        const typeReferences = pothosSchema.getTypeReferences();
-
-        typeReferences.addInputType(typeReference);
-
-        pothosTypeFile.registerType({
-          block: inputDefinition.definition,
-          category: 'input-type',
-        });
-      },
-    };
-  },
-}));
+      };
+    },
+  }),
+);
 
 const PothosPrismaPrimaryKeyGenerator = createGeneratorWithTasks({
   descriptorSchema,

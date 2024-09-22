@@ -24,7 +24,7 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "clean": "rm -rf ./dist",
-    "dev": "tsx watch -r dotenv/config ./src",
+    "dev": "tsx watch --exclude /**/node_modules/** -r dotenv/config ./src",
     "dev:serve": "pnpm dev serve",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
     "prettier:check": "prettier --check .",
@@ -37,12 +37,12 @@
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/project-builder-web": "workspace:*",
-    "commander": "^11.0.0",
+    "commander": "^12.1.0",
     "lodash": "^4.17.21",
     "package-up": "^5.0.0",
-    "pino": "8.14.1",
-    "pino-pretty": "10.0.1",
-    "pkg-dir": "^7.0.0"
+    "pino": "9.4.0",
+    "pino-pretty": "11.2.2",
+    "pkg-dir": "^8.0.0"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
@@ -50,7 +50,7 @@
     "@types/node": "^20.0.0",
     "dotenv": "^16.0.3",
     "tsc-alias": "1.8.10",
-    "tsx": "4.16.2",
+    "tsx": "4.19.1",
     "typescript": "catalog:"
   },
   "engines": {

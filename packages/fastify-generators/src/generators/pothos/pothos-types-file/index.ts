@@ -8,6 +8,7 @@ import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
+  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
@@ -20,7 +21,9 @@ const descriptorSchema = z.object({
   categoryOrder: z.array(z.string()).optional(),
 });
 
-type Config = z.infer<typeof descriptorSchema>;
+export type PothosTypesFileDescriptor = GeneratorDescriptor<
+  typeof descriptorSchema
+>;
 
 interface PothosType {
   name?: string;
@@ -38,7 +41,7 @@ export const pothosTypesFileProvider =
   createProviderType<PothosTypesFileProvider>('pothos-types-file');
 
 export const createPothosTypesFileTask = createTaskConfigBuilder(
-  ({ fileName, categoryOrder }: Config) => ({
+  ({ fileName, categoryOrder }: PothosTypesFileDescriptor) => ({
     name: 'pothos-types-file',
     dependencies: {
       appModule: appModuleProvider,

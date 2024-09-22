@@ -33,7 +33,7 @@ const CheckboxFieldRoot = React.forwardRef<
   ) => {
     return (
       <FormItem error={error} className={cn('space-y-2', className)}>
-        <div className="flex flex-row items-center space-x-4">
+        <div className="flex flex-row items-center">
           <FormItem.Control>
             <Checkbox
               ref={ref}
@@ -45,9 +45,15 @@ const CheckboxFieldRoot = React.forwardRef<
             />
           </FormItem.Control>
           <div className="space-y-0.5">
-            {label && <FormItem.Label>{label}</FormItem.Label>}
+            {label && (
+              <FormItem.Label className="cursor-pointer pl-2">
+                {label}
+              </FormItem.Label>
+            )}
             {description && (
-              <FormItem.Description>{description}</FormItem.Description>
+              <FormItem.Description className="pl-2">
+                {description}
+              </FormItem.Description>
             )}
           </div>
         </div>

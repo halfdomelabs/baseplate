@@ -30,7 +30,7 @@
         }
       }
     ],
-    "$schemaTypes": [
+    "$graphql": [
       {
         "name": "BlogPostObjectType",
         "fileName": "blog-post.object-type",
@@ -46,11 +46,19 @@
       {
         "name": "BlogPostPothosQueries",
         "fileName": "blog-post.queries",
-        "generator": "@halfdomelabs/fastify/pothos/pothos-prisma-query-file",
-        "modelName": "BlogPost",
+        "generator": "@halfdomelabs/fastify/pothos/pothos-types-file",
+        "categoryOrder": ["find-query", "list-query"],
         "children": {
-          "findQuery": {"children": {}},
-          "listQuery": {"children": {}}
+          "$findQuery": {
+            "generator": "@halfdomelabs/fastify/pothos/pothos-prisma-get-query",
+            "modelName": "BlogPost",
+            "children": {}
+          },
+          "$listQuery": {
+            "generator": "@halfdomelabs/fastify/pothos/pothos-prisma-list-query",
+            "modelName": "BlogPost",
+            "children": {}
+          }
         }
       }
     ]

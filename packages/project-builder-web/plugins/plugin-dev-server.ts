@@ -1,4 +1,4 @@
-import chokidar from 'chokidar';
+import chokidar, { FSWatcher } from 'chokidar';
 import mime from 'mime';
 import fs from 'node:fs';
 import { IncomingMessage, ServerResponse } from 'node:http';
@@ -52,7 +52,7 @@ export function pluginDevServerPlugin(): Plugin {
       };
     });
 
-  let watcher: chokidar.FSWatcher | undefined;
+  let watcher: FSWatcher | undefined;
 
   return {
     name: 'plugin-dev-server-plugin',

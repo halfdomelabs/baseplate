@@ -3,17 +3,25 @@ import { z } from 'zod';
 import { BaseGeneratorDescriptor } from '../core/index.js';
 
 export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
-  children?: Record<
-    string,
-    | Partial<BaseGeneratorDescriptor>
-    | string
-    | Partial<BaseGeneratorDescriptor>[]
-    | string[]
-  >;
+  children?: GeneratorDescriptorChildren;
 }
 
-export type GeneratorDescriptor<TSchema extends z.ZodType> =
-  DescriptorWithChildren & z.infer<TSchema>;
+export type GenericDescriptorWithChildren = DescriptorWithChildren &
+  Record<string, unknown>;
+
+export type GeneratorDescriptorChildren = Record<
+  string,
+  | Partial<GenericDescriptorWithChildren>
+  | Partial<GenericDescriptorWithChildren>[]
+  | Partial<DescriptorWithChildren>
+  | Partial<DescriptorWithChildren>[]
+  | string
+  | string[]
+  | undefined
+>;
+
+export type GeneratorDescriptor<TSchema extends z.ZodType = z.ZodUnknown> =
+  Partial<DescriptorWithChildren> & z.infer<TSchema>;
 
 export interface ChildGeneratorConfig {
   provider?: string;

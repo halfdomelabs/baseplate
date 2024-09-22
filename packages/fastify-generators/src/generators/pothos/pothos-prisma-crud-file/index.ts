@@ -1,4 +1,7 @@
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import {
+  createGeneratorWithTasks,
+  GeneratorDescriptor,
+} from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { createPothosTypesFileTask } from '../pothos-types-file/index.js';
@@ -9,6 +12,10 @@ const descriptorSchema = z.object({
   objectTypeRef: z.string().min(1),
   crudServiceRef: z.string().min(1),
 });
+
+export type PothosPrismaCrudFileDescriptor = GeneratorDescriptor<
+  typeof descriptorSchema
+>;
 
 const PothosPrismaCrudFileGenerator = createGeneratorWithTasks({
   descriptorSchema,

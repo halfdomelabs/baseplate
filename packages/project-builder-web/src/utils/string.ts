@@ -21,7 +21,7 @@ export function ellipsisString(str: string, maxLength: number): string {
  * Truncates a string from the middle and adds an ellipsis ('...') if it exceeds the specified maximum length.
  *
  * @param str - The input string to be truncated.
- * @param maxLength - The maximum allowed length of the truncated string including the ellipsis.
+ * @param maxLength - The maximum allowed length of the truncated string including the ellipsis, defaults to 20.
  * @returns The truncated string with an ellipsis in the middle if it exceeds the maximum length.
  *
  * The function works as follows:

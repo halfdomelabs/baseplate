@@ -1,6 +1,6 @@
 import {
-  FeatureUtils,
   AdminAppConfig,
+  FeatureUtils,
   stripChildren,
 } from '@halfdomelabs/project-builder-lib';
 
@@ -12,7 +12,7 @@ export function compileAdminSections(
   featureId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   sectionsId: string,
-): unknown[] | undefined {
+): Record<string, unknown>[] | undefined {
   const sections = builder.appConfig.sections?.filter(
     (s) => s.feature === featureId,
   );
@@ -34,7 +34,7 @@ export function compileAdminSections(
 function compileAdminFeatureRecursive(
   featureId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
-): unknown {
+): string | undefined {
   const { projectDefinition, parsedProject } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
     projectDefinition,
