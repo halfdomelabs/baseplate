@@ -19,7 +19,7 @@ function compileAdminCrudEmbeddedForm(
   const idFields = ModelUtils.byIdOrThrow(
     builder.projectDefinition,
     form.modelName,
-  ).model.primaryKeyFieldRefs;
+  ).model.primaryKeyFieldRefs.map((ref) => builder.nameFromId(ref));
   if (form.includeIdField && idFields.length !== 1) {
     throw new Error(
       `Embedded form ${form.modelName} has ${idFields.length} primary keys, but only one is allowed`,
