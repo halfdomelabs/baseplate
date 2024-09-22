@@ -2,14 +2,15 @@ import { EnumConfig, FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { MdDeleteOutline } from 'react-icons/md';
+import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
+import { EnumInfoEditDialog } from './EnumInfoEditDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
 
-interface ModelHeaderBarProps {
+interface EnumHeaderBarProps {
   className?: string;
   enumDefinition: EnumConfig;
 }
@@ -17,7 +18,7 @@ interface ModelHeaderBarProps {
 export function EnumHeaderBar({
   className,
   enumDefinition,
-}: ModelHeaderBarProps): JSX.Element {
+}: EnumHeaderBarProps): JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -39,9 +40,18 @@ export function EnumHeaderBar({
   };
 
   return (
-    <div className={clsx('flex items-center justify-between px-4', className)}>
+    <div className={clsx('flex items-center justify-between', className)}>
       <div>
-        <h1>{enumDefinition.name}</h1>
+        <EnumInfoEditDialog asChild>
+          <button
+            className="group flex items-center space-x-2 hover:cursor-pointer"
+            type="button"
+            title="Edit Enum Info"
+          >
+            <h1>{enumDefinition.name}</h1>
+            <MdEdit className="invisible size-4 group-hover:visible" />
+          </button>
+        </EnumInfoEditDialog>
         {enumDefinition?.feature && (
           <div className="text-xs text-muted-foreground">
             {
@@ -59,7 +69,7 @@ export function EnumHeaderBar({
             requestConfirm({
               title: 'Confirm delete',
               content: `Are you sure you want to delete ${
-                enumDefinition?.name ?? 'the enum'
+                enumDefinition.name
               }?`,
               buttonConfirmText: 'Delete',
               onConfirm: () => handleDelete(enumDefinition.id),

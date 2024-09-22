@@ -18,20 +18,19 @@ export const enumValueSchema = zEnt(
 
 export type EnumValueConfig = z.infer<typeof enumSchema>;
 
-export const enumSchema = zEnt(
-  z.object({
-    name: z.string().min(1),
-    feature: zRef(z.string().min(1), {
-      type: featureEntityType,
-      onDelete: 'RESTRICT',
-    }),
-    values: z.array(enumValueSchema),
-    isExposed: z.boolean(),
+export const enumBaseSchema = z.object({
+  name: z.string().min(1),
+  feature: zRef(z.string().min(1), {
+    type: featureEntityType,
+    onDelete: 'RESTRICT',
   }),
-  {
-    type: modelEnumEntityType,
-    addContext: 'enum',
-  },
-);
+  values: z.array(enumValueSchema),
+  isExposed: z.boolean(),
+});
+
+export const enumSchema = zEnt(enumBaseSchema, {
+  type: modelEnumEntityType,
+  addContext: 'enum',
+});
 
 export type EnumConfig = z.infer<typeof enumSchema>;

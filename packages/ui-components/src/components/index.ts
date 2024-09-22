@@ -34,6 +34,7 @@ export * from './Sheet/Sheet.js';
 export * from './SectionList/SectionList.js';
 export * from './Select/Select.js';
 export * from './SelectField/SelectField.js';
+export * from './Separator/Separator.js';
 export * from './SidebarLayout/SidebarLayout.js';
 export * from './SidebarTabs/SidebarTabs.js';
 export * from './Skeleton/Skeleton.js';

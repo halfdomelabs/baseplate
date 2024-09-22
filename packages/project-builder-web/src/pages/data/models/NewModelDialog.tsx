@@ -5,7 +5,7 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { ModelGeneralForm } from './edit/model/ModelGeneralForm';
+import { ModelInfoForm } from './edit/model/ModelInfoForm';
 import { useModelForm } from './hooks/useModelForm';
 
 interface NewModelDialogProps {
@@ -50,7 +50,7 @@ export function NewModelDialog({
           </Dialog.Description>
         </Dialog.Header>
         <form onSubmit={onSubmit} className="space-y-4">
-          <ModelGeneralForm control={control} />
+          <ModelInfoForm control={control} />
           <Dialog.Footer>
             <Dialog.Close asChild>
               <Button variant="secondary">Cancel</Button>

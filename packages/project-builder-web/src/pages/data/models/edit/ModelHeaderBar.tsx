@@ -2,11 +2,10 @@ import { FeatureUtils, ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { useState } from 'react';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import { ModelGeneralEditDialog } from './ModelGeneralEditDialog';
+import { ModelInfoEditDialog } from './ModelInfoEditDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
@@ -20,7 +19,6 @@ export function ModelHeaderBar({
   className,
   model,
 }: ModelHeaderBarProps): JSX.Element {
-  const [isGeneralEditDialogOpen, setIsGeneralEditDialogOpen] = useState(false);
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -44,25 +42,21 @@ export function ModelHeaderBar({
   return (
     <div className={clsx('flex items-center justify-between', className)}>
       <div>
-        <button
-          className="group flex items-center space-x-2 hover:cursor-pointer"
-          onClick={() => {
-            setIsGeneralEditDialogOpen(true);
-          }}
-          type="button"
-        >
-          <h1>{model.name}</h1>
-          <MdEdit className="invisible size-4 group-hover:visible" />
-        </button>
+        <ModelInfoEditDialog asChild>
+          <button
+            className="group flex items-center space-x-2 hover:cursor-pointer"
+            type="button"
+            title="Edit Model Info"
+          >
+            <h1>{model.name}</h1>
+            <MdEdit className="invisible size-4 group-hover:visible" />
+          </button>
+        </ModelInfoEditDialog>
         {model?.feature && (
           <div className="text-xs text-muted-foreground">
             {FeatureUtils.getFeatureById(definition, model.feature)?.name}
           </div>
         )}
-        <ModelGeneralEditDialog
-          open={isGeneralEditDialogOpen}
-          onOpenChange={setIsGeneralEditDialogOpen}
-        />
       </div>
       <div className="flex gap-8">
         <Button
@@ -71,9 +65,7 @@ export function ModelHeaderBar({
           onClick={() => {
             requestConfirm({
               title: 'Confirm delete',
-              content: `Are you sure you want to delete ${
-                model?.name ?? 'the model'
-              }?`,
+              content: `Are you sure you want to delete ${model.name}?`,
               buttonConfirmText: 'Delete',
               onConfirm: () => handleDelete(model.id),
             });
