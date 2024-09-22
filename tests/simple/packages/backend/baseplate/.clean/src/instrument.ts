@@ -22,13 +22,19 @@ if (SENTRY_ENABLED) {
       Sentry.requestDataIntegration({ include: { ip: true } }),
       Sentry.prismaIntegration(),
     ],
-    tracesSampler: (samplingContext) => {
+    tracesSampler: ({ parentSampled, attributes }) => {
+      const httpTarget = attributes?.['http.target'];
       if (
-        samplingContext?.request?.url &&
-        IGNORED_TRANSACTION_PATHS.includes(samplingContext?.request?.url)
+        typeof httpTarget === 'string' &&
+        IGNORED_TRANSACTION_PATHS.includes(httpTarget)
       ) {
         return false;
       }
+
+      if (typeof parentSampled === 'boolean') {
+        return parentSampled;
+      }
+
       return SENTRY_TRACES_SAMPLE_RATE;
     },
 
