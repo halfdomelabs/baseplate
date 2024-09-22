@@ -1,5 +1,11 @@
 # @halfdomelabs/cli
 
+## 0.7.23
+
+### Patch Changes
+
+- @halfdomelabs/project-builder-common@0.1.5
+
 ## 0.7.22
 
 ### Patch Changes

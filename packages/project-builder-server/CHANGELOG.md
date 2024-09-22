@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.12
+
+### Patch Changes
+
+- 95d28283: fix: Fix embedded CRUD ID field rendering
+
 ## 0.4.11
 
 ### Patch Changes
