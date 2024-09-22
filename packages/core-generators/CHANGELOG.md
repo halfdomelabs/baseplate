@@ -1,5 +1,19 @@
 # @halfdomelabs/core-generators
 
+## 0.9.6
+
+### Patch Changes
+
+- 8cb0ef35: Upgrade prettier to 3.3.3 and associated plugins to latest
+- 2373fec8: Upgrade PNPM to 9.10.0
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 92c1401f: Upgrade vitest to 2.1.1 and vite to 5.4.7 and @types/react to 18.3.8
+- 8cb0ef35: Upgrade assorted dependencies
+- Updated dependencies [92654962]
+- Updated dependencies [92c1401f]
+- Updated dependencies [8cb0ef35]
+  - @halfdomelabs/sync@0.7.9
+
 ## 0.9.5
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @halfdomelabs/tools
 
+## 0.5.9
+
+### Patch Changes
+
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 92c1401f: Upgrade vitest to 2.1.1 and vite to 5.4.7 and @types/react to 18.3.8
+- 8cb0ef35: Upgrade assorted dependencies
+
 ## 0.5.8
 
 ### Patch Changes

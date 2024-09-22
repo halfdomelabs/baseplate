@@ -1,5 +1,21 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.5
+
+### Patch Changes
+
+- 18ef42fe: Upgrade pino to 9.4.0 and pino-pretty to 11.2.2
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 040d9a38: Upgrade Prisma to 5.19.1
+- 8cb0ef35: Upgrade assorted dependencies
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [2373fec8]
+- Updated dependencies [92654962]
+- Updated dependencies [92c1401f]
+- Updated dependencies [8cb0ef35]
+  - @halfdomelabs/core-generators@0.9.6
+  - @halfdomelabs/sync@0.7.9
+
 ## 0.10.4
 
 ### Patch Changes

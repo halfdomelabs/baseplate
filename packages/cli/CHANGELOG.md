@@ -1,5 +1,29 @@
 # @halfdomelabs/cli
 
+## 0.7.21
+
+### Patch Changes
+
+- 7c0f3638: Upgrade tsx to 4.19.1
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 8cb0ef35: Upgrade assorted dependencies
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [18ef42fe]
+- Updated dependencies [a6e3fd96]
+- Updated dependencies [37006225]
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [37006225]
+- Updated dependencies [2373fec8]
+- Updated dependencies [92654962]
+- Updated dependencies [040d9a38]
+- Updated dependencies [92c1401f]
+- Updated dependencies [8cb0ef35]
+  - @halfdomelabs/react-generators@0.8.5
+  - @halfdomelabs/fastify-generators@0.10.5
+  - @halfdomelabs/core-generators@0.9.6
+  - @halfdomelabs/sync@0.7.9
+  - @halfdomelabs/project-builder-common@0.1.3
+
 ## 0.7.20
 
 ### Patch Changes

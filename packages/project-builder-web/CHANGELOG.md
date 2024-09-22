@@ -1,5 +1,41 @@
 # @halfdomelabs/project-builder-web
 
+## 0.12.1
+
+### Patch Changes
+
+- 4aebad61: Style the Enum edit page header and footer according to the Figma design.
+- 8f100102: Tweak sidebar/topbar layout and rework navigation sidebar
+- 03f3df6a: Force service methods to be enabled before enabling in GraphQL
+- f92a4670: Add useBlockUnsavedChangesNavigate hook to allow users to save before proceeding
+- 32021f09: Improve docs for model service page
+- a6e3fd96: Upgrade react-hook-form to 7.53.0 and @hookform/resolvers to 3.9.0
+- 37006225: Update UI for model editor
+- c835165c: Allow features to be created from model/enum forms
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 92c1401f: Upgrade vitest to 2.1.1 and vite to 5.4.7 and @types/react to 18.3.8
+- c147406e: Deleting model should take you to models home
+- 20d9438b: Remove all references to react-hot-toast and use sonner instead
+- 8cb0ef35: Upgrade assorted dependencies
+- 1bd25964: Improve hot-reload experience by waiting for compilation to finish
+- Updated dependencies [c03c3e34]
+- Updated dependencies [03f3df6a]
+- Updated dependencies [f92a4670]
+- Updated dependencies [32021f09]
+- Updated dependencies [a6e3fd96]
+- Updated dependencies [d447024b]
+- Updated dependencies [c6b14371]
+- Updated dependencies [2579aee0]
+- Updated dependencies [37006225]
+- Updated dependencies [c835165c]
+- Updated dependencies [92654962]
+- Updated dependencies [92c1401f]
+- Updated dependencies [79a6eb64]
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [1bd25964]
+  - @halfdomelabs/ui-components@0.4.15
+  - @halfdomelabs/project-builder-lib@0.8.10
+
 ## 0.12.0
 
 ### Minor Changes

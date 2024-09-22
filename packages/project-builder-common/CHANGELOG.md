@@ -1,5 +1,34 @@
 # @halfdomelabs/project-builder-common
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [03f3df6a]
+- Updated dependencies [f92a4670]
+- Updated dependencies [18ef42fe]
+- Updated dependencies [32021f09]
+- Updated dependencies [a6e3fd96]
+- Updated dependencies [d447024b]
+- Updated dependencies [37006225]
+- Updated dependencies [c835165c]
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [37006225]
+- Updated dependencies [2373fec8]
+- Updated dependencies [92654962]
+- Updated dependencies [040d9a38]
+- Updated dependencies [92c1401f]
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [1bd25964]
+  - @halfdomelabs/react-generators@0.8.5
+  - @halfdomelabs/project-builder-lib@0.8.10
+  - @halfdomelabs/baseplate-plugin-storage@1.0.11
+  - @halfdomelabs/project-builder-server@0.4.11
+  - @halfdomelabs/fastify-generators@0.10.5
+  - @halfdomelabs/core-generators@0.9.6
+  - @halfdomelabs/sync@0.7.9
+
 ## 0.1.2
 
 ### Patch Changes

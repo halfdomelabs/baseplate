@@ -1,5 +1,34 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.7.11
+
+### Patch Changes
+
+- 18ef42fe: Upgrade pino to 9.4.0 and pino-pretty to 11.2.2
+- 7c0f3638: Upgrade tsx to 4.19.1
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 8cb0ef35: Upgrade assorted dependencies
+- Updated dependencies [4aebad61]
+- Updated dependencies [8f100102]
+- Updated dependencies [03f3df6a]
+- Updated dependencies [f92a4670]
+- Updated dependencies [18ef42fe]
+- Updated dependencies [32021f09]
+- Updated dependencies [a6e3fd96]
+- Updated dependencies [d447024b]
+- Updated dependencies [37006225]
+- Updated dependencies [c835165c]
+- Updated dependencies [92654962]
+- Updated dependencies [92c1401f]
+- Updated dependencies [c147406e]
+- Updated dependencies [20d9438b]
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [1bd25964]
+  - @halfdomelabs/project-builder-web@0.12.1
+  - @halfdomelabs/project-builder-lib@0.8.10
+  - @halfdomelabs/project-builder-server@0.4.11
+  - @halfdomelabs/project-builder-common@0.1.3
+
 ## 0.7.10
 
 ### Patch Changes
