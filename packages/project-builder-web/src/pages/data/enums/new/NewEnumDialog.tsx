@@ -2,10 +2,11 @@ import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Dialog,
+  SwitchField,
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { EnumInfoForm } from '../edit/EnumInfoForm';
+import { EnumInfoForm } from '../components/EnumInfoForm';
 import { useEnumForm } from '../hooks/useEnumForm';
 
 interface NewEnumDialogProps {
@@ -51,6 +52,12 @@ export function NewEnumDialog({
         </Dialog.Header>
         <form onSubmit={onSubmit} className="space-y-4">
           <EnumInfoForm control={control} />
+          <SwitchField.Controller
+            label="Expose in GraphQL schema"
+            control={control}
+            name="isExposed"
+            description="Whether to expose this enum in the GraphQL schema"
+          />
           <Dialog.Footer>
             <Dialog.Close asChild>
               <Button variant="secondary">Cancel</Button>

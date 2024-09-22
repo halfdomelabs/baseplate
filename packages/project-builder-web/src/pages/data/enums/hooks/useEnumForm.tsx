@@ -46,6 +46,7 @@ export function useEnumForm({
 }: UseEnumFormOptions = {}): {
   form: UseFormReturn<EnumConfig>;
   onSubmit: () => Promise<void>;
+  defaultValues: EnumConfig;
 } {
   const { uid } = useParams<'uid'>();
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
@@ -97,7 +98,7 @@ export function useEnumForm({
           const existingEnum = definition.enums?.find(
             (e) =>
               e.id !== updatedDefinition.id &&
-              e.name.toLowerCase() === data.name.toLowerCase(),
+              e.name.toLowerCase() === updatedDefinition.name.toLowerCase(),
           );
           if (existingEnum) {
             setError('name', {
@@ -108,14 +109,17 @@ export function useEnumForm({
 
           setConfigAndFixReferences((draftConfig) => {
             // create feature if a new feature exists
-            data.feature = FeatureUtils.ensureFeatureByNameRecursively(
-              draftConfig,
-              data.feature,
-            );
+            updatedDefinition.feature =
+              FeatureUtils.ensureFeatureByNameRecursively(
+                draftConfig,
+                updatedDefinition.feature,
+              );
             draftConfig.enums = _.sortBy(
               [
-                ...(draftConfig.enums?.filter((e) => e.id !== data.id) ?? []),
-                data,
+                ...(draftConfig.enums?.filter(
+                  (e) => e.id !== updatedDefinition.id,
+                ) ?? []),
+                updatedDefinition,
               ],
               (e) => e.name,
             );
@@ -124,10 +128,10 @@ export function useEnumForm({
           if (isCreate) {
             navigate(createEnumEditLink(updatedDefinition.id));
             reset(newEnumDefinition);
-            toast.success('Successfully created model!');
+            toast.success('Successfully created enum!');
           } else {
             reset(data);
-            toast.success('Successfully saved model!');
+            toast.success('Successfully saved enum!');
           }
 
           handleSubmitSuccess?.();
@@ -154,5 +158,5 @@ export function useEnumForm({
     ],
   );
 
-  return { form, onSubmit };
+  return { form, onSubmit, defaultValues };
 }

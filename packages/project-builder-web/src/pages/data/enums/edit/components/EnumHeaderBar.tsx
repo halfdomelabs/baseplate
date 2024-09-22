@@ -1,31 +1,28 @@
 import { EnumConfig, FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SwitchField, toast } from '@halfdomelabs/ui-components';
+import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { UseFormReturn } from 'react-hook-form';
+import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import { EnumOptionsDropdown } from './EnumOptionsDropdown';
+import { EnumInfoEditDialog } from './EnumInfoEditDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
 
-interface ModelHeaderBarProps {
-  form: UseFormReturn<EnumConfig>;
+interface EnumHeaderBarProps {
   className?: string;
   enumDefinition: EnumConfig;
 }
 
 export function EnumHeaderBar({
-  form,
   className,
   enumDefinition,
-}: ModelHeaderBarProps): JSX.Element {
+}: EnumHeaderBarProps): JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
-
-  const { control } = form;
+  const { requestConfirm } = useConfirmDialog();
 
   const handleDelete = (id: string): void => {
     try {
@@ -43,9 +40,18 @@ export function EnumHeaderBar({
   };
 
   return (
-    <div className={clsx('flex items-center justify-between px-4', className)}>
+    <div className={clsx('flex items-center justify-between', className)}>
       <div>
-        <h1>{enumDefinition.name}</h1>
+        <EnumInfoEditDialog asChild>
+          <button
+            className="group flex items-center space-x-2 hover:cursor-pointer"
+            type="button"
+            title="Edit Enum Info"
+          >
+            <h1>{enumDefinition.name}</h1>
+            <MdEdit className="invisible size-4 group-hover:visible" />
+          </button>
+        </EnumInfoEditDialog>
         {enumDefinition?.feature && (
           <div className="text-xs text-muted-foreground">
             {
@@ -55,16 +61,24 @@ export function EnumHeaderBar({
           </div>
         )}
       </div>
-      <div className="flex items-center gap-8">
-        <SwitchField.Controller
-          control={control}
-          name="isExposed"
-          label="Expose in GraphQL schema?"
-        />
-        <EnumOptionsDropdown
-          enumDefinition={enumDefinition}
-          handleDelete={handleDelete}
-        />
+      <div className="flex gap-8">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => {
+            requestConfirm({
+              title: 'Confirm delete',
+              content: `Are you sure you want to delete ${
+                enumDefinition.name
+              }?`,
+              buttonConfirmText: 'Delete',
+              onConfirm: () => handleDelete(enumDefinition.id),
+            });
+          }}
+        >
+          <Button.Icon icon={MdDeleteOutline} className="text-destructive" />
+          <div className="sr-only">Delete Enum</div>
+        </Button>
       </div>
     </div>
   );

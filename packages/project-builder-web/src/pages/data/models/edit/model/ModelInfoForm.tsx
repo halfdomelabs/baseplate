@@ -4,15 +4,15 @@ import { InputField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 
-interface ModelGeneralFormProps {
+interface ModelInfoFormProps {
   className?: string;
   control: Control<ModelConfig>;
 }
 
-export function ModelGeneralForm({
+export function ModelInfoForm({
   className,
   control,
-}: ModelGeneralFormProps): JSX.Element {
+}: ModelInfoFormProps): JSX.Element {
   return (
     <div className={clsx('space-y-4', className)}>
       <InputField.Controller

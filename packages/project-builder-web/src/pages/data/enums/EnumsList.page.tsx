@@ -9,11 +9,11 @@ function EnumsListPage(): JSX.Element {
       <p>
         Enums are a way to define a set of named values. They can be used to
         define a type that can only have a certain set of values. For example,
-        you might have an enum called <code>Color</code> with values{' '}
+        you might have an enum called <strong>Color</strong> with values{' '}
         <code>RED</code>, <code>GREEN</code>, and <code>BLUE</code>.
       </p>
       <p>
-        Choose a model to edit from the sidebar or{' '}
+        Choose an enum to edit from the sidebar or{' '}
         <NewEnumDialog>
           <Button variant="link" size="none">
             create a new enum
