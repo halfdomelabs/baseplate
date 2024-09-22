@@ -1,5 +1,12 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies [f3675692]
+  - @halfdomelabs/fastify-generators@0.10.6
+
 ## 1.0.11
 
 ### Patch Changes

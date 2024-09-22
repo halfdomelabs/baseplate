@@ -1,5 +1,11 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.6
+
+### Patch Changes
+
+- f3675692: Fix Sentry ignored transaction paths logic
+
 ## 0.10.5
 
 ### Patch Changes
