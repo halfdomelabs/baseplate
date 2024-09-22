@@ -1,5 +1,20 @@
 # @halfdomelabs/ui-components
 
+## 0.4.15
+
+### Patch Changes
+
+- c03c3e34: Add improved multi-select component
+- a6e3fd96: Upgrade react-hook-form to 7.53.0 and @hookform/resolvers to 3.9.0
+- c6b14371: Enable scrolling in popovers in Dialogs and add scrolling to Dialogs that are too high
+- 2579aee0: Add onBlur and ref from useController to controlled fields
+- 37006225: Update UI for model editor
+- c835165c: Allow features to be created from model/enum forms
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 92c1401f: Upgrade vitest to 2.1.1 and vite to 5.4.7 and @types/react to 18.3.8
+- 79a6eb64: Add MutliCheckbox component
+- 8cb0ef35: Upgrade assorted dependencies
+
 ## 0.4.14
 
 ### Patch Changes

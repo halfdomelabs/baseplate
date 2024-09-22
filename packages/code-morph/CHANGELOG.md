@@ -1,5 +1,13 @@
 # @halfdomelabs/code-morph
 
+## 0.2.3
+
+### Patch Changes
+
+- 7c0f3638: Upgrade tsx to 4.19.1
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 8cb0ef35: Upgrade assorted dependencies
+
 ## 0.2.2
 
 ### Patch Changes

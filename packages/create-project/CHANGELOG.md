@@ -1,5 +1,14 @@
 # @halfdomelabs/create-project
 
+## 0.2.6
+
+### Patch Changes
+
+- 7c0f3638: Upgrade tsx to 4.19.1
+- 2373fec8: Upgrade PNPM to 9.10.0
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 8cb0ef35: Upgrade assorted dependencies
+
 ## 0.2.5
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/tools",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Shared dev configurations for Baseplate projects",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {

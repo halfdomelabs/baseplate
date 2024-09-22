@@ -1,5 +1,24 @@
 # @halfdomelabs/react-generators
 
+## 0.8.5
+
+### Patch Changes
+
+- 8cb0ef35: Upgrade autoprefixer to 10.4.20, tailwind to 3.4.11, pretter-plugin-tailwind to 0.6.6, @tailwindcss/forms to 0.5.9
+- a6e3fd96: Upgrade react-hook-form to 7.53.0 and @hookform/resolvers to 3.9.0
+- 37006225: Update UI for model editor
+- 37006225: Upgrade react-error-boundary to 4.0.13
+- 92654962: Upgrade Typescript to 5.5.4 using PNPM catalog
+- 92c1401f: Upgrade vitest to 2.1.1 and vite to 5.4.7 and @types/react to 18.3.8
+- 8cb0ef35: Upgrade assorted dependencies
+- Updated dependencies [8cb0ef35]
+- Updated dependencies [2373fec8]
+- Updated dependencies [92654962]
+- Updated dependencies [92c1401f]
+- Updated dependencies [8cb0ef35]
+  - @halfdomelabs/core-generators@0.9.6
+  - @halfdomelabs/sync@0.7.9
+
 ## 0.8.4
 
 ### Patch Changes
