@@ -2,15 +2,21 @@ import {
   EnumConfig,
   modelEnumValueEntityType,
 } from '@halfdomelabs/project-builder-lib';
-import { SectionList } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  InputField,
+  Label,
+  SectionList,
+} from '@halfdomelabs/ui-components';
+import { Fragment } from 'react/jsx-runtime';
 import {
   Control,
   useFieldArray,
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
+import { MdDeleteOutline } from 'react-icons/md';
 
-import { Button, TextInput } from 'src/components';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
 export function EnumValuesSection({
@@ -40,16 +46,18 @@ export function EnumValuesSection({
         </SectionList.SectionDescription>
       </SectionList.SectionHeader>
       <SectionList.SectionContent className="space-y-4">
-        {valueFields.map((field, i) => (
-          <div key={field.id}>
-            <div className="flex flex-row space-x-4">
-              <TextInput.LabelledController
-                label="Value Name, e.g. ACTIVE"
+        <div className="grid grid-cols-3 items-center gap-x-4 gap-y-2">
+          <Label className="mb-2">Value Name, e.g. ACTIVE</Label>
+          <Label className="col-span-2 mb-2">
+            Value Friendly Name, e.g. Active
+          </Label>
+          {valueFields.map((field, i) => (
+            <Fragment key={field.id}>
+              <InputField.Controller
                 control={control}
                 name={`values.${i}.name`}
               />
-              <TextInput.LabelledController
-                label="Value Friendly Name, e.g. Active"
+              <InputField.Controller
                 control={control}
                 name={`values.${i}.friendlyName`}
                 onFocus={() => {
@@ -62,17 +70,19 @@ export function EnumValuesSection({
                 }}
               />
               <Button
-                color="light"
-                type="button"
+                variant="ghost"
+                size="icon"
                 onClick={() => removeValue(i)}
               >
-                Remove
+                <Button.Icon icon={MdDeleteOutline} />
+                <div className="sr-only">Delete Enum</div>
               </Button>
-            </div>
-          </div>
-        ))}
+            </Fragment>
+          ))}
+        </div>
         <Button
-          type="button"
+          size="sm"
+          variant="secondary"
           onClick={() =>
             appendValue({
               id: modelEnumValueEntityType.generateNewId(),
