@@ -53,7 +53,7 @@ export function ModelFieldBadges({
     ),
     ...uniqueConstraints.map((uc) => (
       <ModelFieldUniqueBadge
-        key="unique"
+        key={uc}
         control={control}
         constraintId={uc}
         autoCollapse={autoCollapse}
