@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-web
 
+## 0.12.2
+
+### Patch Changes
+
+- b607b7fe: Redesign Enum values form.
+- 7a8e7b06: Fix unique badge duplication bug
+
 ## 0.12.1
 
 ### Patch Changes
