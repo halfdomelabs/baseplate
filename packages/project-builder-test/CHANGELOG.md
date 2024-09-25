@@ -1,5 +1,13 @@
 # @halfdomelabs/project-builder-test
 
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies [b607b7fe]
+- Updated dependencies [7a8e7b06]
+  - @halfdomelabs/project-builder-web@0.12.2
+
 ## 0.0.6
 
 ### Patch Changes
