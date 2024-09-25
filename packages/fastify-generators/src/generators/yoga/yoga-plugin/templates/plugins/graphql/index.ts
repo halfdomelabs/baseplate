@@ -6,15 +6,8 @@ import { createContextFromRequest } from '%request-service-context';
 import { requestContext } from '@fastify/request-context';
 import { createYoga } from 'graphql-yoga';
 import { logger } from '%logger-service';
-import AltairFastify, {
-  AltairFastifyPluginOptions,
-} from 'altair-fastify-plugin';
-import {
-  FastifyPluginCallback,
-  FastifyReply,
-  FastifyRequest,
-  RouteHandlerMethod,
-} from 'fastify';
+import AltairFastify from 'altair-fastify-plugin';
+import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError } from 'graphql';
 
@@ -109,13 +102,10 @@ export const graphqlPlugin = fp(async (fastify) => {
   GRAPHQL_HANDLER;
 
   if (IS_DEVELOPMENT) {
-    await fastify.register(
-      AltairFastify as unknown as FastifyPluginCallback<AltairFastifyPluginOptions>,
-      {
-        path: '/altair',
-        baseURL: '/altair/',
-        endpointURL: '/graphql',
-      },
-    );
+    await fastify.register(AltairFastify.default, {
+      path: '/altair',
+      baseURL: '/altair/',
+      endpointURL: '/graphql',
+    });
   }
 });
