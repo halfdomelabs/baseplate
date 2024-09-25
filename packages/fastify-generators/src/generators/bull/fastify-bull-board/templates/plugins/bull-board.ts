@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { createBullBoard } from '@bull-board/api';
-import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
+import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 import { FastifyAdapter } from '@bull-board/fastify';
 import { Queue } from 'bullmq';
 import { FastifyPluginAsync } from 'fastify';

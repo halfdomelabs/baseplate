@@ -3,7 +3,7 @@
 import {
   ManagedRepeatableJobsConfig,
   synchronizeRepeatableJobs,
-} from '@src/services/bull.js';
+} from '@src/services/bull/index.js';
 import { logError } from '%error-logger';
 
 const REPEAT_JOB_CONFIGS: ManagedRepeatableJobsConfig[] = REPEAT_JOBS;
