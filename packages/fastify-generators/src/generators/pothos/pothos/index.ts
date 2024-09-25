@@ -81,7 +81,7 @@ const PothosGenerator = createGeneratorWithTasks({
                 getConfig: () => config,
                 getImportMap: () => ({
                   '%pothos': {
-                    path: '@/src/plugins/graphql/builder',
+                    path: '@/src/plugins/graphql/builder.js',
                     allowedImports: ['builder'],
                   },
                 }),
@@ -109,7 +109,7 @@ const PothosGenerator = createGeneratorWithTasks({
               pothosSchema: {
                 getImportMap: () => ({
                   '%pothos': {
-                    path: '@/src/plugins/graphql/builder',
+                    path: '@/src/plugins/graphql/builder.js',
                     allowedImports: ['builder'],
                   },
                 }),
@@ -208,11 +208,11 @@ const PothosGenerator = createGeneratorWithTasks({
             const DEFAULT_PLUGINS = [
               TypescriptCodeUtils.createExpression(
                 `pothosFieldWithInputPayloadPlugin`,
-                `import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin'`,
+                `import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin/index.js'`,
               ),
               TypescriptCodeUtils.createExpression(
                 'pothosStripQueryMutationPlugin',
-                `import { pothosStripQueryMutationPlugin } from './stripQueryMutationPlugin'`,
+                `import { pothosStripQueryMutationPlugin } from './stripQueryMutationPlugin.js'`,
               ),
               TypescriptCodeUtils.createExpression(
                 `SimpleObjectsPlugin`,

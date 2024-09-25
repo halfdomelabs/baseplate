@@ -36,6 +36,7 @@ import {
   resolveModule,
   writeImportDeclarations,
   PathMapEntry,
+  ModuleResolutionMethod,
 } from './imports.js';
 import { ImportMapper } from '../../providers/index.js';
 import { notEmpty } from '../../utils/array.js';
@@ -555,6 +556,7 @@ export class TypescriptSourceBlock<
 export interface TypescriptSourceFileOptions {
   importMappers?: (ImportMapper | undefined)[];
   pathMappings?: PathMapEntry[];
+  resolutionMethod: ModuleResolutionMethod;
 }
 
 interface EtaPreprocessOptions {
@@ -587,7 +589,7 @@ export class TypescriptSourceFile<
   protected sourceFileOptions: TypescriptSourceFileOptions;
   protected preImportBlocks: string[] = [];
 
-  constructor(config: T, options: TypescriptSourceFileOptions = {}) {
+  constructor(config: T, options: TypescriptSourceFileOptions) {
     super(config);
     this.sourceFileOptions = options;
   }
@@ -675,6 +677,7 @@ export class TypescriptSourceFile<
       writeImportDeclarations(writer, allImports, path.dirname(destination), {
         pathMapEntries: this.sourceFileOptions.pathMappings,
         importMappers: importMappers.filter(notEmpty),
+        resolutionMethod: this.sourceFileOptions.resolutionMethod,
       });
       writer.writeLine('');
     });
@@ -698,7 +701,10 @@ export class TypescriptSourceFile<
             resolveModule(
               moduleSpecifier.getLiteralValue(),
               path.dirname(destination),
-              { pathMapEntries: this.sourceFileOptions.pathMappings },
+              {
+                pathMapEntries: this.sourceFileOptions.pathMappings,
+                resolutionMethod: this.sourceFileOptions.resolutionMethod,
+              },
             ),
           );
         }

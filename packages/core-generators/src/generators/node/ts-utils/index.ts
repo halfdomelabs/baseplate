@@ -1,11 +1,11 @@
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { copyTypescriptFileAction } from '../../../actions/index.js';
 import { ImportMapper } from '../../../providers/index.js';
+import { typescriptProvider } from '../typescript/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -53,11 +53,13 @@ export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
 const TsUtilsGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {},
+  dependencies: {
+    typescript: typescriptProvider,
+  },
   exports: {
     tsUtils: tsUtilsProvider,
   },
-  createGenerator() {
+  createGenerator(descriptor, { typescript }) {
     const usedTemplates: Record<string, boolean> = {};
 
     return {
@@ -68,7 +70,7 @@ const TsUtilsGenerator = createGeneratorWithChildren({
               (acc, [key, config]) => ({
                 ...acc,
                 [`%ts-utils/${key}`]: {
-                  path: `@/src/utils/${config.file.replace(/\.ts$/, '')}`,
+                  path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
                   allowedImports: config.exports,
                   onImportUsed: () => {
                     usedTemplates[key] = true;
@@ -97,7 +99,7 @@ const TsUtilsGenerator = createGeneratorWithChildren({
         await Promise.all(
           templateFiles.map((file) =>
             builder.apply(
-              copyTypescriptFileAction({
+              typescript.createCopyAction({
                 source: file,
                 destination: `src/utils/${file}`,
               }),

@@ -79,7 +79,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
           exportName: 'fileUploadInputInputType',
           moduleName: `@/${path.join(
             moduleFolder,
-            'schema/file-upload.input-type',
+            'schema/file-upload.input-type.js',
           )}`,
         });
 
@@ -204,7 +204,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             );
             // Copy schema
             async function registerSchemaFile(file: string): Promise<void> {
-              appModule.addModuleImport(`@/${moduleFolder}/${file}`);
+              appModule.addModuleImport(`@/${moduleFolder}/${file}.js`);
               pothosSchema.registerSchemaFile(
                 path.join(moduleFolder, `${file}.ts`),
               );
@@ -336,7 +336,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                 }).wrap(
                   (contents) => `createS3Adapter(${contents})`,
                   [
-                    `import { createS3Adapter } from '../adapters';`,
+                    `import { createS3Adapter } from '../adapters/index.js';`,
                     `import { config } from '%config';`,
                   ],
                 );
@@ -396,7 +396,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
 
             adapters.url = TypescriptCodeUtils.createExpression(
               'createUrlAdapter()',
-              `import { createS3Adapter } from '../adapters';`,
+              `import { createS3Adapter } from '../adapters/index.js';`,
             );
           },
         };

@@ -99,11 +99,11 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
               getConfigExpression: () =>
                 TypescriptCodeUtils.createExpression(
                   'config',
-                  "import { config } from '@/src/services/config'",
+                  "import { config } from '@/src/services/config.js'",
                 ),
               getImportMap: () => ({
                 '%config': {
-                  path: '@/src/services/config',
+                  path: '@/src/services/config.js',
                   allowedImports: ['config'],
                 },
               }),

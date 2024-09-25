@@ -1,11 +1,11 @@
 import {
-  copyTypescriptFileAction,
   ImportMapper,
   nodeProvider,
+  typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -26,11 +26,12 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
   dependencies: {
     node: nodeProvider,
     appModule: appModuleProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     passwordHasherService: passwordHasherServiceProvider,
   },
-  createGenerator(descriptor, { node, appModule }) {
+  createGenerator(descriptor, { node, appModule, typescript }) {
     const moduleFolder = appModule.getModuleFolder();
 
     node.addPackages({
@@ -54,7 +55,7 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         builder.setBaseDirectory(moduleFolder);
         await builder.apply(
-          copyTypescriptFileAction({
+          typescript.createCopyAction({
             source: 'services/hasher-service.ts',
           }),
         );

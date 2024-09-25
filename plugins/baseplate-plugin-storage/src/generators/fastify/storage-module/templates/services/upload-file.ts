@@ -2,7 +2,7 @@
 
 import { BadRequestError } from '%http-errors';
 import { ServiceContext } from '%service-context';
-import { prepareUploadData, UploadDataInput } from '../utils/upload';
+import { prepareUploadData, UploadDataInput } from '../utils/upload.js';
 
 interface UploadFileInput extends UploadDataInput {
   contents: Buffer;

@@ -3,7 +3,7 @@ import path from 'path';
 
 import { copyTypescriptFileAction } from './copyTypescriptFileAction.js';
 import { ImportMapper } from '../providers/index.js';
-import { PathMapEntry } from '../writers/index.js';
+import { ModuleResolutionMethod, PathMapEntry } from '../writers/index.js';
 
 export interface CopyTypescriptFilesOptions {
   sourceBaseDirectory?: string;
@@ -18,6 +18,7 @@ export interface CopyTypescriptFilesOptions {
   )[];
   importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
+  resolutionMethod: ModuleResolutionMethod;
 }
 
 export const copyTypescriptFilesAction = createBuilderActionCreator(

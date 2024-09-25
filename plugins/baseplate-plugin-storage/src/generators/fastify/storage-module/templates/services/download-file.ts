@@ -3,8 +3,8 @@
 import { Readable } from 'stream';
 import { ForbiddenError } from '%http-errors';
 import { ServiceContext } from '%service-context';
-import { STORAGE_ADAPTERS } from '../constants/adapters';
-import { FILE_CATEGORIES } from '../constants/file-categories';
+import { STORAGE_ADAPTERS } from '../constants/adapters/index.js';
+import { FILE_CATEGORIES } from '../constants/file-categories.js';
 
 export async function downloadFile(
   fileIdOrFile: string | FILE_MODEL_TYPE,

@@ -227,7 +227,7 @@ const ReactGenerator = createGeneratorWithChildren({
           }),
         );
 
-        const viteConfig = new TypescriptSourceFile({
+        const viteConfig = typescript.createTemplate({
           CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject({
             plugins: TypescriptCodeUtils.mergeExpressionsAsArray(vitePlugins),
             server: TypescriptCodeUtils.mergeExpressionsAsObject(

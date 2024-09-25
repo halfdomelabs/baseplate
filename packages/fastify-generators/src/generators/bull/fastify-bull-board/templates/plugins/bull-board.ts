@@ -11,7 +11,7 @@ import {
   authenticateBullBoardUser,
   BULL_BOARD_ACCESS_TOKEN_EXPIRY,
   validateBullBoardAccessToken,
-} from '../services/auth.service';
+} from '../services/auth.service.js';
 
 // https://github.com/fastify/fastify/issues/1864
 /* eslint-disable @typescript-eslint/no-floating-promises */

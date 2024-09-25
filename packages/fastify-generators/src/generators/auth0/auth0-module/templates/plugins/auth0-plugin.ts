@@ -4,8 +4,8 @@ import fastifyAuth0Verify from 'fastify-auth0-verify';
 import fp from 'fastify-plugin';
 import { config } from '%config';
 import { requestContext } from '@fastify/request-context';
-import { createAuthInfoFromRequest } from '../services/auth-service';
-import { AuthInfo, UserInfo } from '../utils/auth-info';
+import { createAuthInfoFromRequest } from '../services/auth-service.js';
+import { AuthInfo, UserInfo } from '../utils/auth-info.js';
 
 declare module 'fastify' {
   interface FastifyRequest {

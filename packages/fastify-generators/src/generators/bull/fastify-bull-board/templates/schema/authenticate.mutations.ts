@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { builder } from '%pothos';
-import { createBullBoardAuthCode } from '../services/auth.service';
+import { createBullBoardAuthCode } from '../services/auth.service.js';
 
 builder.mutationField('createBullBoardAuthCode', (t) =>
   t.fieldWithInputPayload({

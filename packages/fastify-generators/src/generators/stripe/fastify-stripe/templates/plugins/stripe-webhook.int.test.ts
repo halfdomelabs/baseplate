@@ -4,9 +4,9 @@ import Fastify from 'fastify';
 import rawBodyPlugin from 'fastify-raw-body';
 import { Stripe } from 'stripe';
 import { describe, it, expect, vi } from 'vitest';
-import { stripe } from '@/src/services/stripe';
-import { stripeEventService } from '@/src/services/stripe-events';
-import { stripeWebhookPlugin } from './stripe-webhook';
+import { stripe } from '@/src/services/stripe.js';
+import { stripeEventService } from '@/src/services/stripe-events.js';
+import { stripeWebhookPlugin } from './stripe-webhook.js';
 
 vi.mock('@src/services/stripe');
 

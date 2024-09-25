@@ -76,7 +76,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
 
     const importMap = {
       '%logger-service': {
-        path: '@/src/services/logger',
+        path: '@/src/services/logger.js',
         allowedImports: ['logger'],
       },
     };
@@ -93,7 +93,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
           getLogger() {
             return TypescriptCodeUtils.createExpression(
               'logger',
-              'import { logger } from "@/src/services/logger"',
+              'import { logger } from "@/src/services/logger.js"',
             );
           },
           getImportMap() {

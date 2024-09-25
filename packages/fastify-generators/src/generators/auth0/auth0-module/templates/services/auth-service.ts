@@ -1,7 +1,11 @@
 // @ts-nocheck
 
 import { FastifyRequest } from 'fastify';
-import { AuthInfo, createAuthInfoFromUser, UserInfo } from '../utils/auth-info';
+import {
+  AuthInfo,
+  createAuthInfoFromUser,
+  UserInfo,
+} from '../utils/auth-info.js';
 import { populateAuthRoles } from '%role-service';
 
 const USER_ID_CLAIM = 'https://app.com/user_id';

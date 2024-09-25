@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { builder } from '%pothos';
-import { STORAGE_ADAPTERS, StorageAdapterKey } from '../constants/adapters';
+import { STORAGE_ADAPTERS, StorageAdapterKey } from '../constants/adapters.js';
 import { FILE_OBJECT_TYPE } from 'FILE_OBJECT_MODULE';
 
 builder.objectField(FILE_OBJECT_TYPE, 'hostedUrl', (t) =>

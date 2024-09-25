@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { buildServer } from './server';
+import { buildServer } from './server.js';
 
 async function startServer(): Promise<void> {
   const fastify = await buildServer(SERVER_OPTIONS);

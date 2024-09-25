@@ -34,19 +34,41 @@ export interface PathMapEntry {
   to: string; // e.g. app
 }
 
-interface ResolveModuleOptions {
+export type ModuleResolutionMethod = 'cjs' | 'esm';
+
+export interface ResolveModuleOptions {
   importMappers?: ImportMapper[];
   pathMapEntries?: PathMapEntry[];
+  resolutionMethod: ModuleResolutionMethod;
+}
+
+/**
+ * Shortens the path for resolution method namely for CJS, it will remove the .js extension
+ */
+function shortenPathForResolutionMethod(
+  path: string,
+  resolutionMethod: ModuleResolutionMethod,
+): string {
+  if (resolutionMethod === 'esm') {
+    if (path.startsWith('.') || path.startsWith('@src/')) {
+      if (!path.endsWith('.js')) {
+        throw new Error(`Invalid ESM import discovered ${path}`);
+      }
+    }
+  }
+  return resolutionMethod === 'esm'
+    ? path
+    : path.replace(/(\/index)?\.js$/, '');
 }
 
 export function resolveModule(
   moduleSpecifier: string,
   directory: string,
-  { pathMapEntries }: ResolveModuleOptions = {},
+  { pathMapEntries, resolutionMethod }: ResolveModuleOptions,
 ): string {
   // if not relative import, just return directly
   if (!moduleSpecifier.startsWith('@/')) {
-    return moduleSpecifier;
+    return shortenPathForResolutionMethod(moduleSpecifier, resolutionMethod);
   }
   // figure out relative directory
   const absolutePath = moduleSpecifier.substring(2);
@@ -70,16 +92,19 @@ export function resolveModule(
     return pathEntry.to + absolutePath.substring(pathEntry.from.length);
   })();
 
-  return typescriptPathImport &&
-    typescriptPathImport.length < relativePathImport.length
-    ? typescriptPathImport
-    : relativePathImport;
+  return shortenPathForResolutionMethod(
+    typescriptPathImport &&
+      typescriptPathImport.length < relativePathImport.length
+      ? typescriptPathImport
+      : relativePathImport,
+    resolutionMethod,
+  );
 }
 
 function resolveImportDeclaration(
   declaration: ImportDeclarationEntry,
   directory: string,
-  options?: ResolveModuleOptions,
+  options: ResolveModuleOptions,
 ): ImportDeclarationEntry {
   return {
     ...declaration,
@@ -306,7 +331,7 @@ export function writeImportDeclarations(
   writer: CodeBlockWriter,
   imports: ImportDeclarationEntry[],
   fileDirectory: string,
-  options?: ResolveModuleOptions,
+  options: ResolveModuleOptions,
 ): void {
   // map out imports
   const importMap = buildImportMap(options?.importMappers ?? []);

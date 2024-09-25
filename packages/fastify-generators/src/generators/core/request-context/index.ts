@@ -1,8 +1,8 @@
 import {
-  copyTypescriptFileAction,
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
+  typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
@@ -56,11 +56,12 @@ const RequestContextGenerator = createGeneratorWithTasks({
       dependencies: {
         node: nodeProvider,
         fastifyServer: fastifyServerProvider,
+        typescript: typescriptProvider,
       },
       exports: {
         requestContext: requestContextProvider,
       },
-      run({ node, fastifyServer }) {
+      run({ node, fastifyServer, typescript }) {
         const config = createNonOverwriteableMap(
           {},
           { name: 'request-context-config' },
@@ -70,7 +71,7 @@ const RequestContextGenerator = createGeneratorWithTasks({
           name: 'requestContextPlugin',
           plugin: TypescriptCodeUtils.createExpression(
             'requestContextPlugin',
-            "import {requestContextPlugin} from '@/src/plugins/request-context",
+            "import {requestContextPlugin} from '@/src/plugins/request-context.js'",
           ),
         });
         return {
@@ -80,13 +81,13 @@ const RequestContextGenerator = createGeneratorWithTasks({
               getRequestInfoType: () =>
                 TypescriptCodeUtils.createExpression(
                   'RequestInfo',
-                  "import type {RequestInfo} from '@/src/plugins/request-context'",
+                  "import type {RequestInfo} from '@/src/plugins/request-context.js",
                 ),
             },
           }),
           build: async (builder) => {
             await builder.apply(
-              copyTypescriptFileAction({
+              typescript.createCopyAction({
                 source: 'request-context.ts',
                 destination: 'src/plugins/request-context.ts',
               }),

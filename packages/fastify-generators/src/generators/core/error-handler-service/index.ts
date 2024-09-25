@@ -74,14 +74,14 @@ const createSetupTask = createTaskConfigBuilder(() => ({
       name: 'errorHandlerPlugin',
       plugin: TypescriptCodeUtils.createExpression(
         'errorHandlerPlugin',
-        "import { errorHandlerPlugin } from '@/src/plugins/error-handler'",
+        "import { errorHandlerPlugin } from '@/src/plugins/error-handler.js'",
       ),
       orderPriority: 'EARLY',
     });
 
     const errorFunction = TypescriptCodeUtils.createExpression(
       'logError',
-      "import { logError } from '@/src/services/error-logger'",
+      "import { logError } from '@/src/services/error-logger.js'",
     );
 
     fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
@@ -138,16 +138,16 @@ const createMainTask = createTaskConfigBuilder(() => ({
   run() {
     const errorFunction = TypescriptCodeUtils.createExpression(
       'logError',
-      "import { logError } from '@/src/services/error-logger'",
+      "import { logError } from '@/src/services/error-logger.js'",
     );
 
     const importMap = {
       '%http-errors': {
-        path: `@/src/utils/http-errors`,
+        path: `@/src/utils/http-errors.js`,
         allowedImports: Object.values(ERROR_MAP),
       },
       '%error-logger': {
-        path: '@/src/services/error-logger',
+        path: '@/src/services/error-logger.js',
         allowedImports: ['logError'],
       },
     };
@@ -156,11 +156,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
       getProviders: () => ({
         errorHandlerService: {
           getErrorFunction: () => errorFunction,
-          getHttpErrorsImport: () => '@/src/utils/http-errors',
+          getHttpErrorsImport: () => '@/src/utils/http-errors.js',
           getHttpErrorExpression: (error) =>
             new TypescriptCodeExpression(
               ERROR_MAP[error],
-              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors'`,
+              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors.js'`,
             ),
           getImportMap: () => importMap,
         },

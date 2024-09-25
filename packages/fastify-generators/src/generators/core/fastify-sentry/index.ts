@@ -48,13 +48,13 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
       },
       run({ errorHandlerServiceSetup, fastifyServer }) {
-        fastifyServer.addInitializerBlock(`import './instrument';`);
+        fastifyServer.addInitializerBlock(`import './instrument.js';`);
         fastifyServer.addPrePluginBlock(
           TypescriptCodeUtils.createBlock(
             `Sentry.setupFastifyErrorHandler(fastify);
           registerSentryEventProcessor();`,
             [
-              `import { registerSentryEventProcessor } from '@/src/services/sentry';`,
+              `import { registerSentryEventProcessor } from '@/src/services/sentry.js';`,
               `import * as Sentry from '@sentry/node';`,
             ],
           ),
@@ -68,7 +68,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
                 'LOGGER_ACTIONS',
                 TypescriptCodeUtils.createBlock(
                   `context.errorId = logErrorToSentry(error, context);`,
-                  "import { logErrorToSentry } from '@/src/services/sentry'",
+                  "import { logErrorToSentry } from '@/src/services/sentry.js",
                 ),
               );
           },

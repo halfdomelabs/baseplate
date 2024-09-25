@@ -1,4 +1,4 @@
-import { StorageAdapter } from './types';
+import { StorageAdapter } from './types.js';
 
 /**
  * Minimal adapter that just converts path to URL directly.

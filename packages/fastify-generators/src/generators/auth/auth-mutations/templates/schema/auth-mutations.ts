@@ -6,7 +6,7 @@ import {
   clearRefreshTokenFromCookie,
   getRefreshTokenFromCookie,
   setRefreshTokenIntoCookie,
-} from '../utils/refresh-tokens';
+} from '../utils/refresh-tokens.js';
 import { createStandardMutation } from '%nexus/utils';
 
 export const authPayloadObjectType = objectType({

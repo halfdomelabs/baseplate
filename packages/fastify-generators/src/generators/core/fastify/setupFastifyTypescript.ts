@@ -15,11 +15,11 @@ export function setupFastifyTypescript(
     paths: {
       '@src/*': ['./src/*'],
     },
-    target: 'ES2022',
-    lib: ['ES2023'],
+    target: 'es2022',
+    lib: ['es2023'],
     esModuleInterop: true,
-    module: 'commonjs',
-    moduleResolution: 'node',
+    module: 'node16',
+    moduleResolution: 'node16',
     strict: true,
     removeComments: true,
     forceConsistentCasingInFileNames: true,
@@ -29,6 +29,10 @@ export function setupFastifyTypescript(
   });
 
   const nodeVersion = node.getNodeVersion().split('.')[0];
+
+  node.mergeExtraProperties({
+    type: 'module',
+  });
 
   node.addDevPackages({
     'tsc-alias': '1.8.10',

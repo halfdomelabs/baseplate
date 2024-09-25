@@ -3,8 +3,8 @@
 import { File } from '@prisma/client';
 import { BadRequestError } from '%http-errors';
 import { ServiceContext } from '%service-context';
-import { AdapterPresignedUploadUrlPayload } from '../adapters';
-import { prepareUploadData, UploadDataInput } from '../utils/upload';
+import { AdapterPresignedUploadUrlPayload } from '../adapters/index.js';
+import { prepareUploadData, UploadDataInput } from '../utils/upload.js';
 
 type CreatePresignedUploadUrlInput = UploadDataInput;
 
