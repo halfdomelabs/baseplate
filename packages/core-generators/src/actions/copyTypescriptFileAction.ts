@@ -4,7 +4,7 @@ import path from 'path';
 
 import { ImportMapper } from '../providers/index.js';
 import {
-  ModuleResolutionMethod,
+  ModuleResolutionKind,
   PathMapEntry,
   TypescriptSourceFile,
 } from '../writers/index.js';
@@ -15,7 +15,7 @@ export interface CopyTypescriptFileOptions {
   replacements?: Record<string, string>;
   importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
-  resolutionMethod: ModuleResolutionMethod;
+  moduleResolution: ModuleResolutionKind;
   neverOverwrite?: boolean;
 }
 
@@ -29,7 +29,7 @@ function formatImports(
     {
       pathMappings: options.pathMappings,
       importMappers: options.importMappers,
-      resolutionMethod: options.resolutionMethod,
+      moduleResolution: options.moduleResolution,
     },
   );
 

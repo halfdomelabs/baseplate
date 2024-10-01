@@ -49,7 +49,13 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
         fastify: fastifyProvider,
       },
       run({ fastify }) {
-        fastify.getConfig().appendUnique('devLoaders', ['dotenv/config']);
+        fastify.getConfig().appendUnique('nodeFlags', [
+          {
+            flag: '-r dotenv/config',
+            useCase: 'dev-env',
+            targetEnvironment: 'dev',
+          },
+        ]);
 
         return {};
       },

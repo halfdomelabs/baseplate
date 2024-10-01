@@ -346,7 +346,11 @@ if (IS_DEVELOPMENT) {
         // add script to generate types
         node.addScript(
           'generate:schema',
-          `tsx ${fastifyOutput.getDevLoaderString()} src --exit-after-generate-schema`,
+          [
+            'tsx',
+            ...fastifyOutput.getNodeFlagsDev('dev-env'),
+            'src/index.ts --exit-after-generate-schema',
+          ].join(' '),
         );
         return {};
       },

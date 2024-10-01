@@ -30,10 +30,6 @@ export function setupFastifyTypescript(
 
   const nodeVersion = node.getNodeVersion().split('.')[0];
 
-  node.mergeExtraProperties({
-    type: 'module',
-  });
-
   node.addDevPackages({
     'tsc-alias': '1.8.10',
     tsx: '4.19.1',

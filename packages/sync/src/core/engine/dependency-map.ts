@@ -148,7 +148,8 @@ export function buildEntryDependencyMapRecursive(
 
       if (
         formatter &&
-        !getGeneratorEntryExportNames(entry).includes('formatter')
+        !getGeneratorEntryExportNames(entry).includes('formatter') &&
+        taskDependencyMap.formatter !== null
       ) {
         taskDependencyMap.formatter = {
           id: formatter,

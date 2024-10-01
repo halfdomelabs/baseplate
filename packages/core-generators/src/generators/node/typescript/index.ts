@@ -16,7 +16,6 @@ import {
 } from '../../../actions/index.js';
 import { TypescriptCodeBlock } from '../../../writers/index.js';
 import {
-  ModuleResolutionMethod,
   PathMapEntry,
   resolveModule,
 } from '../../../writers/typescript/imports.js';
@@ -79,19 +78,19 @@ export interface TypescriptProvider {
     config: Config,
     options?: Omit<
       TypescriptSourceFileOptions,
-      'pathMappings' | 'resolutionMethod'
+      'pathMappings' | 'moduleResolution'
     >,
   ): TypescriptSourceFile<Config>;
   createCopyFilesAction(
     options: Omit<
       CopyTypescriptFilesOptions,
-      'pathMappings' | 'resolutionMethod'
+      'pathMappings' | 'moduleResolution'
     >,
   ): ReturnType<typeof copyTypescriptFilesAction>;
   createCopyAction(
     options: Omit<
       CopyTypescriptFileOptions,
-      'pathMappings' | 'resolutionMethod'
+      'pathMappings' | 'moduleResolution'
     >,
   ): ReturnType<typeof copyTypescriptFileAction>;
   renderBlockToAction(
@@ -245,11 +244,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
         }
 
         const moduleResolution =
-          config.value().compilerOptions.moduleResolution;
-        const moduleResolutionMethod: ModuleResolutionMethod =
-          moduleResolution === 'node16' || moduleResolution === 'nodenext'
-            ? 'esm'
-            : 'cjs';
+          config.value().compilerOptions.moduleResolution ?? 'node';
 
         return {
           getProviders() {
@@ -259,26 +254,26 @@ const TypescriptGenerator = createGeneratorWithTasks({
                   new TypescriptSourceFile(fileConfig, {
                     ...options,
                     pathMappings: getPathEntries(),
-                    resolutionMethod: moduleResolutionMethod,
+                    moduleResolution,
                   }),
                 createCopyFilesAction: (options) =>
                   copyTypescriptFilesAction({
                     ...options,
                     pathMappings: getPathEntries(),
-                    resolutionMethod: moduleResolutionMethod,
+                    moduleResolution,
                   }),
                 createCopyAction: (options) =>
                   copyTypescriptFileAction({
                     ...options,
                     pathMappings: getPathEntries(),
-                    resolutionMethod: moduleResolutionMethod,
+                    moduleResolution,
                   }),
                 renderBlockToAction: (block, destination, options) => {
                   const file = new TypescriptSourceFile(
                     { BLOCK: { type: 'code-block' } },
                     {
                       pathMappings: getPathEntries(),
-                      resolutionMethod: moduleResolutionMethod,
+                      moduleResolution,
                     },
                   );
                   file.addCodeEntries({ BLOCK: block });
@@ -291,7 +286,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
                 resolveModule: (moduleSpecifier, from) =>
                   resolveModule(moduleSpecifier, from, {
                     pathMapEntries: getPathEntries(),
-                    resolutionMethod: moduleResolutionMethod,
+                    moduleResolution,
                   }),
                 getCompilerOptions,
               } as TypescriptProvider,

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import axios, { isAxiosError, AxiosError, Axios } from 'axios';
+import axios, { isAxiosError, AxiosError, AxiosInstance } from 'axios';
 
 const originalStackSymbol = Symbol('originalStack');
 
@@ -14,7 +14,7 @@ interface ConfigWithOriginalStack {
  *
  * This will add the original stack trace to the axios error.
  */
-export function setupAxiosBetterStackTrace(client: Axios): void {
+export function setupAxiosBetterStackTrace(client: AxiosInstance): void {
   client.interceptors.request.use((config) => {
     // stash the stack trace
     (config as ConfigWithOriginalStack)[originalStackSymbol] =

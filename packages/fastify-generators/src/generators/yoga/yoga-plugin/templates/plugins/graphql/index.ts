@@ -102,7 +102,7 @@ export const graphqlPlugin = fp(async (fastify) => {
   GRAPHQL_HANDLER;
 
   if (IS_DEVELOPMENT) {
-    await fastify.register(AltairFastify.default, {
+    await fastify.register(AltairFastify, {
       path: '/altair',
       baseURL: '/altair/',
       endpointURL: '/graphql',

@@ -104,7 +104,7 @@ const PrismaGenerator = createGeneratorWithTasks({
 
         node.mergeExtraProperties({
           prisma: {
-            seed: `tsx ${fastifyOutput.getDevLoaderString()} src/prisma/seed.ts`,
+            seed: `tsx ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src/prisma/seed.ts`,
           },
         });
 

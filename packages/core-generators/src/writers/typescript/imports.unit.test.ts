@@ -3,9 +3,9 @@ import { describe, it, expect } from 'vitest';
 import { resolveModule, ResolveModuleOptions } from './imports.js';
 
 describe('resolveModule', () => {
-  describe('with cjs resolution method', () => {
+  describe('with node resolution method', () => {
     const options: ResolveModuleOptions = {
-      resolutionMethod: 'cjs',
+      moduleResolution: 'node',
     };
 
     it('does not alter normal module import', () => {
@@ -79,9 +79,9 @@ describe('resolveModule', () => {
     });
   });
 
-  describe('with esm resolution method', () => {
+  describe('with Node16 resolution method', () => {
     const options: ResolveModuleOptions = {
-      resolutionMethod: 'esm',
+      moduleResolution: 'node16',
     };
 
     it('does not alter normal module import', () => {

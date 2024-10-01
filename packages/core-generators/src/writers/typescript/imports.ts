@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import path from 'path';
 import * as R from 'ramda';
-import { CodeBlockWriter, SourceFile } from 'ts-morph';
+import { CodeBlockWriter, SourceFile, ts } from 'ts-morph';
 
 import { sortByImportOrder } from './importOrder.js';
 import { ImportMap, ImportMapper } from '../../providers/index.js';
@@ -34,12 +34,12 @@ export interface PathMapEntry {
   to: string; // e.g. app
 }
 
-export type ModuleResolutionMethod = 'cjs' | 'esm';
+export type ModuleResolutionKind = `${ts.server.protocol.ModuleResolutionKind}`;
 
 export interface ResolveModuleOptions {
   importMappers?: ImportMapper[];
   pathMapEntries?: PathMapEntry[];
-  resolutionMethod: ModuleResolutionMethod;
+  moduleResolution: ModuleResolutionKind;
 }
 
 /**
@@ -47,28 +47,31 @@ export interface ResolveModuleOptions {
  */
 function shortenPathForResolutionMethod(
   path: string,
-  resolutionMethod: ModuleResolutionMethod,
+  moduleResolution: ModuleResolutionKind,
 ): string {
-  if (resolutionMethod === 'esm') {
+  const isNode16 =
+    moduleResolution === 'node16' || moduleResolution === 'nodenext';
+  if (isNode16) {
     if (path.startsWith('.') || path.startsWith('@src/')) {
       if (!path.endsWith('.js')) {
-        throw new Error(`Invalid ESM import discovered ${path}`);
+        throw new Error(
+          `Invalid Node 16 import discovered ${path}. Make sure to use .js extension for Node16 imports.`,
+        );
       }
     }
   }
-  return resolutionMethod === 'esm'
-    ? path
-    : path.replace(/(\/index)?\.js$/, '');
+
+  return isNode16 ? path : path.replace(/(\/index)?\.js$/, '');
 }
 
 export function resolveModule(
   moduleSpecifier: string,
   directory: string,
-  { pathMapEntries, resolutionMethod }: ResolveModuleOptions,
+  { pathMapEntries, moduleResolution }: ResolveModuleOptions,
 ): string {
   // if not relative import, just return directly
   if (!moduleSpecifier.startsWith('@/')) {
-    return shortenPathForResolutionMethod(moduleSpecifier, resolutionMethod);
+    return shortenPathForResolutionMethod(moduleSpecifier, moduleResolution);
   }
   // figure out relative directory
   const absolutePath = moduleSpecifier.substring(2);
@@ -97,7 +100,7 @@ export function resolveModule(
       typescriptPathImport.length < relativePathImport.length
       ? typescriptPathImport
       : relativePathImport,
-    resolutionMethod,
+    moduleResolution,
   );
 }
 
