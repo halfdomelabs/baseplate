@@ -1,7 +1,7 @@
 import { Navigate, RouteObject } from 'react-router-dom';
 
 import SettingsLayout from './_layout';
-import { HierarchyPage } from './hierarchy-tmp';
+import { HierarchyPage } from './hierarchy';
 import ProjectSettingsPage from './project-settings';
 import { ThemeBuilderPage } from './theme-builder';
 import NotFoundPage from '../NotFound.page';
