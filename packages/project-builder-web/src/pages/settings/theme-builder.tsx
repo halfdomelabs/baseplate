@@ -14,9 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
-import { ThemeColorEditor } from './theme/ThemeColorEditor';
-import { ThemeColorsCssDisplay } from './theme/ThemeColorsCssDisplay';
-import { ThemePaletteEditor } from './theme/ThemePaletteEditor';
+import { ThemeColorEditor } from './components/ThemeColorEditor';
+import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay';
+import { ThemePaletteEditor } from './components/ThemePaletteEditor';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 export function ThemeBuilderPage(): JSX.Element {
