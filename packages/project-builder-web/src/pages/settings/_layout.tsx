@@ -24,7 +24,7 @@ function SettingsLayout(): JSX.Element {
           </NavigationMenu.List>
         </NavigationMenu>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content className="p-4">
+      <SidebarLayout.Content>
         <Outlet />
       </SidebarLayout.Content>
     </SidebarLayout>

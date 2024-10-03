@@ -12,9 +12,9 @@ function EnumEditPage(): JSX.Element {
   const { form, onSubmit } = useEnumForm({
     schema: enumBaseSchema.omit({ name: true, feature: true }),
   });
-  const { control, setValue } = form;
+  const { control, setValue, formState } = form;
 
-  useBlockUnsavedChangesNavigate(form.formState, {
+  useBlockUnsavedChangesNavigate(formState, {
     reset: form.reset,
     onSubmit,
   });
