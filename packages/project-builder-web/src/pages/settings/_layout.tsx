@@ -18,6 +18,9 @@ function SettingsLayout(): JSX.Element {
             <NavigationMenu.ItemWithLink asChild>
               <NavLink to={`/settings/hierarchy`}>Hierarchy</NavLink>
             </NavigationMenu.ItemWithLink>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to={`/settings/theme-builder`}>Theme builder</NavLink>
+            </NavigationMenu.ItemWithLink>
           </NavigationMenu.List>
         </NavigationMenu>
       </SidebarLayout.Sidebar>
