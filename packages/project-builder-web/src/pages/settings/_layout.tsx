@@ -15,6 +15,9 @@ function SettingsLayout(): JSX.Element {
                 Project settings
               </NavLink>
             </NavigationMenu.ItemWithLink>
+            <NavigationMenu.ItemWithLink asChild>
+              <NavLink to={`/settings/hierarchy`}>Hierarchy</NavLink>
+            </NavigationMenu.ItemWithLink>
           </NavigationMenu.List>
         </NavigationMenu>
       </SidebarLayout.Sidebar>

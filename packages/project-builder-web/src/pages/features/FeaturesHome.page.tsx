@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
 
-import { FeaturesForm } from './FeaturesForm';
-
 export function FeaturesHomePage(): JSX.Element {
   return (
     <div className="flex max-w-4xl flex-col space-y-4">
@@ -11,7 +9,6 @@ export function FeaturesHomePage(): JSX.Element {
         to make it more useful. For example, you can add{' '}
         <Link to="auth">authentication</Link> to your application.
       </p>
-      <FeaturesForm />
     </div>
   );
 }

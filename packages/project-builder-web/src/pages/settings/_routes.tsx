@@ -1,7 +1,8 @@
 import { Navigate, RouteObject } from 'react-router-dom';
 
-import ProjectSettingsPage from './ProjectSettings';
 import SettingsLayout from './_layout';
+import { HierarchyPage } from './hierarchy';
+import ProjectSettingsPage from './project-settings';
 import NotFoundPage from '../NotFound.page';
 
 export const SettingsRoutes: RouteObject = {
@@ -16,6 +17,11 @@ export const SettingsRoutes: RouteObject = {
       path: 'project-settings',
       element: <ProjectSettingsPage />,
       handle: { crumb: 'Project settings' },
+    },
+    {
+      path: 'hierarchy',
+      element: <HierarchyPage />,
+      handle: { crumb: 'Hierarchy' },
     },
     { path: '*', element: <NotFoundPage /> },
   ],
