@@ -1,20 +1,15 @@
 import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
 import {
-  useBlockDirtyFormNavigate,
+  useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Button,
-  InputField,
-  SectionList,
-  toast,
-} from '@halfdomelabs/ui-components';
+import { InputField, SectionList, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { z } from 'zod';
 
-import DataFormActionBar from '@src/components/FormActionBar';
+import FormActionBar from '@src/components/FormActionBar';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
@@ -41,8 +36,6 @@ function ProjectSettingsPage(): JSX.Element {
 
   const { handleSubmit, control, formState, reset } = form;
 
-  useBlockDirtyFormNavigate(formState, reset);
-
   const onSubmit = (data: FormData): void => {
     try {
       setConfigAndFixReferences((draftConfig) => {
@@ -55,12 +48,17 @@ function ProjectSettingsPage(): JSX.Element {
     }
   };
 
+  useBlockUnsavedChangesNavigate(formState, {
+    reset,
+    onSubmit: handleSubmit(onSubmit),
+  });
+
   return (
-    <div className="relative h-full max-h-full pb-[var(--action-bar-height)]">
-      <form
-        className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-4"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+    <form
+      className="relative h-full max-h-full pb-[var(--action-bar-height)]"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-4">
         <div className="sticky top-0 border-b bg-background py-4">
           <h1>Project settings</h1>
         </div>
@@ -99,15 +97,12 @@ function ProjectSettingsPage(): JSX.Element {
                   setValueAs: (value: string) => value || undefined,
                 }}
               />
-              <div>
-                <Button type="submit">Save</Button>
-              </div>
             </SectionList.SectionContent>
           </SectionList.Section>
         </SectionList>
-      </form>
-      <DataFormActionBar form={form} />
-    </div>
+      </div>
+      <FormActionBar form={form} />
+    </form>
   );
 }
 

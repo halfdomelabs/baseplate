@@ -13,7 +13,7 @@ import { ModelFieldsForm } from './fields/ModelFieldsForm';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
-import DataFormActionBar from '@src/components/FormActionBar';
+import FormActionBar from '@src/components/FormActionBar';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
 
 registerEntityTypeUrl(modelEntityType, `/data/models/edit/{uid}`);
@@ -60,7 +60,7 @@ function ModelEditModelPage(): JSX.Element {
               setValue={setValue}
             />
           </SectionList>
-          <DataFormActionBar form={form} />
+          <FormActionBar form={form} />
         </form>
       </EditedModelContextProvider>
     </ErrorBoundary>

@@ -6,7 +6,7 @@ import { EnumGraphQLSection } from './sections/EnumGraphQLSection';
 import { EnumValuesSection } from './sections/EnumValuesSection';
 import { useEnumForm } from '../hooks/useEnumForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
-import DataFormActionBar from '@src/components/FormActionBar';
+import FormActionBar from '@src/components/FormActionBar';
 
 function EnumEditPage(): JSX.Element {
   const { form, onSubmit } = useEnumForm({
@@ -29,7 +29,7 @@ function EnumEditPage(): JSX.Element {
           <EnumGraphQLSection control={control} />
           <EnumValuesSection control={control} setValue={setValue} />
         </SectionList>
-        <DataFormActionBar form={form} />
+        <FormActionBar form={form} />
       </form>
     </ErrorBoundary>
   );
