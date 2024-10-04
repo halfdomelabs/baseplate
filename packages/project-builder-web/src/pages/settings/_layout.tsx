@@ -3,7 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 
 function SettingsLayout(): JSX.Element {
   return (
-    <SidebarLayout className="flex-1">
+    <SidebarLayout className="h-full flex-1">
       <SidebarLayout.Sidebar className="space-y-4" width="sm">
         <div className="flex items-center justify-between space-x-4">
           <h2>Settings</h2>
@@ -24,7 +24,7 @@ function SettingsLayout(): JSX.Element {
           </NavigationMenu.List>
         </NavigationMenu>
       </SidebarLayout.Sidebar>
-      <SidebarLayout.Content>
+      <SidebarLayout.Content className="h-full">
         <Outlet />
       </SidebarLayout.Content>
     </SidebarLayout>

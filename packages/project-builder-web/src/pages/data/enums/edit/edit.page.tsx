@@ -4,9 +4,9 @@ import { SectionList } from '@halfdomelabs/ui-components';
 
 import { EnumGraphQLSection } from './sections/EnumGraphQLSection';
 import { EnumValuesSection } from './sections/EnumValuesSection';
-import DataFormActionBar from '../../components/DataFormActionBar';
 import { useEnumForm } from '../hooks/useEnumForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
+import DataFormActionBar from '@src/components/FormActionBar';
 
 function EnumEditPage(): JSX.Element {
   const { form, onSubmit } = useEnumForm({

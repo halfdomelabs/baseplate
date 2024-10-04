@@ -6,7 +6,7 @@ import { GraphQLObjectTypeSection } from './GraphQLObjectTypeSection';
 import { GraphQLQueriesSection } from './GraphQLQueriesSection';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
-import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
+import DataFormActionBar from '@src/components/FormActionBar';
 
 function ModelEditSchemaPage(): JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({

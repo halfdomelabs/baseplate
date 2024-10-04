@@ -18,3 +18,4 @@ export { default as Toast } from './Toast';
 export { default as Layout } from './Layout';
 export { default as FormError } from './FormError';
 export { default as Tabs } from './Tabs';
+export { default as FormActionBar } from './FormActionBar';

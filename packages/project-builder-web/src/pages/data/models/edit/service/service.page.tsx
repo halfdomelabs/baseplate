@@ -9,7 +9,7 @@ import { ServiceMethodFieldsSection } from './ServiceMethodFieldsSection';
 import { ServiceTransformersSection } from './ServiceTransformersSection';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
-import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
+import DataFormActionBar from '@src/components/FormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 
 registerEntityTypeUrl(
