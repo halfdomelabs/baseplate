@@ -6,7 +6,7 @@ import { DataRoutes } from './data';
 import { FeatureRoutes } from './features';
 import HomePage from './home/home.page';
 import { PluginRoutes } from './plugins';
-import SettingsPage from './settings';
+import { SettingsRoutes } from './settings/_routes';
 import App from '@src/app/App';
 import { AppLayout } from '@src/app/AppLayout/AppLayout';
 import { createRouteCrumb } from '@src/types/routes';
@@ -47,13 +47,7 @@ export const router = createBrowserRouter([
               crumb: createRouteCrumb({ label: 'Plugins', url: '/plugins' }),
             },
           },
-          {
-            path: '/settings',
-            element: <SettingsPage />,
-            handle: {
-              crumb: 'Settings',
-            },
-          },
+          SettingsRoutes,
           NotFoundRoute,
         ],
       },

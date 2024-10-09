@@ -20,7 +20,7 @@ import {
   useWatch,
 } from 'react-hook-form';
 
-import { generatePalette } from './palette-generator';
+import { generatePalette } from '../theme-utils/palette-generator';
 
 interface ThemePaletteEditorProps {
   control: Control<ThemeConfig>;

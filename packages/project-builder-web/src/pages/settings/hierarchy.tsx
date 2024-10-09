@@ -15,7 +15,7 @@ import { useState } from 'react';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
-import { FeatureForm } from './FeatureForm';
+import { FeatureForm } from './components/FeatureForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
@@ -23,7 +23,7 @@ interface FeaturesFormProps {
   className?: string;
 }
 
-export function FeaturesForm({ className }: FeaturesFormProps): JSX.Element {
+export function HierarchyPage({ className }: FeaturesFormProps): JSX.Element {
   const { definitionContainer, setConfigAndFixReferences } =
     useProjectDefinition();
   const { requestConfirm } = useConfirmDialog();

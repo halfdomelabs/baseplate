@@ -1,5 +1,4 @@
 import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
-import { FaPalette } from 'react-icons/fa';
 import { MdPeople } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
@@ -16,12 +15,6 @@ function FeaturesLayout(): JSX.Element {
               <NavLink to="/features/auth">
                 <MdPeople />
                 Authentication
-              </NavLink>
-            </NavigationMenu.ItemWithLink>
-            <NavigationMenu.ItemWithLink asChild>
-              <NavLink to="/features/theme">
-                <FaPalette />
-                Theme
               </NavLink>
             </NavigationMenu.ItemWithLink>
           </NavigationMenu.List>
