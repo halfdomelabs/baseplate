@@ -4,7 +4,13 @@ import {
   featureEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  buttonVariants,
+  cn,
+  toast,
+  useConfirmDialog,
+} from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
@@ -66,7 +72,7 @@ function HierarchyPage(): JSX.Element {
           </p>
         </div>
         <div className="py-6">
-          <div>
+          <div className="mb-4 flex max-w-md flex-col gap-1">
             {features.map((feature) => (
               <FeatureItem
                 key={feature.id}
@@ -113,18 +119,20 @@ function FeatureItem({
   setShowFeatureForm: (s: boolean) => void;
   handleRemoveFeature: (f: FeatureConfig) => void;
 }): JSX.Element {
+  const featureDisplayName = feature.name.split('/').pop() ?? '';
+
   return (
-    <div className="flex flex-row space-x-2 hover:bg-muted">
+    <div className="flex space-x-1">
       <button
-        className="mr-1 flex flex-row items-center space-x-2 rounded-md p-1"
+        className="mr-1 flex w-full flex-row items-center space-x-3"
         onClick={() => {
           setFeatureToEdit(feature);
           setShowFeatureForm(true);
         }}
       >
         <div
-          className="flex w-56 items-center truncate"
-          title={feature.name.split('/').pop() ?? ''}
+          className="flex w-full items-center space-x-1 truncate"
+          title={featureDisplayName}
         >
           {feature.name.includes('/') && (
             <>
@@ -132,26 +140,29 @@ function FeatureItem({
                 .split('/')
                 .slice(0, -2)
                 .map((name) => (
-                  <FiCornerDownRight
-                    key={name}
-                    className="invisible mr-2 size-4"
-                  />
+                  <div key={name} className="w-8 shrink-0" />
                 ))}
-              <FiCornerDownRight className="mr-2 size-4" />
+              <FiCornerDownRight className="size-8 shrink-0 p-2" />
             </>
           )}
-          <div>{feature.name.split('/').pop() ?? ''}</div>
+          <div
+            className={cn(
+              buttonVariants({
+                variant: 'secondary',
+                size: 'sm',
+              }),
+              'group w-full',
+            )}
+            style={{ justifyContent: 'flex-start' }}
+          >
+            {featureDisplayName}
+            <div className="flex-1" />
+            <MdEdit className="opacity-0 transition-opacity group-hover:opacity-100" />
+          </div>
         </div>
-        <MdEdit />
       </button>
       <Button.WithIcon
-        variant="ghost"
-        onClick={() => handleRemoveFeature(feature)}
-        size="icon"
-        icon={MdDelete}
-        title={`Delete ${feature.name}`}
-      />
-      <Button.WithIcon
+        className="shrink-0"
         variant="ghost"
         onClick={() => {
           setFeatureToEdit({
@@ -164,6 +175,14 @@ function FeatureItem({
         size="icon"
         icon={MdAdd}
         title={`Add Sub-Feature to ${feature.name}`}
+      />
+      <Button.WithIcon
+        className="shrink-0"
+        variant="ghost"
+        onClick={() => handleRemoveFeature(feature)}
+        size="icon"
+        icon={MdDelete}
+        title={`Delete ${feature.name}`}
       />
     </div>
   );
