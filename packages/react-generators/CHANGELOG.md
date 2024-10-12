@@ -1,5 +1,15 @@
 # @halfdomelabs/react-generators
 
+## 0.8.6
+
+### Patch Changes
+
+- 416f0941: Switch to ESM module resolution for backend (before syncing, run `pnpx migrate-esm-imports src baseplate/.clean` on your backend folder to minimize merge errors)
+- c0300ef2: Upgrade Sentry to 8.34.0
+- Updated dependencies [416f0941]
+  - @halfdomelabs/core-generators@0.9.7
+  - @halfdomelabs/sync@0.7.10
+
 ## 0.8.5
 
 ### Patch Changes

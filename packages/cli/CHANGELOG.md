@@ -1,5 +1,17 @@
 # @halfdomelabs/cli
 
+## 0.7.24
+
+### Patch Changes
+
+- Updated dependencies [416f0941]
+- Updated dependencies [c0300ef2]
+  - @halfdomelabs/fastify-generators@0.10.7
+  - @halfdomelabs/react-generators@0.8.6
+  - @halfdomelabs/core-generators@0.9.7
+  - @halfdomelabs/sync@0.7.10
+  - @halfdomelabs/project-builder-common@0.1.6
+
 ## 0.7.23
 
 ### Patch Changes
