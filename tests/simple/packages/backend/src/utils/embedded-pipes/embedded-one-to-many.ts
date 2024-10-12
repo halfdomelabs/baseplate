@@ -1,7 +1,7 @@
-import { notEmpty } from '../arrays';
-import { DataPipeOutput, mergePipeOperations } from '../data-pipes';
-import { ServiceContext } from '../service-context';
-import { UpsertPayload } from './embedded-types';
+import { notEmpty } from '../arrays.js';
+import { DataPipeOutput, mergePipeOperations } from '../data-pipes.js';
+import { ServiceContext } from '../service-context.js';
+import { UpsertPayload } from './embedded-types.js';
 
 // Create Helpers
 

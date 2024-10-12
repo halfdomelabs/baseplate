@@ -1,7 +1,7 @@
 import { CookieSerializeOptions } from '@fastify/cookie';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import type { RequestInfo } from '../plugins/request-context';
-import { ServiceContext, createServiceContext } from './service-context';
+import type { RequestInfo } from '../plugins/request-context.js';
+import { ServiceContext, createServiceContext } from './service-context.js';
 
 interface CookieStore {
   get(name: string): string | undefined;

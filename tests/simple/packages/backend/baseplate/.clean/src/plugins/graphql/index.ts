@@ -6,15 +6,15 @@ import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError, lexicographicSortSchema, printSchema } from 'graphql';
 import { createYoga } from 'graphql-yoga';
-import { config } from '@src/services/config';
-import { logger } from '@src/services/logger';
-import { HttpError } from '@src/utils/http-errors';
-import { createContextFromRequest } from '@src/utils/request-service-context';
-import { builder } from './builder';
-import { useGraphLogger } from './useGraphLogger';
-import { useSentry } from './useSentry';
+import { config } from '@src/services/config.js';
+import { logger } from '@src/services/logger.js';
+import { HttpError } from '@src/utils/http-errors.js';
+import { createContextFromRequest } from '@src/utils/request-service-context.js';
+import { builder } from './builder.js';
+import { useGraphLogger } from './useGraphLogger.js';
+import { useSentry } from './useSentry.js';
 
-import '@src/modules';
+import '@src/modules/index.js';
 
 const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
 

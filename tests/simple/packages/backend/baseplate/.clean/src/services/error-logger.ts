@@ -1,5 +1,5 @@
-import { logger } from './logger';
-import { logErrorToSentry } from './sentry';
+import { logger } from './logger.js';
+import { logErrorToSentry } from './sentry.js';
 
 interface ErrorContext extends Record<string, unknown> {
   errorId?: string;

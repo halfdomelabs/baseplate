@@ -1,7 +1,7 @@
 import os from 'node:os';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
-import { config } from './services/config';
+import { config } from './services/config.js';
 
 const SENTRY_ENABLED = !!config.SENTRY_DSN;
 

@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { createTestDatabase } from '../helpers/db.test-helper';
+import { createTestDatabase } from '../helpers/db.test-helper.js';
 
 /* eslint-disable no-console */
 

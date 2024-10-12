@@ -1,4 +1,4 @@
-import { prisma } from '../services/prisma';
+import { prisma } from '../services/prisma.js';
 
 /* eslint-disable no-console */
 

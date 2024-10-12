@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
-import { prisma } from '../services/prisma';
-import { notEmpty } from './arrays';
+import { prisma } from '../services/prisma.js';
+import { notEmpty } from './arrays.js';
 
 interface DataPipeOperations {
   beforePrismaPromises?: Prisma.PrismaPromise<unknown>[];
