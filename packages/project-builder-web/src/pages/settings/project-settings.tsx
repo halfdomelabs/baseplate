@@ -1,13 +1,15 @@
 import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
 import {
+  useBlockUnsavedChangesNavigate,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Card, InputField, toast } from '@halfdomelabs/ui-components';
+import { InputField, SectionList, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { z } from 'zod';
 
+import FormActionBar from '@src/components/FormActionBar';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
@@ -22,7 +24,7 @@ type FormData = z.infer<typeof validationSchema>;
 
 function ProjectSettingsPage(): JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
-  const { handleSubmit, control } = useResettableForm<FormData>({
+  const form = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
     defaultValues: _.pick(definition, [
       'name',
@@ -31,6 +33,8 @@ function ProjectSettingsPage(): JSX.Element {
       'packageScope',
     ]),
   });
+
+  const { handleSubmit, control, formState, reset } = form;
 
   const onSubmit = (data: FormData): void => {
     try {
@@ -44,44 +48,61 @@ function ProjectSettingsPage(): JSX.Element {
     }
   };
 
+  useBlockUnsavedChangesNavigate(formState, {
+    reset,
+    onSubmit: handleSubmit(onSubmit),
+  });
+
   return (
-    <Card className="m-4 mx-auto max-w-lg self-start overflow-y-auto p-4">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-        <h1>Project Settings</h1>
-        <InputField.Controller
-          name="name"
-          label="Project Name"
-          description="Lowercase letters and dashes, e.g. my-project"
-          control={control}
-          placeholder="e.g. my-project"
-        />
-        <InputField.Controller
-          name="portOffset"
-          label="Port Offset"
-          description="Multiple of 1000, e.g. 4000. This will offset the ports used by the project, e.g. API at 4001, database at 4432, to avoid conflicts with other projects."
-          control={control}
-          registerOptions={{ valueAsNumber: true }}
-        />
-        <InputField.Controller
-          label="Default Version"
-          name="version"
-          description="Default package version for new apps"
-          control={control}
-        />
-        <InputField.Controller
-          label="Package Scope"
-          name="packageScope"
-          description="The scope for packages in this project, e.g. my-project will result in @my-project/app-name"
-          control={control}
-          registerOptions={{
-            setValueAs: (value: string) => value || undefined,
-          }}
-        />
-        <div>
-          <Button type="submit">Save</Button>
+    <form
+      className="relative h-full max-h-full pb-[var(--action-bar-height)]"
+      onSubmit={handleSubmit(onSubmit)}
+    >
+      <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-4">
+        <div className="sticky top-0 border-b bg-background py-4">
+          <h1>Project settings</h1>
         </div>
-      </form>
-    </Card>
+        <SectionList>
+          <SectionList.Section>
+            <SectionList.SectionHeader>
+              <SectionList.SectionTitle>Settings</SectionList.SectionTitle>
+            </SectionList.SectionHeader>
+            <SectionList.SectionContent className="max-w-80">
+              <InputField.Controller
+                name="name"
+                label="Project Name"
+                description="Lowercase letters and dashes, e.g. my-project"
+                control={control}
+                placeholder="e.g. my-project"
+              />
+              <InputField.Controller
+                name="portOffset"
+                label="Port Offset"
+                description="Multiple of 1000, e.g. 4000. This will offset the ports used by the project, e.g. API at 4001, database at 4432, to avoid conflicts with other projects."
+                control={control}
+                registerOptions={{ valueAsNumber: true }}
+              />
+              <InputField.Controller
+                label="Default Version"
+                name="version"
+                description="Default package version for new apps"
+                control={control}
+              />
+              <InputField.Controller
+                label="Package Scope"
+                name="packageScope"
+                description="The scope for packages in this project, e.g. my-project will result in @my-project/app-name"
+                control={control}
+                registerOptions={{
+                  setValueAs: (value: string) => value || undefined,
+                }}
+              />
+            </SectionList.SectionContent>
+          </SectionList.Section>
+        </SectionList>
+      </div>
+      <FormActionBar form={form} />
+    </form>
   );
 }
 

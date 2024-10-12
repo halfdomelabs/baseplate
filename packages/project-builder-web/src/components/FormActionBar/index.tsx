@@ -2,13 +2,13 @@ import { Button } from '@halfdomelabs/ui-components';
 import { UseFormReturn } from 'react-hook-form';
 import { MdOutlineSave } from 'react-icons/md';
 
-interface DataFormActionBarProps {
+interface FormActionBarProps {
   // we don't care about the form type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>;
 }
 
-const DataFormActionBar = ({ form }: DataFormActionBarProps): JSX.Element => {
+const FormActionBar = ({ form }: FormActionBarProps): JSX.Element => {
   const { formState } = form;
   const isDirty = Object.keys(formState.dirtyFields).length > 0;
 
@@ -36,4 +36,4 @@ const DataFormActionBar = ({ form }: DataFormActionBarProps): JSX.Element => {
   );
 };
 
-export default DataFormActionBar;
+export default FormActionBar;

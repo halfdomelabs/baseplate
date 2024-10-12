@@ -9,7 +9,7 @@ import { ServiceMethodFieldsSection } from './ServiceMethodFieldsSection';
 import { ServiceTransformersSection } from './ServiceTransformersSection';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
-import DataFormActionBar from '@src/pages/data/components/DataFormActionBar';
+import FormActionBar from '@src/components/FormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 
 registerEntityTypeUrl(
@@ -64,7 +64,7 @@ function ModelEditServicePage(): JSX.Element {
           <ServiceMethodFieldsSection control={control} setValue={setValue} />
           <ServiceTransformersSection formProps={form} />
         </SectionList>
-        <DataFormActionBar form={form} />
+        <FormActionBar form={form} />
       </form>
     </EditedModelContextProvider>
   );

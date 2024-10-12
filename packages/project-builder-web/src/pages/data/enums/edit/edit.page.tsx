@@ -4,17 +4,17 @@ import { SectionList } from '@halfdomelabs/ui-components';
 
 import { EnumGraphQLSection } from './sections/EnumGraphQLSection';
 import { EnumValuesSection } from './sections/EnumValuesSection';
-import DataFormActionBar from '../../components/DataFormActionBar';
 import { useEnumForm } from '../hooks/useEnumForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
+import FormActionBar from '@src/components/FormActionBar';
 
 function EnumEditPage(): JSX.Element {
   const { form, onSubmit } = useEnumForm({
     schema: enumBaseSchema.omit({ name: true, feature: true }),
   });
-  const { control, setValue } = form;
+  const { control, setValue, formState } = form;
 
-  useBlockUnsavedChangesNavigate(form.formState, {
+  useBlockUnsavedChangesNavigate(formState, {
     reset: form.reset,
     onSubmit,
   });
@@ -29,7 +29,7 @@ function EnumEditPage(): JSX.Element {
           <EnumGraphQLSection control={control} />
           <EnumValuesSection control={control} setValue={setValue} />
         </SectionList>
-        <DataFormActionBar form={form} />
+        <FormActionBar form={form} />
       </form>
     </ErrorBoundary>
   );
