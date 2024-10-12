@@ -6,7 +6,7 @@ import tailwindCssAnimate from 'tailwindcss-animate';
 
 const config: Config = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
-  darkMode: ['class', '[data-mode="dark"]'],
+  darkMode: ['class', '[data-theme="dark"]'],
   theme: {
     fontFamily: {
       body: ['Geist Sans', ...defaultTheme.fontFamily.sans],
