@@ -52,7 +52,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@sentry/react': '8.32.0',
+      '@sentry/core': '8.34.0',
     });
 
     reactError.addErrorReporter(
