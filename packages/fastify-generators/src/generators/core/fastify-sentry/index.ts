@@ -125,14 +125,14 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
 
         node.addPackages({
-          '@sentry/core': '8.32.0',
-          '@sentry/node': '8.32.0',
-          '@sentry/profiling-node': '8.32.0',
+          '@sentry/core': '8.34.0',
+          '@sentry/node': '8.34.0',
+          '@sentry/profiling-node': '8.34.0',
           lodash: '4.17.21',
         });
 
         node.addDevPackages({
-          '@sentry/types': '8.32.0',
+          '@sentry/types': '8.34.0',
           '@types/lodash': '4.17.7',
         });
 
