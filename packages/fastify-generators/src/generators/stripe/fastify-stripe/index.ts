@@ -73,7 +73,7 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
       name: 'stripeWebhookPlugin',
       plugin: new TypescriptCodeExpression(
         'stripeWebhookPlugin',
-        "import { stripeWebhookPlugin } from '@/src/plugins/stripe-webhook'",
+        "import { stripeWebhookPlugin } from '@/src/plugins/stripe-webhook.js'",
       ),
     });
 

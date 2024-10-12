@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import path from 'path';
 import * as R from 'ramda';
-import { CodeBlockWriter, SourceFile } from 'ts-morph';
+import { CodeBlockWriter, SourceFile, ts } from 'ts-morph';
 
 import { sortByImportOrder } from './importOrder.js';
 import { ImportMap, ImportMapper } from '../../providers/index.js';
@@ -34,19 +34,44 @@ export interface PathMapEntry {
   to: string; // e.g. app
 }
 
-interface ResolveModuleOptions {
+export type ModuleResolutionKind = `${ts.server.protocol.ModuleResolutionKind}`;
+
+export interface ResolveModuleOptions {
   importMappers?: ImportMapper[];
   pathMapEntries?: PathMapEntry[];
+  moduleResolution: ModuleResolutionKind;
+}
+
+/**
+ * Shortens the path for resolution method namely for CJS, it will remove the .js extension
+ */
+function shortenPathForResolutionMethod(
+  path: string,
+  moduleResolution: ModuleResolutionKind,
+): string {
+  const isNode16 =
+    moduleResolution === 'node16' || moduleResolution === 'nodenext';
+  if (isNode16) {
+    if (path.startsWith('.') || path.startsWith('@src/')) {
+      if (!path.endsWith('.js')) {
+        throw new Error(
+          `Invalid Node 16 import discovered ${path}. Make sure to use .js extension for Node16 imports.`,
+        );
+      }
+    }
+  }
+
+  return isNode16 ? path : path.replace(/(\/index)?\.js$/, '');
 }
 
 export function resolveModule(
   moduleSpecifier: string,
   directory: string,
-  { pathMapEntries }: ResolveModuleOptions = {},
+  { pathMapEntries, moduleResolution }: ResolveModuleOptions,
 ): string {
   // if not relative import, just return directly
   if (!moduleSpecifier.startsWith('@/')) {
-    return moduleSpecifier;
+    return shortenPathForResolutionMethod(moduleSpecifier, moduleResolution);
   }
   // figure out relative directory
   const absolutePath = moduleSpecifier.substring(2);
@@ -70,16 +95,19 @@ export function resolveModule(
     return pathEntry.to + absolutePath.substring(pathEntry.from.length);
   })();
 
-  return typescriptPathImport &&
-    typescriptPathImport.length < relativePathImport.length
-    ? typescriptPathImport
-    : relativePathImport;
+  return shortenPathForResolutionMethod(
+    typescriptPathImport &&
+      typescriptPathImport.length < relativePathImport.length
+      ? typescriptPathImport
+      : relativePathImport,
+    moduleResolution,
+  );
 }
 
 function resolveImportDeclaration(
   declaration: ImportDeclarationEntry,
   directory: string,
-  options?: ResolveModuleOptions,
+  options: ResolveModuleOptions,
 ): ImportDeclarationEntry {
   return {
     ...declaration,
@@ -306,7 +334,7 @@ export function writeImportDeclarations(
   writer: CodeBlockWriter,
   imports: ImportDeclarationEntry[],
   fileDirectory: string,
-  options?: ResolveModuleOptions,
+  options: ResolveModuleOptions,
 ): void {
   // map out imports
   const importMap = buildImportMap(options?.importMappers ?? []);

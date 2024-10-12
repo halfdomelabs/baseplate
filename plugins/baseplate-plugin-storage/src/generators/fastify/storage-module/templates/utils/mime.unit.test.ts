@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { validateFileExtensionWithMimeType } from './mime';
+import { validateFileExtensionWithMimeType } from './mime.js';
 
 describe('validateFileExtensionWithMimeType', () => {
   it.each([

@@ -49,7 +49,13 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
         fastify: fastifyProvider,
       },
       run({ fastify }) {
-        fastify.getConfig().appendUnique('devLoaders', ['dotenv/config']);
+        fastify.getConfig().appendUnique('nodeFlags', [
+          {
+            flag: '-r dotenv/config',
+            useCase: 'dev-env',
+            targetEnvironment: 'dev',
+          },
+        ]);
 
         return {};
       },
@@ -99,11 +105,11 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
               getConfigExpression: () =>
                 TypescriptCodeUtils.createExpression(
                   'config',
-                  "import { config } from '@/src/services/config'",
+                  "import { config } from '@/src/services/config.js'",
                 ),
               getImportMap: () => ({
                 '%config': {
-                  path: '@/src/services/config',
+                  path: '@/src/services/config.js',
                   allowedImports: ['config'],
                 },
               }),

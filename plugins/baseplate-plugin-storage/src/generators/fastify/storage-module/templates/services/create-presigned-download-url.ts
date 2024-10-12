@@ -2,8 +2,8 @@
 
 import { ForbiddenError } from '%http-errors';
 import { ServiceContext } from '%service-context';
-import { STORAGE_ADAPTERS } from '../constants/adapters';
-import { FILE_CATEGORIES } from '../constants/file-categories';
+import { STORAGE_ADAPTERS } from '../constants/adapters.js';
+import { FILE_CATEGORIES } from '../constants/file-categories.js';
 
 interface CreatePresignedDownloadUrlInput {
   fileId: string;

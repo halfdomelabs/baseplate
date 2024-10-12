@@ -1,13 +1,13 @@
 import {
-  copyTypescriptFileAction,
   ImportMapper,
   nodeProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
+  typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -30,11 +30,12 @@ const ReactLoggerGenerator = createGeneratorWithChildren({
   dependencies: {
     node: nodeProvider,
     react: reactProvider,
+    typescript: typescriptProvider,
   },
   exports: {
     reactLogger: reactLoggerProvider,
   },
-  createGenerator(descriptor, { node, react }) {
+  createGenerator(descriptor, { node, react, typescript }) {
     node.addPackages({
       loglevel: '1.9.1',
     });
@@ -58,7 +59,7 @@ const ReactLoggerGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         builder.setBaseDirectory(react.getSrcFolder());
         await builder.apply(
-          copyTypescriptFileAction({
+          typescript.createCopyAction({
             source: 'logger.ts',
             destination: 'services/logger.ts',
           }),

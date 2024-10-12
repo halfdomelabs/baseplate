@@ -4,8 +4,8 @@ import { FastifyPluginAsync } from 'fastify';
 import { Stripe } from 'stripe';
 import { config } from '%config';
 import { logError } from '%error-logger';
-import { stripe } from '@/src/services/stripe';
-import { stripeEventService } from '@/src/services/stripe-events';
+import { stripe } from '@/src/services/stripe.js';
+import { stripeEventService } from '@/src/services/stripe-events.js';
 import { BadRequestError } from '%http-errors';
 
 async function getStripeEvent(

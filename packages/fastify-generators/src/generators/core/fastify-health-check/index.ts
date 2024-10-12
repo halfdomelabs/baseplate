@@ -38,7 +38,7 @@ const FastifyHealthCheckGenerator = createGeneratorWithChildren({
       name: 'healthCheckPlugin',
       plugin: new TypescriptCodeExpression(
         'healthCheckPlugin',
-        "import { healthCheckPlugin } from '@/src/plugins/health-check'",
+        "import { healthCheckPlugin } from '@/src/plugins/health-check.js'",
       ),
     });
 

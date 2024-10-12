@@ -76,9 +76,13 @@ const EslintGenerator = createGeneratorWithChildren({
         });
         node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');
 
+        const eslintDestination = node.isEsm()
+          ? '.eslintrc.cjs'
+          : '.eslintrc.js';
+
         await builder.apply(
           writeFormattedAction({
-            destination: config.react ? '.eslintrc.cjs' : '.eslintrc.js',
+            destination: eslintDestination,
             contents: `module.exports = ${JSON.stringify(
               eslintConfig,
               null,

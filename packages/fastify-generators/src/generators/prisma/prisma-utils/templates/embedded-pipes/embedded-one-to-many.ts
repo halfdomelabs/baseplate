@@ -2,8 +2,8 @@
 
 import { notEmpty } from '%ts-utils/arrays';
 import { ServiceContext } from '%service-context';
-import { UpsertPayload } from './embedded-types';
-import { DataPipeOutput, mergePipeOperations } from '../data-pipes';
+import { UpsertPayload } from './embedded-types.js';
+import { DataPipeOutput, mergePipeOperations } from '../data-pipes.js';
 
 // Create Helpers
 

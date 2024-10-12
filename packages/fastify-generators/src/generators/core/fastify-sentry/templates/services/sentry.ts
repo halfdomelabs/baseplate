@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as Sentry from '@sentry/node';
-import { config } from './config';
+import { config } from './config.js';
 import { HttpError } from '%http-errors';
 import { FastifyError } from 'fastify';
 

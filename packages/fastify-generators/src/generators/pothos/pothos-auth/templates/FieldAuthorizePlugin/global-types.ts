@@ -11,8 +11,8 @@ import {
 import type {
   AuthorizeRolePluginOptions,
   AuthorizeRoleRuleOption,
-} from './types';
-import type { PothosAuthorizeByRolesPlugin } from '.';
+} from './types.js';
+import type { PothosAuthorizeByRolesPlugin } from './index.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

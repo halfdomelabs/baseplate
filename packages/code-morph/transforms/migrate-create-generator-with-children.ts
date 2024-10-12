@@ -112,7 +112,10 @@ const transform: js.Transform = (file, api) => {
   // Create createMainTask function
   invariant(createGeneratorToMigrate);
   const descriptorArgs = createGeneratorToMigrate.params[0];
-  const dependencyArgs = createGeneratorToMigrate.params[1];
+  const dependencyArgs =
+    createGeneratorToMigrate.params.length > 1
+      ? createGeneratorToMigrate.params[1]
+      : undefined;
 
   if (
     descriptorArgs.type === 'Identifier' ||
@@ -126,7 +129,7 @@ const transform: js.Transform = (file, api) => {
   const runFunction = j.objectMethod(
     'method',
     j.identifier('run'),
-    [dependencyArgs],
+    dependencyArgs ? [dependencyArgs] : [],
     createGeneratorToMigrate.body,
   );
 

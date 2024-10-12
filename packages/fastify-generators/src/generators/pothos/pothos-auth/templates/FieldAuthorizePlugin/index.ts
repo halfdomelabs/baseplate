@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 /* eslint-disable class-methods-use-this */
-import './global-types';
+import './global-types.js';
 import SchemaBuilder, {
   BasePlugin,
   PothosOutputFieldConfig,
@@ -9,7 +9,7 @@ import SchemaBuilder, {
 } from '@pothos/core';
 import { GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql';
 import { ForbiddenError } from '%http-errors';
-import { AuthorizeRoleRuleFunction, AuthorizeRoleRuleOption } from './types';
+import { AuthorizeRoleRuleFunction, AuthorizeRoleRuleOption } from './types.js';
 
 export const pothosAuthorizeByRolesPlugin = 'authorizeByRoles';
 

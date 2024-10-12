@@ -1,9 +1,9 @@
 import {
-  createProviderType,
-  createGeneratorWithChildren,
-  createNonOverwriteableMap,
-  writeJsonAction,
   InferGeneratorDescriptor,
+  createGeneratorWithTasks,
+  createNonOverwriteableMap,
+  createProviderType,
+  writeJsonAction,
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import semver from 'semver';
@@ -29,6 +29,13 @@ export type NodeGeneratorDescriptor = InferGeneratorDescriptor<
   typeof descriptorSchema
 >;
 
+export interface NodeSetupProvider {
+  setIsEsm(isEsm: boolean): void;
+}
+
+export const nodeSetupProvider =
+  createProviderType<NodeSetupProvider>('node-setup');
+
 export interface NodeProvider {
   addPackage(name: string, version: string): void;
   addPackages(packages: Record<string, string>): void;
@@ -39,6 +46,7 @@ export interface NodeProvider {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   mergeExtraProperties(props: Record<string, any>): void;
   getNodeVersion(): string;
+  isEsm(): boolean;
 }
 
 export const nodeProvider = createProviderType<NodeProvider>('node');
@@ -51,8 +59,9 @@ interface NodeDependencyEntry {
   type: NodeDependencyType;
 }
 
-const NodeGenerator = createGeneratorWithChildren({
+const NodeGenerator = createGeneratorWithTasks({
   descriptorSchema,
+
   getDefaultChildGenerators: () => ({
     projects: {
       isMultiple: true,
@@ -101,163 +110,200 @@ const NodeGenerator = createGeneratorWithChildren({
       },
     },
   }),
-  exports: {
-    node: nodeProvider,
-    project: projectProvider,
-  },
-  createGenerator: (descriptor) => {
-    const dependencies: Record<string, NodeDependencyEntry> = {};
-    const extraProperties = createNonOverwriteableMap({}, { name: 'node' });
-    const scripts = createNonOverwriteableMap(
-      { preinstall: 'npx only-allow pnpm' },
-      { name: 'node-scripts' },
-    );
 
-    function mergeDependency(
-      name: string,
-      version: string,
-      type: 'normal' | 'dev',
-    ): void {
-      const existingDependency = dependencies[name];
-
-      if (!existingDependency) {
-        dependencies[name] = { name, version, type };
-      } else {
-        const oldVersion = existingDependency.version;
-        let newVersion: string | null = null;
-        if (semver.subset(oldVersion, version)) {
-          newVersion = oldVersion;
-        } else if (semver.subset(version, oldVersion)) {
-          newVersion = version;
-        } else {
-          throw new Error(
-            `Could not add different versions for dependency: ${name} (${oldVersion}, ${version})`,
-          );
-        }
-        dependencies[name] = {
-          name,
-          version: newVersion,
-          type:
-            existingDependency.type === 'normal' || type === 'normal'
-              ? 'normal'
-              : 'dev',
-        };
-      }
-    }
-
-    return {
-      getProviders: () => {
-        function addPackage(name: string, version: string): void {
-          mergeDependency(name, version, 'normal');
-        }
-        function addDevPackage(name: string, version: string): void {
-          mergeDependency(name, version, 'dev');
-        }
+  buildTasks(taskBuilder, descriptor) {
+    const setupTask = taskBuilder.addTask({
+      name: 'setup',
+      exports: {
+        nodeSetup: nodeSetupProvider,
+      },
+      run() {
+        let isEsm = false;
         return {
-          node: {
-            addPackage,
-            addPackages(packages) {
-              Object.entries(packages).forEach(([name, version]) =>
-                addPackage(name, version),
-              );
+          getProviders: () => ({
+            nodeSetup: {
+              setIsEsm(value) {
+                isEsm = value;
+              },
             },
-            addDevPackage,
-            addDevPackages(packages) {
-              Object.entries(packages).forEach(([name, version]) =>
-                addDevPackage(name, version),
-              );
-            },
-            mergeExtraProperties(props) {
-              extraProperties.merge(props);
-            },
-            addScript(name, script) {
-              scripts.merge({ [name]: script });
-            },
-            addScripts(value) {
-              scripts.merge(value);
-            },
-            getNodeVersion() {
-              return descriptor.nodeVersion;
-            },
-          },
-          project: {
-            getProjectName: () => descriptor.name,
-          },
-        };
-      },
-      build: async (builder) => {
-        const extractDependencies = (
-          type: NodeDependencyType,
-        ): Record<string, string> =>
-          R.mergeAll(
-            R.sortBy(
-              R.prop('name'),
-              Object.values(dependencies).filter((d) => d.type === type),
-            ).map((d) => ({ [d.name]: d.version })),
-          );
-        const packageJson = {
-          name: descriptor.packageName ?? descriptor.name,
-          description: descriptor.description,
-          license: descriptor.license,
-          version: descriptor.version,
-          private: descriptor.private,
-          ...sortKeys(extraProperties.value()),
-          scripts: sortKeys(scripts.value()),
-          dependencies: extractDependencies('normal'),
-          devDependencies: extractDependencies('dev'),
-          engines: {
-            node: `^${descriptor.nodeVersion}`,
-            // use major/minor version of PNPM
-            pnpm: `^${semver.major(descriptor.pnpmVersion)}.${semver.minor(
-              descriptor.pnpmVersion,
-            )}.0`,
-          },
-          volta: {
-            node: descriptor.nodeVersion,
-          },
-        };
-
-        await builder.apply(
-          writeJsonAction({
-            destination: 'package.json',
-            contents: packageJson,
-            preformat: (contents) => sortPackageJson(contents),
           }),
-        );
-
-        // write node version so .pnpm can use it
-        builder.writeFile(
-          '.npmrc',
-          `use-node-version=${descriptor.nodeVersion}`,
-        );
-
-        // we have to avoid the prompt otherwise generation will hang
-        // https://github.com/pnpm/pnpm/issues/6778
-        builder.addPostWriteCommand(
-          'pnpm install --config.confirmModulesPurge=false',
-          'dependencies',
-          {
-            workingDirectory: '/',
-            onlyIfChanged: ['package.json'],
+          build: () => {
+            return { isEsm };
           },
+        };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'main',
+      exports: {
+        node: nodeProvider,
+        project: projectProvider,
+      },
+      taskDependencies: {
+        setup: setupTask,
+      },
+      run(deps, { setup: { isEsm } }) {
+        const dependencies: Record<string, NodeDependencyEntry> = {};
+        const extraProperties = createNonOverwriteableMap(
+          { type: isEsm ? 'module' : 'commonjs' },
+          { name: 'node' },
+        );
+        const scripts = createNonOverwriteableMap(
+          { preinstall: 'npx only-allow pnpm' },
+          { name: 'node-scripts' },
         );
 
-        const allDependencies = R.mergeRight(
-          packageJson.dependencies,
-          packageJson.devDependencies,
-        );
-        if (Object.keys(allDependencies).includes('prettier')) {
-          builder.addPostWriteCommand(
-            'pnpm prettier --write package.json',
-            'dependencies',
-            {
-              workingDirectory: '/',
-              onlyIfChanged: ['package.json'],
-            },
-          );
+        function mergeDependency(
+          name: string,
+          version: string,
+          type: 'normal' | 'dev',
+        ): void {
+          const existingDependency = dependencies[name];
+
+          if (!existingDependency) {
+            dependencies[name] = { name, version, type };
+          } else {
+            const oldVersion = existingDependency.version;
+            let newVersion: string | null = null;
+            if (semver.subset(oldVersion, version)) {
+              newVersion = oldVersion;
+            } else if (semver.subset(version, oldVersion)) {
+              newVersion = version;
+            } else {
+              throw new Error(
+                `Could not add different versions for dependency: ${name} (${oldVersion}, ${version})`,
+              );
+            }
+            dependencies[name] = {
+              name,
+              version: newVersion,
+              type:
+                existingDependency.type === 'normal' || type === 'normal'
+                  ? 'normal'
+                  : 'dev',
+            };
+          }
         }
+
+        return {
+          getProviders: () => {
+            function addPackage(name: string, version: string): void {
+              mergeDependency(name, version, 'normal');
+            }
+            function addDevPackage(name: string, version: string): void {
+              mergeDependency(name, version, 'dev');
+            }
+            return {
+              node: {
+                addPackage,
+                addPackages(packages) {
+                  Object.entries(packages).forEach(([name, version]) =>
+                    addPackage(name, version),
+                  );
+                },
+                addDevPackage,
+                addDevPackages(packages) {
+                  Object.entries(packages).forEach(([name, version]) =>
+                    addDevPackage(name, version),
+                  );
+                },
+                mergeExtraProperties(props) {
+                  extraProperties.merge(props);
+                },
+                addScript(name, script) {
+                  scripts.merge({ [name]: script });
+                },
+                addScripts(value) {
+                  scripts.merge(value);
+                },
+                getNodeVersion() {
+                  return descriptor.nodeVersion;
+                },
+                isEsm() {
+                  return isEsm;
+                },
+              },
+              project: {
+                getProjectName: () => descriptor.name,
+              },
+            };
+          },
+          build: async (builder) => {
+            const extractDependencies = (
+              type: NodeDependencyType,
+            ): Record<string, string> =>
+              R.mergeAll(
+                R.sortBy(
+                  R.prop('name'),
+                  Object.values(dependencies).filter((d) => d.type === type),
+                ).map((d) => ({ [d.name]: d.version })),
+              );
+            const packageJson = {
+              name: descriptor.packageName ?? descriptor.name,
+              description: descriptor.description,
+              license: descriptor.license,
+              version: descriptor.version,
+              private: descriptor.private,
+              ...sortKeys(extraProperties.value()),
+              scripts: sortKeys(scripts.value()),
+              dependencies: extractDependencies('normal'),
+              devDependencies: extractDependencies('dev'),
+              engines: {
+                node: `^${descriptor.nodeVersion}`,
+                // use major/minor version of PNPM
+                pnpm: `^${semver.major(descriptor.pnpmVersion)}.${semver.minor(
+                  descriptor.pnpmVersion,
+                )}.0`,
+              },
+              volta: {
+                node: descriptor.nodeVersion,
+              },
+            };
+
+            await builder.apply(
+              writeJsonAction({
+                destination: 'package.json',
+                contents: packageJson,
+                preformat: (contents) => sortPackageJson(contents),
+              }),
+            );
+
+            // write node version so .pnpm can use it
+            builder.writeFile(
+              '.npmrc',
+              `use-node-version=${descriptor.nodeVersion}`,
+            );
+
+            // we have to avoid the prompt otherwise generation will hang
+            // https://github.com/pnpm/pnpm/issues/6778
+            builder.addPostWriteCommand(
+              'pnpm install --config.confirmModulesPurge=false',
+              'dependencies',
+              {
+                workingDirectory: '/',
+                onlyIfChanged: ['package.json'],
+              },
+            );
+
+            const allDependencies = R.mergeRight(
+              packageJson.dependencies,
+              packageJson.devDependencies,
+            );
+            if (Object.keys(allDependencies).includes('prettier')) {
+              builder.addPostWriteCommand(
+                'pnpm prettier --write package.json',
+                'dependencies',
+                {
+                  workingDirectory: '/',
+                  onlyIfChanged: ['package.json'],
+                },
+              );
+            }
+          },
+        };
       },
-    };
+    });
   },
 });
 

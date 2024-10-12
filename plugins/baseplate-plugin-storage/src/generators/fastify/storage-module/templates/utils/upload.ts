@@ -4,13 +4,13 @@ import { Prisma } from '@prisma/client';
 import { nanoid } from 'nanoid';
 import { BadRequestError, ForbiddenError } from '%http-errors';
 import { ServiceContext } from '%service-context';
-import { StorageAdapter } from '../adapters';
-import { STORAGE_ADAPTERS } from '../constants/adapters';
-import { FileCategory, FILE_CATEGORIES } from '../constants/file-categories';
+import { StorageAdapter } from '../adapters/index.js';
+import { STORAGE_ADAPTERS } from '../constants/adapters.js';
+import { FileCategory, FILE_CATEGORIES } from '../constants/file-categories.js';
 import {
   getMimeTypeFromContentType,
   validateFileExtensionWithMimeType,
-} from './mime';
+} from './mime.js';
 
 export interface UploadDataInput {
   category: string;

@@ -3,7 +3,11 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { ImportMapper } from '../providers/index.js';
-import { PathMapEntry, TypescriptSourceFile } from '../writers/index.js';
+import {
+  ModuleResolutionKind,
+  PathMapEntry,
+  TypescriptSourceFile,
+} from '../writers/index.js';
 
 export interface CopyTypescriptFileOptions {
   destination?: string;
@@ -11,6 +15,7 @@ export interface CopyTypescriptFileOptions {
   replacements?: Record<string, string>;
   importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
+  moduleResolution: ModuleResolutionKind;
   neverOverwrite?: boolean;
 }
 
@@ -24,6 +29,7 @@ function formatImports(
     {
       pathMappings: options.pathMappings,
       importMappers: options.importMappers,
+      moduleResolution: options.moduleResolution,
     },
   );
 

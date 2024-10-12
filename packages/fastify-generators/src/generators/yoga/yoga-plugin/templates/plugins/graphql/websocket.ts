@@ -7,11 +7,11 @@ import { makeHandler } from 'graphql-ws/lib/use/@fastify/websocket';
 import { YogaServerInstance } from 'graphql-yoga';
 // <% if (it.authEnabled) { %>
 import { CloseCode } from 'graphql-ws';
-import { HttpError } from '@src/utils/http-errors';
-import { logger } from '@src/services/logger';
+import { HttpError } from '@/src/utils/http-errors.js';
+import { logger } from '@/src/services/logger.js';
 // <% } %>
-import { logError } from '@src/services/error-logger';
-import { createContextFromRequest } from '@src/utils/request-service-context';
+import { logError } from '@/src/services/error-logger.js';
+import { createContextFromRequest } from '@/src/utils/request-service-context.js';
 
 interface RootValueWithExecutor {
   execute: (args: ExecutionArgs) => Promise<ExecutionResult>;

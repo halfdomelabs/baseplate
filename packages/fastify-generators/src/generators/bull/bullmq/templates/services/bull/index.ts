@@ -1,3 +1,3 @@
-export * from './queue';
-export * from './repeatable';
-export * from './worker';
+export * from './queue.js';
+export * from './repeatable.js';
+export * from './worker.js';

@@ -1,8 +1,12 @@
 // @ts-nocheck
 import { JwtPayload } from 'jsonwebtoken';
 import ms from 'ms';
-import { jwtService, InvalidTokenError } from './jwt-service';
-import { AuthInfo, createAuthInfoFromUser, UserInfo } from '../utils/auth-info';
+import { jwtService, InvalidTokenError } from './jwt-service.js';
+import {
+  AuthInfo,
+  createAuthInfoFromUser,
+  UserInfo,
+} from '../utils/auth-info.js';
 
 export interface AuthPayload {
   userId: string;

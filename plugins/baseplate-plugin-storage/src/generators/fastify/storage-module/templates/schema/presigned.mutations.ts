@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import { builder } from '%pothos';
-import { createPresignedDownloadUrl } from '../services/create-presigned-download-url';
-import { createPresignedUploadUrl } from '../services/create-presigned-upload-url';
+import { createPresignedDownloadUrl } from '../services/create-presigned-download-url.js';
+import { createPresignedUploadUrl } from '../services/create-presigned-upload-url.js';
 import { FILE_OBJECT_TYPE } from 'FILE_OBJECT_MODULE';
 
 export const presignedUrlFieldObjectType = builder.simpleObject(
