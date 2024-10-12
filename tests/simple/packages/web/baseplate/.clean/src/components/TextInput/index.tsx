@@ -1,20 +1,20 @@
 import clsx from 'clsx';
 import {
-  MouseEventHandler,
-  KeyboardEventHandler,
   FocusEventHandler,
   HTMLInputTypeAttribute,
   InputHTMLAttributes,
+  KeyboardEventHandler,
+  MouseEventHandler,
 } from 'react';
 import {
   Control,
   FieldError,
   FieldPath,
-  get,
-  UseFormRegisterReturn,
-  useFormState,
-  RegisterOptions,
   FieldValues,
+  RegisterOptions,
+  UseFormRegisterReturn,
+  get,
+  useFormState,
 } from 'react-hook-form';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';

@@ -1,6 +1,6 @@
 import { Kind } from 'graphql';
-import { builder } from '@src/plugins/graphql/builder';
-import { BadRequestError } from '@src/utils/http-errors';
+import { builder } from '@src/plugins/graphql/builder.js';
+import { BadRequestError } from '@src/utils/http-errors.js';
 
 export const DateTimeScalar = builder.scalarType('DateTime', {
   description: 'Scalar with date and time information',

@@ -1,16 +1,17 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
 import clsx from 'clsx';
 import {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
+  get,
   useFormState,
 } from 'react-hook-form';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
+
+/* eslint-disable jsx-a11y/label-has-associated-control */
 
 interface Props {
   className?: string;

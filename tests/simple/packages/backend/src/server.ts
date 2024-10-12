@@ -3,13 +3,13 @@ import helmet from '@fastify/helmet';
 import * as Sentry from '@sentry/node';
 import Fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
 import { nanoid } from 'nanoid';
-import { RootModule } from './modules';
-import { errorHandlerPlugin } from './plugins/error-handler';
-import { gracefulShutdownPlugin } from './plugins/graceful-shutdown';
-import { graphqlPlugin } from './plugins/graphql';
-import { healthCheckPlugin } from './plugins/health-check';
-import { requestContextPlugin } from './plugins/request-context';
-import { registerSentryEventProcessor } from './services/sentry';
+import { RootModule } from './modules/index.js';
+import { errorHandlerPlugin } from './plugins/error-handler.js';
+import { gracefulShutdownPlugin } from './plugins/graceful-shutdown.js';
+import { graphqlPlugin } from './plugins/graphql/index.js';
+import { healthCheckPlugin } from './plugins/health-check.js';
+import { requestContextPlugin } from './plugins/request-context.js';
+import { registerSentryEventProcessor } from './services/sentry.js';
 
 export async function buildServer(
   options: FastifyServerOptions = {},

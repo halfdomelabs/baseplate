@@ -1,5 +1,5 @@
-import './scalars/date';
-import './scalars/date-time';
-import './scalars/uuid';
+import './scalars/date-time.js';
+import './scalars/date.js';
+import './scalars/uuid.js';
 
 export const graphqlModule = {};

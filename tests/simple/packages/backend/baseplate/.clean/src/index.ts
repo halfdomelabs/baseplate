@@ -1,8 +1,7 @@
-import './instrument';
-import { buildServer } from './server';
-import { config } from './services/config';
-import { logError } from './services/error-logger';
-import { logger } from './services/logger';
+import { buildServer } from './server.js';
+import { config } from './services/config.js';
+import { logError } from './services/error-logger.js';
+import { logger } from './services/logger.js';
 
 async function startServer(): Promise<void> {
   const fastify = await buildServer({ logger });

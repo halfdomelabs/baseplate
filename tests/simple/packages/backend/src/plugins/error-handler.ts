@@ -1,7 +1,7 @@
 import fp from 'fastify-plugin';
-import { config } from '../services/config';
-import { logError } from '../services/error-logger';
-import { HttpError, NotFoundError } from '../utils/http-errors';
+import { config } from '../services/config.js';
+import { logError } from '../services/error-logger.js';
+import { HttpError, NotFoundError } from '../utils/http-errors.js';
 
 const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';
 

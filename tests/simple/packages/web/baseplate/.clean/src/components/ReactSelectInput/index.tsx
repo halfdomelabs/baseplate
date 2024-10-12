@@ -7,7 +7,7 @@ import {
   PathValue,
   useController,
 } from 'react-hook-form';
-import Select, { InputProps, GroupBase, components } from 'react-select';
+import Select, { GroupBase, InputProps, components } from 'react-select';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
 

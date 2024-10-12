@@ -1,4 +1,4 @@
-import { ServiceContext } from './service-context';
+import { ServiceContext } from './service-context.js';
 
 export interface CreateServiceInput<
   CreateData,

@@ -1,6 +1,6 @@
 import { Kind } from 'graphql';
-import { builder } from '@src/plugins/graphql/builder';
-import { BadRequestError } from '@src/utils/http-errors';
+import { builder } from '@src/plugins/graphql/builder.js';
+import { BadRequestError } from '@src/utils/http-errors.js';
 
 const DATE_REGEX = /^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$/;
 

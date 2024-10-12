@@ -5,10 +5,10 @@ import RelayPlugin from '@pothos/plugin-relay';
 import SimpleObjectsPlugin from '@pothos/plugin-simple-objects';
 import TracingPlugin, { isRootField } from '@pothos/plugin-tracing';
 import { createSentryWrapper } from '@pothos/tracing-sentry';
-import { prisma } from '@src/services/prisma';
-import { RequestServiceContext } from '@src/utils/request-service-context';
-import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin';
-import { pothosStripQueryMutationPlugin } from './stripQueryMutationPlugin';
+import { prisma } from '@src/services/prisma.js';
+import { RequestServiceContext } from '@src/utils/request-service-context.js';
+import { pothosFieldWithInputPayloadPlugin } from './FieldWithInputPayloadPlugin/index.js';
+import { pothosStripQueryMutationPlugin } from './stripQueryMutationPlugin.js';
 
 const traceResolver = createSentryWrapper({
   includeSource: true,

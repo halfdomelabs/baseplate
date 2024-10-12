@@ -1,9 +1,9 @@
 import SchemaBuilder, { BasePlugin, SchemaTypes } from '@pothos/core';
 
-import './global-types';
-import './schema-builder';
+import './global-types.js';
+import './schema-builder.js';
 
-export * from './types';
+export * from './types.js';
 
 export const pothosFieldWithInputPayloadPlugin = 'fieldWithInputPayload';
 
