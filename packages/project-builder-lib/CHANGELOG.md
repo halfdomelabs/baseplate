@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.11
+
+### Patch Changes
+
+- Updated dependencies [416f0941]
+  - @halfdomelabs/sync@0.7.10
+
 ## 0.8.10
 
 ### Patch Changes

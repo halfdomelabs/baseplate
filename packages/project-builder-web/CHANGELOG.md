@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-web
 
+## 0.13.0
+
+### Minor Changes
+
+- 0abcf19f: Moved settings-related pages under the `Settings` section
+- a7cd93ef: Redesign `Settings/Project Settings`
+
+### Patch Changes
+
+- @halfdomelabs/project-builder-lib@0.8.11
+
 ## 0.12.2
 
 ### Patch Changes
