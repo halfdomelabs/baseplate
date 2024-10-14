@@ -82,7 +82,7 @@ const PrismaUtilsGenerator = createGeneratorWithChildren({
               (acc, [key, config]) => ({
                 ...acc,
                 [`%prisma-utils/${key}`]: {
-                  path: `@/src/utils/${config.file.replace(/\.ts$/, '')}`,
+                  path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
                   allowedImports: config.exports,
                 },
               }),

@@ -6,7 +6,7 @@ import { config } from '%config';
 import {
   AuthPayload,
   REFRESH_TOKEN_EXPIRY_SECONDS,
-} from '../services/auth-service';
+} from '../services/auth-service.js';
 
 // localhost does not support the __Host prefix and should be scoped to port
 function getRefreshCookieName(context: RequestServiceContext): string {

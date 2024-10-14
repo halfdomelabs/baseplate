@@ -7,8 +7,8 @@ import {
   Kind,
   OperationDefinitionNode,
 } from 'graphql';
-import { logError } from '@src/services/error-logger';
-import { logger } from '@src/services/logger';
+import { logError } from '@src/services/error-logger.js';
+import { logger } from '@src/services/logger.js';
 
 function getOperationType(document: DocumentNode): string | undefined {
   const operationDefinition = document.definitions.find(

@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.7.10
+
+### Patch Changes
+
+- 416f0941: Switch to ESM module resolution for backend (before syncing, run `pnpx migrate-esm-imports src baseplate/.clean` on your backend folder to minimize merge errors)
+
 ## 0.7.9
 
 ### Patch Changes

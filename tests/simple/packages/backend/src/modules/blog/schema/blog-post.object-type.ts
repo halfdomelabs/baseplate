@@ -1,4 +1,4 @@
-import { builder } from '@src/plugins/graphql/builder';
+import { builder } from '@src/plugins/graphql/builder.js';
 
 export const blogPostObjectType = builder.prismaObject('BlogPost', {
   fields: (t) => ({

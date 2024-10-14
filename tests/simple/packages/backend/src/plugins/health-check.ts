@@ -1,5 +1,5 @@
 import { FastifyPluginAsync } from 'fastify';
-import { prisma } from '../services/prisma';
+import { prisma } from '../services/prisma.js';
 
 export const healthCheckPlugin: FastifyPluginAsync = async (fastify) => {
   fastify.get('/healthz', { logLevel: 'warn' }, async () => {

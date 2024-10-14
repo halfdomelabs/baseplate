@@ -1,7 +1,7 @@
 import { requestContext } from '@fastify/request-context';
-import Pino from 'pino';
+import { pino } from 'pino';
 
-export const logger = Pino({
+export const logger = pino({
   formatters: {
     level(level) {
       return { level };

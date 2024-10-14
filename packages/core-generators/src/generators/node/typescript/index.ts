@@ -30,9 +30,29 @@ import {
   CopyTypescriptFilesOptions,
 } from '@src/actions/copyTypescriptFilesAction.js';
 
-// can use CompilerOptions from Typescript but it requires awkwardly serializing
-// CompilerOptions which would have to be done manually
-export type TypescriptCompilerOptions = Record<string, unknown>;
+type ChangePropertyTypes<
+  T,
+  Substitutions extends {
+    [K in keyof T]?: unknown;
+  },
+> = {
+  [K in keyof T]: K extends keyof Substitutions ? Substitutions[K] : T[K];
+};
+
+type ModuleResolutionKind = ts.server.protocol.ModuleResolutionKind;
+type ModuleKind = ts.server.protocol.ModuleKind;
+type ScriptTarget = ts.server.protocol.ScriptTarget;
+type JsxEmit = ts.server.protocol.JsxEmit;
+
+type TypescriptCompilerOptions = ChangePropertyTypes<
+  CompilerOptions,
+  {
+    moduleResolution?: `${ModuleResolutionKind}`;
+    module?: `${ModuleKind}`;
+    target?: `${ScriptTarget}`;
+    jsx?: `${JsxEmit}`;
+  }
+>;
 
 export interface TypescriptConfigReference {
   path: string;
@@ -56,13 +76,22 @@ export interface TypescriptProvider {
     Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>,
   >(
     config: Config,
-    options?: Omit<TypescriptSourceFileOptions, 'pathMappings'>,
+    options?: Omit<
+      TypescriptSourceFileOptions,
+      'pathMappings' | 'moduleResolution'
+    >,
   ): TypescriptSourceFile<Config>;
   createCopyFilesAction(
-    options: Omit<CopyTypescriptFilesOptions, 'pathMappings'>,
+    options: Omit<
+      CopyTypescriptFilesOptions,
+      'pathMappings' | 'moduleResolution'
+    >,
   ): ReturnType<typeof copyTypescriptFilesAction>;
   createCopyAction(
-    options: Omit<CopyTypescriptFileOptions, 'pathMappings'>,
+    options: Omit<
+      CopyTypescriptFileOptions,
+      'pathMappings' | 'moduleResolution'
+    >,
   ): ReturnType<typeof copyTypescriptFileAction>;
   renderBlockToAction(
     block: TypescriptCodeBlock,
@@ -93,11 +122,11 @@ const DEFAULT_CONFIG: TypescriptConfig = {
     outDir: 'dist',
     declaration: true,
     baseUrl: './src',
-    target: 'ES2022',
-    lib: ['ES2023'],
+    target: 'es2022',
+    lib: ['es2023'],
     esModuleInterop: true,
-    module: 'commonjs',
-    moduleResolution: 'node',
+    module: 'node16',
+    moduleResolution: 'node16',
     strict: true,
     removeComments: true,
     forceConsistentCasingInFileNames: true,
@@ -183,10 +212,8 @@ const TypescriptGenerator = createGeneratorWithTasks({
             // { "baseUrl": "./src", "paths": { "@src/*": ["./*"] } }
             // would be { from: "src", to: "@src" }
             const configMap = config.value();
-            const { baseUrl, paths } = configMap.compilerOptions as {
-              baseUrl: string;
-              paths: Record<string, string[]>;
-            };
+
+            const { baseUrl, paths } = configMap.compilerOptions;
             if (!paths && (baseUrl === './' || baseUrl === '.')) {
               // TODO: Support other source folders
               cachedPathEntries = [{ from: 'src', to: 'src' }];
@@ -215,6 +242,10 @@ const TypescriptGenerator = createGeneratorWithTasks({
 
           return cachedPathEntries;
         }
+
+        const moduleResolution =
+          config.value().compilerOptions.moduleResolution ?? 'node';
+
         return {
           getProviders() {
             return {
@@ -223,21 +254,27 @@ const TypescriptGenerator = createGeneratorWithTasks({
                   new TypescriptSourceFile(fileConfig, {
                     ...options,
                     pathMappings: getPathEntries(),
+                    moduleResolution,
                   }),
                 createCopyFilesAction: (options) =>
                   copyTypescriptFilesAction({
                     ...options,
                     pathMappings: getPathEntries(),
+                    moduleResolution,
                   }),
                 createCopyAction: (options) =>
                   copyTypescriptFileAction({
                     ...options,
                     pathMappings: getPathEntries(),
+                    moduleResolution,
                   }),
                 renderBlockToAction: (block, destination, options) => {
                   const file = new TypescriptSourceFile(
                     { BLOCK: { type: 'code-block' } },
-                    { pathMappings: getPathEntries() },
+                    {
+                      pathMappings: getPathEntries(),
+                      moduleResolution,
+                    },
                   );
                   file.addCodeEntries({ BLOCK: block });
                   return file.renderToActionFromText(
@@ -249,6 +286,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
                 resolveModule: (moduleSpecifier, from) =>
                   resolveModule(moduleSpecifier, from, {
                     pathMapEntries: getPathEntries(),
+                    moduleResolution,
                   }),
                 getCompilerOptions,
               } as TypescriptProvider,

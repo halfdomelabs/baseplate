@@ -1,5 +1,18 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 1.0.13
+
+### Patch Changes
+
+- 416f0941: Switch to ESM module resolution for backend (before syncing, run `pnpx migrate-esm-imports src baseplate/.clean` on your backend folder to minimize merge errors)
+- Updated dependencies [416f0941]
+- Updated dependencies [c0300ef2]
+  - @halfdomelabs/fastify-generators@0.10.7
+  - @halfdomelabs/react-generators@0.8.6
+  - @halfdomelabs/core-generators@0.9.7
+  - @halfdomelabs/sync@0.7.10
+  - @halfdomelabs/project-builder-lib@0.8.11
+
 ## 1.0.12
 
 ### Patch Changes

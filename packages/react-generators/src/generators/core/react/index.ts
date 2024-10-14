@@ -8,14 +8,16 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptSourceFile,
+  nodeSetupProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   copyFileAction,
   writeTemplateAction,
   createProviderType,
   createNonOverwriteableMap,
   InferGeneratorDescriptor,
+  createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -25,6 +27,8 @@ const descriptorSchema = z.object({
   title: z.string().default('React App'),
   description: z.string().default('A React app'),
 });
+
+type Descriptor = z.infer<typeof descriptorSchema>;
 
 export type ReactGeneratorDescriptor = InferGeneratorDescriptor<
   typeof descriptorSchema
@@ -45,84 +49,21 @@ export interface ReactProvider {
 
 export const reactProvider = createProviderType<ReactProvider>('react');
 
-const ReactGenerator = createGeneratorWithChildren({
-  descriptorSchema,
+const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
+  name: 'main',
+
   dependencies: {
     node: nodeProvider,
     typescript: typescriptProvider,
     nodeGitIgnore: nodeGitIgnoreProvider,
     eslint: eslintProvider.dependency().optional(),
   },
+
   exports: {
     react: reactProvider,
   },
-  getDefaultChildGenerators: () => ({
-    typescript: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-typescript',
-      },
-    },
-    app: {
-      provider: 'react-app',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-app',
-        peerProvider: true,
-      },
-    },
-    router: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-router',
-        peerProvider: true,
-      },
-    },
-    logger: {
-      provider: 'react-logger',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-logger',
-        peerProvider: true,
-      },
-    },
-    components: {
-      provider: 'react-components',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-components',
-        peerProvider: true,
-      },
-    },
-    config: {
-      provider: 'react-config',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-config',
-        peerProvider: true,
-      },
-    },
-    proxy: {
-      defaultToNullIfEmpty: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-proxy',
-        peerProvider: true,
-      },
-    },
-    error: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-error',
-        peerProvider: true,
-      },
-    },
-    utils: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-utils',
-        peerProvider: true,
-      },
-    },
-    errorBoundary: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-error-boundary',
-        peerProvider: true,
-      },
-    },
-  }),
-  createGenerator(descriptor, { node, typescript, nodeGitIgnore, eslint }) {
+
+  run({ node, typescript, nodeGitIgnore, eslint }) {
     const indexFile = typescript.createTemplate(INDEX_FILE_CONFIG);
     setupViteNode(node);
 
@@ -227,7 +168,7 @@ const ReactGenerator = createGeneratorWithChildren({
           }),
         );
 
-        const viteConfig = new TypescriptSourceFile({
+        const viteConfig = typescript.createTemplate({
           CONFIG: TypescriptCodeUtils.mergeExpressionsAsObject({
             plugins: TypescriptCodeUtils.mergeExpressionsAsArray(vitePlugins),
             server: TypescriptCodeUtils.mergeExpressionsAsObject(
@@ -242,6 +183,91 @@ const ReactGenerator = createGeneratorWithChildren({
         await builder.apply(viteConfig.renderToAction('vite.config.ts'));
       },
     };
+  },
+}));
+
+const ReactGenerator = createGeneratorWithTasks({
+  descriptorSchema,
+  getDefaultChildGenerators: () => ({
+    typescript: {
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-typescript',
+      },
+    },
+    app: {
+      provider: 'react-app',
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-app',
+        peerProvider: true,
+      },
+    },
+    router: {
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-router',
+        peerProvider: true,
+      },
+    },
+    logger: {
+      provider: 'react-logger',
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-logger',
+        peerProvider: true,
+      },
+    },
+    components: {
+      provider: 'react-components',
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-components',
+        peerProvider: true,
+      },
+    },
+    config: {
+      provider: 'react-config',
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-config',
+        peerProvider: true,
+      },
+    },
+    proxy: {
+      defaultToNullIfEmpty: true,
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-proxy',
+        peerProvider: true,
+      },
+    },
+    error: {
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-error',
+        peerProvider: true,
+      },
+    },
+    utils: {
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-utils',
+        peerProvider: true,
+      },
+    },
+    errorBoundary: {
+      defaultDescriptor: {
+        generator: '@halfdomelabs/react/core/react-error-boundary',
+        peerProvider: true,
+      },
+    },
+  }),
+
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
+      name: 'setup-node',
+      dependencies: {
+        nodeSetup: nodeSetupProvider,
+        formatter: createProviderType('non-exist').dependency().optional(),
+      },
+      run: ({ nodeSetup }) => {
+        nodeSetup.setIsEsm(true);
+        return {};
+      },
+    });
+    taskBuilder.addTask(createMainTask(descriptor));
   },
 });
 

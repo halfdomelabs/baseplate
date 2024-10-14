@@ -1,5 +1,20 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.8.0
+
+### Minor Changes
+
+- 416f0941: Switch to ESM module resolution for backend (before syncing, run `pnpx migrate-esm-imports src baseplate/.clean` on your backend folder to minimize merge errors)
+
+### Patch Changes
+
+- Updated dependencies [0abcf19f]
+- Updated dependencies [a7cd93ef]
+  - @halfdomelabs/project-builder-web@0.13.0
+  - @halfdomelabs/project-builder-common@0.1.6
+  - @halfdomelabs/project-builder-server@0.4.13
+  - @halfdomelabs/project-builder-lib@0.8.11
+
 ## 0.7.14
 
 ### Patch Changes

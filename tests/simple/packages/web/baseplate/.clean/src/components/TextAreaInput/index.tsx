@@ -5,8 +5,8 @@ import {
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
+  get,
   useFormState,
 } from 'react-hook-form';
 import FormError from '../FormError';

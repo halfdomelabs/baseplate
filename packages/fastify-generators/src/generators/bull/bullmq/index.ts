@@ -46,8 +46,18 @@ const createMainTask = createTaskConfigBuilder(() => ({
       bullmq: '5.1.1',
     });
 
+    const devOutputFormatter = fastifyOutput.getDevOutputFormatter();
+    const devWorkersCommand = [
+      'tsx watch --clear-screen=false',
+      ...fastifyOutput.getNodeFlagsDev(),
+      './scripts/run-workers.ts',
+      devOutputFormatter ? `| ${devOutputFormatter}` : '',
+    ]
+      .filter((x) => x)
+      .join(' ');
+
     node.addScripts({
-      'dev:workers': `tsx watch --clear-screen=false ${fastifyOutput.getDevLoaderString()} ./scripts/run-workers.ts | pino-pretty -t`,
+      'dev:workers': devWorkersCommand,
       'run:workers': 'pnpm run:script ./scripts/run-workers.ts',
     });
 

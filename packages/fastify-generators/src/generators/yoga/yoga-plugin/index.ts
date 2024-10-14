@@ -90,7 +90,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             configMap.prepend(
               'envelopPlugins',
               TypescriptCodeUtils.createExpression('useGraphLogger()', [
-                "import { useGraphLogger } from './useGraphLogger'",
+                "import { useGraphLogger } from './useGraphLogger.js'",
               ]),
             );
             return { configMap };
@@ -110,7 +110,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           name: 'graphqlPlugin',
           plugin: new TypescriptCodeExpression(
             'graphqlPlugin',
-            "import { graphqlPlugin } from '@/src/plugins/graphql'",
+            "import { graphqlPlugin } from '@/src/plugins/graphql/index.js",
           ),
         });
 
@@ -216,7 +216,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                   method: ['POST', 'OPTIONS'],
                   handler: httpHandler,
                 });`,
-                    "import { getGraphqlWsHandler } from './websocket';",
+                    "import { getGraphqlWsHandler } from './websocket.js';",
                   )
                 : `fastify.route({
               url: '/graphql',

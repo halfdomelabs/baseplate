@@ -69,7 +69,7 @@ const createMainTask = createTaskConfigBuilder(
               'pothosPlugins',
               TypescriptCodeUtils.createExpression(
                 `pothosAuthorizeByRolesPlugin`,
-                `import { pothosAuthorizeByRolesPlugin } from '@/src/plugins/graphql/FieldAuthorizePlugin';`,
+                `import { pothosAuthorizeByRolesPlugin } from '@/src/plugins/graphql/FieldAuthorizePlugin/index.js';`,
               ),
             )
             .appendUnique('schemaTypeOptions', {

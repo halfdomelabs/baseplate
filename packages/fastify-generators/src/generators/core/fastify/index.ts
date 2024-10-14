@@ -1,6 +1,7 @@
 import {
   nodeGitIgnoreProvider,
   nodeProvider,
+  nodeSetupProvider,
   typescriptConfigProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -17,15 +18,26 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
+type NodeFlagUseCase = 'dev-env' | 'instrument';
+
+interface NodeFlag {
+  flag: string;
+  /**
+   * The type of flag that is used
+   *
+   * 'dev-env': For setting up environment variables in dev
+   * 'instrument': For instrumenting the code
+   */
+  useCase: NodeFlagUseCase;
+  targetEnvironment: 'dev' | 'prod';
+}
+
 export interface FastifyGeneratorConfig {
   /**
    * Command to pipe the dev output into, e.g. pino-pretty
    */
   devOutputFormatter?: string;
-  /**
-   * Loaders to register when running in dev
-   */
-  devLoaders: string[];
+  nodeFlags: NodeFlag[];
 }
 
 export interface FastifyProvider {
@@ -35,7 +47,10 @@ export interface FastifyProvider {
 export const fastifyProvider = createProviderType<FastifyProvider>('fastify');
 
 export interface FastifyOutputProvider {
-  getDevLoaderString(): string;
+  getNodeFlags(): NodeFlag[];
+  getNodeFlagsDev(useCase?: NodeFlagUseCase): string[];
+  getNodeFlagsProd(useCase?: NodeFlagUseCase): string[];
+  getDevOutputFormatter(): string | undefined;
 }
 
 export const fastifyOutputProvider =
@@ -132,6 +147,18 @@ const FastifyGenerator = createGeneratorWithTasks({
   }),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
+      name: 'node-setup',
+      dependencies: {
+        nodeSetup: nodeSetupProvider,
+        formatter: createProviderType('non-exist').dependency().optional(),
+      },
+      run({ nodeSetup }) {
+        nodeSetup.setIsEsm(false);
+        return {};
+      },
+    });
+
+    taskBuilder.addTask({
       name: 'typescript',
       dependencies: {
         node: nodeProvider,
@@ -154,7 +181,7 @@ const FastifyGenerator = createGeneratorWithTasks({
       },
       run({ node, nodeGitIgnore }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
-          { devLoaders: [] },
+          { nodeFlags: [] },
           { name: 'fastify-config', mergeArraysUniquely: true },
         );
 
@@ -164,9 +191,6 @@ const FastifyGenerator = createGeneratorWithTasks({
 
         nodeGitIgnore.addExclusions(['/dist']);
 
-        const formatDevLoaders = (loaders: string[]): string =>
-          (loaders ?? []).map((loader) => `-r ${loader}`).join(' ');
-
         return {
           getProviders: () => ({
             fastify: {
@@ -175,18 +199,36 @@ const FastifyGenerator = createGeneratorWithTasks({
           }),
           build() {
             // add scripts
-            const { devOutputFormatter, devLoaders } = config.value();
-            const devRegister = formatDevLoaders(devLoaders ?? []);
-            const devCommand = `tsx watch --clear-screen=false ${devRegister} src/index.ts${
-              devOutputFormatter ? ` | ${devOutputFormatter}` : ''
-            }`;
+            const { devOutputFormatter, nodeFlags } = config.value();
+
+            const outputFormatter = devOutputFormatter
+              ? `| ${devOutputFormatter}`
+              : '';
+            const devCommand = [
+              'tsx watch --clear-screen=false',
+              ...nodeFlags
+                .filter((f) => f.targetEnvironment === 'dev')
+                .map((f) => f.flag),
+              'src/index.ts',
+              outputFormatter,
+            ]
+              .filter((x) => x)
+              .join(' ');
+            const startCommand = [
+              'node',
+              ...nodeFlags
+                .filter((f) => f.targetEnvironment === 'prod')
+                .map((f) => f.flag),
+              'dist/index.js',
+            ].join(' ');
+
             node.addScripts({
               build: 'tsc && tsc-alias',
-              start: 'node ./dist',
+              start: startCommand,
               dev: devCommand,
             });
 
-            return { formatDevLoaders, config };
+            return { nodeFlags, devOutputFormatter };
           },
         };
       },
@@ -196,13 +238,29 @@ const FastifyGenerator = createGeneratorWithTasks({
       name: 'output',
       taskDependencies: { mainTask },
       exports: { fastifyOutput: fastifyOutputProvider },
-      run(deps, { mainTask: { formatDevLoaders, config } }) {
+      run(deps, { mainTask: { nodeFlags, devOutputFormatter } }) {
         return {
           getProviders() {
             return {
               fastifyOutput: {
-                getDevLoaderString: () =>
-                  formatDevLoaders(config.get('devLoaders') ?? []),
+                getNodeFlags: () => nodeFlags,
+                getNodeFlagsDev: (useCase) =>
+                  nodeFlags
+                    .filter(
+                      (f) =>
+                        f.targetEnvironment === 'dev' &&
+                        (!useCase || f.useCase === useCase),
+                    )
+                    .map((f) => f.flag),
+                getNodeFlagsProd: (useCase) =>
+                  nodeFlags
+                    .filter(
+                      (f) =>
+                        f.targetEnvironment === 'prod' &&
+                        (!useCase || f.useCase === useCase),
+                    )
+                    .map((f) => f.flag),
+                getDevOutputFormatter: () => devOutputFormatter,
               },
             };
           },

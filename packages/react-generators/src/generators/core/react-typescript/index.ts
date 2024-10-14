@@ -21,9 +21,9 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
     typescriptConfig.setTypescriptVersion('5.5.4');
     typescriptConfig.setTypescriptCompilerOptions({
       /* Compilation */
-      lib: ['DOM', 'DOM.Iterable', 'ESNext'],
-      module: 'ESNext',
-      target: 'ESNext',
+      lib: ['dom', 'dom.iterable', 'esnext'],
+      module: 'esnext',
+      target: 'esnext',
       skipLibCheck: true,
       esModuleInterop: false,
       allowJs: false,
@@ -36,7 +36,7 @@ const ReactTypescriptGenerator = createGeneratorWithChildren({
       allowSyntheticDefaultImports: true,
       forceConsistentCasingInFileNames: true,
       resolveJsonModule: true,
-      moduleResolution: 'Bundler',
+      moduleResolution: 'bundler',
 
       /* Output */
       isolatedModules: true,

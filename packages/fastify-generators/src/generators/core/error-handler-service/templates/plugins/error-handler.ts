@@ -1,8 +1,8 @@
 // @ts-nocheck
 
 import fp from 'fastify-plugin';
-import { logError } from '../services/error-logger';
-import { HttpError, NotFoundError } from '../utils/http-errors';
+import { logError } from '../services/error-logger.js';
+import { HttpError, NotFoundError } from '../utils/http-errors.js';
 import { config } from '%config';
 
 const IS_DEVELOPMENT = config.APP_ENVIRONMENT === 'development';

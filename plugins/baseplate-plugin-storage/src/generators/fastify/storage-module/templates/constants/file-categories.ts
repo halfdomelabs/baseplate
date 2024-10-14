@@ -2,7 +2,7 @@
 
 import { Prisma } from '@prisma/client';
 import { ServiceContext } from '%service-context';
-import { StorageAdapterKey } from './adapters';
+import { StorageAdapterKey } from './adapters.js';
 
 export interface FileCategory {
   name: string;

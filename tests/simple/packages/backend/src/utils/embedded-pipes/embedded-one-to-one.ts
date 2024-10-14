@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
-import { DataPipeOutput } from '../data-pipes';
-import { ServiceContext } from '../service-context';
-import { UpsertPayload } from './embedded-types';
+import { DataPipeOutput } from '../data-pipes.js';
+import { ServiceContext } from '../service-context.js';
+import { UpsertPayload } from './embedded-types.js';
 
 // Create Helpers
 

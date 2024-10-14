@@ -14,8 +14,8 @@ import {
 import {
   MutationWithInputPayloadOptions,
   OutputShapeFromFields,
-} from './types';
-import type { PothosFieldWithInputPayloadPlugin } from '.';
+} from './types.js';
+import type { PothosFieldWithInputPayloadPlugin } from './index.js';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

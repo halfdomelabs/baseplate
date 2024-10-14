@@ -104,7 +104,7 @@ const NexusGenerator = createGeneratorWithTasks({
         configMap.appendUnique('nexusPlugins', [
           new TypescriptCodeExpression(
             'missingTypePlugin',
-            "import { missingTypePlugin } from './missing-type-plugin'",
+            "import { missingTypePlugin } from './missing-type-plugin.js'",
           ),
         ]);
 
@@ -119,11 +119,11 @@ const NexusGenerator = createGeneratorWithTasks({
 
         const importMap = {
           '%nexus/utils': {
-            path: '@/src/utils/nexus',
+            path: '@/src/utils/nexus.js',
             allowedImports: ['createStandardMutation'],
           },
           '%nexus/typegen': {
-            path: '@/src/nexus-typegen',
+            path: '@/src/nexus-typegen.js',
             allowedImports: ['NexusGenFieldTypes'],
           },
         };
@@ -159,7 +159,7 @@ const NexusGenerator = createGeneratorWithTasks({
           'schemaTypes',
           new TypescriptCodeExpression(
             'NexusType',
-            "import type {NexusType} from '@/src/utils/nexus'",
+            "import type {NexusType} from '@/src/utils/nexus.js'",
           ),
         );
 
@@ -200,7 +200,7 @@ const NexusGenerator = createGeneratorWithTasks({
                   usedSchemaTypes.push(name);
                   return true;
                 },
-                getUtilsImport: () => '@/src/utils/nexus',
+                getUtilsImport: () => '@/src/utils/nexus.js',
                 getNexusWriterOptions: () => ({
                   builder: 't',
                   lookupScalar: (scalar) => getScalarConfig(scalar),
@@ -210,7 +210,7 @@ const NexusGenerator = createGeneratorWithTasks({
                     case 'STANDARD_MUTATION':
                       return new TypescriptCodeExpression(
                         'createStandardMutation',
-                        `import {createStandardMutation} from '@/src/utils/nexus'`,
+                        `import {createStandardMutation} from '@/src/utils/nexus.js'`,
                       );
                     default:
                       throw new Error(`Unknown method ${method as string}`);
@@ -360,7 +360,7 @@ const NexusGenerator = createGeneratorWithTasks({
         // add script to generate types
         node.addScript(
           'nexusgen',
-          `tsx --transpile-only ${fastifyOutput.getDevLoaderString()} src --nexus-exit`,
+          `tsx --transpile-only ${fastifyOutput.getNodeFlagsDev('dev-env').join(' ')} src --nexus-exit`,
         );
         return {};
       },

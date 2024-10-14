@@ -1,5 +1,4 @@
 import {
-  copyTypescriptFileAction,
   ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
@@ -161,7 +160,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
         await Promise.all(
           coreReactComponents.map(async ({ name }) =>
             builder.apply(
-              copyTypescriptFileAction({
+              typescript.createCopyAction({
                 source: `components/${name}/index.tsx`,
                 destination: `${srcFolder}/components/${name}/index.tsx`,
               }),
@@ -169,7 +168,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
           ),
         );
         await builder.apply(
-          copyTypescriptFileAction({
+          typescript.createCopyAction({
             source: 'hooks/useStatus.ts',
             destination: useStatusPath,
           }),

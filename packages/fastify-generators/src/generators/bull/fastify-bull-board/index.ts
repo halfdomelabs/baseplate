@@ -89,7 +89,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
           'children',
           TypescriptCodeUtils.createExpression(
             'bullBoardModule',
-            `import { bullBoardModule } from '@/${moduleFolder}'`,
+            `import { bullBoardModule } from '@/${moduleFolder}/index.js'`,
           ),
         );
 

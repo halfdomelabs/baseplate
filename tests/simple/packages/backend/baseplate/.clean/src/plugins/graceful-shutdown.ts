@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
-import { logError } from '../services/error-logger';
-import { logger } from '../services/logger';
+import { logError } from '../services/error-logger.js';
+import { logger } from '../services/logger.js';
 
 const TIMEOUT = 10000; // time out if shutdown takes longer than 10 seconds
 

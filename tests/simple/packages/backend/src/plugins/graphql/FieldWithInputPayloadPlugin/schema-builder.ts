@@ -5,7 +5,7 @@ import {
   RootFieldBuilder,
   SchemaTypes,
 } from '@pothos/core';
-import { capitalizeString } from '@src/utils/string';
+import { capitalizeString } from '@src/utils/string.js';
 
 const rootBuilderProto =
   RootFieldBuilder.prototype as PothosSchemaTypes.RootFieldBuilder<

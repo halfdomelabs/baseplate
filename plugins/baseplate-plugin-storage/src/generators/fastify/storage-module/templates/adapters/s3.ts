@@ -12,7 +12,7 @@ import {
   AdapterPresignedUploadUrlInput,
   AdapterPresignedUploadUrlPayload,
   StorageAdapter,
-} from './types';
+} from './types.js';
 
 interface S3AdapterOptions {
   region?: string;

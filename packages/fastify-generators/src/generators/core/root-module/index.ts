@@ -70,7 +70,7 @@ const RootModuleGenerator = createGeneratorWithTasks({
                 getRootModule: () =>
                   TypescriptCodeUtils.createExpression(
                     'RootModule',
-                    "import { RootModule } from '@/src/modules'",
+                    "import { RootModule } from '@/src/modules/index.js'",
                   ),
               },
             };
@@ -91,12 +91,12 @@ const RootModuleGenerator = createGeneratorWithTasks({
                 getRootModule: () =>
                   TypescriptCodeUtils.createExpression(
                     'RootModule',
-                    "import { RootModule } from '@/src/modules'",
+                    "import { RootModule } from '@/src/modules/index.js'",
                   ),
-                getRootModuleImport: () => `@/src/modules`,
+                getRootModuleImport: () => `@/src/modules/index.js`,
                 getImportMap: () => ({
                   '%root-module': {
-                    path: '@/src/modules',
+                    path: '@/src/modules/index.js',
                     allowedImports: ['RootModule'],
                   },
                 }),

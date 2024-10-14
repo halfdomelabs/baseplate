@@ -90,7 +90,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
       .appendUnique('nexusPlugins', [
         TypescriptCodeUtils.createExpression(
           `fieldAuthorizeRolePlugin(${args})`,
-          `import { fieldAuthorizeRolePlugin } from '@/src/plugins/graphql/nexus-authorize-role';`,
+          `import { fieldAuthorizeRolePlugin } from '@/src/plugins/graphql/nexus-authorize-role.js';`,
         ),
       ])
       .appendUnique('mutationFields', [
@@ -99,7 +99,7 @@ const NexusAuthGenerator = createGeneratorWithChildren({
           isOptional: true,
           type: new TypescriptCodeExpression(
             "FieldAuthorizeRoleResolver<'Mutation', FieldName>",
-            "import { FieldAuthorizeRoleResolver } from '@/src/plugins/graphql/nexus-authorize-role';",
+            "import { FieldAuthorizeRoleResolver } from '@/src/plugins/graphql/nexus-authorize-role.js';",
           ),
         },
       ]);

@@ -43,7 +43,7 @@ const AppModuleGenerator = createGeneratorWithChildren({
       'children',
       TypescriptCodeUtils.createExpression(
         moduleName,
-        `import {${moduleName}} from '@/${moduleFolder}'`,
+        `import {${moduleName}} from '@/${moduleFolder}/index.js'`,
       ),
     );
 

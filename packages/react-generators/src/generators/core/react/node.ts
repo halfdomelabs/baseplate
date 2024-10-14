@@ -21,7 +21,6 @@ export function setupViteNode(node: NodeProvider): void {
     preview: 'vite preview',
   });
   node.mergeExtraProperties({
-    type: 'module',
     browserslist: {
       production: ['>0.2%', 'not dead', 'not op_mini all'],
       development: [

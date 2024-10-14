@@ -12,7 +12,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { storageModuleProvider } from '../storage-module';
+import { storageModuleProvider } from '../storage-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string(),

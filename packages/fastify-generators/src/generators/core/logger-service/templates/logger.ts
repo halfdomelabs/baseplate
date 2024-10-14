@@ -1,4 +1,4 @@
 // @ts-nocheck
-import Pino from 'pino';
+import { pino } from 'pino';
 
-export const logger = Pino(LOGGER_OPTIONS);
+export const logger = pino(LOGGER_OPTIONS);
