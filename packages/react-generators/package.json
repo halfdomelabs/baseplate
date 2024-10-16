@@ -48,12 +48,12 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/lodash": "4.17.7",
-    "@types/node": "^20.0.0",
+    "@types/node": "catalog:",
     "@types/ramda": "^0.29.3",
     "@types/toposort": "^2.0.3",
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",
-    "tsc-alias": "1.8.10",
+    "tsc-alias": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {

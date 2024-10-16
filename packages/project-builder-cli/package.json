@@ -47,10 +47,10 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/lodash": "4.17.7",
-    "@types/node": "^20.0.0",
+    "@types/node": "catalog:",
     "dotenv": "^16.0.3",
-    "tsc-alias": "1.8.10",
-    "tsx": "4.19.1",
+    "tsc-alias": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {

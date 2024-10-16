@@ -36,9 +36,11 @@
   "devDependencies": {
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
-    "@types/node": "^20.0.0",
-    "tsc-alias": "1.8.10",
-    "tsx": "4.19.1",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tsc-alias": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {
