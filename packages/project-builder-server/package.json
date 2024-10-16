@@ -65,13 +65,13 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/fs-extra": "11.0.4",
     "@types/lodash": "4.17.7",
-    "@types/node": "^20.0.0",
+    "@types/node": "catalog:",
     "@types/ramda": "^0.29.3",
     "@types/ws": "8.5.12",
     "concurrently": "9.0.1",
-    "tsc-alias": "1.8.10",
+    "tsc-alias": "catalog:",
     "typescript": "catalog:",
-    "vitest": "2.1.1"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": "^20.0.0"

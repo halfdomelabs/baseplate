@@ -43,7 +43,7 @@
     "fs-extra": "11.2.0",
     "is-core-module": "2.15.1",
     "lodash": "^4.17.21",
-    "prettier": "3.3.3",
+    "prettier": "catalog:",
     "prettier-plugin-packagejson": "2.5.2",
     "ramda": "^0.28.0",
     "resolve": "^1.22.2",
@@ -63,9 +63,10 @@
     "@types/semver": "^7.5.0",
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",
-    "tsc-alias": "1.8.10",
+    "eslint": "catalog:",
+    "tsc-alias": "catalog:",
     "typescript": "catalog:",
-    "vitest": "2.1.1"
+    "vitest": "catalog:"
   },
   "engines": {
     "node": "^20.0.0"
