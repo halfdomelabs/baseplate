@@ -58,8 +58,8 @@ function ProjectSettingsPage(): JSX.Element {
       className="relative h-full max-h-full pb-[var(--action-bar-height)]"
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-4">
-        <div className="sticky top-0 border-b bg-background py-4">
+      <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
+        <div className="sticky top-0 border-b bg-background py-6">
           <h1>Project settings</h1>
         </div>
         <SectionList>

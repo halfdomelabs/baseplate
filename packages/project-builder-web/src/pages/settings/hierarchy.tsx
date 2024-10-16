@@ -6,7 +6,7 @@ import {
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  Card,
+  buttonVariants,
   cn,
   toast,
   useConfirmDialog,
@@ -19,11 +19,7 @@ import { FeatureForm } from './components/FeatureForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-interface FeaturesFormProps {
-  className?: string;
-}
-
-export function HierarchyPage({ className }: FeaturesFormProps): JSX.Element {
+function HierarchyPage(): JSX.Element {
   const { definitionContainer, setConfigAndFixReferences } =
     useProjectDefinition();
   const { requestConfirm } = useConfirmDialog();
@@ -65,92 +61,131 @@ export function HierarchyPage({ className }: FeaturesFormProps): JSX.Element {
   };
 
   return (
-    <Card className={cn('flex flex-col items-start space-y-4 p-4', className)}>
-      <h2>Hierarchy</h2>
-      <p className="text-muted-foreground">
-        All business logic and features are organized in a hierarchy. The
-        structure of the features in the list below is the way the folder
-        structure will be created in your backend/admin applications.
-      </p>
-      <div>
-        {features.map((feature) => {
-          return (
-            <div
-              key={feature.id}
-              className="flex flex-row space-x-2 hover:bg-muted"
-            >
-              <button
-                className="mr-1 flex flex-row items-center space-x-2 rounded-md p-1"
-                onClick={() => {
-                  setFeatureToEdit(feature);
-                  setShowFeatureForm(true);
-                }}
-              >
-                <div
-                  className="flex w-56 items-center truncate"
-                  title={feature.name.split('/').pop() ?? ''}
-                >
-                  {feature.name.includes('/') && (
-                    <>
-                      {feature.name
-                        .split('/')
-                        .slice(0, -2)
-                        .map((name) => (
-                          <FiCornerDownRight
-                            key={name}
-                            className="invisible mr-2 size-4"
-                          />
-                        ))}
-                      <FiCornerDownRight className="mr-2 size-4" />
-                    </>
-                  )}
-                  <div>{feature.name.split('/').pop() ?? ''}</div>
-                </div>
-                <MdEdit />
-              </button>
-              <Button.WithIcon
-                variant="ghost"
-                onClick={() => handleRemoveFeature(feature)}
-                size="icon"
-                icon={MdDelete}
-                title={`Delete ${feature.name}`}
+    <div className="relative h-full max-h-full pb-[var(--action-bar-height)]">
+      <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
+        <div className="sticky top-0 space-y-2 border-b bg-background py-6">
+          <h1>Hierarchy</h1>
+          <p className="max-w-3xl text-muted-foreground">
+            All business logic and features are organized in a hierarchy. The
+            structure of the features in the list below is the way the folder
+            structure will be created in your backend/admin applications.
+          </p>
+        </div>
+        <div className="py-6">
+          <div className="mb-4 flex max-w-md flex-col gap-1">
+            {features.map((feature) => (
+              <FeatureItem
+                key={feature.id}
+                feature={feature}
+                setFeatureToEdit={setFeatureToEdit}
+                setShowFeatureForm={setShowFeatureForm}
+                handleRemoveFeature={handleRemoveFeature}
               />
-              <Button.WithIcon
-                variant="ghost"
-                onClick={() => {
-                  setFeatureToEdit({
-                    id: featureEntityType.generateNewId(),
-                    name: '',
-                    parentRef: feature.id,
-                  });
-                  setShowFeatureForm(true);
-                }}
-                size="icon"
-                icon={MdAdd}
-                title={`Add Sub-Feature to ${feature.name}`}
-              />
-            </div>
-          );
-        })}
+            ))}
+          </div>
+          <Button
+            onClick={() => {
+              setFeatureToEdit({
+                id: featureEntityType.generateNewId(),
+                name: '',
+                parentRef: null,
+              });
+              setShowFeatureForm(true);
+            }}
+            variant="secondary"
+            size="sm"
+          >
+            Add Feature
+          </Button>
+          <FeatureForm
+            feature={featureToEdit}
+            open={showFeatureForm}
+            onClose={() => setShowFeatureForm(false)}
+          />
+        </div>
       </div>
-      <Button
+    </div>
+  );
+}
+
+function FeatureItem({
+  feature,
+  setFeatureToEdit,
+  setShowFeatureForm,
+  handleRemoveFeature,
+}: {
+  feature: FeatureConfig;
+  setFeatureToEdit: (f: FeatureConfig) => void;
+  setShowFeatureForm: (s: boolean) => void;
+  handleRemoveFeature: (f: FeatureConfig) => void;
+}): JSX.Element {
+  const featureDisplayName = feature.name.split('/').pop() ?? '';
+
+  return (
+    <div className="flex space-x-1">
+      <button
+        className="mr-1 flex w-full flex-row items-center space-x-3"
+        onClick={() => {
+          setFeatureToEdit(feature);
+          setShowFeatureForm(true);
+        }}
+      >
+        <div
+          className="flex w-full items-center space-x-1 truncate"
+          title={featureDisplayName}
+        >
+          {feature.name.includes('/') && (
+            <>
+              {feature.name
+                .split('/')
+                .slice(0, -2)
+                .map((name) => (
+                  <div key={name} className="w-8 shrink-0" />
+                ))}
+              <FiCornerDownRight className="size-8 shrink-0 p-2" />
+            </>
+          )}
+          <div
+            className={cn(
+              buttonVariants({
+                variant: 'secondary',
+                size: 'sm',
+              }),
+              'group w-full',
+            )}
+            style={{ justifyContent: 'flex-start' }}
+          >
+            {featureDisplayName}
+            <div className="flex-1" />
+            <MdEdit className="opacity-0 transition-opacity group-hover:opacity-100" />
+          </div>
+        </div>
+      </button>
+      <Button.WithIcon
+        className="shrink-0"
+        variant="ghost"
         onClick={() => {
           setFeatureToEdit({
             id: featureEntityType.generateNewId(),
             name: '',
-            parentRef: null,
+            parentRef: feature.id,
           });
           setShowFeatureForm(true);
         }}
-        variant="secondary"
-      >
-        Add Feature
-      </Button>
-      <FeatureForm
-        feature={featureToEdit}
-        open={showFeatureForm}
-        onClose={() => setShowFeatureForm(false)}
+        size="icon"
+        icon={MdAdd}
+        title={`Add Sub-Feature to ${feature.name}`}
       />
-    </Card>
+      <Button.WithIcon
+        className="shrink-0"
+        variant="ghost"
+        onClick={() => handleRemoveFeature(feature)}
+        size="icon"
+        icon={MdDelete}
+        title={`Delete ${feature.name}`}
+      />
+    </div>
   );
 }
+
+export default HierarchyPage;
