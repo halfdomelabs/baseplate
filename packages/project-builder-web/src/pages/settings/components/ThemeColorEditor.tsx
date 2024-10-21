@@ -108,7 +108,7 @@ export function ThemeColorEditor({
         })}
       </div>
       <div className="flex-1">
-        <ThemeColorsPreview control={control} mode={mode} />
+        {/* <ThemeColorsPreview control={control} mode={mode} /> */}
       </div>
     </div>
   );

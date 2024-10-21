@@ -17,11 +17,12 @@ import {
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
 import { ThemeColorEditor } from './components/ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay';
+import { ThemeColorsPreview } from './components/ThemeColorsPreview';
 import { ThemePaletteEditor } from './components/ThemePaletteEditor';
 import { logAndFormatError } from 'src/services/error-formatter';
 
@@ -85,6 +86,8 @@ export function ThemeBuilderPage(): JSX.Element {
   const handleShadesChange = useCallback(() => {
     generateNewThemeColors();
   }, [generateNewThemeColors]);
+
+  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
 
   return (
     <div className="relative h-full max-h-full pb-[var(--action-bar-height)]">
@@ -159,9 +162,20 @@ export function ThemeBuilderPage(): JSX.Element {
                 <SectionList.SectionDescription>
                   Pick the colors for your theme
                 </SectionList.SectionDescription>
+                <div className="sticky top-64">
+                  <ThemeColorsPreview
+                    key={themeMode} // force rerender
+                    control={control}
+                    mode={themeMode}
+                  />
+                </div>
               </SectionList.SectionHeader>
               <SectionList.SectionContent>
-                <Tabs defaultValue="light">
+                <Tabs
+                  defaultValue="light"
+                  value={themeMode}
+                  onValueChange={setThemeMode}
+                >
                   <Tabs.List>
                     <Tabs.Trigger value="light">Light</Tabs.Trigger>
                     <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
@@ -191,10 +205,9 @@ export function ThemeBuilderPage(): JSX.Element {
               </SectionList.SectionContent>
             </SectionList.Section>
           </SectionList>
-
           <Button type="submit">Save</Button>
-
           <h2>CSS Preview</h2>
+
           <ThemeColorsCssDisplay control={control} />
         </form>
       </div>
