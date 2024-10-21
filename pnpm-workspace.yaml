@@ -3,4 +3,25 @@ packages:
   - 'plugins/*'
 
 catalog:
+  # Node
+  '@types/node': '^20.0.0'
+
+  # Typescript
   typescript: 5.5.4
+  tsx: 4.19.1
+  tsc-alias: 1.8.10
+
+  # Linting / Formatting
+  eslint: 8.57.0
+  prettier: 3.3.3
+
+  # React
+  react: 18.3.1
+  react-dom: 18.3.1
+  '@types/react': 18.3.8
+  '@types/react-dom': 18.3.0
+
+  # Vite
+  vite: 5.4.7
+  vitest: 2.1.1
+  '@vitejs/plugin-react': 4.3.1

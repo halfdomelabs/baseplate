@@ -40,9 +40,11 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/node": "^20.0.0",
+    "@types/node": "catalog:",
     "@types/ramda": "^0.29.3",
-    "tsx": "4.19.1",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:"
   },
   "engines": {
