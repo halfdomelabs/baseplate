@@ -5,12 +5,12 @@ import React, { useEffect, useState } from 'react';
 import { DocsContainer } from '@storybook/addon-docs';
 import { addons } from '@storybook/preview-api';
 import { createPortal } from 'react-dom';
+import { Toaster } from '../src/components/Toaster/Toaster';
+import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
 
 import '../src/font.css';
 import '../src/styles.css';
 import CustomTheme from './CustomTheme';
-
-import { Toaster } from '../src/components/Toaster/Toaster';
 
 let hasToasterRendered = false;
 
@@ -57,12 +57,16 @@ const preview: Preview = {
     docs: {
       container: (props) => {
         // workaround for https://github.com/hipstersmoothie/storybook-dark-mode/issues/282
-        const [isDark, setIsDark] = useState(false);
+        const [isDark, setIsDark] = useState(isDarkModeEnabled());
 
         useEffect(() => {
-          channel.on(DARK_MODE_EVENT_NAME, setIsDark);
+          const handleDarkModeChange = (shouldBeDark: boolean) => {
+            setIsDark(shouldBeDark);
+            setDarkModeEnabled(shouldBeDark);
+          };
+          channel.on(DARK_MODE_EVENT_NAME, handleDarkModeChange);
           return () => {
-            channel.off(DARK_MODE_EVENT_NAME, setIsDark);
+            channel.off(DARK_MODE_EVENT_NAME, handleDarkModeChange);
           };
         }, []);
 
