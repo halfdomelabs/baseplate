@@ -40,7 +40,12 @@ export function ModelHeaderBar({
   };
 
   return (
-    <div className={clsx('flex items-center justify-between', className)}>
+    <div
+      className={clsx(
+        'flex items-center justify-between border-b py-4',
+        className,
+      )}
+    >
       <div>
         <ModelInfoEditDialog asChild>
           <button
