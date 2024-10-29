@@ -22,7 +22,6 @@ export function ThemeColorsPreview({
     name: `colors.${mode}`,
   });
   const colorCss = colors && generateCssFromThemeConfig(colors);
-  console.debug(colors);
   return (
     <div
       className={clsx(

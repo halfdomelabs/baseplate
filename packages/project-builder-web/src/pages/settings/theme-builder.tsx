@@ -24,6 +24,7 @@ import { ThemeColorEditor } from './components/ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay';
 import { ThemeColorsPreview } from './components/ThemeColorsPreview';
 import { ThemePaletteEditor } from './components/ThemePaletteEditor';
+import { FormActionBar } from '@src/components';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 export function ThemeBuilderPage(): JSX.Element {
@@ -34,11 +35,11 @@ export function ThemeBuilderPage(): JSX.Element {
     [definition.theme],
   );
 
-  const { control, handleSubmit, setValue, getValues, formState, reset } =
-    useResettableForm<ThemeConfig>({
-      resolver: zodResolver(themeSchema),
-      defaultValues,
-    });
+  const form = useResettableForm<ThemeConfig>({
+    resolver: zodResolver(themeSchema),
+    defaultValues,
+  });
+  const { control, handleSubmit, setValue, getValues, formState, reset } = form;
 
   const onSubmit = handleSubmit((data) => {
     try {
@@ -87,10 +88,13 @@ export function ThemeBuilderPage(): JSX.Element {
     generateNewThemeColors();
   }, [generateNewThemeColors]);
 
-  const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
+  const [themeMode, setThemeMode] = useState<string>('light');
 
   return (
-    <div className="relative h-full max-h-full pb-[var(--action-bar-height)]">
+    <form
+      className="relative h-full max-h-full pb-[var(--action-bar-height)]"
+      onSubmit={onSubmit}
+    >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
         <div className="sticky top-0 space-y-2 border-b bg-background py-6">
           <h1>Theme Builder</h1>
@@ -116,7 +120,7 @@ export function ThemeBuilderPage(): JSX.Element {
             </Alert.Description>
           </Alert>
         </div>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <div className="space-y-4">
           <SectionList>
             <SectionList.Section>
               <SectionList.SectionHeader>
@@ -127,7 +131,7 @@ export function ThemeBuilderPage(): JSX.Element {
                   Pick the colors for your theme
                 </SectionList.SectionDescription>
               </SectionList.SectionHeader>
-              <SectionList.SectionContent>
+              <SectionList.SectionContent className="max-w-3xl">
                 <Tabs defaultValue="base">
                   <Tabs.List>
                     <Tabs.Trigger value="base">Base</Tabs.Trigger>
@@ -166,16 +170,12 @@ export function ThemeBuilderPage(): JSX.Element {
                   <ThemeColorsPreview
                     key={themeMode} // force rerender
                     control={control}
-                    mode={themeMode}
+                    mode={themeMode as 'light' | 'dark'}
                   />
                 </div>
               </SectionList.SectionHeader>
-              <SectionList.SectionContent>
-                <Tabs
-                  defaultValue="light"
-                  value={themeMode}
-                  onValueChange={setThemeMode}
-                >
+              <SectionList.SectionContent className="gap-2">
+                <Tabs value={themeMode} onValueChange={setThemeMode}>
                   <Tabs.List>
                     <Tabs.Trigger value="light">Light</Tabs.Trigger>
                     <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
@@ -197,7 +197,8 @@ export function ThemeBuilderPage(): JSX.Element {
                 </Tabs>
                 <Button
                   onClick={() => generateNewThemeColors(true)}
-                  variant="secondary"
+                  variant="outline"
+                  size="sm"
                   type="button"
                 >
                   Reset Colors
@@ -205,12 +206,11 @@ export function ThemeBuilderPage(): JSX.Element {
               </SectionList.SectionContent>
             </SectionList.Section>
           </SectionList>
-          <Button type="submit">Save</Button>
           <h2>CSS Preview</h2>
-
           <ThemeColorsCssDisplay control={control} />
-        </form>
+        </div>
       </div>
-    </div>
+      <FormActionBar form={form} />
+    </form>
   );
 }

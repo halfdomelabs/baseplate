@@ -9,8 +9,6 @@ import { clsx } from 'clsx';
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { MdInfo, MdRestartAlt } from 'react-icons/md';
 
-import { ThemeColorsPreview } from './ThemeColorsPreview';
-
 interface ThemeColorEditorProps {
   className?: string;
   control: Control<ThemeConfig>;
@@ -106,9 +104,6 @@ export function ThemeColorEditor({
             </div>
           );
         })}
-      </div>
-      <div className="flex-1">
-        {/* <ThemeColorsPreview control={control} mode={mode} /> */}
       </div>
     </div>
   );

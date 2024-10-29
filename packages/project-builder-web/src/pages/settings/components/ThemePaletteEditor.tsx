@@ -74,6 +74,7 @@ export function ThemePaletteEditor({
     <div className={clsx('space-y-4', className)}>
       <ComboboxField.Controller
         name={`palettes.${type}.paletteName`}
+        className="max-w-xl"
         control={control}
         options={paletteOptions}
         placeholder="Choose a base palette"
@@ -93,19 +94,19 @@ export function ThemePaletteEditor({
           </Button>
         </div>
       )}
-      <div className="grid grid-cols-11 gap-4">
+      <div className="flex gap-3">
         {PALETTE_SHADES.map((shade) => (
-          <div key={shade} className="w-14">
-            <ColorPickerField.Controller
-              hideText
-              control={control}
-              name={`palettes.${type}.shades.${shade}`}
-              label={shade}
-              onChange={() =>
-                onShadesChange?.(getValues(`palettes.${type}.shades`))
-              }
-            />
-          </div>
+          <ColorPickerField.Controller
+            key={shade}
+            className="flex flex-col items-center"
+            hideText
+            control={control}
+            name={`palettes.${type}.shades.${shade}`}
+            label={shade}
+            onChange={() =>
+              onShadesChange?.(getValues(`palettes.${type}.shades`))
+            }
+          />
         ))}
       </div>
     </div>
