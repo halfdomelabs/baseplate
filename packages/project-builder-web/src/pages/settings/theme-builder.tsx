@@ -21,7 +21,6 @@ import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
 import { ThemeColorEditor } from './components/ThemeColorEditor';
-import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay';
 import { ThemeColorsPreview } from './components/ThemeColorsPreview';
 import { ThemePaletteEditor } from './components/ThemePaletteEditor';
 import { FormActionBar } from '@src/components';
@@ -96,7 +95,7 @@ export function ThemeBuilderPage(): JSX.Element {
       onSubmit={onSubmit}
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
-        <div className="sticky top-0 space-y-2 border-b bg-background py-6">
+        <div className="sticky top-0 z-10 space-y-2 border-b bg-background py-6">
           <h1>Theme Builder</h1>
           <p className="max-w-3xl text-muted-foreground">
             The theme of the UI is based off color variables used with{' '}
@@ -111,7 +110,10 @@ export function ThemeBuilderPage(): JSX.Element {
             . We generate the color variables based off the Tailwind color
             palette structure but you can customize them as you wish.
           </p>
-          <Alert>
+        </div>
+        <div className="pt-4">
+          {/* TODO: check if this should be removed */}
+          <Alert className="max-w-fit">
             <MdConstruction />
             <Alert.Title>Work in Progress</Alert.Title>
             <Alert.Description>
@@ -119,8 +121,6 @@ export function ThemeBuilderPage(): JSX.Element {
               generation at the moment.
             </Alert.Description>
           </Alert>
-        </div>
-        <div className="space-y-4">
           <SectionList>
             <SectionList.Section>
               <SectionList.SectionHeader>
@@ -166,7 +166,7 @@ export function ThemeBuilderPage(): JSX.Element {
                 <SectionList.SectionDescription>
                   Pick the colors for your theme
                 </SectionList.SectionDescription>
-                <div className="sticky top-64">
+                <div className="sticky top-44">
                   <ThemeColorsPreview
                     key={themeMode} // force rerender
                     control={control}
@@ -206,8 +206,9 @@ export function ThemeBuilderPage(): JSX.Element {
               </SectionList.SectionContent>
             </SectionList.Section>
           </SectionList>
-          <h2>CSS Preview</h2>
-          <ThemeColorsCssDisplay control={control} />
+          {/* TODO: confirm this should be removed */}
+          {/* <h2>CSS Preview</h2>
+          <ThemeColorsCssDisplay control={control} /> */}
         </div>
       </div>
       <FormActionBar form={form} />
