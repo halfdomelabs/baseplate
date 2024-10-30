@@ -20,7 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
-import { ThemeColorEditor } from './components/ThemeColorEditor';
+import { ThemeColorsEditor } from './components/ThemeColorsEditor';
 import { ThemeColorsPreview } from './components/ThemeColorsPreview';
 import { ThemePaletteEditor } from './components/ThemePaletteEditor';
 import { FormActionBar } from '@src/components';
@@ -174,21 +174,21 @@ export function ThemeBuilderPage(): JSX.Element {
                   />
                 </div>
               </SectionList.SectionHeader>
-              <SectionList.SectionContent className="gap-2">
+              <SectionList.SectionContent className="space-y-4">
                 <Tabs value={themeMode} onValueChange={setThemeMode}>
                   <Tabs.List>
                     <Tabs.Trigger value="light">Light</Tabs.Trigger>
                     <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
                   </Tabs.List>
                   <Tabs.Content value="light">
-                    <ThemeColorEditor
+                    <ThemeColorsEditor
                       control={control}
                       setValue={setValue}
                       mode="light"
                     />
                   </Tabs.Content>
                   <Tabs.Content value="dark">
-                    <ThemeColorEditor
+                    <ThemeColorsEditor
                       control={control}
                       setValue={setValue}
                       mode="dark"

@@ -81,15 +81,20 @@ export function ThemePaletteEditor({
         onChange={handlePaletteNameChange}
       />
       {paletteName === 'custom' && (
-        <div className="flex items-end space-x-2">
+        <div className="flex max-w-xl items-center justify-between">
           <ColorPickerField.Controller
-            className="flex-1"
+            className="flex-1 space-x-1"
+            wrapperClassName="items-center"
             control={control}
             name={`palettes.${type}.customBase`}
             label="Custom Base Color"
             placeholder="Choose a color"
           />
-          <Button variant="secondary" onClick={handleCustomPaletteGenerate}>
+          <Button
+            variant="secondary"
+            onClick={handleCustomPaletteGenerate}
+            size="sm"
+          >
             Generate
           </Button>
         </div>
@@ -98,7 +103,7 @@ export function ThemePaletteEditor({
         {PALETTE_SHADES.map((shade) => (
           <ColorPickerField.Controller
             key={shade}
-            className="flex flex-col items-center"
+            wrapperClassName="flex flex-col items-center"
             hideText
             control={control}
             name={`palettes.${type}.shades.${shade}`}

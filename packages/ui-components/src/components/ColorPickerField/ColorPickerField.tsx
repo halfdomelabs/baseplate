@@ -12,6 +12,7 @@ import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface ColorPickerFieldProps extends FieldProps {
   className?: string;
+  wrapperClassName?: string;
   disabled?: boolean;
   placeholder?: string;
   onChange?: (value: string) => void;
@@ -27,6 +28,7 @@ export interface ColorPickerFieldProps extends FieldProps {
 function ColorPickerFieldFn(
   {
     className,
+    wrapperClassName,
     disabled,
     placeholder,
     onChange,
@@ -48,11 +50,15 @@ function ColorPickerFieldFn(
       <Popover.Trigger asChild>
         <button
           className={cn(
-            buttonVariants({ variant: 'outline', size: 'none' }),
+            buttonVariants({
+              variant: 'outline',
+              size: 'none',
+              justify: 'start',
+            }),
+            className,
             'flex h-8 items-center px-2',
             hideText ? 'justify-center' : undefined,
             disabled ? 'opacity-75' : undefined,
-            addWrapper ? null : className,
           )}
           id={id}
           ref={ref}
@@ -77,6 +83,7 @@ function ColorPickerFieldFn(
         <Popover.Content
           sideOffset={5}
           align="start"
+          collisionPadding={{ bottom: 50 }}
           className="space-y-2 rounded-md border border-border bg-white p-4"
         >
           <HexColorInput
@@ -93,7 +100,7 @@ function ColorPickerFieldFn(
 
   if (addWrapper) {
     return (
-      <FormItem error={error} className={cn(className)}>
+      <FormItem error={error} className={cn(wrapperClassName)}>
         {label && <FormItem.Label>{label}</FormItem.Label>}
         <FormItem.Control>{inputComponent}</FormItem.Control>
         {error ? (

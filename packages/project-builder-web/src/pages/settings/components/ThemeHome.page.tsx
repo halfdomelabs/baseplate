@@ -14,7 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
 import { MdConstruction } from 'react-icons/md';
 
-import { ThemeColorEditor } from './ThemeColorEditor';
+import { ThemeColorsEditor } from './ThemeColorsEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
 import { logAndFormatError } from 'src/services/error-formatter';
@@ -169,14 +169,14 @@ export function ThemeHomePage(): JSX.Element {
             <Tabs.Trigger value="dark">Dark</Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content value="light">
-            <ThemeColorEditor
+            <ThemeColorsEditor
               control={control}
               setValue={setValue}
               mode="light"
             />
           </Tabs.Content>
           <Tabs.Content value="dark">
-            <ThemeColorEditor
+            <ThemeColorsEditor
               control={control}
               setValue={setValue}
               mode="dark"
