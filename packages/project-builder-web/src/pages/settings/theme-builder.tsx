@@ -174,7 +174,7 @@ export function ThemeBuilderPage(): JSX.Element {
                   />
                 </div>
               </SectionList.SectionHeader>
-              <SectionList.SectionContent className="space-y-4">
+              <SectionList.SectionContent className="flex flex-col gap-4">
                 <Tabs value={themeMode} onValueChange={setThemeMode}>
                   <Tabs.List>
                     <Tabs.Trigger value="light">Light</Tabs.Trigger>
