@@ -86,11 +86,11 @@ export function ThemeColorsPreview({
               <Button variant="link" type="button">
                 Link
               </Button>
-              <Button variant="outline" type="button">
-                Outline
-              </Button>
               <Button variant="secondary" type="button">
                 Secondary
+              </Button>
+              <Button variant="outline" type="button">
+                Outline
               </Button>
             </div>
           </div>
