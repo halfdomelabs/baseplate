@@ -1,19 +1,19 @@
 import * as R from 'ramda';
 
+import type { FormatterProvider } from '@src/providers/index.js';
+import type { Logger } from '@src/utils/evented-logger.js';
+
+import type { GeneratorOutput } from '../generator-output.js';
+import type { GeneratorTaskInstance } from '../generator.js';
+import type { Provider } from '../provider.js';
+import type { GeneratorEntry } from './generator-builder.js';
+
+import { OutputBuilder } from '../generator-output.js';
 import { buildEntryDependencyMapRecursive as buildTaskEntryDependencyMapRecursive } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
-import { GeneratorEntry } from './generator-builder.js';
 import { flattenGeneratorTaskEntries } from './utils.js';
-import { GeneratorOutput, OutputBuilder } from '../generator-output.js';
-import { GeneratorTaskInstance } from '../generator.js';
-import { Provider } from '../provider.js';
-import { FormatterProvider } from '@src/providers/index.js';
-import { Logger } from '@src/utils/evented-logger.js';
 
 // running awaits in serial for ease of reading
-
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
 
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
@@ -58,25 +58,22 @@ export async function executeGeneratorEntry(
               `Could not resolve required dependency ${key} in ${taskId}`,
             );
           }
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           return provider!; // cheat Type system to prevent null from appearing
         }, dependencies);
 
         const taskInstance = task.run(resolvedDependencies);
         taskInstanceById[taskId] = taskInstance;
 
-        if (
-          !taskInstance.getProviders &&
-          exports &&
-          Object.keys(exports).length
-        ) {
+        if (!taskInstance.getProviders && Object.keys(exports).length > 0) {
           throw new Error(
             `Task ${taskId} does not have getProviders function despite having exports`,
           );
         }
-        if (taskInstance.getProviders && exports) {
+        if (taskInstance.getProviders) {
           const providers = taskInstance.getProviders();
           const missingProvider = Object.keys(exports).find(
-            (key) => !providers[key],
+            (key) => !(key in providers),
           );
           if (missingProvider) {
             throw new Error(
@@ -114,12 +111,12 @@ export async function executeGeneratorEntry(
       } else {
         throw new Error(`Unknown action ${action}`);
       }
-    } catch (err) {
+    } catch (error) {
       const { generatorName } = taskEntriesById[taskId];
       logger.error(
         `Error encountered in ${action} step of ${taskId} (${generatorName})`,
       );
-      throw err;
+      throw error;
     }
   }
 

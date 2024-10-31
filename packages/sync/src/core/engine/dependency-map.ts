@@ -1,9 +1,14 @@
 import * as R from 'ramda';
 
-import { GeneratorEntry, GeneratorTaskEntry } from './generator-builder.js';
+import type { Logger } from '@src/utils/evented-logger.js';
+
+import type { ProviderDependencyOptions } from '../provider.js';
+import type {
+  GeneratorEntry,
+  GeneratorTaskEntry,
+} from './generator-builder.js';
+
 import { getGeneratorEntryExportNames, providerMapToNames } from './utils.js';
-import { ProviderDependencyOptions } from '../provider.js';
-import { Logger } from '@src/utils/evented-logger.js';
 
 /**
  * Builds a map of the entry's dependencies to entry IDs of resolved providers
@@ -16,7 +21,10 @@ export function buildTaskDependencyMap(
   parentProviders: Record<string, string>,
   globalGeneratorTaskMap: Record<string, GeneratorTaskEntry>,
   logger: Logger,
-): Record<string, { id: string; options: ProviderDependencyOptions } | null> {
+): Record<
+  string,
+  { id: string; options: ProviderDependencyOptions } | null | undefined
+> {
   return R.mapObjIndexed((dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
@@ -77,25 +85,27 @@ export function buildTaskDependencyMap(
 
 export type EntryDependencyMap = Record<
   string,
-  Record<string, { id: string; options?: ProviderDependencyOptions } | null>
+  Record<
+    string,
+    { id: string; options?: ProviderDependencyOptions } | null | undefined
+  >
 >;
 
 function buildHoistedProviderMap(
   entry: GeneratorEntry,
   providers: string[],
 ): Record<string, string> {
-  if (!providers.length) {
+  if (providers.length === 0) {
     return {};
   }
 
   const matchingProviderMap = R.mergeAll(
     entry.tasks.map((task) =>
-      providerMapToNames(task.exports)
-        .filter((name) => providers.includes(name))
-        .reduce(
-          (acc, name) => ({ ...acc, [name]: task.id }),
-          {} as Record<string, string>,
-        ),
+      Object.fromEntries(
+        providerMapToNames(task.exports)
+          .filter((name) => providers.includes(name))
+          .map((name) => [name, task.id]),
+      ),
     ),
   );
 

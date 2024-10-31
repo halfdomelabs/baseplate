@@ -104,8 +104,14 @@ export function generateBaseEslintConfig(
     },
     {
       rules: {
+        // Allow named default imports without flagging them as errors
         'import-x/no-named-as-default': 'off',
+
+        // Allow named default members without flagging them as errors
         'import-x/no-named-as-default-member': 'off',
+
+        // Disallow importing dependencies that aren’t explicitly listed in the package.json,
+        // except for those explicitly allowed under `devDependencies` (e.g., test files)
         'import-x/no-extraneous-dependencies': ['error', { devDependencies }],
       },
       settings: {
@@ -122,8 +128,17 @@ export function generateBaseEslintConfig(
     eslintPluginUnicorn.configs['flat/recommended'],
     {
       rules: {
+        // Disable the rule that prevents using abbreviations in identifiers, allowing
+        // flexibility in naming, especially for common abbreviations in code.
         'unicorn/prevent-abbreviations': 'off',
+
+        // Disable the rule that disallows `null` values, allowing `null` to be used
+        // when necessary (e.g., for nullable types or optional fields).
         'unicorn/no-null': 'off',
+
+        // Allow array callback references without flags, supporting patterns like
+        // `array.filter(callbackFunction)`, which can improve readability and code brevity.
+        'unicorn/no-array-callback-reference': 'off',
       },
     },
 
@@ -132,12 +147,23 @@ export function generateBaseEslintConfig(
       // perfectionist has some nice rules but can be a bit too strict for recommended config
       plugins: { perfectionist },
       rules: {
+        // Enforces a consistent sorting order for import statements. Customizes the sorting
+        // to place internal imports (e.g., `@src/**`) in a specific order for readability and structure.
         'perfectionist/sort-imports': [
           'error',
           { internalPattern: ['@src/**'] },
         ],
+
+        // Enforces consistent sorting for export statements, keeping exports organized
+        // and making them easier to locate within modules.
         'perfectionist/sort-exports': ['error'],
+
+        // Ensures named imports are sorted alphabetically or in a specified order,
+        // promoting a clean and structured appearance for import declarations.
         'perfectionist/sort-named-imports': ['error'],
+
+        // Enforces alphabetical or specified sorting for named exports to maintain
+        // consistency, aiding readability and organization within files.
         'perfectionist/sort-named-exports': ['error'],
       },
     },

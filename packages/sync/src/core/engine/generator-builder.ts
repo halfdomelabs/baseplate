@@ -1,15 +1,21 @@
-import path from 'path';
+import path from 'node:path';
 
-import { loadDescriptorFromFile } from './descriptor-loader.js';
-import { BaseGeneratorDescriptor } from '../descriptor.js';
-import {
+import type { Logger } from '@src/utils/evented-logger.js';
+
+import { notEmpty } from '@src/utils/arrays.js';
+
+import type { BaseGeneratorDescriptor } from '../descriptor.js';
+import type {
   GeneratorTask,
   ProviderDependencyMap,
   ProviderExportMap,
 } from '../generator.js';
-import { GeneratorConfigMap, GeneratorConfigWithLocation } from '../loader.js';
-import { notEmpty } from '@src/utils/arrays.js';
-import { Logger } from '@src/utils/evented-logger.js';
+import type {
+  GeneratorConfigMap,
+  GeneratorConfigWithLocation,
+} from '../loader.js';
+
+import { loadDescriptorFromFile } from './descriptor-loader.js';
 
 export interface GeneratorTaskEntry {
   id: string;

@@ -1,5 +1,6 @@
+import type { FormatFunction } from '../providers/formatter.js';
+
 import { createBuilderActionCreator } from '../core/index.js';
-import { FormatFunction } from '../providers/formatter.js';
 
 interface Options {
   destination: string;

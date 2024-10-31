@@ -1,13 +1,8 @@
-import * as R from 'ramda';
-import { z } from 'zod';
+import type { z } from 'zod';
 
-import { notEmpty } from './arrays.js';
-import {
-  ChildGeneratorConfig,
-  DescriptorWithChildren,
-} from './createGeneratorTypes.js';
-import {
-  baseDescriptorSchema,
+import * as R from 'ramda';
+
+import type {
   BaseGeneratorDescriptor,
   GeneratorConfig,
   GeneratorOutputBuilder,
@@ -17,6 +12,13 @@ import {
   ProviderDependencyMap,
   ProviderExportMap,
 } from '../core/index.js';
+import type {
+  ChildGeneratorConfig,
+  DescriptorWithChildren,
+} from './create-generator-types.js';
+
+import { baseDescriptorSchema } from '../core/index.js';
+import { notEmpty } from './arrays.js';
 
 export interface SimpleGeneratorTaskOutput<TaskOutput = void> {
   name: string;
@@ -75,9 +77,9 @@ type TaskConfigBuilder<
 
 export type ExtractTaskOutputFromBuilder<T> =
   T extends TaskConfigBuilder<
-    ProviderExportMap<Record<string, Provider>>,
-    ProviderDependencyMap<Record<string, Provider>>,
-    TaskOutputDependencyMap<Record<string, unknown>>,
+    ProviderExportMap,
+    ProviderDependencyMap,
+    TaskOutputDependencyMap,
     infer TaskOutput
   >
     ? TaskOutput
@@ -85,9 +87,9 @@ export type ExtractTaskOutputFromBuilder<T> =
 
 type TaskBuilderMap<T> = {
   [key in keyof T]: TaskConfigBuilder<
-    ProviderExportMap<Record<string, Provider>>,
-    ProviderDependencyMap<Record<string, Provider>>,
-    TaskOutputDependencyMap<Record<string, unknown>>,
+    ProviderExportMap,
+    ProviderDependencyMap,
+    TaskOutputDependencyMap,
     T[key]
   >;
 };
@@ -152,7 +154,7 @@ export interface GeneratorWithTasksConfig<DescriptorSchema extends z.ZodType> {
   descriptorSchema?: DescriptorSchema;
   getDefaultChildGenerators?(
     descriptor: z.infer<DescriptorSchema>,
-  ): Record<string, ChildGeneratorConfig>;
+  ): Partial<Record<string, ChildGeneratorConfig>>;
   buildTasks: (
     taskBuilder: GeneratorTaskBuilder,
     descriptor: DescriptorWithChildren & z.infer<DescriptorSchema>,
@@ -202,7 +204,8 @@ export function createGeneratorWithTasks<
           descriptorChild:
             | Partial<BaseGeneratorDescriptor>
             | string
-            | undefined,
+            | undefined
+            | null,
         ): BaseGeneratorDescriptor | string | null => {
           if (typeof descriptorChild === 'string') {
             // child references are not parsed currently
@@ -236,12 +239,17 @@ export function createGeneratorWithTasks<
         };
 
         const children = R.mapObjIndexed((value, key) => {
+          if (!value) {
+            return null;
+          }
           const { isMultiple } = value;
 
           if (isMultiple) {
             const childArray = descriptorChildren[key] ?? [];
             if (!Array.isArray(childArray)) {
-              throw new Error(`${id} has invalid child ${key}. Must be array.`);
+              throw new TypeError(
+                `${id} has invalid child ${key}. Must be array.`,
+              );
             }
             return childArray
               .map((childDescriptor) =>
@@ -252,7 +260,9 @@ export function createGeneratorWithTasks<
           const child = descriptorChildren[key];
 
           if (Array.isArray(child)) {
-            throw new Error(`${id} has invalid child ${key}. Cannot be array.`);
+            throw new TypeError(
+              `${id} has invalid child ${key}. Cannot be array.`,
+            );
           }
           return mergeAndValidateDescriptor(value, child);
         }, childGeneratorConfigs);
@@ -264,20 +274,20 @@ export function createGeneratorWithTasks<
           children: R.mergeRight(children, customChildren),
           validatedDescriptor,
         };
-      } catch (err) {
+      } catch (error) {
         context.logger.error(
           `Descriptor validation failed at ${context.id}: ${
-            (err as Error).message
+            (error as Error).message
           }`,
         );
-        throw err;
+        throw error;
       }
     },
     createGenerator: (descriptor) => {
       const tasks: SimpleGeneratorTaskConfig<
-        ProviderExportMap<Record<string, Provider>>,
-        ProviderDependencyMap<Record<string, Provider>>,
-        TaskOutputDependencyMap<Record<string, unknown>>
+        ProviderExportMap,
+        ProviderDependencyMap,
+        TaskOutputDependencyMap
       >[] = [];
       const taskOutputs: Record<string, unknown> = {};
       const taskBuilder: GeneratorTaskBuilder<

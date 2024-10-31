@@ -21,7 +21,7 @@ export function createOrderedList<T>(): OrderedList<T> {
 
   return {
     addItem(key, item, orderRules?) {
-      if (items.find((i) => i.key === key)) {
+      if (items.some((i) => i.key === key)) {
         throw new Error(`Item with key ${key} already exists`);
       }
       items.push({ key, item, orderRules });

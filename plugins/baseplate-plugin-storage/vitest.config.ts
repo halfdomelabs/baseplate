@@ -1,3 +1,3 @@
-import defaultVitestConfig from '@halfdomelabs/tools/vitest.config.node';
+import defaultVitestConfig from '@halfdomelabs/tools/vitest.node';
 
 export default defaultVitestConfig;

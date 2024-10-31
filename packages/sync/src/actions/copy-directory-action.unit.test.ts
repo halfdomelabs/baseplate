@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { copyDirectoryAction } from './copyDirectoryAction.js';
 import { OutputBuilder } from '../core/index.js';
+import { copyDirectoryAction } from './copy-directory-action.js';
 
 vi.mock('fs');
 vi.mock('fs/promises');

@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig/tsconfig.node.lib.json",
+  "extends": "./tsconfig.node.lib.json",
   "compilerOptions": {
     "outDir": "./dist"
   },

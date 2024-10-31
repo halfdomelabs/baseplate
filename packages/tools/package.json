@@ -18,16 +18,16 @@
     "./prettier.node": "./prettier.config.base.js",
     "./prettier.react": "./prettier.config.react.js",
     "./vitest.node": "./vitest.config.node.js",
-    "./tsconfig.node.cli.json": "./tsconfig/tsconfig.node.cli.json",
-    "./tsconfig.node.lib.json": "./tsconfig/tsconfig.node.lib.json",
-    "./tsconfig.node.script.json": "./tsconfig/tsconfig.node.script.json",
-    "./tsconfig.vite.lib.json": "./tsconfig/tsconfig.vite.lib.json",
-    "./tsconfig.vite.web.json": "./tsconfig/tsconfig.vite.web.json"
+    "./tsconfig.node.cli.json": "./tsconfig.node.cli.json",
+    "./tsconfig.node.lib.json": "./tsconfig.node.lib.json",
+    "./tsconfig.node.script.json": "./tsconfig.node.script.json",
+    "./tsconfig.vite.lib.json": "./tsconfig.vite.lib.json",
+    "./tsconfig.vite.web.json": "./tsconfig.vite.web.json"
   },
   "files": [
     "dist",
     "prettier.config.*.js",
-    "tsconfig",
+    "tsconfig.*.json",
     "vitest.*.js"
   ],
   "scripts": {

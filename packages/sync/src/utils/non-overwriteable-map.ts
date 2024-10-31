@@ -99,7 +99,8 @@ export function createNonOverwriteableMap<T extends object>(
   // performs the final merge of overrideValues and defaults
   const finalMerge = R.mergeWithKey((key, a, b) => {
     if (mergeArraysUniquely && Array.isArray(a) && Array.isArray(b)) {
-      return R.uniq(a.concat(b));
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return R.uniq([...a, ...b]);
     }
     return b;
   });
@@ -115,7 +116,7 @@ export function createNonOverwriteableMap<T extends object>(
       const arrValue = Array.isArray(value) ? value : [value];
       const existingValue = overrideValues[key] ?? [];
       if (!Array.isArray(existingValue)) {
-        throw new Error(
+        throw new TypeError(
           `Field ${key.toString()} is not array and cannot be prepended to in ${name}`,
         );
       }
@@ -129,7 +130,7 @@ export function createNonOverwriteableMap<T extends object>(
       const arrValue = Array.isArray(value) ? value : [value];
       const existingValue = overrideValues[key] ?? [];
       if (!Array.isArray(existingValue)) {
-        throw new Error(
+        throw new TypeError(
           `Field ${key.toString()} is not array and cannot be appended to in ${name}`,
         );
       }
@@ -144,7 +145,7 @@ export function createNonOverwriteableMap<T extends object>(
       const existingValue = overrideValues[key];
       if (existingValue) {
         if (!Array.isArray(existingValue)) {
-          throw new Error(
+          throw new TypeError(
             `Field ${key.toString()} is not array and cannot be appended to in ${name}`,
           );
         }

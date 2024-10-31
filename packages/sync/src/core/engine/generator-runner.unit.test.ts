@@ -1,13 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { GeneratorEntry } from './generator-builder.js';
-import { executeGeneratorEntry } from './generator-runner.js';
-import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
-import { GeneratorOutputBuilder } from '../generator-output.js';
-import { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
-import { createProviderType, Provider } from '../provider.js';
 import { formatterProvider } from '@src/providers/index.js';
 import { createEventedLogger } from '@src/utils/index.js';
+
+import type { GeneratorOutputBuilder } from '../generator-output.js';
+import type { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
+import type { Provider } from '../provider.js';
+import type { GeneratorEntry } from './generator-builder.js';
+
+import { createProviderType } from '../provider.js';
+import { executeGeneratorEntry } from './generator-runner.js';
+import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
 
 const logger = createEventedLogger({ noConsole: true });
 
@@ -30,7 +33,7 @@ function buildGeneratorEntry(
       /* empty */
     },
     children = [],
-    exports = {},
+    exports: entryExports = {},
     dependencyMap = {},
     exportMap = {},
   } = options;
@@ -49,8 +52,10 @@ function buildGeneratorEntry(
         exports: exportMap,
         taskDependencies: [],
         run: (deps) => ({
-          getProviders: () => exports,
-          build: (builder) => build(builder, deps),
+          getProviders: () => entryExports,
+          build: (builder) => {
+            build(builder, deps);
+          },
         }),
       },
     },

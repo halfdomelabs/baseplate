@@ -1,5 +1,5 @@
-import fs from 'fs/promises';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 import { createBuilderActionCreator } from '../core/index.js';
 
@@ -15,10 +15,11 @@ function applyReplacements(
   contents: string,
   replacements: Record<string, string>,
 ): string {
-  return Object.keys(replacements).reduce(
-    (value, key) => value.replace(new RegExp(key, 'g'), replacements[key]),
-    contents,
-  );
+  let result = contents;
+  for (const [key, value] of Object.entries(replacements)) {
+    result = result.replaceAll(new RegExp(key, 'g'), value);
+  }
+  return result;
 }
 
 export const copyFileAction = createBuilderActionCreator<[Options]>(

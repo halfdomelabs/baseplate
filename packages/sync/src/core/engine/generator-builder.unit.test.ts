@@ -1,11 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { createEventedLogger } from '@src/utils/index.js';
+
+import type { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
+import type { GeneratorConfigMap } from '../loader.js';
+
+import { createProviderType } from '../provider.js';
 import { loadDescriptorFromFile } from './descriptor-loader.js';
 import { buildGeneratorEntry, getGeneratorId } from './generator-builder.js';
-import { ProviderDependencyMap, ProviderExportMap } from '../generator.js';
-import { GeneratorConfigMap } from '../loader.js';
-import { createProviderType } from '../provider.js';
-import { createEventedLogger } from '@src/utils/index.js';
 
 vi.mock('./descriptor-loader');
 

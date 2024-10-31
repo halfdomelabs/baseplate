@@ -1,21 +1,21 @@
 import chalk from 'chalk';
 import { ExecaError } from 'execa';
-import fs from 'fs/promises';
 import _ from 'lodash';
 import ms from 'ms';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import pLimit from 'p-limit';
-import path from 'path';
 
-import {
-  FileData,
-  GeneratorOutput,
-  POST_WRITE_COMMAND_TYPE_PRIORITY,
-} from './generator-output.js';
+import type { Logger } from '@src/utils/evented-logger.js';
+
 import { getErrorMessage } from '@src/utils/errors.js';
-import { Logger } from '@src/utils/evented-logger.js';
 import { executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
+
+import type { FileData, GeneratorOutput } from './generator-output.js';
+
+import { POST_WRITE_COMMAND_TYPE_PRIORITY } from './generator-output.js';
 
 const COMMAND_TIMEOUT_MILLIS = ms('5m');
 
@@ -119,7 +119,7 @@ async function writeFile(
     }
 
     // we don't attempt 3-way merge on Buffer contents
-    if (options?.cleanContents && contents.equals(options?.cleanContents)) {
+    if (options?.cleanContents && contents.equals(options.cleanContents)) {
       return { type: 'skipped', cleanContents: contents, originalPath };
     }
 
@@ -147,8 +147,8 @@ async function writeFile(
         formattedContents = await Promise.resolve(
           options.preformat(formattedContents, filePath, logger),
         );
-      } catch (err) {
-        throw new FormatterError(err, formattedContents);
+      } catch (error) {
+        throw new FormatterError(error, formattedContents);
       }
     }
 
@@ -159,8 +159,8 @@ async function writeFile(
           filePath,
           logger,
         );
-      } catch (err) {
-        throw new FormatterError(err, formattedContents);
+      } catch (error) {
+        throw new FormatterError(error, formattedContents);
       }
     }
     return formattedContents;
@@ -205,9 +205,6 @@ async function writeFile(
   };
 }
 
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-restricted-syntax */
-
 export interface GeneratorWriteOptions {
   cleanDirectory?: string;
   rerunCommands?: string[];
@@ -218,6 +215,10 @@ export interface GeneratorWriteResult {
   failedCommands: string[];
 }
 
+const isModifiedFileResult = (
+  result: WriteFileResult,
+): result is ModifiedWriteFileResult => result.type === 'modified';
+
 export async function writeGeneratorOutput(
   output: GeneratorOutput,
   outputDirectory: string,
@@ -227,10 +228,6 @@ export async function writeGeneratorOutput(
   const { cleanDirectory, rerunCommands = [] } = options ?? {};
   // write files
   const filenames = Object.keys(output.files);
-
-  const isModifiedFileResult = (
-    result: WriteFileResult,
-  ): result is ModifiedWriteFileResult => result.type === 'modified';
 
   try {
     const fileResults = await Promise.all(
@@ -245,8 +242,8 @@ export async function writeGeneratorOutput(
     );
 
     const modifiedFiles = fileResults.filter(isModifiedFileResult);
-    const modifiedFilenames = modifiedFiles.map(
-      (result) => result.originalPath,
+    const modifiedFilenames = new Set(
+      modifiedFiles.map((result) => result.originalPath),
     );
     const conflictFilenames: string[] = modifiedFiles
       .filter((result) => result.hasConflict)
@@ -258,13 +255,11 @@ export async function writeGeneratorOutput(
       modifiedFiles.map((modifiedFile) =>
         writeLimit(async () => {
           await ensureDir(path.dirname(modifiedFile.path));
-          if (modifiedFile.contents instanceof Buffer) {
-            await fs.writeFile(modifiedFile.path, modifiedFile.contents);
-          } else {
-            await fs.writeFile(modifiedFile.path, modifiedFile.contents, {
-              encoding: 'utf-8',
-            });
-          }
+          await (modifiedFile.contents instanceof Buffer
+            ? fs.writeFile(modifiedFile.path, modifiedFile.contents)
+            : fs.writeFile(modifiedFile.path, modifiedFile.contents, {
+                encoding: 'utf8',
+              }));
         }),
       ),
     );
@@ -279,13 +274,11 @@ export async function writeGeneratorOutput(
               fileResult.originalPath,
             );
             await ensureDir(path.dirname(cleanPath));
-            if (fileResult.cleanContents instanceof Buffer) {
-              await fs.writeFile(cleanPath, fileResult.cleanContents);
-            } else {
-              await fs.writeFile(cleanPath, fileResult.cleanContents, {
-                encoding: 'utf-8',
-              });
-            }
+            await (fileResult.cleanContents instanceof Buffer
+              ? fs.writeFile(cleanPath, fileResult.cleanContents)
+              : fs.writeFile(cleanPath, fileResult.cleanContents, {
+                  encoding: 'utf8',
+                }));
           }),
         ),
       );
@@ -299,7 +292,7 @@ export async function writeGeneratorOutput(
 
       return (
         command.options?.onlyIfChanged == null ||
-        changedList.some((file) => modifiedFilenames.includes(file)) ||
+        changedList.some((file) => modifiedFilenames.has(file)) ||
         rerunCommands.includes(command.command)
       );
     });
@@ -309,7 +302,7 @@ export async function writeGeneratorOutput(
       (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType],
     );
 
-    if (conflictFilenames.length) {
+    if (conflictFilenames.length > 0) {
       logger.warn(
         chalk.red(
           `Conflicts occurred while writing files:\n${conflictFilenames.join(
@@ -317,7 +310,7 @@ export async function writeGeneratorOutput(
           )}`,
         ),
       );
-      if (orderedCommands.length) {
+      if (orderedCommands.length > 0) {
         logger.warn(
           `\nOnce resolved, please re-run the generator or run the following commands:`,
         );
@@ -344,12 +337,12 @@ export async function writeGeneratorOutput(
           cwd: path.join(outputDirectory, workingDirectory),
           timeout: COMMAND_TIMEOUT_MILLIS,
         });
-      } catch (err) {
+      } catch (error) {
         logger.error(chalk.red(`Unable to run ${commandString}`));
-        if (err instanceof ExecaError) {
-          logger.error(err.stderr);
+        if (error instanceof ExecaError) {
+          logger.error(error.stderr);
         } else {
-          logger.error(getErrorMessage(err));
+          logger.error(getErrorMessage(error));
         }
         failedCommands.push(command.command);
       }
@@ -359,11 +352,11 @@ export async function writeGeneratorOutput(
       conflictFilenames: [],
       failedCommands,
     };
-  } catch (err) {
-    if (err instanceof FormatterError) {
-      logger.error(`Error formatting file: ${err.message}`);
-      logger.info(`File Dump:\n${err.fileContents}`);
+  } catch (error) {
+    if (error instanceof FormatterError) {
+      logger.error(`Error formatting file: ${error.message}`);
+      logger.info(`File Dump:\n${error.fileContents}`);
     }
-    throw err;
+    throw error;
   }
 }

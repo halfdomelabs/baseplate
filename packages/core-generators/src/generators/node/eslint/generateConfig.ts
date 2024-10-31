@@ -12,7 +12,7 @@ export function generateConfig({
   extraRules = {},
   react,
   disableVitest,
-}: EslintConfig): Linter.Config {
+}: EslintConfig): Linter.LegacyConfig {
   return {
     root: true,
     plugins: ['import', ...(disableVitest ? [] : ['vitest'])],

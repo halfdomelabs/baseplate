@@ -1,5 +1,5 @@
 import jsonPatch from 'fast-json-patch';
-import { merge, diffComm } from 'node-diff3';
+import { diffComm, merge } from 'node-diff3';
 
 interface CommonCommResult {
   common: string[];
@@ -39,7 +39,7 @@ export function attemptMergeJson(
       null,
       2,
     );
-  } catch (e) {
+  } catch {
     // default to merge strings method if patching fails
     return null;
   }
@@ -83,7 +83,7 @@ export function mergeStrings(
   );
 
   const isCommonCommResult = (r: CommResult): r is CommonCommResult =>
-    (r as CommonCommResult).common !== undefined;
+    'common' in r;
 
   return {
     contents: patch
