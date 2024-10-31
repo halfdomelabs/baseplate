@@ -3,7 +3,6 @@ import * as SelectPrimitive from '@radix-ui/react-select';
 import * as React from 'react';
 import { RxCaretSort, RxCheck } from 'react-icons/rx';
 
-import { ScrollArea } from '../ScrollArea/ScrollArea';
 import {
   inputVariants,
   selectCheckVariants,
@@ -11,6 +10,8 @@ import {
   selectItemVariants,
 } from '@src/styles';
 import { cn } from '@src/utils';
+
+import { ScrollArea } from '../ScrollArea/ScrollArea';
 
 /* eslint-disable react/prop-types */
 
@@ -59,8 +60,7 @@ const SelectContent = React.forwardRef<
   (
     { className, children, position = 'popper', maxHeight = '320px', ...props },
     ref,
-  ) => {
-    return (
+  ) => (
       <SelectPrimitive.Portal>
         <SelectPrimitive.Content
           ref={ref}
@@ -101,8 +101,7 @@ const SelectContent = React.forwardRef<
           </ScrollAreaPrimitive.Root>
         </SelectPrimitive.Content>
       </SelectPrimitive.Portal>
-    );
-  },
+    ),
 );
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 

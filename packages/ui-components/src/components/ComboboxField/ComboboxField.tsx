@@ -1,16 +1,20 @@
-import { ForwardedRef } from 'react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type { ForwardedRef } from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { Combobox, ComboboxProps } from '../Combobox/Combobox.js';
-import { FormItem } from '../FormItem/FormItem.js';
-import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import {
+import type {
   AddOptionRequiredFields,
   FieldProps,
   SelectOptionProps,
 } from '@src/types/form.js';
+
+import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+import type { ComboboxProps } from '../Combobox/Combobox.js';
+
+import { Combobox } from '../Combobox/Combobox.js';
+import { FormItem } from '../FormItem/FormItem.js';
 
 export interface ComboboxFieldProps<OptionType>
   extends Omit<ComboboxProps, 'value' | 'onChange' | 'label' | 'children'>,
@@ -44,7 +48,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
 ): JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
   const selectedComboboxOption = (() => {
-    if (value === undefined) return undefined;
+    if (value === undefined) return;
     if (!selectedOption) return null;
     return {
       label: getOptionLabel(selectedOption),

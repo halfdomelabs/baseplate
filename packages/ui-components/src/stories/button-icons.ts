@@ -1,10 +1,10 @@
 import {
-  HiOutlineChevronDown,
-  HiOutlineChevronUp,
-  HiOutlineChevronRight,
-  HiOutlineChevronLeft,
-  HiHome,
   HiCog6Tooth,
+  HiHome,
+  HiOutlineChevronDown,
+  HiOutlineChevronLeft,
+  HiOutlineChevronRight,
+  HiOutlineChevronUp,
   HiPlus,
   HiPower,
 } from 'react-icons/hi2';

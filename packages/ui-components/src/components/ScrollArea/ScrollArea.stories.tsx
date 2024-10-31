@@ -1,8 +1,8 @@
-import { ScrollAreaProps } from '@radix-ui/react-scroll-area';
+import type { ScrollAreaProps } from '@radix-ui/react-scroll-area';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { ScrollArea } from './ScrollArea.js';
 import { Separator } from '../Separator/Separator.js';
+import { ScrollArea } from './ScrollArea.js';
 
 const meta = {
   component: ScrollArea,

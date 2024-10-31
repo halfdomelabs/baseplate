@@ -17,7 +17,12 @@ export type GenerateReactEslintConfigOptions = GenerateBaseEslintConfigOptions;
 export function generateReactEslintConfig(
   options: GenerateReactEslintConfigOptions = {},
 ): FlatConfig.ConfigArray {
-  const { extraConfigs, extraDefaultProjectFiles, ...rest } = options;
+  const {
+    extraConfigs,
+    extraDefaultProjectFiles,
+    extraGlobalIgnores,
+    ...rest
+  } = options;
   const reactConfigs: ConfigWithExtends[] = [
     // React & A11y
     {
@@ -47,7 +52,7 @@ export function generateReactEslintConfig(
     // Storybook
     {
       files: ['**/*.stories.{ts,tsx,js,jsx,mjs,cjs}'],
-      extends: [storybookPlugin.configs['flat/recommended']],
+      extends: [...storybookPlugin.configs['flat/recommended']],
     },
 
     // Tailwind
@@ -60,7 +65,15 @@ export function generateReactEslintConfig(
     },
 
     // Import-X
-    eslintPluginImportX.flatConfigs.recommended,
+    eslintPluginImportX.flatConfigs.react,
+
+    // Unicorn
+    {
+      rules: {
+        // We use replace since it is not supported by ES2020
+        'unicorn/prefer-string-replace-all': 'off',
+      },
+    },
   ];
 
   return generateBaseEslintConfig({
@@ -70,6 +83,7 @@ export function generateReactEslintConfig(
       'vite.config.ts',
       'tailwind.config.ts',
     ],
+    extraGlobalIgnores: ['storybook-static', ...(extraGlobalIgnores ?? [])],
     ...rest,
   });
 }

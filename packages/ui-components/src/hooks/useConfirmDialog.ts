@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { create } from 'zustand';
 
-import { ButtonProps } from '../components/Button/Button';
+import type { ButtonProps } from '../components/Button/Button';
 
 export interface UseConfirmDialogRequestOptions {
   title: string;
@@ -27,7 +27,7 @@ interface UseConfirmDialogState {
 
 export const useConfirmDialogState = create<UseConfirmDialogState>((set) => ({
   confirmOptions: undefined,
-  setConfirmOptions: (options) => set({ confirmOptions: options }),
+  setConfirmOptions: (options) => { set({ confirmOptions: options }); },
 }));
 
 export function useConfirmDialog(): UseConfirmDialogResult {

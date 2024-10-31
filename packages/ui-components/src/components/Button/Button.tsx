@@ -2,8 +2,9 @@ import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
+import type { IconElement } from '@src/types/react';
+
 import { buttonVariants } from '@src/styles';
-import { IconElement } from '@src/types/react';
 import { cn } from '@src/utils';
 
 export interface ButtonProps
@@ -54,15 +55,13 @@ export interface ButtonWithIconProps extends ButtonProps {
 }
 
 const ButtonWithIcon = React.forwardRef<HTMLButtonElement, ButtonWithIconProps>(
-  ({ children, icon, iconPosition = 'left', ...rest }, ref) => {
-    return (
+  ({ children, icon, iconPosition = 'left', ...rest }, ref) => (
       <Button ref={ref} {...rest}>
         {iconPosition === 'left' && <ButtonIcon icon={icon} />}
         {children}
         {iconPosition === 'right' && <ButtonIcon icon={icon} />}
       </Button>
-    );
-  },
+    ),
 );
 
 ButtonWithIcon.displayName = 'ButtonWithIcon';
@@ -76,8 +75,7 @@ interface ButtonWithOnlyIconProps extends ButtonProps {
 const ButtonWithOnlyIcon = React.forwardRef<
   HTMLButtonElement,
   ButtonWithOnlyIconProps
->(({ icon, title, iconClassName, ...rest }, ref) => {
-  return (
+>(({ icon, title, iconClassName, ...rest }, ref) => (
     <Button
       ref={ref}
       variant="ghost"
@@ -88,8 +86,7 @@ const ButtonWithOnlyIcon = React.forwardRef<
     >
       <ButtonIcon className={iconClassName} icon={icon} />
     </Button>
-  );
-});
+  ));
 
 ButtonWithOnlyIcon.displayName = 'ButtonWithOnlyIcon';
 

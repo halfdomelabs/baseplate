@@ -1,19 +1,24 @@
-import React, { ForwardedRef } from 'react';
-import {
+import type { ForwardedRef } from 'react';
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
   RegisterOptions,
-  UseFormRegisterReturn,
+  UseFormRegisterReturn} from 'react-hook-form';
+
+import React from 'react';
+import {
   get,
   useFormState,
 } from 'react-hook-form';
 
+import type { FieldProps } from '@src/types/form';
+
+import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
 import { FormItem } from '../FormItem/FormItem';
 import { Input } from '../Input/Input';
-import { FieldProps } from '@src/types/form';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface InputFieldProps
   extends Omit<
@@ -27,13 +32,12 @@ export interface InputFieldProps
 }
 
 const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
-  ({ label, description, error, onChange, register, ...props }, ref) => {
-    return (
+  ({ label, description, error, onChange, register, ...props }, ref) => (
       <FormItem ref={ref} error={error}>
         {label && <FormItem.Label>{label}</FormItem.Label>}
         <FormItem.Control>
           <Input
-            onChange={onChange && ((e) => onChange?.(e.target.value))}
+            onChange={onChange && ((e) => { onChange(e.target.value); })}
             {...props}
             {...register}
           />
@@ -43,8 +47,7 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
         )}
         {error && <FormItem.Error>{error}</FormItem.Error>}
       </FormItem>
-    );
-  },
+    ),
 );
 InputFieldRoot.displayName = 'InputField';
 

@@ -1,16 +1,18 @@
-import { ForwardedRef } from 'react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type { ForwardedRef } from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { CheckboxField } from '../CheckboxField/CheckboxField.js';
-import { FormItem } from '../FormItem/FormItem.js';
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import {
+import type {
   AddOptionRequiredFields,
   FieldProps,
   MultiSelectOptionProps,
 } from '@src/types/form.js';
+
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { notEmpty } from '@src/utils/array.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+import { CheckboxField } from '../CheckboxField/CheckboxField.js';
+import { FormItem } from '../FormItem/FormItem.js';
 
 export interface MultiCheckboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,

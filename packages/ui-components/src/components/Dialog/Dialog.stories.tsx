@@ -1,9 +1,10 @@
-import { DialogProps } from '@radix-ui/react-dialog';
+import type { DialogProps } from '@radix-ui/react-dialog';
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { useState } from 'react';
 
-import { Dialog } from './Dialog.js';
 import { Button } from '../index.js';
+import { Dialog } from './Dialog.js';
 
 const meta = {
   component: Dialog,
@@ -54,8 +55,8 @@ function ControlledDialogContainer(
 
   return (
     <div>
-      <Button onClick={() => setOpen(true)}>Open dialog</Button>
-      <Dialog {...args} open={open} onOpenChange={(op) => setOpen(op)}>
+      <Button onClick={() => { setOpen(true); }}>Open dialog</Button>
+      <Dialog {...args} open={open} onOpenChange={(op) => { setOpen(op); }}>
         <Dialog.Content>
           <Dialog.Header>
             <Dialog.Title>Confirm controlled delete</Dialog.Title>

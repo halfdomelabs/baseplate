@@ -1,4 +1,4 @@
-import { ThemeVarsColors } from '@storybook/theming';
+import type { ThemeVarsColors } from '@storybook/theming';
 
 export default {
   brandTitle: 'Baseplate UI Component Storybook',

@@ -29,6 +29,7 @@ export interface GenerateBaseEslintConfigOptions {
   extraDevDependencies?: string[];
   extraConfigs?: ConfigWithExtends[];
   extraDefaultProjectFiles?: string[];
+  extraGlobalIgnores?: string[];
 }
 
 export function generateBaseEslintConfig(
@@ -41,6 +42,11 @@ export function generateBaseEslintConfig(
   const defaultProjectFiles = [
     'vitest.config.ts',
     ...(options.extraDefaultProjectFiles ?? []),
+  ];
+  const globalIgnores = [
+    'dist',
+    'node_modules',
+    ...(options.extraGlobalIgnores ?? []),
   ];
 
   return tsEslint.config(
@@ -57,7 +63,9 @@ export function generateBaseEslintConfig(
         // Enforce using concise arrow function syntax when possible.
         'arrow-body-style': ['error', 'as-needed'],
         // Encourage the use of arrow functions for callbacks to avoid `this` binding issues.
-        'prefer-arrow-callback': 'error',
+        // Allow named functions to be used in arrow functions to support generic functions being passed in
+        // e.g. generic components using forwardRef
+        'prefer-arrow-callback': ['error', { allowNamedFunctions: true }],
         // Disallow renaming imports, exports, or destructured variables to the same name.
         'no-useless-rename': 'error',
       },
@@ -104,6 +112,10 @@ export function generateBaseEslintConfig(
     },
     {
       rules: {
+        // Let Typescript handle it since it slows down linting significantly
+        'import-x/namespace': 'off',
+        'import-x/default': 'off',
+
         // Allow named default imports without flagging them as errors
         'import-x/no-named-as-default': 'off',
 
@@ -182,6 +194,6 @@ export function generateBaseEslintConfig(
     eslintConfigPrettier,
 
     // Global Ignores
-    { ignores: ['dist', 'node_modules'] },
+    { ignores: globalIgnores },
   );
 }

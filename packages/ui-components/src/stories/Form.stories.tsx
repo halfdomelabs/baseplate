@@ -1,20 +1,21 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import type { Meta, StoryObj } from '@storybook/react';
+
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
 import {
   Button,
-  InputField,
-  SelectField,
   CheckboxField,
   ColorPickerField,
+  ComboboxField,
+  InputField,
+  MultiComboboxField,
+  SelectField,
+  SwitchField,
   TextareaField,
   Toaster,
-  SwitchField,
-  ComboboxField,
-  MultiComboboxField,
 } from '../components';
 
 // Define the schema using Zod for validation

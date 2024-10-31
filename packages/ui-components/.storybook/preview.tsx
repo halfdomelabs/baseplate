@@ -1,16 +1,17 @@
 import type { Preview } from '@storybook/react';
-import { themes } from '@storybook/theming';
-import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
-import React, { useEffect, useState } from 'react';
+
 import { DocsContainer } from '@storybook/addon-docs';
 import { addons } from '@storybook/preview-api';
+import { themes } from '@storybook/theming';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Toaster } from '../src/components/Toaster/Toaster';
-import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
+import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 
+import { Toaster } from '../src/components/Toaster/Toaster';
+import CustomTheme from './CustomTheme';
 import '../src/font.css';
 import '../src/styles.css';
-import CustomTheme from './CustomTheme';
+import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
 
 let hasToasterRendered = false;
 

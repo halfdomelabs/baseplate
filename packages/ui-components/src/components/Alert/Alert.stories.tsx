@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Alert } from './Alert.js';
+import type { IconElement } from '@src/types/react.js';
+
 import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
-import { IconElement } from '@src/types/react.js';
+
+import { Alert } from './Alert.js';
 
 const variants = ['default', 'error', 'success', 'warning'] as const;
 

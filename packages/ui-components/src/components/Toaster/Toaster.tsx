@@ -11,10 +11,9 @@ type ToasterProps = React.ComponentProps<typeof Sonner>;
  *
  * Adapted from https://ui.shadcn.com/docs/components/sonner
  */
-const Toaster = ({ ...props }: ToasterProps): JSX.Element => {
-  return (
+const Toaster = ({ ...props }: ToasterProps): JSX.Element => (
     <Sonner
-      // eslint-disable-next-line tailwindcss/no-custom-classname
+       
       className="toaster group"
       position="top-center"
       duration={3000}
@@ -43,6 +42,5 @@ const Toaster = ({ ...props }: ToasterProps): JSX.Element => {
       {...props}
     />
   );
-};
 
 export { Toaster };

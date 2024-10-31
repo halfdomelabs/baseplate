@@ -1,8 +1,10 @@
-import React from 'react';
+import type React from 'react';
+
 import { MdFormatListBulleted } from 'react-icons/md';
 
+import type { IconElement } from '@src/types/react.js';
+
 import { useComponentStrings } from '@src/contexts/ComponentStrings';
-import { IconElement } from '@src/types/react.js';
 import { cn } from '@src/utils';
 
 interface EmptyDisplayProps {

@@ -23,14 +23,12 @@ export function useControlledState<T>(
   const [internalState, setInternalState] = useState(defaultValue);
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      if (isControlledRef.current !== isControlled) {
-        // eslint-disable-next-line no-console
+    if (process.env.NODE_ENV !== 'production' && isControlledRef.current !== isControlled) {
+         
         console.warn(
           'Component is changing from controlled to uncontrolled (or visa versa). Component should not switch from controlled to uncontrolled (or vice versa). Decide between using a controlled or uncontrolled Combobox for the lifetime of the component. Check the `value` prop.',
         );
       }
-    }
     isControlledRef.current = isControlled;
   }, [isControlled]);
 

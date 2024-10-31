@@ -11,10 +11,10 @@ declare module 'eslint-plugin-storybook' {
       'addon-interactions': ESLint.ConfigData;
       recommended: ESLint.ConfigData;
       // flat configs
-      'flat/csf': FlatConfig.Config;
-      'flat/csf-strict': FlatConfig.Config;
-      'flat/addon-interactions': FlatConfig.Config;
-      'flat/recommended': FlatConfig.Config;
+      'flat/csf': FlatConfig.Config[];
+      'flat/csf-strict': FlatConfig.Config[];
+      'flat/addon-interactions': FlatConfig.Config[];
+      'flat/recommended': FlatConfig.Config[];
     };
     rules: {
       'await-interactions': ESLint.RuleModule;

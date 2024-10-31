@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react';
 
-import { Button } from '../Button/Button.js';
-import { Dialog } from '../Dialog/Dialog.js';
+import type {
+  UseConfirmDialogRequestOptions} from '@src/hooks/useConfirmDialog.js';
+
 import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
 import {
-  UseConfirmDialogRequestOptions,
   useConfirmDialogState,
 } from '@src/hooks/useConfirmDialog.js';
+
+import { Button } from '../Button/Button.js';
+import { Dialog } from '../Dialog/Dialog.js';
 
 /**
  * A confirm dialog that is placed at the top level of the page
@@ -51,7 +54,7 @@ export function ConfirmDialog(): JSX.Element {
   return (
     <Dialog
       open={!!confirmOptions}
-      onOpenChange={() => setConfirmOptions(undefined)}
+      onOpenChange={() => { setConfirmOptions(undefined); }}
     >
       <Dialog.Content width="md">
         <Dialog.Header>

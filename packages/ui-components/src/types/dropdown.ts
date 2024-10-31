@@ -1,4 +1,4 @@
-import { FieldProps } from './form.js';
+import type { FieldProps } from './form.js';
 
 export type OptionToStringFunc<OptionType> = (value: OptionType) => string;
 

@@ -1,7 +1,9 @@
 import React from 'react';
 
+import type {
+  ComponentStrings} from '@src/constants/strings';
+
 import {
-  ComponentStrings,
   DEFAULT_COMPONENT_STRINGS,
 } from '@src/constants/strings';
 

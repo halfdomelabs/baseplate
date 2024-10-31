@@ -1,4 +1,4 @@
-import { SelectSeparatorProps } from '@radix-ui/react-select';
+import type { SelectSeparatorProps } from '@radix-ui/react-select';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import { Separator } from './Separator.js';

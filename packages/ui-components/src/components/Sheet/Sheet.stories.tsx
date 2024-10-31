@@ -1,9 +1,10 @@
-import { DialogProps } from '@radix-ui/react-dialog';
+import type { DialogProps } from '@radix-ui/react-dialog';
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { useState } from 'react';
 
-import { Sheet } from './Sheet.js';
 import { Button } from '../Button/Button.js';
+import { Sheet } from './Sheet.js';
 
 const meta = {
   component: Sheet,
@@ -53,8 +54,8 @@ function ControlledSheetContainer(
 
   return (
     <div>
-      <Button onClick={() => setOpen(true)}>Open sheet</Button>
-      <Sheet {...args} open={open} onOpenChange={(op) => setOpen(op)}>
+      <Button onClick={() => { setOpen(true); }}>Open sheet</Button>
+      <Sheet {...args} open={open} onOpenChange={(op) => { setOpen(op); }}>
         <Sheet.Content>
           <p>This is the body content</p>
           <Sheet.Footer>

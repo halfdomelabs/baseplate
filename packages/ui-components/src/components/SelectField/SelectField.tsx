@@ -1,15 +1,17 @@
-import { ForwardedRef } from 'react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type { ForwardedRef } from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormItem } from '../FormItem/FormItem.js';
-import { Select } from '../Select/Select.js';
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import {
+import type {
   AddOptionRequiredFields,
   FieldProps,
   SelectOptionProps,
 } from '@src/types/form.js';
+
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+import { FormItem } from '../FormItem/FormItem.js';
+import { Select } from '../Select/Select.js';
 
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>,

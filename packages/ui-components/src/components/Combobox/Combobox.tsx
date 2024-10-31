@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+ 
 'use client';
 
 import {
@@ -13,8 +13,6 @@ import * as React from 'react';
 import { MdCheck } from 'react-icons/md';
 import { RxCaretSort } from 'react-icons/rx';
 
-import { Button } from '../Button/Button';
-import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { useControlledState } from '@src/hooks/useControlledState';
 import {
   inputVariants,
@@ -23,6 +21,9 @@ import {
   selectItemVariants,
 } from '@src/styles';
 import { cn, mergeRefs } from '@src/utils';
+
+import { Button } from '../Button/Button';
+import { ScrollArea } from '../ScrollArea/ScrollArea';
 
 interface ComboboxContextValue {
   selectedValue: string | undefined | null;
@@ -84,7 +85,7 @@ function ComboboxRoot({
   );
   // the value of the combobox that is currently active
   const [activeValue, setActiveValue] = React.useState<string | undefined>(
-    value?.value ?? '',
+    value.value ?? '',
   );
   // Caches the filter query so we can maintain
   // the query when animating the combobox open/close
@@ -110,8 +111,8 @@ function ComboboxRoot({
 
   const contextValue: ComboboxContextValue = React.useMemo(
     () => ({
-      selectedLabel: value?.label ?? '',
-      selectedValue: value?.value,
+      selectedLabel: value.label ?? '',
+      selectedValue: value.value,
       onSelect: (val, lab) => {
         setValue({ value: val, label: lab });
         setFilterQuery(searchQuery);
@@ -127,7 +128,7 @@ function ComboboxRoot({
       setIsOpen: (open) => {
         setFilterQuery(searchQuery);
         if (!open) {
-          setActiveValue(value?.value ?? '');
+          setActiveValue(value.value ?? '');
           setSearchQuery('');
         }
         setIsOpen(open);
@@ -354,7 +355,7 @@ function ComboboxContent({
   return (
     <PopoverPortal>
       <PopoverContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
+        onOpenAutoFocus={(e) => { e.preventDefault(); }}
         onInteractOutside={(e) => {
           if (
             e.target &&

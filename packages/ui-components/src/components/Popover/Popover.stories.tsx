@@ -1,9 +1,9 @@
-import { PopoverProps } from '@radix-ui/react-popover';
+import type { PopoverProps } from '@radix-ui/react-popover';
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Popover } from './Popover.js';
-import { Label } from '../Label/Label.js';
 import { Button, Input } from '../index.js';
+import { Label } from '../Label/Label.js';
+import { Popover } from './Popover.js';
 
 const meta = {
   component: Popover,

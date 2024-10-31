@@ -1,13 +1,15 @@
 /* eslint-disable react/prop-types */
 import type { Meta, StoryObj } from '@storybook/react';
+
 import React from 'react';
 import { RxAngle } from 'react-icons/rx';
+
+import { cn } from '@src/utils/cn.js';
 
 import {
   NavigationMenu,
   navigationMenuTriggerStyle,
 } from './NavigationMenu.js';
-import { cn } from '@src/utils/cn.js';
 
 const meta = {
   component: NavigationMenu,
@@ -59,8 +61,7 @@ const components: { title: string; href: string; description: string }[] = [
 const ListItem = React.forwardRef<
   React.ElementRef<'a'>,
   React.ComponentPropsWithoutRef<'a'>
->(({ className, title, children, ...props }, ref) => {
-  return (
+>(({ className, title, children, ...props }, ref) => (
     <li>
       <NavigationMenu.Link asChild>
         <a
@@ -78,8 +79,7 @@ const ListItem = React.forwardRef<
         </a>
       </NavigationMenu.Link>
     </li>
-  );
-});
+  ));
 ListItem.displayName = 'ListItem';
 
 function NavigationMenuContainer(

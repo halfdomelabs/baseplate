@@ -34,7 +34,8 @@
     "build": "tsc",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
+    "prettier:write": "prettier -w .",
+    "watch": "tsc --watch"
   },
   "dependencies": {
     "@eslint/js": "catalog:",

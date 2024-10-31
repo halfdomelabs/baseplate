@@ -4,6 +4,6 @@ export const isDarkModeEnabled = () =>
   Boolean(localStorage.getItem(LOCAL_STORAGE_KEY));
 
 export const setDarkModeEnabled = (enabled: boolean) =>
-  enabled
+  { enabled
     ? localStorage.setItem(LOCAL_STORAGE_KEY, '1')
-    : localStorage.removeItem(LOCAL_STORAGE_KEY);
+    : localStorage.removeItem(LOCAL_STORAGE_KEY); };
