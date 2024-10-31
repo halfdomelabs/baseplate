@@ -12,7 +12,10 @@ catalog:
   tsc-alias: 1.8.10
 
   # Linting / Formatting
-  eslint: 8.57.0
+  '@eslint/js': 9.13.0
+  eslint: 9.13.0
+  '@types/eslint': 9.6.1
+  '@types/eslint__js': 8.42.3
   prettier: 3.3.3
 
   # React
@@ -25,3 +28,4 @@ catalog:
   vite: 5.4.7
   vitest: 2.1.1
   '@vitejs/plugin-react': 4.3.1
+  vite-tsconfig-paths: 5.0.0

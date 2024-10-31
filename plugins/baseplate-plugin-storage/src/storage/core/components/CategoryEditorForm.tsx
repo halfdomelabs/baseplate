@@ -55,7 +55,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
       <h3>Upload Categories</h3>
       {fields.map((field, idx) => (
         <div key={field.id} className={cn('space-y-4')}>
-          <div className={cn('grid gap-4 grid-cols-3')}>
+          <div className={cn('grid grid-cols-3 gap-4')}>
             <InputField.Controller
               label="Name"
               control={control}

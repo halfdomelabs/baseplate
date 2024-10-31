@@ -37,7 +37,7 @@
     "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
     "@prisma/internals": "5.7.1",
-    "@types/eslint": "^8.44.1",
+    "@types/eslint": "catalog:",
     "@types/resolve": "^1.20.2",
     "change-case": "5.4.4",
     "indent-string": "5.0.0",

@@ -94,7 +94,7 @@ export function StorageConfig({
 
   return (
     <div className="space-y-4">
-      <form onSubmit={onSubmit} className={cn('space-y-4 max-w-4xl')}>
+      <form onSubmit={onSubmit} className={cn('max-w-4xl space-y-4')}>
         {pendingModelChanges && (
           <Alert>
             <Alert.Title>Model Changes</Alert.Title>

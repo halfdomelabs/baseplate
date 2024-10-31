@@ -28,7 +28,7 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
             control={control}
             name={`s3Adapters.${idx}.name`}
           />
-          <div className={cn('flex gap-4 [&>*]:flex-1 w-full')}>
+          <div className={cn('flex w-full gap-4 [&>*]:flex-1')}>
             <InputField.Controller
               label="AWS Bucket Name Environment Variable"
               control={control}
