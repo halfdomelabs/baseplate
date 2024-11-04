@@ -200,6 +200,7 @@ export function ThemeBuilderPage(): JSX.Element {
                   variant="outline"
                   size="sm"
                   type="button"
+                  className="w-fit"
                 >
                   Reset Colors
                 </Button>

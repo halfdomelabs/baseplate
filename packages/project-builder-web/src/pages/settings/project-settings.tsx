@@ -67,7 +67,7 @@ function ProjectSettingsPage(): JSX.Element {
             <SectionList.SectionHeader>
               <SectionList.SectionTitle>Settings</SectionList.SectionTitle>
             </SectionList.SectionHeader>
-            <SectionList.SectionContent className="max-w-80">
+            <SectionList.SectionContent className="flex max-w-80 flex-col gap-4">
               <InputField.Controller
                 name="name"
                 label="Project Name"

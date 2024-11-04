@@ -10,7 +10,6 @@ import {
   ColorPickerField,
   ComboboxField,
 } from '@halfdomelabs/ui-components';
-import { clsx } from 'clsx';
 import { capitalize } from 'inflection';
 import { useCallback } from 'react';
 import {
@@ -24,7 +23,6 @@ import { generatePalette } from '../theme-utils/palette-generator';
 
 interface ThemePaletteEditorProps {
   control: Control<ThemeConfig>;
-  className?: string;
   getValues: UseFormGetValues<ThemeConfig>;
   setValue: UseFormSetValue<ThemeConfig>;
   onShadesChange?: (shades: Partial<PaletteShades>) => void;
@@ -33,7 +31,6 @@ interface ThemePaletteEditorProps {
 
 export function ThemePaletteEditor({
   control,
-  className,
   getValues,
   setValue,
   onShadesChange,
@@ -71,10 +68,9 @@ export function ThemePaletteEditor({
   };
 
   return (
-    <div className={clsx('space-y-4', className)}>
+    <div className="flex max-w-fit flex-col gap-4">
       <ComboboxField.Controller
         name={`palettes.${type}.paletteName`}
-        className="max-w-xl"
         control={control}
         options={paletteOptions}
         placeholder="Choose a base palette"

@@ -100,7 +100,7 @@ function ColorPickerFieldFn(
 
   if (addWrapper) {
     return (
-      <FormItem error={error} className={cn(wrapperClassName)}>
+      <FormItem error={error} className={cn('flex gap-2', wrapperClassName)}>
         {label && <FormItem.Label>{label}</FormItem.Label>}
         <FormItem.Control>{inputComponent}</FormItem.Control>
         {error ? (
