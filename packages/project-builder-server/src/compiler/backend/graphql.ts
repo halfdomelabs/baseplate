@@ -88,30 +88,34 @@ function buildQueriesFileForModel(
     generator: '@halfdomelabs/fastify/pothos/pothos-types-file',
     categoryOrder: ['find-query', 'list-query'],
     children: stripChildren({
-      $findQuery: {
-        generator: '@halfdomelabs/fastify/pothos/pothos-prisma-get-query',
-        modelName: model.name,
-        children: {
-          authorize:
-            !isAuthEnabled || !get?.roles?.length
-              ? undefined
-              : {
-                  roles: get?.roles?.map((r) => appBuilder.nameFromId(r)),
-                },
-        },
-      } satisfies PothosPrismaFindQueryDescriptor,
-      $listQuery: {
-        generator: '@halfdomelabs/fastify/pothos/pothos-prisma-list-query',
-        modelName: model.name,
-        children: {
-          authorize:
-            !isAuthEnabled || !list?.roles?.length
-              ? undefined
-              : {
-                  roles: list?.roles?.map((r) => appBuilder.nameFromId(r)),
-                },
-        },
-      } satisfies PothosPrismaListQueryDescriptor,
+      $findQuery: get?.enabled
+        ? ({
+            generator: '@halfdomelabs/fastify/pothos/pothos-prisma-get-query',
+            modelName: model.name,
+            children: {
+              authorize:
+                !isAuthEnabled || !get?.roles?.length
+                  ? undefined
+                  : {
+                      roles: get?.roles?.map((r) => appBuilder.nameFromId(r)),
+                    },
+            },
+          } satisfies PothosPrismaFindQueryDescriptor)
+        : undefined,
+      $listQuery: list?.enabled
+        ? ({
+            generator: '@halfdomelabs/fastify/pothos/pothos-prisma-list-query',
+            modelName: model.name,
+            children: {
+              authorize:
+                !isAuthEnabled || !list?.roles?.length
+                  ? undefined
+                  : {
+                      roles: list?.roles?.map((r) => appBuilder.nameFromId(r)),
+                    },
+            },
+          } satisfies PothosPrismaListQueryDescriptor)
+        : undefined,
     }),
   };
 }
