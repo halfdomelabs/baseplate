@@ -10,7 +10,6 @@ import {
   ColorPickerField,
   ComboboxField,
 } from '@halfdomelabs/ui-components';
-import { clsx } from 'clsx';
 import { capitalize } from 'inflection';
 import { useCallback } from 'react';
 import {
@@ -24,7 +23,6 @@ import { generatePalette } from '../theme-utils/palette-generator';
 
 interface ThemePaletteEditorProps {
   control: Control<ThemeConfig>;
-  className?: string;
   getValues: UseFormGetValues<ThemeConfig>;
   setValue: UseFormSetValue<ThemeConfig>;
   onShadesChange?: (shades: Partial<PaletteShades>) => void;
@@ -33,7 +31,6 @@ interface ThemePaletteEditorProps {
 
 export function ThemePaletteEditor({
   control,
-  className,
   getValues,
   setValue,
   onShadesChange,
@@ -71,7 +68,7 @@ export function ThemePaletteEditor({
   };
 
   return (
-    <div className={clsx('space-y-4', className)}>
+    <div className="flex max-w-fit flex-col gap-4">
       <ComboboxField.Controller
         name={`palettes.${type}.paletteName`}
         control={control}
@@ -80,32 +77,37 @@ export function ThemePaletteEditor({
         onChange={handlePaletteNameChange}
       />
       {paletteName === 'custom' && (
-        <div className="flex items-end space-x-2">
+        <div className="flex max-w-xl items-center justify-between">
           <ColorPickerField.Controller
-            className="flex-1"
+            className="flex-1 space-x-1"
+            wrapperClassName="items-center"
             control={control}
             name={`palettes.${type}.customBase`}
             label="Custom Base Color"
             placeholder="Choose a color"
           />
-          <Button variant="secondary" onClick={handleCustomPaletteGenerate}>
+          <Button
+            variant="secondary"
+            onClick={handleCustomPaletteGenerate}
+            size="sm"
+          >
             Generate
           </Button>
         </div>
       )}
-      <div className="grid grid-cols-11 gap-4">
+      <div className="flex gap-3">
         {PALETTE_SHADES.map((shade) => (
-          <div key={shade} className="w-14">
-            <ColorPickerField.Controller
-              hideText
-              control={control}
-              name={`palettes.${type}.shades.${shade}`}
-              label={shade}
-              onChange={() =>
-                onShadesChange?.(getValues(`palettes.${type}.shades`))
-              }
-            />
-          </div>
+          <ColorPickerField.Controller
+            key={shade}
+            wrapperClassName="flex flex-col items-center"
+            hideText
+            control={control}
+            name={`palettes.${type}.shades.${shade}`}
+            label={shade}
+            onChange={() =>
+              onShadesChange?.(getValues(`palettes.${type}.shades`))
+            }
+          />
         ))}
       </div>
     </div>

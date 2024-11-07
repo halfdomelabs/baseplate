@@ -9,8 +9,6 @@ import { clsx } from 'clsx';
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { MdInfo, MdRestartAlt } from 'react-icons/md';
 
-import { ThemeColorsPreview } from './ThemeColorsPreview';
-
 interface ThemeColorEditorProps {
   className?: string;
   control: Control<ThemeConfig>;
@@ -18,7 +16,7 @@ interface ThemeColorEditorProps {
   setValue: UseFormSetValue<ThemeConfig>;
 }
 
-export function ThemeColorEditor({
+export function ThemeColorsEditor({
   className,
   control,
   mode,
@@ -28,7 +26,7 @@ export function ThemeColorEditor({
   const palettes = useWatch({ control, name: 'palettes' });
   const themeColors = useWatch({ control, name: `colors.${mode}` });
   return (
-    <div className={clsx('flex w-full gap-4', className)}>
+    <div className={clsx('flex w-full max-w-xl gap-4', className)}>
       <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2">
         {themeColorEntries.map(([key, config], idx) => {
           const themeKey = key as keyof typeof THEME_COLORS;
@@ -51,8 +49,10 @@ export function ThemeColorEditor({
             >
               <ColorPickerField.Controller
                 control={control}
+                className="w-full"
+                wrapperClassName="flex-col items-start"
                 label={
-                  <div className="flex items-center space-x-1">
+                  <div className="flex h-6 w-full items-center gap-1">
                     <div>{config.name}</div>
                     <Tooltip delayDuration={500}>
                       <Tooltip.Trigger asChild>
@@ -106,9 +106,6 @@ export function ThemeColorEditor({
             </div>
           );
         })}
-      </div>
-      <div className="flex-1">
-        <ThemeColorsPreview control={control} mode={mode} />
       </div>
     </div>
   );
