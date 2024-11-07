@@ -79,6 +79,7 @@ function ServiceTransformerRecord({
           icon={MdDelete}
           onClick={() => onRemove(idx)}
           title="Remove"
+          className="text-destructive hover:text-destructive-hover"
         />
       </RecordView.Actions>
     </RecordView>
