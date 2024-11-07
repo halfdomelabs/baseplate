@@ -12,7 +12,8 @@ import {
 import clsx from 'clsx';
 import { useState } from 'react';
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
-import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
+import { HiDotsVertical } from 'react-icons/hi';
+import { MdOutlineDelete } from 'react-icons/md';
 
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
@@ -245,7 +246,7 @@ function ModelFieldForm({
             defaultFieldName={watchedField.name}
           />
           <Button variant="ghost" onClick={() => handleRemove()} size="icon">
-            <Button.Icon icon={HiOutlineTrash} />
+            <Button.Icon icon={MdOutlineDelete} />
           </Button>
         </div>
       </div>
