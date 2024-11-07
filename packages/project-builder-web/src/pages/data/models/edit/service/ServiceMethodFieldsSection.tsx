@@ -120,8 +120,6 @@ export function ServiceMethodFieldsSection({
             {!!transformers.length && (
               <tr>
                 <th>Transformers</th>
-                {isCreateEnabled && <th className="pl-8 pt-8">Creatable</th>}
-                {isUpdateEnabled && <th className="pl-8 pt-8">Updatable</th>}
               </tr>
             )}
             {transformers.map((transformer) => (
