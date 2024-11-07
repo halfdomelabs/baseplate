@@ -3,7 +3,7 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { NavigationTabs } from '@halfdomelabs/ui-components';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
 
-import { ModelHeaderBar } from './ModelHeaderBar';
+import { ModelHeaderBar } from './components/ModelHeaderBar';
 import { NotFoundCard } from 'src/components';
 
 export function ModelEditLayout(): JSX.Element {

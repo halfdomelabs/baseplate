@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 
 import { NotFoundRoute } from './NotFound.page';
 import { AppsRoutes } from './apps';
-import { DataRoutes } from './data';
+import { DataRoutes } from './data/_routes';
 import { FeatureRoutes } from './features';
 import HomePage from './home/home.page';
 import { PluginRoutes } from './plugins';

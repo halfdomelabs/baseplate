@@ -9,7 +9,7 @@ import { SectionList } from '@halfdomelabs/ui-components';
 
 import { ModelRelationsSection } from './ModelRelationsSection';
 import { ModelUniqueConstraintsSection } from './ModelUniqueConstraintsSection';
-import { ModelFieldsForm } from './fields/ModelFieldsForm';
+import { ModelFieldsForm } from './components/ModelFieldsForm';
 import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';

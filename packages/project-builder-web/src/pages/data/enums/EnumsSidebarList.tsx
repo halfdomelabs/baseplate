@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
-import { NewEnumDialog } from './new/NewEnumDialog';
+import { NewEnumDialog } from './components/NewEnumDialog';
 import { createEnumEditLink } from '../models/utils/url';
 
 interface EnumsSidebarListProps {

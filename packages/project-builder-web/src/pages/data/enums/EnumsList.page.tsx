@@ -1,6 +1,6 @@
 import { Button } from '@halfdomelabs/ui-components';
 
-import { NewEnumDialog } from './new/NewEnumDialog';
+import { NewEnumDialog } from './components/NewEnumDialog';
 
 function EnumsListPage(): JSX.Element {
   return (

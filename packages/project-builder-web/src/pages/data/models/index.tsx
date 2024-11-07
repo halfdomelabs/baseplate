@@ -1,18 +1,45 @@
-import { RouteObject } from 'react-router-dom';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
+import { HiDatabase } from 'react-icons/hi';
 
-import ModelListPage from './ModelList.page';
-import { ModelEditRoutes } from './edit/_routes';
-import { NotFoundRoute } from '@src/pages/NotFound.page';
-import { createRouteCrumb } from '@src/types/routes';
+import { NewModelDialog } from './components/NewModelDialog';
 
-export const ModelRoutes: RouteObject = {
-  path: 'models/*',
-  handle: {
-    crumb: createRouteCrumb({ label: 'Models', url: '/data/models' }),
-  },
-  children: [
-    { index: true, element: <ModelListPage /> },
-    ModelEditRoutes,
-    NotFoundRoute,
-  ],
-};
+function ModelListPage(): JSX.Element {
+  const { definition } = useProjectDefinition();
+
+  if (!definition.models.length) {
+    return (
+      <EmptyDisplay
+        icon={HiDatabase}
+        header="No Models"
+        subtitle="Create a model to get started"
+        actions={
+          <NewModelDialog>
+            <Button>New Model</Button>
+          </NewModelDialog>
+        }
+      />
+    );
+  }
+
+  return (
+    <div className="max-w-4xl space-y-4 p-4 text-style-prose">
+      <h1>Models</h1>
+      <p>
+        Models are the building blocks of your app. They define the data
+        structure of your app.
+      </p>
+      <p>
+        Choose a model to edit from the sidebar or{' '}
+        <NewModelDialog>
+          <Button variant="link" size="none">
+            create a new model
+          </Button>
+        </NewModelDialog>
+        .
+      </p>
+    </div>
+  );
+}
+
+export default ModelListPage;

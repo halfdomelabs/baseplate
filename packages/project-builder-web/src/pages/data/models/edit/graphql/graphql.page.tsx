@@ -8,7 +8,7 @@ import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
 import { useModelForm } from '../../hooks/useModelForm';
 import FormActionBar from '@src/components/FormActionBar';
 
-function ModelEditSchemaPage(): JSX.Element {
+function ModelEditGraphQLPage(): JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });
@@ -36,4 +36,4 @@ function ModelEditSchemaPage(): JSX.Element {
   );
 }
 
-export default ModelEditSchemaPage;
+export default ModelEditGraphQLPage;

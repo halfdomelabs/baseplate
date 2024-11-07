@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Control, useController, useWatch } from 'react-hook-form';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
-import { SCALAR_FIELD_TYPE_OPTIONS } from '../../constants/scalar-types';
+import { SCALAR_FIELD_TYPE_OPTIONS } from '../../constants';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 import { BadgeWithTypeLabel } from '../components/BadgeWithTypeLabel';
 

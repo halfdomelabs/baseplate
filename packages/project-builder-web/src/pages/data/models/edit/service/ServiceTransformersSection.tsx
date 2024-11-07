@@ -18,7 +18,7 @@ import { MdAdd, MdEdit } from 'react-icons/md';
 import { MdOutlineDelete } from 'react-icons/md';
 
 import { ServiceTransformerDialog } from './ServiceTransformerDialog';
-import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../constants/built-in-transformers';
+import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../constants';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 
 interface Props {

@@ -9,7 +9,7 @@ import {
 import { Control, UseFormSetValue } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { ModelRelationDialog } from './fields/relations/ModelRelationDialog';
+import { ModelRelationDialog } from './components/relations/ModelRelationDialog';
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
 
 interface Props {
