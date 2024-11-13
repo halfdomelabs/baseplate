@@ -1,7 +1,7 @@
 import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { RouteObject } from 'react-router-dom';
 
-import { ModelEditLayout } from './ModelEditLayout';
+import { ModelEditLayout } from './_layout';
 import ModelEditModelPage from './model/model.page';
 import ModelEditSchemaPage from './schema/schema.page';
 import ModelEditServicePage from './service/service.page';

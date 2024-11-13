@@ -14,7 +14,7 @@ import {
   SCALAR_FIELD_TYPE_OPTIONS,
 } from '../../_constants';
 import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
-import { BadgeWithTypeLabel } from '../components/BadgeWithTypeLabel';
+import { BadgeWithTypeLabel } from '../_components/BadgeWithTypeLabel';
 
 interface ServiceMethodFieldsSectionProps {
   className?: string;
