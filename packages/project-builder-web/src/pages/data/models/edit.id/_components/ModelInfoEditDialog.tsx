@@ -4,8 +4,8 @@ import {
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
+import { ModelInfoForm } from './ModelInfoForm';
 import { useModelForm } from '../../_hooks/useModelForm';
-import { ModelInfoForm } from '../model/ModelInfoForm';
 
 interface ModelInfoEditDialogProps {
   open?: boolean;

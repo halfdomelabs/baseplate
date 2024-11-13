@@ -7,11 +7,11 @@ import {
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList } from '@halfdomelabs/ui-components';
 
-import { ModelRelationsSection } from './ModelRelationsSection';
-import { ModelUniqueConstraintsSection } from './ModelUniqueConstraintsSection';
-import { ModelFieldsForm } from './fields/ModelFieldsForm';
-import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
-import { useModelForm } from '../../_hooks/useModelForm';
+import { ModelRelationsSection } from './_components/ModelRelationsSection';
+import { ModelUniqueConstraintsSection } from './_components/ModelUniqueConstraintsSection';
+import { ModelFieldsForm } from './_components/fields/ModelFieldsForm';
+import { EditedModelContextProvider } from '../_hooks/useEditedModelConfig';
+import { useModelForm } from '../_hooks/useModelForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 import FormActionBar from '@src/components/FormActionBar';
 import { registerEntityTypeUrl } from 'src/services/entity-type';
