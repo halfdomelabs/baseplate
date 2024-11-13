@@ -1,7 +1,7 @@
 'use client';
 
 import * as TabsPrimitive from '@radix-ui/react-tabs';
-import * as React from 'react';
+import React, * as React from 'react';
 
 import { cn } from '@src/utils';
 
@@ -12,7 +12,7 @@ import { cn } from '@src/utils';
  *
  * https://ui.shadcn.com/docs/components/tabs
  */
-const TabsRoot = (props: TabsPrimitive.TabsProps): JSX.Element => (
+const TabsRoot = (props: TabsPrimitive.TabsProps): React.JSX.Element => (
   <TabsPrimitive.Root {...props} />
 );
 

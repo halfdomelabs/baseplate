@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { clsx } from 'clsx';
 
 import { cn } from '@src/utils';
@@ -13,7 +15,7 @@ export interface SidebarLayoutProps {
 export function SidebarLayout({
   className,
   children,
-}: SidebarLayoutProps): JSX.Element {
+}: SidebarLayoutProps): React.JSX.Element {
   return <div className={clsx('flex h-full', className)}>{children}</div>;
 }
 
@@ -29,7 +31,7 @@ SidebarLayout.Sidebar = function SidebarLayoutSidebar({
   children,
   width = 'md',
   noPadding,
-}: SidebarLayoutSidebarProps): JSX.Element {
+}: SidebarLayoutSidebarProps): React.JSX.Element {
   return (
     <aside
       className={cn(
@@ -56,7 +58,7 @@ interface SidebarLayoutContentProps {
 SidebarLayout.Content = function SidebarLayoutContent({
   className,
   children,
-}: SidebarLayoutContentProps): JSX.Element {
+}: SidebarLayoutContentProps): React.JSX.Element {
   return (
     <div className={cn('w-full flex-auto overflow-y-auto', className)}>
       {children}

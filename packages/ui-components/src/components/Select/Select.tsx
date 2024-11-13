@@ -61,47 +61,47 @@ const SelectContent = React.forwardRef<
     { className, children, position = 'popper', maxHeight = '320px', ...props },
     ref,
   ) => (
-      <SelectPrimitive.Portal>
-        <SelectPrimitive.Content
-          ref={ref}
-          className={cn(
-            selectContentVariants({
-              popper: position === 'popper' ? 'active' : 'none',
-            }),
-            className,
-          )}
-          position={position}
-          {...props}
+    <SelectPrimitive.Portal>
+      <SelectPrimitive.Content
+        ref={ref}
+        className={cn(
+          selectContentVariants({
+            popper: position === 'popper' ? 'active' : 'none',
+          }),
+          className,
+        )}
+        position={position}
+        {...props}
+      >
+        <ScrollAreaPrimitive.Root
+          type="auto"
+          className="relative overflow-hidden"
         >
-          <ScrollAreaPrimitive.Root
-            type="auto"
-            className="relative overflow-hidden"
-          >
-            <SelectPrimitive.Viewport asChild>
-              <ScrollAreaPrimitive.Viewport
-                className={cn(
-                  'h-full w-full rounded-[inherit] p-1',
-                  position === 'popper'
-                    ? 'max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full min-w-[var(--radix-select-trigger-width)]'
-                    : 'max-h-[var(--max-popper-height)]',
-                )}
-                style={
-                  {
-                    '--max-popper-height': maxHeight,
-                    // Resolves React warning: https://github.com/radix-ui/primitives/issues/2059
-                    overflowY: undefined,
-                  } as Record<string, string | undefined>
-                }
-              >
-                {children}
-              </ScrollAreaPrimitive.Viewport>
-            </SelectPrimitive.Viewport>
-            <ScrollArea.ScrollBar />
-            <ScrollAreaPrimitive.Corner />
-          </ScrollAreaPrimitive.Root>
-        </SelectPrimitive.Content>
-      </SelectPrimitive.Portal>
-    ),
+          <SelectPrimitive.Viewport asChild>
+            <ScrollAreaPrimitive.Viewport
+              className={cn(
+                'h-full w-full rounded-[inherit] p-1',
+                position === 'popper'
+                  ? 'max-h-[min(var(--max-popper-height),var(--radix-select-content-available-height))] w-full min-w-[var(--radix-select-trigger-width)]'
+                  : 'max-h-[var(--max-popper-height)]',
+              )}
+              style={
+                {
+                  '--max-popper-height': maxHeight,
+                  // Resolves React warning: https://github.com/radix-ui/primitives/issues/2059
+                  overflowY: undefined,
+                } as Record<string, string | undefined>
+              }
+            >
+              {children}
+            </ScrollAreaPrimitive.Viewport>
+          </SelectPrimitive.Viewport>
+          <ScrollArea.ScrollBar />
+          <ScrollAreaPrimitive.Corner />
+        </ScrollAreaPrimitive.Root>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  ),
 );
 SelectContent.displayName = SelectPrimitive.Content.displayName;
 

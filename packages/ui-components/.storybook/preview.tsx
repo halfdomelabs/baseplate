@@ -1,3 +1,4 @@
+import type { DocsContainerProps } from '@storybook/addon-docs';
 import type { Preview } from '@storybook/react';
 
 import { DocsContainer } from '@storybook/addon-docs';
@@ -15,7 +16,7 @@ import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
 
 let hasToasterRendered = false;
 
-const ToasterPortal = () => {
+const ToasterPortal = (): React.JSX.Element | null => {
   const [shouldRender, setShouldRender] = useState(false);
   useEffect(() => {
     if (hasToasterRendered) return;
@@ -30,7 +31,7 @@ const ToasterPortal = () => {
 };
 
 export const decorators = [
-  (Story) => (
+  (Story: React.ElementType) => (
     <>
       <Story />
       <ToasterPortal />
@@ -56,12 +57,14 @@ const preview: Preview = {
       stylePreview: true,
     },
     docs: {
-      container: (props) => {
+      container: (props: DocsContainerProps) => {
         // workaround for https://github.com/hipstersmoothie/storybook-dark-mode/issues/282
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [isDark, setIsDark] = useState(isDarkModeEnabled());
 
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         useEffect(() => {
-          const handleDarkModeChange = (shouldBeDark: boolean) => {
+          const handleDarkModeChange = (shouldBeDark: boolean): void => {
             setIsDark(shouldBeDark);
             setDarkModeEnabled(shouldBeDark);
           };

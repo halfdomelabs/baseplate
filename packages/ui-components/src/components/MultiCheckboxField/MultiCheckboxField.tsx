@@ -1,4 +1,5 @@
 import type { ForwardedRef } from 'react';
+import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
@@ -42,7 +43,7 @@ const MultiCheckboxFieldRoot = genericForwardRef(function MultiCheckboxField<
     disabled,
   }: MultiCheckboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLDivElement>,
-): JSX.Element {
+): React.JSX.Element {
   const selectedOptions = value
     ?.map((val) => options.find((option) => getOptionValue(option) === val))
     .filter(notEmpty);
@@ -122,7 +123,7 @@ const MultiCheckboxFieldController = genericForwardRef(
     }: MultiCheckboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
     ref: ForwardedRef<HTMLDivElement>,
-  ): JSX.Element {
+  ): React.JSX.Element {
     const {
       field,
       fieldState: { error },

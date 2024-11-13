@@ -1,4 +1,6 @@
-import basePrettierConfig from './prettier.config.base.js';
+// @ts-check
+
+import basePrettierConfig from './prettier.config.node.js';
 
 /** @type {import("prettier").Config} */
 export default {

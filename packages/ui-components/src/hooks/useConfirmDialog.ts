@@ -27,7 +27,9 @@ interface UseConfirmDialogState {
 
 export const useConfirmDialogState = create<UseConfirmDialogState>((set) => ({
   confirmOptions: undefined,
-  setConfirmOptions: (options) => { set({ confirmOptions: options }); },
+  setConfirmOptions: (options) => {
+    set({ confirmOptions: options });
+  },
 }));
 
 export function useConfirmDialog(): UseConfirmDialogResult {

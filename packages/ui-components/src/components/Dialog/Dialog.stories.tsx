@@ -1,5 +1,6 @@
 import type { DialogProps } from '@radix-ui/react-dialog';
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
 
 import { useState } from 'react';
 
@@ -15,7 +16,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function DialogContainer(args: Omit<DialogProps, 'children'>): JSX.Element {
+function DialogContainer(
+  args: Omit<DialogProps, 'children'>,
+): React.JSX.Element {
   return (
     <Dialog {...args}>
       <Dialog.Trigger asChild>
@@ -50,13 +53,25 @@ export const Default: Story = {
 
 function ControlledDialogContainer(
   args: Omit<DialogProps, 'children' | 'open'>,
-): JSX.Element {
+): React.JSX.Element {
   const [open, setOpen] = useState(false);
 
   return (
     <div>
-      <Button onClick={() => { setOpen(true); }}>Open dialog</Button>
-      <Dialog {...args} open={open} onOpenChange={(op) => { setOpen(op); }}>
+      <Button
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        Open dialog
+      </Button>
+      <Dialog
+        {...args}
+        open={open}
+        onOpenChange={(op) => {
+          setOpen(op);
+        }}
+      >
         <Dialog.Content>
           <Dialog.Header>
             <Dialog.Title>Confirm controlled delete</Dialog.Title>

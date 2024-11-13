@@ -59,7 +59,7 @@ function commandScoreInner(
   lowerAbbreviation: string,
   stringIndex: number,
   abbreviationIndex: number,
-  memoizedResults: Record<string, number>,
+  memoizedResults: Partial<Record<string, number>>,
 ): number {
   if (abbreviationIndex === abbreviation.length) {
     if (stringIndex === string.length) {
@@ -68,7 +68,7 @@ function commandScoreInner(
     return PENALTY_NOT_COMPLETE;
   }
 
-  const memoizeKey = `${stringIndex},${abbreviationIndex}`;
+  const memoizeKey = `${stringIndex.toString()},${abbreviationIndex.toString()}`;
   if (memoizedResults[memoizeKey] !== undefined) {
     return memoizedResults[memoizeKey];
   }

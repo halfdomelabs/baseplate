@@ -1,4 +1,4 @@
-import type { ForwardedRef, HTMLAttributes} from 'react';
+import type { ForwardedRef, HTMLAttributes } from 'react';
 import type React from 'react';
 
 import { forwardRef } from 'react';

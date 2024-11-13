@@ -1,5 +1,6 @@
 import type { PopoverProps } from '@radix-ui/react-popover';
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
 
 import { Button, Input } from '../index.js';
 import { Label } from '../Label/Label.js';
@@ -14,7 +15,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function PopoverContainer(args: Omit<PopoverProps, 'children'>): JSX.Element {
+function PopoverContainer(
+  args: Omit<PopoverProps, 'children'>,
+): React.JSX.Element {
   return (
     <Popover {...args}>
       <Popover.Trigger asChild>

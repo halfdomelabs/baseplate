@@ -9,7 +9,7 @@
     "directory": "packages/cli"
   },
   "license": "SEE LICENSE IN LICENSE",
-  "author": "Kingston Tam",
+  "author": "Half Dome Labs LLC",
   "type": "module",
   "main": "dist/index.js",
   "files": [

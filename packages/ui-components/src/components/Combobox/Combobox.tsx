@@ -1,4 +1,3 @@
- 
 'use client';
 
 import {
@@ -355,7 +354,9 @@ function ComboboxContent({
   return (
     <PopoverPortal>
       <PopoverContent
-        onOpenAutoFocus={(e) => { e.preventDefault(); }}
+        onOpenAutoFocus={(e) => {
+          e.preventDefault();
+        }}
         onInteractOutside={(e) => {
           if (
             e.target &&
@@ -468,7 +469,7 @@ interface ComboboxActionProps
 }
 
 const ComboboxAction = React.forwardRef<HTMLDivElement, ComboboxActionProps>(
-  ({ value, className, label, children, onClick, ...rest }, ref) => {
+  ({ value, className, children, onClick, ...rest }, ref) => {
     const itemRef = React.useRef<HTMLDivElement>(null);
 
     return (

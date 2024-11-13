@@ -4,8 +4,8 @@ import { MdFormatListBulleted } from 'react-icons/md';
 
 import type { IconElement } from '@src/types/react.js';
 
-import { useComponentStrings } from '@src/contexts/ComponentStrings';
-import { cn } from '@src/utils';
+import { useComponentStrings } from '@src/contexts/component-strings.js';
+import { cn } from '@src/utils/cn.js';
 
 interface EmptyDisplayProps {
   /**
@@ -40,7 +40,7 @@ export function EmptyDisplay({
   header,
   subtitle,
   actions,
-}: EmptyDisplayProps): JSX.Element {
+}: EmptyDisplayProps): React.JSX.Element {
   const strings = useComponentStrings();
 
   return (

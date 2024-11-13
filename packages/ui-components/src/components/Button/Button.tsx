@@ -1,6 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps } from 'class-variance-authority';
-import * as React from 'react';
+import React, * as React from 'react';
 
 import type { IconElement } from '@src/types/react';
 
@@ -45,7 +45,7 @@ const ButtonIcon = ({
   className,
   icon: Icon,
   ...props
-}: ButtonIconProps): JSX.Element => (
+}: ButtonIconProps): React.JSX.Element => (
   <Icon className={cn('h-4 w-4', className)} {...props} />
 );
 
@@ -56,12 +56,12 @@ export interface ButtonWithIconProps extends ButtonProps {
 
 const ButtonWithIcon = React.forwardRef<HTMLButtonElement, ButtonWithIconProps>(
   ({ children, icon, iconPosition = 'left', ...rest }, ref) => (
-      <Button ref={ref} {...rest}>
-        {iconPosition === 'left' && <ButtonIcon icon={icon} />}
-        {children}
-        {iconPosition === 'right' && <ButtonIcon icon={icon} />}
-      </Button>
-    ),
+    <Button ref={ref} {...rest}>
+      {iconPosition === 'left' && <ButtonIcon icon={icon} />}
+      {children}
+      {iconPosition === 'right' && <ButtonIcon icon={icon} />}
+    </Button>
+  ),
 );
 
 ButtonWithIcon.displayName = 'ButtonWithIcon';
@@ -76,17 +76,17 @@ const ButtonWithOnlyIcon = React.forwardRef<
   HTMLButtonElement,
   ButtonWithOnlyIconProps
 >(({ icon, title, iconClassName, ...rest }, ref) => (
-    <Button
-      ref={ref}
-      variant="ghost"
-      size="icon"
-      aria-label={title}
-      title={title}
-      {...rest}
-    >
-      <ButtonIcon className={iconClassName} icon={icon} />
-    </Button>
-  ));
+  <Button
+    ref={ref}
+    variant="ghost"
+    size="icon"
+    aria-label={title}
+    title={title}
+    {...rest}
+  >
+    <ButtonIcon className={iconClassName} icon={icon} />
+  </Button>
+));
 
 ButtonWithOnlyIcon.displayName = 'ButtonWithOnlyIcon';
 

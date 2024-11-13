@@ -1,4 +1,5 @@
 import type { ForwardedRef } from 'react';
+import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
@@ -39,7 +40,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
     ...props
   }: SelectFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLButtonElement>,
-): JSX.Element {
+): React.JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
   const selectedValue = (() => {
@@ -113,7 +114,7 @@ const SelectFieldController = genericForwardRef(function SelectFieldController<
   }: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
     AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLButtonElement>,
-): JSX.Element {
+): React.JSX.Element {
   const {
     field,
     fieldState: { error },

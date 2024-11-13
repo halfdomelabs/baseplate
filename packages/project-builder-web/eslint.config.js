@@ -1,1 +1,1 @@
-export { default } from '@halfdomelabs/tools/eslint.react';
+export { default } from '@halfdomelabs/tools/eslint-react';

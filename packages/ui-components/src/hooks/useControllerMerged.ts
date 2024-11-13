@@ -4,11 +4,10 @@ import type {
   FieldPath,
   FieldValues,
   UseControllerProps,
-  UseControllerReturn} from 'react-hook-form';
-
-import {
-  useController,
+  UseControllerReturn,
 } from 'react-hook-form';
+
+import { useController } from 'react-hook-form';
 
 import { mergeRefs } from '../utils/refs';
 

@@ -16,8 +16,6 @@ import { Badge } from '../Badge/Badge';
 import { Command } from '../Command/Command';
 import { Popover } from '../Popover/Popover';
 
- 
-
 interface MultiComboboxContextValue {
   selectedValues: MultiComboboxOption[];
   onSelect: (
@@ -54,7 +52,7 @@ function MultiComboboxRoot({
   value,
   onChange,
   disabled,
-}: MultiComboboxProps): JSX.Element {
+}: MultiComboboxProps): React.JSX.Element {
   const [selectedValues, setSelectedValues] = useControlledState(
     value,
     onChange,

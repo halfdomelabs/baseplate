@@ -5,13 +5,11 @@ import type {
   FieldPath,
   FieldValues,
   RegisterOptions,
-  UseFormRegisterReturn} from 'react-hook-form';
+  UseFormRegisterReturn,
+} from 'react-hook-form';
 
 import React from 'react';
-import {
-  get,
-  useFormState,
-} from 'react-hook-form';
+import { get, useFormState } from 'react-hook-form';
 
 import type { FieldProps } from '@src/types/form';
 
@@ -33,21 +31,26 @@ export interface TextareaFieldProps
 
 const TextareaFieldRoot = React.forwardRef<HTMLDivElement, TextareaFieldProps>(
   ({ label, description, error, onChange, register, ...props }, ref) => (
-      <FormItem ref={ref} error={error}>
-        {label && <FormItem.Label>{label}</FormItem.Label>}
-        <FormItem.Control>
-          <Textarea
-            onChange={onChange && ((e) => { onChange(e.target.value); })}
-            {...props}
-            {...register}
-          />
-        </FormItem.Control>
-        {description && (
-          <FormItem.Description>{description}</FormItem.Description>
-        )}
-        {error && <FormItem.Error>{error}</FormItem.Error>}
-      </FormItem>
-    ),
+    <FormItem ref={ref} error={error}>
+      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormItem.Control>
+        <Textarea
+          onChange={
+            onChange &&
+            ((e) => {
+              onChange(e.target.value);
+            })
+          }
+          {...props}
+          {...register}
+        />
+      </FormItem.Control>
+      {description && (
+        <FormItem.Description>{description}</FormItem.Description>
+      )}
+      {error && <FormItem.Error>{error}</FormItem.Error>}
+    </FormItem>
+  ),
 );
 TextareaFieldRoot.displayName = 'TextareaField';
 
@@ -71,7 +74,7 @@ const TextareaFieldController = genericForwardRef(
       ...rest
     }: TextareaFieldControllerProps<TFieldValues, TFieldName>,
     ref: ForwardedRef<HTMLDivElement>,
-  ): JSX.Element => {
+  ): React.JSX.Element => {
     const { errors } = useFormState({ control, name });
     const error = get(errors, name) as FieldError | undefined;
 

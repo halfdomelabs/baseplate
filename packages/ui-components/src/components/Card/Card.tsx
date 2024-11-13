@@ -2,8 +2,6 @@ import React from 'react';
 
 import { cn } from '@src/utils';
 
- 
-
 /**
  * Displays a card with header, content, and footer.
  *

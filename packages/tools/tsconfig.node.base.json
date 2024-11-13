@@ -1,20 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Node.JS 20 Base Config",
-  "compilerOptions": {
-    /* Compilation */
-    "lib": ["ES2023"],
-    "module": "Node16",
-    "target": "ES2022",
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-
-    /* Linting */
-    "strict": true,
-
-    /* Resolution */
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "Node16"
-  }
+  "extends": "@tsconfig/node20/tsconfig.json",
+  "display": "Node.JS Base Config"
 }

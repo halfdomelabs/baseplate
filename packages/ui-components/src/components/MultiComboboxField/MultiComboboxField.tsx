@@ -1,4 +1,5 @@
 import type { ForwardedRef } from 'react';
+import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
@@ -7,7 +8,7 @@ import type {
   MultiSelectOptionProps,
 } from '@src/types/form.js';
 
-import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
+import { useComponentStrings } from '@src/contexts/component-strings.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { notEmpty } from '@src/utils/array.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
@@ -46,7 +47,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
     ...props
   }: MultiComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLDivElement>,
-): JSX.Element {
+): React.JSX.Element {
   const selectedOptions = value
     ?.map((val) => options.find((option) => getOptionValue(option) === val))
     .filter(notEmpty);
@@ -64,9 +65,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
         onChange={(value) => {
           const newValues = new Set(value.map((val) => val.value));
           onChange?.(
-            options
-              .map(getOptionValue)
-              .filter((val) => newValues.has(val)),
+            options.map(getOptionValue).filter((val) => newValues.has(val)),
           );
         }}
         {...props}
@@ -129,7 +128,7 @@ const MultiComboboxFieldController = genericForwardRef(
     }: MultiComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
     ref: ForwardedRef<HTMLDivElement>,
-  ): JSX.Element {
+  ): React.JSX.Element {
     const {
       field,
       fieldState: { error },

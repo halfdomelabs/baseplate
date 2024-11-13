@@ -1,4 +1,5 @@
 import type { ForwardedRef } from 'react';
+import type React from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import type {
@@ -7,7 +8,7 @@ import type {
   SelectOptionProps,
 } from '@src/types/form.js';
 
-import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
+import { useComponentStrings } from '@src/contexts/component-strings.js';
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
@@ -45,7 +46,7 @@ const ComboboxFieldRoot = genericForwardRef(function ComboboxField<OptionType>(
     ...props
   }: ComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLInputElement>,
-): JSX.Element {
+): React.JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
   const selectedComboboxOption = (() => {
     if (value === undefined) return;
@@ -121,7 +122,7 @@ const ComboboxFieldController = genericForwardRef(
     }: ComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
     ref: ForwardedRef<HTMLInputElement>,
-  ): JSX.Element {
+  ): React.JSX.Element {
     const {
       field,
       fieldState: { error },

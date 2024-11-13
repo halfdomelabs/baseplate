@@ -96,9 +96,7 @@ const FormControl = React.forwardRef<
       id={formItemId}
       aria-labelledby={formLabelId}
       aria-describedby={
-        error
-          ? `${formDescriptionId} ${formMessageId}`
-          : formDescriptionId
+        error ? `${formDescriptionId} ${formMessageId}` : formDescriptionId
       }
       aria-invalid={!!error}
       {...props}

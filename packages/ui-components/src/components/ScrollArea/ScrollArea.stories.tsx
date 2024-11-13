@@ -1,5 +1,6 @@
 import type { ScrollAreaProps } from '@radix-ui/react-scroll-area';
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
 
 import { Separator } from '../Separator/Separator.js';
 import { ScrollArea } from './ScrollArea.js';
@@ -19,7 +20,7 @@ const tags = Array.from({ length: 50 }).map(
 
 function ScrollAreaContainer(
   args: Omit<ScrollAreaProps, 'children'>,
-): JSX.Element {
+): React.JSX.Element {
   return (
     <ScrollArea className="h-72 w-48 rounded-md border" {...args}>
       <div className="p-4">

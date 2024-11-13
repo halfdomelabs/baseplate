@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -44,7 +45,7 @@ function Form({
   onSubmit: onSubmitProp,
 }: {
   onSubmit?: (data: unknown) => void;
-}): JSX.Element {
+}): React.JSX.Element {
   const defaultValues = {
     name: '',
     color: '',
@@ -75,13 +76,12 @@ function Form({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <InputField.Controller name="name" label="Name" control={control} />
-
+      ’’
       <ColorPickerField.Controller
         name="color"
         label="Pick a Color"
         control={control}
       />
-
       <SelectField.Controller
         name="category"
         label="Select Category"
@@ -92,25 +92,21 @@ function Form({
           { value: 'Option 3', label: 'Option 3' },
         ]}
       />
-
       <CheckboxField.Controller
         name="subscribe"
         label="Subscribe to Newsletter"
         control={control}
       />
-
       <TextareaField.Controller
         name="description"
         label="Description"
         control={control}
       />
-
       <SwitchField.Controller
         name="notifications"
         label="Enable Notifications"
         control={control}
       />
-
       <ComboboxField.Controller
         name="singleOption"
         label="Choose an Option"
@@ -121,7 +117,6 @@ function Form({
           { value: 'Option C', label: 'Option C' },
         ]}
       />
-
       <MultiComboboxField.Controller
         name="multiOptions"
         label="Select Multiple Options"
@@ -133,7 +128,6 @@ function Form({
           { value: 'Option 4', label: 'Option 4' },
         ]}
       />
-
       <Button type="submit" disabled={isSubmitting}>
         Submit
       </Button>

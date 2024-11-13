@@ -37,14 +37,14 @@ const CommandDialog = ({
   children,
   ...props
 }: CommandDialogProps): React.JSX.Element => (
-    <Dialog {...props}>
-      <Dialog.Content className="overflow-hidden p-0 shadow-lg">
-        <CommandRoot className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5">
-          {children}
-        </CommandRoot>
-      </Dialog.Content>
-    </Dialog>
-  );
+  <Dialog {...props}>
+    <Dialog.Content className="overflow-hidden p-0 shadow-lg">
+      <CommandRoot className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:size-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:size-5">
+        {children}
+      </CommandRoot>
+    </Dialog.Content>
+  </Dialog>
+);
 
 const CommandInput = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive.Input>,
@@ -140,14 +140,14 @@ const CommandShortcut = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>): React.JSX.Element => (
-    <span
-      className={cn(
-        'ml-auto text-xs tracking-widest text-muted-foreground',
-        className,
-      )}
-      {...props}
-    />
-  );
+  <span
+    className={cn(
+      'ml-auto text-xs tracking-widest text-muted-foreground',
+      className,
+    )}
+    {...props}
+  />
+);
 CommandShortcut.displayName = 'CommandShortcut';
 
 export const Command = Object.assign(CommandRoot, {

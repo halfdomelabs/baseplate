@@ -1,52 +1,48 @@
-import type { FlatConfig } from '@typescript-eslint/utils/ts-eslint';
-import type { ConfigWithExtends } from 'typescript-eslint';
+// @ts-check
+
+/**
+ * @typedef {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} ConfigArray
+ */
 
 import eslint from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
-import eslintConfigPrettier from 'eslint-config-prettier';
 import * as tsResolver from 'eslint-import-resolver-typescript';
 import eslintPluginImportX from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import tsEslint from 'typescript-eslint';
 
-export const defaultDevDependencyGlobs = [
-  // allow dev dependencies for test files
-  '**/*.test-helper.{js,ts}',
-  '**/*.test.{js,ts,tsx,jsx}',
-  'src/tests/**/*',
-  '**/__mocks__/**/*',
-  // allow dev dependencies for Storybook
-  '**/*.stories.{js,ts,tsx,jsx}',
-  // allow dev dependencies for MDX files
-  '**/*.mdx',
-  // allow dev dependencies for config files at root level
-  '*.{js,ts}',
-  '.*.{js,ts}',
-];
+/**
+ * @typedef {Object} GenerateTypescriptEslintConfigOptions
+ * @property {string[]} [extraTsFileGlobs] - Additional file globs to lint with Typescript
+ * @property {string[]} [extraDevDependencies] - Additional globs for dev dependencies
+ * @property {string[]} [extraDefaultProjectFiles] - Additional default project files
+ */
 
-export interface GenerateBaseEslintConfigOptions {
-  extraDevDependencies?: string[];
-  extraConfigs?: ConfigWithExtends[];
-  extraDefaultProjectFiles?: string[];
-  extraGlobalIgnores?: string[];
-}
-
-export function generateBaseEslintConfig(
-  options: GenerateBaseEslintConfigOptions = {},
-): FlatConfig.ConfigArray {
+/**
+ * Generates a Typescript ESLint configuration
+ * @param {GenerateTypescriptEslintConfigOptions[]} [options=[]] - Configuration options
+ * @returns {ConfigArray} The generated ESLint configuration
+ */
+export function generateTypescriptEslintConfig(options = []) {
+  const tsFileGlobs = [
+    '**/*.{ts,tsx}',
+    ...options.flatMap((option) => option.extraTsFileGlobs ?? []),
+  ];
   const devDependencies = [
-    ...defaultDevDependencyGlobs,
-    ...(options.extraDevDependencies ?? []),
+    // allow dev dependencies for test files
+    '**/*.test-helper.{js,ts,jsx,tsx}',
+    '**/*.test.{js,ts,jsx,tsx}',
+    'src/tests/**/*',
+    '**/__mocks__/**/*',
+    // allow dev dependencies for config files at root level
+    '*.{js,ts}',
+    '.*.{js,ts}',
+    ...options.flatMap((option) => option.extraDevDependencies ?? []),
   ];
   const defaultProjectFiles = [
     'vitest.config.ts',
-    ...(options.extraDefaultProjectFiles ?? []),
-  ];
-  const globalIgnores = [
-    'dist',
-    'node_modules',
-    ...(options.extraGlobalIgnores ?? []),
+    ...options.flatMap((option) => option.extraDefaultProjectFiles ?? []),
   ];
 
   return tsEslint.config(
@@ -73,7 +69,7 @@ export function generateBaseEslintConfig(
 
     // Typescript ESLint Configs
     {
-      files: ['**/*.{ts,tsx}'],
+      files: tsFileGlobs,
       extends: [
         ...tsEslint.configs.strictTypeChecked,
         ...tsEslint.configs.stylisticTypeChecked,
@@ -101,20 +97,29 @@ export function generateBaseEslintConfig(
         '@typescript-eslint/consistent-type-exports': 'error',
         // Ensure consistent usage of type imports
         '@typescript-eslint/consistent-type-imports': 'error',
+        // Allow more relaxed template expression checks
+        '@typescript-eslint/restrict-template-expressions': [
+          'error',
+          {
+            allowBoolean: true,
+            allowNumber: true,
+          },
+        ],
       },
     },
 
     // Import-X Configs
     eslintPluginImportX.flatConfigs.recommended,
     {
-      files: ['**/*.{ts,tsx}'],
+      files: tsFileGlobs,
       extends: [eslintPluginImportX.flatConfigs.typescript],
     },
     {
       rules: {
-        // Let Typescript handle it since it slows down linting significantly
+        // Let Typescript handle it since it checks for unresolved imports
         'import-x/namespace': 'off',
         'import-x/default': 'off',
+        'import-x/no-unresolved': 'off',
 
         // Allow named default imports without flagging them as errors
         'import-x/no-named-as-default': 'off',
@@ -122,7 +127,7 @@ export function generateBaseEslintConfig(
         // Allow named default members without flagging them as errors
         'import-x/no-named-as-default-member': 'off',
 
-        // Disallow importing dependencies that aren’t explicitly listed in the package.json,
+        // Disallow importing dependencies that aren't explicitly listed in the package.json,
         // except for those explicitly allowed under `devDependencies` (e.g., test files)
         'import-x/no-extraneous-dependencies': ['error', { devDependencies }],
       },
@@ -151,31 +156,23 @@ export function generateBaseEslintConfig(
         // Allow array callback references without flags, supporting patterns like
         // `array.filter(callbackFunction)`, which can improve readability and code brevity.
         'unicorn/no-array-callback-reference': 'off',
+
+        // Allow ternary operators to be used when appropriate (this conflicts with https://typescript-eslint.io/rules/prefer-nullish-coalescing/)
+        'unicorn/prefer-logical-operator-over-ternary': 'off',
       },
     },
 
     // Perfectionist Configs
     {
-      // perfectionist has some nice rules but can be a bit too strict for recommended config
       plugins: { perfectionist },
       rules: {
-        // Enforces a consistent sorting order for import statements. Customizes the sorting
-        // to place internal imports (e.g., `@src/**`) in a specific order for readability and structure.
+        // Enforces a consistent sorting order for import statements
         'perfectionist/sort-imports': [
           'error',
           { internalPattern: ['@src/**'] },
         ],
-
-        // Enforces consistent sorting for export statements, keeping exports organized
-        // and making them easier to locate within modules.
         'perfectionist/sort-exports': ['error'],
-
-        // Ensures named imports are sorted alphabetically or in a specified order,
-        // promoting a clean and structured appearance for import declarations.
         'perfectionist/sort-named-imports': ['error'],
-
-        // Enforces alphabetical or specified sorting for named exports to maintain
-        // consistency, aiding readability and organization within files.
         'perfectionist/sort-named-exports': ['error'],
       },
     },
@@ -187,13 +184,7 @@ export function generateBaseEslintConfig(
       rules: vitest.configs.recommended.rules,
     },
 
-    // Extra Configs
-    ...(options.extraConfigs ?? []),
-
-    // Prettier Configs
-    eslintConfigPrettier,
-
     // Global Ignores
-    { ignores: globalIgnores },
+    { ignores: ['dist', 'node_modules'] },
   );
 }

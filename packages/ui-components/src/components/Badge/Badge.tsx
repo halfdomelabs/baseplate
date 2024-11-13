@@ -1,4 +1,4 @@
-import type * as React from 'react';
+import type React from 'react';
 
 import { cva, type VariantProps } from 'class-variance-authority';
 
@@ -45,7 +45,7 @@ function Badge({
 }
 
 interface BadgeWithIconProps extends BadgeProps {
-  icon?: (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  icon?: (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
 }
 
 Badge.WithIcon = function BadgeWithIcon({
@@ -53,7 +53,7 @@ Badge.WithIcon = function BadgeWithIcon({
   className,
   children,
   ...rest
-}: BadgeWithIconProps): JSX.Element {
+}: BadgeWithIconProps): React.JSX.Element {
   return (
     <Badge className={cn('flex items-center space-x-2', className)} {...rest}>
       {Icon && <Icon className="size-4 shrink-0" />}

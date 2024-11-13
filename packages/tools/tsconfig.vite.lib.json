@@ -4,6 +4,7 @@
   "display": "Vite React Library",
   "compilerOptions": {
     /* Output */
+    "noEmit": false,
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true

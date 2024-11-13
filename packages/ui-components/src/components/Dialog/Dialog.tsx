@@ -1,5 +1,5 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import * as React from 'react';
+import React, * as React from 'react';
 import { HiXMark } from 'react-icons/hi2';
 
 import { cn } from '@src/utils';
@@ -10,7 +10,7 @@ import { cn } from '@src/utils';
  * https://ui.shadcn.com/docs/components/dialog
  */
 
-const DialogRoot = (props: DialogPrimitive.DialogProps): JSX.Element => (
+const DialogRoot = (props: DialogPrimitive.DialogProps): React.JSX.Element => (
   <DialogPrimitive.Root {...props} />
 );
 
@@ -79,7 +79,7 @@ const DialogHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
-}): JSX.Element => (
+}): React.JSX.Element => (
   <div
     className={cn(
       'flex flex-col space-y-1.5 text-center sm:text-left',
@@ -95,7 +95,7 @@ const DialogFooter = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
-}): JSX.Element => (
+}): React.JSX.Element => (
   <div
     className={cn(
       'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2',

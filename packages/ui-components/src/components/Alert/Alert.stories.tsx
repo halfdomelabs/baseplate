@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
 
 import type { IconElement } from '@src/types/react.js';
 
@@ -47,7 +48,7 @@ function AlertContainer({
   title,
   description,
   variant,
-}: StoryProps): JSX.Element {
+}: StoryProps): React.JSX.Element {
   return (
     <Alert className={className} variant={variant}>
       {Icon && <Icon className="size-4" />}

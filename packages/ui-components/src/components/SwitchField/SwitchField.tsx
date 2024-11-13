@@ -28,26 +28,26 @@ const SwitchFieldRoot = React.forwardRef<HTMLButtonElement, SwitchFieldProps>(
     { label, description, error, onChange, value, className, ...props },
     ref,
   ) => (
-      <FormItem error={error} className={cn('space-y-2', className)}>
-        <div className="flex flex-row items-center space-x-4">
-          <FormItem.Control>
-            <Switch
-              onCheckedChange={(checked) => onChange?.(checked)}
-              checked={value}
-              {...props}
-              ref={ref}
-            />
-          </FormItem.Control>
-          <div className="space-y-0.5">
-            {label && <FormItem.Label>{label}</FormItem.Label>}
-            {description && (
-              <FormItem.Description>{description}</FormItem.Description>
-            )}
-          </div>
+    <FormItem error={error} className={cn('space-y-2', className)}>
+      <div className="flex flex-row items-center space-x-4">
+        <FormItem.Control>
+          <Switch
+            onCheckedChange={(checked) => onChange?.(checked)}
+            checked={value}
+            {...props}
+            ref={ref}
+          />
+        </FormItem.Control>
+        <div className="space-y-0.5">
+          {label && <FormItem.Label>{label}</FormItem.Label>}
+          {description && (
+            <FormItem.Description>{description}</FormItem.Description>
+          )}
         </div>
-        {error && <FormItem.Error>{error}</FormItem.Error>}
-      </FormItem>
-    ),
+      </div>
+      {error && <FormItem.Error>{error}</FormItem.Error>}
+    </FormItem>
+  ),
 );
 
 SwitchFieldRoot.displayName = 'SwitchField';
@@ -71,7 +71,7 @@ const SwitchFieldController = genericForwardRef(
       ...rest
     }: SwitchFieldControllerProps<TFieldValues, TFieldName>,
     ref: ForwardedRef<HTMLButtonElement>,
-  ): JSX.Element => {
+  ): React.JSX.Element => {
     const {
       field,
       fieldState: { error },

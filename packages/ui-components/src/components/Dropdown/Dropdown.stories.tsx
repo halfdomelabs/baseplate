@@ -1,5 +1,6 @@
 import type { DropdownMenuCheckboxItemProps } from '@radix-ui/react-dropdown-menu';
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
 
 import { useState } from 'react';
 
@@ -117,7 +118,7 @@ export const FullExample: Story = {
 
 type Checked = DropdownMenuCheckboxItemProps['checked'];
 
-function DropdownWithCheckboxesExample(): JSX.Element {
+function DropdownWithCheckboxesExample(): React.JSX.Element {
   const [showStatusBar, setShowStatusBar] = useState<Checked>(true);
   const [showActivityBar, setShowActivityBar] = useState<Checked>(false);
   const [showPanel, setShowPanel] = useState<Checked>(false);
@@ -160,7 +161,7 @@ export const DropdownWithCheckboxes: Story = {
   render: () => <DropdownWithCheckboxesExample />,
 };
 
-function DropdownWithRadioGroupExample(): JSX.Element {
+function DropdownWithRadioGroupExample(): React.JSX.Element {
   const [position, setPosition] = useState('bottom');
 
   return (

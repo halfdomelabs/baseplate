@@ -1,7 +1,7 @@
 {
   "name": "@halfdomelabs/tools",
   "version": "0.5.9",
-  "description": "Shared dev configurations for Baseplate projects",
+  "description": "Shared dev configurations for linting, formatting, and testing Baseplate projects",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
     "type": "git",
@@ -13,36 +13,42 @@
   "sideEffects": false,
   "type": "module",
   "exports": {
-    "./eslint.node": "./dist/eslint.config.node.js",
-    "./eslint.react": "./dist/eslint.config.react.js",
-    "./prettier.node": "./prettier.config.base.js",
-    "./prettier.react": "./prettier.config.react.js",
-    "./vitest.node": "./vitest.config.node.js",
+    "./eslint-configs/typescript": "./eslint-configs/typescript.js",
+    "./eslint-configs/prettier": "./eslint-configs/prettier.js",
+    "./eslint-configs/react": "./eslint-configs/react.js",
+    "./eslint-configs/storybook": "./eslint-configs/storybook.js",
+    "./eslint-configs/tailwind": "./eslint-configs/tailwind.js",
+    "./eslint-node": "./eslint.config.node.js",
+    "./eslint-react": "./eslint.config.react.js",
+    "./prettier-node": "./prettier.config.node.js",
+    "./prettier-react": "./prettier.config.react.js",
     "./tsconfig.node.cli.json": "./tsconfig.node.cli.json",
     "./tsconfig.node.lib.json": "./tsconfig.node.lib.json",
     "./tsconfig.node.script.json": "./tsconfig.node.script.json",
     "./tsconfig.vite.lib.json": "./tsconfig.vite.lib.json",
-    "./tsconfig.vite.web.json": "./tsconfig.vite.web.json"
+    "./tsconfig.vite.web.json": "./tsconfig.vite.web.json",
+    "./vitest-node": "./vitest.config.node.js"
   },
   "files": [
-    "dist",
+    "eslint-configs/**/*.js",
     "prettier.config.*.js",
+    "eslint.config.*.js",
     "tsconfig.*.json",
     "vitest.*.js"
   ],
   "scripts": {
-    "build": "tsc",
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
-    "watch": "tsc --watch"
+    "prettier:write": "prettier -w ."
   },
   "dependencies": {
     "@eslint/js": "catalog:",
+    "@tsconfig/node20": "20.1.4",
+    "@tsconfig/vite-react": "3.0.2",
     "@vitest/eslint-plugin": "1.1.7",
     "eslint-config-prettier": "9.1.0",
     "eslint-import-resolver-typescript": "3.6.3",
-    "eslint-plugin-import-x": "4.4.0",
+    "eslint-plugin-import-x": "4.4.2",
     "eslint-plugin-jsx-a11y": "6.10.2",
     "eslint-plugin-perfectionist": "3.9.1",
     "eslint-plugin-react": "7.37.2",
@@ -50,12 +56,10 @@
     "eslint-plugin-storybook": "0.10.1",
     "eslint-plugin-tailwindcss": "3.17.5",
     "eslint-plugin-unicorn": "56.0.0",
-    "prettier": "catalog:",
     "prettier-plugin-packagejson": "2.5.3",
     "prettier-plugin-tailwindcss": "0.6.8",
     "typescript-eslint": "8.12.2",
-    "vite-tsconfig-paths": "catalog:",
-    "vitest": "catalog:"
+    "vite-tsconfig-paths": "catalog:"
   },
   "devDependencies": {
     "@types/eslint": "catalog:",
