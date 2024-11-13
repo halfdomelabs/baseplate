@@ -1,11 +1,11 @@
-import { Navigate, RouteObject } from 'react-router-dom';
+import { RouteObject } from 'react-router-dom';
 
 import { ModelEditRoutes } from './edit.id/_routes';
 import ModelsIndexPage from './index.page';
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createRouteCrumb } from '@src/types/routes';
 
-export const ModelRoutes: RouteObject = {
+export const ModelsRoutes: RouteObject = {
   path: 'models/*',
   handle: {
     crumb: createRouteCrumb({ label: 'Models', url: '/data/models' }),
@@ -13,10 +13,6 @@ export const ModelRoutes: RouteObject = {
   children: [
     { index: true, element: <ModelsIndexPage /> },
     ModelEditRoutes,
-    {
-      path: 'edit',
-      element: <Navigate to="../" replace />,
-    },
     NotFoundRoute,
   ],
 };
