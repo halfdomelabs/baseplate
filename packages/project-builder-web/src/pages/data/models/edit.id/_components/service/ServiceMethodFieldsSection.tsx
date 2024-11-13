@@ -12,9 +12,9 @@ import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import {
   BUILT_IN_TRANSFORMER_WEB_CONFIGS,
   SCALAR_FIELD_TYPE_OPTIONS,
-} from '../../_constants';
-import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
-import { BadgeWithTypeLabel } from '../_components/BadgeWithTypeLabel';
+} from '../../../_constants';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
+import { BadgeWithTypeLabel } from '../BadgeWithTypeLabel';
 
 interface ServiceMethodFieldsSectionProps {
   className?: string;

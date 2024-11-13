@@ -14,7 +14,7 @@ import { useId } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 
 interface ServiceTransformerFormProps {
   className?: string;

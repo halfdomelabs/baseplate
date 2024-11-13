@@ -13,7 +13,7 @@ import { MultiComboboxField, SelectField } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { UseFormReturn, useWatch } from 'react-hook-form';
 
-import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 import { usePrevious } from 'src/hooks/usePrevious';
 
 function ServiceEmbeddedRelationForm({

@@ -5,10 +5,10 @@ import {
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
 
-import { ServiceMethodFieldsSection } from './ServiceMethodFieldsSection';
-import { ServiceTransformersSection } from './ServiceTransformersSection';
-import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
-import { useModelForm } from '../../_hooks/useModelForm';
+import { ServiceMethodFieldsSection } from './_components/service/ServiceMethodFieldsSection';
+import { ServiceTransformersSection } from './_components/service/ServiceTransformersSection';
+import { EditedModelContextProvider } from '../_hooks/useEditedModelConfig';
+import { useModelForm } from '../_hooks/useModelForm';
 import FormActionBar from '@src/components/FormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 

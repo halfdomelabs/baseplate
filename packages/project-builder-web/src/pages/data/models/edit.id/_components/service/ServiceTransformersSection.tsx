@@ -17,8 +17,8 @@ import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
 import { ServiceTransformerDialog } from './ServiceTransformerDialog';
-import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../_constants';
-import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
+import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../../_constants';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 
 interface Props {
   className?: string;
