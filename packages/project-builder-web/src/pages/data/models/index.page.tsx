@@ -2,9 +2,9 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 
-import { NewModelDialog } from './NewModelDialog';
+import { NewModelDialog } from './_components/NewModelDialog';
 
-function ModelListPage(): JSX.Element {
+function ModelsIndexPage(): JSX.Element {
   const { definition } = useProjectDefinition();
 
   if (!definition.models.length) {
@@ -42,4 +42,4 @@ function ModelListPage(): JSX.Element {
   );
 }
 
-export default ModelListPage;
+export default ModelsIndexPage;

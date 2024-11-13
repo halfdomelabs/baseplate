@@ -9,9 +9,11 @@ import {
 import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 
-import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../constants/built-in-transformers';
-import { SCALAR_FIELD_TYPE_OPTIONS } from '../../constants/scalar-types';
-import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
+import {
+  BUILT_IN_TRANSFORMER_WEB_CONFIGS,
+  SCALAR_FIELD_TYPE_OPTIONS,
+} from '../../_constants';
+import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
 import { BadgeWithTypeLabel } from '../components/BadgeWithTypeLabel';
 
 interface ServiceMethodFieldsSectionProps {

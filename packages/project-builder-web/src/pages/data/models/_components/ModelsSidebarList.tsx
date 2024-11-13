@@ -12,7 +12,7 @@ import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
 import { NewModelDialog } from './NewModelDialog';
-import { createModelEditLink } from './utils/url';
+import { createModelEditLink } from '../_utils/url';
 
 interface ModelsSidebarListProps {
   className?: string;

@@ -20,7 +20,7 @@ import { ModelFieldBadges } from './badges/ModelFieldBadges';
 import { ModelPrimaryKeyDialog } from './primary-key/ModelPrimaryKeyDialog';
 import { ModelRelationDialog } from './relations/ModelRelationDialog';
 import { ModelUniqueConstraintDialog } from './unique-constraints/ModelUniqueConstraintDialog';
-import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 
 interface Props {
   className?: string;

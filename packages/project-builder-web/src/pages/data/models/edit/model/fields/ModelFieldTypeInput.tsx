@@ -10,7 +10,7 @@ import { Control, useController } from 'react-hook-form';
 import {
   SCALAR_FIELD_TYPE_OPTIONS,
   ScalarFieldTypeOption,
-} from '../../../constants/scalar-types';
+} from '../../../_constants';
 
 interface ModelFieldTypeInputProps {
   control: Control<ModelConfig>;

@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
 import { MdExpandMore } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 
 interface ModelAddFieldButtonProps {
   className?: string;

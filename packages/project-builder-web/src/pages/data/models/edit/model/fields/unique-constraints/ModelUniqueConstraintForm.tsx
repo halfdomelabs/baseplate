@@ -13,7 +13,7 @@ import { useId } from 'react';
 import { Control, useController, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { useEditedModelConfig } from '@src/pages/data/models/hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
 
 interface ModelUniqueConstraintFormProps {
   className?: string;

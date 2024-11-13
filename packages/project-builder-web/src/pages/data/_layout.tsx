@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
 import { EnumsSidebarList } from './enums/EnumsSidebarList';
-import { ModelsSidebarList } from './models/ModelsSidebarList';
+import { ModelsSidebarList } from './models/_components/ModelsSidebarList';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 
 export function DataLayout(): JSX.Element {

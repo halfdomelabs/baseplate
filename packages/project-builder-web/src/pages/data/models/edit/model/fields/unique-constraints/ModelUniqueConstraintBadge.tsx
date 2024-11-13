@@ -6,7 +6,7 @@ import { Control } from 'react-hook-form';
 import { MdStar } from 'react-icons/md';
 
 import { ModelUniqueConstraintDialog } from './ModelUniqueConstraintDialog';
-import { useEditedModelConfig } from '@src/pages/data/models/hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
 
 interface ModelFieldUniqueBadgeProps {
   className?: string;

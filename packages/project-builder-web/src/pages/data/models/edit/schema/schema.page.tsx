@@ -4,8 +4,8 @@ import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-li
 import { GraphQLMutationsSection } from './GraphQLMutationsSection';
 import { GraphQLObjectTypeSection } from './GraphQLObjectTypeSection';
 import { GraphQLQueriesSection } from './GraphQLQueriesSection';
-import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
-import { useModelForm } from '../../hooks/useModelForm';
+import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
+import { useModelForm } from '../../_hooks/useModelForm';
 import FormActionBar from '@src/components/FormActionBar';
 
 function ModelEditSchemaPage(): JSX.Element {

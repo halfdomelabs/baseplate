@@ -7,8 +7,8 @@ import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
 
 import { ServiceMethodFieldsSection } from './ServiceMethodFieldsSection';
 import { ServiceTransformersSection } from './ServiceTransformersSection';
-import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
-import { useModelForm } from '../../hooks/useModelForm';
+import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
+import { useModelForm } from '../../_hooks/useModelForm';
 import FormActionBar from '@src/components/FormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 

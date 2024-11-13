@@ -19,7 +19,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 
-import { createModelEditLink } from '../utils/url';
+import { createModelEditLink } from '../_utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { NotFoundError, RefDeleteError } from '@src/utils/error';
 import { logAndFormatError } from 'src/services/error-formatter';

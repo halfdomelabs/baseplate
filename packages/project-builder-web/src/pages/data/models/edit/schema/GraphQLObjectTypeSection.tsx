@@ -5,8 +5,8 @@ import { useState } from 'react';
 import { Control, useController, useWatch } from 'react-hook-form';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
-import { SCALAR_FIELD_TYPE_OPTIONS } from '../../constants/scalar-types';
-import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
+import { SCALAR_FIELD_TYPE_OPTIONS } from '../../_constants';
+import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
 import { BadgeWithTypeLabel } from '../components/BadgeWithTypeLabel';
 
 interface GraphQLObjectTypeSectionProps {

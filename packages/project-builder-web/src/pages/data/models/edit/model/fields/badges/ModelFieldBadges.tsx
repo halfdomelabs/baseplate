@@ -2,7 +2,7 @@ import { ModelConfig } from '@halfdomelabs/project-builder-lib';
 import { clsx } from 'clsx';
 import { Control } from 'react-hook-form';
 
-import { useEditedModelConfig } from '../../../../hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
 import { ModelPrimaryKeyBadge } from '../primary-key/ModelPrimaryKeyBadge';
 import { ModelRelationsBadge } from '../relations/ModelRelationBadge';
 import { ModelFieldUniqueBadge } from '../unique-constraints/ModelUniqueConstraintBadge';

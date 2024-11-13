@@ -5,7 +5,7 @@ import {
 } from '@halfdomelabs/ui-components';
 
 import { ModelInfoForm } from './model/ModelInfoForm';
-import { useModelForm } from '../hooks/useModelForm';
+import { useModelForm } from '../_hooks/useModelForm';
 
 interface ModelInfoEditDialogProps {
   open?: boolean;

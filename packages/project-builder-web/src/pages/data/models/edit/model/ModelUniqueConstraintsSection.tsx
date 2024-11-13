@@ -9,7 +9,7 @@ import { Control, UseFormSetValue } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
 import { ModelUniqueConstraintDialog } from './fields/unique-constraints/ModelUniqueConstraintDialog';
-import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
 
 interface Props {
   control: Control<ModelConfig>;

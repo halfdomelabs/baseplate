@@ -18,7 +18,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 
-import { createEnumEditLink } from '../../models/utils/url';
+import { createEnumEditLink } from '../../models/_utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { NotFoundError, RefDeleteError } from '@src/utils/error';

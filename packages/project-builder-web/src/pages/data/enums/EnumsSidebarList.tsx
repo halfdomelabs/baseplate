@@ -12,7 +12,7 @@ import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
 import { NewEnumDialog } from './new/NewEnumDialog';
-import { createEnumEditLink } from '../models/utils/url';
+import { createEnumEditLink } from '../models/_utils/url';
 
 interface EnumsSidebarListProps {
   className?: string;
