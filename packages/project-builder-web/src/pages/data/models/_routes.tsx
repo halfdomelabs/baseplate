@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom';
+import { Navigate, RouteObject } from 'react-router-dom';
 
 import { ModelEditRoutes } from './edit.id/_routes';
 import ModelsIndexPage from './index.page';
@@ -13,6 +13,10 @@ export const ModelRoutes: RouteObject = {
   children: [
     { index: true, element: <ModelsIndexPage /> },
     ModelEditRoutes,
+    {
+      path: 'edit',
+      element: <Navigate to="../" replace />,
+    },
     NotFoundRoute,
   ],
 };
