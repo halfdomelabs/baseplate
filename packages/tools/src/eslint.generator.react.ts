@@ -72,6 +72,8 @@ export function generateReactEslintConfig(
       rules: {
         // We use replace since it is not supported by ES2020
         'unicorn/prefer-string-replace-all': 'off',
+        // Allow for pascal casing for components
+        'unicorn/filename-case': 'off',
       },
     },
   ];
