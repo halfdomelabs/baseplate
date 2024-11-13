@@ -14,7 +14,8 @@ import {
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
-import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
+import { MdAdd, MdEdit } from 'react-icons/md';
+import { MdOutlineDelete } from 'react-icons/md';
 
 import { ServiceTransformerDialog } from './ServiceTransformerDialog';
 import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../constants/built-in-transformers';
@@ -76,9 +77,10 @@ function ServiceTransformerRecord({
           </ServiceTransformerDialog>
         )}
         <Button.WithOnlyIcon
-          icon={MdDelete}
+          icon={MdOutlineDelete}
           onClick={() => onRemove(idx)}
           title="Remove"
+          className="text-destructive hover:text-destructive-hover"
         />
       </RecordView.Actions>
     </RecordView>
@@ -121,7 +123,7 @@ export function ServiceTransformersSection({
           shape that the database ORM expects.
         </SectionList.SectionDescription>
       </SectionList.SectionHeader>
-      <SectionList.SectionContent className="space-y-4">
+      <SectionList.SectionContent className="max-w-xl space-y-4">
         {fields.map((field, idx) => (
           <ServiceTransformerRecord
             key={field.id}
