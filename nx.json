@@ -36,13 +36,7 @@
     },
     "lint": {
       "inputs": ["default", "^production"],
-      "dependsOn": [
-        "^build",
-        {
-          "projects": ["@halfdomelabs/tools"],
-          "target": "build"
-        }
-      ]
+      "dependsOn": ["^build"]
     },
     "test": {
       "inputs": ["default", "^production"],
