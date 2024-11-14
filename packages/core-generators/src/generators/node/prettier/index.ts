@@ -8,7 +8,7 @@ import {
   formatterProvider,
   writeJsonAction,
 } from '@halfdomelabs/sync';
-import { readJson } from 'fs-extra';
+import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'node:path';
 import { packageUp } from 'package-up';
@@ -99,7 +99,9 @@ async function resolveModuleWithVersion(
   }
   const packageJsonPath = await packageUp({ cwd: result });
   if (!packageJsonPath) return undefined;
-  const packageJson = (await readJson(packageJsonPath)) as { version?: string };
+  const packageJson = (await fs.readJson(packageJsonPath)) as {
+    version?: string;
+  };
   return {
     modulePath: result,
     version: packageJson.version,

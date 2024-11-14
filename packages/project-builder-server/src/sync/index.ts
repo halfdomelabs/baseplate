@@ -80,7 +80,7 @@ export async function generateForDirectory({
 
   const buildResultExists = await fs.pathExists(buildResultPath);
   const oldBuildResult: BuildResultFile = buildResultExists
-    ? ((await fs.readJSON(buildResultPath)) as BuildResultFile)
+    ? ((await fs.readJson(buildResultPath)) as BuildResultFile)
     : {};
 
   // load clean directory contents
