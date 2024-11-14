@@ -47,7 +47,7 @@ export function ServiceMethodFieldsSection({
   const updateTransformers = update?.transformerNames ?? [];
 
   const tableClassName =
-    'border-collapse text-left [&_td]:py-1 [&_th]:sticky [&_th]:top-0 [&_th]:bg-background [&_th]:z-10 [&_th]:py-2';
+    'w-full border-collapse text-left [&_td]:py-1 [&_th]:sticky [&_th]:top-0 [&_th]:bg-background [&_th]:z-10 [&_th]:py-2';
 
   const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
 
@@ -62,11 +62,11 @@ export function ServiceMethodFieldsSection({
           method
         </SectionList.SectionDescription>
       </SectionList.SectionHeader>
-      <SectionList.SectionContent className="space-y-4">
+      <SectionList.SectionContent className="max-w-xl space-y-4">
         <table className={tableClassName}>
           <thead>
             <tr>
-              <th>Fields</th>
+              <th className="w-full">Fields</th>
               {isCreateEnabled && <th className="pl-8">Create</th>}
               {isUpdateEnabled && <th className="pl-8">Update</th>}
             </tr>
@@ -122,8 +122,6 @@ export function ServiceMethodFieldsSection({
             {!!transformers.length && (
               <tr>
                 <th>Transformers</th>
-                {isCreateEnabled && <th className="pl-8 pt-8">Creatable</th>}
-                {isUpdateEnabled && <th className="pl-8 pt-8">Updatable</th>}
               </tr>
             )}
             {transformers.map((transformer) => (
