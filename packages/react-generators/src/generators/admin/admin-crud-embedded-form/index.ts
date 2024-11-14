@@ -1,3 +1,5 @@
+import type { InferTaskBuilderMap } from '@halfdomelabs/sync';
+
 import {
   makeImportAndFilePath,
   TypescriptCodeBlock,
@@ -10,35 +12,33 @@ import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-  InferTaskBuilderMap,
 } from '@halfdomelabs/sync';
 import _ from 'lodash';
 import { z } from 'zod';
 
-import {
-  AdminCrudColumn,
-  adminCrudColumnContainerProvider,
-} from '../_providers/admin-crud-column-container.js';
-import {
-  AdminCrudInput,
-  adminCrudInputContainerProvider,
-  AdminCrudInputValidation,
-} from '../_providers/admin-crud-input-container.js';
-import {
-  AdminCrudDataDependency,
-  getPassthroughExtraProps,
-  mergeAdminCrudDataDependencies,
-} from '../_utils/data-loaders.js';
-import {
-  adminComponentsProvider,
-  AdminComponentsProvider,
-} from '../admin-components/index.js';
-import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
+import type { GraphQLField } from '@src/writers/graphql/index.js';
+
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
-import { GraphQLField } from '@src/writers/graphql/index.js';
+
+import type { AdminCrudColumn } from '../_providers/admin-crud-column-container.js';
+import type {
+  AdminCrudInput,
+  AdminCrudInputValidation,
+} from '../_providers/admin-crud-input-container.js';
+import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
+import type { AdminComponentsProvider } from '../admin-components/index.js';
+
+import { adminCrudColumnContainerProvider } from '../_providers/admin-crud-column-container.js';
+import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
+import {
+  getPassthroughExtraProps,
+  mergeAdminCrudDataDependencies,
+} from '../_utils/data-loaders.js';
+import { adminComponentsProvider } from '../admin-components/index.js';
+import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
 
 const descriptorSchema = z.object({
   name: z.string(),
@@ -118,7 +118,7 @@ function getComponentProps({
           PROPS_NAME: propsName,
           DEFAULT_PROPS: defaultPropsExpression,
           INTERFACE_CONTENT: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-            _.fromPairs(
+            Object.fromEntries(
               dataDependencies.map((d): [string, TypescriptCodeExpression] => [
                 d.propName,
                 d.propType,
@@ -261,7 +261,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
       ).withHeaderKey(formSchema);
 
       const validationExpression = TypescriptCodeUtils.createExpression(
-        `${isList ? `z.array(${formSchema})` : formSchema}`,
+        isList ? `z.array(${formSchema})` : formSchema,
         undefined,
         { headerBlocks: [embeddedBlock] },
       );
@@ -313,9 +313,8 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
               .content('item')
               .wrap((content) => `<Table.Cell>${content}</Table.Cell>`),
           );
-          const tableComponent = !isList
-            ? new TypescriptCodeBlock('')
-            : TypescriptCodeUtils.formatBlock(
+          const tableComponent = isList
+            ? TypescriptCodeUtils.formatBlock(
                 `
             export function COMPONENT_NAME({
               items,
@@ -354,7 +353,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                     tableDataDependencies.map((d) => d.propName).join(',\n'),
                   ),
                   PROPS: getComponentProps({
-                    inputType: isList ? 'List' : 'Object',
+                    inputType: 'List',
                     componentType: 'Table',
                     formDataType,
                     dataDependencies: tableDataDependencies,
@@ -369,7 +368,8 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
                   ],
                   importMappers: [reactComponents],
                 },
-              );
+              )
+            : new TypescriptCodeBlock('');
 
           const formFile = typescript.createTemplate(
             {

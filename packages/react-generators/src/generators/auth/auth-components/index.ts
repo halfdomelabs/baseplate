@@ -1,16 +1,18 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
-  ImportMapper,
   makeImportAndFilePath,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authHooksProvider } from '../auth-hooks/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
+
+import { authHooksProvider } from '../auth-hooks/index.js';
 
 const descriptorSchema = z.object({
   loginPath: z.string().min(1),

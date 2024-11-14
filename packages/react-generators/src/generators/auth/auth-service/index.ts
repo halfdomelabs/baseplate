@@ -1,18 +1,20 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
-  ImportMapper,
   makeImportAndFilePath,
   tsUtilsProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
   copyFileAction,
+  createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactApolloSetupProvider } from '../../apollo/react-apollo/index.js';
 import { reactUtilsProvider } from '@src/generators/core/react-utils/index.js';
+
+import { reactApolloSetupProvider } from '../../apollo/react-apollo/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

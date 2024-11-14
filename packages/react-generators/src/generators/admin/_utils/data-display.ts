@@ -1,10 +1,11 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 
-import { AdminCrudDataDependency } from './data-loaders.js';
-import { GraphQLField } from '@src/writers/graphql/index.js';
+import type { GraphQLField } from '@src/writers/graphql/index.js';
+
+import type { AdminCrudDataDependency } from './data-loaders.js';
 
 export interface AdminCrudDisplay {
   content: (itemName: string) => TypescriptCodeExpression;

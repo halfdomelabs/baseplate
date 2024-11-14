@@ -1,5 +1,6 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
-  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeUtils,
@@ -12,8 +13,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactProvider } from '../react/index.js';
 import { reactAppProvider } from '../react-app/index.js';
+import { reactProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({
   includeDatePicker: z.boolean().optional(),

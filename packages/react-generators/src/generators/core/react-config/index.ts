@@ -1,15 +1,18 @@
-import {
+import type {
   ImportMapper,
-  nodeProvider,
   TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
+import {
+  nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
-  NonOverwriteableMap,
   createNonOverwriteableMap,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
@@ -125,7 +128,7 @@ const ReactConfigGenerator = createGeneratorWithChildren({
 
         const devEnvVars = [...configVars, ...customEnvVars];
 
-        if (devEnvVars.length) {
+        if (devEnvVars.length > 0) {
           const developmentEnvFile = `${devEnvVars
             .map(({ name, value }) => `${name}=${value}`)
             .join('\n')}\n`;

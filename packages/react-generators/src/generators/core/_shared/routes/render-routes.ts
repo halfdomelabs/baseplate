@@ -1,11 +1,9 @@
-import {
-  quot,
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import _ from 'lodash';
 
-import { ReactRouteLayout, ReactRoute } from '@src/providers/routes.js';
+import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
 
 export function renderRoutes(
   routes: ReactRoute[],

@@ -13,13 +13,6 @@ import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';
 
-import {
-  AdminCrudInput,
-  adminCrudInputContainerProvider,
-} from '../_providers/admin-crud-input-container.js';
-import { DataLoader, printDataLoaders } from '../_providers/admin-loader.js';
-import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
-import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
@@ -27,6 +20,14 @@ import { notEmpty } from '@src/utils/array.js';
 import { lowerCaseFirst, titleizeCamel } from '@src/utils/case.js';
 import { createRouteElement } from '@src/utils/routes.js';
 import { mergeGraphQLFields } from '@src/writers/graphql/index.js';
+
+import type { AdminCrudInput } from '../_providers/admin-crud-input-container.js';
+import type { DataLoader } from '../_providers/admin-loader.js';
+
+import { adminCrudInputContainerProvider } from '../_providers/admin-crud-input-container.js';
+import { printDataLoaders } from '../_providers/admin-loader.js';
+import { mergeAdminCrudDataDependencies } from '../_utils/data-loaders.js';
+import { adminCrudQueriesProvider } from '../admin-crud-queries/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string(),
@@ -154,14 +155,16 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
               inputFields.flatMap((f) => f.dataDependencies ?? []),
             );
 
-            dataDependencies.forEach((dep) => {
-              dep.graphFragments?.forEach((frag) => {
-                adminCrudQueries.addFragment(frag);
-              });
-              dep.graphRoots?.forEach((root) => {
-                adminCrudQueries.addRoot(root);
-              });
-            });
+            for (const dep of dataDependencies) {
+              if (dep.graphFragments)
+                for (const frag of dep.graphFragments) {
+                  adminCrudQueries.addFragment(frag);
+                }
+              if (dep.graphRoots)
+                for (const root of dep.graphRoots) {
+                  adminCrudQueries.addRoot(root);
+                }
+            }
 
             const validations = inputFields.flatMap((c) => c.validation);
             const schemaPage = typescript.createTemplate({
@@ -193,7 +196,7 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
                   inputFields.map((field) => field.header).filter(notEmpty),
                 ),
                 EXTRA_PROPS: TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                  _.fromPairs(
+                  Object.fromEntries(
                     dataDependencies.map(
                       (d): [string, TypescriptCodeExpression] => [
                         d.propName,

@@ -1,12 +1,15 @@
-import {
+import type {
   ImportMapper,
-  makeImportAndFilePath,
   TypescriptCodeBlock,
+} from '@halfdomelabs/core-generators';
+
+import {
+  makeImportAndFilePath,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 

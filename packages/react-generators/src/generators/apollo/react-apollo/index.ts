@@ -1,6 +1,7 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
   eslintProvider,
-  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   prettierProvider,
@@ -19,11 +20,12 @@ import * as R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
 
+import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
+import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
+
 import { notEmpty } from '../../../utils/array.js';
 import { reactAppProvider } from '../../core/react-app/index.js';
 import { reactConfigProvider } from '../../core/react-config/index.js';
-import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
-import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
 
 const descriptorSchema = z.object({
   devApiEndpoint: z.string().min(1),
@@ -371,24 +373,28 @@ const ReactApolloGenerator = createGeneratorWithTasks({
               .join(', ');
 
             const clientFile = typescript.createTemplate({
-              CREATE_ARGS: !apolloCreateArgs.length
-                ? new TypescriptCodeExpression('')
-                : TypescriptCodeUtils.createExpression(
-                    `{${createArgNames}}: CreateApolloClientOptions`,
-                    undefined,
-                    {
-                      headerBlocks: [
-                        TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                          R.fromPairs(
-                            apolloCreateArgs.map((arg) => [arg.name, arg.type]),
+              CREATE_ARGS:
+                apolloCreateArgs.length === 0
+                  ? new TypescriptCodeExpression('')
+                  : TypescriptCodeUtils.createExpression(
+                      `{${createArgNames}}: CreateApolloClientOptions`,
+                      undefined,
+                      {
+                        headerBlocks: [
+                          TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+                            R.fromPairs(
+                              apolloCreateArgs.map((arg) => [
+                                arg.name,
+                                arg.type,
+                              ]),
+                            ),
+                          ).wrap(
+                            (contents) =>
+                              `interface CreateApolloClientOptions {\n${contents}\n}`,
                           ),
-                        ).wrap(
-                          (contents) =>
-                            `interface CreateApolloClientOptions {\n${contents}\n}`,
-                        ),
-                      ],
-                    },
-                  ),
+                        ],
+                      },
+                    ),
               LINK_BODIES: TypescriptCodeUtils.mergeBlocks(
                 sortedLinks.map((link) => link.bodyExpression).filter(notEmpty),
                 '\n\n',
@@ -427,16 +433,17 @@ const ReactApolloGenerator = createGeneratorWithTasks({
                     .map((arg) => arg.renderBody)
                     .filter(notEmpty),
                 ),
-                CREATE_ARG_VALUE: !apolloCreateArgs.length
-                  ? TypescriptCodeUtils.createExpression('')
-                  : TypescriptCodeUtils.mergeExpressionsAsObject(
-                      R.fromPairs(
-                        apolloCreateArgs.map((arg) => [
-                          arg.name,
-                          arg.creatorValue,
-                        ]),
+                CREATE_ARG_VALUE:
+                  apolloCreateArgs.length === 0
+                    ? TypescriptCodeUtils.createExpression('')
+                    : TypescriptCodeUtils.mergeExpressionsAsObject(
+                        R.fromPairs(
+                          apolloCreateArgs.map((arg) => [
+                            arg.name,
+                            arg.creatorValue,
+                          ]),
+                        ),
                       ),
-                    ),
                 CREATE_ARGS: TypescriptCodeUtils.createExpression(
                   apolloCreateArgs
                     .map((arg) => arg.hookDependency)
