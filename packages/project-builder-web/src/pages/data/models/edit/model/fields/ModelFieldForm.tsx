@@ -13,7 +13,7 @@ import {
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
+import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
 import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
