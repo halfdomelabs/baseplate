@@ -2,9 +2,9 @@
 import { existsSync, lstatSync } from 'node:fs';
 import ora from 'ora';
 import { IndentationText, Project, QuoteKind } from 'ts-morph';
-import z from 'zod';
 
-import { TypescriptMorpher } from './types.js';
+import type { TypescriptMorpher } from './types.js';
+
 import { findNearestTsconfig } from './utils/find-nearest-tsconfig.js';
 
 interface MorphContext {
@@ -13,7 +13,7 @@ interface MorphContext {
 
 export async function runMorpher(
   path: string,
-  morpher: TypescriptMorpher<z.AnyZodObject>,
+  morpher: TypescriptMorpher,
   options: unknown,
   { dryRun }: MorphContext,
 ): Promise<void> {
@@ -63,7 +63,7 @@ export async function runMorpher(
   for (const sourceFile of sourceFiles) {
     try {
       spinner.text = `Transformed ${processedFiles}/${sourceFilesLength} files (${changedFiles} changed)`;
-      let isModified = false;
+      let isModified = false as boolean;
       const onModified = (): void => {
         isModified = true;
       };

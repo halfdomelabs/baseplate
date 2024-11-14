@@ -18,6 +18,7 @@
     "CHANGELOG"
   ],
   "scripts": {
+    "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "run:morpher": "tsx scripts/run-morpher.ts",

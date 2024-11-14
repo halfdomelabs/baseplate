@@ -182,6 +182,9 @@ export function generateTypescriptEslintConfig(options = []) {
 
         // Allow error variables to be named anything
         'unicorn/catch-error-name': 'off',
+
+        // False positives with array-like functions (https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1394)
+        'unicorn/no-array-method-this-argument': 'off',
       },
     },
 
