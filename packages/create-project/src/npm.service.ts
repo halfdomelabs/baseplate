@@ -29,11 +29,11 @@ async function fetchNpmPackageVersion(
     };
 
     const response = await axios.get<NpmPackageInfo>(url, { headers });
-    if (!response.data?.name) {
+    if (!response.data.name) {
       throw new Error('Invalid response from NPM registry');
     }
     spinner.succeed();
-    return response.data['dist-tags']?.latest;
+    return response.data['dist-tags'].latest;
   } catch (err) {
     if (err instanceof AxiosError && err.response?.status === 404) {
       spinner.fail(
@@ -57,7 +57,6 @@ export async function getNpmTokenAndVersion(): Promise<{
   let latestVersion: string | undefined;
   let npmToken: string;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     npmToken = await input({
       message: 'NPM Token',

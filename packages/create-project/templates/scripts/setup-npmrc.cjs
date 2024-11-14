@@ -23,27 +23,25 @@ module.exports = function generateNpmRc(dirname) {
     const lines = env
       .split('\n')
       .filter((line) => line && !line.startsWith('#'));
-    lines.forEach((line) => {
+    for (const line of lines) {
       const [key, ...values] = line.split('=');
-      if (values.length) {
+      if (values.length > 0) {
         envVars[key] = values.join('=');
       }
-    });
+    }
   }
 
   const template = fs.readFileSync(templatePath, 'utf8');
 
   // replace all ${VARIABLE} with process.env.VARIABLE
   const npmrc = template
-    .replace(/\${([A-Z_]+)}/g, (_, key) => {
+    .replaceAll(/\${([A-Z_]+)}/g, (_, key) => {
       if (!envVars[key]) {
         throw new Error(`Missing environment variable ${key}`);
       }
       return envVars[key];
     })
-    .replace(/\${([A-Z_:a-z\-]+)}/g, (_, key) => {
-      return !!envVars[key] ? envVars[key] : key;
-    });
+    .replaceAll(/\${([A-Z_:a-z\-]+)}/g, (_, key) => envVars[key] ? envVars[key] : key);
 
   const npmrcContents = `
 # This file has been auto-generated from .npmrc.template

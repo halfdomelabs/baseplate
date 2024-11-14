@@ -108,6 +108,11 @@ export function generateTypescriptEslintConfig(options = []) {
             allowNumber: true,
           },
         ],
+        // Allow constant loop conditions
+        '@typescript-eslint/no-unnecessary-condition': [
+          'error',
+          { allowConstantLoopConditions: true },
+        ],
       },
     },
 

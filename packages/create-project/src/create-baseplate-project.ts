@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+#!/usr/bin/env node
+
 import { ExitPromptError } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { program } from 'commander';
@@ -15,7 +16,7 @@ async function checkForPackageJson(directory: string): Promise<boolean> {
     const packageJsonPath = path.join(directory, 'package.json');
     await fs.access(packageJsonPath);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -29,7 +30,7 @@ async function runMain(): Promise<void> {
 
   program
     .description('Create a new Baseplate project')
-    .version(version ?? 'unknown')
+    .version(version)
     .argument('[directory]', 'The directory to initialize the project in', '.');
 
   program.parse(process.argv);
@@ -41,7 +42,7 @@ async function runMain(): Promise<void> {
   const packageName = path
     .basename(resolvedDirectory)
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-');
+    .replaceAll(/[^a-z0-9]+/g, '-');
 
   if (packageName === '-' || !packageName) {
     throw new Error(
@@ -51,9 +52,9 @@ async function runMain(): Promise<void> {
 
   const relativeDirectory = path.relative(process.cwd(), resolvedDirectory);
 
-  console.log(`Creating a new Baseplate project (${packageName})...`);
-  console.log(`Directory: ${relativeDirectory || '.'}`);
-  console.log();
+  console.info(`Creating a new Baseplate project (${packageName})...`);
+  console.info(`Directory: ${relativeDirectory || '.'}`);
+  console.info();
 
   const hasPackageJson = await checkForPackageJson(resolvedDirectory);
 
@@ -63,7 +64,7 @@ async function runMain(): Promise<void> {
     );
   }
 
-  console.log(
+  console.info(
     chalk.yellow(
       'Please enter your NPM token for Baseplate. While Baseplate is in private beta, an NPM token is required to access the Baseplate package. This will be stored in the .env file in your project directory.\n',
     ),
@@ -79,7 +80,7 @@ async function runMain(): Promise<void> {
   });
 }
 
-runMain().catch((err) => {
+await runMain().catch((err: unknown) => {
   if (err instanceof ExitPromptError) {
     return;
   }
