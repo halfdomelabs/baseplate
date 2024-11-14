@@ -7,6 +7,8 @@ import { buttonVariants } from '@src/styles';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
+/* eslint tailwindcss/no-custom-classname: ["error", { whitelist: ["toaster"] }] */
+
 /**
  * A toaster component that displays toast notifications.
  *
