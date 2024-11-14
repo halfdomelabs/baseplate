@@ -3,6 +3,8 @@ import * as R from 'ramda';
 import type { FormatterProvider } from '@src/providers/index.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import { safeMergeMap } from '@src/utils/merge.js';
+
 import type { GeneratorOutput } from '../generator-output.js';
 import type { GeneratorTaskInstance } from '../generator.js';
 import type { Provider } from '../provider.js';
@@ -120,20 +122,10 @@ export async function executeGeneratorEntry(
     }
   }
 
-  const safeMerge = R.mergeWithKey((key) => {
-    throw new Error(
-      `Two or more generators attempted to write to the same file (${key})`,
-    );
-  });
-
   const buildOutput: GeneratorOutput = {
-    files: R.reduce(
-      safeMerge,
-      {},
-      generatorOutputs.map((output) => output.files),
-    ),
-    postWriteCommands: R.flatten(
-      generatorOutputs.map((output) => output.postWriteCommands),
+    files: safeMergeMap(...generatorOutputs.map((output) => output.files)),
+    postWriteCommands: generatorOutputs.flatMap(
+      (output) => output.postWriteCommands,
     ),
   };
 

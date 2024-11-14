@@ -7,27 +7,31 @@ import type {
   PothosPrismaPrimaryKeyDescriptor,
   PothosTypesFileDescriptor,
 } from '@halfdomelabs/fastify-generators';
-import {
+import type {
   EnumConfig,
-  FeatureUtils,
   ModelConfig,
-  ModelUtils,
-  stripEmptyGeneratorChildren,
 } from '@halfdomelabs/project-builder-lib';
-import {
+import type {
   DescriptorWithChildren,
   GeneratorDescriptor,
 } from '@halfdomelabs/sync';
+
+import {
+  FeatureUtils,
+  ModelUtils,
+  stripEmptyGeneratorChildren,
+} from '@halfdomelabs/project-builder-lib';
 import { kebabCase } from 'change-case';
 
-import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 import { notEmpty } from '@src/utils/array.js';
+
+import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
 function buildObjectTypeFile(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
 ): PothosTypesFileDescriptor | undefined {
-  const { graphql } = model ?? {};
+  const { graphql } = model;
   const { objectType, mutations, queries } = graphql ?? {};
 
   const buildQuery = queries?.get?.enabled ?? queries?.list?.enabled;
@@ -71,7 +75,7 @@ function buildQueriesFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
 ): PothosTypesFileDescriptor | undefined {
-  const { graphql } = model ?? {};
+  const { graphql } = model;
   const { queries } = graphql ?? {};
 
   if (!queries?.get?.enabled && !queries?.list?.enabled) {
@@ -96,7 +100,7 @@ function buildQueriesFileForModel(
             !isAuthEnabled || !get?.roles?.length
               ? undefined
               : {
-                  roles: get?.roles?.map((r) => appBuilder.nameFromId(r)),
+                  roles: get.roles.map((r) => appBuilder.nameFromId(r)),
                 },
         },
       } satisfies PothosPrismaFindQueryDescriptor,
@@ -108,7 +112,7 @@ function buildQueriesFileForModel(
             !isAuthEnabled || !list?.roles?.length
               ? undefined
               : {
-                  roles: list?.roles?.map((r) => appBuilder.nameFromId(r)),
+                  roles: list.roles.map((r) => appBuilder.nameFromId(r)),
                 },
         },
       } satisfies PothosPrismaListQueryDescriptor,
@@ -121,14 +125,14 @@ function buildMutationsFileForModel(
   model: ModelConfig,
   featureId: string,
 ): PothosPrismaCrudFileDescriptor | undefined {
-  const { graphql } = model ?? {};
+  const { graphql } = model;
   const { mutations } = graphql ?? {};
 
   const buildMutations =
     !!mutations &&
-    (!!mutations?.create?.enabled ||
-      !!mutations?.update?.enabled ||
-      !!mutations?.delete?.enabled);
+    (!!mutations.create?.enabled ||
+      !!mutations.update?.enabled ||
+      !!mutations.delete?.enabled);
 
   if (!buildMutations) {
     return undefined;
@@ -151,9 +155,8 @@ function buildMutationsFileForModel(
     objectTypeRef: `${featurePath}/root:$graphql.${model.name}ObjectType.$objectType`,
     crudServiceRef: `${featurePath}/root:$services.${model.name}Service`,
     children: {
-      create: !create?.enabled
-        ? undefined
-        : {
+      create: create?.enabled
+        ? {
             children: {
               authorize:
                 isAuthEnabled && create.roles
@@ -162,10 +165,10 @@ function buildMutationsFileForModel(
                     }
                   : undefined,
             },
-          },
-      update: !update?.enabled
-        ? undefined
-        : {
+          }
+        : undefined,
+      update: update?.enabled
+        ? {
             children: {
               authorize:
                 isAuthEnabled && update.roles
@@ -174,10 +177,10 @@ function buildMutationsFileForModel(
                     }
                   : undefined,
             },
-          },
-      delete: !del?.enabled
-        ? undefined
-        : {
+          }
+        : undefined,
+      delete: del?.enabled
+        ? {
             children: {
               authorize:
                 isAuthEnabled && del.roles
@@ -186,7 +189,8 @@ function buildMutationsFileForModel(
                     }
                   : undefined,
             },
-          },
+          }
+        : undefined,
     },
   };
 }
@@ -194,7 +198,7 @@ function buildMutationsFileForModel(
 function buildEnumFileForModel(
   enums: EnumConfig[],
 ): DescriptorWithChildren | undefined {
-  if (!enums.length) {
+  if (enums.length === 0) {
     return undefined;
   }
   return {

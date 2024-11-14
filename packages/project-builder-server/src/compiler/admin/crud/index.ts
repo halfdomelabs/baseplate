@@ -1,15 +1,19 @@
-import {
+import type {
   AdminAppConfig,
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
+} from '@halfdomelabs/project-builder-lib';
+
+import {
   ModelUtils,
   stripEmptyGeneratorChildren,
 } from '@halfdomelabs/project-builder-lib';
 import inflection from 'inflection';
 
+import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
+
 import { compileAdminCrudDisplay } from './displays.js';
 import { compileAdminCrudInput } from './inputs.js';
-import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
 
 function compileAdminCrudEmbeddedForm(
   builder: AppEntryBuilder<AdminAppConfig>,
@@ -37,7 +41,7 @@ function compileAdminCrudEmbeddedForm(
       ...sharedData,
       isList: true,
       children: {
-        columns: form.table?.columns.map((c) => ({
+        columns: form.table.columns.map((c) => ({
           generator: '@halfdomelabs/react/admin/admin-crud-column',
           name: c.label,
           label: c.label,
@@ -72,7 +76,7 @@ export function compileAdminCrudSection(
   parentId: string,
 ): Record<string, unknown> {
   const sectionName = inflection.camelize(
-    crudSection.name.replace(/ /g, '_'),
+    crudSection.name.replaceAll(' ', '_'),
     true,
   );
   const crudSectionId = `${parentId}.${sectionName}.$section`;

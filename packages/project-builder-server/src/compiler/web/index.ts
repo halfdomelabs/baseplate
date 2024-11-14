@@ -1,13 +1,14 @@
-import {
+import type {
   AppEntry,
-  AppUtils,
   ProjectDefinitionContainer,
   WebAppConfig,
-  webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
-import { NodeGeneratorDescriptor } from '../../../../core-generators/dist/index.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
+import { AppUtils, webAppEntryType } from '@halfdomelabs/project-builder-lib';
+
+import type { NodeGeneratorDescriptor } from '../../../../core-generators/dist/index.js';
+
+import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
 export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
@@ -28,9 +29,9 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
       router: {
         children: {
           routes: [
-            !builder.appConfig.includeAuth
-              ? undefined
-              : compileAuthPages(builder, appConfig.allowedRoles),
+            builder.appConfig.includeAuth
+              ? compileAuthPages(builder, appConfig.allowedRoles)
+              : undefined,
           ],
         },
       },
@@ -81,7 +82,7 @@ export function compileWeb(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  appBuilder.addDescriptor<NodeGeneratorDescriptor>('root.json', {
+  appBuilder.addDescriptor('root.json', {
     generator: '@halfdomelabs/core/node/node',
     name: `${projectDefinition.name}-${app.name}`,
     packageName,
@@ -90,7 +91,7 @@ export function compileWeb(
     children: {
       projects: [buildReact(appBuilder)],
     },
-  });
+  } satisfies NodeGeneratorDescriptor);
 
   return appBuilder.toProjectEntry();
 }

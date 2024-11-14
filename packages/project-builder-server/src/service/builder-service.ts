@@ -1,19 +1,23 @@
-import {
-  getLatestMigrationVersion,
+import type {
   PluginMetadataWithPaths,
   ProjectDefinitionInput,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
-import { createEventedLogger, EventedLogger } from '@halfdomelabs/sync';
-import chalk from 'chalk';
-import chokidar, { FSWatcher } from 'chokidar';
-import fs from 'fs-extra';
-import path from 'path';
+import type { EventedLogger } from '@halfdomelabs/sync';
+import type { FSWatcher } from 'chokidar';
 
-import { GeneratorEngineSetupConfig } from '@src/index.js';
+import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
+import { createEventedLogger } from '@halfdomelabs/sync';
+import chalk from 'chalk';
+import chokidar from 'chokidar';
+import fs from 'fs-extra';
+import path from 'node:path';
+
+import type { GeneratorEngineSetupConfig } from '@src/index.js';
+
 import {
-  discoverPlugins,
   createNodeSchemaParserContext,
+  discoverPlugins,
 } from '@src/plugins/index.js';
 import { buildProjectForDirectory } from '@src/runner/index.js';
 import { TypedEventEmitterBase } from '@src/utils/typed-event-emitter.js';
@@ -116,8 +120,19 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
     this.builtInPlugins = builtInPlugins;
   }
 
+  protected handleProjectJsonChange(): void {
+    this.readConfig()
+      .then((payload) => {
+        this.emit('project-json-changed', payload);
+      })
+      .catch((error: unknown) => {
+        this.logger.error(error);
+      });
+  }
+
   public async init(): Promise<void> {
     const fileExists = await fs.pathExists(this.projectJsonPath);
+
     if (!fileExists) {
       // check if old version of the file exists
       const oldJsonPath = path.join(this.directory, 'baseplate/project.json');
@@ -146,26 +161,18 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
       },
     });
 
-    const handleChange = (): void => {
-      this.readConfig()
-        .then((payload) => {
-          this.emit('project-json-changed', payload);
-        })
-        .catch((err) => this.logger.error(err));
-    };
-
-    this.watcher.on('add', handleChange);
-    this.watcher.on('change', handleChange);
-    this.watcher.on('unlink', handleChange);
+    const boundHandleProjectJsonChange =
+      this.handleProjectJsonChange.bind(this);
+    this.watcher.on('add', boundHandleProjectJsonChange);
+    this.watcher.on('change', boundHandleProjectJsonChange);
+    this.watcher.on('unlink', boundHandleProjectJsonChange);
   }
 
   public close(): void {
     if (this.watcher) {
-      this.watcher
-        .close()
-        ?.catch((err) =>
-          this.logger.error(err instanceof Error ? err.toString() : typeof err),
-        );
+      this.watcher.close()?.catch((err: unknown) => {
+        this.logger.error(err instanceof Error ? err.toString() : typeof err);
+      });
     }
   }
 
@@ -207,19 +214,21 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
         generatorSetupConfig: this.generatorSetupConfig,
         context: await this.getSchemaParserContext(),
       });
-    } catch (err) {
-      this.logger.error(err instanceof Error ? err.toString() : typeof err);
+    } catch (error) {
+      this.logger.error(
+        error instanceof Error ? error.toString() : typeof error,
+      );
       this.emit('command-console-emitted', {
         id: this.id,
         message: chalk.red(
           `Error building project: ${
-            err instanceof Error
-              ? `${err.message}${err.stack ? `\n${err.stack}` : ''}`
+            error instanceof Error
+              ? `${error.message}${error.stack ? `\n${error.stack}` : ''}`
               : 'Unknown error'
           }`,
         ),
       });
-      throw err;
+      throw error;
     } finally {
       this.isRunningCommand = false;
     }

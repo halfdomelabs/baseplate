@@ -1,10 +1,12 @@
-import { Logger } from '@halfdomelabs/sync';
+import type { Logger } from '@halfdomelabs/sync';
+
 import fs from 'fs-extra';
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { packageUp } from 'package-up';
 
-import { GeneratorEngineSetupConfig } from '@src/sync/index.js';
+import type { GeneratorEngineSetupConfig } from '@src/sync/index.js';
+
 import { notEmpty } from '@src/utils/array.js';
 import { InitializeServerError } from '@src/utils/errors.js';
 
@@ -43,7 +45,7 @@ export async function discoverGenerators(
     (name) =>
       (name.startsWith('@halfdomelabs/') && name.endsWith('-generators')) ||
       name.startsWith('baseplate-plugin-') ||
-      name.match(/^@[^/]+\/baseplate-plugin-/),
+      (/^@[^/]+\/baseplate-plugin-/.exec(name)),
   );
 
   const require = createRequire(packageDirectory);
@@ -64,7 +66,7 @@ export async function discoverGenerators(
         logger.error(
           `Could not find package.json file for the package ${packageName}.`,
         );
-        return undefined;
+        return;
       }
       return {
         name: packageName,

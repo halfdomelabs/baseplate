@@ -227,17 +227,10 @@ export async function writeGeneratorOutput(
 ): Promise<GeneratorWriteResult> {
   const { cleanDirectory, rerunCommands = [] } = options ?? {};
   // write files
-  const filenames = Object.keys(output.files);
-
   try {
     const fileResults = await Promise.all(
-      filenames.map((filename) =>
-        writeFile(
-          path.join(outputDirectory, filename),
-          output.files[filename],
-          filename,
-          logger,
-        ),
+      [...output.files.entries()].map(([filename, file]) =>
+        writeFile(path.join(outputDirectory, filename), file, filename, logger),
       ),
     );
 

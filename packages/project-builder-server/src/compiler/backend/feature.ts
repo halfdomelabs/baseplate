@@ -3,11 +3,12 @@ import {
   stripEmptyGeneratorChildren,
 } from '@halfdomelabs/project-builder-lib';
 
+import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
+
 import { buildEnumsForFeature } from './enums.js';
 import { buildGraphqlForFeature } from './graphql.js';
 import { buildModelsForFeature } from './models.js';
 import { buildServicesForFeature } from './services.js';
-import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 
 export function buildFeature(
   featureId: string,

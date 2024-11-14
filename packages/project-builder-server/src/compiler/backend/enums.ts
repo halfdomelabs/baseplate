@@ -1,6 +1,6 @@
-import {
-  ParsedProjectDefinition,
+import type {
   EnumConfig,
+  ParsedProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
 
 function buildEnum(enumConfig: EnumConfig): Record<string, unknown> {
@@ -17,9 +17,8 @@ export function buildEnumsForFeature(
   featureId: string,
   parsedProject: ParsedProjectDefinition,
 ): Record<string, unknown>[] | undefined {
-  const enums =
-    parsedProject.getEnums().filter((m) => m.feature === featureId) ?? [];
-  if (!enums.length) {
+  const enums = parsedProject.getEnums().filter((m) => m.feature === featureId);
+  if (enums.length === 0) {
     return undefined;
   }
   return enums.map((m) => buildEnum(m));

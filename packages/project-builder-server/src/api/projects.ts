@@ -1,14 +1,17 @@
-import { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+import type { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+
 import { TRPCError } from '@trpc/server';
 import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import { privateProcedure, router, websocketProcedure } from './trpc.js';
-import { BaseplateApiContext } from './types.js';
-import {
+import type {
   FilePayload,
   ProjectBuilderService,
 } from '@src/service/builder-service.js';
+
+import type { BaseplateApiContext } from './types.js';
+
+import { privateProcedure, router, websocketProcedure } from './trpc.js';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createProjectsRouter({ services }: BaseplateApiContext) {
@@ -24,8 +27,7 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
   }
 
   return router({
-    list: privateProcedure.query(async () => {
-      return Promise.all(
+    list: privateProcedure.query(async () => Promise.all(
         services.map(
           async (
             service,
@@ -44,8 +46,7 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
             };
           },
         ),
-      );
-    }),
+      )),
 
     get: privateProcedure
       .input(
@@ -61,17 +62,15 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
 
     onProjectJsonChanged: websocketProcedure
       .input(z.object({ id: z.string() }))
-      .subscription(({ input: { id } }) => {
-        return observable<FilePayload | null>((emit) => {
+      .subscription(({ input: { id } }) => observable<FilePayload | null>((emit) => {
           const unsubscribe = getApi(id).on(
             'project-json-changed',
             (payload) => {
               emit.next(payload);
             },
           );
-          return () => unsubscribe();
-        });
-      }),
+          return () => { unsubscribe(); };
+        })),
 
     writeConfig: privateProcedure
       .input(

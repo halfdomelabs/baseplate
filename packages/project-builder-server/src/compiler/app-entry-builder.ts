@@ -1,19 +1,22 @@
-import {
+import type {
   AdminAppConfig,
   AppCompiler,
-  appCompilerSpec,
   AppEntry,
   AppEntryType,
   BackendAppConfig,
   BaseAppConfig,
-  createAppCompiler,
   FileEntry,
-  ParsedProjectDefinition,
   PluginImplementationStore,
   ProjectDefinition,
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
-import { AppPluginConfig } from '@halfdomelabs/sync';
+import type { AppPluginConfig } from '@halfdomelabs/sync';
+
+import {
+  appCompilerSpec,
+  createAppCompiler,
+  ParsedProjectDefinition,
+} from '@halfdomelabs/project-builder-lib';
 import _ from 'lodash';
 
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
@@ -43,14 +46,14 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     const appCompilerStore = this.pluginStore.getPluginSpec(appCompilerSpec);
 
     const pluginCompilers = appCompilerStore.getAppCompilers(appConfigType);
-    pluginCompilers.forEach((compiler) => {
+    for (const compiler of pluginCompilers) {
       compiler.compile({
         appDefinition: appConfig,
         appCompiler: this.appCompiler,
         projectDefinition: this.projectDefinition,
         definitionContainer: this.definitionContainer,
       });
-    });
+    }
 
     // add plugin.json to root
     this.addDescriptor('plugins.json', {
@@ -62,14 +65,14 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     } satisfies AppPluginConfig);
   }
 
-  addDescriptor<Descriptor>(path: string, jsonContent: Descriptor): this {
+  addDescriptor(path: string, jsonContent: unknown): this {
     // check for existing paths
-    if (this.files.find((f) => f.path === `baseplate/${path}`)) {
+    if (this.files.some((f) => f.path === `baseplate/${path}`)) {
       throw new Error(`File already exists at path ${path}`);
     }
     this.files.push({
       path: `baseplate/${path}`,
-      jsonContent: jsonContent,
+      jsonContent,
     });
     return this;
   }

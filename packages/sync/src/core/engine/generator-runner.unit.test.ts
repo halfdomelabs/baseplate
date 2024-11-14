@@ -66,10 +66,8 @@ describe('executeGeneratorEntry', () => {
   it('generates an empty generator entry', async () => {
     const entry = buildGeneratorEntry();
     const result = await executeGeneratorEntry(entry, logger);
-    expect(result).toEqual({
-      files: {},
-      postWriteCommands: [],
-    });
+    expect(result.files.size).toEqual(0);
+    expect(result.postWriteCommands.length).toEqual(0);
   });
 
   it('generates a simple entry', async () => {
@@ -80,21 +78,19 @@ describe('executeGeneratorEntry', () => {
       },
     });
     const result = await executeGeneratorEntry(entry, logger);
-    expect(result).toEqual({
-      files: {
-        '/simple/file.txt': {
-          contents: 'simple',
-          formatter: undefined,
-        },
+    expect(Object.fromEntries(result.files.entries())).toEqual({
+      '/simple/file.txt': {
+        contents: 'simple',
+        formatter: undefined,
       },
-      postWriteCommands: [
-        {
-          command: 'simple command',
-          commandType: 'script',
-          options: undefined,
-        },
-      ],
     });
+    expect(result.postWriteCommands).toEqual([
+      {
+        command: 'simple command',
+        commandType: 'script',
+        options: undefined,
+      },
+    ]);
   });
 
   it('generates a nested entry', async () => {
@@ -130,37 +126,35 @@ describe('executeGeneratorEntry', () => {
       ],
     });
     const result = await executeGeneratorEntry(entry, logger);
-    expect(result).toEqual({
-      files: {
-        '/simple/file.txt': {
-          contents: 'simple',
-          formatter: undefined,
-          options: undefined,
-        },
-        '/nested/file.txt': {
-          contents: 'nested',
-          formatter,
-          options: { shouldFormat: true },
-        },
+    expect(Object.fromEntries(result.files.entries())).toEqual({
+      '/simple/file.txt': {
+        contents: 'simple',
+        formatter: undefined,
+        options: undefined,
       },
-      postWriteCommands: [
-        {
-          command: 'nested command',
-          commandType: 'script',
-          options: { workingDirectory: '/nested' },
-        },
-        {
-          command: 'nested command 2',
-          commandType: 'script',
-          options: undefined,
-        },
-        {
-          command: 'simple command',
-          commandType: 'script',
-          options: undefined,
-        },
-      ],
+      '/nested/file.txt': {
+        contents: 'nested',
+        formatter,
+        options: { shouldFormat: true },
+      },
     });
+    expect(result.postWriteCommands).toEqual([
+      {
+        command: 'nested command',
+        commandType: 'script',
+        options: { workingDirectory: '/nested' },
+      },
+      {
+        command: 'nested command 2',
+        commandType: 'script',
+        options: undefined,
+      },
+      {
+        command: 'simple command',
+        commandType: 'script',
+        options: undefined,
+      },
+    ]);
     expect(simpleProvider.hello).toHaveBeenCalled();
   });
 });

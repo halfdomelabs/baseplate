@@ -22,7 +22,7 @@ describe('copyDirectoryAction', () => {
       builder,
     );
 
-    expect(builder.output.files).toEqual({});
+    expect(builder.output.files.size).toEqual(0);
     expect(builder.output.postWriteCommands).toHaveLength(0);
   });
 
@@ -39,9 +39,12 @@ describe('copyDirectoryAction', () => {
       destination: '/dest',
     }).execute(builder);
 
-    expect(builder.output.files).toEqual({
-      '/dest/test1.txt': { contents: Buffer.from('hi', 'utf8') },
-      '/dest/nested/test2.txt': { contents: Buffer.from('hi2', 'utf8') },
+    expect(builder.output.files.size).toEqual(2);
+    expect(builder.output.files.get('/dest/test1.txt')).toEqual({
+      contents: Buffer.from('hi', 'utf8'),
+    });
+    expect(builder.output.files.get('/dest/nested/test2.txt')).toEqual({
+      contents: Buffer.from('hi2', 'utf8'),
     });
     expect(builder.output.postWriteCommands).toHaveLength(0);
   });
@@ -59,12 +62,11 @@ describe('copyDirectoryAction', () => {
       shouldFormat: true,
     }).execute(builder);
 
-    expect(builder.output.files).toEqual({
-      '/dest/test1.txt': {
-        contents: 'hi',
-        formatter,
-        options: { shouldFormat: true },
-      },
+    expect(builder.output.files.size).toEqual(1);
+    expect(builder.output.files.get('/dest/test1.txt')).toEqual({
+      contents: 'hi',
+      formatter,
+      options: { shouldFormat: true },
     });
     expect(builder.output.postWriteCommands).toHaveLength(0);
   });

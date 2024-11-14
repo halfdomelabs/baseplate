@@ -1,14 +1,16 @@
-import {
+import type {
   PluginMetadataWithPaths,
   PluginStore,
-  SchemaParserContext,
+  SchemaParserContext} from '@halfdomelabs/project-builder-lib';
+import type { Logger } from '@halfdomelabs/sync';
+import type { PluginPlatformModule } from 'node_modules/@halfdomelabs/project-builder-lib/dist/plugins/imports/types.js';
+
+import {
   adminCrudInputCompilerSpec,
   appCompilerSpec,
   modelTransformerCompilerSpec,
 } from '@halfdomelabs/project-builder-lib';
-import { Logger } from '@halfdomelabs/sync';
 import path from 'node:path';
-import { PluginPlatformModule } from 'node_modules/@halfdomelabs/project-builder-lib/dist/plugins/imports/types.js';
 
 import { discoverPlugins } from './plugin-discovery.js';
 
@@ -22,8 +24,7 @@ export async function createNodePluginStore(
   plugins: PluginMetadataWithPaths[],
 ): Promise<PluginStore> {
   const pluginsWithModules = await Promise.all(
-    plugins.map(async (plugin) => {
-      return {
+    plugins.map(async (plugin) => ({
         metadata: plugin,
         modules: await Promise.all(
           plugin.nodeModulePaths.map(async (modulePath) => {
@@ -38,8 +39,7 @@ export async function createNodePluginStore(
             };
           }),
         ),
-      };
-    }),
+      })),
   );
   return {
     availablePlugins: pluginsWithModules,

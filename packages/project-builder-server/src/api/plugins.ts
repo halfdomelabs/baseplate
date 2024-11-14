@@ -1,9 +1,11 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 
+import type { ProjectBuilderService } from '@src/service/builder-service.js';
+
+import type { BaseplateApiContext } from './types.js';
+
 import { privateProcedure, router } from './trpc.js';
-import { BaseplateApiContext } from './types.js';
-import { ProjectBuilderService } from '@src/service/builder-service.js';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createPluginsRouter({ services }: BaseplateApiContext) {

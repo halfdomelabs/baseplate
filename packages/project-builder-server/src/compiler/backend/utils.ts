@@ -1,4 +1,4 @@
-import { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+import type { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
 
 export function getPostgresSettings(projectDefinition: ProjectDefinition): {
   config: {

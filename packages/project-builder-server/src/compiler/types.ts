@@ -1,4 +1,4 @@
-import { FileEntry } from '@halfdomelabs/project-builder-lib';
+import type { FileEntry } from '@halfdomelabs/project-builder-lib';
 
 export interface CompilerOutput {
   config: unknown;

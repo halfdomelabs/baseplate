@@ -112,7 +112,7 @@ export interface PostWriteCommand {
 }
 
 export interface GeneratorOutput {
-  files: Record<string, FileData>;
+  files: Map<string, FileData>;
   postWriteCommands: PostWriteCommand[];
 }
 
@@ -128,7 +128,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
   baseDirectory: string | undefined;
 
   constructor(generatorBaseDirectory: string, formatter?: FormatterProvider) {
-    this.output = { files: {}, postWriteCommands: [] };
+    this.output = { files: new Map(), postWriteCommands: [] };
     this.generatorBaseDirectory = generatorBaseDirectory;
     this.formatter = formatter;
   }
@@ -149,7 +149,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
   ): void {
     const fullPath = this.resolvePath(filePath);
 
-    if ('fullPath' in this.output.files) {
+    if (this.output.files.has(fullPath)) {
       throw new Error(`Cannot overwrite file ${fullPath}`);
     }
 
@@ -159,7 +159,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
 
     const formatter =
       this.formatter && options?.shouldFormat ? this.formatter : undefined;
-    this.output.files[fullPath] = { contents, formatter, options };
+    this.output.files.set(fullPath, { contents, formatter, options });
   }
 
   resolvePath(relativePath: string): string {

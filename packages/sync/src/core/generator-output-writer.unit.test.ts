@@ -25,7 +25,7 @@ const testLogger = createEventedLogger({ noConsole: true });
 describe('writeGeneratorOutput', () => {
   it('should write nothing with a blank output', async () => {
     await writeGeneratorOutput(
-      { files: {}, postWriteCommands: [] },
+      { files: new Map(), postWriteCommands: [] },
       '/root',
       undefined,
       testLogger,
@@ -40,10 +40,10 @@ describe('writeGeneratorOutput', () => {
     };
     await writeGeneratorOutput(
       {
-        files: {
-          'file.txt': { contents: 'hi' },
-          'formatted.txt': { contents: 'hello', formatter: testFormatter },
-        },
+        files: new Map([
+          ['file.txt', { contents: 'hi' }],
+          ['formatted.txt', { contents: 'hello', formatter: testFormatter }],
+        ]),
         postWriteCommands: [],
       },
       '/root',
@@ -69,24 +69,30 @@ describe('writeGeneratorOutput', () => {
 
     await writeGeneratorOutput(
       {
-        files: {
-          'file.txt': {
-            contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
-            options: {
-              cleanContents: Buffer.from(
-                ['hello', 'hi', 'something', 'bye'].join('\n'),
-              ),
+        files: new Map([
+          [
+            'file.txt',
+            {
+              contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
+              options: {
+                cleanContents: Buffer.from(
+                  ['hello', 'hi', 'something', 'bye'].join('\n'),
+                ),
+              },
             },
-          },
-          'file2.txt': {
-            contents: ['123', '456', '789', '012'].join('\n'),
-            options: {
-              cleanContents: Buffer.from(
-                ['123', '456', '789', '012'].join('\n'),
-              ),
+          ],
+          [
+            'file2.txt',
+            {
+              contents: ['123', '456', '789', '012'].join('\n'),
+              options: {
+                cleanContents: Buffer.from(
+                  ['123', '456', '789', '012'].join('\n'),
+                ),
+              },
             },
-          },
-        },
+          ],
+        ]),
         postWriteCommands: [],
       },
       '/root',
@@ -106,16 +112,19 @@ describe('writeGeneratorOutput', () => {
 
     await writeGeneratorOutput(
       {
-        files: {
-          'file.txt': {
-            contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
-            options: {
-              cleanContents: Buffer.from(
-                ['hello', 'hola', 'something', 'bye'].join('\n'),
-              ),
+        files: new Map([
+          [
+            'file.txt',
+            {
+              contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
+              options: {
+                cleanContents: Buffer.from(
+                  ['hello', 'hola', 'something', 'bye'].join('\n'),
+                ),
+              },
             },
-          },
-        },
+          ],
+        ]),
         postWriteCommands: [],
       },
       '/root',
@@ -143,11 +152,14 @@ describe('writeGeneratorOutput', () => {
 
     await writeGeneratorOutput(
       {
-        files: {
-          'file.txt': {
-            contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
-          },
-        },
+        files: new Map([
+          [
+            'file.txt',
+            {
+              contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
+            },
+          ],
+        ]),
         postWriteCommands: [],
       },
       '/root',
@@ -173,9 +185,9 @@ describe('writeGeneratorOutput', () => {
 
     await writeGeneratorOutput(
       {
-        files: {
-          'file.txt': { contents: 'hi2', options: { neverOverwrite: true } },
-        },
+        files: new Map([
+          ['file.txt', { contents: 'hi2', options: { neverOverwrite: true } }],
+        ]),
         postWriteCommands: [],
       },
       '/root',
@@ -188,7 +200,7 @@ describe('writeGeneratorOutput', () => {
   it('should write binary file', async () => {
     await writeGeneratorOutput(
       {
-        files: { 'file.txt': { contents: Buffer.from('hi', 'utf8') } },
+        files: new Map([['file.txt', { contents: Buffer.from('hi', 'utf8') }]]),
         postWriteCommands: [],
       },
       '/root',
@@ -201,7 +213,7 @@ describe('writeGeneratorOutput', () => {
   it('should run post-write commands in correct order', async () => {
     await writeGeneratorOutput(
       {
-        files: {},
+        files: new Map(),
         postWriteCommands: [
           {
             command: 'custom-script',
@@ -238,13 +250,16 @@ describe('writeGeneratorOutput', () => {
 
     await writeGeneratorOutput(
       {
-        files: {
-          'file.txt': { contents: 'hi' },
-          'file2.txt': {
-            contents: 'hello',
-            options: { cleanContents: Buffer.from('hi2') },
-          },
-        },
+        files: new Map([
+          ['file.txt', { contents: 'hi' }],
+          [
+            'file2.txt',
+            {
+              contents: 'hello',
+              options: { cleanContents: Buffer.from('hi2') },
+            },
+          ],
+        ]),
         postWriteCommands: [
           {
             command: 'pnpm install',
@@ -278,9 +293,9 @@ describe('writeGeneratorOutput', () => {
 
     await writeGeneratorOutput(
       {
-        files: {
-          'file.txt': { contents: Buffer.from('binary-data', 'utf8') },
-        },
+        files: new Map([
+          ['file.txt', { contents: Buffer.from('binary-data', 'utf8') }],
+        ]),
         postWriteCommands: [
           {
             command: 'pnpm install',

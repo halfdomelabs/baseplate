@@ -1,11 +1,11 @@
-import {
-  FeatureUtils,
-  BackendAppConfig,
-} from '@halfdomelabs/project-builder-lib';
+import type { BackendAppConfig } from '@halfdomelabs/project-builder-lib';
+
+import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
+
+import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
 import { buildFeature } from './feature.js';
 import { getPostgresSettings, getRedisSettings } from './utils.js';
-import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 
 export function buildFastify(
   builder: BackendAppEntryBuilder,
@@ -55,16 +55,15 @@ export function buildFastify(
         generator: '@halfdomelabs/fastify/core/fastify-sentry',
         peerProvider: true,
       },
-      $redis: !app.enableRedis
-        ? undefined
-        : {
+      $redis: app.enableRedis
+        ? {
             generator: '@halfdomelabs/fastify/core/fastify-redis',
             peerProvider: true,
             defaultUrl: getRedisSettings(projectDefinition).url,
-          },
-      ...(!app.enableBullQueue
-        ? {}
-        : {
+          }
+        : undefined,
+      ...(app.enableBullQueue
+        ? {
             $bull: {
               generator: '@halfdomelabs/fastify/bull/bullmq',
               peerProvider: true,
@@ -73,25 +72,26 @@ export function buildFastify(
               generator: '@halfdomelabs/fastify/bull/fastify-bull-board',
               peerProvider: true,
             },
-          }),
-      $postmark: !app.enablePostmark
-        ? undefined
-        : {
+          }
+        : {}),
+      $postmark: app.enablePostmark
+        ? {
             generator: '@halfdomelabs/fastify/email/fastify-postmark',
             peerProvider: true,
-          },
-      $axios: !app.enableAxios
-        ? undefined
-        : {
+          }
+        : undefined,
+      $axios: app.enableAxios
+        ? {
             generator: '@halfdomelabs/fastify/core/axios',
             peerProvider: true,
-          },
-      $sendgrid: !app.enableSendgrid
-        ? undefined
-        : {
+          }
+        : undefined,
+      $sendgrid: app.enableSendgrid
+        ? {
             generator: '@halfdomelabs/fastify/email/fastify-sendgrid',
             peerProvider: true,
-          },
+          }
+        : undefined,
       $prisma: {
         generator: '@halfdomelabs/fastify/prisma/prisma',
         peerProvider: true,
@@ -124,12 +124,12 @@ export function buildFastify(
         ...rootFeatures.map((feature) => buildFeature(feature.id, builder)),
         'graphql/root',
       ],
-      $stripe: !app.enableStripe
-        ? undefined
-        : {
+      $stripe: app.enableStripe
+        ? {
             generator: '@halfdomelabs/fastify/stripe/fastify-stripe',
             peerProvider: true,
-          },
+          }
+        : undefined,
       ...parsedProject.fastifyChildren,
       ...appCompiler.getRootChildren(),
     },
