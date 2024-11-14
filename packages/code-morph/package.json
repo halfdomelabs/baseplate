@@ -10,7 +10,7 @@
     "directory": "packages/code-morph"
   },
   "license": "SEE LICENSE IN LICENSE",
-  "author": "Kingston Tam",
+  "author": "Half Dome Labs LLC",
   "type": "module",
   "files": [
     "LICENSE",

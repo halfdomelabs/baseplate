@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { getDefaultGeneratorSetupConfig } from '@halfdomelabs/project-builder-common';
 import { GeneratorEngine } from '@halfdomelabs/sync';
 import { program } from 'commander';
@@ -29,9 +27,9 @@ async function generateForDirectory(directory: string): Promise<void> {
   const engine = await getGeneratorEngine();
   const project = await engine.loadProject(directory);
   const output = await engine.build(project);
-  console.log('Project built! Writing output....');
+  console.info('Project built! Writing output....');
   await engine.writeOutput(output, directory);
-  console.log('Project successfully generated!');
+  console.info('Project successfully generated!');
 }
 
 async function runMain(): Promise<void> {
