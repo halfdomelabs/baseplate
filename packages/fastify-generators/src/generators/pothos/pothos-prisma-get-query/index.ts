@@ -1,17 +1,16 @@
-import {
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { GeneratorDescriptor } from '@halfdomelabs/sync';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createTaskConfigBuilder,
-  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { pothosSchemaProvider } from '../pothos/index.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
+
 import {
   getModelIdFieldName,
   getPrimaryKeyDefinition,
@@ -20,10 +19,10 @@ import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { quot } from '@src/utils/string.js';
-import {
-  PothosWriterOptions,
-  writePothosArgsFromDtoFields,
-} from '@src/writers/pothos/index.js';
+import { writePothosArgsFromDtoFields } from '@src/writers/pothos/index.js';
+
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosSchemaProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -80,12 +79,13 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
           writerOptions,
         );
 
-        pothosArgs.childDefinitions?.forEach((child) => {
-          pothosTypesFile.registerType({
-            name: child.name,
-            block: child.definition,
-          });
-        });
+        if (pothosArgs.childDefinitions)
+          for (const child of pothosArgs.childDefinitions) {
+            pothosTypesFile.registerType({
+              name: child.name,
+              block: child.definition,
+            });
+          }
 
         const primaryKeyFieldName = getModelIdFieldName(modelOutput);
 

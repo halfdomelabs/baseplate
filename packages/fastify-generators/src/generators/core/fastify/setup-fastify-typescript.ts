@@ -1,4 +1,4 @@
-import {
+import type {
   NodeProvider,
   TypescriptConfigProvider,
 } from '@halfdomelabs/core-generators';

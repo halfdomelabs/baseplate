@@ -1,14 +1,15 @@
+import type { TsUtilsProvider } from '@halfdomelabs/core-generators';
+
 import {
-  TsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import { singularize } from 'inflection';
 
-import {
+import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
-} from '@src/types/serviceOutput.js';
+} from '@src/types/service-output.js';
 
 function buildNestedArgExpression(
   arg: ServiceOutputDtoNestedField,
@@ -22,13 +23,13 @@ function buildNestedArgExpression(
     (f): f is ServiceOutputDtoNestedField => f.type === 'nested',
   );
 
-  if (nestedFields.length) {
+  if (nestedFields.length > 0) {
     // look for all nested expressions with restrictions
     const nestedExpressionsWithRestrict = nestedFields
       .map((nestedField) => ({
         field: nestedField,
         // mutual recursion
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
         expression: convertNestedArgForCall(
           {
             ...nestedField,
@@ -41,7 +42,7 @@ function buildNestedArgExpression(
       }))
       .filter((f) => f.expression.content.includes('restrictObjectNulls'));
 
-    if (nestedExpressionsWithRestrict.length) {
+    if (nestedExpressionsWithRestrict.length > 0) {
       return TypescriptCodeUtils.formatExpression(
         `{
           ...${arg.name},
@@ -91,7 +92,7 @@ function convertNestedArgForCall(
   const nestedArgExpression: TypescriptCodeExpression =
     buildNestedArgExpression(arg, tsUtils);
 
-  if (nonNullableOptionalFields.length) {
+  if (nonNullableOptionalFields.length > 0) {
     return TypescriptCodeUtils.formatExpression(
       `restrictObjectNulls(ARG, [${nonNullableOptionalFields
         .map((f) => `'${f.name}'`)

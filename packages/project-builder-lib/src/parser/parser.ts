@@ -10,14 +10,14 @@ import type {
   ZodPluginWrapper,
 } from '@src/plugins/index.js';
 import type { ZodRefPayload } from '@src/references/ref-builder.js';
-import type { ProjectDefinition } from '@src/schema/projectDefinition.js';
+import type { ProjectDefinition } from '@src/schema/project-definition.js';
 
 import { initializePlugins } from '@src/plugins/imports/loader.js';
 import { pluginConfigSpec, zPluginWrapper } from '@src/plugins/index.js';
 import { ZodRefWrapper } from '@src/references/ref-builder.js';
 import { adminCrudInputSpec, modelTransformerSpec } from '@src/schema/index.js';
 import { basePluginSchema } from '@src/schema/plugins/index.js';
-import { projectDefinitionSchema } from '@src/schema/projectDefinition.js';
+import { projectDefinitionSchema } from '@src/schema/project-definition.js';
 
 import type { SchemaParserContext } from './types.js';
 

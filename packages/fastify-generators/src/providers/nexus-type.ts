@@ -1,4 +1,5 @@
-import { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
 import { createProviderType } from '@halfdomelabs/sync';
 
 export interface NexusTypeProvider {

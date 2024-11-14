@@ -1,7 +1,10 @@
-import {
+import type {
   ImportMapper,
-  makeImportAndFilePath,
   TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+
+import {
+  makeImportAndFilePath,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -97,23 +100,25 @@ const ServiceContextGenerator = createGeneratorWithTasks({
             );
 
             const contextFile = typescript.createTemplate({
-              CONTEXT_FIELDS: !Object.keys(contextFields).length
-                ? TypescriptCodeUtils.createExpression('placeholder?: never')
-                : TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                    R.mapObjIndexed((field) => field.type, contextFields),
-                  ),
-              CREATE_CONTEXT_ARGS: !contextArgs.length
-                ? TypescriptCodeUtils.createExpression('')
-                : TypescriptCodeUtils.mergeExpressions(
-                    contextArgs.map((arg) =>
-                      arg.type.wrap((contents) => `${arg.name}: ${contents}`),
+              CONTEXT_FIELDS:
+                Object.keys(contextFields).length === 0
+                  ? TypescriptCodeUtils.createExpression('placeholder?: never')
+                  : TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
+                      R.mapObjIndexed((field) => field.type, contextFields),
                     ),
-                    '; ',
-                  ).wrap(
-                    (contents) => `
+              CREATE_CONTEXT_ARGS:
+                contextArgs.length === 0
+                  ? TypescriptCodeUtils.createExpression('')
+                  : TypescriptCodeUtils.mergeExpressions(
+                      contextArgs.map((arg) =>
+                        arg.type.wrap((contents) => `${arg.name}: ${contents}`),
+                      ),
+                      '; ',
+                    ).wrap(
+                      (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}}
           `,
-                  ),
+                    ),
               CONTEXT_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
                 R.mapObjIndexed((field) => field.value, contextFields),
               ),
@@ -125,33 +130,35 @@ const ServiceContextGenerator = createGeneratorWithTasks({
 
             const testHelperFile = typescript.createTemplate(
               {
-                TEST_ARGS: !contextArgs.length
-                  ? TypescriptCodeUtils.createExpression('')
-                  : TypescriptCodeUtils.mergeExpressions(
-                      contextArgs.map((arg) =>
-                        arg.type.wrap(
-                          (contents) =>
-                            `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`,
+                TEST_ARGS:
+                  contextArgs.length === 0
+                    ? TypescriptCodeUtils.createExpression('')
+                    : TypescriptCodeUtils.mergeExpressions(
+                        contextArgs.map((arg) =>
+                          arg.type.wrap(
+                            (contents) =>
+                              `${arg.name}${arg.testDefault ? '?' : ''}: ${contents}`,
+                          ),
                         ),
-                      ),
-                      '; ',
-                    ).wrap(
-                      (contents) => `
+                        '; ',
+                      ).wrap(
+                        (contents) => `
             {${contextArgs.map((a) => a.name).join(', ')}}: {${contents}} = {}
           `,
-                    ),
-                TEST_OBJECT: !contextArgs.length
-                  ? TypescriptCodeUtils.createExpression('')
-                  : TypescriptCodeUtils.mergeExpressionsAsObject(
-                      R.fromPairs(
-                        contextArgs.map((arg) => [
-                          arg.name,
-                          arg.testDefault
-                            ? arg.testDefault.prepend(`${arg.name} ?? `)
-                            : TypescriptCodeUtils.createExpression(arg.name),
-                        ]),
                       ),
-                    ),
+                TEST_OBJECT:
+                  contextArgs.length === 0
+                    ? TypescriptCodeUtils.createExpression('')
+                    : TypescriptCodeUtils.mergeExpressionsAsObject(
+                        R.fromPairs(
+                          contextArgs.map((arg) => [
+                            arg.name,
+                            arg.testDefault
+                              ? arg.testDefault.prepend(`${arg.name} ?? `)
+                              : TypescriptCodeUtils.createExpression(arg.name),
+                          ]),
+                        ),
+                      ),
               },
               { importMappers: [{ getImportMap: () => importMap }] },
             );

@@ -1,7 +1,6 @@
-import {
-  createGeneratorWithTasks,
-  GeneratorDescriptor,
-} from '@halfdomelabs/sync';
+import type { GeneratorDescriptor } from '@halfdomelabs/sync';
+
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { createPothosTypesFileTask } from '../pothos-types-file/index.js';

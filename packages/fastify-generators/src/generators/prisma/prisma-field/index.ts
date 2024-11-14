@@ -1,16 +1,18 @@
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { prismaModelProvider } from '../prisma-model/index.js';
-import { ScalarFieldType } from '@src/types/fieldTypes.js';
+import type { ScalarFieldType } from '@src/types/field-types.js';
+import type { PrismaFieldTypeConfig } from '@src/writers/prisma-schema/fields.js';
+
 import {
   buildPrismaScalarField,
-  PrismaFieldTypeConfig,
   PRISMA_SCALAR_FIELD_TYPES,
 } from '@src/writers/prisma-schema/fields.js';
+
+import { prismaModelProvider } from '../prisma-model/index.js';
 
 // some typescript hacking to make field types work generically
 const prismaScalarFieldTypes = PRISMA_SCALAR_FIELD_TYPES as Record<
@@ -36,7 +38,7 @@ const descriptorSchema = z
   })
   .superRefine((obj, ctx) => {
     // TODO: Clean up
-    const schema = prismaScalarFieldTypes[obj.type]?.optionsSchema;
+    const schema = prismaScalarFieldTypes[obj.type].optionsSchema;
     if (schema && obj.options) {
       const parseResult = schema.safeParse(obj.options);
       if (!parseResult.success) {

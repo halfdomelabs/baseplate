@@ -1,20 +1,20 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
 
-import { PrismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
-import {
+import type { PrismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import type {
   PrismaOutputModel,
   PrismaOutputRelationField,
-} from '@src/types/prismaOutput.js';
-import { ServiceOutputDtoNestedField } from '@src/types/serviceOutput.js';
-import {
-  NexusDefinitionWriterOptions,
-  writeNexusObjectTypeFieldFromDtoNestedField,
-} from '@src/writers/nexus-definition/index.js';
+} from '@src/types/prisma-output.js';
+import type { ServiceOutputDtoNestedField } from '@src/types/service-output.js';
+import type { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition/index.js';
+
+import { writeNexusObjectTypeFieldFromDtoNestedField } from '@src/writers/nexus-definition/index.js';
 
 interface RelationFieldWriterContext {
   prismaOutput: PrismaOutputProvider;
@@ -51,7 +51,10 @@ function getResolverForField(
   (INPUT) => OPTIONAL_CHECK MODEL.findUniqueOrThrow({ where: WHERE_CLAUSE })
   `.trim();
 
-  if (field.fields.length !== field.references.length || !field.fields.length) {
+  if (
+    field.fields.length !== field.references.length ||
+    field.fields.length === 0
+  ) {
     throw new Error('Fields and references must be the same length > 0');
   }
 

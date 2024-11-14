@@ -1,14 +1,16 @@
+import type { z } from 'zod';
+
 import {
   createGeneratorWithTasks,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
-import { z } from 'zod';
+
+import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 
 import {
   pothosAuthorizeConfigSchema,
   pothosAuthProvider,
 } from '../pothos-auth/index.js';
-import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 
 const descriptorSchema = pothosAuthorizeConfigSchema;
 

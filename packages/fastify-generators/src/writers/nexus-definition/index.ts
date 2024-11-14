@@ -1,16 +1,17 @@
-import {
-  TypescriptCodeBlock,
-  TypescriptCodeExpression,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
-import { NexusScalarConfig } from './scalars.js';
-import { ScalarFieldType } from '@src/types/fieldTypes.js';
-import {
+import { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
+import type { ScalarFieldType } from '@src/types/field-types.js';
+import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
   ServiceOutputDtoScalarField,
-} from '@src/types/serviceOutput.js';
+} from '@src/types/service-output.js';
+
 import { lowerCaseFirst } from '@src/utils/case.js';
+
+import type { NexusScalarConfig } from './scalars.js';
 
 export interface NexusDefinitionWriterOptions {
   builder: string;
@@ -64,15 +65,15 @@ export function writeNexusDefinitionFromDtoScalarField(
       ? 'id'
       : nexusMethod;
 
-  if (!nexusMethodWithId) {
+  if (nexusMethodWithId) {
+    components.push(`.${nexusMethodWithId}("${field.name}")`);
+  } else {
     if (field.scalarType !== 'enum' || !field.enumType) {
       throw new Error(`Field must have nexus type or be enum!`);
     }
     components.push(
       `.field("${field.name}", { type: "${field.enumType.name}" })`,
     );
-  } else {
-    components.push(`.${nexusMethodWithId}("${field.name}")`);
   }
 
   return components.join('');

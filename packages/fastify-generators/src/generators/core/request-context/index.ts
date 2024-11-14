@@ -1,6 +1,8 @@
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
   nodeProvider,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -8,7 +10,6 @@ import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 

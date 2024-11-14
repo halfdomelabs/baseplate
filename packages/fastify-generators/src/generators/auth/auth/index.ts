@@ -1,9 +1,10 @@
-import { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
+import type { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 

@@ -1,10 +1,13 @@
-import {
+import type {
   ImportMap,
   ImportMapper,
-  makeImportAndFilePath,
-  nodeProvider,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+
+import {
+  makeImportAndFilePath,
+  nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -14,16 +17,17 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { authInfoImportProvider } from '@src/generators/auth/auth-service/index.js';
+import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
+
 import { configServiceProvider } from '../config-service/index.js';
 import {
   errorHandlerServiceProvider,
   errorHandlerServiceSetupProvider,
 } from '../error-handler-service/index.js';
-import { fastifyProvider } from '../fastify/index.js';
 import { fastifyServerProvider } from '../fastify-server/index.js';
+import { fastifyProvider } from '../fastify/index.js';
 import { requestContextProvider } from '../request-context/index.js';
-import { authInfoImportProvider } from '@src/generators/auth/auth-service/index.js';
-import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -150,6 +154,13 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         const [serviceImport, servicePath] =
           makeImportAndFilePath(sentryServicePath);
 
+        const errorLoggerPath =
+          errorHandler.getImportMap()['%error-logger']?.path;
+
+        if (!errorLoggerPath) {
+          throw new Error('Error logger path not found');
+        }
+
         const importMap: ImportMap = {
           '%fastify-sentry/service': {
             path: serviceImport,
@@ -161,7 +172,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
             ],
           },
           '%fastify-sentry/logger': {
-            path: errorHandler.getImportMap()['%error-logger'].path,
+            path: errorLoggerPath,
             allowedImports: ['shouldLogToSentry'],
           },
         };

@@ -9,10 +9,12 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { pothosSetupProvider } from '../pothos/index.js';
+import type { ScalarFieldType } from '@src/types/field-types.js';
+
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
-import { ScalarFieldType } from '@src/types/fieldTypes.js';
+
+import { pothosSetupProvider } from '../pothos/index.js';
 
 interface PothosScalarConfig {
   name: string;
@@ -101,11 +103,11 @@ const createMainTask = createTaskConfigBuilder(({ type }: Descriptor) => ({
 
     pothosSetup.registerSchemaFile(scalarPath);
 
-    if (scalarConfig.dependencies) {
+    if (Object.keys(scalarConfig.dependencies).length > 0) {
       node.addPackages(scalarConfig.dependencies);
     }
 
-    if (scalarConfig.devDependencies) {
+    if (Object.keys(scalarConfig.devDependencies).length > 0) {
       node.addDevPackages(scalarConfig.devDependencies);
     }
 

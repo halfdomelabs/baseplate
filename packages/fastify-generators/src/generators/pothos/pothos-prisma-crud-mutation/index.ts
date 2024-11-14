@@ -1,7 +1,8 @@
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
 import {
   quot,
   tsUtilsProvider,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
@@ -11,8 +12,6 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { pothosSchemaProvider } from '../pothos/index.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
@@ -22,6 +21,9 @@ import {
   writePothosSimpleObjectFieldsFromDtoFields,
 } from '@src/writers/pothos/index.js';
 import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
+
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosSchemaProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -66,20 +68,21 @@ const createMainTask = createTaskConfigBuilder(
       >({});
 
       // unwrap input object arguments
-      const unwrappedArguments = serviceOutput.arguments
-        .map((arg) => {
-          if (
-            arg.name === 'input' &&
-            arg.type === 'nested' &&
-            !arg.isPrismaType
-          ) {
-            return arg.nestedType.fields;
-          }
-          return [arg];
-        })
-        .flat();
+      const unwrappedArguments = serviceOutput.arguments.flatMap((arg) => {
+        if (
+          arg.name === 'input' &&
+          arg.type === 'nested' &&
+          !arg.isPrismaType
+        ) {
+          return arg.nestedType.fields;
+        }
+        return [arg];
+      });
 
-      const inputArgument = serviceOutput.arguments[0];
+      const inputArgument =
+        serviceOutput.arguments.length > 0
+          ? serviceOutput.arguments[0]
+          : undefined;
 
       if (
         !inputArgument ||
@@ -108,12 +111,13 @@ const createMainTask = createTaskConfigBuilder(
           },
         }),
         build: () => {
-          inputFields.childDefinitions?.forEach((childDefinition) => {
-            pothosTypesFile.registerType({
-              name: childDefinition.name,
-              block: childDefinition.definition,
-            });
-          });
+          if (inputFields.childDefinitions)
+            for (const childDefinition of inputFields.childDefinitions) {
+              pothosTypesFile.registerType({
+                name: childDefinition.name,
+                block: childDefinition.definition,
+              });
+            }
 
           const returnFieldName = lowerCaseFirst(modelName);
 

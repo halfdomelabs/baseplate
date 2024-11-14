@@ -1,9 +1,13 @@
-import {
+import type {
   ImportMapper,
+  TypescriptCodeBlock,
+} from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
+import {
   mergeCodeEntryOptions,
   nodeGitIgnoreProvider,
   nodeProvider,
-  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -12,7 +16,6 @@ import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';

@@ -1,8 +1,9 @@
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { prismaModelProvider } from '../prisma-model/index.js';
 import { doubleQuot } from '@src/utils/string.js';
+
+import { prismaModelProvider } from '../prisma-model/index.js';
 
 const REFERENTIAL_ACTIONS = [
   'Cascade',

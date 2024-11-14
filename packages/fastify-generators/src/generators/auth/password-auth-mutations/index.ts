@@ -6,12 +6,13 @@ import {
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authProvider } from '../auth/index.js';
-import { authMutationsProvider } from '../auth-mutations/index.js';
-import { passwordAuthServiceProvider } from '../password-auth-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { nexusSchemaProvider } from '@src/generators/nexus/nexus/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+
+import { authMutationsProvider } from '../auth-mutations/index.js';
+import { authProvider } from '../auth/index.js';
+import { passwordAuthServiceProvider } from '../password-auth-service/index.js';
 
 const descriptorSchema = z.object({});
 

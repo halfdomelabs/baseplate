@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
   eslintProvider,
-  ImportMapper,
   nodeProvider,
   prettierProvider,
   tsUtilsProvider,
@@ -12,9 +15,12 @@ import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import type { ScalarFieldType } from '@src/types/field-types.js';
+import type { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition/index.js';
+import type { NexusScalarConfig } from '@src/writers/nexus-definition/scalars.js';
 
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
@@ -23,12 +29,7 @@ import {
   rootModuleProvider,
 } from '@src/generators/core/root-module/index.js';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
-import { ScalarFieldType } from '@src/types/fieldTypes.js';
-import { NexusDefinitionWriterOptions } from '@src/writers/nexus-definition/index.js';
-import {
-  DEFAULT_NEXUS_SCALAR_CONFIG,
-  NexusScalarConfig,
-} from '@src/writers/nexus-definition/scalars.js';
+import { DEFAULT_NEXUS_SCALAR_CONFIG } from '@src/writers/nexus-definition/scalars.js';
 
 const descriptorSchema = z.object({
   enableSubscriptions: z.boolean().optional(),
@@ -207,13 +208,15 @@ const NexusGenerator = createGeneratorWithTasks({
                 }),
                 getUtilsExpression(method) {
                   switch (method) {
-                    case 'STANDARD_MUTATION':
+                    case 'STANDARD_MUTATION': {
                       return new TypescriptCodeExpression(
                         'createStandardMutation',
                         `import {createStandardMutation} from '@/src/utils/nexus.js'`,
                       );
-                    default:
+                    }
+                    default: {
                       throw new Error(`Unknown method ${method as string}`);
+                    }
                   }
                 },
                 getImportMap: () => importMap,
@@ -290,7 +293,7 @@ const NexusGenerator = createGeneratorWithTasks({
               ),
               CUSTOM_CREATE_MUTATION_OPTIONS: config.mutationFields.map((f) =>
                 f.type
-                  .prepend(`${`${f.name}${f.isOptional ? '?' : ''}`}: `)
+                  .prepend(`${f.name}${f.isOptional ? '?' : ''}: `)
                   .toBlock(),
               ),
             });

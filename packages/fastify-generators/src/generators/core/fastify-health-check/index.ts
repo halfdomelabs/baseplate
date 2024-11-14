@@ -1,12 +1,13 @@
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
 import {
-  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -57,7 +58,7 @@ const FastifyHealthCheckGenerator = createGeneratorWithChildren({
           CHECK: { type: 'code-expression' },
         });
 
-        if (checks.length) {
+        if (checks.length > 0) {
           const checksBlock = TypescriptCodeUtils.mergeBlocks(checks, '\n\n');
           healthCheckPlugin.addCodeExpression(
             'CHECK',

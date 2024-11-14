@@ -1,6 +1,7 @@
-import { PrismaModelBlock } from './types.js';
-import { ScalarFieldType } from '@src/types/fieldTypes.js';
-import { PrismaOutputModel } from '@src/types/prismaOutput.js';
+import type { ScalarFieldType } from '@src/types/field-types.js';
+import type { PrismaOutputModel } from '@src/types/prisma-output.js';
+
+import type { PrismaModelBlock } from './types.js';
 
 interface ModelBlockOptions {
   name: string;
@@ -61,21 +62,24 @@ function parseArguments(
     return {};
   }
 
-  return attribute.args.reduce(
-    (argumentMap: Record<string, string | string[]>, arg, idx) => {
-      if (Array.isArray(arg) || typeof arg === 'string') {
-        const argName = positionalArgumentNames[idx];
-        if (!argName) {
-          throw new Error(
-            `Must provide positional argument name for ${attribute.name}`,
-          );
-        }
-        return { ...argumentMap, [argName]: arg };
+  const argumentMap: Record<string, string | string[]> = {};
+
+  for (let idx = 0; idx < attribute.args.length; idx++) {
+    const arg = attribute.args[idx];
+    if (Array.isArray(arg) || typeof arg === 'string') {
+      const argName = positionalArgumentNames[idx];
+      if (!argName) {
+        throw new Error(
+          `Must provide positional argument name for ${attribute.name}`,
+        );
       }
-      return { ...argumentMap, ...arg };
-    },
-    {},
-  );
+      argumentMap[argName] = arg;
+    } else {
+      Object.assign(argumentMap, arg);
+    }
+  }
+
+  return argumentMap;
 }
 
 function formatModel({ name, type, attributes }: PrismaModelField): string {
@@ -111,7 +115,7 @@ export class PrismaModelBlockWriter {
       throw new Error(`Model ${this.name} has more than one @id field`);
     }
 
-    if (singleIdFields.length) {
+    if (singleIdFields.length > 0) {
       return singleIdFields.map((field) => field.name);
     }
 
@@ -149,14 +153,14 @@ export class PrismaModelBlockWriter {
             ? parseArguments(relationAttribute, ['name'])
             : {};
           if (Array.isArray(relationName)) {
-            throw new Error('Relation name must be string');
+            throw new TypeError('Relation name must be string');
           }
           if (typeof fields === 'string' || typeof references === 'string') {
-            throw new Error('Fields and references must be arrays');
+            throw new TypeError('Fields and references must be arrays');
           }
           return {
             type: 'relation',
-            modelType: field.type.replace(/[[\]?]+$/g, ''),
+            modelType: field.type.replaceAll(/[[\]?]+$/g, ''),
             relationName,
             fields,
             references,
@@ -193,7 +197,7 @@ export class PrismaModelBlockWriter {
       name: this.options.name,
       type: 'model',
       contents: [fieldsString, modelAttributeString]
-        .filter((x) => x)
+        .filter(Boolean)
         .join('\n\n'),
     };
   }
