@@ -1,4 +1,7 @@
-import { IconElement, Sheet } from '@halfdomelabs/ui-components';
+import type { IconElement } from '@halfdomelabs/ui-components';
+import type React from 'react';
+
+import { Sheet } from '@halfdomelabs/ui-components';
 import { HiCollection, HiDatabase } from 'react-icons/hi';
 import { MdApps, MdHome, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
@@ -13,7 +16,7 @@ function SidebarNavigationIcon({
   icon: IconElement;
   label: React.ReactNode;
   end?: boolean;
-}): JSX.Element {
+}): React.JSX.Element {
   return (
     <Sheet.Close asChild>
       <NavLink
@@ -28,7 +31,7 @@ function SidebarNavigationIcon({
   );
 }
 
-export function AppMobileSidebar(): JSX.Element {
+export function AppMobileSidebar(): React.JSX.Element {
   return (
     <nav className="grid gap-6 text-lg font-medium">
       <div className="flex items-center space-x-2">

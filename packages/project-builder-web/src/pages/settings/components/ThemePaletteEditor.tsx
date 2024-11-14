@@ -1,9 +1,18 @@
-import {
-  COLOR_PALETTES,
+import type {
   ColorPaletteName,
-  PALETTE_SHADES,
   PaletteShades,
   ThemeConfig,
+} from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type {
+  Control,
+  UseFormGetValues,
+  UseFormSetValue,
+} from 'react-hook-form';
+
+import {
+  COLOR_PALETTES,
+  PALETTE_SHADES,
 } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
@@ -13,12 +22,7 @@ import {
 import { clsx } from 'clsx';
 import { capitalize } from 'inflection';
 import { useCallback } from 'react';
-import {
-  Control,
-  UseFormGetValues,
-  UseFormSetValue,
-  useWatch,
-} from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import { generatePalette } from '../theme-utils/palette-generator';
 
@@ -38,7 +42,7 @@ export function ThemePaletteEditor({
   setValue,
   onShadesChange,
   type,
-}: ThemePaletteEditorProps): JSX.Element {
+}: ThemePaletteEditorProps): React.JSX.Element {
   const paletteOptions = [
     { value: 'custom', label: 'Custom Base' },
     ...Object.keys(COLOR_PALETTES).map((key) => ({
@@ -53,11 +57,12 @@ export function ThemePaletteEditor({
   });
 
   const handlePaletteNameChange = useCallback(
-    (name: ColorPaletteName) => {
-      if (COLOR_PALETTES[name]) {
-        setValue(`palettes.${type}.shades`, COLOR_PALETTES[name]);
-        onShadesChange?.(COLOR_PALETTES[name]);
-      }
+    (name: string | null) => {
+      if (!name || !Object.prototype.hasOwnProperty.call(COLOR_PALETTES, name))
+        return;
+      const palette = COLOR_PALETTES[name as ColorPaletteName];
+      setValue(`palettes.${type}.shades`, palette);
+      onShadesChange?.(palette);
     },
     [setValue, onShadesChange, type],
   );

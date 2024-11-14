@@ -1,13 +1,15 @@
-import clsx from 'clsx';
-import { useState } from 'react';
-import {
+import type React from 'react';
+import type {
   Control,
   DefaultValues,
   FieldPath,
   FieldPathValue,
   FieldValues,
-  useController,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { useState } from 'react';
+import { useController } from 'react-hook-form';
 
 import Alert from '../Alert';
 import Button from '../Button';
@@ -29,8 +31,12 @@ export interface EmbeddedListFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType[]) => void;
-  renderTable: (tableProps: EmbeddedListTableProps<InputType>) => JSX.Element;
-  renderForm: (formProps: EmbeddedListFormProps<InputType>) => JSX.Element;
+  renderTable: (
+    tableProps: EmbeddedListTableProps<InputType>,
+  ) => React.JSX.Element;
+  renderForm: (
+    formProps: EmbeddedListFormProps<InputType>,
+  ) => React.JSX.Element;
   value: InputType[] | null | undefined;
   itemName?: string;
   defaultValue?: DefaultValues<InputType>;
@@ -44,7 +50,7 @@ function EmbeddedListInput<InputType>({
   value,
   itemName,
   defaultValue = {} as DefaultValues<InputType>,
-}: Props<InputType>): JSX.Element {
+}: Props<InputType>): React.JSX.Element {
   const [valueToEdit, setValueToEdit] = useState<
     { idx?: number; data: DefaultValues<InputType> } | undefined
   >();
@@ -68,25 +74,39 @@ function EmbeddedListInput<InputType>({
     <div className={clsx('space-y-2', className)}>
       <Button
         size="small"
-        onClick={() => setValueToEdit({ data: defaultValue })}
+        onClick={() => {
+          setValueToEdit({ data: defaultValue });
+        }}
       >
         Add Item
       </Button>
-      {definedValue.length ? (
+      {definedValue.length > 0 ? (
         renderTable({
           items: definedValue,
-          edit: (idx) =>
+          edit: (idx) => {
             setValueToEdit({
               idx,
               data: definedValue[idx] as DefaultValues<InputType>,
-            }),
-          remove: (idx) => onChange(definedValue.filter((_, i) => i !== idx)),
+            });
+          },
+          remove: (idx) => {
+            onChange(definedValue.filter((_, i) => i !== idx));
+          },
         })
       ) : (
         <Alert type="info">No items currently</Alert>
       )}
-      <Modal isOpen={!!valueToEdit} onClose={() => setValueToEdit(undefined)}>
-        <Modal.Header onClose={() => setValueToEdit(undefined)}>
+      <Modal
+        isOpen={!!valueToEdit}
+        onClose={() => {
+          setValueToEdit(undefined);
+        }}
+      >
+        <Modal.Header
+          onClose={() => {
+            setValueToEdit(undefined);
+          }}
+        >
           Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
@@ -110,7 +130,7 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
   className,
   error,
   ...rest
-}: EmbeddedListInputLabelledProps<InputType>): JSX.Element {
+}: EmbeddedListInputLabelledProps<InputType>): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <div className={className}>
@@ -146,14 +166,13 @@ EmbeddedListInput.LabelledController =
     FormType extends FieldValues,
     FormPath extends FieldPath<FormType>,
   >({
-    className,
     control,
     name,
     ...rest
   }: EmbeddedListInputLabelledControllerProps<
     FormType,
     FormPath
-  >): JSX.Element {
+  >): React.JSX.Element {
     const {
       field,
       fieldState: { error },
@@ -166,9 +185,9 @@ EmbeddedListInput.LabelledController =
       <EmbeddedListInput.Labelled
         {...rest}
         error={error?.message}
-        onChange={(value) =>
-          field.onChange(value as FieldPathValue<FormType, FormPath>)
-        }
+        onChange={(value) => {
+          field.onChange(value as FieldPathValue<FormType, FormPath>);
+        }}
         value={
           field.value as (FieldPathValue<
             FormType,

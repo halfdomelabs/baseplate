@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import clsx from 'clsx';
 import ReactTimeAgo from 'react-time-ago';
 
@@ -12,7 +14,7 @@ initializeTimeAgo();
 
 export function ProjectSyncStatus({
   className,
-}: ProjectSyncStatusProps): JSX.Element | null {
+}: ProjectSyncStatusProps): React.JSX.Element | null {
   const lastSyncedAt = useProjects((store) => store.lastSyncedAt);
 
   if (!lastSyncedAt) {

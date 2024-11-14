@@ -1,11 +1,11 @@
-import {
-  ProjectDefinition,
-  projectDefinitionSchema,
-} from '@halfdomelabs/project-builder-lib';
+import type { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { z } from 'zod';
+
+import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
 import { Button, Card, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 
 const schema = projectDefinitionSchema.pick({
   name: true,
@@ -22,7 +22,7 @@ interface NewProjectCardProps {
 export function NewProjectCard({
   existingProject,
   saveProject,
-}: NewProjectCardProps): JSX.Element {
+}: NewProjectCardProps): React.JSX.Element {
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       name: existingProject?.name,

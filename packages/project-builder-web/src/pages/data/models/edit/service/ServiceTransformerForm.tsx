@@ -1,12 +1,12 @@
+import type { TransformerConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
+import type React from 'react';
+
 import {
-  TransformerConfig,
   modelTransformerEntityType,
   transformerSchema,
 } from '@halfdomelabs/project-builder-lib';
-import {
-  ModelTransformerWebConfig,
-  usePluginEnhancedSchema,
-} from '@halfdomelabs/project-builder-lib/web';
+import { usePluginEnhancedSchema } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
@@ -28,7 +28,7 @@ export function ServiceTransformerForm({
   webConfig: { Form, pluginId },
   transformer,
   onUpdate,
-}: ServiceTransformerFormProps): JSX.Element | null {
+}: ServiceTransformerFormProps): React.JSX.Element | null {
   const originalModel = useEditedModelConfig((model) => model);
   const schema = usePluginEnhancedSchema(
     z.object({

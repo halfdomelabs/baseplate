@@ -1,4 +1,6 @@
-import { FeatureConfig } from '@halfdomelabs/project-builder-lib';
+import type { FeatureConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -37,7 +39,7 @@ export function FeatureForm({
   feature,
   open,
   onClose,
-}: FeatureFormProps): JSX.Element {
+}: FeatureFormProps): React.JSX.Element {
   const {
     definitionContainer: { definition },
     setConfigAndFixReferences,
@@ -87,15 +89,15 @@ export function FeatureForm({
         function renameFeatureChildren(parentFeature?: FeatureConfig): void {
           const children = newFeatures.filter((f) =>
             parentFeature
-              ? f.name.match(new RegExp(`^${parentFeature?.name}/[^/]+$`))
+              ? new RegExp(`^${parentFeature.name}/[^/]+$`).exec(f.name)
               : !f.name.includes('/'),
           );
-          children.forEach((f) => {
+          for (const f of children) {
             const name = f.name.split('/').pop();
             if (!name) throw new Error('Invalid feature name');
             f.name = parentFeature ? `${parentFeature.name}/${name}` : name;
             renameFeatureChildren(f);
-          });
+          }
         }
 
         renameFeatureChildren();
@@ -103,8 +105,8 @@ export function FeatureForm({
         draftConfig.features = _.sortBy(newFeatures, (f) => f.name);
       });
       onClose?.();
-    } catch (err) {
-      toast.error(logAndFormatError(err));
+    } catch (error) {
+      toast.error(logAndFormatError(error));
     }
   };
 

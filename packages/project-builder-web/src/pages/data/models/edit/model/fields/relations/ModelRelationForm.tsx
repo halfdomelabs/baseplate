@@ -1,10 +1,14 @@
-import {
+import type {
   ModelConfig,
-  ModelFieldUtils,
   ModelRelationFieldConfig,
-  ModelUtils,
   ProjectDefinition,
+} from '@halfdomelabs/project-builder-lib';
+import type { Control } from 'react-hook-form';
+
+import {
+  ModelFieldUtils,
   modelRelationFieldSchema,
+  ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
@@ -20,7 +24,7 @@ import { clsx } from 'clsx';
 import { camelCase } from 'es-toolkit';
 import { pluralize } from 'inflection';
 import React, { useId, useMemo } from 'react';
-import { Control, useController, useForm } from 'react-hook-form';
+import { useController, useForm } from 'react-hook-form';
 
 import { useEditedModelConfig } from '@src/pages/data/models/hooks/useEditedModelConfig';
 
@@ -92,11 +96,11 @@ function getRelationDefaultsFromModel(
       );
       return camelCase(model.name);
     }
-    return undefined;
+    return;
   })();
 
   const references = (() => {
-    if (!editedRelation.modelName) return undefined;
+    if (!editedRelation.modelName) return;
     const {
       model: { fields, primaryKeyFieldRefs },
       name: foreignName,
@@ -127,7 +131,7 @@ function getRelationDefaultsFromModel(
       return editedRelation.foreignRelationName;
     }
     const isOneToOne =
-      references?.every((ref) => ref.local) &&
+      references.every((ref) => ref.local) &&
       ModelFieldUtils.areScalarsUnique(
         editedModel,
         references.map((r) => r.local),
@@ -150,11 +154,11 @@ export function ModelRelationForm({
   onSubmitSuccess,
   relationId,
   defaultFieldName,
-}: ModelRelationFormProps): JSX.Element {
+}: ModelRelationFormProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
   const editedModel = useEditedModelConfig((model) => model);
   const modelName = editedModel.name;
-  const fields = editedModel.model.fields;
+  const { fields } = editedModel.model;
   const {
     field: { value: modelRelations = [], onChange: onModelRelationsChange },
   } = useController({
@@ -220,7 +224,7 @@ export function ModelRelationForm({
       value: f.id,
     })) ?? [];
 
-  const isRelationOptional = relation.references?.some(
+  const isRelationOptional = relation.references.some(
     (ref) => fields.find((f) => f.id === ref.local)?.isOptional,
   );
 
@@ -337,7 +341,7 @@ export function ModelRelationForm({
             <span>
               Name of the relation, e.g. {camelCase(modelName)}.
               <strong>
-                {foreignModel?.name ? camelCase(foreignModel?.name) : 'user'}
+                {foreignModel?.name ? camelCase(foreignModel.name) : 'user'}
               </strong>
             </span>
           }
@@ -357,7 +361,7 @@ export function ModelRelationForm({
         />
         <div className="text-sm font-medium">Local Field</div>
         <div className="text-sm font-medium">Foreign Field</div>
-        {relation.references?.map((_, i) => (
+        {relation.references.map((_, i) => (
           <React.Fragment key={i}>
             <ComboboxField.Controller
               disabled={!hasSelectedForeignModel}

@@ -1,17 +1,18 @@
-import {
-  AdminCrudSectionConfig,
-  ModelUtils,
-} from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+
+import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import {
   adminCrudInputWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
-import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
-
-import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
+
+import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
 
 export type AdminCrudFormConfig = Pick<
   AdminCrudSectionConfig,
@@ -32,8 +33,8 @@ function FieldForm({
   idx: number;
   formProps: UseFormReturn<AdminCrudFormConfig>;
   embeddedFormOptions: { label: string; value: string }[];
-}): JSX.Element {
-  const control = formProps.control;
+}): React.JSX.Element {
+  const { control } = formProps;
   const modelName = useWatch({ control, name: 'modelName' });
   const { definition, pluginContainer } = useProjectDefinition();
   const model = modelName
@@ -89,7 +90,7 @@ function CrudFormFieldsForm({
   className,
   formProps,
   embeddedFormOptions,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const { control } = formProps;
   const { fields, append, remove } = useFieldArray({
     control,
@@ -106,7 +107,9 @@ function CrudFormFieldsForm({
               {field.label} ({field.type})
             </div>
           }
-          onRemove={() => remove(idx)}
+          onRemove={() => {
+            remove(idx);
+          }}
           defaultOpen={!field.label}
         >
           <FieldForm
@@ -117,7 +120,11 @@ function CrudFormFieldsForm({
           />
         </CollapsibleRow>
       ))}
-      <Button onClick={() => append({ type: 'text', label: '' })}>
+      <Button
+        onClick={() => {
+          append({ type: 'text', label: '' });
+        }}
+      >
         Add Field
       </Button>
     </div>

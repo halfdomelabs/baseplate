@@ -1,10 +1,8 @@
+import type React from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+
 import clsx from 'clsx';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  useController,
-} from 'react-hook-form';
+import { useController } from 'react-hook-form';
 
 import CheckedInput from '../CheckedInput';
 import FormError from '../FormError';
@@ -22,7 +20,7 @@ function CheckedArrayInput({
   options,
   onChange,
   value: values = [],
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   return (
     <div className={clsx('flex flex-row flex-wrap gap-4', className)}>
       {options.map((option) => (
@@ -32,7 +30,7 @@ function CheckedArrayInput({
           checked={values.includes(option.value)}
           onChange={(checked) => {
             const filteredValues = values.filter((v) => v !== option.value);
-            return onChange(
+            onChange(
               checked ? [...filteredValues, option.value] : filteredValues,
             );
           }}
@@ -52,7 +50,7 @@ CheckedArrayInput.Labelled = function CheckedArrayInputLabelled({
   className,
   error,
   ...rest
-}: CheckedArrayInputLabelledProps): JSX.Element {
+}: CheckedArrayInputLabelledProps): React.JSX.Element {
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -73,7 +71,7 @@ CheckedArrayInput.LabelledController =
     name,
     control,
     ...rest
-  }: CheckedArrayInputLabelledControllerProps<T>): JSX.Element {
+  }: CheckedArrayInputLabelledControllerProps<T>): React.JSX.Element {
     const {
       field,
       fieldState: { error },

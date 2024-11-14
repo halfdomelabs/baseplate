@@ -1,6 +1,8 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { clsx } from 'clsx';
-import { Control } from 'react-hook-form';
 
 import { useEditedModelConfig } from '../../../../hooks/useEditedModelConfig';
 import { ModelPrimaryKeyBadge } from '../primary-key/ModelPrimaryKeyBadge';
@@ -17,19 +19,17 @@ export function ModelFieldBadges({
   className,
   control,
   idx,
-}: ModelFieldBadgesProps): JSX.Element {
+}: ModelFieldBadgesProps): React.JSX.Element {
   const field = useEditedModelConfig((model) => model.model.fields[idx]);
-  const { isPrimary, uniqueConstraints } = useEditedModelConfig((model) => {
-    return {
-      isPrimary: model.model.primaryKeyFieldRefs.includes(field.id),
-      uniqueConstraints:
-        model.model.uniqueConstraints
-          ?.filter((constraint) =>
-            constraint.fields.some((f) => f.fieldRef === field.id),
-          )
-          .map((uc) => uc.id) ?? [],
-    };
-  });
+  const { isPrimary, uniqueConstraints } = useEditedModelConfig((model) => ({
+    isPrimary: model.model.primaryKeyFieldRefs.includes(field.id),
+    uniqueConstraints:
+      model.model.uniqueConstraints
+        ?.filter((constraint) =>
+          constraint.fields.some((f) => f.fieldRef === field.id),
+        )
+        .map((uc) => uc.id) ?? [],
+  }));
   const modelFieldRelations = useEditedModelConfig(({ model }) => {
     const field = model.fields[idx];
     return (

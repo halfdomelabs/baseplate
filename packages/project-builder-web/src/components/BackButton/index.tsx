@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { MdArrowBack } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,11 +9,16 @@ interface Props {
   className?: string;
 }
 
-function BackButton({ className }: Props): JSX.Element {
+function BackButton({ className }: Props): React.JSX.Element {
   const navigate = useNavigate();
 
   return (
-    <LinkButton className={className} onClick={() => navigate(-1)}>
+    <LinkButton
+      className={className}
+      onClick={() => {
+        navigate(-1);
+      }}
+    >
       <MdArrowBack className="size-6 text-gray-600" />
       <span className="sr-only">Back</span>
     </LinkButton>

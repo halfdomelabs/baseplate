@@ -1,19 +1,20 @@
-import { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
+import type { DefinitionEntity } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog, Table } from '@halfdomelabs/ui-components';
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
-import {
-  UseDeleteReferenceDialogRequestOptions,
-  useDeleteReferenceDialogState,
-} from '@src/hooks/useDeleteReferenceDialog';
+import type { UseDeleteReferenceDialogRequestOptions } from '@src/hooks/useDeleteReferenceDialog';
+
+import { useDeleteReferenceDialogState } from '@src/hooks/useDeleteReferenceDialog';
 import { getEntityTypeUrl } from '@src/services/entity-type';
 
-export function RefIssueDialog(): JSX.Element {
+export function RefIssueDialog(): React.JSX.Element {
   const { dialogOptions, setDialogOptions } = useDeleteReferenceDialogState();
   const { definitionContainer } = useProjectDefinition();
-  const entities = definitionContainer.entities;
+  const { entities } = definitionContainer;
 
   // We need to store the text content in a ref because the Dialog component
   // will transition to fade so we need to cache the text while we close.
@@ -31,7 +32,9 @@ export function RefIssueDialog(): JSX.Element {
   return (
     <Dialog
       open={!!dialogOptions}
-      onOpenChange={() => setDialogOptions(undefined)}
+      onOpenChange={() => {
+        setDialogOptions(undefined);
+      }}
     >
       <Dialog.Content width="lg">
         <Dialog.Header>
@@ -53,20 +56,21 @@ export function RefIssueDialog(): JSX.Element {
             {issues?.map((issue) => {
               const entity = entities.find((e) => e.id === issue.entityId);
               const issuePath = issue.ref.path.join('.');
-              const referenceParent = entities.reduce<
-                DefinitionEntity | undefined
-              >((acc, e) => {
+              let referenceParent: DefinitionEntity | undefined;
+              for (const e of entities) {
                 const entityPath = e.path.join('.');
                 if (
                   issuePath.startsWith(entityPath) &&
-                  (!acc || acc.path.length < entityPath.length)
+                  (!referenceParent ||
+                    referenceParent.path.length < entityPath.length)
                 ) {
-                  return e;
+                  referenceParent = e;
                 }
-                return acc;
-              }, undefined);
+              }
               const pathInParent = referenceParent
-                ? issuePath.substring(referenceParent.path.join('.').length + 1)
+                ? issuePath.slice(
+                    Math.max(0, referenceParent.path.join('.').length + 1),
+                  )
                 : issuePath;
               const referenceParentUrl = referenceParent
                 ? getEntityTypeUrl(definitionContainer, referenceParent)

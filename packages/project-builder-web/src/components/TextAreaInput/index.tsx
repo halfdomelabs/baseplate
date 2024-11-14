@@ -1,6 +1,8 @@
+import type { ChangeEventHandler, HTMLInputTypeAttribute } from 'react';
+import type React from 'react';
+import type { UseFormRegisterReturn } from 'react-hook-form';
+
 import clsx from 'clsx';
-import { ChangeEventHandler, HTMLInputTypeAttribute } from 'react';
-import { UseFormRegisterReturn } from 'react-hook-form';
 
 import FormLabel from '../FormLabel';
 
@@ -26,7 +28,7 @@ const TextAreaInput = function TextAreaInput({
   onTextChange,
   register,
   readOnly,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const handleChange: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     if (onTextChange) {
       onTextChange(e.target.value);
@@ -63,9 +65,8 @@ TextAreaInput.Labelled = function TextAreaInputLabelled({
   className,
   error,
   ...rest
-}: TextAreaInputLabelledProps): JSX.Element {
+}: TextAreaInputLabelledProps): React.JSX.Element {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       <FormLabel>{label}</FormLabel>
       <TextAreaInput {...rest} />

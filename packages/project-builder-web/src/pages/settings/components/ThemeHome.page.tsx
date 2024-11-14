@@ -1,5 +1,7 @@
+import type { ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import {
-  ThemeConfig,
   generateDefaultTheme,
   generateThemeColorsFromShade,
   themeSchema,
@@ -13,13 +15,13 @@ import { Alert, Button, Tabs, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo } from 'react';
 import { MdConstruction } from 'react-icons/md';
+import { logAndFormatError } from 'src/services/error-formatter';
 
 import { ThemeColorEditor } from './ThemeColorEditor';
 import { ThemeColorsCssDisplay } from './ThemeColorsCssDisplay';
 import { ThemePaletteEditor } from './ThemePaletteEditor';
-import { logAndFormatError } from 'src/services/error-formatter';
 
-export function ThemeHomePage(): JSX.Element {
+export function ThemeHomePage(): React.JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
 
   const defaultValues = useMemo(
@@ -40,8 +42,8 @@ export function ThemeHomePage(): JSX.Element {
       });
       toast.success('Successfully saved configuration!');
       reset(data);
-    } catch (err) {
-      toast.error(logAndFormatError(err));
+    } catch (error) {
+      toast.error(logAndFormatError(error));
     }
   });
 
@@ -156,7 +158,9 @@ export function ThemeHomePage(): JSX.Element {
         <h2>Theme Colors</h2>
         <p>Pick the colors for your theme</p>
         <Button
-          onClick={() => generateNewThemeColors(true)}
+          onClick={() => {
+            generateNewThemeColors(true);
+          }}
           variant="secondary"
           type="button"
         >

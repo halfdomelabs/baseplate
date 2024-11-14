@@ -1,4 +1,4 @@
-import { ScalarFieldType } from '@halfdomelabs/project-builder-lib';
+import type { ScalarFieldType } from '@halfdomelabs/project-builder-lib';
 
 export interface ScalarFieldTypeOption {
   label: string;

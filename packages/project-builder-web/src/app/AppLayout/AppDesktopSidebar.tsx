@@ -1,5 +1,6 @@
-import { IconElement } from '@halfdomelabs/ui-components';
-import React from 'react';
+import type { IconElement } from '@halfdomelabs/ui-components';
+import type React from 'react';
+
 import { HiCollection, HiDatabase } from 'react-icons/hi';
 import { MdApps, MdOutlineSettings, MdWidgets } from 'react-icons/md';
 import { Link, NavLink } from 'react-router-dom';
@@ -14,7 +15,7 @@ function SidebarNavigationIcon({
   icon: IconElement;
   label: React.ReactNode;
   end?: boolean;
-}): JSX.Element {
+}): React.JSX.Element {
   return (
     <NavLink
       to={to}
@@ -29,7 +30,7 @@ function SidebarNavigationIcon({
   );
 }
 
-export function AppDesktopSidebar(): JSX.Element {
+export function AppDesktopSidebar(): React.JSX.Element {
   return (
     <nav className="flex h-full flex-col items-center justify-between px-2 pb-4 pt-2.5">
       <div className="space-y-8">

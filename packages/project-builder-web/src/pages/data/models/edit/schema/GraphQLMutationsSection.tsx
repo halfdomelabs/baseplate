@@ -1,4 +1,7 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
@@ -6,7 +9,7 @@ import {
   SectionList,
   SwitchField,
 } from '@halfdomelabs/ui-components';
-import { Control, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
@@ -20,7 +23,7 @@ interface GraphQLMutationsSectionProps {
 export function GraphQLMutationsSection({
   className,
   control,
-}: GraphQLMutationsSectionProps): JSX.Element {
+}: GraphQLMutationsSectionProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
   const isAuthEnabled = !!definition.auth;

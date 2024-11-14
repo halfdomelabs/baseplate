@@ -1,14 +1,17 @@
+import type React from 'react';
+
 import { enumBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList } from '@halfdomelabs/ui-components';
 
-import { EnumGraphQLSection } from './sections/EnumGraphQLSection';
-import { EnumValuesSection } from './sections/EnumValuesSection';
-import { useEnumForm } from '../hooks/useEnumForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 import FormActionBar from '@src/components/FormActionBar';
 
-function EnumEditPage(): JSX.Element {
+import { useEnumForm } from '../hooks/useEnumForm';
+import { EnumGraphQLSection } from './sections/EnumGraphQLSection';
+import { EnumValuesSection } from './sections/EnumValuesSection';
+
+function EnumEditPage(): React.JSX.Element {
   const { form, onSubmit } = useEnumForm({
     schema: enumBaseSchema.omit({ name: true, feature: true }),
   });

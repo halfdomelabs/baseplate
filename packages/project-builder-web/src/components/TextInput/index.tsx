@@ -1,14 +1,15 @@
-import clsx from 'clsx';
-import { HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
-import {
+import type { HTMLInputTypeAttribute, InputHTMLAttributes } from 'react';
+import type React from 'react';
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
-  useFormState,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { get, useFormState } from 'react-hook-form';
 
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -37,13 +38,17 @@ const TextInput = function TextInput({
   value,
   onFocus,
   register,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const inputProps: InputHTMLAttributes<HTMLInputElement> = {
     name,
     placeholder,
     disabled,
     type,
-    onChange: onChange && ((e) => onChange(e.target.value)),
+    onChange:
+      onChange &&
+      ((e) => {
+        onChange(e.target.value);
+      }),
     onBlur,
     onFocus,
     value,
@@ -70,9 +75,8 @@ TextInput.Labelled = function TextInputLabelled({
   className,
   error,
   ...rest
-}: TextInputLabelledProps): JSX.Element {
+}: TextInputLabelledProps): React.JSX.Element {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <TextInput {...rest} />
@@ -89,7 +93,7 @@ interface TextInputControllerProps<T extends FieldValues>
 
 TextInput.LabelledController = function TextInputController<
   T extends FieldValues,
->({ control, name, ...rest }: TextInputControllerProps<T>): JSX.Element {
+>({ control, name, ...rest }: TextInputControllerProps<T>): React.JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

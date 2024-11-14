@@ -1,12 +1,13 @@
+import type { UIEventHandler } from 'react';
+
 import Ansi from '@cocalc/ansi-to-react';
 import clsx from 'clsx';
 import {
-  UIEventHandler,
+  forwardRef,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
-  forwardRef,
-  useImperativeHandle,
 } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
@@ -24,7 +25,9 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
   const [consoleText, setConsoleText] = useState('');
 
   useImperativeHandle(ref, () => ({
-    clearConsole: () => setConsoleText(''),
+    clearConsole: () => {
+      setConsoleText('');
+    },
   }));
 
   const shouldScrollToBottom = useRef(true);
@@ -36,7 +39,7 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
 
   useEffect(() => {
     if (!currentProjectId) {
-      return undefined;
+      return;
     }
     const unsubscribe = client.sync.onConsoleEmitted.subscribe(
       { id: currentProjectId },
@@ -49,7 +52,9 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
       },
     );
 
-    return () => unsubscribe.unsubscribe();
+    return () => {
+      unsubscribe.unsubscribe();
+    };
   }, [currentProjectId]);
 
   useEffect(() => {

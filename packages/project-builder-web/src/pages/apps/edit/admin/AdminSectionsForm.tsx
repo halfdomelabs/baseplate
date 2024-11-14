@@ -1,14 +1,15 @@
-import {
-  AdminAppConfig,
-  adminSectionEntityType,
-} from '@halfdomelabs/project-builder-lib';
+import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { adminSectionEntityType } from '@halfdomelabs/project-builder-lib';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { Route, Routes } from 'react-router-dom';
+import { Sidebar } from 'src/components';
+
+import { registerEntityTypeUrl } from '@src/services/entity-type';
 
 import AdminEditSectionForm from './AdminEditSectionForm';
-import { registerEntityTypeUrl } from '@src/services/entity-type';
-import { Sidebar } from 'src/components';
 
 registerEntityTypeUrl(
   adminSectionEntityType,
@@ -20,7 +21,7 @@ interface Props {
   appConfig: AdminAppConfig;
 }
 
-function AdminSectionsForm({ className, appConfig }: Props): JSX.Element {
+function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
   const sortedSections = _.sortBy(appConfig.sections ?? [], [
     'feature',
     'name',

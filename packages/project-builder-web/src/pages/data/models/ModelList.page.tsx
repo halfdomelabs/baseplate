@@ -1,13 +1,15 @@
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, EmptyDisplay } from '@halfdomelabs/ui-components';
 import { HiDatabase } from 'react-icons/hi';
 
 import { NewModelDialog } from './NewModelDialog';
 
-function ModelListPage(): JSX.Element {
+function ModelListPage(): React.JSX.Element {
   const { definition } = useProjectDefinition();
 
-  if (!definition.models.length) {
+  if (definition.models.length === 0) {
     return (
       <EmptyDisplay
         icon={HiDatabase}

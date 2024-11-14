@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import {
   modelBaseSchema,
   modelEntityType,
@@ -6,15 +8,16 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList } from '@halfdomelabs/ui-components';
+import { registerEntityTypeUrl } from 'src/services/entity-type';
 
-import { ModelRelationsSection } from './ModelRelationsSection';
-import { ModelUniqueConstraintsSection } from './ModelUniqueConstraintsSection';
-import { ModelFieldsForm } from './fields/ModelFieldsForm';
-import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
-import { useModelForm } from '../../hooks/useModelForm';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 import FormActionBar from '@src/components/FormActionBar';
-import { registerEntityTypeUrl } from 'src/services/entity-type';
+
+import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
+import { useModelForm } from '../../hooks/useModelForm';
+import { ModelFieldsForm } from './fields/ModelFieldsForm';
+import { ModelRelationsSection } from './ModelRelationsSection';
+import { ModelUniqueConstraintsSection } from './ModelUniqueConstraintsSection';
 
 registerEntityTypeUrl(modelEntityType, `/data/models/edit/{uid}`);
 registerEntityTypeUrl(
@@ -26,7 +29,7 @@ registerEntityTypeUrl(
   `/data/models/edit/{parentUid}`,
 );
 
-function ModelEditModelPage(): JSX.Element {
+function ModelEditModelPage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });

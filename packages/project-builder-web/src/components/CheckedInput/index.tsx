@@ -1,13 +1,14 @@
-import clsx from 'clsx';
-import {
+import type React from 'react';
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
-  useFormState,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { get, useFormState } from 'react-hook-form';
 
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -16,7 +17,7 @@ interface Props {
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(checked: boolean, value?: string): void;
+  onChange?: (checked: boolean, value?: string) => void;
   checked?: boolean;
   value?: string;
   type?: 'checkbox' | 'radio';
@@ -32,7 +33,7 @@ function CheckedInput({
   value,
   register,
   type = 'checkbox',
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const onChangeHandler =
     onChange &&
     ((event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -69,9 +70,8 @@ CheckedInput.Labelled = function SelectInputLabelled({
   className,
   error,
   ...rest
-}: CheckedInputLabelledProps): JSX.Element {
+}: CheckedInputLabelledProps): React.JSX.Element {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <CheckedInput {...rest} />
@@ -92,7 +92,7 @@ CheckedInput.LabelledController = function CheckedInputLabelledController<
   control,
   name,
   ...rest
-}: CheckedInputLabelledControllerProps<T>): JSX.Element {
+}: CheckedInputLabelledControllerProps<T>): React.JSX.Element {
   const { errors } = useFormState({ control, name });
   const error = get(errors, name) as FieldError | undefined;
 

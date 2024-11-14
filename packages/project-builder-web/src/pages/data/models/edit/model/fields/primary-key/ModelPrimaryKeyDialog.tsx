@@ -1,6 +1,8 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { Dialog, useControlledState } from '@halfdomelabs/ui-components';
-import { Control } from 'react-hook-form';
 
 import { ModelPrimaryKeyForm } from './ModelPrimaryKeyForm';
 
@@ -18,7 +20,7 @@ export function ModelPrimaryKeyDialog({
   asChild,
   open,
   onOpenChange,
-}: ModelPrimaryKeyDialogProps): JSX.Element {
+}: ModelPrimaryKeyDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

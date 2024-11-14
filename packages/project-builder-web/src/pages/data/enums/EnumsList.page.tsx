@@ -1,8 +1,10 @@
+import type React from 'react';
+
 import { Button } from '@halfdomelabs/ui-components';
 
 import { NewEnumDialog } from './new/NewEnumDialog';
 
-function EnumsListPage(): JSX.Element {
+function EnumsListPage(): React.JSX.Element {
   return (
     <div className="max-w-4xl space-y-4 p-4 text-style-prose">
       <h1>Enums</h1>

@@ -1,12 +1,14 @@
-import {
+import type {
   ModelConfig,
   ModelRelationFieldConfig,
 } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Badge } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { Control } from 'react-hook-form';
 import { MdLink } from 'react-icons/md';
 
 import { ModelRelationDialog } from './ModelRelationDialog';
@@ -23,7 +25,7 @@ export function ModelRelationsBadge({
   control,
   relation,
   autoCollapse,
-}: ModelRelationBadgeProps): JSX.Element {
+}: ModelRelationBadgeProps): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
   const [isHovered, setIsHovered] = useState(false);
   const shouldShowText = !autoCollapse || isHovered;
@@ -33,8 +35,12 @@ export function ModelRelationsBadge({
         icon={MdLink}
         variant="secondary"
         className={clsx('max-w-[100px]', className)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => {
+          setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
         aria-label="Relation"
         title="Relation"
       >

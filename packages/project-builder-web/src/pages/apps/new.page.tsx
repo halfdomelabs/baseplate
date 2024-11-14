@@ -1,5 +1,7 @@
+import type { AppConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import {
-  AppConfig,
   appEntityType,
   baseAppSchema,
 } from '@halfdomelabs/project-builder-lib';
@@ -15,10 +17,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-
 import { formatError } from 'src/services/error-formatter';
 
-function NewAppPage(): JSX.Element {
+function NewAppPage(): React.JSX.Element {
   const { setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const formProps = useForm<AppConfig>({
@@ -45,8 +46,8 @@ function NewAppPage(): JSX.Element {
       });
       navigate(`../edit/${appEntityType.toUid(data.id)}`);
       toast.success(`Sucessfully created ${data.name}!`);
-    } catch (err) {
-      toast.error(formatError(err));
+    } catch (error) {
+      toast.error(formatError(error));
     }
   };
 

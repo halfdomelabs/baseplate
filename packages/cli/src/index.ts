@@ -7,7 +7,7 @@ import * as R from 'ramda';
 
 import { getPackageVersion } from './version.js';
 
-let cachedEngine: GeneratorEngine;
+let cachedEngine: GeneratorEngine | undefined;
 
 async function getGeneratorEngine(): Promise<GeneratorEngine> {
   if (!cachedEngine) {
@@ -45,4 +45,8 @@ async function runMain(): Promise<void> {
   await program.parseAsync(process.argv);
 }
 
-runMain().catch((err) => console.error(err));
+try {
+  await runMain();
+} catch (error: unknown) {
+  console.error(error);
+}

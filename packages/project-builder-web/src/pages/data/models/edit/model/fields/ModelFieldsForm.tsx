@@ -1,15 +1,17 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
-import { clsx } from 'clsx';
-import {
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type {
   Control,
   FieldArrayWithId,
   UseFormSetValue,
-  useFieldArray,
 } from 'react-hook-form';
+
+import { clsx } from 'clsx';
+import { useFieldArray } from 'react-hook-form';
+import { SortableList } from 'src/components/SortableList';
 
 import { ModelAddFieldButton } from './ModelAddFieldButton';
 import ModelFieldForm from './ModelFieldForm';
-import { SortableList } from 'src/components/SortableList';
 
 interface ModelFieldsFormProps {
   className?: string;
@@ -21,7 +23,7 @@ export function ModelFieldsForm({
   className,
   control,
   setValue,
-}: ModelFieldsFormProps): JSX.Element {
+}: ModelFieldsFormProps): React.JSX.Element {
   const {
     fields: fieldFields,
     remove: removeField,
@@ -51,7 +53,7 @@ export function ModelFieldsForm({
 
   return (
     <div className={clsx('space-y-4', className)}>
-      {!fieldFields.length ? (
+      {fieldFields.length === 0 ? (
         <p className="pt-4 text-style-muted">Add some fields to get started</p>
       ) : (
         <div className="flex w-full flex-col gap-2 bg-white">

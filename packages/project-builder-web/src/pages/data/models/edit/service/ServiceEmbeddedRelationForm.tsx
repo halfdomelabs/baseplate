@@ -1,25 +1,28 @@
-import {
-  EmbeddedRelationTransformerConfig,
-  ModelTransformerUtils,
-  ModelUtils,
-  modelTransformerEntityType,
-} from '@halfdomelabs/project-builder-lib';
-import {
+import type { EmbeddedRelationTransformerConfig } from '@halfdomelabs/project-builder-lib';
+import type {
   ModelTransformerWebConfig,
   ModelTransformerWebFormProps,
-  useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
+import type React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+
+import {
+  modelTransformerEntityType,
+  ModelTransformerUtils,
+  ModelUtils,
+} from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { MultiComboboxField, SelectField } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
-import { UseFormReturn, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
+import { usePrevious } from 'src/hooks/usePrevious';
 
 import { useEditedModelConfig } from '../../hooks/useEditedModelConfig';
-import { usePrevious } from 'src/hooks/usePrevious';
 
 function ServiceEmbeddedRelationForm({
   formProps,
   name,
-}: ModelTransformerWebFormProps): JSX.Element {
+}: ModelTransformerWebFormProps): React.JSX.Element {
   // force type cast to avoid TS error
   const prefix = name as 'prefix';
   const formPropsTyped = formProps as unknown as UseFormReturn<{
@@ -32,7 +35,7 @@ function ServiceEmbeddedRelationForm({
 
   const transformer = useWatch({
     control,
-    name: `${prefix}`,
+    name: prefix,
   });
 
   const availableRelations = useEditedModelConfig((model) => {
@@ -44,11 +47,12 @@ function ServiceEmbeddedRelationForm({
       (t): t is EmbeddedRelationTransformerConfig =>
         t.type === 'embeddedRelation' && t.id !== transformer.id,
     );
-    return relationsToModel.filter(({ relation }) => {
-      return !otherEmbeddedRelations?.some(
-        (o) => o.foreignRelationRef === relation.foreignId,
-      );
-    });
+    return relationsToModel.filter(
+      ({ relation }) =>
+        !otherEmbeddedRelations?.some(
+          (o) => o.foreignRelationRef === relation.foreignId,
+        ),
+    );
   });
 
   const relationOptions = availableRelations.map((relation) => ({
@@ -57,7 +61,7 @@ function ServiceEmbeddedRelationForm({
   }));
 
   const embeddedTransformer =
-    transformer?.type === 'embeddedRelation' ? transformer : null;
+    (transformer.type as string) === 'embeddedRelation' ? transformer : null;
   const relation = availableRelations.find(
     (r) => r.relation.foreignId === embeddedTransformer?.foreignRelationRef,
   );
@@ -72,7 +76,7 @@ function ServiceEmbeddedRelationForm({
     ) {
       setValue(`${prefix}.embeddedFieldNames`, []);
       if (relation?.model.id) {
-        setValue(`${prefix}.modelRef`, relation?.model.id);
+        setValue(`${prefix}.modelRef`, relation.model.id);
       }
     }
   }, [
@@ -118,12 +122,12 @@ function ServiceEmbeddedRelationForm({
       />
       <MultiComboboxField.Controller
         control={control}
-        disabled={!foreignFieldOptions.length}
+        disabled={foreignFieldOptions.length === 0}
         options={foreignFieldOptions}
         name={`${prefix}.embeddedFieldNames`}
         label="Embedded Field Names"
       />
-      {!!foreignTransformerOptions.length && (
+      {foreignTransformerOptions.length > 0 && (
         <MultiComboboxField.Controller
           control={control}
           options={foreignTransformerOptions}
@@ -161,11 +165,12 @@ export const embeddedRelationTransformerWebConfig: ModelTransformerWebConfig<Emb
         (t): t is EmbeddedRelationTransformerConfig =>
           t.type === 'embeddedRelation',
       );
-      return relationsToModel.some(({ relation }) => {
-        return !otherEmbeddedRelations?.some(
-          (o) => o.foreignRelationRef === relation.foreignId,
-        );
-      });
+      return relationsToModel.some(
+        ({ relation }) =>
+          !otherEmbeddedRelations?.some(
+            (o) => o.foreignRelationRef === relation.foreignId,
+          ),
+      );
     },
     getNewTransformer: () => ({
       id: modelTransformerEntityType.generateNewId(),

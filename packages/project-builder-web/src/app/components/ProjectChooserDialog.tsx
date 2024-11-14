@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import {
   Button,
   Dialog,
@@ -6,7 +8,6 @@ import {
 } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
 import { getProjects } from 'src/services/remote';
@@ -19,7 +20,7 @@ interface ProjectChooserDialogProps {
 export function ProjectChooserDialog({
   onClose,
   isOpen,
-}: ProjectChooserDialogProps): JSX.Element {
+}: ProjectChooserDialogProps): React.JSX.Element {
   const { currentProjectId, setCurrentProjectId, setProjects, projects } =
     useProjects();
   const [error, setError] = useState<Error | null>(null);
@@ -30,13 +31,13 @@ export function ProjectChooserDialog({
       .then((data) => {
         setProjects(data);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         logError(err);
         setError(err as Error);
       });
   }, [setProjects, isOpen]);
 
-  if (!projects) {
+  if (projects.length === 0) {
     return <ErrorableLoader error={error} />;
   }
 

@@ -1,4 +1,4 @@
-import {
+import type {
   DefinitionEntityType,
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';

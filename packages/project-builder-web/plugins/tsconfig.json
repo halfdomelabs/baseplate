@@ -1,0 +1,3 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.node.script.json"
+}

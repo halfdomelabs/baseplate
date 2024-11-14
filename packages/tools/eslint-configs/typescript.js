@@ -91,7 +91,10 @@ export function generateTypescriptEslintConfig(options = []) {
         // Enforce the use of destructuring for objects where applicable, but not for arrays
         '@typescript-eslint/prefer-destructuring': [
           'error',
-          { object: true, array: false },
+          {
+            VariableDeclarator: { object: true, array: false },
+            AssignmentExpression: { object: false, array: false },
+          },
         ],
         // Ensure consistent usage of type exports
         '@typescript-eslint/consistent-type-exports': 'error',
@@ -159,6 +162,21 @@ export function generateTypescriptEslintConfig(options = []) {
 
         // Allow ternary operators to be used when appropriate (this conflicts with https://typescript-eslint.io/rules/prefer-nullish-coalescing/)
         'unicorn/prefer-logical-operator-over-ternary': 'off',
+
+        // Allow the use of `undefined` as a default value in function parameters
+        'unicorn/no-useless-undefined': ['error', { checkArguments: false }],
+
+        // Allow the use of arrow functions in nested scopes
+        'unicorn/consistent-function-scoping': [
+          'error',
+          { checkArrowFunctions: false },
+        ],
+
+        // A bit over-eager flagging any module references
+        'unicorn/prefer-module': 'off',
+
+        // Allow error variables to be named anything
+        'unicorn/catch-error-name': 'off',
       },
     },
 

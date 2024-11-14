@@ -1,8 +1,11 @@
+import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type { UseFormReturn } from 'react-hook-form';
+import type { z } from 'zod';
+
 import {
-  EnumConfig,
+  enumSchema,
   EnumUtils,
   FeatureUtils,
-  enumSchema,
   modelEnumEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import {
@@ -14,14 +17,13 @@ import { toast, useEventCallback } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { z } from 'zod';
 
-import { createEnumEditLink } from '../../models/utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { NotFoundError, RefDeleteError } from '@src/utils/error';
+
+import { createEnumEditLink } from '../../models/utils/url';
 
 interface UseEnumFormOptions {
   schema?: z.ZodTypeAny;
@@ -70,9 +72,9 @@ export function useEnumForm({
 
   const defaultValues = useMemo(() => {
     const enumToUse = enumDefinition ?? newEnumDefinition;
-    return !schema
-      ? enumToUse
-      : (enumSchemaWithPlugins.parse(enumToUse) as EnumConfig);
+    return schema
+      ? (enumSchemaWithPlugins.parse(enumToUse) as EnumConfig)
+      : enumToUse;
   }, [enumDefinition, newEnumDefinition, schema, enumSchemaWithPlugins]);
 
   const form = useResettableForm({
@@ -135,12 +137,12 @@ export function useEnumForm({
           }
 
           handleSubmitSuccess?.();
-        } catch (err) {
-          if (err instanceof RefDeleteError) {
-            showRefIssues({ issues: err.issues });
+        } catch (error) {
+          if (error instanceof RefDeleteError) {
+            showRefIssues({ issues: error.issues });
             return;
           }
-          toast.error(logAndFormatError(err));
+          toast.error(logAndFormatError(error));
         }
       }),
     [

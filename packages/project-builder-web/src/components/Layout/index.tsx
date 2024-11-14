@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import clsx from 'clsx';
 import { Outlet } from 'react-router-dom';
 
@@ -13,7 +15,7 @@ function Layout({
   centered,
   noPadding,
   sidebar,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   return (
     <div className={clsx('flex h-full items-stretch', className)}>
       {sidebar}

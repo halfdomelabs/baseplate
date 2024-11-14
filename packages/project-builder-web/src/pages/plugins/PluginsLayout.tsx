@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -9,10 +11,10 @@ import { Link, NavLink, Outlet } from 'react-router-dom';
 
 import { notEmpty } from '@src/utils/array';
 
-function PluginsLayout(): JSX.Element {
+function PluginsLayout(): React.JSX.Element {
   const { definition, schemaParserContext } = useProjectDefinition();
 
-  const availablePlugins = schemaParserContext.pluginStore.availablePlugins;
+  const { availablePlugins } = schemaParserContext.pluginStore;
 
   const enabledPlugins = (definition.plugins ?? [])
     .map((plugin) => {
@@ -45,7 +47,7 @@ function PluginsLayout(): JSX.Element {
                 </NavLink>
               </NavigationMenu.ItemWithLink>
             ))}
-            {!enabledPlugins.length && (
+            {enabledPlugins.length === 0 && (
               <NavigationMenu.Item className="mt-4 w-full text-center opacity-80">
                 No plugins enabled
               </NavigationMenu.Item>

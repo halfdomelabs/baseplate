@@ -1,4 +1,5 @@
-import { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
+import type { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
+
 import { useMemo } from 'react';
 import { create } from 'zustand';
 
@@ -21,7 +22,9 @@ interface UseDeleteReferenceDialogState {
 export const useDeleteReferenceDialogState =
   create<UseDeleteReferenceDialogState>((set) => ({
     dialogOptions: undefined,
-    setDialogOptions: (options) => set({ dialogOptions: options }),
+    setDialogOptions: (options) => {
+      set({ dialogOptions: options });
+    },
   }));
 
 export function useDeleteReferenceDialog(): UseDeleteReferenceDialogResult {

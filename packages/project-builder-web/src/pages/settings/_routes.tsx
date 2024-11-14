@@ -1,10 +1,12 @@
-import { Navigate, RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
+import { Navigate } from 'react-router-dom';
+
+import NotFoundPage from '../NotFound.page';
 import SettingsLayout from './_layout';
 import HierarchyPage from './hierarchy';
 import ProjectSettingsPage from './project-settings';
 import { ThemeBuilderPage } from './theme-builder';
-import NotFoundPage from '../NotFound.page';
 
 export const SettingsRoutes: RouteObject = {
   element: <SettingsLayout />,

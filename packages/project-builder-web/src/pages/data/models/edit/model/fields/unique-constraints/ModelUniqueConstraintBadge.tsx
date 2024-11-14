@@ -1,12 +1,15 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { Badge } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useState } from 'react';
-import { Control } from 'react-hook-form';
 import { MdStar } from 'react-icons/md';
 
-import { ModelUniqueConstraintDialog } from './ModelUniqueConstraintDialog';
 import { useEditedModelConfig } from '@src/pages/data/models/hooks/useEditedModelConfig';
+
+import { ModelUniqueConstraintDialog } from './ModelUniqueConstraintDialog';
 
 interface ModelFieldUniqueBadgeProps {
   className?: string;
@@ -20,7 +23,7 @@ export function ModelFieldUniqueBadge({
   control,
   constraintId,
   autoCollapse,
-}: ModelFieldUniqueBadgeProps): JSX.Element {
+}: ModelFieldUniqueBadgeProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const shouldShowText = !autoCollapse || isHovered;
   const fieldsLength = useEditedModelConfig(
@@ -34,8 +37,12 @@ export function ModelFieldUniqueBadge({
         variant="secondary"
         icon={MdStar}
         className={clsx('', className)}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => {
+          setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
         aria-label="Unique Constraint"
         title="Unique Constraint"
       >
