@@ -30,11 +30,7 @@ function createPlugin({
         module: {
           dependencies,
           exports,
-          initialize:
-            initialize ??
-            (() => {
-              /* no-op */
-            }),
+          initialize: initialize ?? (() => ({})),
         },
       },
     ],

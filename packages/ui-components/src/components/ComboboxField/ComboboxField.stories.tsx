@@ -17,7 +17,7 @@ const meta: Meta<typeof ComboboxField> = {
     (Story, ctx) => {
       const [value, setValue] = useState(ctx.args.value);
 
-      const onChange = (newValue: string): void => {
+      const onChange = (newValue: string | null): void => {
         ctx.args.onChange?.(newValue);
         setValue(newValue);
       };
