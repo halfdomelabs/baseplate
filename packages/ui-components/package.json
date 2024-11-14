@@ -35,7 +35,7 @@
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
-    "watch:tsc-alias": "tsc-alias -w"
+    "watch:tsc-alias": "tsc-alias -p tsconfig.build.json -w"
   },
   "browserslist": {
     "production": [
