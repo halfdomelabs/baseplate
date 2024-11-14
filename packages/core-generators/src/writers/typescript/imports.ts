@@ -1,9 +1,10 @@
 import type { CodeBlockWriter, SourceFile, ts } from 'ts-morph';
 
-import { groupBy } from 'es-toolkit';
-import _ from 'lodash';
+import { groupBy, mapValues } from 'es-toolkit';
 import path from 'node:path';
 import * as R from 'ramda';
+
+import { notEmpty } from '@src/utils/array.js';
 
 import type { ImportMap, ImportMapper } from '../../providers/index.js';
 
@@ -209,9 +210,17 @@ function importEntryToImportDeclaration(
   isTypeOnly: boolean,
   moduleSpecifier: string,
 ): ImportDeclarationEntry {
-  const importsByName = _.groupBy(importEntries, 'name');
+  const importsByName = groupBy(importEntries, (entry) => entry.name);
 
-  const importByName = R.mapObjIndexed((entries) => {
+  const importByName: Partial<
+    Record<
+      string,
+      {
+        name: string;
+        alias?: string;
+      }
+    >
+  > = mapValues(importsByName, (entries) => {
     const { name, alias } = entries[0];
     if (entries.some((e) => e.alias !== alias)) {
       throw new Error(
@@ -219,7 +228,7 @@ function importEntryToImportDeclaration(
       );
     }
     return { name, alias };
-  }, importsByName);
+  });
 
   const {
     '*': namespaceImportEntry,
@@ -234,9 +243,9 @@ function importEntryToImportDeclaration(
   return {
     moduleSpecifier,
     isTypeOnly,
-    namespaceImport: namespaceImportEntry.alias,
-    defaultImport: defaultImportEntry.alias,
-    namedImports: names.map((name) => namedImports[name]),
+    namespaceImport: namespaceImportEntry?.alias,
+    defaultImport: defaultImportEntry?.alias,
+    namedImports: names.map((name) => namedImports[name]).filter(notEmpty),
   };
 }
 
@@ -255,7 +264,7 @@ function writeImportDeclarationsForModule(
   }
 
   // separate out type-only and normal imports with normal imports taking precedence
-  const importsByName = _.groupBy(importEntries, 'name');
+  const importsByName = groupBy(importEntries, (entry) => entry.name);
 
   const importsWithNameAndType = Object.keys(importsByName).map((name) => {
     const imports = importsByName[name];
@@ -369,7 +378,9 @@ export function writeImportDeclarations(
       importsByModule[moduleSpecifier].length > 0,
   );
   const modulesWithoutImportEntries = allModules.filter(
-    (moduleSpecifier) => importsByModule[moduleSpecifier]?.length === 0,
+    (moduleSpecifier) =>
+      !importsByModule[moduleSpecifier] ||
+      importsByModule[moduleSpecifier].length === 0,
   );
 
   const moduleGroupings = [
