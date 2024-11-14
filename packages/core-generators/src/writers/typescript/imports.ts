@@ -1,10 +1,13 @@
-import _ from 'lodash';
-import path from 'path';
-import * as R from 'ramda';
-import { CodeBlockWriter, SourceFile, ts } from 'ts-morph';
+import type { CodeBlockWriter, SourceFile, ts } from 'ts-morph';
 
-import { sortByImportOrder } from './importOrder.js';
-import { ImportMap, ImportMapper } from '../../providers/index.js';
+import { groupBy } from 'es-toolkit';
+import _ from 'lodash';
+import path from 'node:path';
+import * as R from 'ramda';
+
+import type { ImportMap, ImportMapper } from '../../providers/index.js';
+
+import { sortByImportOrder } from './import-order.js';
 
 export interface NamedImportEntry {
   name: string;
@@ -51,14 +54,14 @@ function shortenPathForResolutionMethod(
 ): string {
   const isNode16 =
     moduleResolution === 'node16' || moduleResolution === 'nodenext';
-  if (isNode16) {
-    if (path.startsWith('.') || path.startsWith('@src/')) {
-      if (!path.endsWith('.js')) {
-        throw new Error(
-          `Invalid Node 16 import discovered ${path}. Make sure to use .js extension for Node16 imports.`,
-        );
-      }
-    }
+  if (
+    isNode16 &&
+    (path.startsWith('.') || path.startsWith('@src/')) &&
+    !path.endsWith('.js')
+  ) {
+    throw new Error(
+      `Invalid Node 16 import discovered ${path}. Make sure to use .js extension for Node16 imports.`,
+    );
   }
 
   return isNode16 ? path : path.replace(/(\/index)?\.js$/, '');
@@ -74,7 +77,7 @@ export function resolveModule(
     return shortenPathForResolutionMethod(moduleSpecifier, moduleResolution);
   }
   // figure out relative directory
-  const absolutePath = moduleSpecifier.substring(2);
+  const absolutePath = moduleSpecifier.slice(2);
   const relativePathImport = (() => {
     const relativePath = path.relative(directory, absolutePath);
 
@@ -92,7 +95,7 @@ export function resolveModule(
     if (!pathEntry) {
       return null;
     }
-    return pathEntry.to + absolutePath.substring(pathEntry.from.length);
+    return pathEntry.to + absolutePath.slice(pathEntry.from.length);
   })();
 
   return shortenPathForResolutionMethod(
@@ -165,7 +168,7 @@ export function writeImportDeclaration(
     moduleSpecifier,
     isTypeOnly,
   } = importDeclaration;
-  const hasNamedImports = !!namedImports.length;
+  const hasNamedImports = namedImports.length > 0;
   if (!!namespaceImport && (!!defaultImport || hasNamedImports)) {
     throw new Error(
       'Cannot have an import with both namespace and named/default imports!',
@@ -185,13 +188,13 @@ export function writeImportDeclaration(
       // sort named imports
       writer.write(' ');
       writer.write('{');
-      namedImports.forEach((namedImport, i) => {
+      for (const [i, namedImport] of namedImports.entries()) {
         writer.conditionalWrite(i !== 0, ',');
         writer.write(` ${namedImport.name}`);
         if (namedImport.alias) {
           writer.write(` as ${namedImport.alias}`);
         }
-      });
+      }
       writer.write(' }');
     }
     writer.write(' from');
@@ -231,8 +234,8 @@ function importEntryToImportDeclaration(
   return {
     moduleSpecifier,
     isTypeOnly,
-    namespaceImport: namespaceImportEntry?.alias,
-    defaultImport: defaultImportEntry?.alias,
+    namespaceImport: namespaceImportEntry.alias,
+    defaultImport: defaultImportEntry.alias,
     namedImports: names.map((name) => namedImports[name]),
   };
 }
@@ -243,7 +246,7 @@ function writeImportDeclarationsForModule(
   moduleSpecifier: string,
 ): void {
   // handle file-only imports
-  if (!importEntries.length) {
+  if (importEntries.length === 0) {
     writeImportDeclaration(
       writer,
       importEntryToImportDeclaration([], false, moduleSpecifier),
@@ -266,7 +269,7 @@ function writeImportDeclarationsForModule(
       .filter((item) => item.isTypeOnly)
       .map((item) => item.imports),
   );
-  if (typeOnlyImports.length) {
+  if (typeOnlyImports.length > 0) {
     writeImportDeclaration(
       writer,
       importEntryToImportDeclaration(typeOnlyImports, true, moduleSpecifier),
@@ -278,7 +281,7 @@ function writeImportDeclarationsForModule(
       .filter((item) => !item.isTypeOnly)
       .map((item) => item.imports),
   );
-  if (normalImports.length) {
+  if (normalImports.length > 0) {
     writeImportDeclaration(
       writer,
       importEntryToImportDeclaration(normalImports, false, moduleSpecifier),
@@ -337,7 +340,7 @@ export function writeImportDeclarations(
   options: ResolveModuleOptions,
 ): void {
   // map out imports
-  const importMap = buildImportMap(options?.importMappers ?? []);
+  const importMap = buildImportMap(options.importMappers ?? []);
   const mappedImports = imports.map((importDeclaration) =>
     resolveImportFromImportMap(importDeclaration, importMap),
   );
@@ -348,7 +351,7 @@ export function writeImportDeclarations(
     resolvedImports.map((i) => importDeclarationToImportEntries(i)),
   );
   // merge all imports together
-  const importsByModule = _.groupBy(
+  const importsByModule: Partial<Record<string, ImportEntry[]>> = groupBy(
     resolvedImportEntries,
     (i) => i.moduleSpecifier,
   );
@@ -366,7 +369,7 @@ export function writeImportDeclarations(
       importsByModule[moduleSpecifier].length > 0,
   );
   const modulesWithoutImportEntries = allModules.filter(
-    (moduleSpecifier) => !importsByModule[moduleSpecifier]?.length,
+    (moduleSpecifier) => importsByModule[moduleSpecifier]?.length === 0,
   );
 
   const moduleGroupings = [
@@ -374,19 +377,19 @@ export function writeImportDeclarations(
     modulesWithoutImportEntries,
   ];
 
-  moduleGroupings.forEach((modules, i) => {
+  for (const [i, modules] of moduleGroupings.entries()) {
     // follow https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
     const sortedModules = sortByImportOrder(modules, {});
 
-    sortedModules.forEach((moduleSpecifier) => {
-      const importEntries = importsByModule[moduleSpecifier] || [];
+    for (const moduleSpecifier of sortedModules) {
+      const importEntries = importsByModule[moduleSpecifier] ?? [];
       writeImportDeclarationsForModule(writer, importEntries, moduleSpecifier);
-    });
+    }
 
     if (moduleGroupings[i + 1]?.length) {
       writer.write('\n');
     }
-  });
+  }
 }
 
 export function getImportDeclarationEntries(

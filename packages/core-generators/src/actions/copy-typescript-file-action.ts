@@ -1,13 +1,11 @@
 import { createBuilderActionCreator } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
-import { ImportMapper } from '../providers/index.js';
-import {
-  ModuleResolutionKind,
-  PathMapEntry,
-  TypescriptSourceFile,
-} from '../writers/index.js';
+import type { ImportMapper } from '../providers/index.js';
+import type { ModuleResolutionKind, PathMapEntry } from '../writers/index.js';
+
+import { TypescriptSourceFile } from '../writers/index.js';
 
 export interface CopyTypescriptFileOptions {
   destination?: string;
@@ -51,10 +49,10 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
   // strip any ts-nocheck from header
   const strippedContents = fileContents.replace(/^\/\/ @ts-nocheck\n/, '');
   // process any replacement
-  const replacedContents = Object.entries(replacements).reduce(
-    (str, [key, value]) => str.replace(new RegExp(key, 'g'), value),
-    strippedContents,
-  );
+  let replacedContents = strippedContents;
+  for (const [key, value] of Object.entries(replacements)) {
+    replacedContents = replacedContents.replaceAll(new RegExp(key, 'g'), value);
+  }
 
   const destinationPath = destination ?? source;
 

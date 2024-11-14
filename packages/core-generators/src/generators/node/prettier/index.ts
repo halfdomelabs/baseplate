@@ -1,20 +1,25 @@
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+import type { Plugin } from 'prettier';
+
 import {
-  NonOverwriteableMap,
   createGeneratorWithChildren,
   createNonOverwriteableMap,
   createProviderType,
   formatterProvider,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import { readJson } from 'fs-extra';
 import _ from 'lodash';
-import path from 'path';
-import prettier, { Plugin } from 'prettier';
+import path from 'node:path';
+import { packageUp } from 'package-up';
+import prettier from 'prettier';
 import prettierPluginPackageJson from 'prettier-plugin-packagejson';
-import requireResolve from 'resolve';
+import resolveFrom from 'resolve-from';
 import { z } from 'zod';
 
-import { nodeProvider } from '../node/index.js';
 import { notEmpty } from '@src/utils/array.js';
+
+import { nodeProvider } from '../node/index.js';
 
 const descriptorSchema = z.object({
   tabWidth: z.number().default(2),
@@ -53,7 +58,7 @@ export interface PrettierProvider {
 export const prettierProvider =
   createProviderType<PrettierProvider>('prettier');
 
-const PARSEABLE_EXTENSIONS = [
+const PARSEABLE_EXTENSIONS = new Set([
   '.json',
   '.js',
   '.ts',
@@ -71,7 +76,7 @@ const PARSEABLE_EXTENSIONS = [
   '.mjs',
   '.cts',
   '.mts',
-];
+]);
 
 const PRETTIER_VERSION = '3.3.3';
 
@@ -79,30 +84,26 @@ interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;
 }
 
-interface ResolveError extends Error {
-  code?: string;
+function resolveModule(name: string, fullPath: string): string | undefined {
+  const basedir = path.dirname(fullPath);
+  return resolveFrom.silent(basedir, name);
 }
 
-function resolveModule(
+async function resolveModuleWithVersion(
   name: string,
   fullPath: string,
 ): Promise<{ modulePath: string; version: string | undefined } | undefined> {
-  const basedir = path.dirname(fullPath);
-  return new Promise((resolve, reject) => {
-    requireResolve(name, { basedir }, (err, resolved, meta): void => {
-      if (err ?? !resolved) {
-        const resolveError: ResolveError = err as ResolveError;
-        if (resolveError.code === 'MODULE_NOT_FOUND' || !resolved) {
-          return resolve(undefined);
-        }
-        return reject(err);
-      }
-      return resolve({
-        modulePath: resolved,
-        version: meta?.version,
-      });
-    });
-  });
+  const result = resolveModule(name, fullPath);
+  if (!result) {
+    return undefined;
+  }
+  const packageJsonPath = await packageUp({ cwd: result });
+  if (!packageJsonPath) return undefined;
+  const packageJson = (await readJson(packageJsonPath)) as { version?: string };
+  return {
+    modulePath: result,
+    version: packageJson.version,
+  };
 }
 
 const PrettierGenerator = createGeneratorWithChildren({
@@ -119,7 +120,7 @@ const PrettierGenerator = createGeneratorWithChildren({
       trailingComma: descriptor.trailingComma,
       semi: descriptor.semi,
     });
-    const plugins = DEFAULT_PLUGINS.slice();
+    const plugins = [...DEFAULT_PLUGINS];
     const prettierIgnore: string[] = [
       '/coverage',
       '/dist',
@@ -143,12 +144,15 @@ const PrettierGenerator = createGeneratorWithChildren({
         return {
           formatter: {
             format: async (input: string, fullPath: string, logger) => {
-              if (!PARSEABLE_EXTENSIONS.includes(path.extname(fullPath))) {
+              if (!PARSEABLE_EXTENSIONS.has(path.extname(fullPath))) {
                 return input;
               }
               if (!prettierModulePromise) {
                 prettierModulePromise = (async () => {
-                  const result = await resolveModule('prettier', fullPath);
+                  const result = await resolveModuleWithVersion(
+                    'prettier',
+                    fullPath,
+                  );
                   if (!result) {
                     logger.info(
                       'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
@@ -172,7 +176,7 @@ const PrettierGenerator = createGeneratorWithChildren({
                 prettierConfigPromise = (async () => {
                   const resolvedPlugins = await Promise.all(
                     plugins.map(async (plugin) => {
-                      const resolvedModule = await resolveModule(
+                      const resolvedModule = await resolveModuleWithVersion(
                         plugin.name,
                         fullPath,
                       );
@@ -181,7 +185,7 @@ const PrettierGenerator = createGeneratorWithChildren({
                         logger.info(
                           `Could not resolve prettier plugin ${plugin.name}. Run again once dependencies have been installed.`,
                         );
-                        return plugin.default ?? undefined;
+                        return plugin.default;
                       }
 
                       return plugin.version === resolvedModule.version
@@ -192,9 +196,10 @@ const PrettierGenerator = createGeneratorWithChildren({
 
                   return {
                     ...prettierConfig.value(),
-                    plugins: resolvedPlugins.length
-                      ? resolvedPlugins.filter(notEmpty)
-                      : [],
+                    plugins:
+                      resolvedPlugins.length > 0
+                        ? resolvedPlugins.filter(notEmpty)
+                        : [],
                   };
                 })();
               }
@@ -221,12 +226,8 @@ const PrettierGenerator = createGeneratorWithChildren({
       build: async (builder) => {
         node.addDevPackages({
           prettier: PRETTIER_VERSION,
-          ...DEFAULT_PLUGINS.reduce(
-            (acc, plugin) => ({
-              ...acc,
-              [plugin.name]: plugin.version,
-            }),
-            {},
+          ...Object.fromEntries(
+            DEFAULT_PLUGINS.map((plugin) => [plugin.name, plugin.version]),
           ),
         });
 

@@ -1,9 +1,10 @@
 import { createBuilderActionCreator } from '@halfdomelabs/sync';
-import path from 'path';
+import path from 'node:path';
 
-import { copyTypescriptFileAction } from './copyTypescriptFileAction.js';
-import { ImportMapper } from '../providers/index.js';
-import { ModuleResolutionKind, PathMapEntry } from '../writers/index.js';
+import type { ImportMapper } from '../providers/index.js';
+import type { ModuleResolutionKind, PathMapEntry } from '../writers/index.js';
+
+import { copyTypescriptFileAction } from './copy-typescript-file-action.js';
 
 export interface CopyTypescriptFilesOptions {
   sourceBaseDirectory?: string;

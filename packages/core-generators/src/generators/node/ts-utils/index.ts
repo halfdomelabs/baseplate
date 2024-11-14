@@ -4,7 +4,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { ImportMapper } from '../../../providers/index.js';
+import type { ImportMapper } from '../../../providers/index.js';
+
 import { typescriptProvider } from '../typescript/index.js';
 
 const descriptorSchema = z.object({});
@@ -66,18 +67,17 @@ const TsUtilsGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         tsUtils: {
           getImportMap: () =>
-            Object.entries(UTIL_CONFIG_MAP).reduce(
-              (acc, [key, config]) => ({
-                ...acc,
-                [`%ts-utils/${key}`]: {
+            Object.fromEntries(
+              Object.entries(UTIL_CONFIG_MAP).map(([key, config]) => [
+                `%ts-utils/${key}`,
+                {
                   path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
                   allowedImports: config.exports,
                   onImportUsed: () => {
                     usedTemplates[key] = true;
                   },
                 },
-              }),
-              {},
+              ]),
             ),
         },
       }),
@@ -85,12 +85,15 @@ const TsUtilsGenerator = createGeneratorWithChildren({
         // recursively resolve dependencies
         const markDependenciesAsUsed = (key: string): void => {
           const config = UTIL_CONFIG_MAP[key];
-          config.dependencies?.forEach((dep) => {
-            usedTemplates[dep] = true;
-            markDependenciesAsUsed(dep);
-          });
+          if (config.dependencies)
+            for (const dep of config.dependencies) {
+              usedTemplates[dep] = true;
+              markDependenciesAsUsed(dep);
+            }
         };
-        Object.keys(usedTemplates).forEach(markDependenciesAsUsed);
+        for (const key of Object.keys(usedTemplates)) {
+          markDependenciesAsUsed(key);
+        }
         // Copy all the util files that were used
         const templateFiles = Object.keys(usedTemplates).map(
           (key) => UTIL_CONFIG_MAP[key].file,

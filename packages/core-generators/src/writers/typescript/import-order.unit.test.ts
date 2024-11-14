@@ -1,7 +1,7 @@
 import * as R from 'ramda';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { sortByImportOrder } from './importOrder.js';
+import { sortByImportOrder } from './import-order.js';
 
 describe('sortByImportOrder', () => {
   it('sorts an empty array', () => {

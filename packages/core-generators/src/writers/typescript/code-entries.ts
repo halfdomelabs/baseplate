@@ -1,13 +1,12 @@
 // have to deal with circular dependencies
-/* eslint-disable @typescript-eslint/no-use-before-define */
 
-/* eslint-disable max-classes-per-file */
 // specifies a block of code
 
 import * as R from 'ramda';
 
-import { ImportDeclarationEntry } from './imports.js';
-import { ImportMapper } from '../../providers/index.js';
+import type { ImportMapper } from '../../providers/index.js';
+import type { ImportDeclarationEntry } from './imports.js';
+
 import { notEmpty, notString } from '../../utils/array.js';
 
 export interface TypescriptCodeEntryOptions {
@@ -243,8 +242,13 @@ function mergeWrappers(
   entries: TypescriptCodeWrapper[],
 ): TypescriptCodeWrapper {
   return new TypescriptCodeWrapper(
-    (contents) =>
-      entries.reverse().reduce((prev, cur) => cur.wrap(prev), contents),
+    (contents) => {
+      let result = contents;
+      for (const entry of entries.reverse()) {
+        result = entry.wrap(result);
+      }
+      return result;
+    },
     null,
     mergeCodeEntryOptions(entries),
   );
@@ -300,7 +304,7 @@ export function normalizeTypescriptStringReplacement(
 
 function formatStringWithContent(
   str: string,
-  args: Record<string, TypescriptCodeContents | string>,
+  args: Partial<Record<string, TypescriptCodeContents | string>>,
 ): string {
   if (Object.keys(args).some((key) => !/^[A-Za-z_-]+$/.test(key))) {
     throw new Error('All arguments for format must follow [A-Z_-]');
@@ -308,7 +312,7 @@ function formatStringWithContent(
   const regex = new RegExp(`(${Object.keys(args).join('|')})`, 'g');
   return str.replace(regex, (key) => {
     const entry = args[key];
-    if (entry == null) {
+    if (entry === undefined) {
       throw new Error(`Could not find entry for ${key}`);
     }
     return typeof entry === 'string' ? entry : entry.content;
@@ -419,19 +423,19 @@ export const TypescriptCodeUtils = {
           return `${key},`;
         }
         if (content.startsWith(`function ${key}`)) {
-          return `${content.replace(/^function /, '')}`;
+          return content.replace(/^function /, '');
         }
         if (content.startsWith(`async function ${key}`)) {
-          return `${content.replace(/^async function /, 'async ')}`;
+          return content.replace(/^async function /, 'async ');
         }
         if (content.endsWith('*/')) {
           const comment = content
-            .substring(content.lastIndexOf('/*') + 2)
+            .slice(Math.max(0, content.lastIndexOf('/*') + 2))
             .replace(/\*\/$/, '')
             .trim();
-          const strippedContent = content.substring(
+          const strippedContent = content.slice(
             0,
-            content.lastIndexOf('/*'),
+            Math.max(0, content.lastIndexOf('/*')),
           );
           return `// ${comment}\n${key}: ${strippedContent},`;
         }
@@ -461,17 +465,17 @@ export const TypescriptCodeUtils = {
       .map((key) => {
         const value = rest[key];
         if (value === true) {
-          return `${key}`;
+          return key;
         }
         if (!value) {
           throw new Error(`Invalid value for attribute ${key}`);
         }
         const content = getExpressionContent(value);
         if (content === 'true') {
-          return `${key}`;
+          return key;
         }
         if (content.startsWith("'") || content.startsWith('"')) {
-          return `${key}="${content.replace(/^['"]|['"]$/g, '')}"`;
+          return `${key}="${content.replaceAll(/^['"]|['"]$/g, '')}"`;
         }
         return `${key}={${content}}`;
       })
@@ -485,7 +489,7 @@ export const TypescriptCodeUtils = {
     );
 
     if (typeof children === 'boolean') {
-      throw new Error('children must be an expression');
+      throw new TypeError('children must be an expression');
     }
 
     if (children) {

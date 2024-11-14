@@ -4,7 +4,7 @@
 // in the future, we could run eslint --fix with better caching
 
 import isCoreModule from 'is-core-module';
-import { isAbsolute as nodeIsAbsolute } from 'path';
+import path from 'node:path';
 import * as R from 'ramda';
 
 const DEFAULT_SORT_ORDER = [
@@ -38,20 +38,20 @@ function baseModule(name: string): string {
 }
 
 function isInternalRegexMatch(name: string, settings: ImportSettings): boolean {
-  const internalScope = settings?.internalRegex;
+  const internalScope = settings.internalRegex;
   return !!internalScope && new RegExp(internalScope).test(name);
 }
 
 export function isAbsolute(name: string): boolean {
-  return typeof name === 'string' && nodeIsAbsolute(name);
+  return typeof name === 'string' && path.isAbsolute(name);
 }
 
 // path is defined only when a resolver resolves to a non-standard path
 export function isBuiltIn(name: string, settings: ImportSettings): boolean {
   if (!name) return false;
   const base = baseModule(name);
-  const extras = settings?.coreModules ?? [];
-  return isCoreModule(base) || extras.indexOf(base) > -1;
+  const extras = settings.coreModules ?? [];
+  return isCoreModule(base) || extras.includes(base);
 }
 
 const moduleRegExp = /^\w/;
@@ -68,9 +68,9 @@ function isRelativeToParent(name: string): boolean {
   return /^\.\.$|^\.\.[\\/]/.test(name);
 }
 
-const indexFiles = ['.', './', './index', './index.js'];
+const indexFiles = new Set(['.', './', './index', './index.js']);
 function isIndex(name: string): boolean {
-  return indexFiles.indexOf(name) !== -1;
+  return indexFiles.has(name);
 }
 
 function isRelativeToSibling(name: string): boolean {
