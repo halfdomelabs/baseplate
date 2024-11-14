@@ -21,7 +21,7 @@
     "build": "tsc",
     "clean": "rm -rf ./dist",
     "dev": "tsx watch ./src",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "start": "tsx ./src",

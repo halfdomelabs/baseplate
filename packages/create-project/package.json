@@ -18,7 +18,7 @@
     "build": "tsc && tsc-alias",
     "clean": "rm -rf ./dist",
     "dev:start": "tsx ./src/create-baseplate-project.ts",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./",
+    "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "start": "node ./dist/create-baseplate-project.js",
