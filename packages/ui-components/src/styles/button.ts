@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority';
 
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:brightness-95 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center gap-2 whitespace-nowrap rounded-md font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 active:brightness-95 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -23,10 +23,16 @@ export const buttonVariants = cva(
         lg: 'h-11 rounded-md px-8',
         icon: 'size-8',
       },
+      justify: {
+        start: 'justify-start',
+        center: 'justify-center',
+        end: 'justify-end',
+      },
     },
     defaultVariants: {
       variant: 'default',
       size: 'default',
+      justify: 'center',
     },
   },
 );

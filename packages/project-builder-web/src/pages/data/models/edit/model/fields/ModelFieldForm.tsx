@@ -14,6 +14,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineTrash } from 'react-icons/hi';
+import { MdOutlineDelete } from 'react-icons/md';
 
 import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
 import { ModelFieldBadges } from './badges/ModelFieldBadges';
@@ -252,7 +253,7 @@ function ModelFieldForm({
             }}
             size="icon"
           >
-            <Button.Icon icon={HiOutlineTrash} />
+            <Button.Icon icon={MdOutlineDelete} />
           </Button>
         </div>
       </div>

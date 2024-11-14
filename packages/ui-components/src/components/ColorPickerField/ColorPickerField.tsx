@@ -1,5 +1,5 @@
-import type { ForwardedRef } from 'react';
 import type React from 'react';
+import type { ForwardedRef } from 'react';
 import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
 import * as Popover from '@radix-ui/react-popover';
@@ -9,7 +9,7 @@ import { HexColorInput, HexColorPicker } from 'react-colorful';
 import type { FieldProps } from '@src/types/form.js';
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
-import { inputVariants } from '@src/styles';
+import { buttonVariants, inputVariants } from '@src/styles';
 import { cn } from '@src/utils';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
@@ -17,6 +17,7 @@ import { FormItem } from '../FormItem/FormItem';
 
 export interface ColorPickerFieldProps extends FieldProps {
   className?: string;
+  wrapperClassName?: string;
   disabled?: boolean;
   placeholder?: string;
   onChange?: (value: string) => void;
@@ -32,6 +33,7 @@ export interface ColorPickerFieldProps extends FieldProps {
 function ColorPickerFieldFn(
   {
     className,
+    wrapperClassName,
     disabled,
     placeholder,
     onChange,
@@ -53,11 +55,15 @@ function ColorPickerFieldFn(
       <Popover.Trigger asChild>
         <button
           className={cn(
-            inputVariants(),
-            'flex items-center space-x-2',
+            buttonVariants({
+              variant: 'outline',
+              size: 'none',
+              justify: 'start',
+            }),
+            className,
+            'flex h-8 items-center px-2',
             hideText ? 'justify-center' : undefined,
             disabled ? 'opacity-75' : undefined,
-            addWrapper ? null : className,
           )}
           id={id}
           ref={ref}
@@ -82,6 +88,7 @@ function ColorPickerFieldFn(
         <Popover.Content
           sideOffset={5}
           align="start"
+          collisionPadding={{ bottom: 50 }}
           className="space-y-2 rounded-md border border-border bg-white p-4"
         >
           <HexColorInput
@@ -98,7 +105,7 @@ function ColorPickerFieldFn(
 
   if (addWrapper) {
     return (
-      <FormItem error={error} className={className}>
+      <FormItem error={error} className={cn('flex gap-2', wrapperClassName)}>
         {label && <FormItem.Label>{label}</FormItem.Label>}
         <FormItem.Control>{inputComponent}</FormItem.Control>
         {error ? (

@@ -31,7 +31,7 @@ export interface InputFieldProps
 
 const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
   ({ label, description, error, onChange, register, ...props }, ref) => (
-    <FormItem ref={ref} error={error}>
+    <FormItem ref={ref} error={error} className="flex flex-col gap-1.5">
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <FormItem.Control>
         <Input

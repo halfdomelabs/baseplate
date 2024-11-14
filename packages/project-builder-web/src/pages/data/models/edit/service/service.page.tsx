@@ -37,7 +37,7 @@ function ModelEditServicePage(): React.JSX.Element {
       getValues={getValues}
       watch={watch}
     >
-      <form onSubmit={onSubmit} className="max-w-5xl space-y-4 p-4">
+      <form onSubmit={onSubmit} className="w-full max-w-7xl space-y-4 p-4">
         <SectionList>
           <SectionList.Section>
             <SectionList.SectionHeader>
