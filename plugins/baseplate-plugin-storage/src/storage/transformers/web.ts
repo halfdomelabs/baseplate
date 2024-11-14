@@ -1,16 +1,20 @@
-import {
+import type {
   ModelConfig,
-  PluginUtils,
-  ProjectDefinition,
+  ProjectDefinition} from '@halfdomelabs/project-builder-lib';
+
+import {
   createPlatformPluginExport,
   modelTransformerEntityType,
+  PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { modelTransformerWebSpec } from '@halfdomelabs/project-builder-lib/web';
 
 import '../../index.css';
+
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
+import type { FileTransformerConfig } from './types';
+
 import { FileTransformerForm } from './components/FileTransformerForm';
-import { FileTransformerConfig } from './types';
-import { StoragePluginDefinition } from '../core/schema/plugin-definition';
 
 function findNonTransformedFileRelations(
   definition: ProjectDefinition,

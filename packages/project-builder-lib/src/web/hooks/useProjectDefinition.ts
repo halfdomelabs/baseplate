@@ -7,7 +7,7 @@ import type { PluginImplementationStore } from '@src/plugins/index.js';
 import type {
   ProjectDefinition,
   ProjectDefinitionInput,
-} from '@src/schema/projectDefinition.js';
+} from '@src/schema/project-definition.js';
 
 export type SetOrTransformConfig =
   | ProjectDefinitionInput

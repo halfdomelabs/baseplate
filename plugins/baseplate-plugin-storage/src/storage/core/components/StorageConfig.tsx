@@ -1,9 +1,11 @@
+import type { WebConfigProps } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import {
-  ModelUtils,
-  PluginUtils,
-  WebConfigProps,
   applyModelPatchInPlace,
   diffModel,
+  ModelUtils,
+  PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
@@ -20,20 +22,20 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
+import { cn } from '@src/utils/cn';
+
+import type { StoragePluginDefinition } from '../schema/plugin-definition';
+
+import { createStorageModels } from '../schema/models';
+import { storagePluginDefinitionSchema } from '../schema/plugin-definition';
 import AdapterEditorForm from './AdapterEditorForm';
 import CategoryEditorForm from './CategoryEditorForm';
-import { createStorageModels } from '../schema/models';
-import {
-  StoragePluginDefinition,
-  storagePluginDefinitionSchema,
-} from '../schema/plugin-definition';
-import { cn } from '@src/utils/cn';
 
 export function StorageConfig({
   definition: pluginMetadata,
   metadata,
   onSave,
-}: WebConfigProps): JSX.Element {
+}: WebConfigProps): React.JSX.Element {
   const { definition, definitionContainer, setConfigAndFixReferences } =
     useProjectDefinition();
   const { logAndFormatError } = useErrorHandler();
@@ -57,10 +59,10 @@ export function StorageConfig({
         }
         PluginUtils.setPluginConfig(draftConfig, metadata, data);
       });
-      if (!pluginMetadata) {
-        toast.success('Sucessfully enabled storage plugin!');
-      } else {
+      if (pluginMetadata) {
         toast.success('Successfully saved plugin!');
+      } else {
+        toast.success('Sucessfully enabled storage plugin!');
       }
       reset(data);
       onSave();
@@ -74,7 +76,7 @@ export function StorageConfig({
   const fileModelRef = watch('fileModelRef');
 
   const pendingModelChanges = useMemo(() => {
-    if (!fileModelRef) return undefined;
+    if (!fileModelRef) return;
 
     const model = ModelUtils.byIdOrThrow(definition, fileModelRef);
     const desiredModel = createStorageModels(definitionContainer);
@@ -86,11 +88,10 @@ export function StorageConfig({
     value: m.id,
   }));
 
-  const featureOptions =
-    definition.features?.map((m) => ({
-      label: m.name,
-      value: m.id,
-    })) ?? [];
+  const featureOptions = definition.features.map((m) => ({
+    label: m.name,
+    value: m.id,
+  }));
 
   return (
     <div className="space-y-4">
@@ -111,7 +112,7 @@ export function StorageConfig({
                     or updated.
                   </li>
                 )}
-                {pendingModelChanges.relations?.length > 0 && (
+                {pendingModelChanges.relations.length > 0 && (
                   <li>
                     {pendingModelChanges.relations.length} relation(s) will be
                     added or updated.

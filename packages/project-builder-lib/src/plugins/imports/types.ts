@@ -25,7 +25,7 @@ export interface PluginPlatformModule<
   initialize: (
     dependencies: ExtractPluginImplementationFromSpecMap<TImports>,
     context: PluginInitializerContext,
-  ) => ExtractPluginImplementationFromSpecMap<TExports> | undefined;
+  ) => ExtractPluginImplementationFromSpecMap<TExports>;
 }
 
 export function createPlatformPluginExport<

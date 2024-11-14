@@ -1,15 +1,16 @@
 import {
-  FeatureUtils,
-  PluginUtils,
   adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
+  FeatureUtils,
+  PluginUtils,
   webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
-import { StoragePluginDefinition } from './schema/plugin-definition';
-import { StorageModuleDescriptor } from '@src/generators/fastify';
+import type { StorageModuleDescriptor } from '@src/generators/fastify';
+
+import type { StoragePluginDefinition } from './schema/plugin-definition';
 
 export default createPlatformPluginExport({
   dependencies: {

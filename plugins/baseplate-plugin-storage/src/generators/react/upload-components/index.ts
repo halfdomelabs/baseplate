@@ -1,5 +1,7 @@
+import type {
+  ImportMapper} from '@halfdomelabs/core-generators';
+
 import {
-  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   typescriptProvider,
@@ -10,9 +12,9 @@ import {
   reactErrorProvider,
 } from '@halfdomelabs/react-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
   copyFileAction,
+  createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';

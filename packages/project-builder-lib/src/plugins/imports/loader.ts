@@ -109,7 +109,7 @@ export function initializeOrderedPluginModules(
         )
       : {};
     const context = { pluginId };
-    const exports = module.initialize(dependencies, context) ?? {};
+    const exports = module.initialize(dependencies, context);
     Object.entries(module.exports ?? {}).map(([key, spec]) => {
       const exportedImplementation = exports[key] as
         | PluginSpecImplementation

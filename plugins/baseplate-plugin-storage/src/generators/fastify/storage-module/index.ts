@@ -1,5 +1,7 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+import type { GeneratorDescriptor } from '@halfdomelabs/sync';
+
 import {
-  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   quot,
@@ -22,7 +24,6 @@ import {
 import {
   createGeneratorWithTasks,
   createProviderType,
-  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
@@ -309,7 +310,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
             // Copy constants
             const adapters: Record<string, TypescriptCodeExpression> = {};
 
-            s3Adapters?.forEach((adapter) => {
+            for (const adapter of s3Adapters) {
               configService.getConfigEntries().set(adapter.bucketConfigVar, {
                 comment: `S3 bucket for ${adapter.name}`,
                 value: new TypescriptCodeExpression('z.string().min(1)'),
@@ -340,7 +341,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
                     `import { config } from '%config';`,
                   ],
                 );
-            });
+            }
 
             const adaptersFile = typescript.createTemplate(
               {
@@ -362,14 +363,15 @@ const StorageModuleGenerator = createGeneratorWithTasks({
               (category) =>
                 TypescriptCodeUtils.mergeExpressionsAsObject({
                   name: quot(category.name),
-                  authorizeUpload: category.uploadRoles?.length
-                    ? TypescriptCodeUtils.mergeExpressionsAsArray(
-                        category.uploadRoles.map(quot),
-                      ).wrap(
-                        (contents) =>
-                          `({ auth }) => auth.hasSomeRole(${contents})`,
-                      )
-                    : undefined,
+                  authorizeUpload:
+                    category.uploadRoles.length > 0
+                      ? TypescriptCodeUtils.mergeExpressionsAsArray(
+                          category.uploadRoles.map(quot),
+                        ).wrap(
+                          (contents) =>
+                            `({ auth }) => auth.hasSomeRole(${contents})`,
+                        )
+                      : undefined,
                   defaultAdapter: quot(category.defaultAdapter),
                   maxFileSize: `${category.maxFileSize ?? 100} * MEGABYTE`,
                   usedByRelation: quot(category.usedByRelation),

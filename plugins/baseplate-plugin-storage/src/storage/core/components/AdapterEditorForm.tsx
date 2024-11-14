@@ -1,18 +1,20 @@
-import { Button, InputField } from '@halfdomelabs/ui-components';
-import { Control, useFieldArray } from 'react-hook-form';
+import type { Control } from 'react-hook-form';
 
-import {
-  StoragePluginDefinition,
-  storageAdapterEntityType,
-} from '../schema/plugin-definition';
+import { Button, InputField } from '@halfdomelabs/ui-components';
+import { useFieldArray } from 'react-hook-form';
+
 import { cn } from '@src/utils/cn';
+
+import type { StoragePluginDefinition } from '../schema/plugin-definition';
+
+import { storageAdapterEntityType } from '../schema/plugin-definition';
 
 interface Props {
   className?: string;
   control: Control<StoragePluginDefinition>;
 }
 
-function AdapterEditorForm({ className, control }: Props): JSX.Element {
+function AdapterEditorForm({ className, control }: Props): React.JSX.Element {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 's3Adapters',
@@ -44,20 +46,25 @@ function AdapterEditorForm({ className, control }: Props): JSX.Element {
               description="The environment variable that contains the domain of the S3 bucket. Optional if bucket is not publicly accessible."
             />
           </div>
-          <Button variant="secondary" onClick={() => remove(idx)}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              remove(idx);
+            }}
+          >
             Remove
           </Button>
         </div>
       ))}
 
       <Button
-        onClick={() =>
+        onClick={() => {
           append({
             id: storageAdapterEntityType.generateNewId(),
             name: '',
             bucketConfigVar: '',
-          })
-        }
+          });
+        }}
       >
         Add Adapter
       </Button>

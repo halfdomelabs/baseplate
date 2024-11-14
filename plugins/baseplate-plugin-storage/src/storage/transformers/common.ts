@@ -18,5 +18,6 @@ export default createPlatformPluginExport({
         return definitionContainer.nameFromId(definition.fileRelationRef);
       },
     });
+    return {};
   },
 });

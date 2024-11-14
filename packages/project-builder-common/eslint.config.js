@@ -1,1 +1,1 @@
-export { generateTypescriptEslintConfig } from '@halfdomelabs/tools/eslint-configs/typescript';
+export { default } from '@halfdomelabs/tools/eslint-node';

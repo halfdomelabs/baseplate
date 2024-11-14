@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
-import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
+import { SCALAR_FIELD_TYPES } from '@src/types/field-types.js';
 
 import { featureEntityType } from '../features/index.js';
 import { VALIDATORS } from '../utils/validation.js';

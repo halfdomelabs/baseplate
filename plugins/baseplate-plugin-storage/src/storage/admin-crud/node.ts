@@ -1,14 +1,16 @@
+import type {
+  AdminCrudInputCompiler} from '@halfdomelabs/project-builder-lib';
+
 import {
-  AdminCrudInputCompiler,
-  ModelFieldUtils,
-  PluginUtils,
   adminCrudInputCompilerSpec,
   createPlatformPluginExport,
+  ModelFieldUtils,
+  PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 
-import { AdminCrudFileInputConfig } from './types';
-import { StoragePluginDefinition } from '../core/schema/plugin-definition';
-import { FileTransformerConfig } from '../transformers/types';
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
+import type { FileTransformerConfig } from '../transformers/types';
+import type { AdminCrudFileInputConfig } from './types';
 
 function buildFileTransformerCompiler(
   pluginId: string,

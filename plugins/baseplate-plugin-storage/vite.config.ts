@@ -1,11 +1,13 @@
-/* eslint-disable no-console */
+ 
+import type { UserConfig} from 'vite';
+
 import {
   getModuleFederationTargets,
   rewriteDistToSrc,
 } from '@halfdomelabs/project-builder-lib/plugin-tools';
 import federation from '@originjs/vite-plugin-federation';
 import react from '@vitejs/plugin-react';
-import { UserConfig, defineConfig } from 'vite';
+import { defineConfig } from 'vite';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(async (): Promise<UserConfig> => {

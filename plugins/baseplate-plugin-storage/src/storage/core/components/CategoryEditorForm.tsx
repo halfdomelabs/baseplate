@@ -1,22 +1,25 @@
+import type { Control } from 'react-hook-form';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
+  cn,
   ComboboxField,
   InputField,
   MultiComboboxField,
-  cn,
 } from '@halfdomelabs/ui-components';
-import { Control, useFieldArray, useWatch } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 
-import { StoragePluginDefinition } from '../schema/plugin-definition';
 import { notEmpty } from '@src/utils/array';
+
+import type { StoragePluginDefinition } from '../schema/plugin-definition';
 
 interface Props {
   className?: string;
   control: Control<StoragePluginDefinition>;
 }
 
-function CategoryEditorForm({ className, control }: Props): JSX.Element {
+function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'categories',
@@ -27,7 +30,7 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
   const fileModel = useWatch({ control, name: 'fileModelRef' });
   const adapters = useWatch({ control, name: 's3Adapters' });
 
-  const adapterOptions = (adapters ?? []).map((adapter) => ({
+  const adapterOptions = adapters.map((adapter) => ({
     label: adapter.name,
     value: adapter.id,
   }));
@@ -86,21 +89,26 @@ function CategoryEditorForm({ className, control }: Props): JSX.Element {
               className={cn('col-span-2')}
             />
           </div>
-          <Button variant="secondary" onClick={() => remove(idx)}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              remove(idx);
+            }}
+          >
             Remove
           </Button>
         </div>
       ))}
 
       <Button
-        onClick={() =>
+        onClick={() => {
           append({
             name: '',
             defaultAdapter: '',
             usedByRelation: '',
             uploadRoles: [],
-          })
-        }
+          });
+        }}
       >
         Add Category
       </Button>

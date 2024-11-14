@@ -1,10 +1,10 @@
 import {
-  VALIDATORS,
   authRoleEntityType,
   createEntityType,
   featureEntityType,
   modelEntityType,
   modelForeignRelationEntityType,
+  VALIDATORS,
   zEnt,
   zRef,
   zRefBuilder,
@@ -43,7 +43,7 @@ export const storagePluginDefinitionSchema = zRefBuilder(
           onDelete: 'RESTRICT',
         }),
         maxFileSize: z.preprocess(
-          (a) => a && parseInt(a as string, 10),
+          (a) => a && Number.parseInt(a as string, 10),
           z.number().positive().optional(),
         ),
         usedByRelation: zRef(z.string(), {
