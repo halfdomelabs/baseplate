@@ -1,14 +1,18 @@
+import type { ComboboxFieldProps } from '@halfdomelabs/ui-components';
+import type { ForwardedRef } from 'react';
+import type React from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+
 import {
   ComboboxField,
-  ComboboxFieldProps,
   genericForwardRef,
   useControllerMerged,
 } from '@halfdomelabs/ui-components';
-import { ForwardedRef, forwardRef, useMemo, useState } from 'react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import { forwardRef, useMemo, useState } from 'react';
+
+import { FeatureUtils } from '@src/definition/index.js';
 
 import { useProjectDefinition } from '../hooks/useProjectDefinition.js';
-import { FeatureUtils } from '@src/definition/index.js';
 
 interface FeatureComboboxFieldProps
   extends Omit<
@@ -55,7 +59,7 @@ const FeatureComboboxFieldRoot = forwardRef<
       FeatureUtils.validateFeatureName(newFeatureName)
       ? [...baseFeatures, createCreateOption(newFeatureName)]
       : baseFeatures;
-  }, [definition.features, searchQuery, value]);
+  }, [definition.features, searchQuery, value, canCreate]);
 
   return (
     <ComboboxField
@@ -91,7 +95,7 @@ const FeatureComboboxFieldController = genericForwardRef(
       ...rest
     }: FeatureComboboxFieldControllerProps<TFieldValues, TFieldName>,
     ref: ForwardedRef<HTMLInputElement>,
-  ): JSX.Element {
+  ): React.JSX.Element {
     const {
       field,
       fieldState: { error },

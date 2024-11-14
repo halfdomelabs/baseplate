@@ -26,7 +26,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-import { ArrayKey, IsTuple, TupleKeys } from './common.js';
+import type { ArrayKey, IsTuple, TupleKeys } from './common.js';
 
 export type Primitive =
   | null
@@ -37,7 +37,6 @@ export type Primitive =
   | symbol
   | bigint;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FieldValues = Record<string, any>;
 
 /**
@@ -167,7 +166,6 @@ export type FieldArrayPathValue<
 export type FieldPathValues<
   TFieldValues extends FieldValues,
   TPath extends FieldPath<TFieldValues>[] | readonly FieldPath<TFieldValues>[],
-  // eslint-disable-next-line @typescript-eslint/ban-types
 > = {} & {
   [K in keyof TPath]: FieldPathValue<
     TFieldValues,

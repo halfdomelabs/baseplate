@@ -1,10 +1,11 @@
-import {
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
+import { modelUniqueConstraintEntityType } from '@src/schema/index.js';
+
+import type {
   ParserPlugin,
   PluginMergeModelFieldInput,
   PluginMergeModelRelationInput,
 } from '../types.js';
-import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
-import { modelUniqueConstraintEntityType } from '@src/schema/index.js';
 
 export const Auth0Plugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -128,11 +129,11 @@ export const Auth0Plugin: ParserPlugin = {
             roles: auth.roles.map((r) => ({
               name: r.name,
               comment: r.comment,
-              inherits: !r.inherits?.length
-                ? undefined
-                : r.inherits?.map((inheritRole) =>
+              inherits: r.inherits?.length
+                ? r.inherits.map((inheritRole) =>
                     definitionContainer.nameFromId(inheritRole),
-                  ),
+                  )
+                : undefined,
             })),
             peerProvider: true,
           },

@@ -1,4 +1,7 @@
-import { FeatureUtils, stripChildren } from '@halfdomelabs/project-builder-lib';
+import {
+  FeatureUtils,
+  stripEmptyGeneratorChildren,
+} from '@halfdomelabs/project-builder-lib';
 
 import { buildEnumsForFeature } from './enums.js';
 import { buildGraphqlForFeature } from './graphql.js';
@@ -27,7 +30,7 @@ export function buildFeature(
     name: featureName,
     generator: '@halfdomelabs/fastify/core/app-module',
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featureId),
-    children: stripChildren({
+    children: stripEmptyGeneratorChildren({
       $enums: buildEnumsForFeature(featureId, parsedProject),
       $models: buildModelsForFeature(builder, featureId),
       $services: buildServicesForFeature(builder, featureId),

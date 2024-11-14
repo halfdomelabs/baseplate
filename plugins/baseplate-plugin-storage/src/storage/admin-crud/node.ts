@@ -30,11 +30,10 @@ function buildFileTransformerCompiler(
         );
       }
 
-      const storageDefinition =
-        PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
-          definitionContainer.definition,
-          pluginId,
-        );
+      const storageDefinition = PluginUtils.configByIdOrThrow(
+        definitionContainer.definition,
+        pluginId,
+      ) as StoragePluginDefinition;
       const category = storageDefinition.categories.find(
         (c) => c.usedByRelation === relation.foreignId,
       );

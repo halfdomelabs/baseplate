@@ -2,11 +2,9 @@ import { converter } from 'culori';
 import { dasherize, underscore } from 'inflection';
 import { z } from 'zod';
 
-import {
-  COLOR_PALETTES,
-  PALETTE_SHADES,
-  PaletteShade,
-} from '@src/constants/colors.js';
+import type { PaletteShade } from '@src/constants/colors.js';
+
+import { COLOR_PALETTES, PALETTE_SHADES } from '@src/constants/colors.js';
 import { convertColorNameToHex } from '@src/utils/colors.js';
 
 export const hexColor = z.string().regex(/^#[0-9a-f]{6}$/i);
@@ -373,30 +371,26 @@ export function generateThemeColorsFromShade(
     config: ThemeColorsConfig;
   },
 ): ThemeColorsConfig {
-  return Object.entries(THEME_COLORS).reduce<ThemeColorsConfig>(
-    (acc, [key, config]) => {
-      const themeColorKey = key as ThemeColorKey;
-      const defaultColorConfig =
-        mode === 'light' ? config.lightDefault : config.darkDefault;
-      const newDefaultColor = getDefaultHex(palettes, defaultColorConfig);
-      const previousDefaultColor =
-        previousValues?.config[themeColorKey] &&
-        getDefaultHex(previousValues.palettes, defaultColorConfig);
-      const previousValue = previousValues?.config[themeColorKey];
+  const result: ThemeColorsConfig = {};
 
-      // if previous default doesn't match previous value, don't overwrite it
-      if (
-        !newDefaultColor ||
-        (previousValue && previousDefaultColor !== previousValue)
-      ) {
-        acc[themeColorKey] = previousValue;
-      } else {
-        acc[themeColorKey] = newDefaultColor;
-      }
-      return acc;
-    },
-    {},
-  );
+  for (const [key, config] of Object.entries(THEME_COLORS)) {
+    const themeColorKey = key as ThemeColorKey;
+    const defaultColorConfig =
+      mode === 'light' ? config.lightDefault : config.darkDefault;
+    const newDefaultColor = getDefaultHex(palettes, defaultColorConfig);
+    const previousDefaultColor =
+      previousValues?.config[themeColorKey] &&
+      getDefaultHex(previousValues.palettes, defaultColorConfig);
+    const previousValue = previousValues?.config[themeColorKey];
+
+    result[themeColorKey] =
+      !newDefaultColor ||
+      (previousValue && previousDefaultColor !== previousValue)
+        ? previousValue
+        : newDefaultColor;
+  }
+
+  return result;
 }
 
 function convertHexToHsl(hex: string): string {
@@ -410,18 +404,17 @@ function convertHexToHsl(hex: string): string {
 export function generateCssFromThemeConfig(
   config: ThemeColorsConfig,
 ): Record<string, string> {
-  return Object.entries(config).reduce<Record<string, string>>(
-    (acc, [key, value]) => {
+  return Object.fromEntries(
+    Object.entries(config).map(([key, value]) => {
       const themeColorKey = key as ThemeColorKey;
       const config = THEME_COLORS[themeColorKey];
-      return {
-        ...acc,
-        [`--${dasherize(underscore(key))}`]: `${convertHexToHsl(value)}${
+      return [
+        `--${dasherize(underscore(key))}`,
+        `${convertHexToHsl(value)}${
           'opacity' in config ? ` / ${config.opacity}%` : ''
         }`,
-      };
-    },
-    {},
+      ];
+    }),
   );
 }
 

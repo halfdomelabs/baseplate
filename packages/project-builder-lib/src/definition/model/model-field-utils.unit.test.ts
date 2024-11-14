@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { ModelFieldUtils } from './model-field-utils.js';
 import {
   generateMockModel,
   generateMockModelRelationField,
   generateMockModelScalarField,
   generateMockUniqueConstraint,
 } from '@src/schema/models/mocks.js';
+
+import { ModelFieldUtils } from './model-field-utils.js';
 
 const { getRelationLocalFields, isRelationOneToOne, isRelationOptional } =
   ModelFieldUtils;

@@ -1,6 +1,8 @@
-import { z } from 'zod';
+import type { z } from 'zod';
 
-import { PluginSpecImplementation, createPluginSpec } from './types.js';
+import type { PluginSpecImplementation } from './types.js';
+
+import { createPluginSpec } from './types.js';
 
 /**
  * Spec for registering plugin config schema
@@ -11,17 +13,17 @@ export interface PluginConfigSpec extends PluginSpecImplementation {
 }
 
 export function createPluginConfigImplementation(): PluginConfigSpec {
-  const schemas: Record<string, z.ZodTypeAny> = {};
+  const schemas = new Map<string, z.ZodTypeAny>();
 
   return {
     registerSchema(pluginId, schema) {
-      if (schemas[pluginId]) {
+      if (schemas.has(pluginId)) {
         throw new Error(`Schema for plugin ${pluginId} is already registered`);
       }
-      schemas[pluginId] = schema;
+      schemas.set(pluginId, schema);
     },
     getSchema(pluginId) {
-      return schemas[pluginId];
+      return schemas.get(pluginId);
     },
   };
 }

@@ -1,4 +1,4 @@
-import { FieldValues, FormState } from 'react-hook-form';
+import type { FieldValues, FormState } from 'react-hook-form';
 
 export function setUndefinedIfEmpty(value: unknown): unknown {
   if (value === '') return undefined;

@@ -1,12 +1,9 @@
+import type { FieldValues, UseFormProps, UseFormReturn } from 'react-hook-form';
+
 import { toast } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { useEffect, useRef } from 'react';
-import {
-  FieldValues,
-  useForm,
-  UseFormProps,
-  UseFormReturn,
-} from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { useProjectDefinition } from './useProjectDefinition.js';
 
@@ -48,7 +45,7 @@ export function useResettableForm<
         oldDefaultValues: props?.defaultValues,
       };
     }
-  }, [props?.defaultValues, reset, externalChangeCounter, toast, isDirty]);
+  }, [props?.defaultValues, reset, externalChangeCounter, isDirty]);
 
   return formProps;
 }

@@ -1,5 +1,5 @@
 import { Slot } from '@radix-ui/react-slot';
-import React, * as React from 'react';
+import React from 'react';
 import { RxChevronRight, RxDotsHorizontal } from 'react-icons/rx';
 
 /* eslint-disable react/prop-types */

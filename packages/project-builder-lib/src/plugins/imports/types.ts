@@ -1,5 +1,5 @@
-import { PluginMetadataWithPaths } from '../metadata/types.js';
-import {
+import type { PluginMetadataWithPaths } from '../metadata/types.js';
+import type {
   InitializedPluginSpec,
   PluginSpec,
   PluginSpecImplementationFromSpec,
@@ -25,7 +25,7 @@ export interface PluginPlatformModule<
   initialize: (
     dependencies: ExtractPluginImplementationFromSpecMap<TImports>,
     context: PluginInitializerContext,
-  ) => ExtractPluginImplementationFromSpecMap<TExports> | void;
+  ) => ExtractPluginImplementationFromSpecMap<TExports> | undefined;
 }
 
 export function createPlatformPluginExport<

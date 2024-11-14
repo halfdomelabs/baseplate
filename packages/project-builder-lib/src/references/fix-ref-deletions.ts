@@ -1,9 +1,11 @@
+import type { TypeOf, z } from 'zod';
+
 import { produce } from 'immer';
 import _ from 'lodash';
-import { TypeOf, z } from 'zod';
+
+import type { DefinitionReference, ReferencePath } from './types.js';
 
 import { ZodRefWrapper } from './ref-builder.js';
-import { DefinitionReference, ReferencePath } from './types.js';
 
 interface FixRefDeletionSuccessResult<TSchema extends z.ZodType> {
   type: 'success';
@@ -45,10 +47,10 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
         false,
         true,
       ).parse(draftData);
-      const entitiesById = _.keyBy(entities, (e) => e.id);
+      const entitiesById = new Map(entities.map((e) => [e.id, e]));
       const referencesMissingEntity = references.filter((r) => {
         const id = _.get(draftData, r.path) as string;
-        return id !== DELETED_SENTINEL_ID && !entitiesById[id];
+        return id !== DELETED_SENTINEL_ID && !entitiesById.has(id);
       });
       if (referencesMissingEntity.length === 0) {
         break;
@@ -59,68 +61,73 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
         idx: number;
       }[] = [];
 
+      function tryDeleteParent(path: ReferencePath): boolean {
+        if (path.length === 0) {
+          return false;
+        }
+        const parentPath = path.slice(0, -1);
+        const parent = _.get(draftData, parentPath) as unknown;
+        if (!Array.isArray(parent)) {
+          return false;
+        }
+        objectsToDeleteInArray.push({
+          path: parentPath,
+          idx: path.at(-1) as number,
+        });
+        return true;
+      }
+
       // attempt to fix reference
-      referencesMissingEntity.forEach((ref) => {
+      for (const ref of referencesMissingEntity) {
         const id = _.get(draftData, ref.path) as string;
 
-        function tryDeleteParent(path: ReferencePath): boolean {
-          if (path.length === 0) {
-            return false;
-          }
-          const parentPath = path.slice(0, -1);
-          const parent = _.get(draftData, parentPath) as unknown;
-          if (!Array.isArray(parent)) {
-            return false;
-          }
-          objectsToDeleteInArray.push({
-            path: parentPath,
-            idx: path[path.length - 1] as number,
-          });
-          return true;
-        }
-
         switch (ref.onDelete) {
-          case 'SET_NULL':
+          case 'SET_NULL': {
             _.set(draftData, ref.path, null);
             break;
-          case 'RESTRICT':
+          }
+          case 'RESTRICT': {
             issues.push({ ref, entityId: id });
             _.set(draftData, ref.path, DELETED_SENTINEL_ID);
             break;
-          case 'DELETE':
+          }
+          case 'DELETE': {
             if (!tryDeleteParent(ref.path)) {
               throw new Error(`Unable to find ref to cascade delete to`);
             }
             break;
-          case 'DELETE_PARENT':
+          }
+          case 'DELETE_PARENT': {
             if (!tryDeleteParent(ref.path.slice(0, -1))) {
               throw new Error(`Unable to find ref to cascade delete to`);
             }
             break;
-          default:
+          }
+          default: {
             throw new Error(
               `Unknown onDelete action ${ref.onDelete as string}`,
             );
+          }
         }
-      });
+      }
 
       const objectsToDeleteByPath = _.groupBy(objectsToDeleteInArray, (o) =>
         o.path.join('.'),
       );
 
       // delete objects in reverse order to avoid index shifting
-      Object.entries(objectsToDeleteByPath).forEach(([, objects]) => {
+      for (const [, objects] of Object.entries(objectsToDeleteByPath)) {
         const sortedObjects = _.sortBy(objects, (o) => -o.idx);
-        sortedObjects.forEach((o) => {
+        for (const o of sortedObjects) {
           const parent = _.get(draftData, o.path) as unknown;
           if (!Array.isArray(parent)) {
-            throw new Error(
+            throw new TypeError(
               `Expected parent to be an array at path ${o.path.join('.')}`,
             );
           }
           parent.splice(o.idx, 1);
-        });
-      });
+        }
+      }
     }
     if (iterations === 100) {
       throw new Error(`Exceeded max iterations fixing deletions`);
@@ -129,15 +136,13 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
 
   const processedData = produceFunc(value) as unknown;
 
-  if (issues.length) {
-    return {
-      type: 'failure',
-      issues,
-    };
-  } else {
-    return {
-      type: 'success',
-      value: processedData,
-    };
-  }
+  return issues.length > 0
+    ? {
+        type: 'failure',
+        issues,
+      }
+    : {
+        type: 'success',
+        value: processedData,
+      };
 }

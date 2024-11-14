@@ -12,7 +12,7 @@ import {
   FeatureUtils,
   ModelConfig,
   ModelUtils,
-  stripChildren,
+  stripEmptyGeneratorChildren,
 } from '@halfdomelabs/project-builder-lib';
 import {
   DescriptorWithChildren,
@@ -87,7 +87,7 @@ function buildQueriesFileForModel(
     fileName: `${kebabCase(model.name)}.queries`,
     generator: '@halfdomelabs/fastify/pothos/pothos-types-file',
     categoryOrder: ['find-query', 'list-query'],
-    children: stripChildren({
+    children: stripEmptyGeneratorChildren({
       $findQuery: {
         generator: '@halfdomelabs/fastify/pothos/pothos-prisma-get-query',
         modelName: model.name,

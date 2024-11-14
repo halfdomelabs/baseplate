@@ -17,11 +17,10 @@ function findNonTransformedFileRelations(
   modelConfig: ModelConfig,
   pluginId: string,
 ): string[] {
-  const storageDefinition =
-    PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
-      definition,
-      pluginId,
-    );
+  const storageDefinition = PluginUtils.configByIdOrThrow(
+    definition,
+    pluginId,
+  ) as StoragePluginDefinition;
   const { transformers } = modelConfig.service ?? {};
   const fileTransformers = (transformers?.filter(
     (transformer) => transformer.type === 'file',

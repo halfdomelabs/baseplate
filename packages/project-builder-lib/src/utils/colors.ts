@@ -1,9 +1,6 @@
-import {
-  COLOR_PALETTES,
-  ColorPaletteName,
-  FIXED_COLOR_MAPPINGS,
-  PaletteShade,
-} from '@src/constants/colors.js';
+import type { ColorPaletteName, PaletteShade } from '@src/constants/colors.js';
+
+import { COLOR_PALETTES, FIXED_COLOR_MAPPINGS } from '@src/constants/colors.js';
 
 /**
  * Convert a color name to a hex color. Can be one of the following:
@@ -21,8 +18,9 @@ export function convertColorNameToHex(color: string): string {
   }
   const colorComponents = color.split('-');
   if (colorComponents.length === 2) {
-    const palette = COLOR_PALETTES[colorComponents[0] as ColorPaletteName];
-    if (palette) {
+    const paletteName = colorComponents[0];
+    if (Object.prototype.hasOwnProperty.call(COLOR_PALETTES, paletteName)) {
+      const palette = COLOR_PALETTES[colorComponents[0] as ColorPaletteName];
       const shade = palette[colorComponents[1] as PaletteShade];
       if (shade) {
         return shade;
@@ -36,18 +34,15 @@ let reverseColorMapping: Record<string, string> | null = null;
 
 function getReverseColorMapping(): Record<string, string> {
   if (!reverseColorMapping) {
-    reverseColorMapping = Object.entries(FIXED_COLOR_MAPPINGS).reduce(
-      (acc, [key, value]) => {
-        acc[value] = key;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-    Object.entries(COLOR_PALETTES).forEach(([paletteName, palette]) => {
-      Object.entries(palette).forEach(([shade, hex]) => {
-        reverseColorMapping![hex] = `${paletteName}-${shade}`;
-      });
-    });
+    reverseColorMapping = {};
+    for (const [key, value] of Object.entries(FIXED_COLOR_MAPPINGS)) {
+      reverseColorMapping[value] = key;
+    }
+    for (const [paletteName, palette] of Object.entries(COLOR_PALETTES)) {
+      for (const [shade, hex] of Object.entries(palette)) {
+        reverseColorMapping[hex] = `${paletteName}-${shade}`;
+      }
+    }
   }
   return reverseColorMapping;
 }

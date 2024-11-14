@@ -1,4 +1,4 @@
-import {
+import type {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
@@ -39,17 +39,12 @@ function getRelationsToModel(
   projectDefinition: ProjectDefinition,
   modelId: string,
 ): { model: ModelConfig; relation: ModelRelationFieldConfig }[] {
-  return projectDefinition.models.flatMap((m) => {
-    return (
+  return projectDefinition.models.flatMap(
+    (m) =>
       m.model.relations
-        ?.filter((r) => {
-          return r.modelName === modelId;
-        })
-        .map((r) => {
-          return { model: m, relation: r };
-        }) ?? []
-    );
-  });
+        ?.filter((r) => r.modelName === modelId)
+        .map((r) => ({ model: m, relation: r })) ?? [],
+  );
 }
 
 function getModelsForFeature(

@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import { ParsedProjectDefinition } from '@src/parser/index.js';
-import { SchemaParserContext } from '@src/parser/types.js';
-import { PluginImplementationStore } from '@src/plugins/index.js';
-import {
+import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { ParsedProjectDefinition } from '@src/parser/index.js';
+import type { SchemaParserContext } from '@src/parser/types.js';
+import type { PluginImplementationStore } from '@src/plugins/index.js';
+import type {
   ProjectDefinition,
   ProjectDefinitionInput,
 } from '@src/schema/projectDefinition.js';

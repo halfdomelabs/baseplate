@@ -1,13 +1,14 @@
 import { z } from 'zod';
 
-import { baseTransformerFields, createModelTransformerType } from './types.js';
+import { zEnt, zRef } from '@src/references/index.js';
+
 import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelScalarFieldEntityType,
   modelTransformerEntityType,
 } from '../types.js';
-import { zEnt, zRef } from '@src/references/index.js';
+import { baseTransformerFields, createModelTransformerType } from './types.js';
 
 export const passwordTransformerSchema = zEnt(
   z.object({
@@ -60,9 +61,9 @@ export const embeddedRelationTransformerSchema = zEnt(
     parentPath: { context: 'model' },
     nameRefPath: 'foreignRelationRef',
   },
-).refBuilder((builder) =>
-  builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel'),
-);
+).refBuilder((builder) => {
+  builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel');
+});
 
 export type EmbeddedRelationTransformerConfig = z.infer<
   typeof embeddedRelationTransformerSchema
@@ -77,8 +78,7 @@ export const BUILT_IN_TRANSFORMERS = [
   createModelTransformerType({
     name: 'embeddedRelation',
     schema: embeddedRelationTransformerSchema,
-    getName: (definitionContainer, definition) => {
-      return definitionContainer.nameFromId(definition.foreignRelationRef);
-    },
+    getName: (definitionContainer, definition) =>
+      definitionContainer.nameFromId(definition.foreignRelationRef),
   }),
 ];

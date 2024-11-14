@@ -19,10 +19,10 @@ export function FileTransformerForm({
   const controlTyped = control as Control<{ prefix: FileTransformerConfig }>;
   const { definition } = useProjectDefinition();
 
-  const storageConfig = PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+  const storageConfig = PluginUtils.configByIdOrThrow(
     definition,
     pluginId ?? '',
-  );
+  ) as StoragePluginDefinition;
 
   const fileRelations =
     originalModel.model.relations?.filter(

@@ -1,9 +1,10 @@
-import {
+import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
+
+import type {
   ParserPlugin,
   PluginMergeModelFieldInput,
   PluginMergeModelRelationInput,
 } from '../types.js';
-import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
 
 export const AuthPlugin: ParserPlugin = {
   name: 'AuthPlugin',
@@ -155,9 +156,8 @@ export const AuthPlugin: ParserPlugin = {
           },
         },
       },
-      ...(!auth.passwordProvider
-        ? {}
-        : {
+      ...(auth.passwordProvider
+        ? {
             $passwordAuthService: {
               name: 'PasswordAuthService',
               generator: '@halfdomelabs/fastify/auth/password-auth-service',
@@ -167,7 +167,8 @@ export const AuthPlugin: ParserPlugin = {
               name: 'PasswordAuthMutations',
               generator: '@halfdomelabs/fastify/auth/password-auth-mutations',
             },
-          }),
+          }
+        : {}),
     });
 
     hooks.addFeatureChildren(auth.accountsFeaturePath, {

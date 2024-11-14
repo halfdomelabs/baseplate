@@ -3,7 +3,7 @@ import {
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
   ModelUtils,
-  stripChildren,
+  stripEmptyGeneratorChildren,
 } from '@halfdomelabs/project-builder-lib';
 import inflection from 'inflection';
 
@@ -86,7 +86,7 @@ export function compileAdminCrudSection(
         disableCreate: crudSection.disableCreate,
         children: {
           edit: {
-            children: stripChildren({
+            children: stripEmptyGeneratorChildren({
               inputs: crudSection.form.fields.map((field) =>
                 compileAdminCrudInput(
                   field,

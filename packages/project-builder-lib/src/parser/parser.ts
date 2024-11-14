@@ -1,27 +1,25 @@
 import { z } from 'zod';
 
-import { SchemaParserContext } from './types.js';
-import {
-  PluginWithPlatformModules,
-  initializePlugins,
-} from '@src/plugins/imports/loader.js';
-import { PluginStore } from '@src/plugins/imports/types.js';
-import {
+import type { PluginWithPlatformModules } from '@src/plugins/imports/loader.js';
+import type { PluginStore } from '@src/plugins/imports/types.js';
+import type {
   InitializedPluginSpec,
+  PluginImplementationStore,
   PluginSpecImplementation,
   PluginSpecWithInitializer,
-  PluginImplementationStore,
   ZodPluginWrapper,
-  pluginConfigSpec,
-  zPluginWrapper,
 } from '@src/plugins/index.js';
-import { ZodRefPayload, ZodRefWrapper } from '@src/references/ref-builder.js';
+import type { ZodRefPayload } from '@src/references/ref-builder.js';
+import type { ProjectDefinition } from '@src/schema/projectDefinition.js';
+
+import { initializePlugins } from '@src/plugins/imports/loader.js';
+import { pluginConfigSpec, zPluginWrapper } from '@src/plugins/index.js';
+import { ZodRefWrapper } from '@src/references/ref-builder.js';
 import { adminCrudInputSpec, modelTransformerSpec } from '@src/schema/index.js';
 import { basePluginSchema } from '@src/schema/plugins/index.js';
-import {
-  ProjectDefinition,
-  projectDefinitionSchema,
-} from '@src/schema/projectDefinition.js';
+import { projectDefinitionSchema } from '@src/schema/projectDefinition.js';
+
+import type { SchemaParserContext } from './types.js';
 
 const COMMON_SPEC_IMPLEMENTATIONS: (
   | InitializedPluginSpec
@@ -52,22 +50,20 @@ export function createPluginImplementationStore(
     ...COMMON_SPEC_IMPLEMENTATIONS,
     ...builtinSpecImplementations,
   ];
-  const specImplementations = initialImplementations.reduce(
-    (acc, spec) => {
-      if ('type' in spec) {
-        if (!spec.defaultInitializer) {
-          throw new Error(
-            `Spec ${spec.type} does not have a defaultInitializer!`,
-          );
-        }
-        acc[spec.name] = spec.defaultInitializer();
-      } else {
-        acc[spec.spec.name] = spec.implementation;
+
+  const specImplementations: Record<string, PluginSpecImplementation> = {};
+  for (const spec of initialImplementations) {
+    if ('type' in spec) {
+      if (typeof spec.defaultInitializer !== 'function') {
+        throw new TypeError(
+          `Spec ${spec.type} does not have a defaultInitializer function!`,
+        );
       }
-      return acc;
-    },
-    {} as Record<string, PluginSpecImplementation>,
-  );
+      specImplementations[spec.name] = spec.defaultInitializer();
+    } else {
+      specImplementations[spec.spec.name] = spec.implementation;
+    }
+  }
   const pluginsWithModules = plugins.map((p): PluginWithPlatformModules => {
     const plugin = availablePlugins.find(
       ({ metadata }) =>

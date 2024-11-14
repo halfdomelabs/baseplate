@@ -1,7 +1,7 @@
 'use client';
 
 import * as TabsPrimitive from '@radix-ui/react-tabs';
-import React, * as React from 'react';
+import React from 'react';
 
 import { cn } from '@src/utils';
 

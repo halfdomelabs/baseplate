@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+import { zRefBuilder } from '@src/references/index.js';
+import { DASHED_NAME } from '@src/utils/validations.js';
+
 import { adminAppSchema } from './apps/admin/index.js';
 import { backendAppSchema } from './apps/backend/index.js';
 import { webAppSchema } from './apps/index.js';
@@ -10,8 +13,6 @@ import { themeSchema } from './features/theme.js';
 import { enumSchema } from './models/enums.js';
 import { modelSchema } from './models/index.js';
 import { pluginsSchema } from './plugins/index.js';
-import { zRefBuilder } from '@src/references/index.js';
-import { DASHED_NAME } from '@src/utils/validations.js';
 
 export const appSchema = zRefBuilder(
   z.discriminatedUnion('type', [
@@ -38,7 +39,7 @@ export const projectDefinitionSchema = z.object({
   portOffset: z
     .number()
     .min(1000)
-    .max(60000)
+    .max(60_000)
     .int()
     .refine(
       (portOffset) => portOffset % 1000 === 0,

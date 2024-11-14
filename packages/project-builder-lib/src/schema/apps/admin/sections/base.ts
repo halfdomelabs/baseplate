@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
-import { adminSectionEntityType } from './types.js';
 import { zRef } from '@src/references/index.js';
 import { featureEntityType } from '@src/schema/features/index.js';
+
+import { adminSectionEntityType } from './types.js';
 
 export const baseAdminSectionValidators = {
   id: z.string().default(adminSectionEntityType.generateNewId()),

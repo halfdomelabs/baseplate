@@ -22,10 +22,10 @@ export default createPlatformPluginExport({
       pluginId,
       appType: backendAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const storage = PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+        const storage = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
-        );
+        ) as StoragePluginDefinition;
         const featurePath = FeatureUtils.getFeatureByIdOrThrow(
           projectDefinition,
           storage.featureRef,
@@ -74,10 +74,10 @@ export default createPlatformPluginExport({
         if (!appDefinition.includeUploadComponents) {
           return;
         }
-        const storage = PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+        const storage = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
-        );
+        ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({
           $uploadComponents: {
@@ -94,10 +94,10 @@ export default createPlatformPluginExport({
       pluginId,
       appType: adminAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const storage = PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+        const storage = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
-        );
+        ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({
           $uploadComponents: {

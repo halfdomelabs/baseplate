@@ -1,6 +1,6 @@
 import { Slot } from '@radix-ui/react-slot';
 import { type VariantProps } from 'class-variance-authority';
-import React, * as React from 'react';
+import React from 'react';
 
 import type { IconElement } from '@src/types/react';
 

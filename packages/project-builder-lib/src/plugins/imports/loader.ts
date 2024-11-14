@@ -1,10 +1,14 @@
+import { mapValues } from 'es-toolkit';
 import _ from 'lodash';
 import toposort from 'toposort';
 
-import { KeyedPluginPlatformModule } from './types.js';
-import { PluginImplementationStore } from '../schema/store.js';
-import { PluginSpecImplementation } from '../spec/types.js';
 import { notEmpty } from '@src/utils/array.js';
+import { stripUndefinedValues } from '@src/utils/strip.js';
+
+import type { PluginSpecImplementation } from '../spec/types.js';
+import type { KeyedPluginPlatformModule } from './types.js';
+
+import { PluginImplementationStore } from '../schema/store.js';
 
 export interface PluginWithPlatformModules {
   id: string;
@@ -44,8 +48,8 @@ export function getOrderedPluginModuleInitializationSteps(
     initialSpecImplementations,
     () => 'built-in',
   );
-  pluginModules.forEach(({ name, module, id }) => {
-    Object.values(module.exports ?? {}).forEach((m) => {
+  for (const { name, module, id } of pluginModules) {
+    for (const m of Object.values(module.exports ?? {})) {
       const exportName = m.name;
 
       if (exportName in pluginModuleIdByExport) {
@@ -57,8 +61,8 @@ export function getOrderedPluginModuleInitializationSteps(
       }
 
       pluginModuleIdByExport[exportName] = id;
-    });
-  });
+    }
+  }
 
   // create list of plugin to plugin dependencies
   const edges = pluginModules.flatMap(({ module, name, id }) =>
@@ -88,28 +92,34 @@ export function getOrderedPluginModuleInitializationSteps(
 
 export function initializeOrderedPluginModules(
   orderedPluginModules: KeyedPlatformModuleWithPlugin[],
-  initialSpecImplementations: Record<string, PluginSpecImplementation>,
-): Record<string, PluginSpecImplementation> {
+  initialSpecImplementations: Partial<Record<string, PluginSpecImplementation>>,
+): Partial<Record<string, PluginSpecImplementation>> {
   const specImplementations = { ...initialSpecImplementations };
 
-  orderedPluginModules.forEach(({ name, module, pluginId }) => {
-    const dependencies = _.mapValues(module.dependencies, (dep) => {
-      const implementation = specImplementations[dep.name];
-      if (!implementation && !dep.isOptional) {
-        throw new Error(`Plugin ${name} missing dependency ${dep.name}`);
-      }
-      return implementation;
-    });
+  for (const { name, module, pluginId } of orderedPluginModules) {
+    const dependencies = module.dependencies
+      ? stripUndefinedValues(
+          mapValues(module.dependencies, (dep) => {
+            const implementation = specImplementations[dep.name];
+            if (!implementation && !dep.isOptional) {
+              throw new Error(`Plugin ${name} missing dependency ${dep.name}`);
+            }
+            return implementation;
+          }),
+        )
+      : {};
     const context = { pluginId };
     const exports = module.initialize(dependencies, context) ?? {};
     Object.entries(module.exports ?? {}).map(([key, spec]) => {
-      const exportedImplementation = exports[key];
+      const exportedImplementation = exports[key] as
+        | PluginSpecImplementation
+        | undefined;
       if (!exportedImplementation) {
         throw new Error(`Plugin ${name} did not return required export ${key}`);
       }
       specImplementations[spec.name] = exportedImplementation;
     });
-  });
+  }
   return specImplementations;
 }
 

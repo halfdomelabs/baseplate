@@ -1,8 +1,5 @@
 import { z } from 'zod';
 
-import { baseAdminSectionValidators } from './base.js';
-import { adminCrudInputSchema } from './crud-form/admin-crud-input.js';
-import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
 import { zRef, zRefBuilder } from '@src/references/index.js';
 import {
   modelEntityType,
@@ -10,6 +7,10 @@ import {
   modelScalarFieldEntityType,
 } from '@src/schema/models/index.js';
 import { notEmpty } from '@src/utils/array.js';
+
+import { baseAdminSectionValidators } from './base.js';
+import { adminCrudInputSchema } from './crud-form/admin-crud-input.js';
+import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
 
 // Table Columns
 export const adminCrudForeignDisplaySchema = z.object({
@@ -48,9 +49,7 @@ export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
 function primitiveMapToKeys<T extends Record<string, unknown>>(
   map: Map<T[keyof T], unknown>,
 ): (keyof T)[] {
-  return Array.from(map.keys())
-    .map((m) => m?.valueOf() as keyof T)
-    .filter(notEmpty);
+  return [...map.keys()].map((m) => m?.valueOf() as keyof T).filter(notEmpty);
 }
 
 export const adminCrudDisplayTypes = primitiveMapToKeys(

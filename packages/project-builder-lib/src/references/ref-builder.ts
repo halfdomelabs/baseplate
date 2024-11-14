@@ -1,24 +1,25 @@
-import _ from 'lodash';
-import {
+import type {
+  input,
   ParseContext,
   ParseInput,
   ParseReturnType,
   SyncParseReturnType,
   TypeOf,
-  ZodType,
   ZodTypeAny,
   ZodTypeDef,
-  input,
-  z,
 } from 'zod';
 
-import {
+import _ from 'lodash';
+import { z, ZodType } from 'zod';
+
+import type { FieldPath, FieldValues } from '@src/types/path/eager.js';
+
+import type {
   DefinitionEntity,
   DefinitionEntityType,
   DefinitionReference,
   ReferencePath,
 } from './types.js';
-import { FieldPath, FieldValues } from '@src/types/path/eager.js';
 
 export const zRefId = z.string().min(1).optional();
 
@@ -130,7 +131,7 @@ interface DefinitionEntityWithNamePath extends Omit<DefinitionEntity, 'name'> {
  */
 
 interface RefBuilderContext {
-  pathMap: Record<string, { path: ReferencePath; type: DefinitionEntityType }>;
+  pathMap: Map<string, { path: ReferencePath; type: DefinitionEntityType }>;
   deserialize: boolean;
 }
 
@@ -140,7 +141,7 @@ class ZodRefBuilder<TInput> {
   entitiesWithNamePath: DefinitionEntityWithNamePath[];
   pathPrefix: ReferencePath;
   context: RefBuilderContext;
-  pathMap: Record<string, { path: ReferencePath; type: DefinitionEntityType }>;
+  pathMap: Map<string, { path: ReferencePath; type: DefinitionEntityType }>;
   data: TInput;
 
   constructor(
@@ -153,7 +154,7 @@ class ZodRefBuilder<TInput> {
     this.entitiesWithNamePath = [];
     this.pathPrefix = pathPrefix;
     this.context = context;
-    this.pathMap = {};
+    this.pathMap = new Map();
     this.data = data;
   }
 
@@ -164,7 +165,7 @@ class ZodRefBuilder<TInput> {
 
     const pathComponents = path
       .split('.')
-      .map((key) => (/^[0-9]+$/.test(key) ? parseInt(key, 10) : key));
+      .map((key) => (/^[0-9]+$/.test(key) ? Number.parseInt(key, 10) : key));
 
     return pathComponents;
   }
@@ -182,7 +183,7 @@ class ZodRefBuilder<TInput> {
     if (typeof path === 'string') {
       return this._constructPath(path);
     }
-    const pathContext = this.context.pathMap[path.context];
+    const pathContext = this.context.pathMap.get(path.context);
     if (!pathContext) {
       throw new Error(
         `Could not find context for ${path.context} from ${this.pathPrefix.join(
@@ -232,7 +233,7 @@ class ZodRefBuilder<TInput> {
 
     this.references.push({
       type: reference.type,
-      path: path,
+      path,
       parentPath:
         reference.parentPath &&
         reference.type.parentType &&
@@ -266,7 +267,8 @@ class ZodRefBuilder<TInput> {
       ? this._constructPathWithoutPrefix(entity.idPath as PathInput<TInput>)
       : [...this._constructPathWithoutPrefix(entity.path), 'id'];
     const id =
-      (_.get(this.data, idPath) as string) ?? entity.type.generateNewId();
+      (_.get(this.data, idPath) as string | undefined) ??
+      entity.type.generateNewId();
 
     // attempt to fetch name from entity input
     const name =
@@ -274,7 +276,7 @@ class ZodRefBuilder<TInput> {
       (_.get(
         this.data,
         entity.namePath ?? [
-          ...((entity.path as PathInput<TInput>) ?? []),
+          ...((entity.path as PathInput<TInput> | undefined) ?? []),
           'name',
         ],
       ) as string);
@@ -324,17 +326,17 @@ class ZodRefBuilder<TInput> {
     type: DefinitionEntityType,
     context: string,
   ): void {
-    if (this.pathMap[context]) {
+    if (this.pathMap.has(context)) {
       throw new Error(
         `Context path already defined for ${context} at ${this.pathPrefix.join(
           '.',
         )}`,
       );
     }
-    this.pathMap[context] = {
+    this.pathMap.set(context, {
       path,
       type,
-    };
+    });
   }
 
   addPathToContext(
@@ -404,10 +406,10 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
             ...zodRefContext,
             context: {
               ...zodRefContext.context,
-              pathMap: {
+              pathMap: new Map([
                 ...zodRefContext.context.pathMap,
                 ...builder.pathMap,
-              },
+              ]),
             },
           },
         },
@@ -424,14 +426,14 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
         ...builder.entities,
         ...builder.entitiesWithNamePath,
       ];
-      if (allEntities.length) {
-        allEntities.forEach((entity) => {
+      if (allEntities.length > 0) {
+        for (const entity of allEntities) {
           _.set(
             output.value as object,
             entity.idPath.slice(input.path.length),
             entity.id,
           );
-        });
+        }
       }
       return output;
     }
@@ -482,12 +484,11 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
   static create = <T extends ZodTypeAny>(
     type: T,
     builder?: ZodBuilderFunction<TypeOf<T>>,
-  ): ZodRef<T> => {
-    return new ZodRef<T>({
+  ): ZodRef<T> =>
+    new ZodRef<T>({
       innerType: type,
       builder,
     });
-  };
 }
 
 export function zRefBuilder<T extends z.ZodType>(
@@ -516,10 +517,10 @@ export function zEnt<
 >(
   schema: TObject,
   entity:
-    | DefinitionEntityInput<z.input<TObject>, TEntityType, TPath, 'id'>
+    | DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>
     | ((
         data: z.input<TObject>,
-      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, TPath, 'id'>),
+      ) => DefinitionEntityInput<z.input<TObject>, TEntityType, TPath>),
 ): ZodRef<
   z.ZodObject<
     TObject['shape'] & {
@@ -566,7 +567,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
     const allowMissingNameRefs = this._def.allowMissingNameRefs ?? false;
     const refContext: ZodRefContext = {
       context: {
-        pathMap: {},
+        pathMap: new Map(),
         deserialize: shouldDeserialize,
       },
       references: [],
@@ -593,7 +594,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
       // resolve entities with name paths if we are not deserializing
       const entities = [...refContext.entities];
 
-      if (refContext.entitiesWithNamePath.length) {
+      if (refContext.entitiesWithNamePath.length > 0) {
         const entitiesById = _.keyBy(entities, 'id');
         let entitiesLength = -1;
         do {
@@ -609,10 +610,12 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
           }
           entitiesLength = entities.length;
           const entitiesWithNamePath = [...refContext.entitiesWithNamePath];
-          entitiesWithNamePath.forEach((entity) => {
+          for (const entity of entitiesWithNamePath) {
             const newName = (() => {
-              const nameRefPath = entity.nameRefPath;
-              const nameRefValue = _.get(output.value, nameRefPath) as string;
+              const { nameRefPath } = entity;
+              const nameRefValue = _.get(output.value, nameRefPath) as
+                | string
+                | undefined;
               if (nameRefValue === undefined) {
                 throw new Error(
                   `Could not find name ref value at ${nameRefPath.join('.')}`,
@@ -622,7 +625,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
               if (shouldDeserialize) {
                 return nameRefValue;
               }
-              return entitiesById[nameRefValue]?.name;
+              return entitiesById[nameRefValue].name;
             })();
             if (newName) {
               const newEntity = {
@@ -633,15 +636,15 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
               entitiesById[entity.id] = newEntity;
               _.pull(refContext.entitiesWithNamePath, entity);
             }
-          });
-        } while (refContext.entitiesWithNamePath.length);
+          }
+        } while (refContext.entitiesWithNamePath.length > 0);
       }
 
       return {
         ...output,
         value: {
           data: output.value,
-          entities: entities,
+          entities,
           references: refContext.references,
         },
       };
@@ -658,11 +661,10 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
     type: T,
     deserialize = false,
     allowMissingNameRefs = false,
-  ): ZodRefWrapper<T> => {
-    return new ZodRefWrapper<T>({
+  ): ZodRefWrapper<T> =>
+    new ZodRefWrapper<T>({
       innerType: type,
       deserialize,
       allowMissingNameRefs,
     });
-  };
 }

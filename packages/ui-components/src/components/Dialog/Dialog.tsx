@@ -1,5 +1,5 @@
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import React, * as React from 'react';
+import React from 'react';
 import { HiXMark } from 'react-icons/hi2';
 
 import { cn } from '@src/utils';

@@ -1,13 +1,14 @@
 import { describe, expect, test } from 'vitest';
 
+import type { PluginWithPlatformModules } from './loader.js';
+import type { PluginPlatformModule } from './types.js';
+
+import { createPluginSpec } from '../spec/types.js';
 import {
-  PluginWithPlatformModules,
   extractPlatformModulesFromPlugins,
   getOrderedPluginModuleInitializationSteps,
   initializeOrderedPluginModules,
 } from './loader.js';
-import { PluginPlatformModule } from './types.js';
-import { createPluginSpec } from '../spec/types.js';
 
 const builtInSpec = createPluginSpec('built-in-spec');
 const spec1 = createPluginSpec('spec-1');
@@ -27,8 +28,8 @@ function createPlugin({
       {
         key: 'main',
         module: {
-          dependencies: dependencies,
-          exports: exports,
+          dependencies,
+          exports,
           initialize:
             initialize ??
             (() => {

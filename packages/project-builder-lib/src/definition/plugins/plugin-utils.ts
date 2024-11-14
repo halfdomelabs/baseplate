@@ -1,5 +1,5 @@
-import { PluginMetadataWithPaths } from '@src/plugins/index.js';
-import { BasePlugin, ProjectDefinition } from '@src/schema/index.js';
+import type { PluginMetadataWithPaths } from '@src/plugins/index.js';
+import type { BasePlugin, ProjectDefinition } from '@src/schema/index.js';
 
 function byId(
   projectDefinition: ProjectDefinition,
@@ -20,12 +20,12 @@ function byIdOrThrow(
   return plugin;
 }
 
-function configByIdOrThrow<T>(
+function configByIdOrThrow(
   projectDefinition: ProjectDefinition,
   id: string,
-): T {
+): unknown {
   const def = byIdOrThrow(projectDefinition, id);
-  return def.config as T;
+  return def.config;
 }
 
 function setPluginConfig(
@@ -35,22 +35,20 @@ function setPluginConfig(
 ): void {
   const plugins = projectDefinition.plugins ?? [];
 
-  if (plugins.some((p) => p.id === plugin.id)) {
-    projectDefinition.plugins = plugins.map((p) =>
-      p.id === plugin.id ? { ...p, config: pluginConfig } : p,
-    );
-  } else {
-    projectDefinition.plugins = [
-      ...plugins,
-      {
-        id: plugin.id,
-        name: plugin.name,
-        version: plugin.version,
-        packageName: plugin.packageName,
-        config: pluginConfig,
-      },
-    ];
-  }
+  projectDefinition.plugins = plugins.some((p) => p.id === plugin.id)
+    ? plugins.map((p) =>
+        p.id === plugin.id ? { ...p, config: pluginConfig } : p,
+      )
+    : [
+        ...plugins,
+        {
+          id: plugin.id,
+          name: plugin.name,
+          version: plugin.version,
+          packageName: plugin.packageName,
+          config: pluginConfig,
+        },
+      ];
 }
 
 export const PluginUtils = {

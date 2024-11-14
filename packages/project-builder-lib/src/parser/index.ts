@@ -1,18 +1,21 @@
 import * as R from 'ramda';
 
-import { AuthPlugin } from './plugins/auth.js';
-import { Auth0Plugin } from './plugins/auth0.js';
-import { ParsedModel, ParsedRelationField } from './types.js';
-import { ProjectDefinitionContainer } from '@src/index.js';
+import type { ProjectDefinitionContainer } from '@src/index.js';
+import type { ProjectDefinition } from '@src/schema/index.js';
+import type { EnumConfig } from '@src/schema/models/enums.js';
+
 import {
-  ProjectDefinition,
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@src/schema/index.js';
-import { EnumConfig } from '@src/schema/models/enums.js';
 import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
+
+import type { ParsedModel, ParsedRelationField } from './types.js';
+
+import { AuthPlugin } from './plugins/auth.js';
+import { Auth0Plugin } from './plugins/auth0.js';
 
 export * from './parser.js';
 
@@ -33,11 +36,9 @@ function upsertItems<T>(
     return [];
   }
   const itemsByKey = R.indexBy(keyFunction, items);
-  const existingKeys = existingItems.map(keyFunction);
+  const existingKeys = new Set(existingItems.map(keyFunction));
 
-  const newItems = items.filter(
-    (item) => !existingKeys.includes(keyFunction(item)),
-  );
+  const newItems = items.filter((item) => !existingKeys.has(keyFunction(item)));
   return [
     ...existingItems.map((item) => {
       const newItem = itemsByKey[keyFunction(item)];
@@ -51,16 +52,18 @@ function upsertItems<T>(
 }
 
 function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
-  const features = projectDefinition.features?.map((f) => f.name) ?? [];
+  const features = projectDefinition.features.map((f) => f.name);
 
   // validate features
   const missingParentFeatures = features.filter(
     (feature) =>
       feature.includes('/') &&
-      !features.includes(feature.substring(0, feature.lastIndexOf('/'))),
+      !features.includes(
+        feature.slice(0, Math.max(0, feature.lastIndexOf('/'))),
+      ),
   );
 
-  if (missingParentFeatures.length) {
+  if (missingParentFeatures.length > 0) {
     throw new Error(
       `Nested features must be a direct child of another feature. Features with missing parents: ${missingParentFeatures.join(
         ', ',
@@ -70,9 +73,9 @@ function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
 
   // validate relations
   const { models = [] } = projectDefinition;
-  models.forEach(
-    (model) =>
-      model.model.relations?.forEach((relation) => {
+  for (const model of models)
+    if (model.model.relations) {
+      for (const relation of model.model.relations) {
         const foreignModel = models.find((m) => m.id === relation.modelName);
         if (!foreignModel) {
           throw new Error(
@@ -80,7 +83,7 @@ function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
           );
         }
         // verify types of fields match
-        relation.references.forEach((reference) => {
+        for (const reference of relation.references) {
           const foreignField = foreignModel.model.fields.find(
             (f) => f.id === reference.foreign,
           );
@@ -102,9 +105,9 @@ function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
               `Field types do not match for ${reference.local} on ${model.name} and ${reference.foreign} on ${foreignModel.name}`,
             );
           }
-        });
-      }) ?? [],
-  );
+        }
+      }
+    }
 }
 
 export class ParsedProjectDefinition {
@@ -125,10 +128,10 @@ export class ParsedProjectDefinition {
     this.projectDefinition = projectDefinition;
     validateProjectDefinition(projectDefinition);
     const copiedProjectDefinition = R.clone(projectDefinition);
-    this.models = copiedProjectDefinition.models ?? [];
+    this.models = copiedProjectDefinition.models;
 
     // run plugins
-    PARSER_PLUGINS.forEach((plugin) =>
+    for (const plugin of PARSER_PLUGINS)
       plugin.run(
         projectDefinition,
         {
@@ -205,27 +208,28 @@ export class ParsedProjectDefinition {
             });
 
             // re-resolve references
-            existingModel.model.relations?.forEach((relation) => {
-              relation.references = relation.references.map((reference) => {
-                const foreignModel = this.getModelById(relation.modelName);
-                const foreignField =
-                  foreignModel.model.fields.find(
-                    (f) => f.name === reference.foreign,
-                  )?.id ?? reference.foreign;
-                const localField =
-                  existingModel.model.fields.find(
-                    (f) => f.name === reference.local,
-                  )?.id ?? reference.local;
-                return {
-                  ...reference,
-                  foreign: foreignField,
-                  local: localField,
-                };
-              });
-            });
+            if (existingModel.model.relations)
+              for (const relation of existingModel.model.relations) {
+                relation.references = relation.references.map((reference) => {
+                  const foreignModel = this.getModelById(relation.modelName);
+                  const foreignField =
+                    foreignModel.model.fields.find(
+                      (f) => f.name === reference.foreign,
+                    )?.id ?? reference.foreign;
+                  const localField =
+                    existingModel.model.fields.find(
+                      (f) => f.name === reference.local,
+                    )?.id ?? reference.local;
+                  return {
+                    ...reference,
+                    foreign: foreignField,
+                    local: localField,
+                  };
+                });
+              }
 
             existingModel.model.primaryKeyFieldRefs =
-              existingModel.model.primaryKeyFieldRefs?.map(
+              existingModel.model.primaryKeyFieldRefs.map(
                 (key) =>
                   existingModel.model.fields.find((f) => f.name === key)?.id ??
                   key,
@@ -233,8 +237,7 @@ export class ParsedProjectDefinition {
           },
         },
         definitionContainer,
-      ),
-    );
+      );
 
     // augment project config
     const updatedProjectDefinition = {

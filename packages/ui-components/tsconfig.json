@@ -1,7 +1,6 @@
 {
   "extends": "@halfdomelabs/tools/tsconfig.vite.lib.json",
   "compilerOptions": {
-    "outDir": "dist",
     "declaration": false,
     "declarationMap": false,
     "noEmit": true,

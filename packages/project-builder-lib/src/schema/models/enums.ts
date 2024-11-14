@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
-import { modelEnumEntityType, modelEnumValueEntityType } from './types.js';
-import { featureEntityType } from '../features/index.js';
 import { zEnt, zRef } from '@src/references/index.js';
+
+import { featureEntityType } from '../features/index.js';
+import { modelEnumEntityType, modelEnumValueEntityType } from './types.js';
 
 export const enumValueSchema = zEnt(
   z.object({

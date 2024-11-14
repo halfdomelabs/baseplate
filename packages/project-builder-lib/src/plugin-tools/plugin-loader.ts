@@ -2,14 +2,18 @@ import { globby } from 'globby';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import {
+import { notEmpty } from '@src/utils/array.js';
+
+import type {
   PluginManifestJson,
   PluginMetadata,
   PluginMetadataWithPaths,
+} from '../plugins/index.js';
+
+import {
   pluginManifestJsonSchema,
   pluginMetadataSchema,
 } from '../plugins/index.js';
-import { notEmpty } from '@src/utils/array.js';
 
 class PluginLoaderError extends Error {
   constructor(
@@ -42,7 +46,7 @@ async function readManifestJson(
   }
 
   return await fs
-    .readFile(manifestJsonPath, 'utf-8')
+    .readFile(manifestJsonPath, 'utf8')
     .then((data) => pluginManifestJsonSchema.parse(JSON.parse(data)));
 }
 
@@ -56,13 +60,13 @@ export async function readMetadataJson(
         `Plugin metadata file not found: ${metadataJsonFilename}`,
       );
     }
-    return fs
-      .readFile(metadataJsonFilename, 'utf-8')
+    return await fs
+      .readFile(metadataJsonFilename, 'utf8')
       .then((data) => pluginMetadataSchema.parse(JSON.parse(data)));
-  } catch (err) {
+  } catch (error) {
     throw new PluginLoaderError(
       `Unable to read plugin metadata ${metadataJsonFilename}`,
-      err,
+      error,
     );
   }
 }
@@ -70,8 +74,8 @@ export async function readMetadataJson(
 const ENTRYPOINT_TYPES = ['node', 'web', 'common'] as const;
 type EntrypointType = (typeof ENTRYPOINT_TYPES)[number];
 
-const NODE_ENTRYPOINT_TYPES: EntrypointType[] = ['node', 'common'];
-const WEB_ENTRYPOINT_TYPES: EntrypointType[] = ['web', 'common'];
+const NODE_ENTRYPOINT_TYPES = new Set(['node', 'common']);
+const WEB_ENTRYPOINT_TYPES = new Set(['web', 'common']);
 
 interface EntrypointInfo {
   type: EntrypointType;
@@ -110,26 +114,27 @@ export async function getPluginEntrypoints(
     );
 
     const moduleEntrypoints = await Promise.all(
-      moduleDirectoryPaths.map(async (moduleDirectoryPath) => {
-        return await Promise.all(
-          ENTRYPOINT_TYPES.map(async (entrypoint) => {
-            const entrypointPath = await findJavascriptFile(
-              path.join(moduleDirectoryPath, entrypoint),
-            );
-            if (!entrypointPath) {
-              return;
-            }
-            return { type: entrypoint, path: entrypointPath };
-          }),
-        );
-      }),
+      moduleDirectoryPaths.map(
+        async (moduleDirectoryPath) =>
+          await Promise.all(
+            ENTRYPOINT_TYPES.map(async (entrypoint) => {
+              const entrypointPath = await findJavascriptFile(
+                path.join(moduleDirectoryPath, entrypoint),
+              );
+              if (!entrypointPath) {
+                return;
+              }
+              return { type: entrypoint, path: entrypointPath };
+            }),
+          ),
+      ),
     );
 
     return moduleEntrypoints.flat().filter(notEmpty);
-  } catch (err) {
+  } catch (error) {
     throw new PluginLoaderError(
       `Unable to find plugin entrypoints in ${pluginDirectory}`,
-      err,
+      error,
     );
   }
 }
@@ -156,10 +161,10 @@ export async function populatePluginMetadataWithPaths(
   try {
     const entrypoints = await getPluginEntrypoints(metadata, pluginDirectory);
     const nodeEntrypoints = entrypoints.filter((n) =>
-      NODE_ENTRYPOINT_TYPES.includes(n.type),
+      NODE_ENTRYPOINT_TYPES.has(n.type),
     );
     const webEntrypoints = entrypoints.filter((n) =>
-      WEB_ENTRYPOINT_TYPES.includes(n.type),
+      WEB_ENTRYPOINT_TYPES.has(n.type),
     );
     return {
       ...metadata,
@@ -176,10 +181,10 @@ export async function populatePluginMetadataWithPaths(
         getWebEntrypointImport(metadata.name, pluginDirectory, e.path),
       ),
     };
-  } catch (err) {
+  } catch (error) {
     throw new PluginLoaderError(
       'Unable to populate plugin metadata with paths',
-      err,
+      error,
     );
   }
 }
@@ -217,9 +222,6 @@ export async function loadPluginsInPackage(
   const plugins = await Promise.all(
     pluginDirectories.map(async (directory) => {
       const metadata = await readMetadataJson(directory);
-      if (!metadata) {
-        return undefined;
-      }
       return populatePluginMetadataWithPaths(
         metadata,
         packageName,
@@ -239,7 +241,7 @@ async function getModuleFederationTargetsForPlugin(
   const entrypoints = await getPluginEntrypoints(metadata, pluginDirectory);
 
   const pluginTargets = entrypoints
-    .filter((e) => WEB_ENTRYPOINT_TYPES.includes(e.type))
+    .filter((e) => WEB_ENTRYPOINT_TYPES.has(e.type))
     .map((entrypoint) => {
       const entrypointImport = getWebEntrypointImport(
         metadata.name,
@@ -306,7 +308,7 @@ export async function getModuleFederationTargets(
   );
   const targets = federationTargets.filter(notEmpty).flat();
 
-  if (!targets.length) {
+  if (targets.length === 0) {
     throw new Error(
       `No module federation targets found in ${pluginPackageDirectory}`,
     );
