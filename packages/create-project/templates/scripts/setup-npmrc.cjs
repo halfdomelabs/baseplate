@@ -41,7 +41,9 @@ module.exports = function generateNpmRc(dirname) {
       }
       return envVars[key];
     })
-    .replaceAll(/\${([A-Z_:a-z\-]+)}/g, (_, key) => envVars[key] ? envVars[key] : key);
+    .replaceAll(/\${([A-Z_:a-z\-]+)}/g, (_, key) =>
+      envVars[key] ? envVars[key] : key,
+    );
 
   const npmrcContents = `
 # This file has been auto-generated from .npmrc.template

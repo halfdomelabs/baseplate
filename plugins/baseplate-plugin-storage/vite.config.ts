@@ -1,5 +1,4 @@
- 
-import type { UserConfig} from 'vite';
+import type { UserConfig } from 'vite';
 
 import {
   getModuleFederationTargets,

@@ -2,7 +2,7 @@ import type {
   FeatureFlag,
   PluginMetadataWithPaths,
 } from '@halfdomelabs/project-builder-lib';
-import type { FastifyBaseLogger, FastifyInstance} from 'fastify';
+import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 
 import fastifyHelmet from '@fastify/helmet';

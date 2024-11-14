@@ -1,5 +1,4 @@
-import type {
-  ModelTransformerCompiler} from '@halfdomelabs/project-builder-lib';
+import type { ModelTransformerCompiler } from '@halfdomelabs/project-builder-lib';
 
 import {
   createPlatformPluginExport,

@@ -1,24 +1,24 @@
 import type {
   AppEntry,
   ProjectDefinition,
-  SchemaParserContext} from '@halfdomelabs/project-builder-lib';
+  SchemaParserContext,
+} from '@halfdomelabs/project-builder-lib';
 import type { Logger } from '@halfdomelabs/sync';
 
 import {
   prettyStableStringify,
-  runSchemaMigrations
+  runSchemaMigrations,
 } from '@halfdomelabs/project-builder-lib';
 import fs from 'fs-extra';
 import path from 'node:path';
 
 import { compileApplications } from '@src/compiler/index.js';
 
-import type {
-  GeneratorEngineSetupConfig} from '../sync/index.js';
+import type { GeneratorEngineSetupConfig } from '../sync/index.js';
 
 import {
   generateCleanAppForDirectory,
-  generateForDirectory
+  generateForDirectory,
 } from '../sync/index.js';
 import { writeApplicationFiles } from '../writer/index.js';
 
@@ -92,9 +92,7 @@ export async function buildProjectForDirectory({
 
   const appsToRegenerate = shouldRegen ? apps : modifiedApps;
 
-   
   for (const app of appsToRegenerate) {
-     
     await generateForDirectory({
       baseDirectory: directory,
       appEntry: app,
@@ -124,9 +122,7 @@ export async function buildToCleanFolder({
     context,
   });
 
-   
   for (const app of apps) {
-     
     await generateCleanAppForDirectory({
       baseDirectory: directory,
       appEntry: app,

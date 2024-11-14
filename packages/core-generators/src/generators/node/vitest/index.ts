@@ -1,5 +1,4 @@
-import type {
-  NonOverwriteableMap} from '@halfdomelabs/sync';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   createGeneratorWithChildren,
@@ -8,12 +7,9 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import type {
-  TypescriptCodeBlock} from '@src/writers/index.js';
+import type { TypescriptCodeBlock } from '@src/writers/index.js';
 
-import {
-  TypescriptCodeUtils,
-} from '@src/writers/index.js';
+import { TypescriptCodeUtils } from '@src/writers/index.js';
 
 import { eslintProvider } from '../eslint/index.js';
 import { nodeProvider } from '../node/index.js';

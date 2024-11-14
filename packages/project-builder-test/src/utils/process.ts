@@ -24,5 +24,9 @@ export function isExitingProcess(): boolean {
   return isExiting;
 }
 
-process.on('SIGINT', () => { handleInterrupt('SIGINT'); });
-process.on('SIGTERM', () => { handleInterrupt('SIGTERM'); });
+process.on('SIGINT', () => {
+  handleInterrupt('SIGINT');
+});
+process.on('SIGTERM', () => {
+  handleInterrupt('SIGTERM');
+});

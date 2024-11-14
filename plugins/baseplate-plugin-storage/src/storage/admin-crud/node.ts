@@ -1,5 +1,4 @@
-import type {
-  AdminCrudInputCompiler} from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudInputCompiler } from '@halfdomelabs/project-builder-lib';
 
 import {
   adminCrudInputCompilerSpec,

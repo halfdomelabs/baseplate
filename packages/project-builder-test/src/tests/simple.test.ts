@@ -14,11 +14,13 @@ export default {
     await helpers.startDockerCompose(
       'packages/backend/docker/docker-compose.yml',
     );
-    await (context.streamCommandOutput ? helpers.runCommand('pnpm prisma migrate dev', {
-        cwd: 'packages/backend',
-      }) : helpers.runCommand('pnpm prisma migrate deploy', {
-        cwd: 'packages/backend',
-      }));
+    await (context.streamCommandOutput
+      ? helpers.runCommand('pnpm prisma migrate dev', {
+          cwd: 'packages/backend',
+        })
+      : helpers.runCommand('pnpm prisma migrate deploy', {
+          cwd: 'packages/backend',
+        }));
     await helpers.runCommand('pnpm prisma db seed', {
       cwd: 'packages/backend',
     });

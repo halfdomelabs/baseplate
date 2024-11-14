@@ -20,10 +20,12 @@ export function createAppRouter(context: BaseplateApiContext) {
     auth: authRouter,
     projects: createProjectsRouter(context),
     sync: createSyncRouter(context),
-    version: publicProcedure.query((): ClientVersionInfo => ({
+    version: publicProcedure.query(
+      (): ClientVersionInfo => ({
         version: context.cliVersion,
         featureFlags: context.featureFlags,
-      })),
+      }),
+    ),
     plugins: createPluginsRouter(context),
   });
 }

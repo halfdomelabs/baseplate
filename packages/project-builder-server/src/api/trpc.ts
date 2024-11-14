@@ -6,7 +6,7 @@ import { getCsrfToken } from './crsf.js';
 
 const t = initTRPC.context<Context>().create();
 
-export const {router} = t;
+export const { router } = t;
 export const publicProcedure = t.procedure;
 
 export const privateProcedure = t.procedure.use(

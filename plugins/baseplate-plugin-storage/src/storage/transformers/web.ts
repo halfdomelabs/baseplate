@@ -1,6 +1,7 @@
 import type {
   ModelConfig,
-  ProjectDefinition} from '@halfdomelabs/project-builder-lib';
+  ProjectDefinition,
+} from '@halfdomelabs/project-builder-lib';
 
 import {
   createPlatformPluginExport,

@@ -62,7 +62,7 @@ export const FILE_MODEL_FIELDS: ModelScalarFieldDefinitionInput[] = [
 export function createStorageModels(
   projectDefinitionContainer: ProjectDefinitionContainer,
 ): { file: ModelDefinitionInput } {
-  const {auth} = projectDefinitionContainer.definition;
+  const { auth } = projectDefinitionContainer.definition;
   if (!auth) {
     throw new Error('Auth plugin is required for storage plugin');
   }

@@ -45,7 +45,7 @@ export async function discoverGenerators(
     (name) =>
       (name.startsWith('@halfdomelabs/') && name.endsWith('-generators')) ||
       name.startsWith('baseplate-plugin-') ||
-      (/^@[^/]+\/baseplate-plugin-/.exec(name)),
+      /^@[^/]+\/baseplate-plugin-/.exec(name),
   );
 
   const require = createRequire(packageDirectory);

@@ -1,7 +1,8 @@
 import type {
   PluginMetadataWithPaths,
   PluginStore,
-  SchemaParserContext} from '@halfdomelabs/project-builder-lib';
+  SchemaParserContext,
+} from '@halfdomelabs/project-builder-lib';
 import type { Logger } from '@halfdomelabs/sync';
 import type { PluginPlatformModule } from 'node_modules/@halfdomelabs/project-builder-lib/dist/plugins/imports/types.js';
 
@@ -25,21 +26,21 @@ export async function createNodePluginStore(
 ): Promise<PluginStore> {
   const pluginsWithModules = await Promise.all(
     plugins.map(async (plugin) => ({
-        metadata: plugin,
-        modules: await Promise.all(
-          plugin.nodeModulePaths.map(async (modulePath) => {
-            const mod = (await import(modulePath)) as
-              | { default: PluginPlatformModule }
-              | PluginPlatformModule;
-            const unwrappedModule = 'default' in mod ? mod.default : mod;
+      metadata: plugin,
+      modules: await Promise.all(
+        plugin.nodeModulePaths.map(async (modulePath) => {
+          const mod = (await import(modulePath)) as
+            | { default: PluginPlatformModule }
+            | PluginPlatformModule;
+          const unwrappedModule = 'default' in mod ? mod.default : mod;
 
-            return {
-              key: path.relative(plugin.pluginDirectory, modulePath),
-              module: unwrappedModule,
-            };
-          }),
-        ),
-      })),
+          return {
+            key: path.relative(plugin.pluginDirectory, modulePath),
+            module: unwrappedModule,
+          };
+        }),
+      ),
+    })),
   );
   return {
     availablePlugins: pluginsWithModules,

@@ -27,7 +27,8 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
   }
 
   return router({
-    list: privateProcedure.query(async () => Promise.all(
+    list: privateProcedure.query(async () =>
+      Promise.all(
         services.map(
           async (
             service,
@@ -46,7 +47,8 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
             };
           },
         ),
-      )),
+      ),
+    ),
 
     get: privateProcedure
       .input(
@@ -62,15 +64,19 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
 
     onProjectJsonChanged: websocketProcedure
       .input(z.object({ id: z.string() }))
-      .subscription(({ input: { id } }) => observable<FilePayload | null>((emit) => {
+      .subscription(({ input: { id } }) =>
+        observable<FilePayload | null>((emit) => {
           const unsubscribe = getApi(id).on(
             'project-json-changed',
             (payload) => {
               emit.next(payload);
             },
           );
-          return () => { unsubscribe(); };
-        })),
+          return () => {
+            unsubscribe();
+          };
+        }),
+      ),
 
     writeConfig: privateProcedure
       .input(
