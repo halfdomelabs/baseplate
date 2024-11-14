@@ -161,7 +161,11 @@ export function ModelFieldDefaultValueInput({
     if (defaultToNow ?? updatedAt) {
       return (
         <div className="flex items-center gap-1">
-          <InputField disabled value={updatedAt ? 'Last Updated' : 'Now'} />
+          <InputField
+            disabled
+            value={updatedAt ? 'Last Updated' : 'Now'}
+            wrapperClassName="flex-1"
+          />
           <Button.WithOnlyIcon
             title="Reset"
             icon={HiOutlineX}
@@ -184,6 +188,7 @@ export function ModelFieldDefaultValueInput({
           placeholder="NULL"
           control={control}
           name={`model.fields.${idx}.options.default`}
+          wrapperClassName="flex-1"
         />
         <Dropdown>
           <Dropdown.Trigger asChild>
