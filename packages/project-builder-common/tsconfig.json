@@ -1,0 +1,4 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
+  "include": ["index.d.ts", "index.js"]
+}
