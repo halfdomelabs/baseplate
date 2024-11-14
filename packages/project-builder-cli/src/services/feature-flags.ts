@@ -1,5 +1,7 @@
+import type {
+  FeatureFlag} from '@halfdomelabs/project-builder-lib';
+
 import {
-  FeatureFlag,
   AVAILABLE_FLAGS,
 } from '@halfdomelabs/project-builder-lib';
 
