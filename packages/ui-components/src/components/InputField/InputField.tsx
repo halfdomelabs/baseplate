@@ -13,6 +13,7 @@ import {
 import { FormItem } from '../FormItem/FormItem';
 import { Input } from '../Input/Input';
 import { FieldProps } from '@src/types/form';
+import { cn } from '@src/utils';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface InputFieldProps
@@ -24,12 +25,28 @@ export interface InputFieldProps
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
+  wrapperClassName?: string;
 }
 
 const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
-  ({ label, description, error, onChange, register, ...props }, ref) => {
+  (
+    {
+      label,
+      description,
+      error,
+      onChange,
+      register,
+      wrapperClassName,
+      ...props
+    },
+    ref,
+  ) => {
     return (
-      <FormItem ref={ref} error={error} className="flex flex-col gap-1.5">
+      <FormItem
+        ref={ref}
+        error={error}
+        className={cn('flex flex-col gap-1.5', wrapperClassName)}
+      >
         {label && <FormItem.Label>{label}</FormItem.Label>}
         <FormItem.Control>
           <Input
