@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Command } from 'commander';
 
 import { addCliGenerateCommand } from './generate.js';
 import { addCliRunCommand } from './run.js';

@@ -1,18 +1,20 @@
 import path from 'node:path';
 
-import { discoverTests } from './discover-tests.js';
-import { generateProject } from './generate.js';
-import { createEnvironmentHelpers } from '@src/environment/index.js';
-import {
+import type {
   ProjectBuilderTest,
   TestRunnerContext,
   TestRunnerHelpers,
 } from '@src/types.js';
+
+import { createEnvironmentHelpers } from '@src/environment/index.js';
 import { logger } from '@src/utils/console.js';
 import {
   getTestProjectsDirectory,
   getTestsDirectory,
 } from '@src/utils/directories.js';
+
+import { discoverTests } from './discover-tests.js';
+import { generateProject } from './generate.js';
 
 async function runTest(test: ProjectBuilderTest): Promise<void> {
   const testProjectsDirectory = await getTestProjectsDirectory();

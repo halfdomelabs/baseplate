@@ -4,7 +4,9 @@
  * © Kiko Beats, released under the MIT License.
  */
 
-import { Subprocess, execa } from 'execa';
+import type { Subprocess } from 'execa';
+
+import { execa } from 'execa';
 
 import { logger } from './console.js';
 
@@ -34,7 +36,7 @@ export async function killProcessGroup(
       const processGroupId = -subprocess.pid;
       process.kill(processGroupId, signal);
     }
-  } catch (_) {
+  } catch {
     // taskkill can fail to kill the process e.g. due to missing permissions.
     // Let's kill the process via Node API. This delays killing of all child
     // processes of `this.proc` until the main Node.js process dies.
@@ -59,9 +61,11 @@ export async function safeKillProcessGroup(
 
   const timeoutRef = setTimeout(() => {
     if (subprocess.killed) return;
-    killProcessGroup(subprocess, { signal: 'SIGKILL' }).catch((err) => {
-      logger.error(`Unable to kill process group`, err);
-    });
+    killProcessGroup(subprocess, { signal: 'SIGKILL' }).catch(
+      (err: unknown) => {
+        logger.error(`Unable to kill process group`, err);
+      },
+    );
   }, timeout);
 
   subprocess.on('exit', () => {

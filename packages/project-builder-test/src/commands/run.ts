@@ -1,4 +1,5 @@
-import { Command } from 'commander';
+import type { Command } from 'commander';
+
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
@@ -33,7 +34,7 @@ async function runTestProject(projectName: string): Promise<void> {
   // check if project directory package.json exists
   try {
     await fs.access(path.join(projectDirectoryPath, 'package.json'));
-  } catch (e) {
+  } catch {
     throw new Error(
       `Project directory ${projectDirectoryPath} does not contain a package.json file`,
     );
