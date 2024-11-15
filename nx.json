@@ -10,25 +10,21 @@
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
+      "!{projectRoot}/**/*.stories.tsx",
       "!{projectRoot}/**/*.test.ts",
       "!{projectRoot}/**/*.md",
       "!{projectRoot}/vitest.config.ts",
-      "!{projectRoot}/.eslintrc.js"
-    ]
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "lint", "prettier:check"]
-      }
-    }
+      "!{projectRoot}/eslint.config.js",
+      "!{projectRoot}/prettier.config.js"
+    ],
+    "e2eTests": ["{workspaceRoot}/tests/**/*"]
   },
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"],
       "inputs": ["production", "^production"],
-      "outputs": ["{projectRoot}/dist", "{projectRoot}/build"]
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["^build"],
+      "cache": true
     },
     "release": {
       "inputs": ["production", "^production"],
@@ -36,15 +32,21 @@
     },
     "lint": {
       "inputs": ["default", "^production"],
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "cache": true
+    },
+    "prettier:check": {
+      "cache": true
     },
     "test": {
       "inputs": ["default", "^production"],
-      "dependsOn": ["build"]
+      "dependsOn": ["^build"],
+      "cache": true
     },
     "test:e2e": {
-      "inputs": ["default", "^production"],
-      "dependsOn": ["^build"]
+      "inputs": ["default", "^production", "e2eTests"],
+      "dependsOn": ["^build"],
+      "cache": true
     }
   },
   "defaultBase": "main"
