@@ -13,8 +13,8 @@ import { useState } from 'react';
 import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
-import { NewModelDialog } from './NewModelDialog';
 import { createModelEditLink } from '../_utils/url';
+import { NewModelDialog } from './NewModelDialog';
 
 interface ModelsSidebarListProps {
   className?: string;
