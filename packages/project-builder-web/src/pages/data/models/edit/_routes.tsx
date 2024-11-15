@@ -5,10 +5,9 @@ import { modelEntityType } from '@halfdomelabs/project-builder-lib';
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createCrumbFromUid, createRouteCrumb } from '@src/types/routes';
 
-import ModelEditModelPage from './model/model.page';
-import { ModelEditLayout } from './ModelEditLayout';
-import ModelEditSchemaPage from './schema/schema.page';
-import ModelEditServicePage from './service/service.page';
+import { ModelEditLayout } from '../edit.id/_layout';
+import ModelEditModelPage from '../edit.id/index.page';
+import ModelEditServicePage from '../edit.id/service.page';
 
 export const ModelEditRoutes: RouteObject = {
   path: 'edit/:uid/*',
@@ -31,7 +30,7 @@ export const ModelEditRoutes: RouteObject = {
     },
     {
       path: 'graphql',
-      element: <ModelEditSchemaPage />,
+      element: <ModelEditServicePage />,
       handle: {
         crumb: createRouteCrumb('GraphQL'),
       },
