@@ -6,7 +6,7 @@ import { createRouteCrumb } from '@src/types/routes';
 import { ModelEditRoutes } from './edit/_routes';
 import ModelsIndexPage from './index.page';
 
-export const ModelRoutes: RouteObject = {
+export const ModelsRoutes: RouteObject = {
   path: 'models/*',
   handle: {
     crumb: createRouteCrumb({ label: 'Models', url: '/data/models' }),
