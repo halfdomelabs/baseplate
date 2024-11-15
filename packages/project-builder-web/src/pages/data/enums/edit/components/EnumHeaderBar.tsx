@@ -1,14 +1,18 @@
-import { EnumConfig, FeatureUtils } from '@halfdomelabs/project-builder-lib';
+import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import { EnumInfoEditDialog } from './EnumInfoEditDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
+
+import { EnumInfoEditDialog } from './EnumInfoEditDialog';
 
 interface EnumHeaderBarProps {
   className?: string;
@@ -18,7 +22,7 @@ interface EnumHeaderBarProps {
 export function EnumHeaderBar({
   className,
   enumDefinition,
-}: EnumHeaderBarProps): JSX.Element {
+}: EnumHeaderBarProps): React.JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -30,12 +34,12 @@ export function EnumHeaderBar({
         draftConfig.enums = draftConfig.enums?.filter((m) => m.id !== id);
       });
       navigate('/data/enums');
-    } catch (err) {
-      if (err instanceof RefDeleteError) {
-        showRefIssues({ issues: err.issues });
+    } catch (error) {
+      if (error instanceof RefDeleteError) {
+        showRefIssues({ issues: error.issues });
         return;
       }
-      toast.error(logAndFormatError(err));
+      toast.error(logAndFormatError(error));
     }
   };
 
@@ -52,7 +56,7 @@ export function EnumHeaderBar({
             <MdEdit className="invisible size-4 group-hover:visible" />
           </button>
         </EnumInfoEditDialog>
-        {enumDefinition?.feature && (
+        {enumDefinition.feature && (
           <div className="text-xs text-muted-foreground">
             {
               FeatureUtils.getFeatureById(definition, enumDefinition.feature)
@@ -72,7 +76,9 @@ export function EnumHeaderBar({
                 enumDefinition.name
               }?`,
               buttonConfirmText: 'Delete',
-              onConfirm: () => handleDelete(enumDefinition.id),
+              onConfirm: () => {
+                handleDelete(enumDefinition.id);
+              },
             });
           }}
         >

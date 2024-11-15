@@ -1,15 +1,18 @@
-import { ForwardedRef } from 'react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type { ForwardedRef } from 'react';
+import type React from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormItem } from '../FormItem/FormItem.js';
-import { Select } from '../Select/Select.js';
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import {
+import type {
   AddOptionRequiredFields,
   FieldProps,
   SelectOptionProps,
 } from '@src/types/form.js';
+
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+import { FormItem } from '../FormItem/FormItem.js';
+import { Select } from '../Select/Select.js';
 
 export interface SelectFieldProps<OptionType>
   extends SelectOptionProps<OptionType>,
@@ -37,7 +40,7 @@ const SelectFieldRoot = genericForwardRef(function SelectField<OptionType>(
     ...props
   }: SelectFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLButtonElement>,
-): JSX.Element {
+): React.JSX.Element {
   const selectedOption = options.find((o) => getOptionValue(o) === value);
 
   const selectedValue = (() => {
@@ -111,7 +114,7 @@ const SelectFieldController = genericForwardRef(function SelectFieldController<
   }: SelectFieldControllerProps<OptionType, TFieldValues, TFieldName> &
     AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLButtonElement>,
-): JSX.Element {
+): React.JSX.Element {
   const {
     field,
     fieldState: { error },

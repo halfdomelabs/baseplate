@@ -1,4 +1,4 @@
-import {
+import type {
   DefinitionEntity,
   DefinitionEntityType,
   ProjectDefinitionContainer,

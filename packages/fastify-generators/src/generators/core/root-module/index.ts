@@ -1,6 +1,9 @@
-import {
+import type {
   ImportMapper,
   TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+
+import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -163,7 +166,10 @@ const RootModuleGenerator = createGeneratorWithTasks({
 
             const moduleFields = Object.keys(moduleFieldMap.value()).map(
               (name) => {
-                const field = moduleFieldMap.get(name)!;
+                const field = moduleFieldMap.get(name);
+                if (!field) {
+                  throw new Error(`Unknown field entry: ${name}`);
+                }
                 return { name, field };
               },
             );

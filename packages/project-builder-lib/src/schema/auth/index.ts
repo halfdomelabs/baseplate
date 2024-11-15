@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
-import { authRoleEntityType } from './types.js';
-import { modelEntityType } from '../models/index.js';
 import { zEnt, zRef } from '@src/references/index.js';
 import { featureEntityType } from '@src/schema/features/index.js';
+
+import { modelEntityType } from '../models/index.js';
+import { authRoleEntityType } from './types.js';
 
 export * from './types.js';
 
@@ -64,9 +65,7 @@ export const authSchema = z.object({
   roles: z.array(authRoleSchema).refine(
     (roles) =>
       // TODO: Add system role
-      ['anonymous', 'user'].every((name) =>
-        roles?.some((r) => r.name === name),
-      ),
+      ['anonymous', 'user'].every((name) => roles.some((r) => r.name === name)),
     { message: 'Anonymous, user, system role required' },
   ),
 });

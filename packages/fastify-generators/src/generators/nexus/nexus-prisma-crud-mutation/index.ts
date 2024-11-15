@@ -1,5 +1,6 @@
+import type { TsUtilsProvider } from '@halfdomelabs/core-generators';
+
 import {
-  TsUtilsProvider,
   tsUtilsProvider,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -9,19 +10,21 @@ import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { singularize } from 'inflection';
 import { z } from 'zod';
 
-import { nexusSchemaProvider } from '../nexus/index.js';
-import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
-import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
-import { nexusTypeProvider } from '@src/providers/nexus-type.js';
-import {
+import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
-} from '@src/types/serviceOutput.js';
+} from '@src/types/service-output.js';
+
+import { serviceFileOutputProvider } from '@src/generators/core/service-file/index.js';
+import { nexusTypeProvider } from '@src/providers/nexus-type.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   writeChildInputDefinition,
   writeNexusInputDefinitionFromDtoFields,
 } from '@src/writers/nexus-definition/index.js';
+
+import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
+import { nexusSchemaProvider } from '../nexus/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -58,13 +61,13 @@ function buildNestedArgExpression(
     (f): f is ServiceOutputDtoNestedField => f.type === 'nested',
   );
 
-  if (nestedFields.length) {
+  if (nestedFields.length > 0) {
     // look for all nested expressions with restrictions
     const nestedExpressionsWithRestrict = nestedFields
       .map((nestedField) => ({
         field: nestedField,
         // mutual recursion
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
         expression: convertNestedArgForCall(
           {
             ...nestedField,
@@ -77,7 +80,7 @@ function buildNestedArgExpression(
       }))
       .filter((f) => f.expression.content.includes('restrictObjectNulls'));
 
-    if (nestedExpressionsWithRestrict.length) {
+    if (nestedExpressionsWithRestrict.length > 0) {
       return TypescriptCodeUtils.formatExpression(
         `{
           ...${arg.name},
@@ -127,7 +130,7 @@ function convertNestedArgForCall(
   const nestedArgExpression: TypescriptCodeExpression =
     buildNestedArgExpression(arg, tsUtils);
 
-  if (nonNullableOptionalFields.length) {
+  if (nonNullableOptionalFields.length > 0) {
     return TypescriptCodeUtils.formatExpression(
       `restrictObjectNulls(ARG, [${nonNullableOptionalFields
         .map((f) => `'${f.name}'`)
@@ -236,12 +239,12 @@ const NexusPrismaCrudMutation = createGeneratorWithChildren({
       RETURN_FIELD_NAME: lowerCaseFirst(modelName),
     });
 
-    inputDefinitions.childInputDefinitions.forEach((child) => {
+    for (const child of inputDefinitions.childInputDefinitions) {
       nexusTypesFile.registerType({
         name: child.name,
         block: writeChildInputDefinition(child),
       });
-    });
+    }
 
     return {
       getProviders: () => ({

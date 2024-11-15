@@ -1,3 +1,3 @@
-export * from './fieldTypes.js';
-export * from './prismaOutput.js';
-export * from './serviceOutput.js';
+export * from './field-types.js';
+export type * from './prisma-output.js';
+export * from './service-output.js';

@@ -1,5 +1,6 @@
+import type { Logger } from '../utils/evented-logger.js';
+
 import { createProviderType } from '../core/provider.js';
-import { Logger } from '../utils/evented-logger.js';
 
 export type FormatFunction = (
   input: string,

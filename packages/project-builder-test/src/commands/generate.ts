@@ -1,4 +1,5 @@
-import { Command } from 'commander';
+import type { Command } from 'commander';
+
 import path from 'node:path';
 
 import { discoverTests } from '@src/runner/discover-tests.js';

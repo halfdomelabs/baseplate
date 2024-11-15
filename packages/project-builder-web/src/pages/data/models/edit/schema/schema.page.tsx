@@ -1,14 +1,17 @@
+import type React from 'react';
+
 import { modelBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 
+import FormActionBar from '@src/components/FormActionBar';
+
+import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
+import { useModelForm } from '../../hooks/useModelForm';
 import { GraphQLMutationsSection } from './GraphQLMutationsSection';
 import { GraphQLObjectTypeSection } from './GraphQLObjectTypeSection';
 import { GraphQLQueriesSection } from './GraphQLQueriesSection';
-import { EditedModelContextProvider } from '../../hooks/useEditedModelConfig';
-import { useModelForm } from '../../hooks/useModelForm';
-import FormActionBar from '@src/components/FormActionBar';
 
-function ModelEditSchemaPage(): JSX.Element {
+function ModelEditSchemaPage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });

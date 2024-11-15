@@ -1,7 +1,8 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
+
 import { createProviderType } from '@halfdomelabs/sync';
 
 export interface ReactRouteLayout {

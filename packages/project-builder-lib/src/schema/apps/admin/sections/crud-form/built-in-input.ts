@@ -1,16 +1,18 @@
 import { z } from 'zod';
 
-import {
-  AdminCrudInputType,
-  adminCrudEmbeddedFormEntityType,
-  createAdminCrudInputType,
-} from './types.js';
 import { zRef } from '@src/references/index.js';
 import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@src/schema/models/index.js';
+
+import type { AdminCrudInputType } from './types.js';
+
+import {
+  adminCrudEmbeddedFormEntityType,
+  createAdminCrudInputType,
+} from './types.js';
 
 export const adminCrudTextInputSchema = z.object({
   type: z.literal('text'),

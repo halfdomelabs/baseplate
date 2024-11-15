@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -11,8 +13,8 @@ import { useState } from 'react';
 import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
-import { NewEnumDialog } from './new/NewEnumDialog';
 import { createEnumEditLink } from '../models/utils/url';
+import { NewEnumDialog } from './new/NewEnumDialog';
 
 interface EnumsSidebarListProps {
   className?: string;
@@ -20,7 +22,7 @@ interface EnumsSidebarListProps {
 
 export function EnumsSidebarList({
   className,
-}: EnumsSidebarListProps): JSX.Element {
+}: EnumsSidebarListProps): React.JSX.Element {
   const {
     definition: { enums = [] },
   } = useProjectDefinition();
@@ -51,7 +53,9 @@ export function EnumsSidebarList({
           <div className="relative">
             <InputField
               value={filterQuery}
-              onChange={(text) => setFilterQuery(text)}
+              onChange={(text) => {
+                setFilterQuery(text);
+              }}
               placeholder="Search"
             />
             {filterQuery && (
@@ -59,7 +63,9 @@ export function EnumsSidebarList({
                 variant="ghost"
                 className="absolute right-4 top-1/2 -translate-y-1/2"
                 size="icon"
-                onClick={() => setFilterQuery('')}
+                onClick={() => {
+                  setFilterQuery('');
+                }}
               >
                 <Button.Icon icon={MdClear} />
               </Button>

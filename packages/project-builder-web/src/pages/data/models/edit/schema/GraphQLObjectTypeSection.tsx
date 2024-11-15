@@ -1,8 +1,12 @@
-import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
+import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList, Switch, SwitchField } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
-import { Control, useController, useWatch } from 'react-hook-form';
+import { useController, useWatch } from 'react-hook-form';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { SCALAR_FIELD_TYPE_OPTIONS } from '../../constants/scalar-types';
@@ -23,19 +27,17 @@ function getUpdatedOrderedList<T extends { id: string }>(
   checked: boolean,
   id: string,
 ): string[] {
-  if (checked) {
-    return items
-      .filter((f) => selected.includes(f.id) || f.id === id)
-      .map((f) => f.id);
-  } else {
-    return selected.filter((f) => f !== id);
-  }
+  return checked
+    ? items
+        .filter((f) => selected.includes(f.id) || f.id === id)
+        .map((f) => f.id)
+    : selected.filter((f) => f !== id);
 }
 
 export function GraphQLObjectTypeSection({
   className,
   control,
-}: GraphQLObjectTypeSectionProps): JSX.Element {
+}: GraphQLObjectTypeSectionProps): React.JSX.Element {
   const { definitionContainer, definition } = useProjectDefinition();
   const modelId = useEditedModelConfig((model) => model.id);
 
@@ -109,9 +111,9 @@ export function GraphQLObjectTypeSection({
               <th>
                 {showCollapsibleFields ? (
                   <button
-                    onClick={() =>
-                      setShouldCollapseFields(!shouldCollapseFields)
-                    }
+                    onClick={() => {
+                      setShouldCollapseFields(!shouldCollapseFields);
+                    }}
                     className="flex items-center gap-4"
                     title={
                       shouldCollapseFields ? 'Expand fields' : 'Collapse fields'
@@ -150,7 +152,7 @@ export function GraphQLObjectTypeSection({
                     <Switch
                       aria-label={`Expose ${field.name} field`}
                       disabled={!isObjectTypeEnabled}
-                      checked={fieldsValue.some((f) => f === field.id)}
+                      checked={fieldsValue.includes(field.id)}
                       onCheckedChange={(checked) => {
                         fieldsOnChange(
                           getUpdatedOrderedList(
@@ -166,16 +168,16 @@ export function GraphQLObjectTypeSection({
                 </tr>
               ))}
             {/* Local Relations */}
-            {localRelations.length ? (
+            {localRelations.length > 0 ? (
               <tr>
                 <th>
                   {showCollapsibleLocalRelations ? (
                     <button
-                      onClick={() =>
+                      onClick={() => {
                         setShouldCollapseLocalRelations(
                           !shouldCollapseLocalRelations,
-                        )
-                      }
+                        );
+                      }}
                       className="flex items-center gap-4"
                       title={
                         shouldCollapseLocalRelations
@@ -213,9 +215,7 @@ export function GraphQLObjectTypeSection({
                     <Switch
                       aria-label={`Expose ${relation.name} relation`}
                       disabled={!isObjectTypeEnabled}
-                      checked={localRelationsValue.some(
-                        (r) => r === relation.id,
-                      )}
+                      checked={localRelationsValue.includes(relation.id)}
                       onCheckedChange={(checked) => {
                         localRelationsOnChange(
                           getUpdatedOrderedList(
@@ -231,16 +231,16 @@ export function GraphQLObjectTypeSection({
                 </tr>
               ))}
             {/* Foreign Relations */}
-            {foreignRelations.length ? (
+            {foreignRelations.length > 0 ? (
               <tr>
                 <th>
                   {showCollapsibleForeignRelations ? (
                     <button
-                      onClick={() =>
+                      onClick={() => {
                         setShouldCollapseForeignRelations(
                           !shouldCollapseForeignRelations,
-                        )
-                      }
+                        );
+                      }}
                       className="flex items-center gap-4"
                       title={
                         shouldCollapseForeignRelations
@@ -276,8 +276,8 @@ export function GraphQLObjectTypeSection({
                     <Switch
                       aria-label={`Expose ${relation.foreignRelationName} relation`}
                       disabled={!isObjectTypeEnabled}
-                      checked={foreignRelationsValue.some(
-                        (r) => r === relation.foreignId,
+                      checked={foreignRelationsValue.includes(
+                        relation.foreignId,
                       )}
                       onCheckedChange={(checked) => {
                         foreignRelationsOnChange(

@@ -1,12 +1,14 @@
-import { appEntityType } from '@halfdomelabs/project-builder-lib';
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
+import { appEntityType } from '@halfdomelabs/project-builder-lib';
+
+import { createCrumbFromUid } from '@src/types/routes';
+
+import NotFoundPage from '../NotFound.page';
 import AppsLayout from './AppsLayout.page';
 import EditAppPage from './edit.page';
 import { AppsListPage } from './list.page';
 import NewAppPage from './new.page';
-import NotFoundPage from '../NotFound.page';
-import { createCrumbFromUid } from '@src/types/routes';
 
 export const AppsRoutes: RouteObject[] = [
   {

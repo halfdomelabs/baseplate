@@ -1,8 +1,11 @@
-import React from 'react';
+import type React from 'react';
 
-import { PluginSpecImplementation, createPluginSpec } from './types.js';
-import { PluginMetadataWithPaths } from '../metadata/types.js';
-import { BasePlugin } from '@src/schema/index.js';
+import type { BasePlugin } from '@src/schema/index.js';
+
+import type { PluginMetadataWithPaths } from '../metadata/types.js';
+import type { PluginSpecImplementation } from './types.js';
+
+import { createPluginSpec } from './types.js';
 
 export interface WebConfigProps {
   definition: BasePlugin | null;
@@ -24,19 +27,19 @@ export interface WebConfigSpec extends PluginSpecImplementation {
 }
 
 export function createWebConfigImplementation(): WebConfigSpec {
-  const components: Record<string, React.FC<WebConfigProps>> = {};
+  const components = new Map<string, React.FC<WebConfigProps>>();
 
   return {
     registerWebConfigComponent(pluginId, ConfigComponent) {
-      if (components[pluginId]) {
+      if (components.has(pluginId)) {
         throw new Error(
           `Web config component for plugin ${pluginId} is already registered`,
         );
       }
-      components[pluginId] = ConfigComponent;
+      components.set(pluginId, ConfigComponent);
     },
     getWebConfigComponent(pluginId) {
-      return components[pluginId];
+      return components.get(pluginId);
     },
   };
 }

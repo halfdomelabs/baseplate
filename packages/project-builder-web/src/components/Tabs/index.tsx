@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { Tab } from '@headlessui/react';
 import clsx from 'clsx';
 
@@ -6,7 +8,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-function Tabs({ className, children }: Props): JSX.Element {
+function Tabs({ className, children }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <Tab.Group>{children}</Tab.Group>
@@ -22,7 +24,7 @@ interface TabsListProps {
 Tabs.List = function TabsList({
   className,
   children,
-}: TabsListProps): JSX.Element {
+}: TabsListProps): React.JSX.Element {
   return (
     <Tab.List
       as="div"
@@ -44,7 +46,7 @@ interface TabsTabProps {
 Tabs.Tab = function TabsTab({
   className,
   children,
-}: TabsTabProps): JSX.Element {
+}: TabsTabProps): React.JSX.Element {
   return (
     <Tab as="li" className={clsx('mr-2 cursor-pointer', className)}>
       {({ selected }) => (
@@ -74,7 +76,7 @@ interface TabsPanelsProps {
 Tabs.Panels = function TabsPanels({
   className,
   children,
-}: TabsPanelsProps): JSX.Element {
+}: TabsPanelsProps): React.JSX.Element {
   return (
     <Tab.Panels
       className={clsx(
@@ -95,7 +97,7 @@ interface TabsPanelProps {
 Tabs.Panel = function TabsPanel({
   className,
   children,
-}: TabsPanelProps): JSX.Element {
+}: TabsPanelProps): React.JSX.Element {
   return <Tab.Panel className={clsx(className)}>{children}</Tab.Panel>;
 };
 

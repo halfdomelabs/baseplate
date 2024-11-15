@@ -1,11 +1,11 @@
-import {
-  adminCrudDisplayTypes,
-  AdminCrudSectionConfig,
-} from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
+import { adminCrudDisplayTypes } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
-import { Control, useFieldArray, useWatch } from 'react-hook-form';
-
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Button, SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 
@@ -29,7 +29,7 @@ function ColumnForm({
   control: Control<AdminCrudTableConfig>;
   fieldOptions: { label: string; value: string }[];
   localRelationOptions: { label: string; value: string }[];
-}): JSX.Element {
+}): React.JSX.Element {
   const displayTypeOptions = adminCrudDisplayTypes.map((t) => ({
     label: t,
     value: t,
@@ -81,7 +81,10 @@ function ColumnForm({
   );
 }
 
-function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
+function CrudTableColumnsForm({
+  className,
+  control,
+}: Props): React.JSX.Element {
   const modelName = useWatch({ control, name: 'modelName' });
   const { parsedProject } = useProjectDefinition();
   const model = modelName ? parsedProject.getModelById(modelName) : undefined;
@@ -112,7 +115,9 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
               {field.label} ({field.display.type})
             </div>
           }
-          onRemove={() => remove(idx)}
+          onRemove={() => {
+            remove(idx);
+          }}
           defaultOpen={!field.label}
         >
           <ColumnForm
@@ -125,9 +130,9 @@ function CrudTableColumnsForm({ className, control }: Props): JSX.Element {
         </CollapsibleRow>
       ))}
       <Button
-        onClick={() =>
-          append({ display: { type: 'text', modelField: '' }, label: '' })
-        }
+        onClick={() => {
+          append({ display: { type: 'text', modelField: '' }, label: '' });
+        }}
       >
         Add Column
       </Button>

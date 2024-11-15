@@ -1,11 +1,10 @@
 import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
+import type React from 'react';
+import type { UseClientVersionResult } from 'src/hooks/useClientVersion';
+
 import { ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useMemo, useRef, useState } from 'react';
-
-import {
-  ClientVersionContext,
-  UseClientVersionResult,
-} from 'src/hooks/useClientVersion';
+import { ClientVersionContext } from 'src/hooks/useClientVersion';
 import { logError } from 'src/services/error-logger';
 import { getVersionInfo } from 'src/services/remote';
 
@@ -15,7 +14,7 @@ interface ClientVersionGateProps {
 
 export function ClientVersionGate({
   children,
-}: ClientVersionGateProps): JSX.Element {
+}: ClientVersionGateProps): React.JSX.Element {
   const [clientVersionInfo, setClientVersionInfo] = useState<
     ClientVersionInfo | undefined
   >();
@@ -26,9 +25,9 @@ export function ClientVersionGate({
       .then((version) => {
         setClientVersionInfo(version);
       })
-      .catch((err) => {
-        logError(err);
-        setError(err as Error);
+      .catch((error_: unknown) => {
+        logError(error_);
+        setError(error_ as Error);
       });
   }, []);
 
@@ -39,7 +38,7 @@ export function ClientVersionGate({
       previousClientVersion.current &&
       previousClientVersion.current !== clientVersionInfo.version
     ) {
-      window.location.reload();
+      globalThis.location.reload();
     }
     if (clientVersionInfo) {
       previousClientVersion.current = clientVersionInfo.version;

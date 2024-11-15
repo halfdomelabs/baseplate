@@ -108,7 +108,7 @@ export function createProviderType<T>(
           if (!reference) {
             return this;
           }
-          if (!this.reference) {
+          if (this.options.reference) {
             throw new Error('Cannot overwrite reference on provider type');
           }
           return R.mergeDeepLeft({ options: { reference } }, this);

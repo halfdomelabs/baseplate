@@ -1,17 +1,19 @@
-import {
-  ModelTransformerCompiler,
-  ModelUtils,
-  modelTransformerCompilerSpec,
-  undefinedIfEmpty,
-} from '@halfdomelabs/project-builder-lib';
-import { ParsedModel } from '@halfdomelabs/project-builder-lib';
-import {
+import type {
   EmbeddedRelationTransformerConfig,
+  ModelTransformerCompiler,
+  ParsedModel,
   TransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
 
-import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import {
+  modelTransformerCompilerSpec,
+  ModelUtils,
+  undefinedIfEmpty,
+} from '@halfdomelabs/project-builder-lib';
+
 import { notEmpty } from '@src/utils/array.js';
+
+import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
 export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRelationTransformerConfig> =
   {
@@ -46,9 +48,9 @@ export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<Embed
         embeddedTransformerNames: definition.embeddedTransformerNames?.map(
           (t) => definitionContainer.nameFromId(t),
         ),
-        foreignCrudServiceRef: !definition.embeddedTransformerNames
-          ? undefined
-          : `${foreignModelFeature}/root:$services.${foreignModel.name}Service.$crud`,
+        foreignCrudServiceRef: definition.embeddedTransformerNames
+          ? `${foreignModelFeature}/root:$services.${foreignModel.name}Service.$crud`
+          : undefined,
       };
     },
   };
@@ -108,7 +110,7 @@ function buildServiceForModel(
             ),
           ),
           create:
-            service.create?.fields?.length && service.create?.enabled
+            service.create?.fields?.length && service.create.enabled
               ? {
                   prismaFields: service.create.fields.map((f) =>
                     appBuilder.nameFromId(f),
@@ -121,7 +123,7 @@ function buildServiceForModel(
                 }
               : null,
           update:
-            service.update?.fields?.length && service.update?.enabled
+            service.update?.fields?.length && service.update.enabled
               ? {
                   prismaFields: service.update.fields.map((f) =>
                     appBuilder.nameFromId(f),

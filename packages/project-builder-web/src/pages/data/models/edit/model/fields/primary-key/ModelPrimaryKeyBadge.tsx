@@ -1,7 +1,9 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { Badge } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
-import { Control } from 'react-hook-form';
 import { MdKey } from 'react-icons/md';
 
 import { ModelPrimaryKeyDialog } from './ModelPrimaryKeyDialog';
@@ -16,7 +18,7 @@ export function ModelPrimaryKeyBadge({
   className,
   control,
   autoCollapse,
-}: ModelPrimaryKeyBadgeProps): JSX.Element {
+}: ModelPrimaryKeyBadgeProps): React.JSX.Element {
   const [isHovered, setIsHovered] = useState(false);
   const shouldShowText = !autoCollapse || isHovered;
   return (
@@ -25,8 +27,12 @@ export function ModelPrimaryKeyBadge({
         icon={MdKey}
         variant="secondary"
         className={className}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={() => {
+          setIsHovered(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovered(false);
+        }}
         aria-label="Primary Key"
         title="Primary Key"
       >

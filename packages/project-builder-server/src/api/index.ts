@@ -1,11 +1,12 @@
-import { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+
+import type { BaseplateApiContext } from './types.js';
 
 import { authRouter } from './auth.js';
 import { createPluginsRouter } from './plugins.js';
 import { createProjectsRouter } from './projects.js';
 import { createSyncRouter } from './sync.js';
 import { publicProcedure, router } from './trpc.js';
-import { BaseplateApiContext } from './types.js';
 
 export interface ClientVersionInfo {
   version: string;
@@ -19,12 +20,12 @@ export function createAppRouter(context: BaseplateApiContext) {
     auth: authRouter,
     projects: createProjectsRouter(context),
     sync: createSyncRouter(context),
-    version: publicProcedure.query((): ClientVersionInfo => {
-      return {
+    version: publicProcedure.query(
+      (): ClientVersionInfo => ({
         version: context.cliVersion,
         featureFlags: context.featureFlags,
-      };
-    }),
+      }),
+    ),
     plugins: createPluginsRouter(context),
   });
 }

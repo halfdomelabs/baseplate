@@ -1,5 +1,7 @@
+import type { VariantProps } from 'class-variance-authority';
+
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
-import { VariantProps, cva } from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
 import * as React from 'react';
 import { RxChevronDown } from 'react-icons/rx';
 

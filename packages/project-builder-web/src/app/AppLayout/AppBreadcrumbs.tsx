@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Breadcrumb, Button, Dropdown } from '@halfdomelabs/ui-components';
 import _, { upperFirst } from 'lodash';
@@ -5,11 +7,12 @@ import { Fragment } from 'react';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import { Link, useMatches, useNavigate } from 'react-router-dom';
 
+import type { RouteCrumbOrFunction } from '@src/types/routes';
+
 import { useProjects } from '@src/hooks/useProjects';
-import { RouteCrumbOrFunction } from '@src/types/routes';
 import { notEmpty } from '@src/utils/array';
 
-export function AppBreadcrumbs(): JSX.Element {
+export function AppBreadcrumbs(): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
   const matches = useMatches();
   const crumbs = matches

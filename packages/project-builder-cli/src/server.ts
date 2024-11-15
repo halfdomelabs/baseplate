@@ -1,9 +1,10 @@
+import type { Command } from 'commander';
+
 import {
-  getDefaultPlugins,
   getDefaultGeneratorSetupConfig,
+  getDefaultPlugins,
 } from '@halfdomelabs/project-builder-common';
 import { startWebServer } from '@halfdomelabs/project-builder-server';
-import { Command } from 'commander';
 import path from 'node:path';
 import { packageDirectory } from 'pkg-dir';
 
@@ -30,8 +31,8 @@ export function addServeCommand(program: Command, version: string): void {
     .option(
       '--port <number>',
       'Port to listen on',
-      parseInt,
-      process.env.PORT ? parseInt(process.env.PORT, 10) : undefined,
+      Number.parseInt,
+      process.env.PORT ? Number.parseInt(process.env.PORT, 10) : undefined,
     )
     .argument(
       '[directories...]',

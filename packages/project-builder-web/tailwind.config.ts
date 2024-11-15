@@ -1,6 +1,7 @@
+import type { Config } from 'tailwindcss';
+
 import tailwindBase from '@halfdomelabs/ui-components/tailwind-base';
 import path from 'node:path';
-import type { Config } from 'tailwindcss';
 
 export default {
   presets: [tailwindBase],

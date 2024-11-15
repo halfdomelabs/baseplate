@@ -1,7 +1,8 @@
-import {
-  ModelConfig,
-  modelUniqueConstraintEntityType,
-} from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormSetValue } from 'react-hook-form';
+
+import { modelUniqueConstraintEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   Dropdown,
@@ -11,17 +12,17 @@ import {
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
-import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
+import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
+import { ModelFieldBadges } from './badges/ModelFieldBadges';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';
-import { ModelFieldBadges } from './badges/ModelFieldBadges';
 import { ModelPrimaryKeyDialog } from './primary-key/ModelPrimaryKeyDialog';
 import { ModelRelationDialog } from './relations/ModelRelationDialog';
 import { ModelUniqueConstraintDialog } from './unique-constraints/ModelUniqueConstraintDialog';
-import { useEditedModelConfig } from '../../../hooks/useEditedModelConfig';
 
 interface Props {
   className?: string;
@@ -37,7 +38,7 @@ function ModelFieldForm({
   idx,
   setValue,
   onRemove,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const watchedField = useWatch({
     name: `model.fields.${idx}`,
     control,
@@ -68,7 +69,7 @@ function ModelFieldForm({
 
   const removeError = useEditedModelConfig((model) => {
     // check local references
-    if (usedRelations?.length) {
+    if (usedRelations.length > 0) {
       return `Unable to remove field as it is being used in relations ${usedRelations
         .map((r) => r.name)
         .join(', ')}`;
@@ -85,7 +86,7 @@ function ModelFieldForm({
     ) {
       return `Unable to remove field as it is being used in in a unique constraint`;
     }
-    return undefined;
+    return;
   });
 
   function handleRemove(): void {
@@ -107,10 +108,10 @@ function ModelFieldForm({
     useState(false);
   const [uniqueConstriantId, setUniqueConstraintId] = useState<
     string | undefined
-  >(undefined);
+  >();
 
   const [isRelationDialogOpen, setIsRelationDialogOpen] = useState(false);
-  const [relationId, setRelationId] = useState<string | undefined>(undefined);
+  const [relationId, setRelationId] = useState<string | undefined>();
 
   return (
     <div className={clsx('items-center', className)}>
@@ -245,7 +246,13 @@ function ModelFieldForm({
             relationId={relationId}
             defaultFieldName={watchedField.name}
           />
-          <Button variant="ghost" onClick={() => handleRemove()} size="icon">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              handleRemove();
+            }}
+            size="icon"
+          >
             <Button.Icon icon={MdOutlineDelete} />
           </Button>
         </div>

@@ -1,9 +1,10 @@
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
-import EnumsListPage from './EnumsList.page';
-import { EnumEditRoutes } from './edit';
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createRouteCrumb } from '@src/types/routes';
+
+import { EnumEditRoutes } from './edit';
+import EnumsListPage from './EnumsList.page';
 
 export const EnumRoutes: RouteObject = {
   path: 'enums/*',

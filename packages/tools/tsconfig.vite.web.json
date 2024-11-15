@@ -3,7 +3,6 @@
   "extends": "./tsconfig.vite.base.json",
   "display": "Vite React Website",
   "compilerOptions": {
-    "noEmit": true,
-    "isolatedModules": true
+    "noEmit": true
   }
 }

@@ -1,12 +1,14 @@
+import type { AuthConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import {
   AUTH_DEFAULT_ROLES,
-  AuthConfig,
   authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import clsx from 'clsx';
 import { useEffect } from 'react';
-import { Control, useFieldArray, useWatch } from 'react-hook-form';
-
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 
@@ -15,7 +17,11 @@ interface Props {
   control: Control<AuthConfig>;
 }
 
-function RoleEditorForm({ className, control }: Props): JSX.Element {
+function isFixedRole(name: string): boolean {
+  return AUTH_DEFAULT_ROLES.some((role) => role.name === name);
+}
+
+function RoleEditorForm({ className, control }: Props): React.JSX.Element {
   const { fields, append, remove, update } = useFieldArray({
     control,
     name: 'roles',
@@ -23,15 +29,14 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
 
   const roles = useWatch({ control, name: 'roles' });
 
-  const roleOptions =
-    roles?.map((role) => ({
-      label: role.name,
-      value: role.id,
-    })) ?? [];
+  const roleOptions = roles.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
 
   useEffect(() => {
     // strip any bad inherits
-    roles?.forEach((role, idx) => {
+    for (const [idx, role] of roles.entries()) {
       const inherits = role.inherits ?? [];
       const permittedInherits = inherits.filter((inherit) =>
         roles.find((r) => r.name === inherit),
@@ -39,11 +44,8 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
       if (permittedInherits.length !== inherits.length) {
         update(idx, { ...role, inherits: permittedInherits });
       }
-    });
+    }
   }, [roles, update]);
-
-  const isFixedRole = (name: string): boolean =>
-    AUTH_DEFAULT_ROLES.some((role) => role.name === name);
 
   return (
     <div className={clsx('space-y-4', className)}>
@@ -68,7 +70,12 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
             name={`roles.${idx}.inherits`}
           />
           {!isFixedRole(field.name) && (
-            <Button color="light" onClick={() => remove(idx)}>
+            <Button
+              color="light"
+              onClick={() => {
+                remove(idx);
+              }}
+            >
               Remove
             </Button>
           )}
@@ -76,13 +83,13 @@ function RoleEditorForm({ className, control }: Props): JSX.Element {
       ))}
 
       <Button
-        onClick={() =>
+        onClick={() => {
           append({
             id: authRoleEntityType.generateNewId(),
             name: '',
             comment: '',
-          })
-        }
+          });
+        }}
       >
         Add Role
       </Button>

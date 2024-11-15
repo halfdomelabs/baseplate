@@ -1,7 +1,8 @@
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
 import {
   makeImportAndFilePath,
   nodeProvider,
-  TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -12,10 +13,11 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
+
 import { reactConfigProvider } from '../react-config/index.js';
 import { reactErrorProvider } from '../react-error/index.js';
 import { reactRouterProvider } from '../react-router/index.js';
-import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
 
 const descriptorSchema = z.object({});
 

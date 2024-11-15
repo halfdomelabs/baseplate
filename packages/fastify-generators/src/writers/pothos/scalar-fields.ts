@@ -1,16 +1,17 @@
-import {
-  quot,
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+
+import type { ServiceOutputDtoScalarField } from '@src/types/service-output.js';
+
+import { upperCaseFirst } from '@src/utils/case.js';
+
+import type { PothosWriterOptions } from './options.js';
 
 import {
   getPothosMethodAndTypeForScalar,
   writePothosFieldOptions,
 } from './helpers.js';
-import { PothosWriterOptions } from './options.js';
-import { ServiceOutputDtoScalarField } from '@src/types/serviceOutput.js';
-import { upperCaseFirst } from '@src/utils/case.js';
 
 export function writePothosInputFieldFromDtoScalarField(
   field: ServiceOutputDtoScalarField,

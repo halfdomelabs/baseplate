@@ -1,4 +1,4 @@
-import {
+import type {
   AdminAppConfig,
   AdminCrudEmbeddedInputConfig,
   AdminCrudEmbeddedLocalInputConfig,
@@ -9,14 +9,17 @@ import {
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
   DescriptorWithChildren,
-  EnumUtils,
-  ModelFieldUtils,
   ModelScalarFieldConfig,
-  ModelUtils,
-  adminCrudInputCompilerSpec,
 } from '@halfdomelabs/project-builder-lib';
 
-import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
+import {
+  adminCrudInputCompilerSpec,
+  EnumUtils,
+  ModelFieldUtils,
+  ModelUtils,
+} from '@halfdomelabs/project-builder-lib';
+
+import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
 
 const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
   {
@@ -36,7 +39,7 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
       );
       if (!enumBlock) {
         throw new Error(
-          `Could not find enum type ${fieldConfig.options?.enumType ?? ''}`,
+          `Could not find enum type ${fieldConfig.options.enumType ?? ''}`,
         );
       }
       const fieldName = definitionContainer.nameFromId(definition.modelField);
@@ -94,14 +97,18 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
 
 function getInputType(fieldConfig: ModelScalarFieldConfig): string {
   switch (fieldConfig.type) {
-    case 'boolean':
+    case 'boolean': {
       return 'checked';
-    case 'date':
+    }
+    case 'date': {
       return 'date';
-    case 'dateTime':
+    }
+    case 'dateTime': {
       return 'dateTime';
-    default:
+    }
+    default: {
       return 'text';
+    }
   }
 }
 
@@ -124,14 +131,14 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
         label: definition.label,
         modelField: fieldName,
         type: getInputType(fieldConfig),
-        validation: !definition.validation
-          ? ModelFieldUtils.getModelFieldValidation(
+        validation: definition.validation
+          ? definition.validation
+          : ModelFieldUtils.getModelFieldValidation(
               definitionContainer.definition,
               model.id,
               fieldConfig.id,
               true,
-            )
-          : definition.validation,
+            ),
       };
     },
   };
@@ -189,13 +196,11 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
 const adminCrudPasswordInputCompiler: AdminCrudInputCompiler<AdminCrudPasswordInputConfig> =
   {
     name: 'password',
-    compileInput: (definition) => {
-      return {
-        name: 'password',
-        generator: '@halfdomelabs/react/admin/admin-crud-password-input',
-        label: definition.label,
-      };
-    },
+    compileInput: (definition) => ({
+      name: 'password',
+      generator: '@halfdomelabs/react/admin/admin-crud-password-input',
+      label: definition.label,
+    }),
   };
 
 const builtInCompilers = [

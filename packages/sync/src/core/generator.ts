@@ -1,12 +1,12 @@
-import { BaseGeneratorDescriptor } from './descriptor.js';
-import { GeneratorOutputBuilder } from './generator-output.js';
-import {
+import type { Logger } from '../utils/evented-logger.js';
+import type { BaseGeneratorDescriptor } from './descriptor.js';
+import type { GeneratorOutputBuilder } from './generator-output.js';
+import type {
   Provider,
   ProviderDependency,
-  ProviderType,
   ProviderExport,
+  ProviderType,
 } from './provider.js';
-import { Logger } from '../utils/evented-logger.js';
 
 /**
  * An instance of a generator that has providers for other
@@ -35,18 +35,14 @@ export type InferDependencyProviderMap<T> =
 export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
 
 export interface ParseDescriptorContext {
-  generatorMap: Record<string, GeneratorConfig>;
+  generatorMap: Record<string, GeneratorConfig | undefined>;
   id: string;
   logger: Logger;
 }
 
 export interface GeneratorTask<
-  ExportMap extends ProviderExportMap = ProviderExportMap<
-    Record<string, Provider>
-  >,
-  DependencyMap extends ProviderDependencyMap = ProviderDependencyMap<
-    Record<string, Provider>
-  >,
+  ExportMap extends ProviderExportMap = ProviderExportMap,
+  DependencyMap extends ProviderDependencyMap = ProviderDependencyMap,
 > {
   name: string;
   exports?: ExportMap;

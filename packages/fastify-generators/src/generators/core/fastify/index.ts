@@ -1,3 +1,5 @@
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
   nodeGitIgnoreProvider,
   nodeProvider,
@@ -8,11 +10,10 @@ import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { setupFastifyTypescript } from './setupFastifyTypescript.js';
+import { setupFastifyTypescript } from './setup-fastify-typescript.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -212,7 +213,7 @@ const FastifyGenerator = createGeneratorWithTasks({
               'src/index.ts',
               outputFormatter,
             ]
-              .filter((x) => x)
+              .filter(Boolean)
               .join(' ');
             const startCommand = [
               'node',

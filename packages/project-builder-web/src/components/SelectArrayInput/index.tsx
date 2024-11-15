@@ -1,11 +1,9 @@
+import type React from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
+
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import {
-  Control,
-  FieldPath,
-  FieldValues,
-  useController,
-} from 'react-hook-form';
+import { useController } from 'react-hook-form';
 
 import Button from '../Button';
 import FormError from '../FormError';
@@ -27,7 +25,7 @@ function SelectArrayInput({
   onChange,
   uniqueValues,
   value: values = [],
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const availableOptions = uniqueValues
     ? options.filter((o) => !values.includes(o.value))
     : options;
@@ -57,16 +55,20 @@ function SelectArrayInput({
           )
         </div>
       ))}
-      <div>{!values.length && 'No values present'}</div>
+      <div>{values.length === 0 && 'No values present'}</div>
       <div className="flex flex-row space-x-4">
         <SelectInput
           className="w-full"
           options={availableOptions}
-          onChange={(newValue) => setSelectedValue(newValue)}
+          onChange={(newValue) => {
+            setSelectedValue(newValue);
+          }}
           value={selectedValue}
         />
         <Button
-          onClick={() => selectedValue && onChange([...values, selectedValue])}
+          onClick={() => {
+            if (selectedValue) onChange([...values, selectedValue]);
+          }}
         >
           Add
         </Button>
@@ -85,7 +87,7 @@ SelectArrayInput.Labelled = function SelectArrayInputLabelled({
   className,
   error,
   ...rest
-}: SelectArrayInputLabelledProps): JSX.Element {
+}: SelectArrayInputLabelledProps): React.JSX.Element {
   return (
     <div className={className}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -106,7 +108,7 @@ SelectArrayInput.LabelledController =
     name,
     control,
     ...rest
-  }: SelectArrayInputLabelledControllerProps<T>): JSX.Element {
+  }: SelectArrayInputLabelledControllerProps<T>): React.JSX.Element {
     const {
       field,
       fieldState: { error },

@@ -1,16 +1,19 @@
-import { ForwardedRef } from 'react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type { ForwardedRef } from 'react';
+import type React from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { CheckboxField } from '../CheckboxField/CheckboxField.js';
-import { FormItem } from '../FormItem/FormItem.js';
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import {
+import type {
   AddOptionRequiredFields,
   FieldProps,
   MultiSelectOptionProps,
 } from '@src/types/form.js';
+
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { notEmpty } from '@src/utils/array.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+import { CheckboxField } from '../CheckboxField/CheckboxField.js';
+import { FormItem } from '../FormItem/FormItem.js';
 
 export interface MultiCheckboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,
@@ -40,7 +43,7 @@ const MultiCheckboxFieldRoot = genericForwardRef(function MultiCheckboxField<
     disabled,
   }: MultiCheckboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLDivElement>,
-): JSX.Element {
+): React.JSX.Element {
   const selectedOptions = value
     ?.map((val) => options.find((option) => getOptionValue(option) === val))
     .filter(notEmpty);
@@ -120,7 +123,7 @@ const MultiCheckboxFieldController = genericForwardRef(
     }: MultiCheckboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
     ref: ForwardedRef<HTMLDivElement>,
-  ): JSX.Element {
+  ): React.JSX.Element {
     const {
       field,
       fieldState: { error },

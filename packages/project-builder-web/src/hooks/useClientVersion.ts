@@ -1,4 +1,5 @@
-import { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+
 import React from 'react';
 
 export interface UseClientVersionResult {

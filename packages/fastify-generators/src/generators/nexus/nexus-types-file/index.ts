@@ -1,20 +1,22 @@
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
 import {
-  TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithTasks,
+  createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
 import * as R from 'ramda';
 import { z } from 'zod';
 
-import { nexusSchemaProvider } from '../nexus/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+
+import { nexusSchemaProvider } from '../nexus/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

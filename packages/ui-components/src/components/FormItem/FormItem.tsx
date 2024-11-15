@@ -1,9 +1,11 @@
-import * as LabelPrimitive from '@radix-ui/react-label';
+import type * as LabelPrimitive from '@radix-ui/react-label';
+
 import { Slot } from '@radix-ui/react-slot';
 import * as React from 'react';
 
-import { Label } from '../Label/Label.js';
 import { cn } from '@src/utils';
+
+import { Label } from '../Label/Label.js';
 
 /* eslint-disable react/prop-types */
 
@@ -94,9 +96,7 @@ const FormControl = React.forwardRef<
       id={formItemId}
       aria-labelledby={formLabelId}
       aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
+        error ? `${formDescriptionId} ${formMessageId}` : formDescriptionId
       }
       aria-invalid={!!error}
       {...props}

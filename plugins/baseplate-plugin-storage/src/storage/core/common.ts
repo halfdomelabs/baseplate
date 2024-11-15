@@ -11,6 +11,7 @@ export default createPlatformPluginExport({
   },
   exports: {},
   initialize: ({ config }, { pluginId }) => {
-    return config.registerSchema(pluginId, storagePluginDefinitionSchema);
+    config.registerSchema(pluginId, storagePluginDefinitionSchema);
+    return {};
   },
 });

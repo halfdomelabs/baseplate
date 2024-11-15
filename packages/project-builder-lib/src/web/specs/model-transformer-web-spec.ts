@@ -1,12 +1,11 @@
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
+import type React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 
-import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import {
-  PluginSpecImplementation,
-  createPluginSpec,
-} from '@src/plugins/spec/types.js';
-import { ModelConfig, TransformerConfig } from '@src/schema/index.js';
+import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+import type { ModelConfig, TransformerConfig } from '@src/schema/index.js';
+
+import { createPluginSpec } from '@src/plugins/spec/types.js';
 
 export interface ModelTransformerWebFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -68,16 +67,16 @@ export interface ModelTransformerWebSpec extends PluginSpecImplementation {
 
 export function createModelTransformerWebImplementation(): ModelTransformerWebSpec {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const transformers: Record<string, ModelTransformerWebConfig<any>> = {};
+  const transformers = new Map<string, ModelTransformerWebConfig<any>>();
 
   return {
     registerTransformerWebConfig(transformer) {
-      if (transformers[transformer.name]) {
+      if (transformers.has(transformer.name)) {
         throw new Error(
           `Model transformer with name ${transformer.name} is already registered`,
         );
       }
-      transformers[transformer.name] = transformer;
+      transformers.set(transformer.name, transformer);
     },
     getTransformerWebConfig(name, builtInTransformers = []) {
       const builtInTransformer = builtInTransformers.find(
@@ -86,14 +85,14 @@ export function createModelTransformerWebImplementation(): ModelTransformerWebSp
       if (builtInTransformer) {
         return builtInTransformer as ModelTransformerWebConfig;
       }
-      const transformer = transformers[name];
+      const transformer = transformers.get(name);
       if (!transformer) {
         throw new Error(`Unable to find transformer with name ${name}`);
       }
       return transformer as ModelTransformerWebConfig;
     },
     getTransformerWebConfigs(builtInTransformers = []) {
-      return [...builtInTransformers, ...Object.values(transformers)];
+      return [...builtInTransformers, ...transformers.values()];
     },
   };
 }

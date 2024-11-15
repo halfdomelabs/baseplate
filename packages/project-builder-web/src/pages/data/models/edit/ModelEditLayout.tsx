@@ -1,12 +1,14 @@
-import { ModelUtils, modelEntityType } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { modelEntityType, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { NavigationTabs } from '@halfdomelabs/ui-components';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
-
-import { ModelHeaderBar } from './ModelHeaderBar';
 import { NotFoundCard } from 'src/components';
 
-export function ModelEditLayout(): JSX.Element {
+import { ModelHeaderBar } from './ModelHeaderBar';
+
+export function ModelEditLayout(): React.JSX.Element {
   const { uid } = useParams<'uid'>();
   const { definition } = useProjectDefinition();
 

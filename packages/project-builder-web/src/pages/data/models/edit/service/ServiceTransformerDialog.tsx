@@ -1,5 +1,7 @@
-import { TransformerConfig } from '@halfdomelabs/project-builder-lib';
-import { ModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
+import type { TransformerConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
+import type React from 'react';
+
 import { Dialog, useControlledState } from '@halfdomelabs/ui-components';
 
 import { ServiceTransformerForm } from './ServiceTransformerForm';
@@ -22,7 +24,7 @@ export function ServiceTransformerDialog({
   open,
   onOpenChange,
   onUpdate,
-}: ServiceTransformerDialogProps): JSX.Element {
+}: ServiceTransformerDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

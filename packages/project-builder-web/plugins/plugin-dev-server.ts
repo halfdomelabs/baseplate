@@ -1,9 +1,13 @@
-import chokidar, { FSWatcher } from 'chokidar';
+import type { FSWatcher } from 'chokidar';
+import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { Plugin, ViteDevServer } from 'vite';
+
+/* eslint-disable import-x/no-extraneous-dependencies */
+
+import chokidar from 'chokidar';
 import mime from 'mime';
 import fs from 'node:fs';
-import { IncomingMessage, ServerResponse } from 'node:http';
 import path from 'node:path';
-import { ViteDevServer, Plugin } from 'vite';
 
 /**
  * Safely concatenate two paths and prevent directory traversal attacks.
@@ -32,19 +36,21 @@ export function pathSafeJoin(
  */
 export function pluginDevServerPlugin(): Plugin {
   // find all available plugins in the workspace
-  const pluginPackageLocation = path.resolve(__dirname, '../../../plugins');
+  const pluginPackageLocation = path.resolve(
+    import.meta.dirname,
+    '../../../plugins',
+  );
   const plugins = fs
     .readdirSync(pluginPackageLocation)
-    .filter((file) => {
-      return (
+    .filter(
+      (file) =>
         fs.statSync(path.join(pluginPackageLocation, file)).isDirectory() &&
-        fs.existsSync(path.join(pluginPackageLocation, file, 'dist', 'web'))
-      );
-    })
+        fs.existsSync(path.join(pluginPackageLocation, file, 'dist', 'web')),
+    )
     .map((file) => {
       const pluginLocation = path.join(pluginPackageLocation, file);
       const packageJson = JSON.parse(
-        fs.readFileSync(path.join(pluginLocation, 'package.json'), 'utf-8'),
+        fs.readFileSync(path.join(pluginLocation, 'package.json'), 'utf8'),
       ) as { name: string };
       return {
         id: packageJson.name.replace('@', '').replace(/\//g, '_'),
@@ -66,9 +72,9 @@ export function pluginDevServerPlugin(): Plugin {
     },
     configureServer(server: ViteDevServer) {
       // watch plugin folders for changes
-      const pluginAssetPaths = plugins.map((plugin) => {
-        return path.join(plugin.location, 'dist', 'web');
-      });
+      const pluginAssetPaths = plugins.map((plugin) =>
+        path.join(plugin.location, 'dist', 'web'),
+      );
 
       if (!watcher) {
         watcher = chokidar.watch(pluginAssetPaths, {
@@ -94,11 +100,13 @@ export function pluginDevServerPlugin(): Plugin {
       server.middlewares.use(
         (req: IncomingMessage, res: ServerResponse, next: () => void) => {
           if (req.url?.startsWith('/api/plugins/')) {
-            const urlMatch = req.url.match(
-              /^\/api\/plugins\/([^/]+)\/([^/]+)\/web\/([^?]*)(.*)$/,
-            );
+            const urlMatch =
+              /^\/api\/plugins\/([^/]+)\/([^/]+)\/web\/([^?]*)(.*)$/.exec(
+                req.url,
+              );
             if (urlMatch) {
-              const [, , pluginId, assetPath] = urlMatch;
+              const pluginId = urlMatch[2];
+              const assetPath = urlMatch[3];
 
               const pluginMatch = plugins.find((plugin) =>
                 pluginId.startsWith(plugin.id),

@@ -1,9 +1,11 @@
-import { program } from 'commander';
-import fs from 'fs/promises';
-import { resolve } from 'path';
+#!/usr/bin/env node
 
+import type { TypescriptMorpher } from 'lib/types.js';
+
+import { program } from 'commander';
 import { runMorpher } from 'lib/runner.js';
-import { TypescriptMorpher } from 'lib/types.js';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 interface Options {
   dryRun: boolean;
@@ -11,7 +13,7 @@ interface Options {
 }
 
 async function getTransformers(): Promise<TypescriptMorpher[]> {
-  const files = await fs.readdir(resolve('./morphers'));
+  const files = await fs.readdir(path.resolve('./morphers'));
   const transformers = await Promise.all(
     files.map(async (file) => {
       const module = (await import(`../morphers/${file}`)) as {
@@ -37,39 +39,41 @@ async function main(): Promise<void> {
     )
     .argument('<transformer>', 'Transformer to run')
     .argument('<path>', 'File or directory to run migration on')
-    .action(async (transformer: string, path: string, options: Options) => {
-      const transformers = await getTransformers();
-      const selectedTransformer = transformers.find(
-        (t) => t.name === transformer,
-      );
-
-      if (!selectedTransformer) {
-        throw new Error(
-          `Could not find transformer ${transformer}. Available transformers:
-          \n${transformers.map((t) => `+ ${t.name}`).join('\n')}\n`,
+    .action(
+      async (transformer: string, migrationPath: string, options: Options) => {
+        const transformers = await getTransformers();
+        const selectedTransformer = transformers.find(
+          (t) => t.name === transformer,
         );
-      }
 
-      const fullPath = resolve(process.cwd(), path);
+        if (!selectedTransformer) {
+          throw new Error(
+            `Could not find transformer ${transformer}. Available transformers:
+          \n${transformers.map((t) => `+ ${t.name}`).join('\n')}\n`,
+          );
+        }
 
-      const extractedOptions = options.options.reduce((acc, option) => {
-        const [key, ...values] = option.split('=');
-        const value = values.join('=');
-        return { ...acc, [key]: value };
-      }, {});
+        const fullPath = path.resolve(process.cwd(), migrationPath);
 
-      return runMorpher(
-        fullPath,
-        selectedTransformer,
-        extractedOptions,
-        options,
-      );
-    });
+        const extractedOptions: Record<string, string> = {};
+        for (const option of options.options) {
+          const [key, ...values] = option.split('=');
+          extractedOptions[key] = values.join('=');
+        }
+
+        return runMorpher(
+          fullPath,
+          selectedTransformer,
+          extractedOptions,
+          options,
+        );
+      },
+    );
 
   await program.parseAsync();
 }
 
-main().catch((err) => {
+await main().catch((err: unknown) => {
   console.error(err);
   process.exit(1);
 });

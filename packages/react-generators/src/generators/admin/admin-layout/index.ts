@@ -5,8 +5,8 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -33,6 +33,14 @@ export const adminLayoutProvider =
   createProviderType<AdminLayoutProvider>('admin-layout');
 
 const ICON_CATEGORY_REGEX = /^[A-Z][a-z]*/;
+
+function getIconImport(iconName: string): string {
+  const category = ICON_CATEGORY_REGEX.exec(iconName);
+  if (!category) {
+    throw new Error(`Invalid icon name: ${iconName}`);
+  }
+  return `react-icons/${category[0].toLowerCase()}`;
+}
 
 const AdminLayoutGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -67,14 +75,6 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
         importMappers: [reactComponents, authHooks],
       },
     );
-
-    function getIconImport(iconName: string): string {
-      const category = ICON_CATEGORY_REGEX.exec(iconName);
-      if (!category) {
-        throw new Error(`Invalid icon name: ${iconName}`);
-      }
-      return `react-icons/${category[0].toLowerCase()}`;
-    }
 
     const navEntries = links.map((link) =>
       TypescriptCodeUtils.mergeExpressionsAsJsxElement('Sidebar.LinkItem', {

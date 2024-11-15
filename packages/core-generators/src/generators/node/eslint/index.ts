@@ -1,13 +1,14 @@
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
+  createGeneratorWithChildren,
+  createNonOverwriteableMap,
   createProviderType,
   writeFormattedAction,
-  createGeneratorWithChildren,
-  NonOverwriteableMap,
-  createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
 
-import { generateConfig } from './generateConfig.js';
 import { nodeProvider } from '../node/index.js';
+import { generateConfig } from './generate-config.js';
 
 interface EslintConfig {
   react?: boolean;

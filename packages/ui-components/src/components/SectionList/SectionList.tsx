@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { cn } from '@src/utils';
 
 interface SectionListProps {
@@ -8,7 +10,7 @@ interface SectionListProps {
 export function SectionList({
   className,
   children,
-}: SectionListProps): JSX.Element {
+}: SectionListProps): React.JSX.Element {
   return <div className={cn('divide-y', className)}>{children}</div>;
 }
 
@@ -20,7 +22,7 @@ interface SectionListSectionProps {
 SectionList.Section = function SectionListSection({
   className,
   children,
-}: SectionListSectionProps): JSX.Element {
+}: SectionListSectionProps): React.JSX.Element {
   return (
     <section className={cn('flex gap-8 py-6', className)}>{children}</section>
   );
@@ -34,7 +36,7 @@ interface SectionListSectionHeaderProps {
 SectionList.SectionHeader = function SectionListSectionHeader({
   className,
   children,
-}: SectionListSectionHeaderProps): JSX.Element {
+}: SectionListSectionHeaderProps): React.JSX.Element {
   return <div className={cn('w-[320px] space-y-2', className)}>{children}</div>;
 };
 
@@ -46,7 +48,7 @@ interface SectionListSectionTitleProps {
 SectionList.SectionTitle = function SectionListSectionTitle({
   className,
   children,
-}: SectionListSectionTitleProps): JSX.Element {
+}: SectionListSectionTitleProps): React.JSX.Element {
   return <h3 className={className}>{children}</h3>;
 };
 
@@ -58,7 +60,7 @@ interface SectionListSectionDescriptionProps {
 SectionList.SectionDescription = function SectionListSectionDescription({
   className,
   children,
-}: SectionListSectionDescriptionProps): JSX.Element {
+}: SectionListSectionDescriptionProps): React.JSX.Element {
   return (
     <div className={cn('text-sm text-muted-foreground', className)}>
       {children}
@@ -74,6 +76,6 @@ interface SectionListSectionContentProps {
 SectionList.SectionContent = function SectionListSectionContent({
   className,
   children,
-}: SectionListSectionContentProps): JSX.Element {
+}: SectionListSectionContentProps): React.JSX.Element {
   return <div className={cn('flex-1', className)}>{children}</div>;
 };

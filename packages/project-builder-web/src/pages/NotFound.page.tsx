@@ -1,8 +1,9 @@
-import { RouteObject } from 'react-router-dom';
+import type React from 'react';
+import type { RouteObject } from 'react-router-dom';
 
 import { NotFoundCard } from 'src/components';
 
-function NotFoundPage(): JSX.Element {
+function NotFoundPage(): React.JSX.Element {
   return <NotFoundCard />;
 }
 

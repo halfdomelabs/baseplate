@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
+import { createEventedLogger } from '@src/utils/index.js';
+
+import { createProviderType } from '../provider.js';
 import {
   buildEntryDependencyMapRecursive,
   buildTaskDependencyMap,
@@ -8,8 +11,6 @@ import {
   buildTestGeneratorEntry,
   buildTestGeneratorTaskEntry,
 } from './tests/factories.test-helper.js';
-import { createProviderType } from '../provider.js';
-import { createEventedLogger } from '@src/utils/index.js';
 
 const providerOne = createProviderType('providerOne');
 const providerTwo = createProviderType('providerTwo');

@@ -1,12 +1,14 @@
-import { modelEntityType } from '@halfdomelabs/project-builder-lib';
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
-import { ModelEditLayout } from './ModelEditLayout';
-import ModelEditModelPage from './model/model.page';
-import ModelEditSchemaPage from './schema/schema.page';
-import ModelEditServicePage from './service/service.page';
+import { modelEntityType } from '@halfdomelabs/project-builder-lib';
+
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createCrumbFromUid, createRouteCrumb } from '@src/types/routes';
+
+import ModelEditModelPage from './model/model.page';
+import { ModelEditLayout } from './ModelEditLayout';
+import ModelEditSchemaPage from './schema/schema.page';
+import ModelEditServicePage from './service/service.page';
 
 export const ModelEditRoutes: RouteObject = {
   path: 'edit/:uid/*',

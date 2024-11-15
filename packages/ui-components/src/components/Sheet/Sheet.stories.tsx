@@ -1,9 +1,11 @@
-import { DialogProps } from '@radix-ui/react-dialog';
+import type { DialogProps } from '@radix-ui/react-dialog';
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
+
 import { useState } from 'react';
 
-import { Sheet } from './Sheet.js';
 import { Button } from '../Button/Button.js';
+import { Sheet } from './Sheet.js';
 
 const meta = {
   component: Sheet,
@@ -14,7 +16,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function SheetContainer(args: Omit<DialogProps, 'children'>): JSX.Element {
+function SheetContainer(
+  args: Omit<DialogProps, 'children'>,
+): React.JSX.Element {
   return (
     <Sheet {...args}>
       <Sheet.Trigger asChild>
@@ -48,13 +52,25 @@ export const Default: Story = {
 
 function ControlledSheetContainer(
   args: Omit<DialogProps, 'children' | 'open'>,
-): JSX.Element {
+): React.JSX.Element {
   const [open, setOpen] = useState(false);
 
   return (
     <div>
-      <Button onClick={() => setOpen(true)}>Open sheet</Button>
-      <Sheet {...args} open={open} onOpenChange={(op) => setOpen(op)}>
+      <Button
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        Open sheet
+      </Button>
+      <Sheet
+        {...args}
+        open={open}
+        onOpenChange={(op) => {
+          setOpen(op);
+        }}
+      >
         <Sheet.Content>
           <p>This is the body content</p>
           <Sheet.Footer>

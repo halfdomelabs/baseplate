@@ -4,9 +4,6 @@ import React, { useId, useMemo, useState } from 'react';
 import { MdCheck, MdClose } from 'react-icons/md';
 import { RxCaretSort } from 'react-icons/rx';
 
-import { Badge } from '../Badge/Badge';
-import { Command } from '../Command/Command';
-import { Popover } from '../Popover/Popover';
 import { useControlledState } from '@src/hooks';
 import {
   inputVariants,
@@ -15,7 +12,9 @@ import {
 } from '@src/styles';
 import { cn, mergeRefs } from '@src/utils';
 
-/* eslint-disable react/prop-types */
+import { Badge } from '../Badge/Badge';
+import { Command } from '../Command/Command';
+import { Popover } from '../Popover/Popover';
 
 interface MultiComboboxContextValue {
   selectedValues: MultiComboboxOption[];
@@ -53,7 +52,7 @@ function MultiComboboxRoot({
   value,
   onChange,
   disabled,
-}: MultiComboboxProps): JSX.Element {
+}: MultiComboboxProps): React.JSX.Element {
   const [selectedValues, setSelectedValues] = useControlledState(
     value,
     onChange,

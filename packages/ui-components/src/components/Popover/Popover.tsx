@@ -1,7 +1,7 @@
 'use client';
 
 import * as PopoverPrimitive from '@radix-ui/react-popover';
-import * as React from 'react';
+import React from 'react';
 
 import { cn } from '@src/utils';
 
@@ -11,11 +11,9 @@ import { cn } from '@src/utils';
  * https://ui.shadcn.com/docs/components/popover
  */
 
-/* eslint-disable react/prop-types */
-
-const PopoverRoot = (props: PopoverPrimitive.PopoverProps): JSX.Element => (
-  <PopoverPrimitive.Root {...props} />
-);
+const PopoverRoot = (
+  props: PopoverPrimitive.PopoverProps,
+): React.JSX.Element => <PopoverPrimitive.Root {...props} />;
 
 const PopoverTrigger = PopoverPrimitive.Trigger;
 

@@ -1,6 +1,6 @@
+import type { ImportMap, ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
-  ImportMap,
-  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeUtils,

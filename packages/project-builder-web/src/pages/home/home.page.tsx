@@ -1,7 +1,9 @@
+import type React from 'react';
+
 import { Button, Card } from '@halfdomelabs/ui-components';
 import { Link } from 'react-router-dom';
 
-function HomePage(): JSX.Element {
+function HomePage(): React.JSX.Element {
   return (
     <div className="flex-1 bg-white">
       <div className="mx-auto w-[40rem] space-y-4 p-4">

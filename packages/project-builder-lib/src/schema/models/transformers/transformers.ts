@@ -1,6 +1,7 @@
+import { zWithPlugins } from '@src/plugins/index.js';
+
 import { modelTransformerSpec } from './model-transformer-spec.js';
 import { baseTransformerSchema } from './types.js';
-import { zWithPlugins } from '@src/plugins/index.js';
 
 export const transformerSchema = zWithPlugins<typeof baseTransformerSchema>(
   (plugins, data) => {

@@ -1,7 +1,6 @@
+import { createTypescriptMorpher } from 'lib/types.js';
 import { ts } from 'ts-morph';
 import z from 'zod';
-
-import { createTypescriptMorpher } from 'lib/types.js';
 
 export default createTypescriptMorpher({
   name: 'move-import-reference',
@@ -28,7 +27,7 @@ export default createTypescriptMorpher({
         sourceFile.getProject().compilerOptions.get(),
         ts.sys,
       ).resolvedModule?.resolvedFileName ?? fromImportPackage;
-    sourceFile.getImportDeclarations().forEach((importDeclaration) => {
+    for (const importDeclaration of sourceFile.getImportDeclarations()) {
       const moduleSpecifier = importDeclaration.getModuleSpecifierValue();
       const resolvedModuleSpecifier =
         ts.resolveModuleName(
@@ -39,19 +38,19 @@ export default createTypescriptMorpher({
         ).resolvedModule?.resolvedFileName ?? moduleSpecifier;
       if (resolvedModuleSpecifier === resolvedTargetImport) {
         let hasOtherImports = false;
-        importDeclaration.getNamedImports().forEach((namedImport) => {
+        for (const namedImport of importDeclaration.getNamedImports()) {
           if (namedImport.getName() === fromImportName) {
             namedImport.remove();
             hasImport = true;
           } else {
             hasOtherImports = true;
           }
-        });
+        }
         if (!hasOtherImports) {
           importDeclaration.remove();
         }
       }
-    });
+    }
 
     // add the named import to the toImportPackage
     if (hasImport) {

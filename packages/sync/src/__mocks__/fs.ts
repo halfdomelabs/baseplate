@@ -1,3 +1,1 @@
-import { fs } from 'memfs';
-
-export default fs;
+export { fs as default } from 'memfs';

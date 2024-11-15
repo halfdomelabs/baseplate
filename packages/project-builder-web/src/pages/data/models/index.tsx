@@ -1,9 +1,10 @@
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
-import ModelListPage from './ModelList.page';
-import { ModelEditRoutes } from './edit/_routes';
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createRouteCrumb } from '@src/types/routes';
+
+import { ModelEditRoutes } from './edit/_routes';
+import ModelListPage from './ModelList.page';
 
 export const ModelRoutes: RouteObject = {
   path: 'models/*',

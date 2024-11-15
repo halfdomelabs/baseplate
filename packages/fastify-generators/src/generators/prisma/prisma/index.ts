@@ -1,8 +1,12 @@
-import {
+import type {
   ImportMapper,
+  TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+import type { formatSchema } from '@prisma/internals';
+
+import {
   nodeProvider,
   projectProvider,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -10,25 +14,25 @@ import {
   createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
-import type { formatSchema } from '@prisma/internals';
-import { createRequire } from 'module';
+import { createRequire } from 'node:module';
 import { z } from 'zod';
 
-import { configServiceProvider } from '@src/generators/core/config-service/index.js';
-import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
-import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';
-import {
+import type {
   PrismaOutputEnum,
   PrismaOutputModel,
-} from '@src/types/prismaOutput.js';
-import { ServiceOutputEnum } from '@src/types/serviceOutput.js';
-import { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js';
+} from '@src/types/prisma-output.js';
+import type { ServiceOutputEnum } from '@src/types/service-output.js';
+import type { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js';
+import type { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types.js';
+
+import { configServiceProvider } from '@src/generators/core/config-service/index.js';
+import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';
+import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import {
   createPrismaSchemaDatasourceBlock,
   createPrismaSchemaGeneratorBlock,
   PrismaSchemaFile,
 } from '@src/writers/prisma-schema/schema.js';
-import { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types.js';
 
 const descriptorSchema = z.object({
   defaultPort: z.number().default(5432),

@@ -24,7 +24,7 @@ export function computeRelativePath(fromPath: string, toPath: string): string {
 
   // Add the necessary number of '../' to go up the directory hierarchy
   const numParentDirs = fromSegments.length;
-  const parentDirs = Array<string>(numParentDirs).fill('..');
+  const parentDirs = Array.from({ length: numParentDirs }).fill('..');
 
   // Construct the relative path
   const relativePath = [...parentDirs, ...toSegments].join('/');

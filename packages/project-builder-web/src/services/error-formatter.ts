@@ -1,5 +1,6 @@
-import { logError } from './error-logger';
 import { UserVisibleError } from 'src/utils/error';
+
+import { logError } from './error-logger';
 
 function getFormattedErrorSuffix(error: unknown): string {
   if (error instanceof UserVisibleError) {

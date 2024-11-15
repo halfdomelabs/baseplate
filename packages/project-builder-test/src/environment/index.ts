@@ -1,15 +1,13 @@
-import {
-  ExecaError,
-  Options as ExecaOptions,
-  execa,
-  parseCommandString,
-} from 'execa';
+import type { ExecaError, Options as ExecaOptions } from 'execa';
+
+import { execa, parseCommandString } from 'execa';
 import path from 'node:path';
 import ora, { oraPromise } from 'ora';
 import { DockerComposeEnvironment } from 'testcontainers';
 
+import type { SetupEnvironmentHelpers, TestRunnerContext } from '@src/types.js';
+
 import { HandledError } from '@src/errors/handled-error.js';
-import { SetupEnvironmentHelpers, TestRunnerContext } from '@src/types.js';
 import { logger } from '@src/utils/console.js';
 import { safeKillProcessGroup } from '@src/utils/kill-process-group.js';
 import { shouldEnableOra } from '@src/utils/ora.js';
@@ -58,7 +56,7 @@ export function createEnvironmentHelpers({
       });
       const execAOptions: ExecaOptions = {
         cwd: path.join(projectDirectoryPath, options.cwd ?? ''),
-        timeout: options?.timeout ?? 30000,
+        timeout: options.timeout ?? 30_000,
         cancelSignal: controller.signal,
       };
       try {
@@ -78,7 +76,7 @@ export function createEnvironmentHelpers({
                 extendEnv: true,
                 env: { CI: 'true' },
               },
-        ).catch((err) => {
+        ).catch((err: unknown) => {
           if (isExitingProcess()) {
             spinner.fail(`Command aborted before finishing: ${command}`);
             throw new HandledError();
@@ -114,7 +112,7 @@ export function createEnvironmentHelpers({
     async startBackgroundCommand(command, options = {}): Promise<void> {
       const execAOptions: ExecaOptions = {
         cwd: path.join(projectDirectoryPath, options.cwd ?? ''),
-        forceKillAfterDelay: 10000,
+        forceKillAfterDelay: 10_000,
         detached: true,
         reject: false,
       };
@@ -140,18 +138,14 @@ export function createEnvironmentHelpers({
         await safeKillProcessGroup(childProcess);
         if (showOutput && !streamCommandOutput) {
           const all = await childProcess
-            .then((result) => {
-              return result.all;
-            })
-            .catch((err) => {
-              return (err as ExecaError).all;
-            });
+            .then((result) => result.all)
+            .catch((err: unknown) => (err as ExecaError).all);
           logger.log(all);
         }
       });
 
       if (options.waitForURL) {
-        const { urls, timeout = 10000 } = options.waitForURL;
+        const { urls, timeout = 10_000 } = options.waitForURL;
         const urlArray = Array.isArray(urls) ? urls : [urls];
         await oraPromise(
           Promise.all(urlArray.map((url) => waitForHealthyUrl(url, timeout))),

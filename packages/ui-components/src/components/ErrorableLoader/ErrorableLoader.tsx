@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { ErrorDisplay } from '../ErrorDisplay/ErrorDisplay.js';
 import { Loader } from '../Loader/Loader.js';
 
@@ -28,7 +30,7 @@ export function ErrorableLoader({
   error,
   header,
   actions,
-}: ErrorableLoaderProps): JSX.Element {
+}: ErrorableLoaderProps): React.JSX.Element {
   if (!error) {
     return <Loader className={className} />;
   }

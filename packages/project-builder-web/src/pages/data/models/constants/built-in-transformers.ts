@@ -13,7 +13,7 @@ export const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
       id: modelTransformerEntityType.generateNewId(),
       type: 'password',
     }),
-    allowNewTransformer(projectContainer, modelConfig) {
+    allowNewTransformer(_, modelConfig) {
       return (
         !modelConfig.service?.transformers?.some(
           (t) => t.type === 'password',

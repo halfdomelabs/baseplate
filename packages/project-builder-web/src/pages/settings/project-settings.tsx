@@ -1,3 +1,6 @@
+import type React from 'react';
+import type { z } from 'zod';
+
 import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
@@ -7,11 +10,10 @@ import {
 import { InputField, SectionList, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import { z } from 'zod';
-
-import FormActionBar from '@src/components/FormActionBar';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
+
+import FormActionBar from '@src/components/FormActionBar';
 
 const validationSchema = projectDefinitionSchema.pick({
   name: true,
@@ -22,7 +24,7 @@ const validationSchema = projectDefinitionSchema.pick({
 
 type FormData = z.infer<typeof validationSchema>;
 
-function ProjectSettingsPage(): JSX.Element {
+function ProjectSettingsPage(): React.JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const form = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
@@ -42,9 +44,9 @@ function ProjectSettingsPage(): JSX.Element {
         Object.assign(draftConfig, data);
       });
       toast.success('Successfully saved configuration!');
-    } catch (err) {
-      logError(err);
-      toast.error(formatError(err));
+    } catch (error) {
+      logError(error);
+      toast.error(formatError(error));
     }
   };
 

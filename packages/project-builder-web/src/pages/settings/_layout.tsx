@@ -1,7 +1,9 @@
+import type React from 'react';
+
 import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
 import { NavLink, Outlet } from 'react-router-dom';
 
-function SettingsLayout(): JSX.Element {
+function SettingsLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="h-full flex-1">
       <SidebarLayout.Sidebar className="space-y-4" width="sm">

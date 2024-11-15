@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { MdDelete, MdEdit } from 'react-icons/md';
 
-import { RecordView } from './RecordView.js';
 import { Button } from '../Button/Button.js';
+import { RecordView } from './RecordView.js';
 
 const meta = {
   component: RecordView,

@@ -1,9 +1,9 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 
-import { ServiceOutputDtoField } from '@src/types/serviceOutput.js';
+import type { ServiceOutputDtoField } from '@src/types/service-output.js';
 
 export interface PrismaDataTransformInputField {
   type: TypescriptCodeExpression;

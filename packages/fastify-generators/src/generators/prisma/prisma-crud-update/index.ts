@@ -1,37 +1,39 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import type {
+  PrismaDataTransformer,
+  PrismaDataTransformerOptions,
+} from '@src/providers/prisma/prisma-data-transformable.js';
+import type { ServiceOutputMethod } from '@src/types/service-output.js';
+
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
+import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
+import { prismaToServiceOutputDto } from '@src/types/service-output.js';
+import { notEmpty } from '@src/utils/array.js';
+
+import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
 
 import {
   getDataInputTypeBlock,
   getDataMethodContextRequired,
   getDataMethodDataExpressions,
   getDataMethodDataType,
-  PrismaDataMethodOptions,
   wrapWithApplyDataPipe,
 } from '../_shared/crud-method/data-method.js';
 import {
   getPrimaryKeyDefinition,
   getPrimaryKeyExpressions,
 } from '../_shared/crud-method/primary-key-input.js';
-import { prismaOutputProvider } from '../prisma/index.js';
 import { prismaCrudServiceProvider } from '../prisma-crud-service/index.js';
 import { prismaUtilsProvider } from '../prisma-utils/index.js';
-import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
-import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
-import {
-  PrismaDataTransformer,
-  PrismaDataTransformerOptions,
-} from '@src/providers/prisma/prisma-data-transformable.js';
-import {
-  prismaToServiceOutputDto,
-  ServiceOutputMethod,
-} from '@src/types/serviceOutput.js';
-import { notEmpty } from '@src/utils/array.js';
+import { prismaOutputProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

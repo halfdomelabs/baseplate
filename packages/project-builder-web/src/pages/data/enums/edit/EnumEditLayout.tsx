@@ -1,14 +1,16 @@
+import type React from 'react';
+
 import {
   EnumUtils,
   modelEnumEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Outlet, useParams } from 'react-router-dom';
-
-import { EnumHeaderBar } from './components/EnumHeaderBar';
 import { NotFoundCard } from 'src/components';
 
-export function EnumEditLayout(): JSX.Element {
+import { EnumHeaderBar } from './components/EnumHeaderBar';
+
+export function EnumEditLayout(): React.JSX.Element {
   const { uid } = useParams<'uid'>();
   const { definition } = useProjectDefinition();
 

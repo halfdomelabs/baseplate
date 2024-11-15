@@ -1,15 +1,16 @@
 import {
-  FeatureUtils,
-  PluginUtils,
   adminAppEntryType,
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
+  FeatureUtils,
+  PluginUtils,
   webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
-import { StoragePluginDefinition } from './schema/plugin-definition';
-import { StorageModuleDescriptor } from '@src/generators/fastify';
+import type { StorageModuleDescriptor } from '@src/generators/fastify';
+
+import type { StoragePluginDefinition } from './schema/plugin-definition';
 
 export default createPlatformPluginExport({
   dependencies: {
@@ -22,10 +23,10 @@ export default createPlatformPluginExport({
       pluginId,
       appType: backendAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const storage = PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+        const storage = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
-        );
+        ) as StoragePluginDefinition;
         const featurePath = FeatureUtils.getFeatureByIdOrThrow(
           projectDefinition,
           storage.featureRef,
@@ -74,10 +75,10 @@ export default createPlatformPluginExport({
         if (!appDefinition.includeUploadComponents) {
           return;
         }
-        const storage = PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+        const storage = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
-        );
+        ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({
           $uploadComponents: {
@@ -94,10 +95,10 @@ export default createPlatformPluginExport({
       pluginId,
       appType: adminAppEntryType,
       compile: ({ projectDefinition, definitionContainer, appCompiler }) => {
-        const storage = PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
+        const storage = PluginUtils.configByIdOrThrow(
           projectDefinition,
           pluginId,
-        );
+        ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({
           $uploadComponents: {

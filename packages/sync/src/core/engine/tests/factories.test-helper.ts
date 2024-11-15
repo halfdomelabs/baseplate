@@ -1,7 +1,9 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { vi } from 'vitest';
 
-import { GeneratorEntry, GeneratorTaskEntry } from '../generator-builder.js';
+import type {
+  GeneratorEntry,
+  GeneratorTaskEntry,
+} from '../generator-builder.js';
 
 let lastGeneratorId = 100;
 let lastTaskId = 100;
@@ -16,7 +18,7 @@ export function buildTestGeneratorTaskEntry(
     exports: {},
     dependentTaskIds: [],
     task: {
-      name: `task-${lastTaskId}`,
+      name: `task-${lastTaskId.toString()}`,
       exports: {},
       dependencies: {},
       taskDependencies: [],
@@ -36,15 +38,15 @@ export function buildTestGeneratorEntry(
   const id = data?.id ?? lastGeneratorId.toString();
   const tasks =
     data?.tasks ??
-    (!task
-      ? []
-      : [
+    (task
+      ? [
           buildTestGeneratorTaskEntry({
             id: `${id}#main`,
             generatorName: 'simple',
             ...task,
           }),
-        ]);
+        ]
+      : []);
   return {
     id,
     descriptor: { generator: 'simple' },

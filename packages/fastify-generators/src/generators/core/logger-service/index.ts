@@ -1,15 +1,18 @@
+import type {
+  ImportMapper,
+  TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+
 import {
   createTypescriptTemplateConfig,
-  ImportMapper,
   nodeProvider,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
   createNonOverwriteableMap,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -115,7 +118,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
 }`,
         );
 
-        if (Object.keys(mixins.value()).length) {
+        if (Object.keys(mixins.value()).length > 0) {
           loggerOptions.mixin = TypescriptCodeUtils.wrapExpression(
             TypescriptCodeUtils.mergeExpressionsAsObject(mixins.value()),
             TypescriptCodeUtils.createWrapper(
@@ -128,7 +131,7 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
 
         loggerFile.addCodeExpression(
           'LOGGER_OPTIONS',
-          Object.keys(loggerOptions).length
+          Object.keys(loggerOptions).length > 0
             ? TypescriptCodeUtils.mergeExpressionsAsObject(loggerOptions)
             : TypescriptCodeUtils.createExpression(''),
         );

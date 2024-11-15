@@ -1,9 +1,11 @@
-import { AppEntry } from '@halfdomelabs/project-builder-lib';
-import { FileData, GeneratorEngine, Logger } from '@halfdomelabs/sync';
+import type { AppEntry } from '@halfdomelabs/project-builder-lib';
+import type { FileData, Logger } from '@halfdomelabs/sync';
+
+import { GeneratorEngine } from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { globby } from 'globby';
-import path from 'path';
+import path from 'node:path';
 import * as R from 'ramda';
 
 export interface GeneratorEngineSetupConfig {
@@ -78,7 +80,7 @@ export async function generateForDirectory({
 
   const buildResultExists = await fs.pathExists(buildResultPath);
   const oldBuildResult: BuildResultFile = buildResultExists
-    ? ((await fs.readJSON(buildResultPath)) as BuildResultFile)
+    ? ((await fs.readJson(buildResultPath)) as BuildResultFile)
     : {};
 
   // load clean directory contents
@@ -92,30 +94,31 @@ export async function generateForDirectory({
 
   const cleanTmpDirectory = path.join(projectDirectory, 'baseplate/.clean_tmp');
 
-  const augmentedOutput = !cleanProjectFiles
-    ? output
-    : {
+  const augmentedOutput = cleanProjectFiles
+    ? {
         ...output,
-        files: R.mergeAll(
-          Object.entries(output.files).map(
-            ([filePath, data]): Record<string, FileData> => {
+        files: new Map(
+          [...output.files.entries()].map(
+            ([filePath, data]): [string, FileData] => {
               const cleanFile = cleanProjectFiles.find(
                 (f) => f.filePath === filePath,
               );
 
-              return {
-                [filePath]: {
+              return [
+                filePath,
+                {
                   ...data,
                   options: {
                     ...data.options,
                     cleanContents: cleanFile?.contents,
                   },
                 },
-              };
+              ];
             },
           ),
         ),
-      };
+      }
+    : output;
 
   try {
     const writeOutput = await engine.writeOutput(
@@ -132,7 +135,7 @@ export async function generateForDirectory({
       await fs.rm(buildResultPath);
     }
 
-    if (writeOutput.failedCommands) {
+    if (writeOutput.failedCommands.length > 0) {
       // write failed commands to a temporary file
       const buildResult: BuildResultFile = {
         failedCommands: writeOutput.failedCommands,
@@ -149,7 +152,7 @@ export async function generateForDirectory({
 
     // find deleted files
     const deletedCleanFiles =
-      cleanProjectFiles?.filter((f) => !output.files[f.filePath]) ?? [];
+      cleanProjectFiles?.filter((f) => !output.files.has(f.filePath)) ?? [];
 
     await Promise.all(
       deletedCleanFiles.map(async (file) => {
@@ -170,7 +173,7 @@ export async function generateForDirectory({
       }),
     );
 
-    if (writeOutput.failedCommands.length) {
+    if (writeOutput.failedCommands.length > 0) {
       logger.error(
         `Project successfully written but with failed commands! Please check logs for more info.`,
       );
@@ -213,16 +216,12 @@ export async function generateCleanAppForDirectory({
   await engine.writeOutput(
     {
       ...output,
-      files: R.mergeAll(
-        Object.entries(output.files).map(([filePath, file]) => {
-          // reject any files that are buffers since we can't merge them
-          if (file.contents instanceof Buffer) {
-            return {};
-          }
-          return {
-            [filePath]: file,
-          };
-        }),
+      files: new Map(
+        [...output.files.entries()].filter(
+          ([, file]) =>
+            // reject any files that are buffers since we can't merge them
+            !(file.contents instanceof Buffer),
+        ),
       ),
       postWriteCommands: [],
     },

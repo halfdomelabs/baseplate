@@ -1,18 +1,19 @@
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
-  createProviderType,
   createGeneratorWithChildren,
-  NonOverwriteableMap,
   createNonOverwriteableMap,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import type { TypescriptCodeBlock } from '@src/writers/index.js';
+
+import { TypescriptCodeUtils } from '@src/writers/index.js';
 
 import { eslintProvider } from '../eslint/index.js';
 import { nodeProvider } from '../node/index.js';
 import { typescriptProvider } from '../typescript/index.js';
-import {
-  TypescriptCodeBlock,
-  TypescriptCodeUtils,
-} from '@src/writers/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -64,7 +65,7 @@ const VitestGenerator = createGeneratorWithChildren({
         const config = configMap.value();
 
         const customSetupPath = 'src/tests/scripts/globalSetup.ts';
-        if (config.customSetupBlocks.length) {
+        if (config.customSetupBlocks.length > 0) {
           const customSetupFile = typescript.createTemplate({
             CUSTOM_SETUP: { type: 'code-block' },
           });
@@ -86,12 +87,12 @@ const VitestGenerator = createGeneratorWithChildren({
           clearMocks: true,
           passWithNoTests: true,
           root: './src',
-          ...(config.customSetupBlocks.length
+          ...(config.customSetupBlocks.length > 0
             ? {
                 globalSetup: `./${customSetupPath}`,
               }
             : {}),
-          ...(config.setupFiles.length
+          ...(config.setupFiles.length > 0
             ? {
                 setupFiles: config.setupFiles,
               }

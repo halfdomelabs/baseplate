@@ -1,5 +1,6 @@
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
 import {
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -8,7 +9,7 @@ import {
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
-import path from 'path';
+import path from 'node:path';
 import * as R from 'ramda';
 import { z } from 'zod';
 

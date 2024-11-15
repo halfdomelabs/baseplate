@@ -1,10 +1,12 @@
-import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
-import { EnumEditLayout } from './EnumEditLayout';
-import EnumEditPage from './edit.page';
+import { modelEnumEntityType } from '@halfdomelabs/project-builder-lib';
+
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createCrumbFromUid } from '@src/types/routes';
+
+import EnumEditPage from './edit.page';
+import { EnumEditLayout } from './EnumEditLayout';
 
 export const EnumEditRoutes: RouteObject = {
   path: 'edit/:uid/*',

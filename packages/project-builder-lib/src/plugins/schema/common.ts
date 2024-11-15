@@ -1,4 +1,4 @@
-import { PluginImplementationStore } from './store.js';
+import type { PluginImplementationStore } from './store.js';
 
 export const zodPluginSymbol = Symbol('zod-plugin');
 

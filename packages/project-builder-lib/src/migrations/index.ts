@@ -1,8 +1,9 @@
+import type { ProjectDefinition } from '../schema/index.js';
+import type { SchemaMigration } from './types.js';
+
 import { migration005PrimaryUniqueRefs } from './migration-005-primaryUniqueRefs.js';
 import { migration006IndividualServiceControllers } from './migration-006-individual-service-controllers.js';
 import { migration007ModelGraphql } from './migration-007-model-graphql.js';
-import { SchemaMigration } from './types.js';
-import { ProjectDefinition } from '../schema/index.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
@@ -20,17 +21,17 @@ export function runSchemaMigrations(config: ProjectDefinition): {
     (m) => m.version > schemaVersion,
   ).sort((a, b) => a.version - b.version);
 
-  const newConfig = unappliedMigrations.reduce(
-    (draftConfig, migration) => ({
-      ...(migration.migrate(draftConfig) as ProjectDefinition),
+  let newConfig = config;
+  for (const migration of unappliedMigrations) {
+    newConfig = {
+      ...(migration.migrate(newConfig) as ProjectDefinition),
       schemaVersion: migration.version,
-    }),
-    config,
-  );
+    };
+  }
 
   return { newConfig, appliedMigrations: unappliedMigrations };
 }
 
 export function getLatestMigrationVersion(): number {
-  return SCHEMA_MIGRATIONS[SCHEMA_MIGRATIONS.length - 1].version;
+  return SCHEMA_MIGRATIONS.at(-1)?.version ?? 0;
 }

@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import clsx from 'clsx';
 
 type ButtonColor = 'blue' | 'green' | 'red' | 'light' | 'dark';
@@ -16,35 +18,45 @@ interface Props {
 
 function getButtonColorClass(color: ButtonColor): string {
   switch (color) {
-    case 'blue':
+    case 'blue': {
       return 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300';
-    case 'green':
+    }
+    case 'green': {
       return 'text-white bg-green-700 hover:bg-green-800 focus:ring-green-300';
-    case 'red':
+    }
+    case 'red': {
       return 'text-white bg-red-700 hover:bg-red-800 focus:ring-red-300';
-    case 'light':
+    }
+    case 'light': {
       return 'text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-gray-200';
-    case 'dark':
+    }
+    case 'dark': {
       return 'text-white bg-gray-800 hover:bg-gray-900 focus:ring-gray-300';
-    default:
+    }
+    default: {
       throw new Error(`Unknown button color: ${color as string}`);
+    }
   }
 }
 
 function getButtonSizeClass(size: ButtonSize): string {
   switch (size) {
-    case 'small':
+    case 'small': {
       return 'px-3 py-2 text-sm';
-    case 'base':
+    }
+    case 'base': {
       return 'px-5 py-2.5 text-sm';
-    case 'large':
+    }
+    case 'large': {
       return 'px-5 py-3 text-base';
-    default:
+    }
+    default: {
       throw new Error(`Unknown button size: ${size as string}`);
+    }
   }
 }
 
-function Button(props: Props): JSX.Element {
+function Button(props: Props): React.JSX.Element {
   const {
     className,
     children,
@@ -65,7 +77,7 @@ function Button(props: Props): JSX.Element {
       disabled={disabled}
       onClick={onClick}
       // a type is being provided but eslint doesn't know
-      // eslint-disable-next-line react/button-has-type
+
       type={type}
     >
       {children}

@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { Menu, Transition } from '@headlessui/react';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
@@ -16,7 +18,7 @@ function Dropdown({
   buttonClassName,
   children,
   buttonLabel,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const popperElementRef = useRef<HTMLDivElement | null>(null);
   const [referenceElement, setReferenceElement] =
     useState<HTMLButtonElement | null>();
@@ -53,8 +55,12 @@ function Dropdown({
                 leave="transition duration-75 ease-out"
                 leaveFrom="transform scale-100 opacity-100"
                 leaveTo="transform scale-95 opacity-0"
-                beforeEnter={() => setPopperElement(popperElementRef.current)}
-                afterLeave={() => setPopperElement(null)}
+                beforeEnter={() => {
+                  setPopperElement(popperElementRef.current);
+                }}
+                afterLeave={() => {
+                  setPopperElement(null);
+                }}
               >
                 <Menu.Items className="absolute z-10 w-44 divide-y divide-gray-100 rounded bg-white shadow dark:bg-gray-700">
                   <ul className="py-1 text-sm text-gray-700 dark:text-gray-200">
@@ -80,7 +86,7 @@ Dropdown.ButtonItem = function DropdownItem({
   className,
   children,
   onClick,
-}: DropdownItemProps): JSX.Element {
+}: DropdownItemProps): React.JSX.Element {
   return (
     <Menu.Item>
       <li>

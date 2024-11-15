@@ -1,16 +1,24 @@
-import {
+import type {
   AnyZodObject,
-  INVALID,
+  input,
+  output,
   ParseInput,
   ParseReturnType,
   Primitive,
   ProcessedCreateParams,
   RawCreateParams,
-  UnknownKeysParam,
+  ZodErrorMap,
+  ZodRawShape,
+  ZodTypeAny,
+  ZodTypeDef,
+} from 'zod';
+
+import {
+  addIssueToContext,
+  INVALID,
   ZodDefault,
   ZodEffects,
   ZodEnum,
-  ZodErrorMap,
   ZodFirstPartyTypeKind,
   ZodIssueCode,
   ZodLazy,
@@ -19,14 +27,8 @@ import {
   ZodNull,
   ZodObject,
   ZodParsedType,
-  ZodRawShape,
   ZodType,
-  ZodTypeAny,
-  ZodTypeDef,
   ZodUndefined,
-  addIssueToContext,
-  input,
-  output,
 } from 'zod';
 
 import { ZodRef } from './ref-builder.js';
@@ -51,10 +53,10 @@ function processCreateParams(params: RawCreateParams): ProcessedCreateParams {
       `Can't use "invalid_type_error" or "required_error" in conjunction with custom error map.`,
     );
   }
-  if (errorMap) return { errorMap: errorMap, description };
+  if (errorMap) return { errorMap, description };
   const customMap: ZodErrorMap = (iss, ctx) => {
     if (iss.code !== 'invalid_type') return { message: ctx.defaultError };
-    if (typeof ctx.data === 'undefined') {
+    if (ctx.data === undefined) {
       return { message: required_error ?? ctx.defaultError };
     }
     return { message: invalid_type_error ?? ctx.defaultError };
@@ -62,9 +64,7 @@ function processCreateParams(params: RawCreateParams): ProcessedCreateParams {
   return { errorMap: customMap, description };
 }
 
-const getDiscriminator = <T extends ZodTypeAny>(
-  type: T,
-): Primitive[] | null => {
+const getDiscriminator = (type: ZodTypeAny): Primitive[] | null => {
   if (type instanceof ZodLazy) {
     return getDiscriminator(type.schema);
   } else if (type instanceof ZodEffects) {
@@ -87,16 +87,10 @@ const getDiscriminator = <T extends ZodTypeAny>(
 };
 
 type ZodRefDiscriminatedUnionOption<Discriminator extends string> =
-  | ZodObject<
-      { [key in Discriminator]: ZodTypeAny } & ZodRawShape,
-      UnknownKeysParam,
-      ZodTypeAny
-    >
+  | ZodObject<Record<Discriminator, ZodTypeAny> & ZodRawShape>
   | (ZodTypeAny & {
       innerType: () => ZodObject<
-        { [key in Discriminator]: ZodTypeAny } & ZodRawShape,
-        UnknownKeysParam,
-        ZodTypeAny
+        Record<Discriminator, ZodTypeAny> & ZodRawShape
       >;
     });
 
@@ -116,7 +110,7 @@ function getInnerZodObject(type: ZodTypeAny): AnyZodObject {
     return getInnerZodObject(type.innerType());
   }
   if (!(type instanceof ZodObject)) {
-    throw new Error(
+    throw new TypeError(
       `Discriminated union option must be an object at root, got ${type.constructor.name}`,
     );
   }
@@ -143,7 +137,7 @@ export class ZodRefDiscriminatedUnion<
       return INVALID;
     }
 
-    const discriminator = this.discriminator;
+    const { discriminator } = this;
 
     const discriminatorValue: string = ctx.data[discriminator];
 
@@ -152,25 +146,23 @@ export class ZodRefDiscriminatedUnion<
     if (!option) {
       addIssueToContext(ctx, {
         code: ZodIssueCode.invalid_union_discriminator,
-        options: Array.from(this.optionsMap.keys()),
+        options: [...this.optionsMap.keys()],
         path: [discriminator],
       });
       return INVALID;
     }
 
-    if (ctx.common.async) {
-      return option._parseAsync({
-        data: ctx.data,
-        path: ctx.path,
-        parent: ctx,
-      }) as any;
-    } else {
-      return option._parseSync({
-        data: ctx.data,
-        path: ctx.path,
-        parent: ctx,
-      }) as any;
-    }
+    return ctx.common.async
+      ? (option._parseAsync({
+          data: ctx.data,
+          path: ctx.path,
+          parent: ctx,
+        }) as any)
+      : (option._parseSync({
+          data: ctx.data,
+          path: ctx.path,
+          parent: ctx,
+        }) as any);
   }
 
   get discriminator(): Discriminator {
@@ -242,7 +234,7 @@ export class ZodRefDiscriminatedUnion<
       typeName: ZodFirstPartyTypeKind.ZodDiscriminatedUnion,
       discriminator,
       options,
-      optionsMap: optionsMap,
+      optionsMap,
       ...processCreateParams(params),
     });
   }

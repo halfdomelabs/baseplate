@@ -1,26 +1,32 @@
 import type { NodeGeneratorDescriptor } from '@halfdomelabs/core-generators';
-import {
+import type {
   AdminAppConfig,
   AppEntry,
-  AppUtils,
-  FeatureUtils,
   ProjectDefinitionContainer,
-  adminAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 import type { ReactGeneratorDescriptor } from '@halfdomelabs/react-generators';
+
+import {
+  adminAppEntryType,
+  AppUtils,
+  FeatureUtils,
+} from '@halfdomelabs/project-builder-lib';
 import { capitalize } from 'inflection';
 
-import { compileAdminFeatures } from './sections.js';
-import { AdminAppEntryBuilder, AppEntryBuilder } from '../appEntryBuilder.js';
-import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 import { notEmpty } from '@src/utils/array.js';
 import { dasherizeCamel, titleizeCamel } from '@src/utils/case.js';
+
+import type { AdminAppEntryBuilder } from '../app-entry-builder.js';
+
+import { AppEntryBuilder } from '../app-entry-builder.js';
+import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
+import { compileAdminFeatures } from './sections.js';
 
 export function buildNavigationLinks(
   builder: AppEntryBuilder<AdminAppConfig>,
 ): unknown[] {
   const config = builder.appConfig;
-  const projectDefinition = builder.projectDefinition;
+  const { projectDefinition } = builder;
   return (
     config.sections?.map((section) => ({
       type: 'link',
@@ -141,7 +147,7 @@ export function compileAdmin(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  appBuilder.addDescriptor<NodeGeneratorDescriptor>('root.json', {
+  appBuilder.addDescriptor('root.json', {
     generator: '@halfdomelabs/core/node/node',
     name: `${projectDefinition.name}-${app.name}`,
     packageName,
@@ -150,7 +156,7 @@ export function compileAdmin(
     children: {
       projects: [buildAdmin(appBuilder)],
     },
-  });
+  } satisfies NodeGeneratorDescriptor);
 
   return appBuilder.toProjectEntry();
 }

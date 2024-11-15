@@ -4,19 +4,22 @@
  * Used for initializing the zod parsing with plugins
  */
 
-import {
+import type {
+  input,
   ParseContext,
   ParseInput,
   ParseReturnType,
   TypeOf,
-  ZodType,
   ZodTypeAny,
   ZodTypeDef,
-  input,
 } from 'zod';
 
-import { ZodPluginContext, zodPluginSymbol } from './common.js';
-import { PluginImplementationStore } from './store.js';
+import { ZodType } from 'zod';
+
+import type { ZodPluginContext } from './common.js';
+import type { PluginImplementationStore } from './store.js';
+
+import { zodPluginSymbol } from './common.js';
 
 export interface ZodPluginWrapperDef<T extends ZodTypeAny = ZodTypeAny>
   extends ZodTypeDef {
@@ -50,12 +53,11 @@ export class ZodPluginWrapper<T extends ZodTypeAny> extends ZodType<
   static create = <T extends ZodTypeAny>(
     type: T,
     pluginStore: PluginImplementationStore,
-  ): ZodPluginWrapper<T> => {
-    return new ZodPluginWrapper<T>({
+  ): ZodPluginWrapper<T> =>
+    new ZodPluginWrapper<T>({
       innerType: type,
       pluginStore,
     });
-  };
 }
 
 export function zPluginWrapper<T extends ZodTypeAny>(

@@ -1,10 +1,12 @@
+import type { InferGeneratorDescriptor } from '@halfdomelabs/sync';
+
 import {
-  InferGeneratorDescriptor,
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import { sortBy } from 'es-toolkit';
 import * as R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
@@ -127,9 +129,7 @@ const NodeGenerator = createGeneratorWithTasks({
               },
             },
           }),
-          build: () => {
-            return { isEsm };
-          },
+          build: () => ({ isEsm }),
         };
       },
     });
@@ -144,7 +144,7 @@ const NodeGenerator = createGeneratorWithTasks({
         setup: setupTask,
       },
       run(deps, { setup: { isEsm } }) {
-        const dependencies: Record<string, NodeDependencyEntry> = {};
+        const dependencies = new Map<string, NodeDependencyEntry>();
         const extraProperties = createNonOverwriteableMap(
           { type: isEsm ? 'module' : 'commonjs' },
           { name: 'node' },
@@ -159,11 +159,9 @@ const NodeGenerator = createGeneratorWithTasks({
           version: string,
           type: 'normal' | 'dev',
         ): void {
-          const existingDependency = dependencies[name];
+          const existingDependency = dependencies.get(name);
 
-          if (!existingDependency) {
-            dependencies[name] = { name, version, type };
-          } else {
+          if (existingDependency) {
             const oldVersion = existingDependency.version;
             let newVersion: string | null = null;
             if (semver.subset(oldVersion, version)) {
@@ -175,69 +173,70 @@ const NodeGenerator = createGeneratorWithTasks({
                 `Could not add different versions for dependency: ${name} (${oldVersion}, ${version})`,
               );
             }
-            dependencies[name] = {
+            dependencies.set(name, {
               name,
               version: newVersion,
               type:
                 existingDependency.type === 'normal' || type === 'normal'
                   ? 'normal'
                   : 'dev',
-            };
+            });
+          } else {
+            dependencies.set(name, { name, version, type });
           }
         }
 
+        function addPackage(name: string, version: string): void {
+          mergeDependency(name, version, 'normal');
+        }
+        function addDevPackage(name: string, version: string): void {
+          mergeDependency(name, version, 'dev');
+        }
+
         return {
-          getProviders: () => {
-            function addPackage(name: string, version: string): void {
-              mergeDependency(name, version, 'normal');
-            }
-            function addDevPackage(name: string, version: string): void {
-              mergeDependency(name, version, 'dev');
-            }
-            return {
-              node: {
-                addPackage,
-                addPackages(packages) {
-                  Object.entries(packages).forEach(([name, version]) =>
-                    addPackage(name, version),
-                  );
-                },
-                addDevPackage,
-                addDevPackages(packages) {
-                  Object.entries(packages).forEach(([name, version]) =>
-                    addDevPackage(name, version),
-                  );
-                },
-                mergeExtraProperties(props) {
-                  extraProperties.merge(props);
-                },
-                addScript(name, script) {
-                  scripts.merge({ [name]: script });
-                },
-                addScripts(value) {
-                  scripts.merge(value);
-                },
-                getNodeVersion() {
-                  return descriptor.nodeVersion;
-                },
-                isEsm() {
-                  return isEsm;
-                },
+          getProviders: () => ({
+            node: {
+              addPackage,
+              addPackages(packages) {
+                for (const [name, version] of Object.entries(packages))
+                  addPackage(name, version);
               },
-              project: {
-                getProjectName: () => descriptor.name,
+              addDevPackage,
+              addDevPackages(packages) {
+                for (const [name, version] of Object.entries(packages))
+                  addDevPackage(name, version);
               },
-            };
-          },
+              mergeExtraProperties(props) {
+                extraProperties.merge(props);
+              },
+              addScript(name, script) {
+                scripts.merge({ [name]: script });
+              },
+              addScripts(value) {
+                scripts.merge(value);
+              },
+              getNodeVersion() {
+                return descriptor.nodeVersion;
+              },
+              isEsm() {
+                return isEsm;
+              },
+            },
+            project: {
+              getProjectName: () => descriptor.name,
+            },
+          }),
           build: async (builder) => {
             const extractDependencies = (
               type: NodeDependencyType,
             ): Record<string, string> =>
-              R.mergeAll(
-                R.sortBy(
-                  R.prop('name'),
-                  Object.values(dependencies).filter((d) => d.type === type),
-                ).map((d) => ({ [d.name]: d.version })),
+              Object.fromEntries(
+                sortBy(
+                  [...dependencies.values()]
+                    .filter((d) => d.type === type)
+                    .map((d) => [d.name, d.version]),
+                  [(d) => d[0]],
+                ),
               );
             const packageJson = {
               name: descriptor.packageName ?? descriptor.name,

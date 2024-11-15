@@ -1,6 +1,8 @@
+import type { MouseEventHandler } from 'react';
+import type React from 'react';
+
 import { Transition } from '@headlessui/react';
 import clsx from 'clsx';
-import { MouseEventHandler } from 'react';
 
 interface Props {
   className?: string;
@@ -16,7 +18,7 @@ function Toast({
   visible,
   children,
   onClose,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   return (
     <Transition
       show={visible}

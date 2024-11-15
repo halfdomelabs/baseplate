@@ -1,15 +1,17 @@
-import { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { FeatureComboboxField } from '@halfdomelabs/project-builder-lib/web';
 import { InputField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { Control } from 'react-hook-form';
 
 interface Props {
   className?: string;
   control: Control<EnumConfig>;
 }
 
-export function EnumInfoForm({ className, control }: Props): JSX.Element {
+export function EnumInfoForm({ className, control }: Props): React.JSX.Element {
   return (
     <div className={clsx('max-w-md space-y-4', className)}>
       <InputField.Controller

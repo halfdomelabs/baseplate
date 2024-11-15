@@ -1,7 +1,7 @@
 import { omit } from 'es-toolkit';
 
-import { createSchemaMigration } from './types.js';
 import { modelUniqueConstraintEntityType } from '../schema/index.js';
+import { createSchemaMigration } from './types.js';
 
 interface OldConfig {
   models: {
@@ -47,37 +47,35 @@ export const migration005PrimaryUniqueRefs = createSchemaMigration<
   name: 'primaryUniqueRefs',
   description:
     'Store primary key in primaryKeyFieldRefs field and unique constraints in unique constraints field',
-  migrate: (config) => {
-    return {
-      ...config,
-      models: config.models.map((model) => {
-        const oldModel = model.model;
-        const primaryKeyFieldRefs = oldModel.primaryKeys?.length
-          ? oldModel.primaryKeys
-          : oldModel.fields.filter((f) => f.isId).map((f) => f.name);
-        return {
-          ...model,
-          model: {
-            ...omit(oldModel, ['primaryKeys', 'uniqueConstraints']),
-            primaryKeyFieldRefs,
-            fields: oldModel.fields.map((f) => omit(f, ['isId', 'isUnique'])),
-            uniqueConstraints: [
-              ...(oldModel.uniqueConstraints?.map((c) => ({
+  migrate: (config) => ({
+    ...config,
+    models: config.models.map((model) => {
+      const oldModel = model.model;
+      const primaryKeyFieldRefs = oldModel.primaryKeys?.length
+        ? oldModel.primaryKeys
+        : oldModel.fields.filter((f) => f.isId).map((f) => f.name);
+      return {
+        ...model,
+        model: {
+          ...omit(oldModel, ['primaryKeys', 'uniqueConstraints']),
+          primaryKeyFieldRefs,
+          fields: oldModel.fields.map((f) => omit(f, ['isId', 'isUnique'])),
+          uniqueConstraints: [
+            ...(oldModel.uniqueConstraints?.map((c) => ({
+              id: modelUniqueConstraintEntityType.generateNewId(),
+              fields: c.fields.map((f) => ({
+                fieldRef: f.name,
+              })),
+            })) ?? []),
+            ...oldModel.fields
+              .filter((f) => f.isUnique)
+              .map((f) => ({
                 id: modelUniqueConstraintEntityType.generateNewId(),
-                fields: c.fields.map((f) => ({
-                  fieldRef: f.name,
-                })),
-              })) ?? []),
-              ...oldModel.fields
-                .filter((f) => f.isUnique)
-                .map((f) => ({
-                  id: modelUniqueConstraintEntityType.generateNewId(),
-                  fields: [{ fieldRef: f.name }],
-                })),
-            ],
-          },
-        };
-      }),
-    };
-  },
+                fields: [{ fieldRef: f.name }],
+              })),
+          ],
+        },
+      };
+    }),
+  }),
 });

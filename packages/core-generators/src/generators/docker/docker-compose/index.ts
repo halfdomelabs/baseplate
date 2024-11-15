@@ -1,11 +1,12 @@
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
-import path from 'path';
+import path from 'node:path';
 import { z } from 'zod';
 
+import type { DockerComposeOutput } from './types.js';
+
+import { projectProvider } from '../../../providers/index.js';
 import { generatePostgresDockerCompose } from './postgres.js';
 import { generateRedisDockerCompose } from './redis.js';
-import { DockerComposeOutput } from './types.js';
-import { projectProvider } from '../../../providers/index.js';
 
 const descriptorSchema = z.object({
   projectName: z.string().optional(),
@@ -61,8 +62,8 @@ const DockerComposeGenerator = createGeneratorWithChildren({
     const dockerComposePath = path.join(dockerFolder, 'docker-compose.yml');
     const dockerEnvPath = path.join(dockerFolder, '.env');
 
-    const serviceEntries = outputs.map((output) => output.services).flat();
-    const volumeEntries = outputs.map((output) => output.volumes).flat();
+    const serviceEntries = outputs.flatMap((output) => output.services);
+    const volumeEntries = outputs.flatMap((output) => output.volumes);
 
     const services = `
 services:
@@ -73,11 +74,11 @@ volumes:
 ${volumeEntries.join('\n')}`.trim();
 
     const entries = [
-      ...(serviceEntries.length ? [services] : []),
-      ...(volumeEntries.length ? [volumes] : []),
+      ...(serviceEntries.length > 0 ? [services] : []),
+      ...(volumeEntries.length > 0 ? [volumes] : []),
     ];
 
-    if (!serviceEntries.length) {
+    if (serviceEntries.length === 0) {
       throw new Error('No services defined for Docker Compose file');
     }
 

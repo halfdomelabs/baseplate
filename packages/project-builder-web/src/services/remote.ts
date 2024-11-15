@@ -1,4 +1,4 @@
-import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
 import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 
 import { client } from './api';

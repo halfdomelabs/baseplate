@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { program } from 'commander';
 
 import { addCliCommands } from './commands/index.js';
@@ -10,7 +11,7 @@ export async function main(): Promise<void> {
   await program.parseAsync(process.argv);
 }
 
-main().catch((err) => {
+await main().catch((err: unknown) => {
   if (err instanceof HandledError) {
     process.exit(1);
   }

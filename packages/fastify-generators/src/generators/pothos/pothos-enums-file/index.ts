@@ -1,6 +1,7 @@
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
 import {
   makeImportAndFilePath,
-  TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -13,8 +14,9 @@ import { kebabCase } from 'change-case';
 import * as R from 'ramda';
 import { z } from 'zod';
 
-import { pothosSetupProvider } from '../pothos/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+
+import { pothosSetupProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

@@ -1,13 +1,15 @@
-import { ErrorDisplay, Button } from '@halfdomelabs/ui-components';
+import type React from 'react';
+
+import { Button, ErrorDisplay } from '@halfdomelabs/ui-components';
 import { useContext } from 'react';
 import {
-  ErrorBoundary as ReactErrorBoundary,
   ErrorBoundaryContext,
+  ErrorBoundary as ReactErrorBoundary,
 } from 'react-error-boundary';
+import { logError } from 'src/services/error-logger';
 
 import { formatError } from '@src/services/error-formatter';
 import { UserVisibleError } from '@src/utils/error';
-import { logError } from 'src/services/error-logger';
 
 interface ErrorBoundaryProps {
   children?: React.ReactNode;
@@ -25,7 +27,7 @@ function ErrorBoundaryFallback({
   resetButtonLabel,
 }: {
   resetButtonLabel: string;
-}): JSX.Element {
+}): React.JSX.Element {
   const {
     resetErrorBoundary,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -63,7 +65,7 @@ export function ErrorBoundary({
   children,
   resetButtonLabel,
   onReset,
-}: ErrorBoundaryProps): JSX.Element {
+}: ErrorBoundaryProps): React.JSX.Element {
   return (
     <ReactErrorBoundary
       fallback={
@@ -71,12 +73,14 @@ export function ErrorBoundary({
           resetButtonLabel={resetButtonLabel ?? 'Reload Page'}
         />
       }
-      onError={(err) => logError(err)}
+      onError={(err) => {
+        logError(err);
+      }}
       onReset={() => {
         if (onReset) {
           onReset();
         } else {
-          window.location.reload();
+          globalThis.location.reload();
         }
       }}
     >

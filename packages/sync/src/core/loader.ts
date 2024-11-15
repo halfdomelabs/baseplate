@@ -1,14 +1,16 @@
-import { createRequire } from 'module';
 import multimatch from 'multimatch';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import { packageUp } from 'package-up';
-import path from 'path';
 import * as R from 'ramda';
 import { z } from 'zod';
 
-import { GeneratorConfig } from './generator.js';
-import { getModuleDefault } from '../utils/require.js';
 import { notEmpty } from '@src/utils/arrays.js';
 import { listDirectories, pathExists, readJSON } from '@src/utils/fs.js';
+
+import type { GeneratorConfig } from './generator.js';
+
+import { getModuleDefault } from '../utils/require.js';
 
 export interface GeneratorConfigWithLocation extends GeneratorConfig {
   /**
@@ -17,7 +19,10 @@ export interface GeneratorConfigWithLocation extends GeneratorConfig {
   configBaseDirectory: string;
 }
 
-export type GeneratorConfigMap = Record<string, GeneratorConfigWithLocation>;
+export type GeneratorConfigMap = Record<
+  string,
+  GeneratorConfigWithLocation | undefined
+>;
 
 // Generator modules have the ability to add a generator.json to the root to specify
 // where the loader should look for generators
@@ -68,12 +73,12 @@ export async function loadGeneratorsForModule(
           // assume there is no generator
           return {};
         }
-        if (!generator.createGenerator) {
+        if (!('createGenerator' in generator)) {
           throw new Error(
             `Generator function lacks a createGenerator function: ${generatorFolder}`,
           );
         }
-        if (!generator.parseDescriptor) {
+        if (!('parseDescriptor' in generator)) {
           throw new Error(
             `Generator function lacks a parseDescriptor function: ${generatorFolder}`,
           );

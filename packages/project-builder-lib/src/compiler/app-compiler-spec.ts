@@ -1,15 +1,14 @@
 import type { DescriptorWithChildren } from '@halfdomelabs/sync';
 
-import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import {
-  PluginSpecImplementation,
-  createPluginSpec,
-} from '@src/plugins/index.js';
-import {
+import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '@src/plugins/index.js';
+import type {
   AppConfig,
   AppEntryType,
   ProjectDefinition,
 } from '@src/schema/index.js';
+
+import { createPluginSpec } from '@src/plugins/index.js';
 import { safeMerge } from '@src/utils/merge.js';
 
 type AnyGeneratorDescriptor = DescriptorWithChildren & Record<string, unknown>;
@@ -25,20 +24,22 @@ export interface AppCompiler {
   addGlobalHoistedProviders: (providers: string[] | string) => void;
   getGlobalHoistedProviders: () => string[];
   addRootChildren: (children: Record<string, AnyGeneratorDescriptor>) => void;
-  getRootChildren: () => Record<string, AnyGeneratorDescriptor>;
+  getRootChildren: () => Partial<Record<string, AnyGeneratorDescriptor>>;
 }
 
 export function createAppCompiler(): AppCompiler {
-  const children: Record<string, Record<string, AnyGeneratorDescriptor>> = {};
+  const children: Partial<
+    Record<string, Record<string, AnyGeneratorDescriptor>>
+  > = {};
   const hoistedProviders: string[] = [];
-  let rootChildren: Record<string, AnyGeneratorDescriptor> = {};
+  let rootChildren: Partial<Record<string, AnyGeneratorDescriptor>> = {};
 
   return {
     addChildrenToFeature(featureId, newChildren) {
       children[featureId] = safeMerge(children[featureId] ?? {}, newChildren);
     },
     getChildrenForFeature(featureId) {
-      return children[featureId] || {};
+      return children[featureId] ?? {};
     },
     addGlobalHoistedProviders(providers) {
       hoistedProviders.push(
@@ -83,17 +84,18 @@ export interface AppCompilerSpec extends PluginSpecImplementation {
 }
 
 export function createAppCompilerPlugin(): AppCompilerSpec {
-  const compilers: Record<string, PluginAppCompiler<unknown>[]> = {};
+  const compilers = new Map<string, PluginAppCompiler<unknown>[]>();
 
   return {
     registerAppCompiler(compiler) {
-      if (!compilers[compiler.appType]) {
-        compilers[compiler.appType] = [];
+      const appCompilers = compilers.get(compiler.appType) ?? [];
+      if (!compilers.has(compiler.appType)) {
+        compilers.set(compiler.appType, appCompilers);
       }
-      compilers[compiler.appType].push(compiler as PluginAppCompiler<unknown>);
+      appCompilers.push(compiler as PluginAppCompiler<unknown>);
     },
     getAppCompilers(appType) {
-      return compilers[appType] ?? [];
+      return compilers.get(appType) ?? [];
     },
   };
 }

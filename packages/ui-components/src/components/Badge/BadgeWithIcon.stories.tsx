@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Badge } from './Badge.js';
 import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
+
+import { Badge } from './Badge.js';
 
 const meta = {
   title: 'Components/BadgeWithIcon',

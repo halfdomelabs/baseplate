@@ -1,6 +1,8 @@
+import type React from 'react';
+
 import { Link } from 'react-router-dom';
 
-export function FeaturesHomePage(): JSX.Element {
+export function FeaturesHomePage(): React.JSX.Element {
   return (
     <div className="flex max-w-4xl flex-col space-y-4">
       <h1>Features</h1>

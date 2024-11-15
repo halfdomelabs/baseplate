@@ -1,16 +1,17 @@
-import {
-  AdminCrudEmbeddedFormConfig,
-  adminCrudEmbeddedFormSchema,
-} from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Control, UseFormReturn } from 'react-hook-form';
+import type { AdminCrudEmbeddedFormConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormReturn } from 'react-hook-form';
+import type {
+  EmbeddedListFormProps,
+  EmbeddedListTableProps,
+} from 'src/components/EmbeddedListInput';
 
-import CrudFormFieldsForm, { AdminCrudFormConfig } from './CrudFormFieldsForm';
-import CrudTableColumnsForm, {
-  AdminCrudTableConfig,
-} from './CrudTableColumnsForm';
+import { adminCrudEmbeddedFormSchema } from '@halfdomelabs/project-builder-lib';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Alert,
   Button,
@@ -20,18 +21,20 @@ import {
   TextInput,
 } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import {
-  EmbeddedListFormProps,
-  EmbeddedListTableProps,
-} from 'src/components/EmbeddedListInput';
 import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
+
+import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
+import type { AdminCrudTableConfig } from './CrudTableColumnsForm';
+
+import CrudFormFieldsForm from './CrudFormFieldsForm';
+import CrudTableColumnsForm from './CrudTableColumnsForm';
 
 export function AdminCrudEmbeddedTable({
   items,
   edit,
   remove,
-}: EmbeddedListTableProps<AdminCrudEmbeddedFormConfig>): JSX.Element {
+}: EmbeddedListTableProps<AdminCrudEmbeddedFormConfig>): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
   return (
     <Table className="max-w-6xl">
@@ -52,8 +55,19 @@ export function AdminCrudEmbeddedTable({
             </Table.Cell>
             <Table.Cell>{item.type}</Table.Cell>
             <Table.Cell className="space-x-4">
-              <LinkButton onClick={() => edit(idx)}>Edit</LinkButton>
-              <LinkButton negative onClick={() => remove(idx)}>
+              <LinkButton
+                onClick={() => {
+                  edit(idx);
+                }}
+              >
+                Edit
+              </LinkButton>
+              <LinkButton
+                negative
+                onClick={() => {
+                  remove(idx);
+                }}
+              >
                 Remove
               </LinkButton>
             </Table.Cell>
@@ -77,7 +91,7 @@ function AdminCrudEmbeddedForm({
   initialData,
   onSubmit,
   embeddedFormOptions,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const { parsedProject } = useProjectDefinition();
   const formProps = useResettableForm<AdminCrudEmbeddedFormConfig>({
     resolver: zodResolver(adminCrudEmbeddedFormSchema),
@@ -97,7 +111,9 @@ function AdminCrudEmbeddedForm({
     <form
       onSubmit={(e) => {
         e.stopPropagation();
-        handleSubmit(onSubmit)(e).catch((err) => setError(formatError(err)));
+        handleSubmit(onSubmit)(e).catch((error: unknown) => {
+          setError(formatError(error));
+        });
       }}
       className="space-y-4"
     >

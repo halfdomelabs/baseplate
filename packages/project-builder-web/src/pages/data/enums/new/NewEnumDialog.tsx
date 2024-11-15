@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -19,12 +21,17 @@ export function NewEnumDialog({
   children,
   open,
   onOpenChange,
-}: NewEnumDialogProps): JSX.Element {
+}: NewEnumDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   const {
     onSubmit,
     form: { control },
-  } = useEnumForm({ isCreate: true, onSubmitSuccess: () => setIsOpen(false) });
+  } = useEnumForm({
+    isCreate: true,
+    onSubmitSuccess: () => {
+      setIsOpen(false);
+    },
+  });
 
   const blockBeforeContinue = useBlockBeforeContinue();
 
@@ -32,13 +39,14 @@ export function NewEnumDialog({
     <Dialog
       open={isOpen}
       onOpenChange={(shouldOpen) => {
-        if (!shouldOpen) setIsOpen(false);
-        else {
+        if (shouldOpen) {
           blockBeforeContinue({
             onContinue: () => {
               setIsOpen(true);
             },
           });
+        } else {
+          setIsOpen(false);
         }
       }}
     >

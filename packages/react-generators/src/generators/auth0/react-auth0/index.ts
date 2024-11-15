@@ -54,9 +54,9 @@ const ReactAuth0Generator = createGeneratorWithChildren({
       devValue: 'AUTH0_AUDIENCE',
     });
 
-    const redirectUri = !callbackPath
-      ? 'window.location.origin'
-      : `\`\${window.location.origin}/${callbackPath}\``;
+    const redirectUri = callbackPath
+      ? `\`\${window.location.origin}/${callbackPath}\``
+      : 'window.location.origin';
 
     reactApp.getRenderWrappers().addItem(
       'react-auth0',

@@ -1,14 +1,18 @@
-import { FeatureUtils, ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
 
-import { ModelInfoEditDialog } from './ModelInfoEditDialog';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { RefDeleteError } from '@src/utils/error';
+
+import { ModelInfoEditDialog } from './ModelInfoEditDialog';
 
 interface ModelHeaderBarProps {
   className?: string;
@@ -18,7 +22,7 @@ interface ModelHeaderBarProps {
 export function ModelHeaderBar({
   className,
   model,
-}: ModelHeaderBarProps): JSX.Element {
+}: ModelHeaderBarProps): React.JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const navigate = useNavigate();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -27,15 +31,15 @@ export function ModelHeaderBar({
   const handleDelete = (id: string): void => {
     try {
       setConfigAndFixReferences((draftConfig) => {
-        draftConfig.models = draftConfig.models?.filter((m) => m.id !== id);
+        draftConfig.models = draftConfig.models.filter((m) => m.id !== id);
       });
       navigate('/data/models');
-    } catch (err) {
-      if (err instanceof RefDeleteError) {
-        showRefIssues({ issues: err.issues });
+    } catch (error) {
+      if (error instanceof RefDeleteError) {
+        showRefIssues({ issues: error.issues });
         return;
       }
-      toast.error(logAndFormatError(err));
+      toast.error(logAndFormatError(error));
     }
   };
 
@@ -57,7 +61,7 @@ export function ModelHeaderBar({
             <MdEdit className="invisible size-4 group-hover:visible" />
           </button>
         </ModelInfoEditDialog>
-        {model?.feature && (
+        {model.feature && (
           <div className="text-xs text-muted-foreground">
             {FeatureUtils.getFeatureById(definition, model.feature)?.name}
           </div>
@@ -72,7 +76,9 @@ export function ModelHeaderBar({
               title: 'Confirm delete',
               content: `Are you sure you want to delete ${model.name}?`,
               buttonConfirmText: 'Delete',
-              onConfirm: () => handleDelete(model.id),
+              onConfirm: () => {
+                handleDelete(model.id);
+              },
             });
           }}
         >

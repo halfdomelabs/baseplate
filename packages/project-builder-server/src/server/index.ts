@@ -1,6 +1,8 @@
 import open from 'open';
 
-import { WebServerOptions, buildServer } from './server.js';
+import type { WebServerOptions } from './server.js';
+
+import { buildServer } from './server.js';
 
 export interface StartWebServerOptions extends WebServerOptions {
   browser: boolean;
@@ -17,12 +19,12 @@ export async function startWebServer(
 
   try {
     await server.listen({ port });
-  } catch (err) {
+  } catch (error) {
     if (
-      err instanceof Error &&
-      typeof err === 'object' &&
-      'code' in err &&
-      err.code === 'EADDRINUSE'
+      error instanceof Error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 'EADDRINUSE'
     ) {
       logger.info('Port in use - retrying in 500ms...');
       // wait a bit and try again since it could be tsx restarting
@@ -31,11 +33,13 @@ export async function startWebServer(
       });
       await server.listen({ port });
     } else {
-      throw err;
+      throw error;
     }
   }
 
   if (browser) {
-    open(`http://localhost:${port}`).catch((err) => logger.error(err));
+    open(`http://localhost:${port}`).catch((error: unknown) => {
+      logger.error(error);
+    });
   }
 }

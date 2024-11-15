@@ -1,6 +1,7 @@
+/* eslint-disable unicorn/no-process-exit */
 import fp from 'fastify-plugin';
 
-const TIMEOUT = 10000; // time out if shutdown takes longer than 10 seconds
+const TIMEOUT = 10_000; // time out if shutdown takes longer than 10 seconds
 
 export const gracefulShutdownPlugin = fp((fastify, opts, done) => {
   const shutdownServer: NodeJS.SignalsListener = (signal) => {
@@ -12,14 +13,13 @@ export const gracefulShutdownPlugin = fp((fastify, opts, done) => {
     // when using fastify.log instead of console.log, the log message will be
     // sent out after the process has been terminated. this avoids that.
 
-    // eslint-disable-next-line no-console
     console.info(`Received ${signal} signal. Shutting down...`);
 
     fastify
       .close()
       .then(() => process.exit(0))
-      .catch((err) => {
-        fastify.log.error(err);
+      .catch((error: unknown) => {
+        fastify.log.error(error);
         process.exit(1);
       });
   };

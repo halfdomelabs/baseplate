@@ -1,20 +1,21 @@
+import type { GeneratorDescriptor } from '@halfdomelabs/sync';
+
 import {
   createGeneratorWithTasks,
   createTaskConfigBuilder,
-  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { pothosSchemaProvider } from '../pothos/index.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
+
 import { getPrimaryKeyDefinition } from '@src/generators/prisma/_shared/crud-method/primary-key-input.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
-import {
-  PothosWriterOptions,
-  writePothosInputDefinitionFromDtoFields,
-} from '@src/writers/pothos/index.js';
+import { writePothosInputDefinitionFromDtoFields } from '@src/writers/pothos/index.js';
+
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosSchemaProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

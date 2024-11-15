@@ -1,6 +1,8 @@
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { GeneratorDescriptor } from '@halfdomelabs/sync';
+
 import {
   makeImportAndFilePath,
-  TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -8,13 +10,13 @@ import {
   createGeneratorWithTasks,
   createProviderType,
   createTaskConfigBuilder,
-  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
 
-import { pothosSchemaProvider } from '../pothos/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
+
+import { pothosSchemaProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   fileName: z.string().min(1),

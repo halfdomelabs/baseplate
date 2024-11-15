@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import {
   Button,
   Dialog,
@@ -19,7 +21,7 @@ export function EnumInfoEditDialog({
   onOpenChange,
   asChild,
   children,
-}: EnumInfoEditDialogProps): JSX.Element {
+}: EnumInfoEditDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
 
   const {

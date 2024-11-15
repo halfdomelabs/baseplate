@@ -1,12 +1,13 @@
 import { z } from 'zod';
 
+import { zRef } from '@src/references/ref-builder.js';
+
+import { authRoleEntityType } from '../auth/types.js';
 import {
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from './types.js';
-import { authRoleEntityType } from '../auth/types.js';
-import { zRef } from '@src/references/ref-builder.js';
 
 const roleArray = z
   .array(

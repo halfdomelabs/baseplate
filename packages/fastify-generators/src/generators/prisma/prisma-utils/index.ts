@@ -1,5 +1,6 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
-  ImportMapper,
   tsUtilsProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -9,8 +10,9 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { prismaOutputProvider } from '../prisma/index.js';
 import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
+
+import { prismaOutputProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -78,15 +80,14 @@ const PrismaUtilsGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         prismaUtils: {
           getImportMap: () =>
-            Object.entries(UTIL_CONFIG_MAP).reduce(
-              (acc, [key, config]) => ({
-                ...acc,
-                [`%prisma-utils/${key}`]: {
+            Object.fromEntries(
+              Object.entries(UTIL_CONFIG_MAP).map(([key, config]) => [
+                `%prisma-utils/${key}`,
+                {
                   path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
                   allowedImports: config.exports,
                 },
-              }),
-              {},
+              ]),
             ),
         },
       }),

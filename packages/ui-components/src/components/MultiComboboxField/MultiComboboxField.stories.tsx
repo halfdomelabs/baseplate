@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+
 import { useState } from 'react';
 
 import { MultiComboboxField } from './MultiComboboxField.js';

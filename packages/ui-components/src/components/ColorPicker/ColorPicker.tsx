@@ -1,10 +1,14 @@
-import React, { ForwardedRef, HTMLAttributes, forwardRef } from 'react';
+import type { ForwardedRef, HTMLAttributes } from 'react';
+import type React from 'react';
+
+import { forwardRef } from 'react';
 import { HexColorInput, HexColorPicker } from 'react-colorful';
 
-import { Popover } from '../Popover/Popover';
 import { useControlledState } from '@src/hooks/useControlledState';
 import { inputVariants } from '@src/styles';
 import { cn } from '@src/utils';
+
+import { Popover } from '../Popover/Popover';
 
 export interface ColorFieldProps
   extends Omit<HTMLAttributes<HTMLButtonElement>, 'value' | 'onChange'> {

@@ -60,24 +60,30 @@ function indent(text: string): string {
 
 function renderGraphQLArgumentValue(value: GraphQLArgumentValue): string {
   switch (value.type) {
-    case 'scalar':
+    case 'scalar': {
       switch (typeof value.value) {
-        case 'string':
+        case 'string': {
           return `"${value.value}"`;
+        }
         case 'number':
-        case 'boolean':
+        case 'boolean': {
           return value.value.toString();
-        default:
+        }
+        default: {
           throw new Error(
             `Unsupported GraphQL scalar value type: ${typeof value.value}`,
           );
+        }
       }
-    case 'variable':
+    }
+    case 'variable': {
       return `$${value.variable}`;
-    default:
+    }
+    default: {
       throw new Error(
         `Unknown GraphQL value type: ${(value as { type: string }).type}`,
       );
+    }
   }
 }
 
@@ -100,7 +106,7 @@ export function renderGraphQLSimpleField({
 
   if (fields?.length) {
     // recursive
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
     fieldDefinition += ` {\n${indent(renderGraphQLFields(fields))}\n}`;
   }
 
@@ -114,14 +120,17 @@ export function renderGraphQLSpreadField({ on }: GraphQLSpreadField): string {
 export function renderGraphQLField(field: GraphQLField): string {
   switch (field.type) {
     case undefined:
-    case 'simple':
+    case 'simple': {
       return renderGraphQLSimpleField(field);
-    case 'spread':
+    }
+    case 'spread': {
       return renderGraphQLSpreadField(field);
-    default:
+    }
+    default: {
       throw new Error(
         `Unknown GraphQL field type ${(field as { type: string }).type}`,
       );
+    }
   }
 }
 
@@ -167,6 +176,18 @@ function isSimpleField(field: GraphQLField): field is GraphQLSimpleField {
   return field.type === 'simple' || field.type === undefined;
 }
 
+/**
+ * Checks if two `GraphQLField` objects are mergeable.
+ *
+ * A mergeable pair of fields must either:
+ * - Be simple fields with the same name and identical arguments, or
+ * - Be of type 'spread' with the same `on` property value.
+ *
+ * @param fieldOne - The first GraphQL field.
+ * @param fieldTwo - The second GraphQL field.
+ * @returns `true` if the fields are mergeable; otherwise, `false`.
+ * @throws If simple fields have different arguments or an unknown field type is encountered.
+ */
 export function areFieldsMergeable(
   fieldOne: GraphQLField,
   fieldTwo: GraphQLField,
@@ -175,10 +196,10 @@ export function areFieldsMergeable(
     if (fieldOne.name !== fieldTwo.name) {
       return false;
     }
-    // check they match in args
+    // Check if arguments are identical
     if (!_.isEqual(fieldOne.args, fieldTwo.args)) {
       throw new Error(
-        `Unable to merge fields with different args ${fieldOne.name}`,
+        `Unable to merge fields with different args: ${fieldOne.name}`,
       );
     }
     return true;
@@ -192,33 +213,49 @@ export function areFieldsMergeable(
   throw new Error(`Unknown type: ${fieldOne.type as string}`);
 }
 
+/**
+ * Merges an array of `GraphQLField` objects, combining any mergeable fields.
+ *
+ * This function iterates through the input fields, merging entries that are determined to be mergeable
+ * based on `areFieldsMergeable`. Non-mergeable fields are added directly to the result.
+ *
+ * @param fields - An array of `GraphQLField` objects to merge.
+ * @returns An array of merged `GraphQLField` objects.
+ */
 export function mergeGraphQLFields(fields: GraphQLField[]): GraphQLField[] {
-  // FYI: Not Immutable
-  return fields.reduce((accumulator, field) => {
-    const idx = accumulator.findIndex((accumField) =>
+  const mergedFields: GraphQLField[] = [];
+
+  for (const field of fields) {
+    // Find an existing field in the merged results that is mergeable with the current field
+    const existingField = mergedFields.find((accumField) =>
       areFieldsMergeable(accumField, field),
     );
-    if (idx === -1) {
-      return [...accumulator, field];
-    }
-    return accumulator.map((accumField, i) => {
-      // perform merge operation
-      if (idx === i) {
-        if (isSimpleField(accumField) && isSimpleField(field)) {
-          return {
-            ...accumField,
-            fields: mergeGraphQLFields([
-              ...(accumField.fields ?? []),
-              ...(field.fields ?? []),
-            ]),
-          };
-        }
-      }
-      return accumField;
-    });
-  }, [] as GraphQLField[]);
-}
 
+    if (existingField && isSimpleField(existingField) && isSimpleField(field)) {
+      // Merge the `fields` property if both fields are simple
+      existingField.fields = mergeGraphQLFields([
+        ...(existingField.fields ?? []),
+        ...(field.fields ?? []),
+      ]);
+    } else {
+      // If no mergeable field is found, add the current field to the result
+      mergedFields.push(field);
+    }
+  }
+
+  return mergedFields;
+}
+/**
+ * Checks if two `GraphQLFragment` objects are mergeable.
+ *
+ * Two fragments are considered mergeable if they have the same name and type.
+ * If the names match but the types differ, an error is thrown.
+ *
+ * @param fragOne - The first GraphQL fragment.
+ * @param fragTwo - The second GraphQL fragment.
+ * @returns `true` if the fragments are mergeable; otherwise, `false`.
+ * @throws If fragments have the same name but different types.
+ */
 export function areFragmentsMergeable(
   fragOne: GraphQLFragment,
   fragTwo: GraphQLFragment,
@@ -226,7 +263,7 @@ export function areFragmentsMergeable(
   if (fragOne.name === fragTwo.name) {
     if (fragOne.type !== fragTwo.type) {
       throw new Error(
-        `Unable to merge fragments with different types ${fragOne.name}`,
+        `Unable to merge fragments with different types: ${fragOne.name}`,
       );
     }
     return true;
@@ -234,31 +271,40 @@ export function areFragmentsMergeable(
   return false;
 }
 
+/**
+ * Merges an array of `GraphQLFragment` objects, combining any mergeable fragments.
+ *
+ * This function iterates through the input fragments and merges entries that are determined to be
+ * mergeable based on `areFragmentsMergeable`. If fragments are mergeable, their `fields` are merged
+ * using `mergeGraphQLFields`. Non-mergeable fragments are added directly to the result.
+ *
+ * @param frags - An array of `GraphQLFragment` objects to merge.
+ * @returns An array of merged `GraphQLFragment` objects.
+ */
 export function mergeGraphQLFragments(
   frags: GraphQLFragment[],
 ): GraphQLFragment[] {
-  // FYI: Not Immutable
-  return frags.reduce((accumulator, frag) => {
-    const idx = accumulator.findIndex((accumFrag) =>
+  const mergedFragments: GraphQLFragment[] = [];
+
+  for (const frag of frags) {
+    // Find an existing fragment in the merged results that is mergeable with the current fragment
+    const existingFrag = mergedFragments.find((accumFrag) =>
       areFragmentsMergeable(accumFrag, frag),
     );
-    if (idx === -1) {
-      return [...accumulator, frag];
+
+    if (existingFrag) {
+      // Merge the `fields` property if the fragments are mergeable
+      existingFrag.fields = mergeGraphQLFields([
+        ...existingFrag.fields,
+        ...frag.fields,
+      ]);
+    } else {
+      // If no mergeable fragment is found, add the current fragment to the result
+      mergedFragments.push(frag);
     }
-    return accumulator.map((accumFrag, i) => {
-      // perform merge operation
-      if (idx === i) {
-        return {
-          ...accumFrag,
-          fields: mergeGraphQLFields([
-            ...(accumFrag.fields ?? []),
-            ...(frag.fields ?? []),
-          ]),
-        };
-      }
-      return accumFrag;
-    });
-  }, [] as GraphQLFragment[]);
+  }
+
+  return mergedFragments;
 }
 
 export function areFieldsIdentical(

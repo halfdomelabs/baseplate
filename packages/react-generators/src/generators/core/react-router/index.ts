@@ -1,7 +1,10 @@
-import {
-  nodeProvider,
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+
+import {
+  nodeProvider,
   TypescriptCodeUtils,
   TypescriptCodeWrapper,
   typescriptProvider,
@@ -12,16 +15,17 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { renderRoutes } from '../_shared/routes/renderRoutes.js';
-import { reactProvider } from '../react/index.js';
-import { reactAppProvider } from '../react-app/index.js';
+import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
+
 import {
-  ReactRouteLayout,
   reactRoutesProvider,
-  ReactRoute,
   reactRoutesReadOnlyProvider,
 } from '@src/providers/routes.js';
 import { notEmpty } from '@src/utils/array.js';
+
+import { renderRoutes } from '../_shared/routes/render-routes.js';
+import { reactAppProvider } from '../react-app/index.js';
+import { reactProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
@@ -66,7 +70,7 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     const layouts: ReactRouteLayout[] = [];
     const headerBlocks: TypescriptCodeBlock[] = [];
 
-    let routesComponent: TypescriptCodeExpression | undefined = undefined;
+    let routesComponent: TypescriptCodeExpression | undefined;
 
     return {
       getProviders: () => ({

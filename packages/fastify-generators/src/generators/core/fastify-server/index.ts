@@ -1,8 +1,10 @@
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
   mergeCodeEntryOptions,
   nodeProvider,
   TypescriptCodeBlock,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -10,7 +12,6 @@ import {
   createGeneratorWithChildren,
   createNonOverwriteableMap,
   createProviderType,
-  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
@@ -175,13 +176,15 @@ const FastifyServerGenerator = createGeneratorWithChildren({
 
         const orderedPlugins = R.sortBy((plugin) => {
           switch (plugin.orderPriority) {
-            case 'EARLY':
+            case 'EARLY': {
               return 0;
-            case 'END':
+            }
+            case 'END': {
               return 2;
-            case 'MIDDLE':
-            default:
+            }
+            default: {
               return 1;
+            }
           }
         }, plugins);
 

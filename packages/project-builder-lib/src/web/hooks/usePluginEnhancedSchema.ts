@@ -1,14 +1,19 @@
+import type { z } from 'zod';
+
 import { useMemo } from 'react';
-import { z } from 'zod';
+
+import type { ZodPluginWrapper } from '@src/plugins/index.js';
+
+import { zPluginWrapper } from '@src/plugins/index.js';
 
 import { useProjectDefinition } from './useProjectDefinition.js';
-import { ZodPluginWrapper, zPluginWrapper } from '@src/plugins/index.js';
 
 export function usePluginEnhancedSchema<T extends z.ZodTypeAny>(
   schema: T,
 ): ZodPluginWrapper<T> {
   const { pluginContainer } = useProjectDefinition();
-  return useMemo(() => {
-    return zPluginWrapper(schema, pluginContainer);
-  }, [schema, pluginContainer]);
+  return useMemo(
+    () => zPluginWrapper(schema, pluginContainer),
+    [schema, pluginContainer],
+  );
 }

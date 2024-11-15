@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { PluginUtils, webConfigSpec } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
@@ -10,10 +12,10 @@ import { useMemo } from 'react';
 import { HiDotsVertical } from 'react-icons/hi';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 import NotFoundPage from '../NotFound.page';
+import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 
-export function PluginConfigPage(): JSX.Element {
+export function PluginConfigPage(): React.JSX.Element {
   const {
     definitionContainer,
     pluginContainer,
@@ -95,13 +97,13 @@ export function PluginConfigPage(): JSX.Element {
             <Dropdown.Content>
               <Dropdown.Group>
                 <Dropdown.Item
-                  onSelect={() =>
+                  onSelect={() => {
                     requestConfirm({
                       title: 'Disable Plugin',
                       content: `Are you sure you want to disable the ${metadata.displayName} plugin?`,
                       onConfirm: onDisablePlugin,
-                    })
-                  }
+                    });
+                  }}
                 >
                   Disable Plugin
                 </Dropdown.Item>

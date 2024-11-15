@@ -1,17 +1,20 @@
-import { ForwardedRef } from 'react';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type { ForwardedRef } from 'react';
+import type React from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormItem } from '../FormItem/FormItem.js';
-import { MultiCombobox } from '../MultiCombobox/MultiCombobox.js';
-import { useComponentStrings } from '@src/contexts/ComponentStrings.js';
-import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
-import {
+import type {
   AddOptionRequiredFields,
   FieldProps,
   MultiSelectOptionProps,
 } from '@src/types/form.js';
+
+import { useComponentStrings } from '@src/contexts/component-strings.js';
+import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { notEmpty } from '@src/utils/array.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+import { FormItem } from '../FormItem/FormItem.js';
+import { MultiCombobox } from '../MultiCombobox/MultiCombobox.js';
 
 export interface MultiComboboxFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,
@@ -44,7 +47,7 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
     ...props
   }: MultiComboboxFieldProps<OptionType> & AddOptionRequiredFields<OptionType>,
   ref: ForwardedRef<HTMLDivElement>,
-): JSX.Element {
+): React.JSX.Element {
   const selectedOptions = value
     ?.map((val) => options.find((option) => getOptionValue(option) === val))
     .filter(notEmpty);
@@ -60,11 +63,9 @@ const MultiComboboxFieldRoot = genericForwardRef(function MultiComboboxField<
       <MultiCombobox
         value={selectedValues}
         onChange={(value) => {
-          const newValues = value.map((val) => val.value);
+          const newValues = new Set(value.map((val) => val.value));
           onChange?.(
-            options
-              ?.map(getOptionValue)
-              .filter((val) => newValues.includes(val)),
+            options.map(getOptionValue).filter((val) => newValues.has(val)),
           );
         }}
         {...props}
@@ -127,7 +128,7 @@ const MultiComboboxFieldController = genericForwardRef(
     }: MultiComboboxFieldControllerProps<OptionType, TFieldValues, TFieldName> &
       AddOptionRequiredFields<OptionType>,
     ref: ForwardedRef<HTMLDivElement>,
-  ): JSX.Element {
+  ): React.JSX.Element {
     const {
       field,
       fieldState: { error },

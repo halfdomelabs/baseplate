@@ -1,12 +1,14 @@
-import { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
 import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
-import { Control } from 'react-hook-form';
 
 export function EnumGraphQLSection({
   control,
 }: {
   control: Control<EnumConfig>;
-}): JSX.Element {
+}): React.JSX.Element {
   return (
     <SectionList.Section>
       <SectionList.SectionHeader>

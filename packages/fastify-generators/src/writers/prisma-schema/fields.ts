@@ -1,9 +1,11 @@
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
 
-import { PrismaModelAttribute, PrismaModelField } from './model-writer.js';
-import { ScalarFieldType } from '@src/types/fieldTypes.js';
+import type { ScalarFieldType } from '@src/types/field-types.js';
+
 import { doubleQuot } from '@src/utils/string.js';
+
+import type { PrismaModelAttribute, PrismaModelField } from './model-writer.js';
 
 export interface PrismaFieldTypeConfig<
   Schema extends z.ZodType = z.AnyZodObject,
@@ -172,11 +174,10 @@ export function buildPrismaScalarField<T extends ScalarFieldType>(
       : unknown;
   },
 ): PrismaModelField {
-  const typeConfig: PrismaFieldTypeConfig = PRISMA_SCALAR_FIELD_TYPES[type];
-
-  if (!typeConfig) {
+  if (!(type in PRISMA_SCALAR_FIELD_TYPES)) {
     throw new Error(`Invalid type ${type}`);
   }
+  const typeConfig: PrismaFieldTypeConfig = PRISMA_SCALAR_FIELD_TYPES[type];
 
   const {
     id,

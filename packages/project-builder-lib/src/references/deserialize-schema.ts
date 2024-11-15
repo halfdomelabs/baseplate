@@ -1,8 +1,17 @@
+import type { TypeOf, z } from 'zod';
+
+import { keyBy } from 'es-toolkit';
 import _ from 'lodash';
 import toposort from 'toposort';
-import { TypeOf, z } from 'zod';
 
-import { ZodRefPayload, ZodRefWrapper } from './ref-builder.js';
+import type { ZodRefPayload } from './ref-builder.js';
+import type { DefinitionEntity } from './types.js';
+
+import { ZodRefWrapper } from './ref-builder.js';
+
+function referenceToNameParentId(name: string, parentId?: string): string {
+  return JSON.stringify({ name, parentId });
+}
 
 export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   schema: TSchema,
@@ -18,7 +27,7 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   const duplicateEntityIds = Object.values(entitiesById).filter(
     (e) => e.length > 1,
   );
-  if (duplicateEntityIds.length) {
+  if (duplicateEntityIds.length > 0) {
     throw new Error(
       `Found multiple duplicate entity IDs: ${duplicateEntityIds
         .map(
@@ -55,31 +64,28 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   const entitiesByType = _.groupBy(entities, (e) => e.type.name);
   const referencesByType = _.groupBy(references, (r) => r.type.name);
 
-  entityTypeOrder.forEach((name) => {
+  for (const name of entityTypeOrder) {
     const entities = entitiesByType[name] ?? [];
     const references = referencesByType[name] ?? [];
 
-    function referenceToNameParentId(name: string, parentId?: string): string {
-      return JSON.stringify({ name, parentId });
-    }
-
     // resolve references to their ID
-    const entitiesByParentIdName = _.keyBy(entities, (e) => {
-      const parentPath = e.parentPath;
-      const parentId = parentPath
-        ? (_.get(data, parentPath) as string)
-        : undefined;
+    const entitiesByParentIdName: Partial<Record<string, DefinitionEntity>> =
+      keyBy(entities, (e) => {
+        const { parentPath } = e;
+        const parentId = parentPath
+          ? (_.get(data, parentPath) as string)
+          : undefined;
 
-      if (parentPath && typeof parentId !== 'string') {
-        throw new Error(
-          `Could not resolve parent path: ${parentPath.join('.')}`,
-        );
-      }
+        if (parentPath && typeof parentId !== 'string') {
+          throw new Error(
+            `Could not resolve parent path: ${parentPath.join('.')}`,
+          );
+        }
 
-      return referenceToNameParentId(e.name, parentId);
-    });
+        return referenceToNameParentId(e.name, parentId);
+      });
 
-    references.forEach((ref) => {
+    for (const ref of references) {
       const name = _.get(data, ref.path) as string;
       // parent ID should have already been resolved due to order of resolving references
       const parentId =
@@ -95,8 +101,8 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
         );
       }
       _.set(data, ref.path, resolvedEntity.id);
-    });
-  });
+    }
+  }
 
   return payload;
 }

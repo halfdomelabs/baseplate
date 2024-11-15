@@ -1,11 +1,13 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
+
 import { createProviderType } from '@halfdomelabs/sync';
 
-import { AdminCrudDataDependency } from '../_utils/data-loaders.js';
-import { GraphQLField } from '@src/writers/graphql/index.js';
+import type { GraphQLField } from '@src/writers/graphql/index.js';
+
+import type { AdminCrudDataDependency } from '../_utils/data-loaders.js';
 
 export interface AdminCrudInputValidation {
   key: string;

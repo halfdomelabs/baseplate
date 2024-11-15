@@ -1,12 +1,11 @@
-import {
-  quot,
-  TypescriptCodeBlock,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
-import { getScalarFieldTypeInfo } from '@src/types/fieldTypes.js';
-import { PrismaOutputModel } from '@src/types/prismaOutput.js';
-import { ServiceOutputDtoField } from '@src/types/serviceOutput.js';
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+
+import type { PrismaOutputModel } from '@src/types/prisma-output.js';
+import type { ServiceOutputDtoField } from '@src/types/service-output.js';
+
+import { getScalarFieldTypeInfo } from '@src/types/field-types.js';
 
 interface PrimaryKeyOutput {
   argumentName: string;

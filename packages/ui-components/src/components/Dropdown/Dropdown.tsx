@@ -2,7 +2,7 @@
 
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import React from 'react';
-import { RxChevronRight, RxCheck, RxDotFilled } from 'react-icons/rx';
+import { RxCheck, RxChevronRight, RxDotFilled } from 'react-icons/rx';
 
 import { cn } from '@src/utils';
 
@@ -186,14 +186,12 @@ DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 const DropdownMenuShortcut = ({
   className,
   ...props
-}: React.HTMLAttributes<HTMLSpanElement>): React.JSX.Element => {
-  return (
-    <span
-      className={cn('ml-auto text-xs tracking-widest opacity-60', className)}
-      {...props}
-    />
-  );
-};
+}: React.HTMLAttributes<HTMLSpanElement>): React.JSX.Element => (
+  <span
+    className={cn('ml-auto text-xs tracking-widest opacity-60', className)}
+    {...props}
+  />
+);
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut';
 
 export const Dropdown = Object.assign(DropdownMenu, {

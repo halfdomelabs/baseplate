@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.node.base.json",
-  "display": "Node.JS CLI",
-  "compilerOptions": {}
+  "display": "Node.JS CLI"
 }

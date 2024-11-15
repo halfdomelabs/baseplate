@@ -4,16 +4,18 @@ import {
 } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
 
-import {
-  ChildInputDefinition,
-  NexusDefinitionWriterOptions,
-  writeNexusInputDefinitionFromDtoFields,
-} from '../nexus-definition/index.js';
-import {
+import type {
   ServiceOutputDtoField,
   ServiceOutputDtoNestedField,
   ServiceOutputDtoScalarField,
-} from '@src/types/serviceOutput.js';
+} from '@src/types/service-output.js';
+
+import type {
+  ChildInputDefinition,
+  NexusDefinitionWriterOptions,
+} from '../nexus-definition/index.js';
+
+import { writeNexusInputDefinitionFromDtoFields } from '../nexus-definition/index.js';
 
 export interface ArgOutput {
   expression: TypescriptCodeExpression;

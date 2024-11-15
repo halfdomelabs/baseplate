@@ -25,18 +25,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
  */
 
-export { PathString } from './common.js';
-export {
+export type { PathString } from './common.js';
+export type {
   ArrayPath,
   FieldArrayPath,
   FieldArrayPathValue,
   FieldPath,
   FieldPathValue,
   FieldPathValues,
+  GlobFieldPath,
+  GlobFieldPathValue,
+  GlobPath,
+  GlobPathValue,
   Path,
   PathValue,
-  GlobFieldPath,
-  GlobPath,
-  GlobFieldPathValue,
-  GlobPathValue,
 } from './eager.js';

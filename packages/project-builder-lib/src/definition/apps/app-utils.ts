@@ -1,8 +1,9 @@
-import {
+import type {
   AppConfig,
   BackendAppConfig,
   ProjectDefinition,
 } from '@src/schema/index.js';
+
 import { computeRelativePath } from '@src/utils/path.js';
 
 function byId(projectDefinition: ProjectDefinition, id: string): AppConfig {
@@ -18,7 +19,7 @@ function getBackendApp(projectDefinition: ProjectDefinition): BackendAppConfig {
     (a): a is BackendAppConfig => a.type === 'backend',
   );
 
-  if (backendApps.length > 1 || !backendApps.length) {
+  if (backendApps.length > 1 || backendApps.length === 0) {
     throw new Error(`Only one backend app is supported and must exist`);
   }
 

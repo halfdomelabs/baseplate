@@ -1,11 +1,12 @@
+import type { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
+import type { Command } from 'commander';
+
 import {
-  getDefaultPlugins,
   getDefaultGeneratorSetupConfig,
+  getDefaultPlugins,
 } from '@halfdomelabs/project-builder-common';
-import { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
 import { startWebServer } from '@halfdomelabs/project-builder-server';
-import { Command } from 'commander';
-import fs from 'fs/promises';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pino } from 'pino';
 import { packageDirectory } from 'pkg-dir';
@@ -97,7 +98,7 @@ async function serveTestProject(projectName: string): Promise<void> {
   // check if folder exists. If not, generate it
   try {
     await fs.access(projectDirectory);
-  } catch (error) {
+  } catch {
     logger.log(`Project ${projectName} does not exist. Generating it...`);
     await createTestProject(projectName, projectDirectory);
   }

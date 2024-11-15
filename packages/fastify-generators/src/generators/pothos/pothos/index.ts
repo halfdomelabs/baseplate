@@ -1,11 +1,15 @@
+import type {
+  ImportMapper,
+  TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import {
   eslintProvider,
-  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   prettierProvider,
   tsUtilsProvider,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
@@ -14,7 +18,6 @@ import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-  NonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -183,18 +186,19 @@ const PothosGenerator = createGeneratorWithTasks({
                   `import { RequestServiceContext } from '%request-service-context'`,
                   { importMappers: [requestServiceContext] },
                 ),
-                Scalars: customScalars.length
-                  ? TypescriptCodeUtils.mergeExpressionsAsObject(
-                      Object.fromEntries(
-                        customScalars.map((scalar) => [
-                          scalar.name,
-                          TypescriptCodeUtils.createExpression(
-                            `{ Input: ${scalar.inputType}, Output: ${scalar.outputType} }`,
-                          ),
-                        ]),
-                      ),
-                    )
-                  : undefined,
+                Scalars:
+                  customScalars.length > 0
+                    ? TypescriptCodeUtils.mergeExpressionsAsObject(
+                        Object.fromEntries(
+                          customScalars.map((scalar) => [
+                            scalar.name,
+                            TypescriptCodeUtils.createExpression(
+                              `{ Input: ${scalar.inputType}, Output: ${scalar.outputType} }`,
+                            ),
+                          ]),
+                        ),
+                      )
+                    : undefined,
                 DefaultEdgesNullability: 'false',
                 DefaultFieldNullability: 'false',
                 ...Object.fromEntries(

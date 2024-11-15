@@ -1,5 +1,5 @@
-import { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
-import { ZodError, ZodIssue } from 'zod';
+import type { FixRefDeletionError } from '@halfdomelabs/project-builder-lib';
+import type { ZodError } from 'zod';
 
 export class UserVisibleError extends Error {
   constructor(
@@ -28,13 +28,10 @@ export class NotFoundError extends UserVisibleError {
 }
 
 export function formatZodError(error: ZodError): string {
-  const errorMessages: string[] = [];
-
-  error.issues.forEach((issue: ZodIssue) => {
+  const errorMessages = error.issues.map((issue) => {
     const { path, message } = issue;
     const fieldPath = path.join('.');
-    const errorMessage = `${fieldPath}: ${message}`;
-    errorMessages.push(errorMessage);
+    return `${fieldPath}: ${message}`;
   });
 
   return errorMessages.join('; ');

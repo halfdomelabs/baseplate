@@ -1,23 +1,26 @@
+import type {
+  TypescriptCodeExpression,
+  TypescriptSourceFile,
+} from '@halfdomelabs/core-generators';
+import type { InferGeneratorDescriptor } from '@halfdomelabs/sync';
+
 import {
   createTypescriptTemplateConfig,
   eslintProvider,
   nodeGitIgnoreProvider,
   nodeProvider,
+  nodeSetupProvider,
   quot,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-  TypescriptSourceFile,
-  nodeSetupProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
   copyFileAction,
-  writeTemplateAction,
-  createProviderType,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
-  InferGeneratorDescriptor,
+  createProviderType,
   createTaskConfigBuilder,
+  writeTemplateAction,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 

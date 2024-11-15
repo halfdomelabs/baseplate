@@ -1,11 +1,14 @@
+import type React from 'react';
+
 import { ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
-
-import { ProjectChooserDialog } from './ProjectChooserDialog';
-import { setLocalStorageProjectId } from '@src/services/project-id.service';
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
 import { getProjects } from 'src/services/remote';
+
+import { setLocalStorageProjectId } from '@src/services/project-id.service';
+
+import { ProjectChooserDialog } from './ProjectChooserDialog';
 
 interface ProjectChooserGateProps {
   children: React.ReactNode;
@@ -13,7 +16,7 @@ interface ProjectChooserGateProps {
 
 export function ProjectChooserGate({
   children,
-}: ProjectChooserGateProps): JSX.Element {
+}: ProjectChooserGateProps): React.JSX.Element {
   const [error, setError] = useState<unknown>(null);
   const { currentProjectId, projectsLoaded, setProjects } = useProjects();
 
@@ -22,7 +25,7 @@ export function ProjectChooserGate({
       .then((data) => {
         setProjects(data);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         logError(err);
         setError(err);
       });
@@ -40,6 +43,5 @@ export function ProjectChooserGate({
     return <ProjectChooserDialog isOpen />;
   }
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <>{children}</>;
 }

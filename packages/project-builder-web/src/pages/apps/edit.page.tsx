@@ -1,18 +1,18 @@
-import {
-  BaseAppConfig,
-  appEntityType,
-} from '@halfdomelabs/project-builder-lib';
+import type { BaseAppConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog, toast } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Alert, NotFoundCard } from 'src/components';
+import { formatError } from 'src/services/error-formatter';
 
 import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
 import WebAppForm from './edit/WebAppForm';
-import { Alert, NotFoundCard } from 'src/components';
-import { formatError } from 'src/services/error-formatter';
 
-function EditAppPage(): JSX.Element {
+function EditAppPage(): React.JSX.Element {
   const { uid } = useParams<'uid'>();
   const { parsedProject, setConfigAndFixReferences, definition } =
     useProjectDefinition();
@@ -33,8 +33,8 @@ function EditAppPage(): JSX.Element {
       });
       toast.success(`Successfully unlinked app!`);
       navigate('/apps/new');
-    } catch (err) {
-      toast.error(`Failed to unlink app: ${formatError(err)}`);
+    } catch (error) {
+      toast.error(`Failed to unlink app: ${formatError(error)}`);
     }
   };
 
@@ -79,18 +79,22 @@ function EditAppPage(): JSX.Element {
       <div>
         {(() => {
           switch (app.type) {
-            case 'backend':
+            case 'backend': {
               return <BackendAppForm appConfig={app} key={app.id} />;
-            case 'web':
+            }
+            case 'web': {
               return <WebAppForm appConfig={app} key={app.id} />;
-            case 'admin':
+            }
+            case 'admin': {
               return <AdminAppForm appConfig={app} key={app.id} />;
-            default:
+            }
+            default: {
               return (
                 <Alert type="error">
                   Unknown App Type {(app as BaseAppConfig).type}
                 </Alert>
               );
+            }
           }
         })()}
       </div>

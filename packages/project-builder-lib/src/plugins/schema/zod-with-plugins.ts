@@ -1,15 +1,18 @@
-import {
+import type {
+  input,
   ParseInput,
   ParseReturnType,
   TypeOf,
-  ZodType,
   ZodTypeAny,
   ZodTypeDef,
-  input,
 } from 'zod';
 
-import { ZodPluginContext, zodPluginSymbol } from './common.js';
-import { PluginImplementationStore } from './store.js';
+import { ZodType } from 'zod';
+
+import type { ZodPluginContext } from './common.js';
+import type { PluginImplementationStore } from './store.js';
+
+import { zodPluginSymbol } from './common.js';
 
 interface ZodPluginExtendedContext {
   [zodPluginSymbol]?: ZodPluginContext;
@@ -43,11 +46,10 @@ export class ZodWithPlugins<T extends ZodTypeAny> extends ZodType<
 
   static create = <T extends ZodTypeAny>(
     getter: (plugins: PluginImplementationStore, data: unknown) => T,
-  ): ZodWithPlugins<T> => {
-    return new ZodWithPlugins<T>({
+  ): ZodWithPlugins<T> =>
+    new ZodWithPlugins<T>({
       getter,
     });
-  };
 }
 
 export function zWithPlugins<T extends ZodTypeAny>(

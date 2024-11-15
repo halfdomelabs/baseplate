@@ -1,8 +1,8 @@
-import { PluginSpec, PluginSpecImplementation } from '../spec/types.js';
+import type { PluginSpec, PluginSpecImplementation } from '../spec/types.js';
 
 export class PluginImplementationStore {
   constructor(
-    public implementations: Record<string, PluginSpecImplementation>,
+    public implementations: Partial<Record<string, PluginSpecImplementation>>,
   ) {}
 
   getPluginSpec<TImplementation>(

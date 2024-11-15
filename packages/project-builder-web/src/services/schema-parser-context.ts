@@ -1,8 +1,9 @@
-import {
+import type {
   PluginMetadataWithPaths,
   SchemaParserContext,
-  webConfigSpec,
 } from '@halfdomelabs/project-builder-lib';
+
+import { webConfigSpec } from '@halfdomelabs/project-builder-lib';
 import {
   adminCrudInputWebSpec,
   modelTransformerWebSpec,

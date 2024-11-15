@@ -1,5 +1,10 @@
 import { z } from 'zod';
 
+import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
+import { SCALAR_FIELD_TYPES } from '@src/types/field-types.js';
+
+import { featureEntityType } from '../features/index.js';
+import { VALIDATORS } from '../utils/validation.js';
 import { modelGraphqlSchema } from './graphql.js';
 import { transformerSchema } from './transformers/transformers.js';
 import {
@@ -12,15 +17,11 @@ import {
   modelTransformerEntityType,
   modelUniqueConstraintEntityType,
 } from './types.js';
-import { featureEntityType } from '../features/index.js';
-import { VALIDATORS } from '../utils/validation.js';
-import { zEnt, zRef, zRefBuilder } from '@src/references/index.js';
-import { SCALAR_FIELD_TYPES } from '@src/types/fieldTypes.js';
 
 export * from './enums.js';
-export * from './types.js';
-export * from './transformers/index.js';
 export * from './graphql.js';
+export * from './transformers/index.js';
+export * from './types.js';
 
 export const modelScalarFieldSchema = zEnt(
   z.object({
@@ -67,7 +68,7 @@ export const modelScalarFieldSchema = zEnt(
   .superRefine((arg, ctx) => {
     // check default values
     const defaultValue = arg.options?.default;
-    const type = arg.type;
+    const { type } = arg;
     if (!defaultValue) {
       return;
     }

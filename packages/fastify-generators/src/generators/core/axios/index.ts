@@ -1,7 +1,7 @@
 import {
-  TypescriptCodeUtils,
   makeImportAndFilePath,
   nodeProvider,
+  TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {

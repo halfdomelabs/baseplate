@@ -1,14 +1,17 @@
-import {
+import type {
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
   TypescriptCodeWrapper,
+} from '@halfdomelabs/core-generators';
+import type { OrderedList } from '@halfdomelabs/sync';
+
+import {
+  TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createOrderedList,
   createProviderType,
-  OrderedList,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 

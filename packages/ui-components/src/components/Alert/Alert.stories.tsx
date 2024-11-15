@@ -1,8 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
+
+import type { IconElement } from '@src/types/react.js';
+
+import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
 
 import { Alert } from './Alert.js';
-import { STORYBOOK_ICON_SELECT } from '@src/stories/button-icons.js';
-import { IconElement } from '@src/types/react.js';
 
 const variants = ['default', 'error', 'success', 'warning'] as const;
 
@@ -45,7 +48,7 @@ function AlertContainer({
   title,
   description,
   variant,
-}: StoryProps): JSX.Element {
+}: StoryProps): React.JSX.Element {
   return (
     <Alert className={className} variant={variant}>
       {Icon && <Icon className="size-4" />}

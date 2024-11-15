@@ -22,10 +22,8 @@ export function useEventCallback<T extends (...args: unknown[]) => unknown>(
   return useMemo(() => {
     const { current } = ref;
     if (!current) {
-      return undefined;
+      return;
     }
-    return (...args) => {
-      return current(...args);
-    };
+    return (...args) => current(...args);
   }, [ref]);
 }

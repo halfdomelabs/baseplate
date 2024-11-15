@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
@@ -8,7 +10,7 @@ import {
 import _ from 'lodash';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
-function AppsLayout(): JSX.Element {
+function AppsLayout(): React.JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
   const { apps } = parsedProject.projectDefinition;

@@ -1,3 +1,3 @@
 export function quot(value: string): string {
-  return `'${value.replace("'", "\\'")}'`;
+  return `'${value.replace("'", String.raw`\'`)}'`;
 }

@@ -36,7 +36,7 @@ export function createTypedEventEmitter<
     },
     emit(eventName, payload) {
       const listeners = listenerMap.get(eventName) ?? [];
-      listeners.forEach((listener) => listener(payload));
+      for (const listener of listeners) listener(payload);
     },
   };
 }

@@ -1,15 +1,16 @@
-import {
-  PluginMetadataWithPaths,
-  webConfigSpec,
-} from '@halfdomelabs/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { webConfigSpec } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Card, toast } from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 
-import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 import { useProjects } from '@src/hooks/useProjects';
 import { getPluginStaticUrl } from '@src/services/plugins';
+
+import { loadPluginImplementationStoreWithNewPlugin } from './utils';
 
 interface PluginCardProps {
   className?: string;
@@ -21,7 +22,7 @@ export function PluginCard({
   className,
   plugin,
   isActive,
-}: PluginCardProps): JSX.Element {
+}: PluginCardProps): React.JSX.Element {
   const { currentProjectId } = useProjects();
   const {
     setConfigAndFixReferences,

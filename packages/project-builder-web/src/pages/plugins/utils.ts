@@ -1,10 +1,11 @@
-import {
+import type {
+  PluginImplementationStore,
   PluginMetadataWithPaths,
   PluginStore,
   ProjectDefinition,
-  PluginImplementationStore,
-  createPluginImplementationStore,
 } from '@halfdomelabs/project-builder-lib';
+
+import { createPluginImplementationStore } from '@halfdomelabs/project-builder-lib';
 
 export function loadPluginImplementationStoreWithNewPlugin(
   pluginStore: PluginStore,

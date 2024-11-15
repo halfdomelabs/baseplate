@@ -1,7 +1,7 @@
-import { promises as fs } from 'fs';
-import path from 'path';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 
-import { FormatFunction, FormatterProvider } from '../providers/index.js';
+import type { FormatFunction, FormatterProvider } from '../providers/index.js';
 
 export interface WriteFileOptions {
   /**
@@ -112,7 +112,7 @@ export interface PostWriteCommand {
 }
 
 export interface GeneratorOutput {
-  files: Record<string, FileData>;
+  files: Map<string, FileData>;
   postWriteCommands: PostWriteCommand[];
 }
 
@@ -128,7 +128,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
   baseDirectory: string | undefined;
 
   constructor(generatorBaseDirectory: string, formatter?: FormatterProvider) {
-    this.output = { files: {}, postWriteCommands: [] };
+    this.output = { files: new Map(), postWriteCommands: [] };
     this.generatorBaseDirectory = generatorBaseDirectory;
     this.formatter = formatter;
   }
@@ -148,16 +148,18 @@ export class OutputBuilder implements GeneratorOutputBuilder {
     options?: WriteFileOptions,
   ): void {
     const fullPath = this.resolvePath(filePath);
-    if (this.output.files[fullPath]) {
+
+    if (this.output.files.has(fullPath)) {
       throw new Error(`Cannot overwrite file ${fullPath}`);
     }
 
     if (contents instanceof Buffer && options?.shouldFormat) {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
+
     const formatter =
       this.formatter && options?.shouldFormat ? this.formatter : undefined;
-    this.output.files[fullPath] = { contents, formatter, options };
+    this.output.files.set(fullPath, { contents, formatter, options });
   }
 
   resolvePath(relativePath: string): string {

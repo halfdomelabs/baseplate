@@ -1,6 +1,5 @@
-/* eslint-disable no-await-in-loop */
-import fs from 'fs/promises';
-import path from 'path';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 export async function readDirectoryRecursive(
   directoryPath: string,
@@ -10,7 +9,6 @@ export async function readDirectoryRecursive(
   // Array to store all the file paths
   let filePaths: string[] = [];
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const file of files) {
     const filePath = `${directoryPath}/${file}`;
     const fileStat = await fs.stat(filePath);
@@ -18,7 +16,7 @@ export async function readDirectoryRecursive(
     if (fileStat.isDirectory()) {
       // If the file is a directory, recursively call the function
       const subDirectoryFiles = await readDirectoryRecursive(filePath);
-      filePaths = filePaths.concat(subDirectoryFiles);
+      filePaths = [...filePaths, ...subDirectoryFiles];
     } else {
       // If the file is a regular file, add its path to the array
       filePaths.push(filePath);
@@ -43,14 +41,14 @@ export async function listDirectories(
     directories.map((directory) => listDirectories(directory)),
   );
 
-  return directories.concat(subDirectories.flat());
+  return [...directories, ...subDirectories.flat()];
 }
 
 export async function pathExists(filePath: string): Promise<boolean> {
   try {
     await fs.access(filePath);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -71,7 +69,7 @@ export async function ensureDir(directoryPath: string): Promise<void> {
 }
 
 export async function readJSON<T>(filePath: string): Promise<T> {
-  const fileData: string = await fs.readFile(filePath, 'utf-8');
+  const fileData: string = await fs.readFile(filePath, 'utf8');
   const jsonData = JSON.parse(fileData) as T;
   return jsonData;
 }

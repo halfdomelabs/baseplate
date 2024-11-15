@@ -1,7 +1,6 @@
-import {
-  TypescriptCodeBlock,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
@@ -9,8 +8,9 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authHooksProvider } from '../auth-hooks/index.js';
 import { reactRouterProvider } from '@src/generators/core/react-router/index.js';
+
+import { authHooksProvider } from '../auth-hooks/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -41,7 +41,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
         },
       }),
       build: () => {
-        if (blocks.length) {
+        if (blocks.length > 0) {
           reactRouter.addRouteHeader(
             TypescriptCodeUtils.mergeBlocks(blocks)
               .wrap(

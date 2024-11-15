@@ -1,7 +1,7 @@
-import {
-  BackendAppConfig,
-  backendAppSchema,
-} from '@halfdomelabs/project-builder-lib';
+import type { BackendAppConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { backendAppSchema } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
@@ -10,7 +10,6 @@ import {
 import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-
 import { Button, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 
@@ -19,7 +18,7 @@ interface Props {
   appConfig: BackendAppConfig;
 }
 
-function BackendAppForm({ className, appConfig }: Props): JSX.Element {
+function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
   const { setConfigAndFixReferences } = useProjectDefinition();
 
   const formProps = useResettableForm<BackendAppConfig>({

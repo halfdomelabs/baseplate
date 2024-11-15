@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { cn } from '@src/utils';
 
 interface LoaderProps {
@@ -7,7 +9,7 @@ interface LoaderProps {
 /**
  * Loader component that displays a 3-dot loading animation.
  */
-export function Loader({ className }: LoaderProps): JSX.Element {
+export function Loader({ className }: LoaderProps): React.JSX.Element {
   return (
     <div className={cn('flex h-full items-center justify-center', className)}>
       <div className="flex items-center space-x-2">

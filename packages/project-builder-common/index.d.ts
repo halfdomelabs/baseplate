@@ -1,6 +1,6 @@
-import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
-import { GeneratorEngineSetupConfig } from '@halfdomelabs/project-builder-server';
-import { Logger } from '@halfdomelabs/sync';
+import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorEngineSetupConfig } from '@halfdomelabs/project-builder-server';
+import type { Logger } from '@halfdomelabs/sync';
 
 export declare function getDefaultPlugins(
   logger: Logger,

@@ -1,19 +1,19 @@
 import type { AppRouter } from '@halfdomelabs/project-builder-server';
+import type { TRPCLink } from '@trpc/client';
+import type { Unsubscribable } from '@trpc/server/observable';
+
 import {
-  TRPCClientError,
-  TRPCLink,
   createTRPCProxyClient,
   createWSClient,
   httpBatchLink,
   splitLink,
+  TRPCClientError,
   wsLink,
 } from '@trpc/client';
-import { Unsubscribable, observable } from '@trpc/server/observable';
+import { observable } from '@trpc/server/observable';
 import axios, { isAxiosError } from 'axios';
 
 import { createTypedEventEmitter } from '@src/utils/typed-event-emitter';
-
-const URL_BASE = undefined;
 
 let csrfToken: string | undefined;
 
@@ -31,11 +31,11 @@ export function retryLink({
   maxAttempts?: number;
 }): TRPCLink<AppRouter> {
   // initialized config
-  return () => {
+  return () =>
     // initialized in app
-    return ({ op, next }) => {
+    ({ op, next }) =>
       // initialized for request
-      return observable((observer) => {
+      observable((observer) => {
         let next$: Unsubscribable | null = null;
         let attemptsLeft = maxAttempts;
         let isDone = false;
@@ -85,18 +85,16 @@ export function retryLink({
           next$?.unsubscribe();
         };
       });
-    };
-  };
 }
 
 // Attaches CSRF token to payload of operation
 export function attachCsrfToken(): TRPCLink<AppRouter> {
   // initialized config
-  return () => {
+  return () =>
     // initialized in app
-    return ({ op, next }) => {
+    ({ op, next }) =>
       // initialized for request
-      return observable((observer) => {
+      observable((observer) => {
         let unsubscribed = false;
         let unsubscribe: Unsubscribable = {
           unsubscribe: () => {
@@ -123,28 +121,26 @@ export function attachCsrfToken(): TRPCLink<AppRouter> {
               },
             });
           })
-          .catch((err) => {
+          .catch((error: unknown) => {
             observer.error(
               new TRPCClientError('Failed to get CSRF token', {
-                cause: err as Error,
+                cause: error as Error,
               }),
             );
           });
         return unsubscribe;
       });
-    };
-  };
 }
 
-export const websocketEvents = createTypedEventEmitter<{ open: void }>();
+export const websocketEvents = createTypedEventEmitter<{ open: undefined }>();
 
 const wsClient = createWSClient({
   onOpen() {
     websocketEvents.emit('open', undefined);
   },
   url: () => {
-    const domain = window.location.origin;
-    return `${(URL_BASE ?? domain).replace(/^http/, 'ws')}/trpc`;
+    const domain = globalThis.location.origin;
+    return `${domain.replace(/^http/, 'ws')}/trpc`;
   },
 });
 
@@ -160,7 +156,7 @@ export const client = createTRPCProxyClient<AppRouter>({
       false: [
         retryLink({ maxAttempts: 3 }),
         httpBatchLink({
-          url: `${URL_BASE ?? ''}/trpc`,
+          url: `/trpc`,
           async headers() {
             return {
               'x-csrf-token': await getCsrfToken(),

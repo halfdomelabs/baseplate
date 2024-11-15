@@ -1,11 +1,12 @@
-import { z } from 'zod';
+import type { z } from 'zod';
+
+import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+
+import { createPluginSpec } from '@src/plugins/spec/types.js';
+
+import type { AdminCrudInputType } from './types.js';
 
 import { BUILT_IN_ADMIN_CRUD_INPUTS } from './built-in-input.js';
-import { AdminCrudInputType } from './types.js';
-import {
-  PluginSpecImplementation,
-  createPluginSpec,
-} from '@src/plugins/spec/types.js';
 
 /**
  * Spec for registering additional model input types
@@ -14,33 +15,29 @@ export interface AdminCrudInputSpec extends PluginSpecImplementation {
   registerAdminCrudInput: <T extends z.ZodTypeAny>(
     input: AdminCrudInputType<T>,
   ) => void;
-  getAdminCrudInputs: () => Record<string, AdminCrudInputType>;
+  getAdminCrudInputs: () => Map<string, AdminCrudInputType>;
   getAdminCrudInput: (name: string) => AdminCrudInputType;
 }
 
 export function createAdminCrudInputImplementation(): AdminCrudInputSpec {
-  const adminCrudInputs = BUILT_IN_ADMIN_CRUD_INPUTS.reduce(
-    (acc, input) => {
-      acc[input.name] = input as unknown as AdminCrudInputType;
-      return acc;
-    },
-    {} as Record<string, AdminCrudInputType>,
+  const adminCrudInputs = new Map<string, AdminCrudInputType>(
+    BUILT_IN_ADMIN_CRUD_INPUTS.map((input) => [input.name, input]),
   );
 
   return {
     registerAdminCrudInput(input) {
-      if (adminCrudInputs[input.name]) {
+      if (adminCrudInputs.has(input.name)) {
         throw new Error(
           `Admin CRUD input with name ${input.name} is already registered`,
         );
       }
-      adminCrudInputs[input.name] = input as unknown as AdminCrudInputType;
+      adminCrudInputs.set(input.name, input as unknown as AdminCrudInputType);
     },
     getAdminCrudInputs() {
       return adminCrudInputs;
     },
     getAdminCrudInput(name) {
-      const input = adminCrudInputs[name];
+      const input = adminCrudInputs.get(name);
       if (!input) {
         throw new Error(`Unable to find input with name ${name}`);
       }
