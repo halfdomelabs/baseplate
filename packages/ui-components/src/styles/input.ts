@@ -23,6 +23,7 @@ export const inputVariants = cva(
       },
     },
     defaultVariants: {
+      height: 'default',
       border: 'default',
       background: 'default',
       rightPadding: 'default',
