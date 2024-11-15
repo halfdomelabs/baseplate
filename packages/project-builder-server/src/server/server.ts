@@ -1,20 +1,23 @@
-import fastifyHelmet from '@fastify/helmet';
-import fastifyStaticPlugin from '@fastify/static';
-import fastifyWebsocketPlugin from '@fastify/websocket';
-import {
+import type {
   FeatureFlag,
   PluginMetadataWithPaths,
 } from '@halfdomelabs/project-builder-lib';
-import { FastifyBaseLogger, FastifyInstance, fastify } from 'fastify';
+import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
+import type { Logger } from 'pino';
+
+import fastifyHelmet from '@fastify/helmet';
+import fastifyStaticPlugin from '@fastify/static';
+import fastifyWebsocketPlugin from '@fastify/websocket';
+import { fastify } from 'fastify';
 import {
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod';
-import { Logger } from 'pino';
+
+import type { GeneratorEngineSetupConfig } from '@src/index.js';
 
 import { gracefulShutdownPlugin } from './graceful-shutdown.js';
 import { baseplatePlugin } from './plugin.js';
-import { GeneratorEngineSetupConfig } from '@src/index.js';
 
 export interface WebServerOptions {
   directories: string[];
@@ -39,7 +42,7 @@ export async function buildServer({
     forceCloseConnections: 'idle',
     // https://github.com/fastify/fastify/issues/4960
     logger: logger as FastifyBaseLogger,
-    maxParamLength: 10000,
+    maxParamLength: 10_000,
   });
 
   server.setValidatorCompiler(validatorCompiler);

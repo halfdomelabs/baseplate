@@ -1,11 +1,11 @@
+import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+import type { ModelConfig } from '@src/schema/index.js';
+
+import { createPluginSpec } from '@src/plugins/spec/types.js';
+
+import type { TransformerConfig } from '../schema/models/transformers/types.js';
 import type { DescriptorWithChildren } from './types.js';
-import { TransformerConfig } from '../schema/models/transformers/types.js';
-import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import {
-  PluginSpecImplementation,
-  createPluginSpec,
-} from '@src/plugins/spec/types.js';
-import { ModelConfig } from '@src/schema/index.js';
 
 export interface ModelTransformerCompiler<
   T extends TransformerConfig = TransformerConfig,
@@ -40,16 +40,16 @@ export interface ModelTransformerCompilerSpec extends PluginSpecImplementation {
 
 export function createModelTransformerCompilerImplementation(): ModelTransformerCompilerSpec {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const transformers: Record<string, ModelTransformerCompiler<any>> = {};
+  const transformers = new Map<string, ModelTransformerCompiler<any>>();
 
   return {
     registerTransformerCompiler(transformer) {
-      if (transformers[transformer.name]) {
+      if (transformers.has(transformer.name)) {
         throw new Error(
           `Model transformer with name ${transformer.name} is already registered`,
         );
       }
-      transformers[transformer.name] = transformer;
+      transformers.set(transformer.name, transformer);
     },
     getModelTransformerCompiler(name, builtInTransformers = []) {
       const builtInTransformer = builtInTransformers.find(
@@ -58,7 +58,7 @@ export function createModelTransformerCompilerImplementation(): ModelTransformer
       if (builtInTransformer) {
         return builtInTransformer as ModelTransformerCompiler;
       }
-      const transformer = transformers[name];
+      const transformer = transformers.get(name);
       if (!transformer) {
         throw new Error(`Unable to find transformer with name ${name}`);
       }

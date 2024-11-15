@@ -1,12 +1,13 @@
-import { ForwardedRef } from 'react';
-import {
+import type { ForwardedRef } from 'react';
+import type {
   ControllerRenderProps,
   FieldPath,
   FieldValues,
   UseControllerProps,
   UseControllerReturn,
-  useController,
 } from 'react-hook-form';
+
+import { useController } from 'react-hook-form';
 
 import { mergeRefs } from '../utils/refs';
 

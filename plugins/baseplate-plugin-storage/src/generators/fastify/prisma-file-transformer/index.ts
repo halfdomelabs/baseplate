@@ -1,14 +1,15 @@
+import type { PrismaOutputRelationField } from '@halfdomelabs/fastify-generators';
+import type { GeneratorDescriptor } from '@halfdomelabs/sync';
+
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
-  prismaOutputProvider,
   prismaCrudServiceSetupProvider,
+  prismaOutputProvider,
   prismaUtilsProvider,
-  PrismaOutputRelationField,
 } from '@halfdomelabs/fastify-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
-  GeneratorDescriptor,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -70,11 +71,11 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
           operationType === 'update' || foreignRelation.isOptional;
         const transformer = TypescriptCodeUtils.createExpression(
           `await validateFileUploadInput(${name}, ${quot(category)}, context${
-            operationType !== 'create'
-              ? `, existingItem${
+            operationType === 'create'
+              ? ''
+              : `, existingItem${
                   operationType === 'upsert' ? '?' : ''
                 }.${foreignRelationFieldName}`
-              : ''
           })`,
           'import {validateFileUploadInput} from "%storage-module/validate-upload-input";',
           { importMappers: [storageModule] },

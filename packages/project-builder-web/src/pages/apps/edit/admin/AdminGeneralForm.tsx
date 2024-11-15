@@ -1,5 +1,7 @@
+import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import {
-  AdminAppConfig,
   adminAppSchema,
   zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
@@ -12,17 +14,17 @@ import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-
-import { logAndFormatError } from '@src/services/error-formatter';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
+
+import { logAndFormatError } from '@src/services/error-formatter';
 
 interface Props {
   className?: string;
   appConfig: AdminAppConfig;
 }
 
-function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
+function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
   const { parsedProject, setConfigAndFixReferences, pluginContainer } =
     useProjectDefinition();
   const schemaWithPlugins = useMemo(
@@ -45,8 +47,8 @@ function AdminGeneralForm({ className, appConfig }: Props): JSX.Element {
       });
       toast.success('Successfully saved app!');
       reset(data);
-    } catch (err) {
-      toast.error(logAndFormatError(err));
+    } catch (error) {
+      toast.error(logAndFormatError(error));
     }
   });
 

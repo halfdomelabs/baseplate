@@ -1,11 +1,12 @@
+import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
+import type { BuildProjectForDirectoryOptions } from '@halfdomelabs/project-builder-server';
+
 import {
   getDefaultGeneratorSetupConfig,
   getDefaultPlugins,
 } from '@halfdomelabs/project-builder-common';
-import { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 import {
   buildProjectForDirectory,
-  BuildProjectForDirectoryOptions,
   buildToCleanFolder,
   createNodeSchemaParserContext,
 } from '@halfdomelabs/project-builder-server';
@@ -32,7 +33,7 @@ async function runMain(): Promise<void> {
 
   const generatorSetupConfig = await getDefaultGeneratorSetupConfig(logger);
 
-  program.version(version ?? 'unknown', '-v, --version');
+  program.version(version, '-v, --version');
 
   program
     .command('generate [directory]')
@@ -82,4 +83,8 @@ async function runMain(): Promise<void> {
   await program.parseAsync(process.argv);
 }
 
-runMain().catch((err) => logger.error(err));
+try {
+  await runMain();
+} catch (err) {
+  logger.error(err);
+}

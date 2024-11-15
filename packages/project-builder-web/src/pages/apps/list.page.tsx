@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Card, EmptyDisplay } from '@halfdomelabs/ui-components';
@@ -5,13 +7,13 @@ import _ from 'lodash';
 import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
-export function AppsListPage(): JSX.Element {
+export function AppsListPage(): React.JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
   const { apps } = parsedProject.projectDefinition;
   const sortedApps = _.sortBy(apps, (m) => m.name);
 
-  if (!sortedApps.length) {
+  if (sortedApps.length === 0) {
     return (
       <EmptyDisplay
         icon={MdApps}

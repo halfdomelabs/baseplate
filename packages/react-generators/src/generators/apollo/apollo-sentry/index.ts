@@ -1,7 +1,7 @@
 import {
+  makeImportAndFilePath,
   TypescriptCodeBlock,
   TypescriptCodeUtils,
-  makeImportAndFilePath,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -10,8 +10,9 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { reactApolloSetupProvider } from '../react-apollo/index.js';
 import { reactSentryProvider } from '@src/generators/core/react-sentry/index.js';
+
+import { reactApolloSetupProvider } from '../react-apollo/index.js';
 
 const descriptorSchema = z.object({});
 

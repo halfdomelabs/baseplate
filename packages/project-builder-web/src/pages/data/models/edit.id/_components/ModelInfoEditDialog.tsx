@@ -1,11 +1,13 @@
+import type React from 'react';
+
 import {
   Button,
   Dialog,
   useControlledState,
 } from '@halfdomelabs/ui-components';
 
-import { ModelInfoForm } from './ModelInfoForm';
 import { useModelForm } from '../../_hooks/useModelForm';
+import { ModelInfoForm } from './ModelInfoForm';
 
 interface ModelInfoEditDialogProps {
   open?: boolean;
@@ -19,7 +21,7 @@ export function ModelInfoEditDialog({
   onOpenChange,
   children,
   asChild,
-}: ModelInfoEditDialogProps): JSX.Element {
+}: ModelInfoEditDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
 
   const {

@@ -1,15 +1,17 @@
+import type { AuthConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import {
   AUTH_DEFAULT_ROLES,
-  AuthConfig,
   authSchema,
 } from '@halfdomelabs/project-builder-lib';
-import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { useResettableForm } from '@halfdomelabs/project-builder-lib/web';
+import {
+  useProjectDefinition,
+  useResettableForm,
+} from '@halfdomelabs/project-builder-lib/web';
 import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-
-import RoleEditorForm from './RoleEditorForm';
 import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
@@ -17,7 +19,9 @@ import { useStatus } from 'src/hooks/useStatus';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
-function AuthPage(): JSX.Element {
+import RoleEditorForm from './RoleEditorForm';
+
+function AuthPage(): React.JSX.Element {
   const { definition, parsedProject, setConfig, setConfigAndFixReferences } =
     useProjectDefinition();
 
@@ -37,9 +41,9 @@ function AuthPage(): JSX.Element {
         draftConfig.auth = data;
       });
       toast.success('Successfully saved configuration!');
-    } catch (err) {
-      logError(err);
-      setError(formatError(err));
+    } catch (error) {
+      logError(error);
+      setError(formatError(error));
     }
   };
 
@@ -58,19 +62,16 @@ function AuthPage(): JSX.Element {
     value: m.id,
   }));
 
-  const featureOptions =
-    definition.features?.map((m) => ({
-      label: m.name,
-      value: m.id,
-    })) ?? [];
+  const featureOptions = definition.features.map((m) => ({
+    label: m.name,
+    value: m.id,
+  }));
 
   return (
     <div className="space-y-4">
       <h2>Auth Configuration</h2>
       <Alert.WithStatus status={status} />
-      {!isAuthEnabled ? (
-        <Button onClick={() => setIsAuthEnabled(true)}>Enable Auth</Button>
-      ) : (
+      {isAuthEnabled ? (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Button onClick={disableAuth}>Disable Auth</Button>
           <CheckedInput.LabelledController
@@ -110,6 +111,14 @@ function AuthPage(): JSX.Element {
           <RoleEditorForm control={control} />
           <Button type="submit">Save</Button>
         </form>
+      ) : (
+        <Button
+          onClick={() => {
+            setIsAuthEnabled(true);
+          }}
+        >
+          Enable Auth
+        </Button>
       )}
     </div>
   );

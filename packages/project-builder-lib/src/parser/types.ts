@@ -1,11 +1,12 @@
-import { ProjectDefinition } from '../schema/index.js';
-import { ProjectDefinitionContainer } from '@src/index.js';
-import { PluginStore } from '@src/plugins/imports/types.js';
-import {
+import type { ProjectDefinitionContainer } from '@src/index.js';
+import type { PluginStore } from '@src/plugins/imports/types.js';
+import type {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
 } from '@src/schema/models/index.js';
+
+import type { ProjectDefinition } from '../schema/index.js';
 
 export interface ParsedModelField extends ModelScalarFieldConfig {
   isLocked?: boolean;

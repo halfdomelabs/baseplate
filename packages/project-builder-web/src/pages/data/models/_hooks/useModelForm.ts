@@ -1,10 +1,13 @@
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { UseFormReturn } from 'react-hook-form';
+import type { z } from 'zod';
+
 import {
   FeatureUtils,
-  ModelConfig,
-  ModelUtils,
   modelEntityType,
   modelScalarFieldEntityType,
   modelSchema,
+  ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import {
   usePluginEnhancedSchema,
@@ -15,14 +18,13 @@ import { toast, useEventCallback } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import _ from 'lodash';
 import { useMemo } from 'react';
-import { UseFormReturn } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { z } from 'zod';
+import { logAndFormatError } from 'src/services/error-formatter';
 
-import { createModelEditLink } from '../_utils/url';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { NotFoundError, RefDeleteError } from '@src/utils/error';
-import { logAndFormatError } from 'src/services/error-formatter';
+
+import { createModelEditLink } from '../_utils/url';
 
 interface UseModelFormOptions {
   schema?: z.ZodTypeAny;
@@ -84,9 +86,9 @@ export function useModelForm<
 
   const defaultValues = useMemo(() => {
     const modelToUse = model ?? newModel;
-    return !schema
-      ? modelToUse
-      : (modelSchemaWithPlugins.parse(modelToUse) as ModelConfig);
+    return schema
+      ? (modelSchemaWithPlugins.parse(modelToUse) as ModelConfig)
+      : modelToUse;
   }, [model, newModel, schema, modelSchemaWithPlugins]);
 
   const form = useResettableForm<ModelConfig>({
@@ -108,11 +110,11 @@ export function useModelForm<
             // generate new ID if new
             id: model?.id ?? modelEntityType.generateNewId(),
           };
-          if (!updatedModel.model?.fields?.length) {
+          if (updatedModel.model.fields.length === 0) {
             toast.error('Model must have at least one field.');
             return;
           }
-          if (!updatedModel.model?.primaryKeyFieldRefs?.length) {
+          if (updatedModel.model.primaryKeyFieldRefs.length === 0) {
             toast.error('Model must have at least one primary key field.');
             return;
           }
@@ -132,31 +134,31 @@ export function useModelForm<
           // clear out any service methods that are disabled
           const { service } = updatedModel;
           if (service) {
-            if (!service.create?.enabled) {
-              service.create = undefined;
-            } else {
+            if (service.create?.enabled) {
               if (
-                !service.create?.fields?.length &&
-                !service.create?.transformerNames?.length
+                !service.create.fields?.length &&
+                !service.create.transformerNames?.length
               ) {
                 toast.error(
                   'Create method must have at least one field or transformer.',
                 );
                 return;
               }
-            }
-            if (!service.update?.enabled) {
-              service.update = undefined;
             } else {
+              service.create = undefined;
+            }
+            if (service.update?.enabled) {
               if (
-                !service.update?.fields?.length &&
-                !service.update?.transformerNames?.length
+                !service.update.fields?.length &&
+                !service.update.transformerNames?.length
               ) {
                 toast.error(
                   'Update method must have at least one field or transformer.',
                 );
                 return;
               }
+            } else {
+              service.update = undefined;
             }
             if (!service.delete?.enabled) {
               service.delete = undefined;
@@ -174,9 +176,7 @@ export function useModelForm<
             );
             draftConfig.models = _.sortBy(
               [
-                ...(draftConfig.models?.filter(
-                  (m) => m.id !== updatedModel.id,
-                ) ?? []),
+                ...draftConfig.models.filter((m) => m.id !== updatedModel.id),
                 updatedModel,
               ],
               (m) => m.name,
@@ -191,12 +191,12 @@ export function useModelForm<
             toast.success('Successfully saved model!');
           }
           handleSubmitSuccess?.();
-        } catch (err) {
-          if (err instanceof RefDeleteError) {
-            showRefIssues({ issues: err.issues });
+        } catch (error) {
+          if (error instanceof RefDeleteError) {
+            showRefIssues({ issues: error.issues });
             return;
           }
-          toast.error(logAndFormatError(err));
+          toast.error(logAndFormatError(error));
         }
       }),
     [

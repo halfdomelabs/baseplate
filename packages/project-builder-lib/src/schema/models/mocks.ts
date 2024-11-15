@@ -1,8 +1,11 @@
-import {
+import type {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ModelUniqueConstraintConfig,
+} from './index.js';
+
+import {
   modelEntityType,
   modelForeignRelationEntityType,
   modelLocalRelationEntityType,

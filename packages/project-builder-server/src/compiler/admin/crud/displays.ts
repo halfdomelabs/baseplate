@@ -1,12 +1,13 @@
-import {
+import type {
   AdminAppConfig,
   AdminCrudDisplayConfig,
   AdminCrudForeignDisplayConfig,
   AdminCrudTextDisplayConfig,
-  ModelFieldUtils,
 } from '@halfdomelabs/project-builder-lib';
 
-import { AppEntryBuilder } from '@src/compiler/appEntryBuilder.js';
+import { ModelFieldUtils } from '@halfdomelabs/project-builder-lib';
+
+import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
 
 function compileAdminCrudForeignDisplay(
   builder: AppEntryBuilder<AdminAppConfig>,
@@ -36,7 +37,7 @@ function compileAdminCrudForeignDisplay(
     generator: '@halfdomelabs/react/admin/admin-crud-foreign-display',
     isOptional: ModelFieldUtils.isRelationOptional(model, relation),
     localField,
-    foreignModelName: foreignModelName,
+    foreignModelName,
     labelExpression: field.labelExpression,
     valueExpression: field.valueExpression,
   };
@@ -67,13 +68,16 @@ export function compileAdminCrudDisplay(
   modelId: string,
 ): unknown {
   switch (field.type) {
-    case 'text':
+    case 'text': {
       return compileAdminCrudTextDisplay(builder, field, modelId);
-    case 'foreign':
+    }
+    case 'foreign': {
       return compileAdminCrudForeignDisplay(builder, field, modelId);
-    default:
+    }
+    default: {
       throw new Error(
         `Unknown admin crud display ${(field as { type: string }).type}`,
       );
+    }
   }
 }

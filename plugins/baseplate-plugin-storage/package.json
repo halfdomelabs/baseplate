@@ -20,7 +20,7 @@
     "build:tsc": "tsc -p tsconfig.build.json && tsc-alias",
     "build:vite": "vite build",
     "clean": "rm -rf ./dist",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
+    "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "typecheck": "tsc --noEmit",
@@ -62,7 +62,7 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-static-copy": "^1.0.5",
-    "vite-tsconfig-paths": "4.3.2",
+    "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {

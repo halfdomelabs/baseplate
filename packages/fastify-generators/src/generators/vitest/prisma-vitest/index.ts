@@ -1,5 +1,6 @@
+import type { ImportMapper } from '@halfdomelabs/core-generators';
+
 import {
-  ImportMapper,
   makeImportAndFilePath,
   nodeProvider,
   projectProvider,
@@ -8,13 +9,14 @@ import {
   vitestProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { fastifyVitestProvider } from '../fastify-vitest/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+
+import { fastifyVitestProvider } from '../fastify-vitest/index.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),

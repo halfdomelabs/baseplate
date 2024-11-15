@@ -1,12 +1,13 @@
 import _ from 'lodash';
 
-import { ModelUtils } from '@src/definition/index.js';
-import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import {
+import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type {
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
-  modelScalarFieldEntityType,
 } from '@src/schema/index.js';
+
+import { ModelUtils } from '@src/definition/index.js';
+import { modelScalarFieldEntityType } from '@src/schema/index.js';
 
 export interface DiffOperation<TField> {
   type: 'add' | 'update' | 'remove';
@@ -70,7 +71,7 @@ function diffModelFields<T extends { id?: string; name: string }>(
 
   if (enableRemove) {
     for (const field of current) {
-      if (!desired.find((f) => f.name === field.name)) {
+      if (!desired.some((f) => f.name === field.name)) {
         operations.push({
           type: 'remove',
           name: field.name,
@@ -92,16 +93,18 @@ function applyModelFieldsPatch<T extends { id?: string; name: string }>(
   for (const { type, field } of patch) {
     const existingField = fields.find((f) => f.name === field.name);
     switch (type) {
-      case 'add':
+      case 'add': {
         fields.push(field);
         break;
-      case 'remove':
+      }
+      case 'remove': {
         fields.splice(
           fields.findIndex((f) => f.name === field.name),
           1,
         );
         break;
-      case 'update':
+      }
+      case 'update': {
         if (!existingField) {
           throw new Error(`Cannot apply patch. Field ${field.name} not found`);
         }
@@ -114,6 +117,7 @@ function applyModelFieldsPatch<T extends { id?: string; name: string }>(
           },
         );
         break;
+      }
     }
   }
 
@@ -150,7 +154,7 @@ export function diffModel(
       ? undefined
       : desired.primaryKeyFieldRefs,
   };
-  return diff.fields.length || diff.relations.length ? diff : undefined;
+  return diff.fields.length > 0 || diff.relations.length > 0 ? diff : undefined;
 }
 
 export function applyModelPatchInPlace(
@@ -193,7 +197,7 @@ export function applyModelPatchInPlace(
     }
     return field.id;
   };
-  current.relations = current.relations?.map((relation) => ({
+  current.relations = current.relations.map((relation) => ({
     ...relation,
     references: relation.references.map((reference) => ({
       ...reference,

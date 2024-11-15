@@ -1,4 +1,7 @@
-import { WebAppConfig, webAppSchema } from '@halfdomelabs/project-builder-lib';
+import type { WebAppConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { webAppSchema } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
   useProjectDefinition,
@@ -7,7 +10,6 @@ import {
 import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
@@ -17,7 +19,7 @@ interface Props {
   appConfig: WebAppConfig;
 }
 
-function WebAppForm({ className, appConfig }: Props): JSX.Element {
+function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
   const { setConfigAndFixReferences } = useProjectDefinition();
 
   const formProps = useResettableForm<WebAppConfig>({

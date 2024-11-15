@@ -1,13 +1,16 @@
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SidebarLayout, NavigationTabs } from '@halfdomelabs/ui-components';
+import { NavigationTabs, SidebarLayout } from '@halfdomelabs/ui-components';
 import _ from 'lodash';
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
-import { EnumsSidebarList } from './enums/EnumsSidebarList';
-import { ModelsSidebarList } from './models/_components/ModelsSidebarList';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 
-export function DataLayout(): JSX.Element {
+import { EnumsSidebarList } from './enums/EnumsSidebarList';
+import { ModelsSidebarList } from './models/_components/ModelsSidebarList';
+
+export function DataLayout(): React.JSX.Element {
   const {
     definition: { models = [], enums = [] },
   } = useProjectDefinition();

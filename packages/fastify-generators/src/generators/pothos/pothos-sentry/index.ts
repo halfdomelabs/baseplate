@@ -11,10 +11,11 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { pothosSetupProvider } from '../pothos/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/index.js';
 import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
+
+import { pothosSetupProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({});
 

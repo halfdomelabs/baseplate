@@ -1,7 +1,10 @@
-import {
+import type {
   ModelConfig,
   TransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+
 import {
   modelTransformerWebSpec,
   useProjectDefinition,
@@ -13,13 +16,12 @@ import {
   SectionList,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
-import { UseFormReturn, useFieldArray, useWatch } from 'react-hook-form';
-import { MdAdd, MdEdit } from 'react-icons/md';
-import { MdOutlineDelete } from 'react-icons/md';
+import { useFieldArray, useWatch } from 'react-hook-form';
+import { MdAdd, MdEdit, MdOutlineDelete } from 'react-icons/md';
 
-import { ServiceTransformerDialog } from './ServiceTransformerDialog';
 import { BUILT_IN_TRANSFORMER_WEB_CONFIGS } from '../../../_constants';
 import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
+import { ServiceTransformerDialog } from './ServiceTransformerDialog';
 
 interface Props {
   className?: string;
@@ -36,7 +38,7 @@ function ServiceTransformerRecord({
   idx: number;
   onUpdate: (transformer: TransformerConfig, idx: number) => void;
   onRemove: (idx: number) => void;
-}): JSX.Element {
+}): React.JSX.Element {
   const { pluginContainer, definitionContainer } = useProjectDefinition();
   const { control } = formProps;
 
@@ -57,20 +59,20 @@ function ServiceTransformerRecord({
         <RecordView.Item title="Type">
           {transformerConfig.label}
         </RecordView.Item>
-        {summary.map((item) => {
-          return (
-            <RecordView.Item key={item.label} title={item.label}>
-              {item.description}
-            </RecordView.Item>
-          );
-        })}
+        {summary.map((item) => (
+          <RecordView.Item key={item.label} title={item.label}>
+            {item.description}
+          </RecordView.Item>
+        ))}
       </RecordView.ItemList>
       <RecordView.Actions>
         {transformerConfig.Form && (
           <ServiceTransformerDialog
             webConfig={transformerConfig}
             transformer={field}
-            onUpdate={(transformer) => onUpdate(transformer, idx)}
+            onUpdate={(transformer) => {
+              onUpdate(transformer, idx);
+            }}
             asChild
           >
             <Button.WithOnlyIcon icon={MdEdit} title="Edit" />
@@ -78,7 +80,9 @@ function ServiceTransformerRecord({
         )}
         <Button.WithOnlyIcon
           icon={MdOutlineDelete}
-          onClick={() => onRemove(idx)}
+          onClick={() => {
+            onRemove(idx);
+          }}
           title="Remove"
           className="text-destructive hover:text-destructive-hover"
         />
@@ -90,7 +94,7 @@ function ServiceTransformerRecord({
 export function ServiceTransformersSection({
   className,
   formProps,
-}: Props): JSX.Element | null {
+}: Props): React.JSX.Element | null {
   const { control } = formProps;
   const { fields, remove, append, update } = useFieldArray({
     control,
@@ -137,7 +141,7 @@ export function ServiceTransformersSection({
             }}
           />
         ))}
-        {!!addableTransformers.length && (
+        {addableTransformers.length > 0 && (
           <Dropdown>
             <Dropdown.Trigger asChild>
               <Button.WithIcon icon={MdAdd} variant="secondary" size="sm">
@@ -146,33 +150,31 @@ export function ServiceTransformersSection({
             </Dropdown.Trigger>
             <Dropdown.Content>
               <Dropdown.Group>
-                {addableTransformers.map((transformer, idx) => {
-                  return (
-                    <Dropdown.Item
-                      key={transformer.name}
-                      onSelect={() => {
-                        if (transformer.Form) {
-                          setAddableTransformerIdx(idx);
-                          setIsNewTransformerDialogOpen(true);
-                        } else {
-                          append(
-                            transformer.getNewTransformer(
-                              definitionContainer,
-                              modelConfig,
-                            ),
-                          );
-                        }
-                      }}
-                    >
-                      <div className="flex flex-col gap-1">
-                        <div>{transformer.label}</div>
-                        <div className="text-style-muted">
-                          {transformer.description}
-                        </div>
+                {addableTransformers.map((transformer, idx) => (
+                  <Dropdown.Item
+                    key={transformer.name}
+                    onSelect={() => {
+                      if (transformer.Form) {
+                        setAddableTransformerIdx(idx);
+                        setIsNewTransformerDialogOpen(true);
+                      } else {
+                        append(
+                          transformer.getNewTransformer(
+                            definitionContainer,
+                            modelConfig,
+                          ),
+                        );
+                      }
+                    }}
+                  >
+                    <div className="flex flex-col gap-1">
+                      <div>{transformer.label}</div>
+                      <div className="text-style-muted">
+                        {transformer.description}
                       </div>
-                    </Dropdown.Item>
-                  );
-                })}
+                    </div>
+                  </Dropdown.Item>
+                ))}
               </Dropdown.Group>
             </Dropdown.Content>
           </Dropdown>

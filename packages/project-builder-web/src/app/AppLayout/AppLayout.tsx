@@ -1,14 +1,17 @@
+import type React from 'react';
+
 import { Button, Sheet } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { MdMenu } from 'react-icons/md';
 import { Outlet } from 'react-router-dom';
 
+import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
+
+import ProjectSyncModal from '../components/ProjectSyncModal';
+import { ProjectSyncStatus } from '../components/ProjectSyncStatus';
 import { AppBreadcrumbs } from './AppBreadcrumbs';
 import { AppDesktopSidebar } from './AppDesktopSidebar';
 import { AppMobileSidebar } from './AppMobileSidebar';
-import ProjectSyncModal from '../components/ProjectSyncModal';
-import { ProjectSyncStatus } from '../components/ProjectSyncStatus';
-import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 
 interface AppLayoutProps {
   className?: string;
@@ -19,7 +22,7 @@ interface AppLayoutProps {
  *
  * See https://ui.shadcn.com/blocks
  */
-export function AppLayout({ className }: AppLayoutProps): JSX.Element {
+export function AppLayout({ className }: AppLayoutProps): React.JSX.Element {
   return (
     <div
       className={clsx(

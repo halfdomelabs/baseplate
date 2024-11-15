@@ -1,18 +1,18 @@
-/* eslint-disable max-classes-per-file */
 import indentString from 'indent-string';
 import * as R from 'ramda';
 
-import { PrismaModelBlockWriter } from './model-writer.js';
-import {
+import type {
+  PrismaOutputEnum,
+  PrismaOutputModel,
+} from '@src/types/prisma-output.js';
+
+import type { PrismaModelBlockWriter } from './model-writer.js';
+import type {
   PrismaDatasourceBlock,
   PrismaEnumBlock,
   PrismaGeneratorBlock,
   PrismaSchemaBlock,
 } from './types.js';
-import {
-  PrismaOutputEnum,
-  PrismaOutputModel,
-} from '@src/types/prismaOutput.js';
 
 function formatBlock(block: PrismaSchemaBlock): string {
   return `

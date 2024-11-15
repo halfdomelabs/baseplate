@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import { Table } from './Table.js';
 import { Button } from '../Button/Button.js';
+import { Table } from './Table.js';
 
 const meta = {
   component: Table,

@@ -1,8 +1,9 @@
 import type { Config } from 'tailwindcss';
-import defaultTheme from 'tailwindcss/defaultTheme';
+
 import headlessUi from '@headlessui/tailwindcss';
-import plugin from 'tailwindcss/plugin';
 import tailwindCssAnimate from 'tailwindcss-animate';
+import defaultTheme from 'tailwindcss/defaultTheme';
+import plugin from 'tailwindcss/plugin';
 
 const config: Config = {
   content: ['./src/**/*.{js,jsx,ts,tsx}'],
@@ -76,7 +77,8 @@ const config: Config = {
     headlessUi,
     tailwindCssAnimate,
     // custom typography plugin
-    plugin(function ({ addBase, addUtilities, theme }) {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    plugin(({ addBase, addUtilities, theme }) => {
       addBase({
         h1: {
           fontSize: theme('fontSize.3xl'),

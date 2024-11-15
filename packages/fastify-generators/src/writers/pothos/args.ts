@@ -1,21 +1,22 @@
-import {
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
 
-import { PothosTypeDefinition } from './definitions.js';
+import type {
+  ServiceOutputDtoField,
+  ServiceOutputDtoNestedField,
+  ServiceOutputDtoScalarField,
+} from '@src/types/service-output.js';
+
+import type { PothosTypeDefinition } from './definitions.js';
+import type { PothosWriterOptions } from './options.js';
+
 import {
   getPothosMethodAndTypeForScalar,
   writePothosFieldOptions,
 } from './helpers.js';
 import { getPothosTypeForNestedInput } from './input-types.js';
-import { PothosWriterOptions } from './options.js';
-import {
-  ServiceOutputDtoField,
-  ServiceOutputDtoNestedField,
-  ServiceOutputDtoScalarField,
-} from '@src/types/serviceOutput.js';
 
 export interface PothosArgOutput {
   expression: TypescriptCodeExpression;

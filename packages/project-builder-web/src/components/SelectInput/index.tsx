@@ -1,13 +1,14 @@
-import clsx from 'clsx';
-import {
+import type React from 'react';
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
-  get,
   UseFormRegisterReturn,
-  useFormState,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { get, useFormState } from 'react-hook-form';
 
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
@@ -17,7 +18,7 @@ interface Props {
   className?: string;
   name?: string;
   disabled?: boolean;
-  onChange?(value: string): void;
+  onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
 }
@@ -30,7 +31,7 @@ function SelectInput({
   onChange,
   value,
   register,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const onChangeHandler =
     onChange &&
     ((event: React.ChangeEvent<HTMLSelectElement>): void => {
@@ -71,9 +72,8 @@ SelectInput.Labelled = function SelectInputLabelled({
   className,
   error,
   ...rest
-}: SelectInputLabelledProps): JSX.Element {
+}: SelectInputLabelledProps): React.JSX.Element {
   return (
-    // eslint-disable-next-line jsx-a11y/label-has-associated-control
     <label className={clsx('block', className)}>
       {label && <FormLabel>{label}</FormLabel>}
       <SelectInput {...rest} />
@@ -90,7 +90,11 @@ interface SelectInputLabelledController<T extends FieldValues>
 
 SelectInput.LabelledController = function SelectInputController<
   T extends FieldValues,
->({ name, control, ...rest }: SelectInputLabelledController<T>): JSX.Element {
+>({
+  name,
+  control,
+  ...rest
+}: SelectInputLabelledController<T>): React.JSX.Element {
   const { errors } = useFormState({ name, control });
   const error = get(errors, name) as FieldError | undefined;
 

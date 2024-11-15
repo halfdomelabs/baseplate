@@ -1,28 +1,29 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 
-import {
+import type {
+  ServiceOutputDtoField,
+  ServiceOutputDtoNestedField,
+} from '@src/types/service-output.js';
+
+import { notEmpty } from '@src/utils/array.js';
+import { lowerCaseFirst } from '@src/utils/case.js';
+
+import type {
   PothosExpressionWithChildren,
   PothosTypeDefinitionWithChildren,
 } from './definitions.js';
+import type { PothosWriterOptions } from './options.js';
+
 import { wrapPothosTypeWithList, writePothosFieldOptions } from './helpers.js';
-import {
-  getExpressionFromPothosTypeReference,
-  PothosWriterOptions,
-} from './options.js';
+import { getExpressionFromPothosTypeReference } from './options.js';
 import { writePothosInputFieldFromDtoScalarField } from './scalar-fields.js';
-import {
-  ServiceOutputDtoField,
-  ServiceOutputDtoNestedField,
-} from '@src/types/serviceOutput.js';
-import { notEmpty } from '@src/utils/array.js';
-import { lowerCaseFirst } from '@src/utils/case.js';
 
 export function writePothosInputFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
   // recursive call
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
   const pothosType = getPothosTypeForNestedInput(field, options);
 
   const fieldOptions = writePothosFieldOptions({

@@ -15,5 +15,6 @@ export default createPlatformPluginExport({
       name: 'file',
       schema: adminCrudFileInputSchema,
     });
+    return {};
   },
 });

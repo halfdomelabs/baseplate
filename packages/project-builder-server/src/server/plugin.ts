@@ -1,29 +1,28 @@
-import {
+import type {
   FeatureFlag,
   PluginMetadataWithPaths,
 } from '@halfdomelabs/project-builder-lib';
-import {
-  FastifyTRPCPluginOptions,
-  fastifyTRPCPlugin,
-} from '@trpc/server/adapters/fastify';
-import crypto from 'crypto';
-import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import fs from 'fs';
+import type { FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
+import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+
+import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
 import mime from 'mime';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 
-import { ProjectBuilderService } from '../service/builder-service.js';
+import type { AppRouter } from '@src/api/index.js';
+import type { GeneratorEngineSetupConfig } from '@src/sync/index.js';
+
 import { createContext } from '@src/api/context.js';
 import { getCsrfToken } from '@src/api/crsf.js';
-import { AppRouter, createAppRouter } from '@src/api/index.js';
-import {
-  GeneratorEngineSetupConfig,
-  getGeneratorEngine,
-} from '@src/sync/index.js';
+import { createAppRouter } from '@src/api/index.js';
+import { getGeneratorEngine } from '@src/sync/index.js';
 import { pathSafeJoin } from '@src/utils/paths.js';
 
-/* eslint-disable @typescript-eslint/no-floating-promises */
+import { ProjectBuilderService } from '../service/builder-service.js';
+
 // FastifyReply has a then method but it's not a promise
 // https://github.com/typescript-eslint/typescript-eslint/issues/2640
 
@@ -191,13 +190,17 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
   });
 
   fastify.addHook('onClose', () => {
-    services.map((service) => service.close());
+    services.map((service) => {
+      service.close();
+    });
   });
 
   // pre-warm up generator engine so syncing is faster on first request
   setTimeout(() => {
     getGeneratorEngine(generatorSetupConfig)
       .preloadGenerators()
-      .catch((err) => fastify.log.error(err));
+      .catch((error: unknown) => {
+        fastify.log.error(error);
+      });
   }, 500);
 };

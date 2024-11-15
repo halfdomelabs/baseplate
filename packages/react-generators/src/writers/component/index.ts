@@ -1,7 +1,6 @@
-import {
-  TypescriptCodeBlock,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 
 interface ReactComponent {
   name: string;

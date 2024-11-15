@@ -1,20 +1,22 @@
+import type { DocsContainerProps } from '@storybook/addon-docs';
 import type { Preview } from '@storybook/react';
-import { themes } from '@storybook/theming';
-import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
-import React, { useEffect, useState } from 'react';
+
 import { DocsContainer } from '@storybook/addon-docs';
 import { addons } from '@storybook/preview-api';
+import { themes } from '@storybook/theming';
+import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Toaster } from '../src/components/Toaster/Toaster';
-import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
+import { DARK_MODE_EVENT_NAME } from 'storybook-dark-mode';
 
+import { Toaster } from '../src/components/Toaster/Toaster';
+import CustomTheme from './CustomTheme';
 import '../src/font.css';
 import '../src/styles.css';
-import CustomTheme from './CustomTheme';
+import { isDarkModeEnabled, setDarkModeEnabled } from './dark-mode';
 
 let hasToasterRendered = false;
 
-const ToasterPortal = () => {
+const ToasterPortal = (): React.JSX.Element | null => {
   const [shouldRender, setShouldRender] = useState(false);
   useEffect(() => {
     if (hasToasterRendered) return;
@@ -29,7 +31,7 @@ const ToasterPortal = () => {
 };
 
 export const decorators = [
-  (Story) => (
+  (Story: React.ElementType) => (
     <>
       <Story />
       <ToasterPortal />
@@ -55,12 +57,14 @@ const preview: Preview = {
       stylePreview: true,
     },
     docs: {
-      container: (props) => {
+      container: (props: DocsContainerProps) => {
         // workaround for https://github.com/hipstersmoothie/storybook-dark-mode/issues/282
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [isDark, setIsDark] = useState(isDarkModeEnabled());
 
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         useEffect(() => {
-          const handleDarkModeChange = (shouldBeDark: boolean) => {
+          const handleDarkModeChange = (shouldBeDark: boolean): void => {
             setIsDark(shouldBeDark);
             setDarkModeEnabled(shouldBeDark);
           };

@@ -9,12 +9,13 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { pothosSetupProvider } from '../pothos/index.js';
 import {
   prismaOutputProvider,
   prismaSchemaProvider,
 } from '@src/generators/prisma/prisma/index.js';
 import { createPrismaSchemaGeneratorBlock } from '@src/writers/prisma-schema/index.js';
+
+import { pothosSetupProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({});
 

@@ -1,11 +1,13 @@
-import {
+import type {
   ModelConfig,
   ModelScalarFieldConfig,
-  modelScalarFieldEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
+
+import { modelScalarFieldEntityType } from '@halfdomelabs/project-builder-lib';
 import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
-import { UseFieldArrayAppend, UseFormSetValue } from 'react-hook-form';
 import { MdExpandMore } from 'react-icons/md';
 
 import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
@@ -25,13 +27,13 @@ export function ModelAddFieldButton({
   className,
   appendField,
   setValue,
-}: ModelAddFieldButtonProps): JSX.Element {
-  const fieldNames = useEditedModelConfig((model) => {
-    return model.model.fields.map((f) => f.name);
-  });
-  const primaryKeyFieldLength = useEditedModelConfig((model) => {
-    return model.model.primaryKeyFieldRefs.length;
-  });
+}: ModelAddFieldButtonProps): React.JSX.Element {
+  const fieldNames = useEditedModelConfig((model) =>
+    model.model.fields.map((f) => f.name),
+  );
+  const primaryKeyFieldLength = useEditedModelConfig(
+    (model) => model.model.primaryKeyFieldRefs.length,
+  );
   const availableAutoFields = useMemo(() => {
     const autoFields: AutoAddField[] = [];
     if (!primaryKeyFieldLength) {
@@ -77,7 +79,7 @@ export function ModelAddFieldButton({
   }, [fieldNames, primaryKeyFieldLength]);
 
   const applyAutoField = (autoField: AutoAddField): void => {
-    autoField.fields.forEach(({ isPrimaryKey, ...field }) => {
+    for (const { isPrimaryKey, ...field } of autoField.fields) {
       const fieldId = modelScalarFieldEntityType.generateNewId();
       if (!fieldNames.includes(field.name)) {
         appendField({
@@ -88,19 +90,19 @@ export function ModelAddFieldButton({
       if (isPrimaryKey) {
         setValue('model.primaryKeyFieldRefs', [fieldId], { shouldDirty: true });
       }
-    });
+    }
   };
   return (
     <ButtonGroup className={className}>
       <ButtonGroup.Button
         variant="secondary"
-        onClick={() =>
+        onClick={() => {
           appendField({
             id: modelScalarFieldEntityType.generateNewId(),
             name: '',
             type: 'string',
-          })
-        }
+          });
+        }}
         size="sm"
       >
         Add Field
@@ -115,7 +117,9 @@ export function ModelAddFieldButton({
           {availableAutoFields.map((field) => (
             <Dropdown.Item
               key={field.name}
-              onClick={() => applyAutoField(field)}
+              onClick={() => {
+                applyAutoField(field);
+              }}
             >
               {field.name}
             </Dropdown.Item>

@@ -1,13 +1,16 @@
-import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
-import { PluginCard } from './PluginCard';
 import { useProjects } from '@src/hooks/useProjects';
 import { client } from '@src/services/api';
 
-export function PluginsHomePage(): JSX.Element {
+import { PluginCard } from './PluginCard';
+
+export function PluginsHomePage(): React.JSX.Element {
   const { currentProjectId } = useProjects();
   const [plugins, setPlugins] = useState<PluginMetadataWithPaths[] | null>(
     null,
@@ -30,7 +33,7 @@ export function PluginsHomePage(): JSX.Element {
     return <ErrorableLoader error={error} />;
   }
 
-  if (!plugins.length) {
+  if (plugins.length === 0) {
     return (
       <EmptyDisplay
         header="No plugins available."
@@ -68,7 +71,7 @@ export function PluginsHomePage(): JSX.Element {
         To add additional plugins, you can install them to your root package
         with <strong>pnpm</strong>.
       </p>
-      {!installedPlugins.length ? null : (
+      {installedPlugins.length === 0 ? null : (
         <>
           <h3>Active Plugins ({installedPlugins.length})</h3>
           {plugins.map((plugin) => (
@@ -76,7 +79,7 @@ export function PluginsHomePage(): JSX.Element {
           ))}
         </>
       )}
-      {!uninstalledPlugins.length ? null : (
+      {uninstalledPlugins.length === 0 ? null : (
         <>
           <h3>Available Plugins ({uninstalledPlugins.length})</h3>
           {plugins.map((plugin) => (

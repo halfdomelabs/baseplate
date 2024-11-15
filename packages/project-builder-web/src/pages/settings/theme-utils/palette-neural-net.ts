@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/numeric-separators-style */
 export function generatePaletteNN(color: {
   r: number;
   g: number;

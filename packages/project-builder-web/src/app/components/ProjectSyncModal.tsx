@@ -1,3 +1,7 @@
+import type React from 'react';
+import type { ConsoleRef } from 'src/components/Console';
+import type { FilePayload } from 'src/services/remote';
+
 import { prettyStableStringify } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockBeforeContinue,
@@ -7,17 +11,17 @@ import { Button, Dialog, toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
+import Console from 'src/components/Console';
+import { formatError } from 'src/services/error-formatter';
+import { startSync } from 'src/services/remote';
 
 import { useProjects } from '@src/hooks/useProjects';
-import Console, { ConsoleRef } from 'src/components/Console';
-import { formatError } from 'src/services/error-formatter';
-import { FilePayload, startSync } from 'src/services/remote';
 
 interface Props {
   className?: string;
 }
 
-function ProjectSyncModal({ className }: Props): JSX.Element {
+function ProjectSyncModal({ className }: Props): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const clearConsoleRef = useRef<ConsoleRef>(null);
   const { definitionContainer, lastModifiedAt } = useProjectDefinition();
@@ -41,15 +45,20 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
     };
 
     clearConsoleRef.current?.clearConsole();
-    startSync(currentProjectId, payload).catch((err) =>
-      toast.error(formatError(err)),
+    startSync(currentProjectId, payload).catch((error: unknown) =>
+      toast.error(formatError(error)),
     );
     setIsOpen(true);
   };
 
   return (
     <div className={clsx(className)}>
-      <Dialog open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          setIsOpen(open);
+        }}
+      >
         <Dialog.Trigger asChild>
           <Button
             onClick={(e) => {
@@ -77,7 +86,12 @@ function ProjectSyncModal({ className }: Props): JSX.Element {
             <Button variant="secondary" onClick={startSyncProject}>
               Retry
             </Button>
-            <Button variant="secondary" onClick={() => setIsOpen(false)}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setIsOpen(false);
+              }}
+            >
               Close
             </Button>
           </Dialog.Footer>

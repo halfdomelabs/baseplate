@@ -1,6 +1,7 @@
-import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { Logger } from '@halfdomelabs/sync';
+
 import { loadPluginsInPackage } from '@halfdomelabs/project-builder-lib/plugin-tools';
-import { Logger } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -43,36 +44,33 @@ export async function discoverPlugins(
   ].filter(
     (name) =>
       name.startsWith('baseplate-plugin-') ||
-      name.match(/^@[^/]+\/baseplate-plugin-/),
+      /^@[^/]+\/baseplate-plugin-/.exec(name),
   );
 
   // Load all valid plugins and their metadata
   const require = createRequire(projectDirectory);
-  return (
-    await Promise.all(
-      pluginPackageNames.map(async (packageName) => {
-        const packagePath = path.dirname(
-          require.resolve(packageName, {
-            paths: [projectDirectory],
-          }),
+  const loadedPlugins = await Promise.all(
+    pluginPackageNames.map(async (packageName) => {
+      const packagePath = path.dirname(
+        require.resolve(packageName, {
+          paths: [projectDirectory],
+        }),
+      );
+
+      const pluginPackageJsonPath = await packageUp({ cwd: packagePath });
+
+      if (!pluginPackageJsonPath) {
+        logger.error(
+          `Could not find package.json file for the plugin ${packageName}.`,
         );
+        return;
+      }
 
-        const pluginPackageJsonPath = await packageUp({ cwd: packagePath });
-
-        if (!pluginPackageJsonPath) {
-          logger.error(
-            `Could not find package.json file for the plugin ${packageName}.`,
-          );
-          return undefined;
-        }
-
-        return loadPluginsInPackage(
-          path.dirname(pluginPackageJsonPath),
-          packageName,
-        );
-      }),
-    )
-  )
-    .flat()
-    .filter(notEmpty);
+      return loadPluginsInPackage(
+        path.dirname(pluginPackageJsonPath),
+        packageName,
+      );
+    }),
+  );
+  return loadedPlugins.flat().filter(notEmpty);
 }

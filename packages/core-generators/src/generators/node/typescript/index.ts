@@ -1,34 +1,32 @@
+import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
+import type { CompilerOptions } from 'ts-morph';
+
 import {
-  BuilderAction,
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
-  WriteFileOptions,
   writeJsonAction,
 } from '@halfdomelabs/sync';
-import { join } from 'path';
+import path from 'node:path';
 import * as R from 'ramda';
-import { CompilerOptions, ts } from 'ts-morph';
+import { ts } from 'ts-morph';
 
-import {
-  copyTypescriptFileAction,
-  CopyTypescriptFileOptions,
-} from '../../../actions/index.js';
-import { TypescriptCodeBlock } from '../../../writers/index.js';
-import {
-  PathMapEntry,
-  resolveModule,
-} from '../../../writers/typescript/imports.js';
-import {
-  TypescriptSourceFile,
+import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
+
+import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
+
+import type { CopyTypescriptFileOptions } from '../../../actions/index.js';
+import type { TypescriptCodeBlock } from '../../../writers/index.js';
+import type { PathMapEntry } from '../../../writers/typescript/imports.js';
+import type {
   TypescriptSourceFileOptions,
   TypescriptTemplateConfigOrEntry,
-} from '../../../writers/typescript/sourceFile.js';
+} from '../../../writers/typescript/source-file.js';
+
+import { copyTypescriptFileAction } from '../../../actions/index.js';
+import { resolveModule } from '../../../writers/typescript/imports.js';
+import { TypescriptSourceFile } from '../../../writers/typescript/source-file.js';
 import { nodeProvider } from '../node/index.js';
-import {
-  copyTypescriptFilesAction,
-  CopyTypescriptFilesOptions,
-} from '@src/actions/copyTypescriptFilesAction.js';
 
 type ChangePropertyTypes<
   T,
@@ -72,9 +70,7 @@ export const typescriptConfigProvider =
   createProviderType<TypescriptConfigProvider>('typescript-config');
 
 export interface TypescriptProvider {
-  createTemplate<
-    Config extends TypescriptTemplateConfigOrEntry<Record<string, unknown>>,
-  >(
+  createTemplate<Config extends TypescriptTemplateConfigOrEntry>(
     config: Config,
     options?: Omit<
       TypescriptSourceFileOptions,
@@ -160,7 +156,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
             config.get('compilerOptions'),
             '.',
           );
-          if (result.errors.length) {
+          if (result.errors.length > 0) {
             throw new Error(
               `Unable to extract compiler options: ${JSON.stringify(
                 result.errors,
@@ -205,7 +201,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
       exports: { typescript: typescriptProvider },
       taskDependencies: { configTask },
       run({ node }, { configTask: { config, getCompilerOptions } }) {
-        let cachedPathEntries: PathMapEntry[];
+        let cachedPathEntries: PathMapEntry[] | undefined;
 
         function getPathEntries(): PathMapEntry[] {
           if (!cachedPathEntries) {
@@ -230,11 +226,10 @@ const TypescriptGenerator = createGeneratorWithTasks({
                   throw new Error('Paths must end in /*');
                 }
                 return {
-                  from: join(baseUrl, value[0].replace(/\/\*$/, '')).replace(
-                    /^\./,
-                    '',
-                  ),
-                  to: key.substring(0, key.length - 2),
+                  from: path
+                    .join(baseUrl, value[0].replace(/\/\*$/, ''))
+                    .replace(/^\./, ''),
+                  to: key.slice(0, Math.max(0, key.length - 2)),
                 };
               });
             }
@@ -310,7 +305,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
                   compilerOptions,
                   include,
                   exclude,
-                  references: references.length ? references : undefined,
+                  references: references.length > 0 ? references : undefined,
                   ...R.mergeAll(extraSections),
                 },
               }),

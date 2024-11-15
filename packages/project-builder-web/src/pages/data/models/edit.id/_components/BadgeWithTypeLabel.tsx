@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { clsx } from 'clsx';
 
 import { ellipsisStringFromMiddle } from '@src/utils/string';
@@ -12,7 +14,7 @@ export function BadgeWithTypeLabel({
   className,
   children,
   type,
-}: BadgeWithTypeLabelProps): JSX.Element {
+}: BadgeWithTypeLabelProps): React.JSX.Element {
   return (
     <div
       className={clsx(

@@ -1,6 +1,8 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { resolveModule, ResolveModuleOptions } from './imports.js';
+import type { ResolveModuleOptions } from './imports.js';
+
+import { resolveModule } from './imports.js';
 
 describe('resolveModule', () => {
   describe('with node resolution method', () => {

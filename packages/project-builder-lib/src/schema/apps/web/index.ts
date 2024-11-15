@@ -1,9 +1,10 @@
 import { z } from 'zod';
 
-import { baseAppValidators } from '../base.js';
-import { createAppEntryType } from '../types.js';
 import { zRef } from '@src/references/index.js';
 import { authRoleEntityType } from '@src/schema/auth/types.js';
+
+import { baseAppValidators } from '../base.js';
+import { createAppEntryType } from '../types.js';
 
 export const webAppSchema = z.object({
   ...baseAppValidators,

@@ -1,6 +1,6 @@
 import {
-  TypescriptCodeUtils,
   nodeProvider,
+  TypescriptCodeUtils,
   vitestProvider,
 } from '@halfdomelabs/core-generators';
 import {

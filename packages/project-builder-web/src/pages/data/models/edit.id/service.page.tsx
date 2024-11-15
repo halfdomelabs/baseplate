@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import {
   modelBaseSchema,
   modelTransformerEntityType,
@@ -5,19 +7,20 @@ import {
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
 
-import { ServiceMethodFieldsSection } from './_components/service/ServiceMethodFieldsSection';
-import { ServiceTransformersSection } from './_components/service/ServiceTransformersSection';
-import { EditedModelContextProvider } from '../_hooks/useEditedModelConfig';
-import { useModelForm } from '../_hooks/useModelForm';
 import FormActionBar from '@src/components/FormActionBar';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
+
+import { EditedModelContextProvider } from '../_hooks/useEditedModelConfig';
+import { useModelForm } from '../_hooks/useModelForm';
+import { ServiceMethodFieldsSection } from './_components/service/ServiceMethodFieldsSection';
+import { ServiceTransformersSection } from './_components/service/ServiceTransformersSection';
 
 registerEntityTypeUrl(
   modelTransformerEntityType,
   `/data/models/edit/{parentUid}`,
 );
 
-function ModelEditServicePage(): JSX.Element {
+function ModelEditServicePage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, feature: true }),
   });

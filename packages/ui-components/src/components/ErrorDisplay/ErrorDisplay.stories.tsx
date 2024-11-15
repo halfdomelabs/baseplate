@@ -21,6 +21,6 @@ export const Default: Story = {};
 
 export const NewError: Story = {
   args: {
-    error: new Error(),
+    error: new Error('This is an error'),
   },
 };

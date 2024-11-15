@@ -1,11 +1,12 @@
-import {
+import type {
   KeyedPluginPlatformModule,
   PluginMetadataWithPaths,
   PluginPlatformModule,
 } from '@halfdomelabs/project-builder-lib';
+
 import {
-  __federation_method_setRemote,
   __federation_method_getRemote,
+  __federation_method_setRemote,
   __federation_method_unwrapDefault,
 } from 'virtual:__federation__';
 

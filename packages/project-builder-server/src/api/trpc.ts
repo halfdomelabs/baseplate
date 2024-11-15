@@ -1,11 +1,12 @@
-import { TRPCError, initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 
-import { Context } from './context.js';
+import type { Context } from './context.js';
+
 import { getCsrfToken } from './crsf.js';
 
 const t = initTRPC.context<Context>().create();
 
-export const router = t.router;
+export const { router } = t;
 export const publicProcedure = t.procedure;
 
 export const privateProcedure = t.procedure.use(

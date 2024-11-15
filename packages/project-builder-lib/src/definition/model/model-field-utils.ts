@@ -1,15 +1,16 @@
 import { isEqual } from 'es-toolkit';
 
-import { ModelUtils } from './model-utils.js';
-import {
+import type {
   ModelConfig,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
   ProjectDefinition,
 } from '@src/schema/index.js';
 
+import { ModelUtils } from './model-utils.js';
+
 function isScalarUnique(model: ModelConfig, fieldId: string): boolean {
-  const primaryKeyFieldRefs = model.model.primaryKeyFieldRefs ?? [];
+  const { primaryKeyFieldRefs } = model.model;
   const uniqueConstraints = model.model.uniqueConstraints ?? [];
   return (
     (primaryKeyFieldRefs.length === 1 &&
@@ -21,15 +22,12 @@ function isScalarUnique(model: ModelConfig, fieldId: string): boolean {
 }
 
 function areScalarsUnique(model: ModelConfig, fieldIds: string[]): boolean {
-  const sortedFieldIds = fieldIds.toSorted();
+  const sortedFieldIds = [...fieldIds].sort();
   return (
-    (isEqual(model.model.primaryKeyFieldRefs.toSorted(), sortedFieldIds) ||
-      model.model.uniqueConstraints?.some((c) => {
-        return isEqual(
-          c.fields.map((f) => f.fieldRef).toSorted(),
-          sortedFieldIds,
-        );
-      })) ??
+    (isEqual([...model.model.primaryKeyFieldRefs].sort(), sortedFieldIds) ||
+      model.model.uniqueConstraints?.some((c) =>
+        isEqual(c.fields.map((f) => f.fieldRef).sort(), sortedFieldIds),
+      )) ??
     false
   );
 }
@@ -39,7 +37,7 @@ function getRelationLocalFields(
   relation: ModelRelationFieldConfig,
 ): ModelScalarFieldConfig[] {
   return relation.references.map((r) => {
-    const field = model.model.fields?.find((f) => f.id === r.local);
+    const field = model.model.fields.find((f) => f.id === r.local);
     if (!field) {
       throw new Error(
         `Could not find field ${r.local} from relation ${relation.name} in model ${model.name}`,
@@ -67,6 +65,30 @@ function isRelationOneToOne(
   return areScalarsUnique(model, localFieldIds);
 }
 
+function getModelValidator(modelField: ModelScalarFieldConfig): string {
+  switch (modelField.type) {
+    case 'boolean': {
+      return 'boolean()';
+    }
+    case 'date': {
+      return 'string()';
+    }
+    case 'int':
+    case 'float': {
+      return 'number()';
+    }
+    case 'dateTime':
+    case 'string':
+    case 'decimal':
+    case 'uuid': {
+      return 'string()';
+    }
+    default: {
+      throw new Error(`Unsupported validator for ${modelField.type}`);
+    }
+  }
+}
+
 function getModelFieldValidation(
   projectDefinition: ProjectDefinition,
   modelId: string,
@@ -86,25 +108,6 @@ function getModelFieldValidation(
   }
   if (field.type === 'float') {
     return `z.number().or(z.string()).pipe(z.coerce.number().finite())${nullishSuffix}`;
-  }
-
-  function getModelValidator(modelField: ModelScalarFieldConfig): string {
-    switch (modelField.type) {
-      case 'boolean':
-        return 'boolean()';
-      case 'date':
-        return 'string()';
-      case 'int':
-      case 'float':
-        return 'number()';
-      case 'dateTime':
-      case 'string':
-      case 'decimal':
-      case 'uuid':
-        return 'string()';
-      default:
-        throw new Error(`Unsupported validator for ${modelField.type}`);
-    }
   }
 
   const validator = `z.${getModelValidator(field)}${nullishSuffix}`;

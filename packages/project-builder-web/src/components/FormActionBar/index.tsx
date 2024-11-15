@@ -1,5 +1,7 @@
+import type React from 'react';
+import type { UseFormReturn } from 'react-hook-form';
+
 import { Button } from '@halfdomelabs/ui-components';
-import { UseFormReturn } from 'react-hook-form';
 import { MdOutlineSave } from 'react-icons/md';
 
 interface FormActionBarProps {
@@ -8,7 +10,7 @@ interface FormActionBarProps {
   form: UseFormReturn<any>;
 }
 
-const FormActionBar = ({ form }: FormActionBarProps): JSX.Element => {
+const FormActionBar = ({ form }: FormActionBarProps): React.JSX.Element => {
   const { formState } = form;
   const isDirty = Object.keys(formState.dirtyFields).length > 0;
 
@@ -18,7 +20,9 @@ const FormActionBar = ({ form }: FormActionBarProps): JSX.Element => {
         variant="outline"
         size="sm"
         type="button"
-        onClick={() => form.reset()}
+        onClick={() => {
+          form.reset();
+        }}
         disabled={formState.isSubmitting || !isDirty}
       >
         Reset

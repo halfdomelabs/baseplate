@@ -1,7 +1,10 @@
-import {
+import type {
   ImportMapper,
-  nodeProvider,
   TypescriptCodeExpression,
+} from '@halfdomelabs/core-generators';
+
+import {
+  nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';

@@ -1,24 +1,23 @@
-import {
-  quot,
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+import type { GeneratorDescriptor } from '@halfdomelabs/sync';
+
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
   createTaskConfigBuilder,
-  GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { pothosSchemaProvider } from '../pothos/index.js';
-import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { pothosTypeOutputProvider } from '@src/providers/pothos-type.js';
-import { prismaToServiceOutputDto } from '@src/types/serviceOutput.js';
+import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { writePothosExposeFieldFromDtoScalarField } from '@src/writers/pothos/index.js';
+
+import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosSchemaProvider } from '../pothos/index.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

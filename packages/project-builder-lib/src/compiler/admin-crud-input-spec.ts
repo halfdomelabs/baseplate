@@ -1,10 +1,13 @@
+import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
+import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
+import type {
+  AdminCrudInputDefinition,
+  ModelConfig,
+} from '@src/schema/index.js';
+
+import { createPluginSpec } from '@src/plugins/spec/types.js';
+
 import type { DescriptorWithChildren } from './types.js';
-import { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import {
-  PluginSpecImplementation,
-  createPluginSpec,
-} from '@src/plugins/spec/types.js';
-import { AdminCrudInputDefinition, ModelConfig } from '@src/schema/index.js';
 
 export interface AdminCrudInputCompiler<
   T extends AdminCrudInputDefinition = AdminCrudInputDefinition,
@@ -40,23 +43,23 @@ export interface AdminCrudInputCompilerSpec extends PluginSpecImplementation {
 
 export function createAdminCrudInputCompilerImplementation(): AdminCrudInputCompilerSpec {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const inputs: Record<string, AdminCrudInputCompiler<any>> = {};
+  const inputs = new Map<string, AdminCrudInputCompiler<any>>();
 
   return {
     registerCompiler(input) {
-      if (inputs[input.name]) {
+      if (inputs.has(input.name)) {
         throw new Error(
           `Admin CRUD input with name ${input.name} is already registered`,
         );
       }
-      inputs[input.name] = input;
+      inputs.set(input.name, input);
     },
     getCompiler(name, builtInInputs = []) {
       const builtInInput = builtInInputs.find((b) => b.name === name);
       if (builtInInput) {
         return builtInInput as AdminCrudInputCompiler;
       }
-      const input = inputs[name];
+      const input = inputs.get(name);
       if (!input) {
         throw new Error(`Unable to find input with name ${name}`);
       }

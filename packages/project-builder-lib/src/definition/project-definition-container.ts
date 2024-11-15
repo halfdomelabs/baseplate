@@ -1,24 +1,27 @@
 import { produce } from 'immer';
 
-import {
-  createProjectDefinitionSchemaWithContext,
-  parseProjectDefinitionWithReferences,
-} from '@src/parser/parser.js';
-import { SchemaParserContext } from '@src/parser/types.js';
-import { PluginImplementationStore } from '@src/plugins/index.js';
-import {
+import type { SchemaParserContext } from '@src/parser/types.js';
+import type { PluginImplementationStore } from '@src/plugins/index.js';
+import type {
   DefinitionEntity,
   DefinitionReference,
   FixRefDeletionResult,
   ZodRefPayload,
+} from '@src/references/index.js';
+import type {
+  ProjectDefinition,
+  projectDefinitionSchema,
+} from '@src/schema/index.js';
+
+import {
+  createProjectDefinitionSchemaWithContext,
+  parseProjectDefinitionWithReferences,
+} from '@src/parser/parser.js';
+import {
   deserializeSchemaWithReferences,
   fixRefDeletions,
   serializeSchemaFromRefPayload,
 } from '@src/references/index.js';
-import {
-  ProjectDefinition,
-  projectDefinitionSchema,
-} from '@src/schema/index.js';
 
 /**
  * Container for a project definition that includes references and entities.

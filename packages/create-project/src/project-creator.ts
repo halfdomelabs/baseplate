@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import type { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
+
 import chalk from 'chalk';
 import { execa } from 'execa';
 import fs from 'node:fs/promises';

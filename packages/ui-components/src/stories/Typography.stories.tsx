@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type React from 'react';
 
-function Typography(): JSX.Element {
+function Typography(): React.JSX.Element {
   return (
     <div className="space-y-4 py-4">
       <h1>Heading 1 (h1)</h1>

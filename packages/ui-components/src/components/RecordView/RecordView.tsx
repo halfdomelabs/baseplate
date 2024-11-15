@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { cn } from '@src/utils';
 
 interface RecordViewProps {
@@ -8,7 +10,7 @@ interface RecordViewProps {
 export function RecordView({
   className,
   children,
-}: RecordViewProps): JSX.Element {
+}: RecordViewProps): React.JSX.Element {
   return (
     <div
       className={cn(
@@ -29,7 +31,7 @@ interface RecordViewItemListProps {
 RecordView.ItemList = function RecordViewItemList({
   className,
   children,
-}: RecordViewItemListProps): JSX.Element {
+}: RecordViewItemListProps): React.JSX.Element {
   return (
     <div className={cn('flex flex-wrap items-center gap-4', className)}>
       {children}
@@ -47,7 +49,7 @@ RecordView.Item = function RecordViewItem({
   className,
   title,
   children,
-}: RecordViewItemProps): JSX.Element {
+}: RecordViewItemProps): React.JSX.Element {
   return (
     <div className={cn('flex min-w-24 flex-col', className)}>
       <div className="text-sm font-medium text-muted-foreground">{title}</div>
@@ -64,7 +66,7 @@ interface RecordViewActionsProps {
 RecordView.Actions = function RecordViewActions({
   className,
   children,
-}: RecordViewActionsProps): JSX.Element {
+}: RecordViewActionsProps): React.JSX.Element {
   return (
     <div className={cn('flex items-center gap-2', className)}>{children}</div>
   );

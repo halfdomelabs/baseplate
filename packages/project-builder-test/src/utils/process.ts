@@ -17,12 +17,16 @@ export function onProcessExit(callback: () => void): () => void {
 const handleInterrupt: NodeJS.SignalsListener = (signal) => {
   logger.info(`\nReceived ${signal}, exiting...`);
   isExiting = true;
-  exitCallbacks.forEach((callback) => callback());
+  for (const callback of exitCallbacks) callback();
 };
 
 export function isExitingProcess(): boolean {
   return isExiting;
 }
 
-process.on('SIGINT', () => handleInterrupt('SIGINT'));
-process.on('SIGTERM', () => handleInterrupt('SIGTERM'));
+process.on('SIGINT', () => {
+  handleInterrupt('SIGINT');
+});
+process.on('SIGTERM', () => {
+  handleInterrupt('SIGTERM');
+});

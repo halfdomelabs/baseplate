@@ -6,13 +6,14 @@ import {
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { writeObjectTypeRelationField } from './relationField.js';
-import { nexusSchemaProvider } from '../nexus/index.js';
-import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
-import { prismaToServiceOutputDto } from '@src/types/serviceOutput.js';
+import { prismaToServiceOutputDto } from '@src/types/service-output.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import { writeNexusDefinitionFromDtoScalarField } from '@src/writers/nexus-definition/index.js';
+
+import { nexusTypesFileProvider } from '../nexus-types-file/index.js';
+import { nexusSchemaProvider } from '../nexus/index.js';
+import { writeObjectTypeRelationField } from './relation-field.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),

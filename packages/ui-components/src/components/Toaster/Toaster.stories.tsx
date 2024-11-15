@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ExternalToast, toast } from 'sonner';
+import type React from 'react';
+import type { ExternalToast } from 'sonner';
+
+import { toast } from 'sonner';
 
 import { Button } from '../Button/Button';
 
@@ -19,7 +22,7 @@ function Toast({
   withAction,
   onActionClick,
   withCancel,
-}: ToastProps): JSX.Element {
+}: ToastProps): React.JSX.Element {
   const onClick = (): void => {
     const payload: ExternalToast = {
       description,

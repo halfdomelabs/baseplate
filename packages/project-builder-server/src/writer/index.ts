@@ -1,9 +1,10 @@
-import { AppEntry, FileEntry } from '@halfdomelabs/project-builder-lib';
-import { Logger } from '@halfdomelabs/sync';
+import type { AppEntry, FileEntry } from '@halfdomelabs/project-builder-lib';
+import type { Logger } from '@halfdomelabs/sync';
+
 import fs from 'fs-extra';
 import { globby } from 'globby';
 import stringify from 'json-stringify-pretty-compact';
-import path from 'path';
+import path from 'node:path';
 
 import { notEmpty } from '../utils/array.js';
 
@@ -45,22 +46,22 @@ async function writeAppFiles(
 
     // delete all files that aren't present
     const allJsonFiles = await globby(['baseplate/**/*.json'], {
-      cwd: `${appDirectory}`,
+      cwd: appDirectory,
     });
     const missingJsonFiles = allJsonFiles.filter(
-      (file) => !app.files.find((f) => f.path === file),
+      (file) => !app.files.some((f) => f.path === file),
     );
 
     await Promise.all(
       missingJsonFiles.map((f) => fs.unlink(path.join(appDirectory, f))),
     );
 
-    return anyModified.some((m) => m);
-  } catch (err) {
+    return anyModified.some(Boolean);
+  } catch (error) {
     logger.error(
-      `Error writing out app ${app.name}: ${(err as Error).message}`,
+      `Error writing out app ${app.name}: ${(error as Error).message}`,
     );
-    throw err;
+    throw error;
   }
 }
 
@@ -77,7 +78,7 @@ export async function writeApplicationFiles(
     path.resolve(path.join(baseDirectory, app.rootDirectory)),
   );
 
-  const uniqueDirectories = Array.from(new Set(directories));
+  const uniqueDirectories = [...new Set(directories)];
   if (directories.length !== uniqueDirectories.length) {
     throw new Error(
       'Duplicate directories found in app entries, cannot write files',

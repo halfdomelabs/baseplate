@@ -1,4 +1,4 @@
-import { EnumConfig, ProjectDefinition } from '@src/schema/index.js';
+import type { EnumConfig, ProjectDefinition } from '@src/schema/index.js';
 
 function byId(
   projectDefinition: ProjectDefinition,

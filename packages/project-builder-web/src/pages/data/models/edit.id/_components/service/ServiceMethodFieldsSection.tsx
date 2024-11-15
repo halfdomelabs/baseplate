@@ -1,13 +1,14 @@
-import {
-  ModelConfig,
-  ModelTransformerUtils,
-} from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormSetValue } from 'react-hook-form';
+
+import { ModelTransformerUtils } from '@halfdomelabs/project-builder-lib';
 import {
   modelTransformerWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
-import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import {
   BUILT_IN_TRANSFORMER_WEB_CONFIGS,
@@ -26,7 +27,7 @@ export function ServiceMethodFieldsSection({
   className,
   control,
   setValue,
-}: ServiceMethodFieldsSectionProps): JSX.Element | null {
+}: ServiceMethodFieldsSectionProps): React.JSX.Element | null {
   const fields = useEditedModelConfig((model) => model.model.fields);
   const create = useWatch({ control, name: 'service.create' });
   const update = useWatch({ control, name: 'service.update' });
@@ -89,15 +90,15 @@ export function ServiceMethodFieldsSection({
                   <td className="pl-8">
                     <SwitchField
                       value={createFields.includes(field.id)}
-                      onChange={(value) =>
+                      onChange={(value) => {
                         setValue(
                           'service.create.fields',
                           value
                             ? [...createFields, field.id]
                             : createFields.filter((id) => id !== field.id),
                           { shouldDirty: true },
-                        )
-                      }
+                        );
+                      }}
                     />
                   </td>
                 )}
@@ -105,21 +106,21 @@ export function ServiceMethodFieldsSection({
                   <td className="pl-8">
                     <SwitchField
                       value={updateFields.includes(field.id)}
-                      onChange={(value) =>
+                      onChange={(value) => {
                         setValue(
                           'service.update.fields',
                           value
                             ? [...updateFields, field.id]
                             : updateFields.filter((id) => id !== field.id),
                           { shouldDirty: true },
-                        )
-                      }
+                        );
+                      }}
                     />
                   </td>
                 )}
               </tr>
             ))}
-            {!!transformers.length && (
+            {transformers.length > 0 && (
               <tr>
                 <th>Transformers</th>
               </tr>
@@ -146,7 +147,7 @@ export function ServiceMethodFieldsSection({
                   <td className="pl-8">
                     <SwitchField
                       value={createTransformers.includes(transformer.id)}
-                      onChange={(value) =>
+                      onChange={(value) => {
                         setValue(
                           'service.create.fields',
                           value
@@ -155,8 +156,8 @@ export function ServiceMethodFieldsSection({
                                 (id) => id !== transformer.id,
                               ),
                           { shouldDirty: true },
-                        )
-                      }
+                        );
+                      }}
                     />
                   </td>
                 )}
@@ -164,7 +165,7 @@ export function ServiceMethodFieldsSection({
                   <td className="pl-8">
                     <SwitchField
                       value={updateTransformers.includes(transformer.id)}
-                      onChange={(value) =>
+                      onChange={(value) => {
                         setValue(
                           'service.update.fields',
                           value
@@ -173,8 +174,8 @@ export function ServiceMethodFieldsSection({
                                 (id) => id !== transformer.id,
                               ),
                           { shouldDirty: true },
-                        )
-                      }
+                        );
+                      }}
                     />
                   </td>
                 )}

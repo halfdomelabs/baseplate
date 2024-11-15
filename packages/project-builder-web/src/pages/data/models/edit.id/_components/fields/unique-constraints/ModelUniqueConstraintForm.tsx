@@ -1,7 +1,8 @@
-import {
-  ModelConfig,
-  modelUniqueConstraintEntityType,
-} from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
+import { modelUniqueConstraintEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   Dialog,
@@ -10,7 +11,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { clsx } from 'clsx';
 import { useId } from 'react';
-import { Control, useController, useForm } from 'react-hook-form';
+import { useController, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
@@ -34,7 +35,7 @@ export function ModelUniqueConstraintForm({
   control: modelControl,
   onSubmitSuccess,
   constraintId,
-}: ModelUniqueConstraintFormProps): JSX.Element {
+}: ModelUniqueConstraintFormProps): React.JSX.Element {
   const fields = useEditedModelConfig((model) => model.model.fields);
   const {
     field: { value: modelValue = [], onChange: onModelChange },

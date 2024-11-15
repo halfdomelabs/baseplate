@@ -1,24 +1,26 @@
-import {
-  TypescriptCodeExpression,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
   writeFormattedAction,
 } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
-import * as path from 'path';
+import path from 'node:path';
 import { z } from 'zod';
+
+import type {
+  GraphQLField,
+  GraphQLFragment,
+  GraphQLRoot,
+} from '@src/writers/graphql/index.js';
 
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
 import {
   areFieldsIdentical,
-  GraphQLField,
-  GraphQLFragment,
-  GraphQLRoot,
   mergeGraphQLFragments,
   renderGraphQLFragment,
   renderGraphQLRoot,
@@ -112,6 +114,40 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
 
     const roots: GraphQLRoot[] = [];
 
+    function createMutation(
+      mutationName: string,
+      fieldName: string,
+      inputType: string,
+      returnIdOnly?: boolean,
+    ): string {
+      return renderGraphQLRoot({
+        type: 'mutation',
+        name: mutationName,
+        variables: [{ name: 'input', type: `${inputType}!` }],
+        fields: [
+          {
+            name: fieldName,
+            args: [
+              {
+                name: 'input',
+                value: { type: 'variable', variable: 'input' },
+              },
+            ],
+            fields: [
+              {
+                name: editFieldName,
+                fields: [
+                  returnIdOnly
+                    ? { name: 'id' }
+                    : { type: 'spread', on: editFragmentName },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+    }
+
     return {
       getProviders: () => ({
         adminCrudQueries: {
@@ -173,16 +209,16 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
       }),
       build: async (builder) => {
         // merge fragments together
-        mergeGraphQLFragments(fragments).forEach((fragment) => {
+        for (const fragment of mergeGraphQLFragments(fragments)) {
           queries.push(renderGraphQLFragment(fragment));
-        });
+        }
 
         // merge roots together
-        roots.forEach((root) => {
+        for (const root of roots) {
           queries.push(renderGraphQLRoot(root));
-        });
+        }
 
-        if (config.rowFields.length) {
+        if (config.rowFields.length > 0) {
           // create fragment and query
           queries.push(
             renderGraphQLFragment({
@@ -190,9 +226,6 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
               type: modelName,
               fields: config.rowFields,
             }),
-          );
-
-          queries.push(
             renderGraphQLRoot({
               type: 'query',
               name: listQueryName,
@@ -206,16 +239,13 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
           );
         }
 
-        if (config.formFields.length) {
+        if (config.formFields.length > 0) {
           queries.push(
             renderGraphQLFragment({
               name: editFragmentName,
               type: modelName,
               fields: config.formFields,
             }),
-          );
-
-          queries.push(
             renderGraphQLRoot({
               type: 'query',
               name: editQueryName,
@@ -231,40 +261,6 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
               ],
             }),
           );
-        }
-
-        function createMutation(
-          mutationName: string,
-          fieldName: string,
-          inputType: string,
-          returnIdOnly?: boolean,
-        ): string {
-          return renderGraphQLRoot({
-            type: 'mutation',
-            name: mutationName,
-            variables: [{ name: 'input', type: `${inputType}!` }],
-            fields: [
-              {
-                name: fieldName,
-                args: [
-                  {
-                    name: 'input',
-                    value: { type: 'variable', variable: 'input' },
-                  },
-                ],
-                fields: [
-                  {
-                    name: editFieldName,
-                    fields: [
-                      returnIdOnly
-                        ? { name: 'id' }
-                        : { type: 'spread', on: editFragmentName },
-                    ],
-                  },
-                ],
-              },
-            ],
-          });
         }
 
         if (config.generateCreate) {
@@ -298,7 +294,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
           );
         }
 
-        if (queries.length) {
+        if (queries.length > 0) {
           const filePath = path.join(
             reactRoutes.getDirectoryBase(),
             'queries.gql',

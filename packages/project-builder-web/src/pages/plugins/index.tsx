@@ -1,11 +1,13 @@
-import { pluginEntityType } from '@halfdomelabs/project-builder-lib';
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
-import PluginsLayout from './PluginsLayout';
+import { pluginEntityType } from '@halfdomelabs/project-builder-lib';
+
+import { createCrumbFromUid } from '@src/types/routes';
+
+import NotFoundPage from '../NotFound.page';
 import { PluginsHomePage } from './home.page';
 import { PluginConfigPage } from './plugin-config.page';
-import NotFoundPage from '../NotFound.page';
-import { createCrumbFromUid } from '@src/types/routes';
+import PluginsLayout from './PluginsLayout';
 
 export const PluginRoutes: RouteObject[] = [
   {

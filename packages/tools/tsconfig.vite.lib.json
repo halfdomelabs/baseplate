@@ -3,7 +3,10 @@
   "extends": "./tsconfig.vite.base.json",
   "display": "Vite React Library",
   "compilerOptions": {
+    "allowImportingTsExtensions": false,
+
     /* Output */
+    "noEmit": false,
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true

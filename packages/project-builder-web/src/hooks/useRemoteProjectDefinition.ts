@@ -1,22 +1,24 @@
-import {
+import type {
   PluginMetadataWithPaths,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
+import type { FilePayload } from 'src/services/remote';
+
 import { toast } from '@halfdomelabs/ui-components';
 import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
-
-import { useProjects } from './useProjects';
-import { client } from '@src/services/api';
-import { resetPluginModuleSeed } from '@src/services/module-federation';
-import { createWebSchemaParserContext } from '@src/services/schema-parser-context';
 import { logError } from 'src/services/error-logger';
 import {
   downloadProjectDefinition,
-  FilePayload,
   getPluginsMetadata,
   uploadProjectDefinition,
 } from 'src/services/remote';
+
+import { client } from '@src/services/api';
+import { resetPluginModuleSeed } from '@src/services/module-federation';
+import { createWebSchemaParserContext } from '@src/services/schema-parser-context';
+
+import { useProjects } from './useProjects';
 
 interface UseRemoteProjectDefinitionResult {
   value?: string | null;
@@ -75,14 +77,14 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
         setPluginsMetadata(plugins);
         return createWebSchemaParserContext(currentProjectId, plugins);
       })
-      .then((schemaParserContext) =>
-        setSchemaParserContext(schemaParserContext),
-      )
-      .catch((err) => {
-        setError(err as Error);
-        logError(err);
+      .then((schemaParserContext) => {
+        setSchemaParserContext(schemaParserContext);
+      })
+      .catch((error_: unknown) => {
+        setError(error_ as Error);
+        logError(error_);
         toast.error(
-          `Error loading project plugin configs: ${(err as Error).message}`,
+          `Error loading project plugin configs: ${(error_ as Error).message}`,
         );
       });
   }, [currentProjectId, projectsLoaded]);
@@ -96,14 +98,14 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
       const eventHandler = (): void => {
         resetPluginModuleSeed();
         createWebSchemaParserContext(currentProjectId, pluginsMetadata)
-          .then((schemaParserContext) =>
-            setSchemaParserContext(schemaParserContext),
-          )
-          .catch((err) => {
-            setError(err as Error);
-            logError(err);
+          .then((schemaParserContext) => {
+            setSchemaParserContext(schemaParserContext);
+          })
+          .catch((error_: unknown) => {
+            setError(error_ as Error);
+            logError(error_);
             toast.error(
-              `Error reloading project plugin configs: ${(err as Error).message}`,
+              `Error reloading project plugin configs: ${(error_ as Error).message}`,
             );
           });
       };
@@ -139,23 +141,25 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
 
       setLoaded(true);
       loadedProjectId.current = currentProjectId;
-    } catch (err) {
+    } catch (error_) {
       if (
-        err instanceof TRPCClientError &&
-        (err.data as { code?: string })?.code === 'NOT_FOUND'
+        error_ instanceof TRPCClientError &&
+        (error_.data as { code?: string }).code === 'NOT_FOUND'
       ) {
         resetCurrentProjectId();
         return;
       }
-      setError(err as Error);
+      setError(error_ as Error);
       toast.error(
-        `Error downloading project config: ${(err as Error).message}`,
+        `Error downloading project config: ${(error_ as Error).message}`,
       );
     }
   }, [currentProjectId, resetCurrentProjectId, updateConfig]);
 
   useEffect(() => {
-    downloadConfig().catch((err) => logError(err));
+    downloadConfig().catch((error_: unknown) => {
+      logError(error_);
+    });
   }, [downloadConfig]);
 
   const pendingSaveContents = useRef<string | null>();
@@ -191,7 +195,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
               'Cannot save because project was modified more recently',
             );
             shouldTriggerRefetch.current = true;
-          } else if (result.type === 'success') {
+          } else if ((result.type as string) === 'success') {
             setFile({
               contents,
               lastModifiedAt: result.lastModifiedAt,
@@ -204,7 +208,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
             throw new Error('Unexpected result type');
           }
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           lastSavedValueRef.current = oldSavedValue;
           toast.error(`Cannot save: ${(err as Error).message}`);
         })
@@ -215,7 +219,9 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
             saveValue(pendingSaveContents.current, newLastModifiedAt);
           }
           if (shouldTriggerRefetch.current) {
-            downloadConfig().catch((err) => logError(err));
+            downloadConfig().catch((error_: unknown) => {
+              logError(error_);
+            });
           }
         });
     },

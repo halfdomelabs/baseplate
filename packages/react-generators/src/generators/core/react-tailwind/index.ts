@@ -4,12 +4,12 @@ import {
   prettierProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
-  createGeneratorWithChildren,
-  writeTemplateAction,
   copyFileAction,
+  createGeneratorWithChildren,
+  createProviderType,
+  writeTemplateAction,
 } from '@halfdomelabs/sync';
-import path from 'path';
+import path from 'node:path';
 import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
 import { z } from 'zod';
 

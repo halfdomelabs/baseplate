@@ -1,21 +1,26 @@
-import {
+import type {
   AppEntry,
-  prettyStableStringify,
   ProjectDefinition,
-  runSchemaMigrations,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
-import { Logger } from '@halfdomelabs/sync';
+import type { Logger } from '@halfdomelabs/sync';
+
+import {
+  prettyStableStringify,
+  runSchemaMigrations,
+} from '@halfdomelabs/project-builder-lib';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
+
+import { compileApplications } from '@src/compiler/index.js';
+
+import type { GeneratorEngineSetupConfig } from '../sync/index.js';
 
 import {
   generateCleanAppForDirectory,
   generateForDirectory,
-  GeneratorEngineSetupConfig,
 } from '../sync/index.js';
 import { writeApplicationFiles } from '../writer/index.js';
-import { compileApplications } from '@src/compiler/index.js';
 
 async function loadProjectJson(directory: string): Promise<unknown> {
   const projectJsonPath = path.join(
@@ -87,9 +92,7 @@ export async function buildProjectForDirectory({
 
   const appsToRegenerate = shouldRegen ? apps : modifiedApps;
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const app of appsToRegenerate) {
-    // eslint-disable-next-line no-await-in-loop
     await generateForDirectory({
       baseDirectory: directory,
       appEntry: app,
@@ -119,9 +122,7 @@ export async function buildToCleanFolder({
     context,
   });
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const app of apps) {
-    // eslint-disable-next-line no-await-in-loop
     await generateCleanAppForDirectory({
       baseDirectory: directory,
       appEntry: app,

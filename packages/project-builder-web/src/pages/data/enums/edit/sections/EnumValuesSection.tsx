@@ -1,22 +1,17 @@
-import {
-  EnumConfig,
-  modelEnumValueEntityType,
-} from '@halfdomelabs/project-builder-lib';
+import type { EnumConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormSetValue } from 'react-hook-form';
+
+import { modelEnumValueEntityType } from '@halfdomelabs/project-builder-lib';
 import {
   Button,
   InputField,
   Label,
   SectionList,
 } from '@halfdomelabs/ui-components';
-import { Fragment } from 'react/jsx-runtime';
-import {
-  Control,
-  useFieldArray,
-  UseFormSetValue,
-  useWatch,
-} from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdDeleteOutline } from 'react-icons/md';
-
+import { Fragment } from 'react/jsx-runtime';
 import { underscoreToTitleCase } from 'src/utils/casing';
 
 export function EnumValuesSection({
@@ -25,7 +20,7 @@ export function EnumValuesSection({
 }: {
   control: Control<EnumConfig>;
   setValue: UseFormSetValue<EnumConfig>;
-}): JSX.Element {
+}): React.JSX.Element {
   const {
     fields: valueFields,
     remove: removeValue,
@@ -72,7 +67,9 @@ export function EnumValuesSection({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => removeValue(i)}
+                onClick={() => {
+                  removeValue(i);
+                }}
               >
                 <Button.Icon icon={MdDeleteOutline} />
                 <div className="sr-only">Delete Enum</div>
@@ -83,13 +80,13 @@ export function EnumValuesSection({
         <Button
           size="sm"
           variant="secondary"
-          onClick={() =>
+          onClick={() => {
             appendValue({
               id: modelEnumValueEntityType.generateNewId(),
               name: '',
               friendlyName: '',
-            })
-          }
+            });
+          }}
         >
           Add Value
         </Button>

@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
-import { VALIDATORS } from '../utils/validation.js';
 import { createEntityType, zEnt, zRef } from '@src/references/index.js';
+
+import { VALIDATORS } from '../utils/validation.js';
 
 export const featureEntityType = createEntityType('feature');
 

@@ -58,8 +58,7 @@ const NodeGitIgnoreGenerator = createGeneratorWithChildren({
       getProviders: () => ({
         nodeGitIgnore: {
           addExclusions(exclusions: string[]) {
-            exclusionLines.push('');
-            exclusionLines.push(...exclusions);
+            exclusionLines.push('', ...exclusions);
           },
         },
       }),

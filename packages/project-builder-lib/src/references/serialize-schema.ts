@@ -1,26 +1,29 @@
+import type { TypeOf, z } from 'zod';
+
 import { produce } from 'immer';
 import _ from 'lodash';
-import { TypeOf, z } from 'zod';
 
-import { ZodRefPayload, ZodRefWrapper } from './ref-builder.js';
+import type { ZodRefPayload } from './ref-builder.js';
+
+import { ZodRefWrapper } from './ref-builder.js';
 
 export function serializeSchemaFromRefPayload<TValue>(
   payload: ZodRefPayload<TValue>,
 ): TValue {
   const { references, entities, data } = payload;
 
-  const entitiesById = _.keyBy(entities, (e) => e.id);
+  const entitiesById = new Map(entities.map((e) => [e.id, e]));
 
   return produce((draftData) => {
-    entities.forEach((entity) => {
+    for (const entity of entities) {
       if (entity.stripIdWhenSerializing) {
         _.unset(draftData, entity.idPath);
       }
-    });
+    }
 
-    references.forEach((reference) => {
+    for (const reference of references) {
       const entityId = _.get(draftData, reference.path) as string;
-      const entity = entitiesById[entityId];
+      const entity = entitiesById.get(entityId);
       if (!entity) {
         throw new Error(
           `Could not find entity with ID: ${entityId} at ${reference.path.join(
@@ -29,7 +32,7 @@ export function serializeSchemaFromRefPayload<TValue>(
         );
       }
       _.set(draftData, reference.path, entity.name);
-    });
+    }
   })(data) as TValue;
 }
 

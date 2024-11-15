@@ -1,5 +1,6 @@
+import type { ScalarFieldType } from '@halfdomelabs/project-builder-lib';
+
 import { modelTransformerEntityType } from '@halfdomelabs/project-builder-lib';
-import { ScalarFieldType } from '@halfdomelabs/project-builder-lib';
 import { createNewModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
 
 import { embeddedRelationTransformerWebConfig } from './edit.id/_components/service/ServiceEmbeddedRelationForm';
@@ -14,7 +15,7 @@ export const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
       id: modelTransformerEntityType.generateNewId(),
       type: 'password',
     }),
-    allowNewTransformer(projectContainer, modelConfig) {
+    allowNewTransformer(_, modelConfig) {
       return (
         !modelConfig.service?.transformers?.some(
           (t) => t.type === 'password',

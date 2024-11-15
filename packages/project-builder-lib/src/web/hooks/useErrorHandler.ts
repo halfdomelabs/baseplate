@@ -1,9 +1,8 @@
 import { useContext } from 'react';
 
-import {
-  ErrorHandlerContext,
-  ErrorHandlerValue,
-} from '../contexts/error-handler.js';
+import type { ErrorHandlerValue } from '../contexts/error-handler.js';
+
+import { ErrorHandlerContext } from '../contexts/error-handler.js';
 
 export function useErrorHandler(): ErrorHandlerValue {
   const context = useContext(ErrorHandlerContext);

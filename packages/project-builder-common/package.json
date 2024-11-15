@@ -15,11 +15,11 @@
     ".": "./index.js"
   },
   "main": "./index.js",
-  "types": "./index.d.ts",
   "files": [
     "*"
   ],
   "scripts": {
+    "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "start": "tsx -r dotenv/config ./src"

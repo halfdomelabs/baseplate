@@ -1,40 +1,42 @@
-import {
-  quot,
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
+
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
+
+import type {
+  PrismaDataTransformer,
+  PrismaDataTransformerOptions,
+  PrismaDataTransformInputField,
+} from '@src/providers/prisma/prisma-data-transformable.js';
+import type {
+  PrismaOutputModel,
+  PrismaOutputRelationField,
+} from '@src/types/prisma-output.js';
+
+import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
+import { notEmpty } from '@src/utils/array.js';
+import { upperCaseFirst } from '@src/utils/case.js';
+
+import type { PrismaDataMethodOptions } from '../_shared/crud-method/data-method.js';
+import type { PrismaUtilsProvider } from '../prisma-utils/index.js';
+import type { PrismaOutputProvider } from '../prisma/index.js';
 
 import {
   getDataInputTypeBlock,
   getDataMethodDataExpressions,
   getDataMethodDataType,
-  PrismaDataMethodOptions,
 } from '../_shared/crud-method/data-method.js';
-import { PrismaOutputProvider, prismaOutputProvider } from '../prisma/index.js';
 import {
   prismaCrudServiceProvider,
   prismaCrudServiceSetupProvider,
 } from '../prisma-crud-service/index.js';
-import {
-  PrismaUtilsProvider,
-  prismaUtilsProvider,
-} from '../prisma-utils/index.js';
-import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
-import {
-  PrismaDataTransformer,
-  PrismaDataTransformerOptions,
-  PrismaDataTransformInputField,
-} from '@src/providers/prisma/prisma-data-transformable.js';
-import {
-  PrismaOutputModel,
-  PrismaOutputRelationField,
-} from '@src/types/prismaOutput.js';
-import { notEmpty } from '@src/utils/array.js';
-import { upperCaseFirst } from '@src/utils/case.js';
+import { prismaUtilsProvider } from '../prisma-utils/index.js';
+import { prismaOutputProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -160,13 +162,14 @@ function createEmbeddedTransformFunction(options: {
           create: createExpression,
           update: updateExpression,
         }),
-        operations: !dataPipeNames.length
-          ? undefined
-          : TypescriptCodeUtils.createExpression(
-              `mergePipeOperations([${dataPipeNames.join(', ')}])`,
-              "import { mergePipeOperations } from '%prisma-utils/dataPipes';",
-              { importMappers: [prismaUtils] },
-            ),
+        operations:
+          dataPipeNames.length === 0
+            ? undefined
+            : TypescriptCodeUtils.createExpression(
+                `mergePipeOperations([${dataPipeNames.join(', ')}])`,
+                "import { mergePipeOperations } from '%prisma-utils/dataPipes';",
+                { importMappers: [prismaUtils] },
+              ),
       }),
       OUTPUT_TYPE: outputType,
       CONTEXT_TYPE: serviceContextType,
@@ -309,22 +312,23 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         update: Prisma.${foreignModelName}UpdateWithout${foreignRelationName}Input;
       }`;
 
-      const upsertFunction = !embeddedTransformerFactories.length
-        ? undefined
-        : createEmbeddedTransformFunction({
-            name: `prepareUpsertEmbedded${upperCaseFirst(
-              localRelationName,
-            )}Data`,
-            inputDataType: dataInputName,
-            outputDataType,
-            dataMethodOptions,
-            isOneToOne,
-            prismaUtils,
-            serviceContextType: serviceContext.getServiceContextType(),
-            whereUniqueType: `Prisma.${upperCaseFirst(
-              foreignModel.name,
-            )}WhereUniqueInput`,
-          });
+      const upsertFunction =
+        embeddedTransformerFactories.length === 0
+          ? undefined
+          : createEmbeddedTransformFunction({
+              name: `prepareUpsertEmbedded${upperCaseFirst(
+                localRelationName,
+              )}Data`,
+              inputDataType: dataInputName,
+              outputDataType,
+              dataMethodOptions,
+              isOneToOne,
+              prismaUtils,
+              serviceContextType: serviceContext.getServiceContextType(),
+              whereUniqueType: `Prisma.${upperCaseFirst(
+                foreignModel.name,
+              )}WhereUniqueInput`,
+            });
 
       const dataInputType = getDataInputTypeBlock(
         dataInputName,
@@ -387,7 +391,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
 
       // finds the discriminator ID field in the input for 1:many relationships
       const getDiscriminatorIdField = (): string => {
-        const foreignIds = foreignModel?.idFields ?? [];
+        const foreignIds = foreignModel.idFields ?? [];
         const discriminatorIdFields = foreignIds.filter((foreignId) =>
           embeddedFieldNames.includes(foreignId),
         );
@@ -412,7 +416,7 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         );
 
         // convert primary keys to where unique
-        const foreignIds = foreignModel?.idFields ?? [];
+        const foreignIds = foreignModel.idFields ?? [];
         const primaryKeyFields = foreignIds.map(
           (
             idField,
@@ -509,11 +513,12 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
               INPUT: usesInput ? 'input' : '',
               RETURN_TYPE: returnType,
               PREFIX: '',
-              VALUE: requirementsList.length
-                ? value.prepend(
-                    `${requirementsList.join(' || ')} ? undefined : `,
-                  )
-                : value,
+              VALUE:
+                requirementsList.length > 0
+                  ? value.prepend(
+                      `${requirementsList.join(' || ')} ? undefined : `,
+                    )
+                  : value,
             },
           ),
           needsExistingItem,
@@ -538,14 +543,14 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         const parentId =
           operationType === 'update' ? localId : `existingItem.${localId}`;
 
-        const transformAdditions = !upsertFunction
-          ? {}
-          : {
+        const transformAdditions = upsertFunction
+          ? {
               transform: upsertFunction.name,
               context: 'context',
               getWhereUnique: whereUniqueResult.func,
               parentId,
-            };
+            }
+          : {};
 
         const oneToManyAdditions = isOneToOne
           ? {}
@@ -556,9 +561,8 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
 
         const parentField = getForeignRelationParentField();
 
-        const oneToOneAdditions = !isOneToOne
-          ? {}
-          : {
+        const oneToOneAdditions = isOneToOne
+          ? {
               deleteRelation: TypescriptCodeUtils.formatExpression(
                 '() => PRISMA_MODEL.deleteMany({ where: WHERE_ARGS })',
                 {
@@ -570,7 +574,8 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
                   }),
                 },
               ),
-            };
+            }
+          : {};
 
         return {
           args: TypescriptCodeUtils.mergeExpressionsAsObject({

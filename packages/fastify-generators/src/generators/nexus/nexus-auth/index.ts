@@ -9,10 +9,11 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { nexusSetupProvider } from '../nexus/index.js';
 import { authProvider } from '@src/generators/auth/auth/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { requestServiceContextSetupProvider } from '@src/generators/core/request-service-context/index.js';
+
+import { nexusSetupProvider } from '../nexus/index.js';
 
 const descriptorSchema = z.object({
   requireOnRootFields: z.boolean().default(true),

@@ -1,6 +1,6 @@
 import { createProviderType } from '@halfdomelabs/sync';
 
-import { AdminCrudDisplay } from '../_utils/data-display.js';
+import type { AdminCrudDisplay } from '../_utils/data-display.js';
 
 export interface AdminCrudDisplayContainer {
   addDisplay: (input: AdminCrudDisplay) => void;

@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -20,7 +22,7 @@ interface ModelsSidebarListProps {
 
 export function ModelsSidebarList({
   className,
-}: ModelsSidebarListProps): JSX.Element {
+}: ModelsSidebarListProps): React.JSX.Element {
   const {
     definition: { models },
   } = useProjectDefinition();
@@ -51,14 +53,18 @@ export function ModelsSidebarList({
           <div className="relative">
             <InputField
               value={filterQuery}
-              onChange={(text) => setFilterQuery(text)}
+              onChange={(text) => {
+                setFilterQuery(text);
+              }}
               placeholder="Search"
             />
             {filterQuery && (
               <Button
                 variant="ghost"
                 className="absolute right-4 top-1/2 -translate-y-1/2"
-                onClick={() => setFilterQuery('')}
+                onClick={() => {
+                  setFilterQuery('');
+                }}
                 size="icon"
               >
                 <Button.Icon icon={MdClear} />

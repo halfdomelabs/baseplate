@@ -1,8 +1,10 @@
+import type React from 'react';
+
 import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
 import { MdPeople } from 'react-icons/md';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
-function FeaturesLayout(): JSX.Element {
+function FeaturesLayout(): React.JSX.Element {
   return (
     <SidebarLayout className="flex-1">
       <SidebarLayout.Sidebar className="space-y-4" width="sm">

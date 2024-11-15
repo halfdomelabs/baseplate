@@ -1,16 +1,18 @@
-import {
+import type {
   ModelConfig,
   ScalarFieldType,
-  SCALAR_FIELD_TYPES,
 } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
+import { SCALAR_FIELD_TYPES } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { ComboboxField } from '@halfdomelabs/ui-components';
-import { Control, useController } from 'react-hook-form';
+import { useController } from 'react-hook-form';
 
-import {
-  SCALAR_FIELD_TYPE_OPTIONS,
-  ScalarFieldTypeOption,
-} from '../../../_constants';
+import type { ScalarFieldTypeOption } from '../../../_constants';
+
+import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../_constants';
 
 interface ModelFieldTypeInputProps {
   control: Control<ModelConfig>;
@@ -20,7 +22,7 @@ interface ModelFieldTypeInputProps {
 export function ModelFieldTypeInput({
   control,
   idx,
-}: ModelFieldTypeInputProps): JSX.Element {
+}: ModelFieldTypeInputProps): React.JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
   const enumOptions: ScalarFieldTypeOption[] = parsedProject
@@ -52,8 +54,8 @@ export function ModelFieldTypeInput({
     control,
   });
 
-  const handleChange = (value: string): void => {
-    if (value.startsWith('enum-')) {
+  const handleChange = (value: string | null): void => {
+    if (value?.startsWith('enum-')) {
       const enumName = value.replace('enum-', '');
       onFieldOptionsChange({
         enumType: enumName,

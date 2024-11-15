@@ -1,10 +1,10 @@
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 
-import {
-  baseDescriptorSchema,
-  BaseGeneratorDescriptor,
-} from '../descriptor.js';
 import { getErrorMessage } from '@src/utils/errors.js';
+
+import type { BaseGeneratorDescriptor } from '../descriptor.js';
+
+import { baseDescriptorSchema } from '../descriptor.js';
 
 export async function loadDescriptorFromFile(
   filePath: string,
@@ -13,14 +13,11 @@ export async function loadDescriptorFromFile(
     const fileString = await fs.readFile(`${filePath}.json`, 'utf8');
     const data = JSON.parse(fileString) as BaseGeneratorDescriptor;
 
-    if (!data) {
-      throw new Error(`Descriptor in is invalid!`);
-    }
     baseDescriptorSchema.parse(data);
     return data;
-  } catch (err) {
+  } catch (error) {
     throw new Error(
-      `Unable to load descriptor file: ${filePath} (${getErrorMessage(err)})`,
+      `Unable to load descriptor file: ${filePath} (${getErrorMessage(error)})`,
     );
   }
 }

@@ -1,5 +1,5 @@
 import { Slot } from '@radix-ui/react-slot';
-import * as React from 'react';
+import React from 'react';
 import { RxChevronRight, RxDotsHorizontal } from 'react-icons/rx';
 
 /* eslint-disable react/prop-types */
@@ -78,7 +78,7 @@ const BreadcrumbSeparator = ({
   children,
   className,
   ...props
-}: React.ComponentProps<'li'>): JSX.Element => (
+}: React.ComponentProps<'li'>): React.JSX.Element => (
   <li
     role="presentation"
     aria-hidden="true"
@@ -93,7 +93,7 @@ BreadcrumbSeparator.displayName = 'BreadcrumbSeparator';
 const BreadcrumbEllipsis = ({
   className,
   ...props
-}: React.ComponentProps<'span'>): JSX.Element => (
+}: React.ComponentProps<'span'>): React.JSX.Element => (
   <span
     role="presentation"
     aria-hidden="true"

@@ -1,6 +1,7 @@
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+
 import {
   makeImportAndFilePath,
-  TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -10,12 +11,14 @@ import {
   createProviderType,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
-import path from 'path';
+import path from 'node:path';
 import { z } from 'zod';
 
-import { appModuleProvider } from '../root-module/index.js';
-import { ServiceOutputMethod } from '@src/types/serviceOutput.js';
+import type { ServiceOutputMethod } from '@src/types/service-output.js';
+
 import { notEmpty } from '@src/utils/array.js';
+
+import { appModuleProvider } from '../root-module/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -99,7 +102,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
               METHODS: TypescriptCodeUtils.mergeBlocks(orderedMethods, '\n\n'),
             });
 
-            if (Object.keys(methodMap.value()).length) {
+            if (Object.keys(methodMap.value()).length > 0) {
               await builder.apply(
                 servicesFile.renderToActionFromText('METHODS;', servicesPath),
               );

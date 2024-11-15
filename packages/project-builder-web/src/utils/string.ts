@@ -14,7 +14,7 @@ function splitIntoTokens(str: string): string[] {
 export function ellipsisString(str: string, maxLength: number): string {
   return str.length <= maxLength
     ? str
-    : str.substring(0, maxLength - 3) + '...';
+    : `${str.slice(0, Math.max(0, maxLength - 3))}...`;
 }
 
 /**
@@ -48,7 +48,7 @@ export function ellipsisStringFromMiddle(str: string, maxLength = 20): string {
 
   // Check if first and last tokens exceed maxLength
   const firstToken = tokens[0];
-  const lastToken = tokens[tokens.length - 1].replace(/^[_\s-]+/, '');
+  const lastToken = (tokens.at(-1) ?? '').replace(/^[_\s-]+/, '');
   const lastTokenLength = lastToken.length;
   if (firstToken.length + lastTokenLength + 3 > maxLength) {
     return ellipsisString(str, maxLength);
@@ -69,5 +69,5 @@ export function ellipsisStringFromMiddle(str: string, maxLength = 20): string {
   }
 
   // trim any separators from the end of the last token
-  return reconstructed + '...' + lastToken;
+  return `${reconstructed}...${lastToken}`;
 }

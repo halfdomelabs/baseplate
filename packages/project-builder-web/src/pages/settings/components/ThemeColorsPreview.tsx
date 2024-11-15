@@ -1,10 +1,11 @@
-import {
-  ThemeConfig,
-  generateCssFromThemeConfig,
-} from '@halfdomelabs/project-builder-lib';
+import type { ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
+import { generateCssFromThemeConfig } from '@halfdomelabs/project-builder-lib';
 import { Badge, Button, Card, Combobox } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { Control, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 interface ThemeColorsPreviewProps {
   className?: string;
@@ -16,12 +17,12 @@ export function ThemeColorsPreview({
   className,
   control,
   mode,
-}: ThemeColorsPreviewProps): JSX.Element {
+}: ThemeColorsPreviewProps): React.JSX.Element {
   const colors = useWatch({
     control,
     name: `colors.${mode}`,
   });
-  const colorCss = colors && generateCssFromThemeConfig(colors);
+  const colorCss = generateCssFromThemeConfig(colors);
   return (
     <div
       className={clsx(
@@ -104,6 +105,6 @@ function PreviewSectionTitle({
   children,
 }: {
   children: React.ReactNode;
-}): JSX.Element {
+}): React.JSX.Element {
   return <h4 className="text-lg font-semibold">{children}</h4>;
 }

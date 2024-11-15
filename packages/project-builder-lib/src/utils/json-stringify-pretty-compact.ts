@@ -10,12 +10,13 @@ function forEach(
   cb: (val: unknown, key: string | number) => void,
 ): void {
   if (Array.isArray(obj)) {
+    // eslint-disable-next-line unicorn/no-array-for-each
     obj.forEach(cb);
   } else if (isObject(obj)) {
-    Object.keys(obj).forEach((key) => {
+    for (const key of Object.keys(obj)) {
       const val = obj[key];
       cb(val, key);
-    });
+    }
   }
 }
 
@@ -117,12 +118,13 @@ export function stringify(
       typeof obj === 'object' &&
       typeof (obj as { toJSON: unknown }).toJSON === 'function'
     ) {
-      // eslint-disable-next-line no-param-reassign
+      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
       obj = (obj as { toJSON: () => void }).toJSON();
     }
 
     const string = JSON.stringify(obj);
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (string === undefined) {
       return string;
     }
@@ -160,6 +162,7 @@ export function stringify(
         }
         delimiters = '[]';
       } else {
+        // eslint-disable-next-line unicorn/no-array-for-each
         Object.keys(obj).forEach((key, index, array) => {
           const keyPart = `${JSON.stringify(key)}: `;
           const value = stringifyRecursive(
@@ -167,6 +170,7 @@ export function stringify(
             nextIndent,
             keyPart.length + atEndOfArray(array, index),
           );
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (value !== undefined) {
             items.push(keyPart + value);
           }

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 /**
  * Safely concatenate two paths and prevent directory traversal attacks.

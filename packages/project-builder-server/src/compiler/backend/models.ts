@@ -1,17 +1,23 @@
 import type { PrismaFieldDescriptor } from '@halfdomelabs/fastify-generators';
-import {
+import type {
   BackendAppConfig,
-  FeatureUtils,
   ModelConfig,
-  ModelFieldUtils,
   ModelRelationFieldConfig,
   ModelScalarFieldConfig,
+} from '@halfdomelabs/project-builder-lib';
+
+import {
+  FeatureUtils,
+  ModelFieldUtils,
   ModelUtils,
   undefinedIfEmpty,
   undefinedIfFalsy,
 } from '@halfdomelabs/project-builder-lib';
 
-import { AppEntryBuilder, BackendAppEntryBuilder } from '../appEntryBuilder.js';
+import type {
+  AppEntryBuilder,
+  BackendAppEntryBuilder,
+} from '../app-entry-builder.js';
 
 function buildScalarField(
   builder: BackendAppEntryBuilder,
@@ -99,7 +105,7 @@ function buildRelationField(
     modelRef: `${foreignFeature}/root:$models.${foreignModel.name}`,
     foreignRelationName,
     relationshipName: needsRelationName ? foreignRelationName : undefined,
-    relationshipType: relationshipType,
+    relationshipType,
     optional,
     onDelete,
     onUpdate,
@@ -115,7 +121,7 @@ function buildModel(
     generator: '@halfdomelabs/fastify/prisma/prisma-model',
     children: {
       fields: undefinedIfEmpty(
-        model.model.fields?.map((field) =>
+        model.model.fields.map((field) =>
           buildScalarField(appBuilder, model, field),
         ),
       ),
@@ -134,9 +140,7 @@ function buildModel(
             },
       uniqueConstraints: undefinedIfEmpty(
         model.model.uniqueConstraints
-          ?.filter(({ fields }) => {
-            return fields.length > 1;
-          })
+          ?.filter(({ fields }) => fields.length > 1)
           .map(({ fields }) => ({
             name: fields
               .map((f) => appBuilder.nameFromId(f.fieldRef))

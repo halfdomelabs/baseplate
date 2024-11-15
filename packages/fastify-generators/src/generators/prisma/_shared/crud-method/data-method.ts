@@ -1,21 +1,24 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import * as R from 'ramda';
 
-import { PrismaOutputProvider } from '../../prisma/index.js';
-import { PrismaUtilsProvider } from '../../prisma-utils/index.js';
-import { ServiceContextProvider } from '@src/generators/core/service-context/index.js';
-import {
+import type { ServiceContextProvider } from '@src/generators/core/service-context/index.js';
+import type {
   PrismaDataTransformer,
   PrismaDataTransformOutputField,
 } from '@src/providers/prisma/prisma-data-transformable.js';
-import { PrismaOutputRelationField } from '@src/types/prismaOutput.js';
-import { ServiceOutputDto } from '@src/types/serviceOutput.js';
+import type { PrismaOutputRelationField } from '@src/types/prisma-output.js';
+import type { ServiceOutputDto } from '@src/types/service-output.js';
+
 import { notEmpty } from '@src/utils/array.js';
 import { upperCaseFirst } from '@src/utils/case.js';
+
+import type { PrismaUtilsProvider } from '../../prisma-utils/index.js';
+import type { PrismaOutputProvider } from '../../prisma/index.js';
 
 export interface PrismaDataMethodOptions {
   name: string;
@@ -44,7 +47,7 @@ export function wrapWithApplyDataPipe(
   pipeNames: string[],
   prismaUtils: PrismaUtilsProvider,
 ): TypescriptCodeExpression {
-  if (!pipeNames.length) {
+  if (pipeNames.length === 0) {
     return operation;
   }
   return TypescriptCodeUtils.formatExpression(
@@ -136,7 +139,7 @@ export function getDataInputTypeBlock(
       ? prismaDataInput
       : `Partial<${prismaDataInput}>`;
 
-  if (!transformerInputs.length) {
+  if (transformerInputs.length === 0) {
     return TypescriptCodeUtils.formatBlock(
       `type DATA_INPUT_TYPE_NAME = Pick<PRISMA_DATA_INPUT, PRISMA_FIELDS>;`,
       {
@@ -195,7 +198,7 @@ export function getDataMethodDataExpressions({
   updateExpression: TypescriptCodeExpression;
   dataPipeNames: string[];
 } {
-  if (!transformers.length) {
+  if (transformers.length === 0) {
     return {
       functionBody: '',
       createExpression: TypescriptCodeUtils.createExpression('data'),
@@ -210,7 +213,7 @@ export function getDataMethodDataExpressions({
     (field): field is PrismaOutputRelationField =>
       field.type === 'relation' &&
       !!field.fields &&
-      field.fields?.some((relationScalarField) =>
+      field.fields.some((relationScalarField) =>
         prismaFieldNames.includes(relationScalarField),
       ),
   );
@@ -221,7 +224,7 @@ export function getDataMethodDataExpressions({
       const missingFields = relationScalarFields.filter(
         (f) => !prismaFieldNames.includes(f),
       );
-      if (missingFields.length) {
+      if (missingFields.length > 0) {
         throw new Error(
           `Relation named ${
             field.name
@@ -284,11 +287,10 @@ export function getDataMethodDataExpressions({
       );
 
       return {
-        inputFields:
-          relationScalarFields.map((f) => ({
-            type: TypescriptCodeUtils.createExpression(''),
-            dtoField: { name: f, type: 'scalar', scalarType: 'string' },
-          })) ?? [],
+        inputFields: relationScalarFields.map((f) => ({
+          type: TypescriptCodeUtils.createExpression(''),
+          dtoField: { name: f, type: 'scalar', scalarType: 'string' },
+        })),
         outputFields: [
           {
             name: field.name,
@@ -321,9 +323,8 @@ export function getDataMethodDataExpressions({
     operationType !== 'create' &&
     augmentedTransformers.some((t) => t.needsExistingItem);
 
-  const existingItemGetter = !needsExistingItem
-    ? TypescriptCodeUtils.createBlock('')
-    : TypescriptCodeUtils.formatBlock(
+  const existingItemGetter = needsExistingItem
+    ? TypescriptCodeUtils.formatBlock(
         `
 const existingItem = OPTIONAL_WHERE
 (await PRISMA_MODEL.findUniqueOrThrow({ where: WHERE_UNIQUE }))
@@ -337,7 +338,8 @@ const existingItem = OPTIONAL_WHERE
           PRISMA_MODEL: prismaOutput.getPrismaModelExpression(modelName),
           WHERE_UNIQUE: whereUniqueExpression ?? '',
         },
-      );
+      )
+    : TypescriptCodeUtils.createBlock('');
 
   const parentIdCheck =
     parentIdCheckField &&

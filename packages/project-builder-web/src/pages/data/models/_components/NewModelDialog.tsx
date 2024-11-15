@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { useBlockBeforeContinue } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -18,12 +20,17 @@ export function NewModelDialog({
   children,
   open,
   onOpenChange,
-}: NewModelDialogProps): JSX.Element {
+}: NewModelDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   const {
     onSubmit,
     form: { control },
-  } = useModelForm({ isCreate: true, onSubmitSuccess: () => setIsOpen(false) });
+  } = useModelForm({
+    isCreate: true,
+    onSubmitSuccess: () => {
+      setIsOpen(false);
+    },
+  });
 
   const blockBeforeContinue = useBlockBeforeContinue();
 
@@ -31,13 +38,14 @@ export function NewModelDialog({
     <Dialog
       open={isOpen}
       onOpenChange={(shouldOpen) => {
-        if (!shouldOpen) setIsOpen(false);
-        else {
+        if (shouldOpen) {
           blockBeforeContinue({
             onContinue: () => {
               setIsOpen(true);
             },
           });
+        } else {
+          setIsOpen(false);
         }
       }}
     >

@@ -1,11 +1,12 @@
 import * as R from 'ramda';
 import toposort from 'toposort';
 
-import { EntryDependencyMap } from './dependency-map.js';
-import { GeneratorTaskEntry } from './generator-builder.js';
-import { ProviderExportMap } from '../generator.js';
-import { ProviderExport } from '../provider.js';
 import { notEmpty } from '@src/utils/arrays.js';
+
+import type { ProviderExportMap } from '../generator.js';
+import type { ProviderExport } from '../provider.js';
+import type { EntryDependencyMap } from './dependency-map.js';
+import type { GeneratorTaskEntry } from './generator-builder.js';
 
 function normalizeExportMap(exportMap: ProviderExportMap): ProviderExport[] {
   return Object.values(exportMap).map((provider) =>
@@ -25,12 +26,12 @@ function getExportInterdependencies(
     { id: string; modifiedInBuild: boolean }[]
   > = {};
 
-  Object.entries(dependencyMap).forEach(([entryId, entryDependencies]) => {
+  for (const [entryId, entryDependencies] of Object.entries(dependencyMap)) {
     const entry = entriesById[entryId];
-    Object.entries(entry.dependencies).forEach(([depName, dep]) => {
+    for (const [depName, dep] of Object.entries(entry.dependencies)) {
       const resolvedDependency = entryDependencies[depName];
       if (!resolvedDependency) {
-        return;
+        continue;
       }
       const providerName = dep.name;
       const key = `provider|${resolvedDependency.id}#${providerName}`;
@@ -42,8 +43,8 @@ function getExportInterdependencies(
         ...(exportDependencies[key] ?? []),
         { id: entryId, modifiedInBuild },
       ];
-    });
-  });
+    }
+  }
 
   const nodes: string[] = [];
   const edges = entries.flatMap((entry) => {

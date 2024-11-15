@@ -75,17 +75,18 @@ export function useBlockBeforeContinue(): (
   options: RequestBlockerOptions,
 ) => void {
   const hasActiveBlockers = useBlockerDialogState(
-    (state) => !!state.activeBlockers.length,
+    (state) => state.activeBlockers.length > 0,
   );
   const clearRequestedBlockers = useBlockerDialogState(
     (state) => state.clearRequestedBlockers,
   );
   // make sure we clear any blocker requests if we navigate away
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       clearRequestedBlockers();
-    };
-  }, []);
+    },
+    [clearRequestedBlockers],
+  );
   const requestBlocker = useBlockerDialogState((state) => state.requestBlocker);
   // if no blockers, continue immediately
   if (!hasActiveBlockers) {

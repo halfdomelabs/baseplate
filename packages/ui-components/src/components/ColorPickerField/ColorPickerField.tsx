@@ -1,14 +1,19 @@
-import * as Popover from '@radix-ui/react-popover';
-import { ForwardedRef, useId } from 'react';
-import { HexColorInput, HexColorPicker } from 'react-colorful';
-import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type React from 'react';
+import type { ForwardedRef } from 'react';
+import type { Control, FieldPath, FieldValues } from 'react-hook-form';
 
-import { FormItem } from '../FormItem/FormItem';
+import * as Popover from '@radix-ui/react-popover';
+import { useId } from 'react';
+import { HexColorInput, HexColorPicker } from 'react-colorful';
+
+import type { FieldProps } from '@src/types/form.js';
+
 import { useControllerMerged } from '@src/hooks/useControllerMerged';
 import { buttonVariants, inputVariants } from '@src/styles';
-import { FieldProps } from '@src/types/form.js';
 import { cn } from '@src/utils';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
+
+import { FormItem } from '../FormItem/FormItem';
 
 export interface ColorPickerFieldProps extends FieldProps {
   className?: string;
@@ -40,7 +45,7 @@ function ColorPickerFieldFn(
     formatColorName,
   }: ColorPickerFieldProps,
   ref: ForwardedRef<HTMLButtonElement>,
-): JSX.Element {
+): React.JSX.Element {
   const addWrapper = label ?? error ?? description;
 
   const id = useId();
@@ -139,7 +144,7 @@ function ColorPickerFieldControllerFn<
     ...rest
   }: ColorPickerFieldControllerProps<TFieldValues, TFieldName>,
   ref: ForwardedRef<HTMLButtonElement>,
-): JSX.Element {
+): React.JSX.Element {
   const {
     field: fieldProps,
     fieldState: { error },

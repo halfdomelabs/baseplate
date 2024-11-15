@@ -1,34 +1,32 @@
-import {
-  ParsedProjectDefinition,
-  ProjectDefinition,
-  ProjectDefinitionContainer,
-  createPluginImplementationStore,
-  createProjectDefinitionSchemaWithContext,
-  fixRefDeletions,
-  parseProjectDefinitionWithContext,
-  runSchemaMigrations,
-  serializeSchema,
-  prettyStableStringify,
-} from '@halfdomelabs/project-builder-lib';
-import {
-  ProjectDefinitionContext,
+import type { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
+import type {
   SetOrTransformConfig,
   SetProjectDefinitionOptions,
   UseProjectDefinitionResult,
 } from '@halfdomelabs/project-builder-lib/web';
+import type React from 'react';
+
+import {
+  createPluginImplementationStore,
+  createProjectDefinitionSchemaWithContext,
+  fixRefDeletions,
+  ParsedProjectDefinition,
+  parseProjectDefinitionWithContext,
+  prettyStableStringify,
+  ProjectDefinitionContainer,
+  runSchemaMigrations,
+  serializeSchema,
+} from '@halfdomelabs/project-builder-lib';
+import { ProjectDefinitionContext } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
-  ErrorDisplay,
   ErrorableLoader,
+  ErrorDisplay,
   toast,
 } from '@halfdomelabs/ui-components';
 import { produce } from 'immer';
 import { useEffect, useMemo, useState } from 'react';
 import semver from 'semver';
-import { ZodError } from 'zod';
-
-import { NewProjectCard } from './NewProjectCard';
-import { websocketEvents } from '@src/services/api';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import { useProjects } from 'src/hooks/useProjects';
 import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
@@ -36,10 +34,15 @@ import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 import { logger } from 'src/services/logger';
 import {
+  formatZodError,
   RefDeleteError,
   UserVisibleError,
-  formatZodError,
 } from 'src/utils/error';
+import { ZodError } from 'zod';
+
+import { websocketEvents } from '@src/services/api';
+
+import { NewProjectCard } from './NewProjectCard';
 
 interface ProjectDefinitionGateProps {
   children?: React.ReactNode;
@@ -47,7 +50,7 @@ interface ProjectDefinitionGateProps {
 
 export function ProjectDefinitionGate({
   children,
-}: ProjectDefinitionGateProps): JSX.Element {
+}: ProjectDefinitionGateProps): React.JSX.Element {
   const {
     value: remoteConfig,
     loaded,
@@ -68,7 +71,9 @@ export function ProjectDefinitionGate({
   useEffect(
     () =>
       websocketEvents.on('open', () => {
-        refreshVersion().catch((err) => logError(err));
+        refreshVersion().catch((err: unknown) => {
+          logError(err);
+        });
       }),
     [refreshVersion],
   );
@@ -93,7 +98,7 @@ export function ProjectDefinitionGate({
     }
     if (
       externalChangeCounter === savedConfig?.externalChangeCounter &&
-      projectId === savedConfig?.projectId
+      projectId === savedConfig.projectId
     ) {
       return {
         status: 'loaded',
@@ -106,7 +111,7 @@ export function ProjectDefinitionGate({
       // migrate config
       const { newConfig: migratedProjectDefinition, appliedMigrations } =
         runSchemaMigrations(projectDefinition);
-      if (appliedMigrations.length) {
+      if (appliedMigrations.length > 0) {
         logger.log(
           `Applied migrations:\n${appliedMigrations
             .map((m) => `${m.version}: ${m.description}`)
@@ -130,8 +135,8 @@ export function ProjectDefinitionGate({
         });
       }
       return { status: 'loaded', parsedProject: project, definitionContainer };
-    } catch (err) {
-      if (err instanceof SyntaxError) {
+    } catch (error_) {
+      if (error_ instanceof SyntaxError) {
         return {
           status: 'error',
           configError: new UserVisibleError(
@@ -139,16 +144,16 @@ export function ProjectDefinitionGate({
           ),
         };
       }
-      if (err instanceof ZodError) {
+      if (error_ instanceof ZodError) {
         return {
           status: 'error',
           configError: new UserVisibleError(
-            `The project configuration is not valid: ${formatZodError(err)}`,
+            `The project configuration is not valid: ${formatZodError(error_)}`,
           ),
         };
       }
-      logError(err);
-      return { status: 'error', configError: err };
+      logError(error_);
+      return { status: 'error', configError: error_ };
     }
   }, [
     savedConfig,
@@ -161,7 +166,7 @@ export function ProjectDefinitionGate({
 
   const result: UseProjectDefinitionResult | undefined = useMemo(() => {
     if (loadData.status !== 'loaded' || !projectId || !schemaParserContext) {
-      return undefined;
+      return;
     }
     function setConfig(
       newConfig: SetOrTransformConfig,
@@ -274,14 +279,20 @@ export function ProjectDefinitionGate({
         actions={
           <div className="flex flex-col space-y-4">
             <Button
-              onClick={() => downloadConfig().catch((err) => logError(err))}
+              onClick={() =>
+                downloadConfig().catch((err: unknown) => {
+                  logError(err);
+                })
+              }
             >
               Try Again
             </Button>
             {projects.length > 1 && (
               <Button
                 variant="secondary"
-                onClick={() => resetCurrentProjectId()}
+                onClick={() => {
+                  resetCurrentProjectId();
+                }}
               >
                 Switch Project
               </Button>
@@ -296,13 +307,13 @@ export function ProjectDefinitionGate({
     return (
       <div className="flex h-full items-center justify-center">
         <NewProjectCard
-          existingProject={result?.parsedProject.projectDefinition}
+          existingProject={result.parsedProject.projectDefinition}
           saveProject={(data) => {
             if (!schemaParserContext) {
               return;
             }
             const oldProjectDefinition =
-              result?.parsedProject.exportToProjectDefinition() ?? {};
+              result.parsedProject.exportToProjectDefinition();
             const newProjectDefinition = {
               ...oldProjectDefinition,
               ...data,
@@ -342,13 +353,19 @@ export function ProjectDefinitionGate({
         header="Upgrade your Baseplate client"
         actions={
           <div className="flex flex-col space-y-4">
-            <Button onClick={() => window.location.reload()}>
+            <Button
+              onClick={() => {
+                globalThis.location.reload();
+              }}
+            >
               Refresh Page
             </Button>
             {projects.length > 1 && (
               <Button
                 variant="secondary"
-                onClick={() => resetCurrentProjectId()}
+                onClick={() => {
+                  resetCurrentProjectId();
+                }}
               >
                 Switch Project
               </Button>

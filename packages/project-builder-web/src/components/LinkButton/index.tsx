@@ -1,5 +1,6 @@
+import type React from 'react';
+
 import clsx from 'clsx';
-import React from 'react';
 
 interface Props {
   className?: string;
@@ -17,7 +18,7 @@ function LinkButton({
   type = 'button',
   negative,
   disabled,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const colorClass = (() => {
     if (disabled) {
       return 'text-gray-400 dark:text-gray-500';
@@ -37,7 +38,7 @@ function LinkButton({
         className,
       )}
       // a type is being provided but eslint doesn't know
-      // eslint-disable-next-line react/button-has-type
+
       type={type}
       onClick={onClick}
       disabled={disabled}

@@ -1,14 +1,15 @@
-import {
+import type {
   AppEntry,
   BackendAppConfig,
   ProjectDefinition,
   ProjectDefinitionContainer,
-  backendAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
+import { backendAppEntryType } from '@halfdomelabs/project-builder-lib';
+
+import { AppEntryBuilder } from '../app-entry-builder.js';
 import { buildFastify } from './fastify.js';
 import { getPostgresSettings, getRedisSettings } from './utils.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
 
 export function buildDocker(
   projectDefinition: ProjectDefinition,

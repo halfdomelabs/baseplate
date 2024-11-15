@@ -1,11 +1,13 @@
-const basePrettierConfig = require('./prettier.config.base');
+// @ts-check
+
+import basePrettierConfig from './prettier.config.node.js';
 
 /** @type {import("prettier").Config} */
-module.exports = {
+export default {
   ...basePrettierConfig,
   tailwindFunctions: ['clsx', 'cn', 'cva'],
   plugins: [
-    ...(basePrettierConfig.plugins || []),
+    ...(basePrettierConfig.plugins ?? []),
     'prettier-plugin-tailwindcss',
   ],
 };

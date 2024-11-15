@@ -1,7 +1,7 @@
-import { FieldValues, FormState } from 'react-hook-form';
+import type { FieldValues, FormState } from 'react-hook-form';
 
-import { useBlockerDialog } from './useBlockerDialog.js';
 import { hasDirtyFields } from '../utils/form.js';
+import { useBlockerDialog } from './useBlockerDialog.js';
 
 export function useBlockDirtyFormNavigate<
   TFieldValues extends FieldValues = FieldValues,

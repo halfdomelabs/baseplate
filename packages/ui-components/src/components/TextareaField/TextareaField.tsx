@@ -1,19 +1,22 @@
-import React, { ForwardedRef } from 'react';
-import {
+import type { ForwardedRef } from 'react';
+import type {
   Control,
   FieldError,
   FieldPath,
   FieldValues,
   RegisterOptions,
   UseFormRegisterReturn,
-  get,
-  useFormState,
 } from 'react-hook-form';
+
+import React from 'react';
+import { get, useFormState } from 'react-hook-form';
+
+import type { FieldProps } from '@src/types/form';
+
+import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import { FormItem } from '../FormItem/FormItem';
 import { Textarea } from '../Textarea/Textarea';
-import { FieldProps } from '@src/types/form';
-import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 export interface TextareaFieldProps
   extends Omit<
@@ -27,24 +30,27 @@ export interface TextareaFieldProps
 }
 
 const TextareaFieldRoot = React.forwardRef<HTMLDivElement, TextareaFieldProps>(
-  ({ label, description, error, onChange, register, ...props }, ref) => {
-    return (
-      <FormItem ref={ref} error={error}>
-        {label && <FormItem.Label>{label}</FormItem.Label>}
-        <FormItem.Control>
-          <Textarea
-            onChange={onChange && ((e) => onChange?.(e.target.value))}
-            {...props}
-            {...register}
-          />
-        </FormItem.Control>
-        {description && (
-          <FormItem.Description>{description}</FormItem.Description>
-        )}
-        {error && <FormItem.Error>{error}</FormItem.Error>}
-      </FormItem>
-    );
-  },
+  ({ label, description, error, onChange, register, ...props }, ref) => (
+    <FormItem ref={ref} error={error}>
+      {label && <FormItem.Label>{label}</FormItem.Label>}
+      <FormItem.Control>
+        <Textarea
+          onChange={
+            onChange &&
+            ((e) => {
+              onChange(e.target.value);
+            })
+          }
+          {...props}
+          {...register}
+        />
+      </FormItem.Control>
+      {description && (
+        <FormItem.Description>{description}</FormItem.Description>
+      )}
+      {error && <FormItem.Error>{error}</FormItem.Error>}
+    </FormItem>
+  ),
 );
 TextareaFieldRoot.displayName = 'TextareaField';
 
@@ -68,7 +74,7 @@ const TextareaFieldController = genericForwardRef(
       ...rest
     }: TextareaFieldControllerProps<TFieldValues, TFieldName>,
     ref: ForwardedRef<HTMLDivElement>,
-  ): JSX.Element => {
+  ): React.JSX.Element => {
     const { errors } = useFormState({ control, name });
     const error = get(errors, name) as FieldError | undefined;
 

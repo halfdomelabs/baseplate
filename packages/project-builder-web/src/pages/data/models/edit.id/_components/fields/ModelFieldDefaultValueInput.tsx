@@ -1,4 +1,8 @@
-import { EnumUtils, ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormSetValue } from 'react-hook-form';
+
+import { EnumUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -7,12 +11,7 @@ import {
   InputField,
   SelectField,
 } from '@halfdomelabs/ui-components';
-import {
-  Control,
-  UseFormSetValue,
-  useController,
-  useWatch,
-} from 'react-hook-form';
+import { useController, useWatch } from 'react-hook-form';
 import { HiDotsVertical, HiOutlineX } from 'react-icons/hi';
 
 interface ModelFieldDefaultValueInputProps {
@@ -25,7 +24,7 @@ export function ModelFieldDefaultValueInput({
   control,
   idx,
   setValue,
-}: ModelFieldDefaultValueInputProps): JSX.Element {
+}: ModelFieldDefaultValueInputProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
   const type = useWatch({
     control,
@@ -61,11 +60,11 @@ export function ModelFieldDefaultValueInput({
           <Button.WithOnlyIcon
             title="Reset"
             icon={HiOutlineX}
-            onClick={() =>
+            onClick={() => {
               setValue(`model.fields.${idx}.options.default`, '', {
                 shouldDirty: true,
-              })
-            }
+              });
+            }}
             variant="ghost"
             size="icon"
           />
@@ -87,11 +86,11 @@ export function ModelFieldDefaultValueInput({
           <Button.WithOnlyIcon
             title="Reset"
             icon={HiOutlineX}
-            onClick={() =>
+            onClick={() => {
               setValue(`model.fields.${idx}.options.default`, undefined, {
                 shouldDirty: true,
-              })
-            }
+              });
+            }}
             variant="ghost"
             size="icon"
           />
@@ -112,7 +111,9 @@ export function ModelFieldDefaultValueInput({
           <Button.WithOnlyIcon
             title="Reset"
             icon={HiOutlineX}
-            onClick={() => onOptionsChange({ ...optionsValue, genUuid: false })}
+            onClick={() => {
+              onOptionsChange({ ...optionsValue, genUuid: false });
+            }}
             variant="ghost"
             size="icon"
           />
@@ -139,12 +140,12 @@ export function ModelFieldDefaultValueInput({
           <Dropdown.Content>
             <Dropdown.Group>
               <Dropdown.Item
-                onSelect={() =>
+                onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
                     genUuid: true,
-                  })
-                }
+                  });
+                }}
               >
                 Random UUID v4
               </Dropdown.Item>
@@ -169,13 +170,13 @@ export function ModelFieldDefaultValueInput({
           <Button.WithOnlyIcon
             title="Reset"
             icon={HiOutlineX}
-            onClick={() =>
+            onClick={() => {
               onOptionsChange({
                 ...optionsValue,
                 defaultToNow: false,
                 updatedAt: false,
-              })
-            }
+              });
+            }}
             variant="ghost"
             size="icon"
           />
@@ -202,24 +203,24 @@ export function ModelFieldDefaultValueInput({
           <Dropdown.Content>
             <Dropdown.Group>
               <Dropdown.Item
-                onSelect={() =>
+                onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
                     defaultToNow: true,
                     updatedAt: false,
-                  })
-                }
+                  });
+                }}
               >
                 Now
               </Dropdown.Item>
               <Dropdown.Item
-                onSelect={() =>
+                onSelect={() => {
                   onOptionsChange({
                     ...optionsValue,
                     defaultToNow: true,
                     updatedAt: true,
-                  })
-                }
+                  });
+                }}
               >
                 Last Updated At
               </Dropdown.Item>
@@ -254,12 +255,12 @@ export function ModelFieldDefaultValueInput({
           <Button.WithOnlyIcon
             title="Reset"
             icon={HiOutlineX}
-            onClick={() =>
+            onClick={() => {
               onOptionsChange({
                 ...optionsValue,
                 defaultEnumValue: '',
-              })
-            }
+              });
+            }}
             variant="ghost"
             size="icon"
           />

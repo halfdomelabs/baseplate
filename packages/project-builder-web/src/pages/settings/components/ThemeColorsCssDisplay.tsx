@@ -1,11 +1,11 @@
-import {
-  ThemeConfig,
-  generateCssFromThemeConfig,
-} from '@halfdomelabs/project-builder-lib';
+import type { ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
+import { generateCssFromThemeConfig } from '@halfdomelabs/project-builder-lib';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
-import { Control, useWatch } from 'react-hook-form';
-
+import { useWatch } from 'react-hook-form';
 import TextAreaInput from 'src/components/TextAreaInput';
 
 interface ThemeColorsCssDisplayProps {
@@ -15,29 +15,29 @@ interface ThemeColorsCssDisplayProps {
 
 function convertRecordToCss(record: Record<string, string>): string {
   return Object.entries(record)
-    .map(([key, value]) => {
-      return `  ${key}: ${value};`;
-    })
+    .map(([key, value]) => `  ${key}: ${value};`)
     .join('\n');
 }
 
 export function ThemeColorsCssDisplay({
   className,
   control,
-}: ThemeColorsCssDisplayProps): JSX.Element {
+}: ThemeColorsCssDisplayProps): React.JSX.Element {
   const colors = useWatch({ control, name: `colors` });
 
-  const cssValue = useMemo(() => {
-    return `
+  const cssValue = useMemo(
+    () =>
+      `
 :root {
-${convertRecordToCss(generateCssFromThemeConfig(colors?.light ?? {}))}
+${convertRecordToCss(generateCssFromThemeConfig(colors.light))}
 }
 
 html[data-theme='dark'] {
-${convertRecordToCss(generateCssFromThemeConfig(colors?.dark ?? {}))}
+${convertRecordToCss(generateCssFromThemeConfig(colors.dark))}
 }
-    `.trim();
-  }, [colors]);
+    `.trim(),
+    [colors],
+  );
 
   return (
     <div className={clsx('', className)}>

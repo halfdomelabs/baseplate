@@ -1,8 +1,10 @@
-import {
+import type {
   FeatureConfig,
   ProjectDefinition,
-  featureEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import { featureEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -15,11 +17,12 @@ import { useState } from 'react';
 import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
-import { FeatureForm } from './components/FeatureForm';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 
-function HierarchyPage(): JSX.Element {
+import { FeatureForm } from './components/FeatureForm';
+
+function HierarchyPage(): React.JSX.Element {
   const { definitionContainer, setConfigAndFixReferences } =
     useProjectDefinition();
   const { requestConfirm } = useConfirmDialog();
@@ -28,7 +31,7 @@ function HierarchyPage(): JSX.Element {
   const [featureToEdit, setFeatureToEdit] = useState<FeatureConfig>();
   const [showFeatureForm, setShowFeatureForm] = useState(false);
 
-  const features = definitionContainer.definition.features;
+  const { features } = definitionContainer.definition;
 
   const handleRemoveFeature = (feature: FeatureConfig): void => {
     function deleteFeature(draftConfig: ProjectDefinition): void {
@@ -53,8 +56,8 @@ function HierarchyPage(): JSX.Element {
         try {
           setConfigAndFixReferences(deleteFeature);
           toast.success(`Feature ${feature.name} removed`);
-        } catch (err) {
-          toast.error(logAndFormatError(err));
+        } catch (error) {
+          toast.error(logAndFormatError(error));
         }
       },
     });
@@ -100,7 +103,9 @@ function HierarchyPage(): JSX.Element {
           <FeatureForm
             feature={featureToEdit}
             open={showFeatureForm}
-            onClose={() => setShowFeatureForm(false)}
+            onClose={() => {
+              setShowFeatureForm(false);
+            }}
           />
         </div>
       </div>
@@ -118,7 +123,7 @@ function FeatureItem({
   setFeatureToEdit: (f: FeatureConfig) => void;
   setShowFeatureForm: (s: boolean) => void;
   handleRemoveFeature: (f: FeatureConfig) => void;
-}): JSX.Element {
+}): React.JSX.Element {
   const featureDisplayName = feature.name.split('/').pop() ?? '';
 
   return (
@@ -179,7 +184,9 @@ function FeatureItem({
       <Button.WithIcon
         className="shrink-0"
         variant="ghost"
-        onClick={() => handleRemoveFeature(feature)}
+        onClick={() => {
+          handleRemoveFeature(feature);
+        }}
         size="icon"
         icon={MdDelete}
         title={`Delete ${feature.name}`}

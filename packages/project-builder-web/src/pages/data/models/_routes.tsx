@@ -1,11 +1,12 @@
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 
-import { ModelEditRoutes } from './edit.id/_routes';
-import ModelsIndexPage from './index.page';
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createRouteCrumb } from '@src/types/routes';
 
-export const ModelsRoutes: RouteObject = {
+import { ModelEditRoutes } from './edit/_routes';
+import ModelsIndexPage from './index.page';
+
+export const ModelRoutes: RouteObject = {
   path: 'models/*',
   handle: {
     crumb: createRouteCrumb({ label: 'Models', url: '/data/models' }),

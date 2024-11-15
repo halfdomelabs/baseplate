@@ -24,7 +24,7 @@
     "build:templates": "cpx \"src/generators/*/*/templates/**\" \"dist/generators\" --clean",
     "build:tsc": "tsc && tsc-alias",
     "clean": "rm -rf ./dist",
-    "lint": "eslint --ext .ts,.tsx,.js,.jsx ./src",
+    "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "typecheck": "tsc --noEmit",
@@ -36,12 +36,10 @@
   "dependencies": {
     "@halfdomelabs/core-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
-    "@types/resolve": "^1.20.2",
     "inflection": "3.0.0",
     "lodash": "^4.17.21",
-    "prettier-plugin-tailwindcss": "0.6.6",
+    "prettier-plugin-tailwindcss": "0.6.8",
     "ramda": "^0.28.0",
-    "resolve": "^1.22.2",
     "toposort": "^2.0.2",
     "zod": "3.23.8"
   },

@@ -1,27 +1,31 @@
-import {
+import type {
   ModelConfig,
-  PluginUtils,
   ProjectDefinition,
+} from '@halfdomelabs/project-builder-lib';
+
+import {
   createPlatformPluginExport,
   modelTransformerEntityType,
+  PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { modelTransformerWebSpec } from '@halfdomelabs/project-builder-lib/web';
 
 import '../../index.css';
+
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
+import type { FileTransformerConfig } from './types';
+
 import { FileTransformerForm } from './components/FileTransformerForm';
-import { FileTransformerConfig } from './types';
-import { StoragePluginDefinition } from '../core/schema/plugin-definition';
 
 function findNonTransformedFileRelations(
   definition: ProjectDefinition,
   modelConfig: ModelConfig,
   pluginId: string,
 ): string[] {
-  const storageDefinition =
-    PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
-      definition,
-      pluginId,
-    );
+  const storageDefinition = PluginUtils.configByIdOrThrow(
+    definition,
+    pluginId,
+  ) as StoragePluginDefinition;
   const { transformers } = modelConfig.service ?? {};
   const fileTransformers = (transformers?.filter(
     (transformer) => transformer.type === 'file',

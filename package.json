@@ -3,6 +3,7 @@
   "private": true,
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
+  "type": "module",
   "scripts": {
     "build": "nx run-many --target=build",
     "build:affected": "nx affected --target=build",

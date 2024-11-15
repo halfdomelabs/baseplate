@@ -1,15 +1,17 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormSetValue } from 'react-hook-form';
+
 import {
   Button,
   RecordView,
   SectionList,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
-import { Control, UseFormSetValue } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { ModelUniqueConstraintDialog } from './fields/unique-constraints/ModelUniqueConstraintDialog';
 import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
+import { ModelUniqueConstraintDialog } from './fields/unique-constraints/ModelUniqueConstraintDialog';
 
 interface Props {
   control: Control<ModelConfig>;
@@ -19,16 +21,14 @@ interface Props {
 export function ModelUniqueConstraintsSection({
   control,
   setValue,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const uniqueConstraints = useEditedModelConfig(
     ({ model }) => model.uniqueConstraints ?? [],
   );
-  const fieldIdsToNames = useEditedModelConfig(({ model }) => {
-    return Object.fromEntries(
-      model.fields.map((field) => [field.id, field.name]),
-    );
-  });
+  const fieldIdsToNames = useEditedModelConfig(({ model }) =>
+    Object.fromEntries(model.fields.map((field) => [field.id, field.name])),
+  );
 
   function handleDeleteConstraint(constraintId: string): void {
     requestConfirm({
@@ -77,7 +77,9 @@ export function ModelUniqueConstraintsSection({
                 icon={MdDeleteOutline}
                 title="Delete"
                 iconClassName="text-destructive"
-                onClick={() => handleDeleteConstraint(constraint.id)}
+                onClick={() => {
+                  handleDeleteConstraint(constraint.id);
+                }}
               />
             </RecordView.Actions>
           </RecordView>

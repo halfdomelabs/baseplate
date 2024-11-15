@@ -1,4 +1,4 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';

@@ -1,4 +1,5 @@
-import { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib';
+
 import { discoverPlugins } from '@halfdomelabs/project-builder-server';
 import { fileURLToPath } from 'node:url';
 

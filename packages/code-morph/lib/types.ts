@@ -1,5 +1,5 @@
-import { SourceFile } from 'ts-morph';
-import z from 'zod';
+import type { SourceFile } from 'ts-morph';
+import type z from 'zod';
 
 type TransformFunction<Options extends z.AnyZodObject> = (
   file: SourceFile,

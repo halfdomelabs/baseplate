@@ -1,13 +1,15 @@
+import type React from 'react';
+import type { IconType } from 'react-icons';
+
 import clsx from 'clsx';
-import { IconType } from 'react-icons';
 import {
+  MdCheckCircleOutline,
   MdErrorOutline,
   MdOutlineInfo,
-  MdCheckCircleOutline,
   MdOutlineWarningAmber,
 } from 'react-icons/md';
 
-import { StatusType } from '../../hooks/useStatus';
+import type { StatusType } from '../../hooks/useStatus';
 
 interface Props {
   className?: string;
@@ -19,35 +21,40 @@ function getAlertClassAndIcon(type: StatusType): {
   Icon: IconType;
 } {
   switch (type) {
-    case 'error':
+    case 'error': {
       return {
         colorClasses:
           'text-red-500 bg-red-100 dark:bg-red-800 dark:text-red-200',
         Icon: MdErrorOutline,
       };
-    case 'info':
+    }
+    case 'info': {
       return {
         colorClasses:
           'text-blue-500 bg-blue-100 dark:bg-blue-800 dark:text-blue-200',
         Icon: MdOutlineInfo,
       };
-    case 'success':
+    }
+    case 'success': {
       return {
         colorClasses:
           'text-green-500 bg-green-100 dark:bg-green-800 dark:text-green-200',
         Icon: MdCheckCircleOutline,
       };
-    case 'warning':
+    }
+    case 'warning': {
       return {
         colorClasses: 'text-orange-500 bg-orange-100 dark:bg-orange-700',
         Icon: MdOutlineWarningAmber,
       };
-    default:
+    }
+    default: {
       throw new Error(`Unknown status type: ${type as string}`);
+    }
   }
 }
 
-function AlertIcon({ className, type }: Props): JSX.Element {
+function AlertIcon({ className, type }: Props): React.JSX.Element {
   const { colorClasses, Icon } = getAlertClassAndIcon(type);
 
   return (

@@ -1,7 +1,8 @@
 import { z } from 'zod';
 
-import { adminSectionEntityType } from '../types.js';
 import { createEntityType } from '@src/references/types.js';
+
+import { adminSectionEntityType } from '../types.js';
 
 export const baseAdminCrudInputSchema = z.object({
   type: z.string().min(1),

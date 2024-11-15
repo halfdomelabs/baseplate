@@ -1,8 +1,12 @@
-import { ModelConfig, ModelUtils } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { UseFormGetValues, UseFormWatch } from 'react-hook-form';
+import type { StoreApi } from 'zustand';
+
+import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { createContext, useContext, useEffect, useMemo } from 'react';
-import { UseFormGetValues, UseFormWatch } from 'react-hook-form';
-import { StoreApi, createStore, useStore } from 'zustand';
+import { createStore, useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
 interface ModelConfigStore {
@@ -25,7 +29,7 @@ export function EditedModelContextProvider({
   watch: UseFormWatch<ModelConfig>;
   getValues: UseFormGetValues<ModelConfig>;
   initialModel: ModelConfig;
-}): JSX.Element {
+}): React.JSX.Element {
   const { definition } = useProjectDefinition();
   const existingModel = ModelUtils.byIdOrThrow(definition, initialModel.id);
   const store = useMemo(

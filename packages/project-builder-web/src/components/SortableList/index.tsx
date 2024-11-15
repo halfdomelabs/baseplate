@@ -1,4 +1,8 @@
-import { DndContext, closestCenter, DragEndEvent } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
+import type { ReactNode } from 'react';
+import type React from 'react';
+
+import { closestCenter, DndContext } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   SortableContext,
@@ -7,19 +11,18 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@halfdomelabs/ui-components';
-import { ReactNode } from 'react';
 import { RxDragHandleHorizontal } from 'react-icons/rx';
 
 interface SortableListItem {
   id: string;
-  element: JSX.Element;
+  element: React.JSX.Element;
 }
 
 interface SortableItemProps {
   id: string;
   children: ReactNode;
 }
-function SortableItem({ id, children }: SortableItemProps): JSX.Element {
+function SortableItem({ id, children }: SortableItemProps): React.JSX.Element {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -56,11 +59,11 @@ interface SortableListProps {
 export function SortableList({
   listItems,
   sortItems,
-}: SortableListProps): JSX.Element {
+}: SortableListProps): React.JSX.Element {
   const handleDragEnd = ({ active, over }: DragEndEvent): void => {
-    if (active.id !== over!.id) {
+    if (over && active.id !== over.id) {
       const dragIndex = listItems.findIndex((item) => item.id === active.id);
-      const hoverIndex = listItems.findIndex((item) => item.id === over!.id);
+      const hoverIndex = listItems.findIndex((item) => item.id === over.id);
       sortItems(dragIndex, hoverIndex);
     }
   };

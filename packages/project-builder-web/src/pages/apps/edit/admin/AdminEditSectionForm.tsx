@@ -1,6 +1,10 @@
-import {
+import type {
   AdminAppConfig,
   AdminSectionConfig,
+} from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
+import {
   adminSectionEntityType,
   adminSectionSchema,
   zPluginWrapper,
@@ -16,11 +20,11 @@ import clsx from 'clsx';
 import _ from 'lodash';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-
-import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { formatError } from 'src/services/error-formatter';
+
+import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 
 interface Props {
   className?: string;
@@ -29,7 +33,10 @@ interface Props {
 
 const SECTION_OPTIONS = [{ label: 'Crud', value: 'crud' }];
 
-function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
+function AdminEditSectionForm({
+  className,
+  appConfig,
+}: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { sectionId: sectionUid } = useParams<{ sectionId: string }>();
   const { setConfigAndFixReferences, parsedProject, pluginContainer } =
@@ -81,8 +88,8 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
       }
       toast.success('Successfully saved section!');
       reset(data);
-    } catch (err) {
-      toast.error(formatError(err));
+    } catch (error) {
+      toast.error(formatError(error));
     }
   });
 
@@ -110,8 +117,8 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
           });
           navigate(`..`);
           toast.success('Successfully deleted section!');
-        } catch (err) {
-          toast.error(formatError(err));
+        } catch (error) {
+          toast.error(formatError(error));
         }
       },
     });
@@ -126,7 +133,13 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
         {sectionId && (
-          <LinkButton onClick={() => handleDelete()}>Delete Section</LinkButton>
+          <LinkButton
+            onClick={() => {
+              handleDelete();
+            }}
+          >
+            Delete Section
+          </LinkButton>
         )}
         <TextInput.LabelledController
           label="Name"
@@ -151,11 +164,13 @@ function AdminEditSectionForm({ className, appConfig }: Props): JSX.Element {
           options={SECTION_OPTIONS}
         />
         {(() => {
-          switch (type) {
-            case 'crud':
+          switch (type as string) {
+            case 'crud': {
               return <AdminCrudSectionForm formProps={formProps} />;
-            default:
+            }
+            default: {
               return <div>Unsupported type {type}</div>;
+            }
           }
         })()}
         <Button type="submit">Save</Button>

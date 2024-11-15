@@ -1,18 +1,18 @@
-import { AdminCrudForeignInputConfig } from '@halfdomelabs/project-builder-lib';
-import {
-  AdminCrudInputWebFormProps,
-  createAdminCrudInputWebConfig,
-} from '@halfdomelabs/project-builder-lib/web';
+import type { AdminCrudForeignInputConfig } from '@halfdomelabs/project-builder-lib';
+import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
+import type React from 'react';
+import type { Control } from 'react-hook-form';
+
+import { createAdminCrudInputWebConfig } from '@halfdomelabs/project-builder-lib/web';
 import { InputField, SelectField } from '@halfdomelabs/ui-components';
-import { Control } from 'react-hook-form';
 
 function AdminCrudForeignInputForm({
   formProps,
   name,
   model,
-}: AdminCrudInputWebFormProps): JSX.Element {
+}: AdminCrudInputWebFormProps): React.JSX.Element {
   const localRelationOptions =
-    model?.model.relations?.map((relation) => ({
+    model.model.relations?.map((relation) => ({
       label: `${relation.name} (${relation.modelName})`,
       value: relation.id,
     })) ?? [];

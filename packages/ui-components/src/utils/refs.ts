@@ -1,4 +1,4 @@
-import { ForwardedRef } from 'react';
+import type { ForwardedRef } from 'react';
 
 /**
  * Merges multiple React refs into a single ref callback. This is useful when you need to pass multiple refs to the same component.
@@ -9,12 +9,12 @@ import { ForwardedRef } from 'react';
  */
 export function mergeRefs<T>(refs: ForwardedRef<T>[]): ForwardedRef<T> {
   return (instance: T | null) => {
-    refs.forEach((ref) => {
+    for (const ref of refs) {
       if (typeof ref === 'function') {
         ref(instance);
       } else if (ref) {
         ref.current = instance;
       }
-    });
+    }
   };
 }

@@ -1,3 +1,5 @@
+import type React from 'react';
+
 import { useBlockerDialogState } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { useCallback, useEffect, useState } from 'react';
@@ -9,9 +11,9 @@ import { logError } from '@src/services/error-logger';
  * A blocker dialog that is placed at the top level of the page
  * enabling the use of the useBlockerDialog hook.
  */
-export function BlockerDialog(): JSX.Element {
+export function BlockerDialog(): React.JSX.Element {
   const activeBlocker = useBlockerDialogState((state) =>
-    state.activeBlockers.length ? state.activeBlockers[0] : null,
+    state.activeBlockers.length > 0 ? state.activeBlockers[0] : null,
   );
   const requestedBlockers = useBlockerDialogState(
     (state) => state.requestedBlockers,
@@ -48,7 +50,7 @@ export function BlockerDialog(): JSX.Element {
         if (blocker.state === 'blocked') {
           blocker.proceed();
         }
-        requestedBlockers.forEach((request) => request.onContinue());
+        for (const request of requestedBlockers) request.onContinue();
         clearRequestedBlockers();
       } finally {
         setIsContinuing(false);
@@ -62,7 +64,9 @@ export function BlockerDialog(): JSX.Element {
 
   useEffect(() => {
     if (shouldShowBlocker && !activeBlocker && !isContinuing) {
-      continueBlockers().catch((err) => logError(err));
+      continueBlockers().catch((error: unknown) => {
+        logError(error);
+      });
     }
   }, [shouldShowBlocker, continueBlockers, activeBlocker, isContinuing]);
 
@@ -76,8 +80,10 @@ export function BlockerDialog(): JSX.Element {
     activeBlocker?.buttonContinueWithoutSaveText && (
       <Button
         onClick={() =>
-          continueBlockers(activeBlocker.onContinueWithoutSave).catch((err) =>
-            logError(err),
+          continueBlockers(activeBlocker.onContinueWithoutSave).catch(
+            (error: unknown) => {
+              logError(error);
+            },
           )
         }
         disabled={isContinuing}
@@ -92,9 +98,9 @@ export function BlockerDialog(): JSX.Element {
     <Button
       disabled={isContinuing}
       onClick={() => {
-        continueBlockers(activeBlocker?.onContinue).catch((err) =>
-          logError(err),
-        );
+        continueBlockers(activeBlocker?.onContinue).catch((error: unknown) => {
+          logError(error);
+        });
       }}
     >
       {activeBlocker?.buttonContinueText ?? 'Continue'}

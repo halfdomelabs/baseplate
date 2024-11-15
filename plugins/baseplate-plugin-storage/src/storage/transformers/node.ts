@@ -1,13 +1,15 @@
+import type { ModelTransformerCompiler } from '@halfdomelabs/project-builder-lib';
+
 import {
-  ModelTransformerCompiler,
-  PluginUtils,
   createPlatformPluginExport,
   modelTransformerCompilerSpec,
+  PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 
-import { FileTransformerConfig } from './types';
-import { StoragePluginDefinition } from '../core/schema/plugin-definition';
-import { PrismaFileTransformerDescriptor } from '@src/generators/fastify';
+import type { PrismaFileTransformerDescriptor } from '@src/generators/fastify';
+
+import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
+import type { FileTransformerConfig } from './types';
 
 function buildFileTransformerCompiler(
   pluginId: string,
@@ -27,11 +29,10 @@ function buildFileTransformerCompiler(
         );
       }
 
-      const storageDefinition =
-        PluginUtils.configByIdOrThrow<StoragePluginDefinition>(
-          definitionContainer.definition,
-          pluginId,
-        );
+      const storageDefinition = PluginUtils.configByIdOrThrow(
+        definitionContainer.definition,
+        pluginId,
+      ) as StoragePluginDefinition;
 
       const category = storageDefinition.categories.find(
         (c) => c.usedByRelation === foreignRelation.foreignId,

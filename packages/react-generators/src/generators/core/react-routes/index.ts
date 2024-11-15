@@ -5,16 +5,17 @@ import {
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { renderRoutes } from '../_shared/routes/renderRoutes.js';
-import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
+import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
+
 import {
-  ReactRoute,
-  ReactRouteLayout,
   reactRoutesProvider,
   reactRoutesReadOnlyProvider,
 } from '@src/providers/routes.js';
 import { notEmpty } from '@src/utils/array.js';
 import { dasherizeCamel, upperCaseFirst } from '@src/utils/case.js';
+
+import { renderRoutes } from '../_shared/routes/render-routes.js';
+import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),
@@ -72,15 +73,14 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
             layoutKey,
             children: renderedRoutes,
           });
-          routes.forEach((route) =>
+          for (const route of routes)
             reactRoutes.registerRoute({
               ...route,
               path:
                 route.path &&
                 `${reactRoutes.getRoutePrefix()}/${pathName}/${route.path}`,
-            }),
-          );
-          layouts.forEach((layout) => reactRoutes.registerLayout(layout));
+            });
+          for (const layout of layouts) reactRoutes.registerLayout(layout);
         } else {
           // if we have an optional notFoundHandler, we need to register it as a route
           if (reactNotFound) {

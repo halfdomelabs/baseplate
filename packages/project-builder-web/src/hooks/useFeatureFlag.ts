@@ -1,4 +1,4 @@
-import { FeatureFlag } from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
 
 import { useClientVersion } from './useClientVersion';
 

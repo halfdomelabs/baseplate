@@ -1,12 +1,15 @@
+import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+
 import {
-  AdminAppConfig,
   FeatureUtils,
-  stripChildren,
+  stripEmptyGeneratorChildren,
 } from '@halfdomelabs/project-builder-lib';
 
-import { compileAdminCrudSection } from './crud/index.js';
-import { AppEntryBuilder } from '../appEntryBuilder.js';
 import { notEmpty } from '@src/utils/array.js';
+
+import type { AppEntryBuilder } from '../app-entry-builder.js';
+
+import { compileAdminCrudSection } from './crud/index.js';
 
 export function compileAdminSections(
   featureId: string,
@@ -22,12 +25,10 @@ export function compileAdminSections(
   }
 
   return sections.map((section) => {
-    switch (section.type) {
-      case 'crud':
-        return compileAdminCrudSection(section, builder, sectionsId);
-      default:
-        throw new Error(`Unknown section type ${section.type as string}`);
+    if ((section.type as string) === 'crud') {
+      return compileAdminCrudSection(section, builder, sectionsId);
     }
+    throw new Error(`Unknown section type ${section.type as string}`);
   });
 }
 
@@ -60,7 +61,7 @@ function compileAdminFeatureRecursive(
     `${descriptorLocation}:$sections`,
   );
 
-  if (!subDescriptors.length && !sectionDescriptors) {
+  if (subDescriptors.length === 0 && !sectionDescriptors) {
     return undefined;
   }
 
@@ -70,7 +71,7 @@ function compileAdminFeatureRecursive(
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featureId),
     // add admin layout to any root features
     layoutKey: feature.parentRef ? undefined : 'admin',
-    children: stripChildren({
+    children: stripEmptyGeneratorChildren({
       $sections: sectionDescriptors,
       $childRoutes: subDescriptors,
     }),

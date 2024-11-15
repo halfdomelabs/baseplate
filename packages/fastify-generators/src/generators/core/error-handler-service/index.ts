@@ -1,10 +1,13 @@
+import type {
+  ImportMapper,
+  TypescriptSourceFile,
+} from '@halfdomelabs/core-generators';
+
 import {
   createTypescriptTemplateConfig,
-  ImportMapper,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
-  TypescriptSourceFile,
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,

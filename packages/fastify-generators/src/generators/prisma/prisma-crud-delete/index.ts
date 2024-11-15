@@ -1,28 +1,29 @@
-import {
+import type {
   TypescriptCodeBlock,
   TypescriptCodeExpression,
-  TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
+
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
-  createProviderType,
   createGeneratorWithChildren,
+  createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
+
+import type { ServiceOutputMethod } from '@src/types/service-output.js';
+
+import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
+import { prismaToServiceOutputDto } from '@src/types/service-output.js';
+
+import type { PrismaUtilsProvider } from '../prisma-utils/index.js';
+import type { PrismaOutputProvider } from '../prisma/index.js';
 
 import {
   getPrimaryKeyDefinition,
   getPrimaryKeyExpressions,
 } from '../_shared/crud-method/primary-key-input.js';
-import { PrismaOutputProvider, prismaOutputProvider } from '../prisma/index.js';
-import {
-  PrismaUtilsProvider,
-  prismaUtilsProvider,
-} from '../prisma-utils/index.js';
-import { serviceFileProvider } from '@src/generators/core/service-file/index.js';
-import {
-  prismaToServiceOutputDto,
-  ServiceOutputMethod,
-} from '@src/types/serviceOutput.js';
+import { prismaUtilsProvider } from '../prisma-utils/index.js';
+import { prismaOutputProvider } from '../prisma/index.js';
 
 const descriptorSchema = z.object({
   name: z.string().min(1),

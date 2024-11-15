@@ -1,13 +1,15 @@
-import clsx from 'clsx';
-import { useState } from 'react';
-import {
+import type React from 'react';
+import type {
   Control,
   DefaultValues,
   FieldPath,
   FieldPathValue,
   FieldValues,
-  useController,
 } from 'react-hook-form';
+
+import clsx from 'clsx';
+import { useState } from 'react';
+import { useController } from 'react-hook-form';
 
 import Button from '../Button';
 import FormError from '../FormError';
@@ -22,7 +24,7 @@ interface EmbeddedFormProps<InputType> {
 interface Props<InputType> {
   className?: string;
   onChange: (value: InputType | null | undefined) => void;
-  renderForm: (options: EmbeddedFormProps<InputType>) => JSX.Element;
+  renderForm: (options: EmbeddedFormProps<InputType>) => React.JSX.Element;
   value: InputType | null | undefined;
   itemName?: string;
   defaultValue?: DefaultValues<InputType>;
@@ -35,7 +37,7 @@ function EmbeddedObjectInput<InputType>({
   value,
   itemName,
   defaultValue = {} as DefaultValues<InputType>,
-}: Props<InputType>): JSX.Element {
+}: Props<InputType>): React.JSX.Element {
   const [valueToEdit, setValueToEdit] = useState<
     DefaultValues<Exclude<InputType, undefined | null>> | undefined
   >();
@@ -49,23 +51,38 @@ function EmbeddedObjectInput<InputType>({
     <div className={clsx('flex flex-row space-x-4', className)}>
       <Button
         size="small"
-        onClick={() =>
+        onClick={() => {
           setValueToEdit(
             (value ?? defaultValue) as DefaultValues<
               Exclude<InputType, undefined | null>
             >,
-          )
-        }
+          );
+        }}
       >
         {value ? 'Edit' : 'Create'}
       </Button>
       {value && (
-        <Button size="small" color="light" onClick={() => onChange(null)}>
+        <Button
+          size="small"
+          color="light"
+          onClick={() => {
+            onChange(null);
+          }}
+        >
           Remove
         </Button>
       )}
-      <Modal isOpen={!!valueToEdit} onClose={() => setValueToEdit(undefined)}>
-        <Modal.Header onClose={() => setValueToEdit(undefined)}>
+      <Modal
+        isOpen={!!valueToEdit}
+        onClose={() => {
+          setValueToEdit(undefined);
+        }}
+      >
+        <Modal.Header
+          onClose={() => {
+            setValueToEdit(undefined);
+          }}
+        >
           Edit {itemName ?? 'Item'}
         </Modal.Header>
         <Modal.Body>
@@ -88,7 +105,7 @@ EmbeddedObjectInput.Labelled = function EmbeddedOneToOneInputLabelled<
   className,
   error,
   ...rest
-}: EmbeddedObjectInputLabelledProps<InputType>): JSX.Element {
+}: EmbeddedObjectInputLabelledProps<InputType>): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <div className={className}>
@@ -117,14 +134,13 @@ EmbeddedObjectInput.LabelledController =
     FormType extends FieldValues,
     FormPath extends FieldPath<FormType>,
   >({
-    className,
     control,
     name,
     ...rest
   }: EmbeddedObjectInputLabelledControllerProps<
     FormType,
     FormPath
-  >): JSX.Element {
+  >): React.JSX.Element {
     const {
       field,
       fieldState: { error },
@@ -137,9 +153,9 @@ EmbeddedObjectInput.LabelledController =
       <EmbeddedObjectInput.Labelled
         {...rest}
         error={error?.message}
-        onChange={(value) =>
-          field.onChange(value as FieldPathValue<FormType, FormPath>)
-        }
+        onChange={(value) => {
+          field.onChange(value as FieldPathValue<FormType, FormPath>);
+        }}
         value={field.value}
       />
     );

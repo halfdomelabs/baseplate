@@ -50,40 +50,38 @@ export const migration006IndividualServiceControllers = createSchemaMigration<
   version: 6,
   name: 'individualServiceControllers',
   description: 'Make service controller fields individually enabled',
-  migrate: (config) => {
-    return {
-      ...config,
-      models: config.models.map((model) => {
-        const {
-          build,
-          create,
-          update,
-          delete: deleteOp,
-          ...rest
-        } = model.service ?? {};
+  migrate: (config) => ({
+    ...config,
+    models: config.models.map((model) => {
+      const {
+        build,
+        create,
+        update,
+        delete: deleteOp,
+        ...rest
+      } = model.service ?? {};
 
-        if (!build) {
-          return omit(model, ['service']);
-        }
+      if (!build) {
+        return omit(model, ['service']);
+      }
 
-        const isCreateEnabled =
-          create &&
-          (!!create.fields?.length || !!create.transformerNames?.length);
-        const isUpdateEnabled =
-          update &&
-          (!!update.fields?.length || !!update.transformerNames?.length);
-        const isDeleteEnabled = !deleteOp?.disabled;
+      const isCreateEnabled =
+        create &&
+        (!!create.fields?.length || !!create.transformerNames?.length);
+      const isUpdateEnabled =
+        update &&
+        (!!update.fields?.length || !!update.transformerNames?.length);
+      const isDeleteEnabled = !deleteOp?.disabled;
 
-        return {
-          ...model,
-          service: {
-            ...rest,
-            create: isCreateEnabled ? { ...create, enabled: true } : undefined,
-            update: isUpdateEnabled ? { ...update, enabled: true } : undefined,
-            delete: isDeleteEnabled ? { enabled: true } : undefined,
-          },
-        };
-      }),
-    };
-  },
+      return {
+        ...model,
+        service: {
+          ...rest,
+          create: isCreateEnabled ? { ...create, enabled: true } : undefined,
+          update: isUpdateEnabled ? { ...update, enabled: true } : undefined,
+          delete: isDeleteEnabled ? { enabled: true } : undefined,
+        },
+      };
+    }),
+  }),
 });

@@ -1,19 +1,22 @@
-import path from 'path';
+import path from 'node:path';
 
-import { loadDescriptorFromFile } from './descriptor-loader.js';
-import { buildGeneratorEntry, GeneratorEntry } from './generator-builder.js';
-import { executeGeneratorEntry } from './generator-runner.js';
-import {
+import type { Logger } from '@src/utils/evented-logger.js';
+
+import type {
   GeneratorWriteOptions,
   GeneratorWriteResult,
-  writeGeneratorOutput,
 } from '../generator-output-writer.js';
-import { GeneratorOutput } from '../generator-output.js';
+import type { GeneratorOutput } from '../generator-output.js';
+import type { GeneratorEntry } from './generator-builder.js';
+
+import { writeGeneratorOutput } from '../generator-output-writer.js';
 import {
   loadGeneratorsForModules,
   loadGeneratorsForProject,
 } from '../loader.js';
-import { Logger } from '@src/utils/evented-logger.js';
+import { loadDescriptorFromFile } from './descriptor-loader.js';
+import { buildGeneratorEntry } from './generator-builder.js';
+import { executeGeneratorEntry } from './generator-runner.js';
 
 export class GeneratorEngine {
   constructor(public builtInGeneratorModulePaths: Record<string, string>) {}

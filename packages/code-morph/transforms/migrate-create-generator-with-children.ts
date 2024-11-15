@@ -1,4 +1,5 @@
-import * as js from 'jscodeshift';
+import type * as js from 'jscodeshift';
+
 import invariant from 'tiny-invariant';
 
 function getMaybeIdentifierName(
@@ -53,11 +54,13 @@ const transform: js.Transform = (file, api) => {
         }
         return true;
       }
-      if (p.type === 'ObjectMethod') {
-        if (p.key.type === 'Identifier' && p.key.name === 'createGenerator') {
-          createGeneratorToMigrate = p;
-          return false;
-        }
+      if (
+        p.type === 'ObjectMethod' &&
+        p.key.type === 'Identifier' &&
+        p.key.name === 'createGenerator'
+      ) {
+        createGeneratorToMigrate = p;
+        return false;
       }
 
       return true;
@@ -86,7 +89,7 @@ const transform: js.Transform = (file, api) => {
     id: { name: 'Descriptor' },
   });
 
-  if (!descriptorType.length) {
+  if (descriptorType.length === 0) {
     // find descriptor schema declaration
     const descriptorSchema = root.find(j.VariableDeclarator, {
       id: { name: 'descriptorSchema' },
@@ -137,7 +140,7 @@ const transform: js.Transform = (file, api) => {
     j.identifier('createTaskConfigBuilder'),
     [
       j.arrowFunctionExpression(
-        descriptorArgs ? [descriptorArgs] : [],
+        [descriptorArgs],
         j.parenthesizedExpression(
           j.objectExpression([
             j.objectProperty(j.identifier('name'), j.stringLiteral('main')),
@@ -162,6 +165,7 @@ const transform: js.Transform = (file, api) => {
     j.Identifier,
     (n) => n.name === 'createGeneratorWithChildren',
   );
+  // eslint-disable-next-line unicorn/no-array-for-each
   createGeneratorWithChildren.forEach((path) => {
     path.replace(j.identifier('createGeneratorWithTasks'));
   });

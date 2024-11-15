@@ -1,12 +1,15 @@
+import type { ThemeConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormSetValue } from 'react-hook-form';
+
 import {
-  THEME_COLORS,
-  ThemeConfig,
   convertHexToColorName,
   getDefaultThemeColorFromShade,
+  THEME_COLORS,
 } from '@halfdomelabs/project-builder-lib';
 import { Button, ColorPickerField, Tooltip } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
-import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 import { MdInfo, MdRestartAlt } from 'react-icons/md';
 
 interface ThemeColorEditorProps {
@@ -21,7 +24,7 @@ export function ThemeColorsEditor({
   control,
   mode,
   setValue,
-}: ThemeColorEditorProps): JSX.Element {
+}: ThemeColorEditorProps): React.JSX.Element {
   const themeColorEntries = Object.entries(THEME_COLORS);
   const palettes = useWatch({ control, name: 'palettes' });
   const themeColors = useWatch({ control, name: `colors.${mode}` });
@@ -75,14 +78,14 @@ export function ThemeColorsEditor({
                   </div>
                 }
                 formatColorName={(color) => {
-                  const baseShade = Object.entries(
-                    palettes.base.shades ?? {},
-                  ).find(([, shadeColor]) => shadeColor === color)?.[0];
+                  const baseShade = Object.entries(palettes.base.shades).find(
+                    ([, shadeColor]) => shadeColor === color,
+                  )?.[0];
                   if (baseShade) {
                     return `base-${baseShade}`;
                   }
                   const primaryShade = Object.entries(
-                    palettes.primary.shades ?? {},
+                    palettes.primary.shades,
                   ).find(([, shadeColor]) => shadeColor === color)?.[0];
                   if (primaryShade) {
                     return `primary-${primaryShade}`;

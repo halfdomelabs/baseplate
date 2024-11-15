@@ -1,10 +1,14 @@
-import { FeatureUtils, stripChildren } from '@halfdomelabs/project-builder-lib';
+import {
+  FeatureUtils,
+  stripEmptyGeneratorChildren,
+} from '@halfdomelabs/project-builder-lib';
+
+import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
 import { buildEnumsForFeature } from './enums.js';
 import { buildGraphqlForFeature } from './graphql.js';
 import { buildModelsForFeature } from './models.js';
 import { buildServicesForFeature } from './services.js';
-import { BackendAppEntryBuilder } from '../appEntryBuilder.js';
 
 export function buildFeature(
   featureId: string,
@@ -27,7 +31,7 @@ export function buildFeature(
     name: featureName,
     generator: '@halfdomelabs/fastify/core/app-module',
     hoistedProviders: parsedProject.getFeatureHoistedProviders(featureId),
-    children: stripChildren({
+    children: stripEmptyGeneratorChildren({
       $enums: buildEnumsForFeature(featureId, parsedProject),
       $models: buildModelsForFeature(builder, featureId),
       $services: buildServicesForFeature(builder, featureId),

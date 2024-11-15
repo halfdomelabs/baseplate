@@ -1,8 +1,8 @@
 import React from 'react';
 import { MdOutlineErrorOutline } from 'react-icons/md';
 
-import { useComponentStrings } from '@src/contexts/ComponentStrings';
-import { cn } from '@src/utils';
+import { useComponentStrings } from '@src/contexts/component-strings.js';
+import { cn } from '@src/utils/cn.js';
 
 interface ErrorDisplayProps {
   /**
@@ -31,7 +31,7 @@ export function ErrorDisplay({
   header,
   error,
   actions,
-}: ErrorDisplayProps): JSX.Element {
+}: ErrorDisplayProps): React.JSX.Element {
   const strings = useComponentStrings();
   return (
     <div className={cn('flex h-full items-center justify-center', className)}>

@@ -1,4 +1,4 @@
-import { DockerComposeOutput } from './types.js';
+import type { DockerComposeOutput } from './types.js';
 
 interface PostgresConfig {
   port: string;

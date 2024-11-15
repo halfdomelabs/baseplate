@@ -1,7 +1,8 @@
+import type { Project } from 'src/services/remote';
+
 import { create } from 'zustand';
 
 import { getLocalStorageProjectId } from '../services/project-id.service';
-import { Project } from 'src/services/remote';
 
 interface ProjectsStore {
   projects: Project[];
@@ -18,8 +19,10 @@ export const useProjects = create<ProjectsStore>((set) => ({
   projects: [],
   projectsLoaded: false,
   lastSyncedAt: null,
-  setLastSyncedAt: (lastSyncedAt) => set({ lastSyncedAt }),
-  setProjects: (projects) =>
+  setLastSyncedAt: (lastSyncedAt) => {
+    set({ lastSyncedAt });
+  },
+  setProjects: (projects) => {
     set((state) => ({
       projects,
       projectsLoaded: true,
@@ -29,19 +32,22 @@ export const useProjects = create<ProjectsStore>((set) => ({
             currentProjectId: projects.length === 1 ? projects[0].id : null,
             lastSyncedAt: null,
           }),
-    })),
+    }));
+  },
   currentProjectId: getLocalStorageProjectId(),
-  setCurrentProjectId: (projectId) =>
+  setCurrentProjectId: (projectId) => {
     set((state) => ({
       currentProjectId: state.projects.some((p) => p.id === projectId)
         ? projectId
         : null,
       lastSyncedAt: null,
-    })),
-  resetCurrentProjectId: () =>
+    }));
+  },
+  resetCurrentProjectId: () => {
     set((state) => ({
       currentProjectId:
         state.projects.length === 1 ? state.projects[0].id : null,
       lastSyncedAt: null,
-    })),
+    }));
+  },
 }));

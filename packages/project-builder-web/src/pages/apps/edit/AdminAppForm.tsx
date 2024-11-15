@@ -1,4 +1,6 @@
-import { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+
 import { NavigationTabs } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { NavLink, Route, Routes } from 'react-router-dom';
@@ -11,7 +13,7 @@ interface Props {
   appConfig: AdminAppConfig;
 }
 
-function AdminAppForm({ className, appConfig }: Props): JSX.Element {
+function AdminAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <NavigationTabs>

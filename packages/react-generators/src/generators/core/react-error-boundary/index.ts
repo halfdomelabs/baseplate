@@ -1,8 +1,8 @@
 import {
   makeImportAndFilePath,
+  nodeProvider,
   TypescriptCodeUtils,
   typescriptProvider,
-  nodeProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,

@@ -1,9 +1,8 @@
-import {
-  TypescriptCodeBlock,
-  TypescriptCodeUtils,
-} from '@halfdomelabs/core-generators';
+import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
-import { ReactComponentsProvider } from '@src/generators/core/react-components/index.js';
+import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+
+import type { ReactComponentsProvider } from '@src/generators/core/react-components/index.js';
 
 export interface DataLoader {
   loader: TypescriptCodeBlock;
@@ -20,7 +19,7 @@ export function printDataLoaders(
   dataParts: string;
   errorParts: string;
 } {
-  if (!loaders.length) {
+  if (loaders.length === 0) {
     return {
       loader: TypescriptCodeUtils.createBlock(''),
       gate: TypescriptCodeUtils.createBlock(''),

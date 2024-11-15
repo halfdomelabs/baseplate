@@ -1,21 +1,20 @@
-import {
-  AdminCrudInputWebFormProps,
-  useProjectDefinition,
-} from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
-import { Control } from 'react-hook-form';
+import type { AdminCrudInputWebFormProps } from '@halfdomelabs/project-builder-lib/web';
+import type { Control } from 'react-hook-form';
 
-import { AdminCrudFileInputConfig } from './types';
-import { FileTransformerConfig } from '../transformers/types';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { SelectField } from '@halfdomelabs/ui-components';
+
+import type { FileTransformerConfig } from '../transformers/types';
+import type { AdminCrudFileInputConfig } from './types';
 
 export function AdminCrudFileInputForm({
   formProps,
   name,
   model,
-}: AdminCrudInputWebFormProps): JSX.Element {
+}: AdminCrudInputWebFormProps): React.JSX.Element {
   const { definitionContainer } = useProjectDefinition();
   const fileTransformerOptions =
-    model?.service?.transformers
+    model.service?.transformers
       ?.filter((t): t is FileTransformerConfig => t.type === 'file')
       .map((transformer) => ({
         label: definitionContainer.nameFromId(transformer.fileRelationRef),

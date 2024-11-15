@@ -1,4 +1,7 @@
-import { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type { ModelConfig } from '@halfdomelabs/project-builder-lib';
+import type React from 'react';
+import type { Control, UseFormSetValue } from 'react-hook-form';
+
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
@@ -6,11 +9,10 @@ import {
   SectionList,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
-import { Control, UseFormSetValue } from 'react-hook-form';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { ModelRelationDialog } from './fields/relations/ModelRelationDialog';
 import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
+import { ModelRelationDialog } from './fields/relations/ModelRelationDialog';
 
 interface Props {
   control: Control<ModelConfig>;
@@ -20,15 +22,13 @@ interface Props {
 export function ModelRelationsSection({
   control,
   setValue,
-}: Props): JSX.Element {
+}: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { definitionContainer } = useProjectDefinition();
   const relations = useEditedModelConfig(({ model }) => model.relations ?? []);
-  const fieldIdsToNames = useEditedModelConfig(({ model }) => {
-    return Object.fromEntries(
-      model.fields.map((field) => [field.id, field.name]),
-    );
-  });
+  const fieldIdsToNames = useEditedModelConfig(({ model }) =>
+    Object.fromEntries(model.fields.map((field) => [field.id, field.name])),
+  );
 
   function handleDeleteRelation(relationId: string): void {
     const relation = relations.find((relation) => relation.id === relationId);
@@ -81,7 +81,9 @@ export function ModelRelationsSection({
                 icon={MdDeleteOutline}
                 title="Delete"
                 iconClassName="text-destructive"
-                onClick={() => handleDeleteRelation(relation.id)}
+                onClick={() => {
+                  handleDeleteRelation(relation.id);
+                }}
               />
             </RecordView.Actions>
           </RecordView>

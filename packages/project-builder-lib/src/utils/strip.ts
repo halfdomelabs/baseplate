@@ -1,25 +1,27 @@
-import { GeneratorDescriptorChildren } from '@halfdomelabs/sync';
+import type { GeneratorDescriptorChildren } from '@halfdomelabs/sync';
+
+import { pickBy } from 'es-toolkit';
 
 /**
  * Strip object of any values that are empty arrays, empty objects, null, or undefined
  */
-export function stripChildren(
+export function stripEmptyGeneratorChildren(
   children: GeneratorDescriptorChildren,
 ): GeneratorDescriptorChildren {
-  return Object.keys(children).reduce((acc, key) => {
-    const item = children[key];
-    if (
-      item === undefined ||
-      item === null ||
-      (Array.isArray(item) && item.length === 0)
-    ) {
-      return acc;
-    }
-    return {
-      ...acc,
-      [key]: item,
-    };
-  }, {});
+  return pickBy(
+    children,
+    (value) =>
+      value !== undefined && !(Array.isArray(value) && value.length === 0),
+  );
+}
+
+/**
+ * Strip object of any values that are undefined
+ */
+export function stripUndefinedValues<T>(
+  obj: Record<string, T | undefined>,
+): Record<string, T> {
+  return pickBy(obj, (value) => value !== undefined) as Record<string, T>;
 }
 
 /**

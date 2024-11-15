@@ -11,8 +11,8 @@ import {
 import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
-import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
+import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
 
 const descriptorSchema = z.object({});
@@ -53,7 +53,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
       './scripts/run-workers.ts',
       devOutputFormatter ? `| ${devOutputFormatter}` : '',
     ]
-      .filter((x) => x)
+      .filter(Boolean)
       .join(' ');
 
     node.addScripts({
