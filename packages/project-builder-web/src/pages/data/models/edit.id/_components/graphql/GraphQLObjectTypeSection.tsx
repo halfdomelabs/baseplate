@@ -4,9 +4,17 @@ import type { Control } from 'react-hook-form';
 
 import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList, Switch, SwitchField } from '@halfdomelabs/ui-components';
+import {
+  Badge,
+  Button,
+  Label,
+  SectionList,
+  Switch,
+  SwitchField,
+} from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
+import { HiMiniChevronDown, HiMiniChevronUp } from 'react-icons/hi2';
 import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../_constants';
@@ -106,9 +114,16 @@ export function GraphQLObjectTypeSection({
         <table className={tableClassName}>
           <thead>
             <tr>
-              <th>
+              <th className="flex items-center gap-1">
+                <Label>Exposed Fields</Label>
+                <Badge
+                  variant="outline"
+                  className="mr-5 font-medium text-muted-foreground"
+                >
+                  {fieldsValue.length}/{fields.length} active
+                </Badge>
                 {showCollapsibleFields ? (
-                  <button
+                  <Button.WithOnlyIcon
                     onClick={() => {
                       setShouldCollapseFields(!shouldCollapseFields);
                     }}
@@ -117,13 +132,11 @@ export function GraphQLObjectTypeSection({
                       shouldCollapseFields ? 'Expand fields' : 'Collapse fields'
                     }
                     type="button"
-                  >
-                    Exposed Fields ({fieldsValue.length}/{fields.length})
-                    {shouldCollapseFields ? <MdExpandLess /> : <MdExpandMore />}
-                  </button>
-                ) : (
-                  'Exposed Fields'
-                )}
+                    icon={
+                      shouldCollapseFields ? HiMiniChevronDown : HiMiniChevronUp
+                    }
+                  />
+                ) : null}
               </th>
               <th className="pl-8"></th>
             </tr>
