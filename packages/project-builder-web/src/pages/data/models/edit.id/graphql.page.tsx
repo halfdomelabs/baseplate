@@ -2,6 +2,7 @@ import type React from 'react';
 
 import { modelBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
+import { SectionList } from '@halfdomelabs/ui-components';
 
 import FormActionBar from '@src/components/FormActionBar';
 
@@ -30,10 +31,12 @@ function ModelEditGraphQLPage(): React.JSX.Element {
       watch={watch}
     >
       <form onSubmit={onSubmit} className="space-y-4 p-4">
-        <GraphQLObjectTypeSection control={control} />
-        <GraphQLQueriesSection control={control} />
-        <GraphQLMutationsSection control={control} />
-        <FormActionBar form={form} />
+        <SectionList>
+          <GraphQLObjectTypeSection control={control} />
+          <GraphQLQueriesSection control={control} />
+          <GraphQLMutationsSection control={control} />
+          <FormActionBar form={form} />
+        </SectionList>
       </form>
     </EditedModelContextProvider>
   );

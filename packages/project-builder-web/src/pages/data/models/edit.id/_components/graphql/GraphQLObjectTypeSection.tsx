@@ -14,7 +14,6 @@ import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 import { BadgeWithTypeLabel } from '../BadgeWithTypeLabel';
 
 interface GraphQLObjectTypeSectionProps {
-  className?: string;
   control: Control<ModelConfig>;
 }
 
@@ -35,7 +34,6 @@ function getUpdatedOrderedList<T extends { id: string }>(
 }
 
 export function GraphQLObjectTypeSection({
-  className,
   control,
 }: GraphQLObjectTypeSectionProps): React.JSX.Element {
   const { definitionContainer, definition } = useProjectDefinition();
@@ -88,16 +86,16 @@ export function GraphQLObjectTypeSection({
     useState(showCollapsibleForeignRelations);
 
   return (
-    <SectionList.Section className={className}>
-      <SectionList.SectionHeader>
-        <div className="sticky top-2">
+    <SectionList.Section>
+      <div>
+        <SectionList.SectionHeader className="sticky top-2">
           <SectionList.SectionTitle>Object Type</SectionList.SectionTitle>
           <SectionList.SectionDescription>
             Configure the object type that will be exposed in the GraphQL schema
             for this model.
           </SectionList.SectionDescription>
-        </div>
-      </SectionList.SectionHeader>
+        </SectionList.SectionHeader>
+      </div>
       <SectionList.SectionContent className="space-y-4">
         <SwitchField.Controller
           control={control}

@@ -16,12 +16,10 @@ import { Link } from 'react-router-dom';
 import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 
 interface GraphQLMutationsSectionProps {
-  className?: string;
   control: Control<ModelConfig>;
 }
 
 export function GraphQLMutationsSection({
-  className,
   control,
 }: GraphQLMutationsSectionProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
@@ -57,15 +55,15 @@ export function GraphQLMutationsSection({
   const isDeleteControllerEnabled = controllerConfig.delete?.enabled;
 
   return (
-    <SectionList.Section className={className}>
-      <SectionList.SectionHeader>
-        <div className="sticky top-2">
+    <SectionList.Section>
+      <div>
+        <SectionList.SectionHeader className="sticky top-2">
           <SectionList.SectionTitle>Mutations</SectionList.SectionTitle>
           <SectionList.SectionDescription>
             Configure the GraphQL mutations that can be performed on this model.
           </SectionList.SectionDescription>
-        </div>
-      </SectionList.SectionHeader>
+        </SectionList.SectionHeader>
+      </div>
       <SectionList.SectionContent className="space-y-6">
         {(!isCreateControllerEnabled ||
           !isUpdateControllerEnabled ||

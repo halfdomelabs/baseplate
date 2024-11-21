@@ -13,12 +13,10 @@ import { useWatch } from 'react-hook-form';
 import { MdInfo } from 'react-icons/md';
 
 interface GraphQLQueriesSectionProps {
-  className?: string;
   control: Control<ModelConfig>;
 }
 
 export function GraphQLQueriesSection({
-  className,
   control,
 }: GraphQLQueriesSectionProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
@@ -47,15 +45,15 @@ export function GraphQLQueriesSection({
   });
 
   return (
-    <SectionList.Section className={className}>
-      <SectionList.SectionHeader>
-        <div className="sticky top-2">
+    <SectionList.Section>
+      <div>
+        <SectionList.SectionHeader className="sticky top-2">
           <SectionList.SectionTitle>Queries</SectionList.SectionTitle>
           <SectionList.SectionDescription>
             Configure the GraphQL queries that can be performed on this model.
           </SectionList.SectionDescription>
-        </div>
-      </SectionList.SectionHeader>
+        </SectionList.SectionHeader>
+      </div>
       <SectionList.SectionContent className="space-y-6">
         {!isObjectTypeEnabled && (
           <Alert className="max-w-md">
