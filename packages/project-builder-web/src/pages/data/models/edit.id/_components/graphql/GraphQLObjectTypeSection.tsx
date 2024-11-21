@@ -114,7 +114,7 @@ export function GraphQLObjectTypeSection({
         <table className={tableClassName}>
           <thead>
             <tr>
-              <th className="flex items-center gap-1">
+              <th className="flex h-8 items-center gap-1">
                 <Label>Exposed Fields</Label>
                 <Badge
                   variant="outline"
