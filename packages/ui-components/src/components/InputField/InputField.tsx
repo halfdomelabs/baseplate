@@ -28,7 +28,7 @@ export interface InputFieldProps
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
-  wrapperClassName?: string;
+  inputClassName?: string;
 }
 
 const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
@@ -39,7 +39,8 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
       error,
       onChange,
       register,
-      wrapperClassName,
+      className,
+      inputClassName,
       ...props
     },
     ref,
@@ -47,7 +48,7 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
     <FormItem
       ref={ref}
       error={error}
-      className={cn('flex flex-col gap-1.5', wrapperClassName)}
+      className={cn('flex flex-col gap-1.5', className)}
     >
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <FormItem.Control>
@@ -58,6 +59,7 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
               onChange(e.target.value);
             })
           }
+          className={inputClassName}
           {...props}
           {...register}
         />
