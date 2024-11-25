@@ -39,7 +39,7 @@ const SwitchFieldRoot = React.forwardRef<HTMLButtonElement, SwitchFieldProps>(
           />
         </FormItem.Control>
         <div className="space-y-0.5">
-          {label && <FormItem.Label>{label}</FormItem.Label>}
+          {label && <FormItem.Label className="block">{label}</FormItem.Label>}
           {description && (
             <FormItem.Description>{description}</FormItem.Description>
           )}
