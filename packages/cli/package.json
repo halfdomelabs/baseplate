@@ -42,7 +42,7 @@
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
     "@types/ramda": "^0.29.3",
-    "eslint": "9.15.0",
+    "eslint": "catalog:",
     "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"

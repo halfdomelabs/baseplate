@@ -30,7 +30,7 @@
   "dependencies": {
     "ast-types": "^0.14.2",
     "commander": "^12.1.0",
-    "eslint": "9.15.0",
+    "eslint": "catalog:",
     "jscodeshift": "17.1.1",
     "ora": "^8.0.1",
     "prettier": "catalog:",

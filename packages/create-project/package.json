@@ -37,7 +37,7 @@
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
-    "eslint": "9.15.0",
+    "eslint": "catalog:",
     "prettier": "catalog:",
     "tsc-alias": "catalog:",
     "tsx": "catalog:",
