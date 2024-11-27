@@ -114,29 +114,35 @@ export function GraphQLObjectTypeSection({
         <table className={tableClassName}>
           <thead>
             <tr>
-              <th className="flex h-8 items-center gap-1">
-                <Label>Exposed Fields</Label>
-                <Badge
-                  variant="outline"
-                  className="mr-5 font-medium text-muted-foreground"
-                >
-                  {fieldsValue.length}/{fields.length} active
-                </Badge>
-                {showCollapsibleFields ? (
-                  <Button.WithOnlyIcon
-                    onClick={() => {
-                      setShouldCollapseFields(!shouldCollapseFields);
-                    }}
-                    className="flex items-center gap-4"
-                    title={
-                      shouldCollapseFields ? 'Expand fields' : 'Collapse fields'
-                    }
-                    type="button"
-                    icon={
-                      shouldCollapseFields ? HiMiniChevronDown : HiMiniChevronUp
-                    }
-                  />
-                ) : null}
+              <th>
+                <div className="flex items-center gap-1">
+                  <Label>Exposed Fields</Label>
+                  <Badge
+                    variant="outline"
+                    className="mr-5 font-medium text-muted-foreground"
+                  >
+                    {fieldsValue.length}/{fields.length} active
+                  </Badge>
+                  {showCollapsibleFields ? (
+                    <Button.WithOnlyIcon
+                      onClick={() => {
+                        setShouldCollapseFields(!shouldCollapseFields);
+                      }}
+                      className="flex items-center gap-4"
+                      title={
+                        shouldCollapseFields
+                          ? 'Expand fields'
+                          : 'Collapse fields'
+                      }
+                      type="button"
+                      icon={
+                        shouldCollapseFields
+                          ? HiMiniChevronDown
+                          : HiMiniChevronUp
+                      }
+                    />
+                  ) : null}
+                </div>
               </th>
               <th className="pl-8"></th>
             </tr>
