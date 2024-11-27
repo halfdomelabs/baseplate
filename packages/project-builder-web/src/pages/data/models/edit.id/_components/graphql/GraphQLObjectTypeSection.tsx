@@ -15,7 +15,6 @@ import {
 import { useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import { HiMiniChevronDown, HiMiniChevronUp } from 'react-icons/hi2';
-import { MdExpandLess, MdExpandMore } from 'react-icons/md';
 
 import { SCALAR_FIELD_TYPE_OPTIONS } from '../../../_constants';
 import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
@@ -75,7 +74,7 @@ export function GraphQLObjectTypeSection({
     control,
     name: 'graphql.objectType.localRelations',
   });
-  const showCollapsibleLocalRelations = localRelations.length > 1; // TODO: change this back to 4
+  const showCollapsibleLocalRelations = localRelations.length > 4;
   const [shouldCollapseLocalRelations, setShouldCollapseLocalRelations] =
     useState(showCollapsibleLocalRelations);
 

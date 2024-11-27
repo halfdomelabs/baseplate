@@ -54,7 +54,7 @@ export function GraphQLQueriesSection({
           </SectionList.SectionDescription>
         </SectionList.SectionHeader>
       </div>
-      <SectionList.SectionContent className="space-y-6">
+      <SectionList.SectionContent className="space-y-8">
         {!isObjectTypeEnabled && (
           <Alert className="max-w-md">
             <MdInfo />
@@ -82,7 +82,7 @@ export function GraphQLQueriesSection({
             />
           )}
         </div>
-        <div className="space-y-2">
+        <div className="space-y-4">
           <SwitchField.Controller
             control={control}
             name="graphql.queries.list.enabled"
