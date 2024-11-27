@@ -75,7 +75,7 @@ export function GraphQLObjectTypeSection({
     control,
     name: 'graphql.objectType.localRelations',
   });
-  const showCollapsibleLocalRelations = localRelations.length > 4;
+  const showCollapsibleLocalRelations = localRelations.length > 1; // TODO: change this back to 4
   const [shouldCollapseLocalRelations, setShouldCollapseLocalRelations] =
     useState(showCollapsibleLocalRelations);
 
@@ -115,7 +115,7 @@ export function GraphQLObjectTypeSection({
           <thead>
             <tr>
               <th>
-                <div className="flex items-center gap-1">
+                <div className="flex w-80 items-center gap-1">
                   <Label>Exposed Fields</Label>
                   <Badge
                     variant="outline"
@@ -188,32 +188,37 @@ export function GraphQLObjectTypeSection({
             {localRelations.length > 0 ? (
               <tr>
                 <th>
-                  {showCollapsibleLocalRelations ? (
-                    <button
-                      onClick={() => {
-                        setShouldCollapseLocalRelations(
-                          !shouldCollapseLocalRelations,
-                        );
-                      }}
-                      className="flex items-center gap-4"
-                      title={
-                        shouldCollapseLocalRelations
-                          ? 'Expand local relations'
-                          : 'Collapse local relations'
-                      }
-                      type="button"
+                  <div className="flex items-center gap-1">
+                    <Label>Exposed Local Relations</Label>
+                    <Badge
+                      variant="outline"
+                      className="mr-5 font-medium text-muted-foreground"
                     >
-                      Exposed Local Relations ({localRelationsValue.length}/
-                      {localRelations.length})
-                      {shouldCollapseLocalRelations ? (
-                        <MdExpandLess />
-                      ) : (
-                        <MdExpandMore />
-                      )}
-                    </button>
-                  ) : (
-                    'Exposed Local Relations'
-                  )}
+                      {localRelationsValue.length}/{localRelations.length}{' '}
+                      active
+                    </Badge>
+                    {showCollapsibleLocalRelations ? (
+                      <Button.WithOnlyIcon
+                        onClick={() => {
+                          setShouldCollapseLocalRelations(
+                            !shouldCollapseLocalRelations,
+                          );
+                        }}
+                        className="flex items-center gap-4"
+                        title={
+                          shouldCollapseLocalRelations
+                            ? 'Expand fields'
+                            : 'Collapse fields'
+                        }
+                        type="button"
+                        icon={
+                          shouldCollapseLocalRelations
+                            ? HiMiniChevronDown
+                            : HiMiniChevronUp
+                        }
+                      />
+                    ) : null}
+                  </div>
                 </th>
                 <th></th>
               </tr>
@@ -251,7 +256,7 @@ export function GraphQLObjectTypeSection({
             {foreignRelations.length > 0 ? (
               <tr>
                 <th>
-                  {showCollapsibleForeignRelations ? (
+                  {/* {showCollapsibleForeignRelations ? (
                     <button
                       onClick={() => {
                         setShouldCollapseForeignRelations(
@@ -276,7 +281,38 @@ export function GraphQLObjectTypeSection({
                     </button>
                   ) : (
                     'Exposed Foreign Relations'
-                  )}
+                  )} */}
+                  <div className="flex items-center gap-1">
+                    <Label>Exposed Foreign Relations</Label>
+                    <Badge
+                      variant="outline"
+                      className="mr-5 font-medium text-muted-foreground"
+                    >
+                      {foreignRelationsValue.length}/{foreignRelations.length}{' '}
+                      active
+                    </Badge>
+                    {showCollapsibleForeignRelations ? (
+                      <Button.WithOnlyIcon
+                        onClick={() => {
+                          setShouldCollapseForeignRelations(
+                            !shouldCollapseForeignRelations,
+                          );
+                        }}
+                        className="flex items-center gap-4"
+                        title={
+                          shouldCollapseForeignRelations
+                            ? 'Expand fields'
+                            : 'Collapse fields'
+                        }
+                        type="button"
+                        icon={
+                          shouldCollapseForeignRelations
+                            ? HiMiniChevronDown
+                            : HiMiniChevronUp
+                        }
+                      />
+                    ) : null}
+                  </div>
                 </th>
                 <th></th>
               </tr>

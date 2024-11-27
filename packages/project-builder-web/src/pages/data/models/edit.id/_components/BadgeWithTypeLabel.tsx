@@ -1,5 +1,6 @@
 import type React from 'react';
 
+import { Badge } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 
 import { ellipsisStringFromMiddle } from '@src/utils/string';
@@ -18,14 +19,14 @@ export function BadgeWithTypeLabel({
   return (
     <div
       className={clsx(
-        'flex w-full justify-between gap-4 rounded-md border bg-muted px-2 py-1',
+        'flex h-8 w-full items-center justify-between gap-4 rounded-md border bg-muted px-3 text-sm',
         className,
       )}
     >
       <div>{children}</div>
-      <div className="rounded-full border px-2 py-1 text-xs text-muted-foreground">
+      <Badge variant="outline" className="text-muted-foreground">
         {ellipsisStringFromMiddle(type, 20)}
-      </div>
+      </Badge>
     </div>
   );
 }
