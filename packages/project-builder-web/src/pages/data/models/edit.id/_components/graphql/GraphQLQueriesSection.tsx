@@ -5,7 +5,7 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
-  MultiCheckboxField,
+  MultiSwitchField,
   SectionList,
   SwitchField,
 } from '@halfdomelabs/ui-components';
@@ -64,7 +64,7 @@ export function GraphQLQueriesSection({
             </Alert.Description>
           </Alert>
         )}
-        <div className="space-y-2">
+        <div className="space-y-4">
           <SwitchField.Controller
             control={control}
             name="graphql.queries.get.enabled"
@@ -73,12 +73,12 @@ export function GraphQLQueriesSection({
             description="Expose method for querying a single instance of this model by its ID, e.g. user(id: $id)."
           />
           {isGetEnabled && isAuthEnabled && (
-            <MultiCheckboxField.Controller
+            <MultiSwitchField.Controller
               control={control}
               name="graphql.queries.get.roles"
               label="Allowed Roles"
               options={roleOptions}
-              className="max-w-md"
+              className="ml-[52px]" // hardcoded to align with the above switch label
             />
           )}
         </div>
@@ -91,12 +91,12 @@ export function GraphQLQueriesSection({
             description="Expose method for querying a list of instances of this model, e.g. users."
           />
           {isListEnabled && isAuthEnabled && (
-            <MultiCheckboxField.Controller
+            <MultiSwitchField.Controller
               control={control}
               name="graphql.queries.list.roles"
               label="Allowed Roles"
               options={roleOptions}
-              className="max-w-md"
+              className="ml-[52px]" // hardcoded to align with the above switch label
             />
           )}
         </div>

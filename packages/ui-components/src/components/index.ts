@@ -25,6 +25,7 @@ export * from './Loader/Loader.js';
 export * from './MultiCheckboxField/MultiCheckboxField.js';
 export * from './MultiCombobox/MultiCombobox.js';
 export * from './MultiComboboxField/MultiComboboxField.js';
+export * from './MultiSwitchField/MultiSwitchField.js';
 export * from './NavigationMenu/NavigationMenu.js';
 export * from './NavigationTabs/NavigationTabs.js';
 export * from './Popover/Popover.js';
