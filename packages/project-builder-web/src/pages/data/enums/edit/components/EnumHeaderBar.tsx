@@ -75,6 +75,7 @@ export function EnumHeaderBar({
               content: `Are you sure you want to delete ${
                 enumDefinition.name
               }?`,
+              buttonConfirmVariant: 'destructive',
               buttonConfirmText: 'Delete',
               onConfirm: () => {
                 handleDelete(enumDefinition.id);

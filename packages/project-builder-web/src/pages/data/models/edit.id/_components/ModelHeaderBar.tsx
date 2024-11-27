@@ -76,6 +76,7 @@ export function ModelHeaderBar({
               title: 'Confirm delete',
               content: `Are you sure you want to delete ${model.name}?`,
               buttonConfirmText: 'Delete',
+              buttonConfirmVariant: 'destructive',
               onConfirm: () => {
                 handleDelete(model.id);
               },
