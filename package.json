@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "check-dependency-version-consistency": "^4.1.0",
-    "nx": "19.5.0",
+    "nx": "20.1.1",
     "typescript": "catalog:"
   },
   "packageManager": "pnpm@9.12.0",

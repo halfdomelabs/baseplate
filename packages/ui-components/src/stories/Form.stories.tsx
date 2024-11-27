@@ -76,7 +76,6 @@ function Form({
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <InputField.Controller name="name" label="Name" control={control} />
-      ’’
       <ColorPickerField.Controller
         name="color"
         label="Pick a Color"
