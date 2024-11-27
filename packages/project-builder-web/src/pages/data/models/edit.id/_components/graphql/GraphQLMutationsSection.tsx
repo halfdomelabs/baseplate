@@ -5,7 +5,6 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
-  MultiCheckboxField,
   MultiSwitchField,
   SectionList,
   SwitchField,

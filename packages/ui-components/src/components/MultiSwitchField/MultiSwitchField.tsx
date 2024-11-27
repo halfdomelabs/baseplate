@@ -10,11 +10,11 @@ import type {
 
 import { useControllerMerged } from '@src/hooks/useControllerMerged.js';
 import { notEmpty } from '@src/utils/array.js';
+import { cn } from '@src/utils/cn.js';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import { FormItem } from '../FormItem/FormItem.js';
 import { SwitchField } from '../SwitchField/SwitchField.js';
-import { cn } from '@src/utils/cn.js';
 
 export interface MultiSwitchFieldProps<OptionType>
   extends MultiSelectOptionProps<OptionType>,

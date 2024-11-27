@@ -7,7 +7,7 @@ import {
   modelTransformerWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
+import { Label, SectionList, SwitchField } from '@halfdomelabs/ui-components';
 import { useWatch } from 'react-hook-form';
 
 import {
@@ -67,7 +67,9 @@ export function ServiceMethodFieldsSection({
         <table className={tableClassName}>
           <thead>
             <tr>
-              <th className="w-full">Fields</th>
+              <th className="w-full">
+                <Label>Fields</Label>
+              </th>
               {isCreateEnabled && <th className="pl-8">Create</th>}
               {isUpdateEnabled && <th className="pl-8">Update</th>}
             </tr>
@@ -122,7 +124,9 @@ export function ServiceMethodFieldsSection({
             ))}
             {transformers.length > 0 && (
               <tr>
-                <th>Transformers</th>
+                <th>
+                  <Label>Transformers</Label>
+                </th>
               </tr>
             )}
             {transformers.map((transformer) => (
