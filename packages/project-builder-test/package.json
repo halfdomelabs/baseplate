@@ -39,8 +39,8 @@
     "globby": "^14.0.2",
     "ora": "^8.0.1",
     "package-up": "^5.0.0",
-    "pino": "9.4.0",
-    "pino-pretty": "11.2.2",
+    "pino": "9.5.0",
+    "pino-pretty": "13.0.0",
     "pkg-dir": "^8.0.0",
     "testcontainers": "10.11.0"
   },

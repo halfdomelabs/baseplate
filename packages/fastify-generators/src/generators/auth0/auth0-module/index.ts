@@ -61,8 +61,8 @@ const createMainTask = createTaskConfigBuilder(
       errorHandlerService,
     }) {
       node.addPackages({
-        'fastify-auth0-verify': '2.1.1',
-        '@fastify/request-context': '5.0.0',
+        'fastify-auth0-verify': '3.0.0',
+        '@fastify/request-context': '6.0.1',
       });
 
       if (includeManagement) {

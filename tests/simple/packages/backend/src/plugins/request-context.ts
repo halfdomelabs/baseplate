@@ -28,7 +28,7 @@ declare module 'fastify' {
 export const requestContextPlugin = fp(async (fastify) => {
   await fastify.register(fastifyRequestContext);
 
-  fastify.decorateRequest('reqInfo', null);
+  fastify.decorateRequest('reqInfo');
 
   fastify.addHook('onRequest', async (req) => {
     const reqInfo = {
