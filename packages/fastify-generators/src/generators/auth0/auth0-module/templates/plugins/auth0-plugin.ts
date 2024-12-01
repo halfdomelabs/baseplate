@@ -25,7 +25,7 @@ export const auth0Plugin = fp(async (fastify) => {
     audience: config.AUTH0_AUDIENCE,
   });
 
-  fastify.decorateRequest('auth', null);
+  fastify.decorateRequest('auth');
 
   fastify.addHook('onRequest', async (req) => {
     const authInfo = await createAuthInfoFromRequest(req);

@@ -17,7 +17,7 @@ declare module '@fastify/request-context' {
 }
 
 export const authPlugin = fp(async (fastify) => {
-  fastify.decorateRequest('auth', null);
+  fastify.decorateRequest('auth');
 
   fastify.addHook('onRequest', async (req) => {
     const authInfo = await createAuthInfoFromAuthorization(

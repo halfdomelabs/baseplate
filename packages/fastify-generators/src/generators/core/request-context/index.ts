@@ -67,7 +67,7 @@ const RequestContextGenerator = createGeneratorWithTasks({
           {},
           { name: 'request-context-config' },
         );
-        node.addPackages({ '@fastify/request-context': '5.0.0' });
+        node.addPackages({ '@fastify/request-context': '6.0.1' });
         fastifyServer.registerPlugin({
           name: 'requestContextPlugin',
           plugin: TypescriptCodeUtils.createExpression(
