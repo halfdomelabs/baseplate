@@ -1,5 +1,17 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.12
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- Updated dependencies [77d9399]
+- Updated dependencies [f11b044]
+- Updated dependencies [dc74c47]
+- Updated dependencies [05fbd9c]
+  - @halfdomelabs/ui-components@0.5.0
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.8.11
 
 ### Patch Changes

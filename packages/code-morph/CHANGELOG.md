@@ -1,5 +1,12 @@
 # @halfdomelabs/code-morph
 
+## 0.2.5
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- dc74c47: Upgrade jscodeshift to 17.1.1
+
 ## 0.2.4
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @halfdomelabs/project-builder-common
 
+## 0.1.7
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- Updated dependencies [cc837f9]
+- Updated dependencies [77d9399]
+- Updated dependencies [d1b05af]
+- Updated dependencies [d1b05af]
+  - @halfdomelabs/project-builder-server@0.4.14
+  - @halfdomelabs/baseplate-plugin-storage@1.0.14
+  - @halfdomelabs/project-builder-lib@0.8.12
+  - @halfdomelabs/fastify-generators@0.10.8
+  - @halfdomelabs/react-generators@0.8.7
+  - @halfdomelabs/core-generators@0.9.8
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.1.6
 
 ### Patch Changes
