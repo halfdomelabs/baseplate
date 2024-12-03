@@ -1,5 +1,11 @@
 # @halfdomelabs/create-project
 
+## 0.2.7
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+
 ## 0.2.6
 
 ### Patch Changes

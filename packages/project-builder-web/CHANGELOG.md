@@ -1,5 +1,24 @@
 # @halfdomelabs/project-builder-web
 
+## 0.14.0
+
+### Minor Changes
+
+- 05fbd9c: Redesign the Theme builder page.
+- 6b6cd89: Redesign `Settings/Project Settings`
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- 15ea063: Use destructive variant for delete confirmation
+- 1e48b3c: Tweak Models/Services design
+- Updated dependencies [77d9399]
+- Updated dependencies [f11b044]
+- Updated dependencies [dc74c47]
+- Updated dependencies [05fbd9c]
+  - @halfdomelabs/project-builder-lib@0.8.12
+  - @halfdomelabs/ui-components@0.5.0
+
 ## 0.13.0
 
 ### Minor Changes

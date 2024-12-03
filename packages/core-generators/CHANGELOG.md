@@ -1,5 +1,13 @@
 # @halfdomelabs/core-generators
 
+## 0.9.8
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- Updated dependencies [77d9399]
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.9.7
 
 ### Patch Changes

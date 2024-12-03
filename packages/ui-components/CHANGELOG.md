@@ -1,5 +1,17 @@
 # @halfdomelabs/ui-components
 
+## 0.5.0
+
+### Minor Changes
+
+- 05fbd9c: Redesign the Theme builder page.
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- f11b044: Update Card story
+- dc74c47: Fix default height on input fields
+
 ## 0.4.15
 
 ### Patch Changes

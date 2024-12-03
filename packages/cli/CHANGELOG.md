@@ -1,5 +1,19 @@
 # @halfdomelabs/cli
 
+## 0.7.25
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- Updated dependencies [77d9399]
+- Updated dependencies [d1b05af]
+- Updated dependencies [d1b05af]
+  - @halfdomelabs/project-builder-common@0.1.7
+  - @halfdomelabs/fastify-generators@0.10.8
+  - @halfdomelabs/react-generators@0.8.7
+  - @halfdomelabs/core-generators@0.9.8
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.7.24
 
 ### Patch Changes

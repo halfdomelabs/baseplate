@@ -1,5 +1,15 @@
 # @halfdomelabs/react-generators
 
+## 0.8.7
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- d1b05af: Upgrade Sentry packages to 8.41.0
+- Updated dependencies [77d9399]
+  - @halfdomelabs/core-generators@0.9.8
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.8.6
 
 ### Patch Changes

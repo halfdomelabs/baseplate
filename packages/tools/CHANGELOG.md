@@ -1,5 +1,11 @@
 # @halfdomelabs/tools
 
+## 0.5.10
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+
 ## 0.5.9
 
 ### Patch Changes
