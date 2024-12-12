@@ -142,15 +142,6 @@ async function writeFile(
 
   async function formatContents(contentsToFormat: string): Promise<string> {
     let formattedContents = contentsToFormat;
-    if (options?.preformat) {
-      try {
-        formattedContents = await Promise.resolve(
-          options.preformat(formattedContents, filePath, logger),
-        );
-      } catch (error) {
-        throw new FormatterError(error, formattedContents);
-      }
-    }
 
     if (formatter) {
       try {

@@ -15,8 +15,6 @@ import { buildEntryDependencyMapRecursive as buildTaskEntryDependencyMapRecursiv
 import { getSortedRunSteps } from './dependency-sort.js';
 import { flattenGeneratorTaskEntries } from './utils.js';
 
-// running awaits in serial for ease of reading
-
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
   logger: Logger,
