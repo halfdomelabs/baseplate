@@ -8,7 +8,7 @@ import type {
   GeneratorTaskEntry,
 } from './generator-builder.js';
 
-import { getGeneratorEntryExportNames, providerMapToNames } from './utils.js';
+import { providerMapToNames } from './utils.js';
 
 /**
  * Builds a map of the entry's dependencies to entry IDs of resolved providers
