@@ -1,6 +1,5 @@
 import * as R from 'ramda';
 
-import type { FormatterProvider } from '@src/providers/index.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
 import { safeMergeMap } from '@src/utils/merge.js';
@@ -90,18 +89,7 @@ export async function executeGeneratorEntry(
         const entry = taskEntriesById[taskId];
         const generator = taskInstanceById[taskId];
 
-        // get default formatter for this instance
-        const formatterId = dependencyMap[taskId].formatter?.id;
-        const formatter =
-          formatterId == null
-            ? undefined
-            : (providerMapById[formatterId]
-                .formatter as unknown as FormatterProvider);
-
-        const outputBuilder = new OutputBuilder(
-          entry.generatorBaseDirectory,
-          formatter,
-        );
+        const outputBuilder = new OutputBuilder(entry.generatorBaseDirectory);
 
         if (generator.build) {
           await Promise.resolve(generator.build(outputBuilder));
@@ -125,6 +113,7 @@ export async function executeGeneratorEntry(
     postWriteCommands: generatorOutputs.flatMap(
       (output) => output.postWriteCommands,
     ),
+    formatters: generatorOutputs.flatMap((output) => output.formatters),
   };
 
   return buildOutput;

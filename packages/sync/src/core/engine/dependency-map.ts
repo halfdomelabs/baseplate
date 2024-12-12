@@ -148,24 +148,6 @@ export function buildEntryDependencyMapRecursive(
         logger,
       );
 
-      // force formatter to be optionally added since it's used by most generators
-      const { formatter } = parentProviders;
-      if (taskDependencyMap.formatter) {
-        throw new Error(
-          `formatter cannot be set as a dependency (it is automatically set) for ${entry.id}`,
-        );
-      }
-
-      if (
-        formatter &&
-        !getGeneratorEntryExportNames(entry).includes('formatter') &&
-        taskDependencyMap.formatter !== null
-      ) {
-        taskDependencyMap.formatter = {
-          id: formatter,
-          options: {},
-        };
-      }
       return {
         [task.id]: taskDependencyMap,
       };

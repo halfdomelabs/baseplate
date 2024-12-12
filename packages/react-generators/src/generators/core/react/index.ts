@@ -263,7 +263,6 @@ const ReactGenerator = createGeneratorWithTasks({
       name: 'setup-node',
       dependencies: {
         nodeSetup: nodeSetupProvider,
-        formatter: createProviderType('non-exist').dependency().optional(),
       },
       run: ({ nodeSetup }) => {
         nodeSetup.setIsEsm(true);

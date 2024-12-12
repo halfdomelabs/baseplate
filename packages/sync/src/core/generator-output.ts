@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
-import type { FormatterProvider } from '../providers/index.js';
+import type { Logger } from '@src/utils/evented-logger.js';
 
 export interface WriteFileOptions {
   /**
@@ -74,6 +74,10 @@ export interface GeneratorOutputBuilder {
    * (all files written will be written relative to the base directory)
    */
   setBaseDirectory: (baseDirectory: string) => void;
+  /**
+   * Adds a formatter for the given file extensions
+   */
+  addFormatter(formatter: GeneratorOutputFormatter): void;
 }
 
 export interface BuilderAction {
@@ -94,7 +98,6 @@ export function createBuilderActionCreator<T extends unknown[]>(
 
 export interface FileData {
   contents: string | Buffer;
-  formatter?: FormatterProvider;
   options?: WriteFileOptions;
 }
 
@@ -104,9 +107,31 @@ export interface PostWriteCommand {
   options?: PostWriteCommandOptions;
 }
 
+export type FormatFunction = (
+  input: string,
+  fullPath: string,
+  logger: Logger,
+) => Promise<string> | string;
+
+export interface GeneratorOutputFormatter {
+  /**
+   * The name of the formatter
+   */
+  name: string;
+  /**
+   * The format function to use for the formatter
+   */
+  format: FormatFunction;
+  /**
+   * File extensions that this formatter should be applied to
+   */
+  fileExtensions?: string[];
+}
+
 export interface GeneratorOutput {
   files: Map<string, FileData>;
   postWriteCommands: PostWriteCommand[];
+  formatters: GeneratorOutputFormatter[];
 }
 
 // TODO: Add unit tests
@@ -116,14 +141,11 @@ export class OutputBuilder implements GeneratorOutputBuilder {
 
   generatorBaseDirectory: string;
 
-  formatter: FormatterProvider | undefined;
-
   baseDirectory: string | undefined;
 
-  constructor(generatorBaseDirectory: string, formatter?: FormatterProvider) {
-    this.output = { files: new Map(), postWriteCommands: [] };
+  constructor(generatorBaseDirectory: string) {
+    this.output = { files: new Map(), postWriteCommands: [], formatters: [] };
     this.generatorBaseDirectory = generatorBaseDirectory;
-    this.formatter = formatter;
   }
 
   readTemplate(templatePath: string): Promise<string> {
@@ -150,9 +172,7 @@ export class OutputBuilder implements GeneratorOutputBuilder {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
 
-    const formatter =
-      this.formatter && options?.shouldFormat ? this.formatter : undefined;
-    this.output.files.set(fullPath, { contents, formatter, options });
+    this.output.files.set(fullPath, { contents, options });
   }
 
   resolvePath(relativePath: string): string {
@@ -175,5 +195,20 @@ export class OutputBuilder implements GeneratorOutputBuilder {
 
   async apply(action: BuilderAction): Promise<void> {
     await action.execute(this);
+  }
+
+  addFormatter(formatter: GeneratorOutputFormatter): void {
+    // check if formatter already exists for given extensions
+    const existingFormatter = this.output.formatters.find((f) =>
+      f.fileExtensions?.some((ext) => formatter.fileExtensions?.includes(ext)),
+    );
+
+    if (existingFormatter) {
+      throw new Error(
+        `Formatter ${formatter.name} already exists for file extensions ${formatter.fileExtensions?.join(', ')}`,
+      );
+    }
+
+    this.output.formatters.push(formatter);
   }
 }
