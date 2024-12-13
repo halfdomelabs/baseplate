@@ -41,7 +41,7 @@
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "7.53.0",
-    "zod": "3.23.8"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
