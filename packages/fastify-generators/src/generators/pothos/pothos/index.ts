@@ -162,9 +162,9 @@ const PothosGenerator = createGeneratorWithTasks({
         },
       ) {
         node.addPackages({
-          '@pothos/core': '4.0.2',
-          '@pothos/plugin-simple-objects': '4.0.3',
-          '@pothos/plugin-relay': '4.0.2',
+          '@pothos/core': '4.3.0',
+          '@pothos/plugin-simple-objects': '4.1.0',
+          '@pothos/plugin-relay': '4.3.0',
         });
 
         // ignore prettier for schema.graphql
