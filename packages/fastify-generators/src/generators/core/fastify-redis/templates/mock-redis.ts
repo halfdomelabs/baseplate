@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Redis } from 'ioredis';
+import type { Redis } from 'ioredis';
 import { vi } from 'vitest';
 
 // We need to mock Redis otherwise open connections may prevent Vitest from exiting
@@ -33,4 +33,7 @@ Object.keys(IoRedisMock).forEach((key) => {
   )[key];
 });
 
-vi.mock('ioredis', () => ({ default: IoRedisMockAugmented }));
+vi.mock('ioredis', () => ({
+  default: IoRedisMockAugmented,
+  Redis: IoRedisMockAugmented,
+}));
