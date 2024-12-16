@@ -1,5 +1,20 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.9
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- 354f4c9: [internal] Refactor formatter provider to become part of generator output
+- f7184a8: Fix mock-redis typings for Node16 module resolution
+- 98518dd: Upgrade nanoid to 3.3.8 for generated versions
+- 144d796: Include instrument.js into Sentry initialization fastify block
+- d7ec6ee: Upgrade @pothos/core to 4.3.0 and associated plugins to latest
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+  - @halfdomelabs/core-generators@0.9.9
+  - @halfdomelabs/sync@0.7.12
+
 ## 0.10.8
 
 ### Patch Changes

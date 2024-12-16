@@ -1,5 +1,25 @@
 # @halfdomelabs/project-builder-test
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+- Updated dependencies [f7184a8]
+- Updated dependencies [98518dd]
+- Updated dependencies [98518dd]
+- Updated dependencies [144d796]
+- Updated dependencies [d7ec6ee]
+  - @halfdomelabs/project-builder-server@0.4.15
+  - @halfdomelabs/project-builder-lib@0.8.13
+  - @halfdomelabs/project-builder-web@0.14.1
+  - @halfdomelabs/fastify-generators@0.10.9
+  - @halfdomelabs/react-generators@0.8.8
+  - @halfdomelabs/core-generators@0.9.9
+  - @halfdomelabs/sync@0.7.12
+  - @halfdomelabs/project-builder-common@0.1.8
+
 ## 0.0.9
 
 ### Patch Changes

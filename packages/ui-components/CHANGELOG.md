@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.5.1
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+
 ## 0.5.0
 
 ### Minor Changes

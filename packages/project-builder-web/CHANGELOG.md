@@ -1,5 +1,15 @@
 # @halfdomelabs/project-builder-web
 
+## 0.14.1
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- Updated dependencies [6ca94da]
+- Updated dependencies [98518dd]
+  - @halfdomelabs/project-builder-lib@0.8.13
+  - @halfdomelabs/ui-components@0.5.1
+
 ## 0.14.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @halfdomelabs/code-morph
 
+## 0.2.6
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+
 ## 0.2.5
 
 ### Patch Changes
