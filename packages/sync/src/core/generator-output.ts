@@ -176,9 +176,15 @@ export class OutputBuilder implements GeneratorOutputBuilder {
   }
 
   resolvePath(relativePath: string): string {
-    return this.baseDirectory
-      ? path.join(this.baseDirectory, relativePath)
-      : relativePath;
+    return (
+      (
+        this.baseDirectory
+          ? path.join(this.baseDirectory, relativePath)
+          : relativePath
+      )
+        // normalize all paths to POSIX style / paths
+        .replaceAll(path.sep, path.posix.sep)
+    );
   }
 
   setBaseDirectory(baseDirectory: string): void {

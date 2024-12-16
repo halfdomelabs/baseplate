@@ -10,6 +10,7 @@ import {
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { packageUp } from 'package-up';
 import prettier from 'prettier';
 import prettierPluginPackageJson from 'prettier-plugin-packagejson';
@@ -175,7 +176,10 @@ const PrettierGenerator = createGeneratorWithChildren({
               if (result.version === prettier.version) {
                 return prettier;
               }
-              const rawImport = (await import(result.modulePath)) as {
+              const rawImport = (await import(
+                // use file:// to support Windows
+                pathToFileURL(result.modulePath).href
+              )) as {
                 default: PrettierModule;
               };
               return rawImport.default;
@@ -202,7 +206,9 @@ const PrettierGenerator = createGeneratorWithChildren({
 
                   return plugin.version === resolvedModule.version
                     ? plugin.default
-                    : (import(resolvedModule.modulePath) as Plugin);
+                    : (import(
+                        pathToFileURL(resolvedModule.modulePath).href
+                      ) as Plugin);
                 }),
               );
 
