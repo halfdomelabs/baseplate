@@ -83,7 +83,7 @@ export async function loadGeneratorsForModule(
             `Generator function lacks a parseDescriptor function: ${generatorFolder}`,
           );
         }
-        const name = `${moduleName.replace(/-generators$/, '')}/${folder}`;
+        const name = `${moduleName.replace(/-generators$/, '')}/${folder.replaceAll(path.sep, path.posix.sep)}`;
 
         return {
           [name]: {

@@ -1,5 +1,6 @@
 import { globby } from 'globby';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import type { ProjectBuilderTest } from '@src/types.js';
 
@@ -22,7 +23,9 @@ export async function discoverTests(
 
   return Promise.all(
     matchingTestFiles.map(async (testFile) => {
-      const file = (await import(path.join(testDirectory, testFile))) as {
+      const file = (await import(
+        pathToFileURL(path.join(testDirectory, testFile)).href
+      )) as {
         default?: ProjectBuilderTest;
       };
       if (!file.default || typeof file.default !== 'object') {
