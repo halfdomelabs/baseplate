@@ -1,5 +1,17 @@
 # @halfdomelabs/react-generators
 
+## 0.8.8
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- 354f4c9: [internal] Refactor formatter provider to become part of generator output
+- 98518dd: Upgrade nanoid to 3.3.8 for generated versions
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+  - @halfdomelabs/core-generators@0.9.9
+  - @halfdomelabs/sync@0.7.12
+
 ## 0.8.7
 
 ### Patch Changes

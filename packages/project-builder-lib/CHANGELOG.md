@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.8.13
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- 98518dd: Upgrade nanoid to 5.0.9
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+  - @halfdomelabs/ui-components@0.5.1
+  - @halfdomelabs/sync@0.7.12
+
 ## 0.8.12
 
 ### Patch Changes

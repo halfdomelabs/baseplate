@@ -1,5 +1,12 @@
 # @halfdomelabs/sync
 
+## 0.7.12
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- 354f4c9: [internal] Refactor formatter provider to become part of generator output
+
 ## 0.7.11
 
 ### Patch Changes
