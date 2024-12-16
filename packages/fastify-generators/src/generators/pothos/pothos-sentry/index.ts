@@ -41,8 +41,8 @@ const createMainTask = createTaskConfigBuilder(() => ({
       ]);
 
     node.addPackages({
-      '@pothos/plugin-tracing': '1.0.2',
-      '@pothos/tracing-sentry': '1.0.3',
+      '@pothos/plugin-tracing': '1.1.0',
+      '@pothos/tracing-sentry': '1.1.1',
     });
 
     return {
