@@ -11,9 +11,3 @@ export function makeImportAndFilePath(filePath: string): [string, string] {
     .replaceAll(path.sep, path.posix.sep)}`;
   return [importPath, filePath];
 }
-
-export function unixPathJoin(...paths: string[]): string {
-  return paths
-    .join(path.posix.sep)
-    .replaceAll(`${path.posix.sep}${path.posix.sep}`, path.posix.sep);
-}
