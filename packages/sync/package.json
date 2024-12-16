@@ -44,7 +44,7 @@
     "package-up": "^5.0.0",
     "ramda": "^0.28.0",
     "toposort": "^2.0.2",
-    "zod": "3.23.8"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",

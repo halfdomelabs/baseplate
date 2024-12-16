@@ -29,3 +29,6 @@ catalog:
   vitest: 2.1.1
   '@vitejs/plugin-react': 4.3.1
   vite-tsconfig-paths: 5.0.0
+
+  # Validation
+  zod: 3.24.1
