@@ -73,10 +73,15 @@ const FastifySentryGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'server',
       dependencies: {
+        node: nodeProvider,
         fastifyServer: fastifyServerProvider,
         errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
       },
-      run({ errorHandlerServiceSetup, fastifyServer }) {
+      run({ node, errorHandlerServiceSetup, fastifyServer }) {
+        if (!node.isEsm()) {
+          fastifyServer.addInitializerBlock("import './instrument.js';\n");
+        }
+
         fastifyServer.addPrePluginBlock(
           TypescriptCodeUtils.createBlock(
             `Sentry.setupFastifyErrorHandler(fastify);
