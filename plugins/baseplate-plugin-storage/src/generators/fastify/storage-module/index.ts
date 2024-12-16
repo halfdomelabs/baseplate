@@ -9,7 +9,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
   TypescriptStringReplacement,
-  unixPathJoin
+  unixPathJoin,
 } from '@halfdomelabs/core-generators';
 import {
   appModuleProvider,
