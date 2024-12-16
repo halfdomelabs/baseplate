@@ -33,7 +33,7 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { reactComponents, typescript, node }) {
     node.addPackages({
-      nanoid: '3.3.7',
+      nanoid: '3.3.8',
     });
 
     const [embeddedListImport, embeddedListPath] = makeImportAndFilePath(
