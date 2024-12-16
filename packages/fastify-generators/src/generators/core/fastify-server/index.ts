@@ -77,7 +77,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
       fastify: '5.1.0',
       '@fastify/helmet': '13.0.0',
       'fastify-plugin': '5.0.1',
-      nanoid: '3.3.7',
+      nanoid: '3.3.8',
     });
 
     plugins.push({
