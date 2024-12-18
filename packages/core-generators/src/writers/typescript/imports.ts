@@ -80,7 +80,9 @@ export function resolveModule(
   // figure out relative directory
   const absolutePath = moduleSpecifier.slice(2);
   const relativePathImport = (() => {
-    const relativePath = path.relative(directory, absolutePath);
+    const relativePath = path
+      .relative(directory, absolutePath)
+      .replaceAll(path.sep, path.posix.sep);
 
     return relativePath.startsWith('./') ||
       relativePath.startsWith('../') ||

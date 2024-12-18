@@ -13,7 +13,11 @@ import { executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
 
-import type { FileData, GeneratorOutput } from './generator-output.js';
+import type {
+  FileData,
+  GeneratorOutput,
+  GeneratorOutputFormatter,
+} from './generator-output.js';
 
 import { POST_WRITE_COMMAND_TYPE_PRIORITY } from './generator-output.js';
 
@@ -102,13 +106,18 @@ async function writeFile(
   filePath: string,
   data: FileData,
   originalPath: string,
+  formatters: GeneratorOutputFormatter[],
   logger: Logger,
 ): Promise<WriteFileResult> {
   // if file exists and we never overwrite, return false
-  const { options, contents, formatter } = data;
+  const { options, contents } = data;
+
+  const formatter = formatters.find((f) =>
+    f.fileExtensions?.some((ext) => path.extname(filePath) === ext),
+  );
 
   if (contents instanceof Buffer) {
-    if (formatter) {
+    if (formatter && options?.shouldFormat) {
       throw new Error(`Cannot format Buffer contents for ${filePath}`);
     }
     if (options?.neverOverwrite) {
@@ -142,17 +151,8 @@ async function writeFile(
 
   async function formatContents(contentsToFormat: string): Promise<string> {
     let formattedContents = contentsToFormat;
-    if (options?.preformat) {
-      try {
-        formattedContents = await Promise.resolve(
-          options.preformat(formattedContents, filePath, logger),
-        );
-      } catch (error) {
-        throw new FormatterError(error, formattedContents);
-      }
-    }
 
-    if (formatter) {
+    if (formatter && options?.shouldFormat) {
       try {
         formattedContents = await formatter.format(
           formattedContents,
@@ -230,7 +230,13 @@ export async function writeGeneratorOutput(
   try {
     const fileResults = await Promise.all(
       [...output.files.entries()].map(([filename, file]) =>
-        writeFile(path.join(outputDirectory, filename), file, filename, logger),
+        writeFile(
+          path.join(outputDirectory, filename),
+          file,
+          filename,
+          output.formatters,
+          logger,
+        ),
       ),
     );
 

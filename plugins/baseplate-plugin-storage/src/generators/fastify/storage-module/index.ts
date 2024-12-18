@@ -78,7 +78,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
         pothosSetup.getTypeReferences().addInputType({
           typeName: 'FileUploadInput',
           exportName: 'fileUploadInputInputType',
-          moduleName: `@/${path.join(
+          moduleName: `@/${path.posix.join(
             moduleFolder,
             'schema/file-upload.input-type.js',
           )}`,

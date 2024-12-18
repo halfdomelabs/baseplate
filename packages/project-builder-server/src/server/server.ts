@@ -40,8 +40,7 @@ export async function buildServer({
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
     forceCloseConnections: 'idle',
-    // https://github.com/fastify/fastify/issues/4960
-    logger: logger as FastifyBaseLogger,
+    loggerInstance: logger as FastifyBaseLogger,
     maxParamLength: 10_000,
   });
 

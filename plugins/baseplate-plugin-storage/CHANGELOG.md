@@ -1,5 +1,42 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 1.0.15
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+- Updated dependencies [f7184a8]
+- Updated dependencies [98518dd]
+- Updated dependencies [98518dd]
+- Updated dependencies [144d796]
+- Updated dependencies [d7ec6ee]
+  - @halfdomelabs/project-builder-lib@0.8.13
+  - @halfdomelabs/fastify-generators@0.10.9
+  - @halfdomelabs/react-generators@0.8.8
+  - @halfdomelabs/core-generators@0.9.9
+  - @halfdomelabs/ui-components@0.5.1
+  - @halfdomelabs/sync@0.7.12
+
+## 1.0.14
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- Updated dependencies [77d9399]
+- Updated dependencies [d1b05af]
+- Updated dependencies [f11b044]
+- Updated dependencies [dc74c47]
+- Updated dependencies [05fbd9c]
+- Updated dependencies [d1b05af]
+  - @halfdomelabs/project-builder-lib@0.8.12
+  - @halfdomelabs/fastify-generators@0.10.8
+  - @halfdomelabs/react-generators@0.8.7
+  - @halfdomelabs/core-generators@0.9.8
+  - @halfdomelabs/ui-components@0.5.0
+  - @halfdomelabs/sync@0.7.11
+
 ## 1.0.13
 
 ### Patch Changes

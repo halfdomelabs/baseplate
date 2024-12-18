@@ -145,10 +145,9 @@ function getWebEntrypointImport(
   entrypointPath: string,
 ): string {
   const pathWithoutExtension = entrypointPath.replace(/\.[jt]sx?$/, '');
-  const relativeEntrypoint = path.relative(
-    pluginDirectory,
-    pathWithoutExtension,
-  );
+  const relativeEntrypoint = path
+    .relative(pluginDirectory, pathWithoutExtension)
+    .replace(/\\/g, '/');
   return `${pluginName}/${relativeEntrypoint}`;
 }
 

@@ -12,7 +12,6 @@ beforeEach(() => {
 });
 
 describe('copyDirectoryAction', () => {
-  const formatter = { format: vi.fn() };
   it('should copy an empty directory', async () => {
     await vol.promises.mkdir('/generator/templates', { recursive: true });
 
@@ -54,7 +53,7 @@ describe('copyDirectoryAction', () => {
       '/generator/templates/test1.txt': 'hi',
     });
 
-    const builder = new OutputBuilder('/generator', formatter);
+    const builder = new OutputBuilder('/generator');
 
     await copyDirectoryAction({
       source: '/',
@@ -65,7 +64,6 @@ describe('copyDirectoryAction', () => {
     expect(builder.output.files.size).toEqual(1);
     expect(builder.output.files.get('/dest/test1.txt')).toEqual({
       contents: 'hi',
-      formatter,
       options: { shouldFormat: true },
     });
     expect(builder.output.postWriteCommands).toHaveLength(0);

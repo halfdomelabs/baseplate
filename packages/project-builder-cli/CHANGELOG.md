@@ -1,5 +1,34 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.8.2
+
+### Patch Changes
+
+- Updated dependencies [6ca94da]
+- Updated dependencies [98518dd]
+  - @halfdomelabs/project-builder-server@0.4.15
+  - @halfdomelabs/project-builder-lib@0.8.13
+  - @halfdomelabs/project-builder-web@0.14.1
+  - @halfdomelabs/project-builder-common@0.1.8
+
+## 0.8.1
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- d1b05af: Upgrade Fastify and associated packages to v5 versions
+- Updated dependencies [cc837f9]
+- Updated dependencies [77d9399]
+- Updated dependencies [d1b05af]
+- Updated dependencies [05fbd9c]
+- Updated dependencies [15ea063]
+- Updated dependencies [6b6cd89]
+- Updated dependencies [1e48b3c]
+  - @halfdomelabs/project-builder-server@0.4.14
+  - @halfdomelabs/project-builder-common@0.1.7
+  - @halfdomelabs/project-builder-lib@0.8.12
+  - @halfdomelabs/project-builder-web@0.14.0
+
 ## 0.8.0
 
 ### Minor Changes

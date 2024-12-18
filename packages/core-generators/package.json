@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/core-generators",
-  "version": "0.9.7",
+  "version": "0.9.9",
   "description": "Core generators for Baseplate",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -52,7 +52,7 @@
     "sort-keys": "^5.1.0",
     "sort-package-json": "2.10.1",
     "ts-morph": "23.0.0",
-    "zod": "3.23.8"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",

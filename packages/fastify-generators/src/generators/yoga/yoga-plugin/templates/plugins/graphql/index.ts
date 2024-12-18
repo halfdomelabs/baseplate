@@ -6,7 +6,7 @@ import { createContextFromRequest } from '%request-service-context';
 import { requestContext } from '@fastify/request-context';
 import { createYoga } from 'graphql-yoga';
 import { logger } from '%logger-service';
-import AltairFastify from 'altair-fastify-plugin';
+import { AltairFastify } from 'altair-fastify-plugin';
 import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError } from 'graphql';

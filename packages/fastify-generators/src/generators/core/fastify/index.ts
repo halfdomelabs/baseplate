@@ -151,7 +151,6 @@ const FastifyGenerator = createGeneratorWithTasks({
       name: 'node-setup',
       dependencies: {
         nodeSetup: nodeSetupProvider,
-        formatter: createProviderType('non-exist').dependency().optional(),
       },
       run({ nodeSetup }) {
         nodeSetup.setIsEsm(false);

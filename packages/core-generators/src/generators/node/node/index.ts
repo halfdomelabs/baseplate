@@ -260,11 +260,12 @@ const NodeGenerator = createGeneratorWithTasks({
               },
             };
 
+            const sortedPackageJsonContents = sortPackageJson(packageJson);
+
             await builder.apply(
               writeJsonAction({
                 destination: 'package.json',
-                contents: packageJson,
-                preformat: (contents) => sortPackageJson(contents),
+                contents: sortedPackageJsonContents,
               }),
             );
 

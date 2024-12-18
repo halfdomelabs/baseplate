@@ -12,6 +12,7 @@ import {
   modelTransformerCompilerSpec,
 } from '@halfdomelabs/project-builder-lib';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 import { discoverPlugins } from './plugin-discovery.js';
 
@@ -29,7 +30,7 @@ export async function createNodePluginStore(
       metadata: plugin,
       modules: await Promise.all(
         plugin.nodeModulePaths.map(async (modulePath) => {
-          const mod = (await import(modulePath)) as
+          const mod = (await import(pathToFileURL(modulePath).href)) as
             | { default: PluginPlatformModule }
             | PluginPlatformModule;
           const unwrappedModule = 'default' in mod ? mod.default : mod;

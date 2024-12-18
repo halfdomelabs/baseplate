@@ -28,9 +28,11 @@ export const Default: Story = {
             voluptatum minima id nobis soluta nisi error.
           </p>
         </Card.Content>
-        <Card.Footer className="space-x-4">
+        <Card.Footer className="justify-between space-x-4">
+          <Button type="button" variant="secondary">
+            Secondary
+          </Button>
           <Button type="button">Primary</Button>
-          <Button type="button">Secondary</Button>
         </Card.Footer>
       </>
     ),
