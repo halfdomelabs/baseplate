@@ -12,7 +12,9 @@ const descriptorSchema = z.object({});
 
 export interface AuthGeneratorConfig {
   userModelName?: string;
-  roleServiceImport?: ImportEntry;
+  authRolesImport?: ImportEntry;
+  userSessionServiceImport?: ImportEntry;
+  contextUtilsImport?: ImportEntry;
 }
 
 export interface AuthSetupProvider {
@@ -62,16 +64,32 @@ const AuthGenerator = createGeneratorWithTasks({
       },
       taskDependencies: { setupTask },
       run(deps, { setupTask: { config } }) {
+        if (!config.value().authRolesImport) {
+          throw new Error(
+            'authRolesImport is required for auth module to work',
+          );
+        }
+        if (!config.value().userSessionServiceImport) {
+          throw new Error(
+            'userSessionServiceImport is required for auth module to work',
+          );
+        }
+        if (!config.value().contextUtilsImport) {
+          throw new Error(
+            'contextUtilsImport is required for auth module to work',
+          );
+        }
         return {
           getProviders: () => ({
             auth: {
               getConfig: () => config.value(),
               getImportMap() {
-                const { roleServiceImport } = config.value();
+                const settings = config.value();
                 return {
-                  ...(roleServiceImport
-                    ? { '%role-service': roleServiceImport }
-                    : {}),
+                  '%auth/auth-roles': settings.authRolesImport,
+                  '%auth/user-session-service':
+                    settings.userSessionServiceImport,
+                  '%auth/context-utils': settings.contextUtilsImport,
                 };
               },
             },

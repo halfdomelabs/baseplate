@@ -1,4 +1,4 @@
-import { FeatureUtils, ModelUtils } from '@src/definition/index.js';
+import { ModelUtils } from '@src/definition/index.js';
 
 import type {
   ParserPlugin,
@@ -106,16 +106,6 @@ export const AuthPlugin: ParserPlugin = {
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth',
         peerProvider: true,
-      },
-      $authContext: {
-        generator: '@halfdomelabs/fastify/auth/auth-context',
-        peerProvider: true,
-        authInfoRef: `${
-          FeatureUtils.getFeatureByIdOrThrow(
-            projectDefinition,
-            auth.authFeaturePath,
-          ).name
-        }/root:$auth.service`,
       },
       $pothosAuth: {
         generator: '@halfdomelabs/fastify/pothos/pothos-auth',

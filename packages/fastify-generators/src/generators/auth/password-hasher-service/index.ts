@@ -1,6 +1,7 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  makeImportAndFilePath,
   nodeProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -8,6 +9,7 @@ import {
   createGeneratorWithChildren,
   createProviderType,
 } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
@@ -35,20 +37,21 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
   createGenerator(descriptor, { node, appModule, typescript }) {
     const moduleFolder = appModule.getModuleFolder();
 
+    const [fileImport] = makeImportAndFilePath(
+      path.join(moduleFolder, 'services/password-hasher.service.ts'),
+    );
+
     node.addPackages({
-      argon2: '0.28.7',
+      '@node-rs/argon2': '2.0.2',
     });
-    // add node-gyp to allow support for compliation on M1
-    node.addDevPackages({
-      'node-gyp': '9.1.0',
-    });
+
     return {
       getProviders: () => ({
         passwordHasherService: {
           getImportMap: () => ({
             '%password-hasher-service': {
-              path: `@/${moduleFolder}/services/hasher-service`,
-              allowedImports: ['hasherService'],
+              path: fileImport,
+              allowedImports: ['createPasswordHash', 'verifyPasswordHash'],
             },
           }),
         },
@@ -57,7 +60,7 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
         builder.setBaseDirectory(moduleFolder);
         await builder.apply(
           typescript.createCopyAction({
-            source: 'services/hasher-service.ts',
+            source: 'services/password-hasher.service.ts',
           }),
         );
       },

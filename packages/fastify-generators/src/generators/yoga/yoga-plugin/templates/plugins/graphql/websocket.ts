@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { WebsocketHandler } from '@fastify/websocket';
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import { ExecutionArgs, ExecutionResult, GraphQLError } from 'graphql';
 import { YogaServerInstance } from 'graphql-yoga';
 import {
@@ -14,6 +14,7 @@ import {
 } from 'graphql-ws';
 import { logger } from '@/src/services/logger.js';
 // <% if (it.authEnabled) { %>
+import { createAuthContextFromSessionInfo } from '%auth/context-utils';
 import { HttpError } from '@/src/utils/http-errors.js';
 // <% } %>
 import * as ws from 'ws';
@@ -217,11 +218,11 @@ export function getGraphqlWsHandler(
       try {
         // attach auth info to request
         const authorizationHeader = ctx.connectionParams?.authorization;
-        const authInfo = AUTH_INFO_CREATOR;
-        ctx.extra.request.auth = authInfo;
+        const sessionInfo = AUTH_INFO_CREATOR;
+        ctx.extra.request.auth = createAuthContextFromSessionInfo(sessionInfo);
 
         // set expiry for socket based on auth token expiry
-        const tokenExpiry = authInfo.user?.tokenExpiry;
+        const tokenExpiry = sessionInfo?.expiresAt;
         if (tokenExpiry) {
           const socket = ctx.extra.socket;
 

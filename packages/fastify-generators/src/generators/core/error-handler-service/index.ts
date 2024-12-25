@@ -128,6 +128,14 @@ const createSetupTask = createTaskConfigBuilder(() => ({
             shouldFormat: true,
           }),
         );
+
+        await builder.apply(
+          copyFileAction({
+            source: 'utils/zod.ts',
+            destination: 'src/utils/zod.ts',
+            shouldFormat: true,
+          }),
+        );
       },
     };
   },
@@ -152,6 +160,10 @@ const createMainTask = createTaskConfigBuilder(() => ({
       '%error-logger': {
         path: '@/src/services/error-logger.js',
         allowedImports: ['logError'],
+      },
+      '%utils-zod': {
+        path: '@/src/utils/zod.js',
+        allowedImports: ['handleZodRequestValidationError'],
       },
     };
 

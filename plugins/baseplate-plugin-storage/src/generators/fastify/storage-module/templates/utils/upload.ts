@@ -100,8 +100,8 @@ export async function prepareUploadData(
       size: fileSize,
       shouldDelete: false,
       isUsed: false,
-      uploader: context.auth.user
-        ? { connect: { id: context.auth.user?.id } }
+      uploader: context.auth.userId
+        ? { connect: { id: context.auth.userId } }
         : undefined,
     },
   };

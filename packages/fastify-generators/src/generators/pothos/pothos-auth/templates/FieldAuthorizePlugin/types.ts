@@ -28,5 +28,5 @@ export type AuthorizeRoleRuleOption<
 
 export interface AuthorizeRolePluginOptions<Types extends SchemaTypes> {
   requireOnRootFields?: boolean;
-  extractRoles: (context: Types['Context']) => Types['AuthRole'][];
+  extractRoles: (context: Types['Context']) => readonly Types['AuthRole'][];
 }

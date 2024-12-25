@@ -15,7 +15,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authServiceImportProvider } from '@src/generators/auth/auth-service/index.js';
+import { authProvider } from '@src/generators/auth/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
@@ -276,7 +276,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           node: nodeProvider,
           typescript: typescriptProvider,
           fastifyRedis: fastifyRedisProvider,
-          authServiceImport: authServiceImportProvider.dependency().optional(),
+          auth: authProvider.dependency().optional(),
           errorLoggerService: errorHandlerServiceProvider,
           loggerService: loggerServiceProvider,
           requestServiceContext: requestServiceContextProvider,
@@ -285,7 +285,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           node,
           typescript,
           fastifyRedis,
-          authServiceImport,
+          auth,
           errorLoggerService,
           loggerService,
           requestServiceContext,
@@ -314,14 +314,15 @@ const YogaPluginGenerator = createGeneratorWithTasks({
 
               const websocketFile = typescript.createTemplate(
                 {
-                  AUTH_INFO_CREATOR: authServiceImport
-                    ? authServiceImport.getAuthInfoCreator(
-                        TypescriptCodeUtils.createExpression(
-                          'ctx.extra.request',
-                        ),
-                        TypescriptCodeUtils.createExpression(
-                          `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`,
-                        ),
+                  AUTH_INFO_CREATOR: auth
+                    ? TypescriptCodeUtils.createExpression(
+                        `await userSessionService.getSessionInfoFromToken(
+          ctx.extra.request,
+          typeof authorizationHeader === 'string'
+            ? authorizationHeader
+            : undefined,
+        )`,
+                        "import { userSessionService } from '%auth/user-session-service';",
                       )
                     : { type: 'code-expression' },
                 },
@@ -330,7 +331,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                     errorLoggerService,
                     loggerService,
                     requestServiceContext,
-                    authServiceImport,
+                    auth,
                   ],
                 },
               );
@@ -341,7 +342,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                   websocketPath,
                   {
                     preprocessWithEta: {
-                      data: { authEnabled: !!authServiceImport },
+                      data: { authEnabled: !!auth },
                     },
                   },
                 ),

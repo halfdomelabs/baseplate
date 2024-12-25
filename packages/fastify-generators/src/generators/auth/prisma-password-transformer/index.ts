@@ -39,8 +39,8 @@ const PrismaPasswordTransformerGenerator = createGeneratorWithChildren({
           {
             name: 'passwordHash',
             transformer: TypescriptCodeUtils.createBlock(
-              'const passwordHash = password == null ? password : (await hasherService.hash(password));',
-              'import {hasherService} from "%password-hasher-service";',
+              'const passwordHash = password ?? await createPasswordHash(password);',
+              'import {createPasswordHash} from "%password-hasher-service";',
               { importMappers: [passwordHasherService] },
             ),
           },

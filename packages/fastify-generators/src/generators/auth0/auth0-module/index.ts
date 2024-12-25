@@ -11,13 +11,13 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import {
-  authInfoImportProvider,
-  authServiceImportProvider,
-} from '@src/generators/auth/auth-service/index.js';
-import { roleServiceProvider } from '@src/generators/auth/role-service/index.js';
+import { authContextProvider } from '@src/generators/auth/auth-context/index.js';
+import { authRolesProvider } from '@src/generators/auth/auth-roles/index.js';
+import { authSetupProvider } from '@src/generators/auth/auth/index.js';
+import { userSessionServiceProvider } from '@src/generators/auth/providers.js';
+import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
-import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
+import { fastifyServerProvider } from '@src/generators/core/index.js';
 import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
@@ -39,57 +39,40 @@ const createMainTask = createTaskConfigBuilder(
     name: 'main',
     dependencies: {
       typescript: typescriptProvider,
-      roleService: roleServiceProvider,
+      authRoles: authRolesProvider,
       node: nodeProvider,
       appModule: appModuleProvider,
       configService: configServiceProvider,
       prismaOutput: prismaOutputProvider,
-      errorHandlerService: errorHandlerServiceProvider,
+      authSetup: authSetupProvider,
+      userSessionTypes: userSessionTypesProvider,
+      authContext: authContextProvider,
     },
     exports: {
       auth0Module: auth0ModuleProvider,
-      authInfoImport: authInfoImportProvider,
-      authServiceImport: authServiceImportProvider,
+      userSessionService: userSessionServiceProvider,
     },
     run({
       node,
       typescript,
-      roleService,
+      authRoles,
       prismaOutput,
       configService,
       appModule,
-      errorHandlerService,
+      authSetup,
+      userSessionTypes,
+      authContext,
     }) {
-      node.addPackages({
-        'fastify-auth0-verify': '3.0.0',
-        '@fastify/request-context': '6.0.1',
-      });
-
       if (includeManagement) {
         node.addPackages({
           auth0: '4.0.2',
         });
       }
 
-      const [pluginImport, pluginPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/plugins/auth0-plugin.ts`,
-      );
-
-      const [authServiceImport, authServicePath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/services/auth-service.ts`,
-      );
-
-      const [authInfoImport, authInfoPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/utils/auth-info.ts`,
-      );
-
-      appModule.registerFieldEntry(
-        'plugins',
-        TypescriptCodeUtils.createExpression(
-          'auth0Plugin',
-          `import {auth0Plugin} from '${pluginImport}'`,
-        ),
-      );
+      const [userSessionServiceImport, userSessionServicePath] =
+        makeImportAndFilePath(
+          `${appModule.getModuleFolder()}/services/user-session.service.ts`,
+        );
 
       configService.getConfigEntries().set('AUTH0_DOMAIN', {
         value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
@@ -108,6 +91,11 @@ const createMainTask = createTaskConfigBuilder(
       const [, managementPath] = makeImportAndFilePath(
         `${appModule.getModuleFolder()}/services/management.ts`,
       );
+
+      authSetup.getConfig().set('userSessionServiceImport', {
+        path: userSessionServiceImport,
+        allowedImports: ['userSessionService'],
+      });
 
       if (includeManagement) {
         configService.getConfigEntries().set('AUTH0_TENANT_DOMAIN', {
@@ -137,72 +125,35 @@ const createMainTask = createTaskConfigBuilder(
       return {
         getProviders: () => ({
           auth0Module: {},
-          authInfoImport: {
+          userSessionService: {
             getImportMap: () => ({
-              '%auth-info': {
-                path: authInfoImport,
-                allowedImports: [
-                  'createAuthInfoFromUser',
-                  'UserInfo',
-                  'AuthInfo',
-                ],
+              '%user-session-service': {
+                path: userSessionServiceImport,
+                allowedImports: ['userSessionService'],
               },
             }),
-          },
-          authServiceImport: {
-            getImportMap: () => ({
-              '%auth-service': {
-                path: authServiceImport,
-                allowedImports: [
-                  'createAuthInfoFromRequest',
-                  'createAuthInfoFromAuthorization',
-                ],
-              },
-            }),
-            getAuthInfoCreator(request, token) {
-              return TypescriptCodeUtils.formatExpression(
-                `await createAuthInfoFromAuthorization(REQUEST, TOKEN)`,
-                { REQUEST: request, TOKEN: token },
-                {
-                  importText: [
-                    `import { createAuthInfoFromAuthorization } from '${authServiceImport}'`,
-                  ],
-                },
-              );
-            },
           },
         }),
         build: async (builder) => {
-          const pluginFile = typescript.createTemplate(
-            {},
-            { importMappers: [configService] },
-          );
-
-          await builder.apply(
-            pluginFile.renderToAction('plugins/auth0-plugin.ts', pluginPath),
-          );
-
           const serviceFile = typescript.createTemplate(
             {
               USER_MODEL: prismaOutput.getPrismaModelExpression(userModelName),
             },
-            { importMappers: [configService, roleService] },
+            {
+              importMappers: [
+                configService,
+                authRoles,
+                authContext,
+                userSessionTypes,
+              ],
+            },
           );
 
           await builder.apply(
             serviceFile.renderToAction(
-              'services/auth-service.ts',
-              authServicePath,
+              'services/user-session.service.ts',
+              userSessionServicePath,
             ),
-          );
-
-          const authInfoFile = typescript.createTemplate(
-            {},
-            { importMappers: [roleService, errorHandlerService] },
-          );
-
-          await builder.apply(
-            authInfoFile.renderToAction('utils/auth-info.ts', authInfoPath),
           );
 
           if (includeManagement) {
@@ -227,6 +178,38 @@ const Auth0ModuleGenerator = createGeneratorWithTasks({
     taskBuilder.addTask(createMainTask(descriptor));
 
     taskBuilder.addTask({
+      name: 'fastifyAuth0Plugin',
+      dependencies: {
+        node: nodeProvider,
+        fastifyServer: fastifyServerProvider,
+        configService: configServiceProvider,
+      },
+      run({ node, fastifyServer, configService }) {
+        node.addPackages({
+          'fastify-auth0-verify': '3.0.0',
+        });
+
+        fastifyServer.registerPlugin({
+          name: 'fastifyAuth0Verify',
+          plugin: TypescriptCodeUtils.createExpression(
+            'fastifyAuth0Verify',
+            "import fastifyAuth0Verify from 'fastify-auth0-verify'",
+          ),
+          options: TypescriptCodeUtils.createExpression(
+            `{
+    domain: config.AUTH0_DOMAIN,
+    audience: config.AUTH0_AUDIENCE,
+  }`,
+            "import {config} from  '%config';",
+            { importMappers: [configService] },
+          ),
+        });
+
+        return {};
+      },
+    });
+
+    taskBuilder.addTask({
       name: 'loggerSetup',
       dependencies: {
         loggerServiceSetup: loggerServiceSetupProvider,
@@ -235,7 +218,7 @@ const Auth0ModuleGenerator = createGeneratorWithTasks({
         loggerServiceSetup.addMixin(
           'userId',
           TypescriptCodeUtils.createExpression(
-            "requestContext.get('user')?.id",
+            "requestContext.get('userId')",
             "import { requestContext } from '@fastify/request-context';",
           ),
         );
