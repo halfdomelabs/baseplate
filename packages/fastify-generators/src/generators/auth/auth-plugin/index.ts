@@ -1,9 +1,10 @@
 import {
+  makeImportAndFilePath,
   nodeProvider,
+  TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
-import path from 'node:path';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
@@ -37,13 +38,21 @@ const AuthPluginGenerator = createGeneratorWithChildren({
       node,
     },
   ) {
-    const authPluginPath = path.join(
+    const [authPluginImport, authPluginPath] = makeImportAndFilePath(
       appModule.getModuleFolder(),
       'plugins/auth.plugin.ts',
     );
     node.addPackages({
       '@fastify/request-context': '6.0.1',
     });
+
+    appModule.registerFieldEntry(
+      'plugins',
+      TypescriptCodeUtils.createExpression(
+        'authPlugin',
+        `import { authPlugin } from '${authPluginImport}'`,
+      ),
+    );
 
     return {
       getProviders: () => ({
