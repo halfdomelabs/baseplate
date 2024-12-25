@@ -3,8 +3,8 @@ import { AUTH_DEFAULT_ROLES, authRoleEntityType } from '@src/schema/index.js';
 import { createSchemaMigration } from './types.js';
 
 interface OldConfig {
-  auth: {
-    roles: {
+  auth?: {
+    roles?: {
       id: string;
       name: string;
       comment: string;
@@ -13,8 +13,8 @@ interface OldConfig {
 }
 
 interface NewConfig {
-  auth: {
-    roles: {
+  auth?: {
+    roles?: {
       id: string;
       name: string;
       builtIn: boolean;
@@ -32,11 +32,11 @@ export const migration008AnonymousPublicRole = createSchemaMigration<
   description: 'Migrate anonymous to public role',
   migrate: (config) => ({
     ...config,
-    auth: {
+    auth: config.auth && {
       ...config.auth,
       roles: [
         ...AUTH_DEFAULT_ROLES.map((role) => {
-          const existingRole = config.auth.roles.find(
+          const existingRole = config.auth?.roles?.find(
             (r) =>
               r.name === role.name ||
               (r.name === 'anonymous' && role.name === 'public'),
@@ -48,8 +48,8 @@ export const migration008AnonymousPublicRole = createSchemaMigration<
             builtIn: true,
           };
         }),
-        ...config.auth.roles
-          .filter(
+        ...(config.auth.roles
+          ?.filter(
             (r) =>
               !AUTH_DEFAULT_ROLES.some((role) => role.name === r.name) &&
               r.name !== 'anonymous',
@@ -59,7 +59,7 @@ export const migration008AnonymousPublicRole = createSchemaMigration<
             name: r.name,
             comment: r.comment,
             builtIn: false,
-          })),
+          })) ?? []),
       ],
     },
   }),
