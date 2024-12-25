@@ -3,6 +3,7 @@ import type React from 'react';
 
 import {
   AUTH_DEFAULT_ROLES,
+  authRoleEntityType,
   authSchema,
 } from '@halfdomelabs/project-builder-lib';
 import {
@@ -16,13 +17,16 @@ import { Alert, Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
 import { useStatus } from 'src/hooks/useStatus';
-import { formatError } from 'src/services/error-formatter';
+import { formatError, logAndFormatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
+
+import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
+import { RefDeleteError } from '@src/utils/error';
 
 import RoleEditorForm from './RoleEditorForm';
 
 function AuthPage(): React.JSX.Element {
-  const { definition, parsedProject, setConfig, setConfigAndFixReferences } =
+  const { definition, parsedProject, setConfigAndFixReferences } =
     useProjectDefinition();
 
   const formProps = useResettableForm<AuthConfig>({
@@ -48,13 +52,33 @@ function AuthPage(): React.JSX.Element {
   };
 
   const [isAuthEnabled, setIsAuthEnabled] = useState(!!definition.auth);
+  const { showRefIssues } = useDeleteReferenceDialog();
+
+  const enableAuth = (): void => {
+    formProps.reset({
+      useAuth0: true,
+      roles: AUTH_DEFAULT_ROLES.map((r) => ({
+        ...r,
+        id: authRoleEntityType.generateNewId(),
+      })),
+    });
+    setIsAuthEnabled(true);
+  };
 
   const disableAuth = (): void => {
-    setConfig((draftConfig) => {
-      draftConfig.auth = undefined;
-    });
-    reset({});
-    setIsAuthEnabled(false);
+    try {
+      setConfigAndFixReferences((draftConfig) => {
+        draftConfig.auth = undefined;
+      });
+      reset({});
+      setIsAuthEnabled(false);
+    } catch (err) {
+      if (err instanceof RefDeleteError) {
+        showRefIssues({ issues: err.issues });
+      } else {
+        toast.error(logAndFormatError(err));
+      }
+    }
   };
 
   const modelOptions = parsedProject.getModels().map((m) => ({
@@ -75,9 +99,10 @@ function AuthPage(): React.JSX.Element {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Button onClick={disableAuth}>Disable Auth</Button>
           <CheckedInput.LabelledController
-            label="Use Auth0?"
+            label="Use Auth0? (currently only Auth0 is supported)"
             name="useAuth0"
             control={control}
+            disabled={true}
           />
           <ReactSelectInput.LabelledController
             label="User Model"
@@ -112,13 +137,7 @@ function AuthPage(): React.JSX.Element {
           <Button type="submit">Save</Button>
         </form>
       ) : (
-        <Button
-          onClick={() => {
-            setIsAuthEnabled(true);
-          }}
-        >
-          Enable Auth
-        </Button>
+        <Button onClick={enableAuth}>Enable Auth</Button>
       )}
     </div>
   );

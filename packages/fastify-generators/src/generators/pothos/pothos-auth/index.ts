@@ -77,7 +77,7 @@ const createMainTask = createTaskConfigBuilder(
               key: 'AuthRole',
               value: new TypescriptCodeExpression(
                 'AuthRole',
-                "import { AuthRole } from '%role-service';",
+                "import { AuthRole } from '%auth/auth-roles';",
                 { importMappers: [auth] },
               ),
             })

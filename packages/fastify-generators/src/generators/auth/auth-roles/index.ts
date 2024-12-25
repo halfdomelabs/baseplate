@@ -1,25 +1,37 @@
-import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
-  TypescriptCodeExpression,
+  makeImportAndFilePath,
   TypescriptCodeUtils,
+  typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
 } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
-import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
+import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
-import { authInfoProvider } from '../auth-service/index.js';
-import { roleServiceProvider } from '../role-service/index.js';
+import { authSetupProvider } from '../auth/index.js';
 
 const descriptorSchema = z.object({
-  userRoleModelName: z.string().min(1),
+  // Note: Public and user roles are automatically added
+  roles: z.array(
+    z.object({
+      // must be kebab-case
+      name: z
+        .string()
+        .min(1)
+        .regex(/^[a-z]+(-[a-z]+)*$/),
+      comment: z.string().min(1),
+      builtIn: z.boolean(),
+    }),
+  ),
 });
 
-export type AuthRolesProvider = unknown;
+export type AuthRolesProvider = ImportMapper;
 
 export const authRolesProvider =
   createProviderType<AuthRolesProvider>('auth-roles');
@@ -28,74 +40,70 @@ const AuthRolesGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    authInfo: authInfoProvider,
-    roleService: roleServiceProvider,
-    prismaOutput: prismaOutputProvider,
+    typescript: typescriptProvider,
+    appModule: appModuleProvider,
+    authSetup: authSetupProvider,
   },
   exports: {
     authRoles: authRolesProvider,
   },
-  createGenerator(
-    { userRoleModelName },
-    { authInfo, prismaOutput, roleService },
-  ) {
-    const authRolesType = TypescriptCodeUtils.createExpression(
-      `AuthRole[]`,
-      `import {AuthRole} from '%role-service'`,
-      { importMappers: [roleService] },
+  createGenerator({ roles }, { typescript, appModule, authSetup }) {
+    if (
+      !['public', 'user', 'system'].every((name) =>
+        roles.some((r) => r.name === name),
+      )
+    ) {
+      throw new Error('public, user, and system roles are required');
+    }
+
+    const [fileImport, filePath] = makeImportAndFilePath(
+      path.join(
+        appModule.getModuleFolder(),
+        'constants/auth-roles.constants.ts',
+      ),
     );
 
-    const rolesCreatorBody: TypescriptCodeBlock =
-      TypescriptCodeUtils.formatBlock(
-        `const userRoles = await USER_ROLE_MODEL.findMany({
-        where: { userId: user.id },
-      });
-      
-      const roles = populateAuthRoles(userRoles.map(r => r.role));`,
-        {
-          USER_ROLE_MODEL:
-            prismaOutput.getPrismaModelExpression(userRoleModelName),
-        },
-        {
-          importText: ["import { populateAuthRoles } from '%role-service'"],
-          importMappers: [roleService],
-        },
-      );
+    const authRolesImport: ImportEntry = {
+      path: fileImport,
+      allowedImports: [
+        'AUTH_ROLE_CONFIG',
+        'AuthRole',
+        'DEFAULT_PUBLIC_ROLES',
+        'DEFAULT_USER_ROLES',
+      ],
+    };
 
-    authInfo.registerAuthField({
-      key: 'roles',
-      creatorBody: rolesCreatorBody,
-      extraCreateArgs: [{ name: 'roles', type: authRolesType }],
-      value: TypescriptCodeUtils.createExpression('roles'),
-      type: authRolesType,
-    });
-
-    authInfo.registerAuthField({
-      key: 'hasSomeRole',
-      value: new TypescriptCodeExpression(
-        '(possibleRoles) => roles.some((role) => possibleRoles.includes(role))',
-      ),
-      type: TypescriptCodeUtils.createExpression(
-        `(possibleRoles: AuthRole[]) => boolean`,
-        `import {AuthRole} from '%role-service'`,
-        { importMappers: [roleService] },
-      ),
-    });
-
-    authInfo.registerAuthField({
-      key: 'hasRole',
-      value: new TypescriptCodeExpression('(role) => roles.includes(role)'),
-      type: TypescriptCodeUtils.createExpression(
-        `(role: AuthRole) => boolean`,
-        `import {AuthRole} from '%role-service'`,
-        { importMappers: [roleService] },
-      ),
-    });
+    authSetup.getConfig().set('authRolesImport', authRolesImport);
 
     return {
       getProviders: () => ({
-        authRoles: {},
+        authRoles: {
+          getImportMap: () => ({
+            '%auth-roles': authRolesImport,
+          }),
+        },
       }),
+      build: async (builder) => {
+        await builder.apply(
+          typescript
+            .createTemplate({
+              TPL_AUTH_ROLES: TypescriptCodeUtils.createExpression(
+                JSON.stringify(
+                  Object.fromEntries(
+                    roles.map((r) => [
+                      r.name,
+                      {
+                        comment: r.comment,
+                        builtIn: r.builtIn,
+                      },
+                    ]),
+                  ),
+                ),
+              ),
+            })
+            .renderToAction('constants/auth-roles.constants.ts', filePath),
+        );
+      },
     };
   },
 });

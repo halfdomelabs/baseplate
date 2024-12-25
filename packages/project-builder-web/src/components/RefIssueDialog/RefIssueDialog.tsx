@@ -40,10 +40,10 @@ export function RefIssueDialog(): React.JSX.Element {
         <Dialog.Header>
           <Dialog.Title>Unable to delete</Dialog.Title>
         </Dialog.Header>
-        <p>
+        <Dialog.Description>
           There were other references that needed to be fixed before you could
           delete this item.
-        </p>
+        </Dialog.Description>
         <Table>
           <Table.Header>
             <Table.Row>

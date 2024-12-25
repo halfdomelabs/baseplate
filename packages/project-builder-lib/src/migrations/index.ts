@@ -4,11 +4,13 @@ import type { SchemaMigration } from './types.js';
 import { migration005PrimaryUniqueRefs } from './migration-005-primaryUniqueRefs.js';
 import { migration006IndividualServiceControllers } from './migration-006-individual-service-controllers.js';
 import { migration007ModelGraphql } from './migration-007-model-graphql.js';
+import { migration008AnonymousPublicRole } from './migration-008-anonymous-public-role.js';
 
 export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration005PrimaryUniqueRefs,
   migration006IndividualServiceControllers,
   migration007ModelGraphql,
+  migration008AnonymousPublicRole,
 ];
 
 export function runSchemaMigrations(config: ProjectDefinition): {
