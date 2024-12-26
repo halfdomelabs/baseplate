@@ -8,7 +8,7 @@ import {
   createGeneratorWithChildren,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
-import { kebabCase } from 'change-case';
+import { camelCase, kebabCase } from 'change-case';
 import path from 'node:path';
 import * as R from 'ramda';
 import { z } from 'zod';
@@ -32,7 +32,7 @@ const AppModuleGenerator = createGeneratorWithChildren({
   },
   createGenerator(descriptor, { appModule, typescript }) {
     const folderName = descriptor.folderName ?? kebabCase(descriptor.name);
-    const moduleName = `${descriptor.name}Module`;
+    const moduleName = `${camelCase(descriptor.name)}Module`;
     const moduleFolder = `${appModule.getModuleFolder()}/${folderName}`;
     const moduleEntries = createNonOverwriteableMap<
       Record<string, TypescriptCodeExpression[]>

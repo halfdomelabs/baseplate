@@ -8,6 +8,8 @@ import { globby } from 'globby';
 import path from 'node:path';
 import * as R from 'ramda';
 
+import { removeEmptyAncestorDirectories } from '@src/utils/directories.js';
+
 export interface GeneratorEngineSetupConfig {
   generatorPackages: { name: string; path: string }[];
 }
@@ -172,6 +174,14 @@ export async function generateForDirectory({
         }
       }),
     );
+
+    if (deletedCleanFiles.length > 0) {
+      // clean up empty directories
+      await removeEmptyAncestorDirectories(
+        deletedCleanFiles.map((f) => path.join(projectDirectory, f.filePath)),
+        projectDirectory,
+      );
+    }
 
     if (writeOutput.failedCommands.length > 0) {
       logger.error(
