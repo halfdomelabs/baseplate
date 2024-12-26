@@ -27,6 +27,7 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
+    "test": "vitest",
     "typecheck": "tsc --noEmit",
     "watch": "concurrently pnpm:watch:*",
     "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
@@ -69,6 +70,7 @@
     "@types/ramda": "^0.29.3",
     "@types/ws": "8.5.13",
     "concurrently": "9.0.1",
+    "memfs": "4.15.1",
     "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
