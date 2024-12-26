@@ -51,7 +51,6 @@
     "inflection": "3.0.0",
     "json-stringify-pretty-compact": "^4.0.0",
     "lodash": "^4.17.21",
-    "memfs": "4.15.1",
     "mime": "^4.0.3",
     "open": "10.1.0",
     "package-up": "^5.0.0",
@@ -71,6 +70,7 @@
     "@types/ramda": "^0.29.3",
     "@types/ws": "8.5.13",
     "concurrently": "9.0.1",
+    "memfs": "4.15.1",
     "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
