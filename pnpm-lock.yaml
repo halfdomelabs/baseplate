@@ -611,9 +611,6 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
-      memfs:
-        specifier: 4.15.1
-        version: 4.15.1
       mime:
         specifier: ^4.0.3
         version: 4.0.3
@@ -666,6 +663,9 @@ importers:
       concurrently:
         specifier: 9.0.1
         version: 9.0.1
+      memfs:
+        specifier: 4.15.1
+        version: 4.15.1
       tsc-alias:
         specifier: 'catalog:'
         version: 1.8.10
