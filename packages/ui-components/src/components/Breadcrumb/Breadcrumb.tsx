@@ -104,7 +104,7 @@ const BreadcrumbEllipsis = ({
     <span className="sr-only">More</span>
   </span>
 );
-BreadcrumbEllipsis.displayName = 'BreadcrumbElipssis';
+BreadcrumbEllipsis.displayName = 'BreadcrumbEllipsis';
 
 export const Breadcrumb = Object.assign(BreadcrumbRoot, {
   List: BreadcrumbList,
