@@ -76,6 +76,6 @@
   ],
   "name": "simple",
   "portOffset": 3000,
-  "schemaVersion": 7,
+  "schemaVersion": 8,
   "version": "0.1.0"
 }
