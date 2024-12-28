@@ -2,9 +2,9 @@ import { Slot } from '@radix-ui/react-slot';
 import React from 'react';
 import { RxChevronRight, RxDotsHorizontal } from 'react-icons/rx';
 
-/* eslint-disable react/prop-types */
-
 import { cn } from '@src/utils';
+
+/* eslint-disable react/prop-types */
 
 const BreadcrumbRoot = React.forwardRef<
   HTMLElement,
