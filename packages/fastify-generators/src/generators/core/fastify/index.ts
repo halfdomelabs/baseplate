@@ -187,6 +187,7 @@ const FastifyGenerator = createGeneratorWithTasks({
 
         node.mergeExtraProperties({
           main: 'dist/index.js',
+          files: ['dist/**/*', 'package.json', 'README.md'],
         });
 
         nodeGitIgnore.addExclusions(['/dist']);

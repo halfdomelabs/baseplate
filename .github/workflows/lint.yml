@@ -16,9 +16,9 @@ jobs:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v4.0.4
+        uses: nrwl/nx-set-shas@v4.1.2
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3.0.0
+        uses: pnpm/action-setup@v4.0.0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
