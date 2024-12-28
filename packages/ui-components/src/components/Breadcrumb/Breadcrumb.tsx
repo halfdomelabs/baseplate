@@ -2,9 +2,9 @@ import { Slot } from '@radix-ui/react-slot';
 import React from 'react';
 import { RxChevronRight, RxDotsHorizontal } from 'react-icons/rx';
 
-/* eslint-disable react/prop-types */
-
 import { cn } from '@src/utils';
+
+/* eslint-disable react/prop-types */
 
 const BreadcrumbRoot = React.forwardRef<
   HTMLElement,
@@ -104,7 +104,7 @@ const BreadcrumbEllipsis = ({
     <span className="sr-only">More</span>
   </span>
 );
-BreadcrumbEllipsis.displayName = 'BreadcrumbElipssis';
+BreadcrumbEllipsis.displayName = 'BreadcrumbEllipsis';
 
 export const Breadcrumb = Object.assign(BreadcrumbRoot, {
   List: BreadcrumbList,

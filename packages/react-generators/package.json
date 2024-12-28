@@ -38,7 +38,7 @@
     "@halfdomelabs/sync": "workspace:*",
     "inflection": "3.0.0",
     "lodash": "^4.17.21",
-    "prettier-plugin-tailwindcss": "0.6.8",
+    "prettier-plugin-tailwindcss": "0.6.9",
     "ramda": "^0.28.0",
     "toposort": "^2.0.2",
     "zod": "catalog:"

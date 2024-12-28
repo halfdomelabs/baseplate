@@ -6,7 +6,7 @@
 
 import eslint from '@eslint/js';
 import vitest from '@vitest/eslint-plugin';
-import * as tsResolver from 'eslint-import-resolver-typescript';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import eslintPluginImportX from 'eslint-plugin-import-x';
 import perfectionist from 'eslint-plugin-perfectionist';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
@@ -140,7 +140,7 @@ export function generateTypescriptEslintConfig(options = []) {
         'import-x/no-extraneous-dependencies': ['error', { devDependencies }],
       },
       settings: {
-        'import-x/resolver': { name: 'tsResolver', resolver: tsResolver },
+        'import-x/resolver-next': [createTypeScriptImportResolver()],
       },
       languageOptions: {
         ecmaVersion: 2022,
@@ -195,7 +195,7 @@ export function generateTypescriptEslintConfig(options = []) {
         // Enforces a consistent sorting order for import statements
         'perfectionist/sort-imports': [
           'error',
-          { internalPattern: ['@src/**'] },
+          { internalPattern: ['^@src/'] },
         ],
         'perfectionist/sort-exports': ['error'],
         'perfectionist/sort-named-imports': ['error'],
