@@ -1,0 +1,9 @@
+# This is a simple diff test
+
+Hello world
+
+<<<<<<< existing
+=======
+This is the new text
+
+>>>>>>> baseplate
