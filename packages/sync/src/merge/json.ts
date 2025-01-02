@@ -11,9 +11,6 @@ export const jsonMergeAlgorithm: MergeAlgorithm = async (
   baseText,
   options,
 ) => {
-  if (!baseText) {
-    return null;
-  }
   try {
     const originalJson = JSON.parse(baseText) as Record<string, unknown>;
     const newJson = JSON.parse(newText) as Record<string, unknown>;

@@ -16,9 +16,6 @@ export const diff3MergeAlgorithm: MergeAlgorithm = (
   newText,
   baseText,
 ) => {
-  if (!baseText) {
-    return null;
-  }
   const mergeResult = merge(userText, baseText, newText, {
     // monkey patching types of diff3 lib (https://github.com/bhousel/node-diff3/blob/main/index.mjs#L434)
     ...({

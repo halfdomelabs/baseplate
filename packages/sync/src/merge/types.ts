@@ -20,6 +20,6 @@ export type MergeResult = {
 export type MergeAlgorithm = (
   userText: string,
   newText: string,
-  baseText: string | undefined,
+  baseText: string,
   options: MergeOptions,
 ) => MergeResult | Promise<MergeResult>;

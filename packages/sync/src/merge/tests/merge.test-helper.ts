@@ -60,7 +60,7 @@ const runMergeTests = (
       const baseText = readFileWithAnyExtension(casePath, 'base');
       const expectedMergedText = readFileWithAnyExtension(casePath, 'merged');
 
-      if (!userText || !newText) {
+      if (!userText || !newText || !baseText) {
         throw new Error(`Missing required user or new files in ${casePath}`);
       }
 

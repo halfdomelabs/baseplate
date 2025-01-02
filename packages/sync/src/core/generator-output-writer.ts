@@ -58,11 +58,14 @@ async function mergeContents(
     return null;
   }
 
+  if (!cleanContents) {
+    return simpleDiffAlgorithm(existingContents, newContents);
+  }
+
   const mergeAlgorithm = buildCompositeMergeAlgorithm([
     ...(mergeAlgorithms ?? []),
     ...(filePath.endsWith('.json') ? [jsonMergeAlgorithm] : []),
     diff3MergeAlgorithm,
-    simpleDiffAlgorithm,
   ]);
 
   const mergeResult = await mergeAlgorithm(

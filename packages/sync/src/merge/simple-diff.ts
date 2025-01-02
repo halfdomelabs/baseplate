@@ -1,6 +1,6 @@
 import { diffComm } from 'node-diff3';
 
-import type { MergeAlgorithm } from './types.js';
+import type { MergeResult } from './types.js';
 
 interface CommonCommResult {
   common: string[];
@@ -19,7 +19,10 @@ type CommResult = CommonCommResult | DiffCommResult;
  * @param newText Baseplate's text
  * @returns Merged text and a boolean indicating if there was a conflict
  */
-export const simpleDiffAlgorithm: MergeAlgorithm = (userText, newText) => {
+export const simpleDiffAlgorithm = (
+  userText: string,
+  newText: string,
+): MergeResult => {
   const patch: CommResult[] = diffComm(
     userText.split('\n'),
     newText.split('\n'),
