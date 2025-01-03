@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vitest';
-import { MergeAlgorithm, MergeOptions } from '../types.js';
+import { MergeAlgorithm, MergeContext } from '../types.js';
 
 const getFileWithAnyExtension = (
   directory: string,
@@ -42,7 +42,7 @@ const collectTestCases = (
 const runMergeTests = (
   mergeAlgorithm: MergeAlgorithm,
   testFolder: string,
-  mergeOptions: MergeOptions = {
+  mergeContext: MergeContext = {
     formatContents: (contents) => contents,
   },
 ): void => {
@@ -69,7 +69,7 @@ const runMergeTests = (
         userText,
         newText,
         baseText,
-        mergeOptions,
+        mergeContext,
       );
 
       // Compare results

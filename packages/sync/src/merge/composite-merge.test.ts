@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import type { MergeAlgorithm, MergeOptions } from './types.js';
+import type { MergeAlgorithm, MergeContext } from './types.js';
 
 import { buildCompositeMergeAlgorithm } from './composite-merge.js';
 
-const mergeOptions: MergeOptions = {
+const mergeContext: MergeContext = {
   formatContents: (contents) => contents,
 };
 
@@ -26,7 +26,7 @@ describe('buildCompositeMergeAlgorithm', () => {
       algorithm3,
     ]);
 
-    const result = await composite('user', 'new', 'base', mergeOptions);
+    const result = await composite('user', 'new', 'base', mergeContext);
 
     expect(result).toEqual({
       mergedText: 'usernew',
@@ -40,7 +40,7 @@ describe('buildCompositeMergeAlgorithm', () => {
 
     const composite = buildCompositeMergeAlgorithm([algorithm1, algorithm2]);
 
-    const result = await composite('user', 'new', 'base', mergeOptions);
+    const result = await composite('user', 'new', 'base', mergeContext);
 
     expect(result).toBeNull();
   });
@@ -48,7 +48,7 @@ describe('buildCompositeMergeAlgorithm', () => {
   it('should work with empty algorithm list', async () => {
     const composite = buildCompositeMergeAlgorithm([]);
 
-    const result = await composite('user', 'new', 'base', mergeOptions);
+    const result = await composite('user', 'new', 'base', mergeContext);
 
     expect(result).toBeNull();
   });

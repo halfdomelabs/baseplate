@@ -1,4 +1,4 @@
-export interface MergeOptions {
+export interface MergeContext {
   // function to format the contents of the file
   formatContents: (contents: string) => Promise<string> | string;
 }
@@ -21,5 +21,5 @@ export type MergeAlgorithm = (
   userText: string,
   newText: string,
   baseText: string,
-  options: MergeOptions,
+  context: MergeContext,
 ) => MergeResult | Promise<MergeResult>;
