@@ -9,7 +9,7 @@ export const jsonMergeAlgorithm: MergeAlgorithm = async (
   userText,
   newText,
   baseText,
-  options,
+  context,
 ) => {
   try {
     const originalJson = JSON.parse(baseText) as Record<string, unknown>;
@@ -32,7 +32,7 @@ export const jsonMergeAlgorithm: MergeAlgorithm = async (
     );
 
     return {
-      mergedText: await options.formatContents(result),
+      mergedText: await context.formatContents(result),
       hasConflict: false,
     };
   } catch {

@@ -46,6 +46,6 @@ export const simpleDiffAlgorithm = (
         ];
       })
       .join('\n'),
-    hasConflict: true,
+    hasConflict: patch.some((result) => !isCommonCommResult(result)),
   };
 };
