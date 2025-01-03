@@ -33,7 +33,7 @@ export function generateTypescriptEslintConfig(options = []) {
     // allow dev dependencies for test files
     '**/*.test-helper.{js,ts,jsx,tsx}',
     '**/*.test.{js,ts,jsx,tsx}',
-    'src/tests/**/*',
+    '**/tests/**/*',
     '**/__mocks__/**/*',
     // allow dev dependencies for config files at root level
     '*.{js,ts}',

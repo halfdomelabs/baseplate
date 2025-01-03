@@ -8,5 +8,6 @@
       "@src/*": ["src/*"]
     }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["src/merge/tests/**/*"]
 }
