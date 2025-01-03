@@ -7,10 +7,7 @@
       "{workspaceRoot}/nx.json",
       "{workspaceRoot}/package.json"
     ],
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/**/*.stories.tsx",
@@ -20,65 +17,35 @@
       "!{projectRoot}/eslint.config.js",
       "!{projectRoot}/prettier.config.js"
     ],
-    "e2eTests": [
-      "{workspaceRoot}/tests/**/*"
-    ]
+    "e2eTests": ["{workspaceRoot}/tests/**/*"]
   },
   "targetDefaults": {
     "build": {
-      "inputs": [
-        "production",
-        "^production"
-      ],
-      "outputs": [
-        "{projectRoot}/dist"
-      ],
-      "dependsOn": [
-        "^build"
-      ],
+      "inputs": ["production", "^production"],
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["^build"],
       "cache": true
     },
     "release": {
-      "inputs": [
-        "production",
-        "^production"
-      ],
-      "dependsOn": [
-        "build"
-      ]
+      "inputs": ["production", "^production"],
+      "dependsOn": ["build"]
     },
     "lint": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
-      "dependsOn": [
-        "^build"
-      ],
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^build"],
       "cache": true
     },
     "prettier:check": {
       "cache": true
     },
     "test": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
-      "dependsOn": [
-        "^build"
-      ],
+      "inputs": ["default", "^production"],
+      "dependsOn": ["^build"],
       "cache": true
     },
     "test:e2e": {
-      "inputs": [
-        "default",
-        "^production",
-        "e2eTests"
-      ],
-      "dependsOn": [
-        "^build"
-      ],
+      "inputs": ["default", "^production", "e2eTests"],
+      "dependsOn": ["^build"],
       "cache": true
     }
   },
