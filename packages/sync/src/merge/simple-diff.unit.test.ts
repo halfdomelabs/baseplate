@@ -26,14 +26,14 @@ describe('simpleDiffAlgorithm', () => {
 
     const result = simpleDiffAlgorithm(text, text);
 
-    expect(result?.hasConflict).toBe(true);
+    expect(result?.hasConflict).toBe(false);
     expect(result?.mergedText).toBe('Hello world\n');
   });
 
   test('should handle empty strings', () => {
     const result = simpleDiffAlgorithm('', '');
 
-    expect(result?.hasConflict).toBe(true);
+    expect(result?.hasConflict).toBe(false);
     expect(result?.mergedText).toBe('');
   });
 });
