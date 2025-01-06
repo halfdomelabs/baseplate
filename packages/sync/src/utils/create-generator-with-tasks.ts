@@ -330,7 +330,8 @@ export function createGeneratorWithTasks<
               (obj) => obj.getOutput(),
               taskDependencies,
             );
-            const runResult = task.run(dependencies, resolvedTaskOutputs);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- task.run may return undefined
+            const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
             return {
               getProviders: runResult.getProviders,
               async build(builder) {

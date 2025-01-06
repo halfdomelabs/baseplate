@@ -8,7 +8,10 @@ import { globby } from 'globby';
 import path from 'node:path';
 import * as R from 'ramda';
 
+import { environmentFlags } from '@src/service/environment-flags.js';
 import { removeEmptyAncestorDirectories } from '@src/utils/directories.js';
+
+import { writeGeneratorStepsHtml } from './generator-steps-html-writer.js';
 
 export interface GeneratorEngineSetupConfig {
   generatorPackages: { name: string; path: string }[];
@@ -77,7 +80,7 @@ export async function generateForDirectory({
   // look for previous build result
   const buildResultPath = path.join(
     projectDirectory,
-    'baseplate/.build_result.json',
+    'baseplate/build/last_build_result.json',
   );
 
   const buildResultExists = await fs.pathExists(buildResultPath);
@@ -94,7 +97,10 @@ export async function generateForDirectory({
     );
   }
 
-  const cleanTmpDirectory = path.join(projectDirectory, 'baseplate/.clean_tmp');
+  const cleanTmpDirectory = path.join(
+    projectDirectory,
+    'baseplate/build/clean_tmp',
+  );
 
   const augmentedOutput = cleanProjectFiles
     ? {
@@ -181,6 +187,13 @@ export async function generateForDirectory({
         deletedCleanFiles.map((f) => path.join(projectDirectory, f.filePath)),
         projectDirectory,
       );
+    }
+
+    if (
+      environmentFlags.BASEPLATE_WRITE_GENERATOR_STEPS_HTML &&
+      output.metadata
+    ) {
+      await writeGeneratorStepsHtml(output.metadata, projectDirectory);
     }
 
     if (writeOutput.failedCommands.length > 0) {

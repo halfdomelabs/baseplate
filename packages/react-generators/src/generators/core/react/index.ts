@@ -107,7 +107,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
       ),
       watch: TypescriptCodeUtils.createExpression(
         JSON.stringify({
-          ignored: ['**/baseplate/.clean/**', '**/baseplate/.clean_tmp/**'],
+          ignored: ['**/baseplate/**'],
         }),
       ),
     });

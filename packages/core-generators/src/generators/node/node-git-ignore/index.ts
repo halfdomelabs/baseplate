@@ -50,9 +50,8 @@ const NodeGitIgnoreGenerator = createGeneratorWithChildren({
       '# Optional eslint cache',
       '.eslintcache',
       '',
-      '# Baseplate temporary and log files',
-      'baseplate/.clean_tmp',
-      'baseplate/.build_result.json',
+      '# Baseplate build artifacts',
+      'baseplate/build',
     ];
     return {
       getProviders: () => ({

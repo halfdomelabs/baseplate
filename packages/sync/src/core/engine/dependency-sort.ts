@@ -134,7 +134,10 @@ function getExportInterdependencies(
 export function getSortedRunSteps(
   entries: GeneratorTaskEntry[],
   dependencyMap: EntryDependencyMap,
-): string[] {
+): {
+  steps: string[];
+  metadata: { fullSteps: string[]; fullEdges: [string, string][] };
+} {
   const dependencyGraph = entries.flatMap((entry): [string, string][] => {
     const entryInit = `init|${entry.id}`;
     const entryBuild = `build|${entry.id}`;
@@ -163,14 +166,17 @@ export function getSortedRunSteps(
   const { nodes: interdependentNodes, edges: interdependentEdges } =
     getExportInterdependencies(entries, dependencyMap);
 
-  const result = toposort.array(
-    [
-      ...entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]),
-      ...interdependentNodes,
-    ],
-    [...dependencyGraph, ...interdependentEdges],
-  );
+  const fullSteps = [
+    ...entries.flatMap(({ id }) => [`init|${id}`, `build|${id}`]),
+    ...interdependentNodes,
+  ];
+  const fullEdges = [...dependencyGraph, ...interdependentEdges];
 
-  // filter out interdepenency nodes
-  return result.filter((node) => !interdependentNodes.includes(node));
+  const result = toposort.array(fullSteps, fullEdges);
+
+  // filter out interdependent nodes
+  return {
+    steps: result.filter((node) => !interdependentNodes.includes(node)),
+    metadata: { fullSteps, fullEdges },
+  };
 }
