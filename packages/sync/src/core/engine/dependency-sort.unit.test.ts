@@ -7,7 +7,7 @@ import { buildTestGeneratorTaskEntry } from './tests/factories.test-helper.js';
 describe('getSortedRunSteps', () => {
   it('sorts an empty list', () => {
     const result = getSortedRunSteps([], {});
-    expect(result).toEqual([]);
+    expect(result.steps).toEqual([]);
   });
 
   it('sorts a list with a dependency map', () => {
@@ -31,7 +31,7 @@ describe('getSortedRunSteps', () => {
     const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
     const resultTwo = getSortedRunSteps(entries, dependencyGraphTwo);
 
-    expect(resultOne).toEqual([
+    expect(resultOne.steps).toEqual([
       'init|entryOne',
       'init|entryTwo',
       'init|entryThree',
@@ -40,7 +40,7 @@ describe('getSortedRunSteps', () => {
       'build|entryOne',
     ]);
 
-    expect(resultTwo).toEqual([
+    expect(resultTwo.steps).toEqual([
       'init|entryThree',
       'init|entryTwo',
       'init|entryOne',
@@ -84,7 +84,7 @@ describe('getSortedRunSteps', () => {
         entryFour: { dep: { id: 'entryOne' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
+      expect(resultOne.steps).toEqual([
         'init|entryOne',
         'init|entryTwo',
         'build|entryTwo',
@@ -126,7 +126,7 @@ describe('getSortedRunSteps', () => {
         entryFour: { dep: { id: 'entryOne' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
+      expect(resultOne.steps).toEqual([
         'init|entryOne',
         'init|entryTwo',
         'build|entryTwo',
@@ -199,7 +199,7 @@ describe('getSortedRunSteps', () => {
         entryFour: { dep: { id: 'entryOne#exp' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
+      expect(resultOne.steps).toEqual([
         'init|entryOne#exp',
         'init|entryTwo',
         'build|entryTwo',
@@ -251,7 +251,7 @@ describe('getSortedRunSteps', () => {
         entryFour: { dep: { id: 'entryOne#exp' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
+      expect(resultOne.steps).toEqual([
         'init|entryOne#exp',
         'init|entryTwo',
         'build|entryTwo',
