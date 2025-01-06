@@ -114,8 +114,6 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             "import { graphqlPlugin } from '@/src/plugins/graphql/index.js",
           ),
         });
-
-        return {};
       },
     });
 

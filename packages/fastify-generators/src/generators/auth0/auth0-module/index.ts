@@ -204,8 +204,6 @@ const Auth0ModuleGenerator = createGeneratorWithTasks({
             { importMappers: [configService] },
           ),
         });
-
-        return {};
       },
     });
 
@@ -222,7 +220,6 @@ const Auth0ModuleGenerator = createGeneratorWithTasks({
             "import { requestContext } from '@fastify/request-context';",
           ),
         );
-        return {};
       },
     });
   },

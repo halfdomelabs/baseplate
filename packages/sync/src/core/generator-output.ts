@@ -133,10 +133,16 @@ export interface GeneratorOutputFormatter {
   fileExtensions?: string[];
 }
 
+export interface GeneratorOutputMetadata {
+  generatorStepNodes: { id: string; label?: string }[];
+  generatorStepEdges: { id: string; source: string; target: string }[];
+}
+
 export interface GeneratorOutput {
   files: Map<string, FileData>;
   postWriteCommands: PostWriteCommand[];
   formatters: GeneratorOutputFormatter[];
+  metadata?: GeneratorOutputMetadata;
 }
 
 // TODO: Add unit tests

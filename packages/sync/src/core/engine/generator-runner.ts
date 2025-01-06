@@ -26,7 +26,10 @@ export async function executeGeneratorEntry(
     taskEntriesById,
     logger,
   );
-  const sortedRunSteps = getSortedRunSteps(taskEntries, dependencyMap);
+  const { steps: sortedRunSteps, metadata } = getSortedRunSteps(
+    taskEntries,
+    dependencyMap,
+  );
 
   const taskInstanceById: Record<string, GeneratorTaskInstance> = {}; // map of entry ID to initialized generator
   const providerMapById: Record<string, Record<string, Provider>> = {}; // map of entry ID to map of provider name to Provider
@@ -114,6 +117,16 @@ export async function executeGeneratorEntry(
       (output) => output.postWriteCommands,
     ),
     formatters: generatorOutputs.flatMap((output) => output.formatters),
+    metadata: {
+      generatorStepNodes: metadata.fullSteps.map((step) => ({
+        id: step,
+      })),
+      generatorStepEdges: metadata.fullEdges.map(([source, target]) => ({
+        id: `${source}->${target}`,
+        source,
+        target,
+      })),
+    },
   };
 
   return buildOutput;

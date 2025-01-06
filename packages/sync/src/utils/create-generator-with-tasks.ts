@@ -41,9 +41,9 @@ export type InferTaskOutputDependencyMap<T> =
   T extends TaskOutputDependencyMap<infer P> ? P : never;
 
 export interface SimpleGeneratorTaskConfig<
-  ExportMap extends ProviderExportMap,
-  DependencyMap extends ProviderDependencyMap,
-  TaskDependencyMap extends TaskOutputDependencyMap,
+  ExportMap extends ProviderExportMap = Record<string, never>,
+  DependencyMap extends ProviderDependencyMap = Record<string, never>,
+  TaskDependencyMap extends TaskOutputDependencyMap = Record<string, never>,
   TaskOutput = unknown,
 > {
   name: string;
@@ -53,10 +53,16 @@ export interface SimpleGeneratorTaskConfig<
   run: (
     dependencies: InferDependencyProviderMap<DependencyMap>,
     taskDependencies: InferTaskOutputDependencyMap<TaskDependencyMap>,
-  ) => SimpleGeneratorTaskInstance<
-    InferExportProviderMap<ExportMap>,
-    TaskOutput
-  >;
+  ) => ExportMap extends Record<string, never>
+    ? // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- we want to allow empty returns for tasks that don't need to return anything
+      void | SimpleGeneratorTaskInstance<
+        InferExportProviderMap<ExportMap>,
+        TaskOutput
+      >
+    : SimpleGeneratorTaskInstance<
+        InferExportProviderMap<ExportMap>,
+        TaskOutput
+      >;
 }
 
 type TaskConfigBuilder<
@@ -127,9 +133,9 @@ export function createTaskConfigBuilder<
 
 export interface GeneratorTaskBuilder<Descriptor = unknown> {
   addTask: <
-    ExportMap extends ProviderExportMap,
-    DependencyMap extends ProviderDependencyMap,
-    TaskDependencyMap extends TaskOutputDependencyMap,
+    ExportMap extends ProviderExportMap = Record<string, never>,
+    DependencyMap extends ProviderDependencyMap = Record<string, never>,
+    TaskDependencyMap extends TaskOutputDependencyMap = Record<string, never>,
     TaskOutput = unknown,
   >(
     task:
@@ -324,7 +330,8 @@ export function createGeneratorWithTasks<
               (obj) => obj.getOutput(),
               taskDependencies,
             );
-            const runResult = task.run(dependencies, resolvedTaskOutputs);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- task.run may return undefined
+            const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
             return {
               getProviders: runResult.getProviders,
               async build(builder) {
