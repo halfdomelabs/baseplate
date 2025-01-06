@@ -150,7 +150,7 @@ const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     prismaOutput: prismaOutputProvider,
-    serviceFile: serviceFileProvider.dependency().modifiedInBuild(),
+    serviceFile: serviceFileProvider.dependency(),
     crudPrismaService: prismaCrudServiceProvider,
     serviceContext: serviceContextProvider,
     prismaUtils: prismaUtilsProvider,

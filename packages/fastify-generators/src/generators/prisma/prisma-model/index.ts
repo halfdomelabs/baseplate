@@ -74,7 +74,7 @@ const PrismaModelGenerator = createGeneratorWithChildren({
     },
   }),
   dependencies: {
-    prisma: prismaSchemaProvider.dependency().modifiedInBuild(),
+    prisma: prismaSchemaProvider.dependency(),
   },
   exports: {
     prismaModel: prismaModelProvider,

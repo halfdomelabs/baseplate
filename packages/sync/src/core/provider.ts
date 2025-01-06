@@ -37,10 +37,6 @@ export interface ProviderDependencyOptions {
    */
   reference?: string;
   /**
-   * Whether the dependency is modified in the build output of this generator (deprecated)
-   */
-  modifiedInBuild?: boolean;
-  /**
    * Whether to resolve the dependency to null always (good for disabling a dependency)
    */
   resolveToNull?: boolean;
@@ -56,31 +52,13 @@ export interface ProviderDependency<P = Provider> {
   readonly options: ProviderDependencyOptions;
   optional(): ProviderDependency<P | undefined>;
   reference(reference?: string): ProviderDependency<P>;
-  /**
-   * Deprecated
-   */
-  modifiedInBuild(): ProviderDependency<P>;
   resolveToNull(): ProviderDependency<P | undefined>;
 }
 
-export interface ProviderExportOptions {
-  /**
-   * A provider export may depend on another provider export being set up
-   * before it can be used. Practically this means that all generators
-   * that depend on this export will depend on the generators that depend
-   * on the specified export.
-   */
-  dependencies?: ProviderType[];
-}
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- we need to keep the generic type for inference
 export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
-  readonly options: ProviderExportOptions;
-  /**
-   * Deprecated.
-   */
-  dependsOn(deps: ProviderType | ProviderType[]): ProviderExport<P>;
 }
 
 interface ProviderTypeOptions {
@@ -113,9 +91,6 @@ export function createProviderType<T>(
           }
           return R.mergeDeepLeft({ options: { reference } }, this);
         },
-        modifiedInBuild() {
-          return R.mergeDeepLeft({ options: { modifiedInBuild: true } }, this);
-        },
         resolveToNull() {
           return R.mergeDeepLeft({ options: { resolveToNull: true } }, this);
         },
@@ -126,19 +101,6 @@ export function createProviderType<T>(
         ...this,
         type: 'export',
         options: {},
-        dependsOn(deps) {
-          const dependencies = Array.isArray(deps) ? deps : [deps];
-          return {
-            ...this,
-            options: {
-              ...this.options,
-              dependencies: [
-                ...(this.options.dependencies ?? []),
-                ...dependencies,
-              ],
-            },
-          };
-        },
       };
     },
   };

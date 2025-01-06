@@ -21,7 +21,7 @@ const AuthApolloGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    reactApolloSetup: reactApolloSetupProvider.dependency().modifiedInBuild(),
+    reactApolloSetup: reactApolloSetupProvider.dependency(),
     authService: authServiceProvider,
   },
   exports: {

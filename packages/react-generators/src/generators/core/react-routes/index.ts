@@ -28,7 +28,7 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    reactRoutes: reactRoutesProvider.dependency().modifiedInBuild(),
+    reactRoutes: reactRoutesProvider.dependency(),
     typescript: typescriptProvider,
     reactNotFound: reactNotFoundProvider.dependency().optional(),
   },
