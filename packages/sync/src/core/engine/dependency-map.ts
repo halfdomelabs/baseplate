@@ -28,13 +28,18 @@ export function buildTaskDependencyMap(
   return R.mapObjIndexed((dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
-    const { optional, reference, resolveToNull } = normalizedDep.options;
+    const { optional, reference, resolutionMode } = normalizedDep.options;
 
-    if (resolveToNull) {
-      return null;
-    }
-
-    if (reference) {
+    if (resolutionMode === 'explicit') {
+      if (!reference) {
+        if (optional) {
+          return null;
+        } else {
+          throw new Error(
+            `Could not resolve explicit dependency ${provider} for ${entry.id}`,
+          );
+        }
+      }
       // TODO: Use better search algorithm
 
       // looks for all tasks within the referenced generator that have the required export

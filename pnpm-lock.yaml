@@ -984,6 +984,9 @@ importers:
       ejs:
         specifier: ^3.1.9
         version: 3.1.10
+      es-toolkit:
+        specifier: 1.18.0
+        version: 1.18.0
       execa:
         specifier: 9.3.0
         version: 9.3.0

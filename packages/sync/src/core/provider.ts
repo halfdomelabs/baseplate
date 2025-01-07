@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import { toMerged } from 'es-toolkit';
 
 /**
  * A provider is a dictionary of functions that allow a generator
@@ -33,13 +33,16 @@ export interface ProviderDependencyOptions {
    */
   optional?: boolean;
   /**
-   * Where the dependency should be resolved from
+   * The mode to use for resolving the dependency
+   *
+   * - `default` - The dependency is resolved via the default resolution algorithm
+   * - `explicit` - The dependency is resolved to a provided reference
+   */
+  resolutionMode?: 'default' | 'explicit';
+  /**
+   * The global ID of the generator to resolve to
    */
   reference?: string;
-  /**
-   * Whether to resolve the dependency to null always (good for disabling a dependency)
-   */
-  resolveToNull?: boolean;
   /**
    * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
    */
@@ -50,9 +53,28 @@ export interface ProviderDependency<P = Provider> {
   readonly type: 'dependency';
   readonly name: string;
   readonly options: ProviderDependencyOptions;
+  /**
+   * Creates an optional dependency
+   */
   optional(): ProviderDependency<P | undefined>;
-  reference(reference?: string): ProviderDependency<P>;
-  resolveToNull(): ProviderDependency<P | undefined>;
+  /**
+   * Specifies that the dependency should be resolved to an export from
+   * a specific generator
+   *
+   * @param generatorGlobalId The global ID of the generator to resolve to
+   */
+  reference(generatorGlobalId: string): ProviderDependency<P>;
+  /**
+   * Specifies that the dependency should be resolved to an export from
+   * a specific generator, but otherwise resolve to undefined if no
+   * reference is provided
+   *
+   * @param generatorGlobalId The global ID of the generator to resolve to
+   * if the reference is provided
+   */
+  optionalReference(
+    generatorGlobalId: string | undefined,
+  ): ProviderDependency<P | undefined>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- we need to keep the generic type for inference
@@ -79,20 +101,23 @@ export function createProviderType<T>(
         type: 'dependency',
         options: options?.isReadOnly ? { isReadOnly: true } : {},
         optional() {
-          return R.mergeDeepLeft({ options: { optional: true } }, this);
+          return toMerged(this, { options: { optional: true } });
         },
-        reference(reference: string) {
-          // allow for undefined references
-          if (!reference) {
-            return this;
-          }
-          if (this.options.reference) {
+        reference(reference) {
+          if (this.options.resolutionMode === 'explicit') {
             throw new Error('Cannot overwrite reference on provider type');
           }
-          return R.mergeDeepLeft({ options: { reference } }, this);
+          return toMerged(this, {
+            options: { reference, resolutionMode: 'explicit' },
+          });
         },
-        resolveToNull() {
-          return R.mergeDeepLeft({ options: { resolveToNull: true } }, this);
+        optionalReference(reference) {
+          if (this.options.resolutionMode === 'explicit') {
+            throw new Error('Cannot overwrite reference on provider type');
+          }
+          return toMerged(this, {
+            options: { reference, resolutionMode: 'explicit', optional: true },
+          });
         },
       };
     },

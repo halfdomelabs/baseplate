@@ -194,9 +194,9 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
   },
   populateDependencies: (dependencies, { foreignCrudServiceRef }) => ({
     ...dependencies,
-    foreignCrudService: foreignCrudServiceRef
-      ? dependencies.foreignCrudService.reference(foreignCrudServiceRef)
-      : dependencies.foreignCrudService.resolveToNull(),
+    foreignCrudService: dependencies.foreignCrudService.optionalReference(
+      foreignCrudServiceRef,
+    ),
   }),
   createGenerator(
     {

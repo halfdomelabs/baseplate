@@ -42,26 +42,6 @@ describe('buildEntryDependencyMap', () => {
     });
   });
 
-  it('should resolve dependencies to resolveToNull to null always', () => {
-    const entry = buildTestGeneratorTaskEntry({
-      dependencies: {
-        dependency: providerOne.dependency().resolveToNull(),
-      },
-    });
-
-    const parentProviders: Record<string, string> = {
-      [providerOne.name]: 'parentId#main',
-    };
-
-    const dependencyMap = buildTaskDependencyMap(
-      entry,
-      parentProviders,
-      {},
-      testLogger,
-    );
-    expect(dependencyMap).toEqual({ dependency: null });
-  });
-
   it('should resolve reference dependency', () => {
     const entry = buildTestGeneratorTaskEntry({
       dependencies: {
@@ -84,7 +64,7 @@ describe('buildEntryDependencyMap', () => {
     expect(dependencyMap).toEqual({
       referenceDependency: {
         id: 'dependent#main',
-        options: { reference: 'dependent' },
+        options: { reference: 'dependent', resolutionMode: 'explicit' },
       },
     });
   });
