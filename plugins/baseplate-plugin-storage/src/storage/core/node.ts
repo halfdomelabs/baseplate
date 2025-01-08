@@ -1,4 +1,3 @@
-import { createPothosPrismaObjectGlobalId } from '@halfdomelabs/fastify-generators';
 import {
   adminAppEntryType,
   appCompilerSpec,
@@ -36,7 +35,6 @@ export default createPlatformPluginExport({
           $storage: {
             generator:
               '@halfdomelabs/baseplate-plugin-storage/fastify/storage-module',
-            fileObjectTypeRef: createPothosPrismaObjectGlobalId(fileModelName),
             fileModel: fileModelName,
             s3Adapters: storage.s3Adapters.map((a) => ({
               name: a.name,

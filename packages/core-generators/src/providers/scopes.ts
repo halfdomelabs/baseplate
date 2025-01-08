@@ -1,11 +1,16 @@
 import { createProviderExportScope } from '@halfdomelabs/sync';
 
 export const projectScope = createProviderExportScope(
-  '@core/project',
-  'The JS/TS Project scope',
+  'core/project',
+  'Scope for the entire project',
 );
 
 export const featureScope = createProviderExportScope(
-  '@core/feature',
-  'The Feature scope',
+  'core/feature',
+  'Scope for a specific feature',
+);
+
+export const fileScope = createProviderExportScope(
+  'core/file',
+  'Scope for a specific file',
 );

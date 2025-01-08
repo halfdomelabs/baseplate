@@ -35,10 +35,6 @@ export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<Embed
 
       const foreignModel = foreignRelation.model;
 
-      const foreignModelFeature = definitionContainer.nameFromId(
-        foreignModel.feature,
-      );
-
       return {
         generator: '@halfdomelabs/fastify/prisma/embedded-relation-transformer',
         name: foreignRelation.relation.foreignRelationName,
@@ -48,8 +44,8 @@ export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<Embed
         embeddedTransformerNames: definition.embeddedTransformerNames?.map(
           (t) => definitionContainer.nameFromId(t),
         ),
-        foreignCrudServiceRef: definition.embeddedTransformerNames
-          ? `${foreignModelFeature}/root:$services.${foreignModel.name}Service.$crud`
+        foreignModelName: definition.embeddedTransformerNames
+          ? foreignModel.name
           : undefined,
       };
     },
@@ -97,6 +93,7 @@ function buildServiceForModel(
 
   return {
     name: `${model.name}Service`,
+    id: `prisma-crud-service:${model.name}`,
     generator: '@halfdomelabs/fastify/core/service-file',
     methodOrder: ['create', 'update', 'delete'],
     children: {

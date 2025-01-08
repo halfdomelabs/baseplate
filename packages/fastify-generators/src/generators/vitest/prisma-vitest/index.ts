@@ -4,6 +4,7 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   projectProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
   vitestProvider,
@@ -39,7 +40,7 @@ const PrismaVitestGenerator = createGeneratorWithChildren({
     fastifyVitest: fastifyVitestProvider,
   },
   exports: {
-    prismaVitest: prismaVitestProvider,
+    prismaVitest: prismaVitestProvider.export(projectScope),
   },
   createGenerator(
     descriptor,

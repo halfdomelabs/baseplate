@@ -33,44 +33,44 @@ function buildGeneratorIdToScopesMapRecursive(
     scopes: entry.scopes.map((scope) => scope.name),
     providers: new Map(),
   };
+  const newParentTaskIds = [...parentTaskIds, entry.id];
 
   // add scoped exports of the entry to cache
   for (const task of entry.tasks) {
     const taskExports = Object.values(task.exports);
     for (const taskExport of taskExports) {
-      const {
-        scope,
-        options: { exportName },
-      } = taskExport;
+      const { exports } = taskExport;
 
-      // find the parent task ID that offers the scope
-      const parentTaskId = parentTaskIds.findLast((id) =>
-        generatorIdToScopesMap[id].scopes.includes(scope.name),
-      );
-
-      if (!parentTaskId) {
-        throw new Error(
-          `Could not find parent task ID for scope ${scope.name} at ${entry.id}`,
+      for (const { scope, exportName } of exports) {
+        // find the parent task ID that offers the scope
+        const parentTaskId = newParentTaskIds.findLast((id) =>
+          generatorIdToScopesMap[id].scopes.includes(scope.name),
         );
-      }
 
-      const { providers } = generatorIdToScopesMap[parentTaskId];
-      const providerId = makeProviderId(taskExport.name, exportName);
+        if (!parentTaskId) {
+          throw new Error(
+            `Could not find parent generator with scope ${scope.name} at ${entry.id}`,
+          );
+        }
 
-      if (providers.has(providerId)) {
-        throw new Error(
-          `Duplicate scoped provider export detected between ${entry.id} and ${providers.get(providerId)} in scope ${scope.name} at ${parentTaskId}.
+        const { providers } = generatorIdToScopesMap[parentTaskId];
+        const providerId = makeProviderId(taskExport.name, exportName);
+
+        if (providers.has(providerId)) {
+          throw new Error(
+            `Duplicate scoped provider export detected between ${entry.id} and ${providers.get(providerId)} in scope ${scope.name} at ${parentTaskId} for provider ${taskExport.name}.
            Please make sure that the provider export names are unique within the scope (and any other scopes at that level).`,
-        );
+          );
+        }
+        providers.set(providerId, task.id);
       }
-      providers.set(providerId, task.id);
     }
   }
 
   for (const child of entry.children) {
     buildGeneratorIdToScopesMapRecursive(
       child,
-      [...parentTaskIds, entry.id],
+      newParentTaskIds,
       generatorIdToScopesMap,
     );
   }
@@ -80,7 +80,9 @@ function mergeAllWithoutDuplicates<T>(array: T[]): T {
   const newObj: T = {} as T;
   for (const obj of array) {
     mergeWith(newObj, obj, (obj, src, key) => {
-      throw new Error(`Duplicate key (${key}) detected`);
+      if (obj !== undefined && src !== undefined) {
+        throw new Error(`Duplicate key (${key}) detected`);
+      }
     });
   }
   return newObj;
@@ -103,7 +105,7 @@ export function buildTaskDependencyMap(
   return mapValues(entry.dependencies, (dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
-    const { optional, exportName } = normalizedDep.options;
+    const { optional, exportName, isReadOnly } = normalizedDep.options;
 
     // if the export name is empty and the dependency is optional, we can skip it
     if (exportName === '' && optional) {
@@ -121,9 +123,9 @@ export function buildTaskDependencyMap(
       generatorIdToScopesMap[parentEntryId].providers.get(providerId);
 
     if (!resolvedTaskId) {
-      if (!optional) {
+      if (!optional || exportName) {
         throw new Error(
-          `Could not resolve dependency ${provider} for ${entry.id}`,
+          `Could not resolve dependency ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorName})`,
         );
       }
       return;
@@ -131,7 +133,7 @@ export function buildTaskDependencyMap(
 
     return {
       id: resolvedTaskId,
-      options: normalizedDep.options,
+      options: { isReadOnly: isReadOnly ? true : undefined },
     };
   });
 }
@@ -140,7 +142,9 @@ export type EntryDependencyMap = Record<
   string,
   Record<
     string,
-    { id: string; options?: ProviderDependencyOptions } | null | undefined
+    | { id: string; options?: Pick<ProviderDependencyOptions, 'isReadOnly'> }
+    | null
+    | undefined
   >
 >;
 

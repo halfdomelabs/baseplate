@@ -1,4 +1,7 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  projectScope,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
@@ -13,7 +16,7 @@ const descriptorSchema = z.object({});
 export type Auth0ApolloProvider = unknown;
 
 export const auth0ApolloProvider =
-  createProviderType<Auth0ApolloProvider>('auth0Apollo');
+  createProviderType<Auth0ApolloProvider>('auth0-apollo');
 
 const Auth0ApolloGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -23,7 +26,7 @@ const Auth0ApolloGenerator = createGeneratorWithChildren({
     apolloError: apolloErrorProvider,
   },
   exports: {
-    auth0Apollo: auth0ApolloProvider,
+    auth0Apollo: auth0ApolloProvider.export(projectScope),
   },
   createGenerator(descriptor, { reactApolloSetup }) {
     reactApolloSetup.addCreateArg({

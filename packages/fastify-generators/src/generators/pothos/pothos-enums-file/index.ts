@@ -1,6 +1,7 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
 import {
+  fileScope,
   makeImportAndFilePath,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -47,7 +48,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
       pothosSetup: pothosSetupProvider,
     },
     exports: {
-      pothosEnumsFile: pothosEnumsFileProvider,
+      pothosEnumsFile: pothosEnumsFileProvider.export(fileScope),
     },
     run({ appModule, typescript, pothosSetup }) {
       const [typesImport, typesPath] = makeImportAndFilePath(
@@ -99,6 +100,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
 
 const PothosEnumsFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
+  scopes: [fileScope],
   getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createPothosEnumsFileTask(descriptor));

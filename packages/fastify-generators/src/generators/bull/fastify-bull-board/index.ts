@@ -50,8 +50,10 @@ const createMainTask = createTaskConfigBuilder(() => ({
   }) {
     const queuesToTrack: TypescriptCodeExpression[] = [];
 
+    const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
+
     pothosSchema.registerSchemaFile(
-      `${appModule.getModuleFolder()}/schema/authenticate.mutations.ts`,
+      `${moduleFolder}/schema/authenticate.mutations.ts`,
     );
 
     node.addPackages({
@@ -83,8 +85,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
           },
           { importMappers },
         );
-
-        const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
 
         appModule.registerFieldEntry(
           'children',

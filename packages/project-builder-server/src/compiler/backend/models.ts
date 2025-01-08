@@ -7,7 +7,6 @@ import type {
 } from '@halfdomelabs/project-builder-lib';
 
 import {
-  FeatureUtils,
   ModelFieldUtils,
   ModelUtils,
   undefinedIfEmpty,
@@ -89,10 +88,6 @@ function buildRelationField(
     foreignRelations.length +
       relations.filter((r) => r.modelName === modelName).length >
     1;
-  const foreignFeature = FeatureUtils.getFeatureByIdOrThrow(
-    projectDefinition,
-    foreignModel.feature,
-  ).name;
 
   return {
     name,
@@ -102,7 +97,8 @@ function buildRelationField(
     references: references.map((r) =>
       appBuilder.definitionContainer.nameFromId(r.foreign),
     ),
-    modelRef: `${foreignFeature}/root:$models.${foreignModel.name}`,
+    modelName: parentModel.name,
+    foreignModelName: foreignModel.name,
     foreignRelationName,
     relationshipName: needsRelationName ? foreignRelationName : undefined,
     relationshipType,

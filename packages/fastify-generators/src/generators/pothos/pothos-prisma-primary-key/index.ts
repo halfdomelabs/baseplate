@@ -1,5 +1,6 @@
 import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
+import { projectScope } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createTaskConfigBuilder,
@@ -34,7 +35,10 @@ const createMainTask = createTaskConfigBuilder(
       pothosSchema: pothosSchemaProvider,
     },
     exports: {
-      pothosTypeOutput: pothosTypeOutputProvider,
+      pothosTypeOutput: pothosTypeOutputProvider.export(
+        projectScope,
+        `prisma-primary-key-type:${modelName}`,
+      ),
     },
     run({ prismaOutput, pothosTypeFile, pothosSchema }) {
       const model = prismaOutput.getPrismaModel(modelName);

@@ -7,6 +7,7 @@ import type { formatSchema } from '@prisma/internals';
 import {
   nodeProvider,
   projectProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -83,7 +84,7 @@ const PrismaGenerator = createGeneratorWithTasks({
         fastifyOutput: fastifyOutputProvider,
         typescript: typescriptProvider,
       },
-      exports: { prismaSchema: prismaSchemaProvider },
+      exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
       run({
         node,
         configService,
@@ -214,7 +215,7 @@ const PrismaGenerator = createGeneratorWithTasks({
 
     taskBuilder.addTask({
       name: 'output',
-      exports: { prismaOutput: prismaOutputProvider },
+      exports: { prismaOutput: prismaOutputProvider.export(projectScope) },
       taskDependencies: { schemaTask },
       run(deps, { schemaTask: { schemaFile } }) {
         return {

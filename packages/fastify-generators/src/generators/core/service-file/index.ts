@@ -51,7 +51,7 @@ export const serviceFileOutputProvider =
   createProviderType<ServiceFileOutputProvider>('service-file-output');
 
 export const serviceFileScope = createProviderExportScope(
-  '@fastify/service-file',
+  'fastify/service-file',
   'Service file',
 );
 

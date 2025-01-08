@@ -2,6 +2,7 @@ import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import {
+  fileScope,
   makeImportAndFilePath,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -51,7 +52,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
       pothosSchema: pothosSchemaProvider,
     },
     exports: {
-      pothosTypes: pothosTypesFileProvider,
+      pothosTypes: pothosTypesFileProvider.export(fileScope),
     },
     run({ appModule, typescript, pothosSchema }) {
       const [typesImport, typesPath] = makeImportAndFilePath(
@@ -113,6 +114,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
 
 const PothosTypesFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
+  scopes: [fileScope],
   getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createPothosTypesFileTask(descriptor));

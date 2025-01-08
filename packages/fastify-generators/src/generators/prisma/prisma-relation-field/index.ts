@@ -17,7 +17,8 @@ const descriptorSchema = z.object({
   name: z.string().min(1),
   fields: z.array(z.string().min(1)),
   references: z.array(z.string().min(1)),
-  modelRef: z.string().min(1),
+  modelName: z.string().min(1),
+  foreignModelName: z.string().min(1),
   foreignRelationName: z.string().optional(),
   relationshipName: z.string().optional(),
   relationshipType: z.enum(['oneToOne', 'oneToMany']).default('oneToMany'),
@@ -33,9 +34,10 @@ const PrismaRelationFieldGenerator = createGeneratorWithChildren({
     prismaModel: prismaModelProvider,
     foreignModel: prismaModelProvider,
   },
-  populateDependencies: (deps, { modelRef }) => ({
+  populateDependencies: (deps, { modelName, foreignModelName }) => ({
     ...deps,
-    foreignModel: deps.foreignModel.dependency().reference(modelRef),
+    prismaModel: deps.prismaModel.dependency().reference(modelName),
+    foreignModel: deps.foreignModel.dependency().reference(foreignModelName),
   }),
   createGenerator(descriptor, { prismaModel, foreignModel }) {
     const {

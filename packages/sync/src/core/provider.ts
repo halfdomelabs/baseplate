@@ -1,6 +1,9 @@
 import { toMerged } from 'es-toolkit';
 
-import { KEBAB_CASE_REGEX } from '@src/utils/validation.js';
+import {
+  KEBAB_CASE_REGEX,
+  KEBAB_CASE_WITH_SLASH_SEPARATOR_REGEX,
+} from '@src/utils/validation.js';
 
 /**
  * A provider is a dictionary of functions that allow a generator
@@ -17,9 +20,9 @@ export function createProviderExportScope(
   name: string,
   description: string,
 ): ProviderExportScope {
-  if (!KEBAB_CASE_REGEX.test(name)) {
+  if (!KEBAB_CASE_WITH_SLASH_SEPARATOR_REGEX.test(name)) {
     throw new Error(
-      'Provider export scope name must be in kebab case (lowercase with dashes)',
+      `Provider export scope name must be in kebab case (lowercase with dashes) with slashes to namespace the scope: ${name}`,
     );
   }
   return { name, description };
@@ -89,25 +92,20 @@ export interface ProviderDependency<P = Provider> {
   ): ProviderDependency<P | undefined>;
 }
 
-export interface ProviderExportOptions {
-  /**
-   * Name of the export within the scope (optional)
-   */
-  readonly exportName?: string;
-}
-
 export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
-  readonly options: ProviderExportOptions;
   /**
-   * Scope of the export
+   * Which scopes the export is available in
    */
-  readonly scope: ProviderExportScope;
+  readonly exports: {
+    readonly scope: ProviderExportScope;
+    readonly exportName?: string;
+  }[];
   /**
-   * Sets the name of the export within the scope
+   * Adds an export to the provider
    */
-  exportName(name: string): ProviderExport<P>;
+  andExport(scope: ProviderExportScope, exportName?: string): ProviderExport<P>;
 }
 
 interface ProviderTypeOptions {
@@ -120,7 +118,7 @@ export function createProviderType<T>(
 ): ProviderType<T> {
   if (!KEBAB_CASE_REGEX.test(name)) {
     throw new Error(
-      'Provider type name must be in kebab case (lowercase with dashes)',
+      `Provider type name must be in kebab case (lowercase with dashes): ${name}`,
     );
   }
 
@@ -159,13 +157,16 @@ export function createProviderType<T>(
       return {
         ...this,
         type: 'export',
-        options: { exportName },
-        scope,
-        exportName(exportName: string) {
-          if (exportName === '') {
-            throw new Error('Export name cannot be an empty string');
-          }
-          return toMerged(this, { options: { exportName } });
+        exports: [
+          {
+            scope,
+            exportName,
+          },
+        ],
+        andExport(scope, exportName) {
+          return toMerged(this, {
+            exports: [...this.exports, { scope, exportName }],
+          });
         },
       };
     },

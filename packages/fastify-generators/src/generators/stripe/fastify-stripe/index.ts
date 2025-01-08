@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -35,7 +36,7 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
     fastifyServer: fastifyServerProvider,
   },
   exports: {
-    fastifyStripe: fastifyStripeProvider,
+    fastifyStripe: fastifyStripeProvider.export(projectScope),
   },
   createGenerator(
     descriptor,

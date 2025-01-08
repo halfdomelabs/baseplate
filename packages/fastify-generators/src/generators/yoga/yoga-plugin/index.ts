@@ -4,6 +4,7 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -54,7 +55,9 @@ const YogaPluginGenerator = createGeneratorWithTasks({
     const setupTask = taskBuilder.addTask({
       name: 'setup',
       dependencies: {},
-      exports: { yogaPluginSetup: yogaPluginSetupProvider },
+      exports: {
+        yogaPluginSetup: yogaPluginSetupProvider.export(projectScope),
+      },
       run() {
         const configMap = createNonOverwriteableMap<YogaPluginConfig>(
           {
@@ -129,7 +132,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         loggerService: loggerServiceProvider,
       },
       exports: {
-        yogaPlugin: yogaPluginProvider,
+        yogaPlugin: yogaPluginProvider.export(projectScope),
       },
       run(
         {

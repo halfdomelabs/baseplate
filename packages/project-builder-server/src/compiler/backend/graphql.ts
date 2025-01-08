@@ -17,7 +17,6 @@ import {
   type PothosTypesFileDescriptor,
 } from '@halfdomelabs/fastify-generators';
 import {
-  FeatureUtils,
   ModelUtils,
   stripEmptyGeneratorChildren,
 } from '@halfdomelabs/project-builder-lib';
@@ -127,7 +126,6 @@ function buildQueriesFileForModel(
 function buildMutationsFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
-  featureId: string,
 ): PothosPrismaCrudFileDescriptor | undefined {
   const { graphql } = model;
   const { mutations } = graphql ?? {};
@@ -142,11 +140,6 @@ function buildMutationsFileForModel(
     return undefined;
   }
 
-  const featurePath = FeatureUtils.getFeaturePathById(
-    appBuilder.projectDefinition,
-    featureId,
-  );
-
   const { create, update, delete: del } = mutations;
 
   const isAuthEnabled = !!appBuilder.definitionContainer.definition.auth;
@@ -156,8 +149,7 @@ function buildMutationsFileForModel(
     fileName: `${kebabCase(model.name)}.mutations`,
     generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-file',
     modelName: model.name,
-    objectTypeRef: createPothosPrismaObjectGlobalId(model.name),
-    crudServiceRef: `${featurePath}/root:$services.${model.name}Service`,
+    crudServiceRef: `prisma-crud-service:${model.name}`,
     children: {
       create: create?.enabled
         ? {
@@ -238,7 +230,7 @@ export function buildGraphqlForFeature(
     ...models.flatMap((model) => [
       buildObjectTypeFile(appBuilder, model),
       buildQueriesFileForModel(appBuilder, model),
-      buildMutationsFileForModel(appBuilder, model, featureId),
+      buildMutationsFileForModel(appBuilder, model),
     ]),
     buildEnumFileForModel(enums),
   ].filter(notEmpty);

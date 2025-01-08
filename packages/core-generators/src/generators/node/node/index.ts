@@ -65,7 +65,7 @@ interface NodeDependencyEntry {
 
 const NodeGenerator = createGeneratorWithTasks({
   descriptorSchema,
-
+  scopes: [projectScope],
   getDefaultChildGenerators: () => ({
     projects: {
       isMultiple: true,
