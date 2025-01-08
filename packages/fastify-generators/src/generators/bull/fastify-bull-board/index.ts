@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -37,7 +38,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     appModule: appModuleProvider,
   },
   exports: {
-    fastifyBullBoard: fastifyBullBoardProvider,
+    fastifyBullBoard: fastifyBullBoardProvider.export(projectScope),
   },
   run({
     node,

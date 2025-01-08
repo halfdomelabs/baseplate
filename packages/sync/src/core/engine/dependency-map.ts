@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import { mapValues, mergeWith } from 'es-toolkit';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
@@ -8,84 +8,132 @@ import type {
   GeneratorTaskEntry,
 } from './generator-builder.js';
 
-import { providerMapToNames } from './utils.js';
+type GeneratorIdToScopesMap = Record<
+  string,
+  {
+    // scopes offered by the generator
+    scopes: string[];
+    // providers within the scopes
+    // key is JSON.encode([providerName(, exportName)])
+    providers: Map<string, string>;
+  }
+>;
+
+function makeProviderId(providerName: string, exportName?: string): string {
+  return JSON.stringify([providerName, exportName]);
+}
+
+function buildGeneratorIdToScopesMapRecursive(
+  entry: GeneratorEntry,
+  parentTaskIds: string[],
+  generatorIdToScopesMap: GeneratorIdToScopesMap,
+): void {
+  // add the scopes of the entry to cache
+  generatorIdToScopesMap[entry.id] = {
+    scopes: entry.scopes.map((scope) => scope.name),
+    providers: new Map(),
+  };
+
+  // add scoped exports of the entry to cache
+  for (const task of entry.tasks) {
+    const taskExports = Object.values(task.exports);
+    for (const taskExport of taskExports) {
+      const {
+        scope,
+        options: { exportName },
+      } = taskExport;
+
+      // find the parent task ID that offers the scope
+      const parentTaskId = parentTaskIds.findLast((id) =>
+        generatorIdToScopesMap[id].scopes.includes(scope.name),
+      );
+
+      if (!parentTaskId) {
+        throw new Error(
+          `Could not find parent task ID for scope ${scope.name} at ${entry.id}`,
+        );
+      }
+
+      const { providers } = generatorIdToScopesMap[parentTaskId];
+      const providerId = makeProviderId(taskExport.name, exportName);
+
+      if (providers.has(providerId)) {
+        throw new Error(
+          `Duplicate scoped provider export detected between ${entry.id} and ${providers.get(providerId)} in scope ${scope.name} at ${parentTaskId}.
+           Please make sure that the provider export names are unique within the scope (and any other scopes at that level).`,
+        );
+      }
+      providers.set(providerId, task.id);
+    }
+  }
+
+  for (const child of entry.children) {
+    buildGeneratorIdToScopesMapRecursive(
+      child,
+      [...parentTaskIds, entry.id],
+      generatorIdToScopesMap,
+    );
+  }
+}
+
+function mergeAllWithoutDuplicates<T>(array: T[]): T {
+  const newObj: T = {} as T;
+  for (const obj of array) {
+    mergeWith(newObj, obj, (obj, src, key) => {
+      throw new Error(`Duplicate key (${key}) detected`);
+    });
+  }
+  return newObj;
+}
 
 /**
  * Builds a map of the entry's dependencies to entry IDs of resolved providers
  *
  * @param entry Generator entry
- * @param parentProviders
+ * @param cache Generator tasks cache
  */
 export function buildTaskDependencyMap(
   entry: GeneratorTaskEntry,
-  parentProviders: Record<string, string>,
-  globalGeneratorTaskMap: Record<string, GeneratorTaskEntry>,
-  logger: Logger,
+  parentEntryIds: string[],
+  generatorIdToScopesMap: GeneratorIdToScopesMap,
 ): Record<
   string,
-  { id: string; options: ProviderDependencyOptions } | null | undefined
+  { id: string; options: ProviderDependencyOptions } | undefined
 > {
-  return R.mapObjIndexed((dep) => {
+  return mapValues(entry.dependencies, (dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
-    const { optional, reference, resolutionMode } = normalizedDep.options;
+    const { optional, exportName } = normalizedDep.options;
 
-    if (resolutionMode === 'explicit') {
-      if (!reference) {
-        if (optional) {
-          return null;
-        } else {
-          throw new Error(
-            `Could not resolve explicit dependency ${provider} for ${entry.id}`,
-          );
-        }
-      }
-      // TODO: Use better search algorithm
-
-      // looks for all tasks within the referenced generator that have the required export
-      const referencedTaskIds = Object.keys(globalGeneratorTaskMap).filter(
-        (key) => key.startsWith(`${reference}#`),
-      );
-      const referencedTaskId = referencedTaskIds.find((key) =>
-        providerMapToNames(globalGeneratorTaskMap[key].exports).includes(
-          provider,
-        ),
-      );
-
-      if (!referencedTaskId) {
-        // TODO: Remove debug helpers
-        const taskKeys = Object.keys(globalGeneratorTaskMap);
-        const file = reference.split(':')[0];
-        const tasksInFile = taskKeys.filter((key) => key.startsWith(file));
-        logger.error(`Task IDs in file: ${tasksInFile.join('\n')}`);
-        throw new Error(
-          `Could not resolve dependency reference ${reference} for ${entry.id}`,
-        );
-      }
-
-      const referencedTask = globalGeneratorTaskMap[referencedTaskId];
-      // validate referenced generator exports required provider
-      const taskProviders = providerMapToNames(referencedTask.exports);
-      if (!taskProviders.includes(provider)) {
-        throw new Error(
-          `${reference} does not implement ${provider} required in ${entry.id}`,
-        );
-      }
-
-      return { id: referencedTaskId, options: normalizedDep.options };
+    // if the export name is empty and the dependency is optional, we can skip it
+    if (exportName === '' && optional) {
+      return;
     }
 
-    if (!parentProviders[provider]) {
+    const providerId = makeProviderId(provider, exportName);
+    // find the closest parent task ID that offers the provider
+    const parentEntryId = parentEntryIds.findLast((id) =>
+      generatorIdToScopesMap[id].providers.has(providerId),
+    );
+
+    const resolvedTaskId =
+      parentEntryId &&
+      generatorIdToScopesMap[parentEntryId].providers.get(providerId);
+
+    if (!resolvedTaskId) {
       if (!optional) {
         throw new Error(
           `Could not resolve dependency ${provider} for ${entry.id}`,
         );
       }
-      return null;
+      return;
     }
 
-    return { id: parentProviders[provider], options: normalizedDep.options };
-  }, entry.dependencies);
+    return {
+      id: resolvedTaskId,
+      options: normalizedDep.options,
+    };
+  });
 }
 
 export type EntryDependencyMap = Record<
@@ -96,61 +144,26 @@ export type EntryDependencyMap = Record<
   >
 >;
 
-function buildHoistedProviderMap(
-  entry: GeneratorEntry,
-  providers: string[],
-): Record<string, string> {
-  if (providers.length === 0) {
-    return {};
-  }
-
-  const matchingProviderMap = R.mergeAll(
-    entry.tasks.map((task) =>
-      Object.fromEntries(
-        providerMapToNames(task.exports)
-          .filter((name) => providers.includes(name))
-          .map((name) => [name, task.id]),
-      ),
-    ),
-  );
-
-  const safeMerge = R.mergeWithKey((key) => {
-    throw new Error(
-      `Duplicate hoisted provider (${key}) detected at ${entry.id}`,
-    );
-  });
-  const hoistedChildProviders = entry.children.map((child) =>
-    buildHoistedProviderMap(child, providers),
-  );
-  const hoistedProviders: Record<string, string> = R.reduce(
-    safeMerge,
-    matchingProviderMap,
-    hoistedChildProviders,
-  );
-
-  return hoistedProviders;
-}
-
 /**
  * Builds a map of task entry ID to resolved providers for that entry recursively from the generator root entry
  *
  * @param entry Root generator entry
- * @param parentProviders Provider map of parents
- * @param globalTaskMap Global generator map
+ * @param resolveableProvider Provider map of parents
+ * @param flattenedTasks Flattened generator tasks
+ * @param logger Logger to use
  */
-export function buildEntryDependencyMapRecursive(
+function buildEntryDependencyMapRecursive(
   entry: GeneratorEntry,
-  parentProviders: Record<string, string>,
-  globalTaskMap: Record<string, GeneratorTaskEntry>,
+  parentEntryIds: string[],
+  generatorIdToScopesMap: GeneratorIdToScopesMap,
   logger: Logger,
 ): EntryDependencyMap {
-  const entryDependencyMaps = R.mergeAll(
+  const entryDependencyMaps = mergeAllWithoutDuplicates(
     entry.tasks.map((task) => {
       const taskDependencyMap = buildTaskDependencyMap(
         task,
-        parentProviders,
-        globalTaskMap,
-        logger,
+        parentEntryIds,
+        generatorIdToScopesMap,
       );
 
       return {
@@ -159,52 +172,14 @@ export function buildEntryDependencyMapRecursive(
     }),
   );
 
-  // get all the peer providers from the children and providers from self
-  const childProviderArrays = entry.children
-    .filter((g) => g.descriptor.peerProvider)
-    .map((g) =>
-      g.tasks.map((task) =>
-        providerMapToNames(task.exports).map((name) => ({ [name]: task.id })),
-      ),
-    );
+  const parentChildIdsWithSelf = [...parentEntryIds, entry.id];
 
-  const safeMerge = R.mergeWithKey((key) => {
-    throw new Error(`Duplicate provider (${key}) detected at ${entry.id}`);
-  });
-  const childProviders: Record<string, string> = R.reduce(
-    safeMerge,
-    {},
-    R.flatten(childProviderArrays),
-  );
-
-  const selfProviders = R.reduce(
-    safeMerge,
-    {},
-    entry.tasks.flatMap((task) =>
-      providerMapToNames(task.exports).map((name) => ({
-        [name]: task.id,
-      })),
-    ),
-  );
-
-  const hoistedProviders = buildHoistedProviderMap(
-    entry,
-    entry.descriptor.hoistedProviders ?? [],
-  );
-
-  const providerMap = {
-    ...parentProviders,
-    ...hoistedProviders,
-    ...selfProviders,
-    ...childProviders,
-  };
-
-  const childDependencyMaps = R.mergeAll(
+  const childDependencyMaps = mergeAllWithoutDuplicates(
     entry.children.map((childEntry) =>
       buildEntryDependencyMapRecursive(
         childEntry,
-        providerMap,
-        globalTaskMap,
+        parentChildIdsWithSelf,
+        generatorIdToScopesMap,
         logger,
       ),
     ),
@@ -214,4 +189,25 @@ export function buildEntryDependencyMapRecursive(
     ...childDependencyMaps,
     ...entryDependencyMaps,
   };
+}
+
+/**
+ * Builds a map of task entry ID to resolved providers for that entry recursively from the generator root entry
+ *
+ * @param entry Root generator entry
+ * @param logger Logger to use
+ */
+export function resolveTaskDependencies(
+  rootEntry: GeneratorEntry,
+  logger: Logger,
+): EntryDependencyMap {
+  const generatorIdToScopesMap: GeneratorIdToScopesMap = {};
+  buildGeneratorIdToScopesMapRecursive(rootEntry, [], generatorIdToScopesMap);
+
+  return buildEntryDependencyMapRecursive(
+    rootEntry,
+    [],
+    generatorIdToScopesMap,
+    logger,
+  );
 }

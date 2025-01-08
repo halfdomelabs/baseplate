@@ -569,9 +569,18 @@ importers:
       '@fastify/websocket':
         specifier: 11.0.1
         version: 11.0.1
+      '@halfdomelabs/core-generators':
+        specifier: workspace:*
+        version: link:../core-generators
+      '@halfdomelabs/fastify-generators':
+        specifier: workspace:*
+        version: link:../fastify-generators
       '@halfdomelabs/project-builder-lib':
         specifier: workspace:*
         version: link:../project-builder-lib
+      '@halfdomelabs/react-generators':
+        specifier: workspace:*
+        version: link:../react-generators
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
@@ -633,15 +642,6 @@ importers:
         specifier: 'catalog:'
         version: 3.24.1
     devDependencies:
-      '@halfdomelabs/core-generators':
-        specifier: workspace:*
-        version: link:../core-generators
-      '@halfdomelabs/fastify-generators':
-        specifier: workspace:*
-        version: link:../fastify-generators
-      '@halfdomelabs/react-generators':
-        specifier: workspace:*
-        version: link:../react-generators
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools

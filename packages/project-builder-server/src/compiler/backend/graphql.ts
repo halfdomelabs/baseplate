@@ -1,13 +1,4 @@
 import type {
-  PothosPrismaCrudFileDescriptor,
-  PothosPrismaEnumDescriptor,
-  PothosPrismaFindQueryDescriptor,
-  PothosPrismaListQueryDescriptor,
-  PothosPrismaObjectDescriptor,
-  PothosPrismaPrimaryKeyDescriptor,
-  PothosTypesFileDescriptor,
-} from '@halfdomelabs/fastify-generators';
-import type {
   EnumConfig,
   ModelConfig,
 } from '@halfdomelabs/project-builder-lib';
@@ -16,6 +7,15 @@ import type {
   GeneratorDescriptor,
 } from '@halfdomelabs/sync';
 
+import {
+  type PothosPrismaCrudFileDescriptor,
+  type PothosPrismaEnumDescriptor,
+  type PothosPrismaFindQueryDescriptor,
+  type PothosPrismaListQueryDescriptor,
+  type PothosPrismaObjectDescriptor,
+  type PothosPrismaPrimaryKeyDescriptor,
+  type PothosTypesFileDescriptor,
+} from '@halfdomelabs/fastify-generators';
 import {
   FeatureUtils,
   ModelUtils,
@@ -156,7 +156,7 @@ function buildMutationsFileForModel(
     fileName: `${kebabCase(model.name)}.mutations`,
     generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-file',
     modelName: model.name,
-    objectTypeRef: `${featurePath}/root:$graphql.${model.name}ObjectType.$objectType`,
+    objectTypeRef: createPothosPrismaObjectGlobalId(model.name),
     crudServiceRef: `${featurePath}/root:$services.${model.name}Service`,
     children: {
       create: create?.enabled

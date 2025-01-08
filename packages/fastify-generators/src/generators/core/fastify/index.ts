@@ -4,6 +4,7 @@ import {
   nodeGitIgnoreProvider,
   nodeProvider,
   nodeSetupProvider,
+  projectScope,
   typescriptConfigProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -177,7 +178,7 @@ const FastifyGenerator = createGeneratorWithTasks({
         nodeGitIgnore: nodeGitIgnoreProvider,
       },
       exports: {
-        fastify: fastifyProvider,
+        fastify: fastifyProvider.export(projectScope),
       },
       run({ node, nodeGitIgnore }) {
         const config = createNonOverwriteableMap<FastifyGeneratorConfig>(
@@ -238,7 +239,9 @@ const FastifyGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'output',
       taskDependencies: { mainTask },
-      exports: { fastifyOutput: fastifyOutputProvider },
+      exports: {
+        fastifyOutput: fastifyOutputProvider.export(projectScope),
+      },
       run(deps, { mainTask: { nodeFlags, devOutputFormatter } }) {
         return {
           getProviders() {

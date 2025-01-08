@@ -1,4 +1,8 @@
-import { eslintProvider, nodeProvider } from '@halfdomelabs/core-generators';
+import {
+  eslintProvider,
+  nodeProvider,
+  projectScope,
+} from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
   createGeneratorWithTasks,
@@ -26,7 +30,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     eslint: eslintProvider,
   },
   exports: {
-    fastifyScripts: fastifyScriptsProvider,
+    fastifyScripts: fastifyScriptsProvider.export(projectScope),
   },
   run({ node, fastifyOutput, eslint }) {
     eslint

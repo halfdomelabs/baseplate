@@ -10,7 +10,7 @@ import type { Provider } from '../provider.js';
 import type { GeneratorEntry } from './generator-builder.js';
 
 import { OutputBuilder } from '../generator-output.js';
-import { buildEntryDependencyMapRecursive as buildTaskEntryDependencyMapRecursive } from './dependency-map.js';
+import { resolveTaskDependencies } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
 import { flattenGeneratorTaskEntries } from './utils.js';
 
@@ -20,12 +20,7 @@ export async function executeGeneratorEntry(
 ): Promise<GeneratorOutput> {
   const taskEntries = flattenGeneratorTaskEntries(rootEntry);
   const taskEntriesById = R.indexBy(R.prop('id'), taskEntries);
-  const dependencyMap = buildTaskEntryDependencyMapRecursive(
-    rootEntry,
-    {},
-    taskEntriesById,
-    logger,
-  );
+  const dependencyMap = resolveTaskDependencies(rootEntry, logger);
   const { steps: sortedRunSteps, metadata } = getSortedRunSteps(
     taskEntries,
     dependencyMap,

@@ -9,6 +9,7 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   prettierProvider,
+  projectScope,
   tsUtilsProvider,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -63,7 +64,9 @@ const PothosGenerator = createGeneratorWithTasks({
     const setupTask = taskBuilder.addTask({
       name: 'setup',
       dependencies: {},
-      exports: { pothosSetup: pothosSetupProvider },
+      exports: {
+        pothosSetup: pothosSetupProvider.export(projectScope),
+      },
       run() {
         const config = createNonOverwriteableMap<PothosGeneratorConfig>({
           pothosPlugins: [],
@@ -103,7 +106,9 @@ const PothosGenerator = createGeneratorWithTasks({
     const schemaTask = taskBuilder.addTask({
       name: 'schema',
       dependencies: {},
-      exports: { pothosSchema: pothosSchemaProvider },
+      exports: {
+        pothosSchema: pothosSchemaProvider.export(projectScope),
+      },
       taskDependencies: { setupTask },
       run(deps, { setupTask: { schemaFiles, pothosTypes } }) {
         return {
@@ -144,7 +149,7 @@ const PothosGenerator = createGeneratorWithTasks({
       },
       taskDependencies: { setupTask, schemaTask },
       exports: {
-        pothos: pothosProvider,
+        pothos: pothosProvider.export(projectScope),
       },
       run(
         {

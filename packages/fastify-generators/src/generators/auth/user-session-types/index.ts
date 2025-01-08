@@ -2,6 +2,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -30,7 +31,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     authContext: authContextProvider,
   },
   exports: {
-    userSessionTypes: userSessionTypesProvider,
+    userSessionTypes: userSessionTypesProvider.export(projectScope),
   },
   run({ appModule, typescript, authContext }) {
     const [typesImport, typesFile] = makeImportAndFilePath(

@@ -3,6 +3,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -32,7 +33,7 @@ const PasswordHasherServiceGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    passwordHasherService: passwordHasherServiceProvider,
+    passwordHasherService: passwordHasherServiceProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, appModule, typescript }) {
     const moduleFolder = appModule.getModuleFolder();

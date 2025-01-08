@@ -2,12 +2,14 @@ import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
+  createProviderExportScope,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
@@ -21,6 +23,8 @@ import { notEmpty } from '@src/utils/array.js';
 import { appModuleProvider } from '../root-module/index.js';
 
 const descriptorSchema = z.object({
+  // unique identifier for the service file to allow it to be referenced by other generators
+  id: z.string().optional(),
   name: z.string().min(1),
   methodOrder: z.array(z.string()).optional(),
   fileName: z.string().optional(),
@@ -46,9 +50,15 @@ export interface ServiceFileOutputProvider {
 export const serviceFileOutputProvider =
   createProviderType<ServiceFileOutputProvider>('service-file-output');
 
+export const serviceFileScope = createProviderExportScope(
+  '@fastify/service-file',
+  'Service file',
+);
+
 export const ServiceFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
+  scopes: [serviceFileScope],
   buildTasks(taskBuilder, descriptor) {
     const mainTask = taskBuilder.addTask({
       name: 'main',
@@ -56,7 +66,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
         appModule: appModuleProvider,
         typescript: typescriptProvider,
       },
-      exports: { serviceFile: serviceFileProvider },
+      exports: { serviceFile: serviceFileProvider.export(serviceFileScope) },
       run({ appModule, typescript }) {
         const methodMap = createNonOverwriteableMap<
           Record<string, TypescriptCodeBlock>
@@ -113,26 +123,33 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
       },
     });
 
-    taskBuilder.addTask({
-      name: 'output',
-      exports: { serviceFileOutput: serviceFileOutputProvider },
-      taskDependencies: { mainTask },
-      run(deps, { mainTask: { outputMap } }) {
-        return {
-          getProviders: () => ({
-            serviceFileOutput: {
-              getServiceMethod(key) {
-                const output = outputMap.get(key);
-                if (!output) {
-                  throw new Error(`No output method found for key ${key}`);
-                }
-                return output;
+    if (descriptor.id) {
+      taskBuilder.addTask({
+        name: 'output',
+        exports: {
+          serviceFileOutput: serviceFileOutputProvider.export(
+            projectScope,
+            descriptor.id,
+          ),
+        },
+        taskDependencies: { mainTask },
+        run(deps, { mainTask: { outputMap } }) {
+          return {
+            getProviders: () => ({
+              serviceFileOutput: {
+                getServiceMethod(key) {
+                  const output = outputMap.get(key);
+                  if (!output) {
+                    throw new Error(`No output method found for key ${key}`);
+                  }
+                  return output;
+                },
               },
-            },
-          }),
-        };
-      },
-    });
+            }),
+          };
+        },
+      });
+    }
   },
 });
 

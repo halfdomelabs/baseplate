@@ -4,8 +4,8 @@ import { createEventedLogger } from '@src/utils/index.js';
 
 import { createProviderType } from '../provider.js';
 import {
-  buildEntryDependencyMapRecursive,
   buildTaskDependencyMap,
+  resolveTaskDependencies,
 } from './dependency-map.js';
 import {
   buildTestGeneratorEntry,
@@ -16,6 +16,10 @@ const providerOne = createProviderType('providerOne');
 const providerTwo = createProviderType('providerTwo');
 
 const testLogger = createEventedLogger({ noConsole: true });
+
+const emptyGeneratorCache = {
+  globalExportIdToTaskId: {},
+};
 
 describe('buildEntryDependencyMap', () => {
   it('should resolve basic dependency map', () => {
@@ -33,8 +37,7 @@ describe('buildEntryDependencyMap', () => {
     const dependencyMap = buildTaskDependencyMap(
       entry,
       parentProviders,
-      {},
-      testLogger,
+      emptyGeneratorCache,
     );
     expect(dependencyMap).toEqual({
       dependency: { id: 'parentId#main', options: {} },
@@ -49,18 +52,13 @@ describe('buildEntryDependencyMap', () => {
       },
     });
 
-    const taskMap = {
-      'dependent#main': buildTestGeneratorTaskEntry({
-        exports: { export: providerOne },
-      }),
+    const generatorCache = {
+      globalExportIdToTaskId: {
+        'dependent#providerOne': 'dependent#main',
+      },
     };
 
-    const dependencyMap = buildTaskDependencyMap(
-      entry,
-      {},
-      taskMap,
-      testLogger,
-    );
+    const dependencyMap = buildTaskDependencyMap(entry, {}, generatorCache);
     expect(dependencyMap).toEqual({
       referenceDependency: {
         id: 'dependent#main',
@@ -76,28 +74,23 @@ describe('buildEntryDependencyMap', () => {
       },
     });
 
-    const taskMap = {
-      'dependent#main': buildTestGeneratorTaskEntry({
-        exports: { export: providerTwo },
-      }),
+    const generatorCache = {
+      globalExportIdToTaskId: {
+        'dependent#providerTwo': 'dependent#main',
+      },
     };
 
-    expect(() =>
-      buildTaskDependencyMap(entry, {}, taskMap, testLogger),
-    ).toThrow('Could not resolve');
+    expect(() => buildTaskDependencyMap(entry, {}, generatorCache)).toThrow(
+      'Could not resolve',
+    );
   });
 });
 
-describe('buildEntryDependencyMapRecursive', () => {
+describe('resolveTaskDependencies', () => {
   it('should generate dependency map of an empty entry', () => {
     const entry = buildTestGeneratorEntry({ id: 'root' });
 
-    const dependencyMap = buildEntryDependencyMapRecursive(
-      entry,
-      {},
-      {},
-      testLogger,
-    );
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
     expect(dependencyMap).toEqual({});
   });
 
@@ -113,20 +106,14 @@ describe('buildEntryDependencyMapRecursive', () => {
         ],
       },
       {
-        dependencies: { dep: providerOne },
         exports: { provider: providerOne },
       },
     );
 
-    const dependencyMap = buildEntryDependencyMapRecursive(
-      entry,
-      { [providerOne.name]: 'parentId#main' },
-      {},
-      testLogger,
-    );
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
     expect(dependencyMap).toEqual({
-      'root#main': { dep: { id: 'parentId#main', options: {} } },
       'child#main': { dep2: { id: 'root#main', options: {} } },
+      'root#main': {},
     });
   });
 
@@ -151,12 +138,7 @@ describe('buildEntryDependencyMapRecursive', () => {
       { exports: { provider: providerOne } },
     );
 
-    const dependencyMap = buildEntryDependencyMapRecursive(
-      entry,
-      { [providerOne.name]: 'parentId' },
-      {},
-      testLogger,
-    );
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
     expect(dependencyMap).toEqual({
       'root#main': {},
       'peer#main': {},
@@ -191,12 +173,7 @@ describe('buildEntryDependencyMapRecursive', () => {
       {},
     );
 
-    const dependencyMap = buildEntryDependencyMapRecursive(
-      entry,
-      {},
-      {},
-      testLogger,
-    );
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child#main': {},
@@ -233,9 +210,9 @@ describe('buildEntryDependencyMapRecursive', () => {
       ],
     });
 
-    expect(() =>
-      buildEntryDependencyMapRecursive(entry, {}, {}, testLogger),
-    ).toThrow('Duplicate hoisted provider');
+    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+      'Duplicate hoisted provider',
+    );
   });
 
   it('should throw if multiple peer providers exist with same provider export', () => {
@@ -262,8 +239,8 @@ describe('buildEntryDependencyMapRecursive', () => {
       { exports: { provider: providerOne } },
     );
 
-    expect(() =>
-      buildEntryDependencyMapRecursive(entry, {}, {}, testLogger),
-    ).toThrow('Duplicate provider');
+    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+      'Duplicate provider',
+    );
   });
 });

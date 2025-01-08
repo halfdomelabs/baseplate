@@ -13,6 +13,8 @@ import sortKeys from 'sort-keys';
 import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 
+import { projectScope } from '@src/providers/scopes.js';
+
 import { projectProvider } from '../../../providers/index.js';
 
 const descriptorSchema = z.object({
@@ -117,7 +119,7 @@ const NodeGenerator = createGeneratorWithTasks({
     const setupTask = taskBuilder.addTask({
       name: 'setup',
       exports: {
-        nodeSetup: nodeSetupProvider,
+        nodeSetup: nodeSetupProvider.export(projectScope),
       },
       run() {
         let isEsm = false;
@@ -137,8 +139,8 @@ const NodeGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'main',
       exports: {
-        node: nodeProvider,
-        project: projectProvider,
+        node: nodeProvider.export(projectScope),
+        project: projectProvider.export(projectScope),
       },
       taskDependencies: {
         setup: setupTask,

@@ -24,6 +24,7 @@ import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -48,8 +49,9 @@ const createMainTask = createTaskConfigBuilder(
         .dependency()
         .reference(objectTypeRef),
     },
+    scopes: [pothosFieldScope],
     exports: {
-      pothosField: pothosFieldProvider,
+      pothosField: pothosFieldProvider.export(pothosFieldScope),
     },
     run({
       pothosSchema,

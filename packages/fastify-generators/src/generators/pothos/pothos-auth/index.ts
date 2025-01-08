@@ -1,4 +1,5 @@
 import {
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -103,7 +104,7 @@ const PothosAuthGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'auth-formatter',
       exports: {
-        pothosAuth: pothosAuthProvider,
+        pothosAuth: pothosAuthProvider.export(projectScope),
       },
       run() {
         return {

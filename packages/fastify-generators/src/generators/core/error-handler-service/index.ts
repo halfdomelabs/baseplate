@@ -5,6 +5,7 @@ import type {
 
 import {
   createTypescriptTemplateConfig,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -68,7 +69,8 @@ const createSetupTask = createTaskConfigBuilder(() => ({
     configService: configServiceProvider,
   },
   exports: {
-    errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
+    errorHandlerServiceSetup:
+      errorHandlerServiceSetupProvider.export(projectScope),
   },
   run({ loggerService, fastifyServer, typescript, configService }) {
     const errorLoggerFile = typescript.createTemplate(errorHandlerFileConfig);
@@ -144,7 +146,7 @@ const createSetupTask = createTaskConfigBuilder(() => ({
 const createMainTask = createTaskConfigBuilder(() => ({
   name: 'main',
   exports: {
-    errorHandlerService: errorHandlerServiceProvider,
+    errorHandlerService: errorHandlerServiceProvider.export(projectScope),
   },
   run() {
     const errorFunction = TypescriptCodeUtils.createExpression(

@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -28,7 +29,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     loggerService: loggerServiceProvider,
   },
   exports: {
-    fastifySendgrid: fastifySendgridProvider,
+    fastifySendgrid: fastifySendgridProvider.export(projectScope),
   },
   run({ node, typescript, configService, loggerService }) {
     node.addPackages({

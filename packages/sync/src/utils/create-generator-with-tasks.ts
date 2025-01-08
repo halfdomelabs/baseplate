@@ -11,6 +11,7 @@ import type {
   Provider,
   ProviderDependencyMap,
   ProviderExportMap,
+  ProviderExportScope,
 } from '../core/index.js';
 import type {
   ChildGeneratorConfig,
@@ -161,6 +162,7 @@ export interface GeneratorWithTasksConfig<DescriptorSchema extends z.ZodType> {
   getDefaultChildGenerators?(
     descriptor: z.infer<DescriptorSchema>,
   ): Partial<Record<string, ChildGeneratorConfig>>;
+  scopes?: ProviderExportScope[];
   buildTasks: (
     taskBuilder: GeneratorTaskBuilder,
     descriptor: DescriptorWithChildren & z.infer<DescriptorSchema>,
@@ -183,6 +185,7 @@ export function createGeneratorWithTasks<
   config: GeneratorWithTasksConfig<DescriptorSchema>,
 ): GeneratorConfig<DescriptorWithChildren & z.infer<DescriptorSchema>> {
   return {
+    scopes: config.scopes,
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
       try {
         // TODO: Merge with base descriptor

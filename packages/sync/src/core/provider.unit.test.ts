@@ -38,7 +38,6 @@ describe('createProviderType', () => {
       .optionalReference('bar');
     expect(optionalReferenceDependency.options.optional).toBe(true);
     expect(optionalReferenceDependency.options.reference).toBe('bar');
-    expect(optionalReferenceDependency.options.resolutionMode).toBe('explicit');
     expectTypeOf<
       InferDependencyProvider<typeof optionalReferenceDependency>
     >().toEqualTypeOf<TestProvider | undefined>();
@@ -51,7 +50,6 @@ describe('createProviderType', () => {
       .optionalReference(undefined);
     expect(optionalReferenceDependency.options.optional).toBe(true);
     expect(optionalReferenceDependency.options.reference).toBeUndefined();
-    expect(optionalReferenceDependency.options.resolutionMode).toBe('explicit');
     expectTypeOf<
       InferDependencyProvider<typeof optionalReferenceDependency>
     >().toEqualTypeOf<TestProvider | undefined>();

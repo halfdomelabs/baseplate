@@ -8,6 +8,7 @@ import {
   mergeCodeEntryOptions,
   nodeGitIgnoreProvider,
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -71,7 +72,7 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
         nodeGitIgnore: nodeGitIgnoreProvider,
         typescript: typescriptProvider,
       },
-      exports: { configService: configServiceProvider },
+      exports: { configService: configServiceProvider.export(projectScope) },
       run({ node, nodeGitIgnore, typescript }) {
         const configEntries = createNonOverwriteableMap<
           Record<string, ConfigEntry>

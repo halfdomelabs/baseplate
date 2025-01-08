@@ -1,10 +1,29 @@
 import { toMerged } from 'es-toolkit';
 
+import { KEBAB_CASE_REGEX } from '@src/utils/validation.js';
+
 /**
  * A provider is a dictionary of functions that allow a generator
  * to interact with a generator
  */
 export type Provider = Record<string, (...args: unknown[]) => unknown>;
+
+export interface ProviderExportScope {
+  readonly name: string;
+  readonly description: string;
+}
+
+export function createProviderExportScope(
+  name: string,
+  description: string,
+): ProviderExportScope {
+  if (!KEBAB_CASE_REGEX.test(name)) {
+    throw new Error(
+      'Provider export scope name must be in kebab case (lowercase with dashes)',
+    );
+  }
+  return { name, description };
+}
 
 /**
  * A provider type is a typed tag for a provider so that it can
@@ -24,7 +43,7 @@ export interface ProviderType<P = Provider> {
   /**
    * Creates an export config for the provider that can be used in export maps
    */
-  export(): ProviderExport<P>;
+  export(scope: ProviderExportScope, exportName?: string): ProviderExport<P>;
 }
 
 export interface ProviderDependencyOptions {
@@ -33,16 +52,9 @@ export interface ProviderDependencyOptions {
    */
   optional?: boolean;
   /**
-   * The mode to use for resolving the dependency
-   *
-   * - `default` - The dependency is resolved via the default resolution algorithm
-   * - `explicit` - The dependency is resolved to a provided reference
+   * The export name of the provider to resolve to (if empty string, forces the dependency to resolve to undefined)
    */
-  resolutionMode?: 'default' | 'explicit';
-  /**
-   * The global ID of the generator to resolve to
-   */
-  reference?: string;
+  exportName?: string;
   /**
    * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
    */
@@ -61,26 +73,41 @@ export interface ProviderDependency<P = Provider> {
    * Specifies that the dependency should be resolved to an export from
    * a specific generator
    *
-   * @param generatorGlobalId The global ID of the generator to resolve to
+   * @param exportName The export name of the provider to resolve to
    */
-  reference(generatorGlobalId: string): ProviderDependency<P>;
+  reference(exportName: string): ProviderDependency<P>;
   /**
    * Specifies that the dependency should be resolved to an export from
    * a specific generator, but otherwise resolve to undefined if no
    * reference is provided
    *
-   * @param generatorGlobalId The global ID of the generator to resolve to
+   * @param exportName The export name of the provider to resolve to
    * if the reference is provided
    */
   optionalReference(
-    generatorGlobalId: string | undefined,
+    exportName: string | undefined,
   ): ProviderDependency<P | undefined>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- we need to keep the generic type for inference
+export interface ProviderExportOptions {
+  /**
+   * Name of the export within the scope (optional)
+   */
+  readonly exportName?: string;
+}
+
 export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
+  readonly options: ProviderExportOptions;
+  /**
+   * Scope of the export
+   */
+  readonly scope: ProviderExportScope;
+  /**
+   * Sets the name of the export within the scope
+   */
+  exportName(name: string): ProviderExport<P>;
 }
 
 interface ProviderTypeOptions {
@@ -91,6 +118,12 @@ export function createProviderType<T>(
   name: string,
   options?: ProviderTypeOptions,
 ): ProviderType<T> {
+  if (!KEBAB_CASE_REGEX.test(name)) {
+    throw new Error(
+      'Provider type name must be in kebab case (lowercase with dashes)',
+    );
+  }
+
   return {
     type: 'type',
     name,
@@ -103,29 +136,37 @@ export function createProviderType<T>(
         optional() {
           return toMerged(this, { options: { optional: true } });
         },
-        reference(reference) {
-          if (this.options.resolutionMode === 'explicit') {
-            throw new Error('Cannot overwrite reference on provider type');
+        reference(exportName) {
+          if (this.options.exportName !== undefined) {
+            throw new Error('Cannot overwrite export name on provider type');
           }
           return toMerged(this, {
-            options: { reference, resolutionMode: 'explicit' },
+            options: { exportName },
           });
         },
-        optionalReference(reference) {
-          if (this.options.resolutionMode === 'explicit') {
-            throw new Error('Cannot overwrite reference on provider type');
+        optionalReference(exportName) {
+          if (this.options.exportName !== undefined) {
+            throw new Error('Cannot overwrite export name on provider type');
           }
           return toMerged(this, {
-            options: { reference, resolutionMode: 'explicit', optional: true },
+            // empty string is equivalent to resolving to undefined
+            options: { exportName: exportName ?? '', optional: true },
           });
         },
       };
     },
-    export() {
+    export(scope, exportName) {
       return {
         ...this,
         type: 'export',
-        options: {},
+        options: { exportName },
+        scope,
+        exportName(exportName: string) {
+          if (exportName === '') {
+            throw new Error('Export name cannot be an empty string');
+          }
+          return toMerged(this, { options: { exportName } });
+        },
       };
     },
   };
