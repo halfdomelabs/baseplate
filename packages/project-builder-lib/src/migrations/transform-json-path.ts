@@ -58,22 +58,16 @@ export function transformJsonPath(
   return navigateAndTransform(data, pathParts);
 }
 
-export function renameObjectKeyTransform(
-  oldKey: string,
-  newKey: string,
+export function renameObjectKeysTransform(
+  renames: Record<string, string>,
 ): TransformFn {
   return (data) => {
     if (data === null) return null;
     if (typeof data !== 'object') {
       throw new TypeError(`Expected an object, got ${typeof data}`);
     }
-    const { [oldKey]: oldValue, ...rest } = data as Record<string, unknown>;
-    if (oldValue === undefined) {
-      return data;
-    }
-    return {
-      ...rest,
-      [newKey]: oldValue,
-    };
+    return Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [renames[key] || key, value]),
+    );
   };
 }

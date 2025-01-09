@@ -37,8 +37,8 @@ export const Auth0Plugin: ParserPlugin = {
     ];
 
     hooks.mergeModel({
-      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel).name,
-      feature: auth.accountsFeaturePath,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModelRef).name,
+      feature: auth.accountsFeatureRef,
       model: {
         primaryKeyFieldRefs: ['id'],
         uniqueConstraints: [
@@ -66,7 +66,7 @@ export const Auth0Plugin: ParserPlugin = {
       {
         name: 'user',
         references: [{ local: 'userId', foreign: 'id' }],
-        modelName: auth.userModel,
+        modelName: auth.userModelRef,
         foreignRelationName: 'roles',
         onDelete: 'Cascade',
         onUpdate: 'Restrict',
@@ -74,13 +74,14 @@ export const Auth0Plugin: ParserPlugin = {
       },
     ];
 
-    if (!auth.userRoleModel) {
+    if (!auth.userRoleModelRef) {
       throw new Error(`User role model required`);
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userRoleModel).name,
-      feature: auth.accountsFeaturePath,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userRoleModelRef)
+        .name,
+      feature: auth.accountsFeatureRef,
       model: {
         fields: userRoleFields,
         relations: userRoleRelations,
@@ -99,7 +100,7 @@ export const Auth0Plugin: ParserPlugin = {
     });
 
     // add feature providers
-    hooks.addFeatureChildren(auth.authFeaturePath, {
+    hooks.addFeatureChildren(auth.authFeatureRef, {
       $authContext: {
         generator: '@halfdomelabs/fastify/auth/auth-context',
       },
@@ -116,8 +117,10 @@ export const Auth0Plugin: ParserPlugin = {
       },
       $auth0: {
         generator: '@halfdomelabs/fastify/auth0/auth0-module',
-        userModelName: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel)
-          .name,
+        userModelName: ModelUtils.byIdOrThrow(
+          projectDefinition,
+          auth.userModelRef,
+        ).name,
         includeManagement: true,
       },
       $userSession: {

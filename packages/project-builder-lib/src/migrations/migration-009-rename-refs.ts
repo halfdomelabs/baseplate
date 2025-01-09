@@ -1,7 +1,7 @@
 import { flow } from 'es-toolkit';
 
 import {
-  renameObjectKeyTransform,
+  renameObjectKeysTransform,
   transformJsonPath,
 } from './transform-json-path.js';
 import { createSchemaMigration } from './types.js';
@@ -19,73 +19,66 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
         transformJsonPath(
           c,
           'apps.*.sections.*',
-          renameObjectKeyTransform('feature', 'featureRef'),
+          renameObjectKeysTransform({
+            feature: 'featureRef',
+            modelName: 'modelRef',
+          }),
         ),
       (c) =>
         transformJsonPath(
           c,
           'apps.*.sections.*.form.fields.*',
-          renameObjectKeyTransform('localRelationName', 'localRelationRef'),
+          renameObjectKeysTransform({
+            localRelationName: 'localRelationRef',
+            modelField: 'modelFieldRef',
+            localRelation: 'localRelationRef',
+            modelRelation: 'modelRelationRef',
+            embeddedFormName: 'embeddedFormRef',
+          }),
         ),
       (c) =>
         transformJsonPath(
           c,
           'apps.*.sections.*.embeddedForms.*.form.fields.*',
-          renameObjectKeyTransform('localRelationName', 'localRelationRef'),
+          renameObjectKeysTransform({
+            localRelationName: 'localRelationRef',
+            modelField: 'modelFieldRef',
+          }),
         ),
       (c) =>
         transformJsonPath(
           c,
           'apps.*.sections.*.table.columns.*.display',
-          renameObjectKeyTransform('modelField', 'modelFieldRef'),
-        ),
-      (c) =>
-        transformJsonPath(
-          c,
-          'apps.*.sections.*.form.fields.*',
-          renameObjectKeyTransform('modelField', 'modelFieldRef'),
-        ),
-      (c) =>
-        transformJsonPath(
-          c,
-          'apps.*.sections.*.embeddedForms.*.form.fields.*',
-          renameObjectKeyTransform('modelField', 'modelFieldRef'),
+          renameObjectKeysTransform({
+            modelField: 'modelFieldRef',
+          }),
         ),
       (c) =>
         transformJsonPath(
           c,
           'apps.*.sections.*.embeddedForms.*.table.columns.*.display',
-          renameObjectKeyTransform('modelField', 'modelFieldRef'),
+          renameObjectKeysTransform({
+            modelField: 'modelFieldRef',
+          }),
         ),
       (c) =>
         transformJsonPath(
           c,
           'apps.*.sections.*.embeddedForms.*',
-          renameObjectKeyTransform('modelName', 'modelRef'),
+          renameObjectKeysTransform({
+            modelName: 'modelRef',
+          }),
         ),
       (c) =>
         transformJsonPath(
           c,
-          'apps.*.sections.*',
-          renameObjectKeyTransform('modelName', 'modelRef'),
-        ),
-      (c) =>
-        transformJsonPath(
-          c,
-          'apps.*.sections.*.form.fields.*',
-          renameObjectKeyTransform('localRelation', 'localRelationRef'),
-        ),
-      (c) =>
-        transformJsonPath(
-          c,
-          'apps.*.sections.*.form.fields.*',
-          renameObjectKeyTransform('modelRelation', 'modelRelationRef'),
-        ),
-      (c) =>
-        transformJsonPath(
-          c,
-          'apps.*.sections.*.form.fields.*',
-          renameObjectKeyTransform('embeddedFormName', 'embeddedFormRef'),
+          'auth',
+          renameObjectKeysTransform({
+            userModel: 'userModelRef',
+            userRoleModel: 'userRoleModelRef',
+            authFeaturePath: 'authFeatureRef',
+            accountsFeaturePath: 'accountsFeatureRef',
+          }),
         ),
     );
     return transform(config) as unknown;

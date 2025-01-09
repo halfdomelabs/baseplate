@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { transformJsonPath } from './transform-json-path.js';
+import {
+  renameObjectKeysTransform,
+  transformJsonPath,
+} from './transform-json-path.js';
 
 describe('transformJsonPath', () => {
   it('should transform a value at a simple path', () => {
@@ -93,5 +96,59 @@ describe('transformJsonPath', () => {
     });
     expect(result).toEqual({ a: { b: { c: [1, 2, 3, 4] } } });
     expect(data.a.b.c).toEqual([1, 2, 3]); // Original object is unchanged
+  });
+});
+
+describe('renameObjectKeysTransform', () => {
+  it('should rename multiple keys in an object', () => {
+    const data = {
+      oldKey1: 'value1',
+      oldKey2: 'value2',
+      unchangedKey: 'value3',
+    };
+    const result = renameObjectKeysTransform({
+      oldKey1: 'newKey1',
+      oldKey2: 'newKey2',
+    })(data);
+    expect(result).toEqual({
+      newKey1: 'value1',
+      newKey2: 'value2',
+      unchangedKey: 'value3',
+    });
+  });
+
+  it('should return null if input is null', () => {
+    const result = renameObjectKeysTransform({
+      oldKey: 'newKey',
+    })(null);
+    expect(result).toBeNull();
+  });
+
+  it('should throw error if input is not an object', () => {
+    expect(() => {
+      renameObjectKeysTransform({
+        oldKey: 'newKey',
+      })(42);
+    }).toThrow(TypeError);
+  });
+
+  it('should keep keys unchanged if they are not in rename map', () => {
+    const data = {
+      key1: 'value1',
+      key2: 'value2',
+    };
+    const result = renameObjectKeysTransform({
+      nonexistentKey: 'newKey',
+    })(data);
+    expect(result).toEqual(data);
+  });
+
+  it('should handle empty rename map', () => {
+    const data = {
+      key1: 'value1',
+      key2: 'value2',
+    };
+    const result = renameObjectKeysTransform({})(data);
+    expect(result).toEqual(data);
   });
 });

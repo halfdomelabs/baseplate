@@ -44,8 +44,8 @@ export const AuthPlugin: ParserPlugin = {
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel).name,
-      feature: auth.accountsFeaturePath,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModelRef).name,
+      feature: auth.accountsFeatureRef,
       model: {
         primaryKeyFieldRefs: ['id'],
         fields: userFields,
@@ -67,7 +67,7 @@ export const AuthPlugin: ParserPlugin = {
       {
         name: 'user',
         references: [{ local: 'userId', foreign: 'id' }],
-        modelName: auth.userModel,
+        modelName: auth.userModelRef,
         foreignRelationName: 'roles',
         onDelete: 'Cascade',
         onUpdate: 'Restrict',
@@ -75,13 +75,14 @@ export const AuthPlugin: ParserPlugin = {
       },
     ];
 
-    if (!auth.userRoleModel) {
+    if (!auth.userRoleModelRef) {
       throw new Error(`User role model required`);
     }
 
     hooks.mergeModel({
-      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userRoleModel).name,
-      feature: auth.accountsFeaturePath,
+      name: ModelUtils.byIdOrThrow(projectDefinition, auth.userRoleModelRef)
+        .name,
+      feature: auth.accountsFeatureRef,
       model: {
         fields: userRoleFields,
         relations: userRoleRelations,
@@ -99,11 +100,13 @@ export const AuthPlugin: ParserPlugin = {
       },
     });
 
-    hooks.addFeatureChildren(auth.authFeaturePath, {
+    hooks.addFeatureChildren(auth.authFeatureRef, {
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth-module',
-        userModelName: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel)
-          .name,
+        userModelName: ModelUtils.byIdOrThrow(
+          projectDefinition,
+          auth.userModelRef,
+        ).name,
         children: {
           roleService: {
             name: 'AuthRoleService',
@@ -117,7 +120,7 @@ export const AuthPlugin: ParserPlugin = {
                     generator: '@halfdomelabs/fastify/auth/auth-roles',
                     userRoleModelName: ModelUtils.byIdOrThrow(
                       projectDefinition,
-                      auth.userRoleModel,
+                      auth.userRoleModelRef,
                     ).name,
                   },
                 },
@@ -140,7 +143,7 @@ export const AuthPlugin: ParserPlugin = {
         : {}),
     });
 
-    hooks.addFeatureChildren(auth.accountsFeaturePath, {
+    hooks.addFeatureChildren(auth.accountsFeatureRef, {
       $hasherService: {
         name: 'HasherService',
         generator: '@halfdomelabs/fastify/auth/password-hasher-service',
