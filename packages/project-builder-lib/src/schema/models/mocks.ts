@@ -41,7 +41,7 @@ export function generateMockModelRelationField(
     id: modelLocalRelationEntityType.generateNewId(),
     foreignId: modelForeignRelationEntityType.generateNewId(),
     name: 'mockRelation',
-    modelName: 'mockModel',
+    modelRef: 'mockModel',
     foreignRelationName: 'mockForeignRelation',
     references: [],
     onDelete: 'Cascade',

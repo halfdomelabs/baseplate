@@ -124,7 +124,7 @@ export const modelRelationFieldSchema = zRefBuilder(
         }),
       }),
     ),
-    modelName: z.string().min(1),
+    modelRef: z.string().min(1),
     foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
     onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
     onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
@@ -134,7 +134,7 @@ export const modelRelationFieldSchema = zRefBuilder(
       type: modelEntityType,
       onDelete: 'RESTRICT',
       addContext: 'foreignModel',
-      path: 'modelName',
+      path: 'modelRef',
     });
     builder.addEntity({
       type: modelLocalRelationEntityType,
@@ -145,7 +145,7 @@ export const modelRelationFieldSchema = zRefBuilder(
       type: modelForeignRelationEntityType,
       idPath: 'foreignId',
       namePath: 'foreignRelationName',
-      parentPath: 'modelName',
+      parentPath: 'modelRef',
       stripIdWhenSerializing: true,
     });
   },

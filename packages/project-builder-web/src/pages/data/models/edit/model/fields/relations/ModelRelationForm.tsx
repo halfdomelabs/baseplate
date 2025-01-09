@@ -89,22 +89,19 @@ function getRelationDefaultsFromModel(
   // default the name to the local field name if it ends with Id
   const name = (() => {
     if (editedRelation.name) return editedRelation.name;
-    if (editedRelation.modelName) {
-      const model = ModelUtils.byIdOrThrow(
-        definition,
-        editedRelation.modelName,
-      );
+    if (editedRelation.modelRef) {
+      const model = ModelUtils.byIdOrThrow(definition, editedRelation.modelRef);
       return camelCase(model.name);
     }
     return;
   })();
 
   const references = (() => {
-    if (!editedRelation.modelName) return;
+    if (!editedRelation.modelRef) return;
     const {
       model: { fields, primaryKeyFieldRefs },
       name: foreignName,
-    } = ModelUtils.byIdOrThrow(definition, editedRelation.modelName);
+    } = ModelUtils.byIdOrThrow(definition, editedRelation.modelRef);
     const primaryKeys = fields.filter((f) =>
       primaryKeyFieldRefs.includes(f.id),
     );
@@ -184,7 +181,7 @@ export function ModelRelationForm({
       defaultFieldName,
     );
     return {
-      modelName: modelRef ?? '',
+      modelRef: modelRef ?? '',
       references: [],
       onDelete: 'Restrict',
       onUpdate: 'Restrict',
@@ -192,7 +189,7 @@ export function ModelRelationForm({
         definition,
         editedModel,
         {
-          modelName: modelRef,
+          modelRef,
         },
         defaultFieldName,
       ),
@@ -207,8 +204,8 @@ export function ModelRelationForm({
 
   const relation = watch();
 
-  const foreignModel = relation.modelName
-    ? definition.models.find((m) => m.id === relation.modelName)
+  const foreignModel = relation.modelRef
+    ? definition.models.find((m) => m.id === relation.modelRef)
     : undefined;
 
   const foreignFields = foreignModel?.model.fields;
@@ -299,7 +296,7 @@ export function ModelRelationForm({
         />
         <ComboboxField.Controller
           control={control}
-          name="modelName"
+          name="modelRef"
           options={foreignModelOptions}
           label="Foreign Model"
           onChange={(value) => {
@@ -310,7 +307,7 @@ export function ModelRelationForm({
                 editedModel,
                 {
                   ...relation,
-                  modelName: value,
+                  modelRef: value,
                 },
                 defaultFieldName,
               );

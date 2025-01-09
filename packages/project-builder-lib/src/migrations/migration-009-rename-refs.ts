@@ -117,6 +117,14 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
       (c) =>
         transformJsonPath(
           c,
+          'models.*.model.relations.*',
+          renameObjectKeysTransform({
+            modelName: 'modelRef',
+          }),
+        ),
+      (c) =>
+        transformJsonPath(
+          c,
           'plugins.*.config.categories.*',
           renameObjectKeysTransform({
             usedByRelation: 'usedByRelationRef',

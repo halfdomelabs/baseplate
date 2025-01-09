@@ -39,7 +39,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
     .getModels()
     .flatMap((m) =>
       m.model.relations
-        ?.filter((r) => r.modelName === fileModel)
+        ?.filter((r) => r.modelRef === fileModel)
         .map((r) => ({
           label: r.foreignRelationName,
           value: r.foreignId,

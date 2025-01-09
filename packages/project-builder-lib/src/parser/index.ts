@@ -76,10 +76,10 @@ function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
   for (const model of models)
     if (model.model.relations) {
       for (const relation of model.model.relations) {
-        const foreignModel = models.find((m) => m.id === relation.modelName);
+        const foreignModel = models.find((m) => m.id === relation.modelRef);
         if (!foreignModel) {
           throw new Error(
-            `Model ${model.name} has a relation to ${relation.modelName} but that model does not exist`,
+            `Model ${model.name} has a relation to ${relation.modelRef} but that model does not exist`,
           );
         }
         // verify types of fields match
@@ -195,7 +195,7 @@ export class ParsedProjectDefinition {
             if (existingModel.model.relations)
               for (const relation of existingModel.model.relations) {
                 relation.references = relation.references.map((reference) => {
-                  const foreignModel = this.getModelById(relation.modelName);
+                  const foreignModel = this.getModelById(relation.modelRef);
                   const foreignField =
                     foreignModel.model.fields.find(
                       (f) => f.name === reference.foreignRef,
@@ -241,7 +241,7 @@ export class ParsedProjectDefinition {
     return this.models.flatMap(
       (m) =>
         m.model.relations
-          ?.filter((relation) => relation.modelName === modelName)
+          ?.filter((relation) => relation.modelRef === modelName)
           .map((relation) => ({ relation, model: m })) ?? [],
     );
   }

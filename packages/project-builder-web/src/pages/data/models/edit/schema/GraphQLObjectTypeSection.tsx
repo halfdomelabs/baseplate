@@ -206,7 +206,7 @@ export function GraphQLObjectTypeSection({
                 <tr key={relation.id}>
                   <td>
                     <BadgeWithTypeLabel
-                      type={definitionContainer.nameFromId(relation.modelName)}
+                      type={definitionContainer.nameFromId(relation.modelRef)}
                     >
                       {relation.name}
                     </BadgeWithTypeLabel>

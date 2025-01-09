@@ -74,7 +74,7 @@ export function createStorageModels(
         {
           name: 'uploader',
           references: [{ localRef: 'uploaderId', foreignRef: 'id' }],
-          modelName: auth.userModelRef,
+          modelRef: auth.userModelRef,
           foreignRelationName: 'files',
           onDelete: 'Cascade',
           onUpdate: 'Restrict',

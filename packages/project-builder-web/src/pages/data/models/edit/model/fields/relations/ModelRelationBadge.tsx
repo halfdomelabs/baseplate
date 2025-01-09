@@ -45,7 +45,7 @@ export function ModelRelationsBadge({
         title="Relation"
       >
         {shouldShowText &&
-          `${definitionContainer.nameFromId(relation.modelName)} ${
+          `${definitionContainer.nameFromId(relation.modelRef)} ${
             relation.references.length > 1
               ? `(${relation.references.length})`
               : ''

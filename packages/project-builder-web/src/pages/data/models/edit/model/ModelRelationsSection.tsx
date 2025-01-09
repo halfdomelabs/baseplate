@@ -63,7 +63,7 @@ export function ModelRelationsSection({
                   .join(', ')}
               </RecordView.Item>
               <RecordView.Item title="Foreign Model">
-                {definitionContainer.nameFromId(relation.modelName)}
+                {definitionContainer.nameFromId(relation.modelRef)}
               </RecordView.Item>
               <RecordView.Item title="On Delete">
                 {relation.onDelete}

@@ -59,12 +59,12 @@ function buildRelationField(
   const {
     name,
     references,
-    modelName,
+    modelRef,
     foreignRelationName,
     onDelete,
     onUpdate,
   } = relationConfig;
-  const foreignModel = ModelUtils.byIdOrThrow(projectDefinition, modelName);
+  const foreignModel = ModelUtils.byIdOrThrow(projectDefinition, modelRef);
 
   const optional = ModelFieldUtils.isRelationOptional(
     parentModel,
@@ -83,10 +83,10 @@ function buildRelationField(
   const foreignRelations = ModelUtils.getRelationsToModel(
     projectDefinition,
     parentModel.id,
-  ).filter(({ model }) => model.id === relationConfig.modelName);
+  ).filter(({ model }) => model.id === relationConfig.modelRef);
   const needsRelationName =
     foreignRelations.length +
-      relations.filter((r) => r.modelName === modelName).length >
+      relations.filter((r) => r.modelRef === modelRef).length >
     1;
 
   return {

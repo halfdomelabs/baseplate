@@ -202,7 +202,7 @@ export function applyModelPatchInPlace(
     references: relation.references.map((reference) => ({
       ...reference,
       localRef: resolveLocalName(reference.localRef),
-      foreignRef: resolveForeignName(reference.foreignRef, relation.modelName),
+      foreignRef: resolveForeignName(reference.foreignRef, relation.modelRef),
     })),
   }));
 }

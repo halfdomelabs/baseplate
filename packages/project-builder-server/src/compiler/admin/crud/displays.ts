@@ -31,7 +31,7 @@ function compileAdminCrudForeignDisplay(
   }
 
   const localField = builder.nameFromId(relation.references[0].localRef);
-  const foreignModelName = builder.nameFromId(relation.modelName);
+  const foreignModelName = builder.nameFromId(relation.modelRef);
   return {
     name: localRelationName,
     generator: '@halfdomelabs/react/admin/admin-crud-foreign-display',

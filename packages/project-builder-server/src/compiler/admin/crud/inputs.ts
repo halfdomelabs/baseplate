@@ -88,7 +88,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         localRelationName: relation.name,
         isOptional: ModelFieldUtils.isRelationOptional(model, relation),
         localField,
-        foreignModelName: definitionContainer.nameFromId(relation.modelName),
+        foreignModelName: definitionContainer.nameFromId(relation.modelRef),
         labelExpression: definition.labelExpression,
         valueExpression: definition.valueExpression,
         defaultLabel: definition.defaultLabel,

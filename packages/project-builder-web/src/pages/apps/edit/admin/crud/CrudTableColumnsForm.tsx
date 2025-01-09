@@ -86,7 +86,7 @@ function CrudTableColumnsForm({
   control,
 }: Props): React.JSX.Element {
   const modelRef = useWatch({ control, name: 'modelRef' });
-  const { parsedProject } = useProjectDefinition();
+  const { parsedProject, definitionContainer } = useProjectDefinition();
   const model = modelRef ? parsedProject.getModelById(modelRef) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
@@ -95,7 +95,7 @@ function CrudTableColumnsForm({
 
   const localRelationOptions =
     model?.model.relations?.map((relation) => ({
-      label: `${relation.name} (${relation.modelName})`,
+      label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
       value: relation.id,
     })) ?? [];
 

@@ -66,7 +66,7 @@ export const Auth0Plugin: ParserPlugin = {
       {
         name: 'user',
         references: [{ localRef: 'userId', foreignRef: 'id' }],
-        modelName: auth.userModelRef,
+        modelRef: auth.userModelRef,
         foreignRelationName: 'roles',
         onDelete: 'Cascade',
         onUpdate: 'Restrict',

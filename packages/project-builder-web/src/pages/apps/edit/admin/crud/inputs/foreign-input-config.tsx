@@ -13,7 +13,7 @@ function AdminCrudForeignInputForm({
 }: AdminCrudInputWebFormProps): React.JSX.Element {
   const localRelationOptions =
     model.model.relations?.map((relation) => ({
-      label: `${relation.name} (${relation.modelName})`,
+      label: `${relation.name} (${relation.modelRef})`,
       value: relation.id,
     })) ?? [];
   const prefix = name as 'prefix';
