@@ -8,6 +8,7 @@ import type {
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -17,7 +18,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authInfoImportProvider } from '@src/generators/auth/auth-service/index.js';
+import { authProvider } from '@src/generators/auth/index.js';
 import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
 import { configServiceProvider } from '../config-service/index.js';
@@ -118,7 +119,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         errorHandler: errorHandlerServiceProvider,
       },
       exports: {
-        fastifySentry: fastifySentryProvider,
+        fastifySentry: fastifySentryProvider.export(projectScope),
       },
       run({ node, configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate(
@@ -271,17 +272,17 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       name: 'auth',
       dependencies: {
         fastifySentry: fastifySentryProvider,
-        authInfoImport: authInfoImportProvider.dependency().optional(),
+        auth: authProvider.dependency().optional(),
       },
-      run({ authInfoImport, fastifySentry }) {
-        if (authInfoImport) {
+      run({ auth, fastifySentry }) {
+        if (auth) {
           fastifySentry.addScopeConfigurationBlock(
             TypescriptCodeUtils.createBlock(
-              `const userData = requestContext.get('user');
-    if (userData) {
+              `const userId = requestContext.get('userId');
+    if (userId) {
       event.user = {
         ...event.user,
-        id: userData.id,
+        id: userId,
       };
     }`,
               `import { requestContext } from '@fastify/request-context';`,

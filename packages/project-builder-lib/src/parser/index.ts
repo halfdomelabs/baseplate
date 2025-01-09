@@ -115,10 +115,6 @@ export class ParsedProjectDefinition {
 
   public projectDefinition: ProjectDefinition;
 
-  public globalHoistedProviders: string[] = [];
-
-  public featureHoistedProviders: Record<string, string[]> = {};
-
   public fastifyChildren: Record<string, unknown> = {};
 
   public featureChildren: Record<string, Record<string, unknown>> = {};
@@ -135,18 +131,6 @@ export class ParsedProjectDefinition {
       plugin.run(
         projectDefinition,
         {
-          addGlobalHoistedProviders: (providers) => {
-            this.globalHoistedProviders = [
-              ...this.globalHoistedProviders,
-              ...(Array.isArray(providers) ? providers : [providers]),
-            ];
-          },
-          addFeatureHoistedProviders: (featureId, providers) => {
-            this.featureHoistedProviders[featureId] = [
-              ...(this.featureHoistedProviders[featureId] ?? []),
-              ...(Array.isArray(providers) ? providers : [providers]),
-            ];
-          },
           addFastifyChildren: (children) => {
             this.fastifyChildren = safeMerge(this.fastifyChildren, children);
           },
@@ -245,10 +229,6 @@ export class ParsedProjectDefinition {
       models: this.models,
     };
     this.projectDefinition = updatedProjectDefinition;
-  }
-
-  getFeatureHoistedProviders(featureId: string): string[] {
-    return this.featureHoistedProviders[featureId];
   }
 
   getFeatureChildren(featureId: string): Record<string, unknown> {

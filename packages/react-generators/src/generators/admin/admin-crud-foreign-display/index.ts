@@ -42,7 +42,7 @@ const createMainTask = createTaskConfigBuilder(
       reactApollo: reactApolloProvider,
     },
     exports: {
-      adminCrudForeignDisplay: adminCrudForeignDisplayProvider,
+      adminCrudForeignDisplay: adminCrudForeignDisplayProvider.export(),
     },
     run({ adminCrudDisplayContainer, reactApollo }) {
       const modelName = adminCrudDisplayContainer.getModelName();

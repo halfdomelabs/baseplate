@@ -1,5 +1,6 @@
 import {
   makeImportAndFilePath,
+  projectScope,
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -54,7 +55,7 @@ const AdminLayoutGenerator = createGeneratorWithChildren({
     reactTailwind: reactTailwindProvider,
   },
   exports: {
-    adminLayout: adminLayoutProvider,
+    adminLayout: adminLayoutProvider.export(projectScope),
   },
   createGenerator(
     { links = [] },

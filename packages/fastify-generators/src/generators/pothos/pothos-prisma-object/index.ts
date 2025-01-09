@@ -1,7 +1,11 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
-import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  projectScope,
+  quot,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
@@ -18,6 +22,7 @@ import { writePothosExposeFieldFromDtoScalarField } from '@src/writers/pothos/in
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -44,8 +49,11 @@ const createMainTask = createTaskConfigBuilder(
       pothosSchema: pothosSchemaProvider,
     },
     exports: {
-      pothosPrismaObject: pothosPrismaObjectProvider,
-      pothosTypeOutput: pothosTypeOutputProvider,
+      pothosPrismaObject: pothosPrismaObjectProvider.export(pothosFieldScope),
+      pothosTypeOutput: pothosTypeOutputProvider.export(
+        projectScope,
+        `prisma-object-type:${modelName}`,
+      ),
     },
     run({ prismaOutput, pothosTypeFile, pothosSchema }) {
       const model = prismaOutput.getPrismaModel(modelName);
@@ -140,6 +148,7 @@ const createMainTask = createTaskConfigBuilder(
 const PothosPrismaObjectGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
+  scopes: [pothosFieldScope],
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },

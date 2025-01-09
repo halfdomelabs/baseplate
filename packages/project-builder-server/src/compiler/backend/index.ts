@@ -35,7 +35,7 @@ export function compileBackend(
     backendAppEntryType,
   );
 
-  const { projectDefinition, parsedProject, appCompiler } = appBuilder;
+  const { projectDefinition } = appBuilder;
 
   const packageName = projectDefinition.packageScope
     ? `@${projectDefinition.packageScope}/${app.name}`
@@ -47,10 +47,6 @@ export function compileBackend(
     packageName,
     description: `Backend app for ${projectDefinition.name}`,
     version: projectDefinition.version,
-    hoistedProviders: [
-      ...parsedProject.globalHoistedProviders,
-      ...appCompiler.getGlobalHoistedProviders(),
-    ],
     children: {
       projects: [
         buildDocker(projectDefinition, app),

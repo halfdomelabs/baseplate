@@ -1,6 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 
+import type { MergeAlgorithm } from '@src/merge/types.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
 export interface WriteFileOptions {
@@ -16,6 +17,10 @@ export interface WriteFileOptions {
    * Contents of the clean file (such that the diff will be merged into the existing file)
    */
   cleanContents?: Buffer;
+  /**
+   * Merge algorithms to use for the file
+   */
+  mergeAlgorithms?: MergeAlgorithm[];
 }
 
 /**
@@ -128,10 +133,16 @@ export interface GeneratorOutputFormatter {
   fileExtensions?: string[];
 }
 
+export interface GeneratorOutputMetadata {
+  generatorStepNodes: { id: string; label?: string }[];
+  generatorStepEdges: { id: string; source: string; target: string }[];
+}
+
 export interface GeneratorOutput {
   files: Map<string, FileData>;
   postWriteCommands: PostWriteCommand[];
   formatters: GeneratorOutputFormatter[];
+  metadata?: GeneratorOutputMetadata;
 }
 
 // TODO: Add unit tests

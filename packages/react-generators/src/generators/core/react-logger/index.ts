@@ -5,6 +5,7 @@ import type {
 
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -36,7 +37,7 @@ const ReactLoggerGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    reactLogger: reactLoggerProvider,
+    reactLogger: reactLoggerProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, react, typescript }) {
     node.addPackages({

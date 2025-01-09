@@ -2,6 +2,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -26,7 +27,7 @@ const ApolloErrorGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    apolloError: apolloErrorProvider,
+    apolloError: apolloErrorProvider.export(projectScope),
   },
   createGenerator(descriptor, { typescript }) {
     const [utilImport, utilPath] = makeImportAndFilePath(

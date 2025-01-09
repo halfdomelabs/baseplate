@@ -5,6 +5,7 @@ import type {
 
 import {
   makeImportAndFilePath,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -36,7 +37,7 @@ const ReactErrorGenerator = createGeneratorWithChildren({
     reactLogger: reactLoggerProvider,
   },
   exports: {
-    reactError: reactErrorProvider,
+    reactError: reactErrorProvider.export(projectScope),
   },
   createGenerator(descriptor, { typescript, reactLogger }) {
     const loggerFile = typescript.createTemplate(

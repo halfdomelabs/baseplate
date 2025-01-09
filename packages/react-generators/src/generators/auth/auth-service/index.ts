@@ -2,6 +2,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
+  projectScope,
   tsUtilsProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -35,7 +36,7 @@ const AuthServiceGenerator = createGeneratorWithChildren({
     reactUtils: reactUtilsProvider,
   },
   exports: {
-    authService: authServiceProvider,
+    authService: authServiceProvider.export(projectScope),
   },
   createGenerator(
     descriptor,

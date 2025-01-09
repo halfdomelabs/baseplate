@@ -5,7 +5,6 @@
  * @typedef {import('./typescript').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
  */
 
-// @ts-ignore
 import storybookPlugin from 'eslint-plugin-storybook';
 import tsEslint from 'typescript-eslint';
 

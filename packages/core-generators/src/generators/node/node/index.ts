@@ -13,6 +13,8 @@ import sortKeys from 'sort-keys';
 import sortPackageJson from 'sort-package-json';
 import { z } from 'zod';
 
+import { projectScope } from '@src/providers/scopes.js';
+
 import { projectProvider } from '../../../providers/index.js';
 
 const descriptorSchema = z.object({
@@ -23,8 +25,8 @@ const descriptorSchema = z.object({
   version: z.string().default('0.1.0'),
   private: z.boolean().default(true),
   path: z.string().default(''),
-  nodeVersion: z.string().default('20.15.1'),
-  pnpmVersion: z.string().default('9.10.0'),
+  nodeVersion: z.string().default('20.18.1'),
+  pnpmVersion: z.string().default('9.15.1'),
 });
 
 export type NodeGeneratorDescriptor = InferGeneratorDescriptor<
@@ -63,7 +65,7 @@ interface NodeDependencyEntry {
 
 const NodeGenerator = createGeneratorWithTasks({
   descriptorSchema,
-
+  scopes: [projectScope],
   getDefaultChildGenerators: () => ({
     projects: {
       isMultiple: true,
@@ -72,35 +74,30 @@ const NodeGenerator = createGeneratorWithTasks({
       provider: 'formatter',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/prettier',
-        peerProvider: true,
       },
     },
     typescript: {
       provider: 'typescript',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/typescript',
-        peerProvider: true,
       },
     },
     gitIgnore: {
       provider: 'node-git-ignore',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/node-git-ignore',
-        peerProvider: true,
       },
     },
     eslint: {
       provider: 'eslint',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/eslint',
-        peerProvider: true,
       },
     },
     tsUtils: {
       provider: 'ts-utils',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/ts-utils',
-        peerProvider: true,
       },
     },
     vitest: {
@@ -108,7 +105,6 @@ const NodeGenerator = createGeneratorWithTasks({
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/vitest',
-        peerProvider: true,
       },
     },
   }),
@@ -117,7 +113,7 @@ const NodeGenerator = createGeneratorWithTasks({
     const setupTask = taskBuilder.addTask({
       name: 'setup',
       exports: {
-        nodeSetup: nodeSetupProvider,
+        nodeSetup: nodeSetupProvider.export(projectScope),
       },
       run() {
         let isEsm = false;
@@ -137,8 +133,8 @@ const NodeGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'main',
       exports: {
-        node: nodeProvider,
-        project: projectProvider,
+        node: nodeProvider.export(projectScope),
+        project: projectProvider.export(projectScope),
       },
       taskDependencies: {
         setup: setupTask,

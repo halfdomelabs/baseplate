@@ -97,7 +97,7 @@ describe('executeGeneratorEntry', () => {
     const entry = buildGeneratorEntry({
       id: 'root',
       exportMap: {
-        simpleExp: simpleProviderType,
+        simpleExp: simpleProviderType.export(),
       },
       exports: { simpleExp: simpleProvider },
       build: (builder) => {

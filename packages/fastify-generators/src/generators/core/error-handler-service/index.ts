@@ -5,6 +5,7 @@ import type {
 
 import {
   createTypescriptTemplateConfig,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -68,7 +69,8 @@ const createSetupTask = createTaskConfigBuilder(() => ({
     configService: configServiceProvider,
   },
   exports: {
-    errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
+    errorHandlerServiceSetup:
+      errorHandlerServiceSetupProvider.export(projectScope),
   },
   run({ loggerService, fastifyServer, typescript, configService }) {
     const errorLoggerFile = typescript.createTemplate(errorHandlerFileConfig);
@@ -128,6 +130,14 @@ const createSetupTask = createTaskConfigBuilder(() => ({
             shouldFormat: true,
           }),
         );
+
+        await builder.apply(
+          copyFileAction({
+            source: 'utils/zod.ts',
+            destination: 'src/utils/zod.ts',
+            shouldFormat: true,
+          }),
+        );
       },
     };
   },
@@ -136,7 +146,7 @@ const createSetupTask = createTaskConfigBuilder(() => ({
 const createMainTask = createTaskConfigBuilder(() => ({
   name: 'main',
   exports: {
-    errorHandlerService: errorHandlerServiceProvider,
+    errorHandlerService: errorHandlerServiceProvider.export(projectScope),
   },
   run() {
     const errorFunction = TypescriptCodeUtils.createExpression(
@@ -152,6 +162,10 @@ const createMainTask = createTaskConfigBuilder(() => ({
       '%error-logger': {
         path: '@/src/services/error-logger.js',
         allowedImports: ['logError'],
+      },
+      '%utils-zod': {
+        path: '@/src/utils/zod.js',
+        allowedImports: ['handleZodRequestValidationError'],
       },
     };
 

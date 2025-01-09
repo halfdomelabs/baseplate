@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -26,7 +27,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     configService: configServiceProvider,
   },
   exports: {
-    fastifyPostmark: fastifyPostmarkProvider,
+    fastifyPostmark: fastifyPostmarkProvider.export(projectScope),
   },
   run({ node, typescript, configService }) {
     node.addPackages({

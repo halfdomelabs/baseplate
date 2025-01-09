@@ -1,6 +1,3 @@
-// do not need a file for each class
-/* eslint-disable max-classes-per-file */
-
 export class HttpError extends Error {
   constructor(
     message: string,

@@ -1,6 +1,7 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  projectScope,
   tsUtilsProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -70,7 +71,7 @@ const PrismaUtilsGenerator = createGeneratorWithChildren({
     tsUtils: tsUtilsProvider,
   },
   exports: {
-    prismaUtils: prismaUtilsProvider,
+    prismaUtils: prismaUtilsProvider.export(projectScope),
   },
   createGenerator(
     descriptor,

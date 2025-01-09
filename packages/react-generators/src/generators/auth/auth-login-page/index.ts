@@ -1,5 +1,6 @@
 import {
   makeImportAndFilePath,
+  projectScope,
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -15,7 +16,6 @@ import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/index.j
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
-import { reactLinkableProvider } from '@src/providers/linkable.js';
 import { reactRoutesProvider } from '@src/providers/routes.js';
 
 import { authServiceProvider } from '../auth-service/index.js';
@@ -42,8 +42,7 @@ const AuthLoginPageGenerator = createGeneratorWithChildren({
     reactComponents: reactComponentsProvider,
   },
   exports: {
-    authLoginPage: authLoginPageProvider,
-    reactLinkable: reactLinkableProvider,
+    authLoginPage: authLoginPageProvider.export(projectScope),
   },
   createGenerator(
     { allowedRoles },
@@ -93,9 +92,6 @@ const AuthLoginPageGenerator = createGeneratorWithChildren({
     return {
       getProviders: () => ({
         authLoginPage: {},
-        reactLinkable: {
-          getLink: () => `${reactRoutes.getRoutePrefix()}/login`,
-        },
       }),
       build: async (builder) => {
         await builder.apply(

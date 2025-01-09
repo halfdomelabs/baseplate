@@ -8,3 +8,4 @@ export * from './pothos-prisma-primary-key/index.js';
 export * from './pothos-prisma/index.js';
 export * from './pothos-types-file/index.js';
 export * from './pothos/index.js';
+export * from './providers/index.js';

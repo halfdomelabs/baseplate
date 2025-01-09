@@ -1,5 +1,6 @@
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -31,7 +32,7 @@ const AuthLayoutGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    authLayout: authLayoutProvider,
+    authLayout: authLayoutProvider.export(projectScope),
   },
   createGenerator({ name }, { reactRoutes, typescript }) {
     const [layoutImport, layoutPath] = makeImportAndFilePath(

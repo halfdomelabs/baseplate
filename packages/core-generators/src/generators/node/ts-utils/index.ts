@@ -4,6 +4,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { projectScope } from '@src/providers/scopes.js';
+
 import type { ImportMapper } from '../../../providers/index.js';
 
 import { typescriptProvider } from '../typescript/index.js';
@@ -58,7 +60,7 @@ const TsUtilsGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    tsUtils: tsUtilsProvider,
+    tsUtils: tsUtilsProvider.export(projectScope),
   },
   createGenerator(descriptor, { typescript }) {
     const usedTemplates: Record<string, boolean> = {};

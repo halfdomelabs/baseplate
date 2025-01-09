@@ -22,10 +22,6 @@ export function providerMapToNames(
   return Object.values(map).map((d) => d.name);
 }
 
-export function getGeneratorEntryExportNames(entry: GeneratorEntry): string[] {
-  return entry.tasks.flatMap((task) => providerMapToNames(task.exports));
-}
-
 /**
  * Recursively goes through generator children and extracts them into a flat list
  *

@@ -5,6 +5,7 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   prettierProvider,
+  projectScope,
   TypescriptCodeBlock,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -100,8 +101,8 @@ const ReactApolloGenerator = createGeneratorWithTasks({
         reactProxy: reactProxyProvider,
       },
       exports: {
-        reactApolloSetup: reactApolloSetupProvider,
-        reactApollo: reactApolloProvider,
+        reactApolloSetup: reactApolloSetupProvider.export(projectScope),
+        reactApollo: reactApolloProvider.export(projectScope),
       },
       run({
         node,

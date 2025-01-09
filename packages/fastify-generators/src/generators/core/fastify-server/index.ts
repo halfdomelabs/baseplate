@@ -4,6 +4,7 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 import {
   mergeCodeEntryOptions,
   nodeProvider,
+  projectScope,
   TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -56,7 +57,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    fastifyServer: fastifyServerProvider,
+    fastifyServer: fastifyServerProvider.export(projectScope),
   },
   createGenerator(
     descriptor,

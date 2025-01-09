@@ -6,6 +6,7 @@ import type {
 import {
   createTypescriptTemplateConfig,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -59,8 +60,8 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    loggerServiceSetup: loggerServiceSetupProvider,
-    loggerService: loggerServiceProvider,
+    loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
+    loggerService: loggerServiceProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, fastify, typescript }) {
     const mixins = createNonOverwriteableMap<

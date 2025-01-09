@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -37,7 +38,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     appModule: appModuleProvider,
   },
   exports: {
-    fastifyBullBoard: fastifyBullBoardProvider,
+    fastifyBullBoard: fastifyBullBoardProvider.export(projectScope),
   },
   run({
     node,
@@ -49,8 +50,10 @@ const createMainTask = createTaskConfigBuilder(() => ({
   }) {
     const queuesToTrack: TypescriptCodeExpression[] = [];
 
+    const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
+
     pothosSchema.registerSchemaFile(
-      `${appModule.getModuleFolder()}/schema/authenticate.mutations.ts`,
+      `${moduleFolder}/schema/authenticate.mutations.ts`,
     );
 
     node.addPackages({
@@ -82,8 +85,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
           },
           { importMappers },
         );
-
-        const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
 
         appModule.registerFieldEntry(
           'children',

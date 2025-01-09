@@ -5,6 +5,7 @@ import type {
   Provider,
   ProviderDependency,
   ProviderExport,
+  ProviderExportScope,
   ProviderType,
 } from './provider.js';
 
@@ -20,7 +21,7 @@ export interface GeneratorTaskInstance<
 }
 
 export type ProviderExportMap<T = Record<string, Provider>> = {
-  [key in keyof T]: ProviderType<T[key]> | ProviderExport<T[key]>;
+  [key in keyof T]: ProviderExport<T[key]>;
 };
 
 export type ProviderDependencyMap<T = Record<string, Provider>> = {
@@ -59,6 +60,10 @@ export interface GeneratorTask<
 export interface GeneratorConfig<
   Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor,
 > {
+  /**
+   * All children of the generator will be part of these scopes
+   */
+  scopes?: ProviderExportScope[];
   /**
    * Parses descriptors and extracts out the structure of the generator
    */

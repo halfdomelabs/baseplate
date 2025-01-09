@@ -39,7 +39,7 @@ const createMainTask = createTaskConfigBuilder(
         .reference(embeddedFormRef),
     },
     exports: {
-      adminCrudEmbeddedInput: adminCrudEmbeddedInputProvider,
+      adminCrudEmbeddedInput: adminCrudEmbeddedInputProvider.export(),
     },
     run({ adminCrudInputContainer, adminComponents, adminCrudEmbeddedForm }) {
       const formInfo = adminCrudEmbeddedForm.getEmbeddedFormInfo();

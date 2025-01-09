@@ -1,4 +1,7 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  projectScope,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
@@ -27,7 +30,7 @@ const ReactProxyGenerator = createGeneratorWithChildren({
     react: reactProvider,
   },
   exports: {
-    reactProxy: reactProxyProvider,
+    reactProxy: reactProxyProvider.export(projectScope),
   },
   createGenerator({ devBackendHost }, { react, reactConfig }) {
     reactConfig.addEnvVar('DEV_BACKEND_HOST', devBackendHost);

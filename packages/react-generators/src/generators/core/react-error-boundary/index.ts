@@ -1,6 +1,7 @@
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -32,7 +33,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     typescript: typescriptProvider,
   },
   exports: {
-    reactErrorBoundary: reactErrorBoundaryProvider,
+    reactErrorBoundary: reactErrorBoundaryProvider.export(projectScope),
   },
   run({ reactApp, reactError, reactComponents, typescript, node }) {
     node.addPackages({

@@ -24,20 +24,20 @@
     "watch": "nx run-many --target=watch --parallel=100 --output-style=stream"
   },
   "dependencies": {
-    "@changesets/cli": "2.27.10",
+    "@changesets/cli": "2.27.11",
     "@halfdomelabs/tools": "workspace:*"
   },
   "devDependencies": {
-    "check-dependency-version-consistency": "^4.1.0",
+    "check-dependency-version-consistency": "5.0.0",
     "nx": "20.1.1",
     "typescript": "catalog:"
   },
-  "packageManager": "pnpm@9.12.0",
+  "packageManager": "pnpm@9.15.1",
   "engines": {
     "node": "^20.0.0",
-    "pnpm": "^9.10.0"
+    "pnpm": "^9.15.0"
   },
   "volta": {
-    "node": "20.15.1"
+    "node": "20.18.1"
   }
 }

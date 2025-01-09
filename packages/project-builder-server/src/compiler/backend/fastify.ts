@@ -48,17 +48,14 @@ export function buildFastify(
       },
       $readme: {
         generator: '@halfdomelabs/fastify/core/readme',
-        peerProvider: true,
         projectName: `${projectDefinition.name} backend`,
       },
       $sentry: {
         generator: '@halfdomelabs/fastify/core/fastify-sentry',
-        peerProvider: true,
       },
       $redis: app.enableRedis
         ? {
             generator: '@halfdomelabs/fastify/core/fastify-redis',
-            peerProvider: true,
             defaultUrl: getRedisSettings(projectDefinition).url,
           }
         : undefined,
@@ -66,53 +63,43 @@ export function buildFastify(
         ? {
             $bull: {
               generator: '@halfdomelabs/fastify/bull/bullmq',
-              peerProvider: true,
             },
             $bullBoard: {
               generator: '@halfdomelabs/fastify/bull/fastify-bull-board',
-              peerProvider: true,
             },
           }
         : {}),
       $postmark: app.enablePostmark
         ? {
             generator: '@halfdomelabs/fastify/email/fastify-postmark',
-            peerProvider: true,
           }
         : undefined,
       $axios: app.enableAxios
         ? {
             generator: '@halfdomelabs/fastify/core/axios',
-            peerProvider: true,
           }
         : undefined,
       $sendgrid: app.enableSendgrid
         ? {
             generator: '@halfdomelabs/fastify/email/fastify-sendgrid',
-            peerProvider: true,
           }
         : undefined,
       $prisma: {
         generator: '@halfdomelabs/fastify/prisma/prisma',
-        peerProvider: true,
         defaultDatabaseUrl: getPostgresSettings(projectDefinition).url,
       },
       $prismaVitest: {
         generator: '@halfdomelabs/fastify/vitest/prisma-vitest',
-        peerProvider: true,
       },
       $prismaUtils: {
         generator: '@halfdomelabs/fastify/prisma/prisma-utils',
-        peerProvider: true,
       },
       $yoga: {
         generator: '@halfdomelabs/fastify/yoga/yoga-plugin',
         enableSubscriptions: app.enableSubscriptions,
-        peerProvider: true,
       },
       $pothos: {
         generator: '@halfdomelabs/fastify/pothos/pothos',
-        peerProvider: true,
       },
       $pothosPrisma: {
         generator: '@halfdomelabs/fastify/pothos/pothos-prisma',
@@ -127,7 +114,6 @@ export function buildFastify(
       $stripe: app.enableStripe
         ? {
             generator: '@halfdomelabs/fastify/stripe/fastify-stripe',
-            peerProvider: true,
           }
         : undefined,
       ...parsedProject.fastifyChildren,

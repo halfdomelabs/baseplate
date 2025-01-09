@@ -28,13 +28,13 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
-    reactRoutes: reactRoutesProvider.dependency().modifiedInBuild(),
+    reactRoutes: reactRoutesProvider.dependency(),
     typescript: typescriptProvider,
     reactNotFound: reactNotFoundProvider.dependency().optional(),
   },
   exports: {
-    reactRoutes: reactRoutesProvider,
-    reactRoutesReadOnly: reactRoutesReadOnlyProvider,
+    reactRoutes: reactRoutesProvider.export(),
+    reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(),
   },
   createGenerator(
     { name, layoutKey, isPassthrough },

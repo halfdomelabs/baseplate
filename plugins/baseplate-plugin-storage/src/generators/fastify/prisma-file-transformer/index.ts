@@ -7,10 +7,7 @@ import {
   prismaOutputProvider,
   prismaUtilsProvider,
 } from '@halfdomelabs/fastify-generators';
-import {
-  createGeneratorWithChildren,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { storageModuleProvider } from '../storage-module/index.js';
@@ -24,11 +21,6 @@ export type PrismaFileTransformerDescriptor = GeneratorDescriptor<
   typeof descriptorSchema
 >;
 
-export type PrismaFileTransformerProvider = unknown;
-
-export const prismaFileTransformerProvider =
-  createProviderType<PrismaFileTransformerProvider>('prisma-file-transformer');
-
 const PrismaFileTransformerGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
@@ -38,9 +30,7 @@ const PrismaFileTransformerGenerator = createGeneratorWithChildren({
     prismaOutput: prismaOutputProvider,
     prismaUtils: prismaUtilsProvider,
   },
-  exports: {
-    prismaFileTransformer: prismaFileTransformerProvider,
-  },
+  exports: {},
   createGenerator(
     { name, category },
     { prismaOutput, prismaCrudServiceSetup, storageModule, prismaUtils },

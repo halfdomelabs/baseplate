@@ -21,8 +21,6 @@ export interface AppCompiler {
   getChildrenForFeature: (
     featureId: string,
   ) => Record<string, AnyGeneratorDescriptor>;
-  addGlobalHoistedProviders: (providers: string[] | string) => void;
-  getGlobalHoistedProviders: () => string[];
   addRootChildren: (children: Record<string, AnyGeneratorDescriptor>) => void;
   getRootChildren: () => Partial<Record<string, AnyGeneratorDescriptor>>;
 }
@@ -31,7 +29,6 @@ export function createAppCompiler(): AppCompiler {
   const children: Partial<
     Record<string, Record<string, AnyGeneratorDescriptor>>
   > = {};
-  const hoistedProviders: string[] = [];
   let rootChildren: Partial<Record<string, AnyGeneratorDescriptor>> = {};
 
   return {
@@ -40,14 +37,6 @@ export function createAppCompiler(): AppCompiler {
     },
     getChildrenForFeature(featureId) {
       return children[featureId] ?? {};
-    },
-    addGlobalHoistedProviders(providers) {
-      hoistedProviders.push(
-        ...(Array.isArray(providers) ? providers : [providers]),
-      );
-    },
-    getGlobalHoistedProviders() {
-      return hoistedProviders;
     },
     addRootChildren(newChildren) {
       rootChildren = safeMerge(rootChildren, newChildren);
@@ -72,7 +61,7 @@ interface PluginAppCompiler<TAppDefinition = AppConfig> {
 }
 
 /**
- * Spec for adding children and hoisted providers to the compilation flow
+ * Spec for adding children to the compilation flow
  */
 export interface AppCompilerSpec extends PluginSpecImplementation {
   registerAppCompiler: <TAppDefinition>(

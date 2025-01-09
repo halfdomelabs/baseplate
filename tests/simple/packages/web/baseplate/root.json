@@ -15,20 +15,15 @@
           "router": {"children": {"routes": [null]}},
           "$tailwind": {"generator": "@halfdomelabs/react/core/react-tailwind"},
           "proxy": {"devBackendHost": "http://localhost:3001"},
-          "$sentry": {
-            "generator": "@halfdomelabs/react/core/react-sentry",
-            "peerProvider": true
-          },
+          "$sentry": {"generator": "@halfdomelabs/react/core/react-sentry"},
           "$apollo": {
             "generator": "@halfdomelabs/react/apollo/react-apollo",
             "devApiEndpoint": "/api/graphql",
             "schemaLocation": "../backend/schema.graphql",
-            "enableSubscriptions": false,
-            "peerProvider": true
+            "enableSubscriptions": false
           },
           "$apolloError": {
-            "generator": "@halfdomelabs/react/apollo/apollo-error",
-            "peerProvider": true
+            "generator": "@halfdomelabs/react/apollo/apollo-error"
           }
         }
       }
