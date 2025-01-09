@@ -35,7 +35,7 @@ const adminCrudTextInputType = createAdminCrudInputType({
 export const adminCrudForeignInputSchema = z.object({
   type: z.literal('foreign'),
   label: z.string().min(1),
-  localRelationName: zRef(z.string(), {
+  localRelationRef: zRef(z.string(), {
     type: modelLocalRelationEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },

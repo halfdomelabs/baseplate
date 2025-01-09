@@ -15,7 +15,7 @@ import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
 // Table Columns
 export const adminCrudForeignDisplaySchema = z.object({
   type: z.literal('foreign'),
-  localRelationName: zRef(z.string(), {
+  localRelationRef: zRef(z.string(), {
     type: modelLocalRelationEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },

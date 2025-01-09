@@ -62,7 +62,7 @@ function ColumnForm({
           <SelectInput.LabelledController
             label="Local Relation Name"
             control={control}
-            name={`table.columns.${idx}.display.localRelationName`}
+            name={`table.columns.${idx}.display.localRelationRef`}
             options={localRelationOptions}
           />
           <TextInput.LabelledController

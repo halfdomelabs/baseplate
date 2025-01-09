@@ -16,9 +16,9 @@ function compileAdminCrudForeignDisplay(
 ): unknown {
   const model = builder.parsedProject.getModelById(modelId);
   const relation = model.model.relations?.find(
-    (r) => r.id === field.localRelationName,
+    (r) => r.id === field.localRelationRef,
   );
-  const localRelationName = builder.nameFromId(field.localRelationName);
+  const localRelationName = builder.nameFromId(field.localRelationRef);
 
   if (!relation) {
     throw new Error(

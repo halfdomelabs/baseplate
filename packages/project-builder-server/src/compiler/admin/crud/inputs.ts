@@ -62,12 +62,12 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
     name: 'foreign',
     compileInput: (definition, { definitionContainer, model }) => {
       const relation = model.model.relations?.find(
-        (r) => r.id === definition.localRelationName,
+        (r) => r.id === definition.localRelationRef,
       );
 
       if (!relation) {
         throw new Error(
-          `Could not find relation ${definition.localRelationName} in model ${model.name}`,
+          `Could not find relation ${definition.localRelationRef} in model ${model.name}`,
         );
       }
 
