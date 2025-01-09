@@ -39,23 +39,23 @@ export const modelScalarFieldSchema = zEnt(
           updatedAt: z.boolean().optional(),
           defaultToNow: z.boolean().optional(),
           // enum options
-          enumType: zRef(z.string().optional(), {
+          enumRef: zRef(z.string().optional(), {
             type: modelEnumEntityType,
             onDelete: 'RESTRICT',
           }),
-          defaultEnumValue: z.string().optional(),
+          defaultEnumValueRef: z.string().optional(),
         })
         .transform((val) => ({
           ...val,
-          ...(val.enumType ? {} : { defaultEnumValue: undefined }),
+          ...(val.enumRef ? {} : { defaultEnumValueRef: undefined }),
         }))
         .optional(),
       (builder) => {
         builder.addReference({
           type: modelEnumValueEntityType,
           onDelete: 'RESTRICT',
-          path: 'defaultEnumValue',
-          parentPath: 'enumType',
+          path: 'defaultEnumValueRef',
+          parentPath: 'enumRef',
         });
       },
     ),
@@ -81,12 +81,12 @@ export const modelScalarFieldSchema = zEnt(
     }
   })
   .transform((value) => {
-    if (value.type !== 'enum' && value.options?.enumType) {
+    if (value.type !== 'enum' && value.options?.enumRef) {
       return {
         ...value,
         options: {
           ...value.options,
-          enumType: undefined,
+          enumRef: undefined,
         },
       };
     }

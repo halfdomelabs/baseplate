@@ -41,12 +41,12 @@ function buildScalarField(
       updatedAt: options.updatedAt,
       default: options.default,
       defaultEnumValue: builder.definitionContainer.nameFromId(
-        options.defaultEnumValue,
+        options.defaultEnumValueRef,
       ),
     }),
     optional: undefinedIfFalsy(field.isOptional),
     unique: undefinedIfFalsy(isUnique),
-    enumType: options.enumType && builder.nameFromId(options.enumType),
+    enumType: options.enumRef && builder.nameFromId(options.enumRef),
   };
 }
 

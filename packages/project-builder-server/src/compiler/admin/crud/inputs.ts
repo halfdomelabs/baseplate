@@ -28,18 +28,18 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
       const fieldConfig = model.model.fields.find(
         (f) => f.id === definition.modelFieldRef,
       );
-      if (fieldConfig?.type !== 'enum' || !fieldConfig.options?.enumType) {
+      if (fieldConfig?.type !== 'enum' || !fieldConfig.options?.enumRef) {
         throw new Error(
           `Admin enum input ${definition.modelFieldRef} is not an enum`,
         );
       }
       const enumBlock = EnumUtils.byId(
         definitionContainer.definition,
-        fieldConfig.options.enumType,
+        fieldConfig.options.enumRef,
       );
       if (!enumBlock) {
         throw new Error(
-          `Could not find enum type ${fieldConfig.options.enumType ?? ''}`,
+          `Could not find enum type ${fieldConfig.options.enumRef ?? ''}`,
         );
       }
       const fieldName = definitionContainer.nameFromId(
