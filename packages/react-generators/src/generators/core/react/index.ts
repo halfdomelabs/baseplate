@@ -202,59 +202,50 @@ const ReactGenerator = createGeneratorWithTasks({
       provider: 'react-app',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-app',
-        peerProvider: true,
       },
     },
     router: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-router',
-        peerProvider: true,
       },
     },
     logger: {
       provider: 'react-logger',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-logger',
-        peerProvider: true,
       },
     },
     components: {
       provider: 'react-components',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-components',
-        peerProvider: true,
       },
     },
     config: {
       provider: 'react-config',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-config',
-        peerProvider: true,
       },
     },
     proxy: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-proxy',
-        peerProvider: true,
       },
     },
     error: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-error',
-        peerProvider: true,
       },
     },
     utils: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-utils',
-        peerProvider: true,
       },
     },
     errorBoundary: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-error-boundary',
-        peerProvider: true,
       },
     },
   }),

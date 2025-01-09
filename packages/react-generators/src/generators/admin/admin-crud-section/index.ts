@@ -41,7 +41,6 @@ const AdminCrudSectionGenerator = createGeneratorWithChildren({
       defaultDescriptor: {
         generator: '@halfdomelabs/react/admin/admin-crud-queries',
         modelName,
-        peerProvider: true,
       },
     },
   }),

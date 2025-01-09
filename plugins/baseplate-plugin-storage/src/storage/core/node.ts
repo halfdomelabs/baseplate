@@ -78,7 +78,6 @@ export default createPlatformPluginExport({
           $uploadComponents: {
             generator:
               '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
-            peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
         });
@@ -98,7 +97,6 @@ export default createPlatformPluginExport({
           $uploadComponents: {
             generator:
               '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
-            peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
         });

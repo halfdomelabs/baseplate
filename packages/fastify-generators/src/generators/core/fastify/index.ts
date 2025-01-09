@@ -65,49 +65,42 @@ const FastifyGenerator = createGeneratorWithTasks({
       provider: 'logger-service',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/logger-service',
-        peerProvider: true,
       },
     },
     rootModule: {
       provider: 'root-module',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/root-module',
-        peerProvider: true,
       },
     },
     errorHandler: {
       provider: 'error-handler-service',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/error-handler-service',
-        peerProvider: true,
       },
     },
     config: {
       provider: 'config-service',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/config-service',
-        peerProvider: true,
       },
     },
     server: {
       provider: 'fastify-server',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/fastify-server',
-        peerProvider: true,
       },
     },
     healthCheck: {
       provider: 'fastify-health-check',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/fastify-health-check',
-        peerProvider: true,
       },
     },
     requestContext: {
       provider: 'request-context',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/request-context',
-        peerProvider: true,
       },
     },
     gracefulShutdown: {
@@ -119,21 +112,18 @@ const FastifyGenerator = createGeneratorWithTasks({
       provider: 'fastify-vitest',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/vitest/fastify-vitest',
-        peerProvider: true,
       },
     },
     serviceContext: {
       provider: 'service-context',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/service-context',
-        peerProvider: true,
       },
     },
     requestServiceContext: {
       provider: 'request-service-context',
       defaultDescriptor: {
         generator: '@halfdomelabs/fastify/core/request-service-context',
-        peerProvider: true,
       },
     },
     cookies: {

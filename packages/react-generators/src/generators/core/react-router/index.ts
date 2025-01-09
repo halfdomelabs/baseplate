@@ -49,7 +49,6 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     notFoundHandler: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-not-found-handler',
-        peerProvider: true,
       },
     },
   }),

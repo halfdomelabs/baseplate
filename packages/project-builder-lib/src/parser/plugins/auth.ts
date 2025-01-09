@@ -105,11 +105,9 @@ export const AuthPlugin: ParserPlugin = {
     hooks.addFastifyChildren({
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth',
-        peerProvider: true,
       },
       $pothosAuth: {
         generator: '@halfdomelabs/fastify/pothos/pothos-auth',
-        peerProvider: true,
       },
     });
 
@@ -127,7 +125,6 @@ export const AuthPlugin: ParserPlugin = {
           roleService: {
             name: 'AuthRoleService',
             generator: '@halfdomelabs/fastify/core/service-file',
-            peerProvider: true,
             children: {
               $roles: {
                 generator: '@halfdomelabs/fastify/auth/role-service',
@@ -151,7 +148,6 @@ export const AuthPlugin: ParserPlugin = {
             $passwordAuthService: {
               name: 'PasswordAuthService',
               generator: '@halfdomelabs/fastify/auth/password-auth-service',
-              peerProvider: true,
             },
             $passwordAuthMutations: {
               name: 'PasswordAuthMutations',

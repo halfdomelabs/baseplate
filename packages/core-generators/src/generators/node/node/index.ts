@@ -74,35 +74,30 @@ const NodeGenerator = createGeneratorWithTasks({
       provider: 'formatter',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/prettier',
-        peerProvider: true,
       },
     },
     typescript: {
       provider: 'typescript',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/typescript',
-        peerProvider: true,
       },
     },
     gitIgnore: {
       provider: 'node-git-ignore',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/node-git-ignore',
-        peerProvider: true,
       },
     },
     eslint: {
       provider: 'eslint',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/eslint',
-        peerProvider: true,
       },
     },
     tsUtils: {
       provider: 'ts-utils',
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/ts-utils',
-        peerProvider: true,
       },
     },
     vitest: {
@@ -110,7 +105,6 @@ const NodeGenerator = createGeneratorWithTasks({
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
         generator: '@halfdomelabs/core/node/vitest',
-        peerProvider: true,
       },
     },
   }),
