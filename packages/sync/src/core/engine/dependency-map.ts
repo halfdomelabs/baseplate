@@ -42,24 +42,29 @@ function buildGeneratorIdToScopesMapRecursive(
       const { exports } = taskExport;
 
       for (const { scope, exportName } of exports) {
-        // find the parent task ID that offers the scope
-        const parentTaskId = newParentTaskIds.findLast((id) =>
-          generatorIdToScopesMap[id].scopes.includes(scope.name),
-        );
+        // find the parent task ID that offers the scope (if undefined, it is the default scope of the entry itself)
+        const parentTaskId = scope
+          ? newParentTaskIds.findLast((id) =>
+              generatorIdToScopesMap[id].scopes.includes(scope.name),
+            )
+          : entry.id;
 
         if (!parentTaskId) {
           throw new Error(
-            `Could not find parent generator with scope ${scope.name} at ${entry.id}`,
+            `Could not find parent generator with scope ${scope?.name} at ${entry.id}`,
           );
         }
 
         const { providers } = generatorIdToScopesMap[parentTaskId];
         const providerId = makeProviderId(taskExport.name, exportName);
 
-        if (providers.has(providerId)) {
+        const existingProviderId = providers.get(providerId);
+
+        if (existingProviderId) {
           throw new Error(
-            `Duplicate scoped provider export detected between ${entry.id} and ${providers.get(providerId)} in scope ${scope.name} at ${parentTaskId} for provider ${taskExport.name}.
-           Please make sure that the provider export names are unique within the scope (and any other scopes at that level).`,
+            `Duplicate scoped provider export detected between ${entry.id} and ${existingProviderId} ` +
+              `in scope (${scope?.name ?? 'default'}) at ${parentTaskId} for provider ${taskExport.name}. ` +
+              `Please make sure that the provider export names are unique within the scope (and any other scopes at that level).`,
           );
         }
         providers.set(providerId, task.id);

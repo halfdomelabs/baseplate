@@ -198,6 +198,61 @@ describe('resolveTaskDependencies', () => {
     });
   });
 
+  it('should handle default scopes correctly', () => {
+    // Arrange
+    const rootEntry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        scopes: [scope1],
+      },
+      {
+        exports: {
+          // Export to scope1
+          provider1: providerOne.export(scope1),
+        },
+      },
+    );
+
+    const middleEntry = buildTestGeneratorEntry(
+      {
+        id: 'middle',
+      },
+      {
+        exports: {
+          // Export only to default scope of children
+          provider2: providerOne.export(),
+        },
+      },
+    );
+
+    const leafEntry = buildTestGeneratorEntry(
+      {
+        id: 'leaf',
+      },
+      {
+        dependencies: {
+          // Should resolve to root's provider2 since it's in the default scope of middle
+          dep1: providerOne.dependency(),
+        },
+      },
+    );
+
+    middleEntry.children.push(leafEntry);
+    rootEntry.children.push(middleEntry);
+
+    // Act
+    const dependencyMap = resolveTaskDependencies(rootEntry, testLogger);
+
+    // Assert
+    expect(dependencyMap).toEqual({
+      'root#main': {},
+      'middle#main': {},
+      'leaf#main': {
+        dep1: { id: 'middle#main', options: {} },
+      },
+    });
+  });
+
   it('should handle providers with custom export names', () => {
     // Arrange
     const entry = buildTestGeneratorEntry(

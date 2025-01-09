@@ -51,19 +51,19 @@ describe('getSortedRunSteps', () => {
   });
 
   describe('with inter-dependent tasks', () => {
-    const providerOne = createProviderType('providerOne');
-    const providerTwo = createProviderType('providerTwo');
-    const providerThree = createProviderType('providerThree');
+    const providerOne = createProviderType('provider-one');
+    const providerTwo = createProviderType('provider-two');
+    const providerThree = createProviderType('provider-three');
 
     it('sorts a list with task inter-dependencies', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp',
-          exports: { exp: providerOne },
+          exports: { exp: providerOne.export() },
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
-          exports: { exp2: providerTwo },
+          exports: { exp2: providerTwo.export() },
           dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({
@@ -105,16 +105,16 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp',
-          exports: { exp: providerOne },
+          exports: { exp: providerOne.export() },
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
-          exports: { exp2: providerTwo },
+          exports: { exp2: providerTwo.export() },
           dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp3',
-          exports: { exp3: providerThree },
+          exports: { exp3: providerThree.export() },
           dependentTaskIds: ['entryOne#exp2'],
         }),
         buildTestGeneratorTaskEntry({
@@ -159,11 +159,11 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp',
-          exports: { exp: providerOne },
+          exports: { exp: providerOne.export() },
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
-          exports: { exp2: providerTwo },
+          exports: { exp2: providerTwo.export() },
           dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({

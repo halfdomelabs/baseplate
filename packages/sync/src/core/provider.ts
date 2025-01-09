@@ -46,7 +46,7 @@ export interface ProviderType<P = Provider> {
   /**
    * Creates an export config for the provider that can be used in export maps
    */
-  export(scope: ProviderExportScope, exportName?: string): ProviderExport<P>;
+  export(scope?: ProviderExportScope, exportName?: string): ProviderExport<P>;
 }
 
 export interface ProviderDependencyOptions {
@@ -99,8 +99,14 @@ export interface ProviderExport<P = Provider> {
    * Which scopes the export is available in
    */
   readonly exports: {
-    readonly scope: ProviderExportScope;
-    readonly exportName?: string;
+    /**
+     * The scope the export is available in (if undefined, it is available to the default scope of its children only)
+     */
+    readonly scope: ProviderExportScope | undefined;
+    /**
+     * The name of the export (if undefined, it is the default export)
+     */
+    readonly exportName: string | undefined;
   }[];
   /**
    * Adds an export to the provider

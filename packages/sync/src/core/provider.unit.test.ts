@@ -25,7 +25,7 @@ describe('createProviderType', () => {
     const provider = createProviderType<TestProvider>('foo');
     const referenceDependency = provider.dependency().reference('bar');
     expect(referenceDependency.options.optional).toBeUndefined();
-    expect(referenceDependency.options.reference).toBe('bar');
+    expect(referenceDependency.options.exportName).toBe('bar');
     expectTypeOf<
       InferDependencyProvider<typeof referenceDependency>
     >().toEqualTypeOf<TestProvider>();
@@ -37,7 +37,7 @@ describe('createProviderType', () => {
       .dependency()
       .optionalReference('bar');
     expect(optionalReferenceDependency.options.optional).toBe(true);
-    expect(optionalReferenceDependency.options.reference).toBe('bar');
+    expect(optionalReferenceDependency.options.exportName).toBe('bar');
     expectTypeOf<
       InferDependencyProvider<typeof optionalReferenceDependency>
     >().toEqualTypeOf<TestProvider | undefined>();
@@ -49,7 +49,7 @@ describe('createProviderType', () => {
       .dependency()
       .optionalReference(undefined);
     expect(optionalReferenceDependency.options.optional).toBe(true);
-    expect(optionalReferenceDependency.options.reference).toBeUndefined();
+    expect(optionalReferenceDependency.options.exportName).toBe('');
     expectTypeOf<
       InferDependencyProvider<typeof optionalReferenceDependency>
     >().toEqualTypeOf<TestProvider | undefined>();
