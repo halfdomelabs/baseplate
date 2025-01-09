@@ -21,7 +21,7 @@ const createMainTask = createTaskConfigBuilder(({ label }: Descriptor) => ({
     adminCrudColumnContainer: adminCrudColumnContainerProvider,
   },
   exports: {
-    adminCrudDisplayContainer: adminCrudDisplayContainerProvider,
+    adminCrudDisplayContainer: adminCrudDisplayContainerProvider.export(),
   },
   run({ adminCrudColumnContainer }) {
     let display: AdminCrudDisplay | null = null;

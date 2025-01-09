@@ -1,5 +1,6 @@
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -35,7 +36,7 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    reactNotFound: reactNotFoundProvider,
+    reactNotFound: reactNotFoundProvider.export(projectScope),
   },
   createGenerator({ layoutKey }, { reactPages, reactComponents, typescript }) {
     const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(

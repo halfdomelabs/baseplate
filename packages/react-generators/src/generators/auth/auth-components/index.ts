@@ -2,6 +2,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -32,7 +33,7 @@ const AuthComponentsGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    authComponents: authComponentsProvider,
+    authComponents: authComponentsProvider.export(projectScope),
   },
   createGenerator({ loginPath }, { authHooks, reactComponents, typescript }) {
     const [, requireAuthPath] = makeImportAndFilePath(

@@ -33,8 +33,8 @@ const ReactRoutesGenerator = createGeneratorWithChildren({
     reactNotFound: reactNotFoundProvider.dependency().optional(),
   },
   exports: {
-    reactRoutes: reactRoutesProvider,
-    reactRoutesReadOnly: reactRoutesReadOnlyProvider,
+    reactRoutes: reactRoutesProvider.export(),
+    reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(),
   },
   createGenerator(
     { name, layoutKey, isPassthrough },

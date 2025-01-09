@@ -5,6 +5,7 @@ import type {
 
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   TypescriptCodeWrapper,
   typescriptProvider,
@@ -59,9 +60,9 @@ const ReactRouterGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    reactRoutes: reactRoutesProvider,
-    reactRoutesReadOnly: reactRoutesReadOnlyProvider,
-    reactRouter: reactRouterProvider,
+    reactRoutes: reactRoutesProvider.export(projectScope),
+    reactRoutesReadOnly: reactRoutesReadOnlyProvider.export(projectScope),
+    reactRouter: reactRouterProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, react, reactApp, typescript }) {
     node.addPackage('react-router-dom', '6.22.3');

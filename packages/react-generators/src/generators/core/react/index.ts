@@ -10,6 +10,7 @@ import {
   nodeGitIgnoreProvider,
   nodeProvider,
   nodeSetupProvider,
+  projectScope,
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -63,7 +64,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
   },
 
   exports: {
-    react: reactProvider,
+    react: reactProvider.export(projectScope),
   },
 
   run({ node, typescript, nodeGitIgnore, eslint }) {

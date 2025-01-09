@@ -48,7 +48,7 @@ const AdminCrudListGenerator = createGeneratorWithChildren({
     reactError: reactErrorProvider,
   },
   exports: {
-    adminCrudColumnContainer: adminCrudColumnContainerProvider,
+    adminCrudColumnContainer: adminCrudColumnContainerProvider.export(),
   },
   createGenerator(
     { modelName, disableCreate },

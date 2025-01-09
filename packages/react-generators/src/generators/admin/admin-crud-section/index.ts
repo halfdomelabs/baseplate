@@ -1,5 +1,6 @@
 import {
   createGeneratorWithChildren,
+  createProviderExportScope,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -13,6 +14,11 @@ export type AdminCrudSectionProvider = unknown;
 
 export const adminCrudSectionProvider =
   createProviderType<AdminCrudSectionProvider>('admin-crud-section');
+
+export const adminCrudSectionScope = createProviderExportScope(
+  'react/admin-crud-section',
+  'Scope for admin crud section',
+);
 
 const AdminCrudSectionGenerator = createGeneratorWithChildren({
   descriptorSchema,
@@ -40,8 +46,9 @@ const AdminCrudSectionGenerator = createGeneratorWithChildren({
     },
   }),
   dependencies: {},
+  scopes: [adminCrudSectionScope],
   exports: {
-    adminCrudSection: adminCrudSectionProvider,
+    adminCrudSection: adminCrudSectionProvider.export(adminCrudSectionScope),
   },
   createGenerator() {
     return {

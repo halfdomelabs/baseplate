@@ -1,4 +1,7 @@
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  projectScope,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
@@ -25,7 +28,7 @@ const AuthApolloGenerator = createGeneratorWithChildren({
     authService: authServiceProvider,
   },
   exports: {
-    authApollo: authApolloProvider,
+    authApollo: authApolloProvider.export(projectScope),
   },
   createGenerator(descriptor, { reactApolloSetup, authService }) {
     return {

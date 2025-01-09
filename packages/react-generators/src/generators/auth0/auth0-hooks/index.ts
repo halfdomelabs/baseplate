@@ -1,5 +1,6 @@
 import {
   makeImportAndFilePath,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -26,7 +27,7 @@ const Auth0HooksGenerator = createGeneratorWithChildren({
     reactError: reactErrorProvider,
   },
   exports: {
-    authHooks: authHooksProvider,
+    authHooks: authHooksProvider.export(projectScope),
   },
   createGenerator({ userQueryName }, { typescript, reactApollo, reactError }) {
     const currentUserFields: string[] = [];

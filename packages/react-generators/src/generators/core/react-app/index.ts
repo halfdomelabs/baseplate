@@ -5,6 +5,7 @@ import type {
 import type { OrderedList } from '@halfdomelabs/sync';
 
 import {
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -38,7 +39,7 @@ const ReactAppGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    reactApp: reactAppProvider,
+    reactApp: reactAppProvider.export(projectScope),
   },
   createGenerator(descriptor, { react, typescript }) {
     const renderWrappers = createOrderedList<TypescriptCodeWrapper>();

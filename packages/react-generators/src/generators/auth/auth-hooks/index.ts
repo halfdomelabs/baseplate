@@ -3,6 +3,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -42,7 +43,7 @@ const AuthHooksGenerator = createGeneratorWithChildren({
     node: nodeProvider,
   },
   exports: {
-    authHooks: authHooksProvider,
+    authHooks: authHooksProvider.export(projectScope),
   },
   createGenerator(
     { userQueryName },
