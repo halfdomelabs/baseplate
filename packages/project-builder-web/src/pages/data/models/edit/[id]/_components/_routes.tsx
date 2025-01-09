@@ -6,7 +6,7 @@ import { Navigate } from 'react-router-dom';
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createCrumbFromUid, createRouteCrumb } from '@src/types/routes';
 
-import { ModelEditLayout } from './_layout';
+import { ModelEditLayout } from '../../_layout';
 import ModelEditGraphQLPage from './graphql.page';
 import ModelEditModelPage from './index.page';
 import ModelEditServicePage from './service.page';
