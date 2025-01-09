@@ -62,7 +62,7 @@ function guessModelTypeFromFieldName(
   // try to find a model with the same feature and a similar name
   const modelWithFeature = tryFindModel(
     (m) =>
-      m.feature === m.feature &&
+      m.featureRef === m.featureRef &&
       m.name.toLowerCase().includes(name.toLowerCase()),
   );
   if (modelWithFeature) return modelWithFeature;

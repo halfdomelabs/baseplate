@@ -22,7 +22,7 @@ registerEntityTypeUrl(
 
 function ModelEditServicePage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
-    schema: modelBaseSchema.omit({ name: true, feature: true }),
+    schema: modelBaseSchema.omit({ name: true, featureRef: true }),
   });
   const { control, watch, getValues, setValue } = form;
 

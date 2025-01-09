@@ -38,7 +38,7 @@ export const Auth0Plugin: ParserPlugin = {
 
     hooks.mergeModel({
       name: ModelUtils.byIdOrThrow(projectDefinition, auth.userModelRef).name,
-      feature: auth.accountsFeatureRef,
+      featureRef: auth.accountsFeatureRef,
       model: {
         primaryKeyFieldRefs: ['id'],
         uniqueConstraints: [
@@ -81,7 +81,7 @@ export const Auth0Plugin: ParserPlugin = {
     hooks.mergeModel({
       name: ModelUtils.byIdOrThrow(projectDefinition, auth.userRoleModelRef)
         .name,
-      feature: auth.accountsFeatureRef,
+      featureRef: auth.accountsFeatureRef,
       model: {
         fields: userRoleFields,
         relations: userRoleRelations,

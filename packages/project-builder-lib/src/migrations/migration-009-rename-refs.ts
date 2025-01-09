@@ -97,6 +97,14 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
             defaultEnumValue: 'defaultEnumValueRef',
           }),
         ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'models.*',
+          renameObjectKeysTransform({
+            feature: 'featureRef',
+          }),
+        ),
     );
     return transform(config) as unknown;
   },

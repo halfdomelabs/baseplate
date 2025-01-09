@@ -230,7 +230,7 @@ export type ModelServiceConfig = z.infer<typeof modelServiceSchema>;
 export const modelBaseSchema = z.object({
   id: z.string().default(() => modelEntityType.generateNewId()),
   name: VALIDATORS.PASCAL_CASE_STRING,
-  feature: zRef(z.string().min(1), {
+  featureRef: zRef(z.string().min(1), {
     type: featureEntityType,
     onDelete: 'RESTRICT',
   }),

@@ -167,7 +167,7 @@ export class ParsedProjectDefinition {
             }
 
             // merge model in
-            if (existingModel.feature !== model.feature) {
+            if (existingModel.featureRef !== model.featureRef) {
               throw new Error(
                 `Model ${model.name} has conflicting feature paths in ${plugin.name}`,
               );
