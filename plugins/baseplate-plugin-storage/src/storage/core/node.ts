@@ -51,8 +51,6 @@ export default createPlatformPluginExport({
             })),
           } satisfies StorageModuleDescriptor,
         });
-
-        appCompiler.addGlobalHoistedProviders('storage-module');
       },
     });
 

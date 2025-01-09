@@ -40,11 +40,6 @@ export interface PluginMergeModelInput
 
 export interface PluginHooks {
   mergeModel: (model: PluginMergeModelInput) => void;
-  addGlobalHoistedProviders: (providers: string | string[]) => void;
-  addFeatureHoistedProviders: (
-    featureId: string,
-    providers: string | string[],
-  ) => void;
   addFastifyChildren: (children: Record<string, unknown>) => void;
   addFeatureChildren: (
     featureId: string,

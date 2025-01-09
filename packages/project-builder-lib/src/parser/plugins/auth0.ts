@@ -99,7 +99,6 @@ export const Auth0Plugin: ParserPlugin = {
     });
 
     // add feature providers
-    hooks.addFeatureHoistedProviders(auth.authFeaturePath, ['role-service']);
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $authContext: {
         generator: '@halfdomelabs/fastify/auth/auth-context',
