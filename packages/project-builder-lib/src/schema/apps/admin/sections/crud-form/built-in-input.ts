@@ -75,12 +75,12 @@ const adminCrudEnumInputType = createAdminCrudInputType({
 export const adminCrudEmbeddedInputSchema = z.object({
   type: z.literal('embedded'),
   label: z.string().min(1),
-  modelRelation: zRef(z.string(), {
+  modelRelationRef: zRef(z.string(), {
     type: modelForeignRelationEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
   }),
-  embeddedFormName: zRef(z.string(), {
+  embeddedFormRef: zRef(z.string(), {
     type: adminCrudEmbeddedFormEntityType,
     parentPath: { context: 'admin-section' },
     onDelete: 'RESTRICT',
@@ -99,12 +99,12 @@ export const adminCrudEmbeddedInputType = createAdminCrudInputType({
 export const adminCrudEmbeddedLocalInputSchema = z.object({
   type: z.literal('embeddedLocal'),
   label: z.string().min(1),
-  localRelation: zRef(z.string(), {
+  localRelationRef: zRef(z.string(), {
     type: modelLocalRelationEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
   }),
-  embeddedFormName: zRef(z.string(), {
+  embeddedFormRef: zRef(z.string(), {
     type: adminCrudEmbeddedFormEntityType,
     parentPath: { context: 'admin-section' },
     onDelete: 'RESTRICT',

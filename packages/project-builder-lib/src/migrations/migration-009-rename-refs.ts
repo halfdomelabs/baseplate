@@ -69,6 +69,24 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
           'apps.*.sections.*',
           renameObjectKeyTransform('modelName', 'modelRef'),
         ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'apps.*.sections.*.form.fields.*',
+          renameObjectKeyTransform('localRelation', 'localRelationRef'),
+        ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'apps.*.sections.*.form.fields.*',
+          renameObjectKeyTransform('modelRelation', 'modelRelationRef'),
+        ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'apps.*.sections.*.form.fields.*',
+          renameObjectKeyTransform('embeddedFormName', 'embeddedFormRef'),
+        ),
     );
     return transform(config) as unknown;
   },

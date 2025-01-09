@@ -19,7 +19,7 @@ function buildFileTransformerCompiler(
     compileInput(definition, { definitionContainer, model }) {
       const transformer = model.service?.transformers?.find(
         (t): t is FileTransformerConfig =>
-          t.id === definition.modelRelation && t.type === 'file',
+          t.id === definition.modelRelationRef && t.type === 'file',
       );
       const relation = model.model.relations?.find(
         (r) => r.id === transformer?.fileRelationRef,
@@ -27,7 +27,7 @@ function buildFileTransformerCompiler(
 
       if (!relation) {
         throw new Error(
-          `Could not find relation ${definition.modelRelation} in model ${model.name}`,
+          `Could not find relation ${definition.modelRelationRef} in model ${model.name}`,
         );
       }
 
@@ -46,7 +46,7 @@ function buildFileTransformerCompiler(
       }
       const isOptional = ModelFieldUtils.isRelationOptional(model, relation);
       const relationName = definitionContainer.nameFromId(
-        definition.modelRelation,
+        definition.modelRelationRef,
       );
 
       return {

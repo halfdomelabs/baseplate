@@ -152,14 +152,14 @@ const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedIn
     name: 'embedded',
     compileInput: (definition, { definitionContainer }) => {
       const relationName = definitionContainer.nameFromId(
-        definition.modelRelation,
+        definition.modelRelationRef,
       );
       return {
         name: relationName,
         generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
         label: definition.label,
         modelRelation: relationName,
-        embeddedFormRef: definition.embeddedFormName,
+        embeddedFormRef: definition.embeddedFormRef,
       };
     },
   };
@@ -169,17 +169,17 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
     name: 'embeddedLocal',
     compileInput(definition, { definitionContainer, model }) {
       const localRelation = model.model.relations?.find(
-        (r) => r.id === definition.localRelation,
+        (r) => r.id === definition.localRelationRef,
       );
 
       if (!localRelation) {
         throw new Error(
-          `Could not find relation ${definition.localRelation} in model ${model.name}`,
+          `Could not find relation ${definition.localRelationRef} in model ${model.name}`,
         );
       }
 
       const localRelationName = definitionContainer.nameFromId(
-        definition.localRelation,
+        definition.localRelationRef,
       );
 
       return {
@@ -188,7 +188,7 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
         label: definition.label,
         modelRelation: localRelationName,
         isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
-        embeddedFormRef: definition.embeddedFormName,
+        embeddedFormRef: definition.embeddedFormRef,
       };
     },
   };

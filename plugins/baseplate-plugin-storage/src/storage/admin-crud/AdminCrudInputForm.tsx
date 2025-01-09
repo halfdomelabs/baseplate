@@ -29,7 +29,7 @@ export function AdminCrudFileInputForm({
     <SelectField.Controller
       label="File Transformer Name"
       control={controlTyped}
-      name={`${prefix}.modelRelation`}
+      name={`${prefix}.modelRelationRef`}
       options={fileTransformerOptions}
     />
   );

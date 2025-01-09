@@ -68,6 +68,9 @@ export function renameObjectKeyTransform(
       throw new TypeError(`Expected an object, got ${typeof data}`);
     }
     const { [oldKey]: oldValue, ...rest } = data as Record<string, unknown>;
+    if (oldValue === undefined) {
+      return data;
+    }
     return {
       ...rest,
       [newKey]: oldValue,
