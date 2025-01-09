@@ -13,7 +13,7 @@ import { EnumValuesSection } from './sections/EnumValuesSection';
 
 function EnumEditPage(): React.JSX.Element {
   const { form, onSubmit } = useEnumForm({
-    schema: enumBaseSchema.omit({ name: true, feature: true }),
+    schema: enumBaseSchema.omit({ name: true, featureRef: true }),
   });
   const { control, setValue, formState } = form;
 

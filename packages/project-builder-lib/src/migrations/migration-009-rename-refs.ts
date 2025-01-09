@@ -80,6 +80,14 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
             accountsFeaturePath: 'accountsFeatureRef',
           }),
         ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'enums.*',
+          renameObjectKeysTransform({
+            feature: 'featureRef',
+          }),
+        ),
     );
     return transform(config) as unknown;
   },

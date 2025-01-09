@@ -17,7 +17,9 @@ export function buildEnumsForFeature(
   featureId: string,
   parsedProject: ParsedProjectDefinition,
 ): Record<string, unknown>[] | undefined {
-  const enums = parsedProject.getEnums().filter((m) => m.feature === featureId);
+  const enums = parsedProject
+    .getEnums()
+    .filter((m) => m.featureRef === featureId);
   if (enums.length === 0) {
     return undefined;
   }

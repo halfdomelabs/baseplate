@@ -21,7 +21,7 @@ export type EnumValueConfig = z.infer<typeof enumSchema>;
 
 export const enumBaseSchema = z.object({
   name: z.string().min(1),
-  feature: zRef(z.string().min(1), {
+  featureRef: zRef(z.string().min(1), {
     type: featureEntityType,
     onDelete: 'RESTRICT',
   }),
