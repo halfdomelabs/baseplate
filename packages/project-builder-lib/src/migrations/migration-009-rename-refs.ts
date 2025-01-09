@@ -1,8 +1,5 @@
 import { flow } from 'es-toolkit';
 
-import type { AdminAppConfig } from '@src/schema/index.js';
-import type { ProjectDefinition } from '@src/schema/project-definition.js';
-
 import {
   renameObjectKeyTransform,
   transformJsonPath,
@@ -36,7 +33,31 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
           'apps.*.sections.*.embeddedForms.*.form.fields.*',
           renameObjectKeyTransform('localRelationName', 'localRelationRef'),
         ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'apps.*.sections.*.table.columns.*.display',
+          renameObjectKeyTransform('modelField', 'modelFieldRef'),
+        ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'apps.*.sections.*.form.fields.*',
+          renameObjectKeyTransform('modelField', 'modelFieldRef'),
+        ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'apps.*.sections.*.embeddedForms.*.form.fields.*',
+          renameObjectKeyTransform('modelField', 'modelFieldRef'),
+        ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'apps.*.sections.*.embeddedForms.*.table.columns.*.display',
+          renameObjectKeyTransform('modelField', 'modelFieldRef'),
+        ),
     );
-    return transform(config);
+    return transform(config) as unknown;
   },
 });

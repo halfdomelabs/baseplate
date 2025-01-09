@@ -30,7 +30,7 @@ export type AdminCrudForeignDisplayConfig = z.infer<
 
 export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
-  modelField: zRef(z.string(), {
+  modelFieldRef: zRef(z.string(), {
     type: modelScalarFieldEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },

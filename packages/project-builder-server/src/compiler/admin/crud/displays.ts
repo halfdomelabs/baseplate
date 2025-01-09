@@ -49,10 +49,12 @@ function compileAdminCrudTextDisplay(
   modelId: string,
 ): unknown {
   const model = builder.parsedProject.getModelById(modelId);
-  const fieldConfig = model.model.fields.find((f) => f.id === field.modelField);
+  const fieldConfig = model.model.fields.find(
+    (f) => f.id === field.modelFieldRef,
+  );
   if (!fieldConfig) {
     throw new Error(
-      `Field ${field.modelField} cannot be found in ${model.name}`,
+      `Field ${field.modelFieldRef} cannot be found in ${model.name}`,
     );
   }
   return {

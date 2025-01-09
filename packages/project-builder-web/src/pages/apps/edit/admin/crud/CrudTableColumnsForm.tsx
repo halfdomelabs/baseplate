@@ -53,7 +53,7 @@ function ColumnForm({
         <SelectInput.LabelledController
           label="Field"
           control={control}
-          name={`table.columns.${idx}.display.modelField`}
+          name={`table.columns.${idx}.display.modelFieldRef`}
           options={fieldOptions}
         />
       )}
@@ -131,7 +131,7 @@ function CrudTableColumnsForm({
       ))}
       <Button
         onClick={() => {
-          append({ display: { type: 'text', modelField: '' }, label: '' });
+          append({ display: { type: 'text', modelFieldRef: '' }, label: '' });
         }}
       >
         Add Column

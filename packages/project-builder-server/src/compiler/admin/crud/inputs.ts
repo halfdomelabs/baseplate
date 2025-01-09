@@ -26,11 +26,11 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
     name: 'enum',
     compileInput: (definition, { definitionContainer, model }) => {
       const fieldConfig = model.model.fields.find(
-        (f) => f.id === definition.modelField,
+        (f) => f.id === definition.modelFieldRef,
       );
       if (fieldConfig?.type !== 'enum' || !fieldConfig.options?.enumType) {
         throw new Error(
-          `Admin enum input ${definition.modelField} is not an enum`,
+          `Admin enum input ${definition.modelFieldRef} is not an enum`,
         );
       }
       const enumBlock = EnumUtils.byId(
@@ -42,7 +42,9 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
           `Could not find enum type ${fieldConfig.options.enumType ?? ''}`,
         );
       }
-      const fieldName = definitionContainer.nameFromId(definition.modelField);
+      const fieldName = definitionContainer.nameFromId(
+        definition.modelFieldRef,
+      );
       return {
         name: fieldName,
         generator: '@halfdomelabs/react/admin/admin-crud-enum-input',
@@ -117,14 +119,16 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
     name: 'text',
     compileInput: (definition, { definitionContainer, model }) => {
       const fieldConfig = model.model.fields.find(
-        (f) => f.id === definition.modelField,
+        (f) => f.id === definition.modelFieldRef,
       );
       if (!fieldConfig) {
         throw new Error(
-          `Field ${definition.modelField} cannot be found in ${model.name}`,
+          `Field ${definition.modelFieldRef} cannot be found in ${model.name}`,
         );
       }
-      const fieldName = definitionContainer.nameFromId(definition.modelField);
+      const fieldName = definitionContainer.nameFromId(
+        definition.modelFieldRef,
+      );
       return {
         name: fieldName,
         generator: '@halfdomelabs/react/admin/admin-crud-text-input',

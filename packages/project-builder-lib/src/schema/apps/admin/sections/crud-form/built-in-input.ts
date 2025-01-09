@@ -17,7 +17,7 @@ import {
 export const adminCrudTextInputSchema = z.object({
   type: z.literal('text'),
   label: z.string().min(1),
-  modelField: zRef(z.string(), {
+  modelFieldRef: zRef(z.string(), {
     type: modelScalarFieldEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
@@ -58,7 +58,7 @@ const adminCrudForeignInputType = createAdminCrudInputType({
 export const adminCrudEnumInputSchema = z.object({
   type: z.literal('enum'),
   label: z.string().min(1),
-  modelField: zRef(z.string(), {
+  modelFieldRef: zRef(z.string(), {
     type: modelScalarFieldEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
