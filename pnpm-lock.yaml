@@ -192,8 +192,8 @@ importers:
         specifier: 'catalog:'
         version: 9.6.1
       es-toolkit:
-        specifier: 1.18.0
-        version: 1.18.0
+        specifier: 1.31.0
+        version: 1.31.0
       eta:
         specifier: ^3.5.0
         version: 3.5.0
@@ -482,8 +482,8 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       es-toolkit:
-        specifier: 1.18.0
-        version: 1.18.0
+        specifier: 1.31.0
+        version: 1.31.0
       globby:
         specifier: ^14.0.2
         version: 14.0.2
@@ -803,8 +803,8 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1
       es-toolkit:
-        specifier: 1.18.0
-        version: 1.18.0
+        specifier: 1.31.0
+        version: 1.31.0
       immer:
         specifier: 10.1.1
         version: 10.1.1
@@ -985,8 +985,8 @@ importers:
         specifier: ^3.1.9
         version: 3.1.10
       es-toolkit:
-        specifier: 1.18.0
-        version: 1.18.0
+        specifier: 1.31.0
+        version: 1.31.0
       execa:
         specifier: 9.3.0
         version: 9.3.0
@@ -4923,8 +4923,8 @@ packages:
     resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
     engines: {node: '>= 0.4'}
 
-  es-toolkit@1.18.0:
-    resolution: {integrity: sha512-J/KKeqozMvgpPSUqZSpt59ZOTku2UrU9cmqmLBt4TmFQ2KCLGf3fXK6Xb2ud5CrpCUHFl/ThijjJkXwa/8sf2g==}
+  es-toolkit@1.31.0:
+    resolution: {integrity: sha512-vwS0lv/tzjM2/t4aZZRAgN9I9TP0MSkWuvt6By+hEXfG/uLs8yg2S1/ayRXH/x3pinbLgVJYT+eppueg3cM6tg==}
 
   esbuild-register@3.6.0:
     resolution: {integrity: sha512-H2/S7Pm8a9CL1uhp9OvjwrBh5Pvx0H8qVOxNu8Wed9Y7qv56MPtq+GGM8RJpq6glYJn9Wspr8uw7l55uyinNeg==}
@@ -11763,7 +11763,7 @@ snapshots:
       is-date-object: 1.0.5
       is-symbol: 1.0.4
 
-  es-toolkit@1.18.0: {}
+  es-toolkit@1.31.0: {}
 
   esbuild-register@3.6.0(esbuild@0.23.1):
     dependencies:

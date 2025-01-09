@@ -54,7 +54,7 @@
     "axios": "1.7.4",
     "clsx": "2.1.1",
     "culori": "^4.0.1",
-    "es-toolkit": "1.18.0",
+    "es-toolkit": "1.31.0",
     "immer": "10.1.1",
     "inflection": "3.0.0",
     "javascript-time-ago": "^2.5.10",

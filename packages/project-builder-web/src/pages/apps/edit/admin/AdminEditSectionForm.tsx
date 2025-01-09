@@ -150,7 +150,7 @@ function AdminEditSectionForm({
           label="Feature"
           control={control}
           options={featureOptions}
-          name="feature"
+          name="featureRef"
         />
         <TextInput.LabelledController
           label="Icon"
