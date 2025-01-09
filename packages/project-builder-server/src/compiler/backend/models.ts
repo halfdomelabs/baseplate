@@ -92,10 +92,10 @@ function buildRelationField(
   return {
     name,
     fields: references.map((r) =>
-      appBuilder.definitionContainer.nameFromId(r.local),
+      appBuilder.definitionContainer.nameFromId(r.localRef),
     ),
     references: references.map((r) =>
-      appBuilder.definitionContainer.nameFromId(r.foreign),
+      appBuilder.definitionContainer.nameFromId(r.foreignRef),
     ),
     modelName: parentModel.name,
     foreignModelName: foreignModel.name,

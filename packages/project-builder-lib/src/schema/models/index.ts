@@ -112,12 +112,12 @@ export const modelRelationFieldSchema = zRefBuilder(
     name: VALIDATORS.CAMEL_CASE_STRING,
     references: z.array(
       z.object({
-        local: zRef(z.string(), {
+        localRef: zRef(z.string(), {
           type: modelScalarFieldEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'model' },
         }),
-        foreign: zRef(z.string(), {
+        foreignRef: zRef(z.string(), {
           type: modelScalarFieldEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'foreignModel' },

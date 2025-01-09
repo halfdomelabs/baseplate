@@ -66,7 +66,7 @@ export const AuthPlugin: ParserPlugin = {
     const userRoleRelations: PluginMergeModelRelationInput[] = [
       {
         name: 'user',
-        references: [{ local: 'userId', foreign: 'id' }],
+        references: [{ localRef: 'userId', foreignRef: 'id' }],
         modelName: auth.userModelRef,
         foreignRelationName: 'roles',
         onDelete: 'Cascade',

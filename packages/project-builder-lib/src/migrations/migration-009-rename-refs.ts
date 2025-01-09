@@ -105,6 +105,15 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
             feature: 'featureRef',
           }),
         ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'models.*.model.relations.*.references.*',
+          renameObjectKeysTransform({
+            local: 'localRef',
+            foreign: 'foreignRef',
+          }),
+        ),
     );
     return transform(config) as unknown;
   },

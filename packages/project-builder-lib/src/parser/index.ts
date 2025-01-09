@@ -85,24 +85,24 @@ function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
         // verify types of fields match
         for (const reference of relation.references) {
           const foreignField = foreignModel.model.fields.find(
-            (f) => f.id === reference.foreign,
+            (f) => f.id === reference.foreignRef,
           );
           if (!foreignField) {
             throw new Error(
-              `Could not find ${reference.foreign} on ${foreignModel.name}`,
+              `Could not find ${reference.foreignRef} on ${foreignModel.name}`,
             );
           }
           const localField = model.model.fields.find(
-            (f) => f.id === reference.local,
+            (f) => f.id === reference.localRef,
           );
           if (!localField) {
             throw new Error(
-              `Could not find ${reference.local} on ${model.name}`,
+              `Could not find ${reference.localRef} on ${model.name}`,
             );
           }
           if (foreignField.type !== localField.type) {
             throw new Error(
-              `Field types do not match for ${reference.local} on ${model.name} and ${reference.foreign} on ${foreignModel.name}`,
+              `Field types do not match for ${reference.localRef} on ${model.name} and ${reference.foreignRef} on ${foreignModel.name}`,
             );
           }
         }
@@ -198,16 +198,16 @@ export class ParsedProjectDefinition {
                   const foreignModel = this.getModelById(relation.modelName);
                   const foreignField =
                     foreignModel.model.fields.find(
-                      (f) => f.name === reference.foreign,
-                    )?.id ?? reference.foreign;
+                      (f) => f.name === reference.foreignRef,
+                    )?.id ?? reference.foreignRef;
                   const localField =
                     existingModel.model.fields.find(
-                      (f) => f.name === reference.local,
-                    )?.id ?? reference.local;
+                      (f) => f.name === reference.localRef,
+                    )?.id ?? reference.localRef;
                   return {
                     ...reference,
-                    foreign: foreignField,
-                    local: localField,
+                    foreignRef: foreignField,
+                    localRef: localField,
                   };
                 });
               }

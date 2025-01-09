@@ -78,7 +78,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
       }
 
       const localField = definitionContainer.nameFromId(
-        relation.references[0].local,
+        relation.references[0].localRef,
       );
 
       return {

@@ -28,7 +28,7 @@ describe('getRelationLocalFields', () => {
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'local', foreign: 'foreign' }],
+      references: [{ localRef: 'local', foreignRef: 'foreign' }],
     });
 
     const localFields = getRelationLocalFields(model, relation);
@@ -57,8 +57,8 @@ describe('getRelationLocalFields', () => {
     });
     const relation = generateMockModelRelationField({
       references: [
-        { local: 'local-id', foreign: 'foreignField' },
-        { local: 'local-id2', foreign: 'foreignField2' },
+        { localRef: 'local-id', foreignRef: 'foreignField' },
+        { localRef: 'local-id2', foreignRef: 'foreignField2' },
       ],
     });
 
@@ -85,7 +85,7 @@ describe('isRelationOptional', () => {
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'local-id', foreign: 'foreignField' }],
+      references: [{ localRef: 'local-id', foreignRef: 'foreignField' }],
     });
 
     const isOptional = isRelationOptional(model, relation);
@@ -111,7 +111,7 @@ describe('isRelationOptional', () => {
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'local-id', foreign: 'foreignField' }],
+      references: [{ localRef: 'local-id', foreignRef: 'foreignField' }],
     });
 
     const isOptional = isRelationOptional(model, relation);
@@ -138,7 +138,7 @@ describe('isRelationOneToOne', () => {
       },
     });
     const relation = generateMockModelRelationField({
-      references: [{ local: 'local-id', foreign: 'foreignField' }],
+      references: [{ localRef: 'local-id', foreignRef: 'foreignField' }],
     });
 
     const isOneToOne = isRelationOneToOne(model, relation);
@@ -173,8 +173,8 @@ describe('isRelationOneToOne', () => {
     });
     const relation = generateMockModelRelationField({
       references: [
-        { local: 'local-id', foreign: 'foreignField' },
-        { local: 'local-id2', foreign: 'foreignField' },
+        { localRef: 'local-id', foreignRef: 'foreignField' },
+        { localRef: 'local-id2', foreignRef: 'foreignField' },
       ],
     });
 

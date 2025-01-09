@@ -136,8 +136,8 @@ export function diffModel(
       ...relation,
       references: relation.references.map((reference) => ({
         ...reference,
-        local: definitionContainer.nameFromId(reference.local),
-        foreign: definitionContainer.nameFromId(reference.foreign),
+        localRef: definitionContainer.nameFromId(reference.localRef),
+        foreignRef: definitionContainer.nameFromId(reference.foreignRef),
       })),
     })) ?? [];
   const diff = {
@@ -201,8 +201,8 @@ export function applyModelPatchInPlace(
     ...relation,
     references: relation.references.map((reference) => ({
       ...reference,
-      local: resolveLocalName(reference.local),
-      foreign: resolveForeignName(reference.foreign, relation.modelName),
+      localRef: resolveLocalName(reference.localRef),
+      foreignRef: resolveForeignName(reference.foreignRef, relation.modelName),
     })),
   }));
 }

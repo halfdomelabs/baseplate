@@ -116,11 +116,11 @@ function getRelationDefaultsFromModel(
         return primaryKey.name;
       })();
       const bestGuessLocal =
-        existingReferences[i]?.local ??
+        existingReferences[i]?.localRef ??
         editedModel.model.fields.find((f) => f.name === bestGuessLocalName)?.id;
       return {
-        local: bestGuessLocal,
-        foreign: primaryKey.id,
+        localRef: bestGuessLocal,
+        foreignRef: primaryKey.id,
       };
     });
   })();
@@ -131,10 +131,10 @@ function getRelationDefaultsFromModel(
       return editedRelation.foreignRelationName;
     }
     const isOneToOne =
-      references.every((ref) => ref.local) &&
+      references.every((ref) => ref.localRef) &&
       ModelFieldUtils.areScalarsUnique(
         editedModel,
-        references.map((r) => r.local),
+        references.map((r) => r.localRef),
       );
     return camelCase(
       isOneToOne ? editedModel.name : pluralize(editedModel.name),
@@ -225,7 +225,7 @@ export function ModelRelationForm({
     })) ?? [];
 
   const isRelationOptional = relation.references.some(
-    (ref) => fields.find((f) => f.id === ref.local)?.isOptional,
+    (ref) => fields.find((f) => f.id === ref.localRef)?.isOptional,
   );
 
   const onDelete = (): void => {
@@ -252,13 +252,13 @@ export function ModelRelationForm({
     }
 
     // look for duplicate local fields
-    const localFields = data.references.map((ref) => ref.local);
+    const localFields = data.references.map((ref) => ref.localRef);
     if (new Set(localFields).size !== localFields.length) {
       toast.error('Local fields must be unique');
       return;
     }
 
-    const foreignFields = data.references.map((ref) => ref.foreign);
+    const foreignFields = data.references.map((ref) => ref.foreignRef);
     if (new Set(foreignFields).size !== foreignFields.length) {
       toast.error('Foreign fields must be unique');
       return;
@@ -366,12 +366,12 @@ export function ModelRelationForm({
             <ComboboxField.Controller
               disabled={!hasSelectedForeignModel}
               control={control}
-              name={`references.${i}.local`}
+              name={`references.${i}.localRef`}
               options={localFieldOptions}
             />
             <ComboboxField.Controller
               control={control}
-              name={`references.${i}.foreign`}
+              name={`references.${i}.foreignRef`}
               options={foreignFieldOptions}
               disabled
             />

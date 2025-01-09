@@ -30,7 +30,7 @@ function compileAdminCrudForeignDisplay(
     throw new Error(`Only relations with a single reference are supported`);
   }
 
-  const localField = builder.nameFromId(relation.references[0].local);
+  const localField = builder.nameFromId(relation.references[0].localRef);
   const foreignModelName = builder.nameFromId(relation.modelName);
   return {
     name: localRelationName,
