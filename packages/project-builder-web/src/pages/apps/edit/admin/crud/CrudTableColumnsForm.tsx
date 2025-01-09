@@ -11,7 +11,7 @@ import CollapsibleRow from 'src/components/CollapsibleRow';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,
-  'table' | 'modelName'
+  'table' | 'modelRef'
 >;
 
 interface Props {
@@ -85,9 +85,9 @@ function CrudTableColumnsForm({
   className,
   control,
 }: Props): React.JSX.Element {
-  const modelName = useWatch({ control, name: 'modelName' });
+  const modelRef = useWatch({ control, name: 'modelRef' });
   const { parsedProject } = useProjectDefinition();
-  const model = modelName ? parsedProject.getModelById(modelName) : undefined;
+  const model = modelRef ? parsedProject.getModelById(modelRef) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'table.columns',

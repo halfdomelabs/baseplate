@@ -53,7 +53,7 @@ describe('buildGeneratorEntry', () => {
     dep: createProviderType('dep'),
   };
   const simpleExports: ProviderExportMap = {
-    exp: createProviderType('exp'),
+    exp: createProviderType('exp').export(),
   };
   const generatorMap: GeneratorConfigMap = {
     simple: {

@@ -67,7 +67,7 @@ export const adminCrudTableColumnSchema = z.object({
 export const adminCrudEmbeddedObjectSchema = z.object({
   id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
   name: z.string().min(1),
-  modelName: zRef(z.string().min(1), {
+  modelRef: zRef(z.string().min(1), {
     type: modelEntityType,
     onDelete: 'RESTRICT',
   }),
@@ -81,7 +81,7 @@ export const adminCrudEmbeddedObjectSchema = z.object({
 export const adminCrudEmbeddedListSchema = z.object({
   id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
   name: z.string().min(1),
-  modelName: zRef(z.string().min(1), {
+  modelRef: zRef(z.string().min(1), {
     type: modelEntityType,
     onDelete: 'RESTRICT',
   }),
@@ -107,7 +107,7 @@ export const adminCrudEmbeddedFormSchema = zRefBuilder(
       type: adminCrudEmbeddedFormEntityType,
       parentPath: { context: 'admin-section' },
     });
-    builder.addPathToContext('modelName', modelEntityType, 'model');
+    builder.addPathToContext('modelRef', modelEntityType, 'model');
   },
 );
 
@@ -121,7 +121,7 @@ export const adminCrudSectionSchema = zRefBuilder(
   z.object({
     ...baseAdminSectionValidators,
     type: z.literal('crud'),
-    modelName: zRef(z.string().min(1), {
+    modelRef: zRef(z.string().min(1), {
       type: modelEntityType,
       onDelete: 'RESTRICT',
     }),
@@ -135,7 +135,7 @@ export const adminCrudSectionSchema = zRefBuilder(
     embeddedForms: z.array(adminCrudEmbeddedFormSchema).optional(),
   }),
   (builder) => {
-    builder.addPathToContext('modelName', modelEntityType, 'model');
+    builder.addPathToContext('modelRef', modelEntityType, 'model');
   },
 );
 
