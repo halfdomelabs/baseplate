@@ -3,7 +3,7 @@ import type { ScalarFieldType } from '@halfdomelabs/project-builder-lib';
 import { modelTransformerEntityType } from '@halfdomelabs/project-builder-lib';
 import { createNewModelTransformerWebConfig } from '@halfdomelabs/project-builder-lib/web';
 
-import { embeddedRelationTransformerWebConfig } from './edit/_components/service/ServiceEmbeddedRelationForm';
+import { embeddedRelationTransformerWebConfig } from './edit/[id]/_components/service/ServiceEmbeddedRelationForm';
 
 export const BUILT_IN_TRANSFORMER_WEB_CONFIGS = [
   embeddedRelationTransformerWebConfig,

@@ -10,7 +10,7 @@ import {
 } from '@halfdomelabs/ui-components';
 import { MdAdd, MdDeleteOutline, MdEdit } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
 import { ModelUniqueConstraintDialog } from './fields/unique-constraints/ModelUniqueConstraintDialog';
 
 interface Props {

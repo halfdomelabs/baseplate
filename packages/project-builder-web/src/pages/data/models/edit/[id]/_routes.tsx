@@ -7,9 +7,9 @@ import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createCrumbFromUid, createRouteCrumb } from '@src/types/routes';
 
 import { ModelEditLayout } from './_layout';
-import ModelEditGraphQLPage from './[id]/_components/graphql.page';
-import ModelEditModelPage from './[id]/_components/index.page';
-import ModelEditServicePage from './[id]/_components/service.page';
+import ModelEditGraphQLPage from './graphql.page';
+import ModelEditModelPage from './index.page';
+import ModelEditServicePage from './service.page';
 
 export const ModelEditRoutes: RouteObject = {
   path: 'edit',

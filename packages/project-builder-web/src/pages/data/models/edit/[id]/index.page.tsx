@@ -13,8 +13,8 @@ import { registerEntityTypeUrl } from 'src/services/entity-type';
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 import FormActionBar from '@src/components/FormActionBar';
 
-import { EditedModelContextProvider } from '../_hooks/useEditedModelConfig';
-import { useModelForm } from '../_hooks/useModelForm';
+import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
+import { useModelForm } from '../../_hooks/useModelForm';
 import { ModelFieldsForm } from './_components/fields/ModelFieldsForm';
 import { ModelRelationsSection } from './_components/ModelRelationsSection';
 import { ModelUniqueConstraintsSection } from './_components/ModelUniqueConstraintsSection';

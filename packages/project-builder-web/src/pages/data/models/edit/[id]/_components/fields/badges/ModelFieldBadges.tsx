@@ -4,7 +4,8 @@ import type { Control } from 'react-hook-form';
 
 import { clsx } from 'clsx';
 
-import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '@src/pages/data/models/_hooks/useEditedModelConfig';
+
 import { ModelPrimaryKeyBadge } from '../primary-key/ModelPrimaryKeyBadge';
 import { ModelRelationsBadge } from '../relations/ModelRelationBadge';
 import { ModelFieldUniqueBadge } from '../unique-constraints/ModelUniqueConstraintBadge';

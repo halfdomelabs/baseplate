@@ -16,7 +16,7 @@ import { useWatch } from 'react-hook-form';
 import { HiDotsVertical } from 'react-icons/hi';
 import { MdOutlineDelete } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
 import { ModelFieldBadges } from './badges/ModelFieldBadges';
 import { ModelFieldDefaultValueInput } from './ModelFieldDefaultValueInput';
 import { ModelFieldTypeInput } from './ModelFieldTypeInput';

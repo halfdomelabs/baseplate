@@ -5,8 +5,8 @@ import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-li
 
 import FormActionBar from '@src/components/FormActionBar';
 
-import { EditedModelContextProvider } from '../_hooks/useEditedModelConfig';
-import { useModelForm } from '../_hooks/useModelForm';
+import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';
+import { useModelForm } from '../../_hooks/useModelForm';
 import { GraphQLMutationsSection } from './_components/graphql/GraphQLMutationsSection';
 import { GraphQLObjectTypeSection } from './_components/graphql/GraphQLObjectTypeSection';
 import { GraphQLQueriesSection } from './_components/graphql/GraphQLQueriesSection';

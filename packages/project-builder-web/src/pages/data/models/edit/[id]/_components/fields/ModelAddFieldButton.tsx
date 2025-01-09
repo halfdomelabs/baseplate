@@ -10,7 +10,7 @@ import { Button, ButtonGroup, Dropdown } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
 import { MdExpandMore } from 'react-icons/md';
 
-import { useEditedModelConfig } from '../../../_hooks/useEditedModelConfig';
+import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
 
 interface ModelAddFieldButtonProps {
   className?: string;

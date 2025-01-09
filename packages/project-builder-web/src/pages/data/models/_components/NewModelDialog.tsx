@@ -8,7 +8,7 @@ import {
 } from '@halfdomelabs/ui-components';
 
 import { useModelForm } from '../_hooks/useModelForm';
-import { ModelInfoForm } from '../edit/_components/ModelInfoForm';
+import { ModelInfoForm } from '../edit/[id]/_components/ModelInfoForm';
 
 interface NewModelDialogProps {
   children: React.ReactNode;
