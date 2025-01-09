@@ -6,6 +6,7 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -43,7 +44,7 @@ const ReactConfigGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    reactConfig: reactConfigProvider,
+    reactConfig: reactConfigProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, typescript }) {
     const configEntryMap = createNonOverwriteableMap<

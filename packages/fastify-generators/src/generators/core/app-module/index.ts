@@ -1,6 +1,7 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
 import {
+  featureScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -28,8 +29,9 @@ const AppModuleGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    appModule: appModuleProvider,
+    appModule: appModuleProvider.export(featureScope),
   },
+  scopes: [featureScope],
   createGenerator(descriptor, { appModule, typescript }) {
     const folderName = descriptor.folderName ?? kebabCase(descriptor.name);
     const moduleName = `${camelCase(descriptor.name)}Module`;

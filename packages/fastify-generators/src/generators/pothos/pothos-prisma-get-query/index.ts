@@ -23,6 +23,7 @@ import { writePothosArgsFromDtoFields } from '@src/writers/pothos/index.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -40,7 +41,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
     pothosSchema: pothosSchemaProvider,
   },
   exports: {
-    pothosField: pothosFieldProvider,
+    pothosField: pothosFieldProvider.export(pothosFieldScope),
   },
   run({ prismaOutput, pothosSchema, pothosTypesFile }) {
     const modelOutput = prismaOutput.getPrismaModel(modelName);
@@ -131,6 +132,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
 
 const PothosPrismaFindQueryGenerator = createGeneratorWithTasks({
   descriptorSchema,
+  scopes: [pothosFieldScope],
   getDefaultChildGenerators: () => ({
     authorize: {
       defaultToNullIfEmpty: true,

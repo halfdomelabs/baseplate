@@ -1,6 +1,7 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
 import {
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -32,7 +33,7 @@ const FastifyHealthCheckGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    fastifyHealthCheck: fastifyHealthCheckProvider,
+    fastifyHealthCheck: fastifyHealthCheckProvider.export(projectScope),
   },
   createGenerator(descriptor, { fastifyServer, typescript }) {
     fastifyServer.registerPlugin({

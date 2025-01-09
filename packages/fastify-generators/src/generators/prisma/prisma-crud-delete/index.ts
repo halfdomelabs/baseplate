@@ -4,10 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithChildren,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ServiceOutputMethod } from '@src/types/service-output.js';
@@ -37,11 +34,6 @@ interface PrismaDeleteMethodOptions {
   methodExpression: TypescriptCodeExpression;
   prismaUtils: PrismaUtilsProvider;
 }
-
-export type PrismaDeleteMethodProvider = unknown;
-
-export const prismaDeleteMethodProvider =
-  createProviderType<PrismaDeleteMethodProvider>('prisma-delete-method');
 
 function getMethodDefinition({
   methodName,
@@ -120,9 +112,6 @@ const PrismaCrudDeleteGenerator = createGeneratorWithChildren({
     prismaOutput: prismaOutputProvider,
     serviceFile: serviceFileProvider,
     prismaUtils: prismaUtilsProvider,
-  },
-  exports: {
-    prismaDeleteMethod: prismaDeleteMethodProvider,
   },
   createGenerator(descriptor, { prismaOutput, serviceFile, prismaUtils }) {
     const { name, modelName } = descriptor;

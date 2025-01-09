@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 import type { TypescriptCodeBlock } from '@src/writers/index.js';
 
+import { projectScope } from '@src/providers/scopes.js';
 import { TypescriptCodeUtils } from '@src/writers/index.js';
 
 import { eslintProvider } from '../eslint/index.js';
@@ -37,7 +38,7 @@ const VitestGenerator = createGeneratorWithChildren({
     eslint: eslintProvider,
   },
   exports: {
-    vitest: vitestProvider,
+    vitest: vitestProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, typescript, eslint }) {
     const configMap = createNonOverwriteableMap<VitestGeneratorConfig>(

@@ -5,6 +5,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { projectScope } from '@src/providers/scopes.js';
+
 const descriptorSchema = z.object({
   additionalExclusions: z.array(z.string().min(1)).optional(),
 });
@@ -20,7 +22,7 @@ const NodeGitIgnoreGenerator = createGeneratorWithChildren({
   descriptorSchema,
   dependencies: {},
   exports: {
-    nodeGitIgnore: nodeGitIgnoreProvider,
+    nodeGitIgnore: nodeGitIgnoreProvider.export(projectScope),
   },
   createGenerator(descriptor) {
     const exclusionLines: string[] = [

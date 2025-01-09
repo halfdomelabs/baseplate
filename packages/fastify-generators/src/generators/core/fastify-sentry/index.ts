@@ -8,6 +8,7 @@ import type {
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -118,7 +119,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         errorHandler: errorHandlerServiceProvider,
       },
       exports: {
-        fastifySentry: fastifySentryProvider,
+        fastifySentry: fastifySentryProvider.export(projectScope),
       },
       run({ node, configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate(

@@ -11,9 +11,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
     server: {
       port: envVars.PORT ? parseInt(envVars.PORT, 10) : 3000,
-      watch: {
-        ignored: ['**/baseplate/.clean/**', '**/baseplate/.clean_tmp/**'],
-      },
+      watch: { ignored: ['**/baseplate/**'] },
       proxy: envVars.DEV_BACKEND_HOST
         ? {
             '/api': {

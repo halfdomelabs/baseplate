@@ -16,6 +16,7 @@ import { lowerCaseFirst } from '@src/utils/case.js';
 import { quot } from '@src/utils/string.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
+import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
@@ -32,7 +33,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
     pothosTypesFile: pothosTypesFileProvider,
   },
   exports: {
-    pothosField: pothosFieldProvider,
+    pothosField: pothosFieldProvider.export(pothosFieldScope),
   },
   run({ prismaOutput, pothosTypesFile }) {
     const modelOutput = prismaOutput.getPrismaModel(modelName);
@@ -94,6 +95,7 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
 
 const PothosPrismaListQueryGenerator = createGeneratorWithTasks({
   descriptorSchema,
+  scopes: [pothosFieldScope],
   getDefaultChildGenerators: () => ({
     authorize: {
       defaultToNullIfEmpty: true,

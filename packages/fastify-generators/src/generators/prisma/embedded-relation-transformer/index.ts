@@ -43,7 +43,7 @@ const descriptorSchema = z.object({
   inputName: z.string().optional(),
   localRelationName: z.string().optional(),
   embeddedFieldNames: z.array(z.string().min(1)),
-  foreignCrudServiceRef: z.string().optional(),
+  foreignModelName: z.string().optional(),
   embeddedTransformerNames: z.array(z.string().min(1)).optional(),
 });
 
@@ -192,11 +192,10 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
     serviceContext: serviceContextProvider,
     prismaUtils: prismaUtilsProvider,
   },
-  populateDependencies: (dependencies, { foreignCrudServiceRef }) => ({
+  populateDependencies: (dependencies, { foreignModelName }) => ({
     ...dependencies,
-    foreignCrudService: foreignCrudServiceRef
-      ? dependencies.foreignCrudService.reference(foreignCrudServiceRef)
-      : dependencies.foreignCrudService.resolveToNull(),
+    foreignCrudService:
+      dependencies.foreignCrudService.optionalReference(foreignModelName),
   }),
   createGenerator(
     {

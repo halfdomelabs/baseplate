@@ -26,7 +26,6 @@ const AuthPluginGenerator = createGeneratorWithChildren({
     userSessionTypes: userSessionTypesProvider,
     node: nodeProvider,
   },
-  exports: {},
   createGenerator(
     descriptor,
     {

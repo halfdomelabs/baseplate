@@ -1,3 +1,4 @@
+import { projectScope } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithChildren,
   createProviderType,
@@ -31,7 +32,7 @@ const AuthPagesGenerator = createGeneratorWithChildren({
   }),
   dependencies: {},
   exports: {
-    authPages: authPagesProvider,
+    authPages: authPagesProvider.export(projectScope),
   },
   createGenerator() {
     return {

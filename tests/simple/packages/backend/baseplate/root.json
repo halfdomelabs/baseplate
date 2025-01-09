@@ -4,7 +4,6 @@
   "packageName": "simple-backend",
   "description": "Backend app for simple",
   "version": "0.1.0",
-  "hoistedProviders": [],
   "children": {
     "projects": [
       {
@@ -19,34 +18,21 @@
           "server": {"defaultPort": 3001},
           "$readme": {
             "generator": "@halfdomelabs/fastify/core/readme",
-            "peerProvider": true,
             "projectName": "simple backend"
           },
-          "$sentry": {
-            "generator": "@halfdomelabs/fastify/core/fastify-sentry",
-            "peerProvider": true
-          },
+          "$sentry": {"generator": "@halfdomelabs/fastify/core/fastify-sentry"},
           "$prisma": {
             "generator": "@halfdomelabs/fastify/prisma/prisma",
-            "peerProvider": true,
             "defaultDatabaseUrl": "postgres://postgres:simple-backend-password@localhost:3432/postgres?schema=public"
           },
           "$prismaVitest": {
-            "generator": "@halfdomelabs/fastify/vitest/prisma-vitest",
-            "peerProvider": true
+            "generator": "@halfdomelabs/fastify/vitest/prisma-vitest"
           },
           "$prismaUtils": {
-            "generator": "@halfdomelabs/fastify/prisma/prisma-utils",
-            "peerProvider": true
+            "generator": "@halfdomelabs/fastify/prisma/prisma-utils"
           },
-          "$yoga": {
-            "generator": "@halfdomelabs/fastify/yoga/yoga-plugin",
-            "peerProvider": true
-          },
-          "$pothos": {
-            "generator": "@halfdomelabs/fastify/pothos/pothos",
-            "peerProvider": true
-          },
+          "$yoga": {"generator": "@halfdomelabs/fastify/yoga/yoga-plugin"},
+          "$pothos": {"generator": "@halfdomelabs/fastify/pothos/pothos"},
           "$pothosPrisma": {
             "generator": "@halfdomelabs/fastify/pothos/pothos-prisma"
           },

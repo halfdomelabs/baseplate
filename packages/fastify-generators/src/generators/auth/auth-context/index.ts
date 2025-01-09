@@ -2,6 +2,7 @@ import type { ImportMap, ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -41,7 +42,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     authSetup: authSetupProvider,
   },
   exports: {
-    authContext: authContextProvider,
+    authContext: authContextProvider.export(projectScope),
   },
   run({
     serviceContextSetup,

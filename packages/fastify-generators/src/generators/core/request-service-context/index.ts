@@ -5,6 +5,7 @@ import type {
 
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -68,7 +69,8 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
         serviceContextSetup: serviceContextSetupProvider,
       },
       exports: {
-        requestServiceContextSetup: requestServiceContextSetupProvider,
+        requestServiceContextSetup:
+          requestServiceContextSetupProvider.export(projectScope),
       },
       run({ typescript, requestContext, serviceContextSetup }) {
         const contextPassthroughMap = createNonOverwriteableMap<
@@ -169,7 +171,8 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'output',
       exports: {
-        requestServiceContext: requestServiceContextProvider,
+        requestServiceContext:
+          requestServiceContextProvider.export(projectScope),
       },
       taskDependencies: { setupTask },
       run(deps, { setupTask: { importMap, contextPath } }) {

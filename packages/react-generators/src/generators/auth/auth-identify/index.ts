@@ -1,6 +1,9 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import {
+  projectScope,
+  TypescriptCodeUtils,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
@@ -28,7 +31,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     authHooks: authHooksProvider,
   },
   exports: {
-    authIdentify: authIdentifyProvider,
+    authIdentify: authIdentifyProvider.export(projectScope),
   },
   run({ reactRouter, authHooks }) {
     const blocks: TypescriptCodeBlock[] = [];

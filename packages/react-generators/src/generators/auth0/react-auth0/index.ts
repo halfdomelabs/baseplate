@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
@@ -29,7 +30,7 @@ const ReactAuth0Generator = createGeneratorWithChildren({
     reactApp: reactAppProvider,
   },
   exports: {
-    reactAuth0: reactAuth0Provider,
+    reactAuth0: reactAuth0Provider.export(projectScope),
   },
   createGenerator({ callbackPath }, { node, reactConfig, reactApp }) {
     node.addPackages({

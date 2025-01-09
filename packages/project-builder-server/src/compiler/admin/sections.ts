@@ -36,7 +36,7 @@ function compileAdminFeatureRecursive(
   featureId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
 ): string | undefined {
-  const { projectDefinition, parsedProject } = builder;
+  const { projectDefinition } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
     projectDefinition,
     featureId,
@@ -68,7 +68,6 @@ function compileAdminFeatureRecursive(
   builder.addDescriptor(`${descriptorLocation}.json`, {
     name: featureName,
     generator: '@halfdomelabs/react/core/react-routes',
-    hoistedProviders: parsedProject.getFeatureHoistedProviders(featureId),
     // add admin layout to any root features
     layoutKey: feature.parentRef ? undefined : 'admin',
     children: stripEmptyGeneratorChildren({

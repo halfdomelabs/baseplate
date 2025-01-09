@@ -2,6 +2,7 @@ import type { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -45,7 +46,7 @@ const AuthRolesGenerator = createGeneratorWithChildren({
     authSetup: authSetupProvider,
   },
   exports: {
-    authRoles: authRolesProvider,
+    authRoles: authRolesProvider.export(projectScope),
   },
   createGenerator({ roles }, { typescript, appModule, authSetup }) {
     if (

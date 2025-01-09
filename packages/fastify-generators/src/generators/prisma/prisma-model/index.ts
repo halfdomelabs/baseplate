@@ -1,8 +1,6 @@
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
-
+import { projectScope } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
-  createNonOverwriteableMap,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { snakeCase } from 'change-case';
@@ -27,7 +25,6 @@ export interface PrismaModelGeneratorConfig {
 }
 
 export interface PrismaModelProvider {
-  getConfig(): NonOverwriteableMap<PrismaModelGeneratorConfig>;
   getName(): string;
   addField(field: PrismaModelField): void;
   addModelAttribute(attribute: PrismaModelAttribute): void;
@@ -36,7 +33,7 @@ export interface PrismaModelProvider {
 export const prismaModelProvider =
   createProviderType<PrismaModelProvider>('prisma-model');
 
-const PrismaModelGenerator = createGeneratorWithChildren({
+const PrismaModelGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({
     fields: {
@@ -73,35 +70,38 @@ const PrismaModelGenerator = createGeneratorWithChildren({
       isMultiple: true,
     },
   }),
-  dependencies: {
-    prisma: prismaSchemaProvider.dependency(),
-  },
-  exports: {
-    prismaModel: prismaModelProvider,
-  },
-  createGenerator(descriptor, { prisma }) {
-    const { name } = descriptor;
-    const tableName = descriptor.tableName ?? snakeCase(name);
-
-    const prismaModel = new PrismaModelBlockWriter({ name, tableName });
-
-    const config = createNonOverwriteableMap(
-      {},
-      { name: 'prisma-model-config' },
-    );
-    return {
-      getProviders: () => ({
-        prismaModel: {
-          getConfig: () => config,
-          getName: () => name,
-          addField: (field) => prismaModel.addField(field),
-          addModelAttribute: (attribute) => prismaModel.addAttribute(attribute),
-        },
-      }),
-      build: () => {
-        prisma.addPrismaModel(prismaModel);
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prisma: prismaSchemaProvider.dependency(),
       },
-    };
+      exports: {
+        prismaModel: prismaModelProvider
+          .export()
+          .andExport(projectScope, descriptor.name),
+      },
+      run: ({ prisma }) => {
+        const { name } = descriptor;
+        const tableName = descriptor.tableName ?? snakeCase(name);
+
+        const prismaModel = new PrismaModelBlockWriter({ name, tableName });
+
+        return {
+          getProviders: () => ({
+            prismaModel: {
+              getName: () => name,
+              addField: (field) => prismaModel.addField(field),
+              addModelAttribute: (attribute) =>
+                prismaModel.addAttribute(attribute),
+            },
+          }),
+          build: () => {
+            prisma.addPrismaModel(prismaModel);
+          },
+        };
+      },
+    });
   },
 });
 

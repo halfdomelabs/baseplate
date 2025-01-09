@@ -84,7 +84,6 @@ export function buildAdmin(
       },
       $tailwind: {
         generator: '@halfdomelabs/react/core/react-tailwind',
-        peerProvider: true,
       },
       proxy: {
         // TODO: Extract out logic
@@ -109,21 +108,17 @@ export function buildAdmin(
       },
       $adminComponents: {
         generator: '@halfdomelabs/react/admin/admin-components',
-        peerProvider: true,
       },
       $sentry: {
         generator: '@halfdomelabs/react/core/react-sentry',
-        peerProvider: true,
       },
       $apollo: {
         generator: '@halfdomelabs/react/apollo/react-apollo',
         devApiEndpoint: '/api/graphql',
         schemaLocation: `${backendRelativePath}/schema.graphql`,
-        peerProvider: true,
       },
       $apolloError: {
         generator: '@halfdomelabs/react/apollo/apollo-error',
-        peerProvider: true,
       },
       ...compileAuthFeatures(builder),
       ...appCompiler.getRootChildren(),

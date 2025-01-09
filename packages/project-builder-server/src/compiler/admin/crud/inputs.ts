@@ -146,7 +146,7 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
 const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedInputConfig> =
   {
     name: 'embedded',
-    compileInput: (definition, { definitionContainer, crudSectionId }) => {
+    compileInput: (definition, { definitionContainer }) => {
       const relationName = definitionContainer.nameFromId(
         definition.modelRelation,
       );
@@ -155,9 +155,7 @@ const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedIn
         generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
         label: definition.label,
         modelRelation: relationName,
-        embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${definitionContainer.nameFromId(
-          definition.embeddedFormName,
-        )}`,
+        embeddedFormRef: definition.embeddedFormName,
       };
     },
   };
@@ -165,7 +163,7 @@ const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedIn
 const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedLocalInputConfig> =
   {
     name: 'embeddedLocal',
-    compileInput(definition, { definitionContainer, model, crudSectionId }) {
+    compileInput(definition, { definitionContainer, model }) {
       const localRelation = model.model.relations?.find(
         (r) => r.id === definition.localRelation,
       );
@@ -186,9 +184,7 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
         label: definition.label,
         modelRelation: localRelationName,
         isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
-        embeddedFormRef: `${crudSectionId}.edit.embeddedForms.${definitionContainer.nameFromId(
-          definition.embeddedFormName,
-        )}`,
+        embeddedFormRef: definition.embeddedFormName,
       };
     },
   };

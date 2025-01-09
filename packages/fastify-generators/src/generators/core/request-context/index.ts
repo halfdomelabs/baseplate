@@ -3,6 +3,7 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -60,7 +61,7 @@ const RequestContextGenerator = createGeneratorWithTasks({
         typescript: typescriptProvider,
       },
       exports: {
-        requestContext: requestContextProvider,
+        requestContext: requestContextProvider.export(projectScope),
       },
       run({ node, fastifyServer, typescript }) {
         const config = createNonOverwriteableMap(

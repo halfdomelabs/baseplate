@@ -26,6 +26,8 @@ import {
   renderGraphQLRoot,
 } from '@src/writers/graphql/index.js';
 
+import { adminCrudSectionScope } from '../admin-crud-section/index.js';
+
 const descriptorSchema = z.object({
   modelName: z.string(),
 });
@@ -69,7 +71,7 @@ const AdminCrudQueriesGenerator = createGeneratorWithChildren({
     reactRoutes: reactRoutesProvider,
   },
   exports: {
-    adminCrudQueries: adminCrudQueriesProvider,
+    adminCrudQueries: adminCrudQueriesProvider.export(adminCrudSectionScope),
   },
   createGenerator({ modelName }, { reactApollo, reactRoutes }) {
     const config: AdminCrudQueriesConfig = {

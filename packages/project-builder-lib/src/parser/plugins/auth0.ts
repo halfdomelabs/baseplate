@@ -92,20 +92,16 @@ export const Auth0Plugin: ParserPlugin = {
     hooks.addFastifyChildren({
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth',
-        peerProvider: true,
       },
       $pothosAuth: {
         generator: '@halfdomelabs/fastify/pothos/pothos-auth',
-        peerProvider: true,
       },
     });
 
     // add feature providers
-    hooks.addFeatureHoistedProviders(auth.authFeaturePath, ['role-service']);
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $authContext: {
         generator: '@halfdomelabs/fastify/auth/auth-context',
-        peerProvider: true,
       },
       $authPlugin: {
         generator: '@halfdomelabs/fastify/auth/auth-plugin',
@@ -117,18 +113,15 @@ export const Auth0Plugin: ParserPlugin = {
           comment: r.comment,
           builtIn: r.builtIn,
         })),
-        peerProvider: true,
       },
       $auth0: {
         generator: '@halfdomelabs/fastify/auth0/auth0-module',
         userModelName: ModelUtils.byIdOrThrow(projectDefinition, auth.userModel)
           .name,
         includeManagement: true,
-        peerProvider: true,
       },
       $userSession: {
         generator: '@halfdomelabs/fastify/auth/user-session-types',
-        peerProvider: true,
       },
     });
   },

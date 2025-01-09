@@ -1,6 +1,9 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
-import { typescriptProvider } from '@halfdomelabs/core-generators';
+import {
+  projectScope,
+  typescriptProvider,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createProviderType,
@@ -35,7 +38,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     typescript: typescriptProvider,
   },
   exports: {
-    reactUtils: reactUtilsProvider,
+    reactUtils: reactUtilsProvider.export(projectScope),
   },
   run({ typescript }) {
     const usedTemplates: Record<string, boolean> = {};

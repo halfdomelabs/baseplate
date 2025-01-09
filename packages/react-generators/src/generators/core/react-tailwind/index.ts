@@ -2,6 +2,7 @@ import {
   eslintProvider,
   nodeProvider,
   prettierProvider,
+  projectScope,
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
@@ -36,7 +37,7 @@ const ReactTailwindGenerator = createGeneratorWithChildren({
     prettier: prettierProvider,
   },
   exports: {
-    reactTailwind: reactTailwindProvider,
+    reactTailwind: reactTailwindProvider.export(projectScope),
   },
   createGenerator({ globalBodyClasses }, { node, react, eslint, prettier }) {
     const srcFolder = react.getSrcFolder();

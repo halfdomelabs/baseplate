@@ -14,6 +14,7 @@ import type {
   GeneratorConfigMap,
   GeneratorConfigWithLocation,
 } from '../loader.js';
+import type { ProviderExportScope } from '../provider.js';
 
 import { loadDescriptorFromFile } from './descriptor-loader.js';
 
@@ -29,6 +30,7 @@ export interface GeneratorTaskEntry {
 
 export interface GeneratorEntry {
   id: string;
+  scopes: ProviderExportScope[];
   generatorConfig: GeneratorConfigWithLocation;
   descriptor: BaseGeneratorDescriptor;
   children: GeneratorEntry[];
@@ -109,19 +111,19 @@ export async function buildGeneratorEntry(
       logger: context.logger,
     });
 
-  const tasks = generatorConfig
-    .createGenerator(validatedDescriptor ?? descriptor)
-    .map(
-      (task): GeneratorTaskEntry => ({
-        id: `${id}#${task.name}`,
-        dependencies: task.dependencies ?? {},
-        exports: task.exports ?? {},
-        task,
-        generatorBaseDirectory: generatorConfig.configBaseDirectory,
-        dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
-        generatorName: descriptor.generator,
-      }),
-    );
+  const generatorDescriptor = validatedDescriptor ?? descriptor;
+
+  const tasks = generatorConfig.createGenerator(generatorDescriptor).map(
+    (task): GeneratorTaskEntry => ({
+      id: `${id}#${task.name}`,
+      dependencies: task.dependencies ?? {},
+      exports: task.exports ?? {},
+      task,
+      generatorBaseDirectory: generatorConfig.configBaseDirectory,
+      dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
+      generatorName: descriptor.generator,
+    }),
+  );
 
   // recursively build children generator entries
   const childGeneratorEntryArrays = await Promise.all(
@@ -161,7 +163,8 @@ export async function buildGeneratorEntry(
   return {
     id,
     generatorConfig,
-    descriptor: validatedDescriptor ?? descriptor,
+    scopes: generatorConfig.scopes ?? [],
+    descriptor: generatorDescriptor,
     children: childGenerators,
     tasks,
   };

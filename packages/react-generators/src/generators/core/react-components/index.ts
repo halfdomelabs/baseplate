@@ -3,6 +3,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -74,7 +75,7 @@ const ReactComponentsGenerator = createGeneratorWithChildren({
     reactApp: reactAppProvider,
   },
   exports: {
-    reactComponents: reactComponentsProvider,
+    reactComponents: reactComponentsProvider.export(projectScope),
   },
   createGenerator(
     { includeDatePicker },

@@ -6,6 +6,11 @@
   "license": "UNLICENSED",
   "type": "commonjs",
   "main": "dist/index.js",
+  "files": [
+    "dist/**/*",
+    "package.json",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc && tsc-alias",
     "dev": "tsx watch --clear-screen=false -r dotenv/config src/index.ts | pino-pretty -t",

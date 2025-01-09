@@ -14,6 +14,7 @@ import { ts } from 'ts-morph';
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 
 import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
+import { projectScope } from '@src/providers/scopes.js';
 
 import type { CopyTypescriptFileOptions } from '../../../actions/index.js';
 import type { TypescriptCodeBlock } from '../../../writers/index.js';
@@ -140,7 +141,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
     const configTask = taskBuilder.addTask({
       name: 'config',
       exports: {
-        typescriptConfig: typescriptConfigProvider,
+        typescriptConfig: typescriptConfigProvider.export(projectScope),
       },
       run() {
         const config = createNonOverwriteableMap<TypescriptConfig>(
@@ -198,7 +199,7 @@ const TypescriptGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'main',
       dependencies: { node: nodeProvider },
-      exports: { typescript: typescriptProvider },
+      exports: { typescript: typescriptProvider.export(projectScope) },
       taskDependencies: { configTask },
       run({ node }, { configTask: { config, getCompilerOptions } }) {
         let cachedPathEntries: PathMapEntry[] | undefined;

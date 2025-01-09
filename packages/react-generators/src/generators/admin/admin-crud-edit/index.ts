@@ -72,8 +72,8 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
         reactError: reactErrorProvider,
       },
       exports: {
-        adminCrudEdit: adminCrudEditProvider,
-        adminCrudInputContainer: adminCrudInputContainerProvider,
+        adminCrudEdit: adminCrudEditProvider.export(),
+        adminCrudInputContainer: adminCrudInputContainerProvider.export(),
       },
       run({
         typescript,

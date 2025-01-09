@@ -17,6 +17,7 @@ import prettierPluginPackageJson from 'prettier-plugin-packagejson';
 import resolveFrom from 'resolve-from';
 import { z } from 'zod';
 
+import { projectScope } from '@src/providers/scopes.js';
 import { notEmpty } from '@src/utils/array.js';
 
 import { nodeProvider } from '../node/index.js';
@@ -112,7 +113,7 @@ const PrettierGenerator = createGeneratorWithChildren({
   descriptorSchema,
   dependencies: { node: nodeProvider },
   exports: {
-    prettier: prettierProvider,
+    prettier: prettierProvider.export(projectScope),
   },
   createGenerator(descriptor, { node }) {
     const prettierConfig = createNonOverwriteableMap<PrettierConfig>({

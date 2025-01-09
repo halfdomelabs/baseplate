@@ -30,6 +30,7 @@ function compileAdminCrudEmbeddedForm(
     );
   }
   const sharedData = {
+    id: form.id,
     name: form.name,
     modelName: builder.nameFromId(form.modelName),
     // auto-add id field if it's a single ID

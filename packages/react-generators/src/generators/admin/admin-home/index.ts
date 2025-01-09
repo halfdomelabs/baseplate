@@ -1,5 +1,6 @@
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -32,7 +33,7 @@ const AdminHomeGenerator = createGeneratorWithChildren({
     reactRoutes: reactRoutesProvider,
   },
   exports: {
-    adminHome: adminHomeProvider,
+    adminHome: adminHomeProvider.export(projectScope),
   },
   createGenerator(
     descriptor,

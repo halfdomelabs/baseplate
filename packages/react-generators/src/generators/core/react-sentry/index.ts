@@ -3,6 +3,7 @@ import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -38,7 +39,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     authIdentify: authIdentifyProvider.dependency().optional(),
   },
   exports: {
-    reactSentryProvider,
+    reactSentry: reactSentryProvider.export(projectScope),
   },
   run({ typescript, reactError, reactConfig, node, authIdentify }) {
     const sentryFile = typescript.createTemplate(
@@ -83,7 +84,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
 
     return {
       getProviders: () => ({
-        reactSentryProvider: {
+        reactSentry: {
           addSentryScopeAction(block) {
             sentryFile.addCodeBlock('SENTRY_SCOPE_ACTIONS', block);
           },

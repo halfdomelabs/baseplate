@@ -89,35 +89,16 @@ export const AuthPlugin: ParserPlugin = {
       },
     });
 
-    // hoist hasher
-    if (auth.passwordProvider) {
-      // TODO: Move hasher service call into user service to make a bit more accessible
-      hooks.addGlobalHoistedProviders('password-hasher-service');
-    }
-
-    hooks.addGlobalHoistedProviders([
-      'auth-info',
-      'auth-service-import',
-      'auth-info-import',
-    ]);
-
     // add global auth providers
     hooks.addFastifyChildren({
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth',
-        peerProvider: true,
       },
       $pothosAuth: {
         generator: '@halfdomelabs/fastify/pothos/pothos-auth',
-        peerProvider: true,
       },
     });
 
-    // add feature providers
-    hooks.addFeatureHoistedProviders(auth.authFeaturePath, [
-      'auth-service',
-      'auth-mutations',
-    ]);
     hooks.addFeatureChildren(auth.authFeaturePath, {
       $auth: {
         generator: '@halfdomelabs/fastify/auth/auth-module',
@@ -127,7 +108,6 @@ export const AuthPlugin: ParserPlugin = {
           roleService: {
             name: 'AuthRoleService',
             generator: '@halfdomelabs/fastify/core/service-file',
-            peerProvider: true,
             children: {
               $roles: {
                 generator: '@halfdomelabs/fastify/auth/role-service',
@@ -151,7 +131,6 @@ export const AuthPlugin: ParserPlugin = {
             $passwordAuthService: {
               name: 'PasswordAuthService',
               generator: '@halfdomelabs/fastify/auth/password-auth-service',
-              peerProvider: true,
             },
             $passwordAuthMutations: {
               name: 'PasswordAuthMutations',

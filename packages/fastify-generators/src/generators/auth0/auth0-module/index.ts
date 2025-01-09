@@ -1,6 +1,7 @@
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -49,8 +50,8 @@ const createMainTask = createTaskConfigBuilder(
       authContext: authContextProvider,
     },
     exports: {
-      auth0Module: auth0ModuleProvider,
-      userSessionService: userSessionServiceProvider,
+      auth0Module: auth0ModuleProvider.export(projectScope),
+      userSessionService: userSessionServiceProvider.export(projectScope),
     },
     run({
       node,

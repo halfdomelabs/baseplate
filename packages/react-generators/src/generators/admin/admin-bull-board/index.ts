@@ -1,4 +1,5 @@
 import {
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -36,7 +37,7 @@ const createMainTask = createTaskConfigBuilder(
       reactRoutes: reactRoutesProvider,
     },
     exports: {
-      adminBullBoard: adminBullBoardProvider,
+      adminBullBoard: adminBullBoardProvider.export(projectScope),
     },
     run({
       typescript,

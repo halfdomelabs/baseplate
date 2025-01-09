@@ -4,6 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -56,7 +57,7 @@ const RootModuleGenerator = createGeneratorWithTasks({
     const rootModuleTask = taskBuilder.addTask({
       name: 'rootModule',
       exports: {
-        rootModule: rootModuleProvider,
+        rootModule: rootModuleProvider.export(projectScope),
       },
       run() {
         const moduleFieldMap = createNonOverwriteableMap<
@@ -85,7 +86,9 @@ const RootModuleGenerator = createGeneratorWithTasks({
 
     taskBuilder.addTask({
       name: 'rootModuleImport',
-      exports: { rootModuleImport: rootModuleImportProvider },
+      exports: {
+        rootModuleImport: rootModuleImportProvider.export(projectScope),
+      },
       run() {
         return {
           getProviders() {
@@ -113,7 +116,7 @@ const RootModuleGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'appModule',
       dependencies: { typescript: typescriptProvider },
-      exports: { appModule: appModuleProvider },
+      exports: { appModule: appModuleProvider.export(projectScope) },
       taskDependencies: { rootModuleTask },
       run({ typescript }, { rootModuleTask: { moduleFieldMap } }) {
         const rootModuleEntries = createNonOverwriteableMap<

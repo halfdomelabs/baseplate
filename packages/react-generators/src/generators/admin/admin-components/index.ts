@@ -3,6 +3,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -29,7 +30,7 @@ const AdminComponentsGenerator = createGeneratorWithChildren({
     node: nodeProvider,
   },
   exports: {
-    adminComponents: adminComponentsProvider,
+    adminComponents: adminComponentsProvider.export(projectScope),
   },
   createGenerator(descriptor, { reactComponents, typescript, node }) {
     node.addPackages({

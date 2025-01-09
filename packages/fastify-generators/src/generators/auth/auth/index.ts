@@ -1,6 +1,10 @@
-import type { ImportEntry, ImportMapper } from '@halfdomelabs/core-generators';
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
+import {
+  type ImportEntry,
+  type ImportMapper,
+  projectScope,
+} from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
@@ -39,7 +43,7 @@ const AuthGenerator = createGeneratorWithTasks({
     const setupTask = taskBuilder.addTask({
       name: 'setup',
       exports: {
-        authSetup: authSetupProvider,
+        authSetup: authSetupProvider.export(projectScope),
       },
       run() {
         const config = createNonOverwriteableMap<AuthGeneratorConfig>(
@@ -60,7 +64,7 @@ const AuthGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'main',
       exports: {
-        auth: authProvider,
+        auth: authProvider.export(projectScope),
       },
       taskDependencies: { setupTask },
       run(deps, { setupTask: { config } }) {

@@ -7,6 +7,8 @@ import {
   writeFormattedAction,
 } from '@halfdomelabs/sync';
 
+import { projectScope } from '@src/providers/scopes.js';
+
 import { nodeProvider } from '../node/index.js';
 import { generateConfig } from './generate-config.js';
 
@@ -28,7 +30,7 @@ const EslintGenerator = createGeneratorWithChildren({
     node: nodeProvider,
   },
   exports: {
-    eslint: eslintProvider,
+    eslint: eslintProvider.export(projectScope),
   },
   createGenerator(descriptor, { node }) {
     const configMap = createNonOverwriteableMap<EslintConfig>(
