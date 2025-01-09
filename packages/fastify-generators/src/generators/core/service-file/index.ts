@@ -9,7 +9,6 @@ import {
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
-  createProviderExportScope,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
@@ -50,15 +49,9 @@ export interface ServiceFileOutputProvider {
 export const serviceFileOutputProvider =
   createProviderType<ServiceFileOutputProvider>('service-file-output');
 
-export const serviceFileScope = createProviderExportScope(
-  'fastify/service-file',
-  'Service file',
-);
-
 export const ServiceFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  scopes: [serviceFileScope],
   buildTasks(taskBuilder, descriptor) {
     const mainTask = taskBuilder.addTask({
       name: 'main',
@@ -66,7 +59,7 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
         appModule: appModuleProvider,
         typescript: typescriptProvider,
       },
-      exports: { serviceFile: serviceFileProvider.export(serviceFileScope) },
+      exports: { serviceFile: serviceFileProvider.export() },
       run({ appModule, typescript }) {
         const methodMap = createNonOverwriteableMap<
           Record<string, TypescriptCodeBlock>

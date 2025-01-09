@@ -1,7 +1,6 @@
 import { projectScope } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
-  createProviderExportScope,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { snakeCase } from 'change-case';
@@ -33,11 +32,6 @@ export interface PrismaModelProvider {
 
 export const prismaModelProvider =
   createProviderType<PrismaModelProvider>('prisma-model');
-
-export const prismaModelScope = createProviderExportScope(
-  'fastify/prisma-model',
-  'Scope for a specific Prisma model',
-);
 
 const PrismaModelGenerator = createGeneratorWithTasks({
   descriptorSchema,
@@ -76,7 +70,6 @@ const PrismaModelGenerator = createGeneratorWithTasks({
       isMultiple: true,
     },
   }),
-  scopes: [prismaModelScope],
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',
@@ -85,7 +78,7 @@ const PrismaModelGenerator = createGeneratorWithTasks({
       },
       exports: {
         prismaModel: prismaModelProvider
-          .export(prismaModelScope)
+          .export()
           .andExport(projectScope, descriptor.name),
       },
       run: ({ prisma }) => {

@@ -1,4 +1,4 @@
-import { fileScope, projectScope } from '@halfdomelabs/core-generators';
+import { projectScope } from '@halfdomelabs/core-generators';
 import {
   createGeneratorWithTasks,
   createNonOverwriteableMap,
@@ -31,7 +31,6 @@ export const prismaCrudServiceProvider =
 
 const PrismaCrudServiceGenerator = createGeneratorWithTasks({
   descriptorSchema,
-  scopes: [fileScope],
   getDefaultChildGenerators: ({ modelName }) => ({
     create: {
       defaultDescriptor: {
@@ -61,8 +60,7 @@ const PrismaCrudServiceGenerator = createGeneratorWithTasks({
     const setupTask = taskBuilder.addTask({
       name: 'setup',
       exports: {
-        prismaCrudServiceSetup:
-          prismaCrudServiceSetupProvider.export(fileScope),
+        prismaCrudServiceSetup: prismaCrudServiceSetupProvider.export(),
       },
       run() {
         const transformers = createNonOverwriteableMap<
@@ -90,7 +88,8 @@ const PrismaCrudServiceGenerator = createGeneratorWithTasks({
       taskDependencies: { setupTask },
       exports: {
         prismaCrudService: prismaCrudServiceProvider
-          .export(fileScope)
+          // export to children and project under model name
+          .export()
           .andExport(projectScope, modelName),
       },
       run(deps, { setupTask: { transformers } }) {

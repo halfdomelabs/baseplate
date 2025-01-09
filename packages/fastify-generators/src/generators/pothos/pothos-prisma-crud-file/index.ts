@@ -1,6 +1,5 @@
 import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
-import { fileScope } from '@halfdomelabs/core-generators';
 import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -18,7 +17,6 @@ export type PothosPrismaCrudFileDescriptor = GeneratorDescriptor<
 
 const PothosPrismaCrudFileGenerator = createGeneratorWithTasks({
   descriptorSchema,
-  scopes: [fileScope],
   getDefaultChildGenerators: (descriptor) => {
     const sharedValues = {
       generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-mutation',
