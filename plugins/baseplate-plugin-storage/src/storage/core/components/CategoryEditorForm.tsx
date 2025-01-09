@@ -67,7 +67,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
             <ComboboxField.Controller
               label="Default Adapter"
               control={control}
-              name={`categories.${idx}.defaultAdapter`}
+              name={`categories.${idx}.defaultAdapterRef`}
               options={adapterOptions}
             />
             <InputField.Controller
@@ -78,7 +78,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
             <ComboboxField.Controller
               label="Used By Relation"
               control={control}
-              name={`categories.${idx}.usedByRelation`}
+              name={`categories.${idx}.usedByRelationRef`}
               options={foreignKeyOptions}
             />
             <MultiComboboxField.Controller
@@ -104,8 +104,8 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
         onClick={() => {
           append({
             name: '',
-            defaultAdapter: '',
-            usedByRelation: '',
+            defaultAdapterRef: '',
+            usedByRelationRef: '',
             uploadRoles: [],
           });
         }}

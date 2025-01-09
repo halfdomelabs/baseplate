@@ -114,6 +114,15 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
             foreign: 'foreignRef',
           }),
         ),
+      (c) =>
+        transformJsonPath(
+          c,
+          'plugins.*.config.categories.*',
+          renameObjectKeysTransform({
+            usedByRelation: 'usedByRelationRef',
+            defaultAdapter: 'defaultAdapterRef',
+          }),
+        ),
     );
     return transform(config) as unknown;
   },

@@ -43,8 +43,12 @@ export default createPlatformPluginExport({
             })),
             categories: storage.categories.map((c) => ({
               ...c,
-              usedByRelation: definitionContainer.nameFromId(c.usedByRelation),
-              defaultAdapter: definitionContainer.nameFromId(c.defaultAdapter),
+              usedByRelation: definitionContainer.nameFromId(
+                c.usedByRelationRef,
+              ),
+              defaultAdapter: definitionContainer.nameFromId(
+                c.defaultAdapterRef,
+              ),
               uploadRoles: c.uploadRoles.map((r) =>
                 definitionContainer.nameFromId(r),
               ),
