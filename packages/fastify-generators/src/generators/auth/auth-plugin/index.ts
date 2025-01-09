@@ -1,80 +1,72 @@
 import {
+  makeImportAndFilePath,
   nodeProvider,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { loggerServiceSetupProvider } from '@src/generators/core/logger-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
-import {
-  authInfoImportProvider,
-  authServiceProvider,
-} from '../auth-service/index.js';
+import { authContextProvider } from '../auth-context/index.js';
+import { userSessionServiceProvider } from '../providers.js';
+import { userSessionTypesProvider } from '../user-session-types/index.js';
 
 const descriptorSchema = z.object({});
 
-const AuthPluginGenerator = createGeneratorWithTasks({
+const AuthPluginGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  buildTasks(taskBuilder) {
-    taskBuilder.addTask({
-      name: 'logger-request-context',
-      dependencies: { loggerServiceSetup: loggerServiceSetupProvider },
-      run({ loggerServiceSetup }) {
-        loggerServiceSetup.addMixin(
-          'userId',
-          TypescriptCodeUtils.createExpression(
-            "requestContext.get('user')?.id",
-            "import { requestContext } from '@fastify/request-context';",
-          ),
-        );
-
-        return {};
-      },
+  dependencies: {
+    typescript: typescriptProvider,
+    appModule: appModuleProvider,
+    authContext: authContextProvider,
+    userSessionService: userSessionServiceProvider,
+    userSessionTypes: userSessionTypesProvider,
+    node: nodeProvider,
+  },
+  createGenerator(
+    descriptor,
+    {
+      typescript,
+      appModule,
+      authContext,
+      userSessionService,
+      userSessionTypes,
+      node,
+    },
+  ) {
+    const [authPluginImport, authPluginPath] = makeImportAndFilePath(
+      appModule.getModuleFolder(),
+      'plugins/auth.plugin.ts',
+    );
+    node.addPackages({
+      '@fastify/request-context': '6.0.1',
     });
 
-    taskBuilder.addTask({
-      name: 'main',
-      dependencies: {
-        node: nodeProvider,
-        authService: authServiceProvider,
-        appModule: appModuleProvider,
-        typescript: typescriptProvider,
-        authInfoImport: authInfoImportProvider,
-      },
-      run({ authService, appModule, typescript, node, authInfoImport }) {
-        node.addPackages({ '@fastify/request-context': '4.0.0' });
+    appModule.registerFieldEntry(
+      'plugins',
+      TypescriptCodeUtils.createExpression(
+        'authPlugin',
+        `import { authPlugin } from '${authPluginImport}'`,
+      ),
+    );
 
-        appModule.registerFieldEntry(
-          'plugins',
-          new TypescriptCodeExpression(
-            'authPlugin',
-            `import {authPlugin} from '@/${appModule.getModuleFolder()}/plugins/auth-plugin'`,
-          ),
+    return {
+      getProviders: () => ({
+        authPlugin: {},
+      }),
+      build: async (builder) => {
+        await builder.apply(
+          typescript.createCopyAction({
+            source: 'plugins/auth.plugin.ts',
+            destination: authPluginPath,
+            importMappers: [authContext, userSessionService, userSessionTypes],
+          }),
         );
-        return {
-          getProviders: () => ({}),
-          build: async (builder) => {
-            builder.setBaseDirectory(appModule.getModuleFolder());
-
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'plugins/auth-plugin.ts',
-                importMappers: [authInfoImport, authService],
-              }),
-            );
-
-            await builder.apply(
-              typescript.createCopyAction({ source: 'utils/headers.ts' }),
-            );
-          },
-        };
       },
-    });
+    };
   },
 });
 

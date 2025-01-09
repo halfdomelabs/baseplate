@@ -39,8 +39,10 @@ import {
 } from '../_utils/data-loaders.js';
 import { adminComponentsProvider } from '../admin-components/index.js';
 import { adminCrudEditProvider } from '../admin-crud-edit/index.js';
+import { adminCrudSectionScope } from '../admin-crud-section/index.js';
 
 const descriptorSchema = z.object({
+  id: z.string(),
   name: z.string(),
   isList: z.boolean(),
   modelName: z.string(),
@@ -136,8 +138,8 @@ const createSetupFormTask = createTaskConfigBuilder(
     name: 'setupForm',
     dependencies: {},
     exports: {
-      adminCrudInputContainer: adminCrudInputContainerProvider,
-      adminCrudColumnContainer: adminCrudColumnContainerProvider,
+      adminCrudInputContainer: adminCrudInputContainerProvider.export(),
+      adminCrudColumnContainer: adminCrudColumnContainerProvider.export(),
     },
     run() {
       const inputFields: AdminCrudInput[] = [];
@@ -170,7 +172,7 @@ const createSetupFormTask = createTaskConfigBuilder(
 
 const createMainTask = createTaskConfigBuilder(
   (
-    { isList, name, idField }: Descriptor,
+    { id, isList, name, idField }: Descriptor,
     taskDependencies?: InferTaskBuilderMap<{
       setupTask: typeof createSetupFormTask;
     }>,
@@ -184,7 +186,10 @@ const createMainTask = createTaskConfigBuilder(
       typescript: typescriptProvider,
     },
     exports: {
-      adminCrudEmbeddedForm: adminCrudEmbeddedFormProvider,
+      adminCrudEmbeddedForm: adminCrudEmbeddedFormProvider.export(
+        adminCrudSectionScope,
+        id,
+      ),
     },
     taskDependencies,
     run(

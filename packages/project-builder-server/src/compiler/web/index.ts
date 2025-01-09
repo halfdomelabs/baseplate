@@ -44,18 +44,15 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
       },
       $sentry: {
         generator: '@halfdomelabs/react/core/react-sentry',
-        peerProvider: true,
       },
       $apollo: {
         generator: '@halfdomelabs/react/apollo/react-apollo',
         devApiEndpoint: '/api/graphql',
         schemaLocation: `${backendRelativePath}/schema.graphql`,
         enableSubscriptions: appConfig.enableSubscriptions,
-        peerProvider: true,
       },
       $apolloError: {
         generator: '@halfdomelabs/react/apollo/apollo-error',
-        peerProvider: true,
       },
       $datadogLogger: appConfig.enableDatadog
         ? { generator: '@halfdomelabs/react/core/react-datadog' }

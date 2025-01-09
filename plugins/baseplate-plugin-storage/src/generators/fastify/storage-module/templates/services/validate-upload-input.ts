@@ -28,7 +28,7 @@ export async function validateFileUploadInput(
   if (
     !file ||
     (!context.auth.roles.includes('system') &&
-      file.uploaderId !== context.auth.requiredUser().id)
+      file.uploaderId !== context.auth.userIdOrThrow())
   ) {
     throw new BadRequestError(`File with ID ${id} not found`);
   }

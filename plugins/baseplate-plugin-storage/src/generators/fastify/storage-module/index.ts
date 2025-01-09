@@ -4,6 +4,7 @@ import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   quot,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
@@ -30,7 +31,6 @@ import { z } from 'zod';
 
 const descriptorSchema = z.object({
   fileModel: z.string().min(1),
-  fileObjectTypeRef: z.string().min(1),
   s3Adapters: z.array(
     z.object({
       name: z.string().min(1),
@@ -63,10 +63,7 @@ export const storageModuleProvider = createProviderType<StorageModuleProvider>(
 const StorageModuleGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  buildTasks(
-    taskBuilder,
-    { fileModel, s3Adapters, categories = [], fileObjectTypeRef },
-  ) {
+  buildTasks(taskBuilder, { fileModel, s3Adapters, categories = [] }) {
     taskBuilder.addTask({
       name: 'setup-file-input-schema',
       dependencies: {
@@ -78,7 +75,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
         pothosSetup.getTypeReferences().addInputType({
           typeName: 'FileUploadInput',
           exportName: 'fileUploadInputInputType',
-          moduleName: `@/${path.join(
+          moduleName: `@/${path.posix.join(
             moduleFolder,
             'schema/file-upload.input-type.js',
           )}`,
@@ -93,7 +90,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
       dependencies: {
         appModule: appModuleProvider,
       },
-      exports: { storageModule: storageModuleProvider },
+      exports: { storageModule: storageModuleProvider.export(projectScope) },
       run({ appModule }) {
         const moduleFolder = appModule.getModuleFolder();
         const [validatorImport] = makeImportAndFilePath(
@@ -141,7 +138,7 @@ const StorageModuleGenerator = createGeneratorWithTasks({
         prismaUtils: prismaUtilsProvider,
         fileObjectType: pothosTypeOutputProvider
           .dependency()
-          .reference(fileObjectTypeRef),
+          .reference(`prisma-object-type:${fileModel}`),
       },
       run({
         node,

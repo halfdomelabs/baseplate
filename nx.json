@@ -49,5 +49,6 @@
       "cache": true
     }
   },
-  "defaultBase": "main"
+  "defaultBase": "main",
+  "nxCloudId": "6777ad092e5ee0cfc9db6992"
 }

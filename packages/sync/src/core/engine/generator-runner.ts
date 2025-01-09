@@ -1,6 +1,5 @@
 import * as R from 'ramda';
 
-import type { FormatterProvider } from '@src/providers/index.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
 import { safeMergeMap } from '@src/utils/merge.js';
@@ -11,11 +10,9 @@ import type { Provider } from '../provider.js';
 import type { GeneratorEntry } from './generator-builder.js';
 
 import { OutputBuilder } from '../generator-output.js';
-import { buildEntryDependencyMapRecursive as buildTaskEntryDependencyMapRecursive } from './dependency-map.js';
+import { resolveTaskDependencies } from './dependency-map.js';
 import { getSortedRunSteps } from './dependency-sort.js';
 import { flattenGeneratorTaskEntries } from './utils.js';
-
-// running awaits in serial for ease of reading
 
 export async function executeGeneratorEntry(
   rootEntry: GeneratorEntry,
@@ -23,13 +20,11 @@ export async function executeGeneratorEntry(
 ): Promise<GeneratorOutput> {
   const taskEntries = flattenGeneratorTaskEntries(rootEntry);
   const taskEntriesById = R.indexBy(R.prop('id'), taskEntries);
-  const dependencyMap = buildTaskEntryDependencyMapRecursive(
-    rootEntry,
-    {},
-    taskEntriesById,
-    logger,
+  const dependencyMap = resolveTaskDependencies(rootEntry, logger);
+  const { steps: sortedRunSteps, metadata } = getSortedRunSteps(
+    taskEntries,
+    dependencyMap,
   );
-  const sortedRunSteps = getSortedRunSteps(taskEntries, dependencyMap);
 
   const taskInstanceById: Record<string, GeneratorTaskInstance> = {}; // map of entry ID to initialized generator
   const providerMapById: Record<string, Record<string, Provider>> = {}; // map of entry ID to map of provider name to Provider
@@ -92,18 +87,7 @@ export async function executeGeneratorEntry(
         const entry = taskEntriesById[taskId];
         const generator = taskInstanceById[taskId];
 
-        // get default formatter for this instance
-        const formatterId = dependencyMap[taskId].formatter?.id;
-        const formatter =
-          formatterId == null
-            ? undefined
-            : (providerMapById[formatterId]
-                .formatter as unknown as FormatterProvider);
-
-        const outputBuilder = new OutputBuilder(
-          entry.generatorBaseDirectory,
-          formatter,
-        );
+        const outputBuilder = new OutputBuilder(entry.generatorBaseDirectory);
 
         if (generator.build) {
           await Promise.resolve(generator.build(outputBuilder));
@@ -127,6 +111,17 @@ export async function executeGeneratorEntry(
     postWriteCommands: generatorOutputs.flatMap(
       (output) => output.postWriteCommands,
     ),
+    formatters: generatorOutputs.flatMap((output) => output.formatters),
+    metadata: {
+      generatorStepNodes: metadata.fullSteps.map((step) => ({
+        id: step,
+      })),
+      generatorStepEdges: metadata.fullEdges.map(([source, target]) => ({
+        id: `${source}->${target}`,
+        source,
+        target,
+      })),
+    },
   };
 
   return buildOutput;

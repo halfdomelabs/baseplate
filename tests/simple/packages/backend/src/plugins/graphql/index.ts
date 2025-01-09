@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import { useDisableIntrospection } from '@envelop/disable-introspection';
 import { requestContext } from '@fastify/request-context';
-import AltairFastify from 'altair-fastify-plugin';
+import { AltairFastify } from 'altair-fastify-plugin';
 import { FastifyReply, FastifyRequest, RouteHandlerMethod } from 'fastify';
 import fp from 'fastify-plugin';
 import { GraphQLError, lexicographicSortSchema, printSchema } from 'graphql';

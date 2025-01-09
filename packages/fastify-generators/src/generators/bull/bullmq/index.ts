@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -32,7 +33,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     fastifyOutput: fastifyOutputProvider,
   },
   exports: {
-    bullMq: bullMqProvider,
+    bullMq: bullMqProvider.export(projectScope),
   },
   run({
     errorHandlerService,

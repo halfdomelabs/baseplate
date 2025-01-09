@@ -6,14 +6,22 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import pLimit from 'p-limit';
 
+import type { MergeAlgorithm, MergeResult } from '@src/merge/types.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import { buildCompositeMergeAlgorithm } from '@src/merge/composite-merge.js';
+import { diff3MergeAlgorithm } from '@src/merge/diff3.js';
+import { jsonMergeAlgorithm } from '@src/merge/json.js';
+import { simpleDiffAlgorithm } from '@src/merge/simple-diff.js';
 import { getErrorMessage } from '@src/utils/errors.js';
 import { executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
-import { attemptMergeJson, mergeStrings } from '@src/utils/merge.js';
 
-import type { FileData, GeneratorOutput } from './generator-output.js';
+import type {
+  FileData,
+  GeneratorOutput,
+  GeneratorOutputFormatter,
+} from './generator-output.js';
 
 import { POST_WRITE_COMMAND_TYPE_PRIORITY } from './generator-output.js';
 
@@ -24,15 +32,16 @@ async function mergeContents(
   filePath: string,
   formatContents: (contents: string) => Promise<string>,
   cleanContents?: string,
-): Promise<{ contents: string; hasConflict: boolean } | null> {
+  mergeAlgorithms?: MergeAlgorithm[],
+): Promise<MergeResult> {
+  // don't write if content has not changed
   if (cleanContents === newContents) {
-    // don't write if content has not changed
     return null;
   }
 
   const doesPathExist = await pathExists(filePath);
   if (!doesPathExist) {
-    return { contents: newContents, hasConflict: false };
+    return { mergedText: newContents, hasConflict: false };
   }
   const existingContents = await fs.readFile(filePath, 'utf8');
 
@@ -49,20 +58,28 @@ async function mergeContents(
     return null;
   }
 
-  // if the file is JSON, attempt a patch diff to avoid messy 3-way diff
-  if (filePath.endsWith('.json') && cleanContents) {
-    const mergedContents = attemptMergeJson(
-      existingContents,
-      newContents,
-      cleanContents,
-    );
-    if (mergedContents) {
-      const formattedMergedContents = await formatContents(mergedContents);
-      return { contents: formattedMergedContents, hasConflict: false };
-    }
+  if (!cleanContents) {
+    return simpleDiffAlgorithm(existingContents, newContents);
   }
 
-  return mergeStrings(existingContents, newContents, cleanContents);
+  const mergeAlgorithm = buildCompositeMergeAlgorithm([
+    ...(mergeAlgorithms ?? []),
+    ...(filePath.endsWith('.json') ? [jsonMergeAlgorithm] : []),
+    diff3MergeAlgorithm,
+  ]);
+
+  const mergeResult = await mergeAlgorithm(
+    existingContents,
+    newContents,
+    cleanContents,
+    { formatContents },
+  );
+
+  if (mergeResult) {
+    return mergeResult;
+  }
+
+  throw new Error(`Unable to merge ${filePath}`);
 }
 
 interface ModifiedWriteFileResult {
@@ -98,17 +115,27 @@ class FormatterError extends Error {
   }
 }
 
-async function writeFile(
-  filePath: string,
-  data: FileData,
-  originalPath: string,
-  logger: Logger,
-): Promise<WriteFileResult> {
-  // if file exists and we never overwrite, return false
-  const { options, contents, formatter } = data;
+async function prepareFileContents({
+  filePath,
+  data,
+  originalPath,
+  formatters,
+  logger,
+}: {
+  filePath: string;
+  data: FileData;
+  originalPath: string;
+  formatters: GeneratorOutputFormatter[];
+  logger: Logger;
+}): Promise<WriteFileResult> {
+  const { options, contents } = data;
+
+  const formatter = formatters.find((f) =>
+    f.fileExtensions?.some((ext) => path.extname(filePath) === ext),
+  );
 
   if (contents instanceof Buffer) {
-    if (formatter) {
+    if (formatter && options?.shouldFormat) {
       throw new Error(`Cannot format Buffer contents for ${filePath}`);
     }
     if (options?.neverOverwrite) {
@@ -142,17 +169,8 @@ async function writeFile(
 
   async function formatContents(contentsToFormat: string): Promise<string> {
     let formattedContents = contentsToFormat;
-    if (options?.preformat) {
-      try {
-        formattedContents = await Promise.resolve(
-          options.preformat(formattedContents, filePath, logger),
-        );
-      } catch (error) {
-        throw new FormatterError(error, formattedContents);
-      }
-    }
 
-    if (formatter) {
+    if (formatter && options?.shouldFormat) {
       try {
         formattedContents = await formatter.format(
           formattedContents,
@@ -193,12 +211,12 @@ async function writeFile(
   if (!mergeResult) {
     return { type: 'skipped', cleanContents: formattedContents, originalPath };
   }
-  const { contents: mergedContents, hasConflict } = mergeResult;
+  const { mergedText, hasConflict } = mergeResult;
 
   return {
     type: 'modified',
     path: filePath,
-    contents: mergedContents,
+    contents: mergedText,
     cleanContents: formattedContents,
     hasConflict,
     originalPath,
@@ -215,10 +233,14 @@ export interface GeneratorWriteResult {
   failedCommands: string[];
 }
 
-const isModifiedFileResult = (
-  result: WriteFileResult,
-): result is ModifiedWriteFileResult => result.type === 'modified';
-
+/**
+ * Write the generator output to the output directory
+ * @param output - The generator output to write
+ * @param outputDirectory - The directory to write the output to
+ * @param options - The write options
+ * @param logger - The logger to use
+ * @returns The result of the write operation
+ */
 export async function writeGeneratorOutput(
   output: GeneratorOutput,
   outputDirectory: string,
@@ -228,32 +250,45 @@ export async function writeGeneratorOutput(
   const { cleanDirectory, rerunCommands = [] } = options ?? {};
   // write files
   try {
+    const writeLimit = pLimit(10);
     const fileResults = await Promise.all(
-      [...output.files.entries()].map(([filename, file]) =>
-        writeFile(path.join(outputDirectory, filename), file, filename, logger),
+      Array.from(output.files.entries(), ([filename, file]) =>
+        writeLimit(() =>
+          prepareFileContents({
+            filePath: path.join(outputDirectory, filename),
+            data: file,
+            originalPath: filename,
+            formatters: output.formatters,
+            logger,
+          }),
+        ),
       ),
     );
 
-    const modifiedFiles = fileResults.filter(isModifiedFileResult);
-    const modifiedFilenames = new Set(
-      modifiedFiles.map((result) => result.originalPath),
+    const modifiedFiles = fileResults.filter(
+      (result) => result.type === 'modified',
     );
     const conflictFilenames: string[] = modifiedFiles
       .filter((result) => result.hasConflict)
       .map((result) => result.originalPath);
 
-    const writeLimit = pLimit(10);
+    const writeFileWithContents = async (
+      filePath: string,
+      contents: Buffer | string,
+    ): Promise<void> => {
+      await ensureDir(path.dirname(filePath));
+      await (contents instanceof Buffer
+        ? fs.writeFile(filePath, contents)
+        : fs.writeFile(filePath, contents, {
+            encoding: 'utf8',
+          }));
+    };
 
     await Promise.all(
       modifiedFiles.map((modifiedFile) =>
-        writeLimit(async () => {
-          await ensureDir(path.dirname(modifiedFile.path));
-          await (modifiedFile.contents instanceof Buffer
-            ? fs.writeFile(modifiedFile.path, modifiedFile.contents)
-            : fs.writeFile(modifiedFile.path, modifiedFile.contents, {
-                encoding: 'utf8',
-              }));
-        }),
+        writeLimit(() =>
+          writeFileWithContents(modifiedFile.path, modifiedFile.contents),
+        ),
       ),
     );
 
@@ -261,21 +296,19 @@ export async function writeGeneratorOutput(
     if (cleanDirectory) {
       await Promise.all(
         fileResults.map((fileResult) =>
-          writeLimit(async () => {
-            const cleanPath = path.join(
-              cleanDirectory,
-              fileResult.originalPath,
-            );
-            await ensureDir(path.dirname(cleanPath));
-            await (fileResult.cleanContents instanceof Buffer
-              ? fs.writeFile(cleanPath, fileResult.cleanContents)
-              : fs.writeFile(cleanPath, fileResult.cleanContents, {
-                  encoding: 'utf8',
-                }));
-          }),
+          writeLimit(() =>
+            writeFileWithContents(
+              path.join(cleanDirectory, fileResult.originalPath),
+              fileResult.cleanContents,
+            ),
+          ),
         ),
       );
     }
+
+    const modifiedFilenames = new Set(
+      modifiedFiles.map((result) => result.originalPath),
+    );
 
     const runnableCommands = output.postWriteCommands.filter((command) => {
       const { onlyIfChanged = [] } = command.options ?? {};

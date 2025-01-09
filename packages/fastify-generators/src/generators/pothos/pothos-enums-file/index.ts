@@ -47,7 +47,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
       pothosSetup: pothosSetupProvider,
     },
     exports: {
-      pothosEnumsFile: pothosEnumsFileProvider,
+      pothosEnumsFile: pothosEnumsFileProvider.export(),
     },
     run({ appModule, typescript, pothosSetup }) {
       const [typesImport, typesPath] = makeImportAndFilePath(

@@ -2,6 +2,7 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   projectProvider,
+  projectScope,
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -34,7 +35,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     project: projectProvider,
   },
   exports: {
-    reactDatadog: reactDatadogProvider,
+    reactDatadog: reactDatadogProvider.export(projectScope),
   },
   run({ typescript, node, reactConfig, authIdentify, project }) {
     const [datadogImport, datadogPath] = makeImportAndFilePath(

@@ -8,6 +8,7 @@ import type {
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -17,7 +18,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authInfoImportProvider } from '@src/generators/auth/auth-service/index.js';
+import { authProvider } from '@src/generators/auth/index.js';
 import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
 import { configServiceProvider } from '../config-service/index.js';
@@ -73,10 +74,15 @@ const FastifySentryGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'server',
       dependencies: {
+        node: nodeProvider,
         fastifyServer: fastifyServerProvider,
         errorHandlerServiceSetup: errorHandlerServiceSetupProvider,
       },
-      run({ errorHandlerServiceSetup, fastifyServer }) {
+      run({ node, errorHandlerServiceSetup, fastifyServer }) {
+        if (!node.isEsm()) {
+          fastifyServer.addInitializerBlock("import './instrument.js';\n");
+        }
+
         fastifyServer.addPrePluginBlock(
           TypescriptCodeUtils.createBlock(
             `Sentry.setupFastifyErrorHandler(fastify);
@@ -113,7 +119,7 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         errorHandler: errorHandlerServiceProvider,
       },
       exports: {
-        fastifySentry: fastifySentryProvider,
+        fastifySentry: fastifySentryProvider.export(projectScope),
       },
       run({ node, configService, typescript, errorHandler }) {
         const sentryServiceFile = typescript.createTemplate(
@@ -129,14 +135,14 @@ const FastifySentryGenerator = createGeneratorWithTasks({
         const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
 
         node.addPackages({
-          '@sentry/core': '8.34.0',
-          '@sentry/node': '8.34.0',
-          '@sentry/profiling-node': '8.34.0',
+          '@sentry/core': '8.41.0',
+          '@sentry/node': '8.41.0',
+          '@sentry/profiling-node': '8.41.0',
           lodash: '4.17.21',
         });
 
         node.addDevPackages({
-          '@sentry/types': '8.34.0',
+          '@sentry/types': '8.41.0',
           '@types/lodash': '4.17.7',
         });
 
@@ -266,17 +272,17 @@ const FastifySentryGenerator = createGeneratorWithTasks({
       name: 'auth',
       dependencies: {
         fastifySentry: fastifySentryProvider,
-        authInfoImport: authInfoImportProvider.dependency().optional(),
+        auth: authProvider.dependency().optional(),
       },
-      run({ authInfoImport, fastifySentry }) {
-        if (authInfoImport) {
+      run({ auth, fastifySentry }) {
+        if (auth) {
           fastifySentry.addScopeConfigurationBlock(
             TypescriptCodeUtils.createBlock(
-              `const userData = requestContext.get('user');
-    if (userData) {
+              `const userId = requestContext.get('userId');
+    if (userId) {
       event.user = {
         ...event.user,
-        id: userData.id,
+        id: userId,
       };
     }`,
               `import { requestContext } from '@fastify/request-context';`,

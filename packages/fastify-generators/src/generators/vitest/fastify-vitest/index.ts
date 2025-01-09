@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   vitestProvider,
 } from '@halfdomelabs/core-generators';
@@ -26,7 +27,7 @@ const FastifyVitestGenerator = createGeneratorWithChildren({
     node: nodeProvider,
   },
   exports: {
-    fastifyVitest: fastifyVitestProvider,
+    fastifyVitest: fastifyVitestProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, vitest }) {
     // add config to vitest setup

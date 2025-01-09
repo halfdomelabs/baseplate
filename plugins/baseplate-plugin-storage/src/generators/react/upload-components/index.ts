@@ -3,6 +3,7 @@ import type { ImportMapper } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
@@ -38,7 +39,7 @@ const UploadComponentsGenerator = createGeneratorWithChildren({
     reactApollo: reactApolloProvider,
   },
   exports: {
-    uploadComponents: uploadComponentsProvider,
+    uploadComponents: uploadComponentsProvider.export(projectScope),
   },
   createGenerator(
     { fileModelName },

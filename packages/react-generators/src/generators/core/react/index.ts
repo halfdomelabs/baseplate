@@ -10,6 +10,7 @@ import {
   nodeGitIgnoreProvider,
   nodeProvider,
   nodeSetupProvider,
+  projectScope,
   quot,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -63,7 +64,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
   },
 
   exports: {
-    react: reactProvider,
+    react: reactProvider.export(projectScope),
   },
 
   run({ node, typescript, nodeGitIgnore, eslint }) {
@@ -107,7 +108,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
       ),
       watch: TypescriptCodeUtils.createExpression(
         JSON.stringify({
-          ignored: ['**/baseplate/.clean/**', '**/baseplate/.clean_tmp/**'],
+          ignored: ['**/baseplate/**'],
         }),
       ),
     });
@@ -201,59 +202,50 @@ const ReactGenerator = createGeneratorWithTasks({
       provider: 'react-app',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-app',
-        peerProvider: true,
       },
     },
     router: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-router',
-        peerProvider: true,
       },
     },
     logger: {
       provider: 'react-logger',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-logger',
-        peerProvider: true,
       },
     },
     components: {
       provider: 'react-components',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-components',
-        peerProvider: true,
       },
     },
     config: {
       provider: 'react-config',
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-config',
-        peerProvider: true,
       },
     },
     proxy: {
       defaultToNullIfEmpty: true,
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-proxy',
-        peerProvider: true,
       },
     },
     error: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-error',
-        peerProvider: true,
       },
     },
     utils: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-utils',
-        peerProvider: true,
       },
     },
     errorBoundary: {
       defaultDescriptor: {
         generator: '@halfdomelabs/react/core/react-error-boundary',
-        peerProvider: true,
       },
     },
   }),
@@ -263,7 +255,6 @@ const ReactGenerator = createGeneratorWithTasks({
       name: 'setup-node',
       dependencies: {
         nodeSetup: nodeSetupProvider,
-        formatter: createProviderType('non-exist').dependency().optional(),
       },
       run: ({ nodeSetup }) => {
         nodeSetup.setIsEsm(true);

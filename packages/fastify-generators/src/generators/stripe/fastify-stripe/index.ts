@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -35,7 +36,7 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
     fastifyServer: fastifyServerProvider,
   },
   exports: {
-    fastifyStripe: fastifyStripeProvider,
+    fastifyStripe: fastifyStripeProvider.export(projectScope),
   },
   createGenerator(
     descriptor,
@@ -50,7 +51,7 @@ const FastifyStripeGenerator = createGeneratorWithChildren({
   ) {
     node.addPackages({
       stripe: '14.5.0',
-      'fastify-raw-body': '4.3.0',
+      'fastify-raw-body': '5.0.0',
     });
     configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
       comment: 'Stripe secret API key',

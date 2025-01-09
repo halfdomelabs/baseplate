@@ -24,18 +24,18 @@ import { writeValueFromPothosArg } from '@src/writers/pothos/resolvers.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { pothosSchemaProvider } from '../pothos/index.js';
+import { pothosFieldScope } from '../providers/scopes.js';
 
 const descriptorSchema = z.object({
   modelName: z.string().min(1),
   type: z.enum(['create', 'update', 'delete']),
-  objectTypeRef: z.string().min(1),
   crudServiceRef: z.string().min(1),
 });
 
 type Descriptor = z.infer<typeof descriptorSchema>;
 
 const createMainTask = createTaskConfigBuilder(
-  ({ modelName, type, objectTypeRef, crudServiceRef }: Descriptor) => ({
+  ({ modelName, type, crudServiceRef }: Descriptor) => ({
     name: 'main',
     dependencies: {
       pothosSchema: pothosSchemaProvider,
@@ -46,10 +46,10 @@ const createMainTask = createTaskConfigBuilder(
       tsUtils: tsUtilsProvider,
       pothosObjectType: pothosTypeOutputProvider
         .dependency()
-        .reference(objectTypeRef),
+        .reference(`prisma-object-type:${modelName}`),
     },
     exports: {
-      pothosField: pothosFieldProvider,
+      pothosField: pothosFieldProvider.export(pothosFieldScope),
     },
     run({
       pothosSchema,
@@ -207,6 +207,7 @@ const createMainTask = createTaskConfigBuilder(
 
 const PothosPrismaCrudMutationGenerator = createGeneratorWithTasks({
   descriptorSchema,
+  scopes: [pothosFieldScope],
   getDefaultChildGenerators: () => ({
     authorize: {
       defaultToNullIfEmpty: true,

@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { formatterProvider } from '@src/providers/index.js';
 import { createEventedLogger } from '@src/utils/index.js';
 
 import type { GeneratorOutputBuilder } from '../generator-output.js';
@@ -81,7 +80,6 @@ describe('executeGeneratorEntry', () => {
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
         contents: 'simple',
-        formatter: undefined,
       },
     });
     expect(result.postWriteCommands).toEqual([
@@ -94,16 +92,14 @@ describe('executeGeneratorEntry', () => {
   });
 
   it('generates a nested entry', async () => {
-    const formatter = { format: vi.fn() };
     const simpleProviderType = createProviderType('simple');
     const simpleProvider = { hello: vi.fn() };
     const entry = buildGeneratorEntry({
       id: 'root',
       exportMap: {
-        formatter: formatterProvider,
-        simpleExp: simpleProviderType,
+        simpleExp: simpleProviderType.export(),
       },
-      exports: { formatter, simpleExp: simpleProvider },
+      exports: { simpleExp: simpleProvider },
       build: (builder) => {
         builder.writeFile('/simple/file.txt', 'simple');
         builder.addPostWriteCommand('simple command', 'script');
@@ -129,12 +125,10 @@ describe('executeGeneratorEntry', () => {
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
         contents: 'simple',
-        formatter: undefined,
         options: undefined,
       },
       '/nested/file.txt': {
         contents: 'nested',
-        formatter,
         options: { shouldFormat: true },
       },
     });

@@ -1,5 +1,31 @@
 # @halfdomelabs/fastify-generators
 
+## 0.10.9
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- 354f4c9: [internal] Refactor formatter provider to become part of generator output
+- f7184a8: Fix mock-redis typings for Node16 module resolution
+- 98518dd: Upgrade nanoid to 3.3.8 for generated versions
+- 144d796: Include instrument.js into Sentry initialization fastify block
+- d7ec6ee: Upgrade @pothos/core to 4.3.0 and associated plugins to latest
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+  - @halfdomelabs/core-generators@0.9.9
+  - @halfdomelabs/sync@0.7.12
+
+## 0.10.8
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- d1b05af: Upgrade Fastify and associated packages to v5 versions
+- d1b05af: Upgrade Sentry packages to 8.41.0
+- Updated dependencies [77d9399]
+  - @halfdomelabs/core-generators@0.9.8
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.10.7
 
 ### Patch Changes

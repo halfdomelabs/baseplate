@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -37,7 +38,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     appModule: appModuleProvider,
   },
   exports: {
-    fastifyBullBoard: fastifyBullBoardProvider,
+    fastifyBullBoard: fastifyBullBoardProvider.export(projectScope),
   },
   run({
     node,
@@ -49,13 +50,15 @@ const createMainTask = createTaskConfigBuilder(() => ({
   }) {
     const queuesToTrack: TypescriptCodeExpression[] = [];
 
+    const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
+
     pothosSchema.registerSchemaFile(
-      `${appModule.getModuleFolder()}/schema/authenticate.mutations.ts`,
+      `${moduleFolder}/schema/authenticate.mutations.ts`,
     );
 
     node.addPackages({
-      '@bull-board/api': '5.17.1',
-      '@bull-board/fastify': '5.17.1',
+      '@bull-board/api': '6.5.3',
+      '@bull-board/fastify': '6.5.3',
       ms: '2.1.3',
     });
 
@@ -82,8 +85,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
           },
           { importMappers },
         );
-
-        const moduleFolder = `${appModule.getModuleFolder()}/bull-board`;
 
         appModule.registerFieldEntry(
           'children',
@@ -130,7 +131,7 @@ const FastifyBullBoardGenerator = createGeneratorWithTasks({
       },
       run({ node, fastifyServer }) {
         node.addPackages({
-          '@fastify/formbody': '7.4.0',
+          '@fastify/formbody': '8.0.1',
         });
 
         fastifyServer.registerPlugin({

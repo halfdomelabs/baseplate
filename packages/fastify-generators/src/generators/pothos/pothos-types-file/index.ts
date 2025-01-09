@@ -51,7 +51,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
       pothosSchema: pothosSchemaProvider,
     },
     exports: {
-      pothosTypes: pothosTypesFileProvider,
+      pothosTypes: pothosTypesFileProvider.export(),
     },
     run({ appModule, typescript, pothosSchema }) {
       const [typesImport, typesPath] = makeImportAndFilePath(

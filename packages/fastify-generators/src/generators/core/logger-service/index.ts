@@ -6,6 +6,7 @@ import type {
 import {
   createTypescriptTemplateConfig,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -59,8 +60,8 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    loggerServiceSetup: loggerServiceSetupProvider,
-    loggerService: loggerServiceProvider,
+    loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
+    loggerService: loggerServiceProvider.export(projectScope),
   },
   createGenerator(descriptor, { node, fastify, typescript }) {
     const mixins = createNonOverwriteableMap<
@@ -70,11 +71,11 @@ const LoggerServiceGenerator = createGeneratorWithChildren({
     fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
 
     node.addPackages({
-      pino: '9.4.0',
+      pino: '9.5.0',
     });
 
     node.addDevPackages({
-      'pino-pretty': '11.2.2',
+      'pino-pretty': '13.0.0',
     });
 
     const importMap = {

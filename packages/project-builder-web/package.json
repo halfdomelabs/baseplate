@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-web",
-  "version": "0.13.0",
+  "version": "0.14.1",
   "description": "Web interface for constructing project builder JSON",
   "license": "SEE LICENSE IN LICENSE",
   "author": "Half Dome Labs LLC",
@@ -70,7 +70,7 @@
     "react-select": "5.8.0",
     "react-time-ago": "^7.3.3",
     "semver": "^7.5.4",
-    "zod": "3.23.8",
+    "zod": "catalog:",
     "zustand": "4.4.6"
   },
   "devDependencies": {

@@ -1,8 +1,6 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { FormatterProvider } from '@src/providers/index.js';
-
 import { executeCommand } from '../utils/exec.js';
 import { createEventedLogger } from '../utils/index.js';
 import { writeGeneratorOutput } from './generator-output-writer.js';
@@ -25,7 +23,7 @@ const testLogger = createEventedLogger({ noConsole: true });
 describe('writeGeneratorOutput', () => {
   it('should write nothing with a blank output', async () => {
     await writeGeneratorOutput(
-      { files: new Map(), postWriteCommands: [] },
+      { files: new Map(), postWriteCommands: [], formatters: [] },
       '/root',
       undefined,
       testLogger,
@@ -35,16 +33,23 @@ describe('writeGeneratorOutput', () => {
 
   it('should write files only', async () => {
     const formatFunction = vi.fn().mockResolvedValue('formatted-output');
-    const testFormatter: FormatterProvider = {
-      format: formatFunction,
-    };
     await writeGeneratorOutput(
       {
         files: new Map([
           ['file.txt', { contents: 'hi' }],
-          ['formatted.txt', { contents: 'hello', formatter: testFormatter }],
+          [
+            'formatted.txt',
+            { contents: 'hello', options: { shouldFormat: true } },
+          ],
         ]),
         postWriteCommands: [],
+        formatters: [
+          {
+            name: 'test',
+            format: formatFunction,
+            fileExtensions: ['.txt'],
+          },
+        ],
       },
       '/root',
       undefined,
@@ -94,6 +99,7 @@ describe('writeGeneratorOutput', () => {
           ],
         ]),
         postWriteCommands: [],
+        formatters: [],
       },
       '/root',
       {},
@@ -126,6 +132,7 @@ describe('writeGeneratorOutput', () => {
           ],
         ]),
         postWriteCommands: [],
+        formatters: [],
       },
       '/root',
       undefined,
@@ -161,6 +168,7 @@ describe('writeGeneratorOutput', () => {
           ],
         ]),
         postWriteCommands: [],
+        formatters: [],
       },
       '/root',
       undefined,
@@ -189,6 +197,7 @@ describe('writeGeneratorOutput', () => {
           ['file.txt', { contents: 'hi2', options: { neverOverwrite: true } }],
         ]),
         postWriteCommands: [],
+        formatters: [],
       },
       '/root',
       undefined,
@@ -202,6 +211,7 @@ describe('writeGeneratorOutput', () => {
       {
         files: new Map([['file.txt', { contents: Buffer.from('hi', 'utf8') }]]),
         postWriteCommands: [],
+        formatters: [],
       },
       '/root',
       undefined,
@@ -227,6 +237,7 @@ describe('writeGeneratorOutput', () => {
           },
           { command: 'pnpm install', commandType: 'dependencies' },
         ],
+        formatters: [],
       },
       '/root',
       undefined,
@@ -272,6 +283,7 @@ describe('writeGeneratorOutput', () => {
             commandType: 'script',
           },
         ],
+        formatters: [],
       },
       '/root',
       undefined,
@@ -303,6 +315,7 @@ describe('writeGeneratorOutput', () => {
             commandType: 'dependencies',
           },
         ],
+        formatters: [],
       },
       '/root',
       undefined,

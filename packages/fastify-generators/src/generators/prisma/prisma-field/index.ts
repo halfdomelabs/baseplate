@@ -1,7 +1,4 @@
-import {
-  createGeneratorWithChildren,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGeneratorWithChildren } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ScalarFieldType } from '@src/types/field-types.js';
@@ -50,19 +47,11 @@ const descriptorSchema = z
 
 export type PrismaFieldDescriptor = z.infer<typeof descriptorSchema>;
 
-export type PrismaFieldProvider = unknown;
-
-export const prismaFieldProvider =
-  createProviderType<PrismaFieldProvider>('prisma-field');
-
 const PrismaFieldGenerator = createGeneratorWithChildren({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   dependencies: {
     prismaModel: prismaModelProvider,
-  },
-  exports: {
-    prismaField: prismaFieldProvider,
   },
   createGenerator(descriptor, { prismaModel }) {
     const { name, type, id, unique, options, optional, dbName, enumType } =

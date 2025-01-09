@@ -4,6 +4,7 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -15,7 +16,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
-import { authServiceImportProvider } from '@src/generators/auth/auth-service/index.js';
+import { authProvider } from '@src/generators/auth/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
@@ -54,7 +55,9 @@ const YogaPluginGenerator = createGeneratorWithTasks({
     const setupTask = taskBuilder.addTask({
       name: 'setup',
       dependencies: {},
-      exports: { yogaPluginSetup: yogaPluginSetupProvider },
+      exports: {
+        yogaPluginSetup: yogaPluginSetupProvider.export(projectScope),
+      },
       run() {
         const configMap = createNonOverwriteableMap<YogaPluginConfig>(
           {
@@ -114,8 +117,6 @@ const YogaPluginGenerator = createGeneratorWithTasks({
             "import { graphqlPlugin } from '@/src/plugins/graphql/index.js",
           ),
         });
-
-        return {};
       },
     });
 
@@ -131,7 +132,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         loggerService: loggerServiceProvider,
       },
       exports: {
-        yogaPlugin: yogaPluginProvider,
+        yogaPlugin: yogaPluginProvider.export(projectScope),
       },
       run(
         {
@@ -145,7 +146,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         { setupTask: { configMap } },
       ) {
         node.addPackages({
-          'altair-fastify-plugin': '7.2.4',
+          'altair-fastify-plugin': '8.0.4',
           graphql: '16.9.0',
           '@envelop/core': '5.0.1',
           '@envelop/disable-introspection': '6.0.0',
@@ -158,7 +159,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
 
         // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
         node.addDevPackages({
-          '@types/ws': '8.5.11',
+          '@types/ws': '8.5.13',
         });
 
         return {
@@ -254,7 +255,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
         },
         run({ node, fastifyServer }) {
           node.addPackages({
-            '@fastify/websocket': '8.3.1',
+            '@fastify/websocket': '11.0.1',
           });
 
           fastifyServer.registerPlugin({
@@ -276,7 +277,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           node: nodeProvider,
           typescript: typescriptProvider,
           fastifyRedis: fastifyRedisProvider,
-          authServiceImport: authServiceImportProvider.dependency().optional(),
+          auth: authProvider.dependency().optional(),
           errorLoggerService: errorHandlerServiceProvider,
           loggerService: loggerServiceProvider,
           requestServiceContext: requestServiceContextProvider,
@@ -285,7 +286,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
           node,
           typescript,
           fastifyRedis,
-          authServiceImport,
+          auth,
           errorLoggerService,
           loggerService,
           requestServiceContext,
@@ -314,14 +315,15 @@ const YogaPluginGenerator = createGeneratorWithTasks({
 
               const websocketFile = typescript.createTemplate(
                 {
-                  AUTH_INFO_CREATOR: authServiceImport
-                    ? authServiceImport.getAuthInfoCreator(
-                        TypescriptCodeUtils.createExpression(
-                          'ctx.extra.request',
-                        ),
-                        TypescriptCodeUtils.createExpression(
-                          `typeof authorizationHeader === 'string' ? authorizationHeader : undefined`,
-                        ),
+                  AUTH_INFO_CREATOR: auth
+                    ? TypescriptCodeUtils.createExpression(
+                        `await userSessionService.getSessionInfoFromToken(
+          ctx.extra.request,
+          typeof authorizationHeader === 'string'
+            ? authorizationHeader
+            : undefined,
+        )`,
+                        "import { userSessionService } from '%auth/user-session-service';",
                       )
                     : { type: 'code-expression' },
                 },
@@ -330,7 +332,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                     errorLoggerService,
                     loggerService,
                     requestServiceContext,
-                    authServiceImport,
+                    auth,
                   ],
                 },
               );
@@ -341,7 +343,7 @@ const YogaPluginGenerator = createGeneratorWithTasks({
                   websocketPath,
                   {
                     preprocessWithEta: {
-                      data: { authEnabled: !!authServiceImport },
+                      data: { authEnabled: !!auth },
                     },
                   },
                 ),

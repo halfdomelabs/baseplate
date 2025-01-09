@@ -1,5 +1,23 @@
 # @halfdomelabs/core-generators
 
+## 0.9.9
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- 354f4c9: [internal] Refactor formatter provider to become part of generator output
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+  - @halfdomelabs/sync@0.7.12
+
+## 0.9.8
+
+### Patch Changes
+
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- Updated dependencies [77d9399]
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.9.7
 
 ### Patch Changes

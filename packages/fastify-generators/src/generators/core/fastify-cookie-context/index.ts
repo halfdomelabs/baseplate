@@ -28,7 +28,7 @@ const FastifyCookieContextGenerator = createGeneratorWithChildren({
     { node, fastifyServer, requestServiceContextSetup },
   ) {
     node.addPackages({
-      '@fastify/cookie': '9.3.0',
+      '@fastify/cookie': '11.0.1',
     });
 
     fastifyServer.registerPlugin({

@@ -7,7 +7,7 @@ import { buildTestGeneratorTaskEntry } from './tests/factories.test-helper.js';
 describe('getSortedRunSteps', () => {
   it('sorts an empty list', () => {
     const result = getSortedRunSteps([], {});
-    expect(result).toEqual([]);
+    expect(result.steps).toEqual([]);
   });
 
   it('sorts a list with a dependency map', () => {
@@ -31,7 +31,7 @@ describe('getSortedRunSteps', () => {
     const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
     const resultTwo = getSortedRunSteps(entries, dependencyGraphTwo);
 
-    expect(resultOne).toEqual([
+    expect(resultOne.steps).toEqual([
       'init|entryOne',
       'init|entryTwo',
       'init|entryThree',
@@ -40,7 +40,7 @@ describe('getSortedRunSteps', () => {
       'build|entryOne',
     ]);
 
-    expect(resultTwo).toEqual([
+    expect(resultTwo.steps).toEqual([
       'init|entryThree',
       'init|entryTwo',
       'init|entryOne',
@@ -48,134 +48,22 @@ describe('getSortedRunSteps', () => {
       'build|entryTwo',
       'build|entryThree',
     ]);
-  });
-
-  describe('with export inter-dependencies', () => {
-    const providerOne = createProviderType('providerOne');
-    const providerTwo = createProviderType('providerTwo');
-    const providerThree = createProviderType('providerThree');
-
-    it('sorts a list with export inter-dependencies', () => {
-      const entries = [
-        buildTestGeneratorTaskEntry({
-          id: 'entryOne',
-          exports: {
-            exp: providerOne,
-            exp2: providerTwo.export().dependsOn(providerOne),
-          },
-        }),
-        buildTestGeneratorTaskEntry({
-          id: 'entryTwo',
-          dependencies: { dep: providerOne },
-        }),
-        buildTestGeneratorTaskEntry({
-          id: 'entryThree',
-          dependencies: { dep: providerTwo },
-        }),
-        buildTestGeneratorTaskEntry({
-          id: 'entryFour',
-          dependencies: { dep: providerOne },
-        }),
-      ];
-      const dependencyGraphOne = {
-        entryOne: {},
-        entryTwo: { dep: { id: 'entryOne' } },
-        entryThree: { dep: { id: 'entryOne' } },
-        entryFour: { dep: { id: 'entryOne' } },
-      };
-      const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
-        'init|entryOne',
-        'init|entryTwo',
-        'build|entryTwo',
-        'init|entryFour',
-        'build|entryFour',
-        'init|entryThree',
-        'build|entryThree',
-        'build|entryOne',
-      ]);
-    });
-
-    it('sorts a list with two layers of export inter-dependencies', () => {
-      const entries = [
-        buildTestGeneratorTaskEntry({
-          id: 'entryOne',
-          exports: {
-            exp: providerOne,
-            exp2: providerTwo.export().dependsOn(providerOne),
-            exp3: providerThree.export().dependsOn(providerTwo),
-          },
-        }),
-        buildTestGeneratorTaskEntry({
-          id: 'entryTwo',
-          dependencies: { dep: providerOne },
-        }),
-        buildTestGeneratorTaskEntry({
-          id: 'entryThree',
-          dependencies: { dep: providerThree },
-        }),
-        buildTestGeneratorTaskEntry({
-          id: 'entryFour',
-          dependencies: { dep: providerOne },
-        }),
-      ];
-      const dependencyGraphOne = {
-        entryOne: {},
-        entryTwo: { dep: { id: 'entryOne' } },
-        entryThree: { dep: { id: 'entryOne' } },
-        entryFour: { dep: { id: 'entryOne' } },
-      };
-      const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
-        'init|entryOne',
-        'init|entryTwo',
-        'build|entryTwo',
-        'init|entryFour',
-        'build|entryFour',
-        'init|entryThree',
-        'build|entryThree',
-        'build|entryOne',
-      ]);
-    });
-
-    it('throws with a generator that depends on inter-dependent providers', () => {
-      const entries = [
-        buildTestGeneratorTaskEntry({
-          id: 'entryOne',
-          exports: {
-            exp: providerOne,
-            exp2: providerTwo.export().dependsOn(providerOne),
-          },
-        }),
-        buildTestGeneratorTaskEntry({
-          id: 'entryTwo',
-          dependencies: { dep: providerOne, dep2: providerTwo },
-        }),
-      ];
-      const dependencyGraphOne = {
-        entryOne: {},
-        entryTwo: { dep: { id: 'entryOne' }, dep2: { id: 'entryOne' } },
-      };
-      expect(() => getSortedRunSteps(entries, dependencyGraphOne)).toThrow(
-        'Cyclic dependency',
-      );
-    });
   });
 
   describe('with inter-dependent tasks', () => {
-    const providerOne = createProviderType('providerOne');
-    const providerTwo = createProviderType('providerTwo');
-    const providerThree = createProviderType('providerThree');
+    const providerOne = createProviderType('provider-one');
+    const providerTwo = createProviderType('provider-two');
+    const providerThree = createProviderType('provider-three');
 
     it('sorts a list with task inter-dependencies', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp',
-          exports: { exp: providerOne },
+          exports: { exp: providerOne.export() },
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
-          exports: { exp2: providerTwo },
+          exports: { exp2: providerTwo.export() },
           dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({
@@ -199,7 +87,7 @@ describe('getSortedRunSteps', () => {
         entryFour: { dep: { id: 'entryOne#exp' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
+      expect(resultOne.steps).toEqual([
         'init|entryOne#exp',
         'init|entryTwo',
         'build|entryTwo',
@@ -217,16 +105,16 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp',
-          exports: { exp: providerOne },
+          exports: { exp: providerOne.export() },
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
-          exports: { exp2: providerTwo },
+          exports: { exp2: providerTwo.export() },
           dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp3',
-          exports: { exp3: providerThree },
+          exports: { exp3: providerThree.export() },
           dependentTaskIds: ['entryOne#exp2'],
         }),
         buildTestGeneratorTaskEntry({
@@ -251,7 +139,7 @@ describe('getSortedRunSteps', () => {
         entryFour: { dep: { id: 'entryOne#exp' } },
       };
       const resultOne = getSortedRunSteps(entries, dependencyGraphOne);
-      expect(resultOne).toEqual([
+      expect(resultOne.steps).toEqual([
         'init|entryOne#exp',
         'init|entryTwo',
         'build|entryTwo',
@@ -271,11 +159,11 @@ describe('getSortedRunSteps', () => {
       const entries = [
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp',
-          exports: { exp: providerOne },
+          exports: { exp: providerOne.export() },
         }),
         buildTestGeneratorTaskEntry({
           id: 'entryOne#exp2',
-          exports: { exp2: providerTwo },
+          exports: { exp2: providerTwo.export() },
           dependentTaskIds: ['entryOne#exp'],
         }),
         buildTestGeneratorTaskEntry({

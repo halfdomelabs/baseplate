@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/react-generators",
-  "version": "0.8.6",
+  "version": "0.8.8",
   "description": "React Generators for Baseplate",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
@@ -38,10 +38,10 @@
     "@halfdomelabs/sync": "workspace:*",
     "inflection": "3.0.0",
     "lodash": "^4.17.21",
-    "prettier-plugin-tailwindcss": "0.6.8",
+    "prettier-plugin-tailwindcss": "0.6.9",
     "ramda": "^0.28.0",
     "toposort": "^2.0.2",
-    "zod": "3.23.8"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",

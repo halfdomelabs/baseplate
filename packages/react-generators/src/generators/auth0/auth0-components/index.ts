@@ -1,5 +1,6 @@
 import {
   makeImportAndFilePath,
+  projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGeneratorWithChildren } from '@halfdomelabs/sync';
@@ -18,7 +19,7 @@ const Auth0ComponentsGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    authComponents: authComponentsProvider,
+    authComponents: authComponentsProvider.export(projectScope),
   },
   createGenerator(descriptor, { reactComponents, typescript }) {
     const [, requireAuthPath] = makeImportAndFilePath(

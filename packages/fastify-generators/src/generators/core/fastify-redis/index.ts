@@ -3,6 +3,7 @@ import type { ImportMap, ImportMapper } from '@halfdomelabs/core-generators';
 import {
   makeImportAndFilePath,
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
   vitestProvider,
@@ -41,7 +42,7 @@ const createMainTask = createTaskConfigBuilder(
       vitest: vitestProvider.dependency().optional(),
     },
     exports: {
-      fastifyRedis: fastifyRedisProvider,
+      fastifyRedis: fastifyRedisProvider.export(projectScope),
     },
     run({ node, configService, fastifyHealthCheck, typescript, vitest }) {
       node.addPackages({ ioredis: '5.3.2' });

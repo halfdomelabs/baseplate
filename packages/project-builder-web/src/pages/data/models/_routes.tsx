@@ -3,7 +3,7 @@ import type { RouteObject } from 'react-router-dom';
 import { NotFoundRoute } from '@src/pages/NotFound.page';
 import { createRouteCrumb } from '@src/types/routes';
 
-import { ModelEditRoutes } from './edit.id/_routes';
+import { ModelEditRoutes } from './edit/[id]/_routes';
 import ModelsIndexPage from './index.page';
 
 export const ModelsRoutes: RouteObject = {

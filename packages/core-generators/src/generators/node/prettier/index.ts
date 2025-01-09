@@ -1,22 +1,23 @@
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+import type { FormatFunction, NonOverwriteableMap } from '@halfdomelabs/sync';
 import type { Plugin } from 'prettier';
 
 import {
   createGeneratorWithChildren,
   createNonOverwriteableMap,
   createProviderType,
-  formatterProvider,
   writeJsonAction,
 } from '@halfdomelabs/sync';
 import fs from 'fs-extra';
 import _ from 'lodash';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { packageUp } from 'package-up';
 import prettier from 'prettier';
 import prettierPluginPackageJson from 'prettier-plugin-packagejson';
 import resolveFrom from 'resolve-from';
 import { z } from 'zod';
 
+import { projectScope } from '@src/providers/scopes.js';
 import { notEmpty } from '@src/utils/array.js';
 
 import { nodeProvider } from '../node/index.js';
@@ -112,8 +113,7 @@ const PrettierGenerator = createGeneratorWithChildren({
   descriptorSchema,
   dependencies: { node: nodeProvider },
   exports: {
-    formatter: formatterProvider,
-    prettier: prettierProvider,
+    prettier: prettierProvider.export(projectScope),
   },
   createGenerator(descriptor, { node }) {
     const prettierConfig = createNonOverwriteableMap<PrettierConfig>({
@@ -133,7 +133,18 @@ const PrettierGenerator = createGeneratorWithChildren({
       'pnpm-lock.yaml',
     ];
     return {
-      getProviders: () => {
+      getProviders: () => ({
+        prettier: {
+          getConfig: () => prettierConfig,
+          addPrettierIgnore(ignorePath) {
+            prettierIgnore.push(ignorePath);
+          },
+          addPlugin(plugin) {
+            plugins.push(plugin);
+          },
+        },
+      }),
+      build: async (builder) => {
         let prettierModulePromise: Promise<PrettierModule> | undefined;
         let prettierConfigPromise:
           | Promise<
@@ -142,90 +153,90 @@ const PrettierGenerator = createGeneratorWithChildren({
               }
             >
           | undefined;
-
-        return {
-          formatter: {
-            format: async (input: string, fullPath: string, logger) => {
-              if (!PARSEABLE_EXTENSIONS.has(path.extname(fullPath))) {
-                return input;
+        const formatFunction: FormatFunction = async (
+          input: string,
+          fullPath: string,
+          logger,
+        ) => {
+          if (!PARSEABLE_EXTENSIONS.has(path.extname(fullPath))) {
+            return input;
+          }
+          if (!prettierModulePromise) {
+            prettierModulePromise = (async () => {
+              const result = await resolveModuleWithVersion(
+                'prettier',
+                fullPath,
+              );
+              if (!result) {
+                logger.info(
+                  'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
+                );
+                // use cached version of prettier if available
+                return prettier;
               }
-              if (!prettierModulePromise) {
-                prettierModulePromise = (async () => {
-                  const result = await resolveModuleWithVersion(
-                    'prettier',
+              if (result.version === prettier.version) {
+                return prettier;
+              }
+              const rawImport = (await import(
+                // use file:// to support Windows
+                pathToFileURL(result.modulePath).href
+              )) as {
+                default: PrettierModule;
+              };
+              return rawImport.default;
+            })();
+          }
+
+          const prettierModule = await prettierModulePromise;
+
+          if (!prettierConfigPromise) {
+            prettierConfigPromise = (async () => {
+              const resolvedPlugins = await Promise.all(
+                plugins.map(async (plugin) => {
+                  const resolvedModule = await resolveModuleWithVersion(
+                    plugin.name,
                     fullPath,
                   );
-                  if (!result) {
+
+                  if (!resolvedModule) {
                     logger.info(
-                      'Could not find prettier library. Falling back to in-built version. Run again once dependencies have been installed.',
+                      `Could not resolve prettier plugin ${plugin.name}. Run again once dependencies have been installed.`,
                     );
-                    // use cached version of prettier if available
-                    return prettier;
+                    return plugin.default;
                   }
-                  if (result.version === prettier.version) {
-                    return prettier;
-                  }
-                  const rawImport = (await import(result.modulePath)) as {
-                    default: PrettierModule;
-                  };
-                  return rawImport.default;
-                })();
-              }
 
-              const prettierModule = await prettierModulePromise;
+                  return plugin.version === resolvedModule.version
+                    ? plugin.default
+                    : (import(
+                        pathToFileURL(resolvedModule.modulePath).href
+                      ) as Plugin);
+                }),
+              );
 
-              if (!prettierConfigPromise) {
-                prettierConfigPromise = (async () => {
-                  const resolvedPlugins = await Promise.all(
-                    plugins.map(async (plugin) => {
-                      const resolvedModule = await resolveModuleWithVersion(
-                        plugin.name,
-                        fullPath,
-                      );
+              return {
+                ...prettierConfig.value(),
+                plugins:
+                  resolvedPlugins.length > 0
+                    ? resolvedPlugins.filter(notEmpty)
+                    : [],
+              };
+            })();
+          }
 
-                      if (!resolvedModule) {
-                        logger.info(
-                          `Could not resolve prettier plugin ${plugin.name}. Run again once dependencies have been installed.`,
-                        );
-                        return plugin.default;
-                      }
+          const config = await prettierConfigPromise;
 
-                      return plugin.version === resolvedModule.version
-                        ? plugin.default
-                        : (import(resolvedModule.modulePath) as Plugin);
-                    }),
-                  );
-
-                  return {
-                    ...prettierConfig.value(),
-                    plugins:
-                      resolvedPlugins.length > 0
-                        ? resolvedPlugins.filter(notEmpty)
-                        : [],
-                  };
-                })();
-              }
-
-              const config = await prettierConfigPromise;
-
-              return prettierModule.format(input, {
-                ...config,
-                filepath: fullPath,
-              });
-            },
-          },
-          prettier: {
-            getConfig: () => prettierConfig,
-            addPrettierIgnore(ignorePath) {
-              prettierIgnore.push(ignorePath);
-            },
-            addPlugin(plugin) {
-              plugins.push(plugin);
-            },
-          },
+          return prettierModule.format(input, {
+            ...config,
+            filepath: fullPath,
+          });
         };
-      },
-      build: async (builder) => {
+
+        builder.addFormatter({
+          name: 'prettier',
+          format: formatFunction,
+          fileExtensions: [...PARSEABLE_EXTENSIONS],
+        });
+
         node.addDevPackages({
           prettier: PRETTIER_VERSION,
           ...Object.fromEntries(

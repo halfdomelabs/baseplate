@@ -49,6 +49,7 @@ export function buildTestGeneratorEntry(
       : []);
   return {
     id,
+    scopes: [],
     descriptor: { generator: 'simple' },
     generatorConfig: {
       configBaseDirectory: '/',

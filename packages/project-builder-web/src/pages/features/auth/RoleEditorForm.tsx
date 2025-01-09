@@ -7,10 +7,8 @@ import {
   authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
 import clsx from 'clsx';
-import { useEffect } from 'react';
-import { useFieldArray, useWatch } from 'react-hook-form';
+import { useFieldArray } from 'react-hook-form';
 import { Button, TextInput } from 'src/components';
-import CheckedArrayInput from 'src/components/CheckedArrayInput';
 
 interface Props {
   className?: string;
@@ -22,30 +20,10 @@ function isFixedRole(name: string): boolean {
 }
 
 function RoleEditorForm({ className, control }: Props): React.JSX.Element {
-  const { fields, append, remove, update } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control,
     name: 'roles',
   });
-
-  const roles = useWatch({ control, name: 'roles' });
-
-  const roleOptions = roles.map((role) => ({
-    label: role.name,
-    value: role.id,
-  }));
-
-  useEffect(() => {
-    // strip any bad inherits
-    for (const [idx, role] of roles.entries()) {
-      const inherits = role.inherits ?? [];
-      const permittedInherits = inherits.filter((inherit) =>
-        roles.find((r) => r.name === inherit),
-      );
-      if (permittedInherits.length !== inherits.length) {
-        update(idx, { ...role, inherits: permittedInherits });
-      }
-    }
-  }, [roles, update]);
 
   return (
     <div className={clsx('space-y-4', className)}>
@@ -62,12 +40,6 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
             label="Comment"
             control={control}
             name={`roles.${idx}.comment`}
-          />
-          <CheckedArrayInput.LabelledController
-            label="Inherits"
-            options={roleOptions}
-            control={control}
-            name={`roles.${idx}.inherits`}
           />
           {!isFixedRole(field.name) && (
             <Button
@@ -88,6 +60,7 @@ function RoleEditorForm({ className, control }: Props): React.JSX.Element {
             id: authRoleEntityType.generateNewId(),
             name: '',
             comment: '',
+            builtIn: false,
           });
         }}
       >

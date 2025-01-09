@@ -1,5 +1,27 @@
 # @halfdomelabs/project-builder-server
 
+## 0.4.15
+
+### Patch Changes
+
+- 6ca94da: Upgrade Zod to 3.24.1
+- Updated dependencies [6ca94da]
+- Updated dependencies [354f4c9]
+- Updated dependencies [98518dd]
+  - @halfdomelabs/project-builder-lib@0.8.13
+  - @halfdomelabs/sync@0.7.12
+
+## 0.4.14
+
+### Patch Changes
+
+- cc837f9: Fix get/list being independently enabled for mutations
+- 77d9399: Upgrade ESLint to v9 and use updated Linter configurations
+- d1b05af: Upgrade Fastify and associated packages to v5 versions
+- Updated dependencies [77d9399]
+  - @halfdomelabs/project-builder-lib@0.8.12
+  - @halfdomelabs/sync@0.7.11
+
 ## 0.4.13
 
 ### Patch Changes

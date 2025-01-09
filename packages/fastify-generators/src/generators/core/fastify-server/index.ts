@@ -4,6 +4,7 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 import {
   mergeCodeEntryOptions,
   nodeProvider,
+  projectScope,
   TypescriptCodeBlock,
   TypescriptCodeUtils,
   typescriptProvider,
@@ -56,7 +57,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     typescript: typescriptProvider,
   },
   exports: {
-    fastifyServer: fastifyServerProvider,
+    fastifyServer: fastifyServerProvider.export(projectScope),
   },
   createGenerator(
     descriptor,
@@ -74,10 +75,10 @@ const FastifyServerGenerator = createGeneratorWithChildren({
     const prePluginBlocks: TypescriptCodeBlock[] = [];
 
     node.addPackages({
-      fastify: '4.28.1',
-      '@fastify/helmet': '11.1.1',
-      'fastify-plugin': '4.5.1',
-      nanoid: '3.3.7',
+      fastify: '5.1.0',
+      '@fastify/helmet': '13.0.0',
+      'fastify-plugin': '5.0.1',
+      nanoid: '3.3.8',
     });
 
     plugins.push({
@@ -145,7 +146,7 @@ const FastifyServerGenerator = createGeneratorWithChildren({
         indexFile.addCodeExpression(
           'SERVER_OPTIONS',
           TypescriptCodeUtils.mergeExpressionsAsObject({
-            logger: loggerService.getLogger(),
+            loggerInstance: loggerService.getLogger(),
           }),
         );
         const configExpression = configService.getConfigExpression();

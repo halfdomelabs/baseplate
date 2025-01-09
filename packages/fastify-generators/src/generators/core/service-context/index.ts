@@ -5,6 +5,7 @@ import type {
 
 import {
   makeImportAndFilePath,
+  projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -56,7 +57,7 @@ const ServiceContextGenerator = createGeneratorWithTasks({
         typescript: typescriptProvider,
       },
       exports: {
-        serviceContextSetup: serviceContextSetupProvider,
+        serviceContextSetup: serviceContextSetupProvider.export(projectScope),
       },
       run({ typescript }) {
         const contextFieldsMap = createNonOverwriteableMap<
@@ -179,7 +180,9 @@ const ServiceContextGenerator = createGeneratorWithTasks({
     taskBuilder.addTask({
       name: 'main',
       taskDependencies: { setupTask },
-      exports: { serviceContext: serviceContextProvider },
+      exports: {
+        serviceContext: serviceContextProvider.export(projectScope),
+      },
       run(deps, { setupTask: { importMap, contextPath, contextImport } }) {
         return {
           getProviders: () => ({

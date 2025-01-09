@@ -10,6 +10,7 @@ import type {
   InferExportProviderMap,
   ProviderDependencyMap,
   ProviderExportMap,
+  ProviderExportScope,
 } from '../core/index.js';
 import type {
   ChildGeneratorConfig,
@@ -25,6 +26,7 @@ export interface SimpleGeneratorConfig<
   DependencyMap extends ProviderDependencyMap,
 > {
   descriptorSchema?: DescriptorSchema;
+  scopes?: ProviderExportScope[];
   getDefaultChildGenerators?(
     descriptor: z.infer<DescriptorSchema>,
   ): Partial<Record<string, ChildGeneratorConfig>>;
@@ -63,6 +65,7 @@ export function createGeneratorWithChildren<
     config.dependencies ?? ({} as DependencyMap);
 
   return {
+    scopes: config.scopes ?? [],
     parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
       try {
         // TODO: Merge with base descriptor

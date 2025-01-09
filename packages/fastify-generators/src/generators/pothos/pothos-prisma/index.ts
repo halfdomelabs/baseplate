@@ -1,5 +1,6 @@
 import {
   nodeProvider,
+  projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
@@ -32,7 +33,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     prismaOutput: prismaOutputProvider,
   },
   exports: {
-    pothosPrisma: pothosPrismaProvider,
+    pothosPrisma: pothosPrismaProvider.export(projectScope),
   },
   run({ node, pothosSetup, prismaOutput }) {
     return {
@@ -40,7 +41,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
         pothosPrisma: {},
       }),
       build: () => {
-        node.addPackages({ '@pothos/plugin-prisma': '4.0.5' });
+        node.addPackages({
+          '@pothos/plugin-prisma': '4.3.1',
+        });
 
         pothosSetup
           .getConfig()

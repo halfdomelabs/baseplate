@@ -3,7 +3,6 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { Plugin, ViteDevServer } from 'vite';
 
 /* eslint-disable import-x/no-extraneous-dependencies */
-
 import chokidar from 'chokidar';
 import mime from 'mime';
 import fs from 'node:fs';

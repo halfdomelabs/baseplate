@@ -3,7 +3,6 @@ import {
   appCompilerSpec,
   backendAppEntryType,
   createPlatformPluginExport,
-  FeatureUtils,
   PluginUtils,
   webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
@@ -27,10 +26,6 @@ export default createPlatformPluginExport({
           projectDefinition,
           pluginId,
         ) as StoragePluginDefinition;
-        const featurePath = FeatureUtils.getFeatureByIdOrThrow(
-          projectDefinition,
-          storage.featureRef,
-        ).name;
 
         // add feature providers
         const fileModelName = definitionContainer.nameFromId(
@@ -40,7 +35,6 @@ export default createPlatformPluginExport({
           $storage: {
             generator:
               '@halfdomelabs/baseplate-plugin-storage/fastify/storage-module',
-            fileObjectTypeRef: `${featurePath}/root:$graphql.${fileModelName}ObjectType.$objectType`,
             fileModel: fileModelName,
             s3Adapters: storage.s3Adapters.map((a) => ({
               name: a.name,
@@ -57,8 +51,6 @@ export default createPlatformPluginExport({
             })),
           } satisfies StorageModuleDescriptor,
         });
-
-        appCompiler.addGlobalHoistedProviders('storage-module');
       },
     });
 
@@ -84,7 +76,6 @@ export default createPlatformPluginExport({
           $uploadComponents: {
             generator:
               '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
-            peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
         });
@@ -104,7 +95,6 @@ export default createPlatformPluginExport({
           $uploadComponents: {
             generator:
               '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
-            peerProvider: true,
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
           },
         });
