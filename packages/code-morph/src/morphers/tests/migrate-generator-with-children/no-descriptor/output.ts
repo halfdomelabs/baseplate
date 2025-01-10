@@ -33,7 +33,7 @@ const PrettierGenerator = createGeneratorWithTasks({
       exports: {
         prettier: prettierProvider.export(projectScope),
       },
-      run() {
+      run(deps) {
         const prettierConfig = createNonOverwriteableMap<PrettierConfig>({
           tabWidth,
         });
