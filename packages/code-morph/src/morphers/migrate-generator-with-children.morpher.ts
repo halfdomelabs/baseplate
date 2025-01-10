@@ -94,15 +94,12 @@ export default createTypescriptMorpher({
     // Create the main task declaration
     const createGeneratorMethodBody =
       createGeneratorMethod.getBody()?.getText() ?? '';
-    // indent the body by 2 spaces
-    const indentedCreateGeneratorMethodBody =
-      createGeneratorMethodBody.replaceAll(/^/gm, '  ');
     const createMainTaskDeclaration = `
 taskBuilder.addTask({
     name: 'main',
     ${argsToMigrate.map((arg) => arg.getText()).join(',\n    ')},
     run(${dependencyParam ? dependencyParam.getText() : ''})
-        ${indentedCreateGeneratorMethodBody}
+        ${createGeneratorMethodBody}
 })`;
 
     const isDescriptorUnused =
