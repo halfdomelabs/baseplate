@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { IndentationText, Project, QuoteKind } from 'ts-morph';
 import { describe, expect, test } from 'vitest';
 
+import prettier from 'prettier';
+
 const getFileWithTsExtension = (
   directory: string,
   baseFileName: string,
@@ -56,8 +58,15 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
   );
   const testCases = collectTestCases(fullTestFolderPath);
 
+  let prettierConfig: prettier.Options | null;
+
   describe(`Test morpher ${morpher.name}`, () => {
     test.each(testCases)('case $caseName', async ({ casePath }) => {
+      if (!prettierConfig) {
+        prettierConfig = await prettier.resolveConfig(
+          path.dirname(fileURLToPath(import.meta.url)),
+        );
+      }
       // Load files with arbitrary extensions
       const optionsPath = path.join(casePath, 'options.json');
       const inputFilename = getFileWithTsExtension(casePath, 'input');
@@ -92,7 +101,16 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
 
       const transformedText = sourceFile.getFullText();
 
-      expect(transformedText).toEqual(outputText);
+      const formattedText = await prettier.format(transformedText, {
+        ...prettierConfig,
+        parser: 'typescript',
+      });
+
+      if (formattedText !== outputText) {
+        console.info(formattedText);
+      }
+
+      expect(formattedText).toEqual(outputText);
     });
   });
 }
