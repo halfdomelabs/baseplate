@@ -5,7 +5,7 @@ import type { TypescriptMorpher } from './types.js';
 
 export async function loadMorphers(): Promise<TypescriptMorpher[]> {
   const morphersPath = path.resolve(
-    path.join(import.meta.dirname, '../morphers'),
+    path.join(import.meta.dirname, './morphers'),
   );
   const files = await readdir(morphersPath);
 
@@ -13,7 +13,7 @@ export async function loadMorphers(): Promise<TypescriptMorpher[]> {
     files
       .filter((file) => file.endsWith('.morpher.ts'))
       .map(async (file) => {
-        const module = (await import(`../morphers/${file}`)) as {
+        const module = (await import(path.join(morphersPath, file))) as {
           default: TypescriptMorpher;
         };
         const morpher = module.default;

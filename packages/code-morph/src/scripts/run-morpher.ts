@@ -95,6 +95,7 @@ async function getPackages(
       })),
       loop: false,
       pageSize: 20,
+      required: true,
     }));
 
   return workspacePackages.filter((p) => selectedPackages.includes(p.name));
