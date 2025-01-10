@@ -56,13 +56,13 @@ async function getPackages(
 
   const preselectedPackages = options.packages;
   if (preselectedPackages?.length) {
-    const invalidPackages = workspacePackages.filter(
-      (p) => !preselectedPackages.includes(p.name),
+    const invalidPackages = preselectedPackages.filter(
+      (p) => !workspacePackages.some((p2) => p2.name === p),
     );
 
     if (invalidPackages.length > 0) {
       throw new Error(
-        `Invalid packages: ${invalidPackages.map((p) => p.name).join(', ')}`,
+        `Invalid packages: ${invalidPackages.map((p) => p).join(', ')}`,
       );
     }
 
@@ -157,7 +157,7 @@ function getMorpherCommand(
   packages: WorkspacePackage[],
   options: Record<string, string>,
 ): string {
-  return `pnpm morpher -m ${morpher.name} -p ${packages.map((p) => p.name).join(' ')} --options ${Object.entries(
+  return `pnpm run:morpher -m ${morpher.name} -p ${packages.map((p) => p.name).join(' ')} --options ${Object.entries(
     options,
   )
     .map(([key, value]) => `${key}=${value}`)
