@@ -51,7 +51,7 @@ export function AdminCrudEmbeddedTable({
           <Table.Row key={item.id}>
             <Table.Cell>{item.name}</Table.Cell>
             <Table.Cell>
-              {definitionContainer.nameFromId(item.modelName)}
+              {definitionContainer.nameFromId(item.modelRef)}
             </Table.Cell>
             <Table.Cell>{item.type}</Table.Cell>
             <Table.Cell className="space-x-4">
@@ -138,7 +138,7 @@ function AdminCrudEmbeddedForm({
         label="Model"
         control={control}
         options={modelOptions}
-        name="modelName"
+        name="modelRef"
       />
       {type === 'list' && (
         <>

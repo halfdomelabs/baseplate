@@ -61,9 +61,9 @@ export function ModelHeaderBar({
             <MdEdit className="invisible size-4 group-hover:visible" />
           </button>
         </ModelInfoEditDialog>
-        {model.feature && (
+        {model.featureRef && (
           <div className="text-xs text-muted-foreground">
-            {FeatureUtils.getFeatureById(definition, model.feature)?.name}
+            {FeatureUtils.getFeatureById(definition, model.featureRef)?.name}
           </div>
         )}
       </div>

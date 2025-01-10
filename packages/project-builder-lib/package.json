@@ -41,7 +41,7 @@
     "@halfdomelabs/ui-components": "workspace:*",
     "clsx": "2.1.1",
     "culori": "^4.0.1",
-    "es-toolkit": "1.18.0",
+    "es-toolkit": "1.31.0",
     "globby": "^14.0.2",
     "immer": "10.1.1",
     "inflection": "3.0.0",

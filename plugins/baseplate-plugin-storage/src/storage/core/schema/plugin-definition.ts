@@ -38,7 +38,7 @@ export const storagePluginDefinitionSchema = zRefBuilder(
     categories: z.array(
       z.object({
         name: z.string().min(1),
-        defaultAdapter: zRef(z.string(), {
+        defaultAdapterRef: zRef(z.string(), {
           type: storageAdapterEntityType,
           onDelete: 'RESTRICT',
         }),
@@ -46,7 +46,7 @@ export const storagePluginDefinitionSchema = zRefBuilder(
           (a) => a && Number.parseInt(a as string, 10),
           z.number().positive().optional(),
         ),
-        usedByRelation: zRef(z.string(), {
+        usedByRelationRef: zRef(z.string(), {
           type: modelForeignRelationEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'fileModel' },

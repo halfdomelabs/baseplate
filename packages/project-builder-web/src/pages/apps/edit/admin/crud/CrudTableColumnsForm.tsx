@@ -11,7 +11,7 @@ import CollapsibleRow from 'src/components/CollapsibleRow';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,
-  'table' | 'modelName'
+  'table' | 'modelRef'
 >;
 
 interface Props {
@@ -53,7 +53,7 @@ function ColumnForm({
         <SelectInput.LabelledController
           label="Field"
           control={control}
-          name={`table.columns.${idx}.display.modelField`}
+          name={`table.columns.${idx}.display.modelFieldRef`}
           options={fieldOptions}
         />
       )}
@@ -62,7 +62,7 @@ function ColumnForm({
           <SelectInput.LabelledController
             label="Local Relation Name"
             control={control}
-            name={`table.columns.${idx}.display.localRelationName`}
+            name={`table.columns.${idx}.display.localRelationRef`}
             options={localRelationOptions}
           />
           <TextInput.LabelledController
@@ -85,9 +85,9 @@ function CrudTableColumnsForm({
   className,
   control,
 }: Props): React.JSX.Element {
-  const modelName = useWatch({ control, name: 'modelName' });
-  const { parsedProject } = useProjectDefinition();
-  const model = modelName ? parsedProject.getModelById(modelName) : undefined;
+  const modelRef = useWatch({ control, name: 'modelRef' });
+  const { parsedProject, definitionContainer } = useProjectDefinition();
+  const model = modelRef ? parsedProject.getModelById(modelRef) : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'table.columns',
@@ -95,7 +95,7 @@ function CrudTableColumnsForm({
 
   const localRelationOptions =
     model?.model.relations?.map((relation) => ({
-      label: `${relation.name} (${relation.modelName})`,
+      label: `${relation.name} (${definitionContainer.nameFromId(relation.modelRef)})`,
       value: relation.id,
     })) ?? [];
 
@@ -131,7 +131,7 @@ function CrudTableColumnsForm({
       ))}
       <Button
         onClick={() => {
-          append({ display: { type: 'text', modelField: '' }, label: '' });
+          append({ display: { type: 'text', modelFieldRef: '' }, label: '' });
         }}
       >
         Add Column

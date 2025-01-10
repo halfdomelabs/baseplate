@@ -35,13 +35,13 @@ function AdminCrudEmbeddedInputForm({
       <SelectField.Controller
         label="Relation Name"
         control={controlTyped}
-        name={`${prefix}.modelRelation`}
+        name={`${prefix}.modelRelationRef`}
         options={foreignRelationOptions}
       />
       <SelectField.Controller
         label="Embedded Form"
         control={controlTyped}
-        name={`${prefix}.embeddedFormName`}
+        name={`${prefix}.embeddedFormRef`}
         options={embeddedFormOptions}
       />
     </>
@@ -56,8 +56,8 @@ export const adminCrudEmbeddedInputWebConfig =
     getNewInput: () => ({
       label: '',
       type: 'embedded',
-      modelRelation: '',
-      embeddedFormName: '',
+      modelRelationRef: '',
+      embeddedFormRef: '',
     }),
     Form: AdminCrudEmbeddedInputForm,
   });

@@ -17,7 +17,7 @@ export function compileAdminSections(
   sectionsId: string,
 ): Record<string, unknown>[] | undefined {
   const sections = builder.appConfig.sections?.filter(
-    (s) => s.feature === featureId,
+    (s) => s.featureRef === featureId,
   );
 
   if (!sections?.length) {

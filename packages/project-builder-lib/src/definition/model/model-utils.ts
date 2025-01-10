@@ -42,7 +42,7 @@ function getRelationsToModel(
   return projectDefinition.models.flatMap(
     (m) =>
       m.model.relations
-        ?.filter((r) => r.modelName === modelId)
+        ?.filter((r) => r.modelRef === modelId)
         .map((r) => ({ model: m, relation: r })) ?? [],
   );
 }
@@ -51,7 +51,7 @@ function getModelsForFeature(
   projectDefinition: ProjectDefinition,
   featureId: string,
 ): ModelConfig[] {
-  return projectDefinition.models.filter((m) => m.feature === featureId);
+  return projectDefinition.models.filter((m) => m.featureRef === featureId);
 }
 
 function getModelIdFields(model: ModelConfig): string[] {

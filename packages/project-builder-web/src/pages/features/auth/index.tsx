@@ -107,25 +107,25 @@ function AuthPage(): React.JSX.Element {
           <ReactSelectInput.LabelledController
             label="User Model"
             options={modelOptions}
-            name="userModel"
+            name="userModelRef"
             control={control}
           />
           <ReactSelectInput.LabelledController
             label="User Role Model"
             options={modelOptions}
-            name="userRoleModel"
+            name="userRoleModelRef"
             control={control}
           />
           <ReactSelectInput.LabelledController
             label="Auth Feature Path"
             options={featureOptions}
-            name="authFeaturePath"
+            name="authFeatureRef"
             control={control}
           />
           <ReactSelectInput.LabelledController
             label="Accounts Feature Path"
             options={featureOptions}
-            name="accountsFeaturePath"
+            name="accountsFeatureRef"
             control={control}
           />
           <CheckedInput.LabelledController

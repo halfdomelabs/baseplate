@@ -38,7 +38,7 @@
   "dependencies": {
     "@halfdomelabs/sync": "workspace:*",
     "@types/eslint": "catalog:",
-    "es-toolkit": "1.18.0",
+    "es-toolkit": "1.31.0",
     "eta": "^3.5.0",
     "fs-extra": "11.2.0",
     "is-core-module": "2.15.1",

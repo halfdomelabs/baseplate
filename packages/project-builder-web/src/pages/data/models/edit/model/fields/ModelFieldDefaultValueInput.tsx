@@ -217,8 +217,8 @@ export function ModelFieldDefaultValueInput({
     );
   }
 
-  if (type === 'enum' && optionsValue?.enumType) {
-    const fieldEnum = EnumUtils.byIdOrThrow(definition, optionsValue.enumType);
+  if (type === 'enum' && optionsValue?.enumRef) {
+    const fieldEnum = EnumUtils.byIdOrThrow(definition, optionsValue.enumRef);
     const enumValues = fieldEnum.values.map((v) => ({
       label: v.friendlyName,
       value: v.id,
@@ -227,22 +227,22 @@ export function ModelFieldDefaultValueInput({
       <div className="flex items-center space-x-1">
         <ComboboxField
           placeholder="NULL"
-          value={optionsValue.defaultEnumValue ?? null}
+          value={optionsValue.defaultEnumValueRef ?? null}
           onChange={(value) => {
             onOptionsChange({
               ...optionsValue,
-              defaultEnumValue: value ? value : undefined,
+              defaultEnumValueRef: value ? value : undefined,
             });
           }}
           options={enumValues}
         />
-        {optionsValue.defaultEnumValue && (
+        {optionsValue.defaultEnumValueRef && (
           <Button
             title="Reset"
             onClick={() => {
               onOptionsChange({
                 ...optionsValue,
-                defaultEnumValue: '',
+                defaultEnumValueRef: '',
               });
             }}
             variant="ghost"

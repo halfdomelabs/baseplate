@@ -34,7 +34,7 @@ export function ModelFieldBadges({
     const field = model.fields[idx];
     return (
       model.relations?.filter((r) =>
-        r.references.some((ref) => ref.local === field.id),
+        r.references.some((ref) => ref.localRef === field.id),
       ) ?? []
     );
   });

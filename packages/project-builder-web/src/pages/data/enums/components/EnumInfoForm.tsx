@@ -23,7 +23,7 @@ export function EnumInfoForm({ className, control }: Props): React.JSX.Element {
       <FeatureComboboxField.Controller
         label="Feature"
         control={control}
-        name="feature"
+        name="featureRef"
         description="The feature this enum belongs to (dash-case)"
         canCreate
       />

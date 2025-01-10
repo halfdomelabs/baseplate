@@ -25,7 +25,7 @@ function AdminCrudTextInputForm({
       <SelectField.Controller
         label="Field"
         control={controlTyped}
-        name={`${prefix}.modelField`}
+        name={`${prefix}.modelFieldRef`}
         options={fieldOptions}
       />
       <InputField.Controller
@@ -42,6 +42,6 @@ export const adminCrudTextInputWebConfig =
     name: 'text',
     pluginId: undefined,
     label: 'Text',
-    getNewInput: () => ({ label: '', type: 'text', modelField: '' }),
+    getNewInput: () => ({ label: '', type: 'text', modelFieldRef: '' }),
     Form: AdminCrudTextInputForm,
   });

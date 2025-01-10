@@ -17,7 +17,7 @@ export default createPlatformPluginExport({
       name: 'file',
       pluginId,
       label: 'File',
-      getNewInput: () => ({ label: '', type: 'file', modelRelation: '' }),
+      getNewInput: () => ({ label: '', type: 'file', modelRelationRef: '' }),
       Form: AdminCrudFileInputForm,
     });
     return {};

@@ -8,7 +8,7 @@ import { adminSectionEntityType } from './types.js';
 export const baseAdminSectionValidators = {
   id: z.string().default(adminSectionEntityType.generateNewId()),
   name: z.string().min(1),
-  feature: zRef(z.string().min(1), {
+  featureRef: zRef(z.string().min(1), {
     type: featureEntityType,
     onDelete: 'RESTRICT',
   }),

@@ -81,7 +81,9 @@ function buildGeneratorIdToScopesMapRecursive(
   }
 }
 
-function mergeAllWithoutDuplicates<T>(array: T[]): T {
+function mergeAllWithoutDuplicates<T extends Record<string, unknown>>(
+  array: T[],
+): T {
   const newObj: T = {} as T;
   for (const obj of array) {
     mergeWith(newObj, obj, (obj, src, key) => {

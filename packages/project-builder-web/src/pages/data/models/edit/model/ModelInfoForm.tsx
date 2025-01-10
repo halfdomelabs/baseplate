@@ -25,7 +25,7 @@ export function ModelInfoForm({
       />
       <FeatureComboboxField.Controller
         control={control}
-        name="feature"
+        name="featureRef"
         description="The feature this model belongs to (dash-case)"
         canCreate
       />

@@ -62,7 +62,7 @@ function guessModelTypeFromFieldName(
   // try to find a model with the same feature and a similar name
   const modelWithFeature = tryFindModel(
     (m) =>
-      m.feature === m.feature &&
+      m.featureRef === m.featureRef &&
       m.name.toLowerCase().includes(name.toLowerCase()),
   );
   if (modelWithFeature) return modelWithFeature;
@@ -89,22 +89,19 @@ function getRelationDefaultsFromModel(
   // default the name to the local field name if it ends with Id
   const name = (() => {
     if (editedRelation.name) return editedRelation.name;
-    if (editedRelation.modelName) {
-      const model = ModelUtils.byIdOrThrow(
-        definition,
-        editedRelation.modelName,
-      );
+    if (editedRelation.modelRef) {
+      const model = ModelUtils.byIdOrThrow(definition, editedRelation.modelRef);
       return camelCase(model.name);
     }
     return;
   })();
 
   const references = (() => {
-    if (!editedRelation.modelName) return;
+    if (!editedRelation.modelRef) return;
     const {
       model: { fields, primaryKeyFieldRefs },
       name: foreignName,
-    } = ModelUtils.byIdOrThrow(definition, editedRelation.modelName);
+    } = ModelUtils.byIdOrThrow(definition, editedRelation.modelRef);
     const primaryKeys = fields.filter((f) =>
       primaryKeyFieldRefs.includes(f.id),
     );
@@ -116,11 +113,11 @@ function getRelationDefaultsFromModel(
         return primaryKey.name;
       })();
       const bestGuessLocal =
-        existingReferences[i]?.local ??
+        existingReferences[i]?.localRef ??
         editedModel.model.fields.find((f) => f.name === bestGuessLocalName)?.id;
       return {
-        local: bestGuessLocal,
-        foreign: primaryKey.id,
+        localRef: bestGuessLocal,
+        foreignRef: primaryKey.id,
       };
     });
   })();
@@ -131,10 +128,10 @@ function getRelationDefaultsFromModel(
       return editedRelation.foreignRelationName;
     }
     const isOneToOne =
-      references.every((ref) => ref.local) &&
+      references.every((ref) => ref.localRef) &&
       ModelFieldUtils.areScalarsUnique(
         editedModel,
-        references.map((r) => r.local),
+        references.map((r) => r.localRef),
       );
     return camelCase(
       isOneToOne ? editedModel.name : pluralize(editedModel.name),
@@ -184,7 +181,7 @@ export function ModelRelationForm({
       defaultFieldName,
     );
     return {
-      modelName: modelRef ?? '',
+      modelRef: modelRef ?? '',
       references: [],
       onDelete: 'Restrict',
       onUpdate: 'Restrict',
@@ -192,7 +189,7 @@ export function ModelRelationForm({
         definition,
         editedModel,
         {
-          modelName: modelRef,
+          modelRef,
         },
         defaultFieldName,
       ),
@@ -207,8 +204,8 @@ export function ModelRelationForm({
 
   const relation = watch();
 
-  const foreignModel = relation.modelName
-    ? definition.models.find((m) => m.id === relation.modelName)
+  const foreignModel = relation.modelRef
+    ? definition.models.find((m) => m.id === relation.modelRef)
     : undefined;
 
   const foreignFields = foreignModel?.model.fields;
@@ -225,7 +222,7 @@ export function ModelRelationForm({
     })) ?? [];
 
   const isRelationOptional = relation.references.some(
-    (ref) => fields.find((f) => f.id === ref.local)?.isOptional,
+    (ref) => fields.find((f) => f.id === ref.localRef)?.isOptional,
   );
 
   const onDelete = (): void => {
@@ -252,13 +249,13 @@ export function ModelRelationForm({
     }
 
     // look for duplicate local fields
-    const localFields = data.references.map((ref) => ref.local);
+    const localFields = data.references.map((ref) => ref.localRef);
     if (new Set(localFields).size !== localFields.length) {
       toast.error('Local fields must be unique');
       return;
     }
 
-    const foreignFields = data.references.map((ref) => ref.foreign);
+    const foreignFields = data.references.map((ref) => ref.foreignRef);
     if (new Set(foreignFields).size !== foreignFields.length) {
       toast.error('Foreign fields must be unique');
       return;
@@ -299,7 +296,7 @@ export function ModelRelationForm({
         />
         <ComboboxField.Controller
           control={control}
-          name="modelName"
+          name="modelRef"
           options={foreignModelOptions}
           label="Foreign Model"
           onChange={(value) => {
@@ -310,7 +307,7 @@ export function ModelRelationForm({
                 editedModel,
                 {
                   ...relation,
-                  modelName: value,
+                  modelRef: value,
                 },
                 defaultFieldName,
               );
@@ -366,12 +363,12 @@ export function ModelRelationForm({
             <ComboboxField.Controller
               disabled={!hasSelectedForeignModel}
               control={control}
-              name={`references.${i}.local`}
+              name={`references.${i}.localRef`}
               options={localFieldOptions}
             />
             <ComboboxField.Controller
               control={control}
-              name={`references.${i}.foreign`}
+              name={`references.${i}.foreignRef`}
               options={foreignFieldOptions}
               disabled
             />

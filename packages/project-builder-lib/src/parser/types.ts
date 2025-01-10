@@ -31,7 +31,7 @@ export type PluginMergeModelRelationInput = Omit<
 >;
 
 export interface PluginMergeModelInput
-  extends Pick<ParsedModel, 'name' | 'feature' | 'service'> {
+  extends Pick<ParsedModel, 'name' | 'featureRef' | 'service'> {
   model: Omit<ParsedModel['model'], 'fields' | 'relations'> & {
     fields: PluginMergeModelFieldInput[];
     relations?: PluginMergeModelRelationInput[];

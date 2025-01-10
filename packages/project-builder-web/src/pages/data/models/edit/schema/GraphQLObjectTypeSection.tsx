@@ -138,9 +138,9 @@ export function GraphQLObjectTypeSection({
                   <td>
                     <BadgeWithTypeLabel
                       type={
-                        field.type === 'enum' && field.options?.enumType
+                        field.type === 'enum' && field.options?.enumRef
                           ? definitionContainer.nameFromId(
-                              field.options.enumType,
+                              field.options.enumRef,
                             )
                           : SCALAR_FIELD_TYPE_OPTIONS[field.type].label
                       }
@@ -206,7 +206,7 @@ export function GraphQLObjectTypeSection({
                 <tr key={relation.id}>
                   <td>
                     <BadgeWithTypeLabel
-                      type={definitionContainer.nameFromId(relation.modelName)}
+                      type={definitionContainer.nameFromId(relation.modelRef)}
                     >
                       {relation.name}
                     </BadgeWithTypeLabel>

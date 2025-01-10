@@ -37,7 +37,7 @@ function createNewModel(): ModelConfig {
   return {
     id: modelEntityType.generateNewId(),
     name: '',
-    feature: '',
+    featureRef: '',
     model: {
       primaryKeyFieldRefs: [idFieldId],
       fields: [
@@ -170,10 +170,11 @@ export function useModelForm<
 
           setConfigAndFixReferences((draftConfig) => {
             // create feature if a new feature exists
-            updatedModel.feature = FeatureUtils.ensureFeatureByNameRecursively(
-              draftConfig,
-              updatedModel.feature,
-            );
+            updatedModel.featureRef =
+              FeatureUtils.ensureFeatureByNameRecursively(
+                draftConfig,
+                updatedModel.featureRef,
+              );
             draftConfig.models = _.sortBy(
               [
                 ...draftConfig.models.filter((m) => m.id !== updatedModel.id),
