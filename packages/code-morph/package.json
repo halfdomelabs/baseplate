@@ -23,6 +23,7 @@
     "prettier:write": "prettier -w .",
     "run:morpher": "tsx scripts/run-morpher.ts",
     "run:script": "tsx",
+    "test": "vitest",
     "transform": "jscodeshift --extensions=ts --parser=ts -t ",
     "transform:dry": "jscodeshift  --extensions=ts --parser=ts -d -p -t ",
     "typecheck": "tsc --noEmit"
@@ -49,7 +50,8 @@
     "eslint": "catalog:",
     "prettier": "catalog:",
     "tsx": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "2.1.8"
   },
   "engines": {
     "node": "^20.0.0"

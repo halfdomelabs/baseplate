@@ -4,9 +4,8 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["lib/*"],
-      "@scripts/*": ["scripts/*"]
+      "@src/*": ["src/*"]
     }
   },
-  "include": ["scripts/**/*", "transforms/**/*", "morphers/**/*", "lib/**/*"]
+  "include": ["src/**/*"]
 }
