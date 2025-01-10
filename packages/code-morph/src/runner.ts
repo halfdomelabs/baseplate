@@ -1,5 +1,6 @@
-import { existsSync, lstatSync } from 'node:fs';
+import { existsSync, lstatSync, writeFileSync } from 'node:fs';
 import ora from 'ora';
+import prettier from 'prettier';
 import { IndentationText, Project, QuoteKind } from 'ts-morph';
 
 import type { TypescriptMorpher } from './types.js';
@@ -33,6 +34,8 @@ export async function runMorpher(
       useTrailingCommas: true,
     },
   });
+
+  const prettierConfig = await prettier.resolveConfig(path);
 
   if (!existsSync(path)) {
     throw new Error(`Path ${path} does not exist`);
@@ -73,7 +76,13 @@ export async function runMorpher(
         changedFiles += 1;
 
         if (!dryRun) {
-          await sourceFile.save();
+          const formatted = await prettier.format(sourceFile.getFullText(), {
+            ...prettierConfig,
+            parser: 'typescript',
+          });
+          writeFileSync(sourceFile.getFilePath(), formatted, {
+            encoding: 'utf8',
+          });
         }
       }
     } catch (err) {

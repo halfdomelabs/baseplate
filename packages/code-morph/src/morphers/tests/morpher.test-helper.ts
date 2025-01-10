@@ -1,12 +1,11 @@
-import type { TypescriptMorpher } from '@src/types.js';
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import prettier from 'prettier';
 import { IndentationText, Project, QuoteKind } from 'ts-morph';
 import { describe, expect, test } from 'vitest';
 
-import prettier from 'prettier';
+import type { TypescriptMorpher } from '@src/types.js';
 
 const getFileWithTsExtension = (
   directory: string,
@@ -70,7 +69,7 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
       // Load files with arbitrary extensions
       const optionsPath = path.join(casePath, 'options.json');
       const inputFilename = getFileWithTsExtension(casePath, 'input');
-      const outputText = await readFileWithTsExtension(casePath, 'output');
+      const outputText = readFileWithTsExtension(casePath, 'output');
 
       if (!inputFilename || !outputText) {
         throw new Error(
