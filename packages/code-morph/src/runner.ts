@@ -1,10 +1,11 @@
 import { existsSync, lstatSync, writeFileSync } from 'node:fs';
 import ora from 'ora';
 import prettier from 'prettier';
-import { IndentationText, Project, QuoteKind } from 'ts-morph';
+import { Project } from 'ts-morph';
 
 import type { TypescriptMorpher } from './types.js';
 
+import { TS_MORPH_MANIPULATION_SETTINGS } from './constants/ts-morph-settings.js';
 import { findNearestAncestorFile } from './utils/find-nearest-ancestor-file.js';
 
 interface MorphContext {
@@ -27,12 +28,7 @@ export async function runMorpher(
   const project = new Project({
     tsConfigFilePath: tsConfig,
     skipAddingFilesFromTsConfig: true,
-    manipulationSettings: {
-      indentationText: IndentationText.TwoSpaces,
-      quoteKind: QuoteKind.Single,
-      usePrefixAndSuffixTextForRename: true,
-      useTrailingCommas: true,
-    },
+    manipulationSettings: TS_MORPH_MANIPULATION_SETTINGS,
   });
 
   const prettierConfig = await prettier.resolveConfig(path);

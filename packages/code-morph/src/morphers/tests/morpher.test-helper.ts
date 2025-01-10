@@ -2,10 +2,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
-import { IndentationText, Project, QuoteKind } from 'ts-morph';
+import { Project } from 'ts-morph';
 import { describe, expect, test } from 'vitest';
 
 import type { TypescriptMorpher } from '@src/types.js';
+
+import { TS_MORPH_MANIPULATION_SETTINGS } from '@src/constants/ts-morph-settings.js';
 
 const getFileWithTsExtension = (
   directory: string,
@@ -86,12 +88,7 @@ export function runMorpherTests(morpher: TypescriptMorpher<any>): void {
 
       // Run the merge algorithm
       const project = new Project({
-        manipulationSettings: {
-          indentationText: IndentationText.TwoSpaces,
-          quoteKind: QuoteKind.Single,
-          usePrefixAndSuffixTextForRename: true,
-          useTrailingCommas: true,
-        },
+        manipulationSettings: TS_MORPH_MANIPULATION_SETTINGS,
       });
       const sourceFile = project.addSourceFileAtPath(
         path.join(casePath, inputFilename),

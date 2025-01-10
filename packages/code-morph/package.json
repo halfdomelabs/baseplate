@@ -33,7 +33,7 @@
     "globby": "^14.0.2",
     "ora": "^8.0.1",
     "prettier": "catalog:",
-    "ts-morph": "23.0.0",
+    "ts-morph": "25.0.0",
     "yaml": "2.7.0",
     "zod": "catalog:"
   },
