@@ -4,6 +4,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "@lib/*": ["lib/*"],
       "@scripts/*": ["scripts/*"]
     }
   },

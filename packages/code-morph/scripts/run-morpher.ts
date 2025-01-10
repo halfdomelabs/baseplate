@@ -1,29 +1,165 @@
 #!/usr/bin/env node
 
-import type { TypescriptMorpher } from 'lib/types.js';
+import type { TypescriptMorpher } from '@lib/types.js';
+import type { WorkspacePackage } from '@lib/utils/find-workspace-projects.js';
 
+import { checkbox, input, search } from '@inquirer/prompts';
+import { loadMorphers } from '@lib/load-morphers.js';
+import { runMorpher } from '@lib/runner.js';
+import { asyncFilter } from '@lib/utils/array.js';
+import { getWorkspacePackages } from '@lib/utils/find-workspace-projects.js';
+import { pathExists } from '@lib/utils/fs.js';
 import { program } from 'commander';
-import { runMorpher } from 'lib/runner.js';
-import fs from 'node:fs/promises';
+import { globby } from 'globby';
 import path from 'node:path';
 
 interface Options {
-  dryRun: boolean;
-  options: string[];
+  dryRun?: boolean;
+  options?: string[];
+  morpher?: string;
+  packages?: string[];
+  displayCommand?: boolean;
 }
 
-async function getTransformers(): Promise<TypescriptMorpher[]> {
-  const files = await fs.readdir(path.resolve('./morphers'));
-  const transformers = await Promise.all(
-    files.map(async (file) => {
-      const module = (await import(`../morphers/${file}`)) as {
-        default: TypescriptMorpher;
-      };
-      return module.default;
-    }),
+async function getMorpher(options: Options): Promise<TypescriptMorpher> {
+  const morphers = await loadMorphers();
+
+  const selectedMorpherName =
+    options.morpher ??
+    (await search({
+      message: 'Select a morpher',
+      source: (term) =>
+        morphers
+          .filter((morpher) => morpher.name.includes(term ?? ''))
+          .map((morpher) => ({
+            name: morpher.name,
+            value: morpher.name,
+            description: morpher.description,
+          })),
+    }));
+
+  const selectedMorpher = morphers.find((t) => t.name === selectedMorpherName);
+
+  if (!selectedMorpher) {
+    throw new Error(`Could not find morpher ${selectedMorpherName}.`);
+  }
+
+  return selectedMorpher;
+}
+
+async function getPackages(
+  options: Options,
+  morpher: TypescriptMorpher,
+): Promise<WorkspacePackage[]> {
+  const workspacePackages = await getWorkspacePackages();
+
+  const preselectedPackages = options.packages;
+  if (preselectedPackages?.length) {
+    const invalidPackages = workspacePackages.filter(
+      (p) => !preselectedPackages.includes(p.name),
+    );
+
+    if (invalidPackages.length > 0) {
+      throw new Error(
+        `Invalid packages: ${invalidPackages.map((p) => p.name).join(', ')}`,
+      );
+    }
+
+    return workspacePackages.filter((p) =>
+      preselectedPackages.includes(p.name),
+    );
+  }
+  const packagesWithGlobs = await asyncFilter(
+    workspacePackages,
+    async (pkg) => {
+      if (!(await pathExists(path.join(pkg.directory, 'tsconfig.json'))))
+        return false;
+      if (!morpher.pathGlobs?.length) return true;
+
+      const matchingFiles = await globby(morpher.pathGlobs, {
+        cwd: pkg.directory,
+        gitignore: true,
+      });
+      return matchingFiles.length > 0;
+    },
   );
 
-  return transformers;
+  const selectedPackages =
+    options.packages ??
+    (await checkbox({
+      message: 'Select a package',
+      choices: packagesWithGlobs.map((pkg) => ({
+        name: pkg.name,
+        value: pkg.name,
+      })),
+      loop: false,
+      pageSize: 20,
+    }));
+
+  return workspacePackages.filter((p) => selectedPackages.includes(p.name));
+}
+
+async function getMorpherOptions(
+  options: Options,
+  morpher: TypescriptMorpher,
+): Promise<Record<string, string>> {
+  if (options.options?.length) {
+    const extractedOptions: Record<string, string> = {};
+    for (const option of options.options) {
+      const [key, ...values] = option.split('=');
+      if (key in morpher.options) {
+        const newValue = values.join('=');
+        if (morpher.options[key].validation) {
+          const result = morpher.options[key].validation.safeParse(newValue);
+          if (!result.success) throw new Error(result.error.message);
+        }
+        extractedOptions[key] = newValue;
+      }
+    }
+
+    // check for missing options
+    const missingOptions = Object.keys(morpher.options).filter(
+      (option) => !extractedOptions[option],
+    );
+    if (missingOptions.length > 0) {
+      throw new Error(`Missing options: ${missingOptions.join(', ')}`);
+    }
+
+    return extractedOptions;
+  }
+
+  // ask for options from user
+  const promptedOptions: Record<string, string> = {};
+  for (const [optionName, option] of Object.entries(morpher.options)) {
+    const prompt = await input({
+      message: `Please enter the value for ${optionName}${
+        option.optional ? ' (optional)' : ''
+      }${option.description ? `: ${option.description}` : ''}`,
+      validate: (value) => {
+        if (!option.optional && !value) return 'This option is required';
+        if (option.validation) {
+          const result = option.validation.safeParse(value);
+          if (!result.success) return result.error.message;
+        }
+        return true;
+      },
+    });
+    promptedOptions[optionName] = prompt;
+  }
+
+  return promptedOptions;
+}
+
+function getMorpherCommand(
+  morpher: TypescriptMorpher,
+  packages: WorkspacePackage[],
+  options: Record<string, string>,
+): string {
+  return `pnpm morpher -m ${morpher.name} -p ${packages.map((p) => p.name).join(' ')} --options ${Object.entries(
+    options,
+  )
+    .map(([key, value]) => `${key}=${value}`)
+    .join(' ')}`;
 }
 
 /**
@@ -37,43 +173,34 @@ async function main(): Promise<void> {
       '-o,--options [options...]',
       'Options for the migration (in format of key=value)',
     )
-    .argument('<transformer>', 'Transformer to run')
-    .argument('<path>', 'File or directory to run migration on')
-    .action(
-      async (transformer: string, migrationPath: string, options: Options) => {
-        const transformers = await getTransformers();
-        const selectedTransformer = transformers.find(
-          (t) => t.name === transformer,
-        );
+    .option('-m,--morpher <morpher>', 'Morpher to run')
+    .option('-p,--packages <packages...>', 'Packages to run migration on')
+    .option('--display-command', 'Display command to run morpher')
+    .action(async (options: Options) => {
+      const morpher = await getMorpher(options);
+      const packages = await getPackages(options, morpher);
+      const morpherOptions = await getMorpherOptions(options, morpher);
 
-        if (!selectedTransformer) {
-          throw new Error(
-            `Could not find transformer ${transformer}. Available transformers:
-          \n${transformers.map((t) => `+ ${t.name}`).join('\n')}\n`,
-          );
-        }
+      if (options.displayCommand) {
+        console.info(getMorpherCommand(morpher, packages, morpherOptions));
+        return;
+      }
 
-        const fullPath = path.resolve(process.cwd(), migrationPath);
+      for (const pkg of packages) {
+        console.info(`Running ${morpher.name} on ${pkg.name}...`);
+        await runMorpher(pkg.directory, morpher, morpherOptions, options);
+      }
 
-        const extractedOptions: Record<string, string> = {};
-        for (const option of options.options) {
-          const [key, ...values] = option.split('=');
-          extractedOptions[key] = values.join('=');
-        }
-
-        return runMorpher(
-          fullPath,
-          selectedTransformer,
-          extractedOptions,
-          options,
-        );
-      },
-    );
+      console.info(`Completed ${morpher.name} on ${packages.length} packages!`);
+    });
 
   await program.parseAsync();
 }
 
 await main().catch((err: unknown) => {
+  if (err instanceof Error && err.name === 'ExitPromptError') {
+    process.exit(1);
+  }
   console.error(err);
   process.exit(1);
 });

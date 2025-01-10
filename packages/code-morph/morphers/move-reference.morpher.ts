@@ -1,4 +1,4 @@
-import { createTypescriptMorpher } from 'lib/types.js';
+import { createTypescriptMorpher } from '@lib/types.js';
 import { ts } from 'ts-morph';
 import z from 'zod';
 
@@ -6,10 +6,18 @@ export default createTypescriptMorpher({
   name: 'move-import-reference',
   description:
     'Moves an import from one package/name to another package/name (can be the same package but different name)',
-  optionSchema: z.object({
-    fromImport: z.string().regex(/^[^:]+:[^:]+$/),
-    toImport: z.string().regex(/^[^:]+:[^:]+$/),
-  }),
+  options: {
+    fromImport: {
+      description: 'The import from which to move',
+      optional: false,
+      validation: z.string().regex(/^[^:]+:[^:]+$/),
+    },
+    toImport: {
+      description: 'The import to move to',
+      optional: false,
+      validation: z.string().regex(/^[^:]+:[^:]+$/),
+    },
+  },
   transform: (sourceFile, options) => {
     // find options
     const { fromImport, toImport } = options;
