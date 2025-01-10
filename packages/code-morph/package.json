@@ -21,23 +21,18 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "run:morpher": "tsx scripts/run-morpher.ts",
+    "run:morpher": "tsx src/scripts/run-morpher.ts",
     "run:script": "tsx",
     "test": "vitest",
-    "transform": "jscodeshift --extensions=ts --parser=ts -t ",
-    "transform:dry": "jscodeshift  --extensions=ts --parser=ts -d -p -t ",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@inquirer/prompts": "7.2.1",
-    "ast-types": "^0.14.2",
     "commander": "^12.1.0",
     "eslint": "catalog:",
     "globby": "^14.0.2",
-    "jscodeshift": "17.1.1",
     "ora": "^8.0.1",
     "prettier": "catalog:",
-    "tiny-invariant": "1.3.1",
     "ts-morph": "23.0.0",
     "yaml": "2.7.0",
     "zod": "catalog:"
@@ -45,7 +40,6 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/eslint": "catalog:",
-    "@types/jscodeshift": "^0.11.11",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",
