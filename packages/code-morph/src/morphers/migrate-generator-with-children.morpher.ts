@@ -105,7 +105,7 @@ taskBuilder.addTask({
       name: 'buildTasks',
       parameters: [
         { name: 'taskBuilder' },
-        parameters[0]?.getStructure() ?? { name: 'descriptor' },
+        ...(parameters[0] ? [parameters[0]?.getStructure()] : []),
       ],
       statements: [createMainTaskDeclaration],
     });
