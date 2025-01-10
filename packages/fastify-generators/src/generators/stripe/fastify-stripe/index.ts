@@ -5,7 +5,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -24,79 +24,85 @@ export type FastifyStripeProvider = unknown;
 export const fastifyStripeProvider =
   createProviderType<FastifyStripeProvider>('fastify-stripe');
 
-const FastifyStripeGenerator = createGeneratorWithChildren({
+const FastifyStripeGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    typescript: typescriptProvider,
-    configService: configServiceProvider,
-    errorHandlerService: errorHandlerServiceProvider,
-    loggerService: loggerServiceProvider,
-    fastifyServer: fastifyServerProvider,
-  },
-  exports: {
-    fastifyStripe: fastifyStripeProvider.export(projectScope),
-  },
-  createGenerator(
-    descriptor,
-    {
-      node,
-      typescript,
-      configService,
-      errorHandlerService,
-      loggerService,
-      fastifyServer,
-    },
-  ) {
-    node.addPackages({
-      stripe: '14.5.0',
-      'fastify-raw-body': '5.0.0',
-    });
-    configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
-      comment: 'Stripe secret API key',
-      value: 'z.string().min(1)',
-      seedValue: 'STRIPE_SECRET_KEY',
-    });
-    configService.getConfigEntries().set('STRIPE_ENDPOINT_SECRET', {
-      comment: 'Stripe webhook endpoint secret',
-      value: 'z.string().min(1)',
-      seedValue: 'STRIPE_ENDPOINT_SECRET',
-    });
-    fastifyServer.registerPlugin({
-      name: 'rawBodyPlugin',
-      plugin: new TypescriptCodeExpression(
-        'rawBodyPlugin',
-        "import rawBodyPlugin from 'fastify-raw-body'",
-      ),
-    });
-    fastifyServer.registerPlugin({
-      name: 'stripeWebhookPlugin',
-      plugin: new TypescriptCodeExpression(
-        'stripeWebhookPlugin',
-        "import { stripeWebhookPlugin } from '@/src/plugins/stripe-webhook.js'",
-      ),
-    });
-
-    return {
-      getProviders: () => ({
-        fastifyStripe: {},
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyFilesAction({
-            destinationBaseDirectory: 'src',
-            paths: [
-              'plugins/stripe-webhook.int.test.ts',
-              'plugins/stripe-webhook.ts',
-              'services/stripe-events.ts',
-              'services/stripe.ts',
-            ],
-            importMappers: [configService, errorHandlerService, loggerService],
-          }),
-        );
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        typescript: typescriptProvider,
+        configService: configServiceProvider,
+        errorHandlerService: errorHandlerServiceProvider,
+        loggerService: loggerServiceProvider,
+        fastifyServer: fastifyServerProvider,
       },
-    };
+      exports: {
+        fastifyStripe: fastifyStripeProvider.export(projectScope),
+      },
+      run({
+        node,
+        typescript,
+        configService,
+        errorHandlerService,
+        loggerService,
+        fastifyServer,
+      }) {
+        node.addPackages({
+          stripe: '14.5.0',
+          'fastify-raw-body': '5.0.0',
+        });
+        configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
+          comment: 'Stripe secret API key',
+          value: 'z.string().min(1)',
+          seedValue: 'STRIPE_SECRET_KEY',
+        });
+        configService.getConfigEntries().set('STRIPE_ENDPOINT_SECRET', {
+          comment: 'Stripe webhook endpoint secret',
+          value: 'z.string().min(1)',
+          seedValue: 'STRIPE_ENDPOINT_SECRET',
+        });
+        fastifyServer.registerPlugin({
+          name: 'rawBodyPlugin',
+          plugin: new TypescriptCodeExpression(
+            'rawBodyPlugin',
+            "import rawBodyPlugin from 'fastify-raw-body'",
+          ),
+        });
+        fastifyServer.registerPlugin({
+          name: 'stripeWebhookPlugin',
+          plugin: new TypescriptCodeExpression(
+            'stripeWebhookPlugin',
+            "import { stripeWebhookPlugin } from '@/src/plugins/stripe-webhook.js'",
+          ),
+        });
+
+        return {
+          getProviders: () => ({
+            fastifyStripe: {},
+          }),
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyFilesAction({
+                destinationBaseDirectory: 'src',
+                paths: [
+                  'plugins/stripe-webhook.int.test.ts',
+                  'plugins/stripe-webhook.ts',
+                  'services/stripe-events.ts',
+                  'services/stripe.ts',
+                ],
+                importMappers: [
+                  configService,
+                  errorHandlerService,
+                  loggerService,
+                ],
+              }),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

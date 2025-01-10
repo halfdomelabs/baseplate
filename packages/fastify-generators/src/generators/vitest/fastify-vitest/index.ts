@@ -5,7 +5,7 @@ import {
   vitestProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -19,36 +19,44 @@ export type FastifyVitestProvider = unknown;
 export const fastifyVitestProvider =
   createProviderType<FastifyVitestProvider>('fastify-vitest');
 
-const FastifyVitestGenerator = createGeneratorWithChildren({
+const FastifyVitestGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    vitest: vitestProvider,
-    node: nodeProvider,
-  },
-  exports: {
-    fastifyVitest: fastifyVitestProvider.export(projectScope),
-  },
-  createGenerator(descriptor, { node, vitest }) {
-    // add config to vitest setup
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        vitest: vitestProvider,
+        node: nodeProvider,
+      },
+      exports: {
+        fastifyVitest: fastifyVitestProvider.export(projectScope),
+      },
+      run({ node, vitest }) {
+        // add config to vitest setup
 
-    vitest
-      .getConfig()
-      .appendUnique('customSetupBlocks', [
-        TypescriptCodeUtils.createBlock(
-          'config()',
-          "import { config } from 'dotenv'",
-        ),
-      ]);
+        vitest
+          .getConfig()
+          .appendUnique('customSetupBlocks', [
+            TypescriptCodeUtils.createBlock(
+              'config()',
+              "import { config } from 'dotenv'",
+            ),
+          ]);
 
-    node.addScript('test', 'vitest run');
-    node.addScript('test:unit', 'cross-env TEST_MODE=unit vitest run .unit.');
+        node.addScript('test', 'vitest run');
+        node.addScript(
+          'test:unit',
+          'cross-env TEST_MODE=unit vitest run .unit.',
+        );
 
-    return {
-      getProviders: () => ({
-        fastifyVitest: {},
-      }),
-    };
+        return {
+          getProviders: () => ({
+            fastifyVitest: {},
+          }),
+        };
+      },
+    });
   },
 });
 

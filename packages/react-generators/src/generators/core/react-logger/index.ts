@@ -10,7 +10,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -28,48 +28,53 @@ export interface ReactLoggerProvider extends ImportMapper {
 export const reactLoggerProvider =
   createProviderType<ReactLoggerProvider>('react-logger');
 
-const ReactLoggerGenerator = createGeneratorWithChildren({
+const ReactLoggerGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    react: reactProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    reactLogger: reactLoggerProvider.export(projectScope),
-  },
-  createGenerator(descriptor, { node, react, typescript }) {
-    node.addPackages({
-      loglevel: '1.9.1',
-    });
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        react: reactProvider,
+        typescript: typescriptProvider,
+      },
+      exports: {
+        reactLogger: reactLoggerProvider.export(projectScope),
+      },
+      run({ node, react, typescript }) {
+        node.addPackages({
+          loglevel: '1.9.1',
+        });
 
-    return {
-      getProviders: () => ({
-        reactLogger: {
-          getLoggerExpression: () =>
-            TypescriptCodeUtils.createExpression(
-              'logger',
-              `import { logger  } from "@/${react.getSrcFolder()}/services/logger";`,
-            ),
-          getImportMap: () => ({
-            '%react-logger': {
-              path: `@/${react.getSrcFolder()}/services/logger`,
-              allowedImports: ['logger'],
+        return {
+          getProviders: () => ({
+            reactLogger: {
+              getLoggerExpression: () =>
+                TypescriptCodeUtils.createExpression(
+                  'logger',
+                  `import { logger  } from "@/${react.getSrcFolder()}/services/logger";`,
+                ),
+              getImportMap: () => ({
+                '%react-logger': {
+                  path: `@/${react.getSrcFolder()}/services/logger`,
+                  allowedImports: ['logger'],
+                },
+              }),
             },
           }),
-        },
-      }),
-      build: async (builder) => {
-        builder.setBaseDirectory(react.getSrcFolder());
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'logger.ts',
-            destination: 'services/logger.ts',
-          }),
-        );
+          build: async (builder) => {
+            builder.setBaseDirectory(react.getSrcFolder());
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'logger.ts',
+                destination: 'services/logger.ts',
+              }),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

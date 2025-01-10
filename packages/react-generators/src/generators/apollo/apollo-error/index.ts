@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -20,40 +20,45 @@ export type ApolloErrorProvider = ImportMapper;
 export const apolloErrorProvider =
   createProviderType<ApolloErrorProvider>('apollo-error');
 
-const ApolloErrorGenerator = createGeneratorWithChildren({
+const ApolloErrorGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    typescript: typescriptProvider,
-  },
-  exports: {
-    apolloError: apolloErrorProvider.export(projectScope),
-  },
-  createGenerator(descriptor, { typescript }) {
-    const [utilImport, utilPath] = makeImportAndFilePath(
-      'src/utils/apollo-error.ts',
-    );
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        typescript: typescriptProvider,
+      },
+      exports: {
+        apolloError: apolloErrorProvider.export(projectScope),
+      },
+      run({ typescript }) {
+        const [utilImport, utilPath] = makeImportAndFilePath(
+          'src/utils/apollo-error.ts',
+        );
 
-    return {
-      getProviders: () => ({
-        apolloError: {
-          getImportMap: () => ({
-            '%apollo-error/utils': {
-              path: utilImport,
-              allowedImports: ['getApolloErrorCode'],
+        return {
+          getProviders: () => ({
+            apolloError: {
+              getImportMap: () => ({
+                '%apollo-error/utils': {
+                  path: utilImport,
+                  allowedImports: ['getApolloErrorCode'],
+                },
+              }),
             },
           }),
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'apollo-error.ts',
-            destination: utilPath,
-          }),
-        );
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'apollo-error.ts',
+                destination: utilPath,
+              }),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

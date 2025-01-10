@@ -7,7 +7,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -29,86 +29,88 @@ export type AuthLoginPageProvider = unknown;
 export const authLoginPageProvider =
   createProviderType<AuthLoginPageProvider>('auth-login-page');
 
-const AuthLoginPageGenerator = createGeneratorWithChildren({
+const AuthLoginPageGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    reactApollo: reactApolloProvider,
-    reactRoutes: reactRoutesProvider,
-    typescript: typescriptProvider,
-    authService: authServiceProvider,
-    reactError: reactErrorProvider,
-    apolloError: apolloErrorProvider,
-    reactComponents: reactComponentsProvider,
-  },
-  exports: {
-    authLoginPage: authLoginPageProvider.export(projectScope),
-  },
-  createGenerator(
-    { allowedRoles },
-    {
-      reactApollo,
-      reactRoutes,
-      typescript,
-      authService,
-      reactError,
-      apolloError,
-      reactComponents,
-    },
-  ) {
-    const rootFolder = `${reactRoutes.getDirectoryBase()}/Login`;
-    const [loginPageImport, loginPagePath] = makeImportAndFilePath(
-      `${rootFolder}/index.tsx`,
-    );
-    const loginPageFile = typescript.createTemplate(
-      {
-        ALLOWED_ROLES: { type: 'code-expression' },
+  buildTasks(taskBuilder, { allowedRoles }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactApollo: reactApolloProvider,
+        reactRoutes: reactRoutesProvider,
+        typescript: typescriptProvider,
+        authService: authServiceProvider,
+        reactError: reactErrorProvider,
+        apolloError: apolloErrorProvider,
+        reactComponents: reactComponentsProvider,
       },
-      {
-        importMappers: [
-          reactComponents,
-          reactApollo,
-          authService,
-          reactError,
-          apolloError,
-        ],
+      exports: {
+        authLoginPage: authLoginPageProvider.export(projectScope),
       },
-    );
-    loginPageFile.addCodeEntries({
-      ALLOWED_ROLES: TypescriptCodeUtils.mergeExpressionsAsArray(
-        allowedRoles.map(quot),
-      ),
-    });
-
-    reactRoutes.registerRoute({
-      path: 'login',
-      layoutKey: 'auth',
-      element: TypescriptCodeUtils.createExpression(
-        `<LoginPage />`,
-        `import LoginPage from '${loginPageImport}';`,
-      ),
-    });
-
-    return {
-      getProviders: () => ({
-        authLoginPage: {},
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          loginPageFile.renderToAction('index.tsx', loginPagePath),
+      run({
+        reactApollo,
+        reactRoutes,
+        typescript,
+        authService,
+        reactError,
+        apolloError,
+        reactComponents,
+      }) {
+        const rootFolder = `${reactRoutes.getDirectoryBase()}/Login`;
+        const [loginPageImport, loginPagePath] = makeImportAndFilePath(
+          `${rootFolder}/index.tsx`,
         );
+        const loginPageFile = typescript.createTemplate(
+          {
+            ALLOWED_ROLES: { type: 'code-expression' },
+          },
+          {
+            importMappers: [
+              reactComponents,
+              reactApollo,
+              authService,
+              reactError,
+              apolloError,
+            ],
+          },
+        );
+        loginPageFile.addCodeEntries({
+          ALLOWED_ROLES: TypescriptCodeUtils.mergeExpressionsAsArray(
+            allowedRoles.map(quot),
+          ),
+        });
 
-        const loginGqlPath = `${rootFolder}/login.gql`;
-        reactApollo.registerGqlFile(loginGqlPath);
-        await builder.apply(
-          copyFileAction({
-            source: 'login.gql',
-            destination: loginGqlPath,
-            shouldFormat: true,
+        reactRoutes.registerRoute({
+          path: 'login',
+          layoutKey: 'auth',
+          element: TypescriptCodeUtils.createExpression(
+            `<LoginPage />`,
+            `import LoginPage from '${loginPageImport}';`,
+          ),
+        });
+
+        return {
+          getProviders: () => ({
+            authLoginPage: {},
           }),
-        );
+          build: async (builder) => {
+            await builder.apply(
+              loginPageFile.renderToAction('index.tsx', loginPagePath),
+            );
+
+            const loginGqlPath = `${rootFolder}/login.gql`;
+            reactApollo.registerGqlFile(loginGqlPath);
+            await builder.apply(
+              copyFileAction({
+                source: 'login.gql',
+                destination: loginGqlPath,
+                shouldFormat: true,
+              }),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

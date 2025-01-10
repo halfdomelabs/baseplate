@@ -7,7 +7,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -25,68 +25,76 @@ export const fastifyHealthCheckProvider =
 
 // async () => ({ success: true })
 
-const FastifyHealthCheckGenerator = createGeneratorWithChildren({
+const FastifyHealthCheckGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    fastifyServer: fastifyServerProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    fastifyHealthCheck: fastifyHealthCheckProvider.export(projectScope),
-  },
-  createGenerator(descriptor, { fastifyServer, typescript }) {
-    fastifyServer.registerPlugin({
-      name: 'healthCheckPlugin',
-      plugin: new TypescriptCodeExpression(
-        'healthCheckPlugin',
-        "import { healthCheckPlugin } from '@/src/plugins/health-check.js'",
-      ),
-    });
-
-    const checks: TypescriptCodeBlock[] = [];
-
-    return {
-      getProviders: () => ({
-        fastifyHealthCheck: {
-          addCheck(check) {
-            checks.push(check);
-          },
-        },
-      }),
-      build: async (builder) => {
-        const healthCheckPlugin = typescript.createTemplate({
-          CHECK: { type: 'code-expression' },
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        fastifyServer: fastifyServerProvider,
+        typescript: typescriptProvider,
+      },
+      exports: {
+        fastifyHealthCheck: fastifyHealthCheckProvider.export(projectScope),
+      },
+      run({ fastifyServer, typescript }) {
+        fastifyServer.registerPlugin({
+          name: 'healthCheckPlugin',
+          plugin: new TypescriptCodeExpression(
+            'healthCheckPlugin',
+            "import { healthCheckPlugin } from '@/src/plugins/health-check.js'",
+          ),
         });
 
-        if (checks.length > 0) {
-          const checksBlock = TypescriptCodeUtils.mergeBlocks(checks, '\n\n');
-          healthCheckPlugin.addCodeExpression(
-            'CHECK',
-            checksBlock.wrapAsExpression((content) =>
-              `async () => {
+        const checks: TypescriptCodeBlock[] = [];
+
+        return {
+          getProviders: () => ({
+            fastifyHealthCheck: {
+              addCheck(check) {
+                checks.push(check);
+              },
+            },
+          }),
+          build: async (builder) => {
+            const healthCheckPlugin = typescript.createTemplate({
+              CHECK: { type: 'code-expression' },
+            });
+
+            if (checks.length > 0) {
+              const checksBlock = TypescriptCodeUtils.mergeBlocks(
+                checks,
+                '\n\n',
+              );
+              healthCheckPlugin.addCodeExpression(
+                'CHECK',
+                checksBlock.wrapAsExpression((content) =>
+                  `async () => {
               ${content}
 
               return { success: true }
             }
             `.trim(),
-            ),
-          );
-        } else {
-          healthCheckPlugin.addCodeExpression(
-            'CHECK',
-            new TypescriptCodeExpression('async () => ({ success: true })'),
-          );
-        }
+                ),
+              );
+            } else {
+              healthCheckPlugin.addCodeExpression(
+                'CHECK',
+                new TypescriptCodeExpression('async () => ({ success: true })'),
+              );
+            }
 
-        await builder.apply(
-          healthCheckPlugin.renderToAction(
-            'health-check.ts',
-            'src/plugins/health-check.ts',
-          ),
-        );
+            await builder.apply(
+              healthCheckPlugin.renderToAction(
+                'health-check.ts',
+                'src/plugins/health-check.ts',
+              ),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

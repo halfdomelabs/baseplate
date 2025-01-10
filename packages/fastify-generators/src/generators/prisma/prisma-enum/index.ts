@@ -1,4 +1,4 @@
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaSchemaProvider } from '../prisma/index.js';
@@ -8,23 +8,28 @@ const descriptorSchema = z.object({
   values: z.array(z.object({ name: z.string().min(1) })),
 });
 
-const PrismaEnumGenerator = createGeneratorWithChildren({
+const PrismaEnumGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    prisma: prismaSchemaProvider,
-  },
-  createGenerator({ name, values }, { prisma }) {
-    prisma.addPrismaEnum({
-      name,
-      values: values.map((v) => ({ name: v.name })),
-    });
+  buildTasks(taskBuilder, { name, values }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prisma: prismaSchemaProvider,
+      },
+      run({ prisma }) {
+        prisma.addPrismaEnum({
+          name,
+          values: values.map((v) => ({ name: v.name })),
+        });
 
-    return {
-      getProviders: () => ({
-        prismaEnum: {},
-      }),
-    };
+        return {
+          getProviders: () => ({
+            prismaEnum: {},
+          }),
+        };
+      },
+    });
   },
 });
 

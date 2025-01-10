@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ServiceOutputMethod } from '@src/types/service-output.js';
@@ -105,43 +105,48 @@ return PRISMA_MODEL.delete({ where: WHERE_CLAUSE, ...query });
   );
 }
 
-const PrismaCrudDeleteGenerator = createGeneratorWithChildren({
+const PrismaCrudDeleteGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    prismaOutput: prismaOutputProvider,
-    serviceFile: serviceFileProvider,
-    prismaUtils: prismaUtilsProvider,
-  },
-  createGenerator(descriptor, { prismaOutput, serviceFile, prismaUtils }) {
-    const { name, modelName } = descriptor;
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prismaOutput: prismaOutputProvider,
+        serviceFile: serviceFileProvider,
+        prismaUtils: prismaUtilsProvider,
+      },
+      run({ prismaOutput, serviceFile, prismaUtils }) {
+        const { name, modelName } = descriptor;
 
-    const methodName = `${name}${modelName}`;
+        const methodName = `${name}${modelName}`;
 
-    const methodExpression = TypescriptCodeUtils.createExpression(
-      methodName,
-      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
-    );
+        const methodExpression = TypescriptCodeUtils.createExpression(
+          methodName,
+          `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
+        );
 
-    const methodOptions = {
-      methodName,
-      descriptor,
-      prismaOutput,
-      methodExpression,
-      prismaUtils,
-    };
+        const methodOptions = {
+          methodName,
+          descriptor,
+          prismaOutput,
+          methodExpression,
+          prismaUtils,
+        };
 
-    serviceFile.registerMethod(
-      name,
-      getMethodBlock(methodOptions),
-      getMethodDefinition(methodOptions),
-    );
+        serviceFile.registerMethod(
+          name,
+          getMethodBlock(methodOptions),
+          getMethodDefinition(methodOptions),
+        );
 
-    return {
-      getProviders: () => ({
-        prismaDeleteMethod: {},
-      }),
-    };
+        return {
+          getProviders: () => ({
+            prismaDeleteMethod: {},
+          }),
+        };
+      },
+    });
   },
 });
 

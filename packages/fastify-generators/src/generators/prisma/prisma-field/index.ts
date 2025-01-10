@@ -1,4 +1,4 @@
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ScalarFieldType } from '@src/types/field-types.js';
@@ -47,39 +47,44 @@ const descriptorSchema = z
 
 export type PrismaFieldDescriptor = z.infer<typeof descriptorSchema>;
 
-const PrismaFieldGenerator = createGeneratorWithChildren({
+const PrismaFieldGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    prismaModel: prismaModelProvider,
-  },
-  createGenerator(descriptor, { prismaModel }) {
-    const { name, type, id, unique, options, optional, dbName, enumType } =
-      descriptor;
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prismaModel: prismaModelProvider,
+      },
+      run({ prismaModel }) {
+        const { name, type, id, unique, options, optional, dbName, enumType } =
+          descriptor;
 
-    if (type === 'enum' && !enumType) {
-      throw new Error(`Enum type required`);
-    }
+        if (type === 'enum' && !enumType) {
+          throw new Error(`Enum type required`);
+        }
 
-    if (enumType && type !== 'enum') {
-      throw new Error(`Enum type can only be used with type 'enum'`);
-    }
+        if (enumType && type !== 'enum') {
+          throw new Error(`Enum type can only be used with type 'enum'`);
+        }
 
-    const prismaField = buildPrismaScalarField(name, type, {
-      id,
-      unique,
-      optional,
-      dbName,
-      typeOptions: options,
-      enumType,
+        const prismaField = buildPrismaScalarField(name, type, {
+          id,
+          unique,
+          optional,
+          dbName,
+          typeOptions: options,
+          enumType,
+        });
+
+        prismaModel.addField(prismaField);
+        return {
+          getProviders: () => ({
+            prismaField: {},
+          }),
+        };
+      },
     });
-
-    prismaModel.addField(prismaField);
-    return {
-      getProviders: () => ({
-        prismaField: {},
-      }),
-    };
   },
 });
 
