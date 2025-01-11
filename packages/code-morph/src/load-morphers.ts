@@ -3,6 +3,11 @@ import path from 'node:path';
 
 import type { TypescriptMorpher } from './types.js';
 
+/**
+ * Loads all morphers from the ./morphers directory with the .morpher.ts extension.
+ *
+ * @returns A list of morphers.
+ */
 export async function loadMorphers(): Promise<TypescriptMorpher[]> {
   const morphersPath = path.resolve(
     path.join(import.meta.dirname, './morphers'),

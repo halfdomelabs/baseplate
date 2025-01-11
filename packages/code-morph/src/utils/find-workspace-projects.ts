@@ -55,6 +55,12 @@ async function findMatchingPackages(
   return packagesWithNames.filter((p) => p !== undefined);
 }
 
+/**
+ * Gets the packages in the workspace.
+ *
+ * @param startDir - The directory to start searching from.
+ * @returns The packages in the workspace.
+ */
 export async function getWorkspacePackages(
   startDir: string = process.cwd(),
 ): Promise<WorkspacePackage[]> {
