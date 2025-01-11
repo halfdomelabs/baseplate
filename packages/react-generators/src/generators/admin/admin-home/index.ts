@@ -5,7 +5,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -23,48 +23,50 @@ export type AdminHomeProvider = unknown;
 export const adminHomeProvider =
   createProviderType<AdminHomeProvider>('admin-home');
 
-const AdminHomeGenerator = createGeneratorWithChildren({
+const AdminHomeGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    reactComponents: reactComponentsProvider,
-    authHooks: authHooksProvider,
-    typescript: typescriptProvider,
-    reactRoutes: reactRoutesProvider,
-  },
-  exports: {
-    adminHome: adminHomeProvider.export(projectScope),
-  },
-  createGenerator(
-    descriptor,
-    { authHooks, reactComponents, reactRoutes, typescript },
-  ) {
-    const [pageImport, pagePath] = makeImportAndFilePath(
-      `${reactRoutes.getDirectoryBase()}/Home/index.tsx`,
-    );
-    reactRoutes.registerRoute({
-      index: true,
-      element: TypescriptCodeUtils.createExpression(
-        `<Home />`,
-        `import Home from '${pageImport}';`,
-      ),
-      layoutKey: 'admin',
-    });
-
-    return {
-      getProviders: () => ({
-        adminHome: {},
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'Home.page.tsx',
-            destination: pagePath,
-            importMappers: [authHooks, reactComponents],
-          }),
-        );
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactComponents: reactComponentsProvider,
+        authHooks: authHooksProvider,
+        typescript: typescriptProvider,
+        reactRoutes: reactRoutesProvider,
       },
-    };
+      exports: {
+        adminHome: adminHomeProvider.export(projectScope),
+      },
+      run({ authHooks, reactComponents, reactRoutes, typescript }) {
+        const [pageImport, pagePath] = makeImportAndFilePath(
+          `${reactRoutes.getDirectoryBase()}/Home/index.tsx`,
+        );
+        reactRoutes.registerRoute({
+          index: true,
+          element: TypescriptCodeUtils.createExpression(
+            `<Home />`,
+            `import Home from '${pageImport}';`,
+          ),
+          layoutKey: 'admin',
+        });
+
+        return {
+          getProviders: () => ({
+            adminHome: {},
+          }),
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'Home.page.tsx',
+                destination: pagePath,
+                importMappers: [authHooks, reactComponents],
+              }),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

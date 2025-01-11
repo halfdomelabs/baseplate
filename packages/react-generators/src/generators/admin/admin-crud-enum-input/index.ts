@@ -1,5 +1,5 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -18,31 +18,31 @@ const descriptorSchema = z.object({
   ),
 });
 
-const AdminCrudEnumInputGenerator = createGeneratorWithChildren({
+const AdminCrudEnumInputGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    adminCrudInputContainer: adminCrudInputContainerProvider,
-    reactComponents: reactComponentsProvider,
-  },
-  createGenerator(
-    { label, modelField, options, isOptional },
-    { adminCrudInputContainer, reactComponents },
-  ) {
-    adminCrudInputContainer.addInput({
-      content: TypescriptCodeUtils.createExpression(
-        `<SelectInput.LabelledController
+  buildTasks(taskBuilder, { label, modelField, options, isOptional }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        adminCrudInputContainer: adminCrudInputContainerProvider,
+        reactComponents: reactComponentsProvider,
+      },
+      run({ adminCrudInputContainer, reactComponents }) {
+        adminCrudInputContainer.addInput({
+          content: TypescriptCodeUtils.createExpression(
+            `<SelectInput.LabelledController
           label="${label}"
           control={control}
           name="${modelField}"
           options={${modelField}Options}
         />`,
-        'import { SelectInput } from "%react-components"',
-        {
-          importMappers: [reactComponents],
-          headerBlocks: [
-            TypescriptCodeUtils.createBlock(
-              `const ${modelField}Options = [
+            'import { SelectInput } from "%react-components"',
+            {
+              importMappers: [reactComponents],
+              headerBlocks: [
+                TypescriptCodeUtils.createBlock(
+                  `const ${modelField}Options = [
               ${options
                 .map(
                   (option) =>
@@ -52,24 +52,26 @@ const AdminCrudEnumInputGenerator = createGeneratorWithChildren({
                 )
                 .join(',\n')}
             ];`,
-            ),
-          ],
-        },
-      ),
-      graphQLFields: [{ name: modelField }],
-      validation: [
-        {
-          key: modelField,
-          expression: TypescriptCodeUtils.createExpression(
-            `z.enum([${options.map((o) => `"${o.value}"`).join(', ')}])${
-              isOptional ? '.nullish()' : ''
-            }`,
+                ),
+              ],
+            },
           ),
-        },
-      ],
-    });
+          graphQLFields: [{ name: modelField }],
+          validation: [
+            {
+              key: modelField,
+              expression: TypescriptCodeUtils.createExpression(
+                `z.enum([${options.map((o) => `"${o.value}"`).join(', ')}])${
+                  isOptional ? '.nullish()' : ''
+                }`,
+              ),
+            },
+          ],
+        });
 
-    return {};
+        return {};
+      },
+    });
   },
 });
 

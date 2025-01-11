@@ -1,24 +1,25 @@
-/* eslint-disable no-console */
-import { existsSync, lstatSync } from 'node:fs';
+import { existsSync, lstatSync, writeFileSync } from 'node:fs';
 import ora from 'ora';
-import { IndentationText, Project, QuoteKind } from 'ts-morph';
+import prettier from 'prettier';
+import { Project } from 'ts-morph';
 
 import type { TypescriptMorpher } from './types.js';
 
-import { findNearestTsconfig } from './utils/find-nearest-tsconfig.js';
+import { TS_MORPH_MANIPULATION_SETTINGS } from './constants/ts-morph-settings.js';
+import { findNearestAncestorFile } from './utils/find-nearest-ancestor-file.js';
 
 interface MorphContext {
-  dryRun: boolean;
+  dryRun?: boolean;
 }
 
 export async function runMorpher(
   path: string,
   morpher: TypescriptMorpher,
-  options: unknown,
+  options: Record<string, string>,
   { dryRun }: MorphContext,
 ): Promise<void> {
   // load path
-  const tsConfig = findNearestTsconfig(path);
+  const tsConfig = findNearestAncestorFile(path, 'tsconfig.json');
 
   if (!tsConfig) {
     throw new Error(`Could not find a tsconfig.json file for ${path}`);
@@ -27,22 +28,20 @@ export async function runMorpher(
   const project = new Project({
     tsConfigFilePath: tsConfig,
     skipAddingFilesFromTsConfig: true,
-    manipulationSettings: {
-      indentationText: IndentationText.TwoSpaces,
-      quoteKind: QuoteKind.Single,
-      usePrefixAndSuffixTextForRename: true,
-      useTrailingCommas: true,
-    },
+    manipulationSettings: TS_MORPH_MANIPULATION_SETTINGS,
   });
+
+  const prettierConfig = await prettier.resolveConfig(path);
 
   if (!existsSync(path)) {
     throw new Error(`Path ${path} does not exist`);
   }
 
+  const sourceGlobs = morpher.pathGlobs ?? ['**/*.ts', '**/*.tsx'];
+
   // load files from path
   if (lstatSync(path).isDirectory()) {
-    project.addSourceFilesAtPaths(`${path}/**/*.ts`);
-    project.addSourceFilesAtPaths(`${path}/**/*.tsx`);
+    project.addSourceFilesAtPaths(sourceGlobs.map((glob) => `${path}/${glob}`));
   } else {
     project.addSourceFileAtPath(path);
   }
@@ -50,11 +49,8 @@ export async function runMorpher(
   const sourceFiles = project.getSourceFiles();
   const sourceFilesLength = sourceFiles.length;
 
-  // validate options
-  const parsedOptions = morpher.optionSchema.parse(options);
-
   // run morpher on each file
-  console.log(
+  console.info(
     `Running morpher ${morpher.name} on ${sourceFilesLength} files...`,
   );
   const spinner = ora('Transforming files...').start();
@@ -68,7 +64,7 @@ export async function runMorpher(
         isModified = true;
       };
       sourceFile.onModified(onModified);
-      morpher.transform(sourceFile, parsedOptions);
+      morpher.transform(sourceFile, options);
       sourceFile.onModified(onModified, false);
 
       processedFiles += 1;
@@ -76,7 +72,13 @@ export async function runMorpher(
         changedFiles += 1;
 
         if (!dryRun) {
-          await sourceFile.save();
+          const formatted = await prettier.format(sourceFile.getFullText(), {
+            ...prettierConfig,
+            parser: 'typescript',
+          });
+          writeFileSync(sourceFile.getFilePath(), formatted, {
+            encoding: 'utf8',
+          });
         }
       }
     } catch (err) {

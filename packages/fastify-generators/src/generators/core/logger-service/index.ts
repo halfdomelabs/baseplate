@@ -11,7 +11,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -51,97 +51,104 @@ const loggerServiceFileConfig = createTypescriptTemplateConfig({
   LOGGER_OPTIONS: { type: 'code-expression' },
 });
 
-const LoggerServiceGenerator = createGeneratorWithChildren({
+const LoggerServiceGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    fastify: fastifyProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
-    loggerService: loggerServiceProvider.export(projectScope),
-  },
-  createGenerator(descriptor, { node, fastify, typescript }) {
-    const mixins = createNonOverwriteableMap<
-      Record<string, TypescriptCodeExpression>
-    >({}, { name: 'logger-service-mixins' });
-
-    fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
-
-    node.addPackages({
-      pino: '9.5.0',
-    });
-
-    node.addDevPackages({
-      'pino-pretty': '13.0.0',
-    });
-
-    const importMap = {
-      '%logger-service': {
-        path: '@/src/services/logger.js',
-        allowedImports: ['logger'],
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        fastify: fastifyProvider,
+        typescript: typescriptProvider,
       },
-    };
+      exports: {
+        loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
+        loggerService: loggerServiceProvider.export(projectScope),
+      },
+      run({ node, fastify, typescript }) {
+        const mixins = createNonOverwriteableMap<
+          Record<string, TypescriptCodeExpression>
+        >({}, { name: 'logger-service-mixins' });
 
-    return {
-      getProviders: () => ({
-        loggerServiceSetup: {
-          addMixin(key, expression) {
-            mixins.merge({ [key]: expression });
+        fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
+
+        node.addPackages({
+          pino: '9.5.0',
+        });
+
+        node.addDevPackages({
+          'pino-pretty': '13.0.0',
+        });
+
+        const importMap = {
+          '%logger-service': {
+            path: '@/src/services/logger.js',
+            allowedImports: ['logger'],
           },
-          getImportMap: () => importMap,
-        },
-        loggerService: {
-          getLogger() {
-            return TypescriptCodeUtils.createExpression(
-              'logger',
-              'import { logger } from "@/src/services/logger.js"',
+        };
+
+        return {
+          getProviders: () => ({
+            loggerServiceSetup: {
+              addMixin(key, expression) {
+                mixins.merge({ [key]: expression });
+              },
+              getImportMap: () => importMap,
+            },
+            loggerService: {
+              getLogger() {
+                return TypescriptCodeUtils.createExpression(
+                  'logger',
+                  'import { logger } from "@/src/services/logger.js"',
+                );
+              },
+              getImportMap() {
+                return importMap;
+              },
+            },
+          }),
+          build: async (builder) => {
+            const loggerFile = typescript.createTemplate(
+              loggerServiceFileConfig,
             );
-          },
-          getImportMap() {
-            return importMap;
-          },
-        },
-      }),
-      build: async (builder) => {
-        const loggerFile = typescript.createTemplate(loggerServiceFileConfig);
 
-        const loggerOptions: Record<string, TypescriptCodeExpression> = {};
+            const loggerOptions: Record<string, TypescriptCodeExpression> = {};
 
-        // log level vs. number for better log parsing
-        loggerOptions.formatters = TypescriptCodeUtils.createExpression(
-          `{
+            // log level vs. number for better log parsing
+            loggerOptions.formatters = TypescriptCodeUtils.createExpression(
+              `{
   level(level) {
     return { level };
   },
 }`,
-        );
+            );
 
-        if (Object.keys(mixins.value()).length > 0) {
-          loggerOptions.mixin = TypescriptCodeUtils.wrapExpression(
-            TypescriptCodeUtils.mergeExpressionsAsObject(mixins.value()),
-            TypescriptCodeUtils.createWrapper(
-              (expression) => `function mixin() {
+            if (Object.keys(mixins.value()).length > 0) {
+              loggerOptions.mixin = TypescriptCodeUtils.wrapExpression(
+                TypescriptCodeUtils.mergeExpressionsAsObject(mixins.value()),
+                TypescriptCodeUtils.createWrapper(
+                  (expression) => `function mixin() {
               return ${expression};
             }`,
-            ),
-          );
-        }
+                ),
+              );
+            }
 
-        loggerFile.addCodeExpression(
-          'LOGGER_OPTIONS',
-          Object.keys(loggerOptions).length > 0
-            ? TypescriptCodeUtils.mergeExpressionsAsObject(loggerOptions)
-            : TypescriptCodeUtils.createExpression(''),
-        );
+            loggerFile.addCodeExpression(
+              'LOGGER_OPTIONS',
+              Object.keys(loggerOptions).length > 0
+                ? TypescriptCodeUtils.mergeExpressionsAsObject(loggerOptions)
+                : TypescriptCodeUtils.createExpression(''),
+            );
 
-        await builder.apply(
-          loggerFile.renderToAction('logger.ts', 'src/services/logger.ts'),
-        );
+            await builder.apply(
+              loggerFile.renderToAction('logger.ts', 'src/services/logger.ts'),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

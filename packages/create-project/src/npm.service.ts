@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { input } from '@inquirer/prompts';
 import axios, { AxiosError } from 'axios';
 import ora from 'ora';
@@ -70,7 +69,7 @@ export async function getNpmTokenAndVersion(): Promise<{
     });
 
     try {
-      console.log('');
+      console.info('');
       latestVersion = await fetchNpmPackageVersion(npmToken);
       break;
     } catch (error) {

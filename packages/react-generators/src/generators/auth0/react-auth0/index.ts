@@ -4,7 +4,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -21,48 +21,51 @@ export type ReactAuth0Provider = unknown;
 export const reactAuth0Provider =
   createProviderType<ReactAuth0Provider>('react-auth0');
 
-const ReactAuth0Generator = createGeneratorWithChildren({
+const ReactAuth0Generator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    reactConfig: reactConfigProvider,
-    reactApp: reactAppProvider,
-  },
-  exports: {
-    reactAuth0: reactAuth0Provider.export(projectScope),
-  },
-  createGenerator({ callbackPath }, { node, reactConfig, reactApp }) {
-    node.addPackages({
-      '@auth0/auth0-react': '2.2.3',
-    });
+  buildTasks(taskBuilder, { callbackPath }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        reactConfig: reactConfigProvider,
+        reactApp: reactAppProvider,
+      },
+      exports: {
+        reactAuth0: reactAuth0Provider.export(projectScope),
+      },
+      run({ node, reactConfig, reactApp }) {
+        node.addPackages({
+          '@auth0/auth0-react': '2.2.3',
+        });
 
-    reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {
-      comment: 'Auth0 Domain',
-      validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-      devValue: 'domain.auth0.com',
-    });
+        reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {
+          comment: 'Auth0 Domain',
+          validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          devValue: 'domain.auth0.com',
+        });
 
-    reactConfig.getConfigMap().set('VITE_AUTH0_CLIENT_ID', {
-      comment: 'Auth0 Client ID',
-      validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-      devValue: 'AUTH0_CLIENT_ID',
-    });
+        reactConfig.getConfigMap().set('VITE_AUTH0_CLIENT_ID', {
+          comment: 'Auth0 Client ID',
+          validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          devValue: 'AUTH0_CLIENT_ID',
+        });
 
-    reactConfig.getConfigMap().set('VITE_AUTH0_AUDIENCE', {
-      comment: 'Auth0 Audience',
-      validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-      devValue: 'AUTH0_AUDIENCE',
-    });
+        reactConfig.getConfigMap().set('VITE_AUTH0_AUDIENCE', {
+          comment: 'Auth0 Audience',
+          validator: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          devValue: 'AUTH0_AUDIENCE',
+        });
 
-    const redirectUri = callbackPath
-      ? `\`\${window.location.origin}/${callbackPath}\``
-      : 'window.location.origin';
+        const redirectUri = callbackPath
+          ? `\`\${window.location.origin}/${callbackPath}\``
+          : 'window.location.origin';
 
-    reactApp.getRenderWrappers().addItem(
-      'react-auth0',
-      TypescriptCodeUtils.createWrapper(
-        (contents) => `<Auth0Provider
+        reactApp.getRenderWrappers().addItem(
+          'react-auth0',
+          TypescriptCodeUtils.createWrapper(
+            (contents) => `<Auth0Provider
         domain={config.VITE_AUTH0_DOMAIN}
         clientId={config.VITE_AUTH0_CLIENT_ID}
         authorizationParams={{
@@ -71,20 +74,22 @@ const ReactAuth0Generator = createGeneratorWithChildren({
         }}
         skipRedirectCallback
       >${contents}</Auth0Provider>`,
-        [
-          `import {Auth0Provider} from '@auth0/auth0-react';`,
-          `import {config} from '%react-config'`,
-        ],
-        { importMappers: [reactConfig] },
-      ),
-      { comesAfter: 'react-apollo' },
-    );
+            [
+              `import {Auth0Provider} from '@auth0/auth0-react';`,
+              `import {config} from '%react-config'`,
+            ],
+            { importMappers: [reactConfig] },
+          ),
+          { comesAfter: 'react-apollo' },
+        );
 
-    return {
-      getProviders: () => ({
-        reactAuth0: {},
-      }),
-    };
+        return {
+          getProviders: () => ({
+            reactAuth0: {},
+          }),
+        };
+      },
+    });
   },
 });
 

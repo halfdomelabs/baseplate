@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -43,89 +43,91 @@ function getIconImport(iconName: string): string {
   return `react-icons/${category[0].toLowerCase()}`;
 }
 
-const AdminLayoutGenerator = createGeneratorWithChildren({
+const AdminLayoutGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    reactComponents: reactComponentsProvider,
-    reactRoutes: reactRoutesProvider,
-    authComponents: authComponentsProvider,
-    typescript: typescriptProvider,
-    authHooks: authHooksProvider,
-    reactTailwind: reactTailwindProvider,
-  },
-  exports: {
-    adminLayout: adminLayoutProvider.export(projectScope),
-  },
-  createGenerator(
-    { links = [] },
-    {
-      reactComponents,
-      reactRoutes,
-      authComponents,
-      typescript,
-      authHooks,
-      reactTailwind,
-    },
-  ) {
-    const adminLayout = typescript.createTemplate(
-      {
-        SIDEBAR_NAV: { type: 'code-expression' },
+  buildTasks(taskBuilder, { links = [] }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactComponents: reactComponentsProvider,
+        reactRoutes: reactRoutesProvider,
+        authComponents: authComponentsProvider,
+        typescript: typescriptProvider,
+        authHooks: authHooksProvider,
+        reactTailwind: reactTailwindProvider,
       },
-      {
-        importMappers: [reactComponents, authHooks],
+      exports: {
+        adminLayout: adminLayoutProvider.export(projectScope),
       },
-    );
+      run({
+        reactComponents,
+        reactRoutes,
+        authComponents,
+        typescript,
+        authHooks,
+        reactTailwind,
+      }) {
+        const adminLayout = typescript.createTemplate(
+          {
+            SIDEBAR_NAV: { type: 'code-expression' },
+          },
+          {
+            importMappers: [reactComponents, authHooks],
+          },
+        );
 
-    const navEntries = links.map((link) =>
-      TypescriptCodeUtils.mergeExpressionsAsJsxElement('Sidebar.LinkItem', {
-        Icon: TypescriptCodeUtils.createExpression(
-          link.icon,
-          `import { ${link.icon} } from '${getIconImport(link.icon)}';`,
-        ),
-        to: quot(link.path),
-        children: link.label,
-      }),
-    );
+        const navEntries = links.map((link) =>
+          TypescriptCodeUtils.mergeExpressionsAsJsxElement('Sidebar.LinkItem', {
+            Icon: TypescriptCodeUtils.createExpression(
+              link.icon,
+              `import { ${link.icon} } from '${getIconImport(link.icon)}';`,
+            ),
+            to: quot(link.path),
+            children: link.label,
+          }),
+        );
 
-    adminLayout.addCodeEntries({
-      SIDEBAR_NAV: TypescriptCodeUtils.mergeExpressions(navEntries),
-    });
+        adminLayout.addCodeEntries({
+          SIDEBAR_NAV: TypescriptCodeUtils.mergeExpressions(navEntries),
+        });
 
-    const [layoutImport, layoutPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/AdminLayout/index.tsx`,
-    );
+        const [layoutImport, layoutPath] = makeImportAndFilePath(
+          `${reactComponents.getComponentsFolder()}/AdminLayout/index.tsx`,
+        );
 
-    reactRoutes.registerLayout({
-      key: 'admin',
-      element: TypescriptCodeUtils.createExpression(
-        `<RequireAuth><AdminLayout /></RequireAuth>`,
-        [
-          `import AdminLayout from '${layoutImport}';`,
-          `import {RequireAuth} from '%auth-components'`,
-        ],
-        {
-          importMappers: [authComponents],
-        },
-      ),
-    });
+        reactRoutes.registerLayout({
+          key: 'admin',
+          element: TypescriptCodeUtils.createExpression(
+            `<RequireAuth><AdminLayout /></RequireAuth>`,
+            [
+              `import AdminLayout from '${layoutImport}';`,
+              `import {RequireAuth} from '%auth-components'`,
+            ],
+            {
+              importMappers: [authComponents],
+            },
+          ),
+        });
 
-    reactTailwind.addGlobalStyle(
-      `body {
+        reactTailwind.addGlobalStyle(
+          `body {
         overscroll-behavior-y: none;
       }`,
-    );
-
-    return {
-      getProviders: () => ({
-        adminLayout: {},
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          adminLayout.renderToAction('AdminLayout.tsx', layoutPath),
         );
+
+        return {
+          getProviders: () => ({
+            adminLayout: {},
+          }),
+          build: async (builder) => {
+            await builder.apply(
+              adminLayout.renderToAction('AdminLayout.tsx', layoutPath),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

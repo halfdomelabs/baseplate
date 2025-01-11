@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
 
@@ -182,128 +182,132 @@ function createEmbeddedTransformFunction(options: {
   };
 }
 
-const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
+const EmbeddedRelationTransformerGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    prismaOutput: prismaOutputProvider,
-    prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
-    foreignCrudService: prismaCrudServiceProvider.dependency().optional(),
-    serviceContext: serviceContextProvider,
-    prismaUtils: prismaUtilsProvider,
-  },
-  populateDependencies: (dependencies, { foreignModelName }) => ({
-    ...dependencies,
-    foreignCrudService:
-      dependencies.foreignCrudService.optionalReference(foreignModelName),
-  }),
-  createGenerator(
+  buildTasks(
+    taskBuilder,
     {
       name: localRelationName,
       embeddedFieldNames = [],
       embeddedTransformerNames,
       inputName: inputNameDescriptor,
-    },
-    {
-      prismaOutput,
-      prismaCrudServiceSetup,
-      foreignCrudService,
-      serviceContext,
-      prismaUtils,
+      foreignModelName,
     },
   ) {
-    function buildTransformer({
-      operationType,
-    }: PrismaDataTransformerOptions): PrismaDataTransformer {
-      const modelName = prismaCrudServiceSetup.getModelName();
-      const inputName = inputNameDescriptor ?? localRelationName;
-
-      const { localModel, foreignModel, localRelation, foreignRelation } =
-        getForeignModelRelation(prismaOutput, modelName, localRelationName);
-
-      if (localModel.idFields?.length !== 1) {
-        throw new Error(
-          `${modelName} must have exactly one id field if used in an embedded relation`,
-        );
-      }
-      const localId = localModel.idFields[0];
-
-      if (embeddedTransformerNames && !foreignCrudService) {
-        throw new Error(
-          `Cannot use embedded transformers without a foreign crud service`,
-        );
-      }
-
-      const isOneToOne = !localRelation.isList;
-
-      // get transformers
-      const embeddedTransformerFactories =
-        embeddedTransformerNames
-          ?.map((name) => foreignCrudService?.getTransformerByName(name))
-          .filter(notEmpty) ?? [];
-
-      const embeddedFields = embeddedFieldNames.map((name) => {
-        const field = foreignModel.fields.find((f) => f.name === name);
-        if (!field) {
-          throw new Error(
-            `Could not find field ${name} on ${foreignModel.name}`,
-          );
-        }
-        if (field.type !== 'scalar') {
-          throw new Error(
-            `Field ${name} on ${foreignModel.name} is not a scalar`,
-          );
-        }
-        return field;
-      });
-
-      const dataInputName = `${modelName}Embedded${upperCaseFirst(
-        localRelationName,
-      )}Data`;
-
-      const upsertTransformers = embeddedTransformerFactories.map((factory) =>
-        factory.buildTransformer({ operationType: 'upsert' }),
-      );
-
-      // If we use the existing item, we should check that its ID is actually owned
-      // by the parent
-      const getForeignRelationParentField = (): string => {
-        // figure out which field is parent ID
-        const foreignParentIdx = foreignRelation.references?.findIndex(
-          (reference) => reference === localId,
-        );
-        // foreign parent ID is not in list
-        if (foreignParentIdx == null || foreignParentIdx === -1) {
-          throw new Error(
-            `Foreign reference must contain primary key of local model`,
-          );
-        }
-        const foreignParentField = foreignRelation.fields?.[foreignParentIdx];
-        if (!foreignParentField) {
-          throw new Error(`Unable to find foreign parent field`);
-        }
-        return foreignParentField;
-      };
-
-      const dataMethodOptions: Omit<PrismaDataMethodOptions, 'name'> = {
-        modelName: foreignModel.name,
-        prismaFieldNames: embeddedFields.map((f) => f.name),
-        operationName: 'create',
-        transformers: upsertTransformers,
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prismaOutput: prismaOutputProvider,
+        prismaCrudServiceSetup: prismaCrudServiceSetupProvider,
+        foreignCrudService: prismaCrudServiceProvider
+          .dependency()
+          .optionalReference(foreignModelName),
+        serviceContext: serviceContextProvider,
+        prismaUtils: prismaUtilsProvider,
+      },
+      run({
         prismaOutput,
-        isPartial: false,
+        prismaCrudServiceSetup,
+        foreignCrudService,
         serviceContext,
         prismaUtils,
-        operationType: 'upsert',
-        whereUniqueExpression: 'whereUnique',
-        parentIdCheckField: upsertTransformers.some((t) => t.needsExistingItem)
-          ? getForeignRelationParentField()
-          : undefined,
-      };
+      }) {
+        function buildTransformer({
+          operationType,
+        }: PrismaDataTransformerOptions): PrismaDataTransformer {
+          const modelName = prismaCrudServiceSetup.getModelName();
+          const inputName = inputNameDescriptor ?? localRelationName;
 
-      const foreignModelName = upperCaseFirst(foreignModel.name);
-      const foreignRelationName = upperCaseFirst(foreignRelation.name);
-      const outputDataType = `{
+          const { localModel, foreignModel, localRelation, foreignRelation } =
+            getForeignModelRelation(prismaOutput, modelName, localRelationName);
+
+          if (localModel.idFields?.length !== 1) {
+            throw new Error(
+              `${modelName} must have exactly one id field if used in an embedded relation`,
+            );
+          }
+          const localId = localModel.idFields[0];
+
+          if (embeddedTransformerNames && !foreignCrudService) {
+            throw new Error(
+              `Cannot use embedded transformers without a foreign crud service`,
+            );
+          }
+
+          const isOneToOne = !localRelation.isList;
+
+          // get transformers
+          const embeddedTransformerFactories =
+            embeddedTransformerNames
+              ?.map((name) => foreignCrudService?.getTransformerByName(name))
+              .filter(notEmpty) ?? [];
+
+          const embeddedFields = embeddedFieldNames.map((name) => {
+            const field = foreignModel.fields.find((f) => f.name === name);
+            if (!field) {
+              throw new Error(
+                `Could not find field ${name} on ${foreignModel.name}`,
+              );
+            }
+            if (field.type !== 'scalar') {
+              throw new Error(
+                `Field ${name} on ${foreignModel.name} is not a scalar`,
+              );
+            }
+            return field;
+          });
+
+          const dataInputName = `${modelName}Embedded${upperCaseFirst(
+            localRelationName,
+          )}Data`;
+
+          const upsertTransformers = embeddedTransformerFactories.map(
+            (factory) => factory.buildTransformer({ operationType: 'upsert' }),
+          );
+
+          // If we use the existing item, we should check that its ID is actually owned
+          // by the parent
+          const getForeignRelationParentField = (): string => {
+            // figure out which field is parent ID
+            const foreignParentIdx = foreignRelation.references?.findIndex(
+              (reference) => reference === localId,
+            );
+            // foreign parent ID is not in list
+            if (foreignParentIdx == null || foreignParentIdx === -1) {
+              throw new Error(
+                `Foreign reference must contain primary key of local model`,
+              );
+            }
+            const foreignParentField =
+              foreignRelation.fields?.[foreignParentIdx];
+            if (!foreignParentField) {
+              throw new Error(`Unable to find foreign parent field`);
+            }
+            return foreignParentField;
+          };
+
+          const dataMethodOptions: Omit<PrismaDataMethodOptions, 'name'> = {
+            modelName: foreignModel.name,
+            prismaFieldNames: embeddedFields.map((f) => f.name),
+            operationName: 'create',
+            transformers: upsertTransformers,
+            prismaOutput,
+            isPartial: false,
+            serviceContext,
+            prismaUtils,
+            operationType: 'upsert',
+            whereUniqueExpression: 'whereUnique',
+            parentIdCheckField: upsertTransformers.some(
+              (t) => t.needsExistingItem,
+            )
+              ? getForeignRelationParentField()
+              : undefined,
+          };
+
+          const foreignModelName = upperCaseFirst(foreignModel.name);
+          const foreignRelationName = upperCaseFirst(foreignRelation.name);
+          const outputDataType = `{
         where${
           isOneToOne ? '?' : ''
         }: Prisma.${foreignModelName}WhereUniqueInput;
@@ -311,317 +315,322 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithChildren({
         update: Prisma.${foreignModelName}UpdateWithout${foreignRelationName}Input;
       }`;
 
-      const upsertFunction =
-        embeddedTransformerFactories.length === 0
-          ? undefined
-          : createEmbeddedTransformFunction({
-              name: `prepareUpsertEmbedded${upperCaseFirst(
-                localRelationName,
-              )}Data`,
-              inputDataType: dataInputName,
-              outputDataType,
-              dataMethodOptions,
-              isOneToOne,
-              prismaUtils,
-              serviceContextType: serviceContext.getServiceContextType(),
-              whereUniqueType: `Prisma.${upperCaseFirst(
-                foreignModel.name,
-              )}WhereUniqueInput`,
-            });
-
-      const dataInputType = getDataInputTypeBlock(
-        dataInputName,
-        dataMethodOptions,
-      ).withHeaderKey(dataInputName);
-      const dataMethodDataType = getDataMethodDataType(dataMethodOptions);
-
-      const isNullable = !localRelation.isList && operationType === 'update';
-
-      const inputField: PrismaDataTransformInputField = {
-        type: TypescriptCodeUtils.createExpression(
-          `${dataInputName}${localRelation.isList ? '[]' : ''}${
-            isNullable ? ' | null' : ''
-          }`,
-          undefined,
-          {
-            headerBlocks: [dataInputType],
-          },
-        ),
-        dtoField: {
-          name: inputName,
-          isOptional: true,
-          isNullable,
-          type: 'nested',
-          isList: localRelation.isList,
-          nestedType: {
-            name: dataInputName,
-            fields: dataMethodDataType.fields,
-          },
-        },
-      };
-
-      /**
-       * This is a fairly complex piece of logic. We have the following scenarios:
-       *
-       * Update/Create:
-       *  - Update operation
-       *  - Create operation
-       *
-       * Relationship Type:
-       *  - 1:many relationship
-       *  - 1:1 relationship
-       *
-       * Data Preprocessing:
-       *  - May have transform function
-       *  - May have no transform function
-       */
-
-      const embeddedCallName = `createOneTo${isOneToOne ? 'One' : 'Many'}${
-        operationType === 'create' ? 'Create' : 'Upsert'
-      }Data`;
-      const embeddedCallImport = `%prisma-utils/embeddedOneTo${
-        isOneToOne ? 'One' : 'Many'
-      }`;
-      const embeddedCallExpression = TypescriptCodeUtils.createExpression(
-        embeddedCallName,
-        `import { ${embeddedCallName} } from '${embeddedCallImport}'`,
-        { importMappers: [prismaUtils] },
-      );
-
-      // finds the discriminator ID field in the input for 1:many relationships
-      const getDiscriminatorIdField = (): string => {
-        const foreignIds = foreignModel.idFields ?? [];
-        const discriminatorIdFields = foreignIds.filter((foreignId) =>
-          embeddedFieldNames.includes(foreignId),
-        );
-
-        if (discriminatorIdFields.length !== 1) {
-          throw new Error(
-            `Expected 1 discriminator ID field for ${localRelationName}, found ${discriminatorIdFields.length}`,
-          );
-        }
-        return discriminatorIdFields[0];
-      };
-
-      const getWhereUniqueFunction = (): {
-        func: TypescriptCodeExpression;
-        needsExistingItem: boolean;
-      } => {
-        const returnType = TypescriptCodeUtils.createExpression(
-          `Prisma.${upperCaseFirst(
-            foreignModel.name,
-          )}WhereUniqueInput | undefined`,
-          "import { Prisma } from '@prisma/client'",
-        );
-
-        // convert primary keys to where unique
-        const foreignIds = foreignModel.idFields ?? [];
-        const primaryKeyFields = foreignIds.map(
-          (
-            idField,
-          ): {
-            name: string;
-            value: string;
-            requiredInputField?: string; // we may require some input fields to be specified
-            usesInput?: boolean;
-            needsExistingItem?: boolean;
-          } => {
-            // check if ID field is in relation
-            const idRelationIdx = foreignRelation.fields?.findIndex(
-              (relationField) => relationField === idField,
-            );
-            if (idRelationIdx != null && idRelationIdx !== -1) {
-              const localField = foreignRelation.references?.[idRelationIdx];
-              if (!localField) {
-                throw new Error(
-                  `Could not find corresponding relation field for ${idField}`,
-                );
-              }
-              // short-circuit case for updates
-              if (operationType === 'update' && localId === localField) {
-                return { name: idField, value: localId };
-              }
-              return {
-                name: idField,
-                value: `existingItem.${localField}`,
-                needsExistingItem: true,
-              };
-            }
-            // check if ID field is in input
-            const embeddedField = embeddedFields.find(
-              (f) => f.name === idField,
-            );
-            if (embeddedField) {
-              return {
-                name: idField,
-                value: `input.${idField}`,
-                usesInput: true,
-                requiredInputField:
-                  embeddedField.isOptional || embeddedField.hasDefault
-                    ? idField
-                    : undefined,
-              };
-            }
-            throw new Error(
-              `Could not find ID field ${idField} in either embedded object or relation for relation ${localRelationName} of ${modelName}`,
-            );
-          },
-        );
-
-        const primaryKeyExpression =
-          TypescriptCodeUtils.mergeExpressionsAsObject(
-            R.fromPairs(
-              primaryKeyFields.map((keyField): [string, string] => [
-                keyField.name,
-                keyField.value,
-              ]),
-            ),
-            { wrapWithParenthesis: true },
-          );
-
-        const value =
-          primaryKeyFields.length > 1
-            ? TypescriptCodeUtils.mergeExpressionsAsObject(
-                {
-                  [foreignIds.join('_')]: primaryKeyExpression,
-                },
-                { wrapWithParenthesis: true },
-              )
-            : primaryKeyExpression;
-
-        const usesInput = primaryKeyFields.some((k) => k.usesInput);
-        const needsExistingItem = primaryKeyFields.some(
-          (k) => k.needsExistingItem,
-        );
-
-        const requirementsList = [
-          ...(needsExistingItem && operationType === 'upsert'
-            ? ['!existingItem']
-            : []),
-          ...primaryKeyFields
-            .map(
-              (f) => f.requiredInputField && `!input.${f.requiredInputField}`,
-            )
-            .filter(notEmpty),
-        ];
-
-        return {
-          func: TypescriptCodeUtils.formatExpression(
-            `(INPUT): RETURN_TYPE => VALUE`,
-            {
-              INPUT: usesInput ? 'input' : '',
-              RETURN_TYPE: returnType,
-              PREFIX: '',
-              VALUE:
-                requirementsList.length > 0
-                  ? value.prepend(
-                      `${requirementsList.join(' || ')} ? undefined : `,
-                    )
-                  : value,
-            },
-          ),
-          needsExistingItem,
-        };
-      };
-
-      const embeddedCallArgs = ((): {
-        args: TypescriptCodeExpression;
-        needsExistingItem?: boolean;
-      } => {
-        if (operationType === 'create') {
-          return {
-            args: TypescriptCodeUtils.mergeExpressionsAsObject({
-              input: inputName,
-              transform: upsertFunction?.name,
-              context: upsertFunction && 'context',
-            }),
-          };
-        }
-        const whereUniqueResult = getWhereUniqueFunction();
-
-        const parentId =
-          operationType === 'update' ? localId : `existingItem.${localId}`;
-
-        const transformAdditions = upsertFunction
-          ? {
-              transform: upsertFunction.name,
-              context: 'context',
-              getWhereUnique: whereUniqueResult.func,
-              parentId,
-            }
-          : {};
-
-        const oneToManyAdditions = isOneToOne
-          ? {}
-          : {
-              idField: quot(getDiscriminatorIdField()),
-              getWhereUnique: whereUniqueResult.func,
-            };
-
-        const parentField = getForeignRelationParentField();
-
-        const oneToOneAdditions = isOneToOne
-          ? {
-              deleteRelation: TypescriptCodeUtils.formatExpression(
-                '() => PRISMA_MODEL.deleteMany({ where: WHERE_ARGS })',
-                {
-                  PRISMA_MODEL: prismaOutput.getPrismaModelExpression(
+          const upsertFunction =
+            embeddedTransformerFactories.length === 0
+              ? undefined
+              : createEmbeddedTransformFunction({
+                  name: `prepareUpsertEmbedded${upperCaseFirst(
+                    localRelationName,
+                  )}Data`,
+                  inputDataType: dataInputName,
+                  outputDataType,
+                  dataMethodOptions,
+                  isOneToOne,
+                  prismaUtils,
+                  serviceContextType: serviceContext.getServiceContextType(),
+                  whereUniqueType: `Prisma.${upperCaseFirst(
                     foreignModel.name,
-                  ),
-                  WHERE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
-                    [parentField]: parentId,
-                  }),
+                  )}WhereUniqueInput`,
+                });
+
+          const dataInputType = getDataInputTypeBlock(
+            dataInputName,
+            dataMethodOptions,
+          ).withHeaderKey(dataInputName);
+          const dataMethodDataType = getDataMethodDataType(dataMethodOptions);
+
+          const isNullable =
+            !localRelation.isList && operationType === 'update';
+
+          const inputField: PrismaDataTransformInputField = {
+            type: TypescriptCodeUtils.createExpression(
+              `${dataInputName}${localRelation.isList ? '[]' : ''}${
+                isNullable ? ' | null' : ''
+              }`,
+              undefined,
+              {
+                headerBlocks: [dataInputType],
+              },
+            ),
+            dtoField: {
+              name: inputName,
+              isOptional: true,
+              isNullable,
+              type: 'nested',
+              isList: localRelation.isList,
+              nestedType: {
+                name: dataInputName,
+                fields: dataMethodDataType.fields,
+              },
+            },
+          };
+
+          /**
+           * This is a fairly complex piece of logic. We have the following scenarios:
+           *
+           * Update/Create:
+           *  - Update operation
+           *  - Create operation
+           *
+           * Relationship Type:
+           *  - 1:many relationship
+           *  - 1:1 relationship
+           *
+           * Data Preprocessing:
+           *  - May have transform function
+           *  - May have no transform function
+           */
+
+          const embeddedCallName = `createOneTo${isOneToOne ? 'One' : 'Many'}${
+            operationType === 'create' ? 'Create' : 'Upsert'
+          }Data`;
+          const embeddedCallImport = `%prisma-utils/embeddedOneTo${
+            isOneToOne ? 'One' : 'Many'
+          }`;
+          const embeddedCallExpression = TypescriptCodeUtils.createExpression(
+            embeddedCallName,
+            `import { ${embeddedCallName} } from '${embeddedCallImport}'`,
+            { importMappers: [prismaUtils] },
+          );
+
+          // finds the discriminator ID field in the input for 1:many relationships
+          const getDiscriminatorIdField = (): string => {
+            const foreignIds = foreignModel.idFields ?? [];
+            const discriminatorIdFields = foreignIds.filter((foreignId) =>
+              embeddedFieldNames.includes(foreignId),
+            );
+
+            if (discriminatorIdFields.length !== 1) {
+              throw new Error(
+                `Expected 1 discriminator ID field for ${localRelationName}, found ${discriminatorIdFields.length}`,
+              );
+            }
+            return discriminatorIdFields[0];
+          };
+
+          const getWhereUniqueFunction = (): {
+            func: TypescriptCodeExpression;
+            needsExistingItem: boolean;
+          } => {
+            const returnType = TypescriptCodeUtils.createExpression(
+              `Prisma.${upperCaseFirst(
+                foreignModel.name,
+              )}WhereUniqueInput | undefined`,
+              "import { Prisma } from '@prisma/client'",
+            );
+
+            // convert primary keys to where unique
+            const foreignIds = foreignModel.idFields ?? [];
+            const primaryKeyFields = foreignIds.map(
+              (
+                idField,
+              ): {
+                name: string;
+                value: string;
+                requiredInputField?: string; // we may require some input fields to be specified
+                usesInput?: boolean;
+                needsExistingItem?: boolean;
+              } => {
+                // check if ID field is in relation
+                const idRelationIdx = foreignRelation.fields?.findIndex(
+                  (relationField) => relationField === idField,
+                );
+                if (idRelationIdx != null && idRelationIdx !== -1) {
+                  const localField =
+                    foreignRelation.references?.[idRelationIdx];
+                  if (!localField) {
+                    throw new Error(
+                      `Could not find corresponding relation field for ${idField}`,
+                    );
+                  }
+                  // short-circuit case for updates
+                  if (operationType === 'update' && localId === localField) {
+                    return { name: idField, value: localId };
+                  }
+                  return {
+                    name: idField,
+                    value: `existingItem.${localField}`,
+                    needsExistingItem: true,
+                  };
+                }
+                // check if ID field is in input
+                const embeddedField = embeddedFields.find(
+                  (f) => f.name === idField,
+                );
+                if (embeddedField) {
+                  return {
+                    name: idField,
+                    value: `input.${idField}`,
+                    usesInput: true,
+                    requiredInputField:
+                      embeddedField.isOptional || embeddedField.hasDefault
+                        ? idField
+                        : undefined,
+                  };
+                }
+                throw new Error(
+                  `Could not find ID field ${idField} in either embedded object or relation for relation ${localRelationName} of ${modelName}`,
+                );
+              },
+            );
+
+            const primaryKeyExpression =
+              TypescriptCodeUtils.mergeExpressionsAsObject(
+                R.fromPairs(
+                  primaryKeyFields.map((keyField): [string, string] => [
+                    keyField.name,
+                    keyField.value,
+                  ]),
+                ),
+                { wrapWithParenthesis: true },
+              );
+
+            const value =
+              primaryKeyFields.length > 1
+                ? TypescriptCodeUtils.mergeExpressionsAsObject(
+                    {
+                      [foreignIds.join('_')]: primaryKeyExpression,
+                    },
+                    { wrapWithParenthesis: true },
+                  )
+                : primaryKeyExpression;
+
+            const usesInput = primaryKeyFields.some((k) => k.usesInput);
+            const needsExistingItem = primaryKeyFields.some(
+              (k) => k.needsExistingItem,
+            );
+
+            const requirementsList = [
+              ...(needsExistingItem && operationType === 'upsert'
+                ? ['!existingItem']
+                : []),
+              ...primaryKeyFields
+                .map(
+                  (f) =>
+                    f.requiredInputField && `!input.${f.requiredInputField}`,
+                )
+                .filter(notEmpty),
+            ];
+
+            return {
+              func: TypescriptCodeUtils.formatExpression(
+                `(INPUT): RETURN_TYPE => VALUE`,
+                {
+                  INPUT: usesInput ? 'input' : '',
+                  RETURN_TYPE: returnType,
+                  PREFIX: '',
+                  VALUE:
+                    requirementsList.length > 0
+                      ? value.prepend(
+                          `${requirementsList.join(' || ')} ? undefined : `,
+                        )
+                      : value,
                 },
               ),
+              needsExistingItem,
+            };
+          };
+
+          const embeddedCallArgs = ((): {
+            args: TypescriptCodeExpression;
+            needsExistingItem?: boolean;
+          } => {
+            if (operationType === 'create') {
+              return {
+                args: TypescriptCodeUtils.mergeExpressionsAsObject({
+                  input: inputName,
+                  transform: upsertFunction?.name,
+                  context: upsertFunction && 'context',
+                }),
+              };
             }
-          : {};
+            const whereUniqueResult = getWhereUniqueFunction();
 
-        return {
-          args: TypescriptCodeUtils.mergeExpressionsAsObject({
-            input: inputName,
-            ...transformAdditions,
-            ...oneToManyAdditions,
-            ...oneToOneAdditions,
-          }),
-          needsExistingItem:
-            whereUniqueResult.needsExistingItem ||
-            (operationType === 'upsert' && !!upsertFunction),
-        };
-      })();
+            const parentId =
+              operationType === 'update' ? localId : `existingItem.${localId}`;
 
-      const outputName = `${localRelationName}Output`;
+            const transformAdditions = upsertFunction
+              ? {
+                  transform: upsertFunction.name,
+                  context: 'context',
+                  getWhereUnique: whereUniqueResult.func,
+                  parentId,
+                }
+              : {};
 
-      const transformer = TypescriptCodeUtils.formatBlock(
-        `const OUTPUT_NAME = await EMBEDDED_CALL(ARGS)`,
-        {
-          OUTPUT_NAME: outputName,
-          EMBEDDED_CALL: embeddedCallExpression,
-          ARGS: embeddedCallArgs.args,
-        },
-        { headerBlocks: upsertFunction ? [upsertFunction.func] : [] },
-      );
+            const oneToManyAdditions = isOneToOne
+              ? {}
+              : {
+                  idField: quot(getDiscriminatorIdField()),
+                  getWhereUnique: whereUniqueResult.func,
+                };
 
-      return {
-        inputFields: [inputField],
-        outputFields: [
-          {
-            name: localRelationName,
-            pipeOutputName: outputName,
-            transformer,
-            createExpression: `{ create: ${outputName}.data?.create }`,
-          },
-        ],
-        needsExistingItem: embeddedCallArgs.needsExistingItem,
-        isAsync: true,
-        needsContext: !!upsertFunction,
-      };
-    }
+            const parentField = getForeignRelationParentField();
 
-    prismaCrudServiceSetup.addTransformer(localRelationName, {
-      buildTransformer,
+            const oneToOneAdditions = isOneToOne
+              ? {
+                  deleteRelation: TypescriptCodeUtils.formatExpression(
+                    '() => PRISMA_MODEL.deleteMany({ where: WHERE_ARGS })',
+                    {
+                      PRISMA_MODEL: prismaOutput.getPrismaModelExpression(
+                        foreignModel.name,
+                      ),
+                      WHERE_ARGS: TypescriptCodeUtils.mergeExpressionsAsObject({
+                        [parentField]: parentId,
+                      }),
+                    },
+                  ),
+                }
+              : {};
+
+            return {
+              args: TypescriptCodeUtils.mergeExpressionsAsObject({
+                input: inputName,
+                ...transformAdditions,
+                ...oneToManyAdditions,
+                ...oneToOneAdditions,
+              }),
+              needsExistingItem:
+                whereUniqueResult.needsExistingItem ||
+                (operationType === 'upsert' && !!upsertFunction),
+            };
+          })();
+
+          const outputName = `${localRelationName}Output`;
+
+          const transformer = TypescriptCodeUtils.formatBlock(
+            `const OUTPUT_NAME = await EMBEDDED_CALL(ARGS)`,
+            {
+              OUTPUT_NAME: outputName,
+              EMBEDDED_CALL: embeddedCallExpression,
+              ARGS: embeddedCallArgs.args,
+            },
+            { headerBlocks: upsertFunction ? [upsertFunction.func] : [] },
+          );
+
+          return {
+            inputFields: [inputField],
+            outputFields: [
+              {
+                name: localRelationName,
+                pipeOutputName: outputName,
+                transformer,
+                createExpression: `{ create: ${outputName}.data?.create }`,
+              },
+            ],
+            needsExistingItem: embeddedCallArgs.needsExistingItem,
+            isAsync: true,
+            needsContext: !!upsertFunction,
+          };
+        }
+
+        prismaCrudServiceSetup.addTransformer(localRelationName, {
+          buildTransformer,
+        });
+
+        return {};
+      },
     });
-
-    return {};
   },
 });
 

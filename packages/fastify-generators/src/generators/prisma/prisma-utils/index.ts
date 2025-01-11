@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -61,58 +61,60 @@ export const prismaUtilsProvider =
 /**
  * Generator for Typescript utility functions like notEmpty
  */
-const PrismaUtilsGenerator = createGeneratorWithChildren({
+const PrismaUtilsGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    typescript: typescriptProvider,
-    serviceContext: serviceContextProvider,
-    prismaOutput: prismaOutputProvider,
-    tsUtils: tsUtilsProvider,
-  },
-  exports: {
-    prismaUtils: prismaUtilsProvider.export(projectScope),
-  },
-  createGenerator(
-    descriptor,
-    { typescript, serviceContext, prismaOutput, tsUtils },
-  ) {
-    return {
-      getProviders: () => ({
-        prismaUtils: {
-          getImportMap: () =>
-            Object.fromEntries(
-              Object.entries(UTIL_CONFIG_MAP).map(([key, config]) => [
-                `%prisma-utils/${key}`,
-                {
-                  path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
-                  allowedImports: config.exports,
-                },
-              ]),
-            ),
-        },
-      }),
-      build: async (builder) => {
-        // TODO: Dynamically add but it won't work until we have build function running after all dependencies
-
-        // Copy all the util files that were used
-        const templateFiles = Object.keys(UTIL_CONFIG_MAP).map(
-          (key) => UTIL_CONFIG_MAP[key].file,
-        );
-
-        await Promise.all(
-          templateFiles.map((file) =>
-            builder.apply(
-              typescript.createCopyAction({
-                source: file,
-                destination: `src/utils/${file}`,
-                importMappers: [serviceContext, prismaOutput, tsUtils],
-              }),
-            ),
-          ),
-        );
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        typescript: typescriptProvider,
+        serviceContext: serviceContextProvider,
+        prismaOutput: prismaOutputProvider,
+        tsUtils: tsUtilsProvider,
       },
-    };
+      exports: {
+        prismaUtils: prismaUtilsProvider.export(projectScope),
+      },
+      run({ typescript, serviceContext, prismaOutput, tsUtils }) {
+        return {
+          getProviders: () => ({
+            prismaUtils: {
+              getImportMap: () =>
+                Object.fromEntries(
+                  Object.entries(UTIL_CONFIG_MAP).map(([key, config]) => [
+                    `%prisma-utils/${key}`,
+                    {
+                      path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
+                      allowedImports: config.exports,
+                    },
+                  ]),
+                ),
+            },
+          }),
+          build: async (builder) => {
+            // TODO: Dynamically add but it won't work until we have build function running after all dependencies
+
+            // Copy all the util files that were used
+            const templateFiles = Object.keys(UTIL_CONFIG_MAP).map(
+              (key) => UTIL_CONFIG_MAP[key].file,
+            );
+
+            await Promise.all(
+              templateFiles.map((file) =>
+                builder.apply(
+                  typescript.createCopyAction({
+                    source: file,
+                    destination: `src/utils/${file}`,
+                    importMappers: [serviceContext, prismaOutput, tsUtils],
+                  }),
+                ),
+              ),
+            );
+          },
+        };
+      },
+    });
   },
 });
 
