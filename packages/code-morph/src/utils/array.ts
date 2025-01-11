@@ -1,3 +1,10 @@
+/**
+ * Filters an array asynchronously.
+ *
+ * @param array - The array to filter.
+ * @param predicate - The predicate to filter the array.
+ * @returns The filtered array.
+ */
 export async function asyncFilter<T>(
   array: T[],
   predicate: (value: T) => Promise<boolean>,

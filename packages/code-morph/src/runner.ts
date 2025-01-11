@@ -8,10 +8,24 @@ import type { TypescriptMorpher } from './types.js';
 import { TS_MORPH_MANIPULATION_SETTINGS } from './constants/ts-morph-settings.js';
 import { findNearestAncestorFile } from './utils/find-nearest-ancestor-file.js';
 
-interface MorphContext {
+/**
+ * The context for a morpher run.
+ */
+export interface MorphContext {
+  /**
+   * Whether to run the morpher in dry run mode.
+   */
   dryRun?: boolean;
 }
 
+/**
+ * Runs a morpher on a given path.
+ *
+ * @param path - The path to run the morpher on.
+ * @param morpher - The morpher to run.
+ * @param options - The options to pass to the morpher.
+ * @param context - The context to pass to the morpher.
+ */
 export async function runMorpher(
   path: string,
   morpher: TypescriptMorpher,
