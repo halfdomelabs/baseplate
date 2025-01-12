@@ -1,9 +1,9 @@
+import { globby } from 'globby';
+import fsAdapter from 'node:fs';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { readDirectoryRecursive } from '@src/utils/fs.js';
-
-import { createBuilderActionCreator } from '../core/index.js';
+import { createBuilderActionCreator } from '@src/output/builder-action.js';
 
 interface Options {
   destination: string;
@@ -22,7 +22,11 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
     );
 
     // read all files in directory
-    const files = await readDirectoryRecursive(templatePath);
+    const files = await globby(path.join(templatePath, '**/*'), {
+      absolute: true,
+      onlyFiles: true,
+      fs: fsAdapter,
+    });
 
     await Promise.all(
       files.map(async (file) => {
