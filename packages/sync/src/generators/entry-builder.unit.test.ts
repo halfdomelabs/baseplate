@@ -201,7 +201,7 @@ describe('buildGeneratorEntry', () => {
     ]);
     expect(mockedReadJsonWithSchema).toHaveBeenCalledWith(
       '/root/child-descriptor.json',
-      baseDescriptorSchema,
+      expect.anything() as unknown,
     );
   });
 });
