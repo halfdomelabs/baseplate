@@ -234,7 +234,7 @@ const PrettierGenerator = createGeneratorWithTasks({
               });
             };
 
-            builder.addFormatter({
+            builder.addGlobalFormatter({
               name: 'prettier',
               format: formatFunction,
               fileExtensions: [...PARSEABLE_EXTENSIONS],

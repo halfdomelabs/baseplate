@@ -4,4 +4,4 @@
 /dist
 /lib
 /node_modules
-src/merge/tests
+src/output/merge-algorithms/tests

@@ -5,22 +5,26 @@ import * as R from 'ramda';
 import type {
   BaseGeneratorDescriptor,
   GeneratorConfig,
-  GeneratorOutputBuilder,
   InferDependencyProviderMap,
   InferExportProviderMap,
-  Provider,
   ProviderDependencyMap,
   ProviderExportMap,
-  ProviderExportScope,
-} from '../core/index.js';
+} from '@src/generators/generators.js';
+import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
+import type { Provider, ProviderExportScope } from '@src/providers/index.js';
+
+import { baseDescriptorSchema } from '@src/generators/generators.js';
+
 import type {
   ChildGeneratorConfig,
   DescriptorWithChildren,
 } from './create-generator-types.js';
 
-import { baseDescriptorSchema } from '../core/index.js';
 import { notEmpty } from './arrays.js';
 
+/**
+ * The output of a simple generator task.
+ */
 export interface SimpleGeneratorTaskOutput<TaskOutput = void> {
   name: string;
   getOutput: () => TaskOutput;
@@ -31,7 +35,9 @@ interface SimpleGeneratorTaskInstance<
   TaskOutput = unknown,
 > {
   getProviders?: () => ExportMap;
-  build?: (builder: GeneratorOutputBuilder) => Promise<TaskOutput> | TaskOutput;
+  build?: (
+    builder: GeneratorTaskOutputBuilder,
+  ) => Promise<TaskOutput> | TaskOutput;
 }
 
 type TaskOutputDependencyMap<T = Record<string, unknown>> = {
