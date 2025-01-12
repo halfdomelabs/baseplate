@@ -8,7 +8,6 @@ import type { GeneratorConfigMap } from './loader.js';
 import { createProviderType } from '../providers/index.js';
 import { buildGeneratorEntry, getGeneratorId } from './entry-builder.js';
 import {
-  baseDescriptorSchema,
   type ProviderDependencyMap,
   type ProviderExportMap,
 } from './generators.js';
