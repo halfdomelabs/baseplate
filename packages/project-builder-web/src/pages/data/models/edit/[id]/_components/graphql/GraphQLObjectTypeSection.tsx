@@ -255,32 +255,6 @@ export function GraphQLObjectTypeSection({
             {foreignRelations.length > 0 ? (
               <tr>
                 <th>
-                  {/* {showCollapsibleForeignRelations ? (
-                    <button
-                      onClick={() => {
-                        setShouldCollapseForeignRelations(
-                          !shouldCollapseForeignRelations,
-                        );
-                      }}
-                      className="flex items-center gap-4"
-                      title={
-                        shouldCollapseForeignRelations
-                          ? 'Expand foreign relations'
-                          : 'Collapse foreign relations'
-                      }
-                      type="button"
-                    >
-                      Exposed Foreign Relations ({foreignRelationsValue.length}/
-                      {foreignRelations.length})
-                      {shouldCollapseForeignRelations ? (
-                        <MdExpandLess />
-                      ) : (
-                        <MdExpandMore />
-                      )}
-                    </button>
-                  ) : (
-                    'Exposed Foreign Relations'
-                  )} */}
                   <div className="flex items-center gap-1">
                     <Label>Exposed Foreign Relations</Label>
                     <Badge
