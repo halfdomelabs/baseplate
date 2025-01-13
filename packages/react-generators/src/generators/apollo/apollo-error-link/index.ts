@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactErrorProvider } from '../../core/react-error/index.js';
@@ -10,19 +10,22 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-const ApolloErrorLinkGenerator = createGeneratorWithChildren({
+const ApolloErrorLinkGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    reactApolloSetup: reactApolloSetupProvider,
-    reactError: reactErrorProvider,
-    reactLogger: reactLoggerProvider,
-  },
-  createGenerator(descriptor, { reactApolloSetup, reactError, reactLogger }) {
-    reactApolloSetup.addLink({
-      name: 'errorLink',
-      bodyExpression: TypescriptCodeUtils.createBlock(
-        `const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactApolloSetup: reactApolloSetupProvider,
+        reactError: reactErrorProvider,
+        reactLogger: reactLoggerProvider,
+      },
+      run({ reactApolloSetup, reactError, reactLogger }) {
+        reactApolloSetup.addLink({
+          name: 'errorLink',
+          bodyExpression: TypescriptCodeUtils.createBlock(
+            `const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
           // log query/subscription errors but not mutations since it should be handled by caller
           const definition = getMainDefinition(operation.query);
           const shouldLogErrors =
@@ -60,32 +63,34 @@ const ApolloErrorLinkGenerator = createGeneratorWithChildren({
             }
           }
         });`,
-        [
-          'import { logError } from "%react-error/logger"',
-          'import { logger } from "%react-logger"',
-          'import { onError } from "@apollo/client/link/error"',
-          'import { getMainDefinition } from "@apollo/client/utilities"',
-          'import { GraphQLError, Kind } from "graphql";',
-          'import { ServerError } from "@apollo/client/link/utils";',
-        ],
-        {
-          importMappers: [reactError, reactLogger],
-          headerBlocks: [
-            TypescriptCodeUtils.createBlock(
-              `export interface ErrorExtensions {
+            [
+              'import { logError } from "%react-error/logger"',
+              'import { logger } from "%react-logger"',
+              'import { onError } from "@apollo/client/link/error"',
+              'import { getMainDefinition } from "@apollo/client/utilities"',
+              'import { GraphQLError, Kind } from "graphql";',
+              'import { ServerError } from "@apollo/client/link/utils";',
+            ],
+            {
+              importMappers: [reactError, reactLogger],
+              headerBlocks: [
+                TypescriptCodeUtils.createBlock(
+                  `export interface ErrorExtensions {
   code?: string;
   statusCode?: number;
   extraData?: Record<string, unknown>;
   reqId?: string;
 }`,
-              undefined,
-              { headerKey: 'ErrorExtensions' },
-            ),
-          ],
-        },
-      ),
+                  undefined,
+                  { headerKey: 'ErrorExtensions' },
+                ),
+              ],
+            },
+          ),
+        });
+        return {};
+      },
     });
-    return {};
   },
 });
 

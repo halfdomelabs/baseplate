@@ -1,6 +1,6 @@
 import { projectScope } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -14,7 +14,7 @@ export type AuthPagesProvider = unknown;
 export const authPagesProvider =
   createProviderType<AuthPagesProvider>('auth-pages');
 
-const AuthPagesGenerator = createGeneratorWithChildren({
+const AuthPagesGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({
     layout: {
@@ -30,16 +30,21 @@ const AuthPagesGenerator = createGeneratorWithChildren({
       },
     },
   }),
-  dependencies: {},
-  exports: {
-    authPages: authPagesProvider.export(projectScope),
-  },
-  createGenerator() {
-    return {
-      getProviders: () => ({
-        authPages: {},
-      }),
-    };
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {},
+      exports: {
+        authPages: authPagesProvider.export(projectScope),
+      },
+      run() {
+        return {
+          getProviders: () => ({
+            authPages: {},
+          }),
+        };
+      },
+    });
   },
 });
 

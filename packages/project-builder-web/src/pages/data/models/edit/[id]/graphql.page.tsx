@@ -13,7 +13,7 @@ import { GraphQLQueriesSection } from './_components/graphql/GraphQLQueriesSecti
 
 function ModelEditGraphQLPage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
-    schema: modelBaseSchema.omit({ name: true, feature: true }),
+    schema: modelBaseSchema.omit({ name: true, featureRef: true }),
   });
 
   useBlockUnsavedChangesNavigate(form.formState, {

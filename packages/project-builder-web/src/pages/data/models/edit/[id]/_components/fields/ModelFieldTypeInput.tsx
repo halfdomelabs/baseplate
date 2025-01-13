@@ -56,9 +56,9 @@ export function ModelFieldTypeInput({
 
   const handleChange = (value: string | null): void => {
     if (value?.startsWith('enum-')) {
-      const enumName = value.replace('enum-', '');
+      const enumRef = value.replace('enum-', '');
       onFieldOptionsChange({
-        enumType: enumName,
+        enumRef,
       });
       onTypeChange('enum');
     } else {
@@ -66,14 +66,12 @@ export function ModelFieldTypeInput({
     }
   };
 
-  const enumType = fieldOptions?.enumType;
+  const enumRef = fieldOptions?.enumRef;
 
   return (
     <div className="space-y-2">
       <ComboboxField
-        value={
-          typeValue === 'enum' && enumType ? `enum-${enumType}` : typeValue
-        }
+        value={typeValue === 'enum' && enumRef ? `enum-${enumRef}` : typeValue}
         onChange={handleChange}
         options={typeOptions}
         renderItemLabel={(option) => (

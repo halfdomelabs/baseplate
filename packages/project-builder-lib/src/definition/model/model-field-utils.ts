@@ -37,10 +37,10 @@ function getRelationLocalFields(
   relation: ModelRelationFieldConfig,
 ): ModelScalarFieldConfig[] {
   return relation.references.map((r) => {
-    const field = model.model.fields.find((f) => f.id === r.local);
+    const field = model.model.fields.find((f) => f.id === r.localRef);
     if (!field) {
       throw new Error(
-        `Could not find field ${r.local} from relation ${relation.name} in model ${model.name}`,
+        `Could not find field ${r.localRef} from relation ${relation.name} in model ${model.name}`,
       );
     }
     return field;

@@ -15,7 +15,7 @@ import { adminCrudEmbeddedFormEntityType } from './crud-form/types.js';
 // Table Columns
 export const adminCrudForeignDisplaySchema = z.object({
   type: z.literal('foreign'),
-  localRelationName: zRef(z.string(), {
+  localRelationRef: zRef(z.string(), {
     type: modelLocalRelationEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
@@ -30,7 +30,7 @@ export type AdminCrudForeignDisplayConfig = z.infer<
 
 export const adminCrudTextDisplaySchema = z.object({
   type: z.literal('text'),
-  modelField: zRef(z.string(), {
+  modelFieldRef: zRef(z.string(), {
     type: modelScalarFieldEntityType,
     onDelete: 'RESTRICT',
     parentPath: { context: 'model' },
@@ -67,7 +67,7 @@ export const adminCrudTableColumnSchema = z.object({
 export const adminCrudEmbeddedObjectSchema = z.object({
   id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
   name: z.string().min(1),
-  modelName: zRef(z.string().min(1), {
+  modelRef: zRef(z.string().min(1), {
     type: modelEntityType,
     onDelete: 'RESTRICT',
   }),
@@ -81,7 +81,7 @@ export const adminCrudEmbeddedObjectSchema = z.object({
 export const adminCrudEmbeddedListSchema = z.object({
   id: z.string().default(adminCrudEmbeddedFormEntityType.generateNewId()),
   name: z.string().min(1),
-  modelName: zRef(z.string().min(1), {
+  modelRef: zRef(z.string().min(1), {
     type: modelEntityType,
     onDelete: 'RESTRICT',
   }),
@@ -107,7 +107,7 @@ export const adminCrudEmbeddedFormSchema = zRefBuilder(
       type: adminCrudEmbeddedFormEntityType,
       parentPath: { context: 'admin-section' },
     });
-    builder.addPathToContext('modelName', modelEntityType, 'model');
+    builder.addPathToContext('modelRef', modelEntityType, 'model');
   },
 );
 
@@ -121,7 +121,7 @@ export const adminCrudSectionSchema = zRefBuilder(
   z.object({
     ...baseAdminSectionValidators,
     type: z.literal('crud'),
-    modelName: zRef(z.string().min(1), {
+    modelRef: zRef(z.string().min(1), {
       type: modelEntityType,
       onDelete: 'RESTRICT',
     }),
@@ -135,7 +135,7 @@ export const adminCrudSectionSchema = zRefBuilder(
     embeddedForms: z.array(adminCrudEmbeddedFormSchema).optional(),
   }),
   (builder) => {
-    builder.addPathToContext('modelName', modelEntityType, 'model');
+    builder.addPathToContext('modelRef', modelEntityType, 'model');
   },
 );
 

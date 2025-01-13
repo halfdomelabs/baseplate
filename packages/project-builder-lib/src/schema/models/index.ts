@@ -39,23 +39,23 @@ export const modelScalarFieldSchema = zEnt(
           updatedAt: z.boolean().optional(),
           defaultToNow: z.boolean().optional(),
           // enum options
-          enumType: zRef(z.string().optional(), {
+          enumRef: zRef(z.string().optional(), {
             type: modelEnumEntityType,
             onDelete: 'RESTRICT',
           }),
-          defaultEnumValue: z.string().optional(),
+          defaultEnumValueRef: z.string().optional(),
         })
         .transform((val) => ({
           ...val,
-          ...(val.enumType ? {} : { defaultEnumValue: undefined }),
+          ...(val.enumRef ? {} : { defaultEnumValueRef: undefined }),
         }))
         .optional(),
       (builder) => {
         builder.addReference({
           type: modelEnumValueEntityType,
           onDelete: 'RESTRICT',
-          path: 'defaultEnumValue',
-          parentPath: 'enumType',
+          path: 'defaultEnumValueRef',
+          parentPath: 'enumRef',
         });
       },
     ),
@@ -81,12 +81,12 @@ export const modelScalarFieldSchema = zEnt(
     }
   })
   .transform((value) => {
-    if (value.type !== 'enum' && value.options?.enumType) {
+    if (value.type !== 'enum' && value.options?.enumRef) {
       return {
         ...value,
         options: {
           ...value.options,
-          enumType: undefined,
+          enumRef: undefined,
         },
       };
     }
@@ -112,19 +112,19 @@ export const modelRelationFieldSchema = zRefBuilder(
     name: VALIDATORS.CAMEL_CASE_STRING,
     references: z.array(
       z.object({
-        local: zRef(z.string(), {
+        localRef: zRef(z.string(), {
           type: modelScalarFieldEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'model' },
         }),
-        foreign: zRef(z.string(), {
+        foreignRef: zRef(z.string(), {
           type: modelScalarFieldEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'foreignModel' },
         }),
       }),
     ),
-    modelName: z.string().min(1),
+    modelRef: z.string().min(1),
     foreignRelationName: VALIDATORS.CAMEL_CASE_STRING,
     onDelete: z.enum(REFERENTIAL_ACTIONS).default('Cascade'),
     onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
@@ -134,7 +134,7 @@ export const modelRelationFieldSchema = zRefBuilder(
       type: modelEntityType,
       onDelete: 'RESTRICT',
       addContext: 'foreignModel',
-      path: 'modelName',
+      path: 'modelRef',
     });
     builder.addEntity({
       type: modelLocalRelationEntityType,
@@ -145,7 +145,7 @@ export const modelRelationFieldSchema = zRefBuilder(
       type: modelForeignRelationEntityType,
       idPath: 'foreignId',
       namePath: 'foreignRelationName',
-      parentPath: 'modelName',
+      parentPath: 'modelRef',
       stripIdWhenSerializing: true,
     });
   },
@@ -230,7 +230,7 @@ export type ModelServiceConfig = z.infer<typeof modelServiceSchema>;
 export const modelBaseSchema = z.object({
   id: z.string().default(() => modelEntityType.generateNewId()),
   name: VALIDATORS.PASCAL_CASE_STRING,
-  feature: zRef(z.string().min(1), {
+  featureRef: zRef(z.string().min(1), {
     type: featureEntityType,
     onDelete: 'RESTRICT',
   }),

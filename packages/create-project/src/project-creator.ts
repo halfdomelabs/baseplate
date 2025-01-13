@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import type { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
 
 import chalk from 'chalk';
@@ -116,8 +115,8 @@ export async function generateBaseplateProject({
 
     const relativePath = path.relative(process.cwd(), directory);
 
-    console.log('');
-    console.log(
+    console.info('');
+    console.info(
       `
 🎉 Congratulations! Your Baseplate project has been created. To get started, run the following command${
         relativePath === '' ? '' : 's'

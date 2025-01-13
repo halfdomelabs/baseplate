@@ -1,5 +1,5 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactApolloProvider } from '@src/generators/apollo/react-apollo/index.js';
@@ -20,15 +20,11 @@ const descriptorSchema = z.object({
   nullLabel: z.string().optional(),
 });
 
-const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
+const AdminCrudForeignInputGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    adminCrudInputContainer: adminCrudInputContainerProvider,
-    reactComponents: reactComponentsProvider,
-    reactApollo: reactApolloProvider,
-  },
-  createGenerator(
+  buildTasks(
+    taskBuilder,
     {
       label,
       localRelationName,
@@ -40,67 +36,76 @@ const AdminCrudForeignInputGenerator = createGeneratorWithChildren({
       defaultLabel,
       nullLabel,
     },
-    { adminCrudInputContainer, reactComponents, reactApollo },
   ) {
-    const optionsName = `${localRelationName}Options`;
-    const modelName = adminCrudInputContainer.getModelName();
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        adminCrudInputContainer: adminCrudInputContainerProvider,
+        reactComponents: reactComponentsProvider,
+        reactApollo: reactApolloProvider,
+      },
+      run({ adminCrudInputContainer, reactComponents, reactApollo }) {
+        const optionsName = `${localRelationName}Options`;
+        const modelName = adminCrudInputContainer.getModelName();
 
-    const { dataDependency, propName } = createForeignDataDependency({
-      foreignModelName,
-      modelName,
-      reactApollo,
-      labelExpression,
-      valueExpression,
-    });
+        const { dataDependency, propName } = createForeignDataDependency({
+          foreignModelName,
+          modelName,
+          reactApollo,
+          labelExpression,
+          valueExpression,
+        });
 
-    const optionsCreator = TypescriptCodeUtils.createExpression(
-      `${propName}.map((option) => ({
+        const optionsCreator = TypescriptCodeUtils.createExpression(
+          `${propName}.map((option) => ({
         label: option.${labelExpression}${
           defaultLabel ? ` ?? ${defaultLabel}` : ''
         },
         value: option.${valueExpression},
       }))`,
-    );
+        );
 
-    adminCrudInputContainer.addInput({
-      content: TypescriptCodeUtils.createExpression(
-        `<ReactSelectInput.LabelledController
+        adminCrudInputContainer.addInput({
+          content: TypescriptCodeUtils.createExpression(
+            `<ReactSelectInput.LabelledController
           label="${label}"
           control={control}
           name="${localField}"
           options={${optionsName}}
           ${adminCrudInputContainer.isInModal() ? 'fixedPosition' : ''}
         />`,
-        'import { ReactSelectInput } from "%react-components"',
-        { importMappers: [reactComponents] },
-      ),
-      graphQLFields: [{ name: localField }],
-      validation: [
-        {
-          key: localField,
-          expression: TypescriptCodeUtils.createExpression(
-            `z.string().uuid()${isOptional ? '.nullish()' : ''}`,
+            'import { ReactSelectInput } from "%react-components"',
+            { importMappers: [reactComponents] },
           ),
-        },
-      ],
-      dataDependencies: [dataDependency],
-      header: TypescriptCodeUtils.formatBlock(
-        `
+          graphQLFields: [{ name: localField }],
+          validation: [
+            {
+              key: localField,
+              expression: TypescriptCodeUtils.createExpression(
+                `z.string().uuid()${isOptional ? '.nullish()' : ''}`,
+              ),
+            },
+          ],
+          dataDependencies: [dataDependency],
+          header: TypescriptCodeUtils.formatBlock(
+            `
         const ${optionsName} = OPTIONS;`,
-        {
-          OPTIONS: nullLabel
-            ? optionsCreator.wrap(
-                (contents) =>
-                  `[
+            {
+              OPTIONS: nullLabel
+                ? optionsCreator.wrap(
+                    (contents) =>
+                      `[
               { label: ${quot(nullLabel)}, value: null },
               ...${contents}
             ]`,
-              )
-            : optionsCreator,
-        },
-      ),
+                  )
+                : optionsCreator,
+            },
+          ),
+        });
+        return {};
+      },
     });
-    return {};
   },
 });
 

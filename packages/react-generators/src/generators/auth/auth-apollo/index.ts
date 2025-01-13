@@ -3,7 +3,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -20,81 +20,84 @@ export type AuthApolloProvider = unknown;
 export const authApolloProvider =
   createProviderType<AuthApolloProvider>('auth-apollo');
 
-const AuthApolloGenerator = createGeneratorWithChildren({
+const AuthApolloGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    reactApolloSetup: reactApolloSetupProvider.dependency(),
-    authService: authServiceProvider,
-  },
-  exports: {
-    authApollo: authApolloProvider.export(projectScope),
-  },
-  createGenerator(descriptor, { reactApolloSetup, authService }) {
-    return {
-      getProviders: () => ({
-        authApollo: {},
-      }),
-      build: async (builder) => {
-        const linkTemplate = await builder.readTemplate('auth-link.ts');
-        const authLink = TypescriptCodeUtils.extractTemplateSnippet(
-          linkTemplate,
-          'AUTH_LINK',
-        );
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactApolloSetup: reactApolloSetupProvider.dependency(),
+        authService: authServiceProvider,
+      },
+      exports: {
+        authApollo: authApolloProvider.export(projectScope),
+      },
+      run({ reactApolloSetup, authService }) {
+        return {
+          getProviders: () => ({
+            authApollo: {},
+          }),
+          build: async (builder) => {
+            const linkTemplate = await builder.readTemplate('auth-link.ts');
+            const authLink = TypescriptCodeUtils.extractTemplateSnippet(
+              linkTemplate,
+              'AUTH_LINK',
+            );
 
-        reactApolloSetup.addLink({
-          name: 'authLink',
-          httpOnly: true,
-          bodyExpression: TypescriptCodeUtils.createBlock(
-            authLink,
-            [
-              'import { setContext } from "@apollo/client/link/context"',
-              'import { authService } from "%auth-service"',
-            ],
-            { importMappers: [authService] },
-          ),
-          dependencies: [['refreshTokenLink', 'authLink']],
-        });
+            reactApolloSetup.addLink({
+              name: 'authLink',
+              httpOnly: true,
+              bodyExpression: TypescriptCodeUtils.createBlock(
+                authLink,
+                [
+                  'import { setContext } from "@apollo/client/link/context"',
+                  'import { authService } from "%auth-service"',
+                ],
+                { importMappers: [authService] },
+              ),
+              dependencies: [['refreshTokenLink', 'authLink']],
+            });
 
-        const refreshTokenLink = TypescriptCodeUtils.extractTemplateSnippet(
-          linkTemplate,
-          'REFRESH_TOKEN_LINK',
-        );
+            const refreshTokenLink = TypescriptCodeUtils.extractTemplateSnippet(
+              linkTemplate,
+              'REFRESH_TOKEN_LINK',
+            );
 
-        reactApolloSetup.addLink({
-          name: 'refreshTokenLink',
-          httpOnly: true,
-          bodyExpression: TypescriptCodeUtils.createBlock(
-            refreshTokenLink,
-            [
-              'import { onError } from "@apollo/client/link/error";',
-              'import { authService } from "%auth-service"',
-              'import { ServerError } from "@apollo/client/link/utils";',
-            ],
-            { importMappers: [authService] },
-          ),
-          dependencies: [['errorLink', 'refreshTokenLink']],
-        });
+            reactApolloSetup.addLink({
+              name: 'refreshTokenLink',
+              httpOnly: true,
+              bodyExpression: TypescriptCodeUtils.createBlock(
+                refreshTokenLink,
+                [
+                  'import { onError } from "@apollo/client/link/error";',
+                  'import { authService } from "%auth-service"',
+                  'import { ServerError } from "@apollo/client/link/utils";',
+                ],
+                { importMappers: [authService] },
+              ),
+              dependencies: [['errorLink', 'refreshTokenLink']],
+            });
 
-        reactApolloSetup.addWebsocketOption(
-          'on',
-          TypescriptCodeUtils.createExpression(
-            `{
+            reactApolloSetup.addWebsocketOption(
+              'on',
+              TypescriptCodeUtils.createExpression(
+                `{
               closed: (e) => {
                 if (e instanceof CloseEvent && e.reason === 'token-expired') {
                   authService.invalidateAccessToken();
                 }
               },
           }`,
-            'import { authService } from "%auth-service"',
-            { importMappers: [authService] },
-          ),
-        );
+                'import { authService } from "%auth-service"',
+                { importMappers: [authService] },
+              ),
+            );
 
-        reactApolloSetup.addWebsocketOption(
-          'connectionParams',
-          TypescriptCodeUtils.createExpression(
-            `async () => {
+            reactApolloSetup.addWebsocketOption(
+              'connectionParams',
+              TypescriptCodeUtils.createExpression(
+                `async () => {
               const isAuthenticated = authService.isAuthenticated();
               if (!isAuthenticated) {
                 return {};
@@ -102,12 +105,14 @@ const AuthApolloGenerator = createGeneratorWithChildren({
               const accessToken = await authService.getAccessToken();
               return { authorization: \`Bearer \${accessToken}\` };
             }`,
-            'import { authService } from "%auth-service"',
-            { importMappers: [authService] },
-          ),
-        );
+                'import { authService } from "%auth-service"',
+                { importMappers: [authService] },
+              ),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

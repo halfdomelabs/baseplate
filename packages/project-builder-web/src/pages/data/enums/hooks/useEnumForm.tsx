@@ -35,7 +35,7 @@ function createNewEnum(): EnumConfig {
   return {
     id: modelEnumEntityType.generateNewId(),
     name: '',
-    feature: '',
+    featureRef: '',
     isExposed: false,
     values: [],
   };
@@ -111,10 +111,10 @@ export function useEnumForm({
 
           setConfigAndFixReferences((draftConfig) => {
             // create feature if a new feature exists
-            updatedDefinition.feature =
+            updatedDefinition.featureRef =
               FeatureUtils.ensureFeatureByNameRecursively(
                 draftConfig,
-                updatedDefinition.feature,
+                updatedDefinition.featureRef,
               );
             draftConfig.enums = _.sortBy(
               [

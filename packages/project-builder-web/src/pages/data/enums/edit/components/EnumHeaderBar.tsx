@@ -56,10 +56,10 @@ export function EnumHeaderBar({
             <MdEdit className="invisible size-4 group-hover:visible" />
           </button>
         </EnumInfoEditDialog>
-        {enumDefinition.feature && (
+        {enumDefinition.featureRef && (
           <div className="text-xs text-muted-foreground">
             {
-              FeatureUtils.getFeatureById(definition, enumDefinition.feature)
+              FeatureUtils.getFeatureById(definition, enumDefinition.featureRef)
                 ?.name
             }
           </div>

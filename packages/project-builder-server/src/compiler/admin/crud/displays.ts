@@ -16,9 +16,9 @@ function compileAdminCrudForeignDisplay(
 ): unknown {
   const model = builder.parsedProject.getModelById(modelId);
   const relation = model.model.relations?.find(
-    (r) => r.id === field.localRelationName,
+    (r) => r.id === field.localRelationRef,
   );
-  const localRelationName = builder.nameFromId(field.localRelationName);
+  const localRelationName = builder.nameFromId(field.localRelationRef);
 
   if (!relation) {
     throw new Error(
@@ -30,8 +30,8 @@ function compileAdminCrudForeignDisplay(
     throw new Error(`Only relations with a single reference are supported`);
   }
 
-  const localField = builder.nameFromId(relation.references[0].local);
-  const foreignModelName = builder.nameFromId(relation.modelName);
+  const localField = builder.nameFromId(relation.references[0].localRef);
+  const foreignModelName = builder.nameFromId(relation.modelRef);
   return {
     name: localRelationName,
     generator: '@halfdomelabs/react/admin/admin-crud-foreign-display',
@@ -49,10 +49,12 @@ function compileAdminCrudTextDisplay(
   modelId: string,
 ): unknown {
   const model = builder.parsedProject.getModelById(modelId);
-  const fieldConfig = model.model.fields.find((f) => f.id === field.modelField);
+  const fieldConfig = model.model.fields.find(
+    (f) => f.id === field.modelFieldRef,
+  );
   if (!fieldConfig) {
     throw new Error(
-      `Field ${field.modelField} cannot be found in ${model.name}`,
+      `Field ${field.modelFieldRef} cannot be found in ${model.name}`,
     );
   }
   return {

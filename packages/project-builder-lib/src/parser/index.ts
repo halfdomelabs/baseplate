@@ -76,33 +76,33 @@ function validateProjectDefinition(projectDefinition: ProjectDefinition): void {
   for (const model of models)
     if (model.model.relations) {
       for (const relation of model.model.relations) {
-        const foreignModel = models.find((m) => m.id === relation.modelName);
+        const foreignModel = models.find((m) => m.id === relation.modelRef);
         if (!foreignModel) {
           throw new Error(
-            `Model ${model.name} has a relation to ${relation.modelName} but that model does not exist`,
+            `Model ${model.name} has a relation to ${relation.modelRef} but that model does not exist`,
           );
         }
         // verify types of fields match
         for (const reference of relation.references) {
           const foreignField = foreignModel.model.fields.find(
-            (f) => f.id === reference.foreign,
+            (f) => f.id === reference.foreignRef,
           );
           if (!foreignField) {
             throw new Error(
-              `Could not find ${reference.foreign} on ${foreignModel.name}`,
+              `Could not find ${reference.foreignRef} on ${foreignModel.name}`,
             );
           }
           const localField = model.model.fields.find(
-            (f) => f.id === reference.local,
+            (f) => f.id === reference.localRef,
           );
           if (!localField) {
             throw new Error(
-              `Could not find ${reference.local} on ${model.name}`,
+              `Could not find ${reference.localRef} on ${model.name}`,
             );
           }
           if (foreignField.type !== localField.type) {
             throw new Error(
-              `Field types do not match for ${reference.local} on ${model.name} and ${reference.foreign} on ${foreignModel.name}`,
+              `Field types do not match for ${reference.localRef} on ${model.name} and ${reference.foreignRef} on ${foreignModel.name}`,
             );
           }
         }
@@ -167,7 +167,7 @@ export class ParsedProjectDefinition {
             }
 
             // merge model in
-            if (existingModel.feature !== model.feature) {
+            if (existingModel.featureRef !== model.featureRef) {
               throw new Error(
                 `Model ${model.name} has conflicting feature paths in ${plugin.name}`,
               );
@@ -195,19 +195,19 @@ export class ParsedProjectDefinition {
             if (existingModel.model.relations)
               for (const relation of existingModel.model.relations) {
                 relation.references = relation.references.map((reference) => {
-                  const foreignModel = this.getModelById(relation.modelName);
+                  const foreignModel = this.getModelById(relation.modelRef);
                   const foreignField =
                     foreignModel.model.fields.find(
-                      (f) => f.name === reference.foreign,
-                    )?.id ?? reference.foreign;
+                      (f) => f.name === reference.foreignRef,
+                    )?.id ?? reference.foreignRef;
                   const localField =
                     existingModel.model.fields.find(
-                      (f) => f.name === reference.local,
-                    )?.id ?? reference.local;
+                      (f) => f.name === reference.localRef,
+                    )?.id ?? reference.localRef;
                   return {
                     ...reference,
-                    foreign: foreignField,
-                    local: localField,
+                    foreignRef: foreignField,
+                    localRef: localField,
                   };
                 });
               }
@@ -241,7 +241,7 @@ export class ParsedProjectDefinition {
     return this.models.flatMap(
       (m) =>
         m.model.relations
-          ?.filter((relation) => relation.modelName === modelName)
+          ?.filter((relation) => relation.modelRef === modelName)
           .map((relation) => ({ relation, model: m })) ?? [],
     );
   }

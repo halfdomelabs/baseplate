@@ -41,7 +41,7 @@ export function generateMockModelRelationField(
     id: modelLocalRelationEntityType.generateNewId(),
     foreignId: modelForeignRelationEntityType.generateNewId(),
     name: 'mockRelation',
-    modelName: 'mockModel',
+    modelRef: 'mockModel',
     foreignRelationName: 'mockForeignRelation',
     references: [],
     onDelete: 'Cascade',
@@ -54,7 +54,7 @@ export function generateMockModel(model?: Partial<ModelConfig>): ModelConfig {
   return {
     id: modelEntityType.generateNewId(),
     name: 'mockModel',
-    feature: 'mockFeature',
+    featureRef: 'mockFeature',
     model: {
       primaryKeyFieldRefs: [model?.model?.fields[0]?.id ?? ''],
       fields: [],

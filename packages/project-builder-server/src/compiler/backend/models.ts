@@ -41,12 +41,12 @@ function buildScalarField(
       updatedAt: options.updatedAt,
       default: options.default,
       defaultEnumValue: builder.definitionContainer.nameFromId(
-        options.defaultEnumValue,
+        options.defaultEnumValueRef,
       ),
     }),
     optional: undefinedIfFalsy(field.isOptional),
     unique: undefinedIfFalsy(isUnique),
-    enumType: options.enumType && builder.nameFromId(options.enumType),
+    enumType: options.enumRef && builder.nameFromId(options.enumRef),
   };
 }
 
@@ -59,12 +59,12 @@ function buildRelationField(
   const {
     name,
     references,
-    modelName,
+    modelRef,
     foreignRelationName,
     onDelete,
     onUpdate,
   } = relationConfig;
-  const foreignModel = ModelUtils.byIdOrThrow(projectDefinition, modelName);
+  const foreignModel = ModelUtils.byIdOrThrow(projectDefinition, modelRef);
 
   const optional = ModelFieldUtils.isRelationOptional(
     parentModel,
@@ -83,19 +83,19 @@ function buildRelationField(
   const foreignRelations = ModelUtils.getRelationsToModel(
     projectDefinition,
     parentModel.id,
-  ).filter(({ model }) => model.id === relationConfig.modelName);
+  ).filter(({ model }) => model.id === relationConfig.modelRef);
   const needsRelationName =
     foreignRelations.length +
-      relations.filter((r) => r.modelName === modelName).length >
+      relations.filter((r) => r.modelRef === modelRef).length >
     1;
 
   return {
     name,
     fields: references.map((r) =>
-      appBuilder.definitionContainer.nameFromId(r.local),
+      appBuilder.definitionContainer.nameFromId(r.localRef),
     ),
     references: references.map((r) =>
-      appBuilder.definitionContainer.nameFromId(r.foreign),
+      appBuilder.definitionContainer.nameFromId(r.foreignRef),
     ),
     modelName: parentModel.name,
     foreignModelName: foreignModel.name,

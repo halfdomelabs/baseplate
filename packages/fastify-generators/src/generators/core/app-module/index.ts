@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createNonOverwriteableMap,
 } from '@halfdomelabs/sync';
 import { camelCase, kebabCase } from 'change-case';
@@ -21,79 +21,84 @@ const descriptorSchema = z.object({
   folderName: z.string().optional(),
 });
 
-const AppModuleGenerator = createGeneratorWithChildren({
+const AppModuleGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    appModule: appModuleProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    appModule: appModuleProvider.export(featureScope),
-  },
   scopes: [featureScope],
-  createGenerator(descriptor, { appModule, typescript }) {
-    const folderName = descriptor.folderName ?? kebabCase(descriptor.name);
-    const moduleName = `${camelCase(descriptor.name)}Module`;
-    const moduleFolder = `${appModule.getModuleFolder()}/${folderName}`;
-    const moduleEntries = createNonOverwriteableMap<
-      Record<string, TypescriptCodeExpression[]>
-    >({}, { name: 'app-module-entries' });
-    const validFields = appModule.getValidFields();
-    const moduleImports: string[] = [];
-
-    appModule.registerFieldEntry(
-      'children',
-      TypescriptCodeUtils.createExpression(
-        moduleName,
-        `import {${moduleName}} from '@/${moduleFolder}/index.js'`,
-      ),
-    );
-
-    return {
-      getProviders: () => ({
-        appModule: {
-          getModuleFolder: () => moduleFolder,
-          getValidFields: () => validFields,
-          addModuleImport(name) {
-            moduleImports.push(name);
-          },
-          registerFieldEntry: (name, type) => {
-            if (!validFields.includes(name)) {
-              throw new Error(`Unknown field entry: ${name}`);
-            }
-            moduleEntries.appendUnique(name, [type]);
-          },
-        },
-      }),
-      build: async (builder) => {
-        const indexFile = typescript.createTemplate({
-          MODULE_CONTENTS: { type: 'code-expression' },
-        });
-
-        indexFile.addCodeExpression(
-          'MODULE_CONTENTS',
-          TypescriptCodeUtils.mergeExpressionsAsObject(
-            R.mapObjIndexed(
-              (types) => TypescriptCodeUtils.mergeExpressionsAsArray(types),
-              moduleEntries.value(),
-            ),
-          ),
-        );
-
-        indexFile.addCodeAddition({
-          importText: moduleImports.map((name) => `import '${name}'`),
-        });
-
-        const moduleFolderIndex = path.join(moduleFolder, 'index.ts');
-        await builder.apply(
-          indexFile.renderToActionFromText(
-            `export const ${moduleName} = MODULE_CONTENTS`,
-            moduleFolderIndex,
-          ),
-        );
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        appModule: appModuleProvider,
+        typescript: typescriptProvider,
       },
-    };
+      exports: {
+        appModule: appModuleProvider.export(featureScope),
+      },
+      run({ appModule, typescript }) {
+        const folderName = descriptor.folderName ?? kebabCase(descriptor.name);
+        const moduleName = `${camelCase(descriptor.name)}Module`;
+        const moduleFolder = `${appModule.getModuleFolder()}/${folderName}`;
+        const moduleEntries = createNonOverwriteableMap<
+          Record<string, TypescriptCodeExpression[]>
+        >({}, { name: 'app-module-entries' });
+        const validFields = appModule.getValidFields();
+        const moduleImports: string[] = [];
+
+        appModule.registerFieldEntry(
+          'children',
+          TypescriptCodeUtils.createExpression(
+            moduleName,
+            `import {${moduleName}} from '@/${moduleFolder}/index.js'`,
+          ),
+        );
+
+        return {
+          getProviders: () => ({
+            appModule: {
+              getModuleFolder: () => moduleFolder,
+              getValidFields: () => validFields,
+              addModuleImport(name) {
+                moduleImports.push(name);
+              },
+              registerFieldEntry: (name, type) => {
+                if (!validFields.includes(name)) {
+                  throw new Error(`Unknown field entry: ${name}`);
+                }
+                moduleEntries.appendUnique(name, [type]);
+              },
+            },
+          }),
+          build: async (builder) => {
+            const indexFile = typescript.createTemplate({
+              MODULE_CONTENTS: { type: 'code-expression' },
+            });
+
+            indexFile.addCodeExpression(
+              'MODULE_CONTENTS',
+              TypescriptCodeUtils.mergeExpressionsAsObject(
+                R.mapObjIndexed(
+                  (types) => TypescriptCodeUtils.mergeExpressionsAsArray(types),
+                  moduleEntries.value(),
+                ),
+              ),
+            );
+
+            indexFile.addCodeAddition({
+              importText: moduleImports.map((name) => `import '${name}'`),
+            });
+
+            const moduleFolderIndex = path.join(moduleFolder, 'index.ts');
+            await builder.apply(
+              indexFile.renderToActionFromText(
+                `export const ${moduleName} = MODULE_CONTENTS`,
+                moduleFolderIndex,
+              ),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

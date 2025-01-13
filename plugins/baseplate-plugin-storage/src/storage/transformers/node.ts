@@ -35,7 +35,7 @@ function buildFileTransformerCompiler(
       ) as StoragePluginDefinition;
 
       const category = storageDefinition.categories.find(
-        (c) => c.usedByRelation === foreignRelation.foreignId,
+        (c) => c.usedByRelationRef === foreignRelation.foreignId,
       );
 
       if (!category) {

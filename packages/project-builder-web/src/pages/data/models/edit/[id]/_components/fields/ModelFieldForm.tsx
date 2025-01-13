@@ -64,7 +64,7 @@ function ModelFieldForm({
   );
   const usedRelations =
     watchedRelations?.filter((relation) =>
-      relation.references.some((r) => r.local === watchedField.id),
+      relation.references.some((r) => r.localRef === watchedField.id),
     ) ?? [];
 
   const removeError = useEditedModelConfig((model) => {

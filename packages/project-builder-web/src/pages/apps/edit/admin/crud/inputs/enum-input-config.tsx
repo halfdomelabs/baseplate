@@ -26,7 +26,7 @@ function AdminCrudEnumInputForm({
     <SelectField.Controller
       label="Enum Field"
       control={controlTyped}
-      name={`${prefix}.modelField`}
+      name={`${prefix}.modelFieldRef`}
       options={enumFieldOptions}
     />
   );
@@ -37,6 +37,6 @@ export const adminCrudEnumInputWebConfig =
     name: 'enum',
     pluginId: undefined,
     label: 'Enum',
-    getNewInput: () => ({ label: '', type: 'enum', modelField: '' }),
+    getNewInput: () => ({ label: '', type: 'enum', modelFieldRef: '' }),
     Form: AdminCrudEnumInputForm,
   });

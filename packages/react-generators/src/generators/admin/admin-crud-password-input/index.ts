@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -11,44 +11,46 @@ const descriptorSchema = z.object({
   modelField: z.string().default('password'),
 });
 
-const AdminCrudTextInputGenerator = createGeneratorWithChildren({
+const AdminCrudTextInputGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    adminCrudInputContainer: adminCrudInputContainerProvider,
-    reactComponents: reactComponentsProvider,
-  },
-  createGenerator(
-    { label, modelField },
-    { adminCrudInputContainer, reactComponents },
-  ) {
-    adminCrudInputContainer.addInput({
-      content: TypescriptCodeUtils.createExpression(
-        `<TextInput.LabelledController
+  buildTasks(taskBuilder, { label, modelField }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        adminCrudInputContainer: adminCrudInputContainerProvider,
+        reactComponents: reactComponentsProvider,
+      },
+      run({ adminCrudInputContainer, reactComponents }) {
+        adminCrudInputContainer.addInput({
+          content: TypescriptCodeUtils.createExpression(
+            `<TextInput.LabelledController
           label="${label}"
           control={control}
           name="${modelField}"
           type="password"
           registerOptions={{ setValueAs: (val: string) => val === '' ? undefined : val }}
         />`,
-        `import { TextInput } from "%react-components"`,
-        { importMappers: [reactComponents] },
-      ),
-      graphQLFields: [],
-      validation: [
-        {
-          key: modelField,
-          expression: TypescriptCodeUtils.createExpression(
-            'z.string().nullish()',
+            `import { TextInput } from "%react-components"`,
+            { importMappers: [reactComponents] },
           ),
-        },
-      ],
-    });
-    return {
-      build: async () => {
-        /* empty */
+          graphQLFields: [],
+          validation: [
+            {
+              key: modelField,
+              expression: TypescriptCodeUtils.createExpression(
+                'z.string().nullish()',
+              ),
+            },
+          ],
+        });
+        return {
+          build: async () => {
+            /* empty */
+          },
+        };
       },
-    };
+    });
   },
 });
 

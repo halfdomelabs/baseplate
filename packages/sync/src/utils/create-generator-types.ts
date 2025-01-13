@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 
-import type { BaseGeneratorDescriptor } from '../core/index.js';
+import type { BaseGeneratorDescriptor } from '@src/generators/generators.js';
 
 export interface DescriptorWithChildren extends BaseGeneratorDescriptor {
   children?: GeneratorDescriptorChildren;
