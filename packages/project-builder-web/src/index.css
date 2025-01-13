@@ -31,8 +31,8 @@ body,
 :root {
   --background: 0 0% 100%;
   --foreground: 229 84% 5%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
   --card: 0 0% 100%;
   --card-foreground: 229 84% 5%;
   --popover: 0 0% 100%;

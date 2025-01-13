@@ -5,7 +5,7 @@ import type { Control } from 'react-hook-form';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Alert,
-  MultiCheckboxField,
+  MultiSwitchField,
   SectionList,
   SwitchField,
 } from '@halfdomelabs/ui-components';
@@ -16,12 +16,10 @@ import { Link } from 'react-router-dom';
 import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
 
 interface GraphQLMutationsSectionProps {
-  className?: string;
   control: Control<ModelConfig>;
 }
 
 export function GraphQLMutationsSection({
-  className,
   control,
 }: GraphQLMutationsSectionProps): React.JSX.Element {
   const { definition } = useProjectDefinition();
@@ -57,16 +55,16 @@ export function GraphQLMutationsSection({
   const isDeleteControllerEnabled = controllerConfig.delete?.enabled;
 
   return (
-    <SectionList.Section className={className}>
-      <SectionList.SectionHeader>
-        <div className="sticky top-2">
+    <SectionList.Section>
+      <div>
+        <SectionList.SectionHeader className="sticky top-2">
           <SectionList.SectionTitle>Mutations</SectionList.SectionTitle>
           <SectionList.SectionDescription>
             Configure the GraphQL mutations that can be performed on this model.
           </SectionList.SectionDescription>
-        </div>
-      </SectionList.SectionHeader>
-      <SectionList.SectionContent className="space-y-6">
+        </SectionList.SectionHeader>
+      </div>
+      <SectionList.SectionContent className="space-y-8">
         {(!isCreateControllerEnabled ||
           !isUpdateControllerEnabled ||
           !isDeleteControllerEnabled) && (
@@ -92,7 +90,7 @@ export function GraphQLMutationsSection({
             </Alert.Description>
           </Alert>
         )}
-        <div className="space-y-2">
+        <div className="space-y-4">
           <SwitchField.Controller
             control={control}
             name="graphql.mutations.create.enabled"
@@ -101,16 +99,16 @@ export function GraphQLMutationsSection({
             description="Expose the create method in the GraphQL schema, e.g. createUser(input: $input)."
           />
           {isCreateEnabled && isAuthEnabled && (
-            <MultiCheckboxField.Controller
+            <MultiSwitchField.Controller
               control={control}
               name="graphql.mutations.create.roles"
               label="Allowed Roles"
               options={roleOptions}
-              className="max-w-md"
+              className="ml-[52px]"
             />
           )}
         </div>
-        <div className="space-y-2">
+        <div className="space-y-4">
           <SwitchField.Controller
             control={control}
             name="graphql.mutations.update.enabled"
@@ -119,12 +117,12 @@ export function GraphQLMutationsSection({
             description="Expose the update method in the GraphQL schema, e.g. updateUser(id: $id, input: $input)."
           />
           {isUpdateEnabled && isAuthEnabled && (
-            <MultiCheckboxField.Controller
+            <MultiSwitchField.Controller
               control={control}
               name="graphql.mutations.update.roles"
               label="Allowed Roles"
               options={roleOptions}
-              className="max-w-md"
+              className="ml-[52px]"
             />
           )}
         </div>
@@ -137,12 +135,12 @@ export function GraphQLMutationsSection({
             description="Expose the delete method in the GraphQL schema, e.g. deleteUser(id: $id)."
           />
           {isDeleteEnabled && isAuthEnabled && (
-            <MultiCheckboxField.Controller
+            <MultiSwitchField.Controller
               control={control}
               name="graphql.mutations.delete.roles"
               label="Allowed Roles"
               options={roleOptions}
-              className="max-w-md"
+              className="ml-[52px]"
             />
           )}
         </div>

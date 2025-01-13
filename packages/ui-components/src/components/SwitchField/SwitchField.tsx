@@ -29,7 +29,7 @@ const SwitchFieldRoot = React.forwardRef<HTMLButtonElement, SwitchFieldProps>(
     ref,
   ) => (
     <FormItem error={error} className={cn('space-y-2', className)}>
-      <div className="flex flex-row items-center space-x-4">
+      <div className="flex items-center gap-2">
         <FormItem.Control>
           <Switch
             onCheckedChange={(checked) => onChange?.(checked)}
@@ -39,7 +39,7 @@ const SwitchFieldRoot = React.forwardRef<HTMLButtonElement, SwitchFieldProps>(
           />
         </FormItem.Control>
         <div className="space-y-0.5">
-          {label && <FormItem.Label>{label}</FormItem.Label>}
+          {label && <FormItem.Label className="block">{label}</FormItem.Label>}
           {description && (
             <FormItem.Description>{description}</FormItem.Description>
           )}
