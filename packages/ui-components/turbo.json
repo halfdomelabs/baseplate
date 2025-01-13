@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "inputs": ["$TURBO_DEFAULT$", "!README.md", "!*.stories.tsx"],
+      "outputs": ["dist/**", "tailwind.config.js"]
+    },
+    "build:storybook": {
+      "outputs": ["storybook-static/**"]
+    }
+  }
+}

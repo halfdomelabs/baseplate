@@ -84,15 +84,5 @@
   },
   "publishConfig": {
     "access": "restricted"
-  },
-  "nx": {
-    "namedInputs": {
-      "default": [
-        "{projectRoot}/**/*"
-      ],
-      "production": [
-        "default"
-      ]
-    }
   }
 }

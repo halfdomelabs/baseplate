@@ -15,6 +15,23 @@ jobs:
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v4.1.2
+      - name: Set environment variable for Turborepo
+        run: echo "TURBO_SCM_BASE=$NX_BASE" >> $GITHUB_ENV
+      - name: Cache turbo build setup
+        uses: rharkor/caching-for-turbo@7220c7f366bf362025ec742bd5bcf2bac6e1770e
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.0.0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: 'pnpm'
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/root
+
+      # Install Playwright Browsers
       - name: Get Playwright version
         id: get-playwright-version
         run: echo "PLAYWRIGHT_VERSION=$(jq '.devDependencies["@playwright/test"]' package.json -r)" >> $GITHUB_OUTPUT
@@ -25,18 +42,5 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-browsers-${{ runner.os }}-${{ steps.get-playwright-version.outputs.PLAYWRIGHT_VERSION }}
-      - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v4.1.2
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4.0.0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version-file: package.json
-          cache: 'pnpm'
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/root
+
       - run: pnpm test:e2e
-        # workaround for https://github.com/nrwl/nx/issues/27040
-        env:
-          NX_ISOLATE_PLUGINS: false

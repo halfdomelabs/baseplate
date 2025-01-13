@@ -44,6 +44,8 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@halfdomelabs/project-builder-lib": "workspace:*",
+    "@halfdomelabs/sync": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@originjs/vite-plugin-federation": "1.3.6",
     "@types/inflection": "^1.13.2",

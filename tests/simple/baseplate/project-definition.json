@@ -21,7 +21,7 @@
   "isInitialized": true,
   "models": [
     {
-      "feature": "blog",
+      "featureRef": "blog",
       "graphql": {
         "objectType": {
           "enabled": true,
@@ -76,6 +76,6 @@
   ],
   "name": "simple",
   "portOffset": 3000,
-  "schemaVersion": 8,
+  "schemaVersion": 9,
   "version": "0.1.0"
 }

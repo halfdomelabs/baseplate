@@ -97,5 +97,4 @@ playground
 .DS_Store
 .vercel
 
-.nx
-.aider*
+.turbo

@@ -69,6 +69,7 @@ export function createEnvironmentHelpers({
                 stdin: 'inherit',
                 stdout: 'inherit',
                 stderr: 'inherit',
+                extendEnv: true,
               }
             : {
                 ...execAOptions,
