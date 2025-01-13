@@ -13,6 +13,7 @@ import { get, useFormState } from 'react-hook-form';
 
 import type { FieldProps } from '@src/types/form';
 
+import { cn } from '@src/utils';
 import { genericForwardRef } from '@src/utils/generic-forward-ref.js';
 
 import { FormItem } from '../FormItem/FormItem';
@@ -27,11 +28,28 @@ export interface InputFieldProps
   onChange?: (value: string) => void;
   value?: string;
   register?: UseFormRegisterReturn;
+  inputClassName?: string;
 }
 
 const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
-  ({ label, description, error, onChange, register, ...props }, ref) => (
-    <FormItem ref={ref} error={error} className="flex flex-col gap-1.5">
+  (
+    {
+      label,
+      description,
+      error,
+      onChange,
+      register,
+      className,
+      inputClassName,
+      ...props
+    },
+    ref,
+  ) => (
+    <FormItem
+      ref={ref}
+      error={error}
+      className={cn('flex flex-col gap-1.5', className)}
+    >
       {label && <FormItem.Label>{label}</FormItem.Label>}
       <FormItem.Control>
         <Input
@@ -41,6 +59,7 @@ const InputFieldRoot = React.forwardRef<HTMLDivElement, InputFieldProps>(
               onChange(e.target.value);
             })
           }
+          className={inputClassName}
           {...props}
           {...register}
         />

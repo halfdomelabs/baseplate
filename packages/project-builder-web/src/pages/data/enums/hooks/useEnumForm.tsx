@@ -23,7 +23,7 @@ import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
 import { logAndFormatError } from '@src/services/error-formatter';
 import { NotFoundError, RefDeleteError } from '@src/utils/error';
 
-import { createEnumEditLink } from '../../models/utils/url';
+import { createEnumEditLink } from '../../models/_utils/url';
 
 interface UseEnumFormOptions {
   schema?: z.ZodTypeAny;

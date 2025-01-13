@@ -13,26 +13,26 @@ import { useState } from 'react';
 import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
 
-import { createEnumEditLink } from '../models/_utils/url';
-import { NewEnumDialog } from './new/NewEnumDialog';
+import { createModelEditLink } from '../_utils/url';
+import { NewModelDialog } from './NewModelDialog';
 
-interface EnumsSidebarListProps {
+interface ModelsSidebarListProps {
   className?: string;
 }
 
-export function EnumsSidebarList({
+export function ModelsSidebarList({
   className,
-}: EnumsSidebarListProps): React.JSX.Element {
+}: ModelsSidebarListProps): React.JSX.Element {
   const {
-    definition: { enums = [] },
+    definition: { models },
   } = useProjectDefinition();
 
   const [filterQuery, setFilterQuery] = useState('');
-  const filteredEnums = enums.filter((item) =>
-    item.name.toLowerCase().includes(filterQuery.toLowerCase()),
+  const filteredModels = models.filter((model) =>
+    model.name.toLowerCase().includes(filterQuery.toLowerCase()),
   );
 
-  const sortedEnums = _.sortBy(filteredEnums, (m) => m.name);
+  const sortedModels = _.sortBy(filteredModels, (m) => m.name);
 
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -44,12 +44,12 @@ export function EnumsSidebarList({
       )}
     >
       <div className="space-y-4 px-4">
-        <NewEnumDialog>
+        <NewModelDialog>
           <Button.WithIcon icon={MdAdd} variant="secondary" className="w-full">
-            New Enum
+            New Model
           </Button.WithIcon>
-        </NewEnumDialog>
-        {enums.length > 0 && (
+        </NewModelDialog>
+        {models.length > 0 && (
           <div className="relative">
             <InputField
               value={filterQuery}
@@ -62,10 +62,10 @@ export function EnumsSidebarList({
               <Button
                 variant="ghost"
                 className="absolute right-4 top-1/2 -translate-y-1/2"
-                size="icon"
                 onClick={() => {
                   setFilterQuery('');
                 }}
+                size="icon"
               >
                 <Button.Icon icon={MdClear} />
               </Button>
@@ -83,18 +83,18 @@ export function EnumsSidebarList({
           }
         }}
       >
-        {sortedEnums.length === 0 && filterQuery && (
+        {sortedModels.length === 0 && filterQuery && (
           <div className="py-4 text-center text-style-muted">
-            No enums found
+            No models found
           </div>
         )}
         <NavigationMenu orientation="vertical">
           <NavigationMenu.List>
-            {sortedEnums.map((enumDef) => (
-              <li key={enumDef.id}>
+            {sortedModels.map((model) => (
+              <li key={model.id}>
                 <NavigationMenu.ItemWithLink asChild size="skinny">
-                  <NavLink to={createEnumEditLink(enumDef.id)}>
-                    {enumDef.name}
+                  <NavLink to={createModelEditLink(model.id)}>
+                    {model.name}
                   </NavLink>
                 </NavigationMenu.ItemWithLink>
               </li>
