@@ -1,5 +1,5 @@
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -53,66 +53,71 @@ export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
 /**
  * Generator for Typescript utility functions like notEmpty
  */
-const TsUtilsGenerator = createGeneratorWithChildren({
+const TsUtilsGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    typescript: typescriptProvider,
-  },
-  exports: {
-    tsUtils: tsUtilsProvider.export(projectScope),
-  },
-  createGenerator(descriptor, { typescript }) {
-    const usedTemplates: Record<string, boolean> = {};
-
-    return {
-      getProviders: () => ({
-        tsUtils: {
-          getImportMap: () =>
-            Object.fromEntries(
-              Object.entries(UTIL_CONFIG_MAP).map(([key, config]) => [
-                `%ts-utils/${key}`,
-                {
-                  path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
-                  allowedImports: config.exports,
-                  onImportUsed: () => {
-                    usedTemplates[key] = true;
-                  },
-                },
-              ]),
-            ),
-        },
-      }),
-      build: async (builder) => {
-        // recursively resolve dependencies
-        const markDependenciesAsUsed = (key: string): void => {
-          const config = UTIL_CONFIG_MAP[key];
-          if (config.dependencies)
-            for (const dep of config.dependencies) {
-              usedTemplates[dep] = true;
-              markDependenciesAsUsed(dep);
-            }
-        };
-        for (const key of Object.keys(usedTemplates)) {
-          markDependenciesAsUsed(key);
-        }
-        // Copy all the util files that were used
-        const templateFiles = Object.keys(usedTemplates).map(
-          (key) => UTIL_CONFIG_MAP[key].file,
-        );
-
-        await Promise.all(
-          templateFiles.map((file) =>
-            builder.apply(
-              typescript.createCopyAction({
-                source: file,
-                destination: `src/utils/${file}`,
-              }),
-            ),
-          ),
-        );
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        typescript: typescriptProvider,
       },
-    };
+      exports: {
+        tsUtils: tsUtilsProvider.export(projectScope),
+      },
+      run({ typescript }) {
+        const usedTemplates: Record<string, boolean> = {};
+
+        return {
+          getProviders: () => ({
+            tsUtils: {
+              getImportMap: () =>
+                Object.fromEntries(
+                  Object.entries(UTIL_CONFIG_MAP).map(([key, config]) => [
+                    `%ts-utils/${key}`,
+                    {
+                      path: `@/src/utils/${config.file.replace(/\.ts$/, '.js')}`,
+                      allowedImports: config.exports,
+                      onImportUsed: () => {
+                        usedTemplates[key] = true;
+                      },
+                    },
+                  ]),
+                ),
+            },
+          }),
+          build: async (builder) => {
+            // recursively resolve dependencies
+            const markDependenciesAsUsed = (key: string): void => {
+              const config = UTIL_CONFIG_MAP[key];
+              if (config.dependencies)
+                for (const dep of config.dependencies) {
+                  usedTemplates[dep] = true;
+                  markDependenciesAsUsed(dep);
+                }
+            };
+            for (const key of Object.keys(usedTemplates)) {
+              markDependenciesAsUsed(key);
+            }
+            // Copy all the util files that were used
+            const templateFiles = Object.keys(usedTemplates).map(
+              (key) => UTIL_CONFIG_MAP[key].file,
+            );
+
+            await Promise.all(
+              templateFiles.map((file) =>
+                builder.apply(
+                  typescript.createCopyAction({
+                    source: file,
+                    destination: `src/utils/${file}`,
+                  }),
+                ),
+              ),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

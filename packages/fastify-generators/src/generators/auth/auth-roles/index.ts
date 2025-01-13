@@ -7,7 +7,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import path from 'node:path';
@@ -37,75 +37,80 @@ export type AuthRolesProvider = ImportMapper;
 export const authRolesProvider =
   createProviderType<AuthRolesProvider>('auth-roles');
 
-const AuthRolesGenerator = createGeneratorWithChildren({
+const AuthRolesGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    typescript: typescriptProvider,
-    appModule: appModuleProvider,
-    authSetup: authSetupProvider,
-  },
-  exports: {
-    authRoles: authRolesProvider.export(projectScope),
-  },
-  createGenerator({ roles }, { typescript, appModule, authSetup }) {
-    if (
-      !['public', 'user', 'system'].every((name) =>
-        roles.some((r) => r.name === name),
-      )
-    ) {
-      throw new Error('public, user, and system roles are required');
-    }
-
-    const [fileImport, filePath] = makeImportAndFilePath(
-      path.join(
-        appModule.getModuleFolder(),
-        'constants/auth-roles.constants.ts',
-      ),
-    );
-
-    const authRolesImport: ImportEntry = {
-      path: fileImport,
-      allowedImports: [
-        'AUTH_ROLE_CONFIG',
-        'AuthRole',
-        'DEFAULT_PUBLIC_ROLES',
-        'DEFAULT_USER_ROLES',
-      ],
-    };
-
-    authSetup.getConfig().set('authRolesImport', authRolesImport);
-
-    return {
-      getProviders: () => ({
-        authRoles: {
-          getImportMap: () => ({
-            '%auth-roles': authRolesImport,
-          }),
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typescript
-            .createTemplate({
-              TPL_AUTH_ROLES: TypescriptCodeUtils.createExpression(
-                JSON.stringify(
-                  Object.fromEntries(
-                    roles.map((r) => [
-                      r.name,
-                      {
-                        comment: r.comment,
-                        builtIn: r.builtIn,
-                      },
-                    ]),
-                  ),
-                ),
-              ),
-            })
-            .renderToAction('constants/auth-roles.constants.ts', filePath),
-        );
+  buildTasks(taskBuilder, { roles }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        typescript: typescriptProvider,
+        appModule: appModuleProvider,
+        authSetup: authSetupProvider,
       },
-    };
+      exports: {
+        authRoles: authRolesProvider.export(projectScope),
+      },
+      run({ typescript, appModule, authSetup }) {
+        if (
+          !['public', 'user', 'system'].every((name) =>
+            roles.some((r) => r.name === name),
+          )
+        ) {
+          throw new Error('public, user, and system roles are required');
+        }
+
+        const [fileImport, filePath] = makeImportAndFilePath(
+          path.join(
+            appModule.getModuleFolder(),
+            'constants/auth-roles.constants.ts',
+          ),
+        );
+
+        const authRolesImport: ImportEntry = {
+          path: fileImport,
+          allowedImports: [
+            'AUTH_ROLE_CONFIG',
+            'AuthRole',
+            'DEFAULT_PUBLIC_ROLES',
+            'DEFAULT_USER_ROLES',
+          ],
+        };
+
+        authSetup.getConfig().set('authRolesImport', authRolesImport);
+
+        return {
+          getProviders: () => ({
+            authRoles: {
+              getImportMap: () => ({
+                '%auth-roles': authRolesImport,
+              }),
+            },
+          }),
+          build: async (builder) => {
+            await builder.apply(
+              typescript
+                .createTemplate({
+                  TPL_AUTH_ROLES: TypescriptCodeUtils.createExpression(
+                    JSON.stringify(
+                      Object.fromEntries(
+                        roles.map((r) => [
+                          r.name,
+                          {
+                            comment: r.comment,
+                            builtIn: r.builtIn,
+                          },
+                        ]),
+                      ),
+                    ),
+                  ),
+                })
+                .renderToAction('constants/auth-roles.constants.ts', filePath),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

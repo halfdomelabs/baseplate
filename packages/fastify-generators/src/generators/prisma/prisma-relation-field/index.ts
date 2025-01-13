@@ -1,4 +1,4 @@
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { doubleQuot } from '@src/utils/string.js';
@@ -27,66 +27,70 @@ const descriptorSchema = z.object({
   onUpdate: z.enum(REFERENTIAL_ACTIONS).default('Restrict'),
 });
 
-const PrismaRelationFieldGenerator = createGeneratorWithChildren({
+const PrismaRelationFieldGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    prismaModel: prismaModelProvider,
-    foreignModel: prismaModelProvider,
-  },
-  populateDependencies: (deps, { modelName, foreignModelName }) => ({
-    ...deps,
-    prismaModel: deps.prismaModel.dependency().reference(modelName),
-    foreignModel: deps.foreignModel.dependency().reference(foreignModelName),
-  }),
-  createGenerator(descriptor, { prismaModel, foreignModel }) {
-    const {
-      name,
-      fields,
-      references,
-      foreignRelationName,
-      relationshipName,
-      relationshipType,
-      optional,
-      onDelete,
-      onUpdate,
-    } = descriptor;
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prismaModel: prismaModelProvider
+          .dependency()
+          .reference(descriptor.modelName),
+        foreignModel: prismaModelProvider
+          .dependency()
+          .reference(descriptor.foreignModelName),
+      },
+      run({ prismaModel, foreignModel }) {
+        const {
+          name,
+          fields,
+          references,
+          foreignRelationName,
+          relationshipName,
+          relationshipType,
+          optional,
+          onDelete,
+          onUpdate,
+        } = descriptor;
 
-    const isManyToOne = relationshipType === 'oneToMany';
-    const modelName = foreignModel.getName();
+        const isManyToOne = relationshipType === 'oneToMany';
+        const modelName = foreignModel.getName();
 
-    prismaModel.addField({
-      name,
-      type: `${modelName}${optional ? '?' : ''}`,
-      fieldType: 'relation',
-      attributes: [
-        {
-          name: '@relation',
-          args: [
-            ...(relationshipName ? [doubleQuot(relationshipName)] : []),
+        prismaModel.addField({
+          name,
+          type: `${modelName}${optional ? '?' : ''}`,
+          fieldType: 'relation',
+          attributes: [
             {
-              fields,
-              references,
-              onDelete,
-              onUpdate,
+              name: '@relation',
+              args: [
+                ...(relationshipName ? [doubleQuot(relationshipName)] : []),
+                {
+                  fields,
+                  references,
+                  onDelete,
+                  onUpdate,
+                },
+              ],
             },
           ],
-        },
-      ],
+        });
+
+        if (foreignRelationName) {
+          foreignModel.addField({
+            name: foreignRelationName,
+            type: `${prismaModel.getName()}${isManyToOne ? '[]' : '?'}`,
+            fieldType: 'relation',
+            attributes: relationshipName
+              ? [{ name: '@relation', args: [doubleQuot(relationshipName)] }]
+              : [],
+          });
+        }
+
+        return {};
+      },
     });
-
-    if (foreignRelationName) {
-      foreignModel.addField({
-        name: foreignRelationName,
-        type: `${prismaModel.getName()}${isManyToOne ? '[]' : '?'}`,
-        fieldType: 'relation',
-        attributes: relationshipName
-          ? [{ name: '@relation', args: [doubleQuot(relationshipName)] }]
-          : [],
-      });
-    }
-
-    return {};
   },
 });
 

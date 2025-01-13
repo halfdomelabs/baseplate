@@ -13,7 +13,7 @@ function AdminCrudForeignInputForm({
 }: AdminCrudInputWebFormProps): React.JSX.Element {
   const localRelationOptions =
     model.model.relations?.map((relation) => ({
-      label: `${relation.name} (${relation.modelName})`,
+      label: `${relation.name} (${relation.modelRef})`,
       value: relation.id,
     })) ?? [];
   const prefix = name as 'prefix';
@@ -26,7 +26,7 @@ function AdminCrudForeignInputForm({
       <SelectField.Controller
         label="Local Relation Name"
         control={controlTyped}
-        name={`${prefix}.localRelationName`}
+        name={`${prefix}.localRelationRef`}
         options={localRelationOptions}
       />
       <InputField.Controller
@@ -61,7 +61,7 @@ export const adminCrudForeignInputWebConfig =
     getNewInput: () => ({
       label: '',
       type: 'foreign',
-      localRelationName: '',
+      localRelationRef: '',
       labelExpression: '',
       valueExpression: '',
       defaultLabel: '',

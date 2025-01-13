@@ -13,7 +13,7 @@ import {
 } from '@halfdomelabs/react-generators';
 import {
   copyFileAction,
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
@@ -28,91 +28,93 @@ export type UploadComponentsProvider = ImportMapper;
 export const uploadComponentsProvider =
   createProviderType<UploadComponentsProvider>('upload-components');
 
-const UploadComponentsGenerator = createGeneratorWithChildren({
+const UploadComponentsGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    node: nodeProvider,
-    reactError: reactErrorProvider,
-    typescript: typescriptProvider,
-    reactComponents: reactComponentsProvider,
-    reactApollo: reactApolloProvider,
-  },
-  exports: {
-    uploadComponents: uploadComponentsProvider.export(projectScope),
-  },
-  createGenerator(
-    { fileModelName },
-    { node, reactError, typescript, reactComponents, reactApollo },
-  ) {
-    node.addPackages({
-      axios: '1.7.4',
-      'react-dropzone': '14.2.3',
-      'react-circular-progressbar': '2.1.0',
-    });
-
-    reactComponents.registerComponent({
-      name: 'FileInput',
-    });
-
-    const [hookImport, hookPath] = makeImportAndFilePath(
-      `src/hooks/useUpload.ts`,
-    );
-
-    const importMap = {
-      '%upload-components/file-input': {
-        path: reactComponents.getComponentsImport(),
-        allowedImports: ['FileInput'],
+  buildTasks(taskBuilder, { fileModelName }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        node: nodeProvider,
+        reactError: reactErrorProvider,
+        typescript: typescriptProvider,
+        reactComponents: reactComponentsProvider,
+        reactApollo: reactApolloProvider,
       },
-      '%upload-components/use-upload': {
-        path: hookImport,
-        allowedImports: ['useUpload'],
+      exports: {
+        uploadComponents: uploadComponentsProvider.export(projectScope),
       },
-    };
+      run({ node, reactError, typescript, reactComponents, reactApollo }) {
+        node.addPackages({
+          axios: '1.7.4',
+          'react-dropzone': '14.2.3',
+          'react-circular-progressbar': '2.1.0',
+        });
 
-    const gqlFilePath = `${reactComponents.getComponentsFolder()}/FileInput/upload.gql`;
-    reactApollo.registerGqlFile(gqlFilePath);
+        reactComponents.registerComponent({
+          name: 'FileInput',
+        });
 
-    return {
-      getProviders: () => ({
-        uploadComponents: {
-          getImportMap() {
-            return importMap;
-          },
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'components/FileInput/index.tsx',
-            destination: `${reactComponents.getComponentsFolder()}/FileInput/index.tsx`,
-            importMappers: [
-              reactError,
-              { getImportMap: () => importMap },
-              reactApollo,
-            ],
-          }),
+        const [hookImport, hookPath] = makeImportAndFilePath(
+          `src/hooks/useUpload.ts`,
         );
 
-        await builder.apply(
-          copyFileAction({
-            source: 'components/FileInput/upload.gql',
-            destination: gqlFilePath,
-            shouldFormat: true,
-            replacements: {
-              FILE_SCHEMA: capitalize(fileModelName),
+        const importMap = {
+          '%upload-components/file-input': {
+            path: reactComponents.getComponentsImport(),
+            allowedImports: ['FileInput'],
+          },
+          '%upload-components/use-upload': {
+            path: hookImport,
+            allowedImports: ['useUpload'],
+          },
+        };
+
+        const gqlFilePath = `${reactComponents.getComponentsFolder()}/FileInput/upload.gql`;
+        reactApollo.registerGqlFile(gqlFilePath);
+
+        return {
+          getProviders: () => ({
+            uploadComponents: {
+              getImportMap() {
+                return importMap;
+              },
             },
           }),
-        );
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'components/FileInput/index.tsx',
+                destination: `${reactComponents.getComponentsFolder()}/FileInput/index.tsx`,
+                importMappers: [
+                  reactError,
+                  { getImportMap: () => importMap },
+                  reactApollo,
+                ],
+              }),
+            );
 
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'hooks/useUpload.ts',
-            destination: hookPath,
-          }),
-        );
+            await builder.apply(
+              copyFileAction({
+                source: 'components/FileInput/upload.gql',
+                destination: gqlFilePath,
+                shouldFormat: true,
+                replacements: {
+                  FILE_SCHEMA: capitalize(fileModelName),
+                },
+              }),
+            );
+
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'hooks/useUpload.ts',
+                destination: hookPath,
+              }),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

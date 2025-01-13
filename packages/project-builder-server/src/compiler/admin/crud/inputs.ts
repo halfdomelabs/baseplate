@@ -26,23 +26,25 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
     name: 'enum',
     compileInput: (definition, { definitionContainer, model }) => {
       const fieldConfig = model.model.fields.find(
-        (f) => f.id === definition.modelField,
+        (f) => f.id === definition.modelFieldRef,
       );
-      if (fieldConfig?.type !== 'enum' || !fieldConfig.options?.enumType) {
+      if (fieldConfig?.type !== 'enum' || !fieldConfig.options?.enumRef) {
         throw new Error(
-          `Admin enum input ${definition.modelField} is not an enum`,
+          `Admin enum input ${definition.modelFieldRef} is not an enum`,
         );
       }
       const enumBlock = EnumUtils.byId(
         definitionContainer.definition,
-        fieldConfig.options.enumType,
+        fieldConfig.options.enumRef,
       );
       if (!enumBlock) {
         throw new Error(
-          `Could not find enum type ${fieldConfig.options.enumType ?? ''}`,
+          `Could not find enum type ${fieldConfig.options.enumRef ?? ''}`,
         );
       }
-      const fieldName = definitionContainer.nameFromId(definition.modelField);
+      const fieldName = definitionContainer.nameFromId(
+        definition.modelFieldRef,
+      );
       return {
         name: fieldName,
         generator: '@halfdomelabs/react/admin/admin-crud-enum-input',
@@ -62,12 +64,12 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
     name: 'foreign',
     compileInput: (definition, { definitionContainer, model }) => {
       const relation = model.model.relations?.find(
-        (r) => r.id === definition.localRelationName,
+        (r) => r.id === definition.localRelationRef,
       );
 
       if (!relation) {
         throw new Error(
-          `Could not find relation ${definition.localRelationName} in model ${model.name}`,
+          `Could not find relation ${definition.localRelationRef} in model ${model.name}`,
         );
       }
 
@@ -76,7 +78,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
       }
 
       const localField = definitionContainer.nameFromId(
-        relation.references[0].local,
+        relation.references[0].localRef,
       );
 
       return {
@@ -86,7 +88,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         localRelationName: relation.name,
         isOptional: ModelFieldUtils.isRelationOptional(model, relation),
         localField,
-        foreignModelName: definitionContainer.nameFromId(relation.modelName),
+        foreignModelName: definitionContainer.nameFromId(relation.modelRef),
         labelExpression: definition.labelExpression,
         valueExpression: definition.valueExpression,
         defaultLabel: definition.defaultLabel,
@@ -117,14 +119,16 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
     name: 'text',
     compileInput: (definition, { definitionContainer, model }) => {
       const fieldConfig = model.model.fields.find(
-        (f) => f.id === definition.modelField,
+        (f) => f.id === definition.modelFieldRef,
       );
       if (!fieldConfig) {
         throw new Error(
-          `Field ${definition.modelField} cannot be found in ${model.name}`,
+          `Field ${definition.modelFieldRef} cannot be found in ${model.name}`,
         );
       }
-      const fieldName = definitionContainer.nameFromId(definition.modelField);
+      const fieldName = definitionContainer.nameFromId(
+        definition.modelFieldRef,
+      );
       return {
         name: fieldName,
         generator: '@halfdomelabs/react/admin/admin-crud-text-input',
@@ -148,14 +152,14 @@ const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedIn
     name: 'embedded',
     compileInput: (definition, { definitionContainer }) => {
       const relationName = definitionContainer.nameFromId(
-        definition.modelRelation,
+        definition.modelRelationRef,
       );
       return {
         name: relationName,
         generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
         label: definition.label,
         modelRelation: relationName,
-        embeddedFormRef: definition.embeddedFormName,
+        embeddedFormRef: definition.embeddedFormRef,
       };
     },
   };
@@ -165,17 +169,17 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
     name: 'embeddedLocal',
     compileInput(definition, { definitionContainer, model }) {
       const localRelation = model.model.relations?.find(
-        (r) => r.id === definition.localRelation,
+        (r) => r.id === definition.localRelationRef,
       );
 
       if (!localRelation) {
         throw new Error(
-          `Could not find relation ${definition.localRelation} in model ${model.name}`,
+          `Could not find relation ${definition.localRelationRef} in model ${model.name}`,
         );
       }
 
       const localRelationName = definitionContainer.nameFromId(
-        definition.localRelation,
+        definition.localRelationRef,
       );
 
       return {
@@ -184,7 +188,7 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
         label: definition.label,
         modelRelation: localRelationName,
         isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
-        embeddedFormRef: definition.embeddedFormName,
+        embeddedFormRef: definition.embeddedFormRef,
       };
     },
   };

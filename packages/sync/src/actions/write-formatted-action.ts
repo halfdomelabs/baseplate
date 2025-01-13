@@ -1,4 +1,4 @@
-import { createBuilderActionCreator } from '../core/index.js';
+import { createBuilderActionCreator } from '@src/output/builder-action.js';
 
 interface Options {
   destination: string;

@@ -1,0 +1,4 @@
+{
+  "fromImport": "./bar.js:foo",
+  "toImport": "./bar2.js:foo2"
+}

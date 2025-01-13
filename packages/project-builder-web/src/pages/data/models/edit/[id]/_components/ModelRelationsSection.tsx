@@ -59,11 +59,11 @@ export function ModelRelationsSection({
               <RecordView.Item title="Name">{relation.name}</RecordView.Item>
               <RecordView.Item title="Local Field">
                 {relation.references
-                  .map((r) => fieldIdsToNames[r.local])
+                  .map((r) => fieldIdsToNames[r.localRef])
                   .join(', ')}
               </RecordView.Item>
               <RecordView.Item title="Foreign Model">
-                {definitionContainer.nameFromId(relation.modelName)}
+                {definitionContainer.nameFromId(relation.modelRef)}
               </RecordView.Item>
               <RecordView.Item title="On Delete">
                 {relation.onDelete}

@@ -26,7 +26,7 @@ export function FileTransformerForm({
 
   const fileRelations =
     originalModel.model.relations?.filter(
-      (relation) => relation.modelName === storageConfig.fileModelRef,
+      (relation) => relation.modelRef === storageConfig.fileModelRef,
     ) ?? [];
 
   const relationOptions = fileRelations.map((relation) => ({

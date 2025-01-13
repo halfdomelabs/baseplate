@@ -1,5 +1,5 @@
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderExportScope,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -20,7 +20,7 @@ export const adminCrudSectionScope = createProviderExportScope(
   'Scope for admin crud section',
 );
 
-const AdminCrudSectionGenerator = createGeneratorWithChildren({
+const AdminCrudSectionGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: ({ modelName, disableCreate }) => ({
     edit: {
@@ -44,17 +44,24 @@ const AdminCrudSectionGenerator = createGeneratorWithChildren({
       },
     },
   }),
-  dependencies: {},
   scopes: [adminCrudSectionScope],
-  exports: {
-    adminCrudSection: adminCrudSectionProvider.export(adminCrudSectionScope),
-  },
-  createGenerator() {
-    return {
-      getProviders: () => ({
-        adminCrudSection: {},
-      }),
-    };
+  buildTasks(taskBuilder) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {},
+      exports: {
+        adminCrudSection: adminCrudSectionProvider.export(
+          adminCrudSectionScope,
+        ),
+      },
+      run() {
+        return {
+          getProviders: () => ({
+            adminCrudSection: {},
+          }),
+        };
+      },
+    });
   },
 });
 

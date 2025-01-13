@@ -14,7 +14,7 @@ function AdminCrudEmbeddedLocalInputForm({
 }: AdminCrudInputWebFormProps): React.JSX.Element {
   const localRelationOptions =
     model.model.relations?.map((relation) => ({
-      label: `${relation.name} (${relation.modelName})`,
+      label: `${relation.name} (${relation.modelRef})`,
       value: relation.id,
     })) ?? [];
   const prefix = name as 'prefix';
@@ -27,13 +27,13 @@ function AdminCrudEmbeddedLocalInputForm({
       <SelectField.Controller
         label="Relation Name"
         control={controlTyped}
-        name={`${prefix}.localRelation`}
+        name={`${prefix}.localRelationRef`}
         options={localRelationOptions}
       />
       <SelectField.Controller
         label="Embedded Form"
         control={controlTyped}
-        name={`${prefix}.embeddedFormName`}
+        name={`${prefix}.embeddedFormRef`}
         options={embeddedFormOptions}
       />
     </>
@@ -48,8 +48,8 @@ export const adminCrudEmbeddedLocalInputWebConfig =
     getNewInput: () => ({
       label: '',
       type: 'embeddedLocal',
-      embeddedFormName: '',
-      localRelation: '',
+      embeddedFormRef: '',
+      localRelationRef: '',
     }),
     Form: AdminCrudEmbeddedLocalInputForm,
   });

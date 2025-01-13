@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -22,38 +22,40 @@ const INPUT_TYPE_MAP: Record<TextInputType, string> = {
   text: 'TextInput',
 };
 
-const AdminCrudTextInputGenerator = createGeneratorWithChildren({
+const AdminCrudTextInputGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    adminCrudInputContainer: adminCrudInputContainerProvider,
-    reactComponents: reactComponentsProvider,
-  },
-  createGenerator(
-    { label, modelField, validation, type },
-    { adminCrudInputContainer, reactComponents },
-  ) {
-    const inputType = INPUT_TYPE_MAP[type];
-    adminCrudInputContainer.addInput({
-      content: TypescriptCodeUtils.createExpression(
-        `<${inputType}.LabelledController
+  buildTasks(taskBuilder, { label, modelField, validation, type }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        adminCrudInputContainer: adminCrudInputContainerProvider,
+        reactComponents: reactComponentsProvider,
+      },
+      run({ adminCrudInputContainer, reactComponents }) {
+        const inputType = INPUT_TYPE_MAP[type];
+        adminCrudInputContainer.addInput({
+          content: TypescriptCodeUtils.createExpression(
+            `<${inputType}.LabelledController
           label="${label}"
           control={control}
           name="${modelField}"
           ${type === 'dateTime' ? 'showTimeSelect' : ''}
         />`,
-        `import { ${inputType} } from "%react-components"`,
-        { importMappers: [reactComponents] },
-      ),
-      graphQLFields: [{ name: modelField }],
-      validation: [
-        {
-          key: modelField,
-          expression: TypescriptCodeUtils.createExpression(validation),
-        },
-      ],
+            `import { ${inputType} } from "%react-components"`,
+            { importMappers: [reactComponents] },
+          ),
+          graphQLFields: [{ name: modelField }],
+          validation: [
+            {
+              key: modelField,
+              expression: TypescriptCodeUtils.createExpression(validation),
+            },
+          ],
+        });
+        return {};
+      },
     });
-    return {};
   },
 });
 

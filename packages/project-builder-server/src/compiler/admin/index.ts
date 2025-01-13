@@ -33,8 +33,10 @@ export function buildNavigationLinks(
       label: titleizeCamel(section.name),
       icon: section.icon ?? 'MdHome',
       path: `${
-        FeatureUtils.getFeatureByIdOrThrow(projectDefinition, section.feature)
-          .name
+        FeatureUtils.getFeatureByIdOrThrow(
+          projectDefinition,
+          section.featureRef,
+        ).name
       }/${dasherizeCamel(section.name)}`,
     })) ?? []
   );

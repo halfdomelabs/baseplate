@@ -93,7 +93,7 @@ function ServiceEmbeddedRelationForm({
       .filter(
         (field) =>
           !relation.relation.references.some(
-            (reference) => reference.local === field.id,
+            (reference) => reference.localRef === field.id,
           ),
       )
       .map((field) => ({

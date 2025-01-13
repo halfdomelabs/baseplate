@@ -16,7 +16,7 @@ import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
 
 export type AdminCrudFormConfig = Pick<
   AdminCrudSectionConfig,
-  'form' | 'modelName'
+  'form' | 'modelRef'
 >;
 
 interface Props {
@@ -35,10 +35,10 @@ function FieldForm({
   embeddedFormOptions: { label: string; value: string }[];
 }): React.JSX.Element {
   const { control } = formProps;
-  const modelName = useWatch({ control, name: 'modelName' });
+  const modelRef = useWatch({ control, name: 'modelRef' });
   const { definition, pluginContainer } = useProjectDefinition();
-  const model = modelName
-    ? ModelUtils.byIdOrThrow(definition, modelName)
+  const model = modelRef
+    ? ModelUtils.byIdOrThrow(definition, modelRef)
     : undefined;
 
   const inputWeb = pluginContainer.getPluginSpec(adminCrudInputWebSpec);

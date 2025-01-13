@@ -38,20 +38,20 @@ export const AUTH_DEFAULT_ROLES = [
 ];
 
 export const authSchema = z.object({
-  userModel: zRef(z.string().min(1), {
+  userModelRef: zRef(z.string().min(1), {
     type: modelEntityType,
     onDelete: 'RESTRICT',
   }),
-  userRoleModel: zRef(z.string().min(1), {
+  userRoleModelRef: zRef(z.string().min(1), {
     type: modelEntityType,
     onDelete: 'RESTRICT',
   }),
   useAuth0: z.boolean().default(false),
-  authFeaturePath: zRef(z.string().min(1), {
+  authFeatureRef: zRef(z.string().min(1), {
     type: featureEntityType,
     onDelete: 'RESTRICT',
   }),
-  accountsFeaturePath: zRef(z.string().min(1), {
+  accountsFeatureRef: zRef(z.string().min(1), {
     type: featureEntityType,
     onDelete: 'RESTRICT',
   }),

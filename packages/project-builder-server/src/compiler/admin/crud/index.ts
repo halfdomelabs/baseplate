@@ -22,17 +22,17 @@ function compileAdminCrudEmbeddedForm(
 ): Record<string, unknown> {
   const idFields = ModelUtils.byIdOrThrow(
     builder.projectDefinition,
-    form.modelName,
+    form.modelRef,
   ).model.primaryKeyFieldRefs.map((ref) => builder.nameFromId(ref));
   if (form.includeIdField && idFields.length !== 1) {
     throw new Error(
-      `Embedded form ${form.modelName} has ${idFields.length} primary keys, but only one is allowed`,
+      `Embedded form ${builder.nameFromId(form.modelRef)} has ${idFields.length} primary keys, but only one is allowed`,
     );
   }
   const sharedData = {
     id: form.id,
     name: form.name,
-    modelName: builder.nameFromId(form.modelName),
+    modelName: builder.nameFromId(form.modelRef),
     // auto-add id field if it's a single ID
     idField: form.includeIdField ? idFields[0] : undefined,
   };
@@ -47,15 +47,11 @@ function compileAdminCrudEmbeddedForm(
           name: c.label,
           label: c.label,
           children: {
-            display: compileAdminCrudDisplay(
-              builder,
-              c.display,
-              form.modelName,
-            ),
+            display: compileAdminCrudDisplay(builder, c.display, form.modelRef),
           },
         })),
         inputs: form.form.fields.map((field) =>
-          compileAdminCrudInput(field, form.modelName, builder, crudSectionId),
+          compileAdminCrudInput(field, form.modelRef, builder, crudSectionId),
         ),
       },
     };
@@ -65,7 +61,7 @@ function compileAdminCrudEmbeddedForm(
     isList: false,
     children: {
       inputs: form.form.fields.map((field) =>
-        compileAdminCrudInput(field, form.modelName, builder, crudSectionId),
+        compileAdminCrudInput(field, form.modelRef, builder, crudSectionId),
       ),
     },
   };
@@ -87,7 +83,7 @@ export function compileAdminCrudSection(
     children: {
       $section: {
         generator: '@halfdomelabs/react/admin/admin-crud-section',
-        modelName: builder.nameFromId(crudSection.modelName),
+        modelName: builder.nameFromId(crudSection.modelRef),
         disableCreate: crudSection.disableCreate,
         children: {
           edit: {
@@ -95,7 +91,7 @@ export function compileAdminCrudSection(
               inputs: crudSection.form.fields.map((field) =>
                 compileAdminCrudInput(
                   field,
-                  crudSection.modelName,
+                  crudSection.modelRef,
                   builder,
                   crudSectionId,
                 ),
@@ -114,7 +110,7 @@ export function compileAdminCrudSection(
                   display: compileAdminCrudDisplay(
                     builder,
                     column.display,
-                    crudSection.modelName,
+                    crudSection.modelRef,
                   ),
                 },
               })),

@@ -3,7 +3,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -22,32 +22,35 @@ export interface ReactProxyProvider {
 export const reactProxyProvider =
   createProviderType<ReactProxyProvider>('react-proxy');
 
-const ReactProxyGenerator = createGeneratorWithChildren({
+const ReactProxyGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    reactConfig: reactConfigProvider,
-    react: reactProvider,
-  },
-  exports: {
-    reactProxy: reactProxyProvider.export(projectScope),
-  },
-  createGenerator({ devBackendHost }, { react, reactConfig }) {
-    reactConfig.addEnvVar('DEV_BACKEND_HOST', devBackendHost);
-    let enableWebsocket = false;
-    return {
-      getProviders: () => ({
-        reactProxy: {
-          enableWebSocket: () => {
-            enableWebsocket = true;
-          },
-        },
-      }),
-      build: () => {
-        react.addServerOption(
-          'proxy',
-          TypescriptCodeUtils.createExpression(
-            `envVars.DEV_BACKEND_HOST
+  buildTasks(taskBuilder, { devBackendHost }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactConfig: reactConfigProvider,
+        react: reactProvider,
+      },
+      exports: {
+        reactProxy: reactProxyProvider.export(projectScope),
+      },
+      run({ react, reactConfig }) {
+        reactConfig.addEnvVar('DEV_BACKEND_HOST', devBackendHost);
+        let enableWebsocket = false;
+        return {
+          getProviders: () => ({
+            reactProxy: {
+              enableWebSocket: () => {
+                enableWebsocket = true;
+              },
+            },
+          }),
+          build: () => {
+            react.addServerOption(
+              'proxy',
+              TypescriptCodeUtils.createExpression(
+                `envVars.DEV_BACKEND_HOST
           ? {
               '/api': {
                 target: envVars.DEV_BACKEND_HOST,
@@ -57,10 +60,12 @@ const ReactProxyGenerator = createGeneratorWithChildren({
               },
             }
           : undefined`,
-          ),
-        );
+              ),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

@@ -34,7 +34,7 @@ function findNonTransformedFileRelations(
     modelConfig.model.relations
       ?.filter(
         (relation) =>
-          relation.modelName === storageDefinition.fileModelRef &&
+          relation.modelRef === storageDefinition.fileModelRef &&
           !fileTransformers.some(
             (transformer) => transformer.fileRelationRef === relation.id,
           ),

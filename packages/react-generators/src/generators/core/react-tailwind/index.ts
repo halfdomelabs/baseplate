@@ -6,7 +6,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
   writeTemplateAction,
 } from '@halfdomelabs/sync';
@@ -27,89 +27,94 @@ export interface ReactTailwindProvider {
 export const reactTailwindProvider =
   createProviderType<ReactTailwindProvider>('react-tailwind');
 
-const ReactTailwindGenerator = createGeneratorWithChildren({
+const ReactTailwindGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    react: reactProvider,
-    node: nodeProvider,
-    eslint: eslintProvider,
-    prettier: prettierProvider,
-  },
-  exports: {
-    reactTailwind: reactTailwindProvider.export(projectScope),
-  },
-  createGenerator({ globalBodyClasses }, { node, react, eslint, prettier }) {
-    const srcFolder = react.getSrcFolder();
+  buildTasks(taskBuilder, { globalBodyClasses }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        react: reactProvider,
+        node: nodeProvider,
+        eslint: eslintProvider,
+        prettier: prettierProvider,
+      },
+      exports: {
+        reactTailwind: reactTailwindProvider.export(projectScope),
+      },
+      run({ node, react, eslint, prettier }) {
+        const srcFolder = react.getSrcFolder();
 
-    const prettierPluginTailwindcssVersion = '0.6.6';
+        const prettierPluginTailwindcssVersion = '0.6.6';
 
-    node.addDevPackages({
-      autoprefixer: '10.4.20',
-      tailwindcss: '3.4.11',
-      'prettier-plugin-tailwindcss': prettierPluginTailwindcssVersion,
-      '@tailwindcss/forms': '0.5.9',
-    });
+        node.addDevPackages({
+          autoprefixer: '10.4.20',
+          tailwindcss: '3.4.11',
+          'prettier-plugin-tailwindcss': prettierPluginTailwindcssVersion,
+          '@tailwindcss/forms': '0.5.9',
+        });
 
-    eslint
-      .getConfig()
-      .appendUnique('eslintIgnore', [
-        'vite.config.ts',
-        'postcss.config.js',
-        'tailwind.config.js',
-      ]);
+        eslint
+          .getConfig()
+          .appendUnique('eslintIgnore', [
+            'vite.config.ts',
+            'postcss.config.js',
+            'tailwind.config.js',
+          ]);
 
-    prettier.addPlugin({
-      name: 'prettier-plugin-tailwindcss',
-      version: prettierPluginTailwindcssVersion,
-      default: prettierPluginTailwindcss,
-    });
+        prettier.addPlugin({
+          name: 'prettier-plugin-tailwindcss',
+          version: prettierPluginTailwindcssVersion,
+          default: prettierPluginTailwindcss,
+        });
 
-    react.getIndexFile().addCodeBlock('IMPORTS', "import './index.css'");
+        react.getIndexFile().addCodeBlock('IMPORTS', "import './index.css'");
 
-    const globalStyles: string[] = [];
+        const globalStyles: string[] = [];
 
-    if (globalBodyClasses) {
-      globalStyles.push(`body {
+        if (globalBodyClasses) {
+          globalStyles.push(`body {
   @apply ${globalBodyClasses}
 }`);
-    }
+        }
 
-    return {
-      getProviders: () => ({
-        reactTailwind: {
-          addGlobalStyle: (style) => {
-            globalStyles.push(style);
-          },
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          writeTemplateAction({
-            template: 'src/index.css',
-            destination: path.join(srcFolder, 'index.css'),
-            data: {
-              globalStyles: globalStyles.join('\n\n'),
+        return {
+          getProviders: () => ({
+            reactTailwind: {
+              addGlobalStyle: (style) => {
+                globalStyles.push(style);
+              },
             },
           }),
-        );
-        // TODO: Dark mode not supported currently
-        await builder.apply(
-          copyFileAction({
-            source: 'tailwind.config.js',
-            destination: 'tailwind.config.js',
-            shouldFormat: true,
-          }),
-        );
-        await builder.apply(
-          copyFileAction({
-            source: 'postcss.config.js',
-            destination: 'postcss.config.js',
-            shouldFormat: true,
-          }),
-        );
+          build: async (builder) => {
+            await builder.apply(
+              writeTemplateAction({
+                template: 'src/index.css',
+                destination: path.join(srcFolder, 'index.css'),
+                data: {
+                  globalStyles: globalStyles.join('\n\n'),
+                },
+              }),
+            );
+            // TODO: Dark mode not supported currently
+            await builder.apply(
+              copyFileAction({
+                source: 'tailwind.config.js',
+                destination: 'tailwind.config.js',
+                shouldFormat: true,
+              }),
+            );
+            await builder.apply(
+              copyFileAction({
+                source: 'postcss.config.js',
+                destination: 'postcss.config.js',
+                shouldFormat: true,
+              }),
+            );
+          },
+        };
       },
-    };
+    });
   },
 });
 

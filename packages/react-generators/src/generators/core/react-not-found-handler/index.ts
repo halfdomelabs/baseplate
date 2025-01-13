@@ -5,7 +5,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -27,53 +27,58 @@ export interface ReactNotFoundProvider {
 export const reactNotFoundProvider =
   createProviderType<ReactNotFoundProvider>('react-not-found');
 
-const ReactNotFoundHandlerGenerator = createGeneratorWithChildren({
+const ReactNotFoundHandlerGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    reactPages: reactRoutesProvider,
-    reactComponents: reactComponentsProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    reactNotFound: reactNotFoundProvider.export(projectScope),
-  },
-  createGenerator({ layoutKey }, { reactPages, reactComponents, typescript }) {
-    const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
-      `${reactPages.getDirectoryBase()}/NotFound.page.tsx`,
-    );
-
-    const notFoundRoute = {
-      path: '*',
-      element: TypescriptCodeUtils.createExpression(
-        `<NotFoundPage />`,
-        `import NotFoundPage from '${notFoundPageImport}';`,
-        {
-          importMappers: [reactComponents],
-        },
-      ),
-    };
-
-    reactPages.registerRoute({
-      ...notFoundRoute,
-      layoutKey,
-    });
-    return {
-      getProviders: () => ({
-        reactNotFound: {
-          getNotFoundRoute: () => notFoundRoute,
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'NotFound.page.tsx',
-            destination: notFoundPagePath,
-            importMappers: [reactComponents],
-          }),
-        );
+  buildTasks(taskBuilder, { layoutKey }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        reactPages: reactRoutesProvider,
+        reactComponents: reactComponentsProvider,
+        typescript: typescriptProvider,
       },
-    };
+      exports: {
+        reactNotFound: reactNotFoundProvider.export(projectScope),
+      },
+      run({ reactPages, reactComponents, typescript }) {
+        const [notFoundPageImport, notFoundPagePath] = makeImportAndFilePath(
+          `${reactPages.getDirectoryBase()}/NotFound.page.tsx`,
+        );
+
+        const notFoundRoute = {
+          path: '*',
+          element: TypescriptCodeUtils.createExpression(
+            `<NotFoundPage />`,
+            `import NotFoundPage from '${notFoundPageImport}';`,
+            {
+              importMappers: [reactComponents],
+            },
+          ),
+        };
+
+        reactPages.registerRoute({
+          ...notFoundRoute,
+          layoutKey,
+        });
+        return {
+          getProviders: () => ({
+            reactNotFound: {
+              getNotFoundRoute: () => notFoundRoute,
+            },
+          }),
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'NotFound.page.tsx',
+                destination: notFoundPagePath,
+                importMappers: [reactComponents],
+              }),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

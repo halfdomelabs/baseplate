@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithChildren,
+  createGeneratorWithTasks,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -24,47 +24,52 @@ export type AuthComponentsProvider = ImportMapper;
 export const authComponentsProvider =
   createProviderType<AuthComponentsProvider>('auth-components');
 
-const AuthComponentsGenerator = createGeneratorWithChildren({
+const AuthComponentsGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    authHooks: authHooksProvider,
-    reactComponents: reactComponentsProvider,
-    typescript: typescriptProvider,
-  },
-  exports: {
-    authComponents: authComponentsProvider.export(projectScope),
-  },
-  createGenerator({ loginPath }, { authHooks, reactComponents, typescript }) {
-    const [, requireAuthPath] = makeImportAndFilePath(
-      `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`,
-    );
-    reactComponents.registerComponent({ name: 'RequireAuth' });
-
-    return {
-      getProviders: () => ({
-        authComponents: {
-          getImportMap: () => ({
-            '%auth-components': {
-              path: reactComponents.getComponentsImport(),
-              allowedImports: ['RequireAuth'],
-            },
-          }),
-        },
-      }),
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyAction({
-            source: 'RequireAuth.tsx',
-            destination: requireAuthPath,
-            importMappers: [authHooks],
-            replacements: {
-              LOGIN_PATH: loginPath,
-            },
-          }),
-        );
+  buildTasks(taskBuilder, { loginPath }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        authHooks: authHooksProvider,
+        reactComponents: reactComponentsProvider,
+        typescript: typescriptProvider,
       },
-    };
+      exports: {
+        authComponents: authComponentsProvider.export(projectScope),
+      },
+      run({ authHooks, reactComponents, typescript }) {
+        const [, requireAuthPath] = makeImportAndFilePath(
+          `${reactComponents.getComponentsFolder()}/RequireAuth/index.tsx`,
+        );
+        reactComponents.registerComponent({ name: 'RequireAuth' });
+
+        return {
+          getProviders: () => ({
+            authComponents: {
+              getImportMap: () => ({
+                '%auth-components': {
+                  path: reactComponents.getComponentsImport(),
+                  allowedImports: ['RequireAuth'],
+                },
+              }),
+            },
+          }),
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: 'RequireAuth.tsx',
+                destination: requireAuthPath,
+                importMappers: [authHooks],
+                replacements: {
+                  LOGIN_PATH: loginPath,
+                },
+              }),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

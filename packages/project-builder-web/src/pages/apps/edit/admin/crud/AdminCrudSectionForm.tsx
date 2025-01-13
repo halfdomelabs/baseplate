@@ -54,7 +54,7 @@ function AdminCrudSectionForm({
         label="Model"
         control={control}
         options={modelOptions}
-        name="modelName"
+        name="modelRef"
       />
       <CheckedInput.LabelledController
         label="Disable Create?"

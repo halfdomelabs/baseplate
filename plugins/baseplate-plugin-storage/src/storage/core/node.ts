@@ -42,9 +42,14 @@ export default createPlatformPluginExport({
               hostedUrlConfigVar: a.hostedUrlConfigVar,
             })),
             categories: storage.categories.map((c) => ({
-              ...c,
-              usedByRelation: definitionContainer.nameFromId(c.usedByRelation),
-              defaultAdapter: definitionContainer.nameFromId(c.defaultAdapter),
+              name: c.name,
+              maxFileSize: c.maxFileSize,
+              usedByRelation: definitionContainer.nameFromId(
+                c.usedByRelationRef,
+              ),
+              defaultAdapter: definitionContainer.nameFromId(
+                c.defaultAdapterRef,
+              ),
               uploadRoles: c.uploadRoles.map((r) =>
                 definitionContainer.nameFromId(r),
               ),

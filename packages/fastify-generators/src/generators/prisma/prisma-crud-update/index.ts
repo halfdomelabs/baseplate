@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type {
@@ -145,69 +145,71 @@ export async function METHOD_NAME({ ID_ARG, data, query, EXTRA_ARGS }: UpdateSer
   );
 }
 
-const PrismaCrudUpdateGenerator = createGeneratorWithChildren({
+const PrismaCrudUpdateGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    prismaOutput: prismaOutputProvider,
-    serviceFile: serviceFileProvider.dependency(),
-    crudPrismaService: prismaCrudServiceProvider,
-    serviceContext: serviceContextProvider,
-    prismaUtils: prismaUtilsProvider,
-  },
-  createGenerator(
-    descriptor,
-    {
-      prismaOutput,
-      serviceFile,
-      crudPrismaService,
-      serviceContext,
-      prismaUtils,
-    },
-  ) {
-    const { name, modelName, prismaFields, transformerNames } = descriptor;
-    const methodName = `${name}${modelName}`;
-
-    const serviceMethodExpression = TypescriptCodeUtils.createExpression(
-      methodName,
-      `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
-    );
-    const transformerOption: PrismaDataTransformerOptions = {
-      operationType: 'update',
-    };
-    const transformers: PrismaDataTransformer[] =
-      transformerNames?.map((transformerName) =>
-        crudPrismaService
-          .getTransformerByName(transformerName)
-          .buildTransformer(transformerOption),
-      ) ?? [];
-
-    return {
-      getProviders: () => ({}),
-      build: () => {
-        const model = prismaOutput.getPrismaModel(modelName);
-        const primaryKey = getPrimaryKeyExpressions(model);
-        const methodOptions: PrismaDataMethodOptions = {
-          name: methodName,
-          modelName,
-          prismaFieldNames: prismaFields,
-          prismaOutput,
-          operationName: 'update',
-          isPartial: true,
-          transformers,
-          serviceContext,
-          prismaUtils,
-          operationType: 'update',
-          whereUniqueExpression: primaryKey.whereClause,
-        };
-
-        serviceFile.registerMethod(
-          name,
-          getMethodBlock(methodOptions),
-          getMethodDefinition(serviceMethodExpression, methodOptions),
-        );
+  buildTasks(taskBuilder, descriptor) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prismaOutput: prismaOutputProvider,
+        serviceFile: serviceFileProvider.dependency(),
+        crudPrismaService: prismaCrudServiceProvider,
+        serviceContext: serviceContextProvider,
+        prismaUtils: prismaUtilsProvider,
       },
-    };
+      run({
+        prismaOutput,
+        serviceFile,
+        crudPrismaService,
+        serviceContext,
+        prismaUtils,
+      }) {
+        const { name, modelName, prismaFields, transformerNames } = descriptor;
+        const methodName = `${name}${modelName}`;
+
+        const serviceMethodExpression = TypescriptCodeUtils.createExpression(
+          methodName,
+          `import { ${methodName} } from '${serviceFile.getServiceImport()}';`,
+        );
+        const transformerOption: PrismaDataTransformerOptions = {
+          operationType: 'update',
+        };
+        const transformers: PrismaDataTransformer[] =
+          transformerNames?.map((transformerName) =>
+            crudPrismaService
+              .getTransformerByName(transformerName)
+              .buildTransformer(transformerOption),
+          ) ?? [];
+
+        return {
+          getProviders: () => ({}),
+          build: () => {
+            const model = prismaOutput.getPrismaModel(modelName);
+            const primaryKey = getPrimaryKeyExpressions(model);
+            const methodOptions: PrismaDataMethodOptions = {
+              name: methodName,
+              modelName,
+              prismaFieldNames: prismaFields,
+              prismaOutput,
+              operationName: 'update',
+              isPartial: true,
+              transformers,
+              serviceContext,
+              prismaUtils,
+              operationType: 'update',
+              whereUniqueExpression: primaryKey.whereClause,
+            };
+
+            serviceFile.registerMethod(
+              name,
+              getMethodBlock(methodOptions),
+              getMethodDefinition(serviceMethodExpression, methodOptions),
+            );
+          },
+        };
+      },
+    });
   },
 });
 

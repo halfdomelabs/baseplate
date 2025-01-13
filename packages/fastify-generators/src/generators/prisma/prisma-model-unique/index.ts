@@ -1,4 +1,4 @@
-import { createGeneratorWithChildren } from '@halfdomelabs/sync';
+import { createGeneratorWithTasks } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaModelProvider } from '../prisma-model/index.js';
@@ -11,18 +11,23 @@ const descriptorSchema = z.object({
   ),
 });
 
-const PrismaModelUniqueGenerator = createGeneratorWithChildren({
+const PrismaModelUniqueGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
-  dependencies: {
-    prismaModel: prismaModelProvider,
-  },
-  createGenerator({ fields }, { prismaModel }) {
-    prismaModel.addModelAttribute({
-      name: '@@unique',
-      args: [fields.map(({ name }) => name)],
+  buildTasks(taskBuilder, { fields }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        prismaModel: prismaModelProvider,
+      },
+      run({ prismaModel }) {
+        prismaModel.addModelAttribute({
+          name: '@@unique',
+          args: [fields.map(({ name }) => name)],
+        });
+        return {};
+      },
     });
-    return {};
   },
 });
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { ExitPromptError } from '@inquirer/prompts';
 import chalk from 'chalk';
 import { program } from 'commander';
 import fs from 'node:fs/promises';
@@ -81,7 +80,7 @@ async function runMain(): Promise<void> {
 }
 
 await runMain().catch((err: unknown) => {
-  if (err instanceof ExitPromptError) {
+  if (err instanceof Error && err.name === 'ExitPromptError') {
     return;
   }
   console.error(

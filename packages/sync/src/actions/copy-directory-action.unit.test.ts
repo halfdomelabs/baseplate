@@ -1,7 +1,8 @@
 import { vol } from 'memfs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { OutputBuilder } from '../core/index.js';
+import { GeneratorTaskOutputBuilder } from '@src/output/index.js';
+
 import { copyDirectoryAction } from './copy-directory-action.js';
 
 vi.mock('fs');
@@ -15,11 +16,12 @@ describe('copyDirectoryAction', () => {
   it('should copy an empty directory', async () => {
     await vol.promises.mkdir('/generator/templates', { recursive: true });
 
-    const builder = new OutputBuilder('/generator');
+    const builder = new GeneratorTaskOutputBuilder('/generator');
 
-    await copyDirectoryAction({ source: '/', destination: '/' }).execute(
-      builder,
-    );
+    await copyDirectoryAction({
+      source: '/',
+      destination: '/',
+    }).execute(builder);
 
     expect(builder.output.files.size).toEqual(0);
     expect(builder.output.postWriteCommands).toHaveLength(0);
@@ -31,7 +33,7 @@ describe('copyDirectoryAction', () => {
       '/generator/templates/a/nested/test2.txt': 'hi2',
     });
 
-    const builder = new OutputBuilder('/generator');
+    const builder = new GeneratorTaskOutputBuilder('/generator');
 
     await copyDirectoryAction({
       source: '/a',
@@ -53,7 +55,7 @@ describe('copyDirectoryAction', () => {
       '/generator/templates/test1.txt': 'hi',
     });
 
-    const builder = new OutputBuilder('/generator');
+    const builder = new GeneratorTaskOutputBuilder('/generator');
 
     await copyDirectoryAction({
       source: '/',
