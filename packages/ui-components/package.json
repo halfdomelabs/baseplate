@@ -119,34 +119,5 @@
   },
   "publishConfig": {
     "access": "restricted"
-  },
-  "nx": {
-    "targets": {
-      "build": {
-        "dependsOn": [
-          "^build"
-        ],
-        "inputs": [
-          "production",
-          "^production"
-        ],
-        "outputs": [
-          "{projectRoot}/dist",
-          "{projectRoot}/tailwind.config.js"
-        ]
-      },
-      "build:storybook": {
-        "dependsOn": [
-          "^build"
-        ],
-        "inputs": [
-          "default",
-          "^production"
-        ],
-        "outputs": [
-          "{projectRoot}/storybook-static"
-        ]
-      }
-    }
   }
 }
