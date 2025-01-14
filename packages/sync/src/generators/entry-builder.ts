@@ -109,6 +109,8 @@ export async function buildGeneratorEntry(
 
   const { children, scopes, tasks } = config.createGenerator(descriptor, {
     id,
+    generatorName: descriptor.generator,
+    generatorBaseDirectory: generatorConfigEntry.directory,
     logger: context.logger,
   });
 
@@ -134,6 +136,12 @@ export async function buildGeneratorEntry(
         childDescriptorOrReferences
           .filter(notEmpty)
           .map(async (descriptorOrRef) => {
+            if (
+              typeof descriptorOrRef === 'object' &&
+              'tasks' in descriptorOrRef
+            ) {
+              throw new Error(`Instantiated generators not supported here`);
+            }
             const childDescriptor = await resolveDescriptorOrReference(
               descriptorOrRef,
               context.baseDirectory,

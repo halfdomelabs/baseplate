@@ -126,15 +126,42 @@ export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
 
 export interface CreateGeneratorContext {
   id: string;
+  generatorName: string;
+  generatorBaseDirectory: string;
   logger: Logger;
 }
 
+/**
+ * A generator bundle contains the built generator and its children
+ */
 export interface GeneratorBundle {
+  /**
+   * The name of the generator
+   */
+  name: string;
+  /**
+   * The directory of the generator
+   */
+  directory: string;
+  /**
+   * The scopes of the generator
+   */
   scopes: ProviderExportScope[];
+  /**
+   * The children of the generator
+   */
   children: Record<
     string,
-    ChildDescriptorOrReference[] | ChildDescriptorOrReference | null
+    | ChildDescriptorOrReference[]
+    | ChildDescriptorOrReference
+    | null
+    | undefined
+    | GeneratorBundle
+    | GeneratorBundle[]
   >;
+  /**
+   * The tasks of the generator
+   */
   tasks: GeneratorTask[];
 }
 
