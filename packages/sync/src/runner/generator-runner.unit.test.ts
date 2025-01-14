@@ -4,8 +4,8 @@ import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-outp
 
 import { createEventedLogger } from '@src/utils/index.js';
 
-import type { GeneratorEntry } from '../generators/entry-builder.js';
 import type {
+  GeneratorEntry,
   ProviderDependencyMap,
   ProviderExportMap,
 } from '../generators/index.js';

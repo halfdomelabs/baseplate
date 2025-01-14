@@ -5,7 +5,7 @@ import type { Logger } from '@src/utils/evented-logger.js';
 import type {
   GeneratorEntry,
   GeneratorTaskEntry,
-} from '../generators/entry-builder.js';
+} from '../generators/index.js';
 import type { ProviderDependencyOptions } from '../providers/index.js';
 
 type GeneratorIdToScopesMap = Record<

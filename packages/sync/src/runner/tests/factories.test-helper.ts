@@ -5,7 +5,7 @@ import type { GeneratorBundle } from '@src/generators/generators.js';
 import type {
   GeneratorEntry,
   GeneratorTaskEntry,
-} from '../../generators/entry-builder.js';
+} from '../../generators/build-generator-entry.js';
 
 let lastGeneratorId = 100;
 let lastTaskId = 100;

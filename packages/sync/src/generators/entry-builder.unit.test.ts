@@ -8,7 +8,10 @@ import type { ProviderDependencyMap, ProviderExportMap } from './generators.js';
 import type { GeneratorConfigMap } from './loader.js';
 
 import { createProviderType } from '../providers/index.js';
-import { buildGeneratorEntry, getGeneratorId } from './entry-builder.js';
+import {
+  buildGeneratorEntryFromDescriptor,
+  getGeneratorId,
+} from './entry-builder.js';
 
 vi.mock('../utils/fs.js');
 
@@ -49,7 +52,7 @@ describe('getGeneratorId', () => {
   });
 });
 
-describe('buildGeneratorEntry', () => {
+describe('buildGeneratorEntryFromDescriptor', () => {
   const simpleDependencies: ProviderDependencyMap = {
     dep: createProviderType('dep'),
   };
@@ -130,7 +133,7 @@ describe('buildGeneratorEntry', () => {
   };
 
   it('should build a simple unnested generator', async () => {
-    const entry = await buildGeneratorEntry(
+    const entry = await buildGeneratorEntryFromDescriptor(
       { generator: 'simple' },
       'project',
       generatorContext,
@@ -150,7 +153,7 @@ describe('buildGeneratorEntry', () => {
   });
 
   it('should build a nested generator', async () => {
-    const entry = await buildGeneratorEntry(
+    const entry = await buildGeneratorEntryFromDescriptor(
       { generator: 'nested' },
       'project',
       generatorContext,
@@ -173,7 +176,7 @@ describe('buildGeneratorEntry', () => {
   it('should build a reference child', async () => {
     mockedReadJsonWithSchema.mockResolvedValueOnce({ generator: 'simple' });
 
-    const entry = await buildGeneratorEntry(
+    const entry = await buildGeneratorEntryFromDescriptor(
       { generator: 'reference' },
       'project',
       generatorContext,
