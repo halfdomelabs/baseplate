@@ -87,6 +87,19 @@ export default createTypescriptMorpher({
       },
     ]);
 
+    // If there is a getDefaultChildGenerators function that only returns an empty object, remove it
+    const getDefaultChildGenerators = firstArg.getProperty(
+      'getDefaultChildGenerators',
+    );
+
+    if (
+      getDefaultChildGenerators &&
+      getDefaultChildGenerators.getText() ===
+        'getDefaultChildGenerators: () => ({})'
+    ) {
+      getDefaultChildGenerators.remove();
+    }
+
     // Replace the variable declaration
     const variableStatement = variableDeclaration.getFirstAncestorByKind(
       SyntaxKind.VariableStatement,

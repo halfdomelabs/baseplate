@@ -27,6 +27,7 @@ export const prettierProvider =
 
 const PrettierGenerator = createGeneratorWithTasks({
   descriptorSchema,
+  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',
