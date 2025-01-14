@@ -1,9 +1,11 @@
 import type { ProviderExportScope } from '@src/providers/index.js';
+import type { Logger } from '@src/utils/evented-logger.js';
 
-import {
-  type GeneratorTask,
-  type ProviderDependencyMap,
-  type ProviderExportMap,
+import type {
+  GeneratorBundle,
+  GeneratorTask,
+  ProviderDependencyMap,
+  ProviderExportMap,
 } from './generators.js';
 
 /**
@@ -64,4 +66,64 @@ export interface GeneratorEntry {
    * The tasks of the generator entry
    */
   tasks: GeneratorTaskEntry[];
+}
+
+export interface BuildGeneratorEntryContext {
+  logger: Logger;
+}
+
+function buildGeneratorEntryRecursive(
+  id: string,
+  bundle: GeneratorBundle,
+  context: BuildGeneratorEntryContext,
+): GeneratorEntry {
+  const { children, scopes, tasks, directory } = bundle;
+
+  const taskEntries = tasks.map(
+    (task): GeneratorTaskEntry => ({
+      id: `${id}#${task.name}`,
+      dependencies: task.dependencies ?? {},
+      exports: task.exports ?? {},
+      task,
+      generatorBaseDirectory: directory,
+      dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
+      generatorName: bundle.name,
+    }),
+  );
+
+  // recursively build children generator entries
+  const builtChildEntries = Object.entries(children).map(([key, value]) => {
+    const childId = `${id}.${key}`;
+
+    const isMultiple = Array.isArray(value);
+    const children = isMultiple ? value : [value];
+
+    return children
+      .filter((child) => child !== undefined)
+      .map((child, idx) => {
+        // TODO: Remove this once we get rid of old generator entry format
+        if (typeof child !== 'object' || !child || 'generator' in child) {
+          throw new Error(
+            `Child descriptor or reference or null not supported`,
+          );
+        }
+        const subChildId = isMultiple ? `${id}.${key}.${idx}` : childId;
+        return buildGeneratorEntryRecursive(subChildId, child, context);
+      });
+  });
+
+  return {
+    id,
+    generatorBaseDirectory: directory,
+    scopes,
+    children: builtChildEntries.flat(),
+    tasks: taskEntries,
+  };
+}
+
+export function buildGeneratorEntry(
+  bundle: GeneratorBundle,
+  context: BuildGeneratorEntryContext,
+): GeneratorEntry {
+  return buildGeneratorEntryRecursive('root', bundle, context);
 }

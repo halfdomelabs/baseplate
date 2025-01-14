@@ -140,7 +140,6 @@ describe('buildGeneratorEntryFromDescriptor', () => {
     );
     expect(entry).toMatchObject({
       id: 'project',
-      generatorConfig: generatorMap.simple?.config,
       children: [],
       tasks: [
         {
@@ -159,16 +158,14 @@ describe('buildGeneratorEntryFromDescriptor', () => {
       generatorContext,
     );
     expect(entry).toMatchObject({
-      generatorConfig: generatorMap.nested?.config,
+      id: 'project',
     });
     expect(entry.children).toMatchObject([
       {
         id: 'project:child',
-        generatorConfig: generatorMap.simple?.config,
       },
       {
         id: 'project:childMany.bob',
-        generatorConfig: generatorMap.simple?.config,
       },
     ]);
   });
@@ -182,12 +179,11 @@ describe('buildGeneratorEntryFromDescriptor', () => {
       generatorContext,
     );
     expect(entry).toMatchObject({
-      generatorConfig: generatorMap.reference?.config,
+      id: 'project',
     });
     expect(entry.children).toMatchObject([
       {
         id: 'child-descriptor',
-        generatorConfig: generatorMap.simple?.config,
       },
     ]);
     expect(mockedReadJsonWithSchema).toHaveBeenCalledWith(

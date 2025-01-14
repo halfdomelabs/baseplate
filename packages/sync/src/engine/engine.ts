@@ -1,9 +1,13 @@
 import path from 'node:path';
 
-import type { GeneratorEntry } from '@src/generators/build-generator-entry.js';
+import type { GeneratorBundle } from '@src/generators/generators.js';
 import type { GeneratorOutput } from '@src/output/generator-task-output.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import {
+  buildGeneratorEntry,
+  type GeneratorEntry,
+} from '@src/generators/build-generator-entry.js';
 import { baseDescriptorSchema } from '@src/generators/generators.js';
 import { readJsonWithSchema } from '@src/utils/fs.js';
 
@@ -62,6 +66,21 @@ export class GeneratorEngine {
     );
 
     return rootGeneratorEntry;
+  }
+
+  /**
+   * Loads the root generator entry from a generator bundle.
+   *
+   * @param bundle - The generator bundle.
+   * @param logger - The logger to use.
+   */
+  loadProjectFromGeneratorBundle(
+    bundle: GeneratorBundle,
+    logger: Logger = console,
+  ): GeneratorEntry {
+    return buildGeneratorEntry(bundle, {
+      logger,
+    });
   }
 
   /**
