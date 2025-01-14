@@ -32,7 +32,6 @@ export interface GeneratorEntry {
   scopes: ProviderExportScope[];
   generatorConfig: GeneratorConfig;
   generatorBaseDirectory: string;
-  descriptor: BaseGeneratorDescriptor;
   children: GeneratorEntry[];
   tasks: GeneratorTaskEntry[];
 }
@@ -108,14 +107,12 @@ export async function buildGeneratorEntry(
   }
   const { config } = generatorConfigEntry;
 
-  const { children = {}, validatedDescriptor } = config.parseDescriptor(
-    descriptor,
-    { id, logger: context.logger },
-  );
+  const { children, scopes, tasks } = config.createGenerator(descriptor, {
+    id,
+    logger: context.logger,
+  });
 
-  const generatorDescriptor = validatedDescriptor ?? descriptor;
-
-  const tasks = config.createGenerator(generatorDescriptor).map(
+  const taskEntries = tasks.map(
     (task): GeneratorTaskEntry => ({
       id: `${id}#${task.name}`,
       dependencies: task.dependencies ?? {},
@@ -166,9 +163,8 @@ export async function buildGeneratorEntry(
     id,
     generatorConfig: config,
     generatorBaseDirectory: generatorConfigEntry.directory,
-    scopes: config.scopes ?? [],
-    descriptor: generatorDescriptor,
+    scopes,
     children: childGenerators,
-    tasks,
+    tasks: taskEntries,
   };
 }

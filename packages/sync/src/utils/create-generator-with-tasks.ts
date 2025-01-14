@@ -4,7 +4,10 @@ import * as R from 'ramda';
 
 import type {
   BaseGeneratorDescriptor,
+  ChildDescriptorOrReference,
+  CreateGeneratorContext,
   GeneratorConfig,
+  GeneratorTask,
   InferDependencyProviderMap,
   InferExportProviderMap,
   ProviderDependencyMap,
@@ -188,172 +191,192 @@ export interface GeneratorWithTasksConfig<DescriptorSchema extends z.ZodType> {
 export function createGeneratorWithTasks<DescriptorSchema extends z.ZodType>(
   config: GeneratorWithTasksConfig<DescriptorSchema>,
 ): GeneratorConfig<DescriptorWithChildren & z.infer<DescriptorSchema>> {
-  return {
-    scopes: config.scopes,
-    parseDescriptor: (descriptor: DescriptorWithChildren, context) => {
-      try {
-        // TODO: Merge with base descriptor
-        const mergedSchema = config.descriptorSchema?.and(baseDescriptorSchema);
-        const validatedDescriptor = mergedSchema?.parse(
-          descriptor,
-        ) as DescriptorWithChildren & z.infer<DescriptorSchema>;
-        const { id } = context;
-        const childGeneratorConfigs =
-          config.getDefaultChildGenerators?.(descriptor) ?? {};
+  function parseDescriptor(
+    descriptor: DescriptorWithChildren,
+    context: CreateGeneratorContext,
+  ): {
+    children: Record<
+      string,
+      ChildDescriptorOrReference[] | ChildDescriptorOrReference | null
+    >;
+    validatedDescriptor: DescriptorWithChildren & z.infer<DescriptorSchema>;
+  } {
+    try {
+      // TODO: Merge with base descriptor
+      const mergedSchema = config.descriptorSchema?.and(baseDescriptorSchema);
+      const validatedDescriptor = mergedSchema?.parse(
+        descriptor,
+      ) as DescriptorWithChildren & z.infer<DescriptorSchema>;
+      const { id } = context;
+      const childGeneratorConfigs =
+        config.getDefaultChildGenerators?.(descriptor) ?? {};
 
-        // make sure descriptor children match context
-        const descriptorChildren = descriptor.children ?? {};
-        const invalidChild = Object.keys(descriptorChildren)
-          .filter((key) => !key.startsWith('$'))
-          .find((key) => !childGeneratorConfigs[key]);
-        if (invalidChild) {
-          throw new Error(
-            `Unknown child found in descriptor: ${invalidChild} (in ${id}). Prefix key with $ if custom child`,
-          );
+      // make sure descriptor children match context
+      const descriptorChildren = descriptor.children ?? {};
+      const invalidChild = Object.keys(descriptorChildren)
+        .filter((key) => !key.startsWith('$'))
+        .find((key) => !childGeneratorConfigs[key]);
+      if (invalidChild) {
+        throw new Error(
+          `Unknown child found in descriptor: ${invalidChild} (in ${id}). Prefix key with $ if custom child`,
+        );
+      }
+
+      const mergeAndValidateDescriptor = (
+        { defaultDescriptor, defaultToNullIfEmpty }: ChildGeneratorConfig,
+        descriptorChild:
+          | Partial<BaseGeneratorDescriptor>
+          | string
+          | undefined
+          | null,
+      ): BaseGeneratorDescriptor | string | null => {
+        if (typeof descriptorChild === 'string') {
+          // child references are not parsed currently
+          // TODO: Figure out better solution?
+          return descriptorChild;
         }
 
-        const mergeAndValidateDescriptor = (
-          { defaultDescriptor, defaultToNullIfEmpty }: ChildGeneratorConfig,
-          descriptorChild:
-            | Partial<BaseGeneratorDescriptor>
-            | string
-            | undefined
-            | null,
-        ): BaseGeneratorDescriptor | string | null => {
-          if (typeof descriptorChild === 'string') {
-            // child references are not parsed currently
-            // TODO: Figure out better solution?
-            return descriptorChild;
-          }
+        // if neither default descriptor nor descriptor child is provided, assume null
+        // if no descriptor child and we've been told to default to null, return null
+        // if descriptor child is null, assume it's been explicitly removed
+        if (
+          (!defaultDescriptor && !descriptorChild) ||
+          (!descriptorChild && !!defaultToNullIfEmpty) ||
+          descriptorChild === null
+        ) {
+          return null;
+        }
 
-          // if neither default descriptor nor descriptor child is provided, assume null
-          // if no descriptor child and we've been told to default to null, return null
-          // if descriptor child is null, assume it's been explicitly removed
-          if (
-            (!defaultDescriptor && !descriptorChild) ||
-            (!descriptorChild && !!defaultToNullIfEmpty) ||
-            descriptorChild === null
-          ) {
-            return null;
-          }
+        const mergedDescriptor = R.mergeRight(
+          defaultDescriptor ?? {},
+          descriptorChild ?? {},
+        );
 
-          const mergedDescriptor = R.mergeRight(
-            defaultDescriptor ?? {},
-            descriptorChild ?? {},
-          );
+        const validatedChildDescriptor = baseDescriptorSchema
+          .passthrough()
+          .parse(mergedDescriptor);
 
-          const validatedChildDescriptor = baseDescriptorSchema
-            .passthrough()
-            .parse(mergedDescriptor);
+        // TODO: Need to implement provider
 
-          // TODO: Need to implement provider
+        return validatedChildDescriptor;
+      };
 
-          return validatedChildDescriptor;
-        };
+      const children = R.mapObjIndexed((value, key) => {
+        if (!value) {
+          return null;
+        }
+        const { isMultiple } = value;
 
-        const children = R.mapObjIndexed((value, key) => {
-          if (!value) {
-            return null;
-          }
-          const { isMultiple } = value;
-
-          if (isMultiple) {
-            const childArray = descriptorChildren[key] ?? [];
-            if (!Array.isArray(childArray)) {
-              throw new TypeError(
-                `${id} has invalid child ${key}. Must be array.`,
-              );
-            }
-            return childArray
-              .map((childDescriptor) =>
-                mergeAndValidateDescriptor(value, childDescriptor),
-              )
-              .filter(notEmpty);
-          }
-          const child = descriptorChildren[key];
-
-          if (Array.isArray(child)) {
+        if (isMultiple) {
+          const childArray = descriptorChildren[key] ?? [];
+          if (!Array.isArray(childArray)) {
             throw new TypeError(
-              `${id} has invalid child ${key}. Cannot be array.`,
+              `${id} has invalid child ${key}. Must be array.`,
             );
           }
-          return mergeAndValidateDescriptor(value, child);
-        }, childGeneratorConfigs);
+          return childArray
+            .map((childDescriptor) =>
+              mergeAndValidateDescriptor(value, childDescriptor),
+            )
+            .filter(notEmpty);
+        }
+        const child = descriptorChildren[key];
 
-        const customChildren: Record<string, BaseGeneratorDescriptor | string> =
-          R.pickBy((_, key) => key.startsWith('$'), descriptorChildren);
+        if (Array.isArray(child)) {
+          throw new TypeError(
+            `${id} has invalid child ${key}. Cannot be array.`,
+          );
+        }
+        return mergeAndValidateDescriptor(value, child);
+      }, childGeneratorConfigs);
 
+      const customChildren: Record<string, BaseGeneratorDescriptor | string> =
+        R.pickBy((_, key) => key.startsWith('$'), descriptorChildren);
+
+      return {
+        children: R.mergeRight(children, customChildren),
+        validatedDescriptor,
+      };
+    } catch (error) {
+      context.logger.error(
+        `Descriptor validation failed at ${context.id}: ${
+          (error as Error).message
+        }`,
+      );
+      throw error;
+    }
+  }
+  function buildTasks(descriptor: DescriptorWithChildren): GeneratorTask[] {
+    const tasks: SimpleGeneratorTaskConfig<
+      ProviderExportMap,
+      ProviderDependencyMap,
+      TaskOutputDependencyMap
+    >[] = [];
+    const taskOutputs: Record<string, unknown> = {};
+    const taskBuilder: GeneratorTaskBuilder<
+      DescriptorWithChildren & z.infer<DescriptorSchema>
+    > = {
+      addTask: (task) => {
+        tasks.push(task instanceof Function ? task(descriptor) : task);
         return {
-          children: R.mergeRight(children, customChildren),
-          validatedDescriptor,
+          name: task.name,
+          getOutput: () => {
+            if (!(task.name in taskOutputs)) {
+              throw new Error(`Task ${task.name} has not run yet`);
+            }
+            // no easy way of typing this
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
+            return taskOutputs[task.name] as any;
+          },
         };
-      } catch (error) {
-        context.logger.error(
-          `Descriptor validation failed at ${context.id}: ${
-            (error as Error).message
-          }`,
-        );
-        throw error;
-      }
-    },
-    createGenerator: (descriptor) => {
-      const tasks: SimpleGeneratorTaskConfig<
-        ProviderExportMap,
-        ProviderDependencyMap,
-        TaskOutputDependencyMap
-      >[] = [];
-      const taskOutputs: Record<string, unknown> = {};
-      const taskBuilder: GeneratorTaskBuilder<
-        DescriptorWithChildren & z.infer<DescriptorSchema>
-      > = {
-        addTask: (task) => {
-          tasks.push(task instanceof Function ? task(descriptor) : task);
+      },
+    };
+    config.buildTasks(taskBuilder, descriptor);
+
+    return tasks.map((task) => {
+      const taskDependencies = task.taskDependencies ?? {};
+      return {
+        name: task.name,
+        dependencies: task.dependencies,
+        exports: task.exports,
+        taskDependencies: Object.values(taskDependencies).map(
+          (dep) => dep.name,
+        ),
+        run(dependencies) {
+          const resolvedTaskOutputs = R.mapObjIndexed(
+            (obj) => obj.getOutput(),
+            taskDependencies,
+          );
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- task.run may return undefined
+          const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
           return {
-            name: task.name,
-            getOutput: () => {
-              if (!(task.name in taskOutputs)) {
-                throw new Error(`Task ${task.name} has not run yet`);
+            getProviders: runResult.getProviders,
+            async build(builder) {
+              if (!runResult.build) {
+                return;
               }
-              // no easy way of typing this
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any
-              return taskOutputs[task.name] as any;
+              const taskOutput = await Promise.resolve(
+                runResult.build(builder),
+              );
+              taskOutputs[task.name] = taskOutput;
             },
           };
         },
       };
-      config.buildTasks(taskBuilder, descriptor);
-
-      return tasks.map((task) => {
-        const taskDependencies = task.taskDependencies ?? {};
-        return {
-          name: task.name,
-          dependencies: task.dependencies,
-          exports: task.exports,
-          taskDependencies: Object.values(taskDependencies).map(
-            (dep) => dep.name,
-          ),
-          run(dependencies) {
-            const resolvedTaskOutputs = R.mapObjIndexed(
-              (obj) => obj.getOutput(),
-              taskDependencies,
-            );
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- task.run may return undefined
-            const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
-            return {
-              getProviders: runResult.getProviders,
-              async build(builder) {
-                if (!runResult.build) {
-                  return;
-                }
-                const taskOutput = await Promise.resolve(
-                  runResult.build(builder),
-                );
-                taskOutputs[task.name] = taskOutput;
-              },
-            };
-          },
-        };
-      });
+    });
+  }
+  return {
+    createGenerator: (descriptor, context) => {
+      const { children, validatedDescriptor } = parseDescriptor(
+        descriptor,
+        context,
+      );
+      const tasks = buildTasks(validatedDescriptor);
+      return {
+        scopes: config.scopes ?? [],
+        children,
+        tasks,
+      };
     },
   };
 }

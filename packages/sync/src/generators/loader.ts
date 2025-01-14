@@ -80,14 +80,6 @@ export async function loadGeneratorsForPackage(
           return;
         }
         if (
-          !('parseDescriptor' in generator) ||
-          typeof generator.parseDescriptor !== 'function'
-        ) {
-          throw new Error(
-            `Generator config lacks a parseDescriptor function: ${folder}`,
-          );
-        }
-        if (
           !('createGenerator' in generator) ||
           typeof generator.createGenerator !== 'function'
         ) {

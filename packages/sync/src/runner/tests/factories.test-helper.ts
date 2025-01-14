@@ -1,5 +1,7 @@
 import { vi } from 'vitest';
 
+import type { GeneratorBundle } from '@src/generators/generators.js';
+
 import type {
   GeneratorEntry,
   GeneratorTaskEntry,
@@ -7,6 +9,17 @@ import type {
 
 let lastGeneratorId = 100;
 let lastTaskId = 100;
+
+export function buildTestGeneratorBundle(
+  bundle: Partial<GeneratorBundle>,
+): GeneratorBundle {
+  return {
+    scopes: [],
+    children: {},
+    tasks: [],
+    ...bundle,
+  };
+}
 
 export function buildTestGeneratorTaskEntry(
   data?: Partial<GeneratorTaskEntry>,
@@ -50,11 +63,12 @@ export function buildTestGeneratorEntry(
   return {
     id,
     scopes: [],
-    descriptor: { generator: 'simple' },
     generatorBaseDirectory: '/',
     generatorConfig: {
-      createGenerator: () => tasks.map((t) => t.task),
-      parseDescriptor: vi.fn(),
+      createGenerator: () =>
+        buildTestGeneratorBundle({
+          tasks: tasks.map((t) => t.task),
+        }),
     },
     children: [],
     tasks,
