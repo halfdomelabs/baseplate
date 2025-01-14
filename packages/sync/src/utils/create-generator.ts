@@ -65,6 +65,12 @@ export type GeneratorBundleCreator<Descriptor> = (
 ) => GeneratorBundle;
 
 /**
+ * Infer the descriptor from a generator bundle creator
+ */
+export type InferDescriptorFromGenerator<Creator> =
+  Creator extends GeneratorBundleCreator<infer Descriptor> ? Descriptor : never;
+
+/**
  * Helper utility to create a generator with a standard format for customizable children
  *
  * @param config Configuration of the generator
