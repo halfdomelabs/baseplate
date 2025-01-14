@@ -66,12 +66,6 @@ export function buildTestGeneratorEntry(
     id,
     scopes: [],
     generatorBaseDirectory: '/',
-    generatorConfig: {
-      createGenerator: () =>
-        buildTestGeneratorBundle({
-          tasks: tasks.map((t) => t.task),
-        }),
-    },
     children: [],
     tasks,
     ...data,

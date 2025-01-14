@@ -11,7 +11,6 @@ import type { GeneratorConfigMap } from './loader.js';
 import {
   baseDescriptorSchema,
   type BaseGeneratorDescriptor,
-  type GeneratorConfig,
   type GeneratorTask,
   type ProviderDependencyMap,
   type ProviderExportMap,
@@ -30,7 +29,6 @@ export interface GeneratorTaskEntry {
 export interface GeneratorEntry {
   id: string;
   scopes: ProviderExportScope[];
-  generatorConfig: GeneratorConfig;
   generatorBaseDirectory: string;
   children: GeneratorEntry[];
   tasks: GeneratorTaskEntry[];
@@ -169,7 +167,6 @@ export async function buildGeneratorEntry(
 
   return {
     id,
-    generatorConfig: config,
     generatorBaseDirectory: generatorConfigEntry.directory,
     scopes,
     children: childGenerators,
