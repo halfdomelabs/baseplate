@@ -5,7 +5,6 @@
 
 import isCoreModule from 'is-core-module';
 import path from 'node:path';
-import * as R from 'ramda';
 
 const DEFAULT_SORT_ORDER = [
   'builtin',
@@ -109,9 +108,14 @@ export function sortByImportOrder(
   names: string[],
   settings: ImportSettings,
 ): string[] {
-  const importTypeSort = R.ascend((name: string) =>
-    DEFAULT_SORT_ORDER.indexOf(getImportType(name, settings)),
-  );
-  const nameSort = R.ascend(R.toLower);
-  return R.sortWith([importTypeSort, nameSort], names);
+  return names.toSorted((a, b) => {
+    const typeA = DEFAULT_SORT_ORDER.indexOf(getImportType(a, settings));
+    const typeB = DEFAULT_SORT_ORDER.indexOf(getImportType(b, settings));
+
+    if (typeA !== typeB) {
+      return typeA - typeB;
+    }
+
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
 }

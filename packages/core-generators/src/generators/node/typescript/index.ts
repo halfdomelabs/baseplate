@@ -7,8 +7,8 @@ import {
   createProviderType,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
-import * as R from 'ramda';
 import { ts } from 'ts-morph';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
@@ -309,7 +309,7 @@ export const typescriptGenerator = createGenerator({
                   include,
                   exclude,
                   references: references.length > 0 ? references : undefined,
-                  ...R.mergeAll(extraSections),
+                  ...safeMergeAll(extraSections),
                 },
               }),
             );

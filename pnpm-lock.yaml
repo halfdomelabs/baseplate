@@ -154,6 +154,9 @@ importers:
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@types/eslint':
         specifier: 'catalog:'
         version: 9.6.1
@@ -178,9 +181,6 @@ importers:
       prettier-plugin-packagejson:
         specifier: 2.5.6
         version: 2.5.6(prettier@3.4.2)
-      ramda:
-        specifier: ^0.28.0
-        version: 0.28.0
       resolve-from:
         specifier: 5.0.0
         version: 5.0.0
@@ -212,9 +212,6 @@ importers:
       '@types/prettier':
         specifier: ^2.7.3
         version: 2.7.3
-      '@types/ramda':
-        specifier: ^0.29.3
-        version: 0.29.12
       '@types/semver':
         specifier: ^7.5.0
         version: 7.5.8

@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@halfdomelabs/sync": "workspace:*",
+    "@halfdomelabs/utils": "workspace:*",
     "@types/eslint": "catalog:",
     "es-toolkit": "1.31.0",
     "eta": "^3.5.0",
@@ -45,7 +46,6 @@
     "package-up": "^5.0.0",
     "prettier": "catalog:",
     "prettier-plugin-packagejson": "2.5.6",
-    "ramda": "^0.28.0",
     "resolve-from": "5.0.0",
     "semver": "^7.5.4",
     "sort-keys": "^5.1.0",
@@ -58,7 +58,6 @@
     "@types/fs-extra": "11.0.4",
     "@types/is-core-module": "^2.2.0",
     "@types/prettier": "^2.7.3",
-    "@types/ramda": "^0.29.3",
     "@types/semver": "^7.5.0",
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",

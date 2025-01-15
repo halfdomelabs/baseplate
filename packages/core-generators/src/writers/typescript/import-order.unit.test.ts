@@ -1,4 +1,3 @@
-import * as R from 'ramda';
 import { describe, expect, it } from 'vitest';
 
 import { sortByImportOrder } from './import-order.js';
@@ -18,7 +17,7 @@ describe('sortByImportOrder', () => {
       './bar',
       './',
     ]);
-    expect(sortByImportOrder(R.reverse(input), {})).toEqual([
+    expect(sortByImportOrder(input.toReversed(), {})).toEqual([
       'fs',
       'chalk',
       '../foo',
@@ -32,6 +31,6 @@ describe('sortByImportOrder', () => {
     const expected = ['../../foo/bar', '../bar', './'];
 
     expect(sortByImportOrder(input, {})).toEqual(expected);
-    expect(sortByImportOrder(R.reverse(input), {})).toEqual(expected);
+    expect(sortByImportOrder(input.toReversed(), {})).toEqual(expected);
   });
 });

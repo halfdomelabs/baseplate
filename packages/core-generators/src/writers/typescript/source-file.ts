@@ -9,9 +9,9 @@ import type {
 } from 'ts-morph';
 
 import { writeFormattedAction } from '@halfdomelabs/sync';
+import { mapValues, uniqWith } from 'es-toolkit';
 import { Eta } from 'eta';
 import path from 'node:path';
-import * as R from 'ramda';
 import { Node, Project, SyntaxKind } from 'ts-morph';
 
 import type { ImportMapper } from '../../providers/index.js';
@@ -137,7 +137,7 @@ export abstract class TypescriptSourceContent<
   protected stringReplacements: Record<string, TypescriptStringReplacement[]>;
 
   constructor(configOrEntries: T) {
-    const config = R.mapObjIndexed((value): TypescriptCodeConfig => {
+    const config = mapValues(configOrEntries, (value): TypescriptCodeConfig => {
       if (value instanceof TypescriptCodeEntry || typeof value === 'string') {
         if (value instanceof TypescriptCodeBlock) {
           return { type: 'code-block', default: value };
@@ -157,22 +157,22 @@ export abstract class TypescriptSourceContent<
         throw new Error(`Unsupported code entry type: ${value.type}`);
       }
       return value;
-    }, configOrEntries);
+    });
 
     this.config = new Map(Object.entries(config));
     const keys = Object.keys(config);
-    this.codeBlocks = R.fromPairs(
+    this.codeBlocks = Object.fromEntries(
       keys.filter((k) => config[k].type === 'code-block').map((k) => [k, []]),
     );
-    this.codeWrappers = R.fromPairs(
+    this.codeWrappers = Object.fromEntries(
       keys.filter((k) => config[k].type === 'code-wrapper').map((k) => [k, []]),
     );
-    this.codeExpressions = R.fromPairs(
+    this.codeExpressions = Object.fromEntries(
       keys
         .filter((k) => config[k].type === 'code-expression')
         .map((k) => [k, []]),
     );
-    this.stringReplacements = R.fromPairs(
+    this.stringReplacements = Object.fromEntries(
       keys
         .filter((k) => config[k].type === 'string-replacement')
         .map((k) => [k, []]),
@@ -342,7 +342,7 @@ export abstract class TypescriptSourceContent<
   } {
     return {
       codeAdditions: this.codeAdditions,
-      codeBlocks: R.mapObjIndexed((value, key) => {
+      codeBlocks: mapValues(this.codeBlocks, (value, key) => {
         const configEntry = this.config.get(key);
         if (configEntry?.type !== 'code-block') {
           throw new Error('Config entry is not a code block');
@@ -350,8 +350,8 @@ export abstract class TypescriptSourceContent<
         const def = configEntry.default;
         if (value.length > 0) return value;
         return def ? [normalizeTypescriptCodeBlock(def)] : [];
-      }, this.codeBlocks),
-      codeWrappers: R.mapObjIndexed((value, key) => {
+      }),
+      codeWrappers: mapValues(this.codeWrappers, (value, key) => {
         const configEntry = this.config.get(key);
         if (configEntry?.type !== 'code-wrapper') {
           throw new Error('Config entry is not a code wrapper');
@@ -359,8 +359,8 @@ export abstract class TypescriptSourceContent<
         const def = configEntry.default;
         if (value.length > 0) return value;
         return def ? [normalizeTypescriptCodeWrappers(def)] : [];
-      }, this.codeWrappers),
-      codeExpressions: R.mapObjIndexed((value, key) => {
+      }),
+      codeExpressions: mapValues(this.codeExpressions, (value, key) => {
         const configEntry = this.config.get(key);
         if (configEntry?.type !== 'code-expression') {
           throw new Error('Config entry is not a code expression');
@@ -368,8 +368,8 @@ export abstract class TypescriptSourceContent<
         const def = configEntry.default;
         if (value.length > 0) return value;
         return def ? [normalizeTypescriptCodeExpression(def)] : [];
-      }, this.codeExpressions),
-      stringReplacements: R.mapObjIndexed((value, key) => {
+      }),
+      stringReplacements: mapValues(this.stringReplacements, (value, key) => {
         const configEntry = this.config.get(key);
         if (configEntry?.type !== 'string-replacement') {
           throw new Error('Config entry is not a string replacement');
@@ -377,7 +377,7 @@ export abstract class TypescriptSourceContent<
         const def = configEntry.default;
         if (value.length > 0) return value;
         return def ? [normalizeTypescriptStringReplacement(def)] : [];
-      }, this.stringReplacements),
+      }),
     };
   }
 
@@ -611,13 +611,13 @@ export class TypescriptSourceFile<
     );
 
     // insert manual imports
-    const providedEntries = R.flatten([
+    const providedEntries = [
       Object.values(entriesWithDefault.codeBlocks),
       Object.values(entriesWithDefault.codeWrappers),
       Object.values(entriesWithDefault.codeExpressions),
       Object.values(entriesWithDefault.stringReplacements),
       entriesWithDefault.codeAdditions.map((options) => ({ options })),
-    ]);
+    ].flat(/* The depth is always 2 */ 2);
 
     const headerBlocks = providedEntries.flatMap(
       (e) =>
@@ -626,9 +626,10 @@ export class TypescriptSourceFile<
 
     const entries = [...providedEntries, ...headerBlocks];
 
-    const importStrings = R.flatten(
-      entries.map((e) => e.options.importText).filter(notEmpty),
-    ).join('\n');
+    const importStrings = entries
+      .flatMap((e) => e.options.importText)
+      .filter(notEmpty)
+      .join('\n');
 
     file.insertText(0, importStrings);
 
@@ -637,7 +638,7 @@ export class TypescriptSourceFile<
     // collate all entry import declarations and write it out
     const allImports = [
       ...fileImports,
-      ...R.flatten(entries.map((e) => e.options.imports).filter(notEmpty)),
+      ...entries.flatMap((e) => e.options.imports).filter(notEmpty),
     ];
 
     const importMappers = [
@@ -648,11 +649,11 @@ export class TypescriptSourceFile<
     for (const i of file.getImportDeclarations()) i.remove();
 
     if (headerBlocks.length > 0) {
-      const deduplicatedHeaderBlocks = R.uniqWith(
+      const deduplicatedHeaderBlocks = uniqWith(
+        headerBlocks,
         (a, b) =>
           a.options.headerKey === b.options.headerKey &&
           a.options.headerKey != null,
-        headerBlocks,
       );
       file.insertText(0, (writer) => {
         writer.writeLine(
