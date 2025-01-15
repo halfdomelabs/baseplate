@@ -59,11 +59,6 @@ function isModule(name: string): boolean {
   return !!name && moduleRegExp.test(name);
 }
 
-const scopedMainRegExp = /^@[^/]+\/?[^/]+$/;
-function isScopedMain(name: string): boolean {
-  return !!name && scopedMainRegExp.test(name);
-}
-
 function isRelativeToParent(name: string): boolean {
   return /^\.\.$|^\.\.[\\/]/.test(name);
 }

@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
+    "@tailwindcss/forms": "0.5.9",
     "@types/ramda": "^0.29.3",
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",

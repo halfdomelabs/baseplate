@@ -20,6 +20,15 @@
         "@types/react-dom"
       ]
     },
+    "packages/fastify-generators": {
+      "entry": ["src/index.{ts,tsx}"],
+      "project": "src/**/*.{ts,tsx}",
+      "ignoreDependencies": [
+        // Tricky bug where @tailwlindcss/forms is being used by prettier-plugin-tailwindcss
+        // so must be included to not bug the build
+        "@tailwindcss/forms"
+      ]
+    },
     "packages/react-generators": {
       "entry": ["src/index.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}",
@@ -29,7 +38,7 @@
       ]
     },
     "packages/project-builder-web": {
-      "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
+      "entry": ["src/index.{ts,tsx}"],
       "project": ["src/**/*.{ts,tsx}", "plugins/*.ts"],
       "ignore": [
         // we ignore this file because it may not always be used when there are no feature flags
@@ -37,7 +46,7 @@
       ]
     },
     "packages/project-builder-cli": {
-      "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
+      "entry": ["src/index.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}",
       "ignoreDependencies": [
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
@@ -47,7 +56,7 @@
       ]
     },
     "packages/project-builder-test": {
-      "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
+      "entry": ["src/index.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}",
       "ignore": ["src/tests/*.ts"],
       "ignoreDependencies": [
@@ -58,12 +67,18 @@
       ]
     },
     "packages/project-builder-common": {
-      "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
+      "entry": ["src/index.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}",
       "ignoreDependencies": [
         // we load the plugins dynamically from the package.json
         "@halfdomelabs/baseplate-plugin-*"
       ]
+    },
+    "packages/ui-components": {
+      "entry": ["src/index.{ts,tsx}"],
+      "project": "src/**/*.{ts,tsx}",
+      // mdx files - https://github.com/webpro-nl/knip/issues/494
+      "ignoreDependencies": ["@storybook/blocks"]
     }
   },
   "ignore": [

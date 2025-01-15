@@ -91,15 +91,6 @@ export function createNonOverwriteableMap<T extends object>(
 
   let overrideValues: Partial<T> = defaultsOverwriteable ? {} : defaults;
 
-  // // performs the final merge of overrideValues and defaults
-  // const finalMerge = R.mergeWithKey((key, a, b) => {
-  //   if (mergeArraysUniquely && Array.isArray(a) && Array.isArray(b)) {
-  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  //     return uniq([...a, ...b]);
-  //   }
-  //   return b;
-  // });
-
   return {
     set(key, value) {
       if (key in overrideValues) {
