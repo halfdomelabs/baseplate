@@ -25,7 +25,7 @@ export interface PrettierProvider {
 export const prettierProvider =
   createProviderType<PrettierProvider>('prettier');
 
-export const prettierGenerator = createGenerator({
+export const simpleGenerator = createGenerator({
   name: 'migrate-generator-with-tasks/simple',
   generatorFileUrl: import.meta.url,
   descriptorSchema,

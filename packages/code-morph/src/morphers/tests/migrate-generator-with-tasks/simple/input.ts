@@ -25,7 +25,7 @@ export interface PrettierProvider {
 export const prettierProvider =
   createProviderType<PrettierProvider>('prettier');
 
-const PrettierGenerator = createGeneratorWithTasks({
+const SimpleGenerator = createGeneratorWithTasks({
   descriptorSchema,
   getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
@@ -54,4 +54,4 @@ const PrettierGenerator = createGeneratorWithTasks({
   },
 });
 
-export default PrettierGenerator;
+export default SimpleGenerator;

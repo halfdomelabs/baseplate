@@ -139,6 +139,9 @@ importers:
       '@inquirer/prompts':
         specifier: 7.2.1
         version: 7.2.1(@types/node@20.12.7)
+      change-case:
+        specifier: 5.4.4
+        version: 5.4.4
       commander:
         specifier: ^12.1.0
         version: 12.1.0

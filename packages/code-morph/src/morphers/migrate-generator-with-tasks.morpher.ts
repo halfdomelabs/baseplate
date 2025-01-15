@@ -1,5 +1,6 @@
 import type { SourceFile } from 'ts-morph';
 
+import { kebabCase } from 'change-case';
 import path from 'node:path';
 import { Node, SyntaxKind } from 'ts-morph';
 
@@ -74,6 +75,17 @@ export default createTypescriptMorpher({
       throw new Error('Generator must be in at least 2 directories deep');
     }
     const generatorPath = `${parts.at(-3)}/${parts.at(-2)}`;
+
+    // Test the generator name matches the last part of the generator path
+    const expectedGeneratorName = kebabCase(generatorName).replace(
+      '-generator',
+      '',
+    );
+    if (expectedGeneratorName !== parts.at(-2)) {
+      throw new Error(
+        `Generator name must match the kebab case of the last part of the path: ${expectedGeneratorName} !== ${parts.at(-2)}`,
+      );
+    }
 
     // Add name and generatorFileUrl properties
     firstArg.insertPropertyAssignments(0, [
