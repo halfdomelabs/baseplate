@@ -23,6 +23,7 @@
     "test": "turbo run test --continue",
     "test:affected": "turbo run test --affected --continue",
     "test:e2e": "turbo run @halfdomelabs/project-builder-test#test:e2e",
+    "test:e2e:affected": "turbo run @halfdomelabs/project-builder-test#test:e2e --affected",
     "test:generate": "pnpm run --filter @halfdomelabs/project-builder-test start generate",
     "typecheck": "turbo run typecheck --affected",
     "versions:check": "check-dependency-version-consistency .",
