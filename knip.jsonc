@@ -15,6 +15,14 @@
       ],
       "project": "src/**/*.{ts,tsx}"
     },
+    "packages/react-generators": {
+      "entry": ["src/index.{ts,tsx}"],
+      "project": "src/**/*.{ts,tsx}",
+      "ignore": [
+        // For some reason, Knip doesn't recognize this file as used.
+        "src/utils/case.ts"
+      ]
+    },
     "packages/project-builder-web": {
       "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
       "project": ["src/**/*.{ts,tsx}", "plugins/*.ts"],
