@@ -1,5 +1,7 @@
 import type { GeneratorBundle } from '@halfdomelabs/sync';
 
+import { safeMerge } from '@halfdomelabs/utils';
+
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type { PluginSpecImplementation } from '@src/plugins/index.js';
 import type {
@@ -9,7 +11,6 @@ import type {
 } from '@src/schema/index.js';
 
 import { createPluginSpec } from '@src/plugins/index.js';
-import { safeMerge } from '@src/utils/merge.js';
 
 export interface AppCompiler {
   addChildrenToFeature: (

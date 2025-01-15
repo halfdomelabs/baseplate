@@ -19,8 +19,7 @@ import {
   reactSentryGenerator,
   reactTailwindGenerator,
 } from '@halfdomelabs/react-generators';
-
-import { safeMergeAll } from '@src/utils/safe-merge.js';
+import { safeMergeAll } from '@halfdomelabs/utils';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';

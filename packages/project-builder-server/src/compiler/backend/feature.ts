@@ -9,8 +9,7 @@ import {
   userSessionTypesGenerator,
 } from '@halfdomelabs/fastify-generators';
 import { FeatureUtils, ModelUtils } from '@halfdomelabs/project-builder-lib';
-
-import { safeMergeAll } from '@src/utils/safe-merge.js';
+import { safeMergeAll } from '@halfdomelabs/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 

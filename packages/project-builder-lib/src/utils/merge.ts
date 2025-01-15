@@ -16,16 +16,6 @@ export function safeMergeMap<K, V>(
   return result;
 }
 
-export function safeMerge<T extends Record<string, unknown>>(
-  itemOne: T,
-  itemTwo: T,
-): T {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return R.mergeWithKey((key) => {
-    throw new Error(`Cannot merge key ${key} because it already exists.`);
-  })(itemOne, itemTwo);
-}
-
 export function deepMergeRightUniq(a: unknown, b: unknown): unknown {
   if (a == null) {
     return b;

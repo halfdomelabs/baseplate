@@ -429,6 +429,9 @@ importers:
       '@halfdomelabs/ui-components':
         specifier: workspace:*
         version: link:../ui-components
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       culori:
         specifier: ^4.0.1
         version: 4.0.1
@@ -541,6 +544,9 @@ importers:
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@trpc/server':
         specifier: ^10.44.0
         version: 10.45.2
@@ -1244,6 +1250,37 @@ importers:
       vite-tsconfig-paths:
         specifier: 'catalog:'
         version: 5.0.0(typescript@5.5.4)(vite@5.4.7(@types/node@20.12.7))
+      vitest:
+        specifier: 'catalog:'
+        version: 2.1.1(@types/node@20.12.7)
+
+  packages/utils:
+    dependencies:
+      es-toolkit:
+        specifier: 1.31.0
+        version: 1.31.0
+    devDependencies:
+      '@halfdomelabs/tools':
+        specifier: workspace:*
+        version: link:../tools
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.12.7
+      concurrently:
+        specifier: 9.0.1
+        version: 9.0.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.17.0(jiti@2.4.2)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.4.2
+      tsc-alias:
+        specifier: 'catalog:'
+        version: 1.8.10
+      typescript:
+        specifier: 'catalog:'
+        version: 5.5.4
       vitest:
         specifier: 'catalog:'
         version: 2.1.1(@types/node@20.12.7)

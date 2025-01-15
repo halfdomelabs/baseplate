@@ -1,5 +1,6 @@
 import type { GeneratorBundleChildren } from '@halfdomelabs/sync';
 
+import { safeMerge } from '@halfdomelabs/utils';
 import * as R from 'ramda';
 
 import type { ProjectDefinitionContainer } from '@src/index.js';
@@ -12,7 +13,7 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@src/schema/index.js';
-import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
+import { deepMergeRightUniq } from '@src/utils/merge.js';
 
 import type { ParsedModel, ParsedRelationField } from './types.js';
 
