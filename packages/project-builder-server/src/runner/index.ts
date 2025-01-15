@@ -14,8 +14,6 @@ import path from 'node:path';
 
 import { compileApplications } from '@src/compiler/index.js';
 
-import type { GeneratorEngineSetupConfig } from '../sync/index.js';
-
 import {
   generateCleanAppForDirectory,
   generateForDirectory,
@@ -67,14 +65,12 @@ async function compileApplicationsFromDirectory({
 
 export interface BuildProjectForDirectoryOptions {
   directory: string;
-  generatorSetupConfig: GeneratorEngineSetupConfig;
   logger: Logger;
   context: SchemaParserContext;
 }
 
 export async function buildProjectForDirectory({
   directory,
-  generatorSetupConfig,
   logger,
   context,
 }: BuildProjectForDirectoryOptions): Promise<void> {
@@ -88,7 +84,6 @@ export async function buildProjectForDirectory({
       baseDirectory: directory,
       appEntry: app,
       logger,
-      generatorSetupConfig,
     });
   }
 
@@ -98,14 +93,12 @@ export async function buildProjectForDirectory({
 interface BuildToCleanFolderOptions {
   directory: string;
   logger: Logger;
-  generatorSetupConfig: GeneratorEngineSetupConfig;
   context: SchemaParserContext;
 }
 
 export async function buildToCleanFolder({
   directory,
   logger,
-  generatorSetupConfig,
   context,
 }: BuildToCleanFolderOptions): Promise<void> {
   const apps = await compileApplicationsFromDirectory({
@@ -118,7 +111,6 @@ export async function buildToCleanFolder({
       baseDirectory: directory,
       appEntry: app,
       logger,
-      generatorSetupConfig,
     });
   }
 

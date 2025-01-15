@@ -1,7 +1,10 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
-import type { FileData, Logger } from '@halfdomelabs/sync';
 
-import { GeneratorEngine } from '@halfdomelabs/sync';
+import {
+  type FileData,
+  GeneratorEngine,
+  type Logger,
+} from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { globby } from 'globby';
@@ -12,25 +15,11 @@ import { removeEmptyAncestorDirectories } from '@src/utils/directories.js';
 
 import { writeGeneratorStepsHtml } from './generator-steps-html-writer.js';
 
-export interface GeneratorEngineSetupConfig {
-  generatorPackages: { name: string; path: string }[];
-}
-
-export function getGeneratorEngine(
-  config: GeneratorEngineSetupConfig,
-): GeneratorEngine {
-  const generatorMap = Object.fromEntries(
-    config.generatorPackages.map(({ name, path }) => [name, path]),
-  );
-  return new GeneratorEngine(generatorMap);
-}
-
 interface BuildResultFile {
   failedCommands?: string[];
 }
 
 interface GenerateForDirectoryOptions {
-  generatorSetupConfig: GeneratorEngineSetupConfig;
   baseDirectory: string;
   appEntry: AppEntry;
   logger: Logger;
@@ -59,23 +48,19 @@ async function getCleanDirectoryFiles(
 }
 
 export async function generateForDirectory({
-  generatorSetupConfig,
   baseDirectory,
   appEntry,
   logger,
 }: GenerateForDirectoryOptions): Promise<void> {
   const { appDirectory, name, generatorBundle } = appEntry;
-  const engine = getGeneratorEngine(generatorSetupConfig);
+  const engine = new GeneratorEngine();
 
   const projectDirectory = path.join(baseDirectory, appDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
-  const project = engine.loadProjectFromGeneratorBundle(
-    generatorBundle,
-    logger,
-  );
+  const project = engine.loadProject(generatorBundle, logger);
   const output = await engine.build(project, logger);
   logger.info('Project built! Writing output....');
 
@@ -217,9 +202,8 @@ export async function generateCleanAppForDirectory({
   baseDirectory,
   appEntry: { appDirectory, name, generatorBundle },
   logger,
-  generatorSetupConfig,
 }: GenerateForDirectoryOptions): Promise<void> {
-  const engine = getGeneratorEngine(generatorSetupConfig);
+  const engine = new GeneratorEngine();
 
   const projectDirectory = path.join(baseDirectory, appDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
@@ -233,10 +217,7 @@ export async function generateCleanAppForDirectory({
 
   logger.info(`Generating clean project ${name} in ${cleanDirectory}...`);
 
-  const project = engine.loadProjectFromGeneratorBundle(
-    generatorBundle,
-    logger,
-  );
+  const project = engine.loadProject(generatorBundle, logger);
   const output = await engine.build(project, logger);
   logger.info('Project built! Writing output....');
 

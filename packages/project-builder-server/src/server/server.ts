@@ -14,8 +14,6 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 
-import type { GeneratorEngineSetupConfig } from '@src/index.js';
-
 import { gracefulShutdownPlugin } from './graceful-shutdown.js';
 import { baseplatePlugin } from './plugin.js';
 
@@ -24,7 +22,6 @@ export interface WebServerOptions {
   projectBuilderStaticDir?: string;
   cliVersion: string;
   logger: Logger;
-  generatorSetupConfig: GeneratorEngineSetupConfig;
   builtInPlugins: PluginMetadataWithPaths[];
   featureFlags: FeatureFlag[];
 }
@@ -34,7 +31,6 @@ export async function buildServer({
   projectBuilderStaticDir,
   cliVersion,
   logger,
-  generatorSetupConfig,
   builtInPlugins,
   featureFlags,
 }: WebServerOptions): Promise<FastifyInstance> {
@@ -56,7 +52,6 @@ export async function buildServer({
   await server.register(baseplatePlugin, {
     directories,
     cliVersion,
-    generatorSetupConfig,
     builtInPlugins,
     featureFlags,
   });

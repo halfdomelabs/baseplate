@@ -10,6 +10,7 @@
     "clean": "turbo run clean",
     "dev:serve": "pnpm --filter @halfdomelabs/project-builder-cli dev:serve",
     "preinstall": "npx only-allow pnpm",
+    "knip": "knip",
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
     "prettier:check": "turbo run prettier:check --continue",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "check-dependency-version-consistency": "5.0.0",
+    "knip": "5.42.0",
     "turbo": "2.3.3",
     "typescript": "catalog:"
   },

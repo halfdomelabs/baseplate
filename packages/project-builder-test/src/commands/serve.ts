@@ -1,10 +1,7 @@
 import type { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
 import type { Command } from 'commander';
 
-import {
-  getDefaultGeneratorSetupConfig,
-  getDefaultPlugins,
-} from '@halfdomelabs/project-builder-common';
+import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
 import { startWebServer } from '@halfdomelabs/project-builder-server';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -57,7 +54,6 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
   const projectBuilderWebDir = await packageDirectory({
     cwd: resolveModule('@halfdomelabs/project-builder-web/package.json'),
   });
-  const generatorSetupConfig = await getDefaultGeneratorSetupConfig(logger);
   const builtInPlugins = await getDefaultPlugins(logger);
 
   if (!projectBuilderWebDir) {
@@ -85,7 +81,6 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
     cliVersion,
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
     logger: pinoLogger,
-    generatorSetupConfig,
     builtInPlugins,
     featureFlags: [],
   });

@@ -1,0 +1,13 @@
+{
+  "workspaces": {
+    "packages/*": {
+      "entry": "src/index.ts",
+      "project": "src/**/*.ts"
+    },
+    "plugins/*": {
+      "entry": "src/index.ts",
+      "project": "src/**/*.ts"
+    }
+  },
+  "ignore": ["tests/**", "**/templates/**", "**/morphers/tests/**"]
+}
