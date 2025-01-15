@@ -13,7 +13,8 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
+import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
+import { mapValues } from 'es-toolkit';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -152,9 +153,8 @@ export const rootModuleGenerator = createGenerator({
             rootModule.addCodeExpression(
               'ROOT_MODULE_CONTENTS',
               TypescriptCodeUtils.mergeExpressionsAsObject(
-                R.mapObjIndexed(
-                  (types) => TypescriptCodeUtils.mergeExpressionsAsArray(types),
-                  rootModuleEntries.value(),
+                mapValues(rootModuleEntries.value(), (types) =>
+                  TypescriptCodeUtils.mergeExpressionsAsArray(types),
                 ),
               ),
             );
@@ -196,7 +196,7 @@ export const rootModuleGenerator = createGenerator({
               ),
             );
 
-            const mergers = R.mergeAll(
+            const mergers = safeMergeAllWithOptions(
               moduleFields.map(({ name }) => ({
                 [name]: TypescriptCodeUtils.createExpression(
                   `[...(prev.${name} ?? []), ...(current.${name} ?? [])]`,

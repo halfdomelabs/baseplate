@@ -7,8 +7,8 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createNonOverwriteableMap } from '@halfdomelabs/sync';
 import { camelCase, kebabCase } from 'change-case';
+import { mapValues } from 'es-toolkit';
 import path from 'node:path';
-import * as R from 'ramda';
 import { z } from 'zod';
 
 import { appModuleProvider } from '../root-module/index.js';
@@ -75,9 +75,8 @@ export const appModuleGenerator = createGenerator({
             indexFile.addCodeExpression(
               'MODULE_CONTENTS',
               TypescriptCodeUtils.mergeExpressionsAsObject(
-                R.mapObjIndexed(
-                  (types) => TypescriptCodeUtils.mergeExpressionsAsArray(types),
-                  moduleEntries.value(),
+                mapValues(moduleEntries.value(), (types) =>
+                  TypescriptCodeUtils.mergeExpressionsAsArray(types),
                 ),
               ),
             );

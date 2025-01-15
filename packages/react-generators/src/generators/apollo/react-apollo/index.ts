@@ -17,7 +17,6 @@ import {
   createProviderType,
   writeTemplateAction,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
 import toposort from 'toposort';
 import { z } from 'zod';
 
@@ -373,7 +372,7 @@ export const reactApolloGenerator = createGenerator({
                       {
                         headerBlocks: [
                           TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                            R.fromPairs(
+                            Object.fromEntries(
                               apolloCreateArgs.map((arg) => [
                                 arg.name,
                                 arg.type,
@@ -428,7 +427,7 @@ export const reactApolloGenerator = createGenerator({
                   apolloCreateArgs.length === 0
                     ? TypescriptCodeUtils.createExpression('')
                     : TypescriptCodeUtils.mergeExpressionsAsObject(
-                        R.fromPairs(
+                        Object.fromEntries(
                           apolloCreateArgs.map((arg) => [
                             arg.name,
                             arg.creatorValue,

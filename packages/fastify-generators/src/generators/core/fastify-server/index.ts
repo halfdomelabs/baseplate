@@ -14,7 +14,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import { configServiceProvider } from '../config-service/index.js';
@@ -180,19 +180,21 @@ export const fastifyServerGenerator = createGenerator({
               ROOT_MODULE: { type: 'code-expression' },
             });
 
-            const orderedPlugins = R.sortBy((plugin) => {
-              switch (plugin.orderPriority) {
-                case 'EARLY': {
-                  return 0;
+            const orderedPlugins = sortBy(plugins, [
+              (plugin) => {
+                switch (plugin.orderPriority) {
+                  case 'EARLY': {
+                    return 0;
+                  }
+                  case 'END': {
+                    return 2;
+                  }
+                  default: {
+                    return 1;
+                  }
                 }
-                case 'END': {
-                  return 2;
-                }
-                default: {
-                  return 1;
-                }
-              }
-            }, plugins);
+              },
+            ]);
 
             serverFile.addCodeBlock(
               'PLUGINS',

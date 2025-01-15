@@ -11,7 +11,7 @@ import {
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
 import { kebabCase } from 'change-case';
-import * as R from 'ramda';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
@@ -74,7 +74,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
           },
         }),
         build: async (builder) => {
-          const orderedTypes = R.sortBy((type) => type.name, enums);
+          const orderedTypes = sortBy(enums, [(type) => type.name]);
 
           const enumsFile = typescript.createTemplate({
             TYPES: TypescriptCodeUtils.mergeBlocks(

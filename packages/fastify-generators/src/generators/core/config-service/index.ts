@@ -18,7 +18,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import { fastifyProvider } from '../fastify/index.js';
@@ -127,9 +127,9 @@ export const configServiceGenerator = createGenerator({
             });
 
             const configEntriesObj = configEntries.value();
-            const sortedConfigEntries = R.sortBy(
-              (entry) => entry[0],
+            const sortedConfigEntries = sortBy(
               Object.entries(configEntriesObj),
+              [(entry) => entry[0]],
             );
             const configEntryKeys = Object.keys(configEntriesObj).sort();
             const mergedExpression = configEntryKeys

@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import * as R from 'ramda';
+import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
 
 import type { ServiceContextProvider } from '@src/generators/core/service-context/index.js';
 import type {
@@ -150,7 +150,7 @@ export function getDataInputTypeBlock(
       { importText: [`import {Prisma} from '@prisma/client'`] },
     );
   }
-  const customFields = R.mergeAll(
+  const customFields = safeMergeAllWithOptions(
     transformers.flatMap((transformer) =>
       transformer.inputFields.map((f) => ({
         [`${f.dtoField.name}${f.dtoField.isOptional ? '?' : ''}`]: f.type,
@@ -254,7 +254,7 @@ export function getDataMethodDataExpressions({
       }
 
       const uniqueWhereValue = TypescriptCodeUtils.mergeExpressionsAsObject(
-        R.fromPairs(
+        Object.fromEntries(
           foreignIdFields.map((idField): [string, string] => {
             const idx = field.references?.findIndex(
               (refName) => refName === idField,
@@ -387,7 +387,7 @@ TRANSFORMERS`,
     ];
 
     return TypescriptCodeUtils.mergeExpressionsAsObject(
-      R.fromPairs(dataExpressionEntries),
+      Object.fromEntries(dataExpressionEntries),
     );
   }
 

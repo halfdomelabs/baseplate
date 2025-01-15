@@ -14,7 +14,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
+import { mapValues } from 'es-toolkit';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -106,7 +106,7 @@ export const serviceContextGenerator = createGenerator({
                 Object.keys(contextFields).length === 0
                   ? TypescriptCodeUtils.createExpression('placeholder?: never')
                   : TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                      R.mapObjIndexed((field) => field.type, contextFields),
+                      mapValues(contextFields, (field) => field.type),
                     ),
               CREATE_CONTEXT_ARGS:
                 contextArgs.length === 0
@@ -122,7 +122,7 @@ export const serviceContextGenerator = createGenerator({
           `,
                     ),
               CONTEXT_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-                R.mapObjIndexed((field) => field.value, contextFields),
+                mapValues(contextFields, (field) => field.value),
               ),
             });
 
@@ -152,7 +152,7 @@ export const serviceContextGenerator = createGenerator({
                   contextArgs.length === 0
                     ? TypescriptCodeUtils.createExpression('')
                     : TypescriptCodeUtils.mergeExpressionsAsObject(
-                        R.fromPairs(
+                        Object.fromEntries(
                           contextArgs.map((arg) => [
                             arg.name,
                             arg.testDefault
