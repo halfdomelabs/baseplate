@@ -444,9 +444,6 @@ importers:
       inflection:
         specifier: 3.0.0
         version: 3.0.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       nanoid:
         specifier: 5.0.9
         version: 5.0.9
@@ -475,9 +472,6 @@ importers:
       '@types/culori':
         specifier: ^2.1.1
         version: 2.1.1
-      '@types/lodash':
-        specifier: 4.17.7
-        version: 4.17.7
       '@types/node':
         specifier: 'catalog:'
         version: 20.12.7
@@ -744,9 +738,6 @@ importers:
       javascript-time-ago:
         specifier: ^2.5.10
         version: 2.5.10
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       loglevel:
         specifier: 1.9.1
         version: 1.9.1
@@ -796,9 +787,6 @@ importers:
       '@types/culori':
         specifier: ^2.1.1
         version: 2.1.1
-      '@types/lodash':
-        specifier: 4.17.7
-        version: 4.17.7
       '@types/node':
         specifier: 'catalog:'
         version: 20.12.7
@@ -862,9 +850,6 @@ importers:
       inflection:
         specifier: 3.0.0
         version: 3.0.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       prettier-plugin-tailwindcss:
         specifier: 0.6.9
         version: 0.6.9(prettier@3.4.2)
@@ -878,9 +863,6 @@ importers:
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
-      '@types/lodash':
-        specifier: 4.17.7
-        version: 4.17.7
       '@types/node':
         specifier: 'catalog:'
         version: 20.12.7
@@ -3262,9 +3244,6 @@ packages:
 
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
-
-  '@types/lodash@4.17.7':
-    resolution: {integrity: sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==}
 
   '@types/mdx@2.0.13':
     resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
@@ -8835,8 +8814,6 @@ snapshots:
   '@types/jsonfile@6.1.4':
     dependencies:
       '@types/node': 22.10.6
-
-  '@types/lodash@4.17.7': {}
 
   '@types/mdx@2.0.13': {}
 
