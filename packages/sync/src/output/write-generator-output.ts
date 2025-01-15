@@ -1,6 +1,6 @@
 import chalk from 'chalk';
+import { sortBy } from 'es-toolkit';
 import { ExecaError } from 'execa';
-import _ from 'lodash';
 import ms from 'ms';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -12,7 +12,6 @@ import type {
 } from '@src/output/merge-algorithms/types.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
-import { getErrorMessage } from '@src/utils/errors.js';
 import { executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 
@@ -325,10 +324,9 @@ export async function writeGeneratorOutput(
       );
     });
 
-    const orderedCommands = _.sortBy(
-      runnableCommands,
+    const orderedCommands = sortBy(runnableCommands, [
       (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType],
-    );
+    ]);
 
     if (conflictFilenames.length > 0) {
       logger.warn(
@@ -370,7 +368,7 @@ export async function writeGeneratorOutput(
         if (error instanceof ExecaError) {
           logger.error(error.stderr);
         } else {
-          logger.error(getErrorMessage(error));
+          logger.error(String(error));
         }
         failedCommands.push(command.command);
       }

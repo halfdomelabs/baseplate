@@ -1,5 +1,3 @@
-import type { InferGeneratorDescriptor } from '@halfdomelabs/sync';
-
 import {
   createGenerator,
   createNonOverwriteableMap,
@@ -7,7 +5,6 @@ import {
   writeJsonAction,
 } from '@halfdomelabs/sync';
 import { sortBy } from 'es-toolkit';
-import * as R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
 import sortPackageJson from 'sort-package-json';
@@ -28,10 +25,6 @@ const descriptorSchema = z.object({
   nodeVersion: z.string().default('20.18.1'),
   pnpmVersion: z.string().default('9.15.1'),
 });
-
-export type NodeGeneratorDescriptor = InferGeneratorDescriptor<
-  typeof descriptorSchema
->;
 
 export interface NodeSetupProvider {
   setIsEsm(isEsm: boolean): void;
@@ -241,10 +234,10 @@ export const nodeGenerator = createGenerator({
               },
             );
 
-            const allDependencies = R.mergeRight(
-              packageJson.dependencies,
-              packageJson.devDependencies,
-            );
+            const allDependencies = {
+              ...packageJson.dependencies,
+              ...packageJson.devDependencies,
+            };
             if (Object.keys(allDependencies).includes('prettier')) {
               builder.addPostWriteCommand(
                 'pnpm prettier --write package.json',

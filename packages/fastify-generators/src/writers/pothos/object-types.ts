@@ -18,7 +18,7 @@ import { wrapPothosTypeWithList, writePothosFieldOptions } from './helpers.js';
 import { getExpressionFromPothosTypeReference } from './options.js';
 import { writePothosObjectFieldFromDtoScalarField } from './scalar-fields.js';
 
-export function writeSimplePothosObjectFieldFromDtoNestedField(
+function writeSimplePothosObjectFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
 ): PothosExpressionWithChildren {
@@ -66,7 +66,7 @@ export function writePothosSimpleObjectFieldsFromDtoFields(
   };
 }
 
-export function writePothosSimpleObjectDefinitionFromDtoFields(
+function writePothosSimpleObjectDefinitionFromDtoFields(
   name: string,
   fields: ServiceOutputDtoField[],
   options: PothosWriterOptions,
@@ -98,7 +98,7 @@ export function writePothosSimpleObjectDefinitionFromDtoFields(
   };
 }
 
-export function getPothosTypeForNestedObject(
+function getPothosTypeForNestedObject(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
 ): PothosExpressionWithChildren {

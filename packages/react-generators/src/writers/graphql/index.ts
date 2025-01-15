@@ -1,39 +1,39 @@
 import _ from 'lodash';
 
-export interface GraphQLArgumentScalarValue {
+interface GraphQLArgumentScalarValue {
   type: 'scalar';
   value: string | number | boolean;
 }
 
-export interface GraphQLArgumentVariableValue {
+interface GraphQLArgumentVariableValue {
   type: 'variable';
   variable: string;
 }
 
-export type GraphQLArgumentValue =
+type GraphQLArgumentValue =
   | GraphQLArgumentScalarValue
   | GraphQLArgumentVariableValue;
 
-export interface GraphQLArgument {
+interface GraphQLArgument {
   name: string;
   value: GraphQLArgumentValue;
 }
 
-export interface GraphQLSimpleField {
+interface GraphQLSimpleField {
   type?: 'simple' | undefined;
   name: string;
   args?: GraphQLArgument[];
   fields?: GraphQLField[];
 }
 
-export interface GraphQLSpreadField {
+interface GraphQLSpreadField {
   type: 'spread';
   on: string;
 }
 
 export type GraphQLField = GraphQLSimpleField | GraphQLSpreadField;
 
-export interface GraphQLVariable {
+interface GraphQLVariable {
   name: string;
   type: string;
 }
@@ -91,7 +91,7 @@ function renderGraphQLArgument({ name, value }: GraphQLArgument): string {
   return `${name}: ${renderGraphQLArgumentValue(value)}`;
 }
 
-export function renderGraphQLSimpleField({
+function renderGraphQLSimpleField({
   name,
   args,
   fields,
@@ -113,11 +113,11 @@ export function renderGraphQLSimpleField({
   return fieldDefinition;
 }
 
-export function renderGraphQLSpreadField({ on }: GraphQLSpreadField): string {
+function renderGraphQLSpreadField({ on }: GraphQLSpreadField): string {
   return `...${on}`;
 }
 
-export function renderGraphQLField(field: GraphQLField): string {
+function renderGraphQLField(field: GraphQLField): string {
   switch (field.type) {
     case undefined:
     case 'simple': {
@@ -134,7 +134,7 @@ export function renderGraphQLField(field: GraphQLField): string {
   }
 }
 
-export function renderGraphQLFields(fields: GraphQLField[]): string {
+function renderGraphQLFields(fields: GraphQLField[]): string {
   return fields.map((field) => renderGraphQLField(field)).join('\n');
 }
 
@@ -188,7 +188,7 @@ function isSimpleField(field: GraphQLField): field is GraphQLSimpleField {
  * @returns `true` if the fields are mergeable; otherwise, `false`.
  * @throws If simple fields have different arguments or an unknown field type is encountered.
  */
-export function areFieldsMergeable(
+function areFieldsMergeable(
   fieldOne: GraphQLField,
   fieldTwo: GraphQLField,
 ): boolean {
@@ -256,7 +256,7 @@ export function mergeGraphQLFields(fields: GraphQLField[]): GraphQLField[] {
  * @returns `true` if the fragments are mergeable; otherwise, `false`.
  * @throws If fragments have the same name but different types.
  */
-export function areFragmentsMergeable(
+function areFragmentsMergeable(
   fragOne: GraphQLFragment,
   fragTwo: GraphQLFragment,
 ): boolean {

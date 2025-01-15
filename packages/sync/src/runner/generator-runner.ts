@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import { keyBy, mapValues } from 'es-toolkit';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
@@ -21,7 +21,7 @@ export async function executeGeneratorEntry(
   logger: Logger,
 ): Promise<GeneratorOutput> {
   const taskEntries = flattenGeneratorTaskEntries(rootEntry);
-  const taskEntriesById = R.indexBy(R.prop('id'), taskEntries);
+  const taskEntriesById = keyBy(taskEntries, (item) => item.id);
   const dependencyMap = resolveTaskDependencies(rootEntry, logger);
   const { steps: sortedRunSteps, metadata } = getSortedRunSteps(
     taskEntries,
@@ -40,26 +40,29 @@ export async function executeGeneratorEntry(
         // run through init step
         const { task, dependencies, exports } = taskEntriesById[taskId];
 
-        const resolvedDependencies = R.mapObjIndexed((dependency, key) => {
-          const dependencyId = dependencyMap[taskId][key]?.id;
+        const resolvedDependencies = mapValues(
+          dependencies,
+          (dependency, key) => {
+            const dependencyId = dependencyMap[taskId][key]?.id;
 
-          const provider =
-            dependencyId == null
-              ? null
-              : providerMapById[dependencyId][dependency.name];
-          const { optional } =
-            dependency.type === 'dependency'
-              ? dependency.options
-              : { optional: false };
+            const provider =
+              dependencyId === undefined
+                ? undefined
+                : providerMapById[dependencyId][dependency.name];
+            const { optional } =
+              dependency.type === 'dependency'
+                ? dependency.options
+                : { optional: false };
 
-          if (!provider && !optional) {
-            throw new Error(
-              `Could not resolve required dependency ${key} in ${taskId}`,
-            );
-          }
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          return provider!; // cheat Type system to prevent null from appearing
-        }, dependencies);
+            if (!provider && !optional) {
+              throw new Error(
+                `Could not resolve required dependency ${key} in ${taskId}`,
+              );
+            }
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return provider!; // cheat Type system to prevent null from appearing
+          },
+        );
 
         const taskInstance = task.run(resolvedDependencies);
         taskInstanceById[taskId] = taskInstance;
@@ -81,9 +84,11 @@ export async function executeGeneratorEntry(
               `Task ${taskId} did not export provider ${missingProvider}`,
             );
           }
-          providerMapById[taskId] = R.zipObj(
-            Object.values(exports).map((value) => value.name),
-            Object.keys(exports).map((key) => providers[key]),
+          providerMapById[taskId] = Object.fromEntries(
+            Object.entries(exports).map(([key, value]) => [
+              value.name,
+              providers[key],
+            ]),
           );
         }
       } else if (action === 'build') {

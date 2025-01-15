@@ -1,3 +1,4 @@
+import type { Paths } from 'type-fest';
 import type {
   input,
   ParseContext,
@@ -11,8 +12,6 @@ import type {
 
 import _ from 'lodash';
 import { z, ZodType } from 'zod';
-
-import type { FieldPath, FieldValues } from '@src/types/path/eager.js';
 
 import type {
   DefinitionEntity,
@@ -31,7 +30,7 @@ function isPromise(object: unknown): object is Promise<unknown> {
  * Builder for references
  */
 
-type PathInput<Type> = Type extends FieldValues ? FieldPath<Type> : never;
+type PathInput<Type> = Exclude<Paths<Type>, number>;
 
 interface ContextValue {
   context: string;

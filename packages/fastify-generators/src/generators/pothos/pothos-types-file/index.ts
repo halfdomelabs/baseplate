@@ -1,5 +1,4 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
-import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import {
   makeImportAndFilePath,
@@ -23,9 +22,7 @@ const descriptorSchema = z.object({
   categoryOrder: z.array(z.string()).optional(),
 });
 
-export type PothosTypesFileDescriptor = GeneratorDescriptor<
-  typeof descriptorSchema
->;
+type Descriptor = z.infer<typeof descriptorSchema>;
 
 interface PothosType {
   name?: string;
@@ -43,7 +40,7 @@ export const pothosTypesFileProvider =
   createProviderType<PothosTypesFileProvider>('pothos-types-file');
 
 export const createPothosTypesFileTask = createTaskConfigBuilder(
-  ({ fileName, categoryOrder }: PothosTypesFileDescriptor) => ({
+  ({ fileName, categoryOrder }: Descriptor) => ({
     name: 'pothos-types-file',
     dependencies: {
       appModule: appModuleProvider,

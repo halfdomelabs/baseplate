@@ -27,7 +27,7 @@ const UTIL_CONFIG_MAP: Record<string, UtilConfig> = {
   },
 };
 
-export type ReactUtilsProvider = ImportMapper;
+type ReactUtilsProvider = ImportMapper;
 
 export const reactUtilsProvider =
   createProviderType<ReactUtilsProvider>('react-utils');

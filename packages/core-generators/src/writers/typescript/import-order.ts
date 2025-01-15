@@ -24,7 +24,7 @@ interface ImportSettings {
 }
 
 const scopedRegExp = /^@[^/]+\/?[^/]+/;
-export function isScoped(name: string): boolean {
+function isScoped(name: string): boolean {
   return !!name && scopedRegExp.test(name);
 }
 
@@ -42,12 +42,12 @@ function isInternalRegexMatch(name: string, settings: ImportSettings): boolean {
   return !!internalScope && new RegExp(internalScope).test(name);
 }
 
-export function isAbsolute(name: string): boolean {
+function isAbsolute(name: string): boolean {
   return typeof name === 'string' && path.isAbsolute(name);
 }
 
 // path is defined only when a resolver resolves to a non-standard path
-export function isBuiltIn(name: string, settings: ImportSettings): boolean {
+function isBuiltIn(name: string, settings: ImportSettings): boolean {
   if (!name) return false;
   const base = baseModule(name);
   const extras = settings.coreModules ?? [];
@@ -57,11 +57,6 @@ export function isBuiltIn(name: string, settings: ImportSettings): boolean {
 const moduleRegExp = /^\w/;
 function isModule(name: string): boolean {
   return !!name && moduleRegExp.test(name);
-}
-
-const scopedMainRegExp = /^@[^/]+\/?[^/]+$/;
-export function isScopedMain(name: string): boolean {
-  return !!name && scopedMainRegExp.test(name);
 }
 
 function isRelativeToParent(name: string): boolean {

@@ -39,7 +39,7 @@ import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 import { compileAdminFeatures } from './sections.js';
 
-export function buildNavigationLinks(
+function buildNavigationLinks(
   builder: AppEntryBuilder<AdminAppConfig>,
 ): AdminLayoutLinkItem[] {
   const config = builder.appConfig;
@@ -59,7 +59,7 @@ export function buildNavigationLinks(
   );
 }
 
-export function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
+function buildAdmin(builder: AdminAppEntryBuilder): GeneratorBundle {
   const { projectDefinition, appConfig, appCompiler } = builder;
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);

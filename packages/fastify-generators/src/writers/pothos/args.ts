@@ -18,7 +18,7 @@ import {
 } from './helpers.js';
 import { getPothosTypeForNestedInput } from './input-types.js';
 
-export interface PothosArgOutput {
+interface PothosArgOutput {
   expression: TypescriptCodeExpression;
   childDefinitions?: PothosTypeDefinition[];
 }

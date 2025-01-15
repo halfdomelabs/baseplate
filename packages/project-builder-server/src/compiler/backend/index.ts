@@ -17,7 +17,7 @@ import { AppEntryBuilder } from '../app-entry-builder.js';
 import { buildFastify } from './fastify.js';
 import { getPostgresSettings, getRedisSettings } from './utils.js';
 
-export function buildDocker(
+function buildDocker(
   projectDefinition: ProjectDefinition,
   app: BackendAppConfig,
 ): GeneratorBundle {

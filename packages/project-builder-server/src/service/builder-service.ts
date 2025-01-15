@@ -13,8 +13,6 @@ import chokidar from 'chokidar';
 import fs from 'fs-extra';
 import path from 'node:path';
 
-import type { GeneratorEngineSetupConfig } from '@src/index.js';
-
 import {
   createNodeSchemaParserContext,
   discoverPlugins,
@@ -55,7 +53,6 @@ function getFirstNonBaseplateParentFolder(filePath: string): string | null {
 interface ProjectBuilderServiceOptions {
   directory: string;
   id: string;
-  generatorSetupConfig: GeneratorEngineSetupConfig;
   builtInPlugins: PluginMetadataWithPaths[];
   cliVersion: string;
 }
@@ -76,8 +73,6 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   private logger: EventedLogger;
 
-  private generatorSetupConfig: GeneratorEngineSetupConfig;
-
   private cliVersion: string;
 
   private cachedAvailablePlugins: PluginMetadataWithPaths[] | null = null;
@@ -89,7 +84,6 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
   constructor({
     directory,
     id,
-    generatorSetupConfig,
     cliVersion,
     builtInPlugins,
   }: ProjectBuilderServiceOptions) {
@@ -101,7 +95,6 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
       'baseplate/project-definition.json',
     );
     this.id = id;
-    this.generatorSetupConfig = generatorSetupConfig;
     this.cliVersion = cliVersion;
 
     this.logger = createEventedLogger();
@@ -170,7 +163,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   public close(): void {
     if (this.watcher) {
-      this.watcher.close()?.catch((err: unknown) => {
+      this.watcher.close().catch((err: unknown) => {
         this.logger.error(err instanceof Error ? err.toString() : typeof err);
       });
     }
@@ -211,7 +204,6 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
       await buildProjectForDirectory({
         directory: this.directory,
         logger: this.logger,
-        generatorSetupConfig: this.generatorSetupConfig,
         context: await this.getSchemaParserContext(),
       });
     } catch (error) {

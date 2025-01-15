@@ -2,7 +2,6 @@ import type {
   TypescriptCodeExpression,
   TypescriptSourceFile,
 } from '@halfdomelabs/core-generators';
-import type { InferGeneratorDescriptor } from '@halfdomelabs/sync';
 
 import {
   createTypescriptTemplateConfig,
@@ -33,10 +32,6 @@ const descriptorSchema = z.object({
 });
 
 type Descriptor = z.infer<typeof descriptorSchema>;
-
-export type ReactGeneratorDescriptor = InferGeneratorDescriptor<
-  typeof descriptorSchema
->;
 
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   APP: { type: 'code-expression', default: '<div />' },

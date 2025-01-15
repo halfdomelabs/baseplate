@@ -1,5 +1,4 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
-import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import {
   projectScope,
@@ -29,9 +28,7 @@ const descriptorSchema = z.object({
   exposedFields: z.array(z.string().min(1)),
 });
 
-export type PothosPrismaObjectDescriptor = GeneratorDescriptor<
-  typeof descriptorSchema
->;
+type Descriptor = z.infer<typeof descriptorSchema>;
 
 export interface PothosPrismaObjectProvider {
   addCustomField: (name: string, expression: TypescriptCodeExpression) => void;
@@ -41,7 +38,7 @@ export const pothosPrismaObjectProvider =
   createProviderType<PothosPrismaObjectProvider>('pothos-prisma-object');
 
 const createMainTask = createTaskConfigBuilder(
-  ({ modelName, exposedFields }: PothosPrismaObjectDescriptor) => ({
+  ({ modelName, exposedFields }: Descriptor) => ({
     name: 'main',
     dependencies: {
       prismaOutput: prismaOutputProvider,

@@ -27,16 +27,6 @@ export interface SchemaMigration<TInputConfig = any, TOutputConfig = any> {
   migrate: (config: TInputConfig) => TOutputConfig;
 }
 
-export type InferSchemaMigrationInputConfig<TMigration> =
-  TMigration extends SchemaMigration<infer TInputConfig, unknown>
-    ? TInputConfig
-    : never;
-
-export type InferSchemaMigrationOutputConfig<TMigration> =
-  TMigration extends SchemaMigration<unknown, infer TOutputConfig>
-    ? TOutputConfig
-    : never;
-
 export function createSchemaMigration<TInputConfig, TOutputConfig>(
   migration: SchemaMigration<TInputConfig, TOutputConfig>,
 ): SchemaMigration<TInputConfig, TOutputConfig> {

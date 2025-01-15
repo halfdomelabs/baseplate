@@ -1,5 +1,4 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
-import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import {
   makeImportAndFilePath,
@@ -46,11 +45,7 @@ const descriptorSchema = z.object({
   ),
 });
 
-export type StorageModuleDescriptor = GeneratorDescriptor<
-  typeof descriptorSchema
->;
-
-export type StorageModuleProvider = ImportMapper;
+type StorageModuleProvider = ImportMapper;
 
 export const storageModuleProvider = createProviderType<StorageModuleProvider>(
   'storage-module',

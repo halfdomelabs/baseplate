@@ -101,7 +101,7 @@ function mergeAllWithoutDuplicates<T extends Record<string, unknown>>(
  * @param entry Generator entry
  * @param cache Generator tasks cache
  */
-export function buildTaskDependencyMap(
+function buildTaskDependencyMap(
   entry: GeneratorTaskEntry,
   parentEntryIds: string[],
   generatorIdToScopesMap: GeneratorIdToScopesMap,

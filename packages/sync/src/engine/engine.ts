@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import type { GeneratorBundle } from '@src/generators/generators.js';
 import type { GeneratorOutput } from '@src/output/generator-task-output.js';
 import type { Logger } from '@src/utils/evented-logger.js';
@@ -8,19 +6,12 @@ import {
   buildGeneratorEntry,
   type GeneratorEntry,
 } from '@src/generators/build-generator-entry.js';
-import { baseDescriptorSchema } from '@src/generators/generators.js';
-import { readJsonWithSchema } from '@src/utils/fs.js';
 
 import type {
   GeneratorWriteOptions,
   GeneratorWriteResult,
 } from '../output/write-generator-output.js';
 
-import { buildGeneratorEntryFromDescriptor } from '../generators/entry-builder.js';
-import {
-  loadGeneratorsForPackages,
-  loadGeneratorsForProject,
-} from '../generators/loader.js';
 import { writeGeneratorOutput } from '../output/write-generator-output.js';
 import { executeGeneratorEntry } from '../runner/index.js';
 
@@ -29,52 +20,12 @@ import { executeGeneratorEntry } from '../runner/index.js';
  */
 export class GeneratorEngine {
   /**
-   * @param builtInGeneratorModulePaths - The paths to the built-in generator modules.
-   */
-  constructor(public builtInGeneratorModulePaths: Record<string, string>) {}
-
-  /**
-   * Preloads all generators for faster generations.
-   */
-  async preloadGenerators(): Promise<void> {
-    await loadGeneratorsForPackages(this.builtInGeneratorModulePaths);
-  }
-
-  /**
-   * Loads the root descriptor of a project
-   *
-   * @param directory Directory of project to load
-   */
-  async loadProject(
-    directory: string,
-    logger: Logger = console,
-  ): Promise<GeneratorEntry> {
-    const projectPath = path.join(directory, 'baseplate');
-    const rootDescriptor = await readJsonWithSchema(
-      path.join(projectPath, 'root.json'),
-      baseDescriptorSchema.passthrough(),
-    );
-    const generators = await loadGeneratorsForProject(
-      this.builtInGeneratorModulePaths,
-      directory,
-    );
-
-    const rootGeneratorEntry = await buildGeneratorEntryFromDescriptor(
-      rootDescriptor,
-      'root',
-      { baseDirectory: projectPath, generatorMap: generators, logger },
-    );
-
-    return rootGeneratorEntry;
-  }
-
-  /**
    * Loads the root generator entry from a generator bundle.
    *
    * @param bundle - The generator bundle.
    * @param logger - The logger to use.
    */
-  loadProjectFromGeneratorBundle(
+  loadProject(
     bundle: GeneratorBundle,
     logger: Logger = console,
   ): GeneratorEntry {

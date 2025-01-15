@@ -13,12 +13,10 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import type { AppRouter } from '@src/api/index.js';
-import type { GeneratorEngineSetupConfig } from '@src/sync/index.js';
 
 import { createContext } from '@src/api/context.js';
 import { getCsrfToken } from '@src/api/crsf.js';
 import { createAppRouter } from '@src/api/index.js';
-import { getGeneratorEngine } from '@src/sync/index.js';
 import { pathSafeJoin } from '@src/utils/paths.js';
 
 import { ProjectBuilderService } from '../service/builder-service.js';
@@ -29,18 +27,11 @@ import { ProjectBuilderService } from '../service/builder-service.js';
 export const baseplatePlugin: FastifyPluginAsyncZod<{
   directories: string[];
   cliVersion: string;
-  generatorSetupConfig: GeneratorEngineSetupConfig;
   builtInPlugins: PluginMetadataWithPaths[];
   featureFlags: FeatureFlag[];
 }> = async function (
   fastify,
-  {
-    directories,
-    cliVersion,
-    generatorSetupConfig,
-    builtInPlugins,
-    featureFlags,
-  },
+  { directories, cliVersion, builtInPlugins, featureFlags },
 ) {
   const csrfToken = getCsrfToken();
   const services = await Promise.all(
@@ -54,7 +45,6 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
       const service = new ProjectBuilderService({
         directory,
         id,
-        generatorSetupConfig,
         cliVersion,
         builtInPlugins,
       });
@@ -194,13 +184,4 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
       service.close();
     });
   });
-
-  // pre-warm up generator engine so syncing is faster on first request
-  setTimeout(() => {
-    getGeneratorEngine(generatorSetupConfig)
-      .preloadGenerators()
-      .catch((error: unknown) => {
-        fastify.log.error(error);
-      });
-  }, 500);
 };

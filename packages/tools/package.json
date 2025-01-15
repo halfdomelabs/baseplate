@@ -62,12 +62,13 @@
     "vite-tsconfig-paths": "catalog:"
   },
   "devDependencies": {
-    "@types/eslint": "catalog:",
     "@types/eslint-config-prettier": "6.11.3",
     "@types/eslint-plugin-jsx-a11y": "6.9.0",
     "@types/eslint-plugin-tailwindcss": "3.17.0",
     "@types/eslint__js": "catalog:",
+    "@typescript-eslint/utils": "8.18.1",
     "eslint": "catalog:",
+    "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "peerDependencies": {

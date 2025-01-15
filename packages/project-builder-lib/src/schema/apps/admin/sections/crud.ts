@@ -6,7 +6,6 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@src/schema/models/index.js';
-import { notEmpty } from '@src/utils/array.js';
 
 import { baseAdminSectionValidators } from './base.js';
 import { adminCrudInputSchema } from './crud-form/admin-crud-input.js';
@@ -49,7 +48,9 @@ export const adminCrudDisplaySchema = z.discriminatedUnion('type', [
 function primitiveMapToKeys<T extends Record<string, unknown>>(
   map: Map<T[keyof T], unknown>,
 ): (keyof T)[] {
-  return [...map.keys()].map((m) => m?.valueOf() as keyof T).filter(notEmpty);
+  return [...map.keys()]
+    .map((m) => m?.valueOf() as keyof T | undefined)
+    .filter((x) => x !== undefined);
 }
 
 export const adminCrudDisplayTypes = primitiveMapToKeys(

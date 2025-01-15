@@ -51,6 +51,8 @@
     "@types/toposort": "^2.0.3",
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
     "tsc-alias": "catalog:",
     "typescript": "catalog:"
   },

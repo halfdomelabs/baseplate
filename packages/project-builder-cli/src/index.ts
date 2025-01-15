@@ -1,9 +1,6 @@
 import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 
-import {
-  getDefaultGeneratorSetupConfig,
-  getDefaultPlugins,
-} from '@halfdomelabs/project-builder-common';
+import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
 import {
   buildProjectForDirectory,
   buildToCleanFolder,
@@ -30,8 +27,6 @@ async function runMain(): Promise<void> {
     throw new Error('Could not determine package version');
   }
 
-  const generatorSetupConfig = await getDefaultGeneratorSetupConfig(logger);
-
   program.version(version, '-v, --version');
 
   program
@@ -47,7 +42,6 @@ async function runMain(): Promise<void> {
       return buildProjectForDirectory({
         directory: resolvedDirectory,
         logger,
-        generatorSetupConfig,
         context,
       });
     });
@@ -65,7 +59,6 @@ async function runMain(): Promise<void> {
       return buildToCleanFolder({
         directory,
         logger,
-        generatorSetupConfig,
         context,
       });
     });

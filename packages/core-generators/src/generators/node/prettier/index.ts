@@ -7,8 +7,8 @@ import {
   createProviderType,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import { uniq } from 'es-toolkit';
 import fs from 'fs-extra';
-import _ from 'lodash';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { packageUp } from 'package-up';
@@ -264,7 +264,7 @@ export const prettierGenerator = createGenerator({
               }),
             );
 
-            const prettierIgnoreSorted = _.uniq(_.sortBy(prettierIgnore));
+            const prettierIgnoreSorted = uniq(prettierIgnore.toSorted());
 
             builder.writeFile(
               '.prettierignore',

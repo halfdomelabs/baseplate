@@ -1,5 +1,3 @@
-import type { z } from 'zod';
-
 import type {
   BaseGeneratorDescriptor,
   InferDependencyProviderMap,
@@ -27,9 +25,6 @@ export type GeneratorDescriptorChildren = Record<
   | string[]
   | undefined
 >;
-
-export type GeneratorDescriptor<TSchema extends z.ZodType = z.ZodUnknown> =
-  Partial<DescriptorWithChildren> & z.infer<TSchema>;
 
 export interface ChildGeneratorConfig {
   provider?: string;

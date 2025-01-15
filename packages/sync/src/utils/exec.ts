@@ -1,6 +1,6 @@
 import { execa, parseCommandString } from 'execa';
 
-export interface ExecOptions {
+interface ExecOptions {
   cwd?: string;
   timeout?: number;
 }

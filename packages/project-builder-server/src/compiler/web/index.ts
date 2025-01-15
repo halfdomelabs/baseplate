@@ -25,9 +25,7 @@ import { safeMergeAll } from '@src/utils/safe-merge.js';
 import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
-export function buildReact(
-  builder: AppEntryBuilder<WebAppConfig>,
-): GeneratorBundle {
+function buildReact(builder: AppEntryBuilder<WebAppConfig>): GeneratorBundle {
   const { projectDefinition, appConfig, appCompiler } = builder;
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);

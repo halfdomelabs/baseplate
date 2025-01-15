@@ -30,7 +30,6 @@
     "@inquirer/prompts": "7.2.1",
     "change-case": "5.4.4",
     "commander": "^12.1.0",
-    "eslint": "catalog:",
     "globby": "^14.0.2",
     "ora": "^8.0.1",
     "prettier": "catalog:",
@@ -40,7 +39,6 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/eslint": "catalog:",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "prettier": "catalog:",

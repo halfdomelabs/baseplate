@@ -1,7 +1,7 @@
 // Simple typed event emitter
 type TypeConfig = Record<string, unknown>;
 
-export interface TypedEventEmitter<T extends TypeConfig> {
+interface TypedEventEmitter<T extends TypeConfig> {
   on<K extends keyof T>(
     eventName: K,
     listener: (payload: T[K]) => void,
@@ -14,9 +14,7 @@ export interface TypedEventEmitter<T extends TypeConfig> {
  *
  * @returns TypedEventEmitter that allows you to listen to events and emit them
  */
-export function createTypedEventEmitter<
-  T extends TypeConfig,
->(): TypedEventEmitter<T> {
+function createTypedEventEmitter<T extends TypeConfig>(): TypedEventEmitter<T> {
   const listenerMap = new Map<keyof T, ((payload: unknown) => void)[]>();
 
   return {

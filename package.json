@@ -10,10 +10,12 @@
     "clean": "turbo run clean",
     "dev:serve": "pnpm --filter @halfdomelabs/project-builder-cli dev:serve",
     "preinstall": "npx only-allow pnpm",
+    "knip": "knip",
     "lint": "turbo run lint --continue",
     "lint:affected": "turbo run lint --affected --continue",
     "prettier:check": "turbo run prettier:check --continue",
     "prettier:check:affected": "turbo run prettier:check --affected --continue",
+    "prettier:root:check": "prettier --check .",
     "prettier:write": "turbo run prettier:write",
     "release": "pnpm build && pnpm changeset publish",
     "run:morpher": "pnpm --filter @halfdomelabs/code-morph run:morpher",
@@ -33,6 +35,8 @@
   },
   "devDependencies": {
     "check-dependency-version-consistency": "5.0.0",
+    "knip": "5.42.0",
+    "prettier": "catalog:",
     "turbo": "2.3.3",
     "typescript": "catalog:"
   },

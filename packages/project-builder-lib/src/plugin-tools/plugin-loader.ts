@@ -2,8 +2,6 @@ import { globby } from 'globby';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { notEmpty } from '@src/utils/array.js';
-
 import type {
   PluginManifestJson,
   PluginMetadata,
@@ -50,9 +48,7 @@ async function readManifestJson(
     .then((data) => pluginManifestJsonSchema.parse(JSON.parse(data)));
 }
 
-export async function readMetadataJson(
-  directory: string,
-): Promise<PluginMetadata> {
+async function readMetadataJson(directory: string): Promise<PluginMetadata> {
   const metadataJsonFilename = path.join(directory, 'metadata.json');
   try {
     if (!(await fileExists(metadataJsonFilename))) {
@@ -101,7 +97,7 @@ async function findJavascriptFile(
   return undefined;
 }
 
-export async function getPluginEntrypoints(
+async function getPluginEntrypoints(
   metadata: PluginMetadata,
   pluginDirectory: string,
 ): Promise<EntrypointInfo[]> {
@@ -130,7 +126,7 @@ export async function getPluginEntrypoints(
       ),
     );
 
-    return moduleEntrypoints.flat().filter(notEmpty);
+    return moduleEntrypoints.flat().filter((x) => x !== undefined);
   } catch (error) {
     throw new PluginLoaderError(
       `Unable to find plugin entrypoints in ${pluginDirectory}`,
@@ -151,7 +147,7 @@ function getWebEntrypointImport(
   return `${pluginName}/${relativeEntrypoint}`;
 }
 
-export async function populatePluginMetadataWithPaths(
+async function populatePluginMetadataWithPaths(
   metadata: PluginMetadata,
   packageName: string,
   pluginDirectory: string,
@@ -188,7 +184,7 @@ export async function populatePluginMetadataWithPaths(
   }
 }
 
-export async function getPluginDirectories(
+async function getPluginDirectories(
   pluginPackageDirectory: string,
   plugins: string | string[],
 ): Promise<string[]> {
@@ -229,7 +225,7 @@ export async function loadPluginsInPackage(
       );
     }),
   );
-  return plugins.filter(notEmpty);
+  return plugins;
 }
 
 async function getModuleFederationTargetsForPlugin(
@@ -295,7 +291,7 @@ export async function getModuleFederationTargets(
         );
       })
     : pluginDirectories;
-  const federationTargets = await Promise.all(
+  const targets = await Promise.all(
     rewrittenPluginDirectories.map(async (directory) => {
       const metadata = await readMetadataJson(directory);
       return getModuleFederationTargetsForPlugin(
@@ -305,7 +301,6 @@ export async function getModuleFederationTargets(
       );
     }),
   );
-  const targets = federationTargets.filter(notEmpty).flat();
 
   if (targets.length === 0) {
     throw new Error(

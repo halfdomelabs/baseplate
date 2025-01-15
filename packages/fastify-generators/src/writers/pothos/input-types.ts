@@ -18,7 +18,7 @@ import { wrapPothosTypeWithList, writePothosFieldOptions } from './helpers.js';
 import { getExpressionFromPothosTypeReference } from './options.js';
 import { writePothosInputFieldFromDtoScalarField } from './scalar-fields.js';
 
-export function writePothosInputFieldFromDtoNestedField(
+function writePothosInputFieldFromDtoNestedField(
   field: ServiceOutputDtoNestedField,
   options: PothosWriterOptions,
 ): PothosExpressionWithChildren {

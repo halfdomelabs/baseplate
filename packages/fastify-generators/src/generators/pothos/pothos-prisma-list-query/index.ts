@@ -1,7 +1,6 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
-import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
-import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
+import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createNonOverwriteableMap,
@@ -13,7 +12,6 @@ import { z } from 'zod';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
 import { lowerCaseFirst } from '@src/utils/case.js';
-import { quot } from '@src/utils/string.js';
 
 import { pothosTypesFileProvider } from '../pothos-types-file/index.js';
 import { pothosFieldScope } from '../providers/scopes.js';
@@ -22,9 +20,7 @@ const descriptorSchema = z.object({
   modelName: z.string().min(1),
 });
 
-type Descriptor = GeneratorDescriptor<typeof descriptorSchema>;
-
-export type PothosPrismaListQueryDescriptor = Descriptor;
+type Descriptor = z.infer<typeof descriptorSchema>;
 
 const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
   name: 'main',

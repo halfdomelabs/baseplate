@@ -3,7 +3,7 @@ import type {
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
 
-export type RouteCrumb = string | { label: string; url?: string };
+type RouteCrumb = string | { label: string; url?: string };
 
 export type RouteCrumbOrFunction =
   | RouteCrumb
