@@ -1,4 +1,4 @@
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -25,9 +25,10 @@ const descriptorSchema = z.object({
     .nullish(),
 });
 
-const DockerComposeGenerator = createGeneratorWithTasks({
+export const dockerComposeGenerator = createGenerator({
+  name: 'docker/docker-compose',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',
@@ -105,5 +106,3 @@ ${entries.join('\n')}`.trim()}\n`,
     });
   },
 });
-
-export default DockerComposeGenerator;

@@ -1,5 +1,4 @@
 import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
-import type { BuildProjectForDirectoryOptions } from '@halfdomelabs/project-builder-server';
 
 import {
   getDefaultGeneratorSetupConfig,
@@ -40,25 +39,18 @@ async function runMain(): Promise<void> {
     .description(
       'Builds project from project-definition.json in baseplate/ directory',
     )
-    .option('--regen', 'Force regeneration of all files')
-    .action(
-      async (
-        directory: string | undefined,
-        { regen }: BuildProjectForDirectoryOptions,
-      ) => {
-        const resolvedDirectory = directory
-          ? expandPathWithTilde(directory)
-          : '.';
-        const context = await createSchemaParserContext(resolvedDirectory);
-        return buildProjectForDirectory({
-          directory: resolvedDirectory,
-          regen,
-          logger,
-          generatorSetupConfig,
-          context,
-        });
-      },
-    );
+    .action(async (directory: string | undefined) => {
+      const resolvedDirectory = directory
+        ? expandPathWithTilde(directory)
+        : '.';
+      const context = await createSchemaParserContext(resolvedDirectory);
+      return buildProjectForDirectory({
+        directory: resolvedDirectory,
+        logger,
+        generatorSetupConfig,
+        context,
+      });
+    });
 
   program
     .command('buildClean [directory]')

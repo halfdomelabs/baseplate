@@ -2,7 +2,7 @@ import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
 import type { CompilerOptions } from 'ts-morph';
 
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
   writeJsonAction,
@@ -136,7 +136,9 @@ const DEFAULT_CONFIG: TypescriptConfig = {
   extraSections: [],
 };
 
-const TypescriptGenerator = createGeneratorWithTasks({
+export const typescriptGenerator = createGenerator({
+  name: 'node/typescript',
+  generatorFileUrl: import.meta.url,
   buildTasks(taskBuilder) {
     const configTask = taskBuilder.addTask({
       name: 'config',
@@ -317,5 +319,3 @@ const TypescriptGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default TypescriptGenerator;

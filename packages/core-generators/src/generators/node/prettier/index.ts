@@ -2,7 +2,7 @@ import type { FormatFunction, NonOverwriteableMap } from '@halfdomelabs/sync';
 import type { Plugin } from 'prettier';
 
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
   writeJsonAction,
@@ -109,7 +109,9 @@ async function resolveModuleWithVersion(
   };
 }
 
-const PrettierGenerator = createGeneratorWithTasks({
+export const prettierGenerator = createGenerator({
+  name: 'node/prettier',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
@@ -274,5 +276,3 @@ const PrettierGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrettierGenerator;

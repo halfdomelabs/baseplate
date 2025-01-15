@@ -20,7 +20,6 @@ import {
   generateCleanAppForDirectory,
   generateForDirectory,
 } from '../sync/index.js';
-import { writeApplicationFiles } from '../writer/index.js';
 
 async function loadProjectJson(directory: string): Promise<unknown> {
   const projectJsonPath = path.join(
@@ -69,7 +68,6 @@ async function compileApplicationsFromDirectory({
 export interface BuildProjectForDirectoryOptions {
   directory: string;
   generatorSetupConfig: GeneratorEngineSetupConfig;
-  regen?: boolean;
   logger: Logger;
   context: SchemaParserContext;
 }
@@ -77,7 +75,6 @@ export interface BuildProjectForDirectoryOptions {
 export async function buildProjectForDirectory({
   directory,
   generatorSetupConfig,
-  regen,
   logger,
   context,
 }: BuildProjectForDirectoryOptions): Promise<void> {
@@ -86,11 +83,7 @@ export async function buildProjectForDirectory({
     context,
   });
 
-  const modifiedApps = await writeApplicationFiles(directory, apps, logger);
-
-  const shouldRegen = regen ?? process.env.FORCE_REGEN === 'true';
-
-  const appsToRegenerate = shouldRegen ? apps : modifiedApps;
+  const appsToRegenerate = apps;
 
   for (const app of appsToRegenerate) {
     await generateForDirectory({

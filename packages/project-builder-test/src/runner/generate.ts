@@ -19,7 +19,6 @@ export async function generateProject(projectDirectory: string): Promise<void> {
   );
   return buildProjectForDirectory({
     directory: projectDirectory,
-    regen: true,
     logger,
     generatorSetupConfig,
     context: nodeSchemaParserContext,
