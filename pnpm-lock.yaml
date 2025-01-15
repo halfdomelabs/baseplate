@@ -532,9 +532,18 @@ importers:
       concurrently:
         specifier: 9.0.1
         version: 9.0.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.17.0(jiti@2.4.2)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.4.2
       tsc-alias:
         specifier: 'catalog:'
         version: 1.8.10
+      type-fest:
+        specifier: 4.32.0
+        version: 4.32.0
       typescript:
         specifier: 'catalog:'
         version: 5.5.4
@@ -729,6 +738,12 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 20.12.7
+      eslint:
+        specifier: 'catalog:'
+        version: 9.17.0(jiti@2.4.2)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.4.2
       tsx:
         specifier: 'catalog:'
         version: 4.19.1
@@ -6668,6 +6683,10 @@ packages:
 
   type-fest@4.31.0:
     resolution: {integrity: sha512-yCxltHW07Nkhv/1F6wWBr8kz+5BGMfP+RbRSYFnegVb0qV/UMT0G0ElBloPVerqn4M2ZV80Ir1FtCcYv1cT6vQ==}
+    engines: {node: '>=16'}
+
+  type-fest@4.32.0:
+    resolution: {integrity: sha512-rfgpoi08xagF3JSdtJlCwMq9DGNDE0IMh3Mkpc1wUypg9vPi786AiqeBBKcqvIkq42azsBM85N490fyZjeUftw==}
     engines: {node: '>=16'}
 
   typed-array-buffer@1.0.2:
@@ -12665,6 +12684,8 @@ snapshots:
   type-fest@2.19.0: {}
 
   type-fest@4.31.0: {}
+
+  type-fest@4.32.0: {}
 
   typed-array-buffer@1.0.2:
     dependencies:

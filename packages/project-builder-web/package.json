@@ -17,7 +17,6 @@
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
-    "refactor": "cd ../code-morph && pnpm run:morpher",
     "serve": "vite preview",
     "test": "vitest",
     "typecheck": "tsc --noEmit"

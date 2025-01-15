@@ -47,6 +47,8 @@
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
     "tsx": "catalog:",
     "typescript": "catalog:"
   },
