@@ -1,5 +1,4 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
-import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import {
   makeImportAndFilePath,
