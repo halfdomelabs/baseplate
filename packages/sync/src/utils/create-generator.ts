@@ -78,7 +78,7 @@ export type InferDescriptorFromGenerator<Creator> =
  */
 export function createGenerator<DescriptorSchema extends z.ZodType>(
   config: CreateGeneratorConfig<DescriptorSchema>,
-): GeneratorBundleCreator<z.infer<DescriptorSchema>> {
+): GeneratorBundleCreator<z.input<DescriptorSchema>> {
   const generatorFilePath = fileURLToPath(config.generatorFileUrl);
   const generatorDirectory = statSync(generatorFilePath).isFile()
     ? path.dirname(generatorFilePath)
