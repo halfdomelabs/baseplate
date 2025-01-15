@@ -1,5 +1,4 @@
-import { mapValues } from 'es-toolkit';
-import _ from 'lodash';
+import { keyBy, mapValues } from 'es-toolkit';
 import toposort from 'toposort';
 
 import { stripUndefinedValues } from '@src/utils/strip.js';
@@ -40,10 +39,10 @@ export function getOrderedPluginModuleInitializationSteps(
   pluginModules: KeyedPlatformModuleWithPlugin[],
   initialSpecImplementations: Record<string, PluginSpecImplementation>,
 ): string[] {
-  const pluginModulesById = _.keyBy(pluginModules, (p) => p.id);
+  const pluginModulesById = keyBy(pluginModules, (p) => p.id);
 
   // create export map of plugin ID to export spec name
-  const pluginModuleIdByExport: Record<string, string> = _.mapValues(
+  const pluginModuleIdByExport: Record<string, string> = mapValues(
     initialSpecImplementations,
     () => 'built-in',
   );
@@ -131,7 +130,7 @@ export function initializePlugins(
 ): PluginImplementationStore {
   const pluginModules = extractPlatformModulesFromPlugins(plugins);
 
-  const pluginModulesById = _.keyBy(pluginModules, (p) => p.id);
+  const pluginModulesById = keyBy(pluginModules, (p) => p.id);
   const orderedModuleIds = getOrderedPluginModuleInitializationSteps(
     pluginModules,
     initialSpecImplementations,

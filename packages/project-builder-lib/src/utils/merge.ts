@@ -1,4 +1,4 @@
-import * as R from 'ramda';
+import { mergeWith } from 'es-toolkit';
 
 export function safeMergeMap<K, V>(
   map1: Map<K, V>,
@@ -16,16 +16,6 @@ export function safeMergeMap<K, V>(
   return result;
 }
 
-export function safeMerge<T extends Record<string, unknown>>(
-  itemOne: T,
-  itemTwo: T,
-): T {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return R.mergeWithKey((key) => {
-    throw new Error(`Cannot merge key ${key} because it already exists.`);
-  })(itemOne, itemTwo);
-}
-
 export function deepMergeRightUniq(a: unknown, b: unknown): unknown {
   if (a == null) {
     return b;
@@ -34,7 +24,7 @@ export function deepMergeRightUniq(a: unknown, b: unknown): unknown {
     return a;
   }
   if (typeof a === 'object' && typeof b === 'object') {
-    return R.mergeWith(deepMergeRightUniq, a, b);
+    return mergeWith(a, b, deepMergeRightUniq);
   }
   if (Array.isArray(a) && Array.isArray(b)) {
     return [...new Set([...(a as unknown[]), ...(b as unknown[])])];

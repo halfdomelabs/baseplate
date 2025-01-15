@@ -154,6 +154,9 @@ importers:
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@types/eslint':
         specifier: 'catalog:'
         version: 9.6.1
@@ -178,9 +181,6 @@ importers:
       prettier-plugin-packagejson:
         specifier: 2.5.6
         version: 2.5.6(prettier@3.4.2)
-      ramda:
-        specifier: ^0.28.0
-        version: 0.28.0
       resolve-from:
         specifier: 5.0.0
         version: 5.0.0
@@ -212,9 +212,6 @@ importers:
       '@types/prettier':
         specifier: ^2.7.3
         version: 2.7.3
-      '@types/ramda':
-        specifier: ^0.29.3
-        version: 0.29.12
       '@types/semver':
         specifier: ^7.5.0
         version: 7.5.8
@@ -294,21 +291,24 @@ importers:
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@prisma/internals':
         specifier: 5.7.1
         version: 5.7.1
       change-case:
         specifier: 5.4.4
         version: 5.4.4
+      es-toolkit:
+        specifier: 1.31.0
+        version: 1.31.0
       indent-string:
         specifier: 5.0.0
         version: 5.0.0
       inflection:
         specifier: 3.0.0
         version: 3.0.0
-      ramda:
-        specifier: ^0.28.0
-        version: 0.28.0
       zod:
         specifier: 'catalog:'
         version: 3.24.1
@@ -319,9 +319,6 @@ importers:
       '@tailwindcss/forms':
         specifier: 0.5.9
         version: 0.5.9(tailwindcss@3.4.11)
-      '@types/ramda':
-        specifier: ^0.29.3
-        version: 0.29.12
       concurrently:
         specifier: 9.0.1
         version: 9.0.1
@@ -429,6 +426,9 @@ importers:
       '@halfdomelabs/ui-components':
         specifier: workspace:*
         version: link:../ui-components
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       culori:
         specifier: ^4.0.1
         version: 4.0.1
@@ -444,15 +444,9 @@ importers:
       inflection:
         specifier: 3.0.0
         version: 3.0.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       nanoid:
         specifier: 5.0.9
         version: 5.0.9
-      ramda:
-        specifier: ^0.28.0
-        version: 0.28.0
       react:
         specifier: 'catalog:'
         version: 18.3.1
@@ -478,15 +472,9 @@ importers:
       '@types/culori':
         specifier: ^2.1.1
         version: 2.1.1
-      '@types/lodash':
-        specifier: 4.17.7
-        version: 4.17.7
       '@types/node':
         specifier: 'catalog:'
         version: 20.12.7
-      '@types/ramda':
-        specifier: ^0.29.3
-        version: 0.29.12
       '@types/react':
         specifier: 'catalog:'
         version: 18.3.8
@@ -541,6 +529,9 @@ importers:
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      '@halfdomelabs/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@trpc/server':
         specifier: ^10.44.0
         version: 10.45.2
@@ -747,9 +738,6 @@ importers:
       javascript-time-ago:
         specifier: ^2.5.10
         version: 2.5.10
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       loglevel:
         specifier: 1.9.1
         version: 1.9.1
@@ -799,9 +787,6 @@ importers:
       '@types/culori':
         specifier: ^2.1.1
         version: 2.1.1
-      '@types/lodash':
-        specifier: 4.17.7
-        version: 4.17.7
       '@types/node':
         specifier: 'catalog:'
         version: 20.12.7
@@ -859,18 +844,15 @@ importers:
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
+      es-toolkit:
+        specifier: 1.31.0
+        version: 1.31.0
       inflection:
         specifier: 3.0.0
         version: 3.0.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       prettier-plugin-tailwindcss:
         specifier: 0.6.9
         version: 0.6.9(prettier@3.4.2)
-      ramda:
-        specifier: ^0.28.0
-        version: 0.28.0
       toposort:
         specifier: ^2.0.2
         version: 2.0.2
@@ -881,15 +863,9 @@ importers:
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
-      '@types/lodash':
-        specifier: 4.17.7
-        version: 4.17.7
       '@types/node':
         specifier: 'catalog:'
         version: 20.12.7
-      '@types/ramda':
-        specifier: ^0.29.3
-        version: 0.29.12
       '@types/toposort':
         specifier: ^2.0.3
         version: 2.0.7
@@ -1244,6 +1220,37 @@ importers:
       vite-tsconfig-paths:
         specifier: 'catalog:'
         version: 5.0.0(typescript@5.5.4)(vite@5.4.7(@types/node@20.12.7))
+      vitest:
+        specifier: 'catalog:'
+        version: 2.1.1(@types/node@20.12.7)
+
+  packages/utils:
+    dependencies:
+      es-toolkit:
+        specifier: 1.31.0
+        version: 1.31.0
+    devDependencies:
+      '@halfdomelabs/tools':
+        specifier: workspace:*
+        version: link:../tools
+      '@types/node':
+        specifier: 'catalog:'
+        version: 20.12.7
+      concurrently:
+        specifier: 9.0.1
+        version: 9.0.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.17.0(jiti@2.4.2)
+      prettier:
+        specifier: 'catalog:'
+        version: 3.4.2
+      tsc-alias:
+        specifier: 'catalog:'
+        version: 1.8.10
+      typescript:
+        specifier: 'catalog:'
+        version: 5.5.4
       vitest:
         specifier: 'catalog:'
         version: 2.1.1(@types/node@20.12.7)
@@ -3238,9 +3245,6 @@ packages:
   '@types/jsonfile@6.1.4':
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
 
-  '@types/lodash@4.17.7':
-    resolution: {integrity: sha512-8wTvZawATi/lsmNu10/j2hk1KEP0IvjubqPE3cu1Xz7xfXXt5oCq3SNUz4fMIP4XGF9Ky+Ue2tBA3hcS7LSBlA==}
-
   '@types/mdx@2.0.13':
     resolution: {integrity: sha512-+OWZQfAYyio6YkJb3HLxDrvnx6SWWDbC0zVPfBRzUk0/nqoDyf6dNxQi3eArPe8rJ473nobTMQ/8Zk+LxJ+Yuw==}
 
@@ -3270,9 +3274,6 @@ packages:
 
   '@types/prop-types@15.7.13':
     resolution: {integrity: sha512-hCZTSvwbzWGvhqxp/RqVqwU999pBf2vp7hzIjiYOsl8wqOmUxkQ6ddw1cV3l8811+kdUFus/q4d1Y3E3SyEifA==}
-
-  '@types/ramda@0.29.12':
-    resolution: {integrity: sha512-sgIEjpJhdQPB52gDF4aphs9nl0xe54CR22DPdWqT8gQHjZYmVApgA0R3/CpMbl0Y8az2TEZrPNL2zy0EvjbkLA==}
 
   '@types/react-dom@18.3.0':
     resolution: {integrity: sha512-EhwApuTmMBmXuFOikhQLIBUn6uFg81SwLMOAUgodJF14SOBOCMdU04gDoYi0WOJJHD144TL32z4yDqCW3dnkQg==}
@@ -5689,9 +5690,6 @@ packages:
   raf@3.4.1:
     resolution: {integrity: sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==}
 
-  ramda@0.28.0:
-    resolution: {integrity: sha512-9QnLuG/kPVgWvMQ4aODhsBUFKOUmnbUnsSXACv+NCQZcHbeb+v8Lodp8OVxtRULN1/xOyYLLaL6npE6dMq5QTA==}
-
   react-colorful@5.6.1:
     resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
     peerDependencies:
@@ -6397,9 +6395,6 @@ packages:
   ts-morph@25.0.0:
     resolution: {integrity: sha512-ERPTUVO5qF8cEGJgAejGOsCVlbk8d0SDyiJsucKQT5XgqoZslv0Qml+gnui6Yy6o+uQqw5SestyW2HvlVtT/Sg==}
 
-  ts-toolbelt@9.6.0:
-    resolution: {integrity: sha512-nsZd8ZeNUzukXPlJmTBwUAuABDe/9qtVDelJeT/qW0ow3ZS3BsQJtNkan1802aM9Uf68/Y8ljw86Hu0h5IUW3w==}
-
   tsc-alias@1.8.10:
     resolution: {integrity: sha512-Ibv4KAWfFkFdKJxnWfVtdOmB0Zi1RJVxcbPGiCDsFpCQSsmpWyuzHG3rQyI5YkobWwxFPEyQfu1hdo4qLG2zPw==}
     hasBin: true
@@ -6502,9 +6497,6 @@ packages:
   typed-array-length@1.0.6:
     resolution: {integrity: sha512-/OxDN6OtAk5KBpGb28T+HZc2M+ADtvRxXrKKbUwtsLgdoxgX13hyy7ek6bFRl5+aBs2yZzB0c4CnQfAtVypW/g==}
     engines: {node: '>= 0.4'}
-
-  types-ramda@0.29.10:
-    resolution: {integrity: sha512-5PJiW/eiTPyXXBYGZOYGezMl6qj7keBiZheRwfjJZY26QPHsNrjfJnz0mru6oeqqoTHOni893Jfd6zyUXfQRWg==}
 
   typescript-eslint@8.18.1:
     resolution: {integrity: sha512-Mlaw6yxuaDEPQvb/2Qwu3/TfgeBHy9iTJ3mTwe7OvpPmF6KPQjVOfGyEJpPv6Ez2C34OODChhXrzYw/9phI0MQ==}
@@ -8823,8 +8815,6 @@ snapshots:
     dependencies:
       '@types/node': 22.10.6
 
-  '@types/lodash@4.17.7': {}
-
   '@types/mdx@2.0.13': {}
 
   '@types/ms@0.7.34': {}
@@ -8850,10 +8840,6 @@ snapshots:
   '@types/prettier@2.7.3': {}
 
   '@types/prop-types@15.7.13': {}
-
-  '@types/ramda@0.29.12':
-    dependencies:
-      types-ramda: 0.29.10
 
   '@types/react-dom@18.3.0':
     dependencies:
@@ -11431,8 +11417,6 @@ snapshots:
     dependencies:
       performance-now: 2.1.0
 
-  ramda@0.28.0: {}
-
   react-colorful@5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -12263,8 +12247,6 @@ snapshots:
       '@ts-morph/common': 0.26.0
       code-block-writer: 13.0.3
 
-  ts-toolbelt@9.6.0: {}
-
   tsc-alias@1.8.10:
     dependencies:
       chokidar: 3.6.0
@@ -12367,10 +12349,6 @@ snapshots:
       has-proto: 1.0.3
       is-typed-array: 1.1.13
       possible-typed-array-names: 1.0.0
-
-  types-ramda@0.29.10:
-    dependencies:
-      ts-toolbelt: 9.6.0
 
   typescript-eslint@8.18.1(eslint@9.17.0(jiti@2.4.2))(typescript@5.5.4):
     dependencies:

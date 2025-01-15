@@ -1,7 +1,7 @@
 import type { TypeOf, z } from 'zod';
 
-import { keyBy } from 'es-toolkit';
-import _ from 'lodash';
+import { groupBy, keyBy, uniq } from 'es-toolkit';
+import { get, set } from 'es-toolkit/compat';
 import toposort from 'toposort';
 
 import type { ZodRefPayload } from './ref-builder.js';
@@ -23,7 +23,7 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   const { references, entities, data } = payload;
 
   // check we don't have more entities than IDs
-  const entitiesById = _.groupBy(entities, (entity) => entity.id);
+  const entitiesById = groupBy(entities, (entity) => entity.id);
   const duplicateEntityIds = Object.values(entitiesById).filter(
     (e) => e.length > 1,
   );
@@ -37,14 +37,14 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
         .join(', ')}`,
     );
   }
-  const uniqueEntityIds = _.uniq(entities.map((e) => e.id));
+  const uniqueEntityIds = uniq(entities.map((e) => e.id));
   if (uniqueEntityIds.length !== entities.length) {
     throw new Error(`Found duplicate entity IDs`);
   }
 
   // collect reference entity types
-  const entityTypes = _.uniq(entities.map((e) => e.type));
-  const entityTypeNames = _.uniq(entityTypes.map((t) => t.name));
+  const entityTypes = uniq(entities.map((e) => e.type));
+  const entityTypeNames = uniq(entityTypes.map((t) => t.name));
   if (entityTypeNames.length !== entityTypes.length) {
     throw new Error(
       `Found more entity types than entity type names implying duplicate entity type name`,
@@ -61,8 +61,8 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
       ]),
   );
 
-  const entitiesByType = _.groupBy(entities, (e) => e.type.name);
-  const referencesByType = _.groupBy(references, (r) => r.type.name);
+  const entitiesByType = groupBy(entities, (e) => e.type.name);
+  const referencesByType = groupBy(references, (r) => r.type.name);
 
   for (const name of entityTypeOrder) {
     const entities = entitiesByType[name] ?? [];
@@ -73,7 +73,7 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
       keyBy(entities, (e) => {
         const { parentPath } = e;
         const parentId = parentPath
-          ? (_.get(data, parentPath) as string)
+          ? (get(data, parentPath) as string)
           : undefined;
 
         if (parentPath && typeof parentId !== 'string') {
@@ -86,10 +86,9 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
       });
 
     for (const ref of references) {
-      const name = _.get(data, ref.path) as string;
+      const name = get(data, ref.path) as string;
       // parent ID should have already been resolved due to order of resolving references
-      const parentId =
-        ref.parentPath && (_.get(data, ref.parentPath) as string);
+      const parentId = ref.parentPath && (get(data, ref.parentPath) as string);
       const parentIdName = referenceToNameParentId(name, parentId);
 
       const resolvedEntity = entitiesByParentIdName[parentIdName];
@@ -100,7 +99,7 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
           } ${parentIdName})`,
         );
       }
-      _.set(data, ref.path, resolvedEntity.id);
+      set(data, ref.path, resolvedEntity.id);
     }
   }
 

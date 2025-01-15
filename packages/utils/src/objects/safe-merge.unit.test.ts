@@ -40,7 +40,7 @@ describe('safeMergeAll', () => {
 
   it('throws an error when keys overlap', () => {
     const items = [{ a: 1 }, { b: 2 }, { b: 3 }];
-    expect(() => safeMergeAll(...items)).toThrowError(
+    expect(() => safeMergeAll(items)).toThrowError(
       'Cannot merge key b because it already exists.',
     );
   });

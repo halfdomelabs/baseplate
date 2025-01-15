@@ -1,6 +1,7 @@
 import type { GeneratorBundleChildren } from '@halfdomelabs/sync';
 
-import * as R from 'ramda';
+import { safeMerge } from '@halfdomelabs/utils';
+import { cloneDeep, keyBy } from 'es-toolkit';
 
 import type { ProjectDefinitionContainer } from '@src/index.js';
 import type { ProjectDefinition } from '@src/schema/index.js';
@@ -12,7 +13,7 @@ import {
   modelLocalRelationEntityType,
   modelScalarFieldEntityType,
 } from '@src/schema/index.js';
-import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
+import { deepMergeRightUniq } from '@src/utils/merge.js';
 
 import type { ParsedModel, ParsedRelationField } from './types.js';
 
@@ -36,7 +37,7 @@ function upsertItems<T>(
     }
     return [];
   }
-  const itemsByKey = R.indexBy(keyFunction, items);
+  const itemsByKey = keyBy(items, keyFunction);
   const existingKeys = new Set(existingItems.map(keyFunction));
 
   const newItems = items.filter((item) => !existingKeys.has(keyFunction(item)));
@@ -124,7 +125,7 @@ export class ParsedProjectDefinition {
     const projectDefinition = definitionContainer.definition;
     this.projectDefinition = projectDefinition;
     validateProjectDefinition(projectDefinition);
-    const copiedProjectDefinition = R.clone(projectDefinition);
+    const copiedProjectDefinition = cloneDeep(projectDefinition);
     this.models = copiedProjectDefinition.models;
 
     // run plugins

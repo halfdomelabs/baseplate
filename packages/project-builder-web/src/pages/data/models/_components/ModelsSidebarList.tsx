@@ -8,7 +8,7 @@ import {
   ScrollArea,
 } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { useState } from 'react';
 import { MdAdd, MdClear } from 'react-icons/md';
 import { NavLink } from 'react-router-dom';
@@ -32,7 +32,7 @@ export function ModelsSidebarList({
     model.name.toLowerCase().includes(filterQuery.toLowerCase()),
   );
 
-  const sortedModels = _.sortBy(filteredModels, (m) => m.name);
+  const sortedModels = sortBy(filteredModels, [(m) => m.name]);
 
   const [isScrolled, setIsScrolled] = useState(false);
 

@@ -1,8 +1,8 @@
 import type { CodeBlockWriter, SourceFile, ts } from 'ts-morph';
 
-import { groupBy, mapValues } from 'es-toolkit';
+import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
+import { groupBy, mapValues, uniq } from 'es-toolkit';
 import path from 'node:path';
-import * as R from 'ramda';
 
 import { notEmpty } from '@src/utils/array.js';
 
@@ -275,11 +275,9 @@ function writeImportDeclarationsForModule(
     return { isTypeOnly, imports };
   });
 
-  const typeOnlyImports = R.flatten(
-    importsWithNameAndType
-      .filter((item) => item.isTypeOnly)
-      .map((item) => item.imports),
-  );
+  const typeOnlyImports = importsWithNameAndType
+    .filter((item) => item.isTypeOnly)
+    .flatMap((item) => item.imports);
   if (typeOnlyImports.length > 0) {
     writeImportDeclaration(
       writer,
@@ -287,11 +285,9 @@ function writeImportDeclarationsForModule(
     );
   }
 
-  const normalImports = R.flatten(
-    importsWithNameAndType
-      .filter((item) => !item.isTypeOnly)
-      .map((item) => item.imports),
-  );
+  const normalImports = importsWithNameAndType
+    .filter((item) => !item.isTypeOnly)
+    .flatMap((item) => item.imports);
   if (normalImports.length > 0) {
     writeImportDeclaration(
       writer,
@@ -301,8 +297,10 @@ function writeImportDeclarationsForModule(
 }
 
 export function buildImportMap(importMappers: ImportMapper[]): ImportMap {
-  // TODO: Throw error if merge conflict
-  return R.mergeAll(importMappers.map((m) => m.getImportMap()));
+  return safeMergeAllWithOptions(
+    importMappers.map((m) => m.getImportMap()),
+    { allowEqualValues: true },
+  );
 }
 
 function resolveImportFromImportMap(
@@ -358,8 +356,8 @@ export function writeImportDeclarations(
   const resolvedImports = mappedImports.map((i) =>
     resolveImportDeclaration(i, fileDirectory, options),
   );
-  const resolvedImportEntries = R.flatten(
-    resolvedImports.map((i) => importDeclarationToImportEntries(i)),
+  const resolvedImportEntries = resolvedImports.flatMap((i) =>
+    importDeclarationToImportEntries(i),
   );
   // merge all imports together
   const importsByModule: Partial<Record<string, ImportEntry[]>> = groupBy(
@@ -373,7 +371,7 @@ export function writeImportDeclarations(
   //
   // import './index.css';
 
-  const allModules = R.uniq(resolvedImports.map((i) => i.moduleSpecifier));
+  const allModules = uniq(resolvedImports.map((i) => i.moduleSpecifier));
   const modulesWithImportEntries = allModules.filter(
     (moduleSpecifier) =>
       importsByModule[moduleSpecifier] &&

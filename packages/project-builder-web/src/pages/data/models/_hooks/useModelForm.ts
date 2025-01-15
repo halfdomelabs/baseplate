@@ -16,7 +16,7 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import { toast, useEventCallback } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { logAndFormatError } from 'src/services/error-formatter';
@@ -175,12 +175,12 @@ export function useModelForm<
                 draftConfig,
                 updatedModel.featureRef,
               );
-            draftConfig.models = _.sortBy(
+            draftConfig.models = sortBy(
               [
                 ...draftConfig.models.filter((m) => m.id !== updatedModel.id),
                 updatedModel,
               ],
-              (m) => m.name,
+              [(m) => m.name],
             );
           });
           if (isCreate) {

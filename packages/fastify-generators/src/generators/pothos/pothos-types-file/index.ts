@@ -10,7 +10,7 @@ import {
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
@@ -80,12 +80,14 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
           },
         }),
         build: async (builder) => {
-          const orderedTypes = R.sortBy((type) => {
-            if (!type.category || !categoryOrder?.includes(type.category)) {
-              return (categoryOrder ?? []).length;
-            }
-            return categoryOrder.indexOf(type.category);
-          }, types);
+          const orderedTypes = sortBy(types, [
+            (type) => {
+              if (!type.category || !categoryOrder?.includes(type.category)) {
+                return (categoryOrder ?? []).length;
+              }
+              return categoryOrder.indexOf(type.category);
+            },
+          ]);
 
           const typesFile = typescript.createTemplate({
             TYPES: TypescriptCodeUtils.mergeBlocks(

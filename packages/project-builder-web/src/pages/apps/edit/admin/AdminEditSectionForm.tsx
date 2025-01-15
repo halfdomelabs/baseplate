@@ -17,7 +17,7 @@ import {
 import { toast, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
@@ -73,14 +73,14 @@ function AdminEditSectionForm({
           throw new Error('Cannot add a section to a non-admin app');
         }
 
-        adminApp.sections = _.sortBy(
+        adminApp.sections = sortBy(
           [
             ...(adminApp.sections ?? []).filter(
               (section) => !sectionId || section.id !== sectionId,
             ),
             { ...data, id },
           ],
-          'name',
+          [(section) => section.name],
         );
       });
       if (!sectionId) {

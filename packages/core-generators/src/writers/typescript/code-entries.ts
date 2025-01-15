@@ -2,7 +2,7 @@
 
 // specifies a block of code
 
-import * as R from 'ramda';
+import { uniq } from 'es-toolkit';
 
 import type { ImportMapper } from '../../providers/index.js';
 import type { ImportDeclarationEntry } from './imports.js';
@@ -52,13 +52,23 @@ export function mergeCodeEntryOptions(
     .filter(notString)
     .map((e) => (e instanceof TypescriptCodeEntry ? e.options : e));
   return {
-    imports: R.flatten(options.map((e) => e.imports).filter(notEmpty)),
-    importText: R.flatten(options.map((e) => e.importText).filter(notEmpty)),
-    headerBlocks: R.flatten(
-      options.map((e) => e.headerBlocks).filter(notEmpty),
-    ),
-    importMappers: R.flatten(
-      R.uniq(options.map((e) => e.importMappers).filter(notEmpty)),
+    imports: options
+      .map((e) => e.imports)
+      .filter(notEmpty)
+      .flat(),
+    importText: options
+      .map((e) => e.importText)
+      .filter(notEmpty)
+      .flat(),
+    headerBlocks: options
+      .map((e) => e.headerBlocks)
+      .filter(notEmpty)
+      .flat(),
+    importMappers: uniq(
+      options
+        .map((e) => e.importMappers)
+        .filter(notEmpty)
+        .flat(),
     ),
   };
 }

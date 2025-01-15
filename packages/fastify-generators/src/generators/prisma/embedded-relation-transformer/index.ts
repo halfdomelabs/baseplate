@@ -5,7 +5,6 @@ import type {
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { createGenerator } from '@halfdomelabs/sync';
-import * as R from 'ramda';
 import { z } from 'zod';
 
 import type {
@@ -477,7 +476,7 @@ export const embeddedRelationTransformerGenerator = createGenerator({
 
             const primaryKeyExpression =
               TypescriptCodeUtils.mergeExpressionsAsObject(
-                R.fromPairs(
+                Object.fromEntries(
                   primaryKeyFields.map((keyField): [string, string] => [
                     keyField.name,
                     keyField.value,

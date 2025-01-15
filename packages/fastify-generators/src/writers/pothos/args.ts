@@ -1,7 +1,8 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import * as R from 'ramda';
+import { safeMergeAllWithOptions } from '@halfdomelabs/utils';
+import { mapValues } from 'es-toolkit';
 
 import type {
   ServiceOutputDtoField,
@@ -80,10 +81,10 @@ export function writePothosArgsFromDtoFields(
     }
     return { [field.name]: writePothosArgFromDtoScalarField(field, options) };
   });
-  const argMap = R.mergeAll(argOutputs);
+  const argMap = safeMergeAllWithOptions(argOutputs);
   return {
     expression: TypescriptCodeUtils.mergeExpressionsAsObject(
-      R.mapObjIndexed((val) => val.expression, argMap),
+      mapValues(argMap, (val) => val.expression),
     ),
     childDefinitions: Object.values(argMap).flatMap(
       (arg) => arg.childDefinitions ?? [],

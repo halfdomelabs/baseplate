@@ -26,8 +26,7 @@ import {
   yogaPluginGenerator,
 } from '@halfdomelabs/fastify-generators';
 import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
-
-import { safeMergeAll } from '@src/utils/safe-merge.js';
+import { safeMergeAll } from '@halfdomelabs/utils';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 

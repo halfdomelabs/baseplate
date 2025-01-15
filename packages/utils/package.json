@@ -1,0 +1,55 @@
+{
+  "name": "@halfdomelabs/utils",
+  "version": "0.1.0",
+  "description": "Shared utility functions for Baseplate",
+  "homepage": "https://www.halfdomelabs.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/halfdomelabs/baseplate",
+    "directory": "packages/utils"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Half Dome Labs LLC",
+  "sideEffects": false,
+  "type": "module",
+  "main": "dist/index.js",
+  "files": [
+    "LICENSE",
+    "dist/**/*",
+    "CHANGELOG"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && tsc-alias",
+    "clean": "rm -rf ./dist",
+    "lint": "eslint .",
+    "prettier:check": "prettier --check .",
+    "prettier:write": "prettier -w .",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "watch": "concurrently pnpm:watch:*",
+    "watch:tsc": "tsc -p tsconfig.build.json --preserveWatchOutput -w",
+    "watch:tsc-alias": "tsc-alias -w"
+  },
+  "dependencies": {
+    "es-toolkit": "1.31.0"
+  },
+  "devDependencies": {
+    "@halfdomelabs/tools": "workspace:*",
+    "@types/node": "catalog:",
+    "concurrently": "9.0.1",
+    "eslint": "catalog:",
+    "prettier": "catalog:",
+    "tsc-alias": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

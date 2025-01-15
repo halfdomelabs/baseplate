@@ -1,0 +1,13 @@
+{
+  "extends": "@halfdomelabs/tools/tsconfig.node.lib.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": ".",
+    "noEmit": true,
+    "paths": {
+      "@src/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/output/merge-algorithms/tests/**/*"]
+}

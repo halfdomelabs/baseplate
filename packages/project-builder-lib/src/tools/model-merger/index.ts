@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEqual } from 'es-toolkit';
 
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type {
@@ -60,7 +60,7 @@ function diffModelFields<T extends { id?: string; name: string }>(
       continue;
     }
 
-    if (!_.isMatch(currentField, field)) {
+    if (!isEqual(currentField, field)) {
       operations.push({
         type: 'update',
         name: field.name,
@@ -147,7 +147,7 @@ export function diffModel(
       desired.relations ?? [],
       options,
     ),
-    primaryKeyFieldRefs: _.isEqual(
+    primaryKeyFieldRefs: isEqual(
       current.primaryKeyFieldRefs,
       desired.primaryKeyFieldRefs,
     )

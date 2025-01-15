@@ -15,7 +15,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
+import { mapValues } from 'es-toolkit';
 import { z } from 'zod';
 
 import { notEmpty } from '@src/utils/array.js';
@@ -122,7 +122,7 @@ export const requestServiceContextGenerator = createGenerator({
               {
                 CONTEXT_FIELDS:
                   TypescriptCodeUtils.mergeBlocksAsInterfaceContent(
-                    R.mapObjIndexed((field) => field.type, contextFields),
+                    mapValues(contextFields, (field) => field.type),
                   ),
                 CONTEXT_BODY: TypescriptCodeUtils.mergeBlocks(
                   Object.values(contextFields)
@@ -134,9 +134,8 @@ export const requestServiceContextGenerator = createGenerator({
                     (Object.keys(contextPassthroughs).length === 0
                       ? TypescriptCodeUtils.createExpression('')
                       : TypescriptCodeUtils.mergeExpressionsAsObject(
-                          R.mapObjIndexed(
-                            (field) => field.creator('request', 'reply'),
-                            contextPassthroughs,
+                          mapValues(contextPassthroughs, (field) =>
+                            field.creator('request', 'reply'),
                           ),
                         )
                     ).wrap(

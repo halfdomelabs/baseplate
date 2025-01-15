@@ -15,7 +15,7 @@ import {
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
-import * as R from 'ramda';
+import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -92,10 +92,9 @@ export const reactConfigGenerator = createGenerator({
             });
 
             const configEntries = configEntryMap.value();
-            const sortedConfigEntries = R.sortBy(
+            const sortedConfigEntries = sortBy(Object.entries(configEntries), [
               (entry) => entry[0],
-              Object.entries(configEntries),
-            );
+            ]);
             const configEntryKeys = Object.keys(configEntries).sort();
             const mergedExpression = TypescriptCodeUtils.mergeExpressions(
               configEntryKeys.map((key) => {

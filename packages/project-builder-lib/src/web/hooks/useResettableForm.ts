@@ -1,7 +1,7 @@
 import type { FieldValues, UseFormProps, UseFormReturn } from 'react-hook-form';
 
 import { toast } from '@halfdomelabs/ui-components';
-import _ from 'lodash';
+import { isEqual } from 'es-toolkit';
 import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -26,7 +26,7 @@ export function useResettableForm<
   useEffect(() => {
     if (
       oldValues.current &&
-      !_.isEqual(oldValues.current.oldDefaultValues, props?.defaultValues)
+      !isEqual(oldValues.current.oldDefaultValues, props?.defaultValues)
     ) {
       reset(props?.defaultValues as TFieldValues);
       if (
@@ -38,7 +38,7 @@ export function useResettableForm<
     }
     if (
       !oldValues.current ||
-      !_.isEqual(oldValues.current.oldDefaultValues, props?.defaultValues)
+      !isEqual(oldValues.current.oldDefaultValues, props?.defaultValues)
     ) {
       oldValues.current = {
         externalChangeCounter,

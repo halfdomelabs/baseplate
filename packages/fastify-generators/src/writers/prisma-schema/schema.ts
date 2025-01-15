@@ -1,5 +1,5 @@
+import { sortBy } from 'es-toolkit';
 import indentString from 'indent-string';
-import * as R from 'ramda';
 
 import type {
   PrismaOutputEnum,
@@ -125,10 +125,7 @@ export class PrismaSchemaFile {
     }
     const modelBlocks = this.modelBlockWriters.map((b) => b.toBlock());
     const enumBlocks = this.enums.map((block) => printEnumBlock(block));
-    const sortedBlocks = R.sortBy(R.prop('name'), [
-      ...modelBlocks,
-      ...enumBlocks,
-    ]);
+    const sortedBlocks = sortBy([...modelBlocks, ...enumBlocks], ['name']);
 
     return `${[
       ...this.generatorBlocks.map(formatBlock),

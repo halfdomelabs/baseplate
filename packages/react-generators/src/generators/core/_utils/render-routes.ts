@@ -1,7 +1,7 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import _ from 'lodash';
+import { groupBy } from 'es-toolkit';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
 
@@ -10,7 +10,7 @@ export function renderRoutes(
   layouts: ReactRouteLayout[],
 ): TypescriptCodeExpression {
   // group routes by layout key
-  const routesByLayoutKey = _.groupBy(
+  const routesByLayoutKey = groupBy(
     routes,
     (route) => route.layoutKey ?? 'no-layout',
   );

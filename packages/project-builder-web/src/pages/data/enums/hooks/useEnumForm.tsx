@@ -15,7 +15,7 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import { toast, useEventCallback } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -116,14 +116,14 @@ export function useEnumForm({
                 draftConfig,
                 updatedDefinition.featureRef,
               );
-            draftConfig.enums = _.sortBy(
+            draftConfig.enums = sortBy(
               [
                 ...(draftConfig.enums?.filter(
                   (e) => e.id !== updatedDefinition.id,
                 ) ?? []),
                 updatedDefinition,
               ],
-              (e) => e.name,
+              [(e) => e.name],
             );
           });
 

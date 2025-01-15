@@ -2,7 +2,7 @@ import type React from 'react';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Breadcrumb, Button, Dropdown } from '@halfdomelabs/ui-components';
-import _, { upperFirst } from 'lodash';
+import { orderBy, upperFirst } from 'es-toolkit';
 import { Fragment } from 'react';
 import { MdKeyboardArrowDown } from 'react-icons/md';
 import { Link, useMatches, useNavigate } from 'react-router-dom';
@@ -34,7 +34,7 @@ export function AppBreadcrumbs(): React.JSX.Element {
   const setCurrentProjectId = useProjects((state) => state.setCurrentProjectId);
   const navigate = useNavigate();
 
-  const orderedProjects = _.orderBy(projects, ['name'], ['asc']);
+  const orderedProjects = orderBy(projects, ['name'], ['asc']);
 
   return (
     <div className="flex items-center space-x-2">
