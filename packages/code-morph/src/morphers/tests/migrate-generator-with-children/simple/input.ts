@@ -36,11 +36,11 @@ const PrettierGenerator = createGeneratorWithChildren({
       tabWidth: descriptor.tabWidth,
     });
     return {
-      getProviders: () => ({
+      providers: {
         prettier: {
           getConfig: () => prettierConfig,
         },
-      }),
+      },
       build: async (builder) => {
         builder.writeFile('test.txt', 'test');
       },

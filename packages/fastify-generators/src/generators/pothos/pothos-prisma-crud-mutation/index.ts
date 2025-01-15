@@ -103,13 +103,13 @@ const createMainTask = createTaskConfigBuilder(
       );
 
       return {
-        getProviders: () => ({
+        providers: {
           pothosField: {
             addCustomOption(field) {
               customFields.set(field.name, field.value);
             },
           },
-        }),
+        },
         build: () => {
           if (inputFields.childDefinitions)
             for (const childDefinition of inputFields.childDefinitions) {

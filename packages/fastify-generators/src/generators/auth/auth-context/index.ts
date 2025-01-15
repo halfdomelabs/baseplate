@@ -90,11 +90,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
     });
 
     return {
-      getProviders: () => ({
+      providers: {
         authContext: {
           getImportMap: () => importMap,
         },
-      }),
+      },
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyAction({

@@ -75,7 +75,7 @@ const createMainTask = createTaskConfigBuilder(
       );
 
       return {
-        getProviders: () => ({
+        providers: {
           fastifyRedis: {
             getImportMap: () => ({
               '%fastify-redis': {
@@ -84,7 +84,7 @@ const createMainTask = createTaskConfigBuilder(
               },
             }),
           },
-        }),
+        },
         build: async (builder) => {
           const redisFile = typescript.createTemplate({
             CONFIG: configService.getConfigExpression(),

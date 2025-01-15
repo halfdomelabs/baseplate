@@ -135,7 +135,7 @@ export const reactComponentsGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             reactComponents: {
               registerComponent: (entry) => allReactComponents.push(entry),
               getComponentsFolder: () => `${srcFolder}/components`,
@@ -161,7 +161,7 @@ export const reactComponentsGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await Promise.all(
               coreReactComponents.map(async ({ name }) =>

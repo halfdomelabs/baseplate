@@ -52,7 +52,7 @@ export const appModuleGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             appModule: {
               getModuleFolder: () => moduleFolder,
               getValidFields: () => validFields,
@@ -66,7 +66,7 @@ export const appModuleGenerator = createGenerator({
                 moduleEntries.appendUnique(name, [type]);
               },
             },
-          }),
+          },
           build: async (builder) => {
             const indexFile = typescript.createTemplate({
               MODULE_CONTENTS: { type: 'code-expression' },

@@ -151,7 +151,7 @@ export const prismaGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             prismaSchema: {
               addPrismaGenerator: (generator) => {
                 schemaFile.addGeneratorBlock(generator);
@@ -163,7 +163,7 @@ export const prismaGenerator = createGenerator({
                 schemaFile.addEnum(block);
               },
             },
-          }),
+          },
           build: async (builder) => {
             const schemaText = schemaFile.toText();
             const { formatSchema: format } = internalRequire(
@@ -217,7 +217,7 @@ export const prismaGenerator = createGenerator({
       taskDependencies: { schemaTask },
       run(deps, { schemaTask: { schemaFile } }) {
         return {
-          getProviders: () => ({
+          providers: {
             prismaOutput: {
               getImportMap: () => ({
                 '%prisma-service': {
@@ -266,7 +266,7 @@ export const prismaGenerator = createGenerator({
                   `import { ${modelName} } from '@prisma/client'`,
                 ),
             },
-          }),
+          },
         };
       },
     });

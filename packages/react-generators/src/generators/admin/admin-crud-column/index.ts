@@ -23,7 +23,7 @@ const createMainTask = createTaskConfigBuilder(({ label }: Descriptor) => ({
   run({ adminCrudColumnContainer }) {
     let display: AdminCrudDisplay | null = null;
     return {
-      getProviders: () => ({
+      providers: {
         adminCrudDisplayContainer: {
           addDisplay(input) {
             if (display) {
@@ -35,7 +35,7 @@ const createMainTask = createTaskConfigBuilder(({ label }: Descriptor) => ({
           },
           getModelName: () => adminCrudColumnContainer.getModelName(),
         },
-      }),
+      },
       build: () => {
         if (!display) {
           throw new Error(

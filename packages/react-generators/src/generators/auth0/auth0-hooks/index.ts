@@ -46,7 +46,7 @@ export const auth0HooksGenerator = createGenerator({
           makeImportAndFilePath(`${hookFolder}/useRequiredUserId.ts`);
 
         return {
-          getProviders: () => ({
+          providers: {
             authHooks: {
               addCurrentUserField: (field: string) => {
                 currentUserFields.push(field);
@@ -70,7 +70,7 @@ export const auth0HooksGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

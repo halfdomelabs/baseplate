@@ -82,22 +82,20 @@ export const pothosGenerator = createGenerator({
         const schemaFiles: string[] = [];
 
         return {
-          getProviders() {
-            return {
-              pothosSetup: {
-                getConfig: () => config,
-                getImportMap: () => ({
-                  '%pothos': {
-                    path: '@/src/plugins/graphql/builder.js',
-                    allowedImports: ['builder'],
-                  },
-                }),
-                registerSchemaFile: (filePath) => {
-                  schemaFiles.push(filePath);
+          providers: {
+            pothosSetup: {
+              getConfig: () => config,
+              getImportMap: () => ({
+                '%pothos': {
+                  path: '@/src/plugins/graphql/builder.js',
+                  allowedImports: ['builder'],
                 },
-                getTypeReferences: () => pothosTypes,
+              }),
+              registerSchemaFile: (filePath) => {
+                schemaFiles.push(filePath);
               },
-            };
+              getTypeReferences: () => pothosTypes,
+            },
           },
           build: () => ({ config, schemaFiles, pothosTypes }),
         };
@@ -113,23 +111,21 @@ export const pothosGenerator = createGenerator({
       taskDependencies: { setupTask },
       run(deps, { setupTask: { schemaFiles, pothosTypes } }) {
         return {
-          getProviders() {
-            return {
-              pothosSchema: {
-                getImportMap: () => ({
-                  '%pothos': {
-                    path: '@/src/plugins/graphql/builder.js',
-                    allowedImports: ['builder'],
-                  },
-                }),
-                registerSchemaFile(filePath) {
-                  schemaFiles.push(filePath);
+          providers: {
+            pothosSchema: {
+              getImportMap: () => ({
+                '%pothos': {
+                  path: '@/src/plugins/graphql/builder.js',
+                  allowedImports: ['builder'],
                 },
-                getTypeReferences() {
-                  return pothosTypes;
-                },
+              }),
+              registerSchemaFile(filePath) {
+                schemaFiles.push(filePath);
               },
-            };
+              getTypeReferences() {
+                return pothosTypes;
+              },
+            },
           },
           build: () => ({ schemaFiles }),
         };
@@ -177,8 +173,8 @@ export const pothosGenerator = createGenerator({
         prettier.addPrettierIgnore('/schema.graphql');
 
         return {
-          getProviders() {
-            return { pothos: {} };
+          providers: {
+            pothos: {},
           },
           async build(builder) {
             const config = configMap.value();

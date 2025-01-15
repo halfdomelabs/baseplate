@@ -76,13 +76,11 @@ export const yogaPluginGenerator = createGenerator({
         );
 
         return {
-          getProviders() {
-            return {
-              yogaPluginSetup: {
-                getConfig: () => configMap,
-                isSubscriptionEnabled: () => !!enableSubscriptions,
-              },
-            };
+          providers: {
+            yogaPluginSetup: {
+              getConfig: () => configMap,
+              isSubscriptionEnabled: () => !!enableSubscriptions,
+            },
           },
           build() {
             configMap.prepend(
@@ -164,8 +162,8 @@ export const yogaPluginGenerator = createGenerator({
         });
 
         return {
-          getProviders() {
-            return { yogaPlugin: { getConfig: () => configMap } };
+          providers: {
+            yogaPlugin: { getConfig: () => configMap },
           },
           async build(builder) {
             const config = configMap.value();

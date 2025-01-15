@@ -36,7 +36,7 @@ export const apolloErrorGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             apolloError: {
               getImportMap: () => ({
                 '%apollo-error/utils': {
@@ -45,7 +45,7 @@ export const apolloErrorGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

@@ -60,7 +60,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
       const enums: PothosEnum[] = [];
 
       return {
-        getProviders: () => ({
+        providers: {
           pothosEnumsFile: {
             getBuilder: () => 'builder',
             registerEnum(pothosEnum) {
@@ -72,7 +72,7 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
               });
             },
           },
-        }),
+        },
         build: async (builder) => {
           const orderedTypes = sortBy(enums, [(type) => type.name]);
 

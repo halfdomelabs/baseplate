@@ -64,7 +64,7 @@ export const tsUtilsGenerator = createGenerator({
         const usedTemplates: Record<string, boolean> = {};
 
         return {
-          getProviders: () => ({
+          providers: {
             tsUtils: {
               getImportMap: () =>
                 Object.fromEntries(
@@ -80,7 +80,7 @@ export const tsUtilsGenerator = createGenerator({
                   ]),
                 ),
             },
-          }),
+          },
           build: async (builder) => {
             // recursively resolve dependencies
             const markDependenciesAsUsed = (key: string): void => {

@@ -41,9 +41,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
     });
 
     return {
-      getProviders: () => ({
+      providers: {
         fastifyPostmark: {},
-      }),
+      },
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyFilesAction({

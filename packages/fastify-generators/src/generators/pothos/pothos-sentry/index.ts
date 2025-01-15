@@ -43,7 +43,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     });
 
     return {
-      getProviders: () => ({}),
+      providers: {},
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyAction({

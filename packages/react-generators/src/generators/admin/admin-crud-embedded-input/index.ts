@@ -116,9 +116,9 @@ const createMainTask = createTaskConfigBuilder(
       });
 
       return {
-        getProviders: () => ({
+        providers: {
           adminCrudEmbeddedInput: {},
-        }),
+        },
       };
     },
   }),

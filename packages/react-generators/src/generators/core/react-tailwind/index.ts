@@ -80,13 +80,13 @@ export const reactTailwindGenerator = createGenerator({
         }
 
         return {
-          getProviders: () => ({
+          providers: {
             reactTailwind: {
               addGlobalStyle: (style) => {
                 globalStyles.push(style);
               },
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               writeTemplateAction({

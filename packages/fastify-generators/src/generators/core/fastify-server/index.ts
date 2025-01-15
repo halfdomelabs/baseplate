@@ -122,7 +122,7 @@ export const fastifyServerGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             fastifyServer: {
               getConfig: () => configMap,
               registerPlugin: (plugin) => plugins.push(plugin),
@@ -133,7 +133,7 @@ export const fastifyServerGenerator = createGenerator({
                 initializerBlocks.push(block);
               },
             },
-          }),
+          },
           build: async (builder) => {
             const config = configMap.value();
             const indexFile = typescript.createTemplate({

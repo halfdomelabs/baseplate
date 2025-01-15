@@ -33,9 +33,9 @@ export const adminCrudSectionGenerator = createGenerator({
       },
       run() {
         return {
-          getProviders: () => ({
+          providers: {
             adminCrudSection: {},
-          }),
+          },
         };
       },
     });

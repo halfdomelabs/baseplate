@@ -63,7 +63,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
       const types: PothosType[] = [];
 
       return {
-        getProviders: () => ({
+        providers: {
           pothosTypes: {
             getBuilder: () => 'builder',
             getModuleName: () => typesImport,
@@ -78,7 +78,7 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
               types.push(type);
             },
           },
-        }),
+        },
         build: async (builder) => {
           const orderedTypes = sortBy(types, [
             (type) => {

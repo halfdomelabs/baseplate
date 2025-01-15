@@ -50,9 +50,9 @@ const createMainTask = createTaskConfigBuilder(
       const baseDirectory = `${reactRoutes.getDirectoryBase()}/bull-board`;
 
       return {
-        getProviders: () => ({
+        providers: {
           adminBullBoard: {},
-        }),
+        },
         build: async (builder) => {
           const importMappers = [
             reactComponents,

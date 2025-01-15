@@ -70,9 +70,9 @@ const createMainTask = createTaskConfigBuilder(
       });
 
       return {
-        getProviders: () => ({
+        providers: {
           adminCrudForeignDisplay: {},
-        }),
+        },
       };
     },
   }),

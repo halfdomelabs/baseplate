@@ -49,7 +49,7 @@ export const passwordHasherServiceGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             passwordHasherService: {
               getImportMap: () => ({
                 '%password-hasher-service': {
@@ -58,7 +58,7 @@ export const passwordHasherServiceGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             builder.setBaseDirectory(moduleFolder);
             await builder.apply(

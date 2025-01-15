@@ -44,7 +44,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     const usedTemplates: Record<string, boolean> = {};
 
     return {
-      getProviders: () => ({
+      providers: {
         reactUtils: {
           getImportMap: () =>
             Object.fromEntries(
@@ -60,7 +60,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
               ]),
             ),
         },
-      }),
+      },
       build: async (builder) => {
         // recursively resolve dependencies
         const markDependenciesAsUsed = (key: string): void => {

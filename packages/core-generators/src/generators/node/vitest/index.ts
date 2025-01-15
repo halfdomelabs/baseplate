@@ -61,11 +61,11 @@ export const vitestGenerator = createGenerator({
         eslint.getConfig().appendUnique('eslintIgnore', ['vitest.config.ts']);
 
         return {
-          getProviders: () => ({
+          providers: {
             vitest: {
               getConfig: () => configMap,
             },
-          }),
+          },
           build: async (builder) => {
             const config = configMap.value();
 

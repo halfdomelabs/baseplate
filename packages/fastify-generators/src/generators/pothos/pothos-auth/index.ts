@@ -109,7 +109,7 @@ export const pothosAuthGenerator = createGenerator({
       },
       run() {
         return {
-          getProviders: () => ({
+          providers: {
             pothosAuth: {
               formatAuthorizeConfig: (config) =>
                 // TODO: Validate roles
@@ -117,7 +117,7 @@ export const pothosAuthGenerator = createGenerator({
                   JSON.stringify(config.roles),
                 ),
             },
-          }),
+          },
         };
       },
     });

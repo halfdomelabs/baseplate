@@ -33,9 +33,9 @@ export const authApolloGenerator = createGenerator({
       },
       run({ reactApolloSetup, authService }) {
         return {
-          getProviders: () => ({
+          providers: {
             authApollo: {},
-          }),
+          },
           build: async (builder) => {
             const linkTemplate = await builder.readTemplate('auth-link.ts');
             const authLink = TypescriptCodeUtils.extractTemplateSnippet(

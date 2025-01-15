@@ -116,7 +116,7 @@ export const adminCrudEditGenerator = createGenerator({
         const inputFields: AdminCrudInput[] = [];
 
         return {
-          getProviders: () => ({
+          providers: {
             adminCrudEdit: {
               getDirectoryBase: () => `${reactRoutes.getDirectoryBase()}/edit`,
               getSchemaPath: () => editSchemaPath,
@@ -129,7 +129,7 @@ export const adminCrudEditGenerator = createGenerator({
               getModelName: () => modelName,
               isInModal: () => false,
             },
-          }),
+          },
           build: async (builder) => {
             adminCrudQueries.setFormFields(
               mergeGraphQLFields([

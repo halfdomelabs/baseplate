@@ -24,9 +24,9 @@ export const authPagesGenerator = createGenerator({
       },
       run() {
         return {
-          getProviders: () => ({
+          providers: {
             authPages: {},
-          }),
+          },
         };
       },
     });

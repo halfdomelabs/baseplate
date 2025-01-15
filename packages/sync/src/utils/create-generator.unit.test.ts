@@ -80,7 +80,7 @@ describe('createGenerator', () => {
             test: testProviderType.export(),
           },
           run: () => ({
-            getProviders: () => ({ test: { value: 'test' } }),
+            providers: { test: { value: 'test' } },
           }),
         });
 

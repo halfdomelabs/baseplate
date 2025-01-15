@@ -127,9 +127,9 @@ export const prismaFileTransformerGenerator = createGenerator({
           },
         });
         return {
-          getProviders: () => ({
+          providers: {
             prismaFileTransformer: {},
-          }),
+          },
         };
       },
     });

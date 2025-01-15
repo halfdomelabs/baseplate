@@ -52,14 +52,14 @@ export const prismaModelGenerator = createGenerator({
         const prismaModel = new PrismaModelBlockWriter({ name, tableName });
 
         return {
-          getProviders: () => ({
+          providers: {
             prismaModel: {
               getName: () => name,
               addField: (field) => prismaModel.addField(field),
               addModelAttribute: (attribute) =>
                 prismaModel.addAttribute(attribute),
             },
-          }),
+          },
           build: () => {
             prisma.addPrismaModel(prismaModel);
           },

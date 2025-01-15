@@ -48,13 +48,13 @@ export const fastifyHealthCheckGenerator = createGenerator({
         const checks: TypescriptCodeBlock[] = [];
 
         return {
-          getProviders: () => ({
+          providers: {
             fastifyHealthCheck: {
               addCheck(check) {
                 checks.push(check);
               },
             },
-          }),
+          },
           build: async (builder) => {
             const healthCheckPlugin = typescript.createTemplate({
               CHECK: { type: 'code-expression' },

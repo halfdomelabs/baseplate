@@ -95,11 +95,11 @@ if (TEST_MODE !== 'unit') {
         ]);
 
         return {
-          getProviders: () => ({
+          providers: {
             prismaVitest: {
               getImportMap: () => importMap,
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

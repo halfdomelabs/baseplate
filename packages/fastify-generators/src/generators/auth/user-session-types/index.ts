@@ -39,7 +39,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
       'types/user-session.types.ts',
     );
     return {
-      getProviders: () => ({
+      providers: {
         userSessionTypes: {
           getImportMap: () => ({
             '%user-session-types': {
@@ -52,7 +52,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             },
           }),
         },
-      }),
+      },
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyAction({

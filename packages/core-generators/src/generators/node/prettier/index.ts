@@ -138,7 +138,7 @@ export const prettierGenerator = createGenerator({
           'pnpm-lock.yaml',
         ];
         return {
-          getProviders: () => ({
+          providers: {
             prettier: {
               getConfig: () => prettierConfig,
               addPrettierIgnore(ignorePath) {
@@ -148,7 +148,7 @@ export const prettierGenerator = createGenerator({
                 plugins.push(plugin);
               },
             },
-          }),
+          },
           build: async (builder) => {
             let prettierModulePromise: Promise<PrettierModule> | undefined;
             let prettierConfigPromise:

@@ -52,11 +52,11 @@ export const authGenerator = createGenerator({
           { name: 'auth-config' },
         );
         return {
-          getProviders: () => ({
+          providers: {
             authSetup: {
               getConfig: () => config,
             },
-          }),
+          },
           build: () => ({ config }),
         };
       },
@@ -85,7 +85,7 @@ export const authGenerator = createGenerator({
           );
         }
         return {
-          getProviders: () => ({
+          providers: {
             auth: {
               getConfig: () => config.value(),
               getImportMap() {
@@ -98,7 +98,7 @@ export const authGenerator = createGenerator({
                 };
               },
             },
-          }),
+          },
         };
       },
     });

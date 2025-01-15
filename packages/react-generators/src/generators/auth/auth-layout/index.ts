@@ -51,9 +51,9 @@ export const authLayoutGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             authLayout: {},
-          }),
+          },
           build: async (builder) => {
             const body = TypescriptCodeUtils.createBlock(
               `return <div className="min-h-full flex items-center justify-center bg-slate-100"><Outlet /></div>;`,

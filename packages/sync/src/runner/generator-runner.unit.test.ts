@@ -55,7 +55,7 @@ function buildGeneratorEntry(
         exports: exportMap,
         taskDependencies: [],
         run: (deps) => ({
-          getProviders: () => entryExports,
+          providers: entryExports,
           build: (builder) => {
             build(builder, deps);
           },

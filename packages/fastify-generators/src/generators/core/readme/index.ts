@@ -47,7 +47,7 @@ In order to set up the backend, you must do the following steps:
 2. **Run Server**: \`pnpm dev\``;
 
         return {
-          getProviders: () => ({}),
+          providers: {},
           build: (builder) => {
             builder.writeFile('README.md', readmeContent);
           },

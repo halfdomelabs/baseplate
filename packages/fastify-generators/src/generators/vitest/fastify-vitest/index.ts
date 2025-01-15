@@ -49,9 +49,9 @@ export const fastifyVitestGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             fastifyVitest: {},
-          }),
+          },
         };
       },
     });

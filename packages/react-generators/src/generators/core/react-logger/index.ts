@@ -46,7 +46,7 @@ export const reactLoggerGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             reactLogger: {
               getLoggerExpression: () =>
                 TypescriptCodeUtils.createExpression(
@@ -60,7 +60,7 @@ export const reactLoggerGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             builder.setBaseDirectory(react.getSrcFolder());
             await builder.apply(
