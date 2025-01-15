@@ -14,6 +14,7 @@ import {
   Dropdown,
   RecordView,
   SectionList,
+  useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -103,6 +104,8 @@ export function ServiceTransformersSection({
   });
   const { pluginContainer, definitionContainer } = useProjectDefinition();
 
+  const { requestConfirm } = useConfirmDialog();
+
   const transformerWeb = pluginContainer.getPluginSpec(modelTransformerWebSpec);
 
   const modelConfig = useEditedModelConfig((model) => model);
@@ -138,7 +141,15 @@ export function ServiceTransformersSection({
               update(idx, transformer);
             }}
             onRemove={(idx) => {
-              remove(idx);
+              requestConfirm({
+                title: 'Confirm delete',
+                content: `Are you sure you want to delete this transformer?`,
+                buttonConfirmText: 'Delete',
+                buttonConfirmVariant: 'destructive',
+                onConfirm: () => {
+                  remove(idx);
+                },
+              });
             }}
           />
         ))}
