@@ -5,10 +5,7 @@ import {
   tsUtilsProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { serviceContextProvider } from '@src/generators/core/service-context/index.js';
@@ -58,12 +55,10 @@ export type PrismaUtilsProvider = ImportMapper;
 export const prismaUtilsProvider =
   createProviderType<PrismaUtilsProvider>('prisma-utils');
 
-/**
- * Generator for Typescript utility functions like notEmpty
- */
-const PrismaUtilsGenerator = createGeneratorWithTasks({
+export const prismaUtilsGenerator = createGenerator({
+  name: 'prisma/prisma-utils',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -117,5 +112,3 @@ const PrismaUtilsGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrismaUtilsGenerator;

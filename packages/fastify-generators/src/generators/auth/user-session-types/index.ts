@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -66,12 +66,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const UserSessionTypesGenerator = createGeneratorWithTasks({
+export const userSessionTypesGenerator = createGenerator({
+  name: 'auth/user-session-types',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default UserSessionTypesGenerator;

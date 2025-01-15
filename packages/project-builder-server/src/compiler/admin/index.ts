@@ -1,4 +1,3 @@
-import type { NodeGeneratorDescriptor } from '@halfdomelabs/core-generators';
 import type {
   AdminAppConfig,
   AppEntry,
@@ -6,6 +5,7 @@ import type {
 } from '@halfdomelabs/project-builder-lib';
 import type { ReactGeneratorDescriptor } from '@halfdomelabs/react-generators';
 
+import { composeNodeGenerator } from '@halfdomelabs/core-generators';
 import {
   adminAppEntryType,
   AppUtils,
@@ -144,16 +144,16 @@ export function compileAdmin(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  appBuilder.addDescriptor('root.json', {
-    generator: '@halfdomelabs/core/node/node',
+  const nodeBundle = composeNodeGenerator({
     name: `${projectDefinition.name}-${app.name}`,
     packageName,
     description: `Admin web app for ${projectDefinition.name}`,
     version: projectDefinition.version,
     children: {
-      projects: [buildAdmin(appBuilder)],
+      // TODO[2025-01-14]: Fix this
+      // projects: [buildAdmin(appBuilder)],
     },
-  } satisfies NodeGeneratorDescriptor);
+  });
 
-  return appBuilder.toProjectEntry();
+  return appBuilder.buildProjectEntry(nodeBundle);
 }

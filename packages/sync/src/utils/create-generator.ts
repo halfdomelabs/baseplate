@@ -50,6 +50,11 @@ export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
   ) => void;
 }
 
+export type GeneratorBundleChildren = Record<
+  string,
+  GeneratorBundle | GeneratorBundle[] | undefined
+>;
+
 /**
  * A function that given a descriptor returns the generator bundle
  *
@@ -58,9 +63,8 @@ export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
  * @returns The generator bundle
  */
 export type GeneratorBundleCreator<Descriptor> = (
-  descriptor: Descriptor,
-  options?: {
-    children?: Record<string, GeneratorBundle | GeneratorBundle[] | undefined>;
+  descriptorWithChildren: Omit<Descriptor, 'children'> & {
+    children?: GeneratorBundleChildren;
   },
 ) => GeneratorBundle;
 
@@ -68,7 +72,11 @@ export type GeneratorBundleCreator<Descriptor> = (
  * Infer the descriptor from a generator bundle creator
  */
 export type InferDescriptorFromGenerator<Creator> =
-  Creator extends GeneratorBundleCreator<infer Descriptor> ? Descriptor : never;
+  Creator extends GeneratorBundleCreator<infer Descriptor>
+    ? Omit<Descriptor, 'children'> & {
+        children?: GeneratorBundleChildren;
+      }
+    : never;
 
 /**
  * Helper utility to create a generator with a standard format for customizable children
@@ -84,9 +92,9 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     ? path.dirname(generatorFilePath)
     : generatorFilePath;
 
-  return (descriptor, { children } = {}) => {
+  return ({ children, ...rest }) => {
     const validatedDescriptor =
-      (config.descriptorSchema?.parse(descriptor) as unknown) ?? {};
+      (config.descriptorSchema?.parse(rest) as unknown) ?? {};
 
     const taskConfigs: SimpleGeneratorTaskConfig<
       ProviderExportMap,
@@ -111,7 +119,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
         };
       },
     };
-    config.buildTasks(taskBuilder, descriptor);
+    config.buildTasks(taskBuilder, validatedDescriptor);
 
     const tasks: GeneratorTask<ProviderExportMap, ProviderDependencyMap>[] =
       taskConfigs.map((task) => {

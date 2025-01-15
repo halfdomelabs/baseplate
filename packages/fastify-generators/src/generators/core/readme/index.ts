@@ -1,14 +1,15 @@
 import { projectProvider } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
   projectName: z.string().optional(),
 });
 
-const ReadmeGenerator = createGeneratorWithTasks({
+export const readmeGenerator = createGenerator({
+  name: 'core/readme',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',
@@ -55,5 +56,3 @@ In order to set up the backend, you must do the following steps:
     });
   },
 });
-
-export default ReadmeGenerator;

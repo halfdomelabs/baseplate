@@ -7,7 +7,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -111,12 +111,11 @@ export const createPothosTypesFileTask = createTaskConfigBuilder(
   }),
 );
 
-const PothosTypesFileGenerator = createGeneratorWithTasks({
+export const pothosTypesFileGenerator = createGenerator({
+  name: 'pothos/pothos-types-file',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createPothosTypesFileTask(descriptor));
   },
 });
-
-export default PothosTypesFileGenerator;

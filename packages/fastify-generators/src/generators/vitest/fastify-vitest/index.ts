@@ -4,10 +4,7 @@ import {
   TypescriptCodeUtils,
   vitestProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -19,9 +16,10 @@ export type FastifyVitestProvider = unknown;
 export const fastifyVitestProvider =
   createProviderType<FastifyVitestProvider>('fastify-vitest');
 
-const FastifyVitestGenerator = createGeneratorWithTasks({
+export const fastifyVitestGenerator = createGenerator({
+  name: 'vitest/fastify-vitest',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -59,5 +57,3 @@ const FastifyVitestGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default FastifyVitestGenerator;

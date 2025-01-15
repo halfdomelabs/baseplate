@@ -4,7 +4,7 @@ import {
   TypescriptCodeExpression,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
@@ -15,9 +15,10 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-const FastifyCookieContextGenerator = createGeneratorWithTasks({
+export const fastifyCookieContextGenerator = createGenerator({
+  name: 'core/fastify-cookie-context',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -83,5 +84,3 @@ interface CookieStore {
     });
   },
 });
-
-export default FastifyCookieContextGenerator;

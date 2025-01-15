@@ -5,7 +5,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -63,12 +63,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const FastifyScriptsGenerator = createGeneratorWithTasks({
+export const fastifyScriptsGenerator = createGenerator({
+  name: 'core/fastify-scripts',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default FastifyScriptsGenerator;

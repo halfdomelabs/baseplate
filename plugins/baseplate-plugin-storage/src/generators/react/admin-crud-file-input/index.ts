@@ -1,6 +1,6 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import { adminCrudInputContainerProvider } from '@halfdomelabs/react-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { uploadComponentsProvider } from '../upload-components/index.js';
@@ -12,9 +12,10 @@ const descriptorSchema = z.object({
   category: z.string().min(1),
 });
 
-const AdminCrudFileInputGenerator = createGeneratorWithTasks({
+export const adminCrudFileInputGenerator = createGenerator({
+  name: 'react/admin-crud-file-input',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { label, modelRelation, isOptional, category }) {
     taskBuilder.addTask({
       name: 'main',
@@ -59,5 +60,3 @@ const AdminCrudFileInputGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminCrudFileInputGenerator;

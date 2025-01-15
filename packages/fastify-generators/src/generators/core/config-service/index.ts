@@ -14,7 +14,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -43,9 +43,10 @@ export interface ConfigServiceProvider extends ImportMapper {
 export const configServiceProvider =
   createProviderType<ConfigServiceProvider>('config-service');
 
-const ConfigServiceGenerator = createGeneratorWithTasks({
+export const configServiceGenerator = createGenerator({
+  name: 'core/config-service',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'fastify',
@@ -188,5 +189,3 @@ const ConfigServiceGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ConfigServiceGenerator;

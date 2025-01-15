@@ -10,7 +10,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -46,9 +46,10 @@ export interface FastifyServerProvider {
 export const fastifyServerProvider =
   createProviderType<FastifyServerProvider>('fastify-server');
 
-const FastifyServerGenerator = createGeneratorWithTasks({
+export const fastifyServerGenerator = createGenerator({
+  name: 'core/fastify-server',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',
@@ -222,5 +223,3 @@ const FastifyServerGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default FastifyServerGenerator;

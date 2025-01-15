@@ -1,10 +1,7 @@
 import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import { projectScope } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { PothosWriterOptions } from '@src/writers/pothos/index.js';
@@ -93,12 +90,11 @@ const createMainTask = createTaskConfigBuilder(
   }),
 );
 
-const PothosPrismaPrimaryKeyGenerator = createGeneratorWithTasks({
+export const pothosPrismaPrimaryKeyGenerator = createGenerator({
+  name: 'pothos/pothos-prisma-primary-key',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default PothosPrismaPrimaryKeyGenerator;

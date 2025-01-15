@@ -4,10 +4,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceSetupProvider } from '../error-handler-service/index.js';
@@ -53,12 +50,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const axiosGenerator = createGeneratorWithTasks({
+export const axiosGenerator = createGenerator({
+  name: 'core/axios',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default axiosGenerator;

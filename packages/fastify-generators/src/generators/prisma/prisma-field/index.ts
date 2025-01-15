@@ -1,4 +1,4 @@
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ScalarFieldType } from '@src/types/field-types.js';
@@ -47,9 +47,10 @@ const descriptorSchema = z
 
 export type PrismaFieldDescriptor = z.infer<typeof descriptorSchema>;
 
-const PrismaFieldGenerator = createGeneratorWithTasks({
+export const prismaFieldGenerator = createGenerator({
+  name: 'prisma/prisma-field',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',
@@ -87,5 +88,3 @@ const PrismaFieldGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrismaFieldGenerator;

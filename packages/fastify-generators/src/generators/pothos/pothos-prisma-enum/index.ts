@@ -1,10 +1,7 @@
 import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
@@ -58,12 +55,11 @@ const createMainTask = createTaskConfigBuilder(
   }),
 );
 
-const PothosPrismaEnumGenerator = createGeneratorWithTasks({
+export const pothosPrismaEnumGenerator = createGenerator({
+  name: 'pothos/pothos-prisma-enum',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default PothosPrismaEnumGenerator;

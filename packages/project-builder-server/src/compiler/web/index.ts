@@ -4,9 +4,8 @@ import type {
   WebAppConfig,
 } from '@halfdomelabs/project-builder-lib';
 
+import { composeNodeGenerator } from '@halfdomelabs/core-generators';
 import { AppUtils, webAppEntryType } from '@halfdomelabs/project-builder-lib';
-
-import type { NodeGeneratorDescriptor } from '../../../../core-generators/dist/index.js';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
@@ -79,16 +78,15 @@ export function compileWeb(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  appBuilder.addDescriptor('root.json', {
-    generator: '@halfdomelabs/core/node/node',
+  const nodeBundle = composeNodeGenerator({
     name: `${projectDefinition.name}-${app.name}`,
     packageName,
     description: `Web app for ${projectDefinition.name}`,
     version: projectDefinition.version,
     children: {
-      projects: [buildReact(appBuilder)],
+      // projects: [buildReact(appBuilder)],
     },
-  } satisfies NodeGeneratorDescriptor);
+  });
 
-  return appBuilder.toProjectEntry();
+  return appBuilder.buildProjectEntry(nodeBundle);
 }

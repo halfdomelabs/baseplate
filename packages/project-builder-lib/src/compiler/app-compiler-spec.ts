@@ -1,4 +1,4 @@
-import type { DescriptorWithChildren } from '@halfdomelabs/sync';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type { PluginSpecImplementation } from '@src/plugins/index.js';
@@ -11,25 +11,19 @@ import type {
 import { createPluginSpec } from '@src/plugins/index.js';
 import { safeMerge } from '@src/utils/merge.js';
 
-type AnyGeneratorDescriptor = DescriptorWithChildren & Record<string, unknown>;
-
 export interface AppCompiler {
   addChildrenToFeature: (
     featureId: string,
-    children: Record<string, AnyGeneratorDescriptor>,
+    children: Record<string, GeneratorBundle>,
   ) => void;
-  getChildrenForFeature: (
-    featureId: string,
-  ) => Record<string, AnyGeneratorDescriptor>;
-  addRootChildren: (children: Record<string, AnyGeneratorDescriptor>) => void;
-  getRootChildren: () => Partial<Record<string, AnyGeneratorDescriptor>>;
+  getChildrenForFeature: (featureId: string) => Record<string, GeneratorBundle>;
+  addRootChildren: (children: Record<string, GeneratorBundle>) => void;
+  getRootChildren: () => Partial<Record<string, GeneratorBundle>>;
 }
 
 export function createAppCompiler(): AppCompiler {
-  const children: Partial<
-    Record<string, Record<string, AnyGeneratorDescriptor>>
-  > = {};
-  let rootChildren: Partial<Record<string, AnyGeneratorDescriptor>> = {};
+  const children: Partial<Record<string, Record<string, GeneratorBundle>>> = {};
+  let rootChildren: Partial<Record<string, GeneratorBundle>> = {};
 
   return {
     addChildrenToFeature(featureId, newChildren) {

@@ -168,14 +168,11 @@ describe('createGenerator', () => {
       tasks: [],
     };
 
-    const bundle = generator(
-      {},
-      {
-        children: {
-          child: childBundle,
-        },
+    const bundle = generator({
+      children: {
+        child: childBundle,
       },
-    );
+    });
 
     expect(bundle.children).toEqual({
       child: childBundle,

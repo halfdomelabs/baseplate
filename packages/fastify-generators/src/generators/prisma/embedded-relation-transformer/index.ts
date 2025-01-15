@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import * as R from 'ramda';
 import { z } from 'zod';
 
@@ -182,9 +182,10 @@ function createEmbeddedTransformFunction(options: {
   };
 }
 
-const EmbeddedRelationTransformerGenerator = createGeneratorWithTasks({
+export const embeddedRelationTransformerGenerator = createGenerator({
+  name: 'prisma/embedded-relation-transformer',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(
     taskBuilder,
     {
@@ -633,5 +634,3 @@ const EmbeddedRelationTransformerGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default EmbeddedRelationTransformerGenerator;

@@ -2,26 +2,25 @@ import type {
   EnumConfig,
   ParsedProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
-function buildEnum(enumConfig: EnumConfig): Record<string, unknown> {
-  return {
+import { prismaEnumGenerator } from '@halfdomelabs/fastify-generators';
+
+function buildEnum(enumConfig: EnumConfig): GeneratorBundle {
+  return prismaEnumGenerator({
     name: enumConfig.name,
-    generator: '@halfdomelabs/fastify/prisma/prisma-enum',
     values: enumConfig.values.map((value) => ({
       name: value.name,
     })),
-  };
+  });
 }
 
 export function buildEnumsForFeature(
   featureId: string,
   parsedProject: ParsedProjectDefinition,
-): Record<string, unknown>[] | undefined {
+): GeneratorBundle[] {
   const enums = parsedProject
     .getEnums()
     .filter((m) => m.featureRef === featureId);
-  if (enums.length === 0) {
-    return undefined;
-  }
   return enums.map((m) => buildEnum(m));
 }

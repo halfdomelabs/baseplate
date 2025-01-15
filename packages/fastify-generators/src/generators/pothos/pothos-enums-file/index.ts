@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -97,12 +97,11 @@ export const createPothosEnumsFileTask = createTaskConfigBuilder(
   }),
 );
 
-const PothosEnumsFileGenerator = createGeneratorWithTasks({
+export const pothosEnumsFileGenerator = createGenerator({
+  name: 'pothos/pothos-enums-file',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createPothosEnumsFileTask(descriptor));
   },
 });
-
-export default PothosEnumsFileGenerator;

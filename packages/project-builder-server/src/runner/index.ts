@@ -83,15 +83,14 @@ export async function buildProjectForDirectory({
     context,
   });
 
-  const appsToRegenerate = apps;
-
-  for (const app of appsToRegenerate) {
+  for (const app of apps) {
     await generateForDirectory({
       baseDirectory: directory,
       appEntry: app,
       logger,
       generatorSetupConfig,
     });
+    throw new Error('Not implemented');
   }
 
   logger.info(`Project written to ${directory}!`);

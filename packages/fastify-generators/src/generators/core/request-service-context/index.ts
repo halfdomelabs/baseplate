@@ -11,7 +11,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -57,9 +57,10 @@ export const requestServiceContextProvider =
     isReadOnly: true,
   });
 
-const RequestServiceContextGenerator = createGeneratorWithTasks({
+export const requestServiceContextGenerator = createGenerator({
+  name: 'core/request-service-context',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     const setupTask = taskBuilder.addTask({
       name: 'setup',
@@ -191,5 +192,3 @@ const RequestServiceContextGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default RequestServiceContextGenerator;

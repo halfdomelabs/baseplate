@@ -7,7 +7,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -153,12 +153,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const AuthContextGenerator = createGeneratorWithTasks({
+export const authContextGenerator = createGenerator({
+  name: 'auth/auth-context',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default AuthContextGenerator;

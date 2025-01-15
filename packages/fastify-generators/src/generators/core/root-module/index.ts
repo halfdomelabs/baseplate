@@ -9,7 +9,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -50,9 +50,10 @@ export interface AppModuleProvider {
 export const appModuleProvider =
   createProviderType<AppModuleProvider>('app-module');
 
-const RootModuleGenerator = createGeneratorWithTasks({
+export const rootModuleGenerator = createGenerator({
+  name: 'core/root-module',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     const rootModuleTask = taskBuilder.addTask({
       name: 'rootModule',
@@ -222,5 +223,3 @@ const RootModuleGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default RootModuleGenerator;

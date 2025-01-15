@@ -10,7 +10,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -47,9 +47,10 @@ export type YogaPluginProvider = unknown;
 export const yogaPluginProvider =
   createProviderType<YogaPluginProvider>('yoga-plugin');
 
-const YogaPluginGenerator = createGeneratorWithTasks({
+export const yogaPluginGenerator = createGenerator({
+  name: 'yoga/yoga-plugin',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { enableSubscriptions }) {
     // Setup Task
     const setupTask = taskBuilder.addTask({
@@ -355,5 +356,3 @@ const YogaPluginGenerator = createGeneratorWithTasks({
     }
   },
 });
-
-export default YogaPluginGenerator;

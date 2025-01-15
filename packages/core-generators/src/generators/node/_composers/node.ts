@@ -12,17 +12,15 @@ import { typescriptGenerator } from '../typescript/index.js';
 
 export const composeNodeGenerator = (
   descriptor: InferDescriptorFromGenerator<typeof nodeGenerator>,
-  options?: {
-    children: Record<string, GeneratorBundle | GeneratorBundle[] | undefined>;
-  },
 ): GeneratorBundle =>
-  nodeGenerator(descriptor, {
+  nodeGenerator({
+    ...descriptor,
     children: {
       prettier: prettierGenerator({}),
       typescript: typescriptGenerator({}),
       gitIgnore: nodeGitIgnoreGenerator({}),
       eslint: eslintGenerator({}),
       tsUtils: tsUtilsGenerator({}),
-      ...options?.children,
+      ...descriptor.children,
     },
   });

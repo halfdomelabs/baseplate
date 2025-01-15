@@ -4,10 +4,7 @@ import {
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
@@ -24,9 +21,10 @@ export type FastifyStripeProvider = unknown;
 export const fastifyStripeProvider =
   createProviderType<FastifyStripeProvider>('fastify-stripe');
 
-const FastifyStripeGenerator = createGeneratorWithTasks({
+export const fastifyStripeGenerator = createGenerator({
+  name: 'stripe/fastify-stripe',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -105,5 +103,3 @@ const FastifyStripeGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default FastifyStripeGenerator;

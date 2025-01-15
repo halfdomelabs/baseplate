@@ -7,7 +7,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -49,9 +49,10 @@ export interface ServiceFileOutputProvider {
 export const serviceFileOutputProvider =
   createProviderType<ServiceFileOutputProvider>('service-file-output');
 
-export const ServiceFileGenerator = createGeneratorWithTasks({
+export const serviceFileGenerator = createGenerator({
+  name: 'core/service-file',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     const mainTask = taskBuilder.addTask({
       name: 'main',
@@ -145,5 +146,3 @@ export const ServiceFileGenerator = createGeneratorWithTasks({
     }
   },
 });
-
-export default ServiceFileGenerator;

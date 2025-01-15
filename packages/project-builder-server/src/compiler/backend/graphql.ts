@@ -2,24 +2,20 @@ import type {
   EnumConfig,
   ModelConfig,
 } from '@halfdomelabs/project-builder-lib';
-import type {
-  DescriptorWithChildren,
-  GeneratorDescriptor,
-} from '@halfdomelabs/sync';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import {
-  type PothosPrismaCrudFileDescriptor,
-  type PothosPrismaEnumDescriptor,
-  type PothosPrismaFindQueryDescriptor,
-  type PothosPrismaListQueryDescriptor,
-  type PothosPrismaObjectDescriptor,
-  type PothosPrismaPrimaryKeyDescriptor,
-  type PothosTypesFileDescriptor,
+  pothosAuthorizeFieldGenerator,
+  pothosEnumsFileGenerator,
+  pothosPrismaCrudMutationGenerator,
+  pothosPrismaEnumGenerator,
+  pothosPrismaFindQueryGenerator,
+  pothosPrismaListQueryGenerator,
+  pothosPrismaObjectGenerator,
+  pothosPrismaPrimaryKeyGenerator,
+  pothosTypesFileGenerator,
 } from '@halfdomelabs/fastify-generators';
-import {
-  ModelUtils,
-  stripEmptyGeneratorChildren,
-} from '@halfdomelabs/project-builder-lib';
+import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { kebabCase } from 'change-case';
 
 import { notEmpty } from '@src/utils/array.js';
@@ -29,7 +25,7 @@ import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 function buildObjectTypeFile(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
-): PothosTypesFileDescriptor | undefined {
+): GeneratorBundle | undefined {
   const { graphql } = model;
   const { objectType, mutations, queries } = graphql ?? {};
 
@@ -45,35 +41,30 @@ function buildObjectTypeFile(
 
   const { fields, localRelations = [], foreignRelations = [] } = objectType;
 
-  return {
-    name: `${model.name}ObjectType`,
+  return pothosTypesFileGenerator({
     fileName: `${kebabCase(model.name)}.object-type`,
-    generator: '@halfdomelabs/fastify/pothos/pothos-types-file',
     children: {
-      $primaryKey:
+      primaryKey:
         (!!buildMutations || !!buildQuery) &&
         ModelUtils.getModelIdFields(model).length > 1
-          ? ({
-              generator:
-                '@halfdomelabs/fastify/pothos/pothos-prisma-primary-key',
+          ? pothosPrismaPrimaryKeyGenerator({
               modelName: model.name,
-            } satisfies PothosPrismaPrimaryKeyDescriptor)
+            })
           : undefined,
-      $objectType: {
-        generator: '@halfdomelabs/fastify/pothos/pothos-prisma-object',
+      objectType: pothosPrismaObjectGenerator({
         modelName: model.name,
         exposedFields: [...fields, ...foreignRelations, ...localRelations].map(
           (id) => appBuilder.nameFromId(id),
         ),
-      } satisfies PothosPrismaObjectDescriptor,
+      }),
     },
-  };
+  });
 }
 
 function buildQueriesFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
-): PothosTypesFileDescriptor | undefined {
+): GeneratorBundle | undefined {
   const { graphql } = model;
   const { queries } = graphql ?? {};
 
@@ -85,48 +76,44 @@ function buildQueriesFileForModel(
 
   const isAuthEnabled = !!appBuilder.definitionContainer.definition.auth;
 
-  return {
-    name: `${model.name}PothosQueries`,
+  return pothosTypesFileGenerator({
     fileName: `${kebabCase(model.name)}.queries`,
-    generator: '@halfdomelabs/fastify/pothos/pothos-types-file',
     categoryOrder: ['find-query', 'list-query'],
-    children: stripEmptyGeneratorChildren({
-      $findQuery: get?.enabled
-        ? ({
-            generator: '@halfdomelabs/fastify/pothos/pothos-prisma-get-query',
+    children: {
+      findQuery: get?.enabled
+        ? pothosPrismaFindQueryGenerator({
             modelName: model.name,
             children: {
               authorize:
                 !isAuthEnabled || !get.roles?.length
                   ? undefined
-                  : {
+                  : pothosAuthorizeFieldGenerator({
                       roles: get.roles.map((r) => appBuilder.nameFromId(r)),
-                    },
+                    }),
             },
-          } satisfies PothosPrismaFindQueryDescriptor)
+          })
         : undefined,
-      $listQuery: list?.enabled
-        ? ({
-            generator: '@halfdomelabs/fastify/pothos/pothos-prisma-list-query',
+      listQuery: list?.enabled
+        ? pothosPrismaListQueryGenerator({
             modelName: model.name,
             children: {
               authorize:
                 !isAuthEnabled || !list.roles?.length
                   ? undefined
-                  : {
+                  : pothosAuthorizeFieldGenerator({
                       roles: list.roles.map((r) => appBuilder.nameFromId(r)),
-                    },
+                    }),
             },
-          } satisfies PothosPrismaListQueryDescriptor)
+          })
         : undefined,
-    }),
-  };
+    },
+  });
 }
 
 function buildMutationsFileForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ModelConfig,
-): PothosPrismaCrudFileDescriptor | undefined {
+): GeneratorBundle | undefined {
   const { graphql } = model;
   const { mutations } = graphql ?? {};
 
@@ -144,78 +131,82 @@ function buildMutationsFileForModel(
 
   const isAuthEnabled = !!appBuilder.definitionContainer.definition.auth;
 
-  return {
-    name: `${model.name}PothosMutations`,
-    fileName: `${kebabCase(model.name)}.mutations`,
-    generator: '@halfdomelabs/fastify/pothos/pothos-prisma-crud-file',
+  const sharedMutationConfig = {
     modelName: model.name,
     crudServiceRef: `prisma-crud-service:${model.name}`,
+  };
+
+  return pothosTypesFileGenerator({
+    fileName: `${kebabCase(model.name)}.mutations`,
     children: {
       create: create?.enabled
-        ? {
+        ? pothosPrismaCrudMutationGenerator({
+            ...sharedMutationConfig,
+            type: 'create',
             children: {
               authorize:
                 isAuthEnabled && create.roles
-                  ? {
+                  ? pothosAuthorizeFieldGenerator({
                       roles: create.roles.map((r) => appBuilder.nameFromId(r)),
-                    }
+                    })
                   : undefined,
             },
-          }
+          })
         : undefined,
       update: update?.enabled
-        ? {
+        ? pothosPrismaCrudMutationGenerator({
+            ...sharedMutationConfig,
+            type: 'update',
             children: {
               authorize:
                 isAuthEnabled && update.roles
-                  ? {
+                  ? pothosAuthorizeFieldGenerator({
                       roles: update.roles.map((r) => appBuilder.nameFromId(r)),
-                    }
+                    })
                   : undefined,
             },
-          }
+          })
         : undefined,
       delete: del?.enabled
-        ? {
+        ? pothosPrismaCrudMutationGenerator({
+            ...sharedMutationConfig,
+            type: 'delete',
             children: {
               authorize:
                 isAuthEnabled && del.roles
-                  ? {
+                  ? pothosAuthorizeFieldGenerator({
                       roles: del.roles.map((r) => appBuilder.nameFromId(r)),
-                    }
+                    })
                   : undefined,
             },
-          }
+          })
         : undefined,
     },
-  };
+  });
 }
 
 function buildEnumFileForModel(
   enums: EnumConfig[],
-): DescriptorWithChildren | undefined {
+): GeneratorBundle | undefined {
   if (enums.length === 0) {
     return undefined;
   }
-  return {
+  return pothosEnumsFileGenerator({
     name: `Enums`,
-    generator: '@halfdomelabs/fastify/pothos/pothos-enums-file',
     children: {
-      $enums: enums.map(
-        (enumConfig): PothosPrismaEnumDescriptor => ({
-          name: enumConfig.name,
-          generator: '@halfdomelabs/fastify/pothos/pothos-prisma-enum',
+      enums: enums.map((enumConfig) =>
+        pothosPrismaEnumGenerator({
           enumName: enumConfig.name,
         }),
       ),
     },
-  };
+  });
 }
 
 export function buildGraphqlForFeature(
   appBuilder: BackendAppEntryBuilder,
   featureId: string,
-): GeneratorDescriptor[] {
+): GeneratorBundle[] {
   const models = ModelUtils.getModelsForFeature(
     appBuilder.projectDefinition,
     featureId,

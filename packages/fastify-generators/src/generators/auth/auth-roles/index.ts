@@ -6,10 +6,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -37,9 +34,10 @@ export type AuthRolesProvider = ImportMapper;
 export const authRolesProvider =
   createProviderType<AuthRolesProvider>('auth-roles');
 
-const AuthRolesGenerator = createGeneratorWithTasks({
+export const authRolesGenerator = createGenerator({
+  name: 'auth/auth-roles',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { roles }) {
     taskBuilder.addTask({
       name: 'main',
@@ -113,5 +111,3 @@ const AuthRolesGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthRolesGenerator;

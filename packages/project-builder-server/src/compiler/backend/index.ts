@@ -45,22 +45,18 @@ export function compileBackend(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  const rootBundle = composeNodeGenerator(
-    {
-      name: `${projectDefinition.name}-${app.name}`,
-      packageName,
-      description: `Backend app for ${projectDefinition.name}`,
-      version: projectDefinition.version,
+  const rootBundle = composeNodeGenerator({
+    name: `${projectDefinition.name}-${app.name}`,
+    packageName,
+    description: `Backend app for ${projectDefinition.name}`,
+    version: projectDefinition.version,
+    children: {
+      projects: [
+        buildDocker(projectDefinition, app),
+        buildFastify(appBuilder, app),
+      ],
+      vitest: vitestGenerator({}),
     },
-    {
-      children: {
-        projects: [
-          buildDocker(projectDefinition, app),
-          buildFastify(appBuilder, app),
-        ],
-        vitest: vitestGenerator({}),
-      },
-    },
-  );
+  });
   return appBuilder.buildProjectEntry(rootBundle);
 }

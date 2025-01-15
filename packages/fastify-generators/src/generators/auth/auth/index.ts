@@ -6,7 +6,7 @@ import {
   projectScope,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -36,9 +36,10 @@ export const authProvider = createProviderType<AuthProvider>('auth', {
   isReadOnly: true,
 });
 
-const AuthGenerator = createGeneratorWithTasks({
+export const authGenerator = createGenerator({
+  name: 'auth/auth',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     const setupTask = taskBuilder.addTask({
       name: 'setup',
@@ -103,5 +104,3 @@ const AuthGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthGenerator;

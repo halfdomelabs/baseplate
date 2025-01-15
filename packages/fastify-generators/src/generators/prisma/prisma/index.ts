@@ -11,10 +11,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { createRequire } from 'node:module';
 import { z } from 'zod';
 
@@ -70,9 +67,10 @@ export const prismaCrudServiceTypesProvider =
 
 const internalRequire = createRequire(import.meta.url);
 
-const PrismaGenerator = createGeneratorWithTasks({
+export const prismaGenerator = createGenerator({
+  name: 'prisma/prisma',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     const schemaTask = taskBuilder.addTask({
       name: 'schema',
@@ -274,5 +272,3 @@ const PrismaGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrismaGenerator;
