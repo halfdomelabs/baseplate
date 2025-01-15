@@ -21,8 +21,7 @@
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w .",
-    "start": "tsx -r dotenv/config ./src"
+    "prettier:write": "prettier -w ."
   },
   "dependencies": {
     "@halfdomelabs/baseplate-plugin-storage": "workspace:*",
@@ -31,7 +30,9 @@
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/react-generators": "workspace:*",
-    "@halfdomelabs/sync": "workspace:*"
+    "@halfdomelabs/sync": "workspace:*",
+    "eslint": "catalog:",
+    "prettier": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*"

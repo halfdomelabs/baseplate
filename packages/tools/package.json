@@ -68,6 +68,7 @@
     "@types/eslint-plugin-tailwindcss": "3.17.0",
     "@types/eslint__js": "catalog:",
     "eslint": "catalog:",
+    "prettier": "catalog:",
     "typescript": "catalog:"
   },
   "peerDependencies": {
