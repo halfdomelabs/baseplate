@@ -48,18 +48,6 @@ export const adminCrudEditGenerator = createGenerator({
   name: 'admin/admin-crud-edit',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  // TODO [2025-01-01]: Remove
-  // getDefaultChildGenerators: () => ({
-  //   inputs: {
-  //     isMultiple: true,
-  //   },
-  //   embeddedForms: {
-  //     isMultiple: true,
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/react/admin/admin-crud-embedded-form',
-  //     },
-  //   },
-  // }),
   buildTasks(taskBuilder, { modelName, disableCreate }) {
     taskBuilder.addTask({
       name: 'main',

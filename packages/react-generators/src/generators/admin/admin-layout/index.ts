@@ -21,6 +21,8 @@ const linkItemSchema = z.object({
   path: z.string().min(1),
 });
 
+export type AdminLayoutLinkItem = z.infer<typeof linkItemSchema>;
+
 const descriptorSchema = z.object({
   links: z.array(linkItemSchema).optional(),
 });

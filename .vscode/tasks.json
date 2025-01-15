@@ -9,7 +9,7 @@
       "problemMatcher": {
         "base": "$tsc",
         "pattern": {
-          "regexp": "^[^\\s]+ ([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
+          "regexp": "^[^\\s]+: ([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
           "file": 1,
           "line": 2,
           "column": 3,
@@ -30,6 +30,31 @@
             ]
           }
         ]
+      }
+    },
+    {
+      "label": "Lint",
+      "type": "npm",
+      "script": "lint",
+      "group": "build",
+      "problemMatcher": {
+        "base": "$eslint-compact",
+        "pattern": [
+          {
+            "regexp": "^[^\\s]+: ([^\\s].*)$",
+            "file": 1
+          },
+          {
+            "regexp": "^[^\\s]+: \\s+(\\d+):(\\d+)\\s+(error|warning|info)\\s+(.*)\\s\\s+(.*)$",
+            "line": 1,
+            "column": 2,
+            "severity": 3,
+            "message": 4,
+            "code": 5,
+            "loop": true
+          }
+        ],
+        "fileLocation": ["absolute"]
       }
     }
   ]

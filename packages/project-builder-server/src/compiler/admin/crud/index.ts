@@ -3,11 +3,18 @@ import type {
   AdminCrudEmbeddedFormConfig,
   AdminCrudSectionConfig,
 } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
+import { ModelUtils } from '@halfdomelabs/project-builder-lib';
 import {
-  ModelUtils,
-  stripEmptyGeneratorChildren,
-} from '@halfdomelabs/project-builder-lib';
+  adminCrudColumnGenerator,
+  adminCrudEditGenerator,
+  adminCrudEmbeddedFormGenerator,
+  adminCrudListGenerator,
+  adminCrudQueriesGenerator,
+  adminCrudSectionGenerator,
+  reactRoutesGenerator,
+} from '@halfdomelabs/react-generators';
 import inflection from 'inflection';
 
 import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
@@ -19,7 +26,7 @@ function compileAdminCrudEmbeddedForm(
   builder: AppEntryBuilder<AdminAppConfig>,
   form: AdminCrudEmbeddedFormConfig,
   crudSectionId: string,
-): Record<string, unknown> {
+): GeneratorBundle {
   const idFields = ModelUtils.byIdOrThrow(
     builder.projectDefinition,
     form.modelRef,
@@ -38,25 +45,29 @@ function compileAdminCrudEmbeddedForm(
   };
 
   if (form.type === 'list') {
-    return {
+    return adminCrudEmbeddedFormGenerator({
       ...sharedData,
       isList: true,
       children: {
-        columns: form.table.columns.map((c) => ({
-          generator: '@halfdomelabs/react/admin/admin-crud-column',
-          name: c.label,
-          label: c.label,
-          children: {
-            display: compileAdminCrudDisplay(builder, c.display, form.modelRef),
-          },
-        })),
+        columns: form.table.columns.map((c) =>
+          adminCrudColumnGenerator({
+            label: c.label,
+            children: {
+              display: compileAdminCrudDisplay(
+                builder,
+                c.display,
+                form.modelRef,
+              ),
+            },
+          }),
+        ),
         inputs: form.form.fields.map((field) =>
           compileAdminCrudInput(field, form.modelRef, builder, crudSectionId),
         ),
       },
-    };
+    });
   }
-  return {
+  return adminCrudEmbeddedFormGenerator({
     ...sharedData,
     isList: false,
     children: {
@@ -64,30 +75,30 @@ function compileAdminCrudEmbeddedForm(
         compileAdminCrudInput(field, form.modelRef, builder, crudSectionId),
       ),
     },
-  };
+  });
 }
 
 export function compileAdminCrudSection(
   crudSection: AdminCrudSectionConfig,
   builder: AppEntryBuilder<AdminAppConfig>,
   parentId: string,
-): Record<string, unknown> {
+): GeneratorBundle {
   const sectionName = inflection.camelize(
     crudSection.name.replaceAll(' ', '_'),
     true,
   );
   const crudSectionId = `${parentId}.${sectionName}.$section`;
-  return {
+  const modelName = builder.nameFromId(crudSection.modelRef);
+  const { disableCreate } = crudSection;
+  return reactRoutesGenerator({
     name: sectionName,
-    generator: '@halfdomelabs/react/core/react-routes',
     children: {
-      $section: {
-        generator: '@halfdomelabs/react/admin/admin-crud-section',
-        modelName: builder.nameFromId(crudSection.modelRef),
-        disableCreate: crudSection.disableCreate,
+      section: adminCrudSectionGenerator({
         children: {
-          edit: {
-            children: stripEmptyGeneratorChildren({
+          edit: adminCrudEditGenerator({
+            modelName,
+            disableCreate,
+            children: {
               inputs: crudSection.form.fields.map((field) =>
                 compileAdminCrudInput(
                   field,
@@ -99,25 +110,31 @@ export function compileAdminCrudSection(
               embeddedForms: crudSection.embeddedForms?.map((form) =>
                 compileAdminCrudEmbeddedForm(builder, form, crudSectionId),
               ),
-            }),
-          },
-          list: {
-            children: {
-              columns: crudSection.table.columns.map((column) => ({
-                name: column.label.replace(' ', '_'),
-                label: column.label,
-                children: {
-                  display: compileAdminCrudDisplay(
-                    builder,
-                    column.display,
-                    crudSection.modelRef,
-                  ),
-                },
-              })),
             },
-          },
+          }),
+          list: adminCrudListGenerator({
+            modelName,
+            disableCreate,
+            children: {
+              columns: crudSection.table.columns.map((column) =>
+                adminCrudColumnGenerator({
+                  label: column.label,
+                  children: {
+                    display: compileAdminCrudDisplay(
+                      builder,
+                      column.display,
+                      crudSection.modelRef,
+                    ),
+                  },
+                }),
+              ),
+            },
+          }),
+          queries: adminCrudQueriesGenerator({
+            modelName,
+          }),
         },
-      },
+      }),
     },
-  };
+  });
 }

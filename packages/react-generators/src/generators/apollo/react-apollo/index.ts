@@ -75,19 +75,6 @@ export const reactApolloGenerator = createGenerator({
   name: 'apollo/react-apollo',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  // TODO [2025-01-01]: Remove
-  // getDefaultChildGenerators: () => ({
-  //   errorLink: {
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/react/apollo/apollo-error-link',
-  //     },
-  //   },
-  //   apolloSentry: {
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/react/apollo/apollo-sentry',
-  //     },
-  //   },
-  // }),
   buildTasks(
     taskBuilder,
     { devApiEndpoint, schemaLocation, enableSubscriptions },

@@ -15,21 +15,6 @@ export const authPagesGenerator = createGenerator({
   name: 'auth/auth-pages',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  // TODO [2025-01-01]: Remove
-  // getDefaultChildGenerators: () => ({
-  //   layout: {
-  //     defaultDescriptor: {
-  //       name: 'AuthLayout',
-  //       generator: '@halfdomelabs/react/auth/auth-layout',
-  //     },
-  //   },
-  //   login: {
-  //     defaultDescriptor: {
-  //       name: 'Login',
-  //       generator: '@halfdomelabs/react/auth/auth-login-page',
-  //     },
-  //   },
-  // }),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',

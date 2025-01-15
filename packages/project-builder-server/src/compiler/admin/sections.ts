@@ -1,9 +1,8 @@
 import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
-import {
-  FeatureUtils,
-  stripEmptyGeneratorChildren,
-} from '@halfdomelabs/project-builder-lib';
+import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
+import { reactRoutesGenerator } from '@halfdomelabs/react-generators';
 
 import { notEmpty } from '@src/utils/array.js';
 
@@ -15,7 +14,7 @@ export function compileAdminSections(
   featureId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   sectionsId: string,
-): Record<string, unknown>[] | undefined {
+): GeneratorBundle[] | undefined {
   const sections = builder.appConfig.sections?.filter(
     (s) => s.featureRef === featureId,
   );
@@ -35,7 +34,7 @@ export function compileAdminSections(
 function compileAdminFeatureRecursive(
   featureId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
-): string | undefined {
+): GeneratorBundle | undefined {
   const { projectDefinition } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
     projectDefinition,
@@ -43,6 +42,11 @@ function compileAdminFeatureRecursive(
   );
   const descriptorLocation = `${feature.name}/root`;
   const featureName = feature.name.split('/').pop();
+
+  if (!featureName) {
+    throw new Error('Feature name is required');
+  }
+
   // find sub-features
   const subFeatures = FeatureUtils.getFeatureChildren(
     projectDefinition,
@@ -65,27 +69,24 @@ function compileAdminFeatureRecursive(
     return undefined;
   }
 
-  builder.addDescriptor(`${descriptorLocation}.json`, {
+  return reactRoutesGenerator({
     name: featureName,
-    generator: '@halfdomelabs/react/core/react-routes',
     // add admin layout to any root features
     layoutKey: feature.parentRef ? undefined : 'admin',
-    children: stripEmptyGeneratorChildren({
+    children: {
       $sections: sectionDescriptors,
       $childRoutes: subDescriptors,
-    }),
+    },
   });
-
-  return descriptorLocation;
 }
 
 export function compileAdminFeatures(
   builder: AppEntryBuilder<AdminAppConfig>,
-): unknown[] {
+): GeneratorBundle[] {
   const { projectDefinition } = builder;
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
 
-  return rootFeatures.flatMap((feature) =>
-    compileAdminFeatureRecursive(feature.id, builder),
-  );
+  return rootFeatures
+    .flatMap((feature) => compileAdminFeatureRecursive(feature.id, builder))
+    .filter(notEmpty);
 }

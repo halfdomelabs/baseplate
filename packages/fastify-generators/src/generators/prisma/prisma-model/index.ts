@@ -34,42 +34,6 @@ export const prismaModelGenerator = createGenerator({
   name: 'prisma/prisma-model',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  // TODO[2025-01-14]: Remove
-  // getDefaultChildGenerators: () => ({
-  //   fields: {
-  //     isMultiple: true,
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/fastify/prisma/prisma-field',
-  //     },
-  //   },
-  //   relations: {
-  //     isMultiple: true,
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/fastify/prisma/prisma-relation-field',
-  //     },
-  //   },
-  //   primaryKey: {
-  //     defaultToNullIfEmpty: true,
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/fastify/prisma/prisma-model-id',
-  //     },
-  //   },
-  //   indicies: {
-  //     isMultiple: true,
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/fastify/prisma/prisma-model-index',
-  //     },
-  //   },
-  //   uniqueConstraints: {
-  //     isMultiple: true,
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/fastify/prisma/prisma-model-unique',
-  //     },
-  //   },
-  //   generatedFields: {
-  //     isMultiple: true,
-  //   },
-  // }),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',

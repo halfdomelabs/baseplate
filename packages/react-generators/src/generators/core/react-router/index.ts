@@ -41,17 +41,6 @@ export const reactRouterGenerator = createGenerator({
   name: 'core/react-router',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  // TODO [2025-01-01]: Remove
-  // getDefaultChildGenerators: () => ({
-  //   routes: {
-  //     isMultiple: true,
-  //   },
-  //   notFoundHandler: {
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/react/core/react-not-found-handler',
-  //     },
-  //   },
-  // }),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',

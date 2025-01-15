@@ -7,6 +7,8 @@ import {
   PluginUtils,
 } from '@halfdomelabs/project-builder-lib';
 
+import { adminCrudFileInputGenerator } from '@src/generators/react/admin-crud-file-input';
+
 import type { StoragePluginDefinition } from '../core/schema/plugin-definition';
 import type { FileTransformerConfig } from '../transformers/types';
 import type { AdminCrudFileInputConfig } from './types';
@@ -49,15 +51,12 @@ function buildFileTransformerCompiler(
         definition.modelRelationRef,
       );
 
-      return {
-        name: relationName,
-        generator:
-          '@halfdomelabs/baseplate-plugin-storage/react/admin-crud-file-input',
+      return adminCrudFileInputGenerator({
         label: definition.label,
         isOptional,
         category: category.name,
         modelRelation: relationName,
-      };
+      });
     },
   };
 }

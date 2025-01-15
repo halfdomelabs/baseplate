@@ -1,3 +1,5 @@
+import type { GeneratorBundle } from '@halfdomelabs/sync';
+
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type { PluginSpecImplementation } from '@src/plugins/spec/types.js';
 import type {
@@ -6,8 +8,6 @@ import type {
 } from '@src/schema/index.js';
 
 import { createPluginSpec } from '@src/plugins/spec/types.js';
-
-import type { DescriptorWithChildren } from './types.js';
 
 export interface AdminCrudInputCompiler<
   T extends AdminCrudInputDefinition = AdminCrudInputDefinition,
@@ -23,7 +23,7 @@ export interface AdminCrudInputCompiler<
       model: ModelConfig;
       crudSectionId: string;
     },
-  ) => DescriptorWithChildren;
+  ) => GeneratorBundle;
 }
 
 /**

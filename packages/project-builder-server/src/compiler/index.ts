@@ -11,8 +11,6 @@ import { compileAdmin } from './admin/index.js';
 import { compileBackend } from './backend/index.js';
 import { compileWeb } from './web/index.js';
 
-export type * from './types.js';
-
 export function compileApplications(
   projectJson: unknown,
   context: SchemaParserContext,

@@ -5,7 +5,6 @@ import type {
   AppEntryType,
   BackendAppConfig,
   BaseAppConfig,
-  FileEntry,
   PluginImplementationStore,
   ProjectDefinition,
   ProjectDefinitionContainer,
@@ -26,8 +25,6 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public pluginStore: PluginImplementationStore;
 
   public appCompiler: AppCompiler;
-
-  protected files: FileEntry[] = [];
 
   constructor(
     public definitionContainer: ProjectDefinitionContainer,
@@ -51,21 +48,6 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
         definitionContainer: this.definitionContainer,
       });
     }
-  }
-
-  /**
-   * @deprecated
-   */
-  addDescriptor(path: string, jsonContent: unknown): this {
-    // check for existing paths
-    if (this.files.some((f) => f.path === `baseplate/${path}`)) {
-      throw new Error(`File already exists at path ${path}`);
-    }
-    this.files.push({
-      path: `baseplate/${path}`,
-      jsonContent,
-    });
-    return this;
   }
 
   nameFromId(id: string): string;

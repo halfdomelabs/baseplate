@@ -90,7 +90,6 @@ export async function buildProjectForDirectory({
       logger,
       generatorSetupConfig,
     });
-    throw new Error('Not implemented');
   }
 
   logger.info(`Project written to ${directory}!`);

@@ -10,7 +10,6 @@ import { reactErrorBoundaryGenerator } from '../react-error-boundary/index.js';
 import { reactErrorGenerator } from '../react-error/index.js';
 import { reactLoggerGenerator } from '../react-logger/index.js';
 import { reactProxyGenerator } from '../react-proxy/index.js';
-import { reactRouterGenerator } from '../react-router/index.js';
 import { reactTypescriptGenerator } from '../react-typescript/index.js';
 import { reactUtilsGenerator } from '../react-utils/index.js';
 import { reactGenerator } from '../react/index.js';
@@ -24,7 +23,6 @@ export function composeReactGenerators(
     children: {
       typescript: reactTypescriptGenerator({}),
       reactApp: reactAppGenerator({}),
-      reactRouter: reactRouterGenerator({}),
       logger: reactLoggerGenerator({}),
       reactComponents: reactComponentsGenerator({}),
       reactConfig: reactConfigGenerator({}),

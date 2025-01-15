@@ -3,14 +3,31 @@ import type {
   ProjectDefinitionContainer,
   WebAppConfig,
 } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import { composeNodeGenerator } from '@halfdomelabs/core-generators';
 import { AppUtils, webAppEntryType } from '@halfdomelabs/project-builder-lib';
+import {
+  apolloErrorGenerator,
+  apolloErrorLinkGenerator,
+  apolloSentryGenerator,
+  composeReactGenerators,
+  reactApolloGenerator,
+  reactDatadogGenerator,
+  reactNotFoundHandlerGenerator,
+  reactRouterGenerator,
+  reactSentryGenerator,
+  reactTailwindGenerator,
+} from '@halfdomelabs/react-generators';
+
+import { safeMergeAll } from '@src/utils/safe-merge.js';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
 import { compileAuthFeatures, compileAuthPages } from '../lib/web-auth.js';
 
-export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
+export function buildReact(
+  builder: AppEntryBuilder<WebAppConfig>,
+): GeneratorBundle {
   const { projectDefinition, appConfig, appCompiler } = builder;
 
   const backendApp = AppUtils.getBackendApp(projectDefinition);
@@ -19,47 +36,45 @@ export function buildReact(builder: AppEntryBuilder<WebAppConfig>): unknown {
     backendApp,
   );
 
-  return {
-    name: 'react',
-    generator: '@halfdomelabs/react/core/react',
-    title: appConfig.title,
-    description: appConfig.description,
-    children: {
-      router: {
-        children: {
-          routes: [
-            builder.appConfig.includeAuth
-              ? compileAuthPages(builder, appConfig.allowedRoles)
-              : undefined,
-          ],
+  return composeReactGenerators(
+    {
+      title: appConfig.title,
+      description: appConfig.description,
+      children: safeMergeAll(
+        {
+          reactRouter: reactRouterGenerator({
+            children: {
+              reactNotFoundHandler: reactNotFoundHandlerGenerator({}),
+              auth: builder.appConfig.includeAuth
+                ? compileAuthPages(builder, appConfig.allowedRoles)
+                : undefined,
+            },
+          }),
+          reactTailwind: reactTailwindGenerator({}),
+          reactSentry: reactSentryGenerator({}),
+          reactApollo: reactApolloGenerator({
+            devApiEndpoint: '/api/graphql',
+            schemaLocation: `${backendRelativePath}/schema.graphql`,
+            enableSubscriptions: appConfig.enableSubscriptions,
+            children: {
+              apolloErrorLink: apolloErrorLinkGenerator({}),
+              apolloSentry: apolloSentryGenerator({}),
+            },
+          }),
+          apolloError: apolloErrorGenerator({}),
+          reactDatadog: appConfig.enableDatadog
+            ? reactDatadogGenerator({})
+            : undefined,
         },
-      },
-      $tailwind: {
-        generator: '@halfdomelabs/react/core/react-tailwind',
-      },
-      proxy: {
-        // TODO: Extract out logic
-        devBackendHost: `http://localhost:${projectDefinition.portOffset + 1}`,
-      },
-      $sentry: {
-        generator: '@halfdomelabs/react/core/react-sentry',
-      },
-      $apollo: {
-        generator: '@halfdomelabs/react/apollo/react-apollo',
-        devApiEndpoint: '/api/graphql',
-        schemaLocation: `${backendRelativePath}/schema.graphql`,
-        enableSubscriptions: appConfig.enableSubscriptions,
-      },
-      $apolloError: {
-        generator: '@halfdomelabs/react/apollo/apollo-error',
-      },
-      $datadogLogger: appConfig.enableDatadog
-        ? { generator: '@halfdomelabs/react/core/react-datadog' }
-        : undefined,
-      ...compileAuthFeatures(builder),
-      ...appCompiler.getRootChildren(),
+        compileAuthFeatures(builder) ?? {},
+        appCompiler.getRootChildren(),
+      ),
     },
-  };
+    {
+      // TODO: Extract out logic
+      devBackendHost: `http://localhost:${projectDefinition.portOffset + 1}`,
+    },
+  );
 }
 
 export function compileWeb(
@@ -84,7 +99,7 @@ export function compileWeb(
     description: `Web app for ${projectDefinition.name}`,
     version: projectDefinition.version,
     children: {
-      // projects: [buildReact(appBuilder)],
+      projects: [buildReact(appBuilder)],
     },
   });
 

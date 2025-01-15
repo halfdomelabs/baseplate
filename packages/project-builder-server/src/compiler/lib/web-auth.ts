@@ -1,86 +1,82 @@
 import type { AppConfig } from '@halfdomelabs/project-builder-lib';
+import type {
+  GeneratorBundle,
+  GeneratorBundleChildren,
+} from '@halfdomelabs/sync';
+
+import {
+  auth0ApolloGenerator,
+  auth0CallbackGenerator,
+  auth0ComponentsGenerator,
+  auth0HooksGenerator,
+  authApolloGenerator,
+  authComponentsGenerator,
+  authHooksGenerator,
+  authIdentifyGenerator,
+  authLayoutGenerator,
+  authLoginPageGenerator,
+  authPagesGenerator,
+  authServiceGenerator,
+  reactAuth0Generator,
+  reactRoutesGenerator,
+} from '@halfdomelabs/react-generators';
 
 import type { AppEntryBuilder } from '../app-entry-builder.js';
 
 export function compileAuthFeatures(
   builder: AppEntryBuilder<AppConfig>,
-): Record<string, unknown> | null {
+): GeneratorBundleChildren | undefined {
   if (builder.appConfig.type === 'web' && !builder.appConfig.includeAuth) {
-    return null;
+    return undefined;
   }
   if (builder.projectDefinition.auth?.useAuth0) {
     return {
-      $auth: {
-        generator: '@halfdomelabs/react/auth0/react-auth0',
+      auth: reactAuth0Generator({
         callbackPath: 'auth/auth0-callback',
-      },
-      $authHooks: {
-        generator: '@halfdomelabs/react/auth0/auth0-hooks',
-      },
-      $authIdentify: {
-        generator: '@halfdomelabs/react/auth/auth-identify',
-      },
-      $authApollo: {
-        generator: '@halfdomelabs/react/auth0/auth0-apollo',
-      },
-      $authComponents: {
-        generator: '@halfdomelabs/react/auth0/auth0-components',
-        loginPath: '/auth/login',
-      },
+      }),
+      authHooks: auth0HooksGenerator({}),
+      authIdentify: authIdentifyGenerator({}),
+      auth0Apollo: auth0ApolloGenerator({}),
+      auth0Components: auth0ComponentsGenerator({}),
     };
   }
   return {
-    $authService: {
-      generator: '@halfdomelabs/react/auth/auth-service',
-    },
-    $authHooks: {
-      generator: '@halfdomelabs/react/auth/auth-hooks',
-    },
-    $authIdentify: {
-      generator: '@halfdomelabs/react/auth/auth-identify',
-    },
-    $authApollo: {
-      generator: '@halfdomelabs/react/auth/auth-apollo',
-    },
-    $authComponents: {
-      generator: '@halfdomelabs/react/auth/auth-components',
+    authService: authServiceGenerator({}),
+    authHooks: authHooksGenerator({}),
+    authIdentify: authIdentifyGenerator({}),
+    authApollo: authApolloGenerator({}),
+    authComponents: authComponentsGenerator({
       loginPath: '/auth/login',
-    },
+    }),
   };
 }
 
 export function compileAuthPages(
   builder: AppEntryBuilder<AppConfig>,
   allowedRoles: string[] = [],
-): unknown {
+): GeneratorBundle {
   if (builder.projectDefinition.auth?.useAuth0) {
-    builder.addDescriptor('auth/root.json', {
+    return reactRoutesGenerator({
       name: 'auth',
-      generator: '@halfdomelabs/react/core/react-routes',
       children: {
-        $auth: {
-          generator: '@halfdomelabs/react/auth0/auth0-callback',
-        },
+        auth: auth0CallbackGenerator({}),
       },
     });
-
-    return 'auth/root';
   }
 
-  builder.addDescriptor('auth/root.json', {
+  return reactRoutesGenerator({
     name: 'auth',
-    generator: '@halfdomelabs/react/core/react-routes',
     children: {
-      $auth: {
-        generator: '@halfdomelabs/react/auth/auth-pages',
+      auth: authPagesGenerator({
         children: {
-          login: {
+          layout: authLayoutGenerator({
+            name: 'AuthLayout',
+          }),
+          login: authLoginPageGenerator({
             allowedRoles: allowedRoles.map((r) => builder.nameFromId(r)),
-          },
+          }),
         },
-      },
+      }),
     },
   });
-
-  return 'auth/root';
 }

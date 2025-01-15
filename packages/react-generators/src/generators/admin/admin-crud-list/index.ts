@@ -34,15 +34,6 @@ export const adminCrudListGenerator = createGenerator({
   name: 'admin/admin-crud-list',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  // TODO [2025-01-01]: Remove
-  // getDefaultChildGenerators: () => ({
-  //   columns: {
-  //     isMultiple: true,
-  //     defaultDescriptor: {
-  //       generator: '@halfdomelabs/react/admin/admin-crud-column',
-  //     },
-  //   },
-  // }),
   buildTasks(taskBuilder, { modelName, disableCreate }) {
     taskBuilder.addTask({
       name: 'main',
