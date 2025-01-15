@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import * as R from 'ramda';
+import { mergeWith, uniq } from 'es-toolkit';
 
 type ArrayKeys<T> = {
   [K in keyof T]: T[K] extends unknown[] ? K : never;
@@ -92,24 +91,24 @@ export function createNonOverwriteableMap<T extends object>(
 
   let overrideValues: Partial<T> = defaultsOverwriteable ? {} : defaults;
 
-  const nonOverwriteableMerge = R.mergeWithKey((key) => {
-    throw new Error(`Field ${key} already has value in ${name}`);
-  });
-
-  // performs the final merge of overrideValues and defaults
-  const finalMerge = R.mergeWithKey((key, a, b) => {
-    if (mergeArraysUniquely && Array.isArray(a) && Array.isArray(b)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      return R.uniq([...a, ...b]);
-    }
-    return b;
-  });
+  // // performs the final merge of overrideValues and defaults
+  // const finalMerge = R.mergeWithKey((key, a, b) => {
+  //   if (mergeArraysUniquely && Array.isArray(a) && Array.isArray(b)) {
+  //     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  //     return uniq([...a, ...b]);
+  //   }
+  //   return b;
+  // });
 
   return {
     set(key, value) {
-      overrideValues = nonOverwriteableMerge(overrideValues, {
+      if (key in overrideValues) {
+        throw new Error(`Field ${String(key)} already has value in ${name}`);
+      }
+      overrideValues = {
+        ...overrideValues,
         [key]: value,
-      }) as Partial<T>;
+      };
       return this;
     },
     prepend(key, value) {
@@ -151,7 +150,7 @@ export function createNonOverwriteableMap<T extends object>(
         }
         overrideValues = {
           ...overrideValues,
-          [key]: R.uniq([...existingValue, ...arrValue]),
+          [key]: uniq([...existingValue, ...arrValue]),
         };
       } else {
         overrideValues = {
@@ -162,14 +161,32 @@ export function createNonOverwriteableMap<T extends object>(
       return this;
     },
     merge(value) {
-      overrideValues = nonOverwriteableMerge(
-        overrideValues,
-        value,
-      ) as Partial<T>;
+      mergeWith(overrideValues, value, (targetValue, sourceValue, key) => {
+        if (key in overrideValues && key in value) {
+          throw new Error(`Cannot merge key ${key} because it already exists.`);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return -- we're just using the sourceValue
+        return sourceValue;
+      });
       return this;
     },
     value() {
-      return finalMerge(defaults, overrideValues) as T;
+      return mergeWith(
+        { ...defaults },
+        overrideValues,
+        (targetValue, sourceValue) => {
+          if (
+            mergeArraysUniquely &&
+            Array.isArray(targetValue) &&
+            Array.isArray(sourceValue)
+          ) {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment
+            return uniq([...targetValue, ...sourceValue]);
+          }
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+          return sourceValue;
+        },
+      );
     },
     get<K extends keyof T>(key: K): T[K] | undefined {
       const override = overrideValues[key];
@@ -179,7 +196,7 @@ export function createNonOverwriteableMap<T extends object>(
         Array.isArray(override) &&
         Array.isArray(def)
       ) {
-        return R.uniq([...def, ...override]) as T[K];
+        return uniq([...def, ...override]) as T[K];
       }
       return (override || def) as T[K] | undefined;
     },

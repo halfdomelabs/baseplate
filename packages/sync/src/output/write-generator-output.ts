@@ -1,6 +1,6 @@
 import chalk from 'chalk';
+import { sortBy } from 'es-toolkit';
 import { ExecaError } from 'execa';
-import _ from 'lodash';
 import ms from 'ms';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -324,10 +324,9 @@ export async function writeGeneratorOutput(
       );
     });
 
-    const orderedCommands = _.sortBy(
-      runnableCommands,
+    const orderedCommands = sortBy(runnableCommands, [
       (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType],
-    );
+    ]);
 
     if (conflictFilenames.length > 0) {
       logger.warn(

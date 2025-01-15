@@ -1,5 +1,3 @@
-import * as R from 'ramda';
-
 import type {
   GeneratorEntry,
   GeneratorTaskEntry,
@@ -12,10 +10,10 @@ import type {
  * @returns Flat list of generator entry and its children
  */
 function flattenGeneratorEntries(entry: GeneratorEntry): GeneratorEntry[] {
-  const childEntries = entry.children.map((child) =>
+  const childEntries = entry.children.flatMap((child) =>
     flattenGeneratorEntries(child),
   );
-  return R.flatten([entry, ...childEntries]);
+  return [entry, ...childEntries];
 }
 
 /**
