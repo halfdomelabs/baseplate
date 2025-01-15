@@ -5,10 +5,7 @@ import {
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { dasherize, underscore } from 'inflection';
 import _ from 'lodash';
 import { z } from 'zod';
@@ -47,19 +44,22 @@ export interface AdminCrudEditProvider {
 export const adminCrudEditProvider =
   createProviderType<AdminCrudEditProvider>('admin-crud-edit');
 
-const AdminCrudEditGenerator = createGeneratorWithTasks({
+export const adminCrudEditGenerator = createGenerator({
+  name: 'admin/admin-crud-edit',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    inputs: {
-      isMultiple: true,
-    },
-    embeddedForms: {
-      isMultiple: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/admin/admin-crud-embedded-form',
-      },
-    },
-  }),
+  // TODO [2025-01-01]: Remove
+  // getDefaultChildGenerators: () => ({
+  //   inputs: {
+  //     isMultiple: true,
+  //   },
+  //   embeddedForms: {
+  //     isMultiple: true,
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/admin/admin-crud-embedded-form',
+  //     },
+  //   },
+  // }),
   buildTasks(taskBuilder, { modelName, disableCreate }) {
     taskBuilder.addTask({
       name: 'main',
@@ -339,5 +339,3 @@ const AdminCrudEditGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminCrudEditGenerator;

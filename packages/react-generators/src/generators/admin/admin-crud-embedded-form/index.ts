@@ -9,7 +9,7 @@ import {
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -418,16 +418,12 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
   }),
 );
 
-const AdminCrudEmbeddedFormGenerator = createGeneratorWithTasks({
+export const adminCrudEmbeddedFormGenerator = createGenerator({
+  name: 'admin/admin-crud-embedded-form',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    columns: { isMultiple: true },
-    inputs: { isMultiple: true },
-  }),
   buildTasks(taskBuilder, descriptor) {
     const setupTask = taskBuilder.addTask(createSetupFormTask(descriptor));
     taskBuilder.addTask(createMainTask(descriptor, { setupTask }));
   },
 });
-
-export default AdminCrudEmbeddedFormGenerator;

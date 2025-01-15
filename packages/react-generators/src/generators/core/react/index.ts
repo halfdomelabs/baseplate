@@ -17,7 +17,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
   createTaskConfigBuilder,
@@ -190,66 +190,10 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
   },
 }));
 
-const ReactGenerator = createGeneratorWithTasks({
+export const reactGenerator = createGenerator({
+  name: 'core/react',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    typescript: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-typescript',
-      },
-    },
-    app: {
-      provider: 'react-app',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-app',
-      },
-    },
-    router: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-router',
-      },
-    },
-    logger: {
-      provider: 'react-logger',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-logger',
-      },
-    },
-    components: {
-      provider: 'react-components',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-components',
-      },
-    },
-    config: {
-      provider: 'react-config',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-config',
-      },
-    },
-    proxy: {
-      defaultToNullIfEmpty: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-proxy',
-      },
-    },
-    error: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-error',
-      },
-    },
-    utils: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-utils',
-      },
-    },
-    errorBoundary: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-error-boundary',
-      },
-    },
-  }),
-
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'setup-node',
@@ -264,5 +208,3 @@ const ReactGenerator = createGeneratorWithTasks({
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default ReactGenerator;

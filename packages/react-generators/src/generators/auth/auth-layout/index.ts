@@ -4,10 +4,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -23,9 +20,10 @@ export type AuthLayoutProvider = unknown;
 export const authLayoutProvider =
   createProviderType<AuthLayoutProvider>('auth-layout');
 
-const AuthLayoutGenerator = createGeneratorWithTasks({
+export const authLayoutGenerator = createGenerator({
+  name: 'auth/auth-layout',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { name }) {
     taskBuilder.addTask({
       name: 'main',
@@ -73,5 +71,3 @@ const AuthLayoutGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthLayoutGenerator;

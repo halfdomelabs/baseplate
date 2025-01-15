@@ -12,7 +12,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
   writeTemplateAction,
@@ -71,20 +71,23 @@ export interface ReactApolloProvider extends ImportMapper {
 export const reactApolloProvider =
   createProviderType<ReactApolloProvider>('react-apollo');
 
-const ReactApolloGenerator = createGeneratorWithTasks({
+export const reactApolloGenerator = createGenerator({
+  name: 'apollo/react-apollo',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    errorLink: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/apollo/apollo-error-link',
-      },
-    },
-    apolloSentry: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/apollo/apollo-sentry',
-      },
-    },
-  }),
+  // TODO [2025-01-01]: Remove
+  // getDefaultChildGenerators: () => ({
+  //   errorLink: {
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/apollo/apollo-error-link',
+  //     },
+  //   },
+  //   apolloSentry: {
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/apollo/apollo-sentry',
+  //     },
+  //   },
+  // }),
   buildTasks(
     taskBuilder,
     { devApiEndpoint, schemaLocation, enableSubscriptions },
@@ -555,5 +558,3 @@ const ReactApolloGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactApolloGenerator;

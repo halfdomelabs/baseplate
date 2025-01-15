@@ -5,10 +5,7 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({
@@ -20,9 +17,10 @@ export type ApolloErrorProvider = ImportMapper;
 export const apolloErrorProvider =
   createProviderType<ApolloErrorProvider>('apollo-error');
 
-const ApolloErrorGenerator = createGeneratorWithTasks({
+export const apolloErrorGenerator = createGenerator({
+  name: 'apollo/apollo-error',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -61,5 +59,3 @@ const ApolloErrorGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ApolloErrorGenerator;

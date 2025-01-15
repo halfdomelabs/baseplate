@@ -3,10 +3,7 @@ import {
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactAppProvider } from '@src/generators/core/react-app/index.js';
@@ -21,9 +18,10 @@ export type ReactAuth0Provider = unknown;
 export const reactAuth0Provider =
   createProviderType<ReactAuth0Provider>('react-auth0');
 
-const ReactAuth0Generator = createGeneratorWithTasks({
+export const reactAuth0Generator = createGenerator({
+  name: 'auth0/react-auth0',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { callbackPath }) {
     taskBuilder.addTask({
       name: 'main',
@@ -92,5 +90,3 @@ const ReactAuth0Generator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactAuth0Generator;

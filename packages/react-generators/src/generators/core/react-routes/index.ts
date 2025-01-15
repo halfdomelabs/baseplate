@@ -2,7 +2,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
@@ -14,7 +14,7 @@ import {
 import { notEmpty } from '@src/utils/array.js';
 import { dasherizeCamel, upperCaseFirst } from '@src/utils/case.js';
 
-import { renderRoutes } from '../_shared/routes/render-routes.js';
+import { renderRoutes } from '../_utils/render-routes.js';
 import { reactNotFoundProvider } from '../react-not-found-handler/index.js';
 
 const descriptorSchema = z.object({
@@ -24,9 +24,10 @@ const descriptorSchema = z.object({
   isPassthrough: z.boolean().optional(),
 });
 
-const ReactRoutesGenerator = createGeneratorWithTasks({
+export const reactRoutesGenerator = createGenerator({
+  name: 'core/react-routes',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { name, layoutKey, isPassthrough }) {
     taskBuilder.addTask({
       name: 'main',
@@ -129,5 +130,3 @@ const ReactRoutesGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactRoutesGenerator;

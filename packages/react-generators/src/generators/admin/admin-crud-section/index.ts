@@ -1,5 +1,5 @@
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderExportScope,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -20,30 +20,33 @@ export const adminCrudSectionScope = createProviderExportScope(
   'Scope for admin crud section',
 );
 
-const AdminCrudSectionGenerator = createGeneratorWithTasks({
+export const adminCrudSectionGenerator = createGenerator({
+  name: 'admin/admin-crud-section',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: ({ modelName, disableCreate }) => ({
-    edit: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/admin/admin-crud-edit',
-        modelName,
-        disableCreate,
-      },
-    },
-    list: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/admin/admin-crud-list',
-        modelName,
-        disableCreate,
-      },
-    },
-    queries: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/admin/admin-crud-queries',
-        modelName,
-      },
-    },
-  }),
+  // TODO [2025-01-01]: Remove
+  // getDefaultChildGenerators: ({ modelName, disableCreate }) => ({
+  //   edit: {
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/admin/admin-crud-edit',
+  //       modelName,
+  //       disableCreate,
+  //     },
+  //   },
+  //   list: {
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/admin/admin-crud-list',
+  //       modelName,
+  //       disableCreate,
+  //     },
+  //   },
+  //   queries: {
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/admin/admin-crud-queries',
+  //       modelName,
+  //     },
+  //   },
+  // }),
   scopes: [adminCrudSectionScope],
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
@@ -64,5 +67,3 @@ const AdminCrudSectionGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminCrudSectionGenerator;

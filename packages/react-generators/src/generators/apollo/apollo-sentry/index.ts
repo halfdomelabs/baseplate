@@ -4,10 +4,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactSentryProvider } from '@src/generators/core/react-sentry/index.js';
@@ -100,13 +97,12 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const ApolloSentryGenerator = createGeneratorWithTasks({
+export const apolloSentryGenerator = createGenerator({
+  name: 'apollo/apollo-sentry',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask(createMainTask);
     taskBuilder.addTask(apolloSentryLinkTask);
   },
 });
-
-export default ApolloSentryGenerator;

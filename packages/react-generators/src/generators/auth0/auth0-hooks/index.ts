@@ -3,7 +3,7 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { copyFileAction, createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { copyFileAction, createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
@@ -15,9 +15,10 @@ const descriptorSchema = z.object({
   userQueryName: z.string().default('user'),
 });
 
-const Auth0HooksGenerator = createGeneratorWithTasks({
+export const auth0HooksGenerator = createGenerator({
+  name: 'auth0/auth0-hooks',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { userQueryName }) {
     taskBuilder.addTask({
       name: 'main',
@@ -122,5 +123,3 @@ const Auth0HooksGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default Auth0HooksGenerator;

@@ -1,6 +1,6 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -124,12 +124,11 @@ const createMainTask = createTaskConfigBuilder(
   }),
 );
 
-const AdminCrudEmbeddedInputGenerator = createGeneratorWithTasks({
+export const adminCrudEmbeddedInputGenerator = createGenerator({
+  name: 'admin/admin-crud-embedded-input',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default AdminCrudEmbeddedInputGenerator;

@@ -1,7 +1,4 @@
-import {
-  createGeneratorWithTasks,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { AdminCrudDisplay } from '../_utils/data-display.js';
@@ -54,14 +51,11 @@ const createMainTask = createTaskConfigBuilder(({ label }: Descriptor) => ({
   },
 }));
 
-const AdminCrudColumnGenerator = createGeneratorWithTasks({
+export const adminCrudColumnGenerator = createGenerator({
+  name: 'admin/admin-crud-column',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    display: {},
-  }),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default AdminCrudColumnGenerator;

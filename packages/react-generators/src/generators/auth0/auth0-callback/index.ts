@@ -3,7 +3,7 @@ import {
   TypescriptCodeExpression,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authHooksProvider } from '@src/generators/auth/auth-hooks/index.js';
@@ -13,9 +13,10 @@ import { reactRoutesProvider } from '@src/providers/routes.js';
 
 const descriptorSchema = z.object({});
 
-const Auth0CallbackGenerator = createGeneratorWithTasks({
+export const auth0CallbackGenerator = createGenerator({
+  name: 'auth0/auth0-callback',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -72,5 +73,3 @@ const Auth0CallbackGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default Auth0CallbackGenerator;

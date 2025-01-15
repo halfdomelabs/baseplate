@@ -5,7 +5,7 @@ import {
   typescriptProvider,
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { pluralize } from 'inflection';
 import { z } from 'zod';
 
@@ -30,16 +30,19 @@ const descriptorSchema = z.object({
   disableCreate: z.boolean().optional(),
 });
 
-const AdminCrudListGenerator = createGeneratorWithTasks({
+export const adminCrudListGenerator = createGenerator({
+  name: 'admin/admin-crud-list',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    columns: {
-      isMultiple: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/admin/admin-crud-column',
-      },
-    },
-  }),
+  // TODO [2025-01-01]: Remove
+  // getDefaultChildGenerators: () => ({
+  //   columns: {
+  //     isMultiple: true,
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/admin/admin-crud-column',
+  //     },
+  //   },
+  // }),
   buildTasks(taskBuilder, { modelName, disableCreate }) {
     taskBuilder.addTask({
       name: 'main',
@@ -236,5 +239,3 @@ const AdminCrudListGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminCrudListGenerator;

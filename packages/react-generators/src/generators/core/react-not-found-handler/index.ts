@@ -4,10 +4,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ReactRoute } from '@src/providers/routes.js';
@@ -27,9 +24,10 @@ export interface ReactNotFoundProvider {
 export const reactNotFoundProvider =
   createProviderType<ReactNotFoundProvider>('react-not-found');
 
-const ReactNotFoundHandlerGenerator = createGeneratorWithTasks({
+export const reactNotFoundHandlerGenerator = createGenerator({
+  name: 'core/react-not-found-handler',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { layoutKey }) {
     taskBuilder.addTask({
       name: 'main',
@@ -81,5 +79,3 @@ const ReactNotFoundHandlerGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactNotFoundHandlerGenerator;

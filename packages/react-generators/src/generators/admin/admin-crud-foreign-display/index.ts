@@ -1,6 +1,6 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -78,12 +78,11 @@ const createMainTask = createTaskConfigBuilder(
   }),
 );
 
-const AdminCrudForeignDisplayGenerator = createGeneratorWithTasks({
+export const adminCrudForeignDisplayGenerator = createGenerator({
+  name: 'admin/admin-crud-foreign-display',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default AdminCrudForeignDisplayGenerator;

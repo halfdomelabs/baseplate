@@ -4,7 +4,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -91,12 +91,11 @@ const createMainTask = createTaskConfigBuilder(
   }),
 );
 
-const AdminBullBoardGenerator = createGeneratorWithTasks({
+export const adminBullBoardGenerator = createGenerator({
+  name: 'admin/admin-bull-board',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default AdminBullBoardGenerator;

@@ -10,10 +10,7 @@ import {
   TypescriptCodeWrapper,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
@@ -24,7 +21,7 @@ import {
 } from '@src/providers/routes.js';
 import { notEmpty } from '@src/utils/array.js';
 
-import { renderRoutes } from '../_shared/routes/render-routes.js';
+import { renderRoutes } from '../_utils/render-routes.js';
 import { reactAppProvider } from '../react-app/index.js';
 import { reactProvider } from '../react/index.js';
 
@@ -40,18 +37,21 @@ export interface ReactRouterProvider {
 export const reactRouterProvider =
   createProviderType<ReactRouterProvider>('react-router');
 
-const ReactRouterGenerator = createGeneratorWithTasks({
+export const reactRouterGenerator = createGenerator({
+  name: 'core/react-router',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    routes: {
-      isMultiple: true,
-    },
-    notFoundHandler: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/react/core/react-not-found-handler',
-      },
-    },
-  }),
+  // TODO [2025-01-01]: Remove
+  // getDefaultChildGenerators: () => ({
+  //   routes: {
+  //     isMultiple: true,
+  //   },
+  //   notFoundHandler: {
+  //     defaultDescriptor: {
+  //       generator: '@halfdomelabs/react/core/react-not-found-handler',
+  //     },
+  //   },
+  // }),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -159,5 +159,3 @@ const ReactRouterGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactRouterGenerator;

@@ -16,6 +16,7 @@
     "prettier:check:affected": "turbo run prettier:check --affected",
     "prettier:write": "turbo run prettier:write",
     "release": "pnpm build && pnpm changeset publish",
+    "run:morpher": "pnpm --filter @halfdomelabs/code-morph run:morpher",
     "serve": "turbo run @halfdomelabs/project-builder-cli:start serve",
     "test": "turbo run test",
     "test:affected": "turbo run test --affected",

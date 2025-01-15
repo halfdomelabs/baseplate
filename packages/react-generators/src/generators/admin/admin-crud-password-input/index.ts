@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -11,9 +11,10 @@ const descriptorSchema = z.object({
   modelField: z.string().default('password'),
 });
 
-const AdminCrudTextInputGenerator = createGeneratorWithTasks({
+export const adminCrudPasswordInputGenerator = createGenerator({
+  name: 'admin/admin-crud-password-input',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { label, modelField }) {
     taskBuilder.addTask({
       name: 'main',
@@ -53,5 +54,3 @@ const AdminCrudTextInputGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminCrudTextInputGenerator;
