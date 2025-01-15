@@ -5,7 +5,6 @@ import {
   writeJsonAction,
 } from '@halfdomelabs/sync';
 import { sortBy } from 'es-toolkit';
-import * as R from 'ramda';
 import semver from 'semver';
 import sortKeys from 'sort-keys';
 import sortPackageJson from 'sort-package-json';
@@ -235,10 +234,10 @@ export const nodeGenerator = createGenerator({
               },
             );
 
-            const allDependencies = R.mergeRight(
-              packageJson.dependencies,
-              packageJson.devDependencies,
-            );
+            const allDependencies = {
+              ...packageJson.dependencies,
+              ...packageJson.devDependencies,
+            };
             if (Object.keys(allDependencies).includes('prettier')) {
               builder.addPostWriteCommand(
                 'pnpm prettier --write package.json',

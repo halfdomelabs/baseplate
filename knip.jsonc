@@ -13,7 +13,12 @@
         "src/*/*/web.ts",
         "src/*/*/common.ts"
       ],
-      "project": "src/**/*.{ts,tsx}"
+      "project": "src/**/*.{ts,tsx}",
+      "ignoreDependencies": [
+        // necessary for build
+        "react-dom",
+        "@types/react-dom"
+      ]
     },
     "packages/react-generators": {
       "entry": ["src/index.{ts,tsx}"],
