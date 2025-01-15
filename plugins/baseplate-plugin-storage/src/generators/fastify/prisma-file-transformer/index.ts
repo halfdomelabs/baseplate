@@ -1,5 +1,4 @@
 import type { PrismaOutputRelationField } from '@halfdomelabs/fastify-generators';
-import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
@@ -16,10 +15,6 @@ const descriptorSchema = z.object({
   name: z.string(),
   category: z.string(),
 });
-
-export type PrismaFileTransformerDescriptor = GeneratorDescriptor<
-  typeof descriptorSchema
->;
 
 export const prismaFileTransformerGenerator = createGenerator({
   name: 'fastify/prisma-file-transformer',

@@ -57,7 +57,6 @@
     "concurrently": "9.0.1",
     "cpx2": "7.0.1",
     "eslint": "catalog:",
-    "globby": "^14.0.2",
     "postcss": "catalog:",
     "postcss-prefixer": "catalog:",
     "prettier": "catalog:",
@@ -65,7 +64,6 @@
     "tsc-alias": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-plugin-static-copy": "^1.0.5",
     "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"
   },

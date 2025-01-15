@@ -14,10 +14,6 @@ export function upperCaseFirst(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function humanizeCamel(str: string, lowerFirst?: boolean): string {
-  return humanize(underscore(str), lowerFirst);
-}
-
 export function dasherizeCamel(str: string): string {
   return dasherize(underscore(lowerCaseFirst(str)));
 }

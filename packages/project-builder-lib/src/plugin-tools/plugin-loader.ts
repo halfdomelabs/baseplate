@@ -48,9 +48,7 @@ async function readManifestJson(
     .then((data) => pluginManifestJsonSchema.parse(JSON.parse(data)));
 }
 
-export async function readMetadataJson(
-  directory: string,
-): Promise<PluginMetadata> {
+async function readMetadataJson(directory: string): Promise<PluginMetadata> {
   const metadataJsonFilename = path.join(directory, 'metadata.json');
   try {
     if (!(await fileExists(metadataJsonFilename))) {
@@ -99,7 +97,7 @@ async function findJavascriptFile(
   return undefined;
 }
 
-export async function getPluginEntrypoints(
+async function getPluginEntrypoints(
   metadata: PluginMetadata,
   pluginDirectory: string,
 ): Promise<EntrypointInfo[]> {
@@ -149,7 +147,7 @@ function getWebEntrypointImport(
   return `${pluginName}/${relativeEntrypoint}`;
 }
 
-export async function populatePluginMetadataWithPaths(
+async function populatePluginMetadataWithPaths(
   metadata: PluginMetadata,
   packageName: string,
   pluginDirectory: string,
@@ -186,7 +184,7 @@ export async function populatePluginMetadataWithPaths(
   }
 }
 
-export async function getPluginDirectories(
+async function getPluginDirectories(
   pluginPackageDirectory: string,
   plugins: string | string[],
 ): Promise<string[]> {

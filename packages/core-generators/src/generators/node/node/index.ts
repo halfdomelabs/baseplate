@@ -1,5 +1,3 @@
-import type { InferGeneratorDescriptor } from '@halfdomelabs/sync';
-
 import {
   createGenerator,
   createNonOverwriteableMap,
@@ -28,10 +26,6 @@ const descriptorSchema = z.object({
   nodeVersion: z.string().default('20.18.1'),
   pnpmVersion: z.string().default('9.15.1'),
 });
-
-export type NodeGeneratorDescriptor = InferGeneratorDescriptor<
-  typeof descriptorSchema
->;
 
 export interface NodeSetupProvider {
   setIsEsm(isEsm: boolean): void;

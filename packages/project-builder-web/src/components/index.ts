@@ -9,6 +9,5 @@ export { default as LinkButton } from './LinkButton';
 export * from './NotFoundCard';
 export { default as SelectInput } from './SelectInput';
 export { default as Sidebar } from './Sidebar';
-export { default as Spinner } from './Spinner';
 export { default as Table } from './Table';
 export { default as TextInput } from './TextInput';

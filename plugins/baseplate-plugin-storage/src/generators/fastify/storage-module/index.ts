@@ -46,11 +46,7 @@ const descriptorSchema = z.object({
   ),
 });
 
-export type StorageModuleDescriptor = GeneratorDescriptor<
-  typeof descriptorSchema
->;
-
-export type StorageModuleProvider = ImportMapper;
+type StorageModuleProvider = ImportMapper;
 
 export const storageModuleProvider = createProviderType<StorageModuleProvider>(
   'storage-module',

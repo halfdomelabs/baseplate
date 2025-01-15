@@ -1,0 +1,37 @@
+{
+  "workspaces": {
+    "packages/*": {
+      "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
+      "project": "src/**/*.{ts,tsx}"
+    },
+    "plugins/*": {
+      "entry": [
+        "src/index.{ts,tsx}",
+        "src/*/*/node.ts",
+        "src/*/*/web.ts",
+        "src/*/*/common.ts"
+      ],
+      "project": "src/**/*.{ts,tsx}"
+    },
+    "packages/project-builder-test": {
+      "ignore": ["src/tests/*.ts"]
+    }
+  },
+  "ignore": [
+    "tests/**",
+    "**/templates/**",
+    "**/morphers/tests/**",
+    "**/merge-algorithms/tests/**"
+  ],
+  "ignoreBinaries": ["only-allow"],
+  "ignoreDependencies": [
+    // we're not using vitest coverage
+    "@vitest/coverage-v8",
+    // we can't import the plugin directly into the config because VSCode won't work otherwise
+    // https://github.com/prettier/prettier/discussions/15167
+    "prettier-plugin-packagejson",
+    "prettier-plugin-tailwindcss",
+    // we can skip this for now because it's used minimally
+    "postcss-load-config"
+  ]
+}

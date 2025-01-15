@@ -33,4 +33,5 @@ jobs:
       - run: pnpm lint:affected
       - run: pnpm prettier:check:affected
       - run: pnpm versions:check
+      - run: pnpm knip
       - run: pnpm dedupe --check

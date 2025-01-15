@@ -23,7 +23,7 @@ const descriptorSchema = z.object({
   fileModelName: z.string().min(1),
 });
 
-export type UploadComponentsProvider = ImportMapper;
+type UploadComponentsProvider = ImportMapper;
 
 export const uploadComponentsProvider =
   createProviderType<UploadComponentsProvider>('upload-components');

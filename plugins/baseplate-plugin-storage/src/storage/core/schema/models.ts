@@ -4,7 +4,7 @@ import type {
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
 
-export const FILE_MODEL_FIELDS: ModelScalarFieldDefinitionInput[] = [
+const FILE_MODEL_FIELDS: ModelScalarFieldDefinitionInput[] = [
   {
     name: 'id',
     type: 'uuid',

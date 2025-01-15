@@ -25,7 +25,7 @@ import { notEmpty } from '@src/utils/array.js';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
-export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRelationTransformerConfig> =
+const embeddedRelationTransformerCompiler: ModelTransformerCompiler<EmbeddedRelationTransformerConfig> =
   {
     name: 'embeddedRelation',
     compileTransformer(definition, { definitionContainer, model }) {

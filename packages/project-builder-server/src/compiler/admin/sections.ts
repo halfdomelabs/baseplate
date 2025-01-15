@@ -10,7 +10,7 @@ import type { AppEntryBuilder } from '../app-entry-builder.js';
 
 import { compileAdminCrudSection } from './crud/index.js';
 
-export function compileAdminSections(
+function compileAdminSections(
   featureId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   sectionsId: string,

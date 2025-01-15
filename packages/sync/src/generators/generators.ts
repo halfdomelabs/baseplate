@@ -26,14 +26,6 @@ export const baseDescriptorSchema = z.object({
 
 export type BaseGeneratorDescriptor = z.infer<typeof baseDescriptorSchema>;
 
-export type InferGeneratorDescriptor<T> =
-  T extends z.ZodType<infer D>
-    ? D &
-        BaseGeneratorDescriptor & {
-          children?: Record<string, unknown>;
-        }
-    : never;
-
 /**
  * A map of export names to the provider export type
  */
