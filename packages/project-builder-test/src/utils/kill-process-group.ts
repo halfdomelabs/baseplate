@@ -20,7 +20,7 @@ const isWin = process.platform === 'win32';
  * @param options.signal - The signal to send to the process group. Default is 'SIGTERM'.
  * @returns A promise that resolves when the process group is killed.
  */
-export async function killProcessGroup(
+async function killProcessGroup(
   subprocess: Subprocess,
   { signal = 'SIGTERM' }: { signal?: NodeJS.Signals } = {},
 ): Promise<void> {

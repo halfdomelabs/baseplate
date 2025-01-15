@@ -11,7 +11,7 @@ function splitIntoTokens(str: string): string[] {
  * @param maxLength - The maximum allowed length of the string including the ellipsis.
  * @returns The truncated string with an ellipsis if it exceeds the maximum length, otherwise the original string.
  */
-export function ellipsisString(str: string, maxLength: number): string {
+function ellipsisString(str: string, maxLength: number): string {
   return str.length <= maxLength
     ? str
     : `${str.slice(0, Math.max(0, maxLength - 3))}...`;

@@ -56,6 +56,52 @@
         ],
         "fileLocation": ["absolute"]
       }
+    },
+    {
+      "label": "Knip",
+      "type": "npm",
+      "script": "knip",
+      "group": "build",
+      "problemMatcher": [
+        {
+          "source": "knip",
+          "pattern": [
+            {
+              "regexp": "^([a-zA-Z\\s]+) \\(\\d+\\)$",
+              "kind": "file",
+              "message": 1
+            },
+            {
+              "regexp": "^([^\\s]+)$",
+              "file": 2
+            },
+            {
+              "regexp": "^(\\S+)\\s+\\S+\\s+([\\w\\/.-]+):(\\d+):(\\d+)$",
+              "file": 2,
+              "line": 3,
+              "column": 4,
+              "loop": true
+            }
+          ],
+          "fileLocation": ["relative", "${workspaceFolder}"]
+        },
+        {
+          "source": "knip",
+          "pattern": [
+            {
+              "regexp": "^([a-zA-Z\\s]+) \\(\\d+\\)$",
+              "kind": "file",
+              "message": 1
+            },
+            {
+              "regexp": "^([^\\s]+)$",
+              "file": 2,
+              "loop": true
+            }
+          ],
+          "fileLocation": ["relative", "${workspaceFolder}"]
+        }
+      ]
     }
   ]
 }

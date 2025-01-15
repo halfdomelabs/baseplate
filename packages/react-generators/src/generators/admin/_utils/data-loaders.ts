@@ -25,7 +25,7 @@ export interface AdminCrudDataDependency {
  * @param depTwo - The second data dependency.
  * @returns `true` if the dependencies are mergeable (i.e., they have the same `propName`), otherwise `false`.
  */
-export function areDepsMergeable(
+function areDepsMergeable(
   depOne: AdminCrudDataDependency,
   depTwo: AdminCrudDataDependency,
 ): boolean {
@@ -66,16 +66,6 @@ export function mergeAdminCrudDataDependencies(
   }
 
   return mergedDeps;
-}
-export function getLoaderExtraProps(
-  dataDependencies: AdminCrudDataDependency[],
-): string {
-  return dataDependencies
-    .map(
-      (d) =>
-        `${d.propName}={${d.propLoaderValueGetter(d.loader.loaderValueName)}}`,
-    )
-    .join(' ');
 }
 
 export function getPassthroughExtraProps(

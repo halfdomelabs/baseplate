@@ -25,7 +25,7 @@ async function getCsrfToken(options?: { skipCache: boolean }): Promise<string> {
   return csrfToken;
 }
 
-export function retryLink({
+function retryLink({
   maxAttempts,
 }: {
   maxAttempts?: number;
@@ -88,7 +88,7 @@ export function retryLink({
 }
 
 // Attaches CSRF token to payload of operation
-export function attachCsrfToken(): TRPCLink<AppRouter> {
+function attachCsrfToken(): TRPCLink<AppRouter> {
   // initialized config
   return () =>
     // initialized in app
