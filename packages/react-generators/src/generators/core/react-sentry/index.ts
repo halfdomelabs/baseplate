@@ -83,13 +83,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
     }
 
     return {
-      getProviders: () => ({
+      providers: {
         reactSentry: {
           addSentryScopeAction(block) {
             sentryFile.addCodeBlock('SENTRY_SCOPE_ACTIONS', block);
           },
         },
-      }),
+      },
       build: async (builder) => {
         await builder.apply(sentryFile.renderToAction('sentry.ts', sentryPath));
       },

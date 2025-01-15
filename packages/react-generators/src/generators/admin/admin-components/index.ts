@@ -55,7 +55,7 @@ export const adminComponentsGenerator = createGenerator({
         reactComponents.registerComponent({ name: 'DescriptionList' });
 
         return {
-          getProviders: () => ({
+          providers: {
             adminComponents: {
               getImportMap: () => ({
                 '%admin-components': {
@@ -75,7 +75,7 @@ export const adminComponentsGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

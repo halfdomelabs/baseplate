@@ -44,13 +44,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
       ].join(' '),
     });
     return {
-      getProviders: () => ({
+      providers: {
         fastifyScripts: {
           getScriptDirectory() {
             return 'scripts';
           },
         },
-      }),
+      },
       build: async (builder) => {
         await builder.apply(
           copyFileAction({

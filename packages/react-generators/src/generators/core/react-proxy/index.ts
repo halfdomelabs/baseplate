@@ -37,13 +37,13 @@ export const reactProxyGenerator = createGenerator({
         reactConfig.addEnvVar('DEV_BACKEND_HOST', devBackendHost);
         let enableWebsocket = false;
         return {
-          getProviders: () => ({
+          providers: {
             reactProxy: {
               enableWebSocket: () => {
                 enableWebsocket = true;
               },
             },
-          }),
+          },
           build: () => {
             react.addServerOption(
               'proxy',

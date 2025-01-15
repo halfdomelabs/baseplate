@@ -60,11 +60,11 @@ export const reactNotFoundHandlerGenerator = createGenerator({
           layoutKey,
         });
         return {
-          getProviders: () => ({
+          providers: {
             reactNotFound: {
               getNotFoundRoute: () => notFoundRoute,
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

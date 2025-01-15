@@ -117,9 +117,9 @@ export const adminLayoutGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             adminLayout: {},
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               adminLayout.renderToAction('AdminLayout.tsx', layoutPath),

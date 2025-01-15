@@ -67,19 +67,17 @@ export const rootModuleGenerator = createGenerator({
         >({}, { name: 'root-module-fields' });
 
         return {
-          getProviders() {
-            return {
-              rootModule: {
-                addModuleField: (name, type) => {
-                  moduleFieldMap.set(name, type);
-                },
-                getRootModule: () =>
-                  TypescriptCodeUtils.createExpression(
-                    'RootModule',
-                    "import { RootModule } from '@/src/modules/index.js'",
-                  ),
+          providers: {
+            rootModule: {
+              addModuleField: (name, type) => {
+                moduleFieldMap.set(name, type);
               },
-            };
+              getRootModule: () =>
+                TypescriptCodeUtils.createExpression(
+                  'RootModule',
+                  "import { RootModule } from '@/src/modules/index.js'",
+                ),
+            },
           },
           build: () => ({ moduleFieldMap }),
         };
@@ -93,23 +91,21 @@ export const rootModuleGenerator = createGenerator({
       },
       run() {
         return {
-          getProviders() {
-            return {
-              rootModuleImport: {
-                getRootModule: () =>
-                  TypescriptCodeUtils.createExpression(
-                    'RootModule',
-                    "import { RootModule } from '@/src/modules/index.js'",
-                  ),
-                getRootModuleImport: () => `@/src/modules/index.js`,
-                getImportMap: () => ({
-                  '%root-module': {
-                    path: '@/src/modules/index.js',
-                    allowedImports: ['RootModule'],
-                  },
-                }),
-              },
-            };
+          providers: {
+            rootModuleImport: {
+              getRootModule: () =>
+                TypescriptCodeUtils.createExpression(
+                  'RootModule',
+                  "import { RootModule } from '@/src/modules/index.js'",
+                ),
+              getRootModuleImport: () => `@/src/modules/index.js`,
+              getImportMap: () => ({
+                '%root-module': {
+                  path: '@/src/modules/index.js',
+                  allowedImports: ['RootModule'],
+                },
+              }),
+            },
           },
         };
       },
@@ -127,7 +123,7 @@ export const rootModuleGenerator = createGenerator({
         const moduleImports: string[] = [];
 
         return {
-          getProviders: () => ({
+          providers: {
             appModule: {
               getModuleFolder: () => 'src/modules',
               getValidFields: () => [
@@ -144,7 +140,7 @@ export const rootModuleGenerator = createGenerator({
                 rootModuleEntries.appendUnique(name, [type]);
               },
             },
-          }),
+          },
           build: async (builder) => {
             const rootModule = typescript.createTemplate({
               ROOT_MODULE_CONTENTS: { type: 'code-expression' },

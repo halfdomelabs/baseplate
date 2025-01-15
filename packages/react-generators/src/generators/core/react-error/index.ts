@@ -65,7 +65,7 @@ export const reactErrorGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             reactError: {
               addContextAction(action) {
                 loggerFile.addCodeBlock('CONTEXT_ACTIONS', action);
@@ -87,7 +87,7 @@ export const reactErrorGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               loggerFile.renderToAction('services/error-logger.ts', loggerPath),

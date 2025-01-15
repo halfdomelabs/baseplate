@@ -80,9 +80,9 @@ export const prismaFieldGenerator = createGenerator({
 
         prismaModel.addField(prismaField);
         return {
-          getProviders: () => ({
+          providers: {
             prismaField: {},
-          }),
+          },
         };
       },
     });

@@ -70,13 +70,13 @@ export const nodeGenerator = createGenerator({
       run() {
         let isEsm = false;
         return {
-          getProviders: () => ({
+          providers: {
             nodeSetup: {
               setIsEsm(value) {
                 isEsm = value;
               },
             },
-          }),
+          },
           build: () => ({ isEsm }),
         };
       },
@@ -142,7 +142,7 @@ export const nodeGenerator = createGenerator({
         }
 
         return {
-          getProviders: () => ({
+          providers: {
             node: {
               addPackage,
               addPackages(packages) {
@@ -173,7 +173,7 @@ export const nodeGenerator = createGenerator({
             project: {
               getProjectName: () => descriptor.name,
             },
-          }),
+          },
           build: async (builder) => {
             const extractDependencies = (
               type: NodeDependencyType,

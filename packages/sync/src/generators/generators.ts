@@ -71,7 +71,7 @@ export interface GeneratorTaskResult<
   /**
    * The providers that are exported by this generator task
    */
-  getProviders?: () => ExportMap;
+  providers?: ExportMap;
   /**
    * The function to build the output for the generator task
    */

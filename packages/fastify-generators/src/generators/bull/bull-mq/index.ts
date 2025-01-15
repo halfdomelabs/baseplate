@@ -63,9 +63,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
     });
 
     return {
-      getProviders: () => ({
+      providers: {
         bullMq: {},
-      }),
+      },
       build: async (builder) => {
         const importMappers = [
           errorHandlerService,

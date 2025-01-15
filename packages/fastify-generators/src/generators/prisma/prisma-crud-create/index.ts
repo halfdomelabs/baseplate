@@ -165,7 +165,7 @@ export const prismaCrudCreateGenerator = createGenerator({
           ) ?? [];
 
         return {
-          getProviders: () => ({}),
+          providers: {},
           build: () => {
             const methodOptions: PrismaDataMethodOptions = {
               name: methodName,

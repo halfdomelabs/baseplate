@@ -69,13 +69,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
     });
 
     return {
-      getProviders: () => ({
+      providers: {
         fastifyBullBoard: {
           addQueueToTrack(queue) {
             queuesToTrack.push(queue);
           },
         },
-      }),
+      },
       build: async (builder) => {
         const importMappers = [errorHandlerService, redis, pothosSchema];
         const pluginFile = typescript.createTemplate(

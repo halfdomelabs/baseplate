@@ -160,7 +160,7 @@ export const adminCrudQueriesGenerator = createGenerator({
         }
 
         return {
-          getProviders: () => ({
+          providers: {
             adminCrudQueries: {
               setRowFields: (fields) => {
                 config.rowFields = fields;
@@ -217,7 +217,7 @@ export const adminCrudQueriesGenerator = createGenerator({
                 roots.push(root);
               },
             },
-          }),
+          },
           build: async (builder) => {
             // merge fragments together
             for (const fragment of mergeGraphQLFragments(fragments)) {

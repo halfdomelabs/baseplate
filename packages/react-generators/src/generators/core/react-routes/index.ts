@@ -49,7 +49,7 @@ export const reactRoutesGenerator = createGenerator({
         const directoryBase = `${reactRoutes.getDirectoryBase()}/${pathName}`;
 
         return {
-          getProviders: () => ({
+          providers: {
             reactRoutes: {
               registerRoute(route) {
                 routes.push(route);
@@ -66,7 +66,7 @@ export const reactRoutesGenerator = createGenerator({
               getRoutePrefix: () =>
                 `${reactRoutes.getRoutePrefix()}/${pathName}`,
             },
-          }),
+          },
           build: async (builder) => {
             if (isPassthrough) {
               const renderedRoutes = renderRoutes(routes, layouts);

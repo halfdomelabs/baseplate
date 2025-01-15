@@ -73,7 +73,7 @@ export const prismaUtilsGenerator = createGenerator({
       },
       run({ typescript, serviceContext, prismaOutput, tsUtils }) {
         return {
-          getProviders: () => ({
+          providers: {
             prismaUtils: {
               getImportMap: () =>
                 Object.fromEntries(
@@ -86,7 +86,7 @@ export const prismaUtilsGenerator = createGenerator({
                   ]),
                 ),
             },
-          }),
+          },
           build: async (builder) => {
             // TODO: Dynamically add but it won't work until we have build function running after all dependencies
 

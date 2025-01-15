@@ -43,9 +43,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
     });
 
     return {
-      getProviders: () => ({
+      providers: {
         fastifySendgrid: {},
-      }),
+      },
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyFilesAction({

@@ -65,11 +65,11 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
     };
 
     return {
-      getProviders: () => ({
+      providers: {
         pothosTypeOutput: {
           getTypeReference: () => typeReference,
         },
-      }),
+      },
       build: () => {
         const typeReferences = pothosSchema.getTypeReferences();
 

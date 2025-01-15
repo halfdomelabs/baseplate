@@ -47,13 +47,13 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
     >({});
 
     return {
-      getProviders: () => ({
+      providers: {
         pothosField: {
           addCustomOption(field) {
             customFields.set(field.name, field.value);
           },
         },
-      }),
+      },
       build: () => {
         const resolveFunction = TypescriptCodeUtils.formatExpression(
           `async (query) => MODEL.findMany({ ...query })`,

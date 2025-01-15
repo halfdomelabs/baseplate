@@ -109,7 +109,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
     });
 
     return {
-      getProviders: () => ({
+      providers: {
         react: {
           getSrcFolder() {
             return 'src';
@@ -124,7 +124,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
             viteServerOptions.set(key, value);
           },
         },
-      }),
+      },
       build: async (builder) => {
         const initialFiles = ['public/favicon.ico', 'README.md'];
 

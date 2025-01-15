@@ -72,7 +72,7 @@ export const reactConfigGenerator = createGenerator({
           zod: '3.24.1',
         });
         return {
-          getProviders: () => ({
+          providers: {
             reactConfig: {
               addEnvVar(name, value) {
                 customEnvVars.push({ name, value });
@@ -85,7 +85,7 @@ export const reactConfigGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             const configFile = typescript.createTemplate({
               CONFIG_SCHEMA: { type: 'code-expression' },

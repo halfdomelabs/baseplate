@@ -46,11 +46,11 @@ export const eslintGenerator = createGenerator({
           { name: 'eslint-config', mergeArraysUniquely: true },
         );
         return {
-          getProviders: () => ({
+          providers: {
             eslint: {
               getConfig: () => configMap,
             },
-          }),
+          },
           build: async (builder) => {
             // build eslint configuration
             const config = configMap.value();

@@ -197,7 +197,7 @@ export const fastifySentryGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             fastifySentry: {
               getImportMap: () => importMap,
               addScopeConfigurationBlock(block) {
@@ -210,7 +210,7 @@ export const fastifySentryGenerator = createGenerator({
                 sentryIntegrations.push(integration);
               },
             },
-          }),
+          },
           build: async (builder) => {
             sentryServiceFile.addCodeEntries({
               SCOPE_CONFIGURATION_BLOCKS: scopeConfigurationBlocks,

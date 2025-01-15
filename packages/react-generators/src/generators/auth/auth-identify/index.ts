@@ -36,13 +36,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
   run({ reactRouter, authHooks }) {
     const blocks: TypescriptCodeBlock[] = [];
     return {
-      getProviders: () => ({
+      providers: {
         authIdentify: {
           addBlock(block) {
             blocks.push(block);
           },
         },
-      }),
+      },
       build: () => {
         if (blocks.length > 0) {
           reactRouter.addRouteHeader(

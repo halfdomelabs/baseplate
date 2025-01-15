@@ -138,7 +138,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- it can return undefined if there are no exports
             const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
             return {
-              getProviders: runResult.getProviders,
+              providers: runResult.providers,
               async build(builder) {
                 if (!runResult.build) {
                   return;

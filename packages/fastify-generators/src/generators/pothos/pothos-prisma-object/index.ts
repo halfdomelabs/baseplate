@@ -62,7 +62,7 @@ const createMainTask = createTaskConfigBuilder(
       >({});
 
       return {
-        getProviders: () => ({
+        providers: {
           pothosPrismaObject: {
             addCustomField: (name, expression) => {
               customFields.set(name, expression);
@@ -75,7 +75,7 @@ const createMainTask = createTaskConfigBuilder(
               moduleName: pothosTypeFile.getModuleName(),
             }),
           },
-        }),
+        },
         build: () => {
           const outputDto = prismaToServiceOutputDto(model, (enumName) =>
             prismaOutput.getServiceEnum(enumName),

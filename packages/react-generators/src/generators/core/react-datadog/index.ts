@@ -68,9 +68,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     return {
-      getProviders: () => ({
+      providers: {
         reactDatadog: {},
-      }),
+      },
       build: async (builder) => {
         await builder.apply(
           typescript.createCopyAction({

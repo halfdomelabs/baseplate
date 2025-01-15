@@ -92,11 +92,11 @@ const createSetupTask = createTaskConfigBuilder(() => ({
     fastifyServer.getConfig().set('errorHandlerFunction', errorFunction);
 
     return {
-      getProviders: () => ({
+      providers: {
         errorHandlerServiceSetup: {
           getHandlerFile: () => errorLoggerFile,
         },
-      }),
+      },
       build: async (builder) => {
         errorLoggerFile.addCodeBlock(
           'LOGGER_ACTIONS',
@@ -170,7 +170,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     };
 
     return {
-      getProviders: () => ({
+      providers: {
         errorHandlerService: {
           getErrorFunction: () => errorFunction,
           getHttpErrorsImport: () => '@/src/utils/http-errors.js',
@@ -181,7 +181,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
             ),
           getImportMap: () => importMap,
         },
-      }),
+      },
     };
   },
 }));

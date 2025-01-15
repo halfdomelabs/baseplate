@@ -70,7 +70,7 @@ export const reactAppGenerator = createGenerator({
             ),
           );
         return {
-          getProviders: () => ({
+          providers: {
             reactApp: {
               getRenderWrappers() {
                 return renderWrappers;
@@ -88,7 +88,7 @@ export const reactAppGenerator = createGenerator({
                 renderSiblings.push(sibling);
               },
             },
-          }),
+          },
           build: async (builder) => {
             const rootWithSiblings = TypescriptCodeUtils.mergeExpressions(
               [renderRoot, ...renderSiblings],

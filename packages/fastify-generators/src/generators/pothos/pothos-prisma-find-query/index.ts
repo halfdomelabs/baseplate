@@ -63,13 +63,13 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
     >({});
 
     return {
-      getProviders: () => ({
+      providers: {
         pothosField: {
           addCustomOption(field) {
             customFields.set(field.name, field.value);
           },
         },
-      }),
+      },
       build: () => {
         const pothosArgs = writePothosArgsFromDtoFields(
           [primaryKeyDefinition],

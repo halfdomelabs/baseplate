@@ -124,7 +124,7 @@ const createMainTask = createTaskConfigBuilder(
       }
 
       return {
-        getProviders: () => ({
+        providers: {
           auth0Module: {},
           userSessionService: {
             getImportMap: () => ({
@@ -134,7 +134,7 @@ const createMainTask = createTaskConfigBuilder(
               },
             }),
           },
-        }),
+        },
         build: async (builder) => {
           const serviceFile = typescript.createTemplate(
             {

@@ -80,7 +80,7 @@ export const serviceFileGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             serviceFile: {
               getServiceImport: () => servicesImport,
               getServicePath: () => servicesPath,
@@ -91,7 +91,7 @@ export const serviceFileGenerator = createGenerator({
                 }
               },
             },
-          }),
+          },
           build: async (builder) => {
             const methods = methodMap.value();
             const methodOrder = descriptor.methodOrder ?? [];
@@ -129,7 +129,7 @@ export const serviceFileGenerator = createGenerator({
         taskDependencies: { mainTask },
         run(deps, { mainTask: { outputMap } }) {
           return {
-            getProviders: () => ({
+            providers: {
               serviceFileOutput: {
                 getServiceMethod(key) {
                   const output = outputMap.get(key);
@@ -139,7 +139,7 @@ export const serviceFileGenerator = createGenerator({
                   return output;
                 },
               },
-            }),
+            },
           };
         },
       });

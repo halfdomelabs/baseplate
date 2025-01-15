@@ -109,11 +109,11 @@ export const fastifyGenerator = createGenerator({
         nodeGitIgnore.addExclusions(['/dist']);
 
         return {
-          getProviders: () => ({
+          providers: {
             fastify: {
               getConfig: () => config,
             },
-          }),
+          },
           build() {
             // add scripts
             const { devOutputFormatter, nodeFlags } = config.value();
@@ -159,29 +159,27 @@ export const fastifyGenerator = createGenerator({
       },
       run(deps, { mainTask: { nodeFlags, devOutputFormatter } }) {
         return {
-          getProviders() {
-            return {
-              fastifyOutput: {
-                getNodeFlags: () => nodeFlags,
-                getNodeFlagsDev: (useCase) =>
-                  nodeFlags
-                    .filter(
-                      (f) =>
-                        f.targetEnvironment === 'dev' &&
-                        (!useCase || f.useCase === useCase),
-                    )
-                    .map((f) => f.flag),
-                getNodeFlagsProd: (useCase) =>
-                  nodeFlags
-                    .filter(
-                      (f) =>
-                        f.targetEnvironment === 'prod' &&
-                        (!useCase || f.useCase === useCase),
-                    )
-                    .map((f) => f.flag),
-                getDevOutputFormatter: () => devOutputFormatter,
-              },
-            };
+          providers: {
+            fastifyOutput: {
+              getNodeFlags: () => nodeFlags,
+              getNodeFlagsDev: (useCase) =>
+                nodeFlags
+                  .filter(
+                    (f) =>
+                      f.targetEnvironment === 'dev' &&
+                      (!useCase || f.useCase === useCase),
+                  )
+                  .map((f) => f.flag),
+              getNodeFlagsProd: (useCase) =>
+                nodeFlags
+                  .filter(
+                    (f) =>
+                      f.targetEnvironment === 'prod' &&
+                      (!useCase || f.useCase === useCase),
+                  )
+                  .map((f) => f.flag),
+              getDevOutputFormatter: () => devOutputFormatter,
+            },
           },
         };
       },

@@ -68,12 +68,12 @@ export const adminCrudListGenerator = createGenerator({
         const deleteInfo = adminCrudQueries.getDeleteHookInfo();
 
         return {
-          getProviders: () => ({
+          providers: {
             adminCrudColumnContainer: {
               addColumn: (input) => columns.push(input),
               getModelName: () => modelName,
             },
-          }),
+          },
           build: async (builder) => {
             const dataDependencies = mergeAdminCrudDataDependencies(
               columns

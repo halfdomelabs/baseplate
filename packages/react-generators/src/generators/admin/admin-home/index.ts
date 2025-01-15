@@ -50,9 +50,9 @@ export const adminHomeGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             adminHome: {},
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

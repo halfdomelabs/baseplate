@@ -101,7 +101,7 @@ export const configServiceGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             configService: {
               getConfigEntries: () => configEntries,
               addAdditionalVerification: (codeBlock) => {
@@ -119,7 +119,7 @@ export const configServiceGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             const configFile = typescript.createTemplate({
               CONFIG_OBJECT: { type: 'code-expression' },

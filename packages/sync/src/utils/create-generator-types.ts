@@ -48,7 +48,7 @@ interface SimpleGeneratorTaskInstance<
   ExportMap extends Record<string, unknown> = Record<string, Provider>,
   TaskOutput = unknown,
 > {
-  getProviders?: () => ExportMap;
+  providers?: ExportMap;
   build?: (
     builder: GeneratorTaskOutputBuilder,
   ) => Promise<TaskOutput> | TaskOutput;

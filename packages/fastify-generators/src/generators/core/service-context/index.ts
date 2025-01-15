@@ -85,7 +85,7 @@ export const serviceContextGenerator = createGenerator({
         };
 
         return {
-          getProviders: () => ({
+          providers: {
             serviceContextSetup: {
               addContextField: (name, config) => {
                 contextFieldsMap.set(name, config);
@@ -93,7 +93,7 @@ export const serviceContextGenerator = createGenerator({
               getImportMap: () => importMap,
               getContextPath: () => contextPath,
             },
-          }),
+          },
           build: async (builder) => {
             const contextFields = contextFieldsMap.value();
 
@@ -186,7 +186,7 @@ export const serviceContextGenerator = createGenerator({
       },
       run(deps, { setupTask: { importMap, contextPath, contextImport } }) {
         return {
-          getProviders: () => ({
+          providers: {
             serviceContext: {
               getImportMap: () => importMap,
               getContextPath: () => contextPath,
@@ -196,7 +196,7 @@ export const serviceContextGenerator = createGenerator({
                   `import {ServiceContext} from '${contextImport}'`,
                 ),
             },
-          }),
+          },
         };
       },
     });

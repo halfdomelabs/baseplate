@@ -45,7 +45,7 @@ export const prismaCrudServiceGenerator = createGenerator({
         >({});
 
         return {
-          getProviders: () => ({
+          providers: {
             prismaCrudServiceSetup: {
               getModelName() {
                 return modelName;
@@ -54,7 +54,7 @@ export const prismaCrudServiceGenerator = createGenerator({
                 transformers.set(name, transformer);
               },
             },
-          }),
+          },
           build: () => ({ transformers }),
         };
       },
@@ -71,18 +71,16 @@ export const prismaCrudServiceGenerator = createGenerator({
       },
       run(deps, { setupTask: { transformers } }) {
         return {
-          getProviders() {
-            return {
-              prismaCrudService: {
-                getTransformerByName(name) {
-                  const transformer = transformers.get(name);
-                  if (!transformer) {
-                    throw new Error(`Transformer ${name} not found`);
-                  }
-                  return transformer;
-                },
+          providers: {
+            prismaCrudService: {
+              getTransformerByName(name) {
+                const transformer = transformers.get(name);
+                if (!transformer) {
+                  throw new Error(`Transformer ${name} not found`);
+                }
+                return transformer;
               },
-            };
+            },
           },
         };
       },

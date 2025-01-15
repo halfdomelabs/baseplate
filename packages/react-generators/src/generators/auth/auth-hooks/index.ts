@@ -80,7 +80,7 @@ export const authHooksGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             authHooks: {
               addCurrentUserField: (field: string) => {
                 currentUserFields.push(field);
@@ -104,7 +104,7 @@ export const authHooksGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

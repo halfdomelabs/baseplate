@@ -65,7 +65,7 @@ export const reactRouterGenerator = createGenerator({
         let routesComponent: TypescriptCodeExpression | undefined;
 
         return {
-          getProviders: () => ({
+          providers: {
             reactRoutes: {
               registerRoute(route) {
                 routes.push(route);
@@ -91,7 +91,7 @@ export const reactRouterGenerator = createGenerator({
                 routesComponent = component;
               },
             },
-          }),
+          },
           build: async (builder) => {
             routesComponent =
               routesComponent ??

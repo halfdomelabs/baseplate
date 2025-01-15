@@ -78,13 +78,13 @@ export const authRolesGenerator = createGenerator({
         authSetup.getConfig().set('authRolesImport', authRolesImport);
 
         return {
-          getProviders: () => ({
+          providers: {
             authRoles: {
               getImportMap: () => ({
                 '%auth-roles': authRolesImport,
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript

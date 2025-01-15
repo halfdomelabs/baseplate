@@ -32,7 +32,7 @@ export const auth0ComponentsGenerator = createGenerator({
         reactComponents.registerComponent({ name: 'RequireAuth' });
 
         return {
-          getProviders: () => ({
+          providers: {
             authComponents: {
               getImportMap: () => ({
                 '%auth-components': {
@@ -41,7 +41,7 @@ export const auth0ComponentsGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

@@ -67,15 +67,14 @@ export async function executeGeneratorEntry(
         const taskInstance = task.run(resolvedDependencies);
         taskInstanceById[taskId] = taskInstance;
 
-        const { getProviders } = taskInstance;
+        const { providers } = taskInstance;
 
-        if (!getProviders && Object.keys(exports).length > 0) {
+        if (!providers && Object.keys(exports).length > 0) {
           throw new Error(
             `Task ${taskId} does not have providers despite having exports`,
           );
         }
-        if (getProviders) {
-          const providers = getProviders();
+        if (providers) {
           const missingProvider = Object.keys(exports).find(
             (key) => !(key in providers),
           );

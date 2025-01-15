@@ -94,7 +94,7 @@ export const storageModuleGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             storageModule: {
               getImportMap() {
                 return {
@@ -112,7 +112,7 @@ export const storageModuleGenerator = createGenerator({
                 };
               },
             },
-          }),
+          },
         };
       },
     });

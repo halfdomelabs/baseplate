@@ -189,7 +189,7 @@ export const reactApolloGenerator = createGenerator({
         }
 
         return {
-          getProviders: () => ({
+          providers: {
             reactApolloSetup: {
               addCreateArg(arg) {
                 apolloCreateArgs.push(arg);
@@ -225,7 +225,7 @@ export const reactApolloGenerator = createGenerator({
                 return '@/src/generated/graphql';
               },
             },
-          }),
+          },
           build: async (builder) => {
             const sortedLinks = toposort
               .array(

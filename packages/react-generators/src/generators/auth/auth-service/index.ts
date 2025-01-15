@@ -65,7 +65,7 @@ export const authServiceGenerator = createGenerator({
         const [, typesPath] = makeImportAndFilePath(`${authFolder}/types.ts`);
 
         return {
-          getProviders: () => ({
+          providers: {
             authService: {
               getImportMap: () => ({
                 '%auth-service': {
@@ -74,7 +74,7 @@ export const authServiceGenerator = createGenerator({
                 },
               }),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

@@ -78,7 +78,7 @@ export const requestContextGenerator = createGenerator({
           ),
         });
         return {
-          getProviders: () => ({
+          providers: {
             requestContext: {
               getConfig: () => config,
               getRequestInfoType: () =>
@@ -87,7 +87,7 @@ export const requestContextGenerator = createGenerator({
                   "import type {RequestInfo} from '@/src/plugins/request-context.js",
                 ),
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

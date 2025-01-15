@@ -142,9 +142,9 @@ export const prismaCrudDeleteGenerator = createGenerator({
         );
 
         return {
-          getProviders: () => ({
+          providers: {
             prismaDeleteMethod: {},
-          }),
+          },
         };
       },
     });

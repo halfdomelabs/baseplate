@@ -75,13 +75,13 @@ export const uploadComponentsGenerator = createGenerator({
         reactApollo.registerGqlFile(gqlFilePath);
 
         return {
-          getProviders: () => ({
+          providers: {
             uploadComponents: {
               getImportMap() {
                 return importMap;
               },
             },
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyAction({

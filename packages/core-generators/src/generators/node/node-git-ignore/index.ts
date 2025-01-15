@@ -61,13 +61,13 @@ export const nodeGitIgnoreGenerator = createGenerator({
           'baseplate/build',
         ];
         return {
-          getProviders: () => ({
+          providers: {
             nodeGitIgnore: {
               addExclusions(exclusions: string[]) {
                 exclusionLines.push('', ...exclusions);
               },
             },
-          }),
+          },
           build: async (builder) => {
             if (descriptor.additionalExclusions) {
               exclusionLines.push(...descriptor.additionalExclusions);

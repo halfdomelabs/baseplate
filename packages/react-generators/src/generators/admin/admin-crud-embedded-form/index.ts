@@ -145,7 +145,7 @@ const createSetupFormTask = createTaskConfigBuilder(
       const tableColumns: AdminCrudColumn[] = [];
 
       return {
-        getProviders: () => ({
+        providers: {
           adminCrudInputContainer: {
             addInput: (input) => inputFields.push(input),
             getModelName: () => modelName,
@@ -162,7 +162,7 @@ const createSetupFormTask = createTaskConfigBuilder(
             },
             getModelName: () => modelName,
           },
-        }),
+        },
         build: () => ({ inputFields, tableColumns }),
       };
     },
@@ -268,7 +268,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
       );
 
       return {
-        getProviders: () => ({
+        providers: {
           adminCrudEmbeddedForm: {
             getEmbeddedFormInfo: () => {
               const sharedData = {
@@ -302,7 +302,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
               };
             },
           },
-        }),
+        },
         build: async (builder) => {
           const headers = tableColumns.map((column) =>
             TypescriptCodeUtils.createExpression(

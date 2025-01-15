@@ -87,7 +87,7 @@ ${volumeEntries.join('\n')}`.trim();
         }
 
         return {
-          getProviders: () => ({}),
+          providers: {},
           build: (builder) => {
             builder.writeFile(
               dockerComposePath,

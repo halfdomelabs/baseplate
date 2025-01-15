@@ -91,9 +91,9 @@ export const authLoginPageGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             authLoginPage: {},
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               loginPageFile.renderToAction('index.tsx', loginPagePath),

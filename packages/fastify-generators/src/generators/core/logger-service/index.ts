@@ -90,7 +90,7 @@ export const loggerServiceGenerator = createGenerator({
         };
 
         return {
-          getProviders: () => ({
+          providers: {
             loggerServiceSetup: {
               addMixin(key, expression) {
                 mixins.merge({ [key]: expression });
@@ -108,7 +108,7 @@ export const loggerServiceGenerator = createGenerator({
                 return importMap;
               },
             },
-          }),
+          },
           build: async (builder) => {
             const loggerFile = typescript.createTemplate(
               loggerServiceFileConfig,

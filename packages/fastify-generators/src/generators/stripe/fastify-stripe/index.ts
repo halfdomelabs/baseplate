@@ -77,9 +77,9 @@ export const fastifyStripeGenerator = createGenerator({
         });
 
         return {
-          getProviders: () => ({
+          providers: {
             fastifyStripe: {},
-          }),
+          },
           build: async (builder) => {
             await builder.apply(
               typescript.createCopyFilesAction({

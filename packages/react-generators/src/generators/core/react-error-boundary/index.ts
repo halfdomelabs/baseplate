@@ -44,9 +44,9 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     return {
-      getProviders: () => ({
+      providers: {
         reactErrorBoundary: {},
-      }),
+      },
       build: async (builder) => {
         const importMappers = [reactComponents, reactError];
         const errorBoundaryFile = typescript.createTemplate(

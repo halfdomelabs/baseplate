@@ -170,7 +170,7 @@ export const typescriptGenerator = createGenerator({
         }
 
         return {
-          getProviders: () => ({
+          providers: {
             typescriptConfig: {
               setTypescriptVersion(version) {
                 config.merge({ version });
@@ -192,7 +192,7 @@ export const typescriptGenerator = createGenerator({
                 config.appendUnique('extraSections', [section]);
               },
             },
-          }),
+          },
           build: () => ({ config, getCompilerOptions }),
         };
       },
@@ -245,50 +245,48 @@ export const typescriptGenerator = createGenerator({
           config.value().compilerOptions.moduleResolution ?? 'node';
 
         return {
-          getProviders() {
-            return {
-              typescript: {
-                createTemplate: (fileConfig, options) =>
-                  new TypescriptSourceFile(fileConfig, {
-                    ...options,
+          providers: {
+            typescript: {
+              createTemplate: (fileConfig, options) =>
+                new TypescriptSourceFile(fileConfig, {
+                  ...options,
+                  pathMappings: getPathEntries(),
+                  moduleResolution,
+                }),
+              createCopyFilesAction: (options) =>
+                copyTypescriptFilesAction({
+                  ...options,
+                  pathMappings: getPathEntries(),
+                  moduleResolution,
+                }),
+              createCopyAction: (options) =>
+                copyTypescriptFileAction({
+                  ...options,
+                  pathMappings: getPathEntries(),
+                  moduleResolution,
+                }),
+              renderBlockToAction: (block, destination, options) => {
+                const file = new TypescriptSourceFile(
+                  { BLOCK: { type: 'code-block' } },
+                  {
                     pathMappings: getPathEntries(),
                     moduleResolution,
-                  }),
-                createCopyFilesAction: (options) =>
-                  copyTypescriptFilesAction({
-                    ...options,
-                    pathMappings: getPathEntries(),
-                    moduleResolution,
-                  }),
-                createCopyAction: (options) =>
-                  copyTypescriptFileAction({
-                    ...options,
-                    pathMappings: getPathEntries(),
-                    moduleResolution,
-                  }),
-                renderBlockToAction: (block, destination, options) => {
-                  const file = new TypescriptSourceFile(
-                    { BLOCK: { type: 'code-block' } },
-                    {
-                      pathMappings: getPathEntries(),
-                      moduleResolution,
-                    },
-                  );
-                  file.addCodeEntries({ BLOCK: block });
-                  return file.renderToActionFromText(
-                    'BLOCK',
-                    destination,
-                    options,
-                  );
-                },
-                resolveModule: (moduleSpecifier, from) =>
-                  resolveModule(moduleSpecifier, from, {
-                    pathMapEntries: getPathEntries(),
-                    moduleResolution,
-                  }),
-                getCompilerOptions,
-              } as TypescriptProvider,
-            };
+                  },
+                );
+                file.addCodeEntries({ BLOCK: block });
+                return file.renderToActionFromText(
+                  'BLOCK',
+                  destination,
+                  options,
+                );
+              },
+              resolveModule: (moduleSpecifier, from) =>
+                resolveModule(moduleSpecifier, from, {
+                  pathMapEntries: getPathEntries(),
+                  moduleResolution,
+                }),
+              getCompilerOptions,
+            } as TypescriptProvider,
           },
           async build(builder) {
             const {
