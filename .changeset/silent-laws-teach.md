@@ -3,7 +3,6 @@
 '@halfdomelabs/project-builder-test': patch
 '@halfdomelabs/ui-components': patch
 '@halfdomelabs/tools': patch
-'@halfdomelabs/cli': patch
 '@halfdomelabs/code-morph': patch
 '@halfdomelabs/core-generators': patch
 '@halfdomelabs/create-project': patch
