@@ -34,13 +34,13 @@ describe('safeMerge', () => {
 describe('safeMergeAll', () => {
   it('merges an array of objects', () => {
     const items = [{ a: 1 }, { b: 2 }, { c: 3 }];
-    const result = safeMergeAll(items);
+    const result = safeMergeAll(...items);
     expect(result).toEqual({ a: 1, b: 2, c: 3 });
   });
 
   it('throws an error when keys overlap', () => {
     const items = [{ a: 1 }, { b: 2 }, { b: 3 }];
-    expect(() => safeMergeAll(items)).toThrowError(
+    expect(() => safeMergeAll(...items)).toThrowError(
       'Cannot merge key b because it already exists.',
     );
   });
