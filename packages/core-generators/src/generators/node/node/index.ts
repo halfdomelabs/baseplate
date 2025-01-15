@@ -1,7 +1,7 @@
 import type { InferGeneratorDescriptor } from '@halfdomelabs/sync';
 
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
   writeJsonAction,
@@ -63,52 +63,11 @@ interface NodeDependencyEntry {
   type: NodeDependencyType;
 }
 
-const NodeGenerator = createGeneratorWithTasks({
+export const nodeGenerator = createGenerator({
+  name: 'node/node',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [projectScope],
-  getDefaultChildGenerators: () => ({
-    projects: {
-      isMultiple: true,
-    },
-    prettier: {
-      provider: 'formatter',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/core/node/prettier',
-      },
-    },
-    typescript: {
-      provider: 'typescript',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/core/node/typescript',
-      },
-    },
-    gitIgnore: {
-      provider: 'node-git-ignore',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/core/node/node-git-ignore',
-      },
-    },
-    eslint: {
-      provider: 'eslint',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/core/node/eslint',
-      },
-    },
-    tsUtils: {
-      provider: 'ts-utils',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/core/node/ts-utils',
-      },
-    },
-    vitest: {
-      provider: 'vitest',
-      defaultToNullIfEmpty: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/core/node/vitest',
-      },
-    },
-  }),
-
   buildTasks(taskBuilder, descriptor) {
     const setupTask = taskBuilder.addTask({
       name: 'setup',
@@ -302,5 +261,3 @@ const NodeGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default NodeGenerator;

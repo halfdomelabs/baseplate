@@ -7,7 +7,7 @@ import {
   prismaOutputProvider,
   prismaUtilsProvider,
 } from '@halfdomelabs/fastify-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { storageModuleProvider } from '../storage-module/index.js';
@@ -21,9 +21,10 @@ export type PrismaFileTransformerDescriptor = GeneratorDescriptor<
   typeof descriptorSchema
 >;
 
-const PrismaFileTransformerGenerator = createGeneratorWithTasks({
+export const prismaFileTransformerGenerator = createGenerator({
+  name: 'fastify/prisma-file-transformer',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { name, category }) {
     taskBuilder.addTask({
       name: 'main',
@@ -139,5 +140,3 @@ const PrismaFileTransformerGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrismaFileTransformerGenerator;

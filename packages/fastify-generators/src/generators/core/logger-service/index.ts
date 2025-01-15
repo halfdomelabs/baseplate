@@ -11,7 +11,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -51,9 +51,10 @@ const loggerServiceFileConfig = createTypescriptTemplateConfig({
   LOGGER_OPTIONS: { type: 'code-expression' },
 });
 
-const LoggerServiceGenerator = createGeneratorWithTasks({
+export const loggerServiceGenerator = createGenerator({
+  name: 'core/logger-service',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -151,5 +152,3 @@ const LoggerServiceGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default LoggerServiceGenerator;

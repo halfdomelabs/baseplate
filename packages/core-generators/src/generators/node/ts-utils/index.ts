@@ -1,7 +1,4 @@
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { projectScope } from '@src/providers/scopes.js';
@@ -50,12 +47,10 @@ export type TsUtilsProvider = ImportMapper;
 
 export const tsUtilsProvider = createProviderType<TsUtilsProvider>('ts-utils');
 
-/**
- * Generator for Typescript utility functions like notEmpty
- */
-const TsUtilsGenerator = createGeneratorWithTasks({
+export const tsUtilsGenerator = createGenerator({
+  name: 'node/ts-utils',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -120,5 +115,3 @@ const TsUtilsGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default TsUtilsGenerator;

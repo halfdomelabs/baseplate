@@ -8,7 +8,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   writeFormattedAction,
 } from '@halfdomelabs/sync';
@@ -66,7 +66,9 @@ export interface ReactComponentsProvider extends ImportMapper {
 export const reactComponentsProvider =
   createProviderType<ReactComponentsProvider>('react-components');
 
-const ReactComponentsGenerator = createGeneratorWithTasks({
+export const reactComponentsGenerator = createGenerator({
+  name: 'core/react-components',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder, { includeDatePicker }) {
     taskBuilder.addTask({
@@ -217,5 +219,3 @@ const ReactComponentsGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactComponentsGenerator;

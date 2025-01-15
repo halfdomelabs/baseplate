@@ -11,7 +11,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -36,9 +36,10 @@ export interface ReactConfigProvider extends ImportMapper {
 export const reactConfigProvider =
   createProviderType<ReactConfigProvider>('react-config');
 
-const ReactConfigGenerator = createGeneratorWithTasks({
+export const reactConfigGenerator = createGenerator({
+  name: 'core/react-config',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -147,5 +148,3 @@ const ReactConfigGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactConfigGenerator;

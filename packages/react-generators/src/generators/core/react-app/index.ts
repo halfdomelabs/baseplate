@@ -10,7 +10,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createOrderedList,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -32,7 +32,9 @@ export interface ReactAppProvider {
 export const reactAppProvider =
   createProviderType<ReactAppProvider>('react-app');
 
-const ReactAppGenerator = createGeneratorWithTasks({
+export const reactAppGenerator = createGenerator({
+  name: 'core/react-app',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
@@ -109,5 +111,3 @@ const ReactAppGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactAppGenerator;

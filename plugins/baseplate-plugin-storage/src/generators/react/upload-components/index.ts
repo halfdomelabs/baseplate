@@ -13,7 +13,7 @@ import {
 } from '@halfdomelabs/react-generators';
 import {
   copyFileAction,
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
@@ -28,9 +28,10 @@ export type UploadComponentsProvider = ImportMapper;
 export const uploadComponentsProvider =
   createProviderType<UploadComponentsProvider>('upload-components');
 
-const UploadComponentsGenerator = createGeneratorWithTasks({
+export const uploadComponentsGenerator = createGenerator({
+  name: 'react/upload-components',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { fileModelName }) {
     taskBuilder.addTask({
       name: 'main',
@@ -117,5 +118,3 @@ const UploadComponentsGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default UploadComponentsGenerator;

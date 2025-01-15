@@ -4,20 +4,21 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
+import { userSessionServiceProvider } from '../_providers/index.js';
 import { authContextProvider } from '../auth-context/index.js';
-import { userSessionServiceProvider } from '../providers.js';
 import { userSessionTypesProvider } from '../user-session-types/index.js';
 
 const descriptorSchema = z.object({});
 
-const AuthPluginGenerator = createGeneratorWithTasks({
+export const authPluginGenerator = createGenerator({
+  name: 'auth/auth-plugin',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -75,5 +76,3 @@ const AuthPluginGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthPluginGenerator;

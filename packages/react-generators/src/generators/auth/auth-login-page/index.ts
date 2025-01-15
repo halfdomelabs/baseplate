@@ -7,7 +7,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -29,9 +29,10 @@ export type AuthLoginPageProvider = unknown;
 export const authLoginPageProvider =
   createProviderType<AuthLoginPageProvider>('auth-login-page');
 
-const AuthLoginPageGenerator = createGeneratorWithTasks({
+export const authLoginPageGenerator = createGenerator({
+  name: 'auth/auth-login-page',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { allowedRoles }) {
     taskBuilder.addTask({
       name: 'main',
@@ -113,5 +114,3 @@ const AuthLoginPageGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthLoginPageGenerator;

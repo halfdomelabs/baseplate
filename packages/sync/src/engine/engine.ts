@@ -1,18 +1,22 @@
 import path from 'node:path';
 
+import type { GeneratorBundle } from '@src/generators/generators.js';
 import type { GeneratorOutput } from '@src/output/generator-task-output.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import {
+  buildGeneratorEntry,
+  type GeneratorEntry,
+} from '@src/generators/build-generator-entry.js';
 import { baseDescriptorSchema } from '@src/generators/generators.js';
 import { readJsonWithSchema } from '@src/utils/fs.js';
 
-import type { GeneratorEntry } from '../generators/entry-builder.js';
 import type {
   GeneratorWriteOptions,
   GeneratorWriteResult,
 } from '../output/write-generator-output.js';
 
-import { buildGeneratorEntry } from '../generators/entry-builder.js';
+import { buildGeneratorEntryFromDescriptor } from '../generators/entry-builder.js';
 import {
   loadGeneratorsForPackages,
   loadGeneratorsForProject,
@@ -55,13 +59,28 @@ export class GeneratorEngine {
       directory,
     );
 
-    const rootGeneratorEntry = await buildGeneratorEntry(
+    const rootGeneratorEntry = await buildGeneratorEntryFromDescriptor(
       rootDescriptor,
       'root',
       { baseDirectory: projectPath, generatorMap: generators, logger },
     );
 
     return rootGeneratorEntry;
+  }
+
+  /**
+   * Loads the root generator entry from a generator bundle.
+   *
+   * @param bundle - The generator bundle.
+   * @param logger - The logger to use.
+   */
+  loadProjectFromGeneratorBundle(
+    bundle: GeneratorBundle,
+    logger: Logger = console,
+  ): GeneratorEntry {
+    return buildGeneratorEntry(bundle, {
+      logger,
+    });
   }
 
   /**

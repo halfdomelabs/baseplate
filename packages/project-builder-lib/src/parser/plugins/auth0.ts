@@ -88,44 +88,5 @@ export const Auth0Plugin: ParserPlugin = {
         primaryKeyFieldRefs: ['userId', 'role'],
       },
     });
-
-    // add global auth providers
-    hooks.addFastifyChildren({
-      $auth: {
-        generator: '@halfdomelabs/fastify/auth/auth',
-      },
-      $pothosAuth: {
-        generator: '@halfdomelabs/fastify/pothos/pothos-auth',
-      },
-    });
-
-    // add feature providers
-    hooks.addFeatureChildren(auth.authFeatureRef, {
-      $authContext: {
-        generator: '@halfdomelabs/fastify/auth/auth-context',
-      },
-      $authPlugin: {
-        generator: '@halfdomelabs/fastify/auth/auth-plugin',
-      },
-      $authRoles: {
-        generator: '@halfdomelabs/fastify/auth/auth-roles',
-        roles: auth.roles.map((r) => ({
-          name: r.name,
-          comment: r.comment,
-          builtIn: r.builtIn,
-        })),
-      },
-      $auth0: {
-        generator: '@halfdomelabs/fastify/auth0/auth0-module',
-        userModelName: ModelUtils.byIdOrThrow(
-          projectDefinition,
-          auth.userModelRef,
-        ).name,
-        includeManagement: true,
-      },
-      $userSession: {
-        generator: '@halfdomelabs/fastify/auth/user-session-types',
-      },
-    });
   },
 };

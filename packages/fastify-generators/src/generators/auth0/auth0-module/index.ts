@@ -6,7 +6,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -15,7 +15,7 @@ import { z } from 'zod';
 import { authContextProvider } from '@src/generators/auth/auth-context/index.js';
 import { authRolesProvider } from '@src/generators/auth/auth-roles/index.js';
 import { authSetupProvider } from '@src/generators/auth/auth/index.js';
-import { userSessionServiceProvider } from '@src/generators/auth/providers.js';
+import { userSessionServiceProvider } from '@src/generators/auth/index.js';
 import { userSessionTypesProvider } from '@src/generators/auth/user-session-types/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { fastifyServerProvider } from '@src/generators/core/index.js';
@@ -172,9 +172,10 @@ const createMainTask = createTaskConfigBuilder(
   }),
 );
 
-const Auth0ModuleGenerator = createGeneratorWithTasks({
+export const auth0ModuleGenerator = createGenerator({
+  name: 'auth0/auth0-module',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
 
@@ -225,5 +226,3 @@ const Auth0ModuleGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default Auth0ModuleGenerator;

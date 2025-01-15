@@ -6,10 +6,7 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -24,9 +21,10 @@ export type PasswordHasherServiceProvider = ImportMapper;
 export const passwordHasherServiceProvider =
   createProviderType<PasswordHasherServiceProvider>('password-hasher-service');
 
-const PasswordHasherServiceGenerator = createGeneratorWithTasks({
+export const passwordHasherServiceGenerator = createGenerator({
+  name: 'auth/password-hasher-service',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -74,5 +72,3 @@ const PasswordHasherServiceGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PasswordHasherServiceGenerator;

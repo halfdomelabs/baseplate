@@ -3,7 +3,7 @@ import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -93,20 +93,12 @@ const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
   },
 }));
 
-const PothosPrismaListQueryGenerator = createGeneratorWithTasks({
+export const pothosPrismaListQueryGenerator = createGenerator({
+  name: 'pothos/pothos-prisma-list-query',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [pothosFieldScope],
-  getDefaultChildGenerators: () => ({
-    authorize: {
-      defaultToNullIfEmpty: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/pothos/pothos-authorize-field',
-      },
-    },
-  }),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default PothosPrismaListQueryGenerator;

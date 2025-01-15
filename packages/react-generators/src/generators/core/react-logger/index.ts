@@ -9,10 +9,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactProvider } from '../react/index.js';
@@ -28,9 +25,10 @@ export interface ReactLoggerProvider extends ImportMapper {
 export const reactLoggerProvider =
   createProviderType<ReactLoggerProvider>('react-logger');
 
-const ReactLoggerGenerator = createGeneratorWithTasks({
+export const reactLoggerGenerator = createGenerator({
+  name: 'core/react-logger',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -77,5 +75,3 @@ const ReactLoggerGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactLoggerGenerator;

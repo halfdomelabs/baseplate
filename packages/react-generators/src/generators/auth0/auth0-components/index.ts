@@ -3,7 +3,7 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authComponentsProvider } from '@src/generators/auth/auth-components/index.js';
@@ -11,9 +11,10 @@ import { reactComponentsProvider } from '@src/generators/core/react-components/i
 
 const descriptorSchema = z.object({});
 
-const Auth0ComponentsGenerator = createGeneratorWithTasks({
+export const auth0ComponentsGenerator = createGenerator({
+  name: 'auth0/auth0-components',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -54,5 +55,3 @@ const Auth0ComponentsGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default Auth0ComponentsGenerator;

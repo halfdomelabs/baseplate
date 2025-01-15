@@ -8,9 +8,9 @@ import type {
   AdminCrudInputDefinition,
   AdminCrudPasswordInputConfig,
   AdminCrudTextInputConfig,
-  DescriptorWithChildren,
   ModelScalarFieldConfig,
 } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 import {
   adminCrudInputCompilerSpec,
@@ -18,6 +18,13 @@ import {
   ModelFieldUtils,
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
+import {
+  adminCrudEmbeddedInputGenerator,
+  adminCrudEnumInputGenerator,
+  adminCrudForeignInputGenerator,
+  adminCrudPasswordInputGenerator,
+  adminCrudTextInputGenerator,
+} from '@halfdomelabs/react-generators';
 
 import type { AppEntryBuilder } from '@src/compiler/app-entry-builder.js';
 
@@ -45,9 +52,7 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
       const fieldName = definitionContainer.nameFromId(
         definition.modelFieldRef,
       );
-      return {
-        name: fieldName,
-        generator: '@halfdomelabs/react/admin/admin-crud-enum-input',
+      return adminCrudEnumInputGenerator({
         modelField: fieldName,
         label: definition.label,
         isOptional: fieldConfig.isOptional,
@@ -55,7 +60,7 @@ const adminEnumInputCompiler: AdminCrudInputCompiler<AdminCrudEnumInputConfig> =
           label: v.friendlyName,
           value: v.name,
         })),
-      };
+      });
     },
   };
 
@@ -81,9 +86,7 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         relation.references[0].localRef,
       );
 
-      return {
-        name: relation.name,
-        generator: '@halfdomelabs/react/admin/admin-crud-foreign-input',
+      return adminCrudForeignInputGenerator({
         label: definition.label,
         localRelationName: relation.name,
         isOptional: ModelFieldUtils.isRelationOptional(model, relation),
@@ -93,11 +96,13 @@ const adminForeignInputCompiler: AdminCrudInputCompiler<AdminCrudForeignInputCon
         valueExpression: definition.valueExpression,
         defaultLabel: definition.defaultLabel,
         nullLabel: definition.nullLabel,
-      };
+      });
     },
   };
 
-function getInputType(fieldConfig: ModelScalarFieldConfig): string {
+function getInputType(
+  fieldConfig: ModelScalarFieldConfig,
+): 'text' | 'checked' | 'date' | 'dateTime' {
   switch (fieldConfig.type) {
     case 'boolean': {
       return 'checked';
@@ -129,9 +134,7 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
       const fieldName = definitionContainer.nameFromId(
         definition.modelFieldRef,
       );
-      return {
-        name: fieldName,
-        generator: '@halfdomelabs/react/admin/admin-crud-text-input',
+      return adminCrudTextInputGenerator({
         label: definition.label,
         modelField: fieldName,
         type: getInputType(fieldConfig),
@@ -143,7 +146,7 @@ const adminCrudTextInputCompiler: AdminCrudInputCompiler<AdminCrudTextInputConfi
               fieldConfig.id,
               true,
             ),
-      };
+      });
     },
   };
 
@@ -154,13 +157,11 @@ const adminCrudEmbeddedInputCompiler: AdminCrudInputCompiler<AdminCrudEmbeddedIn
       const relationName = definitionContainer.nameFromId(
         definition.modelRelationRef,
       );
-      return {
-        name: relationName,
-        generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
+      return adminCrudEmbeddedInputGenerator({
         label: definition.label,
         modelRelation: relationName,
         embeddedFormRef: definition.embeddedFormRef,
-      };
+      });
     },
   };
 
@@ -182,25 +183,22 @@ const adminCrudEmbeddedLocalInputCompiler: AdminCrudInputCompiler<AdminCrudEmbed
         definition.localRelationRef,
       );
 
-      return {
-        name: localRelationName,
-        generator: '@halfdomelabs/react/admin/admin-crud-embedded-input',
+      return adminCrudEmbeddedInputGenerator({
         label: definition.label,
         modelRelation: localRelationName,
         isRequired: !ModelFieldUtils.isRelationOptional(model, localRelation),
         embeddedFormRef: definition.embeddedFormRef,
-      };
+      });
     },
   };
 
 const adminCrudPasswordInputCompiler: AdminCrudInputCompiler<AdminCrudPasswordInputConfig> =
   {
     name: 'password',
-    compileInput: (definition) => ({
-      name: 'password',
-      generator: '@halfdomelabs/react/admin/admin-crud-password-input',
-      label: definition.label,
-    }),
+    compileInput: (definition) =>
+      adminCrudPasswordInputGenerator({
+        label: definition.label,
+      }),
   };
 
 const builtInCompilers = [
@@ -217,7 +215,7 @@ export function compileAdminCrudInput(
   modelId: string,
   builder: AppEntryBuilder<AdminAppConfig>,
   crudSectionId: string,
-): DescriptorWithChildren {
+): GeneratorBundle {
   const inputCompiler = builder.pluginStore.getPluginSpec(
     adminCrudInputCompilerSpec,
   );

@@ -5,13 +5,11 @@ import type {
 } from '@halfdomelabs/project-builder-lib';
 
 import { ProjectDefinitionContainer } from '@halfdomelabs/project-builder-lib';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 
 import { compileAdmin } from './admin/index.js';
 import { compileBackend } from './backend/index.js';
 import { compileWeb } from './web/index.js';
-
-export type * from './types.js';
 
 export function compileApplications(
   projectJson: unknown,
@@ -22,7 +20,7 @@ export function compileApplications(
     context,
   );
   // Compile backend app first since it's likely the dependency for the other apps
-  const appConfigs = _.sortBy(definitionContainer.definition.apps, [
+  const appConfigs = sortBy(definitionContainer.definition.apps, [
     (a) => (a.type === 'backend' ? 0 : 1),
     (a) => a.name,
   ]);

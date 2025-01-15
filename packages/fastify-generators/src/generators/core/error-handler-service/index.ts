@@ -12,7 +12,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -186,14 +186,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const ErrorHandlerServiceGenerator = createGeneratorWithTasks({
+export const errorHandlerServiceGenerator = createGenerator({
+  name: 'core/error-handler-service',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
 
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createSetupTask(descriptor));
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default ErrorHandlerServiceGenerator;

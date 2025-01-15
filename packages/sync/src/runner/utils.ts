@@ -3,7 +3,7 @@ import * as R from 'ramda';
 import type {
   GeneratorEntry,
   GeneratorTaskEntry,
-} from '@src/generators/entry-builder.js';
+} from '@src/generators/build-generator-entry.js';
 import type {
   ProviderDependency,
   ProviderExport,

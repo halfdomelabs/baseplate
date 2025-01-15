@@ -7,7 +7,8 @@ import {
   webAppEntryType,
 } from '@halfdomelabs/project-builder-lib';
 
-import type { StorageModuleDescriptor } from '@src/generators/fastify';
+import { storageModuleGenerator } from '@src/generators/fastify';
+import { uploadComponentsGenerator } from '@src/generators/react/upload-components';
 
 import type { StoragePluginDefinition } from './schema/plugin-definition';
 
@@ -32,9 +33,7 @@ export default createPlatformPluginExport({
           storage.fileModelRef,
         );
         appCompiler.addChildrenToFeature(storage.featureRef, {
-          $storage: {
-            generator:
-              '@halfdomelabs/baseplate-plugin-storage/fastify/storage-module',
+          storage: storageModuleGenerator({
             fileModel: fileModelName,
             s3Adapters: storage.s3Adapters.map((a) => ({
               name: a.name,
@@ -54,7 +53,7 @@ export default createPlatformPluginExport({
                 definitionContainer.nameFromId(r),
               ),
             })),
-          } satisfies StorageModuleDescriptor,
+          }),
         });
       },
     });
@@ -78,11 +77,9 @@ export default createPlatformPluginExport({
         ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({
-          $uploadComponents: {
-            generator:
-              '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
+          uploadComponents: uploadComponentsGenerator({
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
-          },
+          }),
         });
       },
     });
@@ -97,11 +94,9 @@ export default createPlatformPluginExport({
         ) as StoragePluginDefinition;
 
         appCompiler.addRootChildren({
-          $uploadComponents: {
-            generator:
-              '@halfdomelabs/baseplate-plugin-storage/react/upload-components',
+          uploadComponents: uploadComponentsGenerator({
             fileModelName: definitionContainer.nameFromId(storage.fileModelRef),
-          },
+          }),
         });
       },
     });

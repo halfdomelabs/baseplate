@@ -5,10 +5,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createNonOverwriteableMap,
-} from '@halfdomelabs/sync';
+import { createGenerator, createNonOverwriteableMap } from '@halfdomelabs/sync';
 import { camelCase, kebabCase } from 'change-case';
 import path from 'node:path';
 import * as R from 'ramda';
@@ -21,9 +18,10 @@ const descriptorSchema = z.object({
   folderName: z.string().optional(),
 });
 
-const AppModuleGenerator = createGeneratorWithTasks({
+export const appModuleGenerator = createGenerator({
+  name: 'core/app-module',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   scopes: [featureScope],
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
@@ -101,5 +99,3 @@ const AppModuleGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AppModuleGenerator;

@@ -124,9 +124,45 @@ export interface GeneratorTask<
 
 export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
 
-export interface ParseDescriptorContext {
+export interface CreateGeneratorContext {
   id: string;
+  generatorName: string;
+  generatorBaseDirectory: string;
   logger: Logger;
+}
+
+/**
+ * A generator bundle contains the built generator and its children
+ */
+export interface GeneratorBundle {
+  /**
+   * The name of the generator
+   */
+  name: string;
+  /**
+   * The directory of the generator
+   */
+  directory: string;
+  /**
+   * The scopes of the generator
+   */
+  scopes: ProviderExportScope[];
+  /**
+   * The children of the generator
+   */
+  children: Record<
+    string,
+    | ChildDescriptorOrReference[]
+    | ChildDescriptorOrReference
+    | null
+    | undefined
+    | GeneratorBundle
+    | GeneratorBundle[]
+  >;
+  /**
+   * The tasks of the generator
+   */
+  tasks: GeneratorTask[];
 }
 
 /**
@@ -136,25 +172,11 @@ export interface GeneratorConfig<
   Descriptor extends BaseGeneratorDescriptor = BaseGeneratorDescriptor,
 > {
   /**
-   * All children of the generator will be part of these scopes
-   */
-  scopes?: ProviderExportScope[];
-  /**
-   * Parses descriptors and extracts out the structure of the generator
-   */
-  parseDescriptor: (
-    descriptor: Descriptor,
-    context: ParseDescriptorContext,
-  ) => {
-    validatedDescriptor?: Descriptor;
-    children?: Record<
-      string,
-      ChildDescriptorOrReference | ChildDescriptorOrReference[] | null
-    >;
-  };
-  /**
    * Creates an instance of the generator with a given descriptor and
    * resolved dependencies
    */
-  createGenerator: (descriptor: Descriptor) => GeneratorTask[];
+  createGenerator: (
+    descriptor: Descriptor,
+    context: CreateGeneratorContext,
+  ) => GeneratorBundle;
 }

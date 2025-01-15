@@ -1,5 +1,5 @@
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -18,9 +18,10 @@ const descriptorSchema = z.object({
   ),
 });
 
-const AdminCrudEnumInputGenerator = createGeneratorWithTasks({
+export const adminCrudEnumInputGenerator = createGenerator({
+  name: 'admin/admin-crud-enum-input',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { label, modelField, options, isOptional }) {
     taskBuilder.addTask({
       name: 'main',
@@ -74,5 +75,3 @@ const AdminCrudEnumInputGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminCrudEnumInputGenerator;

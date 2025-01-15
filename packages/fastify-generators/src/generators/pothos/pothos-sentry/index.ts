@@ -5,10 +5,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
@@ -60,9 +57,10 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const PothosSentryGenerator = createGeneratorWithTasks({
+export const pothosSentryGenerator = createGenerator({
+  name: 'pothos/pothos-sentry',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
 
@@ -131,5 +129,3 @@ const PothosSentryGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PothosSentryGenerator;

@@ -22,10 +22,7 @@ import {
   prismaUtilsProvider,
   serviceContextProvider,
 } from '@halfdomelabs/fastify-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -60,9 +57,10 @@ export const storageModuleProvider = createProviderType<StorageModuleProvider>(
   { isReadOnly: true },
 );
 
-const StorageModuleGenerator = createGeneratorWithTasks({
+export const storageModuleGenerator = createGenerator({
+  name: 'fastify/storage-module',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { fileModel, s3Adapters, categories = [] }) {
     taskBuilder.addTask({
       name: 'setup-file-input-schema',
@@ -403,5 +401,3 @@ const StorageModuleGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default StorageModuleGenerator;

@@ -8,10 +8,7 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactLoggerProvider } from '../react-logger/index.js';
@@ -29,9 +26,10 @@ export interface ReactErrorProvider extends ImportMapper {
 export const reactErrorProvider =
   createProviderType<ReactErrorProvider>('react-error');
 
-const ReactErrorGenerator = createGeneratorWithTasks({
+export const reactErrorGenerator = createGenerator({
+  name: 'core/react-error',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -106,5 +104,3 @@ const ReactErrorGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactErrorGenerator;

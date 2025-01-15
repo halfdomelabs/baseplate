@@ -8,7 +8,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -97,9 +97,10 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const ReactSentryGenerator = createGeneratorWithTasks({
+export const reactSentryGenerator = createGenerator({
+  name: 'core/react-sentry',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
 
@@ -127,5 +128,3 @@ const ReactSentryGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactSentryGenerator;

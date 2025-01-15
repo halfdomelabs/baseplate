@@ -10,7 +10,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -47,9 +47,10 @@ export interface ServiceContextProvider extends ImportMapper {
 export const serviceContextProvider =
   createProviderType<ServiceContextProvider>('service-context');
 
-const ServiceContextGenerator = createGeneratorWithTasks({
+export const serviceContextGenerator = createGenerator({
+  name: 'core/service-context',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     const setupTask = taskBuilder.addTask({
       name: 'setup',
@@ -201,5 +202,3 @@ const ServiceContextGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ServiceContextGenerator;

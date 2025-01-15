@@ -1,7 +1,16 @@
+import type { GeneratorBundle } from '@halfdomelabs/sync';
+
 import {
-  FeatureUtils,
-  stripEmptyGeneratorChildren,
-} from '@halfdomelabs/project-builder-lib';
+  appModuleGenerator,
+  auth0ModuleGenerator,
+  authContextGenerator,
+  authPluginGenerator,
+  authRolesGenerator,
+  userSessionTypesGenerator,
+} from '@halfdomelabs/fastify-generators';
+import { FeatureUtils, ModelUtils } from '@halfdomelabs/project-builder-lib';
+
+import { safeMergeAll } from '@src/utils/safe-merge.js';
 
 import type { BackendAppEntryBuilder } from '../app-entry-builder.js';
 
@@ -13,13 +22,12 @@ import { buildServicesForFeature } from './services.js';
 export function buildFeature(
   featureId: string,
   builder: BackendAppEntryBuilder,
-): string {
+): GeneratorBundle {
   const { projectDefinition, parsedProject, appCompiler } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
     projectDefinition,
     featureId,
   );
-  const descriptorLocation = `${feature.name}/root`;
   const featureName = FeatureUtils.getFeatureName(feature);
   // find sub-features
   const subFeatures = FeatureUtils.getFeatureChildren(
@@ -27,21 +35,42 @@ export function buildFeature(
     featureId,
   );
 
-  builder.addDescriptor(`${descriptorLocation}.json`, {
+  return appModuleGenerator({
     name: featureName,
-    generator: '@halfdomelabs/fastify/core/app-module',
-    children: stripEmptyGeneratorChildren({
-      $enums: buildEnumsForFeature(featureId, parsedProject),
-      $models: buildModelsForFeature(builder, featureId),
-      $services: buildServicesForFeature(builder, featureId),
-      $graphql: buildGraphqlForFeature(builder, featureId),
-      $submodules: subFeatures.map((subFeature) =>
-        buildFeature(subFeature.id, builder),
-      ),
-      ...parsedProject.getFeatureChildren(featureId),
-      ...appCompiler.getChildrenForFeature(featureId),
-    }),
+    children: safeMergeAll(
+      {
+        enums: buildEnumsForFeature(featureId, parsedProject),
+        models: buildModelsForFeature(builder, featureId),
+        services: buildServicesForFeature(builder, featureId),
+        graphql: buildGraphqlForFeature(builder, featureId),
+        submodules: subFeatures.map((subFeature) =>
+          buildFeature(subFeature.id, builder),
+        ),
+        ...(projectDefinition.auth &&
+        featureId === projectDefinition.auth.authFeatureRef
+          ? {
+              authContext: authContextGenerator({}),
+              authPlugin: authPluginGenerator({}),
+              authRoles: authRolesGenerator({
+                roles: projectDefinition.auth.roles.map((r) => ({
+                  name: r.name,
+                  comment: r.comment,
+                  builtIn: r.builtIn,
+                })),
+              }),
+              auth0Module: auth0ModuleGenerator({
+                userModelName: ModelUtils.byIdOrThrow(
+                  projectDefinition,
+                  projectDefinition.auth.userModelRef,
+                ).name,
+                includeManagement: true,
+              }),
+              userSessionTypes: userSessionTypesGenerator({}),
+            }
+          : {}),
+      },
+      parsedProject.getFeatureChildren(featureId),
+      appCompiler.getChildrenForFeature(featureId),
+    ),
   });
-
-  return descriptorLocation;
 }

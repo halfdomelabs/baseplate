@@ -8,7 +8,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -33,9 +33,10 @@ export const requestContextProvider =
     isReadOnly: true,
   });
 
-const RequestContextGenerator = createGeneratorWithTasks({
+export const requestContextGenerator = createGenerator({
+  name: 'core/request-context',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'logger-request-context',
@@ -100,5 +101,3 @@ const RequestContextGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default RequestContextGenerator;

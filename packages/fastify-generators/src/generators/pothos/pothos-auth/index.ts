@@ -5,7 +5,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -95,9 +95,10 @@ const createMainTask = createTaskConfigBuilder(
   }),
 );
 
-const PothosAuthGenerator = createGeneratorWithTasks({
+export const pothosAuthGenerator = createGenerator({
+  name: 'pothos/pothos-auth',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
 
@@ -122,5 +123,3 @@ const PothosAuthGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PothosAuthGenerator;

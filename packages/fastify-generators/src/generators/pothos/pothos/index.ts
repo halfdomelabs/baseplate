@@ -16,7 +16,7 @@ import {
   TypescriptStringReplacement,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -57,9 +57,10 @@ export type PothosProvider = unknown;
 
 export const pothosProvider = createProviderType<PothosProvider>('pothos');
 
-const PothosGenerator = createGeneratorWithTasks({
+export const pothosGenerator = createGenerator({
+  name: 'pothos/pothos',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     const setupTask = taskBuilder.addTask({
       name: 'setup',
@@ -366,5 +367,3 @@ if (IS_DEVELOPMENT) {
     });
   },
 });
-
-export default PothosGenerator;

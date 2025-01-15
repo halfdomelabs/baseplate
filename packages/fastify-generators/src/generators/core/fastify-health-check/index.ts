@@ -6,10 +6,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { fastifyServerProvider } from '../fastify-server/index.js';
@@ -25,9 +22,10 @@ export const fastifyHealthCheckProvider =
 
 // async () => ({ success: true })
 
-const FastifyHealthCheckGenerator = createGeneratorWithTasks({
+export const fastifyHealthCheckGenerator = createGenerator({
+  name: 'core/fastify-health-check',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -97,5 +95,3 @@ const FastifyHealthCheckGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default FastifyHealthCheckGenerator;

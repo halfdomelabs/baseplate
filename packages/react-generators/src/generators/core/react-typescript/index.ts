@@ -2,14 +2,15 @@ import {
   eslintProvider,
   typescriptConfigProvider,
 } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks, writeJsonAction } from '@halfdomelabs/sync';
+import { createGenerator, writeJsonAction } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 const descriptorSchema = z.object({});
 
-const ReactTypescriptGenerator = createGeneratorWithTasks({
+export const reactTypescriptGenerator = createGenerator({
+  name: 'core/react-typescript',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -75,5 +76,3 @@ const ReactTypescriptGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ReactTypescriptGenerator;

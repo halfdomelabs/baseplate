@@ -4,7 +4,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -78,9 +78,10 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const PothosPrismaGenerator = createGeneratorWithTasks({
+export const pothosPrismaGenerator = createGenerator({
+  name: 'pothos/pothos-prisma',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
 
@@ -101,5 +102,3 @@ const PothosPrismaGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PothosPrismaGenerator;

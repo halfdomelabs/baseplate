@@ -4,7 +4,17 @@ import type {
   ParsedModel,
   TransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
+import {
+  embeddedRelationTransformerGenerator,
+  prismaCrudCreateGenerator,
+  prismaCrudDeleteGenerator,
+  prismaCrudServiceGenerator,
+  prismaCrudUpdateGenerator,
+  prismaPasswordTransformerGenerator,
+  serviceFileGenerator,
+} from '@halfdomelabs/fastify-generators';
 import {
   modelTransformerCompilerSpec,
   ModelUtils,
@@ -35,8 +45,7 @@ export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<Embed
 
       const foreignModel = foreignRelation.model;
 
-      return {
-        generator: '@halfdomelabs/fastify/prisma/embedded-relation-transformer',
+      return embeddedRelationTransformerGenerator({
         name: foreignRelation.relation.foreignRelationName,
         embeddedFieldNames: definition.embeddedFieldNames.map((e) =>
           definitionContainer.nameFromId(e),
@@ -47,17 +56,14 @@ export const embeddedRelationTransformerCompiler: ModelTransformerCompiler<Embed
         foreignModelName: definition.embeddedTransformerNames
           ? foreignModel.name
           : undefined,
-      };
+      });
     },
   };
 
 const passwordTransformerCompiler: ModelTransformerCompiler = {
   name: 'password',
   compileTransformer() {
-    return {
-      name: 'password',
-      generator: '@halfdomelabs/fastify/auth/prisma-password-transformer',
-    };
+    return prismaPasswordTransformerGenerator({});
   },
 };
 
@@ -65,7 +71,7 @@ function buildTransformer(
   appBuilder: BackendAppEntryBuilder,
   transformer: TransformerConfig,
   model: ParsedModel,
-): unknown {
+): GeneratorBundle {
   const { pluginStore } = appBuilder;
   const compilerImplementation = pluginStore.getPluginSpec(
     modelTransformerCompilerSpec,
@@ -85,30 +91,28 @@ function buildTransformer(
 function buildServiceForModel(
   appBuilder: BackendAppEntryBuilder,
   model: ParsedModel,
-): Record<string, unknown> | undefined {
+): GeneratorBundle | undefined {
   const { service } = model;
   if (!service) {
     return undefined;
   }
 
-  return {
+  return serviceFileGenerator({
     name: `${model.name}Service`,
     id: `prisma-crud-service:${model.name}`,
-    generator: '@halfdomelabs/fastify/core/service-file',
     methodOrder: ['create', 'update', 'delete'],
     children: {
-      $crud: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-crud-service',
+      $crud: prismaCrudServiceGenerator({
         modelName: model.name,
         children: {
-          transformers: undefinedIfEmpty(
-            service.transformers?.map((transfomer) =>
-              buildTransformer(appBuilder, transfomer, model),
-            ),
+          transformers: service.transformers?.map((transfomer) =>
+            buildTransformer(appBuilder, transfomer, model),
           ),
           create:
             service.create?.fields?.length && service.create.enabled
-              ? {
+              ? prismaCrudCreateGenerator({
+                  name: 'create',
+                  modelName: model.name,
                   prismaFields: service.create.fields.map((f) =>
                     appBuilder.nameFromId(f),
                   ),
@@ -117,11 +121,13 @@ function buildServiceForModel(
                       appBuilder.nameFromId(f),
                     ),
                   ),
-                }
-              : null,
+                })
+              : undefined,
           update:
             service.update?.fields?.length && service.update.enabled
-              ? {
+              ? prismaCrudUpdateGenerator({
+                  name: 'update',
+                  modelName: model.name,
                   prismaFields: service.update.fields.map((f) =>
                     appBuilder.nameFromId(f),
                   ),
@@ -130,19 +136,24 @@ function buildServiceForModel(
                       appBuilder.nameFromId(f),
                     ),
                   ),
-                }
-              : null,
-          delete: service.delete?.enabled ? {} : null,
+                })
+              : undefined,
+          delete: service.delete?.enabled
+            ? prismaCrudDeleteGenerator({
+                name: 'delete',
+                modelName: model.name,
+              })
+            : undefined,
         },
-      },
+      }),
     },
-  };
+  });
 }
 
 export function buildServicesForFeature(
   appBuilder: BackendAppEntryBuilder,
   featureId: string,
-): Record<string, unknown>[] {
+): GeneratorBundle[] {
   const models = ModelUtils.getModelsForFeature(
     appBuilder.projectDefinition,
     featureId,

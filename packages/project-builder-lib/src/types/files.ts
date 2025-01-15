@@ -1,10 +1,7 @@
-export interface FileEntry {
-  path: string;
-  jsonContent: unknown;
-}
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
 export interface AppEntry {
   name: string;
-  rootDirectory: string;
-  files: FileEntry[];
+  appDirectory: string;
+  generatorBundle: GeneratorBundle;
 }

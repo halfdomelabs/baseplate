@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -22,9 +22,10 @@ const INPUT_TYPE_MAP: Record<TextInputType, string> = {
   text: 'TextInput',
 };
 
-const AdminCrudTextInputGenerator = createGeneratorWithTasks({
+export const adminCrudTextInputGenerator = createGenerator({
+  name: 'admin/admin-crud-text-input',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { label, modelField, validation, type }) {
     taskBuilder.addTask({
       name: 'main',
@@ -58,5 +59,3 @@ const AdminCrudTextInputGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminCrudTextInputGenerator;

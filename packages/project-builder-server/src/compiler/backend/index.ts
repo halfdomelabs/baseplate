@@ -4,7 +4,13 @@ import type {
   ProjectDefinition,
   ProjectDefinitionContainer,
 } from '@halfdomelabs/project-builder-lib';
+import type { GeneratorBundle } from '@halfdomelabs/sync';
 
+import {
+  composeNodeGenerator,
+  dockerComposeGenerator,
+  vitestGenerator,
+} from '@halfdomelabs/core-generators';
 import { backendAppEntryType } from '@halfdomelabs/project-builder-lib';
 
 import { AppEntryBuilder } from '../app-entry-builder.js';
@@ -14,15 +20,13 @@ import { getPostgresSettings, getRedisSettings } from './utils.js';
 export function buildDocker(
   projectDefinition: ProjectDefinition,
   app: BackendAppConfig,
-): unknown {
-  return {
-    name: 'docker',
-    generator: '@halfdomelabs/core/docker/docker-compose',
+): GeneratorBundle {
+  return dockerComposeGenerator({
     postgres: getPostgresSettings(projectDefinition).config,
     ...(app.enableRedis
       ? { redis: getRedisSettings(projectDefinition).config }
       : {}),
-  };
+  });
 }
 
 export function compileBackend(
@@ -41,8 +45,7 @@ export function compileBackend(
     ? `@${projectDefinition.packageScope}/${app.name}`
     : `${projectDefinition.name}-${app.name}`;
 
-  appBuilder.addDescriptor('root.json', {
-    generator: '@halfdomelabs/core/node/node',
+  const rootBundle = composeNodeGenerator({
     name: `${projectDefinition.name}-${app.name}`,
     packageName,
     description: `Backend app for ${projectDefinition.name}`,
@@ -52,10 +55,8 @@ export function compileBackend(
         buildDocker(projectDefinition, app),
         buildFastify(appBuilder, app),
       ],
-      vitest: {
-        generator: '@halfdomelabs/core/node/vitest',
-      },
+      vitest: vitestGenerator({}),
     },
   });
-  return appBuilder.toProjectEntry();
+  return appBuilder.buildProjectEntry(rootBundle);
 }

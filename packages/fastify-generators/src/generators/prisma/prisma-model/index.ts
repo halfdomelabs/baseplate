@@ -1,8 +1,5 @@
 import { projectScope } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { snakeCase } from 'change-case';
 import { z } from 'zod';
 
@@ -33,43 +30,10 @@ export interface PrismaModelProvider {
 export const prismaModelProvider =
   createProviderType<PrismaModelProvider>('prisma-model');
 
-const PrismaModelGenerator = createGeneratorWithTasks({
+export const prismaModelGenerator = createGenerator({
+  name: 'prisma/prisma-model',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    fields: {
-      isMultiple: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-field',
-      },
-    },
-    relations: {
-      isMultiple: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-relation-field',
-      },
-    },
-    primaryKey: {
-      defaultToNullIfEmpty: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-model-id',
-      },
-    },
-    indicies: {
-      isMultiple: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-model-index',
-      },
-    },
-    uniqueConstraints: {
-      isMultiple: true,
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-model-unique',
-      },
-    },
-    generatedFields: {
-      isMultiple: true,
-    },
-  }),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
       name: 'main',
@@ -104,5 +68,3 @@ const PrismaModelGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrismaModelGenerator;

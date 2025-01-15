@@ -2,10 +2,7 @@ import {
   projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { apolloErrorProvider } from '@src/generators/apollo/apollo-error/index.js';
@@ -18,9 +15,10 @@ export type Auth0ApolloProvider = unknown;
 export const auth0ApolloProvider =
   createProviderType<Auth0ApolloProvider>('auth0-apollo');
 
-const Auth0ApolloGenerator = createGeneratorWithTasks({
+export const auth0ApolloGenerator = createGenerator({
+  name: 'auth0/auth0-apollo',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -71,5 +69,3 @@ const Auth0ApolloGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default Auth0ApolloGenerator;

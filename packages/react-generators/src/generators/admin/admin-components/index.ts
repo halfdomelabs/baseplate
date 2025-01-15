@@ -6,10 +6,7 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -21,9 +18,10 @@ export type AdminComponentsProvider = ImportMapper;
 export const adminComponentsProvider =
   createProviderType<AdminComponentsProvider>('admin-components');
 
-const AdminComponentsGenerator = createGeneratorWithTasks({
+export const adminComponentsGenerator = createGenerator({
+  name: 'admin/admin-components',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -103,5 +101,3 @@ const AdminComponentsGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminComponentsGenerator;

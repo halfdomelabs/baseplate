@@ -8,7 +8,7 @@ import {
   typescriptConfigProvider,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -58,85 +58,10 @@ export interface FastifyOutputProvider {
 export const fastifyOutputProvider =
   createProviderType<FastifyOutputProvider>('fastify-output');
 
-const FastifyGenerator = createGeneratorWithTasks({
+export const fastifyGenerator = createGenerator({
+  name: 'core/fastify',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({
-    logger: {
-      provider: 'logger-service',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/logger-service',
-      },
-    },
-    rootModule: {
-      provider: 'root-module',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/root-module',
-      },
-    },
-    errorHandler: {
-      provider: 'error-handler-service',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/error-handler-service',
-      },
-    },
-    config: {
-      provider: 'config-service',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/config-service',
-      },
-    },
-    server: {
-      provider: 'fastify-server',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/fastify-server',
-      },
-    },
-    healthCheck: {
-      provider: 'fastify-health-check',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/fastify-health-check',
-      },
-    },
-    requestContext: {
-      provider: 'request-context',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/request-context',
-      },
-    },
-    gracefulShutdown: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/fastify-graceful-shutdown',
-      },
-    },
-    vitest: {
-      provider: 'fastify-vitest',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/vitest/fastify-vitest',
-      },
-    },
-    serviceContext: {
-      provider: 'service-context',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/service-context',
-      },
-    },
-    requestServiceContext: {
-      provider: 'request-service-context',
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/request-service-context',
-      },
-    },
-    cookies: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/fastify-cookie-context',
-      },
-    },
-    scripts: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/core/fastify-scripts',
-      },
-    },
-  }),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'node-setup',
@@ -263,5 +188,3 @@ const FastifyGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default FastifyGenerator;

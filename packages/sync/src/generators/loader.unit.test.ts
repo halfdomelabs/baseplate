@@ -36,11 +36,9 @@ describe('loadGeneratorsForPackage', () => {
       '/modules/test-generators',
     );
     const mockGeneratorOne: GeneratorConfig = {
-      parseDescriptor: vi.fn(),
       createGenerator: vi.fn(),
     };
     const mockGeneratorTwo: GeneratorConfig = {
-      parseDescriptor: vi.fn(),
       createGenerator: vi.fn(),
     };
     mockedLoadDefaultExportUtils.loadDefaultExport.mockResolvedValueOnce(
@@ -92,11 +90,9 @@ describe('loadGeneratorsForPackage', () => {
       '/modules/test-generators',
     );
     const mockGeneratorOne: GeneratorConfig = {
-      parseDescriptor: vi.fn(),
       createGenerator: vi.fn(),
     };
     const mockGeneratorTwo: GeneratorConfig = {
-      parseDescriptor: vi.fn(),
       createGenerator: vi.fn(),
     };
     mockedLoadDefaultExportUtils.loadDefaultExport.mockResolvedValueOnce(

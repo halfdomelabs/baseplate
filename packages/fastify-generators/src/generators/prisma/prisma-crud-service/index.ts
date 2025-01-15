@@ -1,6 +1,6 @@
 import { projectScope } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -29,33 +29,10 @@ export interface PrismaCrudServiceProvider {
 export const prismaCrudServiceProvider =
   createProviderType<PrismaCrudServiceProvider>('prisma-crud-service');
 
-const PrismaCrudServiceGenerator = createGeneratorWithTasks({
+export const prismaCrudServiceGenerator = createGenerator({
+  name: 'prisma/prisma-crud-service',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: ({ modelName }) => ({
-    create: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-crud-create',
-        name: 'create',
-        modelName,
-      },
-    },
-    update: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-crud-update',
-        name: 'update',
-        type: 'update',
-        modelName,
-      },
-    },
-    delete: {
-      defaultDescriptor: {
-        generator: '@halfdomelabs/fastify/prisma/prisma-crud-delete',
-        name: 'delete',
-        modelName,
-      },
-    },
-    transformers: { isMultiple: true },
-  }),
   buildTasks(taskBuilder, { modelName }) {
     const setupTask = taskBuilder.addTask({
       name: 'setup',
@@ -112,5 +89,3 @@ const PrismaCrudServiceGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrismaCrudServiceGenerator;

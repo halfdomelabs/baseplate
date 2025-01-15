@@ -12,10 +12,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authProvider } from '@src/generators/auth/index.js';
@@ -43,9 +40,10 @@ export const fastifySentryProvider =
 
 const sentryServicePath = 'src/services/sentry.ts';
 
-const FastifySentryGenerator = createGeneratorWithTasks({
+export const fastifySentryGenerator = createGenerator({
+  name: 'core/fastify-sentry',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'fastify-instrument',
@@ -294,5 +292,3 @@ const FastifySentryGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default FastifySentryGenerator;

@@ -6,7 +6,6 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import { globby } from 'globby';
 import path from 'node:path';
-import * as R from 'ramda';
 
 import { environmentFlags } from '@src/service/environment-flags.js';
 import { removeEmptyAncestorDirectories } from '@src/utils/directories.js';
@@ -20,7 +19,7 @@ export interface GeneratorEngineSetupConfig {
 export function getGeneratorEngine(
   config: GeneratorEngineSetupConfig,
 ): GeneratorEngine {
-  const generatorMap = R.fromPairs(
+  const generatorMap = Object.fromEntries(
     config.generatorPackages.map(({ name, path }) => [name, path]),
   );
   return new GeneratorEngine(generatorMap);
@@ -65,15 +64,18 @@ export async function generateForDirectory({
   appEntry,
   logger,
 }: GenerateForDirectoryOptions): Promise<void> {
-  const { rootDirectory, name } = appEntry;
+  const { appDirectory, name, generatorBundle } = appEntry;
   const engine = getGeneratorEngine(generatorSetupConfig);
 
-  const projectDirectory = path.join(baseDirectory, rootDirectory);
+  const projectDirectory = path.join(baseDirectory, appDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
-  const project = await engine.loadProject(projectDirectory, logger);
+  const project = engine.loadProjectFromGeneratorBundle(
+    generatorBundle,
+    logger,
+  );
   const output = await engine.build(project, logger);
   logger.info('Project built! Writing output....');
 
@@ -213,13 +215,13 @@ export async function generateForDirectory({
 
 export async function generateCleanAppForDirectory({
   baseDirectory,
-  appEntry: { rootDirectory, name },
+  appEntry: { appDirectory, name, generatorBundle },
   logger,
   generatorSetupConfig,
 }: GenerateForDirectoryOptions): Promise<void> {
   const engine = getGeneratorEngine(generatorSetupConfig);
 
-  const projectDirectory = path.join(baseDirectory, rootDirectory);
+  const projectDirectory = path.join(baseDirectory, appDirectory);
   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
 
   // delete clean project if exists
@@ -231,7 +233,10 @@ export async function generateCleanAppForDirectory({
 
   logger.info(`Generating clean project ${name} in ${cleanDirectory}...`);
 
-  const project = await engine.loadProject(projectDirectory, logger);
+  const project = engine.loadProjectFromGeneratorBundle(
+    generatorBundle,
+    logger,
+  );
   const output = await engine.build(project, logger);
   logger.info('Project built! Writing output....');
 

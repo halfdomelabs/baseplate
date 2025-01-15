@@ -5,7 +5,7 @@ import {
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
@@ -70,12 +70,11 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
 }));
 
-const AuthIdentifyGenerator = createGeneratorWithTasks({
+export const authIdentifyGenerator = createGenerator({
+  name: 'auth/auth-identify',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask(createMainTask(descriptor));
   },
 });
-
-export default AuthIdentifyGenerator;

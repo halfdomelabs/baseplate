@@ -1,3 +1,5 @@
+import type { GeneratorBundleChildren } from '@halfdomelabs/sync';
+
 import type { ProjectDefinitionContainer } from '@src/index.js';
 import type { PluginStore } from '@src/plugins/imports/types.js';
 import type {
@@ -40,10 +42,10 @@ export interface PluginMergeModelInput
 
 export interface PluginHooks {
   mergeModel: (model: PluginMergeModelInput) => void;
-  addFastifyChildren: (children: Record<string, unknown>) => void;
+  addFastifyChildren: (children: GeneratorBundleChildren) => void;
   addFeatureChildren: (
     featureId: string,
-    children: Record<string, unknown>,
+    children: GeneratorBundleChildren,
   ) => void;
 }
 

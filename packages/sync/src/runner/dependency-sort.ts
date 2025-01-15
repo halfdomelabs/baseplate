@@ -2,7 +2,7 @@ import toposort from 'toposort';
 
 import { notEmpty } from '@src/utils/arrays.js';
 
-import type { GeneratorTaskEntry } from '../generators/entry-builder.js';
+import type { GeneratorTaskEntry } from '../generators/index.js';
 import type { EntryDependencyMap } from './dependency-map.js';
 
 /**

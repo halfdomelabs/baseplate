@@ -6,7 +6,56 @@
       "type": "npm",
       "script": "typecheck",
       "group": "build",
-      "problemMatcher": ["$tsc"]
+      "problemMatcher": {
+        "base": "$tsc",
+        "pattern": {
+          "regexp": "^[^\\s]+: ([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
+          "file": 1,
+          "line": 2,
+          "column": 3,
+          "severity": 4,
+          "code": 5,
+          "message": 6
+        },
+        "fileLocation": [
+          "search",
+          {
+            "include": [
+              "${workspaceFolder}/packages",
+              "${workspaceFolder}/plugins"
+            ],
+            "exclude": [
+              "${workspaceFolder}/packages/*/node_modules",
+              "${workspaceFolder}/plugins/*/node_modules"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "label": "Lint",
+      "type": "npm",
+      "script": "lint",
+      "group": "build",
+      "problemMatcher": {
+        "base": "$eslint-compact",
+        "pattern": [
+          {
+            "regexp": "^[^\\s]+: ([^\\s].*)$",
+            "file": 1
+          },
+          {
+            "regexp": "^[^\\s]+: \\s+(\\d+):(\\d+)\\s+(error|warning|info)\\s+(.*)\\s\\s+(.*)$",
+            "line": 1,
+            "column": 2,
+            "severity": 3,
+            "message": 4,
+            "code": 5,
+            "loop": true
+          }
+        ],
+        "fileLocation": ["absolute"]
+      }
     }
   ]
 }

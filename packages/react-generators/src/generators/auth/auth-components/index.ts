@@ -5,10 +5,7 @@ import {
   projectScope,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -24,9 +21,10 @@ export type AuthComponentsProvider = ImportMapper;
 export const authComponentsProvider =
   createProviderType<AuthComponentsProvider>('auth-components');
 
-const AuthComponentsGenerator = createGeneratorWithTasks({
+export const authComponentsGenerator = createGenerator({
+  name: 'auth/auth-components',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { loginPath }) {
     taskBuilder.addTask({
       name: 'main',
@@ -72,5 +70,3 @@ const AuthComponentsGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthComponentsGenerator;

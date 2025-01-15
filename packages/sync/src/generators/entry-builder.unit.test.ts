@@ -1,16 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import { buildTestGeneratorBundle } from '@src/runner/tests/factories.test-helper.js';
 import { readJsonWithSchema } from '@src/utils/fs.js';
 import { createEventedLogger } from '@src/utils/index.js';
 
+import type { ProviderDependencyMap, ProviderExportMap } from './generators.js';
 import type { GeneratorConfigMap } from './loader.js';
 
 import { createProviderType } from '../providers/index.js';
-import { buildGeneratorEntry, getGeneratorId } from './entry-builder.js';
 import {
-  type ProviderDependencyMap,
-  type ProviderExportMap,
-} from './generators.js';
+  buildGeneratorEntryFromDescriptor,
+  getGeneratorId,
+} from './entry-builder.js';
 
 vi.mock('../utils/fs.js');
 
@@ -51,7 +52,7 @@ describe('getGeneratorId', () => {
   });
 });
 
-describe('buildGeneratorEntry', () => {
+describe('buildGeneratorEntryFromDescriptor', () => {
   const simpleDependencies: ProviderDependencyMap = {
     dep: createProviderType('dep'),
   };
@@ -61,56 +62,65 @@ describe('buildGeneratorEntry', () => {
   const generatorMap: GeneratorConfigMap = {
     simple: {
       config: {
-        parseDescriptor: () => ({}),
-        createGenerator: () => [
-          {
-            name: 'main',
-            dependencies: simpleDependencies,
-            exports: simpleExports,
-            taskDependencies: [],
-            run: vi.fn(),
-          },
-        ],
+        createGenerator: () =>
+          buildTestGeneratorBundle({
+            tasks: [
+              {
+                name: 'main',
+                dependencies: simpleDependencies,
+                exports: simpleExports,
+                taskDependencies: [],
+                run: vi.fn(),
+              },
+            ],
+          }),
       },
       directory: '/simple',
     },
     nested: {
       config: {
-        parseDescriptor: () => ({
-          children: {
-            child: { generator: 'simple' },
-            childMany: [{ name: 'bob', generator: 'simple' }],
-          },
-        }),
-        createGenerator: () => [],
+        createGenerator: () =>
+          buildTestGeneratorBundle({
+            children: {
+              child: { generator: 'simple' },
+              childMany: [{ name: 'bob', generator: 'simple' }],
+            },
+          }),
       },
       directory: '/simple',
     },
     reference: {
       config: {
-        parseDescriptor: () => ({ children: { child: 'child-descriptor' } }),
-        createGenerator: () => [],
+        createGenerator: () =>
+          buildTestGeneratorBundle({
+            children: {
+              child: 'child-descriptor',
+            },
+          }),
       },
       directory: '/simple',
     },
     duplicateReference: {
       config: {
-        parseDescriptor: () => ({
-          children: {
-            child: 'child-descriptor',
-            childDuplicate: 'child-descriptor',
-          },
-        }),
-        createGenerator: () => [],
+        createGenerator: () =>
+          buildTestGeneratorBundle({
+            children: {
+              child: { generator: 'simple' },
+              childDuplicate: { generator: 'simple' },
+            },
+          }),
       },
       directory: '/simple',
     },
     validatedDescriptor: {
       config: {
-        parseDescriptor: () => ({
-          validatedDescriptor: { name: 'hi', generator: 'foo' },
-        }),
-        createGenerator: () => [],
+        createGenerator: () =>
+          buildTestGeneratorBundle({
+            children: {
+              child: { generator: 'simple' },
+              childDuplicate: { generator: 'simple' },
+            },
+          }),
       },
       directory: '/simple',
     },
@@ -123,15 +133,13 @@ describe('buildGeneratorEntry', () => {
   };
 
   it('should build a simple unnested generator', async () => {
-    const entry = await buildGeneratorEntry(
+    const entry = await buildGeneratorEntryFromDescriptor(
       { generator: 'simple' },
       'project',
       generatorContext,
     );
     expect(entry).toMatchObject({
       id: 'project',
-      generatorConfig: generatorMap.simple?.config,
-      descriptor: { generator: 'simple' },
       children: [],
       tasks: [
         {
@@ -143,38 +151,21 @@ describe('buildGeneratorEntry', () => {
     });
   });
 
-  it('should build a validated descriptor', async () => {
-    const entry = await buildGeneratorEntry(
-      { generator: 'validatedDescriptor' },
-      'project',
-      generatorContext,
-    );
-    expect(entry.descriptor).toMatchObject({
-      name: 'hi',
-      generator: 'foo',
-    });
-  });
-
   it('should build a nested generator', async () => {
-    const entry = await buildGeneratorEntry(
+    const entry = await buildGeneratorEntryFromDescriptor(
       { generator: 'nested' },
       'project',
       generatorContext,
     );
     expect(entry).toMatchObject({
-      generatorConfig: generatorMap.nested?.config,
-      descriptor: { generator: 'nested' },
+      id: 'project',
     });
     expect(entry.children).toMatchObject([
       {
         id: 'project:child',
-        generatorConfig: generatorMap.simple?.config,
-        descriptor: { generator: 'simple' },
       },
       {
         id: 'project:childMany.bob',
-        generatorConfig: generatorMap.simple?.config,
-        descriptor: { generator: 'simple' },
       },
     ]);
   });
@@ -182,20 +173,17 @@ describe('buildGeneratorEntry', () => {
   it('should build a reference child', async () => {
     mockedReadJsonWithSchema.mockResolvedValueOnce({ generator: 'simple' });
 
-    const entry = await buildGeneratorEntry(
+    const entry = await buildGeneratorEntryFromDescriptor(
       { generator: 'reference' },
       'project',
       generatorContext,
     );
     expect(entry).toMatchObject({
-      generatorConfig: generatorMap.reference?.config,
-      descriptor: { generator: 'reference' },
+      id: 'project',
     });
     expect(entry.children).toMatchObject([
       {
         id: 'child-descriptor',
-        generatorConfig: generatorMap.simple?.config,
-        descriptor: { generator: 'simple' },
       },
     ]);
     expect(mockedReadJsonWithSchema).toHaveBeenCalledWith(

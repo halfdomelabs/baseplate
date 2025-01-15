@@ -1,3 +1,5 @@
+import type { GeneratorBundleChildren } from '@halfdomelabs/sync';
+
 import * as R from 'ramda';
 
 import type { ProjectDefinitionContainer } from '@src/index.js';
@@ -14,12 +16,11 @@ import { deepMergeRightUniq, safeMerge } from '@src/utils/merge.js';
 
 import type { ParsedModel, ParsedRelationField } from './types.js';
 
-import { AuthPlugin } from './plugins/auth.js';
 import { Auth0Plugin } from './plugins/auth0.js';
 
 export * from './parser.js';
 
-const PARSER_PLUGINS = [AuthPlugin, Auth0Plugin];
+const PARSER_PLUGINS = [Auth0Plugin];
 
 function upsertItems<T>(
   items: T[] | undefined,
@@ -115,9 +116,9 @@ export class ParsedProjectDefinition {
 
   public projectDefinition: ProjectDefinition;
 
-  public fastifyChildren: Record<string, unknown> = {};
+  public fastifyChildren: GeneratorBundleChildren = {};
 
-  public featureChildren: Record<string, Record<string, unknown>> = {};
+  public featureChildren: Record<string, GeneratorBundleChildren> = {};
 
   constructor(public definitionContainer: ProjectDefinitionContainer) {
     const projectDefinition = definitionContainer.definition;
@@ -231,8 +232,8 @@ export class ParsedProjectDefinition {
     this.projectDefinition = updatedProjectDefinition;
   }
 
-  getFeatureChildren(featureId: string): Record<string, unknown> {
-    return this.featureChildren[featureId];
+  getFeatureChildren(featureId: string): GeneratorBundleChildren {
+    return this.featureChildren[featureId] ?? {};
   }
 
   getModelForeignRelations(

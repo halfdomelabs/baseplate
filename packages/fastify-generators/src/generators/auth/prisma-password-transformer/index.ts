@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaCrudServiceSetupProvider } from '@src/generators/prisma/prisma-crud-service/index.js';
@@ -10,9 +10,10 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-const PrismaPasswordTransformerGenerator = createGeneratorWithTasks({
+export const prismaPasswordTransformerGenerator = createGenerator({
+  name: 'auth/prisma-password-transformer',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -53,5 +54,3 @@ const PrismaPasswordTransformerGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default PrismaPasswordTransformerGenerator;

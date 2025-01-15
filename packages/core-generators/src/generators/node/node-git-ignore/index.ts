@@ -1,5 +1,5 @@
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
   writeFormattedAction,
 } from '@halfdomelabs/sync';
@@ -18,7 +18,9 @@ export interface NodeGitIgnoreProvider {
 export const nodeGitIgnoreProvider =
   createProviderType<NodeGitIgnoreProvider>('node-git-ignore');
 
-const NodeGitIgnoreGenerator = createGeneratorWithTasks({
+export const nodeGitIgnoreGenerator = createGenerator({
+  name: 'node/node-git-ignore',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder, descriptor) {
     taskBuilder.addTask({
@@ -82,5 +84,3 @@ const NodeGitIgnoreGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default NodeGitIgnoreGenerator;

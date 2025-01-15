@@ -1,7 +1,7 @@
 import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
-  createGeneratorWithTasks,
+  createGenerator,
   createNonOverwriteableMap,
   createProviderType,
 } from '@halfdomelabs/sync';
@@ -29,9 +29,10 @@ export interface VitestProvider {
 
 export const vitestProvider = createProviderType<VitestProvider>('vitest');
 
-const VitestGenerator = createGeneratorWithTasks({
+export const vitestGenerator = createGenerator({
+  name: 'node/vitest',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -131,5 +132,3 @@ const VitestGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default VitestGenerator;

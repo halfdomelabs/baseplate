@@ -1,41 +1,20 @@
 import path from 'node:path';
 
-import type { ProviderExportScope } from '@src/providers/index.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
 import { notEmpty } from '@src/utils/arrays.js';
 import { readJsonWithSchema } from '@src/utils/fs.js';
 
+import type {
+  GeneratorEntry,
+  GeneratorTaskEntry,
+} from './build-generator-entry.js';
 import type { GeneratorConfigMap } from './loader.js';
 
 import {
   baseDescriptorSchema,
   type BaseGeneratorDescriptor,
-  type GeneratorConfig,
-  type GeneratorTask,
-  type ProviderDependencyMap,
-  type ProviderExportMap,
 } from './generators.js';
-
-export interface GeneratorTaskEntry {
-  id: string;
-  dependencies: ProviderDependencyMap;
-  exports: ProviderExportMap;
-  task: GeneratorTask;
-  generatorBaseDirectory: string;
-  dependentTaskIds: string[];
-  generatorName: string;
-}
-
-export interface GeneratorEntry {
-  id: string;
-  scopes: ProviderExportScope[];
-  generatorConfig: GeneratorConfig;
-  generatorBaseDirectory: string;
-  descriptor: BaseGeneratorDescriptor;
-  children: GeneratorEntry[];
-  tasks: GeneratorTaskEntry[];
-}
 
 interface GeneratorEntryBuilderContext {
   baseDirectory: string;
@@ -95,7 +74,7 @@ async function resolveDescriptorOrReference(
   );
 }
 
-export async function buildGeneratorEntry(
+export async function buildGeneratorEntryFromDescriptor(
   descriptor: BaseGeneratorDescriptor,
   id: string,
   context: GeneratorEntryBuilderContext,
@@ -108,14 +87,14 @@ export async function buildGeneratorEntry(
   }
   const { config } = generatorConfigEntry;
 
-  const { children = {}, validatedDescriptor } = config.parseDescriptor(
-    descriptor,
-    { id, logger: context.logger },
-  );
+  const { children, scopes, tasks } = config.createGenerator(descriptor, {
+    id,
+    generatorName: descriptor.generator,
+    generatorBaseDirectory: generatorConfigEntry.directory,
+    logger: context.logger,
+  });
 
-  const generatorDescriptor = validatedDescriptor ?? descriptor;
-
-  const tasks = config.createGenerator(generatorDescriptor).map(
+  const taskEntries = tasks.map(
     (task): GeneratorTaskEntry => ({
       id: `${id}#${task.name}`,
       dependencies: task.dependencies ?? {},
@@ -137,6 +116,12 @@ export async function buildGeneratorEntry(
         childDescriptorOrReferences
           .filter(notEmpty)
           .map(async (descriptorOrRef) => {
+            if (
+              typeof descriptorOrRef === 'object' &&
+              'tasks' in descriptorOrRef
+            ) {
+              throw new Error(`Instantiated generators not supported here`);
+            }
             const childDescriptor = await resolveDescriptorOrReference(
               descriptorOrRef,
               context.baseDirectory,
@@ -148,7 +133,11 @@ export async function buildGeneratorEntry(
               isMultiple,
             );
 
-            return buildGeneratorEntry(childDescriptor, childId, context);
+            return buildGeneratorEntryFromDescriptor(
+              childDescriptor,
+              childId,
+              context,
+            );
           }),
       );
     }),
@@ -164,11 +153,9 @@ export async function buildGeneratorEntry(
 
   return {
     id,
-    generatorConfig: config,
     generatorBaseDirectory: generatorConfigEntry.directory,
-    scopes: config.scopes ?? [],
-    descriptor: generatorDescriptor,
+    scopes,
     children: childGenerators,
-    tasks,
+    tasks: taskEntries,
   };
 }

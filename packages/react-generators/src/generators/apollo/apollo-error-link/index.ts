@@ -1,5 +1,5 @@
 import { TypescriptCodeUtils } from '@halfdomelabs/core-generators';
-import { createGeneratorWithTasks } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactErrorProvider } from '../../core/react-error/index.js';
@@ -10,9 +10,10 @@ const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
-const ApolloErrorLinkGenerator = createGeneratorWithTasks({
+export const apolloErrorLinkGenerator = createGenerator({
+  name: 'apollo/apollo-error-link',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -93,5 +94,3 @@ const ApolloErrorLinkGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default ApolloErrorLinkGenerator;

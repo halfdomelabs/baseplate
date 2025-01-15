@@ -8,7 +8,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -26,9 +26,10 @@ export type AuthServiceProvider = ImportMapper;
 export const authServiceProvider =
   createProviderType<AuthServiceProvider>('auth-service');
 
-const AuthServiceGenerator = createGeneratorWithTasks({
+export const authServiceGenerator = createGenerator({
+  name: 'auth/auth-service',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -107,5 +108,3 @@ const AuthServiceGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthServiceGenerator;

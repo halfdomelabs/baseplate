@@ -9,10 +9,7 @@ import {
   typescriptProvider,
   vitestProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
@@ -28,9 +25,10 @@ export type PrismaVitestProvider = ImportMapper;
 export const prismaVitestProvider =
   createProviderType<PrismaVitestProvider>('prisma-vitest');
 
-const PrismaVitestGenerator = createGeneratorWithTasks({
+export const prismaVitestGenerator = createGenerator({
+  name: 'vitest/prisma-vitest',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder) {
     taskBuilder.addTask({
       name: 'main',
@@ -134,5 +132,3 @@ if (TEST_MODE !== 'unit') {
     });
   },
 });
-
-export default PrismaVitestGenerator;

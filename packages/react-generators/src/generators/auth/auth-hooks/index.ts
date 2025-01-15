@@ -8,7 +8,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   copyFileAction,
-  createGeneratorWithTasks,
+  createGenerator,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -30,9 +30,10 @@ export interface AuthHooksProvider extends ImportMapper {
 export const authHooksProvider =
   createProviderType<AuthHooksProvider>('auth-hooks');
 
-const AuthHooksGenerator = createGeneratorWithTasks({
+export const authHooksGenerator = createGenerator({
+  name: 'auth/auth-hooks',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { userQueryName }) {
     taskBuilder.addTask({
       name: 'main',
@@ -172,5 +173,3 @@ const AuthHooksGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AuthHooksGenerator;

@@ -5,10 +5,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGeneratorWithTasks,
-  createProviderType,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authComponentsProvider } from '@src/generators/auth/auth-components/index.js';
@@ -23,6 +20,8 @@ const linkItemSchema = z.object({
   icon: z.string().min(1),
   path: z.string().min(1),
 });
+
+export type AdminLayoutLinkItem = z.infer<typeof linkItemSchema>;
 
 const descriptorSchema = z.object({
   links: z.array(linkItemSchema).optional(),
@@ -43,9 +42,10 @@ function getIconImport(iconName: string): string {
   return `react-icons/${category[0].toLowerCase()}`;
 }
 
-const AdminLayoutGenerator = createGeneratorWithTasks({
+export const adminLayoutGenerator = createGenerator({
+  name: 'admin/admin-layout',
+  generatorFileUrl: import.meta.url,
   descriptorSchema,
-  getDefaultChildGenerators: () => ({}),
   buildTasks(taskBuilder, { links = [] }) {
     taskBuilder.addTask({
       name: 'main',
@@ -130,5 +130,3 @@ const AdminLayoutGenerator = createGeneratorWithTasks({
     });
   },
 });
-
-export default AdminLayoutGenerator;
