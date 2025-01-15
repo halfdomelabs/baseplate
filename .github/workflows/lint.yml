@@ -34,7 +34,7 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm lint:affected
+      - run: pnpm lint
       - run: pnpm prettier:check:affected
       - run: pnpm versions:check
       - run: pnpm knip
