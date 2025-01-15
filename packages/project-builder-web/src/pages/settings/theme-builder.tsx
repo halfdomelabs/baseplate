@@ -25,6 +25,7 @@ import { logAndFormatError } from 'src/services/error-formatter';
 
 import { FormActionBar } from '@src/components';
 
+import { ThemeColorsCssDisplay } from './components/ThemeColorsCssDisplay';
 import { ThemeColorsEditor } from './components/ThemeColorsEditor';
 import { ThemeColorsPreview } from './components/ThemeColorsPreview';
 import { ThemePaletteEditor } from './components/ThemePaletteEditor';
@@ -211,10 +212,18 @@ export function ThemeBuilderPage(): React.JSX.Element {
                 </Button>
               </SectionList.SectionContent>
             </SectionList.Section>
+            <SectionList.Section>
+              <SectionList.SectionHeader>
+                <SectionList.SectionTitle>CSS Preview</SectionList.SectionTitle>
+                <SectionList.SectionDescription>
+                  Preview the CSS for your theme
+                </SectionList.SectionDescription>
+              </SectionList.SectionHeader>
+              <SectionList.SectionContent className="flex flex-col gap-4">
+                <ThemeColorsCssDisplay control={control} />
+              </SectionList.SectionContent>
+            </SectionList.Section>
           </SectionList>
-          {/* TODO: confirm this should be removed */}
-          {/* <h2>CSS Preview</h2>
-          <ThemeColorsCssDisplay control={control} /> */}
         </div>
       </div>
       <FormActionBar form={form} />

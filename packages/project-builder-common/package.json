@@ -25,11 +25,8 @@
   },
   "dependencies": {
     "@halfdomelabs/baseplate-plugin-storage": "workspace:*",
-    "@halfdomelabs/core-generators": "workspace:*",
-    "@halfdomelabs/fastify-generators": "workspace:*",
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/project-builder-server": "workspace:*",
-    "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
     "eslint": "catalog:",
     "prettier": "catalog:"

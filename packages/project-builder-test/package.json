@@ -26,13 +26,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@halfdomelabs/core-generators": "workspace:*",
-    "@halfdomelabs/fastify-generators": "workspace:*",
     "@halfdomelabs/project-builder-common": "workspace:*",
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/project-builder-web": "workspace:*",
-    "@halfdomelabs/react-generators": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
     "commander": "^12.1.0",
     "execa": "9.3.0",

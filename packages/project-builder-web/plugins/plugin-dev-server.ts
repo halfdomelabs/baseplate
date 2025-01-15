@@ -14,7 +14,7 @@ import path from 'node:path';
  * @param {string} relativePath - The relative path to concatenate to the base path.
  * @returns {string} The safely concatenated and normalized absolute path.
  */
-export function pathSafeJoin(
+function pathSafeJoin(
   basePath: string,
   relativePath: string,
 ): string | undefined {

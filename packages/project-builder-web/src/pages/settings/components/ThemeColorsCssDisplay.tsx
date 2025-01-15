@@ -3,10 +3,10 @@ import type React from 'react';
 import type { Control } from 'react-hook-form';
 
 import { generateCssFromThemeConfig } from '@halfdomelabs/project-builder-lib';
+import { TextareaField } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
-import TextAreaInput from 'src/components/TextAreaInput';
 
 interface ThemeColorsCssDisplayProps {
   className?: string;
@@ -41,7 +41,7 @@ ${convertRecordToCss(generateCssFromThemeConfig(colors.dark))}
 
   return (
     <div className={clsx('', className)}>
-      <TextAreaInput className="h-60" readOnly value={cssValue} />
+      <TextareaField className="h-60" readOnly value={cssValue} />
     </div>
   );
 }

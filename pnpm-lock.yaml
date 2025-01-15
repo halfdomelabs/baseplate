@@ -404,21 +404,12 @@ importers:
       '@halfdomelabs/baseplate-plugin-storage':
         specifier: workspace:*
         version: link:../../plugins/baseplate-plugin-storage
-      '@halfdomelabs/core-generators':
-        specifier: workspace:*
-        version: link:../core-generators
-      '@halfdomelabs/fastify-generators':
-        specifier: workspace:*
-        version: link:../fastify-generators
       '@halfdomelabs/project-builder-lib':
         specifier: workspace:*
         version: link:../project-builder-lib
       '@halfdomelabs/project-builder-server':
         specifier: workspace:*
         version: link:../project-builder-server
-      '@halfdomelabs/react-generators':
-        specifier: workspace:*
-        version: link:../react-generators
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
@@ -635,12 +626,6 @@ importers:
 
   packages/project-builder-test:
     dependencies:
-      '@halfdomelabs/core-generators':
-        specifier: workspace:*
-        version: link:../core-generators
-      '@halfdomelabs/fastify-generators':
-        specifier: workspace:*
-        version: link:../fastify-generators
       '@halfdomelabs/project-builder-common':
         specifier: workspace:*
         version: link:../project-builder-common
@@ -653,9 +638,6 @@ importers:
       '@halfdomelabs/project-builder-web':
         specifier: workspace:*
         version: link:../project-builder-web
-      '@halfdomelabs/react-generators':
-        specifier: workspace:*
-        version: link:../react-generators
       '@halfdomelabs/sync':
         specifier: workspace:*
         version: link:../sync
@@ -835,9 +817,15 @@ importers:
       autoprefixer:
         specifier: 'catalog:'
         version: 10.4.20(postcss@8.4.38)
+      chokidar:
+        specifier: 4.0.3
+        version: 4.0.3
       eslint:
         specifier: 'catalog:'
         version: 9.17.0(jiti@2.4.2)
+      mime:
+        specifier: ^4.0.3
+        version: 4.0.3
       postcss:
         specifier: 'catalog:'
         version: 8.4.38
@@ -3779,6 +3767,10 @@ packages:
 
   chokidar@4.0.0:
     resolution: {integrity: sha512-mxIojEAQcuEvT/lyXq+jf/3cO/KoA6z4CeNDGGevTybECPOMFCnQy3OPahluUkbqgPNGw5Bi78UC7Po6Lhy+NA==}
+    engines: {node: '>= 14.16.0'}
+
+  chokidar@4.0.3:
+    resolution: {integrity: sha512-Qgzu8kfBvo+cA4962jnP1KkS6Dop5NS6g7R5LFYJr4b8Ub94PPQXUksCw9PvXoeXPRRddRNC5C1JQUR2SMGtnA==}
     engines: {node: '>= 14.16.0'}
 
   chownr@1.1.4:
@@ -9458,6 +9450,10 @@ snapshots:
       fsevents: 2.3.3
 
   chokidar@4.0.0:
+    dependencies:
+      readdirp: 4.0.1
+
+  chokidar@4.0.3:
     dependencies:
       readdirp: 4.0.1
 
