@@ -1,4 +1,4 @@
-import { dasherize, humanize, titleize, underscore } from 'inflection';
+import { dasherize, titleize, underscore } from 'inflection';
 
 export function lowerCaseFirst(str: string): string {
   if (str.length === 0) {

@@ -38,7 +38,6 @@
     "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/project-builder-web": "workspace:*",
     "commander": "^12.1.0",
-    "lodash": "^4.17.21",
     "package-up": "^5.0.0",
     "pino": "9.5.0",
     "pino-pretty": "13.0.0",
@@ -46,7 +45,6 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/lodash": "4.17.7",
     "@types/node": "catalog:",
     "dotenv": "^16.0.3",
     "eslint": "catalog:",
