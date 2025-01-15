@@ -12,7 +12,6 @@ import type {
 } from '@src/output/merge-algorithms/types.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
-import { getErrorMessage } from '@src/utils/errors.js';
 import { executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 
@@ -370,7 +369,7 @@ export async function writeGeneratorOutput(
         if (error instanceof ExecaError) {
           logger.error(error.stderr);
         } else {
-          logger.error(getErrorMessage(error));
+          logger.error(String(error));
         }
         failedCommands.push(command.command);
       }

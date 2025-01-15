@@ -1,9 +1,8 @@
 import {
   nodeProvider,
-  projectScope,
   TypescriptCodeUtils,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { reactAppProvider } from '@src/generators/core/react-app/index.js';
@@ -12,11 +11,6 @@ import { reactConfigProvider } from '@src/generators/core/react-config/index.js'
 const descriptorSchema = z.object({
   callbackPath: z.string().optional(),
 });
-
-export type ReactAuth0Provider = unknown;
-
-export const reactAuth0Provider =
-  createProviderType<ReactAuth0Provider>('react-auth0');
 
 export const reactAuth0Generator = createGenerator({
   name: 'auth0/react-auth0',
@@ -29,9 +23,6 @@ export const reactAuth0Generator = createGenerator({
         node: nodeProvider,
         reactConfig: reactConfigProvider,
         reactApp: reactAppProvider,
-      },
-      exports: {
-        reactAuth0: reactAuth0Provider.export(projectScope),
       },
       run({ node, reactConfig, reactApp }) {
         node.addPackages({
@@ -80,12 +71,6 @@ export const reactAuth0Generator = createGenerator({
           ),
           { comesAfter: 'react-apollo' },
         );
-
-        return {
-          getProviders: () => ({
-            reactAuth0: {},
-          }),
-        };
       },
     });
   },

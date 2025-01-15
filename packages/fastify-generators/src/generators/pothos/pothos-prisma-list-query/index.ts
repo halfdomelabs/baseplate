@@ -1,5 +1,4 @@
 import type { TypescriptCodeExpression } from '@halfdomelabs/core-generators';
-import type { GeneratorDescriptor } from '@halfdomelabs/sync';
 
 import { quot, TypescriptCodeUtils } from '@halfdomelabs/core-generators';
 import {
@@ -21,9 +20,7 @@ const descriptorSchema = z.object({
   modelName: z.string().min(1),
 });
 
-type Descriptor = GeneratorDescriptor<typeof descriptorSchema>;
-
-export type PothosPrismaListQueryDescriptor = Descriptor;
+type Descriptor = z.infer<typeof descriptorSchema>;
 
 const createMainTask = createTaskConfigBuilder(({ modelName }: Descriptor) => ({
   name: 'main',
