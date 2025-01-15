@@ -4,16 +4,14 @@ export interface FieldProps {
   description?: React.ReactNode;
 }
 
-export type SelectOptionLabelRenderer<OptionType> = (
+type SelectOptionLabelRenderer<OptionType> = (
   value: OptionType,
   options: { selected: boolean },
 ) => React.ReactNode;
 
-export type SelectOptionStringExtractor<OptionType> = (
-  value: OptionType,
-) => string;
+type SelectOptionStringExtractor<OptionType> = (value: OptionType) => string;
 
-export type SelectOptionStringOrNullExtractor<OptionType> = (
+type SelectOptionStringOrNullExtractor<OptionType> = (
   value: OptionType,
 ) => string | null;
 

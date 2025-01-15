@@ -1,4 +1,5 @@
 // @ts-check
+import * as prettierPluginPackageJson from 'prettier-plugin-packagejson';
 
 /** @type {import("prettier").Config} */
 export default {
@@ -6,5 +7,5 @@ export default {
   singleQuote: true,
   trailingComma: 'all',
   semi: true,
-  plugins: ['prettier-plugin-packagejson'],
+  plugins: [prettierPluginPackageJson],
 };

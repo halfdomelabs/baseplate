@@ -2,8 +2,6 @@ import { globby } from 'globby';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { notEmpty } from '@src/utils/array.js';
-
 import type {
   PluginManifestJson,
   PluginMetadata,
@@ -130,7 +128,7 @@ export async function getPluginEntrypoints(
       ),
     );
 
-    return moduleEntrypoints.flat().filter(notEmpty);
+    return moduleEntrypoints.flat().filter((x) => x !== undefined);
   } catch (error) {
     throw new PluginLoaderError(
       `Unable to find plugin entrypoints in ${pluginDirectory}`,
@@ -229,7 +227,7 @@ export async function loadPluginsInPackage(
       );
     }),
   );
-  return plugins.filter(notEmpty);
+  return plugins;
 }
 
 async function getModuleFederationTargetsForPlugin(
@@ -295,7 +293,7 @@ export async function getModuleFederationTargets(
         );
       })
     : pluginDirectories;
-  const federationTargets = await Promise.all(
+  const targets = await Promise.all(
     rewrittenPluginDirectories.map(async (directory) => {
       const metadata = await readMetadataJson(directory);
       return getModuleFederationTargetsForPlugin(
@@ -305,7 +303,6 @@ export async function getModuleFederationTargets(
       );
     }),
   );
-  const targets = federationTargets.filter(notEmpty).flat();
 
   if (targets.length === 0) {
     throw new Error(

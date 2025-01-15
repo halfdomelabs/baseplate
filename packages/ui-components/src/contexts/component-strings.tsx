@@ -11,4 +11,7 @@ const ComponentStringsContext = React.createContext<ComponentStrings>(
 export const useComponentStrings = (): ComponentStrings =>
   React.useContext(ComponentStringsContext);
 
+/**
+ * @public
+ */
 export const ComponentStringsProvider = ComponentStringsContext.Provider;

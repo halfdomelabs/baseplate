@@ -3,7 +3,7 @@ export interface TestRunnerContext {
   streamCommandOutput: boolean;
 }
 
-export interface RunCommandOptions {
+interface RunCommandOptions {
   cwd?: string;
   // timeout in ms
   timeout?: number;
@@ -19,7 +19,7 @@ interface WaitForURLOptions {
   timeout?: number;
 }
 
-export interface StartBackgroundCommandOptions extends RunCommandOptions {
+interface StartBackgroundCommandOptions extends RunCommandOptions {
   waitForURL?: WaitForURLOptions;
 }
 

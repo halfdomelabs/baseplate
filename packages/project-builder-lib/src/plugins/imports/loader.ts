@@ -2,7 +2,6 @@ import { mapValues } from 'es-toolkit';
 import _ from 'lodash';
 import toposort from 'toposort';
 
-import { notEmpty } from '@src/utils/array.js';
 import { stripUndefinedValues } from '@src/utils/strip.js';
 
 import type { PluginSpecImplementation } from '../spec/types.js';
@@ -82,7 +81,7 @@ export function getOrderedPluginModuleInitializationSteps(
         }
         return [resolvedDep, id];
       })
-      .filter(notEmpty),
+      .filter((x) => x !== undefined),
   );
 
   const nodes = pluginModules.map((p) => p.id);

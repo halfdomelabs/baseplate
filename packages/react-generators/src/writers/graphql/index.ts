@@ -1,39 +1,39 @@
 import _ from 'lodash';
 
-export interface GraphQLArgumentScalarValue {
+interface GraphQLArgumentScalarValue {
   type: 'scalar';
   value: string | number | boolean;
 }
 
-export interface GraphQLArgumentVariableValue {
+interface GraphQLArgumentVariableValue {
   type: 'variable';
   variable: string;
 }
 
-export type GraphQLArgumentValue =
+type GraphQLArgumentValue =
   | GraphQLArgumentScalarValue
   | GraphQLArgumentVariableValue;
 
-export interface GraphQLArgument {
+interface GraphQLArgument {
   name: string;
   value: GraphQLArgumentValue;
 }
 
-export interface GraphQLSimpleField {
+interface GraphQLSimpleField {
   type?: 'simple' | undefined;
   name: string;
   args?: GraphQLArgument[];
   fields?: GraphQLField[];
 }
 
-export interface GraphQLSpreadField {
+interface GraphQLSpreadField {
   type: 'spread';
   on: string;
 }
 
 export type GraphQLField = GraphQLSimpleField | GraphQLSpreadField;
 
-export interface GraphQLVariable {
+interface GraphQLVariable {
   name: string;
   type: string;
 }

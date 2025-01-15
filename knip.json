@@ -7,6 +7,9 @@
     "plugins/*": {
       "entry": ["src/index.{ts,tsx}", "src/web/index.{ts,tsx}"],
       "project": "src/**/*.{ts,tsx}"
+    },
+    "packages/project-builder-test": {
+      "ignore": ["src/tests/*.ts"]
     }
   },
   "ignore": [

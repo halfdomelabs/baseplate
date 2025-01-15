@@ -1,7 +1,7 @@
 // Simple typed event emitter
 type TypeConfig = Record<string, unknown>;
 
-export interface TypedEventEmitter<T extends TypeConfig> {
+interface TypedEventEmitter<T extends TypeConfig> {
   on<K extends keyof T>(
     eventName: K,
     listener: (payload: T[K]) => void,
