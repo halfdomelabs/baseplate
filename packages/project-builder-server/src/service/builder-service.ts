@@ -163,7 +163,7 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
 
   public close(): void {
     if (this.watcher) {
-      this.watcher.close()?.catch((err: unknown) => {
+      this.watcher.close().catch((err: unknown) => {
         this.logger.error(err instanceof Error ? err.toString() : typeof err);
       });
     }
