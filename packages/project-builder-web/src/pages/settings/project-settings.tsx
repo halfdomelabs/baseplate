@@ -9,7 +9,7 @@ import {
 } from '@halfdomelabs/project-builder-lib/web';
 import { InputField, SectionList, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import _ from 'lodash';
+import { pick } from 'es-toolkit';
 import { formatError } from 'src/services/error-formatter';
 import { logError } from 'src/services/error-logger';
 
@@ -28,7 +28,7 @@ function ProjectSettingsPage(): React.JSX.Element {
   const { definition, setConfigAndFixReferences } = useProjectDefinition();
   const form = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
-    defaultValues: _.pick(definition, [
+    defaultValues: pick(definition, [
       'name',
       'version',
       'portOffset',

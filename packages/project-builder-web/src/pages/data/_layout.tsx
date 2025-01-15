@@ -2,7 +2,7 @@ import type React from 'react';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { NavigationTabs, SidebarLayout } from '@halfdomelabs/ui-components';
-import _ from 'lodash';
+import { maxBy } from 'es-toolkit';
 import { NavLink, Outlet, useMatch } from 'react-router-dom';
 
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
@@ -15,10 +15,7 @@ export function DataLayout(): React.JSX.Element {
     definition: { models = [], enums = [] },
   } = useProjectDefinition();
 
-  const longestName = _.maxBy(
-    [...models, ...enums],
-    (m) => m.name.length,
-  )?.name;
+  const longestName = maxBy([...models, ...enums], (m) => m.name.length)?.name;
 
   const modelsActive = useMatch('/data/models/*');
   const enumsActive = useMatch('/data/enums/*');

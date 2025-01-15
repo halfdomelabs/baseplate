@@ -3,7 +3,7 @@ import type React from 'react';
 
 import { adminSectionEntityType } from '@halfdomelabs/project-builder-lib';
 import clsx from 'clsx';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { Route, Routes } from 'react-router-dom';
 import { Sidebar } from 'src/components';
 
@@ -22,9 +22,8 @@ interface Props {
 }
 
 function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
-  const sortedSections = _.sortBy(appConfig.sections ?? [], [
-    'feature',
-    'name',
+  const sortedSections = sortBy(appConfig.sections ?? [], [
+    (section) => section.name,
   ]);
 
   return (

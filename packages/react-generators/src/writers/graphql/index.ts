@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isEqual } from 'es-toolkit';
 
 interface GraphQLArgumentScalarValue {
   type: 'scalar';
@@ -197,7 +197,7 @@ function areFieldsMergeable(
       return false;
     }
     // Check if arguments are identical
-    if (!_.isEqual(fieldOne.args, fieldTwo.args)) {
+    if (!isEqual(fieldOne.args, fieldTwo.args)) {
       throw new Error(
         `Unable to merge fields with different args: ${fieldOne.name}`,
       );
@@ -311,5 +311,5 @@ export function areFieldsIdentical(
   fieldsOne: GraphQLField[],
   fieldsTwo: GraphQLField[],
 ): boolean {
-  return _.isEqual(fieldsOne, fieldsTwo);
+  return isEqual(fieldsOne, fieldsTwo);
 }

@@ -38,14 +38,12 @@
     "@halfdomelabs/sync": "workspace:*",
     "es-toolkit": "1.31.0",
     "inflection": "3.0.0",
-    "lodash": "^4.17.21",
     "prettier-plugin-tailwindcss": "0.6.9",
     "toposort": "^2.0.2",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
-    "@types/lodash": "4.17.7",
     "@types/node": "catalog:",
     "@types/toposort": "^2.0.3",
     "concurrently": "9.0.1",

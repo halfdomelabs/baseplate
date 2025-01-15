@@ -10,7 +10,8 @@ import type {
   ZodTypeDef,
 } from 'zod';
 
-import _ from 'lodash';
+import { keyBy, pull } from 'es-toolkit';
+import { get, set } from 'es-toolkit/compat';
 import { z, ZodType } from 'zod';
 
 import type {
@@ -222,7 +223,7 @@ class ZodRefBuilder<TInput> {
     const refValue =
       refPathWithoutPrefix.length === 0
         ? this.data
-        : (_.get(
+        : (get(
             this.data,
             this._constructPathWithoutPrefix(reference.path),
           ) as string);
@@ -266,13 +267,13 @@ class ZodRefBuilder<TInput> {
       ? this._constructPathWithoutPrefix(entity.idPath as PathInput<TInput>)
       : [...this._constructPathWithoutPrefix(entity.path), 'id'];
     const id =
-      (_.get(this.data, idPath) as string | undefined) ??
+      (get(this.data, idPath) as string | undefined) ??
       entity.type.generateNewId();
 
     // attempt to fetch name from entity input
     const name =
       entity.name ??
-      (_.get(
+      (get(
         this.data,
         entity.namePath ?? [
           ...((entity.path as PathInput<TInput> | undefined) ?? []),
@@ -427,7 +428,7 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
       ];
       if (allEntities.length > 0) {
         for (const entity of allEntities) {
-          _.set(
+          set(
             output.value as object,
             entity.idPath.slice(input.path.length),
             entity.id,
@@ -594,7 +595,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
       const entities = [...refContext.entities];
 
       if (refContext.entitiesWithNamePath.length > 0) {
-        const entitiesById = _.keyBy(entities, 'id');
+        const entitiesById = keyBy(entities, (entity) => entity.id);
         let entitiesLength = -1;
         do {
           if (entitiesLength === entities.length) {
@@ -612,7 +613,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
           for (const entity of entitiesWithNamePath) {
             const newName = (() => {
               const { nameRefPath } = entity;
-              const nameRefValue = _.get(output.value, nameRefPath) as
+              const nameRefValue = get(output.value, nameRefPath) as
                 | string
                 | undefined;
               if (nameRefValue === undefined) {
@@ -633,7 +634,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
               };
               entities.push(newEntity);
               entitiesById[entity.id] = newEntity;
-              _.pull(refContext.entitiesWithNamePath, entity);
+              pull(refContext.entitiesWithNamePath, [entity]);
             }
           }
         } while (refContext.entitiesWithNamePath.length > 0);

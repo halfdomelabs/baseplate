@@ -10,7 +10,7 @@ import {
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -102,7 +102,7 @@ export function FeatureForm({
 
         renameFeatureChildren();
 
-        draftConfig.features = _.sortBy(newFeatures, (f) => f.name);
+        draftConfig.features = sortBy(newFeatures, [(f) => f.name]);
       });
       onClose?.();
     } catch (error) {

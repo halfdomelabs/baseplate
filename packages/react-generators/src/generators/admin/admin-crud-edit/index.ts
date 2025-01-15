@@ -7,7 +7,6 @@ import {
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { dasherize, underscore } from 'inflection';
-import _ from 'lodash';
 import { z } from 'zod';
 
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
@@ -158,9 +157,8 @@ export const adminCrudEditGenerator = createGenerator({
             const schemaPage = typescript.createTemplate({
               SCHEMA_NAME: new TypescriptStringReplacement(editSchemaName),
               SCHEMA_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-                _.zipObject(
-                  validations.map((v) => v.key),
-                  validations.map((v) => v.expression),
+                Object.fromEntries(
+                  validations.map((v) => [v.key, v.expression]),
                 ),
               ),
               FORM_DATA_NAME: new TypescriptStringReplacement(formDataName),

@@ -7,14 +7,14 @@ import {
   NavigationMenu,
   SidebarLayout,
 } from '@halfdomelabs/ui-components';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
 function AppsLayout(): React.JSX.Element {
   const { parsedProject } = useProjectDefinition();
 
   const { apps } = parsedProject.projectDefinition;
-  const sortedApps = _.sortBy(apps, (m) => m.name);
+  const sortedApps = sortBy(apps, [(app) => app.name]);
 
   return (
     <SidebarLayout className="flex-1">

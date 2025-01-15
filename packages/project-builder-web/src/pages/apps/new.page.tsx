@@ -14,7 +14,7 @@ import {
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import _ from 'lodash';
+import { sortBy } from 'es-toolkit';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { formatError } from 'src/services/error-formatter';
@@ -42,7 +42,7 @@ function NewAppPage(): React.JSX.Element {
     try {
       setConfigAndFixReferences((draftConfig) => {
         const newApps = [...draftConfig.apps, data];
-        draftConfig.apps = _.sortBy(newApps, 'name');
+        draftConfig.apps = sortBy(newApps, [(app) => app.name]);
       });
       navigate(`../edit/${appEntityType.toUid(data.id)}`);
       toast.success(`Sucessfully created ${data.name}!`);

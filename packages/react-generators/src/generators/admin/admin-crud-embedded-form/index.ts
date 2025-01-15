@@ -13,7 +13,6 @@ import {
   createProviderType,
   createTaskConfigBuilder,
 } from '@halfdomelabs/sync';
-import _ from 'lodash';
 import { z } from 'zod';
 
 import type { GraphQLField } from '@src/writers/graphql/index.js';
@@ -257,10 +256,7 @@ export type SCHEMA_TYPE = z.infer<typeof SCHEMA_NAME>;
           SCHEMA_NAME: formSchema,
           SCHEMA_TYPE: formDataType,
           SCHEMA_OBJECT: TypescriptCodeUtils.mergeExpressionsAsObject(
-            _.zipObject(
-              validations.map((v) => v.key),
-              validations.map((v) => v.expression),
-            ),
+            Object.fromEntries(validations.map((v) => [v.key, v.expression])),
           ),
         },
       ).withHeaderKey(formSchema);
