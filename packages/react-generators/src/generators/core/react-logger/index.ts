@@ -4,12 +4,14 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  makeImportAndFilePath,
   nodeProvider,
   projectScope,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import { reactProvider } from '../react/index.js';
@@ -45,6 +47,10 @@ export const reactLoggerGenerator = createGenerator({
           loglevel: '1.9.1',
         });
 
+        const [fileImport, filePath] = makeImportAndFilePath(
+          path.join(react.getSrcFolder(), 'services/logger.ts'),
+        );
+
         return {
           providers: {
             reactLogger: {
@@ -55,18 +61,17 @@ export const reactLoggerGenerator = createGenerator({
                 ),
               getImportMap: () => ({
                 '%react-logger': {
-                  path: `@/${react.getSrcFolder()}/services/logger`,
+                  path: fileImport,
                   allowedImports: ['logger'],
                 },
               }),
             },
           },
           build: async (builder) => {
-            builder.setBaseDirectory(react.getSrcFolder());
             await builder.apply(
               typescript.createCopyAction({
                 source: 'logger.ts',
-                destination: 'services/logger.ts',
+                destination: filePath,
               }),
             );
           },

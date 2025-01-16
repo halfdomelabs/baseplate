@@ -40,7 +40,7 @@ export const passwordHasherServiceGenerator = createGenerator({
       run({ node, appModule, typescript }) {
         const moduleFolder = appModule.getModuleFolder();
 
-        const [fileImport] = makeImportAndFilePath(
+        const [fileImport, filePath] = makeImportAndFilePath(
           path.join(moduleFolder, 'services/password-hasher.service.ts'),
         );
 
@@ -60,10 +60,10 @@ export const passwordHasherServiceGenerator = createGenerator({
             },
           },
           build: async (builder) => {
-            builder.setBaseDirectory(moduleFolder);
             await builder.apply(
               typescript.createCopyAction({
                 source: 'services/password-hasher.service.ts',
+                destination: filePath,
               }),
             );
           },

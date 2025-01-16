@@ -146,11 +146,6 @@ export class GeneratorTaskOutputBuilder {
    */
   generatorBaseDirectory: string;
 
-  /**
-   * The base directory to prefix all file paths with
-   */
-  baseDirectory: string | undefined;
-
   constructor(generatorBaseDirectory: string) {
     this.output = {
       files: new Map(),
@@ -201,31 +196,14 @@ export class GeneratorTaskOutputBuilder {
   }
 
   /**
-   * Resolves a path with the given base directory
+   * Resolves a path
    *
    * @param relativePath The path to resolve relative to the base directory
    * @returns The resolved path
    */
   resolvePath(relativePath: string): string {
-    return (
-      (
-        this.baseDirectory
-          ? path.join(this.baseDirectory, relativePath)
-          : relativePath
-      )
-        // normalize all paths to POSIX style / paths
-        .replaceAll(path.sep, path.posix.sep)
-    );
-  }
-
-  /**
-   * Sets the base directory for the generator output
-   * (all files written will be written relative to the base directory)
-   *
-   * @param baseDirectory The base directory to set
-   */
-  setBaseDirectory(baseDirectory: string): void {
-    this.baseDirectory = baseDirectory;
+    // normalize all paths to POSIX style / paths
+    return relativePath.replaceAll(path.sep, path.posix.sep);
   }
 
   /**

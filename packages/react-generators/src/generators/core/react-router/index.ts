@@ -4,6 +4,7 @@ import type {
 } from '@halfdomelabs/core-generators';
 
 import {
+  makeImportAndFilePath,
   nodeProvider,
   projectScope,
   TypescriptCodeUtils,
@@ -11,6 +12,7 @@ import {
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
 import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import path from 'node:path';
 import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
@@ -100,7 +102,9 @@ export const reactRouterGenerator = createGenerator({
                 `import { Routes } from 'react-router-dom'`,
               );
 
-            builder.setBaseDirectory(react.getSrcFolder());
+            const [pagesImport, pagesPath] = makeImportAndFilePath(
+              path.join(react.getSrcFolder(), 'pages/index.tsx'),
+            );
 
             reactApp
               .getRenderWrappers()
@@ -115,7 +119,7 @@ export const reactRouterGenerator = createGenerator({
             reactApp.setRenderRoot(
               TypescriptCodeUtils.createExpression(
                 '<PagesRoot />',
-                `import PagesRoot from "@/${react.getSrcFolder()}/pages"`,
+                `import PagesRoot from "${pagesImport}"`,
               ),
             );
 
@@ -140,7 +144,7 @@ export const reactRouterGenerator = createGenerator({
             });
 
             await builder.apply(
-              pagesRootFile.renderToAction('pages/index.tsx'),
+              pagesRootFile.renderToAction('pages/index.tsx', pagesPath),
             );
           },
         };
