@@ -1,5 +1,13 @@
 # @halfdomelabs/tools
 
+## 0.5.11
+
+### Patch Changes
+
+- [#419](https://github.com/halfdomelabs/baseplate/pull/419) [`9f34f54`](https://github.com/halfdomelabs/baseplate/commit/9f34f54d6b6c9762f5237000c83aa9959116a282) Thanks [@kingston](https://github.com/kingston)! - Change monorepo tooling to Turborepo from NX for easier caching
+
+- [#406](https://github.com/halfdomelabs/baseplate/pull/406) [`cd92861`](https://github.com/halfdomelabs/baseplate/commit/cd92861d764380264dcc7d480407edf618421e70) Thanks [@kingston](https://github.com/kingston)! - Upgrade ESLint to 9.17 and Prettier to 3.4 (and associated plugins)
+
 ## 0.5.10
 
 ### Patch Changes

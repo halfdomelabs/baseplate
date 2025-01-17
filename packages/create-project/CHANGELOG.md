@@ -1,5 +1,17 @@
 # @halfdomelabs/create-project
 
+## 0.2.8
+
+### Patch Changes
+
+- [#416](https://github.com/halfdomelabs/baseplate/pull/416) [`b18263c`](https://github.com/halfdomelabs/baseplate/commit/b18263c1a06a74c9c5456b1efb0d7171e3b747cc) Thanks [@kingston](https://github.com/kingston)! - Refactor generators to use createGeneratorsWithTasks instead of createGeneratorsWithChildren
+
+- [#407](https://github.com/halfdomelabs/baseplate/pull/407) [`09243e5`](https://github.com/halfdomelabs/baseplate/commit/09243e511eefa65ce0809ec8b9228a74f690cdf6) Thanks [@kingston](https://github.com/kingston)! - Upgrade PNPM to 9.15.1
+
+- [#419](https://github.com/halfdomelabs/baseplate/pull/419) [`9f34f54`](https://github.com/halfdomelabs/baseplate/commit/9f34f54d6b6c9762f5237000c83aa9959116a282) Thanks [@kingston](https://github.com/kingston)! - Change monorepo tooling to Turborepo from NX for easier caching
+
+- [#407](https://github.com/halfdomelabs/baseplate/pull/407) [`09243e5`](https://github.com/halfdomelabs/baseplate/commit/09243e511eefa65ce0809ec8b9228a74f690cdf6) Thanks [@kingston](https://github.com/kingston)! - Upgrade Node to 20.18.1
+
 ## 0.2.7
 
 ### Patch Changes

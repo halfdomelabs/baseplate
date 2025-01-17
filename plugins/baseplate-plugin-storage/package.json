@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/baseplate-plugin-storage",
-  "version": "1.0.15",
+  "version": "2.0.0",
   "description": "Contains for the storage plugin for Baseplate",
   "repository": "https://github.com/halfdomelabs/baseplate",
   "license": "SEE LICENSE IN LICENSE",
