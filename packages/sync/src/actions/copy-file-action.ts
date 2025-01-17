@@ -39,13 +39,25 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
         fileContents,
         replacements ?? {},
       );
-      builder.writeFile(destination, replacedFileContents, {
-        shouldFormat,
-        neverOverwrite,
+      builder.writeFile({
+        id: destination,
+        filePath: destination,
+        contents: replacedFileContents,
+        options: {
+          shouldFormat,
+          neverOverwrite,
+        },
       });
     } else {
       const fileContents = await fs.readFile(templatePath);
-      builder.writeFile(destination, fileContents, { neverOverwrite });
+      builder.writeFile({
+        id: destination,
+        filePath: destination,
+        contents: fileContents,
+        options: {
+          neverOverwrite,
+        },
+      });
     }
   },
 );

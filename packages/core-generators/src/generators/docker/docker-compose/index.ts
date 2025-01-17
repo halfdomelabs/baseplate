@@ -89,17 +89,21 @@ ${volumeEntries.join('\n')}`.trim();
         return {
           providers: {},
           build: (builder) => {
-            builder.writeFile(
-              dockerComposePath,
-              `${`
+            builder.writeFile({
+              id: 'docker-compose',
+              filePath: dockerComposePath,
+              contents: `${`
 ${entries.join('\n')}`.trim()}\n`,
-              { shouldFormat: true },
-            );
+              options: {
+                shouldFormat: true,
+              },
+            });
 
-            builder.writeFile(
-              dockerEnvPath,
-              `COMPOSE_PROJECT_NAME=${projectName}-dev\n`,
-            );
+            builder.writeFile({
+              id: 'docker-env',
+              filePath: dockerEnvPath,
+              contents: `COMPOSE_PROJECT_NAME=${projectName}-dev\n`,
+            });
           },
         };
       },

@@ -9,6 +9,7 @@ import { TypescriptSourceFile } from '../writers/index.js';
 
 export interface CopyTypescriptFileOptions {
   destination?: string;
+  id?: string;
   source: string;
   replacements?: Record<string, string>;
   importMappers?: ImportMapper[];
@@ -64,8 +65,13 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
     ? formatImports(replacedContents, fullPath, options)
     : replacedContents;
 
-  builder.writeFile(destinationPath, formattedContents, {
-    shouldFormat: true,
-    neverOverwrite,
+  builder.writeFile({
+    id: options.id ?? destinationPath,
+    filePath: destinationPath,
+    contents: formattedContents,
+    options: {
+      shouldFormat: true,
+      neverOverwrite,
+    },
   });
 });

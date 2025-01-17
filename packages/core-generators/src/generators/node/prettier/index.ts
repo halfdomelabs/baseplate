@@ -266,10 +266,14 @@ export const prettierGenerator = createGenerator({
 
             const prettierIgnoreSorted = uniq(prettierIgnore.toSorted());
 
-            builder.writeFile(
-              '.prettierignore',
-              `${prettierIgnoreSorted.join('\n')}\n`,
-            );
+            builder.writeFile({
+              id: 'prettier-ignore',
+              filePath: '.prettierignore',
+              contents: `${prettierIgnoreSorted.join('\n')}\n`,
+              options: {
+                shouldFormat: true,
+              },
+            });
           },
         };
       },

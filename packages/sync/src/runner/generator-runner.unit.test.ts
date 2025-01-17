@@ -76,7 +76,11 @@ describe('executeGeneratorEntry', () => {
   it('generates a simple entry', async () => {
     const entry = buildGeneratorEntry({
       build: (builder) => {
-        builder.writeFile('/simple/file.txt', 'simple');
+        builder.writeFile({
+          id: 'simple',
+          filePath: '/simple/file.txt',
+          contents: 'simple',
+        });
         builder.addPostWriteCommand('simple command', 'script');
       },
     });
@@ -105,7 +109,11 @@ describe('executeGeneratorEntry', () => {
       },
       exports: { simpleExp: simpleProvider },
       build: (builder) => {
-        builder.writeFile('/simple/file.txt', 'simple');
+        builder.writeFile({
+          id: 'simple',
+          filePath: '/simple/file.txt',
+          contents: 'simple',
+        });
         builder.addPostWriteCommand('simple command', 'script');
       },
       children: [
@@ -114,8 +122,13 @@ describe('executeGeneratorEntry', () => {
           dependencyMap: { simpleDep: simpleProviderType },
           build: (builder, deps) => {
             deps.simpleDep.hello();
-            builder.writeFile('/nested/file.txt', 'nested', {
-              shouldFormat: true,
+            builder.writeFile({
+              id: 'nested',
+              filePath: '/nested/file.txt',
+              contents: 'nested',
+              options: {
+                shouldFormat: true,
+              },
             });
             builder.addPostWriteCommand('nested command', 'script', {
               workingDirectory: '/nested',

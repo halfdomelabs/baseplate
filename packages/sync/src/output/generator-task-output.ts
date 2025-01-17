@@ -10,6 +10,11 @@ import type { MergeAlgorithm } from './merge-algorithms/types.js';
  */
 export interface WriteFileOptions {
   /**
+   * Alternate full IDs for the file (used if migrating file from one generator to another)
+   * Note: This must be the full ID of the file (i.e. `<package>/<generator-name>/<file-id>`)
+   */
+  alternateFullIds?: string[];
+  /**
    * Whether to format the file using the default formatter
    */
   shouldFormat?: boolean;
@@ -66,6 +71,10 @@ export interface PostWriteCommandOptions {
  * Data for a file to be written
  */
 export interface FileData {
+  /**
+   * A unique identifier for the file within that generator (used to track renaming/moving of the file)
+   */
+  id: string;
   /**
    * The contents of the file
    */
@@ -177,11 +186,17 @@ export class GeneratorTaskOutputBuilder {
    * @param contents The contents of the file
    * @param options The options for the file
    */
-  writeFile(
-    filePath: string,
-    contents: string | Buffer,
-    options?: WriteFileOptions,
-  ): void {
+  writeFile({
+    id,
+    filePath,
+    contents,
+    options,
+  }: {
+    id: string;
+    filePath: string;
+    contents: string | Buffer;
+    options?: WriteFileOptions;
+  }): void {
     const fullPath = this.resolvePath(filePath);
 
     if (this.output.files.has(fullPath)) {
@@ -192,7 +207,7 @@ export class GeneratorTaskOutputBuilder {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
 
-    this.output.files.set(fullPath, { contents, options });
+    this.output.files.set(fullPath, { id, contents, options });
   }
 
   /**

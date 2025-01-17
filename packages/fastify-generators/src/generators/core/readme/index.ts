@@ -49,7 +49,14 @@ In order to set up the backend, you must do the following steps:
         return {
           providers: {},
           build: (builder) => {
-            builder.writeFile('README.md', readmeContent);
+            builder.writeFile({
+              id: 'readme',
+              filePath: 'README.md',
+              contents: readmeContent,
+              options: {
+                shouldFormat: true,
+              },
+            });
           },
         };
       },

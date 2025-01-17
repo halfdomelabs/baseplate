@@ -36,10 +36,14 @@ describe('writeGeneratorOutput', () => {
     await writeGeneratorOutput(
       {
         files: new Map([
-          ['file.txt', { contents: 'hi' }],
+          ['file.txt', { id: 'file', contents: 'hi' }],
           [
             'formatted.txt',
-            { contents: 'hello', options: { shouldFormat: true } },
+            {
+              id: 'formatted',
+              contents: 'hello',
+              options: { shouldFormat: true },
+            },
           ],
         ]),
         postWriteCommands: [],
@@ -78,6 +82,7 @@ describe('writeGeneratorOutput', () => {
           [
             'file.txt',
             {
+              id: 'file',
               contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
               options: {
                 cleanContents: Buffer.from(
@@ -89,6 +94,7 @@ describe('writeGeneratorOutput', () => {
           [
             'file2.txt',
             {
+              id: 'file2',
               contents: ['123', '456', '789', '012'].join('\n'),
               options: {
                 cleanContents: Buffer.from(
@@ -122,6 +128,7 @@ describe('writeGeneratorOutput', () => {
           [
             'file.txt',
             {
+              id: 'file',
               contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
               options: {
                 cleanContents: Buffer.from(
@@ -163,6 +170,7 @@ describe('writeGeneratorOutput', () => {
           [
             'file.txt',
             {
+              id: 'file',
               contents: ['hello', 'hi', 'something', 'adios'].join('\n'),
             },
           ],
@@ -194,7 +202,14 @@ describe('writeGeneratorOutput', () => {
     await writeGeneratorOutput(
       {
         files: new Map([
-          ['file.txt', { contents: 'hi2', options: { neverOverwrite: true } }],
+          [
+            'file.txt',
+            {
+              id: 'file',
+              contents: 'hi2',
+              options: { neverOverwrite: true },
+            },
+          ],
         ]),
         postWriteCommands: [],
         globalFormatters: [],
@@ -209,7 +224,9 @@ describe('writeGeneratorOutput', () => {
   it('should write binary file', async () => {
     await writeGeneratorOutput(
       {
-        files: new Map([['file.txt', { contents: Buffer.from('hi', 'utf8') }]]),
+        files: new Map([
+          ['file.txt', { id: 'file', contents: Buffer.from('hi', 'utf8') }],
+        ]),
         postWriteCommands: [],
         globalFormatters: [],
       },
@@ -262,10 +279,11 @@ describe('writeGeneratorOutput', () => {
     await writeGeneratorOutput(
       {
         files: new Map([
-          ['file.txt', { contents: 'hi' }],
+          ['file.txt', { id: 'file', contents: 'hi' }],
           [
             'file2.txt',
             {
+              id: 'file2',
               contents: 'hello',
               options: { cleanContents: Buffer.from('hi2') },
             },
@@ -306,7 +324,10 @@ describe('writeGeneratorOutput', () => {
     await writeGeneratorOutput(
       {
         files: new Map([
-          ['file.txt', { contents: Buffer.from('binary-data', 'utf8') }],
+          [
+            'file.txt',
+            { id: 'file', contents: Buffer.from('binary-data', 'utf8') },
+          ],
         ]),
         postWriteCommands: [
           {

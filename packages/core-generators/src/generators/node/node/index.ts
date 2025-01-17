@@ -218,10 +218,11 @@ export const nodeGenerator = createGenerator({
             );
 
             // write node version so .pnpm can use it
-            builder.writeFile(
-              '.npmrc',
-              `use-node-version=${descriptor.nodeVersion}`,
-            );
+            builder.writeFile({
+              id: 'node/npmrc',
+              filePath: '.npmrc',
+              contents: `use-node-version=${descriptor.nodeVersion}`,
+            });
 
             // we have to avoid the prompt otherwise generation will hang
             // https://github.com/pnpm/pnpm/issues/6778

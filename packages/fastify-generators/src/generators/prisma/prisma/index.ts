@@ -172,10 +172,11 @@ export const prismaGenerator = createGenerator({
             const formattedSchemaText = await format({
               schema: schemaText,
             });
-            builder.writeFile(
-              'prisma/schema.prisma',
-              `${formattedSchemaText.trimEnd()}\n`,
-            );
+            builder.writeFile({
+              id: 'prisma-schema',
+              filePath: 'prisma/schema.prisma',
+              contents: `${formattedSchemaText.trimEnd()}\n`,
+            });
 
             builder.addPostWriteCommand('pnpm prisma generate', 'generation', {
               onlyIfChanged: ['prisma/schema.prisma'],

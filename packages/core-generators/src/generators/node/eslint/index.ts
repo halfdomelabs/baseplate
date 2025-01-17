@@ -100,10 +100,14 @@ export const eslintGenerator = createGenerator({
             );
 
             // generate ignore file
-            builder.writeFile(
-              '.eslintignore',
-              `${config.eslintIgnore.join('\n')}\n`,
-            );
+            builder.writeFile({
+              id: 'eslint-ignore',
+              filePath: '.eslintignore',
+              contents: `${config.eslintIgnore.join('\n')}\n`,
+              options: {
+                shouldFormat: true,
+              },
+            });
           },
         };
       },
