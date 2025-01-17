@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/project-builder-cli",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "Full-stack CLI builder using Baseplate generators",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
