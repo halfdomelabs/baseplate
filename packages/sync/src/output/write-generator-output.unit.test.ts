@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { executeCommand } from '../utils/exec.js';
 import { createEventedLogger } from '../utils/index.js';
+import { POST_WRITE_COMMAND_PRIORITY } from './post-write-commands/index.js';
 import { writeGeneratorOutput } from './write-generator-output.js';
 
 vi.mock('node:fs');
@@ -244,15 +245,25 @@ describe('writeGeneratorOutput', () => {
         postWriteCommands: [
           {
             command: 'custom-script',
-            options: { workingDirectory: '/folder' },
-            commandType: 'script',
+            options: {
+              workingDirectory: '/folder',
+              priority: POST_WRITE_COMMAND_PRIORITY.DEFAULT,
+            },
           },
           {
             command: 'custom',
-            options: { workingDirectory: '/folder' },
-            commandType: 'generation',
+            options: {
+              workingDirectory: '/folder',
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+            },
           },
-          { command: 'pnpm install', commandType: 'dependencies' },
+          {
+            command: 'pnpm install',
+            options: {
+              workingDirectory: '/folder',
+              priority: POST_WRITE_COMMAND_PRIORITY.DEPENDENCIES,
+            },
+          },
         ],
         globalFormatters: [],
       },
@@ -292,13 +303,17 @@ describe('writeGeneratorOutput', () => {
         postWriteCommands: [
           {
             command: 'pnpm install',
-            options: { onlyIfChanged: ['file.txt'] },
-            commandType: 'dependencies',
+            options: {
+              onlyIfChanged: ['file.txt'],
+              priority: POST_WRITE_COMMAND_PRIORITY.DEPENDENCIES,
+            },
           },
           {
             command: 'custom',
-            options: { onlyIfChanged: ['file2.txt'] },
-            commandType: 'script',
+            options: {
+              onlyIfChanged: ['file2.txt'],
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+            },
           },
         ],
         globalFormatters: [],
@@ -332,8 +347,10 @@ describe('writeGeneratorOutput', () => {
         postWriteCommands: [
           {
             command: 'pnpm install',
-            options: { onlyIfChanged: ['file.txt'] },
-            commandType: 'dependencies',
+            options: {
+              onlyIfChanged: ['file.txt'],
+              priority: POST_WRITE_COMMAND_PRIORITY.DEPENDENCIES,
+            },
           },
         ],
         globalFormatters: [],

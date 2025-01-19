@@ -4,6 +4,10 @@ import path from 'node:path';
 import type { BuilderAction } from './builder-action.js';
 import type { GeneratorOutputFormatter } from './formatter.js';
 import type { MergeAlgorithm } from './merge-algorithms/types.js';
+import type {
+  PostWriteCommand,
+  PostWriteCommandOptions,
+} from './post-write-commands/types.js';
 
 /**
  * Options for writing a file
@@ -33,41 +37,6 @@ export interface WriteFileOptions {
 }
 
 /**
- * The type of post write command to run which specifies the order in which it is run
- *
- * - dependencies: for installing any dependencies, e.g. pnpm install
- * - generation: for generating the files, e.g. pnpm prisma schema
- * - script: for running any scripts, e.g. pnpm generate
- */
-export type PostWriteCommandType = 'dependencies' | 'generation' | 'script';
-
-/**
- * The priority of each post write command type
- */
-export const POST_WRITE_COMMAND_TYPE_PRIORITY: Record<
-  PostWriteCommandType,
-  number
-> = {
-  dependencies: 0,
-  generation: 1,
-  script: 2,
-};
-
-/**
- * Options for a post write command
- */
-export interface PostWriteCommandOptions {
-  /**
-   * Only run command if the provided files were changed
-   */
-  onlyIfChanged?: string | string[];
-  /**
-   * The working directory to run the command in. Defaults to package directory.
-   */
-  workingDirectory?: string;
-}
-
-/**
  * Data for a file to be written
  */
 export interface FileData {
@@ -83,24 +52,6 @@ export interface FileData {
    * The options for how to write the file
    */
   options?: WriteFileOptions;
-}
-
-/**
- * A command to run after the files are written
- */
-export interface PostWriteCommand {
-  /**
-   * The command to run
-   */
-  command: string;
-  /**
-   * The type of the command
-   */
-  commandType: PostWriteCommandType;
-  /**
-   * The options for the command
-   */
-  options?: PostWriteCommandOptions;
 }
 
 /**
@@ -230,10 +181,9 @@ export class GeneratorTaskOutputBuilder {
    */
   addPostWriteCommand(
     command: string,
-    commandType: PostWriteCommandType,
     options?: PostWriteCommandOptions,
   ): void {
-    this.output.postWriteCommands.push({ command, commandType, options });
+    this.output.postWriteCommands.push({ command, options });
   }
 
   /**

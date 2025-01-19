@@ -42,9 +42,11 @@ describe('copyDirectoryAction', () => {
 
     expect(builder.output.files.size).toEqual(2);
     expect(builder.output.files.get('/dest/test1.txt')).toEqual({
+      id: '/dest/test1.txt',
       contents: Buffer.from('hi', 'utf8'),
     });
     expect(builder.output.files.get('/dest/nested/test2.txt')).toEqual({
+      id: '/dest/nested/test2.txt',
       contents: Buffer.from('hi2', 'utf8'),
     });
     expect(builder.output.postWriteCommands).toHaveLength(0);
@@ -65,6 +67,7 @@ describe('copyDirectoryAction', () => {
 
     expect(builder.output.files.size).toEqual(1);
     expect(builder.output.files.get('/dest/test1.txt')).toEqual({
+      id: '/dest/test1.txt',
       contents: 'hi',
       options: { shouldFormat: true },
     });

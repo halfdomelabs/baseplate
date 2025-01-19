@@ -1,7 +1,4 @@
 import chalk from 'chalk';
-import { sortBy } from 'es-toolkit';
-import { ExecaError } from 'execa';
-import ms from 'ms';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import pLimit from 'p-limit';
@@ -12,21 +9,21 @@ import type {
 } from '@src/output/merge-algorithms/types.js';
 import type { Logger } from '@src/utils/evented-logger.js';
 
-import { executeCommand } from '@src/utils/exec.js';
 import { ensureDir, pathExists } from '@src/utils/fs.js';
 
 import type { GeneratorOutputFormatter } from './formatter.js';
 import type { FileData, GeneratorOutput } from './generator-task-output.js';
 
-import { POST_WRITE_COMMAND_TYPE_PRIORITY } from './generator-task-output.js';
 import {
   buildCompositeMergeAlgorithm,
   diff3MergeAlgorithm,
   jsonMergeAlgorithm,
   simpleDiffAlgorithm,
 } from './merge-algorithms/index.js';
-
-const COMMAND_TIMEOUT_MILLIS = ms('5m');
+import {
+  runPostWriteCommands,
+  sortPostWriteCommands,
+} from './post-write-commands/index.js';
 
 async function mergeContents(
   newContents: string,
@@ -324,9 +321,7 @@ export async function writeGeneratorOutput(
       );
     });
 
-    const orderedCommands = sortBy(runnableCommands, [
-      (command) => POST_WRITE_COMMAND_TYPE_PRIORITY[command.commandType],
-    ]);
+    const orderedCommands = sortPostWriteCommands(runnableCommands);
 
     if (conflictFilenames.length > 0) {
       logger.warn(
@@ -350,29 +345,11 @@ export async function writeGeneratorOutput(
       };
     }
 
-    const failedCommands: string[] = [];
-
-    for (const command of orderedCommands) {
-      const { workingDirectory = '' } = command.options ?? {};
-
-      const commandString = command.command;
-
-      logger.info(`Running ${commandString}...`);
-      try {
-        await executeCommand(commandString, {
-          cwd: path.join(outputDirectory, workingDirectory),
-          timeout: COMMAND_TIMEOUT_MILLIS,
-        });
-      } catch (error) {
-        logger.error(chalk.red(`Unable to run ${commandString}`));
-        if (error instanceof ExecaError) {
-          logger.error(error.stderr);
-        } else {
-          logger.error(String(error));
-        }
-        failedCommands.push(command.command);
-      }
-    }
+    const { failedCommands } = await runPostWriteCommands(
+      orderedCommands,
+      outputDirectory,
+      logger,
+    );
 
     return {
       conflictFilenames: [],
