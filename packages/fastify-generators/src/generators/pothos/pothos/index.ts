@@ -19,6 +19,7 @@ import {
   createGenerator,
   createNonOverwriteableMap,
   createProviderType,
+  POST_WRITE_COMMAND_PRIORITY,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
@@ -329,7 +330,8 @@ if (IS_DEVELOPMENT) {
               }),
             );
 
-            builder.addPostWriteCommand('pnpm generate:schema', 'generation', {
+            builder.addPostWriteCommand('pnpm generate:schema', {
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
               onlyIfChanged: [
                 ...schemaFiles,
                 'src/plugins/graphql/index.ts',

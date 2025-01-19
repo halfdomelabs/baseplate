@@ -22,7 +22,7 @@
       "cache": false
     },
     "typecheck": {
-      "cache": true
+      "cache": false
     },
     "dev": {
       "persistent": true,

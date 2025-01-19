@@ -15,6 +15,7 @@ import {
   createGenerator,
   createNonOverwriteableMap,
   createProviderType,
+  POST_WRITE_COMMAND_PRIORITY,
   writeTemplateAction,
 } from '@halfdomelabs/sync';
 import toposort from 'toposort';
@@ -453,7 +454,9 @@ export const reactApolloGenerator = createGenerator({
               ),
             );
 
-            builder.addPostWriteCommand('pnpm generate', 'generation', {
+            builder.addPostWriteCommand('pnpm generate', {
+              // run after prisma generate
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN + 1,
               onlyIfChanged: [...gqlFiles, 'codegen.yml'],
             });
           },

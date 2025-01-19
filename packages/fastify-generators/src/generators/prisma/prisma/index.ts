@@ -11,7 +11,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createProviderType,
+  POST_WRITE_COMMAND_PRIORITY,
+} from '@halfdomelabs/sync';
 import { createRequire } from 'node:module';
 import { z } from 'zod';
 
@@ -178,7 +182,8 @@ export const prismaGenerator = createGenerator({
               contents: `${formattedSchemaText.trimEnd()}\n`,
             });
 
-            builder.addPostWriteCommand('pnpm prisma generate', 'generation', {
+            builder.addPostWriteCommand('pnpm prisma generate', {
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
               onlyIfChanged: ['prisma/schema.prisma'],
             });
 

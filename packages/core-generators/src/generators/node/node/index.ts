@@ -2,6 +2,7 @@ import {
   createGenerator,
   createNonOverwriteableMap,
   createProviderType,
+  POST_WRITE_COMMAND_PRIORITY,
   writeJsonAction,
 } from '@halfdomelabs/sync';
 import { sortBy } from 'es-toolkit';
@@ -228,10 +229,10 @@ export const nodeGenerator = createGenerator({
             // https://github.com/pnpm/pnpm/issues/6778
             builder.addPostWriteCommand(
               'pnpm install --config.confirmModulesPurge=false',
-              'dependencies',
               {
                 workingDirectory: '/',
                 onlyIfChanged: ['package.json'],
+                priority: POST_WRITE_COMMAND_PRIORITY.DEPENDENCIES,
               },
             );
 
@@ -242,7 +243,6 @@ export const nodeGenerator = createGenerator({
             if (Object.keys(allDependencies).includes('prettier')) {
               builder.addPostWriteCommand(
                 'pnpm prettier --write package.json',
-                'dependencies',
                 {
                   workingDirectory: '/',
                   onlyIfChanged: ['package.json'],
