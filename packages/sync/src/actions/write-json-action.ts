@@ -1,6 +1,7 @@
 import { createBuilderActionCreator } from '@src/output/builder-action.js';
 
 interface Options {
+  id?: string;
   destination: string;
   contents: unknown;
   noFormat?: boolean;
@@ -8,12 +9,12 @@ interface Options {
 
 export const writeJsonAction = createBuilderActionCreator<[Options]>(
   (options: Options) => (builder) => {
-    const { destination, contents, noFormat } = options;
+    const { id, destination, contents, noFormat } = options;
 
     const jsonString = `${JSON.stringify(contents, null, 2)}\n`;
 
     builder.writeFile({
-      id: destination,
+      id: id ?? destination,
       filePath: destination,
       contents: jsonString,
       options: {

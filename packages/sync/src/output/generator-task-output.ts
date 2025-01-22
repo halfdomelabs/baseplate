@@ -154,8 +154,6 @@ export class GeneratorTaskOutputBuilder {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
 
-    //TODO [2024-01-01]: Check uniqueness of id and throw error
-
     this.output.files.set(fullPath, { id, contents, options });
   }
 

@@ -213,6 +213,7 @@ export const nodeGenerator = createGenerator({
 
             await builder.apply(
               writeJsonAction({
+                id: 'package-json',
                 destination: 'package.json',
                 contents: sortedPackageJsonContents,
               }),
@@ -220,7 +221,7 @@ export const nodeGenerator = createGenerator({
 
             // write node version so .pnpm can use it
             builder.writeFile({
-              id: 'node/npmrc',
+              id: 'npmrc',
               filePath: '.npmrc',
               contents: `use-node-version=${descriptor.nodeVersion}`,
             });
