@@ -1,26 +1,30 @@
 import jsonPatch from 'fast-json-patch';
 
-import type { MergeAlgorithm } from './types.js';
+import type { StringMergeAlgorithm } from './types.js';
 
 /**
  * Merges JSON strings using a 3-way merge algorithm
  */
-export const jsonMergeAlgorithm: MergeAlgorithm = async (
-  userText,
-  newText,
-  baseText,
-  context,
-) => {
+export const jsonMergeAlgorithm: StringMergeAlgorithm = (input) => {
   try {
-    const originalJson = JSON.parse(baseText) as Record<string, unknown>;
-    const newJson = JSON.parse(newText) as Record<string, unknown>;
-    const existingJson = JSON.parse(userText) as Record<string, unknown>;
+    const originalJson = JSON.parse(input.previousGeneratedText) as Record<
+      string,
+      unknown
+    >;
+    const newJson = JSON.parse(input.currentGeneratedText) as Record<
+      string,
+      unknown
+    >;
+    const existingJson = JSON.parse(input.previousWorkingText) as Record<
+      string,
+      unknown
+    >;
 
     const diff = jsonPatch.compare(originalJson, newJson, true);
 
     if (diff.length === 0) {
       return {
-        mergedText: userText,
+        mergedText: input.previousWorkingText,
         hasConflict: false,
       };
     }
@@ -32,7 +36,7 @@ export const jsonMergeAlgorithm: MergeAlgorithm = async (
     );
 
     return {
-      mergedText: await context.formatContents(result),
+      mergedText: result,
       hasConflict: false,
     };
   } catch {

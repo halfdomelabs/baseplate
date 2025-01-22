@@ -14,10 +14,7 @@ import path from 'node:path';
 
 import { compileApplications } from '@src/compiler/index.js';
 
-import {
-  generateCleanAppForDirectory,
-  generateForDirectory,
-} from '../sync/index.js';
+import { generateForDirectory } from '../sync/index.js';
 
 async function loadProjectJson(directory: string): Promise<unknown> {
   const projectJsonPath = path.join(
@@ -81,33 +78,6 @@ export async function buildProjectForDirectory({
 
   for (const app of apps) {
     await generateForDirectory({
-      baseDirectory: directory,
-      appEntry: app,
-      logger,
-    });
-  }
-
-  logger.info(`Project written to ${directory}!`);
-}
-
-interface BuildToCleanFolderOptions {
-  directory: string;
-  logger: Logger;
-  context: SchemaParserContext;
-}
-
-export async function buildToCleanFolder({
-  directory,
-  logger,
-  context,
-}: BuildToCleanFolderOptions): Promise<void> {
-  const apps = await compileApplicationsFromDirectory({
-    directory,
-    context,
-  });
-
-  for (const app of apps) {
-    await generateCleanAppForDirectory({
       baseDirectory: directory,
       appEntry: app,
       logger,

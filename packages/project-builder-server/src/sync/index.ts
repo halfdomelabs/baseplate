@@ -1,17 +1,13 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
+import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
 
-import {
-  type FileData,
-  GeneratorEngine,
-  type Logger,
-} from '@halfdomelabs/sync';
-import chalk from 'chalk';
+import { GeneratorEngine } from '@halfdomelabs/sync';
+import { createCodebaseFileReaderFromDirectory } from '@halfdomelabs/sync/dist/output/codebase-file-reader.js';
 import fs from 'fs-extra';
-import { globby } from 'globby';
 import path from 'node:path';
+import { z } from 'zod';
 
 import { environmentFlags } from '@src/service/environment-flags.js';
-import { removeEmptyAncestorDirectories } from '@src/utils/directories.js';
 
 import { writeGeneratorStepsHtml } from './generator-steps-html-writer.js';
 
@@ -25,26 +21,65 @@ interface GenerateForDirectoryOptions {
   logger: Logger;
 }
 
-async function getCleanDirectoryFiles(
-  cleanDirectory: string,
-): Promise<{ filePath: string; contents: Buffer }[] | null> {
-  // check if the project directory exists
-  const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
+// /**
+//  * Rename the clean directory to the generated directory if it exists.
+//  *
+//  * The .clean directory was the old directory that was used to store the generated
+//  * contents. Now we use the generated directory instead.
+//  *
+//  * @param projectDirectory - The project directory.
+//  */
+// async function renameCleanDirectoryIfExists(
+//   projectDirectory: string,
+// ): Promise<void> {
+//   const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
+//   const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
+//   const cleanDirectoryExists = await fs.pathExists(cleanDirectory);
+//   if (cleanDirectoryExists) {
+//     await fs.rename(cleanDirectory, generatedDirectory);
+//   }
+// }
 
-  if (!cleanDirectoryExists) {
-    return null;
+const GENERATED_DIRECTORY = 'baseplate/.clean';
+const FILE_ID_MAP_PATH = 'baseplate/file-id-map.json';
+
+async function getPreviousGeneratedFileIdMap(
+  projectDirectory: string,
+): Promise<Map<string, string>> {
+  const generatedFileIdMapPath = path.join(projectDirectory, FILE_ID_MAP_PATH);
+  try {
+    const fileIdMap = (await fs.readJson(generatedFileIdMapPath)) as unknown;
+
+    const fileIdRecord = z.record(z.string(), z.string()).parse(fileIdMap);
+    return new Map(Object.entries(fileIdRecord));
+  } catch (err) {
+    if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
+      return new Map();
+    }
+    throw new Error(
+      `Failed to get previous generated file id map (${generatedFileIdMapPath}): ${String(err)}`,
+      { cause: err },
+    );
+  }
+}
+
+async function getPreviousGeneratedPayload(
+  projectDirectory: string,
+): Promise<PreviousGeneratedPayload | undefined> {
+  const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
+
+  const previousDirectoryExists = await fs.pathExists(generatedDirectory);
+
+  if (!previousDirectoryExists) {
+    return undefined;
   }
 
-  const files = await globby('**/*', { cwd: cleanDirectory, dot: true });
-  return Promise.all(
-    files.map(async (filePath) => {
-      const contents = await fs.readFile(path.join(cleanDirectory, filePath));
-      return {
-        filePath,
-        contents,
-      };
-    }),
-  );
+  const fileIdMap = await getPreviousGeneratedFileIdMap(projectDirectory);
+
+  return {
+    fileReader: createCodebaseFileReaderFromDirectory(generatedDirectory),
+    fileIdToRelativePathMap: fileIdMap,
+  };
 }
 
 export async function generateForDirectory({
@@ -56,7 +91,6 @@ export async function generateForDirectory({
   const engine = new GeneratorEngine();
 
   const projectDirectory = path.join(baseDirectory, appDirectory);
-  const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
@@ -76,55 +110,25 @@ export async function generateForDirectory({
     : {};
 
   // load clean directory contents
-  const cleanProjectFiles = await getCleanDirectoryFiles(cleanDirectory);
+  const previousGeneratedPayload =
+    await getPreviousGeneratedPayload(projectDirectory);
 
-  if (cleanProjectFiles) {
-    logger.info(
-      'Detected project clean folder. Attempting 3-way mediocre-merge...',
-    );
+  if (previousGeneratedPayload) {
+    logger.info('Detected generated folder. Attempting 3-way merge...');
   }
 
-  const cleanTmpDirectory = path.join(
+  const generatedTemporaryDirectory = path.join(
     projectDirectory,
-    'baseplate/build/clean_tmp',
+    'baseplate/build/generated_tmp',
   );
 
-  const augmentedOutput = cleanProjectFiles
-    ? {
-        ...output,
-        files: new Map(
-          [...output.files.entries()].map(
-            ([filePath, data]): [string, FileData] => {
-              const cleanFile = cleanProjectFiles.find(
-                (f) => f.filePath === filePath,
-              );
-
-              return [
-                filePath,
-                {
-                  ...data,
-                  options: {
-                    ...data.options,
-                    cleanContents: cleanFile?.contents,
-                  },
-                },
-              ];
-            },
-          ),
-        ),
-      }
-    : output;
-
   try {
-    const writeOutput = await engine.writeOutput(
-      augmentedOutput,
-      projectDirectory,
-      {
-        cleanDirectory: cleanTmpDirectory,
-        rerunCommands: oldBuildResult.failedCommands,
-      },
+    const writeOutput = await engine.writeOutput(output, projectDirectory, {
+      previousGeneratedPayload,
+      generatedContentsDirectory: generatedTemporaryDirectory,
+      rerunCommands: oldBuildResult.failedCommands,
       logger,
-    );
+    });
 
     if (buildResultExists) {
       await fs.rm(buildResultPath);
@@ -138,43 +142,53 @@ export async function generateForDirectory({
       await fs.writeJSON(buildResultPath, buildResult, { spaces: 2 });
     }
 
-    if (cleanProjectFiles) {
-      // swap out clean directory with clean_tmp
-      await fs.rm(cleanDirectory, { recursive: true });
+    // swap out generated directory with generated_tmp
+    const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
+    if (previousGeneratedPayload) {
+      await fs.rm(generatedDirectory, { recursive: true });
     }
+    await fs.move(generatedTemporaryDirectory, generatedDirectory);
 
-    await fs.move(cleanTmpDirectory, cleanDirectory);
-
-    // find deleted files
-    const deletedCleanFiles =
-      cleanProjectFiles?.filter((f) => !output.files.has(f.filePath)) ?? [];
-
-    await Promise.all(
-      deletedCleanFiles.map(async (file) => {
-        const pathToDelete = path.join(projectDirectory, file.filePath);
-        const pathExists = await fs.pathExists(pathToDelete);
-        if (!pathExists) {
-          return;
-        }
-        const existingContents = await fs.readFile(pathToDelete);
-        if (existingContents.equals(file.contents)) {
-          logger.info(`Deleting ${file.filePath}...`);
-          await fs.remove(pathToDelete);
-        } else {
-          logger.info(
-            chalk.red(`${file.filePath} has been modified. Skipping delete.`),
-          );
-        }
-      }),
+    // write file id map
+    const fileIdMap = Object.fromEntries(
+      writeOutput.fileIdToRelativePathMap.entries(),
+    );
+    await fs.writeJSON(
+      path.join(projectDirectory, FILE_ID_MAP_PATH),
+      fileIdMap,
+      { spaces: 2 },
     );
 
-    if (deletedCleanFiles.length > 0) {
-      // clean up empty directories
-      await removeEmptyAncestorDirectories(
-        deletedCleanFiles.map((f) => path.join(projectDirectory, f.filePath)),
-        projectDirectory,
-      );
-    }
+    // // find deleted files
+    // const deletedCleanFiles =
+    //   cleanProjectFiles?.filter((f) => !output.files.has(f.filePath)) ?? [];
+
+    // await Promise.all(
+    //   deletedCleanFiles.map(async (file) => {
+    //     const pathToDelete = path.join(projectDirectory, file.filePath);
+    //     const pathExists = await fs.pathExists(pathToDelete);
+    //     if (!pathExists) {
+    //       return;
+    //     }
+    //     const existingContents = await fs.readFile(pathToDelete);
+    //     if (existingContents.equals(file.contents)) {
+    //       logger.info(`Deleting ${file.filePath}...`);
+    //       await fs.remove(pathToDelete);
+    //     } else {
+    //       logger.info(
+    //         chalk.red(`${file.filePath} has been modified. Skipping delete.`),
+    //       );
+    //     }
+    //   }),
+    // );
+
+    // if (deletedCleanFiles.length > 0) {
+    //   // clean up empty directories
+    //   await removeEmptyAncestorDirectories(
+    //     deletedCleanFiles.map((f) => path.join(projectDirectory, f.filePath)),
+    //     projectDirectory,
+    //   );
+    // }
 
     if (
       environmentFlags.BASEPLATE_WRITE_GENERATOR_STEPS_HTML &&
@@ -192,51 +206,8 @@ export async function generateForDirectory({
     }
   } finally {
     // attempt to remove any temporary directory
-    await fs.rm(cleanTmpDirectory, { recursive: true }).catch(() => {
+    await fs.rm(generatedTemporaryDirectory, { recursive: true }).catch(() => {
       /* ignore errors */
     });
   }
-}
-
-export async function generateCleanAppForDirectory({
-  baseDirectory,
-  appEntry: { appDirectory, name, generatorBundle },
-  logger,
-}: GenerateForDirectoryOptions): Promise<void> {
-  const engine = new GeneratorEngine();
-
-  const projectDirectory = path.join(baseDirectory, appDirectory);
-  const cleanDirectory = path.join(projectDirectory, 'baseplate/.clean');
-
-  // delete clean project if exists
-  const cleanProjectExists = await fs.pathExists(cleanDirectory);
-
-  if (cleanProjectExists) {
-    await fs.rm(cleanDirectory, { recursive: true });
-  }
-
-  logger.info(`Generating clean project ${name} in ${cleanDirectory}...`);
-
-  const project = engine.loadProject(generatorBundle, logger);
-  const output = await engine.build(project, logger);
-  logger.info('Project built! Writing output....');
-
-  // strip out any post write commands
-  await engine.writeOutput(
-    {
-      ...output,
-      files: new Map(
-        [...output.files.entries()].filter(
-          ([, file]) =>
-            // reject any files that are buffers since we can't merge them
-            !(file.contents instanceof Buffer),
-        ),
-      ),
-      postWriteCommands: [],
-    },
-    cleanDirectory,
-    undefined,
-    logger,
-  );
-  logger.info('Project successfully written to clean project!');
 }

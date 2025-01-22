@@ -554,7 +554,7 @@ interface EtaPreprocessOptions {
 }
 
 interface FileWriteOptions {
-  neverOverwrite?: boolean;
+  shouldNeverOverwrite?: boolean;
   /**
    * Preprocess template with Eta to allow for more powerful templating options
    * beyond just find-replace.

@@ -133,7 +133,7 @@ const createMainTask = createTaskConfigBuilder((descriptor: Descriptor) => ({
             copyFileAction({
               source: file,
               destination: file,
-              neverOverwrite: true,
+              shouldNeverOverwrite: true,
             }),
           ),
         );

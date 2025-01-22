@@ -3,11 +3,11 @@ import path from 'node:path';
 
 import type { BuilderAction } from './builder-action.js';
 import type { GeneratorOutputFormatter } from './formatter.js';
-import type { MergeAlgorithm } from './merge-algorithms/types.js';
 import type {
   PostWriteCommand,
   PostWriteCommandOptions,
 } from './post-write-commands/types.js';
+import type { StringMergeAlgorithm } from './string-merge-algorithms/types.js';
 
 /**
  * Options for writing a file
@@ -25,15 +25,11 @@ export interface WriteFileOptions {
   /**
    * Never overwrite the file (e.g. for placeholder images)
    */
-  neverOverwrite?: boolean;
-  /**
-   * Contents of the clean file (such that the diff will be merged into the existing file)
-   */
-  cleanContents?: Buffer;
+  shouldNeverOverwrite?: boolean;
   /**
    * Merge algorithms to use for the file
    */
-  mergeAlgorithms?: MergeAlgorithm[];
+  mergeAlgorithms?: StringMergeAlgorithm[];
 }
 
 /**
@@ -157,6 +153,8 @@ export class GeneratorTaskOutputBuilder {
     if (contents instanceof Buffer && options?.shouldFormat) {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
+
+    //TODO [2024-01-01]: Check uniqueness of id and throw error
 
     this.output.files.set(fullPath, { id, contents, options });
   }

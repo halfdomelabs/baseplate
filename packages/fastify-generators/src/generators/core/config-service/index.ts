@@ -192,7 +192,7 @@ export const configServiceGenerator = createGenerator({
               filePath: '.env',
               contents: envFile,
               options: {
-                neverOverwrite: true,
+                shouldNeverOverwrite: true,
               },
             });
           },

@@ -15,7 +15,7 @@ export interface CopyTypescriptFileOptions {
   importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
   moduleResolution: ModuleResolutionKind;
-  neverOverwrite?: boolean;
+  shouldNeverOverwrite?: boolean;
 }
 
 function formatImports(
@@ -38,7 +38,12 @@ function formatImports(
 export const copyTypescriptFileAction = createBuilderActionCreator<
   [CopyTypescriptFileOptions]
 >((options: CopyTypescriptFileOptions) => async (builder) => {
-  const { destination, source, replacements = {}, neverOverwrite } = options;
+  const {
+    destination,
+    source,
+    replacements = {},
+    shouldNeverOverwrite,
+  } = options;
 
   const templatePath = path.join(
     builder.generatorBaseDirectory,
@@ -71,7 +76,7 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
     contents: formattedContents,
     options: {
       shouldFormat: true,
-      neverOverwrite,
+      shouldNeverOverwrite,
     },
   });
 });

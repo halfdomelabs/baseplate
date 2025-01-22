@@ -207,7 +207,7 @@ export const prismaGenerator = createGenerator({
 
             await builder.apply(
               seedFile.renderToAction('prisma/seed.ts', 'src/prisma/seed.ts', {
-                neverOverwrite: true,
+                shouldNeverOverwrite: true,
               }),
             );
 

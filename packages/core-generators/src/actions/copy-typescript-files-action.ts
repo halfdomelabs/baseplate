@@ -14,7 +14,7 @@ export interface CopyTypescriptFilesOptions {
     | {
         path: string;
         replacements?: Record<string, string>;
-        neverOverwrite?: boolean;
+        shouldNeverOverwrite?: boolean;
       }
   )[];
   importMappers?: ImportMapper[];
@@ -40,7 +40,7 @@ export const copyTypescriptFilesAction = createBuilderActionCreator(
         source: path.join(sourceBaseDirectory, p.path),
         destination: path.join(destinationBaseDirectory, p.path),
         replacements: p.replacements,
-        neverOverwrite: p.neverOverwrite,
+        shouldNeverOverwrite: p.shouldNeverOverwrite,
         ...rest,
       }),
     );

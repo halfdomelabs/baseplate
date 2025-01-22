@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, test } from 'vitest';
-import { MergeAlgorithm, MergeContext } from '../types.js';
+
+import type { StringMergeAlgorithm } from '../types.js';
 
 const getFileWithAnyExtension = (
   directory: string,
@@ -40,11 +41,9 @@ const collectTestCases = (
 };
 
 const runMergeTests = (
-  mergeAlgorithm: MergeAlgorithm,
+  mergeAlgorithm: StringMergeAlgorithm,
   testFolder: string,
-  mergeContext: MergeContext = {
-    formatContents: (contents) => contents,
-  },
+  formatContents?: (contents: string) => string,
 ): void => {
   const fullTestFolderPath = path.join(
     path.dirname(fileURLToPath(import.meta.url)),
@@ -55,22 +54,25 @@ const runMergeTests = (
   describe(`Test merge algorithm ${testFolder}`, () => {
     test.each(testCases)('case $caseName', async ({ casePath }) => {
       // Load files with arbitrary extensions
-      const userText = readFileWithAnyExtension(casePath, 'user');
-      const newText = readFileWithAnyExtension(casePath, 'new');
-      const baseText = readFileWithAnyExtension(casePath, 'base');
+      const previousWorkingText = readFileWithAnyExtension(casePath, 'user');
+      const currentGeneratedText = readFileWithAnyExtension(casePath, 'new');
+      const previousGeneratedText = readFileWithAnyExtension(casePath, 'base');
       const expectedMergedText = readFileWithAnyExtension(casePath, 'merged');
 
-      if (!userText || !newText || !baseText) {
+      if (
+        !previousWorkingText ||
+        !currentGeneratedText ||
+        !previousGeneratedText
+      ) {
         throw new Error(`Missing required user or new files in ${casePath}`);
       }
 
       // Run the merge algorithm
-      const result = await mergeAlgorithm(
-        userText,
-        newText,
-        baseText,
-        mergeContext,
-      );
+      const result = await mergeAlgorithm({
+        previousWorkingText,
+        currentGeneratedText,
+        previousGeneratedText,
+      });
 
       // Compare results
       if (expectedMergedText === undefined) {
@@ -80,7 +82,10 @@ const runMergeTests = (
         // If merged file exists, ensure the mergedText matches
         expect(result).not.toBeNull();
         if (result) {
-          expect(result.mergedText).toBe(expectedMergedText);
+          const formattedMergedText = formatContents
+            ? formatContents(result.mergedText)
+            : result.mergedText;
+          expect(formattedMergedText).toBe(expectedMergedText);
         }
       }
 

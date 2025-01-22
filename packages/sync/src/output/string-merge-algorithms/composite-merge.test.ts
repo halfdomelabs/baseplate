@@ -1,21 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
-import type { MergeAlgorithm, MergeContext } from './types.js';
+import type { StringMergeAlgorithm } from './types.js';
 
 import { buildCompositeMergeAlgorithm } from './composite-merge.js';
 
-const mergeContext: MergeContext = {
-  formatContents: (contents) => contents,
-};
-
 describe('buildCompositeMergeAlgorithm', () => {
   it('should try algorithms in order until one succeeds', async () => {
-    const algorithm1: MergeAlgorithm = () => null;
-    const algorithm2: MergeAlgorithm = (userText, newText) => ({
-      mergedText: userText + newText,
+    const algorithm1: StringMergeAlgorithm = () => null;
+    const algorithm2: StringMergeAlgorithm = (input) => ({
+      mergedText: input.previousWorkingText + input.currentGeneratedText,
       hasConflict: false,
     });
-    const algorithm3: MergeAlgorithm = () => ({
+    const algorithm3: StringMergeAlgorithm = () => ({
       mergedText: 'should not reach here',
       hasConflict: false,
     });
@@ -26,7 +22,11 @@ describe('buildCompositeMergeAlgorithm', () => {
       algorithm3,
     ]);
 
-    const result = await composite('user', 'new', 'base', mergeContext);
+    const result = await composite({
+      previousWorkingText: 'user',
+      currentGeneratedText: 'new',
+      previousGeneratedText: 'base',
+    });
 
     expect(result).toEqual({
       mergedText: 'usernew',
@@ -35,12 +35,16 @@ describe('buildCompositeMergeAlgorithm', () => {
   });
 
   it('should return null if no algorithms succeed', async () => {
-    const algorithm1: MergeAlgorithm = () => null;
-    const algorithm2: MergeAlgorithm = () => null;
+    const algorithm1: StringMergeAlgorithm = () => null;
+    const algorithm2: StringMergeAlgorithm = () => null;
 
     const composite = buildCompositeMergeAlgorithm([algorithm1, algorithm2]);
 
-    const result = await composite('user', 'new', 'base', mergeContext);
+    const result = await composite({
+      previousWorkingText: 'user',
+      currentGeneratedText: 'new',
+      previousGeneratedText: 'base',
+    });
 
     expect(result).toBeNull();
   });
@@ -48,7 +52,11 @@ describe('buildCompositeMergeAlgorithm', () => {
   it('should work with empty algorithm list', async () => {
     const composite = buildCompositeMergeAlgorithm([]);
 
-    const result = await composite('user', 'new', 'base', mergeContext);
+    const result = await composite({
+      previousWorkingText: 'user',
+      currentGeneratedText: 'new',
+      previousGeneratedText: 'base',
+    });
 
     expect(result).toBeNull();
   });

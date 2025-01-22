@@ -8,7 +8,10 @@ describe('simpleDiffAlgorithm', () => {
     const newText =
       '# This is a simple diff test\n\nHello world\n\nThis is the new text\n';
 
-    const result = simpleDiffAlgorithm(userText, newText);
+    const result = simpleDiffAlgorithm({
+      previousWorkingText: userText,
+      currentGeneratedText: newText,
+    });
 
     expect(result?.hasConflict).toBe(true);
     expect(result?.mergedText).toBe(
@@ -24,14 +27,20 @@ describe('simpleDiffAlgorithm', () => {
   test('should return identical text when no differences', () => {
     const text = 'Hello world\n';
 
-    const result = simpleDiffAlgorithm(text, text);
+    const result = simpleDiffAlgorithm({
+      previousWorkingText: text,
+      currentGeneratedText: text,
+    });
 
     expect(result?.hasConflict).toBe(false);
     expect(result?.mergedText).toBe('Hello world\n');
   });
 
   test('should handle empty strings', () => {
-    const result = simpleDiffAlgorithm('', '');
+    const result = simpleDiffAlgorithm({
+      previousWorkingText: '',
+      currentGeneratedText: '',
+    });
 
     expect(result?.hasConflict).toBe(false);
     expect(result?.mergedText).toBe('');
