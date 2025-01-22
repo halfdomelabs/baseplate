@@ -265,7 +265,7 @@ async function findPreviousRelativePath(
 /**
  * Input for the prepareGeneratorFile function
  */
-export interface PrepareGeneratorFileInput {
+interface PrepareGeneratorFileInput {
   /**
    * Relative path of the file
    */

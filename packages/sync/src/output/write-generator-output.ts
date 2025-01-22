@@ -6,17 +6,20 @@ import type { GeneratorOutput } from './generator-task-output.js';
 import type {
   GeneratorOutputFileWriterContext,
   PreviousGeneratedPayload,
-} from './prepare-generator-files/types.js';
+} from './prepare-generator-files/index.js';
 
+import { cleanDeletedFiles } from './clean-deleted-files.js';
 import { createCodebaseFileReaderFromDirectory } from './codebase-file-reader.js';
-import { filterPostWriteCommands } from './post-write-commands/filter-commands.js';
 import {
+  filterPostWriteCommands,
   runPostWriteCommands,
   sortPostWriteCommands,
 } from './post-write-commands/index.js';
-import { FormatterError } from './prepare-generator-files/errors.js';
-import { prepareGeneratorFiles } from './prepare-generator-files/prepare-generator-files.js';
-import { writeGeneratorFiles } from './write-generator-file/write-generator-files.js';
+import {
+  FormatterError,
+  prepareGeneratorFiles,
+} from './prepare-generator-files/index.js';
+import { writeGeneratorFiles } from './write-generator-file/index.js';
 
 /**
  * Options for writing the generator output
@@ -56,9 +59,12 @@ export interface WriteGeneratorOutputResult {
    * Commands that failed to run
    */
   failedCommands: string[];
+  /**
+   * Files pending deletion (removed in new generation but were modified so could not be
+   * automatically deleted)
+   */
+  relativePathsPendingDelete: string[];
 }
-
-// TODO [2025-01-20]: Add pendingDeleteFiles
 
 /**
  * Write the generator output to the output directory
@@ -102,6 +108,13 @@ export async function writeGeneratorOutput(
       generatedContentsDirectory,
     });
 
+    // Clean up deleted files if we have previous generated contents
+    const { relativePathsPendingDelete } = await cleanDeletedFiles({
+      outputDirectory,
+      previousGeneratedPayload,
+      currentFileIdToRelativePathMap: fileIdToRelativePathMap,
+    });
+
     const modifiedRelativePaths = new Set(
       files
         .filter((result) => result.mergedContents)
@@ -137,6 +150,7 @@ export async function writeGeneratorOutput(
         conflictFilenames: relativePathsWithConflicts,
         failedCommands: orderedCommands.map((c) => c.command),
         fileIdToRelativePathMap,
+        relativePathsPendingDelete,
       };
     }
 
@@ -150,6 +164,7 @@ export async function writeGeneratorOutput(
       conflictFilenames: [],
       failedCommands,
       fileIdToRelativePathMap,
+      relativePathsPendingDelete,
     };
   } catch (error) {
     if (error instanceof FormatterError) {

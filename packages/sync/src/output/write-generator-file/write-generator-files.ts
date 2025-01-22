@@ -7,7 +7,7 @@ import type { GeneratorFileOperationResult } from '../prepare-generator-files/ty
 import { WriteGeneratorFilesError } from './errors.js';
 import { writeGeneratorFile } from './write-generator-file.js';
 
-export interface WriteGeneratorFilesInput {
+interface WriteGeneratorFilesInput {
   /**
    * File operations to write
    */

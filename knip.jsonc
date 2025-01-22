@@ -85,7 +85,7 @@
     "tests/**",
     "**/templates/**",
     "**/morphers/tests/**",
-    "**/merge-algorithms/tests/**"
+    "**/string-merge-algorithms/tests/**"
   ],
   "ignoreBinaries": ["only-allow"],
   "ignoreDependencies": [

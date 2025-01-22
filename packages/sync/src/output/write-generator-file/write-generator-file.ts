@@ -5,7 +5,7 @@ import { ensureDir, pathExists } from '@src/utils/fs.js';
 
 import type { GeneratorFileOperationResult } from '../prepare-generator-files/types.js';
 
-export interface WriteGeneratorFileInput {
+interface WriteGeneratorFileInput {
   /**
    * File operation result from prepare generator files
    */

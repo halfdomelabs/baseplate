@@ -14,7 +14,7 @@ import { prepareGeneratorFile } from './prepare-generator-file.js';
 /**
  * Prepare generator files input
  */
-export interface PrepareGeneratorFilesInput {
+interface PrepareGeneratorFilesInput {
   /**
    * Map of files to prepare
    */
@@ -28,7 +28,7 @@ export interface PrepareGeneratorFilesInput {
 /**
  * Prepare generator files result
  */
-export interface PrepareGeneratorFilesResult {
+interface PrepareGeneratorFilesResult {
   /**
    * List of files that were prepared
    */
