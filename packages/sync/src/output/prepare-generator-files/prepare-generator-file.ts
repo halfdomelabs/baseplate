@@ -184,11 +184,14 @@ async function mergeStringContents({
       });
 
   if (mergeResult) {
-    const formattedMergeResult = await formatContents(
-      relativePath,
-      { ...data, contents: mergeResult.mergedText },
-      context,
-    );
+    // do not format if there is a conflict
+    const formattedMergeResult = mergeResult.hasConflict
+      ? mergeResult.mergedText
+      : await formatContents(
+          relativePath,
+          { ...data, contents: mergeResult.mergedText },
+          context,
+        );
     return {
       relativePath,
       previousRelativePath,
@@ -357,7 +360,7 @@ export async function prepareGeneratorFile({
   // Otherwise, we merge the contents
   const mergeInput: MergeContentsInput = {
     relativePath,
-    data,
+    data: { ...data, contents: formattedContents },
     previousRelativePath,
     previousGeneratedBuffer,
     previousWorkingBuffer,
