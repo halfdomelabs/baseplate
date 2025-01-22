@@ -87,6 +87,17 @@ export interface GeneratorOutput extends GeneratorTaskOutput {
   metadata?: GeneratorOutputMetadata;
 }
 
+interface GeneratorTaskOutputBuilderContext {
+  /**
+   * The base directory of the generator code (useful for reading templates)
+   */
+  generatorBaseDirectory: string;
+  /**
+   * The name of the generator
+   */
+  generatorName: string;
+}
+
 /**
  * Builder for the output of a generator task that collects the files and
  * commands that need to be run
@@ -102,13 +113,19 @@ export class GeneratorTaskOutputBuilder {
    */
   generatorBaseDirectory: string;
 
-  constructor(generatorBaseDirectory: string) {
+  /**
+   * The name of the generator
+   */
+  generatorName: string;
+
+  constructor(context: GeneratorTaskOutputBuilderContext) {
     this.output = {
       files: new Map(),
       postWriteCommands: [],
       globalFormatters: [],
     };
-    this.generatorBaseDirectory = generatorBaseDirectory;
+    this.generatorBaseDirectory = context.generatorBaseDirectory;
+    this.generatorName = context.generatorName;
   }
 
   /**
@@ -154,7 +171,11 @@ export class GeneratorTaskOutputBuilder {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
 
-    this.output.files.set(fullPath, { id, contents, options });
+    this.output.files.set(fullPath, {
+      id: `${this.generatorName}:${id}`,
+      contents,
+      options,
+    });
   }
 
   /**

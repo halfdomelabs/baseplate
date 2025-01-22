@@ -96,9 +96,10 @@ export async function executeGeneratorEntry(
         const entry = taskEntriesById[taskId];
         const generator = taskInstanceById[taskId];
 
-        const outputBuilder = new GeneratorTaskOutputBuilder(
-          entry.generatorBaseDirectory,
-        );
+        const outputBuilder = new GeneratorTaskOutputBuilder({
+          generatorBaseDirectory: entry.generatorBaseDirectory,
+          generatorName: entry.generatorName,
+        });
 
         if (generator.build) {
           await Promise.resolve(generator.build(outputBuilder));
