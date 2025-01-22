@@ -61,7 +61,7 @@ describe('writeGeneratorOutput', () => {
     });
 
     // Verify successful result
-    expect(result.conflictFilenames).toHaveLength(0);
+    expect(result.relativePathsWithConflicts).toHaveLength(0);
     expect(result.failedCommands).toHaveLength(0);
     expect(result.fileIdToRelativePathMap.size).toBe(2);
     expect(result.fileIdToRelativePathMap.get('test-1')).toBe('test.txt');
@@ -101,7 +101,7 @@ describe('writeGeneratorOutput', () => {
     });
 
     // Verify conflict handling
-    expect(result.conflictFilenames).toContain('test.txt');
+    expect(result.relativePathsWithConflicts).toContain('test.txt');
     expect(result.failedCommands).toContain('format');
     expect(result.fileIdToRelativePathMap.size).toBe(1);
   });

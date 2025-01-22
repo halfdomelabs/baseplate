@@ -3,6 +3,7 @@ import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
 
 import { GeneratorEngine } from '@halfdomelabs/sync';
 import { createCodebaseFileReaderFromDirectory } from '@halfdomelabs/sync/dist/output/codebase-file-reader.js';
+import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'node:path';
 import { z } from 'zod';
@@ -123,7 +124,12 @@ export async function generateForDirectory({
   );
 
   try {
-    const writeOutput = await engine.writeOutput(output, projectDirectory, {
+    const {
+      failedCommands,
+      relativePathsPendingDelete,
+      relativePathsWithConflicts,
+      fileIdToRelativePathMap,
+    } = await engine.writeOutput(output, projectDirectory, {
       previousGeneratedPayload,
       generatedContentsDirectory: generatedTemporaryDirectory,
       rerunCommands: oldBuildResult.failedCommands,
@@ -134,10 +140,10 @@ export async function generateForDirectory({
       await fs.rm(buildResultPath);
     }
 
-    if (writeOutput.failedCommands.length > 0) {
+    if (failedCommands.length > 0) {
       // write failed commands to a temporary file
       const buildResult: BuildResultFile = {
-        failedCommands: writeOutput.failedCommands,
+        failedCommands,
       };
       await fs.writeJSON(buildResultPath, buildResult, { spaces: 2 });
     }
@@ -149,46 +155,42 @@ export async function generateForDirectory({
     }
     await fs.move(generatedTemporaryDirectory, generatedDirectory);
 
-    // write file id map
-    const fileIdMap = Object.fromEntries(
-      writeOutput.fileIdToRelativePathMap.entries(),
-    );
+    // Write file ID map
+    const fileIdMap = Object.fromEntries(fileIdToRelativePathMap.entries());
     await fs.writeJSON(
       path.join(projectDirectory, FILE_ID_MAP_PATH),
       fileIdMap,
       { spaces: 2 },
     );
 
-    // // find deleted files
-    // const deletedCleanFiles =
-    //   cleanProjectFiles?.filter((f) => !output.files.has(f.filePath)) ?? [];
+    // List out conflicts
+    if (relativePathsWithConflicts.length > 0) {
+      logger.warn(
+        chalk.red(
+          `Conflicts occurred while writing files:\n${relativePathsWithConflicts.join(
+            '\n',
+          )}`,
+        ),
+      );
+      if (failedCommands.length > 0) {
+        logger.warn(
+          `\nOnce resolved, please re-run the generator or run the following commands:`,
+        );
+        for (const command of failedCommands) {
+          logger.warn(`  ${command}`);
+        }
+      }
+    }
 
-    // await Promise.all(
-    //   deletedCleanFiles.map(async (file) => {
-    //     const pathToDelete = path.join(projectDirectory, file.filePath);
-    //     const pathExists = await fs.pathExists(pathToDelete);
-    //     if (!pathExists) {
-    //       return;
-    //     }
-    //     const existingContents = await fs.readFile(pathToDelete);
-    //     if (existingContents.equals(file.contents)) {
-    //       logger.info(`Deleting ${file.filePath}...`);
-    //       await fs.remove(pathToDelete);
-    //     } else {
-    //       logger.info(
-    //         chalk.red(`${file.filePath} has been modified. Skipping delete.`),
-    //       );
-    //     }
-    //   }),
-    // );
-
-    // if (deletedCleanFiles.length > 0) {
-    //   // clean up empty directories
-    //   await removeEmptyAncestorDirectories(
-    //     deletedCleanFiles.map((f) => path.join(projectDirectory, f.filePath)),
-    //     projectDirectory,
-    //   );
-    // }
+    if (relativePathsPendingDelete.length > 0) {
+      logger.warn(
+        chalk.red(
+          `Files were removed in the new generation but were modified so could not be automatically deleted:\n${relativePathsPendingDelete.join(
+            '\n',
+          )}`,
+        ),
+      );
+    }
 
     if (
       environmentFlags.BASEPLATE_WRITE_GENERATOR_STEPS_HTML &&
@@ -197,7 +199,7 @@ export async function generateForDirectory({
       await writeGeneratorStepsHtml(output.metadata, projectDirectory);
     }
 
-    if (writeOutput.failedCommands.length > 0) {
+    if (failedCommands.length > 0) {
       logger.error(
         `Project successfully written but with failed commands! Please check logs for more info.`,
       );

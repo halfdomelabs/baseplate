@@ -1,5 +1,3 @@
-import chalk from 'chalk';
-
 import type { Logger } from '@src/utils/evented-logger.js';
 
 import type { GeneratorOutput } from './generator-task-output.js';
@@ -52,16 +50,16 @@ export interface WriteGeneratorOutputResult {
    */
   fileIdToRelativePathMap: Map<string, string>;
   /**
-   * Filenames that had conflicts
+   * Relative paths of files that had conflicts
    */
-  conflictFilenames: string[];
+  relativePathsWithConflicts: string[];
   /**
    * Commands that failed to run
    */
   failedCommands: string[];
   /**
-   * Files pending deletion (removed in new generation but were modified so could not be
-   * automatically deleted)
+   * Relative paths that were removed in new generation but were modified so
+   * could not be automatically deleted.
    */
   relativePathsPendingDelete: string[];
 }
@@ -130,24 +128,10 @@ export async function writeGeneratorOutput(
       .filter((result) => result.hasConflict)
       .map((result) => result.relativePath);
 
+    // don't run commands if there are conflicts
     if (relativePathsWithConflicts.length > 0) {
-      logger.warn(
-        chalk.red(
-          `Conflicts occurred while writing files:\n${relativePathsWithConflicts.join(
-            '\n',
-          )}`,
-        ),
-      );
-      if (orderedCommands.length > 0) {
-        logger.warn(
-          `\nOnce resolved, please re-run the generator or run the following commands:`,
-        );
-        for (const command of orderedCommands) {
-          logger.warn(`  ${command.command}`);
-        }
-      }
       return {
-        conflictFilenames: relativePathsWithConflicts,
+        relativePathsWithConflicts,
         failedCommands: orderedCommands.map((c) => c.command),
         fileIdToRelativePathMap,
         relativePathsPendingDelete,
@@ -161,7 +145,7 @@ export async function writeGeneratorOutput(
     );
 
     return {
-      conflictFilenames: [],
+      relativePathsWithConflicts: [],
       failedCommands,
       fileIdToRelativePathMap,
       relativePathsPendingDelete,
