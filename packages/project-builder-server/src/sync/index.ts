@@ -158,7 +158,11 @@ export async function generateForDirectory({
     await fs.move(generatedTemporaryDirectory, generatedDirectory);
 
     // Write file ID map
-    const fileIdMap = Object.fromEntries(fileIdToRelativePathMap.entries());
+    const fileIdMap = Object.fromEntries(
+      [...fileIdToRelativePathMap.entries()].sort(([a], [b]) =>
+        a.localeCompare(b),
+      ),
+    );
     await fs.writeJSON(
       path.join(projectDirectory, FILE_ID_MAP_PATH),
       fileIdMap,
