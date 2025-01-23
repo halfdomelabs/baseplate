@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { BuilderAction } from '@halfdomelabs/sync';
+import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
 import type {
   CallExpression,
   ExportDeclaration,
@@ -8,7 +8,6 @@ import type {
   SourceFile,
 } from 'ts-morph';
 
-import { writeFormattedAction } from '@halfdomelabs/sync';
 import { mapValues, uniqWith } from 'es-toolkit';
 import { Eta } from 'eta';
 import path from 'node:path';
@@ -553,8 +552,11 @@ interface EtaPreprocessOptions {
   data: Record<string, unknown>;
 }
 
-interface FileWriteOptions {
-  shouldNeverOverwrite?: boolean;
+interface SourceFileWriteOptions extends WriteFileOptions {
+  /**
+   * The id of the file
+   */
+  id?: string;
   /**
    * Preprocess template with Eta to allow for more powerful templating options
    * beyond just find-replace.
@@ -721,25 +723,26 @@ export class TypescriptSourceFile<
   renderToActionFromText(
     template: string,
     destination: string,
-    options?: FileWriteOptions,
+    options?: SourceFileWriteOptions,
   ): BuilderAction {
     return {
-      execute: async (builder) => {
+      execute: (builder) => {
+        const { id, preprocessWithEta, ...rest } = options ?? {};
         const fullPath = builder.resolvePath(destination);
-        if (options?.preprocessWithEta) {
-          template = this.preprocessWithEta(
-            template,
-            options.preprocessWithEta,
-          );
+        if (preprocessWithEta) {
+          template = this.preprocessWithEta(template, preprocessWithEta);
         }
         const contents = this.renderToText(template, fullPath);
-        await builder.apply(
-          writeFormattedAction({
-            destination,
-            contents,
-            ...options,
-          }),
-        );
+        builder.writeFile({
+          id: id ?? fullPath,
+          filePath: fullPath,
+          contents,
+          options: {
+            shouldFormat: true,
+            shouldNeverOverwrite: options?.shouldNeverOverwrite,
+            ...rest,
+          },
+        });
       },
     };
   }
@@ -747,26 +750,27 @@ export class TypescriptSourceFile<
   renderToAction(
     templateFile: string,
     destination?: string,
-    options?: FileWriteOptions,
+    options?: SourceFileWriteOptions,
   ): BuilderAction {
     return {
       execute: async (builder) => {
+        const { id, preprocessWithEta, ...rest } = options ?? {};
         const fullPath = builder.resolvePath(destination ?? templateFile);
         let template = await builder.readTemplate(templateFile);
-        if (options?.preprocessWithEta) {
-          template = this.preprocessWithEta(
-            template,
-            options.preprocessWithEta,
-          );
+        if (preprocessWithEta) {
+          template = this.preprocessWithEta(template, preprocessWithEta);
         }
         const contents = this.renderToText(template, fullPath);
-        await builder.apply(
-          writeFormattedAction({
-            destination: destination ?? templateFile,
-            contents,
-            ...options,
-          }),
-        );
+        builder.writeFile({
+          id: id ?? fullPath,
+          filePath: fullPath,
+          contents,
+          options: {
+            shouldFormat: true,
+            shouldNeverOverwrite: options?.shouldNeverOverwrite,
+            ...rest,
+          },
+        });
       },
     };
   }
