@@ -1,5 +1,4 @@
 import { findNearestPackageJson } from '@halfdomelabs/utils/node';
-import * as fsAdapter from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 interface PackageJson {
@@ -26,7 +25,6 @@ export async function findGeneratorPackageName(
   // Find the nearest package.json
   const packageJsonPath = await findNearestPackageJson({
     cwd: generatorDirectory,
-    fs: fsAdapter,
   });
   if (!packageJsonPath) {
     throw new Error(

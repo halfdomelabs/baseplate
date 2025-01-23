@@ -65,6 +65,7 @@
     "@types/node": "catalog:",
     "concurrently": "9.0.1",
     "eslint": "catalog:",
+    "memfs": "4.15.1",
     "prettier": "catalog:",
     "tsc-alias": "catalog:",
     "typescript": "catalog:",

@@ -1,4 +1,4 @@
-import * as fsAdapter from 'node:fs';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 /**
@@ -13,10 +13,6 @@ interface FindNearestPackageJsonOptions {
    * Stop search if node_modules is found
    */
   stopAtNodeModules?: boolean;
-  /**
-   * Optional file system adapter
-   */
-  fs?: typeof fsAdapter;
 }
 
 /**
@@ -28,11 +24,7 @@ interface FindNearestPackageJsonOptions {
 export async function findNearestPackageJson(
   options: FindNearestPackageJsonOptions = {},
 ): Promise<string | undefined> {
-  const {
-    cwd = process.cwd(),
-    stopAtNodeModules = false,
-    fs = fsAdapter,
-  } = options;
+  const { cwd = process.cwd(), stopAtNodeModules = false } = options;
   const { root } = path.parse(cwd);
   let currentDir = path.resolve(cwd);
 
@@ -40,7 +32,7 @@ export async function findNearestPackageJson(
     try {
       // Check for package.json
       const packageJsonPath = path.join(currentDir, 'package.json');
-      const stat = await fs.promises.stat(packageJsonPath);
+      const stat = await fs.stat(packageJsonPath);
       if (stat.isFile()) {
         return packageJsonPath;
       }

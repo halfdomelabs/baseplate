@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { findNearestPackageJson } from './find-nearest-package-json.js';
 
-vi.mock('node:fs');
+vi.mock('node:fs/promises');
 
 describe('findNearestPackageJson', () => {
   beforeEach(() => {

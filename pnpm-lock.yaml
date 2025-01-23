@@ -596,6 +596,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.17.0(jiti@2.4.2)
+      memfs:
+        specifier: 4.15.1
+        version: 4.15.1
       prettier:
         specifier: 'catalog:'
         version: 3.4.2
@@ -1229,6 +1232,9 @@ importers:
       es-toolkit:
         specifier: 1.31.0
         version: 1.31.0
+      zod:
+        specifier: 3.24.1
+        version: 3.24.1
     devDependencies:
       '@halfdomelabs/tools':
         specifier: workspace:*

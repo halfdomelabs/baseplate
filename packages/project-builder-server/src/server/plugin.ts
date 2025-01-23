@@ -21,9 +21,6 @@ import { pathSafeJoin } from '@src/utils/paths.js';
 
 import { ProjectBuilderService } from '../service/builder-service.js';
 
-// FastifyReply has a then method but it's not a promise
-// https://github.com/typescript-eslint/typescript-eslint/issues/2640
-
 export const baseplatePlugin: FastifyPluginAsyncZod<{
   directories: string[];
   cliVersion: string;

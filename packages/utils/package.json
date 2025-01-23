@@ -35,7 +35,8 @@
     "watch:tsc-alias": "tsc-alias -w"
   },
   "dependencies": {
-    "es-toolkit": "1.31.0"
+    "es-toolkit": "1.31.0",
+    "zod": "3.24.1"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
