@@ -9,15 +9,14 @@ import {
   prettyStableStringify,
   runSchemaMigrations,
 } from '@halfdomelabs/project-builder-lib';
-import fs from 'fs-extra';
+import { fileExists, readJsonWithSchema } from '@halfdomelabs/utils/node';
+import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { z } from 'zod';
 
 import { compileApplications } from '@src/compiler/index.js';
 
-import {
-  generateCleanAppForDirectory,
-  generateForDirectory,
-} from '../sync/index.js';
+import { generateForDirectory } from '../sync/index.js';
 
 async function loadProjectJson(directory: string): Promise<unknown> {
   const projectJsonPath = path.join(
@@ -25,24 +24,21 @@ async function loadProjectJson(directory: string): Promise<unknown> {
     'baseplate/project-definition.json',
   );
 
-  const fileExists = await fs.pathExists(projectJsonPath);
+  const projectJsonExists = await fileExists(projectJsonPath);
 
-  if (!fileExists) {
-    // previously, json file lived in project.json so search for that and migrate if needed
-    const oldProjectJsonPath = path.join(directory, 'baseplate/project.json');
-    if (await fs.pathExists(oldProjectJsonPath)) {
-      await fs.move(oldProjectJsonPath, projectJsonPath);
-    } else {
-      throw new Error(`Could not find definition file at ${projectJsonPath}`);
-    }
+  if (!projectJsonExists) {
+    throw new Error(`Could not find definition file at ${projectJsonPath}`);
   }
 
-  const projectJson: unknown = await fs.readJson(projectJsonPath);
+  const projectJson: unknown = await readJsonWithSchema(
+    projectJsonPath,
+    z.object({}).passthrough(),
+  );
 
   const { newConfig: migratedProjectJson, appliedMigrations } =
     runSchemaMigrations(projectJson as ProjectDefinition);
   if (appliedMigrations.length > 0) {
-    await fs.writeFile(
+    await writeFile(
       projectJsonPath,
       prettyStableStringify(migratedProjectJson),
     );
@@ -81,33 +77,6 @@ export async function buildProjectForDirectory({
 
   for (const app of apps) {
     await generateForDirectory({
-      baseDirectory: directory,
-      appEntry: app,
-      logger,
-    });
-  }
-
-  logger.info(`Project written to ${directory}!`);
-}
-
-interface BuildToCleanFolderOptions {
-  directory: string;
-  logger: Logger;
-  context: SchemaParserContext;
-}
-
-export async function buildToCleanFolder({
-  directory,
-  logger,
-  context,
-}: BuildToCleanFolderOptions): Promise<void> {
-  const apps = await compileApplicationsFromDirectory({
-    directory,
-    context,
-  });
-
-  for (const app of apps) {
-    await generateCleanAppForDirectory({
       baseDirectory: directory,
       appEntry: app,
       logger,

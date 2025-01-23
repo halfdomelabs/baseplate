@@ -11,7 +11,11 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createProviderType } from '@halfdomelabs/sync';
+import {
+  createGenerator,
+  createProviderType,
+  POST_WRITE_COMMAND_PRIORITY,
+} from '@halfdomelabs/sync';
 import { createRequire } from 'node:module';
 import { z } from 'zod';
 
@@ -172,12 +176,14 @@ export const prismaGenerator = createGenerator({
             const formattedSchemaText = await format({
               schema: schemaText,
             });
-            builder.writeFile(
-              'prisma/schema.prisma',
-              `${formattedSchemaText.trimEnd()}\n`,
-            );
+            builder.writeFile({
+              id: 'prisma-schema',
+              filePath: 'prisma/schema.prisma',
+              contents: `${formattedSchemaText.trimEnd()}\n`,
+            });
 
-            builder.addPostWriteCommand('pnpm prisma generate', 'generation', {
+            builder.addPostWriteCommand('pnpm prisma generate', {
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
               onlyIfChanged: ['prisma/schema.prisma'],
             });
 
@@ -201,7 +207,7 @@ export const prismaGenerator = createGenerator({
 
             await builder.apply(
               seedFile.renderToAction('prisma/seed.ts', 'src/prisma/seed.ts', {
-                neverOverwrite: true,
+                shouldNeverOverwrite: true,
               }),
             );
 

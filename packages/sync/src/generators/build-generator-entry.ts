@@ -8,6 +8,8 @@ import type {
   ProviderExportMap,
 } from './generators.js';
 
+import { findGeneratorPackageName } from './find-generator-package-name.js';
+
 /**
  * A generator task entry is a task that has been set up within a generator entry
  */
@@ -72,12 +74,20 @@ export interface BuildGeneratorEntryContext {
   logger: Logger;
 }
 
-function buildGeneratorEntryRecursive(
+async function buildGeneratorEntryRecursive(
   id: string,
   bundle: GeneratorBundle,
   context: BuildGeneratorEntryContext,
-): GeneratorEntry {
-  const { children, scopes, tasks, directory } = bundle;
+  packageNameCache: Map<string, string>,
+): Promise<GeneratorEntry> {
+  const { children, scopes, tasks, directory, name } = bundle;
+
+  // Get the package name for this generator
+  const packageName = await findGeneratorPackageName(
+    directory,
+    packageNameCache,
+  );
+  const prefixedName = `${packageName}#${name}`;
 
   const taskEntries = tasks.map(
     (task): GeneratorTaskEntry => ({
@@ -87,30 +97,41 @@ function buildGeneratorEntryRecursive(
       task,
       generatorBaseDirectory: directory,
       dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
-      generatorName: bundle.name,
+      generatorName: prefixedName,
     }),
   );
 
   // recursively build children generator entries
-  const builtChildEntries = Object.entries(children).map(([key, value]) => {
-    const childId = `${id}.${key}`;
+  const builtChildEntries = await Promise.all(
+    Object.entries(children).map(async ([key, value]) => {
+      const childId = `${id}.${key}`;
 
-    const isMultiple = Array.isArray(value);
-    const children = isMultiple ? value : [value];
+      const isMultiple = Array.isArray(value);
+      const children = isMultiple ? value : [value];
 
-    return children
-      .filter((child) => child !== undefined)
-      .map((child, idx) => {
-        // TODO: Remove this once we get rid of old generator entry format
-        if (typeof child !== 'object' || !child || 'generator' in child) {
-          throw new Error(
-            `Child descriptor or reference or null not supported`,
-          );
-        }
-        const subChildId = isMultiple ? `${id}.${key}.${idx}` : childId;
-        return buildGeneratorEntryRecursive(subChildId, child, context);
-      });
-  });
+      const childEntries = await Promise.all(
+        children
+          .filter((child) => child !== undefined)
+          .map(async (child, idx) => {
+            // TODO: Remove this once we get rid of old generator entry format
+            if (typeof child !== 'object' || !child || 'generator' in child) {
+              throw new Error(
+                `Child descriptor or reference or null not supported`,
+              );
+            }
+            const subChildId = isMultiple ? `${id}.${key}.${idx}` : childId;
+            return buildGeneratorEntryRecursive(
+              subChildId,
+              child,
+              context,
+              packageNameCache,
+            );
+          }),
+      );
+
+      return childEntries;
+    }),
+  );
 
   return {
     id,
@@ -121,9 +142,15 @@ function buildGeneratorEntryRecursive(
   };
 }
 
-export function buildGeneratorEntry(
+export async function buildGeneratorEntry(
   bundle: GeneratorBundle,
   context: BuildGeneratorEntryContext,
-): GeneratorEntry {
-  return buildGeneratorEntryRecursive('root', bundle, context);
+): Promise<GeneratorEntry> {
+  const packageNameCache = new Map<string, string>();
+  return buildGeneratorEntryRecursive(
+    'root',
+    bundle,
+    context,
+    packageNameCache,
+  );
 }

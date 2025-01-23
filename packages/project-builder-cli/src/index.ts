@@ -3,7 +3,6 @@ import type { SchemaParserContext } from '@halfdomelabs/project-builder-lib';
 import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
 import {
   buildProjectForDirectory,
-  buildToCleanFolder,
   createNodeSchemaParserContext,
 } from '@halfdomelabs/project-builder-server';
 import { program } from 'commander';
@@ -41,23 +40,6 @@ async function runMain(): Promise<void> {
       const context = await createSchemaParserContext(resolvedDirectory);
       return buildProjectForDirectory({
         directory: resolvedDirectory,
-        logger,
-        context,
-      });
-    });
-
-  program
-    .command('buildClean [directory]')
-    .description(
-      'Writes a clean project from project-definition.json in baseplate/ directory to sub-apps',
-    )
-    .action(async (directory: string) => {
-      const resolvedDirectory = directory
-        ? expandPathWithTilde(directory)
-        : '.';
-      const context = await createSchemaParserContext(resolvedDirectory);
-      return buildToCleanFolder({
-        directory,
         logger,
         context,
       });

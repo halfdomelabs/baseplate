@@ -7,7 +7,7 @@ interface Options {
   destination: string;
   source: string;
   shouldFormat?: boolean;
-  neverOverwrite?: boolean;
+  shouldNeverOverwrite?: boolean;
   replacements?: Record<string, string>;
 }
 
@@ -24,8 +24,13 @@ function applyReplacements(
 
 export const copyFileAction = createBuilderActionCreator<[Options]>(
   (options: Options) => async (builder) => {
-    const { destination, source, shouldFormat, neverOverwrite, replacements } =
-      options;
+    const {
+      destination,
+      source,
+      shouldFormat,
+      shouldNeverOverwrite,
+      replacements,
+    } = options;
 
     const templatePath = path.join(
       builder.generatorBaseDirectory,
@@ -33,19 +38,19 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
       source,
     );
 
-    if (shouldFormat ?? replacements) {
-      const fileContents = await fs.readFile(templatePath, 'utf8');
-      const replacedFileContents = applyReplacements(
-        fileContents,
-        replacements ?? {},
-      );
-      builder.writeFile(destination, replacedFileContents, {
+    const fileContents = await fs.readFile(templatePath, 'utf8');
+    const replacedFileContents = applyReplacements(
+      fileContents,
+      replacements ?? {},
+    );
+    builder.writeFile({
+      id: destination,
+      filePath: destination,
+      contents: replacedFileContents,
+      options: {
         shouldFormat,
-        neverOverwrite,
-      });
-    } else {
-      const fileContents = await fs.readFile(templatePath);
-      builder.writeFile(destination, fileContents, { neverOverwrite });
-    }
+        shouldNeverOverwrite,
+      },
+    });
   },
 );

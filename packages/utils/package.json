@@ -12,6 +12,10 @@
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./node": "./dist/node.js"
+  },
   "main": "dist/index.js",
   "files": [
     "LICENSE",
@@ -31,13 +35,15 @@
     "watch:tsc-alias": "tsc-alias -w"
   },
   "dependencies": {
-    "es-toolkit": "1.31.0"
+    "es-toolkit": "1.31.0",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
     "concurrently": "9.0.1",
     "eslint": "catalog:",
+    "memfs": "4.15.1",
     "prettier": "catalog:",
     "tsc-alias": "catalog:",
     "typescript": "catalog:",

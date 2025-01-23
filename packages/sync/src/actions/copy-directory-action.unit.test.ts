@@ -16,7 +16,10 @@ describe('copyDirectoryAction', () => {
   it('should copy an empty directory', async () => {
     await vol.promises.mkdir('/generator/templates', { recursive: true });
 
-    const builder = new GeneratorTaskOutputBuilder('/generator');
+    const builder = new GeneratorTaskOutputBuilder({
+      generatorBaseDirectory: '/generator',
+      generatorName: 'test',
+    });
 
     await copyDirectoryAction({
       source: '/',
@@ -33,7 +36,10 @@ describe('copyDirectoryAction', () => {
       '/generator/templates/a/nested/test2.txt': 'hi2',
     });
 
-    const builder = new GeneratorTaskOutputBuilder('/generator');
+    const builder = new GeneratorTaskOutputBuilder({
+      generatorBaseDirectory: '/generator',
+      generatorName: 'test',
+    });
 
     await copyDirectoryAction({
       source: '/a',
@@ -42,9 +48,11 @@ describe('copyDirectoryAction', () => {
 
     expect(builder.output.files.size).toEqual(2);
     expect(builder.output.files.get('/dest/test1.txt')).toEqual({
+      id: 'test:/dest/test1.txt',
       contents: Buffer.from('hi', 'utf8'),
     });
     expect(builder.output.files.get('/dest/nested/test2.txt')).toEqual({
+      id: 'test:/dest/nested/test2.txt',
       contents: Buffer.from('hi2', 'utf8'),
     });
     expect(builder.output.postWriteCommands).toHaveLength(0);
@@ -55,7 +63,10 @@ describe('copyDirectoryAction', () => {
       '/generator/templates/test1.txt': 'hi',
     });
 
-    const builder = new GeneratorTaskOutputBuilder('/generator');
+    const builder = new GeneratorTaskOutputBuilder({
+      generatorBaseDirectory: '/generator',
+      generatorName: 'test',
+    });
 
     await copyDirectoryAction({
       source: '/',
@@ -65,6 +76,7 @@ describe('copyDirectoryAction', () => {
 
     expect(builder.output.files.size).toEqual(1);
     expect(builder.output.files.get('/dest/test1.txt')).toEqual({
+      id: 'test:/dest/test1.txt',
       contents: 'hi',
       options: { shouldFormat: true },
     });

@@ -2,10 +2,13 @@ import type { PluginMetadataWithPaths } from '@halfdomelabs/project-builder-lib'
 import type { Logger } from '@halfdomelabs/sync';
 
 import { loadPluginsInPackage } from '@halfdomelabs/project-builder-lib/plugin-tools';
-import fs from 'fs-extra';
+import {
+  findNearestPackageJson,
+  readJsonWithSchema,
+} from '@halfdomelabs/utils/node';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { packageUp } from 'package-up';
+import { z } from 'zod';
 
 import { notEmpty } from '@src/utils/array.js';
 import { InitializeServerError } from '@src/utils/errors.js';
@@ -17,7 +20,9 @@ export async function discoverPlugins(
   projectDirectory: string,
   logger: Logger,
 ): Promise<PluginMetadataWithPaths[]> {
-  const packageJsonPath = await packageUp({ cwd: projectDirectory });
+  const packageJsonPath = await findNearestPackageJson({
+    cwd: projectDirectory,
+  });
 
   if (!packageJsonPath) {
     throw new InitializeServerError(
@@ -27,15 +32,18 @@ export async function discoverPlugins(
   }
 
   // Load the package.json file
-  const packageJson = (await fs.readJson(packageJsonPath).catch(() => {
+  const packageJson = await readJsonWithSchema(
+    packageJsonPath,
+    z.object({
+      dependencies: z.record(z.string()).optional(),
+      devDependencies: z.record(z.string()).optional(),
+    }),
+  ).catch(() => {
     throw new InitializeServerError(
       `Could not read the root package.json file for the Baseplate project at ${packageJsonPath}.`,
       'Make sure the package.json file is a valid JSON file.',
     );
-  })) as {
-    dependencies?: Record<string, string>;
-    devDependencies?: Record<string, string>;
-  };
+  });
 
   // Look for plugins that start with baseplate-plugin- or @scope/baseplate-plugin-
   const pluginPackageNames = [
@@ -57,7 +65,10 @@ export async function discoverPlugins(
         }),
       );
 
-      const pluginPackageJsonPath = await packageUp({ cwd: packagePath });
+      const pluginPackageJsonPath = await findNearestPackageJson({
+        cwd: packagePath,
+        stopAtNodeModules: true,
+      });
 
       if (!pluginPackageJsonPath) {
         logger.error(

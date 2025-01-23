@@ -35,12 +35,21 @@ export const copyDirectoryAction = createBuilderActionCreator<[Options]>(
 
         if (shouldFormat) {
           const fileContents = await fs.readFile(file, 'utf8');
-          builder.writeFile(destinationPath, fileContents, {
-            shouldFormat: true,
+          builder.writeFile({
+            id: destinationPath,
+            filePath: destinationPath,
+            contents: fileContents,
+            options: {
+              shouldFormat: true,
+            },
           });
         } else {
           const fileContents = await fs.readFile(file);
-          builder.writeFile(destinationPath, fileContents);
+          builder.writeFile({
+            id: destinationPath,
+            filePath: destinationPath,
+            contents: fileContents,
+          });
         }
       }),
     );

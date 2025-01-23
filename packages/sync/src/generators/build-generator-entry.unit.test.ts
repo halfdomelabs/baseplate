@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { vol } from 'memfs';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   createProviderExportScope,
@@ -11,11 +12,28 @@ import type { ProviderExportMap } from './generators.js';
 
 import { buildGeneratorEntry } from './build-generator-entry.js';
 
+// Mock the fs module
+vi.mock('node:fs');
+vi.mock('node:fs/promises');
+
 describe('buildGeneratorEntry', () => {
   const testProviderType = createProviderType('test');
   const logger = createEventedLogger({ noConsole: true });
 
-  it('builds a simple generator entry', () => {
+  beforeEach(() => {
+    vol.reset();
+    vi.clearAllMocks();
+  });
+
+  it('builds a simple generator entry', async () => {
+    // Set up test package.json
+    const testFs = {
+      '/test/package.json': JSON.stringify({
+        name: 'test-package',
+      }),
+    };
+    vol.fromJSON(testFs, '/');
+
     const bundle = buildTestGeneratorBundle({
       name: 'test-generator',
       directory: '/test',
@@ -34,7 +52,7 @@ describe('buildGeneratorEntry', () => {
       ],
     });
 
-    const entry = buildGeneratorEntry(bundle, { logger });
+    const entry = await buildGeneratorEntry(bundle, { logger });
 
     expect(entry).toMatchObject({
       id: 'root',
@@ -48,13 +66,24 @@ describe('buildGeneratorEntry', () => {
           exports: { test: expect.any(Object) as ProviderExportMap },
           dependentTaskIds: [],
           generatorBaseDirectory: '/test',
-          generatorName: 'test-generator',
+          generatorName: 'test-package#test-generator',
         },
       ],
     });
   });
 
-  it('builds nested generator entries', () => {
+  it('builds nested generator entries', async () => {
+    // Set up test package.json files
+    const testFs = {
+      '/test/parent/package.json': JSON.stringify({
+        name: 'parent-package',
+      }),
+      '/test/child/package.json': JSON.stringify({
+        name: 'child-package',
+      }),
+    };
+    vol.fromJSON(testFs, '/');
+
     const childBundle = {
       name: 'child-generator',
       directory: '/test/child',
@@ -71,7 +100,7 @@ describe('buildGeneratorEntry', () => {
 
     const bundle = {
       name: 'parent-generator',
-      directory: '/test',
+      directory: '/test/parent',
       scopes: [],
       children: {
         child: childBundle,
@@ -80,11 +109,11 @@ describe('buildGeneratorEntry', () => {
       tasks: [],
     };
 
-    const entry = buildGeneratorEntry(bundle, { logger });
+    const entry = await buildGeneratorEntry(bundle, { logger });
 
     expect(entry).toMatchObject({
       id: 'root',
-      generatorBaseDirectory: '/test',
+      generatorBaseDirectory: '/test/parent',
       children: [
         {
           id: 'root.child',
@@ -92,7 +121,7 @@ describe('buildGeneratorEntry', () => {
           tasks: [
             {
               id: 'root.child#child-task',
-              generatorName: 'child-generator',
+              generatorName: 'child-package#child-generator',
             },
           ],
         },
@@ -102,7 +131,7 @@ describe('buildGeneratorEntry', () => {
           tasks: [
             {
               id: 'root.multiChild.0#child-task',
-              generatorName: 'child-generator',
+              generatorName: 'child-package#child-generator',
             },
           ],
         },
@@ -112,7 +141,7 @@ describe('buildGeneratorEntry', () => {
           tasks: [
             {
               id: 'root.multiChild.1#child-task',
-              generatorName: 'child-generator',
+              generatorName: 'child-package#child-generator',
             },
           ],
         },
@@ -120,7 +149,15 @@ describe('buildGeneratorEntry', () => {
     });
   });
 
-  it('supports task dependencies', () => {
+  it('supports task dependencies', async () => {
+    // Set up test package.json
+    const testFs = {
+      '/test/package.json': JSON.stringify({
+        name: 'test-package',
+      }),
+    };
+    vol.fromJSON(testFs, '/');
+
     const bundle = {
       name: 'test-generator',
       directory: '/test',
@@ -140,12 +177,20 @@ describe('buildGeneratorEntry', () => {
       ],
     };
 
-    const entry = buildGeneratorEntry(bundle, { logger });
+    const entry = await buildGeneratorEntry(bundle, { logger });
 
     expect(entry.tasks[1].dependentTaskIds).toEqual(['root#task1']);
   });
 
-  it('preserves scopes from bundle', () => {
+  it('preserves scopes from bundle', async () => {
+    // Set up test package.json
+    const testFs = {
+      '/test/package.json': JSON.stringify({
+        name: 'test-package',
+      }),
+    };
+    vol.fromJSON(testFs, '/');
+
     const scope = createProviderExportScope('test-scope', 'desc');
     const bundle = {
       name: 'test-generator',
@@ -155,7 +200,7 @@ describe('buildGeneratorEntry', () => {
       tasks: [],
     };
 
-    const entry = buildGeneratorEntry(bundle, { logger });
+    const entry = await buildGeneratorEntry(bundle, { logger });
 
     expect(entry.scopes).toEqual([scope]);
   });

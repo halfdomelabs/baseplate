@@ -25,7 +25,11 @@ describe('createGenerator', () => {
           name: 'test-task',
           run: () => ({
             build: (builder: GeneratorTaskOutputBuilder) => {
-              builder.writeFile('test.txt', 'content');
+              builder.writeFile({
+                id: 'test',
+                filePath: 'test.txt',
+                contents: 'content',
+              });
             },
           }),
         });

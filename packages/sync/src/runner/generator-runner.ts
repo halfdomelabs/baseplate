@@ -2,6 +2,7 @@ import { keyBy, mapValues } from 'es-toolkit';
 
 import type { Logger } from '@src/utils/evented-logger.js';
 
+import { findDuplicates } from '@src/utils/find-duplicates.js';
 import { safeMergeMap } from '@src/utils/merge.js';
 
 import type {
@@ -95,9 +96,10 @@ export async function executeGeneratorEntry(
         const entry = taskEntriesById[taskId];
         const generator = taskInstanceById[taskId];
 
-        const outputBuilder = new GeneratorTaskOutputBuilder(
-          entry.generatorBaseDirectory,
-        );
+        const outputBuilder = new GeneratorTaskOutputBuilder({
+          generatorBaseDirectory: entry.generatorBaseDirectory,
+          generatorName: entry.generatorName,
+        });
 
         if (generator.build) {
           await Promise.resolve(generator.build(outputBuilder));
@@ -136,6 +138,13 @@ export async function executeGeneratorEntry(
       })),
     },
   };
+
+  // verify no file IDs are duplicated
+  const fileIds = Array.from(buildOutput.files.values(), (file) => file.id);
+  const duplicateFileIds = findDuplicates(fileIds);
+  if (duplicateFileIds.length > 0) {
+    throw new Error(`Duplicate file IDs found: ${duplicateFileIds.join(', ')}`);
+  }
 
   return buildOutput;
 }

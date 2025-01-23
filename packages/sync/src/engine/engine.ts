@@ -8,8 +8,8 @@ import {
 } from '@src/generators/build-generator-entry.js';
 
 import type {
-  GeneratorWriteOptions,
-  GeneratorWriteResult,
+  WriteGeneratorOutputOptions,
+  WriteGeneratorOutputResult,
 } from '../output/write-generator-output.js';
 
 import { writeGeneratorOutput } from '../output/write-generator-output.js';
@@ -28,7 +28,7 @@ export class GeneratorEngine {
   loadProject(
     bundle: GeneratorBundle,
     logger: Logger = console,
-  ): GeneratorEntry {
+  ): Promise<GeneratorEntry> {
     return buildGeneratorEntry(bundle, {
       logger,
     });
@@ -50,9 +50,8 @@ export class GeneratorEngine {
   async writeOutput(
     output: GeneratorOutput,
     outputDirectory: string,
-    options?: GeneratorWriteOptions,
-    logger: Logger = console,
-  ): Promise<GeneratorWriteResult> {
-    return writeGeneratorOutput(output, outputDirectory, options, logger);
+    options?: WriteGeneratorOutputOptions,
+  ): Promise<WriteGeneratorOutputResult> {
+    return writeGeneratorOutput(output, outputDirectory, options);
   }
 }

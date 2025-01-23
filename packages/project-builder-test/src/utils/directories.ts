@@ -1,8 +1,8 @@
+import { findNearestPackageJson } from '@halfdomelabs/utils/node';
 import path from 'node:path';
-import { packageUp } from 'package-up';
 
 export async function getTestsDirectory(): Promise<string> {
-  const packageRoot = await packageUp({
+  const packageRoot = await findNearestPackageJson({
     cwd: import.meta.dirname,
   });
   if (!packageRoot) {
@@ -12,13 +12,13 @@ export async function getTestsDirectory(): Promise<string> {
 }
 
 export async function getTestProjectsDirectory(): Promise<string> {
-  const packageRoot = await packageUp({
+  const packageRoot = await findNearestPackageJson({
     cwd: import.meta.dirname,
   });
   if (!packageRoot) {
     throw new Error('Could not find package root');
   }
-  const rootPackageRoot = await packageUp({
+  const rootPackageRoot = await findNearestPackageJson({
     cwd: path.dirname(path.dirname(packageRoot)),
   });
   if (!rootPackageRoot) {

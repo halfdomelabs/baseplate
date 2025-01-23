@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
 
+import { POST_WRITE_COMMAND_PRIORITY } from '@src/output/post-write-commands/types.js';
 import { createEventedLogger } from '@src/utils/index.js';
 
 import type {
@@ -28,6 +29,7 @@ function buildGeneratorEntry(
       builder: GeneratorTaskOutputBuilder,
       deps: Record<string, Provider>,
     ) => void;
+    generatorName?: string;
   } = {},
 ): GeneratorEntry {
   const {
@@ -49,6 +51,7 @@ function buildGeneratorEntry(
       ...(id && { id: `${id}#main` }),
       dependencies: dependencyMap,
       exports: exportMap,
+      generatorName: options.generatorName,
       task: {
         name: 'main',
         dependencies: dependencyMap,
@@ -75,22 +78,32 @@ describe('executeGeneratorEntry', () => {
 
   it('generates a simple entry', async () => {
     const entry = buildGeneratorEntry({
+      generatorName: 'test-generator',
       build: (builder) => {
-        builder.writeFile('/simple/file.txt', 'simple');
-        builder.addPostWriteCommand('simple command', 'script');
+        builder.writeFile({
+          id: 'simple',
+          filePath: '/simple/file.txt',
+          contents: 'simple',
+        });
+        builder.addPostWriteCommand('simple command', {
+          priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+        });
       },
     });
     const result = await executeGeneratorEntry(entry, logger);
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
+        id: 'test-generator:simple',
         contents: 'simple',
+        options: undefined,
       },
     });
     expect(result.postWriteCommands).toEqual([
       {
         command: 'simple command',
-        commandType: 'script',
-        options: undefined,
+        options: {
+          priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+        },
       },
     ]);
   });
@@ -103,24 +116,41 @@ describe('executeGeneratorEntry', () => {
       exportMap: {
         simpleExp: simpleProviderType.export(),
       },
+      generatorName: 'test-generator',
       exports: { simpleExp: simpleProvider },
       build: (builder) => {
-        builder.writeFile('/simple/file.txt', 'simple');
-        builder.addPostWriteCommand('simple command', 'script');
+        builder.writeFile({
+          id: 'simple',
+          filePath: '/simple/file.txt',
+          contents: 'simple',
+        });
+        builder.addPostWriteCommand('simple command', {
+          priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+        });
       },
       children: [
         buildGeneratorEntry({
           id: 'root:nested',
           dependencyMap: { simpleDep: simpleProviderType },
+          generatorName: 'nested-generator',
           build: (builder, deps) => {
             deps.simpleDep.hello();
-            builder.writeFile('/nested/file.txt', 'nested', {
-              shouldFormat: true,
+            builder.writeFile({
+              id: 'nested',
+              filePath: '/nested/file.txt',
+              contents: 'nested',
+              options: {
+                shouldFormat: true,
+              },
             });
-            builder.addPostWriteCommand('nested command', 'script', {
+            builder.addPostWriteCommand('nested command', {
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
               workingDirectory: '/nested',
             });
-            builder.addPostWriteCommand('nested command 2', 'script');
+            builder.addPostWriteCommand('nested command 2', {
+              priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+              workingDirectory: '/nested',
+            });
           },
         }),
       ],
@@ -128,10 +158,12 @@ describe('executeGeneratorEntry', () => {
     const result = await executeGeneratorEntry(entry, logger);
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
+        id: 'test-generator:simple',
         contents: 'simple',
         options: undefined,
       },
       '/nested/file.txt': {
+        id: 'nested-generator:nested',
         contents: 'nested',
         options: { shouldFormat: true },
       },
@@ -139,18 +171,23 @@ describe('executeGeneratorEntry', () => {
     expect(result.postWriteCommands).toEqual([
       {
         command: 'nested command',
-        commandType: 'script',
-        options: { workingDirectory: '/nested' },
+        options: {
+          priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+          workingDirectory: '/nested',
+        },
       },
       {
         command: 'nested command 2',
-        commandType: 'script',
-        options: undefined,
+        options: {
+          priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+          workingDirectory: '/nested',
+        },
       },
       {
         command: 'simple command',
-        commandType: 'script',
-        options: undefined,
+        options: {
+          priority: POST_WRITE_COMMAND_PRIORITY.CODEGEN,
+        },
       },
     ]);
     expect(simpleProvider.hello).toHaveBeenCalled();

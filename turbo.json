@@ -4,7 +4,8 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "!README.md"],
-      "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["build/**", "dist/**", ".next/**", "!.next/cache/**"],
+      "outputLogs": "errors-only"
     },
     "clean": {
       "cache": false
@@ -15,14 +16,14 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputLogs": "new-only"
+      "outputLogs": "errors-only"
     },
     "prettier:check": {},
     "prettier:write": {
       "cache": false
     },
     "typecheck": {
-      "cache": true
+      "cache": false
     },
     "dev": {
       "persistent": true,

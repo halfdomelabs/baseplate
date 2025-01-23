@@ -5,6 +5,7 @@ import path from 'node:path';
 import { createBuilderActionCreator } from '@src/output/builder-action.js';
 
 interface Options {
+  id?: string;
   destination: string;
   template: string;
   data: Record<string, unknown>;
@@ -25,6 +26,13 @@ export const writeTemplateAction = createBuilderActionCreator<[Options]>(
 
     const contents = ejs.render(templateContents, data);
 
-    builder.writeFile(destination, contents, { shouldFormat: !noFormat });
+    builder.writeFile({
+      id: options.id ?? destination,
+      filePath: destination,
+      contents,
+      options: {
+        shouldFormat: !noFormat,
+      },
+    });
   },
 );

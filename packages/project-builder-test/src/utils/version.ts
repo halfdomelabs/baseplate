@@ -1,10 +1,10 @@
+import { findNearestPackageJson } from '@halfdomelabs/utils/node';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { packageUp } from 'package-up';
 
 export async function getCliVersion(): Promise<string> {
-  const packageJsonPath = await packageUp({
+  const packageJsonPath = await findNearestPackageJson({
     cwd: fileURLToPath(import.meta.url),
   });
   if (!packageJsonPath) {

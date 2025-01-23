@@ -7,11 +7,13 @@ import {
   createProviderType,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import {
+  findNearestPackageJson,
+  readJsonWithSchema,
+} from '@halfdomelabs/utils/node';
 import { uniq } from 'es-toolkit';
-import fs from 'fs-extra';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { packageUp } from 'package-up';
 import prettier from 'prettier';
 import prettierPluginPackageJson from 'prettier-plugin-packagejson';
 import resolveFrom from 'resolve-from';
@@ -98,11 +100,14 @@ async function resolveModuleWithVersion(
   if (!result) {
     return undefined;
   }
-  const packageJsonPath = await packageUp({ cwd: result });
+  const packageJsonPath = await findNearestPackageJson({ cwd: result });
   if (!packageJsonPath) return undefined;
-  const packageJson = (await fs.readJson(packageJsonPath)) as {
-    version?: string;
-  };
+  const packageJson = await readJsonWithSchema(
+    packageJsonPath,
+    z.object({
+      version: z.string().optional(),
+    }),
+  );
   return {
     modulePath: result,
     version: packageJson.version,
@@ -266,10 +271,14 @@ export const prettierGenerator = createGenerator({
 
             const prettierIgnoreSorted = uniq(prettierIgnore.toSorted());
 
-            builder.writeFile(
-              '.prettierignore',
-              `${prettierIgnoreSorted.join('\n')}\n`,
-            );
+            builder.writeFile({
+              id: 'prettier-ignore',
+              filePath: '.prettierignore',
+              contents: `${prettierIgnoreSorted.join('\n')}\n`,
+              options: {
+                shouldFormat: true,
+              },
+            });
           },
         };
       },

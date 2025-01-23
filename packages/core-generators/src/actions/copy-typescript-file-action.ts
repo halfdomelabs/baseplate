@@ -1,5 +1,5 @@
 import { createBuilderActionCreator } from '@halfdomelabs/sync';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import type { ImportMapper } from '../providers/index.js';
@@ -9,12 +9,13 @@ import { TypescriptSourceFile } from '../writers/index.js';
 
 export interface CopyTypescriptFileOptions {
   destination?: string;
+  id?: string;
   source: string;
   replacements?: Record<string, string>;
   importMappers?: ImportMapper[];
   pathMappings?: PathMapEntry[];
   moduleResolution: ModuleResolutionKind;
-  neverOverwrite?: boolean;
+  shouldNeverOverwrite?: boolean;
 }
 
 function formatImports(
@@ -37,7 +38,12 @@ function formatImports(
 export const copyTypescriptFileAction = createBuilderActionCreator<
   [CopyTypescriptFileOptions]
 >((options: CopyTypescriptFileOptions) => async (builder) => {
-  const { destination, source, replacements = {}, neverOverwrite } = options;
+  const {
+    destination,
+    source,
+    replacements = {},
+    shouldNeverOverwrite,
+  } = options;
 
   const templatePath = path.join(
     builder.generatorBaseDirectory,
@@ -64,8 +70,13 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
     ? formatImports(replacedContents, fullPath, options)
     : replacedContents;
 
-  builder.writeFile(destinationPath, formattedContents, {
-    shouldFormat: true,
-    neverOverwrite,
+  builder.writeFile({
+    id: options.id ?? destinationPath,
+    filePath: destinationPath,
+    contents: formattedContents,
+    options: {
+      shouldFormat: true,
+      shouldNeverOverwrite,
+    },
   });
 });

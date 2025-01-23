@@ -9,5 +9,5 @@
     }
   },
   "include": ["src/**/*"],
-  "exclude": ["src/output/merge-algorithms/tests/**/*"]
+  "exclude": ["src/output/string-merge-algorithms/tests/**/*"]
 }

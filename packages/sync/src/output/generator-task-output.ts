@@ -3,12 +3,21 @@ import path from 'node:path';
 
 import type { BuilderAction } from './builder-action.js';
 import type { GeneratorOutputFormatter } from './formatter.js';
-import type { MergeAlgorithm } from './merge-algorithms/types.js';
+import type {
+  PostWriteCommand,
+  PostWriteCommandOptions,
+} from './post-write-commands/types.js';
+import type { StringMergeAlgorithm } from './string-merge-algorithms/types.js';
 
 /**
  * Options for writing a file
  */
 export interface WriteFileOptions {
+  /**
+   * Alternate full IDs for the file (used if migrating file from one generator to another)
+   * Note: This must be the full ID of the file (i.e. `<package>/<generator-name>/<file-id>`)
+   */
+  alternateFullIds?: string[];
   /**
    * Whether to format the file using the default formatter
    */
@@ -16,56 +25,21 @@ export interface WriteFileOptions {
   /**
    * Never overwrite the file (e.g. for placeholder images)
    */
-  neverOverwrite?: boolean;
-  /**
-   * Contents of the clean file (such that the diff will be merged into the existing file)
-   */
-  cleanContents?: Buffer;
+  shouldNeverOverwrite?: boolean;
   /**
    * Merge algorithms to use for the file
    */
-  mergeAlgorithms?: MergeAlgorithm[];
-}
-
-/**
- * The type of post write command to run which specifies the order in which it is run
- *
- * - dependencies: for installing any dependencies, e.g. pnpm install
- * - generation: for generating the files, e.g. pnpm prisma schema
- * - script: for running any scripts, e.g. pnpm generate
- */
-export type PostWriteCommandType = 'dependencies' | 'generation' | 'script';
-
-/**
- * The priority of each post write command type
- */
-export const POST_WRITE_COMMAND_TYPE_PRIORITY: Record<
-  PostWriteCommandType,
-  number
-> = {
-  dependencies: 0,
-  generation: 1,
-  script: 2,
-};
-
-/**
- * Options for a post write command
- */
-export interface PostWriteCommandOptions {
-  /**
-   * Only run command if the provided files were changed
-   */
-  onlyIfChanged?: string | string[];
-  /**
-   * The working directory to run the command in. Defaults to package directory.
-   */
-  workingDirectory?: string;
+  mergeAlgorithms?: StringMergeAlgorithm[];
 }
 
 /**
  * Data for a file to be written
  */
 export interface FileData {
+  /**
+   * A unique identifier for the file within that generator (used to track renaming/moving of the file)
+   */
+  id: string;
   /**
    * The contents of the file
    */
@@ -74,24 +48,6 @@ export interface FileData {
    * The options for how to write the file
    */
   options?: WriteFileOptions;
-}
-
-/**
- * A command to run after the files are written
- */
-export interface PostWriteCommand {
-  /**
-   * The command to run
-   */
-  command: string;
-  /**
-   * The type of the command
-   */
-  commandType: PostWriteCommandType;
-  /**
-   * The options for the command
-   */
-  options?: PostWriteCommandOptions;
 }
 
 /**
@@ -131,6 +87,17 @@ export interface GeneratorOutput extends GeneratorTaskOutput {
   metadata?: GeneratorOutputMetadata;
 }
 
+interface GeneratorTaskOutputBuilderContext {
+  /**
+   * The base directory of the generator code (useful for reading templates)
+   */
+  generatorBaseDirectory: string;
+  /**
+   * The name of the generator
+   */
+  generatorName: string;
+}
+
 /**
  * Builder for the output of a generator task that collects the files and
  * commands that need to be run
@@ -146,13 +113,19 @@ export class GeneratorTaskOutputBuilder {
    */
   generatorBaseDirectory: string;
 
-  constructor(generatorBaseDirectory: string) {
+  /**
+   * The name of the generator
+   */
+  generatorName: string;
+
+  constructor(context: GeneratorTaskOutputBuilderContext) {
     this.output = {
       files: new Map(),
       postWriteCommands: [],
       globalFormatters: [],
     };
-    this.generatorBaseDirectory = generatorBaseDirectory;
+    this.generatorBaseDirectory = context.generatorBaseDirectory;
+    this.generatorName = context.generatorName;
   }
 
   /**
@@ -177,11 +150,17 @@ export class GeneratorTaskOutputBuilder {
    * @param contents The contents of the file
    * @param options The options for the file
    */
-  writeFile(
-    filePath: string,
-    contents: string | Buffer,
-    options?: WriteFileOptions,
-  ): void {
+  writeFile({
+    id,
+    filePath,
+    contents,
+    options,
+  }: {
+    id: string;
+    filePath: string;
+    contents: string | Buffer;
+    options?: WriteFileOptions;
+  }): void {
     const fullPath = this.resolvePath(filePath);
 
     if (this.output.files.has(fullPath)) {
@@ -192,7 +171,11 @@ export class GeneratorTaskOutputBuilder {
       throw new Error(`Cannot format Buffer contents for ${fullPath}`);
     }
 
-    this.output.files.set(fullPath, { contents, options });
+    this.output.files.set(fullPath, {
+      id: `${this.generatorName}:${id}`,
+      contents,
+      options,
+    });
   }
 
   /**
@@ -215,10 +198,9 @@ export class GeneratorTaskOutputBuilder {
    */
   addPostWriteCommand(
     command: string,
-    commandType: PostWriteCommandType,
     options?: PostWriteCommandOptions,
   ): void {
-    this.output.postWriteCommands.push({ command, commandType, options });
+    this.output.postWriteCommands.push({ command, options });
   }
 
   /**

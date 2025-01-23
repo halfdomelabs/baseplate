@@ -32,6 +32,7 @@
     "watch:tsc-alias": "tsc-alias -w"
   },
   "dependencies": {
+    "@halfdomelabs/utils": "workspace:*",
     "chalk": "5.3.0",
     "ejs": "^3.1.9",
     "es-toolkit": "1.31.0",
