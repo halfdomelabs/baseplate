@@ -172,9 +172,6 @@ importers:
       is-core-module:
         specifier: 2.15.1
         version: 2.15.1
-      package-up:
-        specifier: ^5.0.0
-        version: 5.0.0
       prettier:
         specifier: 'catalog:'
         version: 3.4.2
@@ -257,9 +254,6 @@ importers:
       ora:
         specifier: ^8.0.1
         version: 8.0.1
-      package-up:
-        specifier: ^5.0.0
-        version: 5.0.0
     devDependencies:
       '@halfdomelabs/project-builder-lib':
         specifier: workspace:*
@@ -361,9 +355,6 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
-      package-up:
-        specifier: ^5.0.0
-        version: 5.0.0
       pino:
         specifier: 9.5.0
         version: 9.5.0
@@ -571,9 +562,6 @@ importers:
       open:
         specifier: 10.1.0
         version: 10.1.0
-      package-up:
-        specifier: ^5.0.0
-        version: 5.0.0
       pino:
         specifier: 9.5.0
         version: 9.5.0
@@ -641,9 +629,6 @@ importers:
       ora:
         specifier: ^8.0.1
         version: 8.0.1
-      package-up:
-        specifier: ^5.0.0
-        version: 5.0.0
       pino:
         specifier: 9.5.0
         version: 9.5.0
@@ -5398,10 +5383,6 @@ packages:
 
   package-manager-detector@0.2.5:
     resolution: {integrity: sha512-3dS7y28uua+UDbRCLBqltMBrbI+A5U2mI9YuxHRxIWYmLj3DwntEBmERYzIAQ4DMeuCUOBSak7dBHHoXKpOTYQ==}
-
-  package-up@5.0.0:
-    resolution: {integrity: sha512-MQEgDUvXCa3sGvqHg3pzHO8e9gqTCMPVrWUko3vPQGntwegmFo52mZb2abIVTjFnUcW0BcPz0D93jV5Cas1DWA==}
-    engines: {node: '>=18'}
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -11214,10 +11195,6 @@ snapshots:
   package-json-from-dist@1.0.1: {}
 
   package-manager-detector@0.2.5: {}
-
-  package-up@5.0.0:
-    dependencies:
-      find-up-simple: 1.0.0
 
   parent-module@1.0.1:
     dependencies:

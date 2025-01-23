@@ -54,7 +54,6 @@
     "inflection": "3.0.0",
     "mime": "^4.0.3",
     "open": "10.1.0",
-    "package-up": "^5.0.0",
     "pino": "9.5.0",
     "zod": "catalog:"
   },
