@@ -85,7 +85,7 @@
     "tailwindcss": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vite-plugin-svgr": "4.2.0",
+    "vite-plugin-svgr": "catalog:",
     "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"
   },

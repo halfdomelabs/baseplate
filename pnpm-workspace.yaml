@@ -30,10 +30,11 @@ catalog:
   postcss-prefixer: 3.0.0
 
   # Vite
-  vite: 5.4.7
-  vitest: 2.1.1
-  '@vitejs/plugin-react': 4.3.1
-  vite-tsconfig-paths: 5.0.0
+  vite: 6.0.11
+  vitest: 3.0.3
+  '@vitejs/plugin-react': 4.3.4
+  vite-plugin-svgr: 4.3.0
+  vite-tsconfig-paths: 5.1.4
 
   # Validation
   zod: 3.24.1

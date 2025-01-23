@@ -53,12 +53,16 @@ export const vitestGenerator = createGenerator({
           { name: 'vitest-config', mergeArraysUniquely: true },
         );
 
+        const vitestConfigFilename = node.isEsm()
+          ? 'vitest.config.ts'
+          : 'vitest.config.mts';
+
         node.addDevPackages({
-          vitest: '2.1.1',
-          'vite-tsconfig-paths': '4.3.2',
+          vitest: '3.0.3',
+          'vite-tsconfig-paths': '5.1.4',
         });
 
-        eslint.getConfig().appendUnique('eslintIgnore', ['vitest.config.ts']);
+        eslint.getConfig().appendUnique('eslintIgnore', [vitestConfigFilename]);
 
         return {
           providers: {
@@ -124,7 +128,16 @@ export const vitestGenerator = createGenerator({
             });
 
             await builder.apply(
-              vitestConfigFile.renderToAction('vitest.config.ts'),
+              vitestConfigFile.renderToAction(
+                'vitest.config.ts',
+                vitestConfigFilename,
+                {
+                  id: 'vitest-config',
+                  alternateFullIds: [
+                    '@halfdomelabs/core-generators#node/vitest:vitest.config.ts',
+                  ],
+                },
+              ),
             );
           },
         };
