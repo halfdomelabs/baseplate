@@ -28,7 +28,7 @@ export class GeneratorEngine {
   loadProject(
     bundle: GeneratorBundle,
     logger: Logger = console,
-  ): GeneratorEntry {
+  ): Promise<GeneratorEntry> {
     return buildGeneratorEntry(bundle, {
       logger,
     });

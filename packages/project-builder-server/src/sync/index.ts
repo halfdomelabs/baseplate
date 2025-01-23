@@ -95,7 +95,7 @@ export async function generateForDirectory({
 
   logger.info(`Generating project ${name} in ${projectDirectory}...`);
 
-  const project = engine.loadProject(generatorBundle, logger);
+  const project = await engine.loadProject(generatorBundle, logger);
   const output = await engine.build(project, logger);
   logger.info('Project built! Writing output....');
 

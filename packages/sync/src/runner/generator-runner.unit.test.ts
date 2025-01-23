@@ -29,6 +29,7 @@ function buildGeneratorEntry(
       builder: GeneratorTaskOutputBuilder,
       deps: Record<string, Provider>,
     ) => void;
+    generatorName?: string;
   } = {},
 ): GeneratorEntry {
   const {
@@ -50,6 +51,7 @@ function buildGeneratorEntry(
       ...(id && { id: `${id}#main` }),
       dependencies: dependencyMap,
       exports: exportMap,
+      generatorName: options.generatorName,
       task: {
         name: 'main',
         dependencies: dependencyMap,
@@ -76,6 +78,7 @@ describe('executeGeneratorEntry', () => {
 
   it('generates a simple entry', async () => {
     const entry = buildGeneratorEntry({
+      generatorName: 'test-generator',
       build: (builder) => {
         builder.writeFile({
           id: 'simple',
@@ -90,7 +93,7 @@ describe('executeGeneratorEntry', () => {
     const result = await executeGeneratorEntry(entry, logger);
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
-        id: 'simple',
+        id: 'test-generator:simple',
         contents: 'simple',
         options: undefined,
       },
@@ -113,6 +116,7 @@ describe('executeGeneratorEntry', () => {
       exportMap: {
         simpleExp: simpleProviderType.export(),
       },
+      generatorName: 'test-generator',
       exports: { simpleExp: simpleProvider },
       build: (builder) => {
         builder.writeFile({
@@ -128,6 +132,7 @@ describe('executeGeneratorEntry', () => {
         buildGeneratorEntry({
           id: 'root:nested',
           dependencyMap: { simpleDep: simpleProviderType },
+          generatorName: 'nested-generator',
           build: (builder, deps) => {
             deps.simpleDep.hello();
             builder.writeFile({
@@ -153,12 +158,12 @@ describe('executeGeneratorEntry', () => {
     const result = await executeGeneratorEntry(entry, logger);
     expect(Object.fromEntries(result.files.entries())).toEqual({
       '/simple/file.txt': {
-        id: 'simple',
+        id: 'test-generator:simple',
         contents: 'simple',
         options: undefined,
       },
       '/nested/file.txt': {
-        id: 'nested',
+        id: 'nested-generator:nested',
         contents: 'nested',
         options: { shouldFormat: true },
       },

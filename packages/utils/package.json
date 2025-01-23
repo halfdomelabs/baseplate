@@ -12,6 +12,10 @@
   "author": "Half Dome Labs LLC",
   "sideEffects": false,
   "type": "module",
+  "exports": {
+    ".": "./dist/index.js",
+    "./node": "./dist/node.js"
+  },
   "main": "dist/index.js",
   "files": [
     "LICENSE",
@@ -38,6 +42,7 @@
     "@types/node": "catalog:",
     "concurrently": "9.0.1",
     "eslint": "catalog:",
+    "memfs": "4.15.1",
     "prettier": "catalog:",
     "tsc-alias": "catalog:",
     "typescript": "catalog:",
