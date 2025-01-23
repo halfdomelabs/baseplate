@@ -1,5 +1,12 @@
 # @halfdomelabs/create-project
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies [[`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14)]:
+  - @halfdomelabs/utils@0.1.2
+
 ## 0.2.8
 
 ### Patch Changes

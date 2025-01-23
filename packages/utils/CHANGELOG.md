@@ -1,5 +1,11 @@
 # @halfdomelabs/utils
 
+## 0.1.2
+
+### Patch Changes
+
+- [#428](https://github.com/halfdomelabs/baseplate/pull/428) [`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14) Thanks [@kingston](https://github.com/kingston)! - Add package-up equivalent implementation
+
 ## 0.1.1
 
 ### Patch Changes
