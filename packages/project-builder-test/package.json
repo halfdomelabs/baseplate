@@ -31,6 +31,7 @@
     "@halfdomelabs/project-builder-server": "workspace:*",
     "@halfdomelabs/project-builder-web": "workspace:*",
     "@halfdomelabs/sync": "workspace:*",
+    "@halfdomelabs/utils": "workspace:*",
     "commander": "^12.1.0",
     "execa": "9.3.0",
     "globby": "^14.0.2",

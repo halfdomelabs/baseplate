@@ -1,13 +1,13 @@
+import { findNearestPackageJson } from '@halfdomelabs/utils/node';
 import { promises as fs } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { packageUp } from 'package-up';
 
 let cachedVersion: string | undefined | null;
 
 export async function getPackageVersion(): Promise<string | null> {
   if (cachedVersion === undefined) {
     // Construct the path to the package.json file.
-    const packageJsonPath = await packageUp({
+    const packageJsonPath = await findNearestPackageJson({
       cwd: fileURLToPath(import.meta.url),
     });
 

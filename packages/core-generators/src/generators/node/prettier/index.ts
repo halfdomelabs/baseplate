@@ -7,11 +7,13 @@ import {
   createProviderType,
   writeJsonAction,
 } from '@halfdomelabs/sync';
-import { readJsonWithSchema } from '@halfdomelabs/utils/node';
+import {
+  findNearestPackageJson,
+  readJsonWithSchema,
+} from '@halfdomelabs/utils/node';
 import { uniq } from 'es-toolkit';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { packageUp } from 'package-up';
 import prettier from 'prettier';
 import prettierPluginPackageJson from 'prettier-plugin-packagejson';
 import resolveFrom from 'resolve-from';
@@ -98,7 +100,7 @@ async function resolveModuleWithVersion(
   if (!result) {
     return undefined;
   }
-  const packageJsonPath = await packageUp({ cwd: result });
+  const packageJsonPath = await findNearestPackageJson({ cwd: result });
   if (!packageJsonPath) return undefined;
   const packageJson = await readJsonWithSchema(
     packageJsonPath,
