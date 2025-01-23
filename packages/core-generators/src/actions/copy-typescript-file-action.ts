@@ -1,5 +1,5 @@
 import { createBuilderActionCreator } from '@halfdomelabs/sync';
-import fs from 'fs-extra';
+import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import type { ImportMapper } from '../providers/index.js';

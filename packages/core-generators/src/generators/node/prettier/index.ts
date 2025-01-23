@@ -7,8 +7,8 @@ import {
   createProviderType,
   writeJsonAction,
 } from '@halfdomelabs/sync';
+import { readJsonWithSchema } from '@halfdomelabs/utils/node';
 import { uniq } from 'es-toolkit';
-import fs from 'fs-extra';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { packageUp } from 'package-up';
@@ -100,9 +100,12 @@ async function resolveModuleWithVersion(
   }
   const packageJsonPath = await packageUp({ cwd: result });
   if (!packageJsonPath) return undefined;
-  const packageJson = (await fs.readJson(packageJsonPath)) as {
-    version?: string;
-  };
+  const packageJson = await readJsonWithSchema(
+    packageJsonPath,
+    z.object({
+      version: z.string().optional(),
+    }),
+  );
   return {
     modulePath: result,
     version: packageJson.version,

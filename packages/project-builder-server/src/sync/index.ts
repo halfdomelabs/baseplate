@@ -5,8 +5,14 @@ import {
   createCodebaseFileReaderFromDirectory,
   GeneratorEngine,
 } from '@halfdomelabs/sync';
+import {
+  dirExists,
+  handleFileNotFoundError,
+  readJsonWithSchema,
+  writeJson,
+} from '@halfdomelabs/utils/node';
 import chalk from 'chalk';
-import fs from 'fs-extra';
+import { rename, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 
@@ -14,9 +20,11 @@ import { environmentFlags } from '@src/service/environment-flags.js';
 
 import { writeGeneratorStepsHtml } from './generator-steps-html-writer.js';
 
-interface BuildResultFile {
-  failedCommands?: string[];
-}
+const buildResultFileSchema = z.object({
+  failedCommands: z.array(z.string()).optional(),
+});
+
+type BuildResultFile = z.output<typeof buildResultFileSchema>;
 
 interface GenerateForDirectoryOptions {
   baseDirectory: string;
@@ -51,10 +59,11 @@ async function getPreviousGeneratedFileIdMap(
 ): Promise<Map<string, string>> {
   const generatedFileIdMapPath = path.join(projectDirectory, FILE_ID_MAP_PATH);
   try {
-    const fileIdMap = (await fs.readJson(generatedFileIdMapPath)) as unknown;
-
-    const fileIdRecord = z.record(z.string(), z.string()).parse(fileIdMap);
-    return new Map(Object.entries(fileIdRecord));
+    const fileIdMap = await readJsonWithSchema(
+      generatedFileIdMapPath,
+      z.record(z.string(), z.string()),
+    );
+    return new Map(Object.entries(fileIdMap));
   } catch (err) {
     if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
       return new Map();
@@ -71,7 +80,7 @@ async function getPreviousGeneratedPayload(
 ): Promise<PreviousGeneratedPayload | undefined> {
   const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
 
-  const previousDirectoryExists = await fs.pathExists(generatedDirectory);
+  const previousDirectoryExists = await dirExists(generatedDirectory);
 
   if (!previousDirectoryExists) {
     return undefined;
@@ -107,10 +116,10 @@ export async function generateForDirectory({
     'baseplate/build/last_build_result.json',
   );
 
-  const buildResultExists = await fs.pathExists(buildResultPath);
-  const oldBuildResult: BuildResultFile = buildResultExists
-    ? ((await fs.readJson(buildResultPath)) as BuildResultFile)
-    : {};
+  const oldBuildResult = await readJsonWithSchema(
+    buildResultPath,
+    buildResultFileSchema,
+  ).catch(handleFileNotFoundError);
 
   // load clean directory contents
   const previousGeneratedPayload =
@@ -134,12 +143,12 @@ export async function generateForDirectory({
     } = await engine.writeOutput(output, projectDirectory, {
       previousGeneratedPayload,
       generatedContentsDirectory: generatedTemporaryDirectory,
-      rerunCommands: oldBuildResult.failedCommands,
+      rerunCommands: oldBuildResult?.failedCommands,
       logger,
     });
 
-    if (buildResultExists) {
-      await fs.rm(buildResultPath);
+    if (oldBuildResult) {
+      await rm(buildResultPath);
     }
 
     if (failedCommands.length > 0) {
@@ -147,15 +156,15 @@ export async function generateForDirectory({
       const buildResult: BuildResultFile = {
         failedCommands,
       };
-      await fs.writeJSON(buildResultPath, buildResult, { spaces: 2 });
+      await writeJson(buildResultPath, buildResult);
     }
 
     // swap out generated directory with generated_tmp
     const generatedDirectory = path.join(projectDirectory, GENERATED_DIRECTORY);
     if (previousGeneratedPayload) {
-      await fs.rm(generatedDirectory, { recursive: true });
+      await rm(generatedDirectory, { recursive: true });
     }
-    await fs.move(generatedTemporaryDirectory, generatedDirectory);
+    await rename(generatedTemporaryDirectory, generatedDirectory);
 
     // Write file ID map
     const fileIdMap = Object.fromEntries(
@@ -163,11 +172,7 @@ export async function generateForDirectory({
         a.localeCompare(b),
       ),
     );
-    await fs.writeJSON(
-      path.join(projectDirectory, FILE_ID_MAP_PATH),
-      fileIdMap,
-      { spaces: 2 },
-    );
+    await writeJson(path.join(projectDirectory, FILE_ID_MAP_PATH), fileIdMap);
 
     // List out conflicts
     if (relativePathsWithConflicts.length > 0) {
@@ -214,7 +219,7 @@ export async function generateForDirectory({
     }
   } finally {
     // attempt to remove any temporary directory
-    await fs.rm(generatedTemporaryDirectory, { recursive: true }).catch(() => {
+    await rm(generatedTemporaryDirectory, { recursive: true }).catch(() => {
       /* ignore errors */
     });
   }

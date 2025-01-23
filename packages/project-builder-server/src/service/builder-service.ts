@@ -8,9 +8,10 @@ import type { FSWatcher } from 'chokidar';
 
 import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger } from '@halfdomelabs/sync';
+import { ensureDir, fileExists } from '@halfdomelabs/utils/node';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
-import fs from 'fs-extra';
+import { readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import {
@@ -30,7 +31,7 @@ export type WriteResult =
   | { type: 'modified-more-recently' };
 
 function getLastModifiedTime(filePath: string): Promise<string> {
-  return fs.stat(filePath).then((stat) => stat.mtime.toISOString());
+  return stat(filePath).then((stat) => stat.mtime.toISOString());
 }
 
 export interface CommandConsoleEmittedPayload {
@@ -124,27 +125,24 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
   }
 
   public async init(): Promise<void> {
-    const fileExists = await fs.pathExists(this.projectJsonPath);
+    const projectJsonExists = await fileExists(this.projectJsonPath);
 
-    if (!fileExists) {
-      // check if old version of the file exists
-      const oldJsonPath = path.join(this.directory, 'baseplate/project.json');
-      if (await fs.pathExists(oldJsonPath)) {
-        await fs.move(oldJsonPath, this.projectJsonPath);
-      } else {
-        // auto-create a simple project-definition.json file
-        this.logger.info(
-          `project-definition.json not found. Creating project-definition.json file in ${this.projectJsonPath}`,
-        );
-        const starterName =
-          getFirstNonBaseplateParentFolder(this.projectJsonPath) ?? 'project';
-        await fs.writeJson(this.projectJsonPath, {
+    if (!projectJsonExists) {
+      // auto-create a simple project-definition.json file
+      this.logger.info(
+        `project-definition.json not found. Creating project-definition.json file in ${this.projectJsonPath}`,
+      );
+      const starterName =
+        getFirstNonBaseplateParentFolder(this.projectJsonPath) ?? 'project';
+      await writeFile(
+        this.projectJsonPath,
+        JSON.stringify({
           name: starterName,
           cliVersion: this.cliVersion,
           portOffset: 5000,
           schemaVersion: getLatestMigrationVersion(),
-        } satisfies ProjectDefinitionInput);
-      }
+        } satisfies ProjectDefinitionInput),
+      );
     }
 
     this.watcher = chokidar.watch(this.projectJsonPath, {
@@ -170,26 +168,26 @@ export class ProjectBuilderService extends TypedEventEmitterBase<{
   }
 
   public async readConfig(): Promise<FilePayload | null> {
-    if (!(await fs.pathExists(this.projectJsonPath))) {
+    if (!(await fileExists(this.projectJsonPath))) {
       return null;
     }
     const [lastModifiedAt, contents] = await Promise.all([
       getLastModifiedTime(this.projectJsonPath),
-      fs.promises.readFile(this.projectJsonPath, 'utf8'),
+      readFile(this.projectJsonPath, 'utf8'),
     ]);
     return { contents, lastModifiedAt };
   }
 
   public async writeConfig(payload: FilePayload): Promise<WriteResult> {
-    if (await fs.pathExists(this.projectJsonPath)) {
+    if (await fileExists(this.projectJsonPath)) {
       const lastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
       if (lastModifiedAt !== payload.lastModifiedAt) {
         return { type: 'modified-more-recently' };
       }
     } else {
-      await fs.ensureDir(path.dirname(this.projectJsonPath));
+      await ensureDir(path.dirname(this.projectJsonPath));
     }
-    await fs.promises.writeFile(this.projectJsonPath, payload.contents, 'utf8');
+    await writeFile(this.projectJsonPath, payload.contents, 'utf8');
     const newLastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
     return { type: 'success', lastModifiedAt: newLastModifiedAt };
   }
