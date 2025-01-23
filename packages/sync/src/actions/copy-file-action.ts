@@ -38,31 +38,19 @@ export const copyFileAction = createBuilderActionCreator<[Options]>(
       source,
     );
 
-    if (shouldFormat ?? replacements) {
-      const fileContents = await fs.readFile(templatePath, 'utf8');
-      const replacedFileContents = applyReplacements(
-        fileContents,
-        replacements ?? {},
-      );
-      builder.writeFile({
-        id: destination,
-        filePath: destination,
-        contents: replacedFileContents,
-        options: {
-          shouldFormat,
-          shouldNeverOverwrite,
-        },
-      });
-    } else {
-      const fileContents = await fs.readFile(templatePath);
-      builder.writeFile({
-        id: destination,
-        filePath: destination,
-        contents: fileContents,
-        options: {
-          shouldNeverOverwrite,
-        },
-      });
-    }
+    const fileContents = await fs.readFile(templatePath, 'utf8');
+    const replacedFileContents = applyReplacements(
+      fileContents,
+      replacements ?? {},
+    );
+    builder.writeFile({
+      id: destination,
+      filePath: destination,
+      contents: replacedFileContents,
+      options: {
+        shouldFormat,
+        shouldNeverOverwrite,
+      },
+    });
   },
 );

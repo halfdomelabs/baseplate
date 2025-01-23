@@ -1,8 +1,10 @@
 import type { AppEntry } from '@halfdomelabs/project-builder-lib';
 import type { Logger, PreviousGeneratedPayload } from '@halfdomelabs/sync';
 
-import { GeneratorEngine } from '@halfdomelabs/sync';
-import { createCodebaseFileReaderFromDirectory } from '@halfdomelabs/sync/dist/output/codebase-file-reader.js';
+import {
+  createCodebaseFileReaderFromDirectory,
+  GeneratorEngine,
+} from '@halfdomelabs/sync';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'node:path';

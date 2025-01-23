@@ -104,9 +104,6 @@ export const eslintGenerator = createGenerator({
               id: 'eslint-ignore',
               filePath: '.eslintignore',
               contents: `${config.eslintIgnore.join('\n')}\n`,
-              options: {
-                shouldFormat: true,
-              },
             });
           },
         };

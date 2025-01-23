@@ -1,4 +1,5 @@
 export * from './builder-action.js';
+export * from './codebase-file-reader.js';
 export type * from './formatter.js';
 export * from './generator-task-output.js';
 export * from './post-write-commands/types.js';
