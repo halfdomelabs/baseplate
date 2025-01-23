@@ -1,5 +1,18 @@
 # @halfdomelabs/project-builder-cli
 
+## 0.9.1
+
+### Patch Changes
+
+- [#428](https://github.com/halfdomelabs/baseplate/pull/428) [`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14) Thanks [@kingston](https://github.com/kingston)! - Refactor output file writing and support file IDs to allow rename operations
+
+- Updated dependencies [[`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14), [`5507eb7`](https://github.com/halfdomelabs/baseplate/commit/5507eb77d5413d3b87fa50988a6e4a1d58d78a14)]:
+  - @halfdomelabs/project-builder-server@0.5.1
+  - @halfdomelabs/utils@0.1.2
+  - @halfdomelabs/project-builder-common@0.1.10
+  - @halfdomelabs/project-builder-lib@0.9.1
+  - @halfdomelabs/project-builder-web@0.15.1
+
 ## 0.9.0
 
 ### Minor Changes
