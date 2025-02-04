@@ -83,7 +83,7 @@ function getRelationDefaultsFromModel(
   editedRelation: Partial<ModelRelationFieldConfig>,
   defaultFieldName?: string,
 ): Pick<
-  Partial<ModelRelationFieldConfig>,
+  ModelRelationFieldConfig,
   'foreignRelationName' | 'name' | 'references'
 > {
   // default the name to the local field name if it ends with Id
@@ -139,9 +139,9 @@ function getRelationDefaultsFromModel(
   })();
 
   return {
-    name,
-    foreignRelationName,
-    references,
+    name: name ?? '',
+    foreignRelationName: foreignRelationName ?? '',
+    references: references ?? [],
   };
 }
 
@@ -182,7 +182,6 @@ export function ModelRelationForm({
     );
     return {
       modelRef: modelRef ?? '',
-      references: [],
       onDelete: 'Restrict',
       onUpdate: 'Restrict',
       ...getRelationDefaultsFromModel(
@@ -317,9 +316,7 @@ export function ModelRelationForm({
             if (name) {
               setValue('name', name);
             }
-            if (references) {
-              setValue('references', references);
-            }
+            setValue('references', references);
           }}
         />
       </div>

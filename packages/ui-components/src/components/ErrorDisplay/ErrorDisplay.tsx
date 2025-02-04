@@ -34,7 +34,12 @@ export function ErrorDisplay({
 }: ErrorDisplayProps): React.JSX.Element {
   const strings = useComponentStrings();
   return (
-    <div className={cn('flex h-full items-center justify-center', className)}>
+    <div
+      className={cn(
+        'flex h-full w-full items-center justify-center',
+        className,
+      )}
+    >
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>
           <MdOutlineErrorOutline className="size-20 text-muted-foreground" />
