@@ -2,6 +2,7 @@ import type { AppRouter } from '@halfdomelabs/project-builder-server';
 import type { TRPCLink } from '@trpc/client';
 import type { Unsubscribable } from '@trpc/server/observable';
 
+import { createTypedEventEmitter } from '@halfdomelabs/utils';
 import {
   createTRPCProxyClient,
   createWSClient,
@@ -12,8 +13,6 @@ import {
 } from '@trpc/client';
 import { observable } from '@trpc/server/observable';
 import axios, { isAxiosError } from 'axios';
-
-import { createTypedEventEmitter } from '@src/utils/typed-event-emitter';
 
 let csrfToken: string | undefined;
 

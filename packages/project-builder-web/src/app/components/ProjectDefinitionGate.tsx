@@ -25,7 +25,7 @@ import {
   toast,
 } from '@halfdomelabs/ui-components';
 import { produce } from 'immer';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import semver from 'semver';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import { useProjects } from 'src/hooks/useProjects';
@@ -39,8 +39,6 @@ import {
   UserVisibleError,
 } from 'src/utils/error';
 import { ZodError } from 'zod';
-
-import { websocketEvents } from '@src/services/api';
 
 import { NewProjectCard } from './NewProjectCard';
 
@@ -63,20 +61,9 @@ export function ProjectDefinitionGate({
     lastModifiedAt,
   } = useRemoteProjectDefinition();
   const { projects, resetCurrentProjectId } = useProjects();
-  const { version: cliVersion, refreshVersion } = useClientVersion();
+  const { version: cliVersion } = useClientVersion();
 
   const selectedProject = projects.find((p) => p.id === projectId);
-
-  // refresh version when we reconnect to websocket client
-  useEffect(
-    () =>
-      websocketEvents.on('open', () => {
-        refreshVersion().catch((err: unknown) => {
-          logError(err);
-        });
-      }),
-    [refreshVersion],
-  );
 
   const [savedConfig, setSavedConfig] = useState<{
     project: ParsedProjectDefinition;

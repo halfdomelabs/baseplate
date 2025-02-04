@@ -1,12 +1,15 @@
 import type { ClientVersionInfo } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
-import type { UseClientVersionResult } from 'src/hooks/useClientVersion';
 
 import { ErrorableLoader } from '@halfdomelabs/ui-components';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ClientVersionContext } from 'src/hooks/useClientVersion';
-import { logError } from 'src/services/error-logger';
-import { getVersionInfo } from 'src/services/remote';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import type { UseClientVersionResult } from '@src/hooks/useClientVersion';
+
+import { ClientVersionContext } from '@src/hooks/useClientVersion';
+import { websocketEvents } from '@src/services/api';
+import { logError } from '@src/services/error-logger';
+import { getVersionInfo } from '@src/services/remote';
 
 interface ClientVersionGateProps {
   children?: React.ReactNode;
@@ -20,7 +23,7 @@ export function ClientVersionGate({
   >();
   const [error, setError] = useState<Error | undefined>();
 
-  useEffect(() => {
+  const fetchVersion = useCallback(() => {
     getVersionInfo()
       .then((version) => {
         setClientVersionInfo(version);
@@ -31,6 +34,15 @@ export function ClientVersionGate({
       });
   }, []);
 
+  // refresh version when we reconnect to websocket client
+  useEffect(() => {
+    fetchVersion();
+
+    const unsubscribe = websocketEvents.on('open', fetchVersion);
+    return unsubscribe;
+  }, [fetchVersion]);
+
+  // reload page when version changes
   const previousClientVersion = useRef<string | undefined>();
   useEffect(() => {
     if (
@@ -51,7 +63,6 @@ export function ClientVersionGate({
         ? {
             version: clientVersionInfo.version,
             featureFlags: clientVersionInfo.featureFlags,
-            refreshVersion: () => getVersionInfo().then(setClientVersionInfo),
           }
         : undefined,
     [clientVersionInfo],
