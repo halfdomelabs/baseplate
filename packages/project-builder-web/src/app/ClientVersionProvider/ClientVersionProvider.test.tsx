@@ -5,12 +5,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useClientVersion } from '@src/hooks/useClientVersion';
 import { websocketEvents } from '@src/services/api';
 
-import { ClientVersionGate } from './ClientVersionGate';
+import { ClientVersionProvider } from './ClientVersionProvider';
 
 vi.mock('@src/services/remote');
 vi.mock('@src/services/error-logger');
 
-describe('ClientVersionGate', () => {
+describe('ClientVersionProvider', () => {
   const mockVersionInfo = {
     version: '1.0.0',
     featureFlags: [],
@@ -41,7 +41,7 @@ describe('ClientVersionGate', () => {
   });
 
   it('should fetch version info on mount', async () => {
-    render(<ClientVersionGate>{mockChild}</ClientVersionGate>);
+    render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
 
     expect(getVersionInfo).toHaveBeenCalledTimes(1);
 
@@ -59,7 +59,7 @@ describe('ClientVersionGate', () => {
         }),
     );
 
-    render(<ClientVersionGate>{mockChild}</ClientVersionGate>);
+    render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
     expect(screen.queryByTestId('child')).not.toBeInTheDocument();
@@ -71,7 +71,7 @@ describe('ClientVersionGate', () => {
     const error = new Error('Failed to fetch');
     vi.mocked(getVersionInfo).mockRejectedValue(error);
 
-    render(<ClientVersionGate>{mockChild}</ClientVersionGate>);
+    render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('ClientVersionGate', () => {
   });
 
   it('should reload page when version changes', async () => {
-    render(<ClientVersionGate>{mockChild}</ClientVersionGate>);
+    render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
 
     await waitFor(() => {
       expect(screen.getByTestId('child')).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('ClientVersionGate', () => {
   });
 
   it('should not reload page when version does not change', async () => {
-    render(<ClientVersionGate>{mockChild}</ClientVersionGate>);
+    render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
 
     // Trigger websocket reconnect
     websocketEvents.emit('open', undefined);
@@ -117,9 +117,9 @@ describe('ClientVersionGate', () => {
     };
 
     render(
-      <ClientVersionGate>
+      <ClientVersionProvider>
         <ContextConsumer />
-      </ClientVersionGate>,
+      </ClientVersionProvider>,
     );
 
     await waitFor(() => {

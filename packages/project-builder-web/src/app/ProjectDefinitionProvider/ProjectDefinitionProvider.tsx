@@ -42,13 +42,13 @@ import { ZodError } from 'zod';
 
 import { NewProjectCard } from './NewProjectCard';
 
-interface ProjectDefinitionGateProps {
+interface ProjectDefinitionProviderProps {
   children?: React.ReactNode;
 }
 
-export function ProjectDefinitionGate({
+export function ProjectDefinitionProvider({
   children,
-}: ProjectDefinitionGateProps): React.JSX.Element {
+}: ProjectDefinitionProviderProps): React.JSX.Element {
   const {
     value: remoteConfig,
     loaded,

@@ -12,9 +12,9 @@ import { RefIssueDialog } from '@src/components/RefIssueDialog/RefIssueDialog';
 import { formatError, logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 
-import { ClientVersionGate } from './components/ClientVersionGate';
-import { ProjectChooserGate } from './components/ProjectChooserGate';
-import { ProjectDefinitionGate } from './components/ProjectDefinitionGate';
+import { ClientVersionProvider } from './ClientVersionProvider/ClientVersionProvider';
+import { ProjectDefinitionProvider } from './ProjectDefinitionProvider/ProjectDefinitionProvider';
+import { ProjectSelectorGate } from './ProjectSelectorGate/ProjectSelectorGate';
 
 function App(): React.JSX.Element {
   const errorHandler: ErrorHandlerValue = useMemo(
@@ -29,17 +29,17 @@ function App(): React.JSX.Element {
     <ErrorBoundary>
       <ErrorHandlerContext.Provider value={errorHandler}>
         <Tooltip.Provider>
-          <ClientVersionGate>
-            <ProjectChooserGate>
-              <ProjectDefinitionGate>
+          <ClientVersionProvider>
+            <ProjectSelectorGate>
+              <ProjectDefinitionProvider>
                 <Outlet />
                 <RefIssueDialog />
-              </ProjectDefinitionGate>
-            </ProjectChooserGate>
-            <Toaster />
-            <ConfirmDialog />
-            <BlockerDialog />
-          </ClientVersionGate>
+              </ProjectDefinitionProvider>
+            </ProjectSelectorGate>
+          </ClientVersionProvider>
+          <Toaster />
+          <ConfirmDialog />
+          <BlockerDialog />
         </Tooltip.Provider>
       </ErrorHandlerContext.Provider>
     </ErrorBoundary>

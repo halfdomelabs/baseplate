@@ -11,13 +11,13 @@ import { websocketEvents } from '@src/services/api';
 import { logError } from '@src/services/error-logger';
 import { getVersionInfo } from '@src/services/remote';
 
-interface ClientVersionGateProps {
+interface ClientVersionProviderProps {
   children?: React.ReactNode;
 }
 
-export function ClientVersionGate({
+export function ClientVersionProvider({
   children,
-}: ClientVersionGateProps): React.JSX.Element {
+}: ClientVersionProviderProps): React.JSX.Element {
   const [clientVersionInfo, setClientVersionInfo] = useState<
     ClientVersionInfo | undefined
   >();
