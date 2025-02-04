@@ -15,7 +15,9 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <Combobox.Input placeholder="Select a fruit" />
+        <div className="w-80">
+          <Combobox.Input placeholder="Select a fruit" />
+        </div>
         <Combobox.Content>
           <Combobox.Empty>No results found</Combobox.Empty>
           <Combobox.Group>

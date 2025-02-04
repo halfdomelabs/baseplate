@@ -56,12 +56,11 @@ export interface ComboboxProps {
   disabled?: boolean;
 }
 
+const DEFAULT_OPTION = { value: null, label: '' };
+
 /**
  * A control that allows users to select an option from a list of options and type to search.
  */
-
-const DEFAULT_OPTION = { value: null, label: '' };
-
 function ComboboxRoot({
   children,
   value: controlledValue,
@@ -224,13 +223,9 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             setIsOpen(false);
           } else if (specialKeys.includes(e.key)) {
             setIsOpen(true);
-            // if we pass through the event, the Command component will error out if the portal is not open
-            if (!isOpen) {
-              e.preventDefault();
-            }
           }
         },
-        [setIsOpen, isOpen],
+        [setIsOpen],
       );
 
     return (
@@ -488,6 +483,9 @@ const ComboboxAction = React.forwardRef<HTMLDivElement, ComboboxActionProps>(
 
 ComboboxAction.displayName = 'ComboboxAction';
 
+/**
+ * Combobox is a component that allows users to select an option from a list of options and type to search.
+ */
 export const Combobox = Object.assign(ComboboxRoot, {
   Input: ComboboxInput,
   Content: ComboboxContent,
