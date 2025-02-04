@@ -27,7 +27,8 @@
     "./tsconfig.node.script.json": "./tsconfig.node.script.json",
     "./tsconfig.vite.lib.json": "./tsconfig.vite.lib.json",
     "./tsconfig.vite.web.json": "./tsconfig.vite.web.json",
-    "./vitest-node": "./vitest.config.node.js"
+    "./vitest-node": "./vitest.config.node.js",
+    "./vitest-react": "./vitest.config.react.js"
   },
   "files": [
     "eslint-configs/**/*.js",

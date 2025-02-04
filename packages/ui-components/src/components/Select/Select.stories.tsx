@@ -18,9 +18,11 @@ export const Default: Story = {
   args: {
     children: (
       <>
-        <Select.Trigger>
-          <Select.Value placeholder="Select something!" />
-        </Select.Trigger>
+        <div className="w-80">
+          <Select.Trigger>
+            <Select.Value placeholder="Select something!" />
+          </Select.Trigger>
+        </div>
         <Select.Content>
           <Select.Group>
             <Select.Item value="apple">Apple</Select.Item>
