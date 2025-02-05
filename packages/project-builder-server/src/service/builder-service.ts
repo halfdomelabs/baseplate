@@ -65,7 +65,7 @@ interface ProjectBuilderServiceOptions {
 }
 
 interface ProjectBuilderServiceEvents {
-  'project-json-changed': FilePayload | null;
+  'project-json-changed': FilePayload | undefined;
   'command-console-emitted': CommandConsoleEmittedPayload;
 }
 
@@ -175,9 +175,9 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
     }
   }
 
-  public async readConfig(): Promise<FilePayload | null> {
+  public async readConfig(): Promise<FilePayload | undefined> {
     if (!(await fileExists(this.projectJsonPath))) {
-      return null;
+      return undefined;
     }
     const [lastModifiedAt, contents] = await Promise.all([
       getLastModifiedTime(this.projectJsonPath),

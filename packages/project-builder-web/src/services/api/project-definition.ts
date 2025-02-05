@@ -15,7 +15,7 @@ import { createProjectNotFoundHandler } from './errors';
  */
 export async function downloadProjectDefinition(
   id: string,
-): Promise<FilePayload | null> {
+): Promise<FilePayload | undefined> {
   if (IS_PREVIEW) {
     const response = await fetch('/preview-app.json');
     return {

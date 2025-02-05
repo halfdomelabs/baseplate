@@ -10,5 +10,5 @@ export async function getVersionInfo(): Promise<ClientVersionInfo> {
       featureFlags: [],
     };
   }
-  return trpc.version.query();
+  return trpc.version.get.query();
 }

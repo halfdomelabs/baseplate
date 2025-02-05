@@ -116,18 +116,21 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
     }
   }, [currentProjectId, pluginsMetadata]);
 
-  const updateConfig = useCallback((payload: FilePayload | null): boolean => {
-    // skip saving if we already have this value
-    if (
-      lastSavedValueRef.current &&
-      payload?.contents === lastSavedValueRef.current
-    ) {
-      return false;
-    }
-    setFile(payload);
-    lastSavedValueRef.current = payload?.contents ?? null;
-    return true;
-  }, []);
+  const updateConfig = useCallback(
+    (payload: FilePayload | undefined): boolean => {
+      // skip saving if we already have this value
+      if (
+        lastSavedValueRef.current &&
+        payload?.contents === lastSavedValueRef.current
+      ) {
+        return false;
+      }
+      setFile(payload);
+      lastSavedValueRef.current = payload?.contents ?? null;
+      return true;
+    },
+    [],
+  );
 
   const downloadConfig = useCallback(async (): Promise<void> => {
     try {

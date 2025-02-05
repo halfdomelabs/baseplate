@@ -12,11 +12,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 
-import type { AppRouter } from '@src/api/index.js';
-
-import { createContext } from '@src/api/context.js';
+import { createContextBuilder } from '@src/api/context.js';
 import { getCsrfToken } from '@src/api/crsf.js';
-import { createAppRouter } from '@src/api/index.js';
+import { appRouter, type AppRouter } from '@src/api/index.js';
 import { pathSafeJoin } from '@src/utils/paths.js';
 
 import { ProjectBuilderService } from '../service/builder-service.js';
@@ -60,13 +58,13 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
     prefix: '/trpc',
     useWSS: true,
     trpcOptions: {
-      router: createAppRouter({
+      router: appRouter,
+      createContext: createContextBuilder({
         services,
         cliVersion,
         logger: fastify.log,
         featureFlags,
       }),
-      createContext,
       onError: ({ error }) => {
         fastify.log.error(error);
       },
