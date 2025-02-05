@@ -1,13 +1,13 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { getVersionInfo } from 'src/services/remote';
+import { getVersionInfo } from 'src/services/api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useClientVersion } from '@src/hooks/useClientVersion';
-import { websocketEvents } from '@src/services/api';
+import { trpcWebsocketEvents } from '@src/services/trpc';
 
 import { ClientVersionProvider } from './ClientVersionProvider';
 
-vi.mock('@src/services/remote');
+vi.mock('@src/services/api');
 vi.mock('@src/services/error-logger');
 
 describe('ClientVersionProvider', () => {
@@ -23,7 +23,7 @@ describe('ClientVersionProvider', () => {
 
   beforeEach(() => {
     vi.mocked(getVersionInfo).mockResolvedValue(mockVersionInfo);
-    websocketEvents.clear();
+    trpcWebsocketEvents.clearListeners();
 
     // Mock location.reload
     Object.defineProperty(globalThis, 'location', {
@@ -92,7 +92,7 @@ describe('ClientVersionProvider', () => {
     });
 
     // Trigger websocket reconnect
-    websocketEvents.emit('open', undefined);
+    trpcWebsocketEvents.emit('open', undefined);
 
     await waitFor(() => {
       expect(reloadMock).toHaveBeenCalled();
@@ -103,7 +103,7 @@ describe('ClientVersionProvider', () => {
     render(<ClientVersionProvider>{mockChild}</ClientVersionProvider>);
 
     // Trigger websocket reconnect
-    websocketEvents.emit('open', undefined);
+    trpcWebsocketEvents.emit('open', undefined);
 
     await waitFor(() => {
       expect(reloadMock).not.toHaveBeenCalled();

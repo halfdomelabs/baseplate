@@ -2,21 +2,21 @@ import type {
   PluginMetadataWithPaths,
   SchemaParserContext,
 } from '@halfdomelabs/project-builder-lib';
-import type { FilePayload } from 'src/services/remote';
+import type { FilePayload } from '@halfdomelabs/project-builder-server';
 
 import { toast } from '@halfdomelabs/ui-components';
 import { TRPCClientError } from '@trpc/client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { logError } from 'src/services/error-logger';
+
 import {
   downloadProjectDefinition,
   getPluginsMetadata,
   uploadProjectDefinition,
-} from 'src/services/remote';
-
-import { client } from '@src/services/api';
+} from '@src/services/api';
 import { resetPluginModuleSeed } from '@src/services/module-federation';
 import { createWebSchemaParserContext } from '@src/services/schema-parser-context';
+import { trpc } from '@src/services/trpc';
 
 import { useProjects } from './useProjects';
 
@@ -229,7 +229,7 @@ export function useRemoteProjectDefinition(): UseRemoteProjectDefinitionResult {
   );
 
   useEffect(() => {
-    const unsubscribeMessage = client.projects.onProjectJsonChanged.subscribe(
+    const unsubscribeMessage = trpc.projects.onProjectJsonChanged.subscribe(
       { id: currentProjectId ?? '' },
       {
         onData: (value) => {

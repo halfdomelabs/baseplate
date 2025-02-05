@@ -96,7 +96,7 @@ describe('TypedEventEmitter', () => {
     emitter.on('stringEvent', listener1);
     emitter.on('numberEvent', listener2);
 
-    emitter.clear();
+    emitter.clearListeners();
 
     emitter.emit('stringEvent', 'test');
     emitter.emit('numberEvent', 42);

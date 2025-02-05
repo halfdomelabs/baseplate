@@ -1,37 +1,64 @@
 /**
- * Typed event emitter interface.
+ * Class providing typed event emitter functionality.
  *
  * @template T - Mapping of event names to payload types.
  */
-export interface TypedEventEmitter<T extends object> {
+export class TypedEventEmitter<T extends object> {
+  private listenerMap = new Map<keyof T, ((payload: T[keyof T]) => void)[]>();
+
   /**
    * Registers a listener for an event.
    *
    * @template K - The event name.
-   * @param {K} eventName - Name of the event.
-   * @param {(payload: T[K]) => void} listener - Callback invoked with the event payload.
-   * @returns {() => void} Function to unregister the listener.
+   * @param eventName - Name of the event.
+   * @param listener - Callback invoked with the event payload.
+   * @returns Function to unregister the listener.
    */
   on<K extends keyof T>(
     eventName: K,
     listener: (payload: T[K]) => void,
-  ): () => void;
+  ): () => void {
+    const existingListeners = this.listenerMap.get(eventName) ?? [];
+    this.listenerMap.set(eventName, [
+      ...existingListeners,
+      listener as (payload: T[keyof T]) => void,
+    ]);
+
+    // Returns a function that unregisters this listener.
+    return () => {
+      const updatedListeners = (this.listenerMap.get(eventName) ?? []).filter(
+        (l) => l !== listener,
+      );
+      if (updatedListeners.length > 0) {
+        this.listenerMap.set(eventName, updatedListeners);
+      } else {
+        this.listenerMap.delete(eventName);
+      }
+    };
+  }
 
   /**
    * Emits an event with the given payload.
    *
    * @template K - The event name.
-   * @param {K} eventName - Name of the event.
-   * @param {T[K]} payload - Payload for the event.
+   * @param eventName - Name of the event.
+   * @param payload - Payload for the event.
    */
-  emit<K extends keyof T>(eventName: K, payload: T[K]): void;
+  emit<K extends keyof T>(eventName: K, payload: T[K]): void {
+    const listeners = this.listenerMap.get(eventName) ?? [];
+    for (const listener of listeners) {
+      listener(payload);
+    }
+  }
 
   /**
    * Removes all registered event listeners.
    *
    * Note: This is dangerous and should only be used in testing.
    */
-  clear(): void;
+  clearListeners(): void {
+    this.listenerMap.clear();
+  }
 }
 
 /**
@@ -43,36 +70,5 @@ export interface TypedEventEmitter<T extends object> {
 export function createTypedEventEmitter<
   T extends object,
 >(): TypedEventEmitter<T> {
-  const listenerMap = new Map<keyof T, ((payload: unknown) => void)[]>();
-
-  return {
-    on(eventName, listener) {
-      const existingListeners = listenerMap.get(eventName) ?? [];
-      listenerMap.set(eventName, [
-        ...existingListeners,
-        listener as (payload: unknown) => void,
-      ]);
-
-      // Returns a function that unregisters this listener.
-      return () => {
-        const updatedListeners = (listenerMap.get(eventName) ?? []).filter(
-          (l) => l !== listener,
-        );
-        if (updatedListeners.length > 0) {
-          listenerMap.set(eventName, updatedListeners);
-        } else {
-          listenerMap.delete(eventName);
-        }
-      };
-    },
-    emit(eventName, payload) {
-      const listeners = listenerMap.get(eventName) ?? [];
-      for (const listener of listeners) {
-        listener(payload);
-      }
-    },
-    clear() {
-      listenerMap.clear();
-    },
-  };
+  return new TypedEventEmitter<T>();
 }

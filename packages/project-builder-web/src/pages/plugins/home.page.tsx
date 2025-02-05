@@ -6,7 +6,7 @@ import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
-import { client } from '@src/services/api';
+import { trpc } from '@src/services/trpc';
 
 import { PluginCard } from './PluginCard';
 
@@ -23,7 +23,7 @@ export function PluginsHomePage(): React.JSX.Element {
     if (!currentProjectId) {
       return;
     }
-    client.plugins.getAvailablePlugins
+    trpc.plugins.getAvailablePlugins
       .mutate({ id: currentProjectId })
       .then(setPlugins)
       .catch(setError);

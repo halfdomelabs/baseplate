@@ -13,6 +13,8 @@ export interface ClientVersionInfo {
   featureFlags: FeatureFlag[];
 }
 
+export type { ProjectInfo } from './projects.js';
+
 // we need to infer the type of the router for TRPC to work
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createAppRouter(context: BaseplateApiContext) {

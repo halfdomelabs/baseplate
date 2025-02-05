@@ -8,10 +8,7 @@ import type { FSWatcher } from 'chokidar';
 
 import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger } from '@halfdomelabs/sync';
-import {
-  createTypedEventEmitter,
-  type TypedEventEmitter,
-} from '@halfdomelabs/utils';
+import { TypedEventEmitter } from '@halfdomelabs/utils';
 import { ensureDir, fileExists } from '@halfdomelabs/utils/node';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
@@ -24,11 +21,17 @@ import {
 } from '@src/plugins/index.js';
 import { buildProjectForDirectory } from '@src/runner/index.js';
 
+/**
+ * The payload of a project definition file with a last modified timestamp.
+ */
 export interface FilePayload {
   contents: string;
   lastModifiedAt: string;
 }
 
+/**
+ * The result of a write operation on a project definition file.
+ */
 export type WriteResult =
   | { type: 'success'; lastModifiedAt: string }
   | { type: 'modified-more-recently' };
@@ -66,9 +69,7 @@ interface ProjectBuilderServiceEvents {
   'command-console-emitted': CommandConsoleEmittedPayload;
 }
 
-export class ProjectBuilderService
-  implements TypedEventEmitter<ProjectBuilderServiceEvents>
-{
+export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServiceEvents> {
   public readonly directory: string;
 
   private projectJsonPath: string;
@@ -89,15 +90,14 @@ export class ProjectBuilderService
 
   private schemaParserContext: SchemaParserContext | undefined;
 
-  private eventEmitter: TypedEventEmitter<ProjectBuilderServiceEvents>;
-
   constructor({
     directory,
     id,
     cliVersion,
     builtInPlugins,
   }: ProjectBuilderServiceOptions) {
-    this.eventEmitter = createTypedEventEmitter<ProjectBuilderServiceEvents>();
+    super();
+
     this.directory = directory;
     this.projectJsonPath = path.join(
       directory,
@@ -120,24 +120,6 @@ export class ProjectBuilderService
       });
     });
     this.builtInPlugins = builtInPlugins;
-  }
-
-  public on<K extends keyof ProjectBuilderServiceEvents>(
-    eventName: K,
-    listener: (payload: ProjectBuilderServiceEvents[K]) => void,
-  ): () => void {
-    return this.eventEmitter.on(eventName, listener);
-  }
-
-  public emit<K extends keyof ProjectBuilderServiceEvents>(
-    eventName: K,
-    payload: ProjectBuilderServiceEvents[K],
-  ): void {
-    this.eventEmitter.emit(eventName, payload);
-  }
-
-  public clear(): void {
-    this.eventEmitter.clear();
   }
 
   protected handleProjectJsonChange(): void {

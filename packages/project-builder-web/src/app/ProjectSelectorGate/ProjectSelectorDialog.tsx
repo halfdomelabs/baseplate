@@ -10,7 +10,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
-import { getProjects } from 'src/services/remote';
+
+import { getProjects } from '@src/services/api';
 
 interface ProjectSelectDialogProps {
   onClose?: () => void;

@@ -7,9 +7,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { UseClientVersionResult } from '@src/hooks/useClientVersion';
 
 import { ClientVersionContext } from '@src/hooks/useClientVersion';
-import { websocketEvents } from '@src/services/api';
+import { getVersionInfo } from '@src/services/api';
 import { logError } from '@src/services/error-logger';
-import { getVersionInfo } from '@src/services/remote';
+import { trpcWebsocketEvents } from '@src/services/trpc';
 
 interface ClientVersionProviderProps {
   children?: React.ReactNode;
@@ -38,7 +38,7 @@ export function ClientVersionProvider({
   useEffect(() => {
     fetchVersion();
 
-    const unsubscribe = websocketEvents.on('open', fetchVersion);
+    const unsubscribe = trpcWebsocketEvents.on('open', fetchVersion);
     return unsubscribe;
   }, [fetchVersion]);
 

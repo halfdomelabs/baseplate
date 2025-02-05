@@ -8,3 +8,5 @@ const configSchema = z.object({
 });
 
 export const config = configSchema.parse(import.meta.env);
+
+export const IS_PREVIEW = config.VITE_PREVIEW_MODE;

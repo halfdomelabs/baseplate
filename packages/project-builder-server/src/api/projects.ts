@@ -13,6 +13,12 @@ import type { BaseplateApiContext } from './types.js';
 
 import { privateProcedure, router, websocketProcedure } from './trpc.js';
 
+export interface ProjectInfo {
+  id: string;
+  name: string;
+  directory: string;
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function createProjectsRouter({ services }: BaseplateApiContext) {
   function getApi(id: string): ProjectBuilderService {
@@ -29,24 +35,20 @@ export function createProjectsRouter({ services }: BaseplateApiContext) {
   return router({
     list: privateProcedure.query(async () =>
       Promise.all(
-        services.map(
-          async (
-            service,
-          ): Promise<{ id: string; name: string; directory: string }> => {
-            const config = await service.readConfig();
-            if (!config) {
-              throw new Error(`File config missing for ${service.directory}`);
-            }
-            const parsedContents = JSON.parse(
-              config.contents,
-            ) as ProjectDefinition;
-            return {
-              id: service.id,
-              name: parsedContents.name,
-              directory: service.directory,
-            };
-          },
-        ),
+        services.map(async (service): Promise<ProjectInfo> => {
+          const config = await service.readConfig();
+          if (!config) {
+            throw new Error(`File config missing for ${service.directory}`);
+          }
+          const parsedContents = JSON.parse(
+            config.contents,
+          ) as ProjectDefinition;
+          return {
+            id: service.id,
+            name: parsedContents.name,
+            directory: service.directory,
+          };
+        }),
       ),
     ),
 

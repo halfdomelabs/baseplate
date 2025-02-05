@@ -1,13 +1,13 @@
-import type { Project } from 'src/services/remote';
+import type { ProjectInfo } from '@halfdomelabs/project-builder-server';
 
 import { create } from 'zustand';
 
 import { getLocalStorageProjectId } from '../services/project-id.service';
 
 interface ProjectsStore {
-  projects: Project[];
+  projects: ProjectInfo[];
   projectsLoaded: boolean;
-  setProjects: (projects: Project[]) => void;
+  setProjects: (projects: ProjectInfo[]) => void;
   currentProjectId: string | null;
   setCurrentProjectId: (projectId: string) => void;
   resetCurrentProjectId: () => void;

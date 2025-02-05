@@ -1,6 +1,6 @@
+import type { FilePayload } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 import type { ConsoleRef } from 'src/components/Console';
-import type { FilePayload } from 'src/services/remote';
 
 import { prettyStableStringify } from '@halfdomelabs/project-builder-lib';
 import {
@@ -12,8 +12,8 @@ import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
 import Console from 'src/components/Console';
+import { startSync } from 'src/services/api';
 import { formatError } from 'src/services/error-formatter';
-import { startSync } from 'src/services/remote';
 
 import { useProjects } from '@src/hooks/useProjects';
 
