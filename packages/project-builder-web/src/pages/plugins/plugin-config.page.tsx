@@ -20,7 +20,7 @@ export function PluginConfigPage(): React.JSX.Element {
     definitionContainer,
     pluginContainer,
     schemaParserContext,
-    setConfigAndFixReferences,
+    saveDefinitionWithFeedbackSync,
   } = useProjectDefinition();
   const { id } = useParams<'id'>();
   const { requestConfirm } = useConfirmDialog();
@@ -70,11 +70,19 @@ export function PluginConfigPage(): React.JSX.Element {
   const { metadata } = plugin;
 
   function onDisablePlugin(): void {
-    setConfigAndFixReferences((draft) => {
-      draft.plugins = (draft.plugins ?? []).filter((p) => p.id !== metadata.id);
-    });
-    toast.success(`Disabled ${metadata.displayName}!`);
-    navigate('/plugins');
+    saveDefinitionWithFeedbackSync(
+      (draft) => {
+        draft.plugins = (draft.plugins ?? []).filter(
+          (p) => p.id !== metadata.id,
+        );
+      },
+      {
+        onSuccess: () => {
+          toast.success(`Disabled ${metadata.displayName}!`);
+          navigate('/plugins');
+        },
+      },
+    );
   }
 
   function onSave(): void {

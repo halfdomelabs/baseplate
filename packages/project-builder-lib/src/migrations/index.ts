@@ -15,8 +15,32 @@ export const SCHEMA_MIGRATIONS: SchemaMigration[] = [
   migration009RenameRefs,
 ];
 
+export function isMigrateableProjectDefinition(
+  projectDefinition: unknown,
+): projectDefinition is ProjectDefinition {
+  return (
+    typeof projectDefinition === 'object' &&
+    !!projectDefinition &&
+    'schemaVersion' in projectDefinition
+  );
+}
+
+export class SchemaMigrationError extends Error {
+  public readonly migrationName: string;
+  public readonly cause: unknown;
+
+  constructor(migrationName: string, cause: unknown) {
+    super(
+      `Schema migration ${migrationName} failed: ${cause instanceof Error ? cause.message : String(cause)}`,
+    );
+    this.name = 'SchemaMigrationError';
+    this.migrationName = migrationName;
+    this.cause = cause;
+  }
+}
+
 export function runSchemaMigrations(config: ProjectDefinition): {
-  newConfig: ProjectDefinition;
+  migratedDefinition: ProjectDefinition;
   appliedMigrations: SchemaMigration[];
 } {
   const schemaVersion = config.schemaVersion ?? 0;
@@ -25,15 +49,19 @@ export function runSchemaMigrations(config: ProjectDefinition): {
     (m) => m.version > schemaVersion,
   ).sort((a, b) => a.version - b.version);
 
-  let newConfig = config;
+  let migratedDefinition = config;
   for (const migration of unappliedMigrations) {
-    newConfig = {
-      ...(migration.migrate(newConfig) as ProjectDefinition),
-      schemaVersion: migration.version,
-    };
+    try {
+      migratedDefinition = {
+        ...(migration.migrate(migratedDefinition) as ProjectDefinition),
+        schemaVersion: migration.version,
+      };
+    } catch (cause) {
+      throw new SchemaMigrationError(migration.name, cause);
+    }
   }
 
-  return { newConfig, appliedMigrations: unappliedMigrations };
+  return { migratedDefinition, appliedMigrations: unappliedMigrations };
 }
 
 export function getLatestMigrationVersion(): number {

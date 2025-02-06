@@ -19,10 +19,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { logAndFormatError } from 'src/services/error-formatter';
 
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { NotFoundError, RefDeleteError } from '@src/utils/error';
+import { NotFoundError } from '@src/utils/error';
 
 import { createModelEditLink } from '../_utils/url';
 
@@ -63,7 +61,7 @@ export function useModelForm<
   defaultValues: TDefinition;
 } {
   const { uid } = useParams<'uid'>();
-  const { definition, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
   const navigate = useNavigate();
 
   const urlModelId = isCreate ? undefined : modelEntityType.fromUid(uid);
@@ -76,8 +74,6 @@ export function useModelForm<
       'The model you were looking for could not be found.',
     );
   }
-
-  const { showRefIssues } = useDeleteReferenceDialog();
 
   // memoize it to keep the same UID when resetting
   const newModel = useMemo(() => createNewModel(), []);
@@ -103,72 +99,72 @@ export function useModelForm<
   const onSubmit = useMemo(
     () =>
       handleSubmit((data) => {
-        try {
-          const updatedModel = {
-            ...model,
-            ...data,
-            // generate new ID if new
-            id: model?.id ?? modelEntityType.generateNewId(),
-          };
-          if (updatedModel.model.fields.length === 0) {
-            toast.error('Model must have at least one field.');
-            return;
-          }
-          if (updatedModel.model.primaryKeyFieldRefs.length === 0) {
-            toast.error('Model must have at least one primary key field.');
-            return;
-          }
-          // check for models with the same name
-          const existingModel = definition.models.find(
-            (m) =>
-              m.id !== data.id &&
-              m.name.toLowerCase() === newModel.name.toLowerCase(),
-          );
-          if (existingModel) {
-            setError('name', {
-              message: `Model with name ${updatedModel.name} already exists.`,
-            });
-            return;
-          }
+        const updatedModel = {
+          ...model,
+          ...data,
+          // generate new ID if new
+          id: model?.id ?? modelEntityType.generateNewId(),
+        };
+        if (updatedModel.model.fields.length === 0) {
+          toast.error('Model must have at least one field.');
+          return;
+        }
+        if (updatedModel.model.primaryKeyFieldRefs.length === 0) {
+          toast.error('Model must have at least one primary key field.');
+          return;
+        }
+        // check for models with the same name
+        const existingModel = definition.models.find(
+          (m) =>
+            m.id !== data.id &&
+            m.name.toLowerCase() === newModel.name.toLowerCase(),
+        );
+        if (existingModel) {
+          setError('name', {
+            message: `Model with name ${updatedModel.name} already exists.`,
+          });
+          return;
+        }
 
-          // clear out any service methods that are disabled
-          const { service } = updatedModel;
-          if (service) {
-            if (service.create?.enabled) {
-              if (
-                !service.create.fields?.length &&
-                !service.create.transformerNames?.length
-              ) {
-                toast.error(
-                  'Create method must have at least one field or transformer.',
-                );
-                return;
-              }
-            } else {
-              service.create = undefined;
+        // clear out any service methods that are disabled
+        const { service } = updatedModel;
+        if (service) {
+          if (service.create?.enabled) {
+            if (
+              !service.create.fields?.length &&
+              !service.create.transformerNames?.length
+            ) {
+              toast.error(
+                'Create method must have at least one field or transformer.',
+              );
+              return;
             }
-            if (service.update?.enabled) {
-              if (
-                !service.update.fields?.length &&
-                !service.update.transformerNames?.length
-              ) {
-                toast.error(
-                  'Update method must have at least one field or transformer.',
-                );
-                return;
-              }
-            } else {
-              service.update = undefined;
-            }
-            if (!service.delete?.enabled) {
-              service.delete = undefined;
-            }
-            if (!service.create && !service.update && !service.delete) {
-              updatedModel.service = undefined;
-            }
+          } else {
+            service.create = undefined;
           }
+          if (service.update?.enabled) {
+            if (
+              !service.update.fields?.length &&
+              !service.update.transformerNames?.length
+            ) {
+              toast.error(
+                'Update method must have at least one field or transformer.',
+              );
+              return;
+            }
+          } else {
+            service.update = undefined;
+          }
+          if (!service.delete?.enabled) {
+            service.delete = undefined;
+          }
+          if (!service.create && !service.update && !service.delete) {
+            updatedModel.service = undefined;
+          }
+        }
 
-          setConfigAndFixReferences((draftConfig) => {
+        return saveDefinitionWithFeedback(
+          (draftConfig) => {
             // create feature if a new feature exists
             updatedModel.featureRef =
               FeatureUtils.ensureFeatureByNameRecursively(
@@ -182,30 +178,28 @@ export function useModelForm<
               ],
               [(m) => m.name],
             );
-          });
-          if (isCreate) {
-            navigate(createModelEditLink(updatedModel.id));
-            reset(newModel);
-            toast.success('Successfully created model!');
-          } else {
-            reset(data);
-            toast.success('Successfully saved model!');
-          }
-          handleSubmitSuccess?.();
-        } catch (error) {
-          if (error instanceof RefDeleteError) {
-            showRefIssues({ issues: error.issues });
-            return;
-          }
-          toast.error(logAndFormatError(error));
-        }
+          },
+          {
+            successMessage: isCreate
+              ? 'Successfully created model!'
+              : 'Successfully saved model!',
+            onSuccess: () => {
+              if (isCreate) {
+                navigate(createModelEditLink(updatedModel.id));
+                reset(newModel);
+              } else {
+                reset(data);
+              }
+              handleSubmitSuccess?.();
+            },
+          },
+        );
       }),
     [
-      setConfigAndFixReferences,
-      showRefIssues,
       reset,
       setError,
       handleSubmit,
+      saveDefinitionWithFeedback,
       isCreate,
       navigate,
       handleSubmitSuccess,

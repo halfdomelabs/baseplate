@@ -8,9 +8,9 @@ import { MdApps } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
 export function AppsListPage(): React.JSX.Element {
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
-  const { apps } = parsedProject.projectDefinition;
+  const { apps } = definition;
   const sortedApps = sortBy(apps, [(app) => app.name]);
 
   if (sortedApps.length === 0) {

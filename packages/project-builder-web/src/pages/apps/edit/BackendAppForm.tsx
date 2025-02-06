@@ -7,7 +7,6 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { Button, TextInput } from 'src/components';
@@ -19,23 +18,22 @@ interface Props {
 }
 
 function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
-  const { setConfigAndFixReferences } = useProjectDefinition();
+  const { saveDefinitionWithFeedback, isSavingDefinition } =
+    useProjectDefinition();
 
   const formProps = useResettableForm<BackendAppConfig>({
     resolver: zodResolver(backendAppSchema),
-    defaultValues: appConfig,
+    values: appConfig,
   });
   const { control, handleSubmit, formState, reset } = formProps;
 
-  const onSubmit = handleSubmit((data) => {
-    setConfigAndFixReferences((draftConfig) => {
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
         app.id === appConfig.id ? data : app,
       );
-    });
-    reset(data);
-    toast.success('Successfully saved app!');
-  });
+    }),
+  );
 
   useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
@@ -87,7 +85,9 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
           control={control}
           name="enableAxios"
         />
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={isSavingDefinition}>
+          Save
+        </Button>
       </form>
     </div>
   );

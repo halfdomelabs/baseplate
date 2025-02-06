@@ -50,6 +50,10 @@ export class ZodPluginWrapper<T extends ZodTypeAny> extends ZodType<
     });
   }
 
+  get pluginStore(): PluginImplementationStore {
+    return this._def.pluginStore;
+  }
+
   static create = <T extends ZodTypeAny>(
     type: T,
     pluginStore: PluginImplementationStore,

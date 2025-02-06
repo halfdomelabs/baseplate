@@ -34,8 +34,6 @@ export function useBlockUnsavedChangesNavigate<
     onContinue: async () => {
       await onSubmit();
       // // a bit of a hack to make sure we get the latest form state before continuing
-      // await new Promise((resolve) => setTimeout(resolve, 100));
-      // console.log('formState.isDirty', isDirtyRef.current);
       return !isDirtyRef.current;
     },
   });

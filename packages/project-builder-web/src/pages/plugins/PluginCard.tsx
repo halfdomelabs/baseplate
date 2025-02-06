@@ -25,10 +25,11 @@ export function PluginCard({
 }: PluginCardProps): React.JSX.Element {
   const { currentProjectId } = useProjects();
   const {
-    setConfigAndFixReferences,
+    saveDefinitionWithFeedbackSync,
     schemaParserContext,
     definitionContainer,
     pluginContainer,
+    isSavingDefinition,
   } = useProjectDefinition();
   const navigate = useNavigate();
 
@@ -46,29 +47,39 @@ export function PluginCard({
       navigate(`/plugins/edit/${plugin.id}`);
       return;
     }
-    setConfigAndFixReferences((draft) => {
-      draft.plugins = [
-        ...(draft.plugins ?? []).filter(
-          (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
-        ),
-        {
-          id: plugin.id,
-          packageName: plugin.packageName,
-          name: plugin.name,
-          version: plugin.version,
-          config: {},
-        },
-      ];
-    });
-    toast.success(`Enabled ${plugin.displayName}!`);
+    saveDefinitionWithFeedbackSync(
+      (draft) => {
+        draft.plugins = [
+          ...(draft.plugins ?? []).filter(
+            (p) =>
+              p.packageName !== plugin.packageName || p.name !== plugin.name,
+          ),
+          {
+            id: plugin.id,
+            packageName: plugin.packageName,
+            name: plugin.name,
+            version: plugin.version,
+            config: {},
+          },
+        ];
+      },
+      {
+        successMessage: `Enabled ${plugin.displayName}!`,
+      },
+    );
   }
 
   function disablePlugin(): void {
-    setConfigAndFixReferences((draft) => {
-      draft.plugins = (draft.plugins ?? []).filter(
-        (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
-      );
-    });
+    saveDefinitionWithFeedbackSync(
+      (draft) => {
+        draft.plugins = (draft.plugins ?? []).filter(
+          (p) => p.packageName !== plugin.packageName || p.name !== plugin.name,
+        );
+      },
+      {
+        successMessage: `Disabled ${plugin.displayName}!`,
+      },
+    );
     toast.success(`Disabled ${plugin.displayName}!`);
   }
 
@@ -104,7 +115,11 @@ export function PluginCard({
             {(() => {
               if (!isActive) {
                 return (
-                  <Button variant="secondary" onClick={enablePlugin}>
+                  <Button
+                    variant="secondary"
+                    onClick={enablePlugin}
+                    disabled={isSavingDefinition}
+                  >
                     Enable
                   </Button>
                 );
@@ -116,7 +131,11 @@ export function PluginCard({
                 );
               } else {
                 return (
-                  <Button variant="secondary" onClick={disablePlugin}>
+                  <Button
+                    variant="secondary"
+                    onClick={disablePlugin}
+                    disabled={isSavingDefinition}
+                  >
                     Disable
                   </Button>
                 );

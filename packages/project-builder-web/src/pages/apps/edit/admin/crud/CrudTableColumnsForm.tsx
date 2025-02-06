@@ -2,7 +2,10 @@ import type { AdminCrudSectionConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 import type { Control } from 'react-hook-form';
 
-import { adminCrudDisplayTypes } from '@halfdomelabs/project-builder-lib';
+import {
+  adminCrudDisplayTypes,
+  ModelUtils,
+} from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
@@ -86,8 +89,10 @@ function CrudTableColumnsForm({
   control,
 }: Props): React.JSX.Element {
   const modelRef = useWatch({ control, name: 'modelRef' });
-  const { parsedProject, definitionContainer } = useProjectDefinition();
-  const model = modelRef ? parsedProject.getModelById(modelRef) : undefined;
+  const { definition, definitionContainer } = useProjectDefinition();
+  const model = modelRef
+    ? ModelUtils.byIdOrThrow(definition, modelRef)
+    : undefined;
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'table.columns',

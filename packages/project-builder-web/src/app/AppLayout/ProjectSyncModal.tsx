@@ -1,8 +1,6 @@
-import type { FilePayload } from '@halfdomelabs/project-builder-server';
 import type React from 'react';
 import type { ConsoleRef } from 'src/components/Console';
 
-import { prettyStableStringify } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockBeforeContinue,
   useProjectDefinition,
@@ -24,7 +22,7 @@ interface Props {
 function ProjectSyncModal({ className }: Props): React.JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
   const clearConsoleRef = useRef<ConsoleRef>(null);
-  const { definitionContainer, lastModifiedAt } = useProjectDefinition();
+  const { definitionContainer } = useProjectDefinition();
   const { currentProjectId, setLastSyncedAt } = useProjects();
   const blockBeforeContinue = useBlockBeforeContinue();
 
@@ -36,16 +34,9 @@ function ProjectSyncModal({ className }: Props): React.JSX.Element {
     if (!currentProjectId) {
       return;
     }
-    const serializedConfig = prettyStableStringify(
-      definitionContainerRef.current.toSerializedConfig(),
-    );
-    const payload: FilePayload = {
-      contents: serializedConfig,
-      lastModifiedAt: lastModifiedAt ?? new Date(0).toISOString(),
-    };
 
     clearConsoleRef.current?.clearConsole();
-    startSync(currentProjectId, payload).catch((error: unknown) =>
+    startSync(currentProjectId).catch((error: unknown) =>
       toast.error(formatError(error)),
     );
     setIsOpen(true);

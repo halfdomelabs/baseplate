@@ -1,7 +1,7 @@
 import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import type { FilePayload } from '@src/service/builder-service.js';
+import type { ProjectDefinitionFilePayload } from '@src/service/builder-service.js';
 
 import { privateProcedure, router, websocketProcedure } from './trpc.js';
 
@@ -15,11 +15,8 @@ export const projectsRouter = router({
   list: privateProcedure.query(async ({ ctx }) =>
     Promise.all(
       ctx.services.map(async (service): Promise<ProjectInfo> => {
-        const config = await service.readConfig();
-        if (!config) {
-          throw new Error(`File config missing for ${service.directory}`);
-        }
-        const parsedContents = JSON.parse(config.contents) as unknown;
+        const { contents } = await service.readDefinition();
+        const parsedContents = JSON.parse(contents) as unknown;
 
         if (
           !parsedContents ||
@@ -41,7 +38,7 @@ export const projectsRouter = router({
     ),
   ),
 
-  get: privateProcedure
+  readDefinition: privateProcedure
     .input(
       z.object({
         id: z.string(),
@@ -49,14 +46,14 @@ export const projectsRouter = router({
     )
     .query(async ({ input: { id }, ctx }) => {
       const api = ctx.getApi(id);
-      const file = await api.readConfig();
-      return { file };
+      const contents = await api.readDefinition();
+      return { contents };
     }),
 
   onProjectJsonChanged: websocketProcedure
     .input(z.object({ id: z.string() }))
     .subscription(({ input: { id }, ctx }) =>
-      observable<FilePayload | undefined>((emit) => {
+      observable<ProjectDefinitionFilePayload>((emit) => {
         const unsubscribe = ctx
           .getApi(id)
           .on('project-json-changed', (payload) => {
@@ -68,17 +65,17 @@ export const projectsRouter = router({
       }),
     ),
 
-  writeConfig: privateProcedure
+  writeDefinition: privateProcedure
     .input(
       z.object({
         id: z.string(),
-        contents: z.string(),
-        lastModifiedAt: z.string(),
+        newContents: z.string(),
+        oldContentsHash: z.string(),
       }),
     )
-    .mutation(async ({ input: { id, contents, lastModifiedAt }, ctx }) => {
+    .mutation(async ({ input: { id, newContents, oldContentsHash }, ctx }) => {
       const api = ctx.getApi(id);
-      const result = await api.writeConfig({ contents, lastModifiedAt });
+      const result = await api.writeDefinition(newContents, oldContentsHash);
       return { result };
     }),
 });

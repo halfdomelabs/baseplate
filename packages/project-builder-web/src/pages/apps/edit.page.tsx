@@ -3,10 +3,9 @@ import type React from 'react';
 
 import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog, toast } from '@halfdomelabs/ui-components';
+import { Button, Dialog } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, NotFoundCard } from 'src/components';
-import { formatError } from 'src/services/error-formatter';
 
 import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
@@ -14,7 +13,7 @@ import WebAppForm from './edit/WebAppForm';
 
 function EditAppPage(): React.JSX.Element {
   const { uid } = useParams<'uid'>();
-  const { parsedProject, setConfigAndFixReferences, definition } =
+  const { saveDefinitionWithFeedbackSync, definition, isSavingDefinition } =
     useProjectDefinition();
 
   const id = uid ? appEntityType.fromUid(uid) : undefined;
@@ -27,18 +26,21 @@ function EditAppPage(): React.JSX.Element {
   }
 
   const handleDelete = (): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        draftConfig.apps = draftConfig.apps.filter((a) => a.id !== id);
-      });
-      toast.success(`Successfully unlinked app!`);
-      navigate('/apps/new');
-    } catch (error) {
-      toast.error(`Failed to unlink app: ${formatError(error)}`);
-    }
+    saveDefinitionWithFeedbackSync(
+      (definition) => {
+        definition.apps = definition.apps.filter((a) => a.id !== id);
+      },
+      {
+        successMessage: 'Successfully unlinked app!',
+        disableDeleteRefDialog: true,
+        onSuccess: () => {
+          navigate('/apps/new');
+        },
+      },
+    );
   };
 
-  const { packageScope } = parsedProject.projectDefinition;
+  const { packageScope } = definition;
 
   return (
     <div className="space-y-4">
@@ -69,7 +71,11 @@ function EditAppPage(): React.JSX.Element {
               <Dialog.Close>
                 <Button variant="secondary">Cancel</Button>
               </Dialog.Close>
-              <Button variant="destructive" onClick={handleDelete}>
+              <Button
+                variant="destructive"
+                onClick={handleDelete}
+                disabled={isSavingDefinition}
+              >
                 Unlink App
               </Button>
             </Dialog.Footer>

@@ -8,11 +8,15 @@ import type { FSWatcher } from 'chokidar';
 
 import { getLatestMigrationVersion } from '@halfdomelabs/project-builder-lib';
 import { createEventedLogger } from '@halfdomelabs/sync';
-import { TypedEventEmitter } from '@halfdomelabs/utils';
-import { ensureDir, fileExists } from '@halfdomelabs/utils/node';
+import { hashWithSHA256, TypedEventEmitter } from '@halfdomelabs/utils';
+import {
+  ensureDir,
+  fileExists,
+  handleFileNotFoundError,
+} from '@halfdomelabs/utils/node';
 import chalk from 'chalk';
 import chokidar from 'chokidar';
-import { readFile, stat, writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import {
@@ -22,39 +26,38 @@ import {
 import { buildProjectForDirectory } from '@src/runner/index.js';
 
 /**
- * The payload of a project definition file with a last modified timestamp.
+ * The payload of a project definition file read operation.
  */
-export interface FilePayload {
+export interface ProjectDefinitionFilePayload {
+  /**
+   * The contents of the project definition file.
+   */
   contents: string;
-  lastModifiedAt: string;
+  /**
+   * The SHA-256 hash of the contents of the project definition file.
+   */
+  hash: string;
 }
 
 /**
  * The result of a write operation on a project definition file.
  */
-export type WriteResult =
-  | { type: 'success'; lastModifiedAt: string }
-  | { type: 'modified-more-recently' };
+export type ProjectDefinitionFileWriteResult =
+  // The file was written successfully.
+  | { type: 'success' }
+  // The file was not written because the original contents do not match the
+  // expected contents and the file should be re-read.
+  | {
+      type: 'original-contents-mismatch';
+      currentPayload: ProjectDefinitionFilePayload;
+    };
 
-function getLastModifiedTime(filePath: string): Promise<string> {
-  return stat(filePath).then((stat) => stat.mtime.toISOString());
-}
-
+/**
+ * The payload of a command console emitted event.
+ */
 export interface CommandConsoleEmittedPayload {
   id: string;
   message: string;
-}
-
-function getFirstNonBaseplateParentFolder(filePath: string): string | null {
-  const segments = path.dirname(filePath).split(path.sep);
-
-  for (let i = segments.length - 1; i >= 0; i -= 1) {
-    if (segments[i] !== 'baseplate') {
-      return segments[i];
-    }
-  }
-
-  return null;
 }
 
 interface ProjectBuilderServiceOptions {
@@ -65,7 +68,7 @@ interface ProjectBuilderServiceOptions {
 }
 
 interface ProjectBuilderServiceEvents {
-  'project-json-changed': FilePayload | undefined;
+  'project-json-changed': ProjectDefinitionFilePayload;
   'command-console-emitted': CommandConsoleEmittedPayload;
 }
 
@@ -123,7 +126,7 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   }
 
   protected handleProjectJsonChange(): void {
-    this.readConfig()
+    this.readDefinition()
       .then((payload) => {
         this.emit('project-json-changed', payload);
       })
@@ -132,27 +135,17 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
       });
   }
 
-  public async init(): Promise<void> {
-    const projectJsonExists = await fileExists(this.projectJsonPath);
+  protected _getInitialProjectDefinition(): string {
+    const starterName = path.dirname(path.dirname(this.projectJsonPath));
+    return JSON.stringify({
+      name: starterName,
+      cliVersion: this.cliVersion,
+      portOffset: 5000,
+      schemaVersion: getLatestMigrationVersion(),
+    } satisfies ProjectDefinitionInput);
+  }
 
-    if (!projectJsonExists) {
-      // auto-create a simple project-definition.json file
-      this.logger.info(
-        `project-definition.json not found. Creating project-definition.json file in ${this.projectJsonPath}`,
-      );
-      const starterName =
-        getFirstNonBaseplateParentFolder(this.projectJsonPath) ?? 'project';
-      await writeFile(
-        this.projectJsonPath,
-        JSON.stringify({
-          name: starterName,
-          cliVersion: this.cliVersion,
-          portOffset: 5000,
-          schemaVersion: getLatestMigrationVersion(),
-        } satisfies ProjectDefinitionInput),
-      );
-    }
-
+  public init(): void {
     this.watcher = chokidar.watch(this.projectJsonPath, {
       ignoreInitial: true,
       awaitWriteFinish: {
@@ -170,34 +163,57 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   public close(): void {
     if (this.watcher) {
       this.watcher.close().catch((err: unknown) => {
-        this.logger.error(err instanceof Error ? err.toString() : typeof err);
+        this.logger.error(err);
       });
     }
   }
 
-  public async readConfig(): Promise<FilePayload | undefined> {
-    if (!(await fileExists(this.projectJsonPath))) {
-      return undefined;
-    }
-    const [lastModifiedAt, contents] = await Promise.all([
-      getLastModifiedTime(this.projectJsonPath),
-      readFile(this.projectJsonPath, 'utf8'),
-    ]);
-    return { contents, lastModifiedAt };
+  /**
+   * Reads the project definition file.
+   *
+   * @returns The contents of the project definition file.
+   */
+  public async readDefinition(): Promise<ProjectDefinitionFilePayload> {
+    const fileReadResult = await readFile(this.projectJsonPath, 'utf8').catch(
+      handleFileNotFoundError,
+    );
+    const contents = fileReadResult ?? this._getInitialProjectDefinition();
+    return {
+      contents,
+      hash: await hashWithSHA256(contents),
+    };
   }
 
-  public async writeConfig(payload: FilePayload): Promise<WriteResult> {
+  /**
+   * Writes a project definition file checking that the original contents match
+   * the current contents of the file to avoid overwriting changes made by the
+   * user.
+   *
+   * @param newContents - The new contents of the project definition file.
+   * @param oldContentsHash - The SHA-256 hash of the old contents of the project definition file.
+   * @returns The result of the write operation.
+   */
+  public async writeDefinition(
+    newContents: string,
+    oldContentsHash: string,
+  ): Promise<ProjectDefinitionFileWriteResult> {
     if (await fileExists(this.projectJsonPath)) {
-      const lastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
-      if (lastModifiedAt !== payload.lastModifiedAt) {
-        return { type: 'modified-more-recently' };
+      const currentContents = await readFile(this.projectJsonPath);
+      const currentContentsHash = await hashWithSHA256(currentContents);
+      if (currentContentsHash !== oldContentsHash) {
+        return {
+          type: 'original-contents-mismatch',
+          currentPayload: {
+            contents: currentContents.toString('utf8'),
+            hash: currentContentsHash,
+          },
+        };
       }
     } else {
       await ensureDir(path.dirname(this.projectJsonPath));
     }
-    await writeFile(this.projectJsonPath, payload.contents, 'utf8');
-    const newLastModifiedAt = await getLastModifiedTime(this.projectJsonPath);
-    return { type: 'success', lastModifiedAt: newLastModifiedAt };
+    await writeFile(this.projectJsonPath, newContents, 'utf8');
+    return { type: 'success' };
   }
 
   public async buildProject(): Promise<void> {

@@ -17,10 +17,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { formatError } from 'src/services/error-formatter';
 
 function NewAppPage(): React.JSX.Element {
-  const { setConfigAndFixReferences } = useProjectDefinition();
+  const { saveDefinitionWithFeedback, isSavingDefinition } =
+    useProjectDefinition();
   const navigate = useNavigate();
   const formProps = useForm<AppConfig>({
     resolver: zodResolver(baseAppSchema),
@@ -38,25 +38,27 @@ function NewAppPage(): React.JSX.Element {
     { label: 'Admin App', value: 'admin' },
   ];
 
-  const onSubmit = (data: AppConfig): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback(
+      (draftConfig) => {
         const newApps = [...draftConfig.apps, data];
         draftConfig.apps = sortBy(newApps, [(app) => app.name]);
-      });
-      navigate(`../edit/${appEntityType.toUid(data.id)}`);
-      toast.success(`Sucessfully created ${data.name}!`);
-    } catch (error) {
-      toast.error(formatError(error));
-    }
-  };
+      },
+      {
+        onSuccess: () => {
+          navigate(`../edit/${appEntityType.toUid(data.id)}`);
+          toast.success(`Sucessfully created ${data.name}!`);
+        },
+      },
+    ),
+  );
 
   return (
     <div className="space-y-4">
       <h1>New App</h1>
       <Card>
         <Card.Content>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <InputField.Controller
               label="Name"
               control={control}
@@ -69,7 +71,9 @@ function NewAppPage(): React.JSX.Element {
               name="type"
               options={appTypeOptions}
             />
-            <Button type="submit">Create</Button>
+            <Button type="submit" disabled={isSavingDefinition}>
+              Create
+            </Button>
           </form>
         </Card.Content>
       </Card>

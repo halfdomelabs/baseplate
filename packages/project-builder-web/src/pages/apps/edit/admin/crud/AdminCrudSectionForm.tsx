@@ -28,9 +28,9 @@ function AdminCrudSectionForm({
   formProps,
 }: Props): React.JSX.Element {
   const { control } = formProps;
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
-  const modelOptions = parsedProject.getModels().map((model) => ({
+  const modelOptions = definition.models.map((model) => ({
     label: model.name,
     value: model.id,
   }));

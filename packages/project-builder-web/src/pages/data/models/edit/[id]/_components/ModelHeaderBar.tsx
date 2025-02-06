@@ -3,14 +3,10 @@ import type React from 'react';
 
 import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { Button, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { RefDeleteError } from '@src/utils/error';
 
 import { ModelInfoEditDialog } from './ModelInfoEditDialog';
 
@@ -23,24 +19,22 @@ export function ModelHeaderBar({
   className,
   model,
 }: ModelHeaderBarProps): React.JSX.Element {
-  const { definition, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedbackSync } = useProjectDefinition();
   const navigate = useNavigate();
-  const { showRefIssues } = useDeleteReferenceDialog();
   const { requestConfirm } = useConfirmDialog();
 
   const handleDelete = (id: string): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
+    saveDefinitionWithFeedbackSync(
+      (draftConfig) => {
         draftConfig.models = draftConfig.models.filter((m) => m.id !== id);
-      });
-      navigate('/data/models');
-    } catch (error) {
-      if (error instanceof RefDeleteError) {
-        showRefIssues({ issues: error.issues });
-        return;
-      }
-      toast.error(logAndFormatError(error));
-    }
+      },
+      {
+        onSuccess: () => {
+          navigate('/data/models');
+        },
+        successMessage: 'Successfully deleted model!',
+      },
+    );
   };
 
   return (

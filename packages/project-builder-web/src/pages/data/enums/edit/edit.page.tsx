@@ -12,7 +12,7 @@ import { EnumGraphQLSection } from './sections/EnumGraphQLSection';
 import { EnumValuesSection } from './sections/EnumValuesSection';
 
 function EnumEditPage(): React.JSX.Element {
-  const { form, onSubmit } = useEnumForm({
+  const { form, onSubmit, isSavingDefinition } = useEnumForm({
     schema: enumBaseSchema.omit({ name: true, featureRef: true }),
   });
   const { control, setValue, formState } = form;
@@ -32,7 +32,7 @@ function EnumEditPage(): React.JSX.Element {
           <EnumGraphQLSection control={control} />
           <EnumValuesSection control={control} setValue={setValue} />
         </SectionList>
-        <FormActionBar form={form} />
+        <FormActionBar form={form} disabled={isSavingDefinition} />
       </form>
     </ErrorBoundary>
   );

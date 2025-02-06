@@ -7,7 +7,6 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { Button, TextInput } from 'src/components';
@@ -20,34 +19,31 @@ interface Props {
 }
 
 function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
-  const { setConfigAndFixReferences } = useProjectDefinition();
+  const { saveDefinitionWithFeedback, isSavingDefinition } =
+    useProjectDefinition();
 
   const formProps = useResettableForm<WebAppConfig>({
     resolver: zodResolver(webAppSchema),
-    defaultValues: appConfig,
+    values: appConfig,
   });
   const { control, handleSubmit, formState, reset } = formProps;
 
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
-  const onSubmit = handleSubmit((data) => {
-    setConfigAndFixReferences((draftConfig) => {
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback((draftConfig) => {
       draftConfig.apps = draftConfig.apps.map((app) =>
         app.id === appConfig.id ? data : app,
       );
-    });
-    toast.success('Successfully saved app!');
-    reset(data);
-  });
+    }),
+  );
 
   useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
-  const roleOptions = parsedProject.projectDefinition.auth?.roles.map(
-    (role) => ({
-      label: role.name,
-      value: role.id,
-    }),
-  );
+  const roleOptions = definition.auth?.roles.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
 
   return (
     <div className={clsx('', className)}>
@@ -100,7 +96,9 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
             name="allowedRoles"
           />
         )}
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={isSavingDefinition}>
+          Save
+        </Button>
       </form>
     </div>
   );

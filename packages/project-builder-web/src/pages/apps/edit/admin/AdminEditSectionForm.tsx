@@ -14,7 +14,7 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { toast, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
@@ -22,7 +22,6 @@ import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { formatError } from 'src/services/error-formatter';
 
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 
@@ -39,8 +38,13 @@ function AdminEditSectionForm({
 }: Props): React.JSX.Element {
   const { requestConfirm } = useConfirmDialog();
   const { sectionId: sectionUid } = useParams<{ sectionId: string }>();
-  const { setConfigAndFixReferences, parsedProject, pluginContainer } =
-    useProjectDefinition();
+  const {
+    saveDefinitionWithFeedback,
+    saveDefinitionWithFeedbackSync,
+    isSavingDefinition,
+    definition,
+    pluginContainer,
+  } = useProjectDefinition();
   const navigate = useNavigate();
 
   const sectionId = sectionUid
@@ -54,7 +58,8 @@ function AdminEditSectionForm({
   const schemaWithPlugins = zPluginWrapper(adminSectionSchema, pluginContainer);
 
   const formProps = useResettableForm<AdminSectionConfig>({
-    defaultValues: existingSection ?? { type: 'crud' },
+    values: existingSection,
+    defaultValues: { type: 'crud' },
     resolver: zodResolver(schemaWithPlugins),
   });
 
@@ -65,9 +70,9 @@ function AdminEditSectionForm({
   }, [reset, existingSection]);
 
   const onSubmit = handleSubmit((data) => {
-    try {
-      const id = data.id || adminSectionEntityType.generateNewId();
-      setConfigAndFixReferences((config) => {
+    const id = data.id || adminSectionEntityType.generateNewId();
+    return saveDefinitionWithFeedback(
+      (config) => {
         const adminApp = config.apps.find((app) => app.id === appConfig.id);
         if (adminApp?.type !== 'admin') {
           throw new Error('Cannot add a section to a non-admin app');
@@ -82,15 +87,15 @@ function AdminEditSectionForm({
           ],
           [(section) => section.name],
         );
-      });
-      if (!sectionId) {
-        navigate(`edit/${adminSectionEntityType.toUid(id)}`);
-      }
-      toast.success('Successfully saved section!');
-      reset(data);
-    } catch (error) {
-      toast.error(formatError(error));
-    }
+      },
+      {
+        onSuccess: () => {
+          if (!sectionId) {
+            navigate(`edit/${adminSectionEntityType.toUid(id)}`);
+          }
+        },
+      },
+    );
   });
 
   useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
@@ -104,8 +109,8 @@ function AdminEditSectionForm({
         existingSection?.name ?? 'this section'
       }?`,
       onConfirm: () => {
-        try {
-          setConfigAndFixReferences((config) => {
+        saveDefinitionWithFeedbackSync(
+          (config) => {
             const adminApp = config.apps.find((app) => app.id === appConfig.id);
             if (adminApp?.type !== 'admin') {
               throw new Error('Cannot add a section to a non-admin app');
@@ -114,17 +119,19 @@ function AdminEditSectionForm({
             adminApp.sections = (adminApp.sections ?? []).filter(
               (section) => !sectionId || section.id !== sectionId,
             );
-          });
-          navigate(`..`);
-          toast.success('Successfully deleted section!');
-        } catch (error) {
-          toast.error(formatError(error));
-        }
+          },
+          {
+            successMessage: 'Successfully deleted section!',
+            onSuccess: () => {
+              navigate(`..`);
+            },
+          },
+        );
       },
     });
   }
 
-  const featureOptions = parsedProject.projectDefinition.features.map((f) => ({
+  const featureOptions = definition.features.map((f) => ({
     label: f.name,
     value: f.id,
   }));
@@ -173,7 +180,9 @@ function AdminEditSectionForm({
             }
           }
         })()}
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={isSavingDefinition}>
+          Save
+        </Button>
       </form>
     </div>
   );

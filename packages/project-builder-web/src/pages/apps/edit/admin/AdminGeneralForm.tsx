@@ -10,14 +10,11 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { useMemo } from 'react';
 import { Button, TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
-
-import { logAndFormatError } from '@src/services/error-formatter';
 
 interface Props {
   className?: string;
@@ -25,7 +22,7 @@ interface Props {
 }
 
 function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
-  const { parsedProject, setConfigAndFixReferences, pluginContainer } =
+  const { definition, saveDefinitionWithFeedback, pluginContainer } =
     useProjectDefinition();
   const schemaWithPlugins = useMemo(
     () => zPluginWrapper(adminAppSchema, pluginContainer),
@@ -34,32 +31,24 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
 
   const formProps = useResettableForm<AdminAppConfig>({
     resolver: zodResolver(schemaWithPlugins),
-    defaultValues: appConfig,
+    values: appConfig,
   });
   const { control, handleSubmit, formState, reset } = formProps;
 
-  const onSubmit = handleSubmit((data) => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        draftConfig.apps = draftConfig.apps.map((app) =>
-          app.id === appConfig.id ? data : app,
-        );
-      });
-      toast.success('Successfully saved app!');
-      reset(data);
-    } catch (error) {
-      toast.error(logAndFormatError(error));
-    }
-  });
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback((draftConfig) => {
+      draftConfig.apps = draftConfig.apps.map((app) =>
+        app.id === appConfig.id ? data : app,
+      );
+    }),
+  );
 
   useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
-  const roleOptions = parsedProject.projectDefinition.auth?.roles.map(
-    (role) => ({
-      label: role.name,
-      value: role.id,
-    }),
-  );
+  const roleOptions = definition.auth?.roles.map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
 
   return (
     <div className={clsx('', className)}>
@@ -82,7 +71,9 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
             name="allowedRoles"
           />
         )}
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={formState.isSubmitting}>
+          Save
+        </Button>
       </form>
     </div>
   );

@@ -2,32 +2,34 @@ import type { AuthConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import {
+  applyModelPatchInPlace,
   AUTH_DEFAULT_ROLES,
   authRoleEntityType,
   authSchema,
+  diffModel,
+  ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { toast } from '@halfdomelabs/ui-components';
+import { Alert as UiAlert } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
-import { Alert, Button } from 'src/components';
+import { useMemo, useState } from 'react';
+import { Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import ReactSelectInput from 'src/components/ReactSelectInput';
-import { useStatus } from 'src/hooks/useStatus';
-import { formatError, logAndFormatError } from 'src/services/error-formatter';
-import { logError } from 'src/services/error-logger';
 
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { RefDeleteError } from '@src/utils/error';
-
+import { createAuth0Models } from './auth-models';
 import RoleEditorForm from './RoleEditorForm';
 
 function AuthPage(): React.JSX.Element {
-  const { definition, parsedProject, setConfigAndFixReferences } =
-    useProjectDefinition();
+  const {
+    definition,
+    definitionContainer,
+    saveDefinitionWithFeedback,
+    saveDefinitionWithFeedbackSync,
+  } = useProjectDefinition();
 
   const formProps = useResettableForm<AuthConfig>({
     resolver: zodResolver(authSchema),
@@ -37,22 +39,53 @@ function AuthPage(): React.JSX.Element {
     },
   });
   const { control, reset, handleSubmit } = formProps;
-  const { status, setError } = useStatus();
 
-  const onSubmit = (data: AuthConfig): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        draftConfig.auth = data;
-      });
-      toast.success('Successfully saved configuration!');
-    } catch (error) {
-      logError(error);
-      setError(formatError(error));
-    }
-  };
+  const userModelRef = definition.auth?.userModelRef;
+  const userRoleModelRef = definition.auth?.userRoleModelRef;
+
+  const pendingModelChanges = useMemo(() => {
+    if (!userModelRef || !userRoleModelRef) return;
+
+    const desiredModels = createAuth0Models(userModelRef);
+
+    const userModel = ModelUtils.byIdOrThrow(definition, userModelRef);
+    const userRoleModel = ModelUtils.byIdOrThrow(definition, userRoleModelRef);
+    return {
+      user: diffModel(userModel.model, desiredModels.user, definitionContainer),
+      userRole: diffModel(
+        userRoleModel.model,
+        desiredModels.userRole,
+        definitionContainer,
+      ),
+    };
+  }, [userModelRef, userRoleModelRef, definitionContainer, definition]);
+
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback((draftConfig) => {
+      if (pendingModelChanges?.user) {
+        const model = ModelUtils.byIdOrThrow(draftConfig, data.userModelRef);
+        applyModelPatchInPlace(
+          model.model,
+          pendingModelChanges.user,
+          definitionContainer,
+        );
+      }
+      if (pendingModelChanges?.userRole) {
+        const model = ModelUtils.byIdOrThrow(
+          draftConfig,
+          data.userRoleModelRef,
+        );
+        applyModelPatchInPlace(
+          model.model,
+          pendingModelChanges.userRole,
+          definitionContainer,
+        );
+      }
+      draftConfig.auth = data;
+    }),
+  );
 
   const [isAuthEnabled, setIsAuthEnabled] = useState(!!definition.auth);
-  const { showRefIssues } = useDeleteReferenceDialog();
 
   const enableAuth = (): void => {
     formProps.reset({
@@ -66,22 +99,22 @@ function AuthPage(): React.JSX.Element {
   };
 
   const disableAuth = (): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
+    saveDefinitionWithFeedbackSync(
+      (draftConfig) => {
         draftConfig.auth = undefined;
-      });
-      reset({});
-      setIsAuthEnabled(false);
-    } catch (err) {
-      if (err instanceof RefDeleteError) {
-        showRefIssues({ issues: err.issues });
-      } else {
-        toast.error(logAndFormatError(err));
-      }
-    }
+      },
+      {
+        onSuccess: () => {
+          reset({});
+          setIsAuthEnabled(false);
+        },
+      },
+    );
+    reset({});
+    setIsAuthEnabled(false);
   };
 
-  const modelOptions = parsedProject.getModels().map((m) => ({
+  const modelOptions = definition.models.map((m) => ({
     label: m.name,
     value: m.id,
   }));
@@ -94,10 +127,81 @@ function AuthPage(): React.JSX.Element {
   return (
     <div className="space-y-4">
       <h2>Auth Configuration</h2>
-      <Alert.WithStatus status={status} />
       {isAuthEnabled ? (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <Button onClick={disableAuth}>Disable Auth</Button>
+
+          {pendingModelChanges?.user && (
+            <UiAlert>
+              <UiAlert.Title>Model Changes</UiAlert.Title>
+              <UiAlert.Description>
+                <p>
+                  The selected user model will be updated to include the
+                  required fields for the auth plugin. The following changes
+                  will be applied:
+                </p>
+                <ul>
+                  {pendingModelChanges.user.fields.length > 0 && (
+                    <li>
+                      {pendingModelChanges.user.fields.length} field(s) will be
+                      added or updated.
+                    </li>
+                  )}
+                  {pendingModelChanges.user.relations.length > 0 && (
+                    <li>
+                      {pendingModelChanges.user.relations.length} relation(s)
+                      will be added or updated.
+                    </li>
+                  )}
+                  {pendingModelChanges.user.uniqueConstraints.length > 0 && (
+                    <li>
+                      {pendingModelChanges.user.uniqueConstraints.length} unique
+                      constraint(s) will be added or updated.
+                    </li>
+                  )}
+                  {pendingModelChanges.user.primaryKeyFieldRefs && (
+                    <li>The primary key will be updated.</li>
+                  )}
+                </ul>
+              </UiAlert.Description>
+            </UiAlert>
+          )}
+          {pendingModelChanges?.userRole && (
+            <UiAlert>
+              <UiAlert.Title>Model Changes</UiAlert.Title>
+              <UiAlert.Description>
+                <p>
+                  The selected user role model will be updated to include the
+                  required fields for the auth plugin. The following changes
+                  will be applied:
+                </p>
+                <ul>
+                  {pendingModelChanges.userRole.fields.length > 0 && (
+                    <li>
+                      {pendingModelChanges.userRole.fields.length} field(s) will
+                      be added or updated.
+                    </li>
+                  )}
+                  {pendingModelChanges.userRole.relations.length > 0 && (
+                    <li>
+                      {pendingModelChanges.userRole.relations.length}{' '}
+                      relation(s) will be added or updated.
+                    </li>
+                  )}
+                  {pendingModelChanges.userRole.uniqueConstraints.length >
+                    0 && (
+                    <li>
+                      {pendingModelChanges.userRole.uniqueConstraints.length}
+                      unique constraint(s) will be added or updated.
+                    </li>
+                  )}
+                  {pendingModelChanges.userRole.primaryKeyFieldRefs && (
+                    <li>The primary key will be updated.</li>
+                  )}
+                </ul>
+              </UiAlert.Description>
+            </UiAlert>
+          )}
           <CheckedInput.LabelledController
             label="Use Auth0? (currently only Auth0 is supported)"
             name="useAuth0"

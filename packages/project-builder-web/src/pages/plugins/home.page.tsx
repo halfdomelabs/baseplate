@@ -15,7 +15,7 @@ export function PluginsHomePage(): React.JSX.Element {
   const [plugins, setPlugins] = useState<PluginMetadataWithPaths[] | null>(
     null,
   );
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
   const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export function PluginsHomePage(): React.JSX.Element {
       return;
     }
     trpc.plugins.getAvailablePlugins
-      .mutate({ id: currentProjectId })
+      .mutate({ projectId: currentProjectId })
       .then(setPlugins)
       .catch(setError);
   }, [currentProjectId]);
@@ -42,7 +42,7 @@ export function PluginsHomePage(): React.JSX.Element {
     );
   }
 
-  const pluginConfig = parsedProject.projectDefinition.plugins ?? [];
+  const pluginConfig = definition.plugins ?? [];
   const installedPlugins = plugins.filter((plugin) =>
     pluginConfig.some(
       (config) =>

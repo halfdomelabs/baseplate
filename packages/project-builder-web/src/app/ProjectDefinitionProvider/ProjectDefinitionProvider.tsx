@@ -1,7 +1,6 @@
-import type { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
 import type {
-  SetOrTransformConfig,
-  SetProjectDefinitionOptions,
+  ProjectDefinitionSetter,
+  SaveDefinitionWithFeedbackOptions,
   UseProjectDefinitionResult,
 } from '@halfdomelabs/project-builder-lib/web';
 import type React from 'react';
@@ -10,12 +9,7 @@ import {
   createPluginImplementationStore,
   createProjectDefinitionSchemaWithContext,
   fixRefDeletions,
-  ParsedProjectDefinition,
-  parseProjectDefinitionWithContext,
-  prettyStableStringify,
   ProjectDefinitionContainer,
-  runSchemaMigrations,
-  serializeSchema,
 } from '@halfdomelabs/project-builder-lib';
 import { ProjectDefinitionContext } from '@halfdomelabs/project-builder-lib/web';
 import {
@@ -29,17 +23,14 @@ import { useMemo, useState } from 'react';
 import semver from 'semver';
 import { useClientVersion } from 'src/hooks/useClientVersion';
 import { useProjects } from 'src/hooks/useProjects';
-import { useRemoteProjectDefinition } from 'src/hooks/useRemoteProjectDefinition';
-import { formatError } from 'src/services/error-formatter';
-import { logError } from 'src/services/error-logger';
-import { logger } from 'src/services/logger';
-import {
-  formatZodError,
-  RefDeleteError,
-  UserVisibleError,
-} from 'src/utils/error';
-import { ZodError } from 'zod';
+import { formatError, logAndFormatError } from 'src/services/error-formatter';
+import { RefDeleteError } from 'src/utils/error';
 
+import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
+
+import { useProjectDefinitionContainer } from './hooks/use-project-definition-container';
+import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents';
+import { useSchemaParserContext } from './hooks/use-schema-parser-context';
 import { NewProjectCard } from './NewProjectCard';
 
 interface ProjectDefinitionProviderProps {
@@ -49,214 +40,129 @@ interface ProjectDefinitionProviderProps {
 export function ProjectDefinitionProvider({
   children,
 }: ProjectDefinitionProviderProps): React.JSX.Element {
+  const { schemaParserContext, error: contextError } = useSchemaParserContext();
   const {
-    value: remoteConfig,
-    loaded,
-    error,
-    saveValue: saveRemoteConfig,
-    projectId,
-    externalChangeCounter,
-    downloadConfig,
-    schemaParserContext,
-    lastModifiedAt,
-  } = useRemoteProjectDefinition();
-  const { projects, resetCurrentProjectId } = useProjects();
+    projectDefinitionFilePayload,
+    uploadProjectDefinitionContents,
+    error: definitionError,
+  } = useRemoteProjectDefinitionContents();
+  const { projectDefinitionContainer, error: containerError } =
+    useProjectDefinitionContainer({
+      schemaParserContext,
+      projectDefinitionFilePayload,
+    });
+  const { currentProjectId, projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion } = useClientVersion();
+  const { showRefIssues } = useDeleteReferenceDialog();
+  const [isSavingDefinition, setIsSavingDefinition] = useState(false);
 
-  const selectedProject = projects.find((p) => p.id === projectId);
+  const selectedProject = projects.find((p) => p.id === currentProjectId);
 
-  const [savedConfig, setSavedConfig] = useState<{
-    project: ParsedProjectDefinition;
-    definitionContainer: ProjectDefinitionContainer;
-    externalChangeCounter: number;
-    projectId: string;
-  } | null>(null);
-
-  const loadData = useMemo(():
-    | {
-        status: 'loaded';
-        parsedProject: ParsedProjectDefinition;
-        definitionContainer: ProjectDefinitionContainer;
-      }
-    | { status: 'error'; configError: unknown }
-    | { status: 'loading' } => {
-    if (!remoteConfig || !projectId || !loaded || !schemaParserContext) {
-      return { status: 'loading' };
-    }
-    if (
-      externalChangeCounter === savedConfig?.externalChangeCounter &&
-      projectId === savedConfig.projectId
-    ) {
-      return {
-        status: 'loaded',
-        parsedProject: savedConfig.project,
-        definitionContainer: savedConfig.definitionContainer,
-      };
-    }
-    try {
-      const projectDefinition = JSON.parse(remoteConfig) as ProjectDefinition;
-      // migrate config
-      const { newConfig: migratedProjectDefinition, appliedMigrations } =
-        runSchemaMigrations(projectDefinition);
-      if (appliedMigrations.length > 0) {
-        logger.log(
-          `Applied migrations:\n${appliedMigrations
-            .map((m) => `${m.version}: ${m.description}`)
-            .join('\n')}`,
-        );
-      }
-      // validate config
-      const definitionContainer =
-        ProjectDefinitionContainer.fromSerializedConfig(
-          migratedProjectDefinition,
-          schemaParserContext,
-        );
-      const project = new ParsedProjectDefinition(definitionContainer);
-      // only save config if project is initialized
-      if (projectDefinition.isInitialized) {
-        setSavedConfig({
-          project,
-          externalChangeCounter,
-          projectId,
-          definitionContainer,
-        });
-      }
-      return { status: 'loaded', parsedProject: project, definitionContainer };
-    } catch (error_) {
-      if (error_ instanceof SyntaxError) {
-        return {
-          status: 'error',
-          configError: new UserVisibleError(
-            'The project configuration is not a valid JSON file. Please check the file and try again.',
-          ),
-        };
-      }
-      if (error_ instanceof ZodError) {
-        return {
-          status: 'error',
-          configError: new UserVisibleError(
-            `The project configuration is not valid: ${formatZodError(error_)}`,
-          ),
-        };
-      }
-      logError(error_);
-      return { status: 'error', configError: error_ };
-    }
-  }, [
-    savedConfig,
-    remoteConfig,
-    externalChangeCounter,
-    projectId,
-    loaded,
-    schemaParserContext,
-  ]);
+  const updatedExternally = !!projectDefinitionFilePayload?.updatedExternally;
 
   const result: UseProjectDefinitionResult | undefined = useMemo(() => {
-    if (loadData.status !== 'loaded' || !projectId || !schemaParserContext) {
-      return;
-    }
-    function setConfig(
-      newConfig: SetOrTransformConfig,
-      { fixReferences }: SetProjectDefinitionOptions = {},
-    ): void {
-      if (loadData.status !== 'loaded' || !projectId || !schemaParserContext) {
-        throw new Error(
-          'Cannot set config when project config is not yet loaded',
-        );
-      }
+    if (!projectDefinitionContainer || !schemaParserContext) return;
 
-      const oldProjectDefinition = loadData.definitionContainer.definition;
-      const newProjectDefinition =
-        typeof newConfig === 'function'
-          ? produce(oldProjectDefinition, newConfig)
-          : newConfig;
+    const { definition } = projectDefinitionContainer;
+    const parserContext = schemaParserContext;
 
-      const projectDefinitionSchemaWithContext =
-        createProjectDefinitionSchemaWithContext(
-          newProjectDefinition,
-          schemaParserContext,
-        );
+    function saveDefinition(newConfig: ProjectDefinitionSetter): Promise<void> {
+      setIsSavingDefinition(true);
+      try {
+        const newProjectDefinition = produce(definition, newConfig);
 
-      let validatedProjectDefinition = parseProjectDefinitionWithContext(
-        newProjectDefinition,
-        schemaParserContext,
-      );
+        const projectDefinitionSchemaWithContext =
+          createProjectDefinitionSchemaWithContext(
+            newProjectDefinition,
+            parserContext,
+          );
 
-      if (fixReferences) {
         const result = fixRefDeletions(
           projectDefinitionSchemaWithContext,
-          validatedProjectDefinition,
+          newProjectDefinition,
         );
         if (result.type === 'failure') {
           throw new RefDeleteError(result.issues);
         }
-        validatedProjectDefinition = result.value;
+        const fixedProjectDefinition = result.value;
+
+        fixedProjectDefinition.cliVersion = cliVersion;
+
+        const definitionContainer = new ProjectDefinitionContainer(
+          result.refPayload,
+          parserContext,
+          projectDefinitionSchemaWithContext.pluginStore,
+        );
+
+        return uploadProjectDefinitionContents(
+          definitionContainer.toSerializedContents(),
+        );
+      } finally {
+        setIsSavingDefinition(false);
       }
-
-      const parsedConfig = new ParsedProjectDefinition(
-        ProjectDefinitionContainer.fromDefinition(
-          validatedProjectDefinition,
-          schemaParserContext,
-        ),
-      );
-      parsedConfig.projectDefinition.cliVersion = cliVersion;
-
-      const exportedProjectDefinition =
-        parsedConfig.exportToProjectDefinition();
-      const definitionContainer = ProjectDefinitionContainer.fromDefinition(
-        exportedProjectDefinition,
-        schemaParserContext,
-      );
-
-      saveRemoteConfig(
-        prettyStableStringify(definitionContainer.toSerializedConfig()),
-      );
-      setSavedConfig({
-        project: parsedConfig,
-        externalChangeCounter,
-        projectId,
-        definitionContainer,
-      });
     }
 
     const pluginContainer = createPluginImplementationStore(
       schemaParserContext.pluginStore,
-      loadData.definitionContainer.definition,
+      definition,
     );
 
+    async function saveDefinitionWithFeedback(
+      definition: ProjectDefinitionSetter,
+      options: SaveDefinitionWithFeedbackOptions = {},
+    ): Promise<{ success: boolean }> {
+      return saveDefinition(definition)
+        .then(() => {
+          toast.success(options.successMessage ?? 'Successfully saved!');
+          options.onSuccess?.();
+          return { success: true };
+        })
+        .catch((err: unknown) => {
+          if (
+            err instanceof RefDeleteError &&
+            !options.disableDeleteRefDialog
+          ) {
+            showRefIssues({ issues: err.issues });
+          } else {
+            toast.error(
+              logAndFormatError(err, `Failed to save project definition.`),
+            );
+          }
+          return { success: false };
+        });
+    }
     return {
-      definition: loadData.definitionContainer.definition,
-      parsedProject: loadData.parsedProject,
-      definitionContainer: loadData.definitionContainer,
-      externalChangeCounter,
-      setConfigAndFixReferences: (config) => {
-        setConfig(config, { fixReferences: true });
+      definition,
+      definitionContainer: projectDefinitionContainer,
+      saveDefinition,
+      saveDefinitionWithFeedback,
+      saveDefinitionWithFeedbackSync: (definition, options) => {
+        void saveDefinitionWithFeedback(definition, options);
       },
-      setConfig,
+      isSavingDefinition,
       pluginContainer,
       schemaParserContext,
-      lastModifiedAt,
+      updatedExternally,
     };
   }, [
-    loadData,
-    saveRemoteConfig,
     cliVersion,
-    externalChangeCounter,
-    projectId,
+    projectDefinitionContainer,
+    isSavingDefinition,
     schemaParserContext,
-    lastModifiedAt,
+    updatedExternally,
+    uploadProjectDefinitionContents,
+    showRefIssues,
   ]);
 
-  const compositeError =
-    error ?? (loadData.status === 'error' ? loadData.configError : undefined);
+  const error = contextError ?? definitionError ?? containerError;
 
-  if (!loaded || compositeError || !result) {
+  if (!result) {
     return (
       <ErrorableLoader
         error={
-          compositeError &&
+          error &&
           formatError(
-            compositeError,
+            error,
             `We could not load the project config (${
               selectedProject?.directory ?? 'unknown'
             }).`,
@@ -265,15 +171,6 @@ export function ProjectDefinitionProvider({
         header="Failed to load project config"
         actions={
           <div className="flex flex-col space-y-4">
-            <Button
-              onClick={() =>
-                downloadConfig().catch((err: unknown) => {
-                  logError(err);
-                })
-              }
-            >
-              Try Again
-            </Button>
             {projects.length > 1 && (
               <Button
                 variant="secondary"
@@ -294,35 +191,12 @@ export function ProjectDefinitionProvider({
     return (
       <div className="flex h-full items-center justify-center">
         <NewProjectCard
-          existingProject={result.parsedProject.projectDefinition}
-          saveProject={(data) => {
-            if (!schemaParserContext) {
-              return;
-            }
-            const oldProjectDefinition =
-              result.parsedProject.exportToProjectDefinition();
-            const newProjectDefinition = {
-              ...oldProjectDefinition,
-              ...data,
-              isInitialized: true,
-            };
-            const projectDefinitionSchemaWithContext =
-              createProjectDefinitionSchemaWithContext(
-                newProjectDefinition,
-                schemaParserContext,
-              );
-            saveRemoteConfig(
-              prettyStableStringify(
-                serializeSchema(
-                  projectDefinitionSchemaWithContext,
-                  newProjectDefinition as ProjectDefinition,
-                ),
-              ),
-              undefined,
-              () => {
-                toast.success('Successfully created project!');
-              },
-            );
+          existingProject={result.definition}
+          saveProject={async (data) => {
+            await result.saveDefinition((definition) => {
+              Object.assign(definition, data);
+              definition.isInitialized = true;
+            });
           }}
         />
       </div>
