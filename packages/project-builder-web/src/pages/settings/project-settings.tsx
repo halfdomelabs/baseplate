@@ -10,6 +10,7 @@ import {
 import { InputField, SectionList } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pick } from 'es-toolkit';
+import { useMemo } from 'react';
 
 import FormActionBar from '@src/components/FormActionBar';
 
@@ -24,17 +25,16 @@ type FormData = z.infer<typeof validationSchema>;
 
 function ProjectSettingsPage(): React.JSX.Element {
   const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
+  const defaultValues = useMemo(
+    () => pick(definition, ['name', 'version', 'portOffset', 'packageScope']),
+    [definition],
+  );
   const form = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
-    defaultValues: pick(definition, [
-      'name',
-      'version',
-      'portOffset',
-      'packageScope',
-    ]),
+    defaultValues,
   });
 
-  const { handleSubmit, control, formState, reset } = form;
+  const { handleSubmit, control, reset } = form;
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
@@ -42,10 +42,7 @@ function ProjectSettingsPage(): React.JSX.Element {
     }),
   );
 
-  useBlockUnsavedChangesNavigate(formState, {
-    reset,
-    onSubmit,
-  });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
     <form

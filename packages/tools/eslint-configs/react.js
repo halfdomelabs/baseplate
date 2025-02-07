@@ -14,7 +14,9 @@ import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import tsEslint from 'typescript-eslint';
 
 /** @type {GenerateTypescriptEslintConfigOptions} */
-export const reactTypescriptEslintOptions = {};
+export const reactTypescriptEslintOptions = {
+  extraDefaultProjectFiles: ['vite.config.ts'],
+};
 
 /** @type {ConfigArray} */
 export const reactEslintConfig = tsEslint.config(

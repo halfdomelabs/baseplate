@@ -33,12 +33,9 @@ function ModelEditModelPage(): React.JSX.Element {
   const { form, onSubmit, defaultValues } = useModelForm({
     schema: modelBaseSchema.omit({ name: true, featureRef: true }),
   });
-  const { control, watch, getValues, setValue } = form;
+  const { control, watch, getValues, setValue, reset } = form;
 
-  useBlockUnsavedChangesNavigate(form.formState, {
-    reset: form.reset,
-    onSubmit,
-  });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   // TODO: Add validation for fields form where:
   // - referenced type does not match field type

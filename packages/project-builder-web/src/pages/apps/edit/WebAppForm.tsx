@@ -26,7 +26,7 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
     resolver: zodResolver(webAppSchema),
     values: appConfig,
   });
-  const { control, handleSubmit, formState, reset } = formProps;
+  const { control, handleSubmit, reset } = formProps;
 
   const { definition } = useProjectDefinition();
 
@@ -38,7 +38,7 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
     }),
   );
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const roleOptions = definition.auth?.roles.map((role) => ({
     label: role.name,

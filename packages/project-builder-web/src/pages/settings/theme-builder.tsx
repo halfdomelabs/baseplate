@@ -35,7 +35,7 @@ export function ThemeBuilderPage(): React.JSX.Element {
     resolver: zodResolver(themeSchema),
     values,
   });
-  const { control, handleSubmit, setValue, getValues, formState, reset } = form;
+  const { control, handleSubmit, setValue, getValues, reset } = form;
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
@@ -43,7 +43,7 @@ export function ThemeBuilderPage(): React.JSX.Element {
     }),
   );
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const generateNewThemeColors = useCallback(
     (resetColors?: boolean) => {

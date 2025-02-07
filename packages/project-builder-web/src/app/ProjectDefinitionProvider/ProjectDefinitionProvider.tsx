@@ -66,7 +66,9 @@ export function ProjectDefinitionProvider({
     const { definition } = projectDefinitionContainer;
     const parserContext = schemaParserContext;
 
-    function saveDefinition(newConfig: ProjectDefinitionSetter): Promise<void> {
+    async function saveDefinition(
+      newConfig: ProjectDefinitionSetter,
+    ): Promise<void> {
       setIsSavingDefinition(true);
       try {
         const newProjectDefinition = produce(definition, newConfig);
@@ -94,7 +96,7 @@ export function ProjectDefinitionProvider({
           projectDefinitionSchemaWithContext.pluginStore,
         );
 
-        return uploadProjectDefinitionContents(
+        await uploadProjectDefinitionContents(
           definitionContainer.toSerializedContents(),
         );
       } finally {

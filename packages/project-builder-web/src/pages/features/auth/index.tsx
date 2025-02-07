@@ -110,8 +110,6 @@ function AuthPage(): React.JSX.Element {
         },
       },
     );
-    reset({});
-    setIsAuthEnabled(false);
   };
 
   const modelOptions = definition.models.map((m) => ({

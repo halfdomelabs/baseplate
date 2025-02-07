@@ -65,6 +65,9 @@ export function useRemoteProjectDefinitionContents(): UseRemoteProjectDefinition
 
       await projectDefinitionFileManager
         .uploadDefinitionContents(newContents)
+        .then((newPayload) => {
+          setProjectDefinitionFilePayload(newPayload);
+        })
         .catch((err: unknown) => {
           if (err instanceof ProjectNotFoundError) {
             resetCurrentProjectId();

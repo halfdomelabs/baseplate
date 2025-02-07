@@ -6,7 +6,7 @@ function getFormattedErrorSuffix(error: unknown): string {
   if (error instanceof UserVisibleError) {
     return error.message;
   }
-  return 'Please try again later.';
+  return 'Check console logs for more details.';
 }
 
 export function formatError(

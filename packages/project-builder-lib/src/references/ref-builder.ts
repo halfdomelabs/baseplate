@@ -10,7 +10,7 @@ import type {
   ZodTypeDef,
 } from 'zod';
 
-import { keyBy, pull } from 'es-toolkit';
+import { pull } from 'es-toolkit';
 import { get, set } from 'es-toolkit/compat';
 import { z, ZodType } from 'zod';
 
@@ -595,7 +595,9 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
       const entities = [...refContext.entities];
 
       if (refContext.entitiesWithNamePath.length > 0) {
-        const entitiesById = keyBy(entities, (entity) => entity.id);
+        const entitiesById = new Map<string, DefinitionEntity>(
+          entities.map((entity) => [entity.id, entity]),
+        );
         let entitiesLength = -1;
         do {
           if (entitiesLength === entities.length) {
@@ -625,7 +627,13 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
               if (shouldDeserialize) {
                 return nameRefValue;
               }
-              return entitiesById[nameRefValue].name;
+              const refEntity = entitiesById.get(nameRefValue);
+              if (!refEntity) {
+                throw new Error(
+                  `Could not find entity with id ${nameRefValue} at ${nameRefPath.join('.')}`,
+                );
+              }
+              return refEntity.name;
             })();
             if (newName) {
               const newEntity = {
@@ -633,7 +641,7 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
                 name: newName,
               };
               entities.push(newEntity);
-              entitiesById[entity.id] = newEntity;
+              entitiesById.set(entity.id, newEntity);
               pull(refContext.entitiesWithNamePath, [entity]);
             }
           }

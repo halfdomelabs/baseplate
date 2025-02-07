@@ -15,12 +15,9 @@ function EnumEditPage(): React.JSX.Element {
   const { form, onSubmit, isSavingDefinition } = useEnumForm({
     schema: enumBaseSchema.omit({ name: true, featureRef: true }),
   });
-  const { control, setValue, formState } = form;
+  const { control, setValue } = form;
 
-  useBlockUnsavedChangesNavigate(formState, {
-    reset: form.reset,
-    onSubmit,
-  });
+  useBlockUnsavedChangesNavigate({ control, reset: form.reset, onSubmit });
 
   return (
     <ErrorBoundary>

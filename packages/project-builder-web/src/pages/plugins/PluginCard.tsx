@@ -3,7 +3,7 @@ import type React from 'react';
 
 import { webConfigSpec } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Card, toast } from '@halfdomelabs/ui-components';
+import { Button, Card } from '@halfdomelabs/ui-components';
 import { MdExtension } from 'react-icons/md';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -80,7 +80,6 @@ export function PluginCard({
         successMessage: `Disabled ${plugin.displayName}!`,
       },
     );
-    toast.success(`Disabled ${plugin.displayName}!`);
   }
 
   const webConfigImplementation = pluginContainer.getPluginSpec(webConfigSpec);

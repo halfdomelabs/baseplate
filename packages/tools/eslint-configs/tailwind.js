@@ -7,7 +7,9 @@
 // @ts-ignore eslint-plugin-react-hooks does not have typings
 import tailwindPlugin from 'eslint-plugin-tailwindcss';
 
-export const tailwindTypescriptEslintOptions = {};
+export const tailwindTypescriptEslintOptions = {
+  extraDefaultProjectFiles: ['tailwind.config.ts'],
+};
 
 /** @type {ConfigArray} */
 export const tailwindEslintConfig = [
@@ -25,6 +27,7 @@ export const tailwindEslintConfig = [
             'text-style-muted',
             'bg-background',
             'bg-muted',
+            'border-border',
           ],
         },
       ],

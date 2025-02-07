@@ -22,8 +22,12 @@ interface Props {
 }
 
 function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
-  const { definition, saveDefinitionWithFeedback, pluginContainer } =
-    useProjectDefinition();
+  const {
+    definition,
+    saveDefinitionWithFeedback,
+    pluginContainer,
+    isSavingDefinition,
+  } = useProjectDefinition();
   const schemaWithPlugins = useMemo(
     () => zPluginWrapper(adminAppSchema, pluginContainer),
     [pluginContainer],
@@ -33,7 +37,7 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
     resolver: zodResolver(schemaWithPlugins),
     values: appConfig,
   });
-  const { control, handleSubmit, formState, reset } = formProps;
+  const { control, handleSubmit, reset } = formProps;
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
@@ -43,7 +47,7 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
     }),
   );
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const roleOptions = definition.auth?.roles.map((role) => ({
     label: role.name,
@@ -71,7 +75,7 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
             name="allowedRoles"
           />
         )}
-        <Button type="submit" disabled={formState.isSubmitting}>
+        <Button type="submit" disabled={isSavingDefinition}>
           Save
         </Button>
       </form>

@@ -5,7 +5,6 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
   Dropdown,
-  toast,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
@@ -21,6 +20,7 @@ export function PluginConfigPage(): React.JSX.Element {
     pluginContainer,
     schemaParserContext,
     saveDefinitionWithFeedbackSync,
+    isSavingDefinition,
   } = useProjectDefinition();
   const { id } = useParams<'id'>();
   const { requestConfirm } = useConfirmDialog();
@@ -77,8 +77,8 @@ export function PluginConfigPage(): React.JSX.Element {
         );
       },
       {
+        successMessage: `Disabled ${metadata.displayName}!`,
         onSuccess: () => {
-          toast.success(`Disabled ${metadata.displayName}!`);
           navigate('/plugins');
         },
       },
@@ -105,6 +105,7 @@ export function PluginConfigPage(): React.JSX.Element {
             <Dropdown.Content>
               <Dropdown.Group>
                 <Dropdown.Item
+                  disabled={isSavingDefinition}
                   onSelect={() => {
                     requestConfirm({
                       title: 'Disable Plugin',

@@ -25,7 +25,7 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
     resolver: zodResolver(backendAppSchema),
     values: appConfig,
   });
-  const { control, handleSubmit, formState, reset } = formProps;
+  const { control, handleSubmit, reset } = formProps;
 
   const onSubmit = handleSubmit((data) =>
     saveDefinitionWithFeedback((draftConfig) => {
@@ -35,7 +35,7 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
     }),
   );
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
     <div className={clsx('', className)}>

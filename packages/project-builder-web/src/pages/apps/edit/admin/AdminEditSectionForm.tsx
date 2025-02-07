@@ -63,7 +63,7 @@ function AdminEditSectionForm({
     resolver: zodResolver(schemaWithPlugins),
   });
 
-  const { control, handleSubmit, watch, reset, formState } = formProps;
+  const { control, handleSubmit, watch, reset } = formProps;
 
   useEffect(() => {
     reset(existingSection ?? { type: 'crud' });
@@ -98,7 +98,7 @@ function AdminEditSectionForm({
     );
   });
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const type = watch('type');
 

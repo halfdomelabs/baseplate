@@ -73,7 +73,7 @@ export function StorageConfig({
     ),
   );
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const modelOptions = definition.models.map((m) => ({
     label: m.name,

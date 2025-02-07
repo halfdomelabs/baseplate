@@ -17,12 +17,9 @@ function ModelEditGraphQLPage(): React.JSX.Element {
     schema: modelBaseSchema.omit({ name: true, featureRef: true }),
   });
 
-  useBlockUnsavedChangesNavigate(form.formState, {
-    reset: form.reset,
-    onSubmit,
-  });
+  const { control, watch, getValues, reset } = form;
 
-  const { control, watch, getValues } = form;
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
     <EditedModelContextProvider

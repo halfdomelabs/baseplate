@@ -19,7 +19,8 @@ export function ModelHeaderBar({
   className,
   model,
 }: ModelHeaderBarProps): React.JSX.Element {
-  const { definition, saveDefinitionWithFeedbackSync } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedbackSync, isSavingDefinition } =
+    useProjectDefinition();
   const navigate = useNavigate();
   const { requestConfirm } = useConfirmDialog();
 
@@ -65,6 +66,7 @@ export function ModelHeaderBar({
         <Button
           variant="outline"
           size="icon"
+          disabled={isSavingDefinition}
           onClick={() => {
             requestConfirm({
               title: 'Confirm delete',
