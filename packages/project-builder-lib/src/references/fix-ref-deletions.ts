@@ -44,9 +44,10 @@ export function fixRefDeletions<TSchema extends z.ZodType>(
   let iterations;
   let valueToEdit = value;
   for (iterations = 0; iterations < 100; iterations++) {
-    const parseResult = ZodRefWrapper.create(schema, false, true).parse(
-      valueToEdit,
-    );
+    const parseResult = ZodRefWrapper.create(schema, {
+      deserialize: true,
+      allowMissingNameRefs: true,
+    }).parse(valueToEdit);
     const { references, entities } = parseResult;
     valueToEdit = parseResult.data;
     const entitiesById = new Map(entities.map((e) => [e.id, e]));

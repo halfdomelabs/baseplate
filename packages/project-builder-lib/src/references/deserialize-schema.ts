@@ -17,7 +17,9 @@ export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   schema: TSchema,
   input: unknown,
 ): ZodRefPayload<TypeOf<TSchema>> {
-  const payload = ZodRefWrapper.create(schema, true).parse(input);
+  const payload = ZodRefWrapper.create(schema, {
+    deserialize: true,
+  }).parse(input);
 
   // resolve all references
   const { references, entities, data } = payload;

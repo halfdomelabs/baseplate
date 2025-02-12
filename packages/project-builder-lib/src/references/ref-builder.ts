@@ -44,11 +44,12 @@ interface ContextValue {
 type PathInputOrContext<Type> = PathInput<Type> | ContextValue;
 
 /**
- * Base interface for defining an entity input.
- * @template TInput - The overall input type.
- * @template TEntityType - The entity type.
- * @template TPath - The type of the path (optional).
- * @template TIdKey - The key to use when resolving the entity’s id.
+ * Base definition for entity input.
+ *
+ * @template TInput - The overall input data type.
+ * @template TEntityType - The entity type, extending DefinitionEntityType.
+ * @template TPath - The type representing a path in TInput (e.g. a dot-separated string); defaults to undefined.
+ * @template TIdKey - The key type for the entity's id; defaults to "id".
  */
 interface DefinitionEntityInputBase<
   TInput,
@@ -56,16 +57,21 @@ interface DefinitionEntityInputBase<
   TPath extends PathInput<TInput> | undefined = undefined,
   TIdKey = 'id',
 > {
+  /** The entity type definition. */
   type: TEntityType;
+  /** Optional dot-separated string representing the location of the entity within the input. */
   path?: TPath;
+  /** Optional path key used to resolve the entity's id; if not provided, the id is assumed to be under the entity's path with key "id". */
   idPath?: TIdKey;
+  /** Optional path used to retrieve the entity's name from the input data. */
   namePath?: PathInput<TInput>;
-  /**
-   * Use nameRefPath when the path that contains the name is a reference.
-   */
+  /** Use nameRefPath when the path that contains the name is a reference. */
   nameRefPath?: PathInput<TInput>;
+  /** The name of the entity. */
   name?: string;
+  /** Optional context identifier used to register the entity's path in a shared context. */
   addContext?: string;
+  /** If true, the entity's id is removed during serialization. */
   stripIdWhenSerializing?: boolean;
 }
 
@@ -907,14 +913,20 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
   /**
    * Creates a new ZodRefWrapper instance.
    * @param type - The inner Zod type.
-   * @param deserialize - Flag to enable deserialization of name references.
-   * @param allowMissingNameRefs - Flag to allow missing name references.
+   * @param options - Options for the ZodRefWrapper.
+   * @param options.deserialize - Flag to enable deserialization of name references.
+   * @param options.allowMissingNameRefs - Flag to allow missing name references.
    * @returns A new instance of ZodRefWrapper.
    */
   static create = <T extends ZodTypeAny>(
     type: T,
-    deserialize = false,
-    allowMissingNameRefs = false,
+    {
+      deserialize = false,
+      allowMissingNameRefs = false,
+    }: {
+      deserialize?: boolean;
+      allowMissingNameRefs?: boolean;
+    } = {},
   ): ZodRefWrapper<T> =>
     new ZodRefWrapper<T>({
       innerType: type,
