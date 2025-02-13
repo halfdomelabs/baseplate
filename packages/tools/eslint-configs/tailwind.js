@@ -28,6 +28,7 @@ export const tailwindEslintConfig = [
             'bg-background',
             'bg-muted',
             'border-border',
+            'text-style-prose',
           ],
         },
       ],
