@@ -28,6 +28,7 @@ export function EnumInfoEditDialog({
     form: { control, reset },
     onSubmit,
     defaultValues,
+    isSavingDefinition,
   } = useEnumForm({
     onSubmitSuccess() {
       setIsOpen(false);
@@ -55,7 +56,9 @@ export function EnumInfoEditDialog({
             <Dialog.Close asChild>
               <Button variant="secondary">Cancel</Button>
             </Dialog.Close>
-            <Button type="submit">Save</Button>
+            <Button type="submit" disabled={isSavingDefinition}>
+              Save
+            </Button>
           </Dialog.Footer>
         </form>
       </Dialog.Content>

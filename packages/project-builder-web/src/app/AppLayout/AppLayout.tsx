@@ -7,11 +7,11 @@ import { Outlet } from 'react-router-dom';
 
 import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
 
-import ProjectSyncModal from '../components/ProjectSyncModal';
-import { ProjectSyncStatus } from '../components/ProjectSyncStatus';
 import { AppBreadcrumbs } from './AppBreadcrumbs';
 import { AppDesktopSidebar } from './AppDesktopSidebar';
 import { AppMobileSidebar } from './AppMobileSidebar';
+import ProjectSyncModal from './ProjectSyncModal';
+import { ProjectSyncStatus } from './ProjectSyncStatus';
 
 interface AppLayoutProps {
   className?: string;

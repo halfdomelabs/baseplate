@@ -1,5 +1,3 @@
-import { mergeWith } from 'es-toolkit';
-
 export function safeMergeMap<K, V>(
   map1: Map<K, V>,
   map2: Map<K, V>,
@@ -14,21 +12,4 @@ export function safeMergeMap<K, V>(
   }
 
   return result;
-}
-
-export function deepMergeRightUniq(a: unknown, b: unknown): unknown {
-  if (a == null) {
-    return b;
-  }
-  if (b == null) {
-    return a;
-  }
-  if (typeof a === 'object' && typeof b === 'object') {
-    return mergeWith(a, b, deepMergeRightUniq);
-  }
-  if (Array.isArray(a) && Array.isArray(b)) {
-    return [...new Set([...(a as unknown[]), ...(b as unknown[])])];
-  }
-
-  return b;
 }

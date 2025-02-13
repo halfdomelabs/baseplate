@@ -4,19 +4,22 @@ import { ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
-import { getProjects } from 'src/services/remote';
 
+import { getProjects } from '@src/services/api';
 import { setLocalStorageProjectId } from '@src/services/project-id.service';
 
-import { ProjectChooserDialog } from './ProjectChooserDialog';
+import { ProjectSelectDialog } from './ProjectSelectorDialog';
 
-interface ProjectChooserGateProps {
+interface ProjectSelectorGateProps {
   children: React.ReactNode;
 }
 
-export function ProjectChooserGate({
+/**
+ * Gate that ensures a project is selected before rendering the app
+ */
+export function ProjectSelectorGate({
   children,
-}: ProjectChooserGateProps): React.JSX.Element {
+}: ProjectSelectorGateProps): React.JSX.Element {
   const [error, setError] = useState<unknown>(null);
   const { currentProjectId, projectsLoaded, setProjects } = useProjects();
 
@@ -40,7 +43,7 @@ export function ProjectChooserGate({
   }
 
   if (!currentProjectId) {
-    return <ProjectChooserDialog isOpen />;
+    return <ProjectSelectDialog isOpen />;
   }
 
   return <>{children}</>;

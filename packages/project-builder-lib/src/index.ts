@@ -4,7 +4,6 @@ export * from './definition/index.js';
 export * from './feature-flags/index.js';
 export * from './migrations/index.js';
 export * from './parser/index.js';
-export type * from './parser/types.js';
 export * from './plugins/index.js';
 export * from './references/index.js';
 export * from './schema/index.js';

@@ -3,14 +3,10 @@ import type React from 'react';
 
 import { FeatureUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, toast, useConfirmDialog } from '@halfdomelabs/ui-components';
+import { Button, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { clsx } from 'clsx';
 import { MdDeleteOutline, MdEdit } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
-
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { RefDeleteError } from '@src/utils/error';
 
 import { EnumInfoEditDialog } from './EnumInfoEditDialog';
 
@@ -23,24 +19,22 @@ export function EnumHeaderBar({
   className,
   enumDefinition,
 }: EnumHeaderBarProps): React.JSX.Element {
-  const { definition, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedbackSync, isSavingDefinition } =
+    useProjectDefinition();
   const navigate = useNavigate();
-  const { showRefIssues } = useDeleteReferenceDialog();
   const { requestConfirm } = useConfirmDialog();
 
   const handleDelete = (id: string): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
+    saveDefinitionWithFeedbackSync(
+      (draftConfig) => {
         draftConfig.enums = draftConfig.enums?.filter((m) => m.id !== id);
-      });
-      navigate('/data/enums');
-    } catch (error) {
-      if (error instanceof RefDeleteError) {
-        showRefIssues({ issues: error.issues });
-        return;
-      }
-      toast.error(logAndFormatError(error));
-    }
+      },
+      {
+        onSuccess: () => {
+          navigate('/data/enums');
+        },
+      },
+    );
   };
 
   return (
@@ -82,6 +76,7 @@ export function EnumHeaderBar({
               },
             });
           }}
+          disabled={isSavingDefinition}
         >
           <Button.Icon icon={MdDeleteOutline} className="text-destructive" />
           <div className="sr-only">Delete Enum</div>

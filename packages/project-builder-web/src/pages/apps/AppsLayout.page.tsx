@@ -11,9 +11,9 @@ import { sortBy } from 'es-toolkit';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 
 function AppsLayout(): React.JSX.Element {
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
-  const { apps } = parsedProject.projectDefinition;
+  const { apps } = definition;
   const sortedApps = sortBy(apps, [(app) => app.name]);
 
   return (

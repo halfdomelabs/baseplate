@@ -11,17 +11,10 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Alert,
-  Button,
-  SectionList,
-  Tabs,
-  toast,
-} from '@halfdomelabs/ui-components';
+import { Alert, Button, SectionList, Tabs } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useMemo, useState } from 'react';
 import { MdConstruction } from 'react-icons/md';
-import { logAndFormatError } from 'src/services/error-formatter';
 
 import { FormActionBar } from '@src/components';
 
@@ -31,32 +24,26 @@ import { ThemeColorsPreview } from './components/ThemeColorsPreview';
 import { ThemePaletteEditor } from './components/ThemePaletteEditor';
 
 export function ThemeBuilderPage(): React.JSX.Element {
-  const { definition, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
 
-  const defaultValues = useMemo(
+  const values = useMemo(
     () => definition.theme ?? generateDefaultTheme(),
     [definition.theme],
   );
 
   const form = useResettableForm<ThemeConfig>({
     resolver: zodResolver(themeSchema),
-    defaultValues,
+    values,
   });
-  const { control, handleSubmit, setValue, getValues, formState, reset } = form;
+  const { control, handleSubmit, setValue, getValues, reset } = form;
 
-  const onSubmit = handleSubmit((data) => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        draftConfig.theme = data;
-      });
-      toast.success('Successfully saved configuration!');
-      reset(data);
-    } catch (error) {
-      toast.error(logAndFormatError(error));
-    }
-  });
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback((draftConfig) => {
+      draftConfig.theme = data;
+    }),
+  );
 
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const generateNewThemeColors = useCallback(
     (resetColors?: boolean) => {
@@ -68,8 +55,8 @@ export function ThemeBuilderPage(): React.JSX.Element {
           resetColors
             ? undefined
             : {
-                palettes: defaultValues.palettes,
-                config: defaultValues.colors.light,
+                palettes: values.palettes,
+                config: values.colors.light,
               },
         ),
         dark: generateThemeColorsFromShade(
@@ -78,13 +65,13 @@ export function ThemeBuilderPage(): React.JSX.Element {
           resetColors
             ? undefined
             : {
-                palettes: defaultValues.palettes,
-                config: defaultValues.colors.dark,
+                palettes: values.palettes,
+                config: values.colors.dark,
               },
         ),
       });
     },
-    [getValues, setValue, defaultValues],
+    [getValues, setValue, values],
   );
 
   const handleShadesChange = useCallback(() => {

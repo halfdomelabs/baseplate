@@ -17,7 +17,21 @@ export const tailwindEslintConfig = [
   ...tailwindPlugin.configs['flat/recommended'],
   {
     rules: {
-      'tailwindcss/no-custom-classname': ['error', {}],
+      'tailwindcss/no-custom-classname': [
+        'error',
+        {
+          // for some reason, VSCode throws an error for this rule so adding the rules manually
+          whitelist: [
+            'text-muted-foreground',
+            'text-destructive',
+            'text-style-muted',
+            'bg-background',
+            'bg-muted',
+            'border-border',
+            'text-style-prose',
+          ],
+        },
+      ],
       'tailwindcss/classnames-order': 'off',
     },
   },

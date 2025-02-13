@@ -92,7 +92,7 @@ function AdminCrudEmbeddedForm({
   onSubmit,
   embeddedFormOptions,
 }: Props): React.JSX.Element {
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
   const formProps = useResettableForm<AdminCrudEmbeddedFormConfig>({
     resolver: zodResolver(adminCrudEmbeddedFormSchema),
     defaultValues: initialData,
@@ -100,7 +100,7 @@ function AdminCrudEmbeddedForm({
   const { handleSubmit, control, watch } = formProps;
   const { status, setError } = useStatus();
 
-  const modelOptions = parsedProject.getModels().map((model) => ({
+  const modelOptions = definition.models.map((model) => ({
     label: model.name,
     value: model.id,
   }));

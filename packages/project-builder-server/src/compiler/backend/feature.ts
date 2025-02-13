@@ -22,7 +22,7 @@ export function buildFeature(
   featureId: string,
   builder: BackendAppEntryBuilder,
 ): GeneratorBundle {
-  const { projectDefinition, parsedProject, appCompiler } = builder;
+  const { projectDefinition, appCompiler } = builder;
   const feature = FeatureUtils.getFeatureByIdOrThrow(
     projectDefinition,
     featureId,
@@ -38,7 +38,7 @@ export function buildFeature(
     name: featureName,
     children: safeMergeAll(
       {
-        enums: buildEnumsForFeature(featureId, parsedProject),
+        enums: buildEnumsForFeature(featureId, projectDefinition),
         models: buildModelsForFeature(builder, featureId),
         services: buildServicesForFeature(builder, featureId),
         graphql: buildGraphqlForFeature(builder, featureId),
@@ -68,7 +68,6 @@ export function buildFeature(
             }
           : {}),
       },
-      parsedProject.getFeatureChildren(featureId),
       appCompiler.getChildrenForFeature(featureId),
     ),
   });

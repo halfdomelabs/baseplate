@@ -10,17 +10,18 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from 'src/hooks/useProjects';
 import { logError } from 'src/services/error-logger';
-import { getProjects } from 'src/services/remote';
 
-interface ProjectChooserDialogProps {
+import { getProjects } from '@src/services/api';
+
+interface ProjectSelectDialogProps {
   onClose?: () => void;
   isOpen?: boolean;
 }
 
-export function ProjectChooserDialog({
+export function ProjectSelectDialog({
   onClose,
   isOpen,
-}: ProjectChooserDialogProps): React.JSX.Element {
+}: ProjectSelectDialogProps): React.JSX.Element {
   const { currentProjectId, setCurrentProjectId, setProjects, projects } =
     useProjects();
   const [error, setError] = useState<Error | null>(null);
@@ -46,7 +47,7 @@ export function ProjectChooserDialog({
       onOpenChange={
         onClose ??
         (() => {
-          /* dummy */
+          /* no-op */
         })
       }
       open={isOpen}

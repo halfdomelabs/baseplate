@@ -9,16 +9,10 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import {
   useBlockUnsavedChangesNavigate,
-  useErrorHandler,
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import {
-  Alert,
-  Button,
-  ComboboxField,
-  toast,
-} from '@halfdomelabs/ui-components';
+import { Alert, Button, ComboboxField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo } from 'react';
 
@@ -36,42 +30,14 @@ export function StorageConfig({
   metadata,
   onSave,
 }: WebConfigProps): React.JSX.Element {
-  const { definition, definitionContainer, setConfigAndFixReferences } =
+  const { definition, definitionContainer, saveDefinitionWithFeedback } =
     useProjectDefinition();
-  const { logAndFormatError } = useErrorHandler();
 
   const { control, handleSubmit, formState, watch, reset } =
     useResettableForm<StoragePluginDefinition>({
       resolver: zodResolver(storagePluginDefinitionSchema),
       values: pluginMetadata?.config as StoragePluginDefinition,
     });
-
-  const onSubmit = handleSubmit((data) => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        if (pendingModelChanges) {
-          const model = ModelUtils.byIdOrThrow(draftConfig, data.fileModelRef);
-          applyModelPatchInPlace(
-            model.model,
-            pendingModelChanges,
-            definitionContainer,
-          );
-        }
-        PluginUtils.setPluginConfig(draftConfig, metadata, data);
-      });
-      if (pluginMetadata) {
-        toast.success('Successfully saved plugin!');
-      } else {
-        toast.success('Sucessfully enabled storage plugin!');
-      }
-      reset(data);
-      onSave();
-    } catch (err) {
-      toast.error(logAndFormatError(err));
-    }
-  });
-
-  useBlockUnsavedChangesNavigate(formState, { reset, onSubmit });
 
   const fileModelRef = watch('fileModelRef');
 
@@ -82,6 +48,32 @@ export function StorageConfig({
     const desiredModel = createStorageModels(definitionContainer);
     return diffModel(model.model, desiredModel.file, definitionContainer);
   }, [fileModelRef, definitionContainer, definition]);
+
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback(
+      (draftConfig) => {
+        if (pendingModelChanges) {
+          const model = ModelUtils.byIdOrThrow(draftConfig, data.fileModelRef);
+          applyModelPatchInPlace(
+            model.model,
+            pendingModelChanges,
+            definitionContainer,
+          );
+        }
+        PluginUtils.setPluginConfig(draftConfig, metadata, data);
+      },
+      {
+        successMessage: pluginMetadata
+          ? 'Successfully saved plugin!'
+          : 'Sucessfully enabled storage plugin!',
+        onSuccess: () => {
+          onSave();
+        },
+      },
+    ),
+  );
+
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   const modelOptions = definition.models.map((m) => ({
     label: m.name,
@@ -145,7 +137,9 @@ export function StorageConfig({
         </div>
         <AdapterEditorForm control={control} />
         <CategoryEditorForm control={control} />
-        <Button type="submit">Save</Button>
+        <Button type="submit" disabled={formState.isSubmitting}>
+          Save
+        </Button>
       </form>
     </div>
   );

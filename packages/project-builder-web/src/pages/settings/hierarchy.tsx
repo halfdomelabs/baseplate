@@ -10,7 +10,6 @@ import {
   Button,
   buttonVariants,
   cn,
-  toast,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { useState } from 'react';
@@ -18,12 +17,11 @@ import { FiCornerDownRight } from 'react-icons/fi';
 import { MdAdd, MdDelete, MdEdit } from 'react-icons/md';
 
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { logAndFormatError } from '@src/services/error-formatter';
 
 import { FeatureForm } from './components/FeatureForm';
 
 function HierarchyPage(): React.JSX.Element {
-  const { definitionContainer, setConfigAndFixReferences } =
+  const { definitionContainer, saveDefinitionWithFeedbackSync } =
     useProjectDefinition();
   const { requestConfirm } = useConfirmDialog();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -53,12 +51,9 @@ function HierarchyPage(): React.JSX.Element {
       title: 'Delete Feature',
       content: `Are you sure you want to delete ${feature.name}?`,
       onConfirm: () => {
-        try {
-          setConfigAndFixReferences(deleteFeature);
-          toast.success(`Feature ${feature.name} removed`);
-        } catch (error) {
-          toast.error(logAndFormatError(error));
-        }
+        saveDefinitionWithFeedbackSync(deleteFeature, {
+          successMessage: `Feature ${feature.name} removed`,
+        });
       },
     });
   };

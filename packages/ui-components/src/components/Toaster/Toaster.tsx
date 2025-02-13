@@ -19,6 +19,7 @@ const Toaster = ({ ...props }: ToasterProps): React.JSX.Element => (
     className="toaster group"
     position="top-center"
     duration={3000}
+    closeButton
     toastOptions={{
       unstyled: true,
       classNames: {

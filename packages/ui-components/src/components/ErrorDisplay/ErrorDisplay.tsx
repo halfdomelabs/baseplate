@@ -39,6 +39,7 @@ export function ErrorDisplay({
         'flex h-full w-full items-center justify-center',
         className,
       )}
+      role="alert"
     >
       <div className="flex max-w-xl flex-col items-center space-y-4 text-center">
         <div>

@@ -6,7 +6,7 @@ import type {
   DefinitionEntity,
   DefinitionReference,
   FixRefDeletionResult,
-  ZodRefPayload,
+  ResolvedZodRefPayload,
 } from '@src/references/index.js';
 import type {
   ProjectDefinition,
@@ -22,6 +22,7 @@ import {
   fixRefDeletions,
   serializeSchemaFromRefPayload,
 } from '@src/references/index.js';
+import { prettyStableStringify } from '@src/utils';
 
 /**
  * Container for a project definition that includes references and entities.
@@ -30,14 +31,14 @@ import {
  * such as the ability to fetch an entity by ID.
  */
 export class ProjectDefinitionContainer {
-  refPayload: ZodRefPayload<ProjectDefinition>;
+  refPayload: ResolvedZodRefPayload<ProjectDefinition>;
   definition: ProjectDefinition;
   references: DefinitionReference[];
   entities: DefinitionEntity[];
   parserContext: SchemaParserContext;
 
   constructor(
-    config: ZodRefPayload<ProjectDefinition>,
+    config: ResolvedZodRefPayload<ProjectDefinition>,
     parserContext: SchemaParserContext,
     public pluginStore: PluginImplementationStore,
   ) {
@@ -98,13 +99,14 @@ export class ProjectDefinitionContainer {
   }
 
   /**
-   * Serializes the configuration of the project definition such that all references are
-   * resolved to their names for easier reading.
+   * Serializes the project definition resolving references to their names for easier reading.
    *
-   * @returns The serialized configuration of the project definition
+   * @returns The serialized contents of the project definition
    */
-  toSerializedConfig(): Record<string, unknown> {
-    return serializeSchemaFromRefPayload(this.refPayload);
+  toSerializedContents(): string {
+    return prettyStableStringify(
+      serializeSchemaFromRefPayload(this.refPayload),
+    );
   }
 
   /**
@@ -146,7 +148,7 @@ export class ProjectDefinitionContainer {
         config,
       ),
       context,
-      projectDefinitionSchemaWithContext._def.pluginStore,
+      projectDefinitionSchemaWithContext.pluginStore,
     );
   }
 }

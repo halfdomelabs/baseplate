@@ -13,15 +13,13 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { toast, useEventCallback } from '@halfdomelabs/ui-components';
+import { useEventCallback } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
 import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
-import { logAndFormatError } from '@src/services/error-formatter';
-import { NotFoundError, RefDeleteError } from '@src/utils/error';
+import { NotFoundError } from '@src/utils/error';
 
 import { createEnumEditLink } from '../../models/_utils/url';
 
@@ -49,9 +47,11 @@ export function useEnumForm({
   form: UseFormReturn<EnumConfig>;
   onSubmit: () => Promise<void>;
   defaultValues: EnumConfig;
+  isSavingDefinition: boolean;
 } {
   const { uid } = useParams<'uid'>();
-  const { definition, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedback, isSavingDefinition } =
+    useProjectDefinition();
   const navigate = useNavigate();
 
   const urlEnumId = isCreate ? undefined : modelEnumEntityType.fromUid(uid);
@@ -62,8 +62,6 @@ export function useEnumForm({
   if (!isCreate && !enumDefinition) {
     throw new NotFoundError('Enum not found');
   }
-
-  const { showRefIssues } = useDeleteReferenceDialog();
 
   // memoize it to keep the same UID when resetting
   const newEnumDefinition = useMemo(() => createNewEnum(), []);
@@ -89,27 +87,27 @@ export function useEnumForm({
   const onSubmit = useMemo(
     () =>
       handleSubmit((data) => {
-        try {
-          const updatedDefinition = {
-            ...enumDefinition,
-            ...data,
-            // generate new ID if new
-            id: enumDefinition?.id ?? modelEnumEntityType.generateNewId(),
-          };
-          // check for enums with the same name
-          const existingEnum = definition.enums?.find(
-            (e) =>
-              e.id !== updatedDefinition.id &&
-              e.name.toLowerCase() === updatedDefinition.name.toLowerCase(),
-          );
-          if (existingEnum) {
-            setError('name', {
-              message: `Enum with name ${updatedDefinition.name} already exists.`,
-            });
-            return;
-          }
+        const updatedDefinition = {
+          ...enumDefinition,
+          ...data,
+          // generate new ID if new
+          id: enumDefinition?.id ?? modelEnumEntityType.generateNewId(),
+        };
+        // check for enums with the same name
+        const existingEnum = definition.enums?.find(
+          (e) =>
+            e.id !== updatedDefinition.id &&
+            e.name.toLowerCase() === updatedDefinition.name.toLowerCase(),
+        );
+        if (existingEnum) {
+          setError('name', {
+            message: `Enum with name ${updatedDefinition.name} already exists.`,
+          });
+          return;
+        }
 
-          setConfigAndFixReferences((draftConfig) => {
+        return saveDefinitionWithFeedback(
+          (draftConfig) => {
             // create feature if a new feature exists
             updatedDefinition.featureRef =
               FeatureUtils.ensureFeatureByNameRecursively(
@@ -125,32 +123,28 @@ export function useEnumForm({
               ],
               [(e) => e.name],
             );
-          });
-
-          if (isCreate) {
-            navigate(createEnumEditLink(updatedDefinition.id));
-            reset(newEnumDefinition);
-            toast.success('Successfully created enum!');
-          } else {
-            reset(data);
-            toast.success('Successfully saved enum!');
-          }
-
-          handleSubmitSuccess?.();
-        } catch (error) {
-          if (error instanceof RefDeleteError) {
-            showRefIssues({ issues: error.issues });
-            return;
-          }
-          toast.error(logAndFormatError(error));
-        }
+          },
+          {
+            successMessage: isCreate
+              ? 'Successfully created enum!'
+              : 'Successfully saved enum!',
+            onSuccess: () => {
+              if (isCreate) {
+                navigate(createEnumEditLink(updatedDefinition.id));
+                reset(newEnumDefinition);
+              } else {
+                reset(data);
+              }
+              handleSubmitSuccess?.();
+            },
+          },
+        );
       }),
     [
       navigate,
       reset,
-      setConfigAndFixReferences,
+      saveDefinitionWithFeedback,
       setError,
-      showRefIssues,
       handleSubmit,
       definition,
       isCreate,
@@ -160,5 +154,5 @@ export function useEnumForm({
     ],
   );
 
-  return { form, onSubmit, defaultValues };
+  return { form, onSubmit, defaultValues, isSavingDefinition };
 }

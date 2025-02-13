@@ -37,7 +37,7 @@ export function buildFastify(
   builder: BackendAppEntryBuilder,
   app: BackendAppConfig,
 ): GeneratorBundle {
-  const { projectDefinition, parsedProject, appCompiler } = builder;
+  const { projectDefinition, appCompiler } = builder;
   const rootFeatures = FeatureUtils.getRootFeatures(projectDefinition);
 
   // add graphql scalars
@@ -99,7 +99,6 @@ export function buildFastify(
             }
           : {}),
       },
-      parsedProject.fastifyChildren,
       appCompiler.getRootChildren(),
     ),
   });

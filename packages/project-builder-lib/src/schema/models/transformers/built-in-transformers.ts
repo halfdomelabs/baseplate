@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { zEnt, zRef } from '@src/references/index.js';
+import {
+  createDefinitionEntityNameResolver,
+  zEnt,
+  zRef,
+} from '@src/references/index.js';
 
 import {
   modelEntityType,
@@ -18,7 +22,7 @@ export const passwordTransformerSchema = zEnt(
   {
     type: modelTransformerEntityType,
     parentPath: { context: 'model' },
-    name: 'password',
+    getNameResolver: () => 'password',
   },
 );
 
@@ -59,7 +63,11 @@ export const embeddedRelationTransformerSchema = zEnt(
   {
     type: modelTransformerEntityType,
     parentPath: { context: 'model' },
-    nameRefPath: 'foreignRelationRef',
+    getNameResolver: (entity) =>
+      createDefinitionEntityNameResolver({
+        idsToResolve: { foreignRelation: entity.foreignRelationRef },
+        resolveName: (entityNames) => entityNames.foreignRelation,
+      }),
   },
 ).refBuilder((builder) => {
   builder.addPathToContext('modelRef', modelEntityType, 'embeddedModel');

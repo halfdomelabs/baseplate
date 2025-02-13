@@ -23,15 +23,15 @@ export function ModelFieldTypeInput({
   control,
   idx,
 }: ModelFieldTypeInputProps): React.JSX.Element {
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
-  const enumOptions: ScalarFieldTypeOption[] = parsedProject
-    .getEnums()
-    .map((config) => ({
+  const enumOptions: ScalarFieldTypeOption[] = (definition.enums ?? []).map(
+    (config) => ({
       label: config.name,
       value: `enum-${config.id}`,
       description: 'Enum type',
-    }));
+    }),
+  );
 
   const typeOptions = [
     ...SCALAR_FIELD_TYPES.filter((t) => t !== 'enum').map(

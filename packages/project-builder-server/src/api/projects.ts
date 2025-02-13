@@ -1,95 +1,81 @@
-import type { ProjectDefinition } from '@halfdomelabs/project-builder-lib';
-
-import { TRPCError } from '@trpc/server';
 import { observable } from '@trpc/server/observable';
 import { z } from 'zod';
 
-import type {
-  FilePayload,
-  ProjectBuilderService,
-} from '@src/service/builder-service.js';
-
-import type { BaseplateApiContext } from './types.js';
+import type { ProjectDefinitionFilePayload } from '@src/service/builder-service.js';
 
 import { privateProcedure, router, websocketProcedure } from './trpc.js';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function createProjectsRouter({ services }: BaseplateApiContext) {
-  function getApi(id: string): ProjectBuilderService {
-    const service = services.find((a) => a.id === id);
-    if (!service) {
-      throw new TRPCError({
-        message: `No project with id ${id}`,
-        code: 'NOT_FOUND',
-      });
-    }
-    return service;
-  }
+export interface ProjectInfo {
+  id: string;
+  name: string;
+  directory: string;
+}
 
-  return router({
-    list: privateProcedure.query(async () =>
-      Promise.all(
-        services.map(
-          async (
-            service,
-          ): Promise<{ id: string; name: string; directory: string }> => {
-            const config = await service.readConfig();
-            if (!config) {
-              throw new Error(`File config missing for ${service.directory}`);
-            }
-            const parsedContents = JSON.parse(
-              config.contents,
-            ) as ProjectDefinition;
-            return {
-              id: service.id,
-              name: parsedContents.name,
-              directory: service.directory,
-            };
-          },
-        ),
-      ),
+export const projectsRouter = router({
+  list: privateProcedure.query(async ({ ctx }) =>
+    Promise.all(
+      ctx.services.map(async (service): Promise<ProjectInfo> => {
+        const { contents } = await service.readDefinition();
+        const parsedContents = JSON.parse(contents) as unknown;
+
+        if (
+          !parsedContents ||
+          typeof parsedContents !== 'object' ||
+          !('name' in parsedContents) ||
+          typeof parsedContents.name !== 'string'
+        ) {
+          throw new Error(
+            `Invalid project definition for ${service.directory}`,
+          );
+        }
+
+        return {
+          id: service.id,
+          name: parsedContents.name,
+          directory: service.directory,
+        };
+      }),
+    ),
+  ),
+
+  readDefinition: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ input: { id }, ctx }) => {
+      const api = ctx.getApi(id);
+      const contents = await api.readDefinition();
+      return { contents };
+    }),
+
+  onProjectJsonChanged: websocketProcedure
+    .input(z.object({ id: z.string() }))
+    .subscription(({ input: { id }, ctx }) =>
+      observable<ProjectDefinitionFilePayload>((emit) => {
+        const unsubscribe = ctx
+          .getApi(id)
+          .on('project-json-changed', (payload) => {
+            emit.next(payload);
+          });
+        return () => {
+          unsubscribe();
+        };
+      }),
     ),
 
-    get: privateProcedure
-      .input(
-        z.object({
-          id: z.string(),
-        }),
-      )
-      .query(async ({ input: { id } }) => {
-        const api = getApi(id);
-        const file = await api.readConfig();
-        return { file };
+  writeDefinition: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        newContents: z.string(),
+        oldContentsHash: z.string(),
       }),
-
-    onProjectJsonChanged: websocketProcedure
-      .input(z.object({ id: z.string() }))
-      .subscription(({ input: { id } }) =>
-        observable<FilePayload | null>((emit) => {
-          const unsubscribe = getApi(id).on(
-            'project-json-changed',
-            (payload) => {
-              emit.next(payload);
-            },
-          );
-          return () => {
-            unsubscribe();
-          };
-        }),
-      ),
-
-    writeConfig: privateProcedure
-      .input(
-        z.object({
-          id: z.string(),
-          contents: z.string(),
-          lastModifiedAt: z.string(),
-        }),
-      )
-      .mutation(async ({ input: { id, contents, lastModifiedAt } }) => {
-        const api = getApi(id);
-        const result = await api.writeConfig({ contents, lastModifiedAt });
-        return { result };
-      }),
-  });
-}
+    )
+    .mutation(async ({ input: { id, newContents, oldContentsHash }, ctx }) => {
+      const api = ctx.getApi(id);
+      const result = await api.writeDefinition(newContents, oldContentsHash);
+      return { result };
+    }),
+});

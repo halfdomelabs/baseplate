@@ -1,7 +1,7 @@
 import type {
   EmbeddedRelationTransformerConfig,
+  ModelConfig,
   ModelTransformerCompiler,
-  ParsedModel,
   TransformerConfig,
 } from '@halfdomelabs/project-builder-lib';
 import type { GeneratorBundle } from '@halfdomelabs/sync';
@@ -70,7 +70,7 @@ const passwordTransformerCompiler: ModelTransformerCompiler = {
 function buildTransformer(
   appBuilder: BackendAppEntryBuilder,
   transformer: TransformerConfig,
-  model: ParsedModel,
+  model: ModelConfig,
 ): GeneratorBundle {
   const { pluginStore } = appBuilder;
   const compilerImplementation = pluginStore.getPluginSpec(
@@ -90,7 +90,7 @@ function buildTransformer(
 
 function buildServiceForModel(
   appBuilder: BackendAppEntryBuilder,
-  model: ParsedModel,
+  model: ModelConfig,
 ): GeneratorBundle | undefined {
   const { service } = model;
   if (!service) {

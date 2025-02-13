@@ -6,7 +6,7 @@ import { EmptyDisplay, ErrorableLoader } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
-import { client } from '@src/services/api';
+import { trpc } from '@src/services/trpc';
 
 import { PluginCard } from './PluginCard';
 
@@ -15,7 +15,7 @@ export function PluginsHomePage(): React.JSX.Element {
   const [plugins, setPlugins] = useState<PluginMetadataWithPaths[] | null>(
     null,
   );
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
   const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
@@ -23,8 +23,8 @@ export function PluginsHomePage(): React.JSX.Element {
     if (!currentProjectId) {
       return;
     }
-    client.plugins.getAvailablePlugins
-      .mutate({ id: currentProjectId })
+    trpc.plugins.getAvailablePlugins
+      .mutate({ projectId: currentProjectId })
       .then(setPlugins)
       .catch(setError);
   }, [currentProjectId]);
@@ -42,7 +42,7 @@ export function PluginsHomePage(): React.JSX.Element {
     );
   }
 
-  const pluginConfig = parsedProject.projectDefinition.plugins ?? [];
+  const pluginConfig = definition.plugins ?? [];
   const installedPlugins = plugins.filter((plugin) =>
     pluginConfig.some(
       (config) =>

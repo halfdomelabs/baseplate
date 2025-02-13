@@ -3,13 +3,13 @@ import type { TypeOf, z } from 'zod';
 import { get, set, unset } from 'es-toolkit/compat';
 import { produce } from 'immer';
 
-import type { ZodRefPayload } from './ref-builder.js';
+import type { ResolvedZodRefPayload } from './types.js';
 
-import { ZodRefWrapper } from './ref-builder.js';
+import { parseSchemaWithReferences } from './parse-schema-with-references.js';
 
 export function serializeSchemaFromRefPayload<
   TValue extends Record<string, unknown>,
->(payload: ZodRefPayload<TValue>): TValue {
+>(payload: ResolvedZodRefPayload<TValue>): TValue {
   const { references, entities, data } = payload;
 
   const entitiesById = new Map(entities.map((e) => [e.id, e]));
@@ -40,7 +40,7 @@ export function serializeSchema<TSchema extends z.ZodType>(
   schema: TSchema,
   value: TypeOf<TSchema>,
 ): TypeOf<TSchema> {
-  const payload = ZodRefWrapper.create(schema).parse(value);
+  const payload = parseSchemaWithReferences(schema, value);
 
   return serializeSchemaFromRefPayload(payload) as unknown;
 }

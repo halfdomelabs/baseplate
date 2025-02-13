@@ -7,11 +7,10 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { InputField, SectionList, toast } from '@halfdomelabs/ui-components';
+import { InputField, SectionList } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pick } from 'es-toolkit';
-import { formatError } from 'src/services/error-formatter';
-import { logError } from 'src/services/error-logger';
+import { useMemo } from 'react';
 
 import FormActionBar from '@src/components/FormActionBar';
 
@@ -25,40 +24,30 @@ const validationSchema = projectDefinitionSchema.pick({
 type FormData = z.infer<typeof validationSchema>;
 
 function ProjectSettingsPage(): React.JSX.Element {
-  const { definition, setConfigAndFixReferences } = useProjectDefinition();
+  const { definition, saveDefinitionWithFeedback } = useProjectDefinition();
+  const defaultValues = useMemo(
+    () => pick(definition, ['name', 'version', 'portOffset', 'packageScope']),
+    [definition],
+  );
   const form = useResettableForm<FormData>({
     resolver: zodResolver(validationSchema),
-    defaultValues: pick(definition, [
-      'name',
-      'version',
-      'portOffset',
-      'packageScope',
-    ]),
+    defaultValues,
   });
 
-  const { handleSubmit, control, formState, reset } = form;
+  const { handleSubmit, control, reset } = form;
 
-  const onSubmit = (data: FormData): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
-        Object.assign(draftConfig, data);
-      });
-      toast.success('Successfully saved configuration!');
-    } catch (error) {
-      logError(error);
-      toast.error(formatError(error));
-    }
-  };
+  const onSubmit = handleSubmit((data) =>
+    saveDefinitionWithFeedback((draftConfig) => {
+      Object.assign(draftConfig, data);
+    }),
+  );
 
-  useBlockUnsavedChangesNavigate(formState, {
-    reset,
-    onSubmit: handleSubmit(onSubmit),
-  });
+  useBlockUnsavedChangesNavigate({ control, reset, onSubmit });
 
   return (
     <form
       className="relative h-full max-h-full pb-[var(--action-bar-height)]"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit}
     >
       <div className="flex h-full max-h-full flex-1 flex-col overflow-y-auto px-6">
         <div className="sticky top-0 border-b bg-background py-6">

@@ -26,6 +26,7 @@ export function NewEnumDialog({
   const {
     onSubmit,
     form: { control },
+    isSavingDefinition,
   } = useEnumForm({
     isCreate: true,
     onSubmitSuccess: () => {
@@ -70,7 +71,9 @@ export function NewEnumDialog({
             <Dialog.Close asChild>
               <Button variant="secondary">Cancel</Button>
             </Dialog.Close>
-            <Button type="submit">Create Enum</Button>
+            <Button type="submit" disabled={isSavingDefinition}>
+              Create Enum
+            </Button>
           </Dialog.Footer>
         </form>
       </Dialog.Content>

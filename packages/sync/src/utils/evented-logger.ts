@@ -1,4 +1,4 @@
-import { createTypedEventEmitter } from './typed-event-emitter.js';
+import { createTypedEventEmitter } from '@halfdomelabs/utils';
 
 export interface Logger {
   error(message: unknown): void;

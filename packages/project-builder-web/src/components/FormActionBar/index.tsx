@@ -8,9 +8,13 @@ interface FormActionBarProps {
   // we don't care about the form type
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: UseFormReturn<any>;
+  disabled?: boolean;
 }
 
-const FormActionBar = ({ form }: FormActionBarProps): React.JSX.Element => {
+const FormActionBar = ({
+  form,
+  disabled,
+}: FormActionBarProps): React.JSX.Element => {
   const { formState } = form;
   const isDirty = Object.keys(formState.dirtyFields).length > 0;
 
@@ -23,7 +27,7 @@ const FormActionBar = ({ form }: FormActionBarProps): React.JSX.Element => {
         onClick={() => {
           form.reset();
         }}
-        disabled={formState.isSubmitting || !isDirty}
+        disabled={formState.isSubmitting || !isDirty || disabled}
       >
         Reset
       </Button>
@@ -32,7 +36,7 @@ const FormActionBar = ({ form }: FormActionBarProps): React.JSX.Element => {
         variant="default"
         size="sm"
         type="submit"
-        disabled={formState.isSubmitting || !isDirty}
+        disabled={formState.isSubmitting || !isDirty || disabled}
       >
         Save
       </Button.WithIcon>

@@ -7,7 +7,6 @@ import {
   ComboboxField,
   Dialog,
   InputField,
-  toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { sortBy } from 'es-toolkit';
@@ -15,7 +14,6 @@ import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { logAndFormatError } from '@src/services/error-formatter';
 import { UserVisibleError } from '@src/utils/error';
 
 interface FeatureFormProps {
@@ -33,8 +31,6 @@ const featureSchema = z.object({
   parentRef: z.string().nullish(),
 });
 
-type FeatureFormData = z.infer<typeof featureSchema>;
-
 export function FeatureForm({
   feature,
   open,
@@ -42,7 +38,7 @@ export function FeatureForm({
 }: FeatureFormProps): React.JSX.Element {
   const {
     definitionContainer: { definition },
-    setConfigAndFixReferences,
+    saveDefinitionWithFeedback,
   } = useProjectDefinition();
   const defaultValues = useMemo(
     () => ({
@@ -52,7 +48,12 @@ export function FeatureForm({
     }),
     [feature],
   );
-  const { control, handleSubmit, reset } = useForm({
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm({
     resolver: zodResolver(featureSchema),
     values: defaultValues,
   });
@@ -61,9 +62,9 @@ export function FeatureForm({
     if (open) reset(defaultValues);
   }, [open, defaultValues, reset]);
 
-  const onUpsertFeature = (data: FeatureFormData): void => {
-    try {
-      setConfigAndFixReferences((draftConfig) => {
+  const onUpsertFeature = handleSubmit((data) =>
+    saveDefinitionWithFeedback(
+      (draftConfig) => {
         const parentName = draftConfig.features.find(
           (f) => f.id === data.parentRef,
         )?.name;
@@ -103,12 +104,14 @@ export function FeatureForm({
         renameFeatureChildren();
 
         draftConfig.features = sortBy(newFeatures, [(f) => f.name]);
-      });
-      onClose?.();
-    } catch (error) {
-      toast.error(logAndFormatError(error));
-    }
-  };
+      },
+      {
+        onSuccess: () => {
+          onClose?.();
+        },
+      },
+    ),
+  );
 
   const parentOptions = [
     {
@@ -133,7 +136,7 @@ export function FeatureForm({
       }}
     >
       <Dialog.Content>
-        <form className="space-y-4" onSubmit={handleSubmit(onUpsertFeature)}>
+        <form className="space-y-4" onSubmit={onUpsertFeature}>
           <Dialog.Header>
             <Dialog.Title>
               {feature?.name ? 'Edit' : 'Add'} Feature
@@ -156,7 +159,9 @@ export function FeatureForm({
             <Button onClick={onClose} variant="secondary">
               Cancel
             </Button>
-            <Button type="submit">Save</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              Save
+            </Button>
           </Dialog.Footer>
         </form>
       </Dialog.Content>

@@ -16,10 +16,9 @@ export function useResettableForm<
   const formProps = useForm(props);
   const { reset, formState } = formProps;
   const { isDirty } = formState;
-  const { externalChangeCounter } = useProjectDefinition();
+  const { updatedExternally } = useProjectDefinition();
 
   const oldValues = useRef<{
-    externalChangeCounter: number;
     oldDefaultValues: unknown;
   }>();
 
@@ -29,10 +28,7 @@ export function useResettableForm<
       !isEqual(oldValues.current.oldDefaultValues, props?.defaultValues)
     ) {
       reset(props?.defaultValues as TFieldValues);
-      if (
-        isDirty &&
-        oldValues.current.externalChangeCounter !== externalChangeCounter
-      ) {
+      if (isDirty && updatedExternally) {
         toast.warning('Contents were updated externally so form was reset!');
       }
     }
@@ -41,11 +37,10 @@ export function useResettableForm<
       !isEqual(oldValues.current.oldDefaultValues, props?.defaultValues)
     ) {
       oldValues.current = {
-        externalChangeCounter,
         oldDefaultValues: props?.defaultValues,
       };
     }
-  }, [props?.defaultValues, reset, externalChangeCounter, isDirty]);
+  }, [props?.defaultValues, reset, updatedExternally, isDirty]);
 
   return formProps;
 }

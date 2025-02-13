@@ -6,7 +6,7 @@ import type {
 } from '@halfdomelabs/project-builder-lib';
 import type { GeneratorBundle } from '@halfdomelabs/sync';
 
-import { ModelFieldUtils } from '@halfdomelabs/project-builder-lib';
+import { ModelFieldUtils, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import {
   adminCrudForeignDisplayGenerator,
   adminCrudTextDisplayGenerator,
@@ -19,7 +19,7 @@ function compileAdminCrudForeignDisplay(
   field: AdminCrudForeignDisplayConfig,
   modelId: string,
 ): GeneratorBundle {
-  const model = builder.parsedProject.getModelById(modelId);
+  const model = ModelUtils.byIdOrThrow(builder.projectDefinition, modelId);
   const relation = model.model.relations?.find(
     (r) => r.id === field.localRelationRef,
   );
@@ -51,7 +51,7 @@ function compileAdminCrudTextDisplay(
   field: AdminCrudTextDisplayConfig,
   modelId: string,
 ): GeneratorBundle {
-  const model = builder.parsedProject.getModelById(modelId);
+  const model = ModelUtils.byIdOrThrow(builder.projectDefinition, modelId);
   const fieldConfig = model.model.fields.find(
     (f) => f.id === field.modelFieldRef,
   );

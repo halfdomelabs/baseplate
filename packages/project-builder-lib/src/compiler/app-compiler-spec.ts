@@ -17,14 +17,22 @@ export interface AppCompiler {
     featureId: string,
     children: Record<string, GeneratorBundle>,
   ) => void;
-  getChildrenForFeature: (featureId: string) => Record<string, GeneratorBundle>;
+  getChildrenForFeature: (
+    featureId: string,
+  ) => Record<string, GeneratorBundle | GeneratorBundle[]>;
   addRootChildren: (children: Record<string, GeneratorBundle>) => void;
-  getRootChildren: () => Partial<Record<string, GeneratorBundle>>;
+  getRootChildren: () => Partial<
+    Record<string, GeneratorBundle | GeneratorBundle[]>
+  >;
 }
 
 export function createAppCompiler(): AppCompiler {
-  const children: Partial<Record<string, Record<string, GeneratorBundle>>> = {};
-  let rootChildren: Partial<Record<string, GeneratorBundle>> = {};
+  const children: Partial<
+    Record<string, Record<string, GeneratorBundle | GeneratorBundle[]>>
+  > = {};
+  let rootChildren: Partial<
+    Record<string, GeneratorBundle | GeneratorBundle[]>
+  > = {};
 
   return {
     addChildrenToFeature(featureId, newChildren) {

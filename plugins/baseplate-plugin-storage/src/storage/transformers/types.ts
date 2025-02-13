@@ -1,5 +1,6 @@
 import {
   baseTransformerFields,
+  createDefinitionEntityNameResolver,
   modelLocalRelationEntityType,
   modelTransformerEntityType,
   zEnt,
@@ -20,7 +21,11 @@ export const fileTransformerSchema = zEnt(
   {
     type: modelTransformerEntityType,
     parentPath: { context: 'model' },
-    nameRefPath: 'fileRelationRef',
+    getNameResolver: (entity) =>
+      createDefinitionEntityNameResolver({
+        idsToResolve: { fileRelation: entity.fileRelationRef },
+        resolveName: (entityNames) => entityNames.fileRelation,
+      }),
   },
 );
 

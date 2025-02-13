@@ -3,9 +3,11 @@ import type React from 'react';
 import type { z } from 'zod';
 
 import { projectDefinitionSchema } from '@halfdomelabs/project-builder-lib';
-import { Button, Card, InputField } from '@halfdomelabs/ui-components';
+import { Button, Card, InputField, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+
+import { logAndFormatError } from '@src/services/error-formatter';
 
 const schema = projectDefinitionSchema.pick({
   name: true,
@@ -16,19 +18,29 @@ type FormData = z.infer<typeof schema>;
 
 interface NewProjectCardProps {
   existingProject?: ProjectDefinition;
-  saveProject: (data: FormData) => void;
+  saveProject: (data: FormData) => Promise<void>;
 }
 
 export function NewProjectCard({
   existingProject,
   saveProject,
 }: NewProjectCardProps): React.JSX.Element {
-  const { control, handleSubmit } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = useForm<FormData>({
     defaultValues: {
       name: existingProject?.name,
       portOffset: existingProject?.portOffset ?? 3000,
     },
     resolver: zodResolver(schema),
+  });
+
+  const onSubmit = handleSubmit((data) => {
+    saveProject(data).catch((err: unknown) => {
+      toast.error(logAndFormatError(err, 'Failed to save project'));
+    });
   });
 
   return (
@@ -45,10 +57,7 @@ export function NewProjectCard({
             Let&apos;s get you set up!
           </p>
         </div>
-        <form
-          onSubmit={handleSubmit(saveProject)}
-          className="flex flex-col space-y-4"
-        >
+        <form onSubmit={onSubmit} className="flex flex-col space-y-4">
           <InputField.Controller
             name="name"
             label="Project Name"
@@ -63,7 +72,7 @@ export function NewProjectCard({
             control={control}
             registerOptions={{ valueAsNumber: true }}
           />
-          <Button className="mx-auto" type="submit">
+          <Button className="mx-auto" type="submit" disabled={isSubmitting}>
             Initialize Project
           </Button>
         </form>

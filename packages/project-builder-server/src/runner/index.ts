@@ -35,16 +35,14 @@ async function loadProjectJson(directory: string): Promise<unknown> {
     z.object({}).passthrough(),
   );
 
-  const { newConfig: migratedProjectJson, appliedMigrations } =
-    runSchemaMigrations(projectJson as ProjectDefinition);
+  const { migratedDefinition, appliedMigrations } = runSchemaMigrations(
+    projectJson as ProjectDefinition,
+  );
   if (appliedMigrations.length > 0) {
-    await writeFile(
-      projectJsonPath,
-      prettyStableStringify(migratedProjectJson),
-    );
+    await writeFile(projectJsonPath, prettyStableStringify(migratedDefinition));
   }
 
-  return migratedProjectJson;
+  return migratedDefinition;
 }
 
 async function compileApplicationsFromDirectory({

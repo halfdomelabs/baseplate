@@ -1,35 +1,72 @@
 import React from 'react';
 
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
-import type { ParsedProjectDefinition } from '@src/parser/index.js';
 import type { SchemaParserContext } from '@src/parser/types.js';
 import type { PluginImplementationStore } from '@src/plugins/index.js';
-import type {
-  ProjectDefinition,
-  ProjectDefinitionInput,
-} from '@src/schema/project-definition.js';
+import type { ProjectDefinition } from '@src/schema/project-definition.js';
 
-export type SetOrTransformConfig =
-  | ProjectDefinitionInput
-  | ((draftConfig: ProjectDefinition) => void);
+/**
+ * A function that sets the project definition.
+ *
+ * This can be a function that returns a new project definition, or a function that
+ * mutates the existing project definition (using Immer).
+ */
+export type ProjectDefinitionSetter = (draftConfig: ProjectDefinition) => void;
 
-export interface SetProjectDefinitionOptions {
-  fixReferences?: boolean;
+export interface SaveDefinitionWithFeedbackOptions {
+  disableDeleteRefDialog?: boolean;
+  successMessage?: string;
+  onSuccess?: () => void;
 }
 
+/**
+ * The result of the `useProjectDefinition` hook.
+ */
 export interface UseProjectDefinitionResult {
+  /**
+   * The current project definition.
+   */
   definition: ProjectDefinition;
-  parsedProject: ParsedProjectDefinition;
+  /**
+   * The project definition container.
+   */
   definitionContainer: ProjectDefinitionContainer;
-  setConfigAndFixReferences: (configOrTransform: SetOrTransformConfig) => void;
-  setConfig: (
-    configOrTransform: SetOrTransformConfig,
-    options?: SetProjectDefinitionOptions,
+  /**
+   * Whether the project definition has been updated externally.
+   */
+  updatedExternally: boolean;
+  /**
+   * Save the project definition.
+   */
+  saveDefinition: (definition: ProjectDefinitionSetter) => Promise<void>;
+  /**
+   * Save the project definition with feedback showing a toast
+   * when there are errors or a success message when the definition is saved.
+   */
+  saveDefinitionWithFeedback: (
+    definition: ProjectDefinitionSetter,
+    options?: SaveDefinitionWithFeedbackOptions,
+  ) => Promise<{ success: boolean }>;
+  /**
+   * Save the project definition with feedback showing a toast
+   * when there are errors or a success message when the definition is saved.
+   */
+  saveDefinitionWithFeedbackSync: (
+    definition: ProjectDefinitionSetter,
+    options?: SaveDefinitionWithFeedbackOptions,
   ) => void;
-  externalChangeCounter: number;
+  /**
+   * Whether the project definition is being saved.
+   */
+  isSavingDefinition: boolean;
+  /**
+   * The plugin container.
+   */
   pluginContainer: PluginImplementationStore;
+  /**
+   * The schema parser context.
+   */
   schemaParserContext: SchemaParserContext;
-  lastModifiedAt?: string;
 }
 
 export const ProjectDefinitionContext =

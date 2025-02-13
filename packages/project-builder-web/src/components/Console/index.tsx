@@ -11,7 +11,7 @@ import {
 } from 'react';
 
 import { useProjects } from '@src/hooks/useProjects';
-import { client } from '@src/services/api';
+import { trpc } from '@src/services/trpc';
 
 interface Props {
   className?: string;
@@ -41,7 +41,7 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
     if (!currentProjectId) {
       return;
     }
-    const unsubscribe = client.sync.onConsoleEmitted.subscribe(
+    const unsubscribe = trpc.sync.onConsoleEmitted.subscribe(
       { id: currentProjectId },
       {
         onData: (msg) => {

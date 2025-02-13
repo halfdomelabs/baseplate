@@ -25,7 +25,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
     name: 'categories',
   });
 
-  const { parsedProject } = useProjectDefinition();
+  const { definition } = useProjectDefinition();
 
   const fileModel = useWatch({ control, name: 'fileModelRef' });
   const adapters = useWatch({ control, name: 's3Adapters' });
@@ -35,8 +35,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
     value: adapter.id,
   }));
 
-  const foreignKeyOptions = parsedProject
-    .getModels()
+  const foreignKeyOptions = definition.models
     .flatMap((m) =>
       m.model.relations
         ?.filter((r) => r.modelRef === fileModel)
@@ -48,7 +47,7 @@ function CategoryEditorForm({ className, control }: Props): React.JSX.Element {
     .filter(notEmpty);
 
   const roleOptions =
-    parsedProject.projectDefinition.auth?.roles.map((role) => ({
+    definition.auth?.roles.map((role) => ({
       label: role.name,
       value: role.id,
     })) ?? [];

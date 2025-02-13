@@ -14,13 +14,10 @@ import type { GeneratorBundle } from '@halfdomelabs/sync';
 import {
   appCompilerSpec,
   createAppCompiler,
-  ParsedProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
 
 export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
   public projectDefinition: ProjectDefinition;
-
-  public parsedProject: ParsedProjectDefinition;
 
   public pluginStore: PluginImplementationStore;
 
@@ -32,7 +29,6 @@ export class AppEntryBuilder<AppConfig extends BaseAppConfig = BaseAppConfig> {
     public appConfigType: AppEntryType<AppConfig>,
   ) {
     this.projectDefinition = definitionContainer.definition;
-    this.parsedProject = new ParsedProjectDefinition(definitionContainer);
     this.pluginStore = definitionContainer.pluginStore;
 
     // initialize app compiler
