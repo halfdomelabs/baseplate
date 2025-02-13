@@ -1,5 +1,17 @@
 # @halfdomelabs/ui-components
 
+## 0.5.3
+
+### Patch Changes
+
+- [#435](https://github.com/halfdomelabs/baseplate/pull/435) [`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6) Thanks [@kingston](https://github.com/kingston)! - Upgrade sonner to 1.7.4
+
+- [#433](https://github.com/halfdomelabs/baseplate/pull/433) [`128f42b`](https://github.com/halfdomelabs/baseplate/commit/128f42b46bb697b0443e71b93a97fe766ee3d280) Thanks [@kingston](https://github.com/kingston)! - Make error display full-width to center it
+
+- [#434](https://github.com/halfdomelabs/baseplate/pull/434) [`76f4247`](https://github.com/halfdomelabs/baseplate/commit/76f4247984f6eb2f786771ed07c96b3099e1a5eb) Thanks [@kingston](https://github.com/kingston)! - Upgrade cmdk for combobox and add test for combobox
+
+- [#430](https://github.com/halfdomelabs/baseplate/pull/430) [`2e5e7b4`](https://github.com/halfdomelabs/baseplate/commit/2e5e7b4b9fd1308ee06e5c83ac54fef7926685ab) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vitest to 3.0.3 and Vite to 6.0.11 (and associated dependencies)
+
 ## 0.5.2
 
 ### Patch Changes

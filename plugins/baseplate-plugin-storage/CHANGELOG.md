@@ -1,5 +1,16 @@
 # @halfdomelabs/baseplate-plugin-storage
 
+## 3.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6), [`128f42b`](https://github.com/halfdomelabs/baseplate/commit/128f42b46bb697b0443e71b93a97fe766ee3d280), [`76f4247`](https://github.com/halfdomelabs/baseplate/commit/76f4247984f6eb2f786771ed07c96b3099e1a5eb), [`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6), [`1bc1674`](https://github.com/halfdomelabs/baseplate/commit/1bc167442e649490b22d3afc6c508fcd23a194a4), [`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6), [`2e5e7b4`](https://github.com/halfdomelabs/baseplate/commit/2e5e7b4b9fd1308ee06e5c83ac54fef7926685ab)]:
+  - @halfdomelabs/ui-components@0.5.3
+  - @halfdomelabs/project-builder-lib@0.9.2
+  - @halfdomelabs/fastify-generators@0.11.2
+  - @halfdomelabs/react-generators@0.9.2
+  - @halfdomelabs/core-generators@0.10.2
+
 ## 3.0.0
 
 ### Patch Changes

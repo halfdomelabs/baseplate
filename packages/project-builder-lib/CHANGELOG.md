@@ -1,5 +1,16 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.9.2
+
+### Patch Changes
+
+- [#435](https://github.com/halfdomelabs/baseplate/pull/435) [`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6) Thanks [@kingston](https://github.com/kingston)! - Rewrite saving/syncing logic to clean up flows for parsing and saving project definition
+
+- [#435](https://github.com/halfdomelabs/baseplate/pull/435) [`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6) Thanks [@kingston](https://github.com/kingston)! - Refactor nameRefs to use resolveName for resolving name of entities
+
+- Updated dependencies [[`3b83763`](https://github.com/halfdomelabs/baseplate/commit/3b837636d225db0bb729fad05536ad9df4dfb1d6), [`128f42b`](https://github.com/halfdomelabs/baseplate/commit/128f42b46bb697b0443e71b93a97fe766ee3d280), [`76f4247`](https://github.com/halfdomelabs/baseplate/commit/76f4247984f6eb2f786771ed07c96b3099e1a5eb), [`2e5e7b4`](https://github.com/halfdomelabs/baseplate/commit/2e5e7b4b9fd1308ee06e5c83ac54fef7926685ab)]:
+  - @halfdomelabs/ui-components@0.5.3
+
 ## 0.9.1
 
 ### Patch Changes

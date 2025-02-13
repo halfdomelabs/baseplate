@@ -1,5 +1,16 @@
 # @halfdomelabs/react-generators
 
+## 0.9.2
+
+### Patch Changes
+
+- [#436](https://github.com/halfdomelabs/baseplate/pull/436) [`1bc1674`](https://github.com/halfdomelabs/baseplate/commit/1bc167442e649490b22d3afc6c508fcd23a194a4) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vitest to 3.0.5 and Sentry to 8.55.0
+
+- [#430](https://github.com/halfdomelabs/baseplate/pull/430) [`2e5e7b4`](https://github.com/halfdomelabs/baseplate/commit/2e5e7b4b9fd1308ee06e5c83ac54fef7926685ab) Thanks [@kingston](https://github.com/kingston)! - Upgrade Vitest to 3.0.3 and Vite to 6.0.11 (and associated dependencies)
+
+- Updated dependencies [[`1bc1674`](https://github.com/halfdomelabs/baseplate/commit/1bc167442e649490b22d3afc6c508fcd23a194a4), [`2e5e7b4`](https://github.com/halfdomelabs/baseplate/commit/2e5e7b4b9fd1308ee06e5c83ac54fef7926685ab)]:
+  - @halfdomelabs/core-generators@0.10.2
+
 ## 0.9.1
 
 ### Patch Changes
