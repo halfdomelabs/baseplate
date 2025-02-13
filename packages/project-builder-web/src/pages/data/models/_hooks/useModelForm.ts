@@ -117,7 +117,7 @@ export function useModelForm<
         const existingModel = definition.models.find(
           (m) =>
             m.id !== data.id &&
-            m.name.toLowerCase() === newModel.name.toLowerCase(),
+            m.name.toLowerCase() === updatedModel.name.toLowerCase(),
         );
         if (existingModel) {
           setError('name', {

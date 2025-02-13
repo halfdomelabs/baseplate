@@ -27,8 +27,12 @@ export interface AppCompiler {
 }
 
 export function createAppCompiler(): AppCompiler {
-  const children: Partial<Record<string, Record<string, GeneratorBundle>>> = {};
-  let rootChildren: Partial<Record<string, GeneratorBundle>> = {};
+  const children: Partial<
+    Record<string, Record<string, GeneratorBundle | GeneratorBundle[]>>
+  > = {};
+  let rootChildren: Partial<
+    Record<string, GeneratorBundle | GeneratorBundle[]>
+  > = {};
 
   return {
     addChildrenToFeature(featureId, newChildren) {

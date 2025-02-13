@@ -7,6 +7,6 @@ const configSchema = z.object({
     .transform((arg) => arg === 'true'),
 });
 
-export const config = configSchema.parse(import.meta.env);
+const config = configSchema.parse(import.meta.env);
 
 export const IS_PREVIEW = config.VITE_PREVIEW_MODE;

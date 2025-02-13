@@ -1,4 +1,5 @@
 import { isEqual } from 'es-toolkit';
+import { isMatch } from 'es-toolkit/compat';
 
 import type { ProjectDefinitionContainer } from '@src/definition/project-definition-container.js';
 import type {
@@ -88,7 +89,7 @@ function diffByKey<T>(
       ops.push({ type: 'add', key, item: desiredItem });
       continue;
     }
-    if (!isEqual(currentItem, desiredItem)) {
+    if (!isMatch(currentItem, desiredItem)) {
       ops.push({ type: 'update', key, item: desiredItem });
     }
   }
@@ -201,14 +202,22 @@ export function diffModel(
     options,
   );
   const uniqueConstraintDiffs = diffByKey(
-    current.uniqueConstraints ?? [],
+    (current.uniqueConstraints ?? []).map((constraint) => ({
+      ...constraint,
+      fields: constraint.fields.map((f) => ({
+        ...f,
+        fieldRef: definitionContainer.nameFromId(f.fieldRef),
+      })),
+    })),
     desired.uniqueConstraints ?? [],
     getUniqueConstraintKey,
     options,
   );
 
   const pkDiff = isEqual(
-    current.primaryKeyFieldRefs,
+    current.primaryKeyFieldRefs.map((ref) =>
+      definitionContainer.nameFromId(ref),
+    ),
     desired.primaryKeyFieldRefs,
   )
     ? undefined
@@ -242,6 +251,19 @@ export function applyModelPatchInPlace(
   patch: ModelDiffOutput,
   definitionContainer: ProjectDefinitionContainer,
 ): void {
+  // Resolve relation references.
+  const resolveLocalId = (name: string): string => {
+    const field = current.fields.find((f) => f.name === name);
+    return field ? field.id : name;
+  };
+  const resolveForeignId = (name: string, foreignModel: string): string => {
+    const field = ModelUtils.byIdOrThrow(
+      definitionContainer.definition,
+      foreignModel,
+    ).model.fields.find((f) => f.name === name);
+    return field ? field.id : name;
+  };
+
   // Patch fields.
   current.fields = applyPatchByKey(
     current.fields,
@@ -277,25 +299,18 @@ export function applyModelPatchInPlace(
       id:
         previousConstraint?.id ??
         modelUniqueConstraintEntityType.generateNewId(),
+      fields: constraint.fields.map((f) => ({
+        ...f,
+        fieldRef: resolveLocalId(f.fieldRef),
+      })),
     }),
   );
 
   if (patch.primaryKeyFieldRefs) {
-    current.primaryKeyFieldRefs = patch.primaryKeyFieldRefs;
+    current.primaryKeyFieldRefs = patch.primaryKeyFieldRefs.map((ref) =>
+      resolveLocalId(ref),
+    );
   }
-
-  // Resolve relation references.
-  const resolveLocalId = (name: string): string => {
-    const field = current.fields.find((f) => f.name === name);
-    return field ? field.id : name;
-  };
-  const resolveForeignId = (name: string, foreignModel: string): string => {
-    const field = ModelUtils.byIdOrThrow(
-      definitionContainer.definition,
-      foreignModel,
-    ).model.fields.find((f) => f.name === name);
-    return field ? field.id : name;
-  };
 
   current.relations = current.relations.map((relation) => ({
     ...relation,

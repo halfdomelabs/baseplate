@@ -6,6 +6,7 @@ import { isTRPCClientError } from '../trpc';
 export class ProjectNotFoundError extends Error {
   constructor(projectId: string) {
     super(`Project not found for project ID: ${projectId}`);
+    this.name = 'ProjectNotFoundError';
   }
 }
 
