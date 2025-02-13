@@ -58,7 +58,7 @@ export const vitestGenerator = createGenerator({
           : 'vitest.config.mts';
 
         node.addDevPackages({
-          vitest: '3.0.3',
+          vitest: '3.0.5',
           'vite-tsconfig-paths': '5.1.4',
         });
 

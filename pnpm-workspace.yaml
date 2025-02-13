@@ -31,7 +31,7 @@ catalog:
 
   # Vite
   vite: 6.0.11
-  vitest: 3.0.3
+  vitest: 3.0.5
   '@vitejs/plugin-react': 4.3.4
   vite-plugin-svgr: 4.3.0
   vite-tsconfig-paths: 5.1.4
