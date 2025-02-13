@@ -30,7 +30,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
 ) {
   const csrfToken = getCsrfToken();
   const services = await Promise.all(
-    directories.map(async (directory) => {
+    directories.map((directory) => {
       const id = crypto
         .createHash('shake256', { outputLength: 9 })
         .update(directory)
@@ -43,7 +43,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
         cliVersion,
         builtInPlugins,
       });
-      await service.init();
+      service.init();
       return service;
     }),
   );

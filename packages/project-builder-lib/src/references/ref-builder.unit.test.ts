@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 
 import {
+  createDefinitionEntityNameResolver,
   zEnt,
   ZodRefWrapper,
   zRef,
@@ -190,13 +191,14 @@ describe('ref-builder', () => {
         }),
         {
           type: personType,
-          getNameResolver: (value) => ({
-            idsToResolve: {
-              company: value.companyId,
-            },
-            resolveName: (entityNames) =>
-              `${value.name} at ${entityNames.company as string}`,
-          }),
+          getNameResolver: (value) =>
+            createDefinitionEntityNameResolver({
+              idsToResolve: {
+                company: value.companyId,
+              },
+              resolveName: (entityNames) =>
+                `${value.name} at ${entityNames.company}`,
+            }),
         },
       ),
       personRef: zRef(z.string(), { type: personType, onDelete: 'RESTRICT' }),
