@@ -144,16 +144,15 @@ describe('ref-builder', () => {
   it('should support nameRef functionality for entities', () => {
     const modelType = createEntityType('model');
     const fieldType = createEntityType('field', { parentType: modelType });
+    const linkedFieldType = createEntityType('linkedField', {});
 
     // Create a schema that uses nameRefPath to reference another entity's name
     const schema = z.object({
       model: zEnt(
         z.object({
-          id: zRefId,
           name: z.string(),
           field: zEnt(
             z.object({
-              id: zRefId,
               name: z.string(),
             }),
             {
@@ -170,19 +169,21 @@ describe('ref-builder', () => {
       // This entity will reference model.field.name via nameRefPath
       linkedField: zEnt(
         z.object({
-          id: zRefId,
-          fieldRef: zRef(z.string(), {
-            type: fieldType,
-            onDelete: 'RESTRICT',
-            parentPath: { context: 'model' },
-          }),
+          modelRef: z.string(),
+          fieldRef: z.string(),
         }),
         {
-          type: fieldType,
+          type: linkedFieldType,
           nameRefPath: 'fieldRef',
-          parentPath: { context: 'model' },
         },
-      ),
+      ).refBuilder((builder) => {
+        builder.addReference({
+          path: 'fieldRef',
+          type: fieldType,
+          onDelete: 'RESTRICT',
+          parentPath: 'modelRef',
+        });
+      }),
     });
 
     const input = {
@@ -195,15 +196,18 @@ describe('ref-builder', () => {
         },
       },
       linkedField: {
-        id: 'field-2',
+        id: 'linked-field-1',
+        modelRef: 'model-1',
         fieldRef: 'field-1',
       },
-    };
+    } satisfies z.infer<typeof schema>;
 
     const payload = ZodRefWrapper.create(schema).parse(input);
 
     // Verify the linked field entity uses the referenced field's name
-    const linkedFieldEntity = payload.entities.find((e) => e.id === 'field-2');
+    const linkedFieldEntity = payload.entities.find(
+      (e) => e.id === 'linked-field-1',
+    );
     expect(linkedFieldEntity).toBeDefined();
     expect(linkedFieldEntity?.name).toBe('Field One');
 
