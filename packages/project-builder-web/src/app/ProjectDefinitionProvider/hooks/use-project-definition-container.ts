@@ -4,7 +4,7 @@ import type {
 } from '@halfdomelabs/project-builder-lib';
 import type { ProjectDefinitionFilePayload } from '@halfdomelabs/project-builder-server';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { parseProjectDefinitionContents } from '../services/parse-project-definition-contents';
 
@@ -50,6 +50,12 @@ export function useProjectDefinitionContainer({
       };
     }
   }, [schemaParserContext, projectDefinitionFilePayload]);
+
+  useEffect(() => {
+    if (error) {
+      console.error(error);
+    }
+  }, [error]);
 
   return {
     projectDefinitionContainer: projectDefinitionContainer?.container,
