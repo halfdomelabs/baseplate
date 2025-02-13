@@ -153,3 +153,23 @@ export function createEntityType<TParent extends DefinitionEntityType>(
       : undefined,
   );
 }
+
+/**
+ * A payload with resolved entity names.
+ *
+ * @template T - The type of the payload.
+ */
+export interface ResolvedZodRefPayload<T> {
+  /**
+   * The parsed data.
+   */
+  data: T;
+  /**
+   * The entities with resolved names.
+   */
+  entities: DefinitionEntity[];
+  /**
+   * The references in the definition.
+   */
+  references: DefinitionReference[];
+}

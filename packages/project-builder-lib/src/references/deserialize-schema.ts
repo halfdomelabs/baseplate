@@ -4,10 +4,9 @@ import { groupBy, keyBy, uniq } from 'es-toolkit';
 import { get, set } from 'es-toolkit/compat';
 import toposort from 'toposort';
 
-import type { ZodRefPayload } from './ref-builder.js';
-import type { DefinitionEntity } from './types.js';
+import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
-import { ZodRefWrapper } from './ref-builder.js';
+import { parseSchemaWithReferences } from './parse-schema-with-references.js';
 
 function referenceToNameParentId(name: string, parentId?: string): string {
   return JSON.stringify({ name, parentId });
@@ -16,10 +15,10 @@ function referenceToNameParentId(name: string, parentId?: string): string {
 export function deserializeSchemaWithReferences<TSchema extends z.ZodType>(
   schema: TSchema,
   input: unknown,
-): ZodRefPayload<TypeOf<TSchema>> {
-  const payload = ZodRefWrapper.create(schema, {
-    deserialize: true,
-  }).parse(input);
+): ResolvedZodRefPayload<TypeOf<TSchema>> {
+  const payload = parseSchemaWithReferences(schema, input, {
+    skipReferenceNameResolution: true,
+  });
 
   // resolve all references
   const { references, entities, data } = payload;

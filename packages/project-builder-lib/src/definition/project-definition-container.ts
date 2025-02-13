@@ -6,7 +6,7 @@ import type {
   DefinitionEntity,
   DefinitionReference,
   FixRefDeletionResult,
-  ZodRefPayload,
+  ResolvedZodRefPayload,
 } from '@src/references/index.js';
 import type {
   ProjectDefinition,
@@ -31,14 +31,14 @@ import { prettyStableStringify } from '@src/utils';
  * such as the ability to fetch an entity by ID.
  */
 export class ProjectDefinitionContainer {
-  refPayload: ZodRefPayload<ProjectDefinition>;
+  refPayload: ResolvedZodRefPayload<ProjectDefinition>;
   definition: ProjectDefinition;
   references: DefinitionReference[];
   entities: DefinitionEntity[];
   parserContext: SchemaParserContext;
 
   constructor(
-    config: ZodRefPayload<ProjectDefinition>,
+    config: ResolvedZodRefPayload<ProjectDefinition>,
     parserContext: SchemaParserContext,
     public pluginStore: PluginImplementationStore,
   ) {

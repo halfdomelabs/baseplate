@@ -10,7 +10,6 @@ import type {
   ZodTypeDef,
 } from 'zod';
 
-import { pull } from 'es-toolkit';
 import { get, set } from 'es-toolkit/compat';
 import { z, ZodType } from 'zod';
 
@@ -44,6 +43,43 @@ interface ContextValue {
 type PathInputOrContext<Type> = PathInput<Type> | ContextValue;
 
 /**
+ * Allows the caller to resolve the name of an entity, optionally providing a
+ * map of entity ids that need to be resolved prior to resolving the entity's
+ * name.
+ */
+export interface DefinitionEntityNameResolver<
+  TEntityIds extends Record<string, string | string[]> = Record<
+    string,
+    string | string[]
+  >,
+> {
+  /**
+   * Optional map of entity ids that need to be resolved prior to resolving the
+   * entity's name.
+   */
+  idsToResolve?: TEntityIds;
+  /**
+   * Resolves the name of an entity from the provided entity names.
+   * @param entityNames - A map of entity ids to their names.
+   * @returns The name of the entity.
+   */
+  resolveName: (entityNames: TEntityIds) => string;
+}
+
+/**
+ * Creates a definition entity name resolver.
+ * @param entityNameResolver - The entity name resolver.
+ * @returns The definition entity name resolver.
+ */
+export function createDefinitionEntityNameResolver<
+  TEntityIds extends Record<string, string | string[]>,
+>(
+  entityNameResolver: DefinitionEntityNameResolver<TEntityIds>,
+): DefinitionEntityNameResolver<TEntityIds> {
+  return entityNameResolver;
+}
+
+/**
  * Base definition for entity input.
  *
  * @template TInput - The overall input data type.
@@ -61,14 +97,13 @@ interface DefinitionEntityInputBase<
   type: TEntityType;
   /** Optional dot-separated string representing the location of the entity within the input. */
   path?: TPath;
-  /** Optional path key used to resolve the entity's id; if not provided, the id is assumed to be under the entity's path with key "id". */
+  /** Optional path key used to store the entity's id; if not provided, the id is assumed to be under the entity's path with key "id". */
   idPath?: TIdKey;
-  /** Optional path used to retrieve the entity's name from the input data. */
-  namePath?: PathInput<TInput>;
-  /** Use nameRefPath when the path that contains the name is a reference. */
-  nameRefPath?: PathInput<TInput>;
-  /** The name of the entity. */
-  name?: string;
+  /** Optional function used to get the name resolver from the input data. Otherwise, the entity's name is assumed to be under the entity's path with key "name". */
+  getNameResolver?: (
+    value: TInput,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to allow more specific generic typed to be put in here
+  ) => DefinitionEntityNameResolver<any> | string;
   /** Optional context identifier used to register the entity's path in a shared context. */
   addContext?: string;
   /** If true, the entity's id is removed during serialization. */
@@ -141,7 +176,7 @@ interface DefinitionReferenceInputWithoutParent<
 }
 
 /**
- * Depending on the entity type’s requirements, resolves to the correct reference input.
+ * Depending on the entity type’s requirements, defines the input required to create a definition reference.
  */
 type DefinitionReferenceInput<
   TInput,
@@ -150,13 +185,16 @@ type DefinitionReferenceInput<
   ? DefinitionReferenceInputWithoutParent<TInput, TEntityType>
   : DefinitionReferenceInputWithParent<TInput, TEntityType>;
 
-interface DefinitionEntityWithNamePath extends Omit<DefinitionEntity, 'name'> {
-  nameRefPath: ReferencePath;
+/**
+ * Entity with a name resolver.
+ */
+interface DefinitionEntityWithNameResolver
+  extends Omit<DefinitionEntity, 'name'> {
+  nameResolver: DefinitionEntityNameResolver;
 }
 
 interface RefBuilderContext {
   pathMap: Map<string, { path: ReferencePath; type: DefinitionEntityType }>;
-  deserialize: boolean;
 }
 
 /**
@@ -170,8 +208,7 @@ interface RefBuilderContext {
  */
 export class ZodRefBuilder<TInput> {
   readonly references: DefinitionReference[];
-  readonly entities: DefinitionEntity[];
-  readonly entitiesWithNamePath: DefinitionEntityWithNamePath[];
+  readonly entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
   readonly pathPrefix: ReferencePath;
   readonly context: RefBuilderContext;
   readonly pathMap: Map<
@@ -192,8 +229,7 @@ export class ZodRefBuilder<TInput> {
     data: TInput,
   ) {
     this.references = [];
-    this.entities = [];
-    this.entitiesWithNamePath = [];
+    this.entitiesWithNameResolver = [];
     this.pathPrefix = pathPrefix;
     this.context = context;
     this.pathMap = new Map();
@@ -329,8 +365,8 @@ export class ZodRefBuilder<TInput> {
    *      to the entity path.
    *    - If no id is found, generate a new one.
    * 4. Resolve the entity name:
-   *    - Use the provided name if available; otherwise, try using namePath or default
-   *      to a path ending with 'name'.
+   *    - Use the provided resolveName if available; otherwise, default to using the
+   *      name path.
    * 5. Register the entity in either the direct entities list or the name-ref list.
    * 6. Optionally, add the entity’s id path to the shared context.
    *
@@ -342,12 +378,6 @@ export class ZodRefBuilder<TInput> {
     TPath extends PathInput<TInput> | undefined = undefined,
     TIDKey extends string | PathInput<TInput> = 'id',
   >(entity: DefinitionEntityInput<TInput, TEntityType, TPath, TIDKey>): void {
-    if ((!!entity.name || !!entity.namePath) && entity.nameRefPath) {
-      throw new Error(
-        `Reference entity cannot have both name and nameRefPath at ${entity.path}`,
-      );
-    }
-
     // Build the full path for the entity.
     const path = this._constructPath(entity.path);
 
@@ -359,22 +389,11 @@ export class ZodRefBuilder<TInput> {
       (get(this.data, idPath) as string | undefined) ??
       entity.type.generateNewId();
 
-    // Resolve the name:
-    // If a name is provided directly, use it.
-    // Otherwise, attempt to extract the name from the data via namePath or default to "name" under entity.path.
-    const name =
-      entity.name ??
-      (get(
-        this.data,
-        entity.namePath ?? [
-          ...((entity.path as PathInput<TInput> | undefined) ?? []),
-          'name',
-        ],
-      ) as string);
-
-    if (!name && !entity.nameRefPath) {
-      throw new Error(`Reference entity requires a name at ${path.join('.')}`);
-    }
+    // Resolve the name: if getNameResolver is provided, use it to build the name resolver; otherwise,
+    // use the default name resolver.
+    const getNameResolver =
+      entity.getNameResolver ?? ((value) => get(value, 'name') as string);
+    const nameResolver = getNameResolver(this.data);
 
     // Base entity definition shared between regular entities and those with a name reference.
     const entityBase = {
@@ -392,19 +411,14 @@ export class ZodRefBuilder<TInput> {
       stripIdWhenSerializing: entity.stripIdWhenSerializing,
     };
 
-    if (entity.nameRefPath) {
-      // Register entities that will have their names resolved later.
-      this.entitiesWithNamePath.push({
-        ...entityBase,
-        nameRefPath: this._constructPath(entity.nameRefPath),
-      });
-    } else {
-      // Register the entity immediately with its resolved name.
-      this.entities.push({
-        ...entityBase,
-        name,
-      });
-    }
+    this.entitiesWithNameResolver.push({
+      ...entityBase,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- needed to allow more specific generic typed to be put in here
+      nameResolver:
+        typeof nameResolver === 'string'
+          ? { resolveName: () => nameResolver }
+          : nameResolver,
+    });
 
     // Optionally add the id path to the context.
     if (entity.addContext) {
@@ -484,8 +498,7 @@ const zodRefSymbol = Symbol('zod-ref');
 interface ZodRefContext {
   context: RefBuilderContext;
   references: DefinitionReference[];
-  entities: DefinitionEntity[];
-  entitiesWithNamePath: DefinitionEntityWithNamePath[];
+  entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
 }
 
 /**
@@ -534,8 +547,9 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     this._def.builder(builder, input.data);
     zodRefContext.references.push(...builder.references);
-    zodRefContext.entities.push(...builder.entities);
-    zodRefContext.entitiesWithNamePath.push(...builder.entitiesWithNamePath);
+    zodRefContext.entitiesWithNameResolver.push(
+      ...builder.entitiesWithNameResolver,
+    );
 
     // Re-parse using the inner type but merge the updated context.
     const parseOutput = this._def.innerType._parse({
@@ -562,7 +576,9 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
 
     /**
      * Transforms the output of the inner parse by iterating through all registered
-     * entities and replacing the placeholder values in the output data with the generated ids.
+     * entities and assigning the id to the corresponding path in the output in case
+     * it was generated by the builder.
+     *
      * @param output - The result from the inner parse.
      * @returns The transformed parse output.
      */
@@ -571,20 +587,14 @@ export class ZodRef<T extends ZodTypeAny> extends ZodType<
     ): SyncParseReturnType<unknown> {
       if (output.status === 'aborted') return output;
 
-      // For each entity, update the corresponding id in the output.
-      const allEntities = [
-        ...builder.entities,
-        ...builder.entitiesWithNamePath,
-      ];
-      if (allEntities.length > 0) {
-        for (const entity of allEntities) {
-          // Remove the prefix portion of the idPath before setting the id.
-          set(
-            output.value as object,
-            entity.idPath.slice(input.path.length),
-            entity.id,
-          );
-        }
+      // For each entity, assign the id to the corresponding path in the output
+      // in the event that it was generated by the builder.
+      for (const entity of builder.entitiesWithNameResolver) {
+        set(
+          output.value as object,
+          entity.idPath.slice(input.path.length),
+          entity.id,
+        );
       }
       return output;
     }
@@ -745,28 +755,21 @@ export function zEnt<
 export interface ZodRefPayload<TData> {
   data: TData;
   references: DefinitionReference[];
-  entities: DefinitionEntity[];
+  entitiesWithNameResolver: DefinitionEntityWithNameResolver[];
 }
 
 /**
- * Definition for a ZodRefWrapper, which wraps a schema for initial parsing and
- * later deserialization of references/entities.
+ * Definition for a ZodRefWrapper, which wraps a schema for collecting references and entities.
  *
  * @template T - The inner Zod type.
  */
 export interface ZodRefWrapperDef<T extends ZodTypeAny = ZodTypeAny>
   extends ZodTypeDef {
   innerType: T;
-  deserialize: boolean;
-  /**
-   * Whether to allow missing name references. Useful for testing deletions.
-   */
-  allowMissingNameRefs?: boolean;
 }
 
 /**
  * ZodRefWrapper is used for initializing parsing that collects references and entities.
- * It can also deserialize name references if required.
  *
  * @template T - The inner Zod type.
  */
@@ -779,25 +782,19 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
    * Core parse method that:
    * 1. Initializes a fresh reference context.
    * 2. Parses using the inner type while injecting the context.
-   * 3. Resolves any entities with name references.
-   * 4. Returns a payload containing the parsed data, along with references and entities.
+   * 3. Returns a payload containing the parsed data, along with references and entities.
    *
    * @param input - The parse input.
    * @returns The parsed payload.
    */
   _parse(input: ParseInput): ParseReturnType<ZodRefPayload<TypeOf<T>>> {
-    // Determine deserialization settings.
-    const shouldDeserialize = this._def.deserialize;
-    const allowMissingNameRefs = this._def.allowMissingNameRefs ?? false;
     // Initialize the reference context.
     const refContext: ZodRefContext = {
       context: {
         pathMap: new Map(),
-        deserialize: shouldDeserialize,
       },
       references: [],
-      entities: [],
-      entitiesWithNamePath: [],
+      entitiesWithNameResolver: [],
     };
 
     // Inject the refContext into the parent's common context and parse the inner type.
@@ -812,92 +809,16 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
       } as ParseContext,
     });
 
-    /**
-     * Resolves entities that were registered with a name reference.
-     *
-     * The algorithm iteratively attempts to resolve each entity's name:
-     * - For each entity with a name ref, get the name value from the output data.
-     * - If deserializing, use the raw value.
-     * - Otherwise, look up the entity by id and use its name.
-     * - If no progress is made in an iteration (and missing names are not allowed),
-     *   throw an error.
-     *
-     * @param output - The output from the inner parse.
-     * @returns The final payload with resolved entities.
-     */
     function transformParseOutput(
       output: SyncParseReturnType<unknown>,
     ): SyncParseReturnType<ZodRefPayload<TypeOf<T>>> {
       if (output.status === 'aborted') return output;
 
-      // Start with the directly registered entities.
-      const entities = [...refContext.entities];
-
-      if (refContext.entitiesWithNamePath.length > 0) {
-        const entitiesById = new Map<string, DefinitionEntity>(
-          entities.map((entity) => [entity.id, entity]),
-        );
-        let previousEntitiesCount = -1;
-        // Continue until all entities with name references are resolved or no progress is made.
-        do {
-          if (previousEntitiesCount === entities.length) {
-            if (allowMissingNameRefs) {
-              break;
-            }
-            throw new Error(
-              `Could not resolve all entities with name paths. Entities remaining: ${refContext.entitiesWithNamePath
-                .map((e) => e.id)
-                .join(', ')}`,
-            );
-          }
-          previousEntitiesCount = entities.length;
-          // Process a copy of the unresolved entities.
-          const unresolved = [...refContext.entitiesWithNamePath];
-          for (const entity of unresolved) {
-            const newName = (() => {
-              const { nameRefPath } = entity;
-              // Retrieve the name value from the output data.
-              const nameRefValue = get(output.value, nameRefPath) as
-                | string
-                | undefined;
-              if (nameRefValue === undefined) {
-                throw new Error(
-                  `Could not find name ref value at ${nameRefPath.join('.')}`,
-                );
-              }
-              // When deserializing, return the raw name reference value.
-              if (shouldDeserialize) {
-                return nameRefValue;
-              }
-              // Otherwise, find the corresponding entity and use its name.
-              const refEntity = entitiesById.get(nameRefValue);
-              if (!refEntity) {
-                throw new Error(
-                  `Could not find entity with id ${nameRefValue} at ${nameRefPath.join('.')}`,
-                );
-              }
-              return refEntity.name;
-            })();
-            if (newName) {
-              // Update the entity with the resolved name.
-              const newEntity = {
-                ...entity,
-                name: newName,
-              };
-              entities.push(newEntity);
-              entitiesById.set(entity.id, newEntity);
-              // Remove the resolved entity from the unresolved list.
-              pull(refContext.entitiesWithNamePath, [entity]);
-            }
-          }
-        } while (refContext.entitiesWithNamePath.length > 0);
-      }
-
       return {
         ...output,
         value: {
           data: output.value,
-          entities,
+          entitiesWithNameResolver: refContext.entitiesWithNameResolver,
           references: refContext.references,
         },
       };
@@ -914,23 +835,12 @@ export class ZodRefWrapper<T extends ZodTypeAny> extends ZodType<
    * Creates a new ZodRefWrapper instance.
    * @param type - The inner Zod type.
    * @param options - Options for the ZodRefWrapper.
-   * @param options.deserialize - Flag to enable deserialization of name references.
-   * @param options.allowMissingNameRefs - Flag to allow missing name references.
+   * @param options.skipReferenceNameResolution - Flag to skip resolving references to names (serialized definitions use resolved name references).
+   * @param options.allowInvalidReferences - Flag to allow invalid references (used for testing deletes).
    * @returns A new instance of ZodRefWrapper.
    */
-  static create = <T extends ZodTypeAny>(
-    type: T,
-    {
-      deserialize = false,
-      allowMissingNameRefs = false,
-    }: {
-      deserialize?: boolean;
-      allowMissingNameRefs?: boolean;
-    } = {},
-  ): ZodRefWrapper<T> =>
+  static create = <T extends ZodTypeAny>(type: T): ZodRefWrapper<T> =>
     new ZodRefWrapper<T>({
       innerType: type,
-      deserialize,
-      allowMissingNameRefs,
     });
 }

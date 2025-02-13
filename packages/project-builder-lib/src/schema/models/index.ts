@@ -144,7 +144,7 @@ export const modelRelationFieldSchema = zRefBuilder(
     builder.addEntity({
       type: modelForeignRelationEntityType,
       idPath: 'foreignId',
-      namePath: 'foreignRelationName',
+      getNameResolver: (entity) => entity.foreignRelationName,
       parentPath: 'modelRef',
       stripIdWhenSerializing: true,
     });

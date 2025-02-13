@@ -9,12 +9,12 @@ import type {
   PluginSpecWithInitializer,
   ZodPluginWrapper,
 } from '@src/plugins/index.js';
-import type { ZodRefPayload } from '@src/references/ref-builder.js';
+import type { ResolvedZodRefPayload } from '@src/references/types.js';
 import type { ProjectDefinition } from '@src/schema/project-definition.js';
 
 import { initializePlugins } from '@src/plugins/imports/loader.js';
 import { pluginConfigSpec, zPluginWrapper } from '@src/plugins/index.js';
-import { ZodRefWrapper } from '@src/references/ref-builder.js';
+import { parseSchemaWithReferences } from '@src/references/parse-schema-with-references.js';
 import { adminCrudInputSpec, modelTransformerSpec } from '@src/schema/index.js';
 import { basePluginSchema } from '@src/schema/plugins/index.js';
 import { projectDefinitionSchema } from '@src/schema/project-definition.js';
@@ -123,13 +123,13 @@ export function parseProjectDefinitionWithReferences(
   projectDefinition: unknown,
   context: SchemaParserContext,
 ): {
-  definition: ZodRefPayload<ProjectDefinition>;
+  definition: ResolvedZodRefPayload<ProjectDefinition>;
   pluginStore: PluginImplementationStore;
 } {
   const schema = createProjectDefinitionSchemaWithContext(
     projectDefinition,
     context,
   );
-  const definition = ZodRefWrapper.create(schema).parse(projectDefinition);
+  const definition = parseSchemaWithReferences(schema, projectDefinition);
   return { definition, pluginStore: schema._def.pluginStore };
 }
