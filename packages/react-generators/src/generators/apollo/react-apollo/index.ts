@@ -21,6 +21,7 @@ import {
 import toposort from 'toposort';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { reactErrorProvider } from '@src/generators/core/react-error/index.js';
 import { reactProxyProvider } from '@src/generators/core/react-proxy/index.js';
 
@@ -108,22 +109,25 @@ export const reactApolloGenerator = createGenerator({
         const gqlFiles: string[] = [];
 
         node.addPackages({
-          '@apollo/client': '3.10.8',
-          graphql: '16.9.0',
+          '@apollo/client': REACT_PACKAGES['@apollo/client'],
+          graphql: REACT_PACKAGES.graphql,
         });
 
         if (enableSubscriptions) {
           node.addPackages({
-            'graphql-ws': '5.16.0',
+            'graphql-ws': REACT_PACKAGES['graphql-ws'],
           });
         }
 
         node.addDevPackages({
-          '@graphql-codegen/cli': '5.0.2',
-          '@graphql-codegen/typescript': '4.0.9',
-          '@graphql-codegen/typescript-operations': '4.2.3',
-          '@graphql-codegen/typescript-react-apollo': '4.3.0',
-          '@parcel/watcher': '2.4.1',
+          '@graphql-codegen/cli': REACT_PACKAGES['@graphql-codegen/cli'],
+          '@graphql-codegen/typescript':
+            REACT_PACKAGES['@graphql-codegen/typescript'],
+          '@graphql-codegen/typescript-operations':
+            REACT_PACKAGES['@graphql-codegen/typescript-operations'],
+          '@graphql-codegen/typescript-react-apollo':
+            REACT_PACKAGES['@graphql-codegen/typescript-react-apollo'],
+          '@parcel/watcher': REACT_PACKAGES['@parcel/watcher'],
         });
 
         node.addScripts({

@@ -27,6 +27,7 @@ import type { ServiceOutputEnum } from '@src/types/service-output.js';
 import type { PrismaModelBlockWriter } from '@src/writers/prisma-schema/index.js';
 import type { PrismaGeneratorBlock } from '@src/writers/prisma-schema/types.js';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { fastifyHealthCheckProvider } from '@src/generators/core/fastify-health-check/index.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
@@ -96,12 +97,13 @@ export const prismaGenerator = createGenerator({
         typescript,
       }) {
         node.addDevPackages({
-          prisma: '5.19.1',
-          '@prisma/instrumentation': '5.19.1',
+          prisma: FASTIFY_PACKAGES.prisma,
+          '@prisma/instrumentation':
+            FASTIFY_PACKAGES['@prisma/instrumentation'],
         });
 
         node.addPackages({
-          '@prisma/client': '5.19.1',
+          '@prisma/client': FASTIFY_PACKAGES['@prisma/client'],
         });
 
         // add prisma generate script to postinstall for pnpm (https://github.com/prisma/prisma/issues/6603)

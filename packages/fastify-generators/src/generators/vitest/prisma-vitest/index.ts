@@ -12,6 +12,7 @@ import {
 import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { prismaOutputProvider } from '@src/generators/prisma/prisma/index.js';
 
 import { fastifyVitestProvider } from '../fastify-vitest/index.js';
@@ -45,8 +46,8 @@ export const prismaVitestGenerator = createGenerator({
       },
       run({ node, vitest, project, typescript, prismaOutput }) {
         node.addDevPackages({
-          'vitest-mock-extended': '1.3.2',
-          'pg-connection-string': '2.6.4',
+          'vitest-mock-extended': FASTIFY_PACKAGES['vitest-mock-extended'],
+          'pg-connection-string': FASTIFY_PACKAGES['pg-connection-string'],
         });
 
         const [dbHelperImport, dbHelperPath] = makeImportAndFilePath(

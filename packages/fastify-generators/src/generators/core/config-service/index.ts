@@ -21,6 +21,8 @@ import {
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+
 import { fastifyProvider } from '../fastify/index.js';
 
 const descriptorSchema = z.object({
@@ -81,12 +83,12 @@ export const configServiceGenerator = createGenerator({
         const additionalVerifications: TypescriptCodeBlock[] = [];
 
         node.addPackages({
-          zod: '3.24.1',
-          'cross-env': '7.0.3',
+          zod: FASTIFY_PACKAGES.zod,
+          'cross-env': FASTIFY_PACKAGES['cross-env'],
         });
 
         node.addDevPackages({
-          dotenv: '16.3.1',
+          dotenv: FASTIFY_PACKAGES.dotenv,
         });
 
         nodeGitIgnore.addExclusions(['/.env', '/.*.env']);

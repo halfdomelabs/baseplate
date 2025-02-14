@@ -10,6 +10,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import {
   prismaOutputProvider,
   prismaSchemaProvider,
@@ -42,7 +43,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
       },
       build: () => {
         node.addPackages({
-          '@pothos/plugin-prisma': '4.3.1',
+          '@pothos/plugin-prisma': FASTIFY_PACKAGES['@pothos/plugin-prisma'],
         });
 
         pothosSetup

@@ -1,6 +1,7 @@
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {
+  CORE_PACKAGES,
   makeImportAndFilePath,
   nodeProvider,
   projectScope,
@@ -18,6 +19,8 @@ import {
 } from '@halfdomelabs/sync';
 import { capitalize } from 'inflection';
 import { z } from 'zod';
+
+import { STORAGE_PACKAGES } from '@src/constants';
 
 const descriptorSchema = z.object({
   fileModelName: z.string().min(1),
@@ -47,9 +50,10 @@ export const uploadComponentsGenerator = createGenerator({
       },
       run({ node, reactError, typescript, reactComponents, reactApollo }) {
         node.addPackages({
-          axios: '1.7.4',
-          'react-dropzone': '14.2.3',
-          'react-circular-progressbar': '2.1.0',
+          axios: CORE_PACKAGES.axios,
+          'react-dropzone': STORAGE_PACKAGES['react-dropzone'],
+          'react-circular-progressbar':
+            STORAGE_PACKAGES['react-circular-progressbar'],
         });
 
         reactComponents.registerComponent({

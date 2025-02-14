@@ -23,6 +23,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
 import { rootModuleImportProvider } from '@src/generators/core/root-module/index.js';
@@ -165,9 +166,10 @@ export const pothosGenerator = createGenerator({
         },
       ) {
         node.addPackages({
-          '@pothos/core': '4.3.0',
-          '@pothos/plugin-simple-objects': '4.1.0',
-          '@pothos/plugin-relay': '4.3.0',
+          '@pothos/core': FASTIFY_PACKAGES['@pothos/core'],
+          '@pothos/plugin-simple-objects':
+            FASTIFY_PACKAGES['@pothos/plugin-simple-objects'],
+          '@pothos/plugin-relay': FASTIFY_PACKAGES['@pothos/plugin-relay'],
         });
 
         // ignore prettier for schema.graphql

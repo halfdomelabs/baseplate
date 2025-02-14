@@ -7,6 +7,7 @@ import {
   writeFormattedAction,
 } from '@halfdomelabs/sync';
 
+import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
 
 import { nodeProvider } from '../node/index.js';
@@ -62,24 +63,30 @@ export const eslintGenerator = createGenerator({
 
             const reactPackages: Record<string, string> = config.react
               ? {
-                  'eslint-plugin-jsx-a11y': '6.9.0',
-                  'eslint-plugin-react': '7.34.4',
-                  'eslint-plugin-react-hooks': '4.6.2',
+                  'eslint-plugin-jsx-a11y':
+                    CORE_PACKAGES['eslint-plugin-jsx-a11y'],
+                  'eslint-plugin-react': CORE_PACKAGES['eslint-plugin-react'],
+                  'eslint-plugin-react-hooks':
+                    CORE_PACKAGES['eslint-plugin-react-hooks'],
                 }
               : {};
 
             node.addDevPackages({
-              '@typescript-eslint/eslint-plugin': '7.16.1',
-              '@typescript-eslint/parser': '7.16.1',
-              eslint: '8.57.0',
+              '@typescript-eslint/eslint-plugin':
+                CORE_PACKAGES['@typescript-eslint/eslint-plugin'],
+              '@typescript-eslint/parser':
+                CORE_PACKAGES['@typescript-eslint/parser'],
+              eslint: CORE_PACKAGES.eslint,
               ...reactPackages,
-              'eslint-config-prettier': '9.1.0',
-              'eslint-import-resolver-typescript': '3.6.1',
-              'eslint-plugin-import': '2.29.1',
+              'eslint-config-prettier': CORE_PACKAGES['eslint-config-prettier'],
+              'eslint-import-resolver-typescript':
+                CORE_PACKAGES['eslint-import-resolver-typescript'],
+              'eslint-plugin-import': CORE_PACKAGES['eslint-plugin-import'],
               ...(config.disableVitest
                 ? {}
                 : {
-                    'eslint-plugin-vitest': '0.4.1',
+                    'eslint-plugin-vitest':
+                      CORE_PACKAGES['eslint-plugin-vitest'],
                   }),
             });
             node.addScript('lint', 'eslint --ext .ts,.tsx,.js.,.jsx .');

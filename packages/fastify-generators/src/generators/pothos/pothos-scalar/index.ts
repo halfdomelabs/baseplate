@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 import type { ScalarFieldType } from '@src/types/field-types.js';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
@@ -58,10 +59,10 @@ const scalarConfigMap = createPothosScalarMap({
     outputType: 'string',
     sourceType: 'string',
     dependencies: {
-      uuid: '9.0.0',
+      uuid: FASTIFY_PACKAGES.uuid,
     },
     devDependencies: {
-      '@types/uuid': '9.0.1',
+      '@types/uuid': FASTIFY_PACKAGES['@types/uuid'],
     },
   },
 });

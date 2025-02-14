@@ -7,6 +7,7 @@ import {
 import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
@@ -48,8 +49,8 @@ export const fastifyStripeGenerator = createGenerator({
         fastifyServer,
       }) {
         node.addPackages({
-          stripe: '14.5.0',
-          'fastify-raw-body': '5.0.0',
+          stripe: FASTIFY_PACKAGES.stripe,
+          'fastify-raw-body': FASTIFY_PACKAGES['fastify-raw-body'],
         });
         configService.getConfigEntries().set('STRIPE_SECRET_KEY', {
           comment: 'Stripe secret API key',

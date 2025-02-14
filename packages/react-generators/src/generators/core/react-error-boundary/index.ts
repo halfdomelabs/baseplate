@@ -12,6 +12,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+
 import { reactAppProvider } from '../react-app/index.js';
 import { reactComponentsProvider } from '../react-components/index.js';
 import { reactErrorProvider } from '../react-error/index.js';
@@ -37,7 +39,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ reactApp, reactError, reactComponents, typescript, node }) {
     node.addPackages({
-      'react-error-boundary': '4.0.13',
+      'react-error-boundary': REACT_PACKAGES['react-error-boundary'],
     });
     const [errorBoundaryImport, errorBoundaryPath] = makeImportAndFilePath(
       'src/components/ErrorBoundary/index.tsx',

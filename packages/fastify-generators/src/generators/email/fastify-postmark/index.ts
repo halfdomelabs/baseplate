@@ -10,6 +10,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 
 const descriptorSchema = z.object({});
@@ -31,7 +32,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ node, typescript, configService }) {
     node.addPackages({
-      postmark: '4.0.2',
+      postmark: FASTIFY_PACKAGES.postmark,
     });
     configService.getConfigEntries().set('POSTMARK_API_TOKEN', {
       comment: 'Postmark API token',

@@ -1,4 +1,5 @@
 import {
+  CORE_PACKAGES,
   makeImportAndFilePath,
   nodeProvider,
   TypescriptCodeUtils,
@@ -24,7 +25,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      axios: '1.7.4',
+      axios: CORE_PACKAGES.axios,
     });
 
     return {

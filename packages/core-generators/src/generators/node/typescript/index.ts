@@ -14,6 +14,7 @@ import { ts } from 'ts-morph';
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
 
 import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
+import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
 
 import type { CopyTypescriptFileOptions } from '../../../actions/index.js';
@@ -111,10 +112,8 @@ interface TypescriptConfig {
   extraSections: Record<string, unknown>[];
 }
 
-const TYPESCRIPT_VERSION = '^4.5.4';
-
 const DEFAULT_CONFIG: TypescriptConfig = {
-  version: TYPESCRIPT_VERSION,
+  version: CORE_PACKAGES.typescript,
   compilerOptions: {
     outDir: 'dist',
     declaration: true,

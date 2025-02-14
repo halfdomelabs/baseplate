@@ -7,6 +7,7 @@ import {
 import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
 import { userSessionServiceProvider } from '../_providers/index.js';
@@ -43,7 +44,8 @@ export const authPluginGenerator = createGenerator({
           'plugins/auth.plugin.ts',
         );
         node.addPackages({
-          '@fastify/request-context': '6.0.1',
+          '@fastify/request-context':
+            FASTIFY_PACKAGES['@fastify/request-context'],
         });
 
         appModule.registerFieldEntry(

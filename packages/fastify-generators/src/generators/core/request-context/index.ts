@@ -14,6 +14,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+
 import { fastifyServerProvider } from '../fastify-server/index.js';
 import { loggerServiceSetupProvider } from '../logger-service/index.js';
 
@@ -69,7 +71,10 @@ export const requestContextGenerator = createGenerator({
           {},
           { name: 'request-context-config' },
         );
-        node.addPackages({ '@fastify/request-context': '6.0.1' });
+        node.addPackages({
+          '@fastify/request-context':
+            FASTIFY_PACKAGES['@fastify/request-context'],
+        });
         fastifyServer.registerPlugin({
           name: 'requestContextPlugin',
           plugin: TypescriptCodeUtils.createExpression(

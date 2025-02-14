@@ -15,6 +15,7 @@ import {
 import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authProvider } from '@src/generators/auth/index.js';
 import { prismaSchemaProvider } from '@src/generators/prisma/index.js';
 
@@ -133,15 +134,15 @@ export const fastifySentryGenerator = createGenerator({
         const shouldLogToSentryBlocks: TypescriptCodeBlock[] = [];
 
         node.addPackages({
-          '@sentry/core': '8.55.0',
-          '@sentry/node': '8.55.0',
-          '@sentry/profiling-node': '8.55.0',
-          lodash: '4.17.21',
+          '@sentry/core': FASTIFY_PACKAGES['@sentry/core'],
+          '@sentry/node': FASTIFY_PACKAGES['@sentry/node'],
+          '@sentry/profiling-node': FASTIFY_PACKAGES['@sentry/profiling-node'],
+          lodash: FASTIFY_PACKAGES.lodash,
         });
 
         node.addDevPackages({
-          '@sentry/types': '8.55.0',
-          '@types/lodash': '4.17.7',
+          '@sentry/types': FASTIFY_PACKAGES['@sentry/types'],
+          '@types/lodash': FASTIFY_PACKAGES['@types/lodash'],
         });
 
         configService.getConfigEntries().merge({

@@ -14,6 +14,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
 
 import { reactConfigProvider } from '../react-config/index.js';
@@ -55,7 +56,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@sentry/react': '8.55.0',
+      '@sentry/react': REACT_PACKAGES['@sentry/react'],
     });
 
     reactError.addErrorReporter(

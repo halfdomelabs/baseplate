@@ -14,6 +14,8 @@ import path from 'node:path';
 import * as prettierPluginTailwindcss from 'prettier-plugin-tailwindcss';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+
 import { reactProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({
@@ -46,13 +48,12 @@ export const reactTailwindGenerator = createGenerator({
       run({ node, react, eslint, prettier }) {
         const srcFolder = react.getSrcFolder();
 
-        const prettierPluginTailwindcssVersion = '0.6.6';
-
         node.addDevPackages({
-          autoprefixer: '10.4.20',
-          tailwindcss: '3.4.11',
-          'prettier-plugin-tailwindcss': prettierPluginTailwindcssVersion,
-          '@tailwindcss/forms': '0.5.9',
+          autoprefixer: REACT_PACKAGES.autoprefixer,
+          tailwindcss: REACT_PACKAGES.tailwindcss,
+          'prettier-plugin-tailwindcss':
+            REACT_PACKAGES['prettier-plugin-tailwindcss'],
+          '@tailwindcss/forms': REACT_PACKAGES['@tailwindcss/forms'],
         });
 
         eslint
@@ -65,7 +66,7 @@ export const reactTailwindGenerator = createGenerator({
 
         prettier.addPlugin({
           name: 'prettier-plugin-tailwindcss',
-          version: prettierPluginTailwindcssVersion,
+          version: REACT_PACKAGES['prettier-plugin-tailwindcss'],
           default: prettierPluginTailwindcss,
         });
 

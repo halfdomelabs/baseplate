@@ -25,6 +25,8 @@ import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
+import { STORAGE_PACKAGES } from '@src/constants';
+
 const descriptorSchema = z.object({
   fileModel: z.string().min(1),
   s3Adapters: z.array(
@@ -151,14 +153,16 @@ export const storageModuleGenerator = createGenerator({
         );
 
         node.addPackages({
-          '@aws-sdk/client-s3': '3.370.0',
-          '@aws-sdk/s3-presigned-post': '3.370.0',
-          '@aws-sdk/s3-request-presigner': '3.370.0',
-          'mime-types': '2.1.35',
+          '@aws-sdk/client-s3': STORAGE_PACKAGES['@aws-sdk/client-s3'],
+          '@aws-sdk/s3-presigned-post':
+            STORAGE_PACKAGES['@aws-sdk/s3-presigned-post'],
+          '@aws-sdk/s3-request-presigner':
+            STORAGE_PACKAGES['@aws-sdk/s3-request-presigner'],
+          'mime-types': STORAGE_PACKAGES['mime-types'],
         });
 
         node.addDevPackages({
-          '@types/mime-types': '2.1.1',
+          '@types/mime-types': STORAGE_PACKAGES['@types/mime-types'],
         });
 
         configService

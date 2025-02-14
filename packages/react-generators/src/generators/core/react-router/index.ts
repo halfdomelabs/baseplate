@@ -17,6 +17,7 @@ import { z } from 'zod';
 
 import type { ReactRoute, ReactRouteLayout } from '@src/providers/routes.js';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import {
   reactRoutesProvider,
   reactRoutesReadOnlyProvider,
@@ -58,7 +59,9 @@ export const reactRouterGenerator = createGenerator({
         reactRouter: reactRouterProvider.export(projectScope),
       },
       run({ node, react, reactApp, typescript }) {
-        node.addPackage('react-router-dom', '6.22.3');
+        node.addPackages({
+          'react-router-dom': REACT_PACKAGES['react-router-dom'],
+        });
 
         const routes: ReactRoute[] = [];
         const layouts: ReactRouteLayout[] = [];

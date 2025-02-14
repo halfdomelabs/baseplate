@@ -10,6 +10,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { loggerServiceProvider } from '@src/generators/core/logger-service/index.js';
 
@@ -33,7 +34,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
   },
   run({ node, typescript, configService, loggerService }) {
     node.addPackages({
-      '@sendgrid/mail': '8.1.0',
+      '@sendgrid/mail': FASTIFY_PACKAGES['@sendgrid/mail'],
     });
     configService.getConfigEntries().set('SENDGRID_API_KEY', {
       comment: 'Sendgrid API token',

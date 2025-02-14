@@ -12,6 +12,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifyRedisProvider } from '@src/generators/core/fastify-redis/index.js';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
@@ -57,15 +58,15 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@bull-board/api': '6.5.3',
-      '@bull-board/fastify': '6.5.3',
-      ms: '2.1.3',
+      '@bull-board/api': FASTIFY_PACKAGES['@bull-board/api'],
+      '@bull-board/fastify': FASTIFY_PACKAGES['@bull-board/fastify'],
+      ms: FASTIFY_PACKAGES.ms,
     });
 
     // required for bull-board to compile
     node.addDevPackages({
-      '@types/redis-info': '3.0.3',
-      '@types/ms': '0.7.34',
+      '@types/redis-info': FASTIFY_PACKAGES['@types/redis-info'],
+      '@types/ms': FASTIFY_PACKAGES['@types/ms'],
     });
 
     return {
@@ -132,7 +133,7 @@ export const fastifyBullBoardGenerator = createGenerator({
       },
       run({ node, fastifyServer }) {
         node.addPackages({
-          '@fastify/formbody': '8.0.1',
+          '@fastify/formbody': FASTIFY_PACKAGES['@fastify/formbody'],
         });
 
         fastifyServer.registerPlugin({

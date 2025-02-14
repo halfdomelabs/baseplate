@@ -14,6 +14,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { authIdentifyProvider } from '@src/generators/auth/auth-identify/index.js';
 
 import { reactConfigProvider } from '../react-config/index.js';
@@ -43,7 +44,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     );
 
     node.addPackages({
-      '@datadog/browser-logs': '4.19.1',
+      '@datadog/browser-logs': REACT_PACKAGES['@datadog/browser-logs'],
     });
 
     reactConfig.getConfigMap().set('VITE_DATADOG_CLIENT_TOKEN', {
