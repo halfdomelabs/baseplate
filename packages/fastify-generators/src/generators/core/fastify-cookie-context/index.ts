@@ -7,6 +7,7 @@ import {
 import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { fastifyServerProvider } from '@src/generators/core/fastify-server/index.js';
 
 import { requestServiceContextSetupProvider } from '../request-service-context/index.js';
@@ -29,7 +30,7 @@ export const fastifyCookieContextGenerator = createGenerator({
       },
       run({ node, fastifyServer, requestServiceContextSetup }) {
         node.addPackages({
-          '@fastify/cookie': '11.0.1',
+          '@fastify/cookie': FASTIFY_PACKAGES['@fastify/cookie'],
         });
 
         fastifyServer.registerPlugin({

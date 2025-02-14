@@ -17,6 +17,8 @@ import {
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+
 import { configServiceProvider } from '../config-service/index.js';
 import { loggerServiceProvider } from '../logger-service/index.js';
 import { rootModuleProvider } from '../root-module/index.js';
@@ -76,10 +78,10 @@ export const fastifyServerGenerator = createGenerator({
         const prePluginBlocks: TypescriptCodeBlock[] = [];
 
         node.addPackages({
-          fastify: '5.1.0',
-          '@fastify/helmet': '13.0.0',
-          'fastify-plugin': '5.0.1',
-          nanoid: '3.3.8',
+          fastify: FASTIFY_PACKAGES.fastify,
+          '@fastify/helmet': FASTIFY_PACKAGES['@fastify/helmet'],
+          'fastify-plugin': FASTIFY_PACKAGES['fastify-plugin'],
+          nanoid: FASTIFY_PACKAGES.nanoid,
         });
 
         plugins.push({

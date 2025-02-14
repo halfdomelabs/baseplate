@@ -3,6 +3,8 @@ import type {
   TypescriptConfigProvider,
 } from '@halfdomelabs/core-generators';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+
 export function setupFastifyTypescript(
   node: NodeProvider,
   typescriptConfig: TypescriptConfigProvider,
@@ -28,11 +30,9 @@ export function setupFastifyTypescript(
     skipLibCheck: true,
   });
 
-  const nodeVersion = node.getNodeVersion().split('.')[0];
-
   node.addDevPackages({
-    'tsc-alias': '1.8.10',
-    tsx: '4.19.1',
-    '@types/node': `^${nodeVersion}.0.0`,
+    'tsc-alias': FASTIFY_PACKAGES['tsc-alias'],
+    tsx: FASTIFY_PACKAGES.tsx,
+    '@types/node': FASTIFY_PACKAGES['@types/node'],
   });
 }

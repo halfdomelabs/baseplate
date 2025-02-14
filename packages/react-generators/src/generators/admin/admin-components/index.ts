@@ -9,6 +9,7 @@ import {
 import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { reactComponentsProvider } from '@src/generators/core/react-components/index.js';
 
 const descriptorSchema = z.object({});
@@ -35,7 +36,7 @@ export const adminComponentsGenerator = createGenerator({
       },
       run({ reactComponents, typescript, node }) {
         node.addPackages({
-          nanoid: '3.3.8',
+          nanoid: REACT_PACKAGES.nanoid,
         });
 
         const [embeddedListImport, embeddedListPath] = makeImportAndFilePath(

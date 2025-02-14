@@ -15,6 +15,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+
 import { configServiceProvider } from '../config-service/index.js';
 import { fastifyHealthCheckProvider } from '../fastify-health-check/index.js';
 
@@ -45,8 +47,8 @@ const createMainTask = createTaskConfigBuilder(
       fastifyRedis: fastifyRedisProvider.export(projectScope),
     },
     run({ node, configService, fastifyHealthCheck, typescript, vitest }) {
-      node.addPackages({ ioredis: '5.3.2' });
-      node.addDevPackages({ 'ioredis-mock': '8.7.0' });
+      node.addPackages({ ioredis: FASTIFY_PACKAGES.ioredis });
+      node.addDevPackages({ 'ioredis-mock': FASTIFY_PACKAGES['ioredis-mock'] });
 
       const [redisImport, redisPath] = makeImportAndFilePath(
         `src/services/redis.ts`,

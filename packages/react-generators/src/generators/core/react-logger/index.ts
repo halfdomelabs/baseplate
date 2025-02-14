@@ -14,6 +14,8 @@ import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+
 import { reactProvider } from '../react/index.js';
 
 const descriptorSchema = z.object({
@@ -44,7 +46,7 @@ export const reactLoggerGenerator = createGenerator({
       },
       run({ node, react, typescript }) {
         node.addPackages({
-          loglevel: '1.9.1',
+          loglevel: REACT_PACKAGES.loglevel,
         });
 
         const [fileImport, filePath] = makeImportAndFilePath(

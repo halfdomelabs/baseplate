@@ -14,6 +14,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+
 import { reactAppProvider } from '../react-app/index.js';
 import { reactProvider } from '../react/index.js';
 
@@ -85,14 +87,14 @@ export const reactComponentsGenerator = createGenerator({
       run({ react, node, typescript, reactApp }) {
         const srcFolder = react.getSrcFolder();
         node.addPackages({
-          '@headlessui/react': '1.7.18',
-          '@hookform/resolvers': '3.9.0',
-          clsx: '2.1.1',
-          'react-hook-form': '7.53.0',
-          'react-hot-toast': '2.4.1',
-          'react-icons': '5.0.1',
-          'react-select': '5.8.0',
-          zustand: '4.4.6',
+          '@headlessui/react': REACT_PACKAGES['@headlessui/react'],
+          '@hookform/resolvers': REACT_PACKAGES['@hookform/resolvers'],
+          clsx: REACT_PACKAGES.clsx,
+          'react-hook-form': REACT_PACKAGES['react-hook-form'],
+          'react-hot-toast': REACT_PACKAGES['react-hot-toast'],
+          'react-icons': REACT_PACKAGES['react-icons'],
+          'react-select': REACT_PACKAGES['react-select'],
+          zustand: REACT_PACKAGES.zustand,
         });
         const [useStatusImport, useStatusPath] = makeImportAndFilePath(
           `${srcFolder}/hooks/useStatus.ts`,

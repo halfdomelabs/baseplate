@@ -19,6 +19,7 @@ import prettierPluginPackageJson from 'prettier-plugin-packagejson';
 import resolveFrom from 'resolve-from';
 import { z } from 'zod';
 
+import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
 import { notEmpty } from '@src/utils/array.js';
 
@@ -48,7 +49,7 @@ const DEFAULT_PLUGINS: PrettierPluginConfig[] = [
   {
     name: 'prettier-plugin-packagejson',
     default: prettierPluginPackageJson as Plugin,
-    version: '2.5.2',
+    version: CORE_PACKAGES['prettier-plugin-packagejson'],
   },
 ];
 
@@ -80,8 +81,6 @@ const PARSEABLE_EXTENSIONS = new Set([
   '.cts',
   '.mts',
 ]);
-
-const PRETTIER_VERSION = '3.3.3';
 
 interface PrettierModule {
   format(input: string, config: Record<string, unknown>): Promise<string>;
@@ -248,7 +247,7 @@ export const prettierGenerator = createGenerator({
             });
 
             node.addDevPackages({
-              prettier: PRETTIER_VERSION,
+              prettier: CORE_PACKAGES.prettier,
               ...Object.fromEntries(
                 DEFAULT_PLUGINS.map((plugin) => [plugin.name, plugin.version]),
               ),

@@ -12,6 +12,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { authContextProvider } from '@src/generators/auth/auth-context/index.js';
 import { authRolesProvider } from '@src/generators/auth/auth-roles/index.js';
 import { authSetupProvider } from '@src/generators/auth/auth/index.js';
@@ -66,7 +67,7 @@ const createMainTask = createTaskConfigBuilder(
     }) {
       if (includeManagement) {
         node.addPackages({
-          auth0: '4.0.2',
+          auth0: FASTIFY_PACKAGES.auth0,
         });
       }
 

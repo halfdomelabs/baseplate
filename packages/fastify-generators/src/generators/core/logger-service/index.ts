@@ -17,6 +17,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
+
 import { fastifyProvider } from '../fastify/index.js';
 
 const descriptorSchema = z.object({
@@ -75,11 +77,11 @@ export const loggerServiceGenerator = createGenerator({
         fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
 
         node.addPackages({
-          pino: '9.5.0',
+          pino: FASTIFY_PACKAGES.pino,
         });
 
         node.addDevPackages({
-          'pino-pretty': '13.0.0',
+          'pino-pretty': FASTIFY_PACKAGES['pino-pretty'],
         });
 
         const importMap = {

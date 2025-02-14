@@ -10,6 +10,7 @@ import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import path from 'node:path';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { appModuleProvider } from '@src/generators/core/root-module/index.js';
 
 const descriptorSchema = z.object({
@@ -45,7 +46,7 @@ export const passwordHasherServiceGenerator = createGenerator({
         );
 
         node.addPackages({
-          '@node-rs/argon2': '2.0.2',
+          '@node-rs/argon2': FASTIFY_PACKAGES['@node-rs/argon2'],
         });
 
         return {

@@ -18,6 +18,8 @@ import {
 import { sortBy } from 'es-toolkit';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
@@ -69,7 +71,7 @@ export const reactConfigGenerator = createGenerator({
         const customEnvVars: { name: string; value: string }[] = [];
 
         node.addPackages({
-          zod: '3.24.1',
+          zod: REACT_PACKAGES.zod,
         });
         return {
           providers: {

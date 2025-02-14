@@ -1,19 +1,20 @@
 import type { NodeProvider } from '@halfdomelabs/core-generators';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+
 export function setupViteNode(node: NodeProvider): void {
-  const nodeVersion = node.getNodeVersion().split('.')[0];
   node.addPackages({
-    react: '18.3.1',
-    'react-dom': '18.3.1',
+    react: REACT_PACKAGES.react,
+    'react-dom': REACT_PACKAGES['react-dom'],
   });
   node.addDevPackages({
-    '@types/node': `^${nodeVersion}.0.0`,
-    '@types/react': '18.3.8',
-    '@types/react-dom': '18.3.0',
-    '@vitejs/plugin-react': '4.3.4',
-    vite: '6.0.11',
-    'vite-plugin-svgr': '4.3.0',
-    'vite-tsconfig-paths': '5.1.4',
+    '@types/node': REACT_PACKAGES['@types/node'],
+    '@types/react': REACT_PACKAGES['@types/react'],
+    '@types/react-dom': REACT_PACKAGES['@types/react-dom'],
+    '@vitejs/plugin-react': REACT_PACKAGES['@vitejs/plugin-react'],
+    vite: REACT_PACKAGES.vite,
+    'vite-plugin-svgr': REACT_PACKAGES['vite-plugin-svgr'],
+    'vite-tsconfig-paths': REACT_PACKAGES['vite-tsconfig-paths'],
   });
   node.addScripts({
     dev: 'vite',

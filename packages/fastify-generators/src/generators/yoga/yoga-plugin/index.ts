@@ -16,6 +16,7 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { FASTIFY_PACKAGES } from '@src/constants/index.js';
 import { authProvider } from '@src/generators/auth/index.js';
 import { configServiceProvider } from '@src/generators/core/config-service/index.js';
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
@@ -145,20 +146,18 @@ export const yogaPluginGenerator = createGenerator({
         { setupTask: { configMap } },
       ) {
         node.addPackages({
-          'altair-fastify-plugin': '8.0.4',
-          graphql: '16.9.0',
-          '@envelop/core': '5.0.1',
-          '@envelop/disable-introspection': '6.0.0',
-          'graphql-yoga': '5.6.1',
+          'altair-fastify-plugin': FASTIFY_PACKAGES['altair-fastify-plugin'],
+          graphql: FASTIFY_PACKAGES.graphql,
+          '@envelop/core': FASTIFY_PACKAGES['@envelop/core'],
+          '@envelop/disable-introspection':
+            FASTIFY_PACKAGES['@envelop/disable-introspection'],
+          'graphql-yoga': FASTIFY_PACKAGES['graphql-yoga'],
         });
 
         node.addDevPackages({
-          '@envelop/types': '5.0.0',
-        });
-
-        // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
-        node.addDevPackages({
-          '@types/ws': '8.5.13',
+          '@envelop/types': FASTIFY_PACKAGES['@envelop/types'],
+          // needed to properly compile (https://github.com/fastify/fastify-websocket/issues/90)
+          '@types/ws': FASTIFY_PACKAGES['@types/ws'],
         });
 
         return {
@@ -254,7 +253,7 @@ export const yogaPluginGenerator = createGenerator({
         },
         run({ node, fastifyServer }) {
           node.addPackages({
-            '@fastify/websocket': '11.0.1',
+            '@fastify/websocket': FASTIFY_PACKAGES['@fastify/websocket'],
           });
 
           fastifyServer.registerPlugin({
@@ -291,8 +290,9 @@ export const yogaPluginGenerator = createGenerator({
           requestServiceContext,
         }) {
           node.addPackages({
-            '@graphql-yoga/redis-event-target': '2.0.0',
-            'graphql-ws': '5.16.0',
+            '@graphql-yoga/redis-event-target':
+              FASTIFY_PACKAGES['@graphql-yoga/redis-event-target'],
+            'graphql-ws': FASTIFY_PACKAGES['graphql-ws'],
           });
 
           const [, pubsubPath] = makeImportAndFilePath(

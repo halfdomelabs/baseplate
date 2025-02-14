@@ -13,6 +13,8 @@ import {
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
+
 import { reactApolloProvider } from '../../apollo/react-apollo/index.js';
 import { reactComponentsProvider } from '../../core/react-components/index.js';
 import { reactErrorProvider } from '../../core/react-error/index.js';
@@ -73,10 +75,10 @@ export const authHooksGenerator = createGenerator({
           makeImportAndFilePath(`${hookFolder}/useRequiredUserId.ts`);
 
         node.addPackages({
-          'use-subscription': '^1.5.1',
+          'use-subscription': REACT_PACKAGES['use-subscription'],
         });
         node.addDevPackages({
-          '@types/use-subscription': '^1.0.0',
+          '@types/use-subscription': REACT_PACKAGES['@types/use-subscription'],
         });
 
         return {

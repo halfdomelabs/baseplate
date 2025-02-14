@@ -5,6 +5,7 @@ import {
 import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
+import { REACT_PACKAGES } from '@src/constants/react-packages.js';
 import { reactAppProvider } from '@src/generators/core/react-app/index.js';
 import { reactConfigProvider } from '@src/generators/core/react-config/index.js';
 
@@ -26,7 +27,7 @@ export const reactAuth0Generator = createGenerator({
       },
       run({ node, reactConfig, reactApp }) {
         node.addPackages({
-          '@auth0/auth0-react': '2.2.3',
+          '@auth0/auth0-react': REACT_PACKAGES['@auth0/auth0-react'],
         });
 
         reactConfig.getConfigMap().set('VITE_AUTH0_DOMAIN', {

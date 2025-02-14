@@ -9,6 +9,7 @@ import { z } from 'zod';
 
 import type { TypescriptCodeBlock } from '@src/writers/index.js';
 
+import { CORE_PACKAGES } from '@src/constants/index.js';
 import { projectScope } from '@src/providers/scopes.js';
 import { TypescriptCodeUtils } from '@src/writers/index.js';
 
@@ -58,8 +59,8 @@ export const vitestGenerator = createGenerator({
           : 'vitest.config.mts';
 
         node.addDevPackages({
-          vitest: '3.0.5',
-          'vite-tsconfig-paths': '5.1.4',
+          vitest: CORE_PACKAGES.vitest,
+          'vite-tsconfig-paths': CORE_PACKAGES['vite-tsconfig-paths'],
         });
 
         eslint.getConfig().appendUnique('eslintIgnore', [vitestConfigFilename]);
