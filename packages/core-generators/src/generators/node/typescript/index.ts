@@ -306,7 +306,7 @@ export const typescriptGenerator = createGenerator({
                   include,
                   exclude,
                   references: references.length > 0 ? references : undefined,
-                  ...safeMergeAll(extraSections),
+                  ...safeMergeAll(...extraSections),
                 },
               }),
             );

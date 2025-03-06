@@ -113,6 +113,11 @@ export function generateTypescriptEslintConfig(options = []) {
           'error',
           { allowConstantLoopConditions: true },
         ],
+        // Allow ternary operators to be used when checking for empty string
+        '@typescript-eslint/prefer-nullish-coalescing': [
+          'error',
+          { ignoreTernaryTests: true },
+        ],
       },
     },
 
