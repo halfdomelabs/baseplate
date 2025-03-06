@@ -1,5 +1,15 @@
 # @halfdomelabs/project-builder-server
 
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies [[`dcbf847`](https://github.com/halfdomelabs/baseplate/commit/dcbf84709856f5fc7a8e5240c3f83ab8df88254e), [`a6fb0d8`](https://github.com/halfdomelabs/baseplate/commit/a6fb0d86a5d74031c484eba8861d95c19a31a7b4), [`16494a4`](https://github.com/halfdomelabs/baseplate/commit/16494a4a1981f46600ff35624f4f2fb0b3b7a1d3), [`ed229ab`](https://github.com/halfdomelabs/baseplate/commit/ed229ab6688969e3eb2230ea7caf273916e68291)]:
+  - @halfdomelabs/fastify-generators@0.11.3
+  - @halfdomelabs/react-generators@0.9.3
+  - @halfdomelabs/core-generators@0.10.3
+  - @halfdomelabs/project-builder-lib@0.9.3
+
 ## 0.5.2
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.9.3
+
+### Patch Changes
+
+- [#439](https://github.com/halfdomelabs/baseplate/pull/439) [`a6fb0d8`](https://github.com/halfdomelabs/baseplate/commit/a6fb0d86a5d74031c484eba8861d95c19a31a7b4) Thanks [@kingston](https://github.com/kingston)! - Fix module resolution for project-builder-lib
+
+- Updated dependencies [[`ed229ab`](https://github.com/halfdomelabs/baseplate/commit/ed229ab6688969e3eb2230ea7caf273916e68291)]:
+  - @halfdomelabs/ui-components@0.5.4
+
 ## 0.9.2
 
 ### Patch Changes
