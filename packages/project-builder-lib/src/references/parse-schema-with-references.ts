@@ -1,12 +1,12 @@
 import type { z } from 'zod';
 
-import type { ResolvedZodRefPayload } from './types';
+import type { ResolvedZodRefPayload } from './types.js';
 
-import { ZodRefWrapper } from './ref-builder';
+import { ZodRefWrapper } from './ref-builder.js';
 import {
   resolveZodRefPayloadNames,
   type ResolveZodRefPayloadNamesOptions,
-} from './resolve-zod-ref-payload-names';
+} from './resolve-zod-ref-payload-names.js';
 
 /**
  * Parses a schema with references.
