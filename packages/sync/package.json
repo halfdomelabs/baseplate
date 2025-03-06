@@ -1,6 +1,6 @@
 {
   "name": "@halfdomelabs/sync",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Library for syncing Baseplate descriptions",
   "homepage": "https://www.halfdomelabs.com/",
   "repository": {
