@@ -1,5 +1,11 @@
 # @halfdomelabs/ui-components
 
+## 0.5.4
+
+### Patch Changes
+
+- [#441](https://github.com/halfdomelabs/baseplate/pull/441) [`ed229ab`](https://github.com/halfdomelabs/baseplate/commit/ed229ab6688969e3eb2230ea7caf273916e68291) Thanks [@kingston](https://github.com/kingston)! - Upgrade vitest to 3.0.7 and vite to 6.2.0
+
 ## 0.5.3
 
 ### Patch Changes
