@@ -1,8 +1,8 @@
 import { keyBy, mapValues } from 'es-toolkit';
 import toposort from 'toposort';
 
-import type { ZodRefPayload } from './ref-builder';
-import type { DefinitionEntity, ResolvedZodRefPayload } from './types';
+import type { ZodRefPayload } from './ref-builder.js';
+import type { DefinitionEntity, ResolvedZodRefPayload } from './types.js';
 
 /**
  * Options for resolving entity names in a ZodRefPayload.

@@ -22,7 +22,7 @@ import {
   fixRefDeletions,
   serializeSchemaFromRefPayload,
 } from '@src/references/index.js';
-import { prettyStableStringify } from '@src/utils';
+import { prettyStableStringify } from '@src/utils/index.js';
 
 /**
  * Container for a project definition that includes references and entities.
