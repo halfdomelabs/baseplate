@@ -1,5 +1,15 @@
 # @halfdomelabs/project-builder-common
 
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @halfdomelabs/project-builder-lib@0.9.4
+  - @halfdomelabs/project-builder-server@0.5.4
+  - @halfdomelabs/sync@0.9.1
+  - @halfdomelabs/baseplate-plugin-storage@3.0.3
+
 ## 0.1.12
 
 ### Patch Changes

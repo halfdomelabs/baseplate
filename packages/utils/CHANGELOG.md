@@ -1,5 +1,11 @@
 # @halfdomelabs/utils
 
+## 0.1.3
+
+### Patch Changes
+
+- [#444](https://github.com/halfdomelabs/baseplate/pull/444) [`a7307cd`](https://github.com/halfdomelabs/baseplate/commit/a7307cdd2da73c9b7e02a23835eefe32ebed95d0) Thanks [@kingston](https://github.com/kingston)! - Add typed event emitter to package
+
 ## 0.1.2
 
 ### Patch Changes
