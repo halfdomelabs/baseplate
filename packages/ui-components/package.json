@@ -110,7 +110,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tsc-alias": "catalog:",
     "typescript": "catalog:",
-    "vite": "6.0.11",
+    "vite": "catalog:",
     "vite-plugin-svgr": "catalog:",
     "vite-tsconfig-paths": "catalog:",
     "vitest": "catalog:"

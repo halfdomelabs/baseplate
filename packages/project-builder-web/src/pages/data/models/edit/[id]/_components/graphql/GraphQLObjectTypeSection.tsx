@@ -27,8 +27,8 @@ interface GraphQLObjectTypeSectionProps {
 const tableClassName =
   'border-collapse text-left [&_td]:py-1 [&_th]:sticky [&_th]:top-0 [&_th]:bg-background [&_th]:z-10 [&_th]:py-2';
 
-function getUpdatedOrderedList<T extends { id: string }>(
-  items: T[],
+function getUpdatedOrderedList(
+  items: { id: string }[],
   selected: string[],
   checked: boolean,
   id: string,
