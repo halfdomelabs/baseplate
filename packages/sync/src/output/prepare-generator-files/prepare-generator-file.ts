@@ -210,12 +210,12 @@ async function mergeStringContents({
 }
 
 /**
- * Find the relative path of the file in the previous working codebase
+ * Find the relative path of the file in the previous generated codebase
  *
  * @param data - File data
  * @param relativePath - Relative path of the file
  * @param context - Generator output file writer context
- * @returns The relative path of the file in the previous working codebase or undefined if it does not exist
+ * @returns The relative path of the file in the previous generated codebase or undefined if it does not exist
  */
 async function findPreviousRelativePath(
   data: FileData,
@@ -316,9 +316,10 @@ export async function prepareGeneratorFile({
 
   // If we haven't modified the generated version of the file,
   // we use the previous working file version
-  const previousGeneratedBuffer = previousRelativePath
-    ? await previousGeneratedPayload?.fileReader.readFile(previousRelativePath)
-    : undefined;
+  const previousGeneratedBuffer =
+    await previousGeneratedPayload?.fileReader.readFile(
+      previousRelativePath ?? relativePath,
+    );
 
   if (
     previousGeneratedBuffer &&

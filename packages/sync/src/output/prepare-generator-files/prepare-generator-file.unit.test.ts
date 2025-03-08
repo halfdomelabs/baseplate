@@ -181,6 +181,38 @@ describe('prepareGeneratorFile', () => {
     });
   });
 
+  it('should not re-write a deleted file when content is unchanged', async () => {
+    const content = 'unchanged content';
+    const workingFiles = new Map<string, Buffer>();
+
+    const previousGeneratedFiles = new Map([
+      ['file.txt', Buffer.from(content)],
+    ]);
+
+    const mockPreviousPayload: PreviousGeneratedPayload = {
+      fileReader: createCodebaseReaderFromMemory(previousGeneratedFiles),
+      fileIdToRelativePathMap: new Map([[DEFAULT_FILE_ID, 'file.txt']]),
+    };
+
+    const result = await prepareGeneratorFile({
+      relativePath: 'file.txt',
+      data: createMockFileData({
+        contents: content,
+      }),
+      context: createMockContext({
+        previousWorkingCodebase: createCodebaseReaderFromMemory(workingFiles),
+        previousGeneratedPayload: mockPreviousPayload,
+      }),
+    });
+
+    expect(result).toEqual({
+      relativePath: 'file.txt',
+      previousRelativePath: undefined,
+      mergedContents: undefined,
+      generatedContents: Buffer.from(content),
+    });
+  });
+
   it('should handle JSON files with special merge algorithm', async () => {
     const workingFiles = new Map([
       ['config.json', Buffer.from('{"key": "original","other": "other"}')],
