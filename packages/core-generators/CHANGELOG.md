@@ -1,5 +1,12 @@
 # @halfdomelabs/core-generators
 
+## 0.10.5
+
+### Patch Changes
+
+- Updated dependencies [[`4785487`](https://github.com/halfdomelabs/baseplate/commit/4785487474947affa0818280cb1a75da5a3b48ba)]:
+  - @halfdomelabs/sync@0.9.2
+
 ## 0.10.4
 
 ### Patch Changes

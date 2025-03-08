@@ -1,5 +1,11 @@
 # @halfdomelabs/sync
 
+## 0.9.2
+
+### Patch Changes
+
+- [#445](https://github.com/halfdomelabs/baseplate/pull/445) [`4785487`](https://github.com/halfdomelabs/baseplate/commit/4785487474947affa0818280cb1a75da5a3b48ba) Thanks [@kingston](https://github.com/kingston)! - Ensure files are not regenerated if they have been deleted and are unmodified
+
 ## 0.9.1
 
 ### Patch Changes
