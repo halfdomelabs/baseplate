@@ -1,5 +1,12 @@
 # @halfdomelabs/project-builder-web
 
+## 0.15.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @halfdomelabs/project-builder-lib@0.9.5
+
 ## 0.15.4
 
 ### Patch Changes
