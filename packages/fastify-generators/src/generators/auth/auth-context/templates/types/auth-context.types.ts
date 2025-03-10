@@ -10,4 +10,5 @@ export interface AuthContext {
   userIdOrThrow: () => string;
   roles: readonly AuthRole[];
   hasRole: (role: AuthRole) => boolean;
+  hasSomeRole: (roles: AuthRole[]) => boolean;
 }

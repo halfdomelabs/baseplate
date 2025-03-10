@@ -27,5 +27,7 @@ export function createAuthContextFromSessionInfo(
     },
     roles,
     hasRole: (role) => roles.includes(role),
+    hasSomeRole: (possibleRoles) =>
+      possibleRoles.some((role) => roles.includes(role)),
   };
 }
