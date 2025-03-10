@@ -1,5 +1,11 @@
 # @halfdomelabs/fastify-generators
 
+## 0.11.6
+
+### Patch Changes
+
+- [#447](https://github.com/halfdomelabs/baseplate/pull/447) [`bb620bc`](https://github.com/halfdomelabs/baseplate/commit/bb620bc62dcf0569f76a401e3b3f9a5d1c10e004) Thanks [@kingston](https://github.com/kingston)! - Restore hasSomeRole to auth context
+
 ## 0.11.5
 
 ### Patch Changes
