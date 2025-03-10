@@ -1,5 +1,18 @@
 # @halfdomelabs/project-builder-web
 
+## 0.15.6
+
+### Patch Changes
+
+- [#449](https://github.com/halfdomelabs/baseplate/pull/449) [`43fa1fe`](https://github.com/halfdomelabs/baseplate/commit/43fa1fe9846b97dc9e6a9df647bd8feafb06b6e4) Thanks [@kingston](https://github.com/kingston)! - Fix ability to create new file transformers
+
+- [#448](https://github.com/halfdomelabs/baseplate/pull/448) [`6aff02e`](https://github.com/halfdomelabs/baseplate/commit/6aff02e963860b34077d4041e20dc45e4cb9f092) Thanks [@kingston](https://github.com/kingston)! - Fix toggle for controller transformers
+
+- [#451](https://github.com/halfdomelabs/baseplate/pull/451) [`7cd545f`](https://github.com/halfdomelabs/baseplate/commit/7cd545f74ca67288613b2043a62f43c5269f3078) Thanks [@kingston](https://github.com/kingston)! - Persist model IDs with reloads
+
+- Updated dependencies [[`43fa1fe`](https://github.com/halfdomelabs/baseplate/commit/43fa1fe9846b97dc9e6a9df647bd8feafb06b6e4)]:
+  - @halfdomelabs/project-builder-lib@0.9.6
+
 ## 0.15.5
 
 ### Patch Changes

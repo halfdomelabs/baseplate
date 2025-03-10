@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.9.6
+
+### Patch Changes
+
+- [#449](https://github.com/halfdomelabs/baseplate/pull/449) [`43fa1fe`](https://github.com/halfdomelabs/baseplate/commit/43fa1fe9846b97dc9e6a9df647bd8feafb06b6e4) Thanks [@kingston](https://github.com/kingston)! - Fix ability to create new file transformers
+
 ## 0.9.5
 
 ### Patch Changes
