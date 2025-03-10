@@ -76,6 +76,7 @@ function ServiceTransformerRecord({
               onUpdate(transformer, idx);
             }}
             asChild
+            isCreate={false}
           >
             <Button.WithOnlyIcon icon={MdEdit} title="Edit" />
           </ServiceTransformerDialog>
@@ -201,6 +202,7 @@ export function ServiceTransformersSection({
           }}
           open={isNewTransfomerDialogOpen}
           onOpenChange={setIsNewTransformerDialogOpen}
+          isCreate={true}
         />
       </SectionList.SectionContent>
     </SectionList.Section>

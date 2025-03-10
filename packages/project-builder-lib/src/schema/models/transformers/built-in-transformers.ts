@@ -33,14 +33,14 @@ export type PasswordTransformerConfig = z.infer<
 export const embeddedRelationTransformerSchema = zEnt(
   z.object({
     ...baseTransformerFields,
-    foreignRelationRef: zRef(z.string(), {
+    foreignRelationRef: zRef(z.string().min(1), {
       type: modelForeignRelationEntityType,
       onDelete: 'DELETE_PARENT',
       parentPath: { context: 'model' },
     }),
     type: z.literal('embeddedRelation'),
     embeddedFieldNames: z.array(
-      zRef(z.string(), {
+      zRef(z.string().min(1), {
         type: modelScalarFieldEntityType,
         onDelete: 'RESTRICT',
         parentPath: { context: 'embeddedModel' },
@@ -48,14 +48,14 @@ export const embeddedRelationTransformerSchema = zEnt(
     ),
     embeddedTransformerNames: z
       .array(
-        zRef(z.string(), {
+        zRef(z.string().min(1), {
           type: modelTransformerEntityType,
           onDelete: 'RESTRICT',
           parentPath: { context: 'embeddedModel' },
         }),
       )
       .optional(),
-    modelRef: zRef(z.string(), {
+    modelRef: zRef(z.string().min(1), {
       type: modelEntityType,
       onDelete: 'RESTRICT',
     }),
