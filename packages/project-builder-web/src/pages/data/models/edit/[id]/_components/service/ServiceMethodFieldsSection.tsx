@@ -153,7 +153,7 @@ export function ServiceMethodFieldsSection({
                       value={createTransformers.includes(transformer.id)}
                       onChange={(value) => {
                         setValue(
-                          'service.create.fields',
+                          'service.create.transformerNames',
                           value
                             ? [...createTransformers, transformer.id]
                             : createTransformers.filter(
@@ -171,7 +171,7 @@ export function ServiceMethodFieldsSection({
                       value={updateTransformers.includes(transformer.id)}
                       onChange={(value) => {
                         setValue(
-                          'service.update.fields',
+                          'service.update.transformerNames',
                           value
                             ? [...updateTransformers, transformer.id]
                             : updateTransformers.filter(
