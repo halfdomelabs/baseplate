@@ -18,7 +18,7 @@ interface UseProjectDefinitionContainerResult {
   error: unknown;
   cacheProjectDefinitionContainer: (
     projectDefinitionContainer: ProjectDefinitionContainer,
-    seralizedContents: string,
+    serializedContents: string,
   ) => void;
 }
 
