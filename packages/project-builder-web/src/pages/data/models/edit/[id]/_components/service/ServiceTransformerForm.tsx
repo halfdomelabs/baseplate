@@ -21,6 +21,7 @@ interface ServiceTransformerFormProps {
   webConfig: ModelTransformerWebConfig;
   transformer?: TransformerConfig;
   onUpdate: (transformer: TransformerConfig) => void;
+  isCreate: boolean;
 }
 
 export function ServiceTransformerForm({
@@ -28,6 +29,7 @@ export function ServiceTransformerForm({
   webConfig: { Form, pluginId },
   transformer,
   onUpdate,
+  isCreate,
 }: ServiceTransformerFormProps): React.JSX.Element | null {
   const originalModel = useEditedModelConfig((model) => model);
   const schema = usePluginEnhancedSchema(
@@ -78,7 +80,7 @@ export function ServiceTransformerForm({
         <Dialog.Close asChild>
           <Button variant="secondary">Cancel</Button>
         </Dialog.Close>
-        <Button type="submit" disabled={!isDirty} form={formId}>
+        <Button type="submit" disabled={!isCreate && !isDirty} form={formId}>
           Save
         </Button>
       </Dialog.Footer>

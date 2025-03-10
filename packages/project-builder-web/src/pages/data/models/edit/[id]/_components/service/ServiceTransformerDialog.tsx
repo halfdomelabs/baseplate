@@ -14,6 +14,7 @@ interface ServiceTransformerDialogProps {
   webConfig: ModelTransformerWebConfig | undefined;
   transformer: TransformerConfig | undefined;
   onUpdate: (transformer: TransformerConfig) => void;
+  isCreate: boolean;
 }
 
 export function ServiceTransformerDialog({
@@ -24,6 +25,7 @@ export function ServiceTransformerDialog({
   open,
   onOpenChange,
   onUpdate,
+  isCreate,
 }: ServiceTransformerDialogProps): React.JSX.Element {
   const [isOpen, setIsOpen] = useControlledState(open, onOpenChange, false);
   return (
@@ -34,7 +36,7 @@ export function ServiceTransformerDialog({
       <Dialog.Content>
         <Dialog.Header>
           <Dialog.Title>
-            {transformer?.id ? 'Edit' : 'Create'} {webConfig?.label} Transformer
+            {isCreate ? 'Create' : 'Edit'} {webConfig?.label} Transformer
           </Dialog.Title>
           <Dialog.Description>
             {webConfig?.instructions ??
@@ -49,6 +51,7 @@ export function ServiceTransformerDialog({
               onUpdate(transformer);
             }}
             webConfig={webConfig}
+            isCreate={isCreate}
           />
         )}
       </Dialog.Content>
