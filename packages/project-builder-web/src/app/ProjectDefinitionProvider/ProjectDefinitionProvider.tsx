@@ -46,11 +46,14 @@ export function ProjectDefinitionProvider({
     uploadProjectDefinitionContents,
     error: definitionError,
   } = useRemoteProjectDefinitionContents();
-  const { projectDefinitionContainer, error: containerError } =
-    useProjectDefinitionContainer({
-      schemaParserContext,
-      projectDefinitionFilePayload,
-    });
+  const {
+    projectDefinitionContainer,
+    error: containerError,
+    cacheProjectDefinitionContainer,
+  } = useProjectDefinitionContainer({
+    schemaParserContext,
+    projectDefinitionFilePayload,
+  });
   const { currentProjectId, projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion } = useClientVersion();
   const { showRefIssues } = useDeleteReferenceDialog();
@@ -95,10 +98,14 @@ export function ProjectDefinitionProvider({
           parserContext,
           projectDefinitionSchemaWithContext.pluginStore,
         );
+        const serializedContents = definitionContainer.toSerializedContents();
 
-        await uploadProjectDefinitionContents(
-          definitionContainer.toSerializedContents(),
+        cacheProjectDefinitionContainer(
+          definitionContainer,
+          serializedContents,
         );
+
+        await uploadProjectDefinitionContents(serializedContents);
       } finally {
         setIsSavingDefinition(false);
       }
@@ -154,6 +161,7 @@ export function ProjectDefinitionProvider({
     updatedExternally,
     uploadProjectDefinitionContents,
     showRefIssues,
+    cacheProjectDefinitionContainer,
   ]);
 
   const error = contextError ?? definitionError ?? containerError;
