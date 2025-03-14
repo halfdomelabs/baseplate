@@ -101,7 +101,7 @@ export const reactTailwindGenerator = createGenerator({
             // TODO: Dark mode not supported currently
             await builder.apply(
               copyFileAction({
-                source: 'tailwind.config.js',
+                source: 'tpl.tailwind.config.js',
                 destination: 'tailwind.config.js',
                 shouldFormat: true,
               }),
