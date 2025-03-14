@@ -42,7 +42,10 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
           'apps.*.sections.*.embeddedForms.*.form.fields.*',
           renameObjectKeysTransform({
             localRelationName: 'localRelationRef',
+            localRelation: 'localRelationRef',
             modelField: 'modelFieldRef',
+            modelRelation: 'modelRelationRef',
+            embeddedFormName: 'embeddedFormRef',
           }),
         ),
       (c) =>
@@ -51,6 +54,7 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
           'apps.*.sections.*.table.columns.*.display',
           renameObjectKeysTransform({
             modelField: 'modelFieldRef',
+            localRelationName: 'localRelationRef',
           }),
         ),
       (c) =>
@@ -59,6 +63,7 @@ export const migration009RenameRefs = createSchemaMigration<unknown, unknown>({
           'apps.*.sections.*.embeddedForms.*.table.columns.*.display',
           renameObjectKeysTransform({
             modelField: 'modelFieldRef',
+            localRelationName: 'localRelationRef',
           }),
         ),
       (c) =>
