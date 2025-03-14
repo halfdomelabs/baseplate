@@ -1,5 +1,11 @@
 # @halfdomelabs/core-generators
 
+## 0.10.6
+
+### Patch Changes
+
+- [#454](https://github.com/halfdomelabs/baseplate/pull/454) [`5ef58cd`](https://github.com/halfdomelabs/baseplate/commit/5ef58cd9d17a94ff260457b7bc6c96c85d921f7e) Thanks [@kingston](https://github.com/kingston)! - Upgrade axios to 1.8.3
+
 ## 0.10.5
 
 ### Patch Changes
