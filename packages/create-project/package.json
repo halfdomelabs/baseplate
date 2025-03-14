@@ -27,7 +27,7 @@
   "dependencies": {
     "@halfdomelabs/utils": "workspace:*",
     "@inquirer/prompts": "7.2.1",
-    "axios": "1.7.4",
+    "axios": "1.8.3",
     "chalk": "5.3.0",
     "commander": "^12.1.0",
     "execa": "9.3.0",
