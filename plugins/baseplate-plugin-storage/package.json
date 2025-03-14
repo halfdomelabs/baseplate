@@ -47,7 +47,6 @@
     "@halfdomelabs/sync": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@originjs/vite-plugin-federation": "1.3.6",
-    "@types/inflection": "^1.13.2",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
