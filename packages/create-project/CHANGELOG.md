@@ -1,5 +1,11 @@
 # @halfdomelabs/create-project
 
+## 0.2.11
+
+### Patch Changes
+
+- [#458](https://github.com/halfdomelabs/baseplate/pull/458) [`08c496f`](https://github.com/halfdomelabs/baseplate/commit/08c496fa98631299728c1c94525e198e1af93367) Thanks [@kingston](https://github.com/kingston)! - Bump axios to ^1.8.3
+
 ## 0.2.10
 
 ### Patch Changes
