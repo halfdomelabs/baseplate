@@ -1,5 +1,11 @@
 # @halfdomelabs/project-builder-lib
 
+## 0.9.7
+
+### Patch Changes
+
+- [#456](https://github.com/halfdomelabs/baseplate/pull/456) [`2810154`](https://github.com/halfdomelabs/baseplate/commit/2810154cca129832fcdd3ba1280f717b255943bc) Thanks [@kingston](https://github.com/kingston)! - Fix ref rename migration to handle all cases
+
 ## 0.9.6
 
 ### Patch Changes
