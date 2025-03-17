@@ -11,7 +11,7 @@ export function createContextBuilder(apiContext: BaseplateApiContext) {
       res,
       ...apiContext,
       getApi: (projectId: string) => {
-        const service = apiContext.services.find((a) => a.id === projectId);
+        const service = apiContext.serviceManager.getService(projectId);
         if (!service) {
           throw new TRPCError({
             message: `No project with id ${projectId}`,

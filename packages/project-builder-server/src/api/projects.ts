@@ -14,27 +14,29 @@ export interface ProjectInfo {
 export const projectsRouter = router({
   list: privateProcedure.query(async ({ ctx }) =>
     Promise.all(
-      ctx.services.map(async (service): Promise<ProjectInfo> => {
-        const { contents } = await service.readDefinition();
-        const parsedContents = JSON.parse(contents) as unknown;
+      ctx.serviceManager
+        .getServices()
+        .map(async (service): Promise<ProjectInfo> => {
+          const { contents } = await service.readDefinition();
+          const parsedContents = JSON.parse(contents) as unknown;
 
-        if (
-          !parsedContents ||
-          typeof parsedContents !== 'object' ||
-          !('name' in parsedContents) ||
-          typeof parsedContents.name !== 'string'
-        ) {
-          throw new Error(
-            `Invalid project definition for ${service.directory}`,
-          );
-        }
+          if (
+            !parsedContents ||
+            typeof parsedContents !== 'object' ||
+            !('name' in parsedContents) ||
+            typeof parsedContents.name !== 'string'
+          ) {
+            throw new Error(
+              `Invalid project definition for ${service.directory}`,
+            );
+          }
 
-        return {
-          id: service.id,
-          name: parsedContents.name,
-          directory: service.directory,
-        };
-      }),
+          return {
+            id: service.id,
+            name: parsedContents.name,
+            directory: service.directory,
+          };
+        }),
     ),
   ),
 

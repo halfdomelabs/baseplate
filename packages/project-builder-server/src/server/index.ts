@@ -1,3 +1,5 @@
+import type { FastifyInstance } from 'fastify';
+
 import open from 'open';
 
 import type { WebServerOptions } from './server.js';
@@ -11,9 +13,11 @@ export interface StartWebServerOptions extends WebServerOptions {
 
 const DEFAULT_PORT = 3230;
 
+export { BuilderServiceManager } from './builder-service-manager.js';
+
 export async function startWebServer(
   options: StartWebServerOptions,
-): Promise<void> {
+): Promise<FastifyInstance> {
   const { browser, port = DEFAULT_PORT, logger } = options;
   const server = await buildServer(options);
 
@@ -42,4 +46,6 @@ export async function startWebServer(
       logger.error(error);
     });
   }
+
+  return server;
 }

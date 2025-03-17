@@ -1,10 +1,24 @@
 import { initTRPC, TRPCError } from '@trpc/server';
 
+import { UserVisibleError } from '@src/utils/errors.js';
+
 import type { Context } from './context.js';
 
 import { getCsrfToken } from './crsf.js';
 
-const t = initTRPC.context<Context>().create();
+const t = initTRPC.context<Context>().create({
+  errorFormatter({ error, shape }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        isUserVisible: error instanceof UserVisibleError,
+        descriptionText:
+          error instanceof UserVisibleError ? error.descriptionText : undefined,
+      },
+    };
+  },
+});
 
 export const { router } = t;
 export const publicProcedure = t.procedure;
