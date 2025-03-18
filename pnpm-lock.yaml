@@ -249,9 +249,6 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
     devDependencies:
-      '@halfdomelabs/project-builder-lib':
-        specifier: workspace:*
-        version: link:../project-builder-lib
       '@halfdomelabs/tools':
         specifier: workspace:*
         version: link:../tools
