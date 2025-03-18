@@ -1,7 +1,4 @@
-import type {
-  AppRouter,
-  appRouter,
-} from '@halfdomelabs/project-builder-server';
+import type { AppRouter } from '@halfdomelabs/project-builder-server';
 
 import { TRPCClientError } from '@trpc/client';
 import { UserVisibleError } from 'src/utils/error';

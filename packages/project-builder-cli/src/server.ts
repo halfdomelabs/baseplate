@@ -1,5 +1,6 @@
 import type { Command } from 'commander';
 import type { FastifyInstance } from 'fastify';
+import type { Logger } from 'pino';
 
 import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
 import {
@@ -18,11 +19,12 @@ import { getPackageVersion } from './utils/version.js';
 interface ServeCommandOptions {
   browser: boolean;
   port: number;
+  logger?: Logger;
 }
 
 export async function serveWebServer(
   directories: string[],
-  { browser, port }: ServeCommandOptions,
+  { browser, port, logger: overrideLogger }: ServeCommandOptions,
 ): Promise<{
   fastifyInstance: FastifyInstance;
   serviceManager: BuilderServiceManager;
@@ -54,7 +56,7 @@ export async function serveWebServer(
     port,
     cliVersion: version,
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
-    logger,
+    logger: overrideLogger ?? logger,
     featureFlags: getEnabledFeatureFlags(),
   });
 

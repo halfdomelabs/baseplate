@@ -11,8 +11,10 @@ import { test as base } from '@playwright/test';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { pino } from 'pino';
 
 import { serveWebServer } from '@src/server.js';
+import { DEFAULT_LOGGER_OPTIONS } from '@src/services/logger.js';
 
 /**
  * Start the server on an available port
@@ -31,6 +33,10 @@ async function startServerOnAvailablePort(): Promise<{
       const server = await serveWebServer([], {
         port: usedPort,
         browser: false,
+        logger: pino({
+          ...DEFAULT_LOGGER_OPTIONS,
+          level: 'error',
+        }),
       });
       return {
         fastifyInstance: server.fastifyInstance,
