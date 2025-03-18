@@ -46,14 +46,17 @@
       ]
     },
     "packages/project-builder-cli": {
-      "entry": ["src/index.{ts,tsx}"],
-      "project": "src/**/*.{ts,tsx}",
+      "entry": ["src/index.{ts,tsx}", "tests/**/*.spec.{ts,tsx}"],
+      "project": ["src/**/*.{ts,tsx}", "tests/**/*.{ts,tsx}"],
       "ignoreDependencies": [
         // pino-pretty is referenced by string (https://github.com/pinojs/pino/blob/ad864b7ae02b314b9a548614f705a437e0db78c3/docs/transports.md)
         "pino-pretty",
         // we resolve the package by string in src/server.ts
         "@halfdomelabs/project-builder-web"
-      ]
+      ],
+      "paths": {
+        "@src/*": ["./src/*"]
+      }
     },
     "packages/project-builder-test": {
       "entry": ["src/index.{ts,tsx}"],

@@ -34,7 +34,6 @@
     "ora": "^8.0.1"
   },
   "devDependencies": {
-    "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/tools": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
