@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalPassThroughEnv": ["PLAYWRIGHT_*"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -17,6 +18,9 @@
     "test": {
       "dependsOn": ["^build"],
       "outputLogs": "errors-only"
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"]
     },
     "prettier:check": {},
     "prettier:write": {

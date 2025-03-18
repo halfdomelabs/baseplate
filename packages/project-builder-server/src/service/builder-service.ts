@@ -136,9 +136,13 @@ export class ProjectBuilderService extends TypedEventEmitter<ProjectBuilderServi
   }
 
   protected _getInitialProjectDefinition(): string {
-    const starterName = path.dirname(path.dirname(this.projectJsonPath));
+    const starterName = path
+      .basename(path.dirname(path.dirname(this.projectJsonPath)))
+      .toLowerCase();
+    const sanitizedName = starterName.replaceAll(/[^a-zA-Z0-9-]/g, '');
+    const finalName = sanitizedName || 'project-name';
     return JSON.stringify({
-      name: starterName,
+      name: finalName,
       cliVersion: this.cliVersion,
       portOffset: 5000,
       schemaVersion: getLatestMigrationVersion(),

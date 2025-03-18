@@ -11,7 +11,7 @@ import path from 'node:path';
 import { z } from 'zod';
 
 import { notEmpty } from '@src/utils/array.js';
-import { InitializeServerError } from '@src/utils/errors.js';
+import { UserVisibleError } from '@src/utils/errors.js';
 
 /**
  * Finds the available plugins in the project.
@@ -25,7 +25,7 @@ export async function discoverPlugins(
   });
 
   if (!packageJsonPath) {
-    throw new InitializeServerError(
+    throw new UserVisibleError(
       'Could not find root package.json file for the Baseplate project',
       'Make sure the project-definition.json file is inside a valid Node package with @halfdomelabs/project-builder-cli.',
     );
@@ -39,7 +39,7 @@ export async function discoverPlugins(
       devDependencies: z.record(z.string()).optional(),
     }),
   ).catch(() => {
-    throw new InitializeServerError(
+    throw new UserVisibleError(
       `Could not read the root package.json file for the Baseplate project at ${packageJsonPath}.`,
       'Make sure the package.json file is a valid JSON file.',
     );

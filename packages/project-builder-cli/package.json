@@ -22,7 +22,7 @@
     "scripts/**/*"
   ],
   "scripts": {
-    "build": "tsc && tsc-alias",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "clean": "rm -rf ./dist",
     "dev": "tsx watch --exclude /**/node_modules/** -r dotenv/config ./src",
     "dev:serve": "pnpm dev serve",
@@ -30,7 +30,8 @@
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier -w .",
     "start": "tsx -r dotenv/config ./src",
-    "typecheck": "tsc --noEmit"
+    "test:e2e": "pnpm playwright test",
+    "typecheck": "tsc --build tsconfig.json"
   },
   "dependencies": {
     "@halfdomelabs/project-builder-common": "workspace:*",
@@ -45,9 +46,11 @@
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
+    "@playwright/test": "1.51.0",
     "@types/node": "catalog:",
     "dotenv": "^16.0.3",
     "eslint": "catalog:",
+    "fastify": "5.1.0",
     "prettier": "catalog:",
     "tsc-alias": "catalog:",
     "tsx": "catalog:",

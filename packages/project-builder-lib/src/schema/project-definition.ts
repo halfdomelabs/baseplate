@@ -51,7 +51,7 @@ export const projectDefinitionSchema = z.object({
   enums: z.array(enumSchema).optional(),
   auth: authSchema.optional(),
   isInitialized: z.boolean().default(false),
-  schemaVersion: z.number().nullish(),
+  schemaVersion: z.number(),
   theme: themeSchema.optional(),
   plugins: pluginsSchema.optional(),
 });

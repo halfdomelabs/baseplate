@@ -1,5 +1,3 @@
-import type { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
-
 import chalk from 'chalk';
 import { execa } from 'execa';
 import fs from 'node:fs/promises';
@@ -74,20 +72,6 @@ export async function generateBaseplateProject({
             node: '20.18.1',
           },
         },
-        null,
-        2,
-      ),
-    );
-
-    await writeFile(
-      'baseplate/project-definition.json',
-      JSON.stringify(
-        {
-          name: packageName,
-          features: [],
-          models: [],
-          portOffset: 3000,
-        } satisfies ProjectDefinitionInput,
         null,
         2,
       ),

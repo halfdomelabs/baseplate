@@ -22,10 +22,6 @@ async function createSchemaParserContext(
 async function runMain(): Promise<void> {
   const version = await getPackageVersion();
 
-  if (!version) {
-    throw new Error('Could not determine package version');
-  }
-
   program.version(version, '-v, --version');
 
   program
@@ -45,7 +41,7 @@ async function runMain(): Promise<void> {
       });
     });
 
-  addServeCommand(program, version);
+  addServeCommand(program);
 
   await program.parseAsync(process.argv);
 }

@@ -1,13 +1,9 @@
-import type {
-  FeatureFlag,
-  PluginMetadataWithPaths,
-} from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
 import type { FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
 import mime from 'mime';
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
@@ -17,39 +13,18 @@ import { getCsrfToken } from '@src/api/crsf.js';
 import { appRouter, type AppRouter } from '@src/api/index.js';
 import { pathSafeJoin } from '@src/utils/paths.js';
 
-import { ProjectBuilderService } from '../service/builder-service.js';
+import type { BuilderServiceManager } from './builder-service-manager.js';
 
 export const baseplatePlugin: FastifyPluginAsyncZod<{
-  directories: string[];
   cliVersion: string;
-  builtInPlugins: PluginMetadataWithPaths[];
   featureFlags: FeatureFlag[];
-}> = async function (
-  fastify,
-  { directories, cliVersion, builtInPlugins, featureFlags },
-) {
+  serviceManager: BuilderServiceManager;
+}> = async function (fastify, { cliVersion, featureFlags, serviceManager }) {
   const csrfToken = getCsrfToken();
-  const services = await Promise.all(
-    directories.map((directory) => {
-      const id = crypto
-        .createHash('shake256', { outputLength: 9 })
-        .update(directory)
-        .digest('base64')
-        .replace('/', '-')
-        .replace('+', '_');
-      const service = new ProjectBuilderService({
-        directory,
-        id,
-        cliVersion,
-        builtInPlugins,
-      });
-      service.init();
-      return service;
-    }),
-  );
 
   fastify.log.info(
-    `Loaded projects:\n${services
+    `Loaded projects:\n${serviceManager
+      .getServices()
       .map((api) => `${api.directory}: ${api.id}`)
       .join('\n')}`,
   );
@@ -60,7 +35,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
     trpcOptions: {
       router: appRouter,
       createContext: createContextBuilder({
-        services,
+        serviceManager,
         cliVersion,
         logger: fastify.log,
         featureFlags,
@@ -81,7 +56,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
     },
     handler: async (req, reply) => {
       const { projectId, '*': staticPath } = req.params;
-      const service = services.find((service) => service.id === projectId);
+      const service = serviceManager.getService(projectId);
       if (!service) {
         reply.status(404).send('No project with provided ID found');
         return;
@@ -123,7 +98,7 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
     },
     handler: async (req, reply) => {
       const { projectId, '*': staticPath } = req.params;
-      const service = services.find((service) => service.id === projectId);
+      const service = serviceManager.getService(projectId);
       if (!service) {
         reply.status(404).send('No project with provided ID found');
         return;
@@ -175,8 +150,6 @@ export const baseplatePlugin: FastifyPluginAsyncZod<{
   });
 
   fastify.addHook('onClose', () => {
-    services.map((service) => {
-      service.close();
-    });
+    serviceManager.removeAllServices();
   });
 };

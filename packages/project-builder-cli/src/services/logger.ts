@@ -1,6 +1,6 @@
 import { pino } from 'pino';
 
-export const logger = pino({
+export const DEFAULT_LOGGER_OPTIONS: pino.LoggerOptions = {
   transport: {
     target: 'pino-pretty',
     options: {
@@ -8,4 +8,6 @@ export const logger = pino({
       ignore: 'pid,hostname',
     },
   },
-});
+};
+
+export const logger = pino(DEFAULT_LOGGER_OPTIONS);

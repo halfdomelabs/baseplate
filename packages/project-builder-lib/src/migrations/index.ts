@@ -43,7 +43,7 @@ export function runSchemaMigrations(config: ProjectDefinition): {
   migratedDefinition: ProjectDefinition;
   appliedMigrations: SchemaMigration[];
 } {
-  const schemaVersion = config.schemaVersion ?? 0;
+  const { schemaVersion } = config;
 
   const unappliedMigrations = SCHEMA_MIGRATIONS.filter(
     (m) => m.version > schemaVersion,

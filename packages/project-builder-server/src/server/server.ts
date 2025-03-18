@@ -1,7 +1,4 @@
-import type {
-  FeatureFlag,
-  PluginMetadataWithPaths,
-} from '@halfdomelabs/project-builder-lib';
+import type { FeatureFlag } from '@halfdomelabs/project-builder-lib';
 import type { FastifyBaseLogger, FastifyInstance } from 'fastify';
 import type { Logger } from 'pino';
 
@@ -14,25 +11,25 @@ import {
   validatorCompiler,
 } from 'fastify-type-provider-zod';
 
+import type { BuilderServiceManager } from './builder-service-manager.js';
+
 import { gracefulShutdownPlugin } from './graceful-shutdown.js';
 import { baseplatePlugin } from './plugin.js';
 
 export interface WebServerOptions {
-  directories: string[];
   projectBuilderStaticDir?: string;
   cliVersion: string;
   logger: Logger;
-  builtInPlugins: PluginMetadataWithPaths[];
   featureFlags: FeatureFlag[];
+  serviceManager: BuilderServiceManager;
 }
 
 export async function buildServer({
-  directories,
   projectBuilderStaticDir,
   cliVersion,
   logger,
-  builtInPlugins,
   featureFlags,
+  serviceManager,
 }: WebServerOptions): Promise<FastifyInstance> {
   const server = fastify({
     forceCloseConnections: 'idle',
@@ -45,15 +42,22 @@ export async function buildServer({
 
   await server.register(gracefulShutdownPlugin);
 
-  await server.register(fastifyHelmet);
+  await server.register(fastifyHelmet, {
+    contentSecurityPolicy: {
+      directives: {
+        // Disable upgrade-insecure-requests to allow insecure requests to localhost
+        // This is required for Safari to work (https://github.com/helmetjs/helmet/issues/429)
+        upgradeInsecureRequests: null,
+      },
+    },
+  });
 
   await server.register(fastifyWebsocketPlugin);
 
   await server.register(baseplatePlugin, {
-    directories,
     cliVersion,
-    builtInPlugins,
     featureFlags,
+    serviceManager,
   });
 
   if (projectBuilderStaticDir) {

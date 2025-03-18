@@ -54,12 +54,10 @@ export function ProjectDefinitionProvider({
     schemaParserContext,
     projectDefinitionFilePayload,
   });
-  const { currentProjectId, projects, resetCurrentProjectId } = useProjects();
+  const { projects, resetCurrentProjectId } = useProjects();
   const { version: cliVersion } = useClientVersion();
   const { showRefIssues } = useDeleteReferenceDialog();
   const [isSavingDefinition, setIsSavingDefinition] = useState(false);
-
-  const selectedProject = projects.find((p) => p.id === currentProjectId);
 
   const updatedExternally = !!projectDefinitionFilePayload?.updatedExternally;
 
@@ -169,15 +167,7 @@ export function ProjectDefinitionProvider({
   if (!result) {
     return (
       <ErrorableLoader
-        error={
-          error &&
-          formatError(
-            error,
-            `We could not load the project config (${
-              selectedProject?.directory ?? 'unknown'
-            }).`,
-          )
-        }
+        error={error && formatError(error, ``)}
         header="Failed to load project config"
         actions={
           <div className="flex flex-col space-y-4">

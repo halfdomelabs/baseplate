@@ -10,7 +10,7 @@
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "1.48.0",
+    "@playwright/test": "1.51.0",
     "@types/node": "^20.0.0",
     "prettier": "3.3.3",
     "typescript": "5.5.4"
