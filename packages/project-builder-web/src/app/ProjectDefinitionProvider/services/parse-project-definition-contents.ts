@@ -20,7 +20,7 @@ export function parseProjectDefinitionContents(
     // migrate config
     if (!isMigrateableProjectDefinition(projectDefinition)) {
       throw new UserVisibleError(
-        'The project configuration is not valid JSON object. Please check the file and try again.',
+        'The project configuration is not valid project definition with a schemaVersion property. Please check the file and try again.',
       );
     }
     const { migratedDefinition } = runSchemaMigrations(projectDefinition);

@@ -3,6 +3,7 @@ import type { BuilderServiceManager } from '@halfdomelabs/project-builder-server
 import type { FastifyInstance } from 'fastify';
 
 import {
+  getLatestMigrationVersion,
   prettyStableStringify,
   type ProjectDefinition,
 } from '@halfdomelabs/project-builder-lib';
@@ -53,11 +54,45 @@ async function startServerOnAvailablePort(): Promise<{
   throw new Error('Could not find available port');
 }
 
+/**
+ * The payload for a project
+ */
+interface ProjectPayload {
+  /**
+   * The ID of the project
+   */
+  id: string;
+  /**
+   * The start URL of the project
+   */
+  startUrl: string;
+  /**
+   * Make a URL for the project with the project ID/server URL added
+   * @param path - The path to append to the base URL
+   * @returns The full URL
+   */
+  makeUrl: (path: string) => string;
+  /**
+   * Read the project definition from the project directory
+   * @returns The project definition
+   */
+  readProjectDefinition: () => Promise<ProjectDefinition>;
+  /**
+   * Write the project definition to the project directory
+   * @param projectDefinition - The project definition to write
+   */
+  writeProjectDefinition: (
+    projectDefinition: ProjectDefinition,
+  ) => Promise<void>;
+}
+
 // Extend the base Playwright test with our fixture
 export const test = base.extend<
   {
-    projectDefinition: ProjectDefinition | undefined;
-    serviceUrl: string;
+    addProject: (
+      projectDefinition?: ProjectDefinition,
+    ) => Promise<ProjectPayload>;
+    addInitializedProject: () => Promise<ProjectPayload>;
   },
   {
     server: {
@@ -67,7 +102,6 @@ export const test = base.extend<
     };
   }
 >({
-  projectDefinition: undefined,
   server: [
     async ({}, use) => {
       let fastifyInstance: FastifyInstance | undefined;
@@ -97,65 +131,105 @@ export const test = base.extend<
     },
     { scope: 'worker' },
   ],
-  serviceUrl: async ({ projectDefinition, server }, use, { parallelIndex }) => {
-    // Generate a unique temp directory for this test run
-    const tempDir = path.join(os.tmpdir(), `baseplate-test-${parallelIndex}`);
-
-    // Delete the temp directory if it exists
-    try {
-      await fs.rm(tempDir, { recursive: true, force: true });
-    } catch (err) {
-      console.warn(`Failed to clean up temp directory: ${tempDir}`, err);
-    }
-
-    // Create temp directory
-    await fs.mkdir(tempDir, { recursive: true });
-
-    // Write package.json for the project
-    await fs.writeFile(
-      path.join(tempDir, 'package.json'),
-      JSON.stringify(
-        {
-          name: 'test-project',
-          version: '0.0.1',
-          private: true,
-        },
-        null,
-        2,
-      ),
+  addProject: async ({ server }, use, { parallelIndex }) => {
+    const temporaryDirectory = path.join(
+      os.tmpdir(),
+      `baseplate-test-${parallelIndex}`,
     );
-
-    // Write the project definition
-    async function writeProjectDefinition(
-      content: ProjectDefinition,
-    ): Promise<void> {
-      await fs.writeFile(
-        path.join(tempDir, 'project.json'),
-        prettyStableStringify(content),
-      );
-    }
-
-    if (projectDefinition) {
-      await writeProjectDefinition(projectDefinition);
-    }
-
-    // Add service to the server
-    const service = server.builderServiceManager.addService(tempDir);
-
+    let projectIdx = 0;
     try {
-      // Use the fixture in the test
-      await use(`http://localhost:${server.port}`);
+      await use(async (projectDefinition: ProjectDefinition | undefined) => {
+        // Generate a unique temp directory for this test run
+        const tempDir = path.join(temporaryDirectory, `project-${projectIdx}`);
+        projectIdx++;
+
+        // Delete the temp directory if it exists
+        try {
+          await fs.rm(tempDir, { recursive: true, force: true });
+        } catch (err) {
+          console.warn(`Failed to clean up temp directory: ${tempDir}`, err);
+        }
+
+        // Create temp directory
+        await fs.mkdir(path.join(tempDir, 'baseplate'), { recursive: true });
+
+        // Write package.json for the project
+        await fs.writeFile(
+          path.join(tempDir, 'package.json'),
+          JSON.stringify(
+            {
+              name: 'test-project',
+              version: '0.0.1',
+              private: true,
+            },
+            null,
+            2,
+          ),
+        );
+
+        async function writeProjectDefinition(
+          projectDefinition: ProjectDefinition,
+        ): Promise<void> {
+          await fs.writeFile(
+            path.join(tempDir, 'baseplate/project-definition.json'),
+            prettyStableStringify(projectDefinition),
+          );
+        }
+
+        async function readProjectDefinition(): Promise<ProjectDefinition> {
+          const contents = await fs.readFile(
+            path.join(tempDir, 'baseplate/project-definition.json'),
+            'utf8',
+          );
+          return JSON.parse(contents) as ProjectDefinition;
+        }
+
+        if (projectDefinition) {
+          await writeProjectDefinition(projectDefinition);
+        }
+
+        // Add service to the server
+        const service = server.builderServiceManager.addService(tempDir);
+
+        return {
+          id: service.id,
+          startUrl: `${server.url}/?projectId=${service.id}`,
+          makeUrl: (path: string) =>
+            `${server.url}/${path}?projectId=${service.id}`,
+          writeProjectDefinition,
+          readProjectDefinition,
+        };
+      });
     } finally {
-      // Remove the service from the server
-      server.builderServiceManager.removeService(service.id);
+      // Remove all services from the server
+      server.builderServiceManager.removeAllServices();
 
       // Clean up the temp directory
       try {
-        await fs.rm(tempDir, { recursive: true, force: true });
+        await fs.rm(temporaryDirectory, { recursive: true, force: true });
       } catch (err) {
-        console.warn(`Failed to clean up temp directory: ${tempDir}`, err);
+        console.warn(
+          `Failed to clean up temp directory: ${temporaryDirectory}`,
+          err,
+        );
       }
     }
+  },
+  addInitializedProject: async ({ addProject }, use) => {
+    await use(
+      async () =>
+        await addProject({
+          name: 'test-project',
+          version: '0.0.1',
+          cliVersion: '0.0.1',
+          portOffset: 7000,
+          apps: [],
+          features: [],
+          models: [],
+          isInitialized: true,
+          schemaVersion: getLatestMigrationVersion(),
+        }),
+    );
   },
 });
 
