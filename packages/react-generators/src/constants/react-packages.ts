@@ -27,7 +27,7 @@ export const REACT_PACKAGES = {
   'react-hot-toast': '2.4.1',
   'react-icons': '5.0.1',
   'react-select': '5.8.0',
-  zustand: '4.4.6',
+  zustand: '5.0.3',
   'react-error-boundary': '4.0.13',
 
   // GraphQL
