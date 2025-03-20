@@ -12,9 +12,6 @@ jobs:
   test:
     name: Test E2E
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.51.0-noble
-      options: --user 1001
 
     steps:
       - name: Checkout Repo
@@ -37,6 +34,10 @@ jobs:
           cache: 'pnpm'
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/project-builder-cli... --filter @halfdomelabs/root
+
+      - name: Install Playwright with dependencies
+        run: pnpm playwright install --with-deps
+        working-directory: packages/project-builder-cli
 
       - name: Run E2E Tests
         run: pnpm test:e2e:affected

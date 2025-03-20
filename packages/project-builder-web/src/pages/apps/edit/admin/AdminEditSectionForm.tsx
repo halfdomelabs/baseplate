@@ -14,14 +14,13 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { useConfirmDialog } from '@halfdomelabs/ui-components';
+import { ComboboxField, useConfirmDialog } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
-import ReactSelectInput from 'src/components/ReactSelectInput';
 
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 
@@ -153,7 +152,7 @@ function AdminEditSectionForm({
           control={control}
           name="name"
         />
-        <ReactSelectInput.LabelledController
+        <ComboboxField.Controller
           label="Feature"
           control={control}
           options={featureOptions}

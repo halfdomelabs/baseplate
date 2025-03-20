@@ -7,10 +7,6 @@ export default {
   async setupEnvironment(context, helpers) {
     // disable frozen lockfile to test migrations
     await helpers.runCommand('pnpm install --no-frozen-lockfile');
-    await helpers.runCommand('pnpm playwright install --with-deps', {
-      cwd: 'packages/e2e',
-      timeout: 180_000,
-    });
     await helpers.startDockerCompose(
       'packages/backend/docker/docker-compose.yml',
     );
