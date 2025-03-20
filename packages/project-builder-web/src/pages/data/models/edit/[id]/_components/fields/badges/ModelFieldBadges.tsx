@@ -22,15 +22,17 @@ export function ModelFieldBadges({
   idx,
 }: ModelFieldBadgesProps): React.JSX.Element {
   const field = useEditedModelConfig((model) => model.model.fields[idx]);
-  const { isPrimary, uniqueConstraints } = useEditedModelConfig((model) => ({
-    isPrimary: model.model.primaryKeyFieldRefs.includes(field.id),
-    uniqueConstraints:
+  const isPrimary = useEditedModelConfig((model) =>
+    model.model.primaryKeyFieldRefs.includes(field.id),
+  );
+  const uniqueConstraints = useEditedModelConfig(
+    (model) =>
       model.model.uniqueConstraints
         ?.filter((constraint) =>
           constraint.fields.some((f) => f.fieldRef === field.id),
         )
         .map((uc) => uc.id) ?? [],
-  }));
+  );
   const modelFieldRelations = useEditedModelConfig(({ model }) => {
     const field = model.fields[idx];
     return (

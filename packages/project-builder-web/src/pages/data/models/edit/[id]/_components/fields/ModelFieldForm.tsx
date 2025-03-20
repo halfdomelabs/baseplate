@@ -49,15 +49,12 @@ function ModelFieldForm({
     control,
   });
 
-  const { isPartOfPrimaryKey, hasCompositePrimaryKey, uniqueConstraints } =
-    useEditedModelConfig((model) => {
-      const { primaryKeyFieldRefs, uniqueConstraints } = model.model;
-      return {
-        isPartOfPrimaryKey: primaryKeyFieldRefs.includes(watchedField.id),
-        hasCompositePrimaryKey: primaryKeyFieldRefs.length > 1,
-        uniqueConstraints: uniqueConstraints ?? [],
-      };
-    });
+  const model = useEditedModelConfig((model) => model.model);
+  const isPartOfPrimaryKey = model.primaryKeyFieldRefs.includes(
+    watchedField.id,
+  );
+  const hasCompositePrimaryKey = model.primaryKeyFieldRefs.length > 1;
+  const uniqueConstraints = model.uniqueConstraints ?? [];
 
   const ownUniqueConstraints = uniqueConstraints.filter((uc) =>
     uc.fields.some((f) => f.fieldRef === watchedField.id),
@@ -67,7 +64,7 @@ function ModelFieldForm({
       relation.references.some((r) => r.localRef === watchedField.id),
     ) ?? [];
 
-  const removeError = useEditedModelConfig((model) => {
+  const removeError = (() => {
     // check local references
     if (usedRelations.length > 0) {
       return `Unable to remove field as it is being used in relations ${usedRelations
@@ -80,14 +77,14 @@ function ModelFieldForm({
     }
     // check unique constraints
     if (
-      model.model.uniqueConstraints?.some((constraint) =>
+      model.uniqueConstraints?.some((constraint) =>
         constraint.fields.some((f) => f.fieldRef === watchedField.id),
       )
     ) {
       return `Unable to remove field as it is being used in in a unique constraint`;
     }
     return;
-  });
+  })();
 
   function handleRemove(): void {
     if (removeError) {
