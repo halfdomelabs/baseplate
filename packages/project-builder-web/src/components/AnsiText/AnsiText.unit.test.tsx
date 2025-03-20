@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react';
 import anser from 'anser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import AnsiText from './AnsiText';
+import { AnsiText } from './AnsiText';
 
 // Mock the anser library
 vi.mock('anser', () => ({
