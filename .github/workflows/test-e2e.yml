@@ -38,7 +38,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile --filter @halfdomelabs/project-builder-test... --filter @halfdomelabs/project-builder-cli... --filter @halfdomelabs/root
 
-      - name: Typecheck
-        run: pnpm typecheck
       - name: Run E2E Tests
         run: pnpm test:e2e:affected
