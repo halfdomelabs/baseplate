@@ -34,4 +34,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm build:affected
+      - name: Typecheck
+        run: pnpm typecheck
       - run: pnpm test:affected
