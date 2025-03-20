@@ -81,5 +81,3 @@ export function AnsiText({ text }: AnsiTextProps): React.JSX.Element {
 
   return <>{parsedLines}</>;
 }
-
-export default AnsiText;

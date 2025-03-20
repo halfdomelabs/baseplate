@@ -12,7 +12,7 @@ import {
 import { useProjects } from '@src/hooks/useProjects';
 import { trpc } from '@src/services/trpc';
 
-import AnsiText from '../AnsiText/AnsiText';
+import { AnsiText } from '../AnsiText/AnsiText';
 
 interface Props {
   className?: string;
