@@ -13,12 +13,11 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Alert as UiAlert } from '@halfdomelabs/ui-components';
+import { ComboboxField, Alert as UiAlert } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
 import { Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import ReactSelectInput from 'src/components/ReactSelectInput';
 
 import { createAuth0Models } from './auth-models';
 import RoleEditorForm from './RoleEditorForm';
@@ -206,25 +205,25 @@ function AuthPage(): React.JSX.Element {
             control={control}
             disabled={true}
           />
-          <ReactSelectInput.LabelledController
+          <ComboboxField.Controller
             label="User Model"
             options={modelOptions}
             name="userModelRef"
             control={control}
           />
-          <ReactSelectInput.LabelledController
+          <ComboboxField.Controller
             label="User Role Model"
             options={modelOptions}
             name="userRoleModelRef"
             control={control}
           />
-          <ReactSelectInput.LabelledController
+          <ComboboxField.Controller
             label="Auth Feature Path"
             options={featureOptions}
             name="authFeatureRef"
             control={control}
           />
-          <ReactSelectInput.LabelledController
+          <ComboboxField.Controller
             label="Accounts Feature Path"
             options={featureOptions}
             name="accountsFeatureRef"
