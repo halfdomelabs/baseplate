@@ -44,8 +44,8 @@ function Badge({
   );
 }
 
-interface BadgeWithIconProps extends BadgeProps {
-  icon?: (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
+export interface BadgeWithIconProps extends BadgeProps {
+  icon?: (props: React.SVGProps<SVGSVGElement>) => React.ReactNode;
 }
 
 Badge.WithIcon = function BadgeWithIcon({

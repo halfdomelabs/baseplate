@@ -45,8 +45,8 @@ export const Default: Story = {
       { label: 'Option 2', value: '2' },
       { label: 'Option 3', value: '3' },
     ],
-    getOptionLabel: (option) => (option as { label: string }).label,
-    getOptionValue: (option) => (option as { value: string }).value,
+    getOptionLabel: (option: { label: string }) => option.label,
+    getOptionValue: (option: { value: string }) => option.value,
     className: 'w-96',
   },
 };
@@ -60,8 +60,8 @@ export const Labelled: Story = {
     ],
     label: 'What option would you like to combobox?',
     description: 'We will never judge you for your choice.',
-    getOptionLabel: (option) => (option as { label: string }).label,
-    getOptionValue: (option) => (option as { value: string }).value,
+    getOptionLabel: (option: { label: string }) => option.label,
+    getOptionValue: (option: { value: string }) => option.value,
     className: 'w-96',
   },
 };

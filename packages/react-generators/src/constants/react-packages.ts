@@ -25,7 +25,7 @@ export const REACT_PACKAGES = {
   clsx: '2.1.1',
   'react-hook-form': '7.53.0',
   'react-hot-toast': '2.4.1',
-  'react-icons': '5.0.1',
+  'react-icons': '5.5.0',
   'react-select': '5.8.0',
   zustand: '5.0.3',
   'react-error-boundary': '4.0.13',
