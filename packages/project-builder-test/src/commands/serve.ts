@@ -1,8 +1,14 @@
-import type { ProjectDefinitionInput } from '@halfdomelabs/project-builder-lib';
 import type { Command } from 'commander';
 
 import { getDefaultPlugins } from '@halfdomelabs/project-builder-common';
-import { startWebServer } from '@halfdomelabs/project-builder-server';
+import {
+  getLatestMigrationVersion,
+  type ProjectDefinitionInput,
+} from '@halfdomelabs/project-builder-lib';
+import {
+  BuilderServiceManager,
+  startWebServer,
+} from '@halfdomelabs/project-builder-server';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { pino } from 'pino';
@@ -46,6 +52,7 @@ async function createTestProject(
       features: [],
       models: [],
       portOffset: 3000,
+      schemaVersion: getLatestMigrationVersion(),
     } satisfies ProjectDefinitionInput),
   );
 }
@@ -74,14 +81,19 @@ async function serveWebsite(projectDirectory: string): Promise<void> {
     },
   });
 
-  return startWebServer({
-    directories: [projectDirectory],
+  const serviceManager = new BuilderServiceManager({
+    initialDirectories: [projectDirectory],
+    builtInPlugins,
+    cliVersion,
+  });
+
+  await startWebServer({
+    serviceManager,
     browser: false,
     port: 3230,
     cliVersion,
     projectBuilderStaticDir: path.join(projectBuilderWebDir, 'dist'),
     logger: pinoLogger,
-    builtInPlugins,
     featureFlags: [],
   });
 }

@@ -51,7 +51,7 @@
     "sort-keys": "^5.1.0",
     "toposort": "^2.0.2",
     "zod": "catalog:",
-    "zustand": "4.4.6"
+    "zustand": "5.0.3"
   },
   "devDependencies": {
     "@halfdomelabs/tools": "workspace:*",
