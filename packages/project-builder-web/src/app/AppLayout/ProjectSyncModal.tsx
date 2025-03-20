@@ -1,5 +1,4 @@
 import type React from 'react';
-import type { ConsoleRef } from 'src/components/Console';
 
 import {
   useBlockBeforeContinue,
@@ -9,10 +8,12 @@ import { Button, Dialog, toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
-import Console from 'src/components/Console';
 import { startSync } from 'src/services/api';
 import { formatError } from 'src/services/error-formatter';
 
+import type { ConsoleRef } from '@src/components';
+
+import { Console } from '@src/components';
 import { useProjects } from '@src/hooks/useProjects';
 
 interface Props {

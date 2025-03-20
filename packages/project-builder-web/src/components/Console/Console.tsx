@@ -1,6 +1,5 @@
 import type { UIEventHandler } from 'react';
 
-import Ansi from '@cocalc/ansi-to-react';
 import clsx from 'clsx';
 import {
   forwardRef,
@@ -13,6 +12,8 @@ import {
 import { useProjects } from '@src/hooks/useProjects';
 import { trpc } from '@src/services/trpc';
 
+import { AnsiText } from '../AnsiText/AnsiText';
+
 interface Props {
   className?: string;
 }
@@ -21,7 +22,7 @@ export interface ConsoleRef {
   clearConsole: () => void;
 }
 
-const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
+export const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
   const [consoleText, setConsoleText] = useState('');
 
   useImperativeHandle(ref, () => ({
@@ -90,12 +91,10 @@ const Console = forwardRef<ConsoleRef, Props>(({ className }, ref) => {
       ref={codeRef}
       onScroll={handleScroll}
     >
-      <Ansi>{consoleText}</Ansi>
+      <AnsiText text={consoleText} />
       <div ref={bottomRef} />
     </code>
   );
 });
 
 Console.displayName = 'Console';
-
-export default Console;
