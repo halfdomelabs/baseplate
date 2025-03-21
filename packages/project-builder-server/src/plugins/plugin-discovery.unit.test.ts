@@ -35,7 +35,7 @@ describe('discoverPlugins', () => {
 
     // Reset the createRequire mock
     vi.mocked(createRequire).mockReturnValue(
-      mockRequire as unknown as NodeRequire,
+      mockRequire as unknown as NodeJS.Require,
     );
   });
 

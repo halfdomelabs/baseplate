@@ -65,11 +65,11 @@ export async function generateBaseplateProject({
           },
           packageManager: 'pnpm@9.15.1',
           engines: {
-            node: '^20.18.1',
+            node: '^22.0.0',
             pnpm: '^9.15.0',
           },
           volta: {
-            node: '20.18.1',
+            node: '22.14.0',
           },
         },
         null,
