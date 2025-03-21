@@ -33,7 +33,6 @@ interface ComboboxContextValue {
   setIsOpen: (open: boolean) => void;
   isOpen: boolean;
   inputId: string;
-  activeDescendentId: string | undefined;
   listRef: React.RefObject<HTMLDivElement>;
   shouldShowItem: (label: string | null) => boolean;
   disabled: boolean;
@@ -94,19 +93,6 @@ function ComboboxRoot({
 
   const listRef = React.useRef<HTMLDivElement>(null);
 
-  const [activeDescendentId, setActiveDescendentId] = React.useState<
-    string | undefined
-  >();
-
-  // workaround for https://github.com/pacocoursey/cmdk/issues/253
-  function fixActiveDescendant(newActiveValue: string | undefined): void {
-    if (!newActiveValue) return;
-    const item = listRef.current?.querySelector(
-      `[cmdk-item=""][data-value="${encodeURIComponent(newActiveValue)}"]`,
-    );
-    setActiveDescendentId(item?.id);
-  }
-
   const contextValue: ComboboxContextValue = React.useMemo(
     () => ({
       selectedLabel: value.label ?? '',
@@ -135,7 +121,6 @@ function ComboboxRoot({
       inputId,
       inputRef,
       listRef,
-      activeDescendentId,
       shouldShowItem: (label) => {
         if (!filterQuery) {
           return true;
@@ -155,7 +140,6 @@ function ComboboxRoot({
       setValue,
       isOpen,
       filterQuery,
-      activeDescendentId,
       disabled,
     ],
   );
@@ -169,7 +153,6 @@ function ComboboxRoot({
           value={activeValue}
           onValueChange={(val) => {
             setActiveValue(val);
-            fixActiveDescendant(val);
           }}
           label={label}
         >
@@ -208,7 +191,6 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
       searchQuery,
       setSearchQuery,
       selectedLabel,
-      activeDescendentId,
       disabled,
     } = useComboboxContext();
 
@@ -275,7 +257,6 @@ const ComboboxInput = React.forwardRef<HTMLInputElement, ComboboxInputProps>(
             ref={mergeRefs([ref, inputRef])}
           >
             <input
-              aria-activedescendant={activeDescendentId}
               // allow aria-labelledby to be overridden
               {...(rest['aria-labelledby']
                 ? { 'aria-labelledby': rest['aria-labelledby'] }
