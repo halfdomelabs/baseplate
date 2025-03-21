@@ -3,7 +3,7 @@ export const REACT_PACKAGES = {
   react: '18.3.1',
   'react-dom': '18.3.1',
   'react-router-dom': '6.22.3',
-  '@types/node': `^20.0.0`,
+  '@types/node': `^22.0.0`,
   '@types/react': '18.3.8',
   '@types/react-dom': '18.3.0',
   '@vitejs/plugin-react': '4.3.4',
