@@ -6,7 +6,8 @@ import {
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Outlet, useParams } from 'react-router-dom';
-import { NotFoundCard } from 'src/components';
+
+import { NotFoundCard } from '@src/components';
 
 import { EnumHeaderBar } from './components/EnumHeaderBar';
 

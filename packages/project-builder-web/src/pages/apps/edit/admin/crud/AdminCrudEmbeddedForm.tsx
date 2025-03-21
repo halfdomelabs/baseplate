@@ -1,9 +1,5 @@
 import type { AdminCrudEmbeddedFormConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
-import type {
-  EmbeddedListFormProps,
-  EmbeddedListTableProps,
-} from 'src/components/EmbeddedListInput';
 
 import {
   adminCrudEmbeddedFormSchema,
@@ -21,8 +17,14 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
-import { LinkButton } from 'src/components';
-import { logAndFormatError } from 'src/services/error-formatter';
+
+import type {
+  EmbeddedListFormProps,
+  EmbeddedListTableProps,
+} from '@src/components/EmbeddedListInput';
+
+import { LinkButton } from '@src/components';
+import { logAndFormatError } from '@src/services/error-formatter';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
 import type { AdminCrudTableConfig } from './CrudTableColumnsForm';

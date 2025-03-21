@@ -21,12 +21,12 @@ import {
 import { produce } from 'immer';
 import { useMemo, useState } from 'react';
 import semver from 'semver';
-import { useClientVersion } from 'src/hooks/useClientVersion';
-import { useProjects } from 'src/hooks/useProjects';
-import { formatError, logAndFormatError } from 'src/services/error-formatter';
-import { RefDeleteError } from 'src/utils/error';
 
+import { useClientVersion } from '@src/hooks/useClientVersion';
 import { useDeleteReferenceDialog } from '@src/hooks/useDeleteReferenceDialog';
+import { useProjects } from '@src/hooks/useProjects';
+import { formatError, logAndFormatError } from '@src/services/error-formatter';
+import { RefDeleteError } from '@src/utils/error';
 
 import { useProjectDefinitionContainer } from './hooks/use-project-definition-container';
 import { useRemoteProjectDefinitionContents } from './hooks/use-remote-project-definition-contents';

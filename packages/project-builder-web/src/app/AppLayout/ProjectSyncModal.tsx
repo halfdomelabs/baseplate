@@ -8,13 +8,13 @@ import { Button, Dialog, toast } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useRef, useState } from 'react';
 import { MdSync } from 'react-icons/md';
-import { startSync } from 'src/services/api';
-import { formatError } from 'src/services/error-formatter';
 
 import type { ConsoleRef } from '@src/components';
 
 import { Console } from '@src/components';
 import { useProjects } from '@src/hooks/useProjects';
+import { startSync } from '@src/services/api';
+import { formatError } from '@src/services/error-formatter';
 
 interface Props {
   className?: string;

@@ -5,7 +5,8 @@ import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { Button, Dialog, ErrorDisplay } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { NotFoundCard } from 'src/components';
+
+import { NotFoundCard } from '@src/components';
 
 import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';

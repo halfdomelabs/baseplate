@@ -8,10 +8,10 @@ import {
 } from '@halfdomelabs/ui-components';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProjects } from 'src/hooks/useProjects';
-import { logError } from 'src/services/error-logger';
 
+import { useProjects } from '@src/hooks/useProjects';
 import { getProjects } from '@src/services/api';
+import { logError } from '@src/services/error-logger';
 
 interface ProjectSelectDialogProps {
   onClose?: () => void;

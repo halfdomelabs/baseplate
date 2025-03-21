@@ -6,9 +6,9 @@ import {
   ErrorBoundaryContext,
   ErrorBoundary as ReactErrorBoundary,
 } from 'react-error-boundary';
-import { logError } from 'src/services/error-logger';
 
 import { formatError } from '@src/services/error-formatter';
+import { logError } from '@src/services/error-logger';
 import { UserVisibleError } from '@src/utils/error';
 
 interface ErrorBoundaryProps {

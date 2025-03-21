@@ -4,7 +4,8 @@ import { modelEntityType, ModelUtils } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { NavigationTabs } from '@halfdomelabs/ui-components';
 import { NavLink, Outlet, useParams } from 'react-router-dom';
-import { NotFoundCard } from 'src/components';
+
+import { NotFoundCard } from '@src/components';
 
 import { ModelHeaderBar } from './_components/ModelHeaderBar';
 

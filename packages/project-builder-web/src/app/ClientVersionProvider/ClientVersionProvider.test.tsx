@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { getVersionInfo } from 'src/services/api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useClientVersion } from '@src/hooks/useClientVersion';
+import { getVersionInfo } from '@src/services/api';
 import { trpcWebsocketEvents } from '@src/services/trpc';
 
 import { ClientVersionProvider } from './ClientVersionProvider';
