@@ -1,2 +1,8 @@
 packages:
-  - 'packages/*'
+  - packages/*
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - '@sentry/profiling-node'
+  - esbuild
+  - prisma

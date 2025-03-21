@@ -15,7 +15,7 @@
     "test": "turbo run test"
   },
   "devDependencies": {
-    "turbo": "2.3.3"
+    "turbo": "2.4.4"
   },
   "packageManager": "pnpm@10.6.5",
   "engines": {
