@@ -17,6 +17,7 @@ import {
 import {
   Button,
   ComboboxField,
+  InputField,
   useConfirmDialog,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,7 +25,7 @@ import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { LinkButton, SelectInput, TextInput } from 'src/components';
+import { LinkButton, SelectInput } from 'src/components';
 
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 
@@ -151,22 +152,14 @@ function AdminEditSectionForm({
             Delete Section
           </LinkButton>
         )}
-        <TextInput.LabelledController
-          label="Name"
-          control={control}
-          name="name"
-        />
+        <InputField.Controller label="Name" control={control} name="name" />
         <ComboboxField.Controller
           label="Feature"
           control={control}
           options={featureOptions}
           name="featureRef"
         />
-        <TextInput.LabelledController
-          label="Icon"
-          control={control}
-          name="icon"
-        />
+        <InputField.Controller label="Icon" control={control} name="icon" />
         <SelectInput.LabelledController
           label="Type"
           control={control}

@@ -7,10 +7,9 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button } from '@halfdomelabs/ui-components';
+import { Button, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-import { TextInput } from 'src/components';
 import CheckedArrayInput from 'src/components/CheckedArrayInput';
 import CheckedInput from 'src/components/CheckedInput';
 
@@ -49,22 +48,18 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <TextInput.LabelledController
-          label="Name"
-          control={control}
-          name="name"
-        />
-        <TextInput.LabelledController
+        <InputField.Controller label="Name" control={control} name="name" />
+        <InputField.Controller
           label="Package Location (optional) e.g. packages/web"
           control={control}
           name="packageLocation"
         />
-        <TextInput.LabelledController
+        <InputField.Controller
           label="Page Title"
           control={control}
           name="title"
         />
-        <TextInput.LabelledController
+        <InputField.Controller
           label="Description Meta Tag"
           control={control}
           name="description"

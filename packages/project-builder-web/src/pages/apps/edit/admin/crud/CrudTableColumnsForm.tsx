@@ -7,11 +7,12 @@ import {
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button } from '@halfdomelabs/ui-components';
+import { Button, InputField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import { SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
+
+import { SelectInput } from '@src/components';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,
@@ -47,7 +48,7 @@ function ColumnForm({
         options={displayTypeOptions}
         name={`table.columns.${idx}.display.type`}
       />
-      <TextInput.LabelledController
+      <InputField.Controller
         label="Label"
         control={control}
         name={`table.columns.${idx}.label`}
@@ -69,12 +70,12 @@ function ColumnForm({
             name={`table.columns.${idx}.display.localRelationRef`}
             options={localRelationOptions}
           />
-          <TextInput.LabelledController
+          <InputField.Controller
             label="Label Expression (e.g. name)"
             control={control}
             name={`table.columns.${idx}.display.labelExpression`}
           />
-          <TextInput.LabelledController
+          <InputField.Controller
             label="Value Expression (e.g. id)"
             control={control}
             name={`table.columns.${idx}.display.valueExpression`}

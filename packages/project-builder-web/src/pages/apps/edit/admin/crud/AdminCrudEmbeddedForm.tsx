@@ -10,11 +10,11 @@ import {
   zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, toast } from '@halfdomelabs/ui-components';
+import { Button, InputField, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
-import { LinkButton, SelectInput, Table, TextInput } from 'src/components';
+import { LinkButton, SelectInput, Table } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import { logAndFormatError } from 'src/services/error-formatter';
 
@@ -117,11 +117,7 @@ function AdminCrudEmbeddedForm({
       id={formId}
       className="space-y-4"
     >
-      <TextInput.LabelledController
-        label="Name"
-        control={control}
-        name="name"
-      />
+      <InputField.Controller label="Name" control={control} name="name" />
       <SelectInput.LabelledController
         label="Type"
         control={control}

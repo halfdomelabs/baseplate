@@ -8,4 +8,3 @@ export { default as LinkButton } from './LinkButton';
 export * from './NotFoundCard';
 export { default as SelectInput } from './SelectInput';
 export { default as Table } from './Table';
-export { default as TextInput } from './TextInput';
