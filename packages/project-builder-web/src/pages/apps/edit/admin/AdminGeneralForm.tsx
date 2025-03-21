@@ -10,11 +10,14 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, InputField } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  InputField,
+  MultiComboboxField,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import CheckedArrayInput from 'src/components/CheckedArrayInput';
 
 interface Props {
   className?: string;
@@ -64,7 +67,7 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
           name="packageLocation"
         />
         {roleOptions && (
-          <CheckedArrayInput.LabelledController
+          <MultiComboboxField.Controller
             label="Allowed Roles?"
             control={control}
             options={roleOptions}

@@ -14,13 +14,13 @@ import {
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
 import {
+  Alert,
   Button,
+  CheckboxField,
   ComboboxField,
-  Alert as UiAlert,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
-import CheckedInput from 'src/components/CheckedInput';
 
 import { createAuth0Models } from './auth-models';
 import RoleEditorForm from './RoleEditorForm';
@@ -132,9 +132,9 @@ function AuthPage(): React.JSX.Element {
           <Button onClick={disableAuth}>Disable Auth</Button>
 
           {pendingModelChanges?.user && (
-            <UiAlert>
-              <UiAlert.Title>Model Changes</UiAlert.Title>
-              <UiAlert.Description>
+            <Alert>
+              <Alert.Title>Model Changes</Alert.Title>
+              <Alert.Description>
                 <p>
                   The selected user model will be updated to include the
                   required fields for the auth plugin. The following changes
@@ -163,13 +163,13 @@ function AuthPage(): React.JSX.Element {
                     <li>The primary key will be updated.</li>
                   )}
                 </ul>
-              </UiAlert.Description>
-            </UiAlert>
+              </Alert.Description>
+            </Alert>
           )}
           {pendingModelChanges?.userRole && (
-            <UiAlert>
-              <UiAlert.Title>Model Changes</UiAlert.Title>
-              <UiAlert.Description>
+            <Alert>
+              <Alert.Title>Model Changes</Alert.Title>
+              <Alert.Description>
                 <p>
                   The selected user role model will be updated to include the
                   required fields for the auth plugin. The following changes
@@ -199,10 +199,10 @@ function AuthPage(): React.JSX.Element {
                     <li>The primary key will be updated.</li>
                   )}
                 </ul>
-              </UiAlert.Description>
-            </UiAlert>
+              </Alert.Description>
+            </Alert>
           )}
-          <CheckedInput.LabelledController
+          <CheckboxField.Controller
             label="Use Auth0? (currently only Auth0 is supported)"
             name="useAuth0"
             control={control}
@@ -232,7 +232,7 @@ function AuthPage(): React.JSX.Element {
             name="accountsFeatureRef"
             control={control}
           />
-          <CheckedInput.LabelledController
+          <CheckboxField.Controller
             label="Enable Password Auth?"
             name="passwordProvider"
             control={control}

@@ -12,6 +12,7 @@ import {
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import {
   Button,
+  CheckboxField,
   InputField,
   SelectField,
   toast,
@@ -20,7 +21,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
 import { LinkButton, Table } from 'src/components';
-import CheckedInput from 'src/components/CheckedInput';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
@@ -129,7 +129,7 @@ function AdminCrudEmbeddedForm({
         name="type"
         options={TYPE_OPTIONS}
       />
-      <CheckedInput.LabelledController
+      <CheckboxField.Controller
         label="Include ID Field? (useful for list types)"
         control={control}
         name="includeIdField"

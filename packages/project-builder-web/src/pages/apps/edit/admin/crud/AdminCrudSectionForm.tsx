@@ -3,10 +3,9 @@ import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { SelectField } from '@halfdomelabs/ui-components';
+import { CheckboxField, SelectField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useWatch } from 'react-hook-form';
-import CheckedInput from 'src/components/CheckedInput';
 import EmbeddedListInput from 'src/components/EmbeddedListInput';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
@@ -56,7 +55,7 @@ function AdminCrudSectionForm({
         options={modelOptions}
         name="modelRef"
       />
-      <CheckedInput.LabelledController
+      <CheckboxField.Controller
         label="Disable Create?"
         control={control}
         name="disableCreate"

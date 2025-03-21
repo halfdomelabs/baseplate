@@ -7,11 +7,14 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, InputField } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  CheckboxField,
+  InputField,
+  MultiComboboxField,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-import CheckedArrayInput from 'src/components/CheckedArrayInput';
-import CheckedInput from 'src/components/CheckedInput';
 
 interface Props {
   className?: string;
@@ -64,28 +67,28 @@ function WebAppForm({ className, appConfig }: Props): React.JSX.Element {
           control={control}
           name="description"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Include Auth?"
           control={control}
           name="includeAuth"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Include Upload Components?"
           control={control}
           name="includeUploadComponents"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Subscriptions?"
           control={control}
           name="enableSubscriptions"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Datadog Logging?"
           control={control}
           name="enableDatadog"
         />
         {roleOptions && (
-          <CheckedArrayInput.LabelledController
+          <MultiComboboxField.Controller
             label="Allowed Roles?"
             control={control}
             options={roleOptions}
