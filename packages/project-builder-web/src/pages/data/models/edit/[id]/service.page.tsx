@@ -7,7 +7,7 @@ import {
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList, SwitchField } from '@halfdomelabs/ui-components';
 
-import FormActionBar from '@src/components/FormActionBar';
+import { FormActionBar } from '@src/components';
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 
 import { EditedModelContextProvider } from '../../_hooks/useEditedModelConfig';

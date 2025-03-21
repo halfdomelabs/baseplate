@@ -13,7 +13,7 @@ interface Props {
   onRemove?: () => void;
 }
 
-function CollapsibleRow({
+export function CollapsibleRow({
   className,
   defaultOpen,
   children,
@@ -54,5 +54,3 @@ function CollapsibleRow({
     </div>
   );
 }
-
-export default CollapsibleRow;

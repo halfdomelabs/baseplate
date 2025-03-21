@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { pick } from 'es-toolkit';
 import { useMemo } from 'react';
 
-import FormActionBar from '@src/components/FormActionBar';
+import { FormActionBar } from '@src/components';
 
 const validationSchema = projectDefinitionSchema.pick({
   name: true,

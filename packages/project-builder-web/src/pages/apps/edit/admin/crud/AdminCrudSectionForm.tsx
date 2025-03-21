@@ -7,7 +7,7 @@ import { CheckboxField, SelectField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useWatch } from 'react-hook-form';
 
-import EmbeddedListInput from '@src/components/EmbeddedListInput';
+import { EmbeddedListInput } from '@src/components';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
 import type { AdminCrudTableConfig } from './CrudTableColumnsForm';

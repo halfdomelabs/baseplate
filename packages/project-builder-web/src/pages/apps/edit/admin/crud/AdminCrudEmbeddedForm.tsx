@@ -21,7 +21,7 @@ import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
 import type {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
-} from '@src/components/EmbeddedListInput';
+} from '@src/components';
 
 import { LinkButton } from '@src/components';
 import { logAndFormatError } from '@src/services/error-formatter';

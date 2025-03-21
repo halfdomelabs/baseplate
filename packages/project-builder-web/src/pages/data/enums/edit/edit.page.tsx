@@ -4,8 +4,7 @@ import { enumBaseSchema } from '@halfdomelabs/project-builder-lib';
 import { useBlockUnsavedChangesNavigate } from '@halfdomelabs/project-builder-lib/web';
 import { SectionList } from '@halfdomelabs/ui-components';
 
-import { ErrorBoundary } from '@src/components/ErrorBoundary/ErrorBoundary';
-import FormActionBar from '@src/components/FormActionBar';
+import { ErrorBoundary, FormActionBar } from '@src/components';
 
 import { useEnumForm } from '../hooks/useEnumForm';
 import { EnumGraphQLSection } from './sections/EnumGraphQLSection';

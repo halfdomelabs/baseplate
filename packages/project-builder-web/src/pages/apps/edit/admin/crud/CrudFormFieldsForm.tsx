@@ -11,7 +11,7 @@ import { Button, InputField, SelectField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
 
-import CollapsibleRow from '@src/components/CollapsibleRow';
+import { CollapsibleRow } from '@src/components';
 
 import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
 

@@ -7,13 +7,10 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
-import { Alert, Button, Dialog } from '@halfdomelabs/ui-components';
+import { Alert, Button, Dialog, FormItem } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useController } from 'react-hook-form';
-
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
 
 export interface EmbeddedListTableProps<InputType> {
   items: InputType[];
@@ -40,7 +37,7 @@ interface Props<InputType> {
   defaultValue?: DefaultValues<InputType>;
 }
 
-function EmbeddedListInput<InputType>({
+export function EmbeddedListInput<InputType>({
   className,
   onChange,
   renderTable,
@@ -129,11 +126,11 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
 }: EmbeddedListInputLabelledProps<InputType>): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
-      <div className={className}>
-        {label && <FormLabel>{label}</FormLabel>}
+      <FormItem className={className}>
+        {label && <FormItem.Label>{label}</FormItem.Label>}
         <EmbeddedListInput {...rest} />
-        {error && <FormError>{error}</FormError>}
-      </div>
+        {error && <FormItem.Error>{error}</FormItem.Error>}
+      </FormItem>
     </div>
   );
 };
@@ -195,5 +192,3 @@ EmbeddedListInput.LabelledController =
       />
     );
   };
-
-export default EmbeddedListInput;
