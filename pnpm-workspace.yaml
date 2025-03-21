@@ -1,38 +1,30 @@
 packages:
-  - 'packages/*'
-  - 'plugins/*'
-
+  - packages/*
+  - plugins/*
 catalog:
-  # Node
-  '@types/node': '^22.0.0'
-
-  # Typescript
+  '@types/node': ^22.0.0
   typescript: 5.5.4
   tsx: 4.19.3
   tsc-alias: 1.8.10
-
-  # Linting / Formatting
   '@eslint/js': 9.21.0
   eslint: 9.21.0
   prettier: 3.4.2
-
-  # React
   react: 18.3.1
   react-dom: 18.3.1
   '@types/react': 18.3.8
   '@types/react-dom': 18.3.0
-
   autoprefixer: 10.4.20
   tailwindcss: 3.4.11
   postcss: 8.4.38
   postcss-prefixer: 3.0.0
-
-  # Vite
   vite: 6.2.0
   vitest: 3.0.7
   '@vitejs/plugin-react': 4.3.4
   vite-plugin-svgr: 4.3.0
   vite-tsconfig-paths: 5.1.4
-
-  # Validation
   zod: 3.24.1
+onlyBuiltDependencies:
+  - '@prisma/engines'
+  - cpu-features
+  - esbuild
+  - ssh2
