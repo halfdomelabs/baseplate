@@ -15,12 +15,13 @@ import {
   CheckboxField,
   InputField,
   SelectField,
+  Table,
   toast,
 } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
-import { LinkButton, Table } from 'src/components';
+import { LinkButton } from 'src/components';
 import { logAndFormatError } from 'src/services/error-formatter';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
@@ -37,14 +38,14 @@ export function AdminCrudEmbeddedTable({
   const { definitionContainer } = useProjectDefinition();
   return (
     <Table className="max-w-6xl">
-      <Table.Head>
-        <Table.HeadRow>
-          <Table.HeadCell>Form Name</Table.HeadCell>
-          <Table.HeadCell>Model Name</Table.HeadCell>
-          <Table.HeadCell>Type</Table.HeadCell>
-          <Table.HeadCell>Actions</Table.HeadCell>
-        </Table.HeadRow>
-      </Table.Head>
+      <Table.Header>
+        <Table.Row>
+          <Table.Head>Form Name</Table.Head>
+          <Table.Head>Model Name</Table.Head>
+          <Table.Head>Type</Table.Head>
+          <Table.Head>Actions</Table.Head>
+        </Table.Row>
+      </Table.Header>
       <Table.Body>
         {items.map((item, idx) => (
           <Table.Row key={item.id}>
