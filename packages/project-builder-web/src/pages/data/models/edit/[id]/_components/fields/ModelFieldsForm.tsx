@@ -9,7 +9,7 @@ import type {
 import { clsx } from 'clsx';
 import { useFieldArray } from 'react-hook-form';
 
-import { SortableList } from '@src/components/SortableList';
+import { SortableList } from '@src/components';
 
 import { ModelAddFieldButton } from './ModelAddFieldButton';
 import ModelFieldForm from './ModelFieldForm';

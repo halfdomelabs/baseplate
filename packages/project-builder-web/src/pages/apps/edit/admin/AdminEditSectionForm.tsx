@@ -27,8 +27,6 @@ import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { LinkButton } from '@src/components';
-
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 
 interface Props {
@@ -146,13 +144,15 @@ function AdminEditSectionForm({
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
         {sectionId && (
-          <LinkButton
+          <Button
+            variant="link"
+            size="none"
             onClick={() => {
               handleDelete();
             }}
           >
             Delete Section
-          </LinkButton>
+          </Button>
         )}
         <InputField.Controller label="Name" control={control} name="name" />
         <ComboboxField.Controller

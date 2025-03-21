@@ -23,7 +23,6 @@ import type {
   EmbeddedListTableProps,
 } from '@src/components';
 
-import { LinkButton } from '@src/components';
 import { logAndFormatError } from '@src/services/error-formatter';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
@@ -57,21 +56,24 @@ export function AdminCrudEmbeddedTable({
             </Table.Cell>
             <Table.Cell>{item.type}</Table.Cell>
             <Table.Cell className="space-x-4">
-              <LinkButton
+              <Button
+                variant="link"
+                size="none"
                 onClick={() => {
                   edit(idx);
                 }}
               >
                 Edit
-              </LinkButton>
-              <LinkButton
-                negative
+              </Button>
+              <Button
+                variant="destructiveLink"
+                size="none"
                 onClick={() => {
                   remove(idx);
                 }}
               >
                 Remove
-              </LinkButton>
+              </Button>
             </Table.Cell>
           </Table.Row>
         ))}
