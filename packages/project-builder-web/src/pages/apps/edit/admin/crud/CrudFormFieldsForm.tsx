@@ -7,10 +7,9 @@ import {
   adminCrudInputWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
-import { Button, InputField } from '@halfdomelabs/ui-components';
+import { Button, InputField, SelectField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import { SelectInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 
 import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';
@@ -63,7 +62,7 @@ function FieldForm({
 
   return (
     <div className="space-y-4">
-      <SelectInput.LabelledController
+      <SelectField.Controller
         label="Type"
         control={control}
         options={fieldTypeOptions}

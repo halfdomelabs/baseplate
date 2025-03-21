@@ -3,9 +3,9 @@ import type React from 'react';
 import type { Control, UseFormReturn } from 'react-hook-form';
 
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { SelectField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useWatch } from 'react-hook-form';
-import { SelectInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import EmbeddedListInput from 'src/components/EmbeddedListInput';
 
@@ -50,7 +50,7 @@ function AdminCrudSectionForm({
 
   return (
     <div className={clsx('space-y-4', className)}>
-      <SelectInput.LabelledController
+      <SelectField.Controller
         label="Model"
         control={control}
         options={modelOptions}

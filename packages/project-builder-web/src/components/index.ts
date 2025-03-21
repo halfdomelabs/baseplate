@@ -6,5 +6,4 @@ export { default as FormError } from './FormError';
 export { default as FormLabel } from './FormLabel';
 export { default as LinkButton } from './LinkButton';
 export * from './NotFoundCard';
-export { default as SelectInput } from './SelectInput';
 export { default as Table } from './Table';

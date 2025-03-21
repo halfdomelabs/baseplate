@@ -10,11 +10,16 @@ import {
   zPluginWrapper,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, InputField, toast } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  InputField,
+  SelectField,
+  toast,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useId } from 'react';
 import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
-import { LinkButton, SelectInput, Table } from 'src/components';
+import { LinkButton, Table } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 import { logAndFormatError } from 'src/services/error-formatter';
 
@@ -118,7 +123,7 @@ function AdminCrudEmbeddedForm({
       className="space-y-4"
     >
       <InputField.Controller label="Name" control={control} name="name" />
-      <SelectInput.LabelledController
+      <SelectField.Controller
         label="Type"
         control={control}
         name="type"
@@ -129,7 +134,7 @@ function AdminCrudEmbeddedForm({
         control={control}
         name="includeIdField"
       />
-      <SelectInput.LabelledController
+      <SelectField.Controller
         label="Model"
         control={control}
         options={modelOptions}
