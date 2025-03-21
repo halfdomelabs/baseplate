@@ -41,7 +41,6 @@
     "@halfdomelabs/project-builder-lib": "workspace:*",
     "@halfdomelabs/ui-components": "workspace:*",
     "@halfdomelabs/utils": "workspace:*",
-    "@headlessui/react": "1.7.18",
     "@hookform/resolvers": "3.9.0",
     "@testing-library/dom": "10.4.0",
     "@testing-library/jest-dom": "6.6.3",

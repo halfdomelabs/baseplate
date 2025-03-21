@@ -1,9 +1,7 @@
 import type React from 'react';
 
-import { ErrorDisplay } from '@halfdomelabs/ui-components';
+import { Button, ErrorDisplay } from '@halfdomelabs/ui-components';
 import { useNavigate } from 'react-router-dom';
-
-import Button from '../Button';
 
 export function NotFoundCard(): React.JSX.Element {
   const navigate = useNavigate();

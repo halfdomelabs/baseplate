@@ -12,7 +12,8 @@ import {
 import { useFieldArray, useWatch } from 'react-hook-form';
 import { MdDeleteOutline } from 'react-icons/md';
 import { Fragment } from 'react/jsx-runtime';
-import { underscoreToTitleCase } from 'src/utils/casing';
+
+import { underscoreToTitleCase } from '@src/utils/casing';
 
 export function EnumValuesSection({
   control,

@@ -14,13 +14,18 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { ComboboxField, useConfirmDialog } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  ComboboxField,
+  InputField,
+  SelectField,
+  useConfirmDialog,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { sortBy } from 'es-toolkit';
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, LinkButton, SelectInput, TextInput } from 'src/components';
 
 import AdminCrudSectionForm from './crud/AdminCrudSectionForm';
 
@@ -139,31 +144,25 @@ function AdminEditSectionForm({
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
         {sectionId && (
-          <LinkButton
+          <Button
+            variant="link"
+            size="none"
             onClick={() => {
               handleDelete();
             }}
           >
             Delete Section
-          </LinkButton>
+          </Button>
         )}
-        <TextInput.LabelledController
-          label="Name"
-          control={control}
-          name="name"
-        />
+        <InputField.Controller label="Name" control={control} name="name" />
         <ComboboxField.Controller
           label="Feature"
           control={control}
           options={featureOptions}
           name="featureRef"
         />
-        <TextInput.LabelledController
-          label="Icon"
-          control={control}
-          name="icon"
-        />
-        <SelectInput.LabelledController
+        <InputField.Controller label="Icon" control={control} name="icon" />
+        <SelectField.Controller
           label="Type"
           control={control}
           name="type"

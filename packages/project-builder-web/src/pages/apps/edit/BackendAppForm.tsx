@@ -7,10 +7,9 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
+import { Button, CheckboxField, InputField } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
-import { Button, TextInput } from 'src/components';
-import CheckedInput from 'src/components/CheckedInput';
 
 interface Props {
   className?: string;
@@ -40,47 +39,43 @@ function BackendAppForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <TextInput.LabelledController
-          label="Name"
-          control={control}
-          name="name"
-        />
-        <TextInput.LabelledController
+        <InputField.Controller label="Name" control={control} name="name" />
+        <InputField.Controller
           label="Package Location (optional) e.g. packages/backend"
           control={control}
           name="packageLocation"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Stripe?"
           control={control}
           name="enableStripe"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Postmark?"
           control={control}
           name="enablePostmark"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Sendgrid?"
           control={control}
           name="enableSendgrid"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Redis?"
           control={control}
           name="enableRedis"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Bull Queue?"
           control={control}
           name="enableBullQueue"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable GraphQL Subscriptions?"
           control={control}
           name="enableSubscriptions"
         />
-        <CheckedInput.LabelledController
+        <CheckboxField.Controller
           label="Enable Axios?"
           control={control}
           name="enableAxios"

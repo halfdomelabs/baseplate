@@ -10,11 +10,14 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
+import {
+  Button,
+  InputField,
+  MultiComboboxField,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import clsx from 'clsx';
 import { useMemo } from 'react';
-import { Button, TextInput } from 'src/components';
-import CheckedArrayInput from 'src/components/CheckedArrayInput';
 
 interface Props {
   className?: string;
@@ -57,18 +60,14 @@ function AdminGeneralForm({ className, appConfig }: Props): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
       <form onSubmit={onSubmit} className="space-y-4">
-        <TextInput.LabelledController
-          label="Name"
-          control={control}
-          name="name"
-        />
-        <TextInput.LabelledController
+        <InputField.Controller label="Name" control={control} name="name" />
+        <InputField.Controller
           label="Package Location (optional) e.g. packages/web"
           control={control}
           name="packageLocation"
         />
         {roleOptions && (
-          <CheckedArrayInput.LabelledController
+          <MultiComboboxField.Controller
             label="Allowed Roles?"
             control={control}
             options={roleOptions}

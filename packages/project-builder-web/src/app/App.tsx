@@ -5,10 +5,8 @@ import { ErrorHandlerContext } from '@halfdomelabs/project-builder-lib/web';
 import { ConfirmDialog, Toaster, Tooltip } from '@halfdomelabs/ui-components';
 import { useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
-import { ErrorBoundary } from 'src/components/ErrorBoundary/ErrorBoundary';
 
-import { BlockerDialog } from '@src/components';
-import { RefIssueDialog } from '@src/components/RefIssueDialog/RefIssueDialog';
+import { BlockerDialog, ErrorBoundary, RefIssueDialog } from '@src/components';
 import { formatError, logAndFormatError } from '@src/services/error-formatter';
 import { logError } from '@src/services/error-logger';
 

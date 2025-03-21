@@ -7,10 +7,11 @@ import {
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { Button, InputField, SelectField } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import { Button, SelectInput, TextInput } from 'src/components';
-import CollapsibleRow from 'src/components/CollapsibleRow';
+
+import { CollapsibleRow } from '@src/components';
 
 export type AdminCrudTableConfig = Pick<
   AdminCrudSectionConfig,
@@ -40,20 +41,20 @@ function ColumnForm({
   const type = useWatch({ control, name: `table.columns.${idx}.display.type` });
   return (
     <div className="space-y-4">
-      <SelectInput.LabelledController
+      <SelectField.Controller
         label="Type"
         control={control}
         options={displayTypeOptions}
         name={`table.columns.${idx}.display.type`}
       />
-      <TextInput.LabelledController
+      <InputField.Controller
         label="Label"
         control={control}
         name={`table.columns.${idx}.label`}
       />
 
       {type === 'text' && (
-        <SelectInput.LabelledController
+        <SelectField.Controller
           label="Field"
           control={control}
           name={`table.columns.${idx}.display.modelFieldRef`}
@@ -62,18 +63,18 @@ function ColumnForm({
       )}
       {type === 'foreign' && (
         <>
-          <SelectInput.LabelledController
+          <SelectField.Controller
             label="Local Relation Name"
             control={control}
             name={`table.columns.${idx}.display.localRelationRef`}
             options={localRelationOptions}
           />
-          <TextInput.LabelledController
+          <InputField.Controller
             label="Label Expression (e.g. name)"
             control={control}
             name={`table.columns.${idx}.display.labelExpression`}
           />
-          <TextInput.LabelledController
+          <InputField.Controller
             label="Value Expression (e.g. id)"
             control={control}
             name={`table.columns.${idx}.display.valueExpression`}

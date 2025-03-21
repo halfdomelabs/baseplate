@@ -26,7 +26,7 @@ function AdminAppForm({ className, appConfig }: Props): React.JSX.Element {
           <NavLink to="sections">Sections</NavLink>
         </NavigationTabs.Item>
       </NavigationTabs>
-      <div className="bg-slate-200">
+      <div className="mt-4 border-t">
         <Routes>
           <Route
             index

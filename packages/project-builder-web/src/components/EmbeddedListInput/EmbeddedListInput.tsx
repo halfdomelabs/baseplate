@@ -7,15 +7,10 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
+import { Alert, Button, Dialog, FormItem } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useController } from 'react-hook-form';
-
-import Alert from '../Alert';
-import Button from '../Button';
-import FormError from '../FormError';
-import FormLabel from '../FormLabel';
-import Modal from '../Modal';
 
 export interface EmbeddedListTableProps<InputType> {
   items: InputType[];
@@ -42,7 +37,7 @@ interface Props<InputType> {
   defaultValue?: DefaultValues<InputType>;
 }
 
-function EmbeddedListInput<InputType>({
+export function EmbeddedListInput<InputType>({
   className,
   onChange,
   renderTable,
@@ -73,7 +68,7 @@ function EmbeddedListInput<InputType>({
   return (
     <div className={clsx('space-y-2', className)}>
       <Button
-        size="small"
+        size="sm"
         onClick={() => {
           setValueToEdit({ data: defaultValue });
         }}
@@ -94,28 +89,26 @@ function EmbeddedListInput<InputType>({
           },
         })
       ) : (
-        <Alert type="info">No items currently</Alert>
+        <Alert variant="default">No items currently</Alert>
       )}
-      <Modal
-        isOpen={!!valueToEdit}
-        onClose={() => {
-          setValueToEdit(undefined);
+      <Dialog
+        open={!!valueToEdit}
+        onOpenChange={(open) => {
+          if (!open) {
+            setValueToEdit(undefined);
+          }
         }}
       >
-        <Modal.Header
-          onClose={() => {
-            setValueToEdit(undefined);
-          }}
-        >
-          Edit {itemName ?? 'Item'}
-        </Modal.Header>
-        <Modal.Body>
+        <Dialog.Content aria-describedby={undefined}>
+          <Dialog.Header>
+            <Dialog.Title>Edit {itemName ?? 'Item'}</Dialog.Title>
+          </Dialog.Header>
           {renderForm({
             initialData: valueToEdit?.data,
             onSubmit: handleSubmit,
           })}
-        </Modal.Body>
-      </Modal>
+        </Dialog.Content>
+      </Dialog>
     </div>
   );
 }
@@ -133,11 +126,11 @@ EmbeddedListInput.Labelled = function EmbeddedOneToOneInputLabelled<InputType>({
 }: EmbeddedListInputLabelledProps<InputType>): React.JSX.Element {
   return (
     <div className={clsx('', className)}>
-      <div className={className}>
-        {label && <FormLabel>{label}</FormLabel>}
+      <FormItem className={className}>
+        {label && <FormItem.Label>{label}</FormItem.Label>}
         <EmbeddedListInput {...rest} />
-        {error && <FormError>{error}</FormError>}
-      </div>
+        {error && <FormItem.Error>{error}</FormItem.Error>}
+      </FormItem>
     </div>
   );
 };
@@ -199,5 +192,3 @@ EmbeddedListInput.LabelledController =
       />
     );
   };
-
-export default EmbeddedListInput;

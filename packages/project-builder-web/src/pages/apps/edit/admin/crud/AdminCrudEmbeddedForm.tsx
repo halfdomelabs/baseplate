@@ -1,28 +1,29 @@
 import type { AdminCrudEmbeddedFormConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
-import type { Control, UseFormReturn } from 'react-hook-form';
+
+import {
+  adminCrudEmbeddedFormSchema,
+  zPluginWrapper,
+} from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import {
+  Button,
+  CheckboxField,
+  InputField,
+  SelectField,
+  Table,
+  toast,
+} from '@halfdomelabs/ui-components';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useId } from 'react';
+import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
+
 import type {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
-} from 'src/components/EmbeddedListInput';
+} from '@src/components';
 
-import { adminCrudEmbeddedFormSchema } from '@halfdomelabs/project-builder-lib';
-import {
-  useProjectDefinition,
-  useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Alert,
-  Button,
-  LinkButton,
-  SelectInput,
-  Table,
-  TextInput,
-} from 'src/components';
-import CheckedInput from 'src/components/CheckedInput';
-import { useStatus } from 'src/hooks/useStatus';
-import { formatError } from 'src/services/error-formatter';
+import { logAndFormatError } from '@src/services/error-formatter';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
 import type { AdminCrudTableConfig } from './CrudTableColumnsForm';
@@ -38,14 +39,14 @@ export function AdminCrudEmbeddedTable({
   const { definitionContainer } = useProjectDefinition();
   return (
     <Table className="max-w-6xl">
-      <Table.Head>
-        <Table.HeadRow>
-          <Table.HeadCell>Form Name</Table.HeadCell>
-          <Table.HeadCell>Model Name</Table.HeadCell>
-          <Table.HeadCell>Type</Table.HeadCell>
-          <Table.HeadCell>Actions</Table.HeadCell>
-        </Table.HeadRow>
-      </Table.Head>
+      <Table.Header>
+        <Table.Row>
+          <Table.Head>Form Name</Table.Head>
+          <Table.Head>Model Name</Table.Head>
+          <Table.Head>Type</Table.Head>
+          <Table.Head>Actions</Table.Head>
+        </Table.Row>
+      </Table.Header>
       <Table.Body>
         {items.map((item, idx) => (
           <Table.Row key={item.id}>
@@ -55,21 +56,24 @@ export function AdminCrudEmbeddedTable({
             </Table.Cell>
             <Table.Cell>{item.type}</Table.Cell>
             <Table.Cell className="space-x-4">
-              <LinkButton
+              <Button
+                variant="link"
+                size="none"
                 onClick={() => {
                   edit(idx);
                 }}
               >
                 Edit
-              </LinkButton>
-              <LinkButton
-                negative
+              </Button>
+              <Button
+                variant="destructiveLink"
+                size="none"
                 onClick={() => {
                   remove(idx);
                 }}
               >
                 Remove
-              </LinkButton>
+              </Button>
             </Table.Cell>
           </Table.Row>
         ))}
@@ -92,13 +96,16 @@ function AdminCrudEmbeddedForm({
   onSubmit,
   embeddedFormOptions,
 }: Props): React.JSX.Element {
-  const { definition } = useProjectDefinition();
-  const formProps = useResettableForm<AdminCrudEmbeddedFormConfig>({
-    resolver: zodResolver(adminCrudEmbeddedFormSchema),
+  const { definition, pluginContainer } = useProjectDefinition();
+  const schemaWithPlugins = zPluginWrapper(
+    adminCrudEmbeddedFormSchema,
+    pluginContainer,
+  );
+  const formProps = useForm<AdminCrudEmbeddedFormConfig>({
+    resolver: zodResolver(schemaWithPlugins),
     defaultValues: initialData,
   });
   const { handleSubmit, control, watch } = formProps;
-  const { status, setError } = useStatus();
 
   const modelOptions = definition.models.map((model) => ({
     label: model.name,
@@ -107,34 +114,32 @@ function AdminCrudEmbeddedForm({
 
   const type = watch('type');
 
+  const formId = useId();
+
   return (
     <form
       onSubmit={(e) => {
         e.stopPropagation();
         handleSubmit(onSubmit)(e).catch((error: unknown) => {
-          setError(formatError(error));
+          toast.error(logAndFormatError(error));
         });
       }}
+      id={formId}
       className="space-y-4"
     >
-      <Alert.WithStatus status={status} />
-      <TextInput.LabelledController
-        label="Name"
-        control={control}
-        name="name"
-      />
-      <SelectInput.LabelledController
+      <InputField.Controller label="Name" control={control} name="name" />
+      <SelectField.Controller
         label="Type"
         control={control}
         name="type"
         options={TYPE_OPTIONS}
       />
-      <CheckedInput.LabelledController
+      <CheckboxField.Controller
         label="Include ID Field? (useful for list types)"
         control={control}
         name="includeIdField"
       />
-      <SelectInput.LabelledController
+      <SelectField.Controller
         label="Model"
         control={control}
         options={modelOptions}
@@ -153,7 +158,9 @@ function AdminCrudEmbeddedForm({
         formProps={formProps as unknown as UseFormReturn<AdminCrudFormConfig>}
         embeddedFormOptions={embeddedFormOptions}
       />
-      <Button type="submit">Save</Button>
+      <Button type="submit" form={formId}>
+        Save
+      </Button>
     </form>
   );
 }

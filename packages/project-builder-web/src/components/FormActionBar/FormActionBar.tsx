@@ -11,7 +11,7 @@ interface FormActionBarProps {
   disabled?: boolean;
 }
 
-const FormActionBar = ({
+export const FormActionBar = ({
   form,
   disabled,
 }: FormActionBarProps): React.JSX.Element => {
@@ -43,5 +43,3 @@ const FormActionBar = ({
     </div>
   );
 };
-
-export default FormActionBar;

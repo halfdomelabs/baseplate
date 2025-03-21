@@ -15,7 +15,8 @@ import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
 import { MultiComboboxField, SelectField } from '@halfdomelabs/ui-components';
 import { useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
-import { usePrevious } from 'src/hooks/usePrevious';
+
+import { usePrevious } from '@src/hooks/usePrevious';
 
 import { useEditedModelConfig } from '../../../../_hooks/useEditedModelConfig';
 

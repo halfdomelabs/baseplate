@@ -1,9 +1,8 @@
 import type React from 'react';
 
+import { Button } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
-
-import LinkButton from '../LinkButton';
 
 interface Props {
   className?: string;
@@ -13,7 +12,7 @@ interface Props {
   onRemove?: () => void;
 }
 
-function CollapsibleRow({
+export function CollapsibleRow({
   className,
   defaultOpen,
   children,
@@ -27,32 +26,38 @@ function CollapsibleRow({
       {isOpen ? (
         <div className="space-y-4 border border-gray-200">
           <div className="flex flex-row space-x-4">
-            <LinkButton
+            <Button
+              variant="link"
+              size="none"
               onClick={() => {
                 setIsOpen(false);
               }}
             >
               Close
-            </LinkButton>
-            <LinkButton onClick={onRemove}>Remove</LinkButton>
+            </Button>
+            <Button variant="link" size="none" onClick={onRemove}>
+              Remove
+            </Button>
           </div>
           {children}
         </div>
       ) : (
         <div className="flex flex-row items-center space-x-4">
-          <LinkButton
+          <Button
+            variant="link"
+            size="none"
             onClick={() => {
               setIsOpen(true);
             }}
           >
             Edit
-          </LinkButton>
+          </Button>
           {collapsedContents}
-          <LinkButton onClick={onRemove}>Remove</LinkButton>
+          <Button variant="link" size="none" onClick={onRemove}>
+            Remove
+          </Button>
         </div>
       )}
     </div>
   );
 }
-
-export default CollapsibleRow;
