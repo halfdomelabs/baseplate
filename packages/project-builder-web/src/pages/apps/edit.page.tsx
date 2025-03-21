@@ -3,9 +3,9 @@ import type React from 'react';
 
 import { appEntityType } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
-import { Button, Dialog } from '@halfdomelabs/ui-components';
+import { Button, Dialog, ErrorDisplay } from '@halfdomelabs/ui-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Alert, NotFoundCard } from 'src/components';
+import { NotFoundCard } from 'src/components';
 
 import AdminAppForm from './edit/AdminAppForm';
 import BackendAppForm from './edit/BackendAppForm';
@@ -96,9 +96,9 @@ function EditAppPage(): React.JSX.Element {
             }
             default: {
               return (
-                <Alert type="error">
-                  Unknown App Type {(app as BaseAppConfig).type}
-                </Alert>
+                <ErrorDisplay
+                  error={`Unknown app type: ${(app as BaseAppConfig).type}`}
+                />
               );
             }
           }

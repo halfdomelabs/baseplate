@@ -13,10 +13,13 @@ import {
   useProjectDefinition,
   useResettableForm,
 } from '@halfdomelabs/project-builder-lib/web';
-import { ComboboxField, Alert as UiAlert } from '@halfdomelabs/ui-components';
+import {
+  Button,
+  ComboboxField,
+  Alert as UiAlert,
+} from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMemo, useState } from 'react';
-import { Button } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
 
 import { createAuth0Models } from './auth-models';

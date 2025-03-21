@@ -1,28 +1,22 @@
 import type { AdminCrudEmbeddedFormConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
-import type { Control, UseFormReturn } from 'react-hook-form';
 import type {
   EmbeddedListFormProps,
   EmbeddedListTableProps,
 } from 'src/components/EmbeddedListInput';
 
-import { adminCrudEmbeddedFormSchema } from '@halfdomelabs/project-builder-lib';
 import {
-  useProjectDefinition,
-  useResettableForm,
-} from '@halfdomelabs/project-builder-lib/web';
+  adminCrudEmbeddedFormSchema,
+  zPluginWrapper,
+} from '@halfdomelabs/project-builder-lib';
+import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { Button, toast } from '@halfdomelabs/ui-components';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Alert,
-  Button,
-  LinkButton,
-  SelectInput,
-  Table,
-  TextInput,
-} from 'src/components';
+import { useId } from 'react';
+import { type Control, useForm, type UseFormReturn } from 'react-hook-form';
+import { LinkButton, SelectInput, Table, TextInput } from 'src/components';
 import CheckedInput from 'src/components/CheckedInput';
-import { useStatus } from 'src/hooks/useStatus';
-import { formatError } from 'src/services/error-formatter';
+import { logAndFormatError } from 'src/services/error-formatter';
 
 import type { AdminCrudFormConfig } from './CrudFormFieldsForm';
 import type { AdminCrudTableConfig } from './CrudTableColumnsForm';
@@ -92,13 +86,16 @@ function AdminCrudEmbeddedForm({
   onSubmit,
   embeddedFormOptions,
 }: Props): React.JSX.Element {
-  const { definition } = useProjectDefinition();
-  const formProps = useResettableForm<AdminCrudEmbeddedFormConfig>({
-    resolver: zodResolver(adminCrudEmbeddedFormSchema),
+  const { definition, pluginContainer } = useProjectDefinition();
+  const schemaWithPlugins = zPluginWrapper(
+    adminCrudEmbeddedFormSchema,
+    pluginContainer,
+  );
+  const formProps = useForm<AdminCrudEmbeddedFormConfig>({
+    resolver: zodResolver(schemaWithPlugins),
     defaultValues: initialData,
   });
   const { handleSubmit, control, watch } = formProps;
-  const { status, setError } = useStatus();
 
   const modelOptions = definition.models.map((model) => ({
     label: model.name,
@@ -107,17 +104,19 @@ function AdminCrudEmbeddedForm({
 
   const type = watch('type');
 
+  const formId = useId();
+
   return (
     <form
       onSubmit={(e) => {
         e.stopPropagation();
         handleSubmit(onSubmit)(e).catch((error: unknown) => {
-          setError(formatError(error));
+          toast.error(logAndFormatError(error));
         });
       }}
+      id={formId}
       className="space-y-4"
     >
-      <Alert.WithStatus status={status} />
       <TextInput.LabelledController
         label="Name"
         control={control}
@@ -153,7 +152,9 @@ function AdminCrudEmbeddedForm({
         formProps={formProps as unknown as UseFormReturn<AdminCrudFormConfig>}
         embeddedFormOptions={embeddedFormOptions}
       />
-      <Button type="submit">Save</Button>
+      <Button type="submit" form={formId}>
+        Save
+      </Button>
     </form>
   );
 }

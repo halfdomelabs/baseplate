@@ -7,9 +7,10 @@ import {
   ModelUtils,
 } from '@halfdomelabs/project-builder-lib';
 import { useProjectDefinition } from '@halfdomelabs/project-builder-lib/web';
+import { Button } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import { Button, SelectInput, TextInput } from 'src/components';
+import { SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 
 export type AdminCrudTableConfig = Pick<

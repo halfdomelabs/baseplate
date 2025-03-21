@@ -6,9 +6,10 @@ import {
   AUTH_DEFAULT_ROLES,
   authRoleEntityType,
 } from '@halfdomelabs/project-builder-lib';
+import { Button } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray } from 'react-hook-form';
-import { Button, TextInput } from 'src/components';
+import { TextInput } from 'src/components';
 
 interface Props {
   className?: string;

@@ -7,9 +7,10 @@ import {
   adminCrudInputWebSpec,
   useProjectDefinition,
 } from '@halfdomelabs/project-builder-lib/web';
+import { Button } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import { Button, SelectInput, TextInput } from 'src/components';
+import { SelectInput, TextInput } from 'src/components';
 import CollapsibleRow from 'src/components/CollapsibleRow';
 
 import { BUILT_IN_ADMIN_CRUD_INPUT_WEB_CONFIGS } from './inputs';

@@ -2,10 +2,9 @@ import type { AdminAppConfig } from '@halfdomelabs/project-builder-lib';
 import type React from 'react';
 
 import { adminSectionEntityType } from '@halfdomelabs/project-builder-lib';
-import clsx from 'clsx';
+import { NavigationMenu, SidebarLayout } from '@halfdomelabs/ui-components';
 import { sortBy } from 'es-toolkit';
-import { Route, Routes } from 'react-router-dom';
-import { Sidebar } from 'src/components';
+import { Link, Route, Routes } from 'react-router-dom';
 
 import { registerEntityTypeUrl } from '@src/services/entity-type';
 
@@ -27,26 +26,33 @@ function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
   ]);
 
   return (
-    <div className={clsx('flex items-stretch', className)}>
-      <Sidebar className="flex-none !bg-white">
-        <Sidebar.Header className="mb-4">
+    <SidebarLayout className={className}>
+      <SidebarLayout.Sidebar className="space-y-4" width="sm">
+        <div className="flex items-center justify-between">
           <h2>Sections</h2>
-        </Sidebar.Header>
-        <Sidebar.LinkGroup>
-          <Sidebar.LinkItem className="text-green-500" to="new">
-            New Section
-          </Sidebar.LinkItem>
-          {sortedSections.map((section) => (
-            <Sidebar.LinkItem
-              key={section.id}
-              to={`edit/${adminSectionEntityType.toUid(section.id)}`}
-            >
-              {section.name}
-            </Sidebar.LinkItem>
-          ))}
-        </Sidebar.LinkGroup>
-      </Sidebar>
-      <div className="flex h-full flex-auto flex-col overflow-y-auto p-4">
+        </div>
+        <NavigationMenu orientation="vertical">
+          <NavigationMenu.List>
+            <li>
+              <NavigationMenu.ItemWithLink asChild>
+                <Link to="new" className="text-green-500">
+                  New Section
+                </Link>
+              </NavigationMenu.ItemWithLink>
+            </li>
+            {sortedSections.map((section) => (
+              <li key={section.id}>
+                <NavigationMenu.ItemWithLink asChild>
+                  <Link to={`edit/${adminSectionEntityType.toUid(section.id)}`}>
+                    {section.name}
+                  </Link>
+                </NavigationMenu.ItemWithLink>
+              </li>
+            ))}
+          </NavigationMenu.List>
+        </NavigationMenu>
+      </SidebarLayout.Sidebar>
+      <SidebarLayout.Content className="p-4">
         <Routes>
           <Route
             path="new"
@@ -57,8 +63,8 @@ function AdminSectionsForm({ className, appConfig }: Props): React.JSX.Element {
             element={<AdminEditSectionForm appConfig={appConfig} />}
           />
         </Routes>
-      </div>
-    </div>
+      </SidebarLayout.Content>
+    </SidebarLayout>
   );
 }
 

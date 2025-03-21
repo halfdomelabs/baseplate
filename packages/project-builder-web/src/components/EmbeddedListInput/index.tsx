@@ -7,15 +7,13 @@ import type {
   FieldValues,
 } from 'react-hook-form';
 
+import { Alert, Button, Dialog } from '@halfdomelabs/ui-components';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { useController } from 'react-hook-form';
 
-import Alert from '../Alert';
-import Button from '../Button';
 import FormError from '../FormError';
 import FormLabel from '../FormLabel';
-import Modal from '../Modal';
 
 export interface EmbeddedListTableProps<InputType> {
   items: InputType[];
@@ -73,7 +71,7 @@ function EmbeddedListInput<InputType>({
   return (
     <div className={clsx('space-y-2', className)}>
       <Button
-        size="small"
+        size="sm"
         onClick={() => {
           setValueToEdit({ data: defaultValue });
         }}
@@ -94,28 +92,26 @@ function EmbeddedListInput<InputType>({
           },
         })
       ) : (
-        <Alert type="info">No items currently</Alert>
+        <Alert variant="default">No items currently</Alert>
       )}
-      <Modal
-        isOpen={!!valueToEdit}
-        onClose={() => {
-          setValueToEdit(undefined);
+      <Dialog
+        open={!!valueToEdit}
+        onOpenChange={(open) => {
+          if (!open) {
+            setValueToEdit(undefined);
+          }
         }}
       >
-        <Modal.Header
-          onClose={() => {
-            setValueToEdit(undefined);
-          }}
-        >
-          Edit {itemName ?? 'Item'}
-        </Modal.Header>
-        <Modal.Body>
+        <Dialog.Content aria-describedby={undefined}>
+          <Dialog.Header>
+            <Dialog.Title>Edit {itemName ?? 'Item'}</Dialog.Title>
+          </Dialog.Header>
           {renderForm({
             initialData: valueToEdit?.data,
             onSubmit: handleSubmit,
           })}
-        </Modal.Body>
-      </Modal>
+        </Dialog.Content>
+      </Dialog>
     </div>
   );
 }
