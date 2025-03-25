@@ -161,7 +161,8 @@ export class GeneratorTaskOutputBuilder {
     contents: string | Buffer;
     options?: WriteFileOptions;
   }): void {
-    const fullPath = this.resolvePath(filePath);
+    // normalize all paths to POSIX style / paths
+    const fullPath = filePath.replaceAll(path.sep, path.posix.sep);
 
     if (this.output.files.has(fullPath)) {
       throw new Error(`Cannot overwrite file ${fullPath}`);
@@ -176,17 +177,6 @@ export class GeneratorTaskOutputBuilder {
       contents,
       options,
     });
-  }
-
-  /**
-   * Resolves a path
-   *
-   * @param relativePath The path to resolve relative to the base directory
-   * @returns The resolved path
-   */
-  resolvePath(relativePath: string): string {
-    // normalize all paths to POSIX style / paths
-    return relativePath.replaceAll(path.sep, path.posix.sep);
   }
 
   /**
