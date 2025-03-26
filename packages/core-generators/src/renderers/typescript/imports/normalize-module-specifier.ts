@@ -81,12 +81,12 @@ function isInternalImport(
   );
 }
 
-export type ModuleResolutionKind = `${ts.server.protocol.ModuleResolutionKind}`;
+type ModuleResolutionKind = `${ts.server.protocol.ModuleResolutionKind}`;
 
 /**
  * Options for resolving module paths
  */
-export interface ResolveModuleOptions {
+interface ResolveModuleOptions {
   /**
    * The path map entries
    */
