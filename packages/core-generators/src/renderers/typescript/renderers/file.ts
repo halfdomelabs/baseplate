@@ -22,8 +22,9 @@ import {
 } from '../imports/ts-morph-operations.js';
 import { renderTsTemplateToTsCodeFragment } from './template.js';
 
-interface RenderTsCodeFileTemplateOptions extends RenderTsTemplateOptions {
-  importSortOptions?: SortImportDeclarationsOptions;
+export interface RenderTsCodeFileTemplateOptions
+  extends RenderTsTemplateOptions {
+  importSortOptions?: Partial<SortImportDeclarationsOptions>;
   resolveModule?: (moduleSpecifier: string) => string;
 }
 

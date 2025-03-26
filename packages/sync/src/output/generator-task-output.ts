@@ -146,17 +146,17 @@ export class GeneratorTaskOutputBuilder {
   /**
    * Writes a file to the output
    *
-   * @param filePath The path to the file relative to the base directory
-   * @param contents The contents of the file
-   * @param options The options for the file
+   * @param payload The payload for the file to write
    */
   writeFile({
     id,
     filePath,
     contents,
     options,
+    generatorName,
   }: {
     id: string;
+    generatorName?: string;
     filePath: string;
     contents: string | Buffer;
     options?: WriteFileOptions;
@@ -173,7 +173,7 @@ export class GeneratorTaskOutputBuilder {
     }
 
     this.output.files.set(fullPath, {
-      id: `${this.generatorName}:${id}`,
+      id: `${generatorName ?? this.generatorName}:${id}`,
       contents,
       options,
     });

@@ -10,12 +10,23 @@ import {
 import { safeMergeAll } from '@halfdomelabs/utils';
 import path from 'node:path';
 import { ts } from 'ts-morph';
+import { z } from 'zod';
 
 import type { CopyTypescriptFilesOptions } from '@src/actions/copy-typescript-files-action.js';
+import type {
+  InferTsCodeTemplateVariablesFromMap,
+  TsCodeFileTemplate,
+  TsCodeTemplateVariableMap,
+} from '@src/renderers/typescript/index.js';
 
 import { copyTypescriptFilesAction } from '@src/actions/copy-typescript-files-action.js';
 import { CORE_PACKAGES } from '@src/constants/core-packages.js';
 import { projectScope } from '@src/providers/scopes.js';
+import {
+  generatePathMapEntries,
+  pathMapEntriesToRegexes,
+  renderTsCodeFileTemplate,
+} from '@src/renderers/typescript/index.js';
 
 import type { CopyTypescriptFileOptions } from '../../../actions/index.js';
 import type { TypescriptCodeBlock } from '../../../writers/index.js';
@@ -53,6 +64,10 @@ type TypescriptCompilerOptions = ChangePropertyTypes<
     jsx?: `${JsxEmit}`;
   }
 >;
+
+const typescriptGeneratorDescriptorSchema = z.object({
+  includeMetadata: z.boolean().optional(),
+});
 
 export interface TypescriptConfigReference {
   path: string;
@@ -103,6 +118,26 @@ export interface TypescriptProvider {
 export const typescriptProvider =
   createProviderType<TypescriptProvider>('typescript');
 
+interface WriteTemplatedFilePayload<
+  TVariables extends TsCodeTemplateVariableMap,
+> {
+  template: TsCodeFileTemplate<TVariables>;
+  destination: string;
+  variables: InferTsCodeTemplateVariablesFromMap<TVariables>;
+  fileId: string;
+  generatorName: string;
+  options?: WriteFileOptions;
+}
+
+export interface TypescriptFileProvider {
+  writeTemplatedFile<TVariables extends TsCodeTemplateVariableMap>(
+    payload: WriteTemplatedFilePayload<TVariables>,
+  ): void;
+}
+
+export const typescriptFileProvider =
+  createProviderType<TypescriptFileProvider>('typescript-file');
+
 interface TypescriptConfig {
   version: string;
   compilerOptions: TypescriptCompilerOptions;
@@ -138,7 +173,8 @@ const DEFAULT_CONFIG: TypescriptConfig = {
 export const typescriptGenerator = createGenerator({
   name: 'node/typescript',
   generatorFileUrl: import.meta.url,
-  buildTasks(taskBuilder) {
+  descriptorSchema: typescriptGeneratorDescriptorSchema,
+  buildTasks(taskBuilder, descriptor) {
     const configTask = taskBuilder.addTask({
       name: 'config',
       exports: {
@@ -310,6 +346,68 @@ export const typescriptGenerator = createGenerator({
                 },
               }),
             );
+          },
+        };
+      },
+    });
+
+    taskBuilder.addTask({
+      name: 'file',
+      exports: {
+        typescriptFile: typescriptFileProvider.export(projectScope),
+      },
+      taskDependencies: { configTask },
+      run(_, { configTask: { config } }) {
+        const moduleResolution =
+          config.value().compilerOptions.moduleResolution ?? 'node';
+        const { baseUrl = '.', paths = {} } = config.value().compilerOptions;
+        const pathMapEntries = generatePathMapEntries(baseUrl, paths);
+        const internalPatterns = pathMapEntriesToRegexes(pathMapEntries);
+
+        const typescriptFiles: WriteTemplatedFilePayload<TsCodeTemplateVariableMap>[] =
+          [];
+
+        return {
+          providers: {
+            typescriptFile: {
+              writeTemplatedFile: (payload) => {
+                typescriptFiles.push(payload);
+              },
+            },
+          },
+          async build(builder) {
+            for (const {
+              fileId,
+              generatorName,
+              template,
+              destination,
+              variables,
+              options,
+            } of typescriptFiles) {
+              const directory = path.dirname(destination);
+              const file = await renderTsCodeFileTemplate(template, variables, {
+                resolveModule(moduleSpecifier) {
+                  return resolveModule(moduleSpecifier, directory, {
+                    pathMapEntries,
+                    moduleResolution,
+                  });
+                },
+                importSortOptions: {
+                  internalPatterns,
+                },
+                includeMetadata: descriptor.includeMetadata,
+              });
+              builder.writeFile({
+                id: fileId,
+                generatorName,
+                filePath: destination,
+                contents: file,
+                options: {
+                  ...options,
+                  shouldFormat: true,
+                },
+              });
+            }
           },
         };
       },
