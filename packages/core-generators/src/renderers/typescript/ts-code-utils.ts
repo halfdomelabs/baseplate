@@ -84,6 +84,12 @@ export const TsCodeUtils = {
         if (key === content) {
           return `${key},`;
         }
+        if (content.startsWith(`function ${key}`)) {
+          return content.replace(/^function /, '');
+        }
+        if (content.startsWith(`async function ${key}`)) {
+          return content.replace(/^async function /, 'async ');
+        }
         return `${key}: ${content},`;
       })
       .join('\n');
@@ -93,6 +99,14 @@ export const TsCodeUtils = {
         ? `({${mergedContent}})`
         : `{${mergedContent}}`,
       ...mergeFragmentImportsAndHoistedFragments(fragments),
+    };
+  },
+
+  wrapFragment(fragment: TsCodeFragment, wrapper: string): TsCodeFragment {
+    return {
+      contents: wrapper.replace('CONTENTS', fragment.contents),
+      imports: fragment.imports,
+      hoistedFragments: fragment.hoistedFragments,
     };
   },
 };
