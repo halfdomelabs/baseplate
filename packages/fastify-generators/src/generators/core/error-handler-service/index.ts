@@ -1,12 +1,12 @@
 import type {
   ImportMapper,
+  TypescriptCodeExpression,
   TypescriptSourceFile,
 } from '@halfdomelabs/core-generators';
 
 import {
   createTypescriptTemplateConfig,
   projectScope,
-  TypescriptCodeExpression,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -50,9 +50,6 @@ export const errorHandlerServiceSetupProvider =
 export interface ErrorHandlerServiceProvider extends ImportMapper {
   getHttpErrorsImport(): string;
   getErrorFunction(): TypescriptCodeExpression;
-  getHttpErrorExpression(
-    error: keyof typeof ERROR_MAP,
-  ): TypescriptCodeExpression;
 }
 
 export const errorHandlerServiceProvider =
@@ -174,11 +171,6 @@ const createMainTask = createTaskConfigBuilder(() => ({
         errorHandlerService: {
           getErrorFunction: () => errorFunction,
           getHttpErrorsImport: () => '@/src/utils/http-errors.js',
-          getHttpErrorExpression: (error) =>
-            new TypescriptCodeExpression(
-              ERROR_MAP[error],
-              `import { ${ERROR_MAP[error]} } from '@/src/utils/http-errors.js'`,
-            ),
           getImportMap: () => importMap,
         },
       },

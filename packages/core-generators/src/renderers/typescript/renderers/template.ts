@@ -28,7 +28,7 @@ export function renderTsTemplateToTsCodeFragment<
   // Replace variables with their values
   for (const [key, value] of Object.entries(variables)) {
     validateKey(key);
-    const { contents } = value;
+    const contents = typeof value === 'string' ? value : value.contents;
 
     const valueToReplace = options.includeMetadata
       ? `/* ${key} */ ${contents}`
@@ -40,7 +40,7 @@ export function renderTsTemplateToTsCodeFragment<
   }
 
   const { imports, hoistedFragments } = flattenImportsAndHoistedFragments(
-    Object.values(variables),
+    Object.values(variables).filter((val) => typeof val !== 'string'),
   );
 
   return {

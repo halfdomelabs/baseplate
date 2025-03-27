@@ -121,12 +121,10 @@ export const loggerServiceGenerator = createGenerator({
 }`;
 
             if (Object.keys(mixins.value()).length > 0) {
-              loggerOptions.mixin = TsCodeUtils.wrapFragment(
-                TsCodeUtils.mergeFragmentsAsObject(mixins.value()),
-                `function mixin() {
-              return CONTENTS;
-            }`,
-              );
+              loggerOptions.mixin = TsCodeUtils.template`
+                function mixin() {
+                  return ${TsCodeUtils.mergeFragmentsAsObject(mixins.value())};
+                }`;
             }
 
             typescriptFile.writeTemplatedFile({

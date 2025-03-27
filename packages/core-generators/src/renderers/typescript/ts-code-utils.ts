@@ -109,4 +109,42 @@ export const TsCodeUtils = {
       hoistedFragments: fragment.hoistedFragments,
     };
   },
+
+  /**
+   * Creates a template string function that processes template literals with embedded expressions.
+   * Similar to the standard template literals, but handles TsCodeFragment objects and collects their imports.
+   *
+   * @param strings The string parts of the template
+   * @param expressions The expressions to be interpolated between the string parts
+   * @returns A new TsCodeFragment with the combined content and collected imports
+   *
+   * @example
+   * const name = 'world';
+   * const greeting = tsCodeFragment('Hello');
+   * const result = template`${greeting}, ${name}!`;
+   * // result.contents will be "Hello, world!"
+   * // result.imports will include any imports from the greeting fragment
+   */
+  template(
+    strings: TemplateStringsArray,
+    ...expressions: (TsCodeFragment | string)[]
+  ): TsCodeFragment {
+    const fragments = expressions.filter(isTsCodeFragment);
+    const result: string[] = [];
+
+    // Interleave the strings with the expressions
+    for (const [i, str] of strings.entries()) {
+      result.push(str);
+
+      if (i < expressions.length) {
+        const expr = expressions[i];
+        result.push(typeof expr === 'string' ? expr : expr.contents);
+      }
+    }
+
+    return {
+      contents: result.join(''),
+      ...mergeFragmentImportsAndHoistedFragments(fragments),
+    };
+  },
 };

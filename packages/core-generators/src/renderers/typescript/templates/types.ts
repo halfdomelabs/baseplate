@@ -30,5 +30,5 @@ export type TsCodeFileTemplate<TVariables extends TsCodeTemplateVariableMap> =
 export type InferTsCodeTemplateVariablesFromMap<
   TMap extends TsCodeTemplateVariableMap,
 > = {
-  [T in keyof TMap]: TsCodeFragment;
+  [T in keyof TMap]: TsCodeFragment | string;
 };
