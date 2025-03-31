@@ -8,14 +8,14 @@ describe('renderTsCodeFileTemplate', () => {
   it('should render a simple template without imports', async () => {
     const template = {
       name: 'test',
-      contents: 'const value = CONTENT;',
+      contents: 'const value = TPL_CONTENT;',
       variables: {
-        CONTENT: {},
+        TPL_CONTENT: {},
       },
     };
 
     const variables = {
-      CONTENT: tsCodeFragment('42'),
+      TPL_CONTENT: tsCodeFragment('42'),
     };
 
     const result = await renderTsCodeFileTemplate(template, variables, {});
@@ -25,14 +25,14 @@ describe('renderTsCodeFileTemplate', () => {
   it('should properly merge and sort imports', async () => {
     const template = {
       name: 'test',
-      contents: 'IMPORTS',
+      contents: 'TPL_IMPORTS',
       variables: {
-        IMPORTS: {},
+        TPL_IMPORTS: {},
       },
     };
 
     const variables = {
-      IMPORTS: tsCodeFragment(
+      TPL_IMPORTS: tsCodeFragment(
         'const myVar = new MyClass();\nconst utils = getUtils();',
         [
           tsImportBuilder().named('MyClass').from('./my-class'),
@@ -58,14 +58,14 @@ describe('renderTsCodeFileTemplate', () => {
   it('should handle module resolution when provided', async () => {
     const template = {
       name: 'test',
-      contents: 'CONTENT',
+      contents: 'TPL_CONTENT',
       variables: {
-        CONTENT: {},
+        TPL_CONTENT: {},
       },
     };
 
     const variables = {
-      CONTENT: tsCodeFragment(
+      TPL_CONTENT: tsCodeFragment(
         'const test = new Test();',
         tsImportBuilder().named('Test').from('./test'),
       ),
@@ -85,14 +85,14 @@ describe('renderTsCodeFileTemplate', () => {
   it('should handle hoisted fragments in correct order', async () => {
     const template = {
       name: 'test',
-      contents: 'CONTENT',
+      contents: 'TPL_CONTENT',
       variables: {
-        CONTENT: {},
+        TPL_CONTENT: {},
       },
     };
 
     const variables = {
-      CONTENT: tsCodeFragment(
+      TPL_CONTENT: tsCodeFragment(
         'import { foo } from "./add2.js";\nconst x = helper1() + helper2();',
         [tsImportBuilder().default('test').from('./test.js')],
         {

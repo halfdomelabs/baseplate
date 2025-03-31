@@ -7,16 +7,16 @@ import { renderTsTemplateToTsCodeFragment } from './template.js';
 describe('renderTsTemplateToTsCodeFragment', () => {
   it('should replace template variables with their values', () => {
     const template = `
-      function FUNCTION_NAME() {
-        return RETURN_VALUE; // FUNCTION_NAME
+      function TPL_FUNCTION_NAME() {
+        return TPL_RETURN_VALUE; // TPL_FUNCTION_NAME
       }
     `;
 
     const variables = {
-      FUNCTION_NAME: {
+      TPL_FUNCTION_NAME: {
         contents: 'sayHello',
       },
-      RETURN_VALUE: {
+      TPL_RETURN_VALUE: {
         contents: '"Hello, World!"',
       },
     };
@@ -33,9 +33,9 @@ describe('renderTsTemplateToTsCodeFragment', () => {
   });
 
   it('should include metadata when option is enabled', () => {
-    const template = 'const name = VARIABLE;';
+    const template = 'const name = TPL_VARIABLE;';
     const variables = {
-      VARIABLE: {
+      TPL_VARIABLE: {
         contents: '"test"',
       },
     };
@@ -44,13 +44,13 @@ describe('renderTsTemplateToTsCodeFragment', () => {
       includeMetadata: true,
     });
 
-    expect(result.contents).toEqual('const name = /* VARIABLE */ "test";');
+    expect(result.contents).toEqual('const name = /* TPL_VARIABLE */ "test";');
   });
 
   it('should collect imports and hoisted fragments from variables', () => {
-    const template = 'const value = COMPLEX_VALUE;';
+    const template = 'const value = TPL_COMPLEX_VALUE;';
     const variables = {
-      COMPLEX_VALUE: tsCodeFragment(
+      TPL_COMPLEX_VALUE: tsCodeFragment(
         'new MyClass()',
         tsImportBuilder().named('MyClass').from('./my-class'),
         {
@@ -83,14 +83,14 @@ describe('renderTsTemplateToTsCodeFragment', () => {
     };
 
     expect(() => renderTsTemplateToTsCodeFragment(template, variables)).toThrow(
-      'Invalid template file variable key: invalid_key',
+      'Template variable keys must be uppercase alphanumeric',
     );
   });
 
   it('should strip ts-nocheck from header', () => {
-    const template = '// @ts-nocheck\nconst value = VARIABLE;';
+    const template = '// @ts-nocheck\nconst value = TPL_VARIABLE;';
     const variables = {
-      VARIABLE: {
+      TPL_VARIABLE: {
         contents: '"test"',
       },
     };

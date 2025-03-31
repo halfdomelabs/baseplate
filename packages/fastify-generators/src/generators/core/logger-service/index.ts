@@ -7,7 +7,6 @@ import type {
 import {
   nodeProvider,
   projectScope,
-  tsCodeFragment,
   TsCodeUtils,
   TypescriptCodeUtils,
   typescriptFileProvider,
@@ -133,7 +132,7 @@ export const loggerServiceGenerator = createGenerator({
                 LOGGER_OPTIONS:
                   Object.keys(loggerOptions).length > 0
                     ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
-                    : tsCodeFragment(''),
+                    : '',
               },
               destination: 'src/services/logger.ts',
               fileId: 'logger',
