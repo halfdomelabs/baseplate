@@ -104,9 +104,9 @@ export async function renderTsCodeFileTemplate<
   options: RenderTsCodeFileTemplateOptions,
 ): Promise<string> {
   const rawTemplate =
-    'path' in template
-      ? await readFile(template.path, 'utf8')
-      : template.contents;
+    'path' in template.source
+      ? await readFile(template.source.path, 'utf8')
+      : template.source.contents;
 
   // Render the template into a code fragment
   const { contents, imports, hoistedFragments } =

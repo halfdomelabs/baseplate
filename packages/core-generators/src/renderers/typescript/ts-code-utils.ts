@@ -32,7 +32,16 @@ function mergeFragmentImportsAndHoistedFragments(fragments: TsCodeFragment[]): {
   };
 }
 
+/**
+ * Utility functions for working with TypeScript code fragments.
+ */
 export const TsCodeUtils = {
+  /**
+   * Merge an array of code fragments into a single code fragment.
+   * @param fragments - The code fragments to merge.
+   * @param separator - The separator to use between the fragments.
+   * @returns The merged code fragment.
+   */
   mergeFragments(
     fragments: TsCodeFragment[],
     separator = '\n',
@@ -43,6 +52,11 @@ export const TsCodeUtils = {
     };
   },
 
+  /**
+   * Format a string as a comment.
+   * @param text - The text to format.
+   * @returns The formatted text.
+   */
   formatAsComment(text: string): string {
     return text
       .split('\n')
@@ -50,6 +64,12 @@ export const TsCodeUtils = {
       .join('\n');
   },
 
+  /**
+   * Format a string with content.
+   * @param formatString - The string to format.
+   * @param args - The arguments to format the string with.
+   * @returns The formatted string.
+   */
   formatFragment(
     formatString: string,
     args: Record<string, TsCodeFragment | string>,
@@ -62,6 +82,12 @@ export const TsCodeUtils = {
     };
   },
 
+  /**
+   * Merge an object of code fragments into a single code fragment.
+   * @param obj - The object to merge.
+   * @param options - The options for the merge.
+   * @returns The merged code fragment.
+   */
   mergeFragmentsAsObject(
     obj: Record<string, TsCodeFragment | string | undefined>,
     options: {
@@ -102,6 +128,12 @@ export const TsCodeUtils = {
     };
   },
 
+  /**
+   * Wrap a code fragment with a string.
+   * @param fragment - The code fragment to wrap.
+   * @param wrapper - The string to wrap the code fragment with.
+   * @returns The wrapped code fragment.
+   */
   wrapFragment(fragment: TsCodeFragment, wrapper: string): TsCodeFragment {
     return {
       contents: wrapper.replace('CONTENTS', fragment.contents),

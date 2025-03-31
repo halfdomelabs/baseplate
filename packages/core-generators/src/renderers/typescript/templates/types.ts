@@ -6,31 +6,26 @@ export interface TsCodeTemplateVariable {
 
 export type TsCodeTemplateVariableMap = Record<string, TsCodeTemplateVariable>;
 
-interface TsCodeFileTemplateBase<TVariables extends TsCodeTemplateVariableMap> {
+export type TsCodeFileTemplateSource =
+  | {
+      path: string;
+    }
+  | {
+      contents: string;
+    };
+
+export interface TsCodeFileTemplate<
+  TVariables extends TsCodeTemplateVariableMap,
+> {
   name: string;
   variables: TVariables;
+  source: TsCodeFileTemplateSource;
   /**
    * The prefix to use for the template variables.
    * @default 'TPL_'
    */
   prefix?: string;
 }
-
-interface TsCodeFileTemplateWithPath<
-  TVariables extends TsCodeTemplateVariableMap,
-> extends TsCodeFileTemplateBase<TVariables> {
-  path: string;
-}
-
-interface TsCodeFileTemplateWithContents<
-  TVariables extends TsCodeTemplateVariableMap,
-> extends TsCodeFileTemplateBase<TVariables> {
-  contents: string;
-}
-
-export type TsCodeFileTemplate<TVariables extends TsCodeTemplateVariableMap> =
-  | TsCodeFileTemplateWithPath<TVariables>
-  | TsCodeFileTemplateWithContents<TVariables>;
 
 export type InferTsCodeTemplateVariablesFromMap<
   TMap extends TsCodeTemplateVariableMap,

@@ -8,7 +8,7 @@ describe('renderTsCodeFileTemplate', () => {
   it('should render a simple template without imports', async () => {
     const template = {
       name: 'test',
-      contents: 'const value = TPL_CONTENT;',
+      source: { contents: 'const value = TPL_CONTENT;' },
       variables: {
         TPL_CONTENT: {},
       },
@@ -25,7 +25,7 @@ describe('renderTsCodeFileTemplate', () => {
   it('should properly merge and sort imports', async () => {
     const template = {
       name: 'test',
-      contents: 'TPL_IMPORTS',
+      source: { contents: 'TPL_IMPORTS' },
       variables: {
         TPL_IMPORTS: {},
       },
@@ -58,7 +58,7 @@ describe('renderTsCodeFileTemplate', () => {
   it('should handle module resolution when provided', async () => {
     const template = {
       name: 'test',
-      contents: 'TPL_CONTENT',
+      source: { contents: 'TPL_CONTENT' },
       variables: {
         TPL_CONTENT: {},
       },
@@ -85,7 +85,7 @@ describe('renderTsCodeFileTemplate', () => {
   it('should handle hoisted fragments in correct order', async () => {
     const template = {
       name: 'test',
-      contents: 'TPL_CONTENT',
+      source: { contents: 'TPL_CONTENT' },
       variables: {
         TPL_CONTENT: {},
       },

@@ -3,7 +3,9 @@ import path from 'node:path';
 
 export const loggerFileTemplate = tsCodeFileTemplate({
   name: 'logger',
-  path: path.join(import.meta.dirname, '../templates/logger.ts'),
+  source: {
+    path: path.join(import.meta.dirname, '../templates/logger.ts'),
+  },
   variables: {
     LOGGER_OPTIONS: {},
   },

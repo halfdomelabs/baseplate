@@ -17,6 +17,13 @@ export interface RenderTsTemplateOptions {
   prefix?: string;
 }
 
+/**
+ * Render a template to a code fragment.
+ * @param template - The template to render.
+ * @param variables - The variables to render the template with.
+ * @param options - The options for the render.
+ * @returns The rendered code fragment.
+ */
 export function renderTsTemplateToTsCodeFragment<
   TVariables extends TsCodeTemplateVariableMap,
 >(
