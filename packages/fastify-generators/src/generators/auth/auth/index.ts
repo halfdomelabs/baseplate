@@ -57,7 +57,14 @@ export const authGenerator = createGenerator({
               getConfig: () => config,
             },
           },
-          build: () => ({ config }),
+          build: (
+            builder,
+            addTaskOutput: (output: {
+              config: NonOverwriteableMap<AuthGeneratorConfig>;
+            }) => void,
+          ) => {
+            addTaskOutput({ config });
+          },
         };
       },
     });

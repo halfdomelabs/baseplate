@@ -115,7 +115,16 @@ export const requestServiceContextGenerator = createGenerator({
               getContextPath: () => contextPath,
             },
           },
-          build: async (builder) => {
+          build: async (
+            builder,
+            addTaskOutput: (output: {
+              importMap: Record<
+                string,
+                { path: string; allowedImports: string[] }
+              >;
+              contextPath: string;
+            }) => void,
+          ) => {
             const contextFields = contextFieldsMap.value();
             const contextPassthroughs = contextPassthroughMap.value();
             const contextFile = typescript.createTemplate(
@@ -162,7 +171,7 @@ export const requestServiceContextGenerator = createGenerator({
               ),
             );
 
-            return { importMap, contextPath };
+            addTaskOutput({ importMap, contextPath });
           },
         };
       },

@@ -94,7 +94,17 @@ export const serviceContextGenerator = createGenerator({
               getContextPath: () => contextPath,
             },
           },
-          build: async (builder) => {
+          build: async (
+            builder,
+            addTaskOutput: (output: {
+              importMap: Record<
+                string,
+                { path: string; allowedImports: string[] }
+              >;
+              contextPath: string;
+              contextImport: string;
+            }) => void,
+          ) => {
             const contextFields = contextFieldsMap.value();
 
             const contextArgs = Object.values(contextFields).flatMap(
@@ -172,7 +182,7 @@ export const serviceContextGenerator = createGenerator({
               ),
             );
 
-            return { importMap, contextPath, contextImport };
+            addTaskOutput({ importMap, contextPath, contextImport });
           },
         };
       },

@@ -83,7 +83,12 @@ export const yogaPluginGenerator = createGenerator({
               isSubscriptionEnabled: () => !!enableSubscriptions,
             },
           },
-          build() {
+          build(
+            builder,
+            addTaskOutput: (output: {
+              configMap: NonOverwriteableMap<YogaPluginConfig>;
+            }) => void,
+          ) {
             configMap.prepend(
               'envelopPlugins',
               new TypescriptCodeExpression(
@@ -97,7 +102,7 @@ export const yogaPluginGenerator = createGenerator({
                 "import { useGraphLogger } from './useGraphLogger.js'",
               ]),
             );
-            return { configMap };
+            addTaskOutput({ configMap });
           },
         };
       },

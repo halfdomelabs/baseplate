@@ -87,7 +87,6 @@ ${volumeEntries.join('\n')}`.trim();
         }
 
         return {
-          providers: {},
           build: (builder) => {
             builder.writeFile({
               id: 'docker-compose',

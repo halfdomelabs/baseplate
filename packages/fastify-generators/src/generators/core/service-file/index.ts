@@ -1,4 +1,5 @@
 import type { TypescriptCodeBlock } from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   makeImportAndFilePath,
@@ -92,7 +93,14 @@ export const serviceFileGenerator = createGenerator({
               },
             },
           },
-          build: async (builder) => {
+          build: async (
+            builder,
+            addTaskOutput: (output: {
+              outputMap: NonOverwriteableMap<
+                Record<string, ServiceOutputMethod>
+              >;
+            }) => void,
+          ) => {
             const methods = methodMap.value();
             const methodOrder = descriptor.methodOrder ?? [];
             const orderedMethods = [
@@ -111,7 +119,7 @@ export const serviceFileGenerator = createGenerator({
                 servicesFile.renderToActionFromText('METHODS;', servicesPath),
               );
             }
-            return { outputMap };
+            addTaskOutput({ outputMap });
           },
         };
       },

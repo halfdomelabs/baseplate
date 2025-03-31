@@ -1,4 +1,8 @@
-import type { BuilderAction, WriteFileOptions } from '@halfdomelabs/sync';
+import type {
+  BuilderAction,
+  NonOverwriteableMap,
+  WriteFileOptions,
+} from '@halfdomelabs/sync';
 import type { CompilerOptions } from 'ts-morph';
 
 import {
@@ -228,7 +232,15 @@ export const typescriptGenerator = createGenerator({
               },
             },
           },
-          build: () => ({ config, getCompilerOptions }),
+          build: (
+            builder,
+            addTaskOutput: (output: {
+              config: NonOverwriteableMap<TypescriptConfig>;
+              getCompilerOptions: () => CompilerOptions;
+            }) => void,
+          ) => {
+            addTaskOutput({ config, getCompilerOptions });
+          },
         };
       },
     });

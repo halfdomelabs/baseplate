@@ -25,22 +25,24 @@ function buildGeneratorEntry(
     dependencyMap?: ProviderDependencyMap;
     exportMap?: ProviderExportMap;
     exports?: Record<string, Provider>;
+    outputMap?: ProviderExportMap;
+    outputs?: Record<string, Provider>;
     build?: (
       builder: GeneratorTaskOutputBuilder,
       deps: Record<string, Provider>,
-    ) => void;
+    ) => void | Promise<void>;
     generatorName?: string;
   } = {},
 ): GeneratorEntry {
   const {
     id,
-    build = () => {
-      /* empty */
-    },
+    build = () => ({}),
     children = [],
     exports: entryExports = {},
+    outputs: entryOutputs = {},
     dependencyMap = {},
     exportMap = {},
+    outputMap = {},
   } = options;
   return buildTestGeneratorEntry(
     {
@@ -57,10 +59,12 @@ function buildGeneratorEntry(
         dependencies: dependencyMap,
         exports: exportMap,
         taskDependencies: [],
+        outputs: outputMap,
         run: (deps) => ({
           providers: entryExports,
           build: (builder) => {
             build(builder, deps);
+            return entryOutputs;
           },
         }),
       },

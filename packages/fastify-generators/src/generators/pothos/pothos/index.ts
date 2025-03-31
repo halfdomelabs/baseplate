@@ -99,7 +99,16 @@ export const pothosGenerator = createGenerator({
               getTypeReferences: () => pothosTypes,
             },
           },
-          build: () => ({ config, schemaFiles, pothosTypes }),
+          build: (
+            builder,
+            addTaskOutput: (output: {
+              config: NonOverwriteableMap<PothosGeneratorConfig>;
+              schemaFiles: string[];
+              pothosTypes: PothosTypeReferenceContainer;
+            }) => void,
+          ) => {
+            addTaskOutput({ config, schemaFiles, pothosTypes });
+          },
         };
       },
     });
@@ -129,7 +138,12 @@ export const pothosGenerator = createGenerator({
               },
             },
           },
-          build: () => ({ schemaFiles }),
+          build: (
+            builder,
+            addTaskOutput: (output: { schemaFiles: string[] }) => void,
+          ) => {
+            addTaskOutput({ schemaFiles });
+          },
         };
       },
     });

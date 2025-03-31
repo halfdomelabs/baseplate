@@ -31,6 +31,10 @@ export interface ProviderType<P = Provider> {
    */
   readonly isReadOnly?: boolean;
   /**
+   * Whether the provider is used as an output provider (i.e. read-only)
+   */
+  readonly isOutput?: boolean;
+  /**
    * Creates a dependency config for the provider that can be used in dependency maps
    */
   dependency(): ProviderDependency<P>;

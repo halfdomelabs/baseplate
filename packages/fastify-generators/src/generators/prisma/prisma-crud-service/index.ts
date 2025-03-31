@@ -1,3 +1,5 @@
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
+
 import { projectScope } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -55,7 +57,16 @@ export const prismaCrudServiceGenerator = createGenerator({
               },
             },
           },
-          build: () => ({ transformers }),
+          build: (
+            builder,
+            addTaskOutput: (output: {
+              transformers: NonOverwriteableMap<
+                Record<string, PrismaDataTransformerFactory>
+              >;
+            }) => void,
+          ) => {
+            addTaskOutput({ transformers });
+          },
         };
       },
     });

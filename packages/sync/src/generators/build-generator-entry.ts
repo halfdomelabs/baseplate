@@ -27,6 +27,10 @@ export interface GeneratorTaskEntry {
    */
   exports: ProviderExportMap;
   /**
+   * The outputs of the task entry
+   */
+  outputs: ProviderExportMap;
+  /**
    * The task that the task entry represents
    */
   task: GeneratorTask;
@@ -94,6 +98,7 @@ async function buildGeneratorEntryRecursive(
       id: `${id}#${task.name}`,
       dependencies: task.dependencies ?? {},
       exports: task.exports ?? {},
+      outputs: task.outputs ?? {},
       task,
       generatorBaseDirectory: directory,
       dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),

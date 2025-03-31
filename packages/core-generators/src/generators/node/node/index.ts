@@ -78,7 +78,12 @@ export const nodeGenerator = createGenerator({
               },
             },
           },
-          build: () => ({ isEsm }),
+          build: (
+            builder,
+            addTaskOutput: (output: { isEsm: boolean }) => void,
+          ) => {
+            addTaskOutput({ isEsm });
+          },
         };
       },
     });

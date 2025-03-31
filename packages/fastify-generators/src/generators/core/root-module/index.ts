@@ -2,6 +2,7 @@ import type {
   ImportMapper,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
+import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 
 import {
   projectScope,
@@ -79,7 +80,16 @@ export const rootModuleGenerator = createGenerator({
                 ),
             },
           },
-          build: () => ({ moduleFieldMap }),
+          build: (
+            builder,
+            addTaskOutput: (output: {
+              moduleFieldMap: NonOverwriteableMap<
+                Record<string, TypescriptCodeExpression>
+              >;
+            }) => void,
+          ) => {
+            addTaskOutput({ moduleFieldMap });
+          },
         };
       },
     });

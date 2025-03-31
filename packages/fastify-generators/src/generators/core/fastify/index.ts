@@ -114,7 +114,13 @@ export const fastifyGenerator = createGenerator({
               getConfig: () => config,
             },
           },
-          build() {
+          build(
+            builder,
+            addTaskOutput: (output: {
+              nodeFlags: NodeFlag[];
+              devOutputFormatter: string | undefined;
+            }) => void,
+          ) {
             // add scripts
             const { devOutputFormatter, nodeFlags } = config.value();
 
@@ -145,7 +151,7 @@ export const fastifyGenerator = createGenerator({
               dev: devCommand,
             });
 
-            return { nodeFlags, devOutputFormatter };
+            addTaskOutput({ nodeFlags, devOutputFormatter });
           },
         };
       },

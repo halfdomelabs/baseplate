@@ -8,15 +8,12 @@ import { fileURLToPath } from 'node:url';
 import type {
   GeneratorBundle,
   GeneratorTask,
-  ProviderDependencyMap,
-  ProviderExportMap,
 } from '@src/generators/generators.js';
-import type { ProviderExportScope } from '@src/providers/index.js';
+import type { Provider, ProviderExportScope } from '@src/providers/index.js';
 
 import type {
   GeneratorTaskBuilder,
   SimpleGeneratorTaskConfig,
-  TaskOutputDependencyMap,
 } from './create-generator-types.js';
 
 /**
@@ -96,11 +93,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     const validatedDescriptor =
       (config.descriptorSchema?.parse(rest) as unknown) ?? {};
 
-    const taskConfigs: SimpleGeneratorTaskConfig<
-      ProviderExportMap,
-      ProviderDependencyMap,
-      TaskOutputDependencyMap
-    >[] = [];
+    const taskConfigs: SimpleGeneratorTaskConfig[] = [];
     const taskOutputs: Record<string, unknown> = {};
     const taskBuilder: GeneratorTaskBuilder<z.infer<DescriptorSchema>> = {
       addTask: (task) => {
@@ -121,37 +114,41 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     };
     config.buildTasks(taskBuilder, validatedDescriptor);
 
-    const tasks: GeneratorTask<ProviderExportMap, ProviderDependencyMap>[] =
-      taskConfigs.map((task) => {
-        const taskDependencies = task.taskDependencies ?? {};
-        return {
-          name: task.name,
-          dependencies: task.dependencies,
-          exports: task.exports,
-          taskDependencies: Object.values(taskDependencies).map(
-            (dep) => dep.name,
-          ),
-          run(dependencies) {
-            const resolvedTaskOutputs = mapValues(taskDependencies, (dep) =>
-              dep.getOutput(),
-            );
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- it can return undefined if there are no exports
-            const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
-            return {
-              providers: runResult.providers,
-              async build(builder) {
-                if (!runResult.build) {
-                  return;
-                }
-                const taskOutput = await Promise.resolve(
-                  runResult.build(builder),
-                );
-                taskOutputs[task.name] = taskOutput;
-              },
-            };
-          },
-        };
-      });
+    const tasks: GeneratorTask[] = taskConfigs.map((task) => {
+      const taskDependencies = task.taskDependencies ?? {};
+      return {
+        name: task.name,
+        dependencies: task.dependencies,
+        exports: task.exports,
+        outputs: task.outputs,
+        taskDependencies: Object.values(taskDependencies).map(
+          (dep) => dep.name,
+        ),
+        run(dependencies) {
+          const resolvedTaskOutputs = mapValues(taskDependencies, (dep) =>
+            dep.getOutput(),
+          );
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- it can return undefined if there are no exports
+          const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
+          return {
+            providers: runResult.providers,
+            async build(builder) {
+              if (!runResult.build) {
+                return {};
+              }
+              let taskOutput: unknown;
+              const output = await Promise.resolve(
+                runResult.build(builder, (output) => {
+                  taskOutput = output;
+                }),
+              );
+              taskOutputs[task.name] = taskOutput;
+              return output as Record<string, Provider>;
+            },
+          };
+        },
+      };
+    });
 
     return {
       name: config.name,
