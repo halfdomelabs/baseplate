@@ -146,22 +146,23 @@ export class GeneratorTaskOutputBuilder {
   /**
    * Writes a file to the output
    *
-   * @param filePath The path to the file relative to the base directory
-   * @param contents The contents of the file
-   * @param options The options for the file
+   * @param payload The payload for the file to write
    */
   writeFile({
     id,
     filePath,
     contents,
     options,
+    generatorName,
   }: {
     id: string;
+    generatorName?: string;
     filePath: string;
     contents: string | Buffer;
     options?: WriteFileOptions;
   }): void {
-    const fullPath = this.resolvePath(filePath);
+    // normalize all paths to POSIX style / paths
+    const fullPath = filePath.replaceAll(path.sep, path.posix.sep);
 
     if (this.output.files.has(fullPath)) {
       throw new Error(`Cannot overwrite file ${fullPath}`);
@@ -172,21 +173,10 @@ export class GeneratorTaskOutputBuilder {
     }
 
     this.output.files.set(fullPath, {
-      id: `${this.generatorName}:${id}`,
+      id: `${generatorName ?? this.generatorName}:${id}`,
       contents,
       options,
     });
-  }
-
-  /**
-   * Resolves a path
-   *
-   * @param relativePath The path to resolve relative to the base directory
-   * @returns The resolved path
-   */
-  resolvePath(relativePath: string): string {
-    // normalize all paths to POSIX style / paths
-    return relativePath.replaceAll(path.sep, path.posix.sep);
   }
 
   /**

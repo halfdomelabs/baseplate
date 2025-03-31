@@ -728,14 +728,13 @@ export class TypescriptSourceFile<
     return {
       execute: (builder) => {
         const { id, preprocessWithEta, ...rest } = options ?? {};
-        const fullPath = builder.resolvePath(destination);
         if (preprocessWithEta) {
           template = this.preprocessWithEta(template, preprocessWithEta);
         }
-        const contents = this.renderToText(template, fullPath);
+        const contents = this.renderToText(template, destination);
         builder.writeFile({
-          id: id ?? fullPath,
-          filePath: fullPath,
+          id: id ?? destination,
+          filePath: destination,
           contents,
           options: {
             shouldFormat: true,
@@ -755,7 +754,7 @@ export class TypescriptSourceFile<
     return {
       execute: async (builder) => {
         const { id, preprocessWithEta, ...rest } = options ?? {};
-        const fullPath = builder.resolvePath(destination ?? templateFile);
+        const fullPath = destination ?? templateFile;
         let template = await builder.readTemplate(templateFile);
         if (preprocessWithEta) {
           template = this.preprocessWithEta(template, preprocessWithEta);

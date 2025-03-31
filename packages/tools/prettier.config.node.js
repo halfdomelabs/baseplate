@@ -1,5 +1,5 @@
 // @ts-check
-import url from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 /** @type {import("prettier").Config} */
 export default {
@@ -9,7 +9,7 @@ export default {
   semi: true,
   plugins: [
     // workaround for this bug: https://github.com/prettier/prettier-vscode/issues/3641
-    url.fileURLToPath(import.meta.resolve('prettier-plugin-packagejson')),
+    fileURLToPath(import.meta.resolve('prettier-plugin-packagejson')),
   ],
   // we don't want trailing commas in jsonc files (https://github.com/prettier/prettier/issues/15956)
   overrides: [

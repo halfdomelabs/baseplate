@@ -4,6 +4,8 @@ import type { NonOverwriteableMap } from '@halfdomelabs/sync';
 import {
   nodeProvider,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -46,9 +48,11 @@ export const requestContextGenerator = createGenerator({
       run({ loggerServiceSetup }) {
         loggerServiceSetup.addMixin(
           'reqId',
-          TypescriptCodeUtils.createExpression(
+          tsCodeFragment(
             "requestContext.get('reqInfo')?.id",
-            "import { requestContext } from '@fastify/request-context';",
+            tsImportBuilder()
+              .named('requestContext')
+              .from('@fastify/request-context'),
           ),
         );
 

@@ -1,14 +1,15 @@
 import type {
   ImportMapper,
+  TsCodeFragment,
   TypescriptCodeExpression,
 } from '@halfdomelabs/core-generators';
 
 import {
-  createTypescriptTemplateConfig,
   nodeProvider,
   projectScope,
+  TsCodeUtils,
   TypescriptCodeUtils,
-  typescriptProvider,
+  typescriptFileProvider,
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
@@ -20,13 +21,14 @@ import { z } from 'zod';
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 
 import { fastifyProvider } from '../fastify/index.js';
+import { loggerFileTemplate } from './generated/templates.js';
 
 const descriptorSchema = z.object({
   placeholder: z.string().optional(),
 });
 
 export interface LoggerServiceSetupProvider extends ImportMapper {
-  addMixin(key: string, expression: TypescriptCodeExpression): void;
+  addMixin(key: string, expression: TsCodeFragment): void;
 }
 
 export const loggerServiceSetupProvider =
@@ -49,10 +51,6 @@ export const loggerServiceProvider = createProviderType<LoggerServiceProvider>(
   { isReadOnly: true },
 );
 
-const loggerServiceFileConfig = createTypescriptTemplateConfig({
-  LOGGER_OPTIONS: { type: 'code-expression' },
-});
-
 export const loggerServiceGenerator = createGenerator({
   name: 'core/logger-service',
   generatorFileUrl: import.meta.url,
@@ -63,15 +61,15 @@ export const loggerServiceGenerator = createGenerator({
       dependencies: {
         node: nodeProvider,
         fastify: fastifyProvider,
-        typescript: typescriptProvider,
+        typescriptFile: typescriptFileProvider,
       },
       exports: {
         loggerServiceSetup: loggerServiceSetupProvider.export(projectScope),
         loggerService: loggerServiceProvider.export(projectScope),
       },
-      run({ node, fastify, typescript }) {
+      run({ node, fastify, typescriptFile }) {
         const mixins = createNonOverwriteableMap<
-          Record<string, TypescriptCodeExpression>
+          Record<string, TsCodeFragment>
         >({}, { name: 'logger-service-mixins' });
 
         fastify.getConfig().set('devOutputFormatter', 'pino-pretty -t');
@@ -111,43 +109,40 @@ export const loggerServiceGenerator = createGenerator({
               },
             },
           },
-          build: async (builder) => {
-            const loggerFile = typescript.createTemplate(
-              loggerServiceFileConfig,
-            );
-
-            const loggerOptions: Record<string, TypescriptCodeExpression> = {};
+          build: (builder) => {
+            const loggerOptions: Record<string, TsCodeFragment | string> = {};
 
             // log level vs. number for better log parsing
-            loggerOptions.formatters = TypescriptCodeUtils.createExpression(
-              `{
+            loggerOptions.formatters = `{
   level(level) {
     return { level };
   },
-}`,
-            );
+}`;
 
             if (Object.keys(mixins.value()).length > 0) {
-              loggerOptions.mixin = TypescriptCodeUtils.wrapExpression(
-                TypescriptCodeUtils.mergeExpressionsAsObject(mixins.value()),
-                TypescriptCodeUtils.createWrapper(
-                  (expression) => `function mixin() {
-              return ${expression};
-            }`,
-                ),
-              );
+              loggerOptions.mixin = TsCodeUtils.template`
+                function mixin() {
+                  return ${TsCodeUtils.mergeFragmentsAsObject(mixins.value())};
+                }`;
             }
 
-            loggerFile.addCodeExpression(
-              'LOGGER_OPTIONS',
-              Object.keys(loggerOptions).length > 0
-                ? TypescriptCodeUtils.mergeExpressionsAsObject(loggerOptions)
-                : TypescriptCodeUtils.createExpression(''),
-            );
-
-            await builder.apply(
-              loggerFile.renderToAction('logger.ts', 'src/services/logger.ts'),
-            );
+            typescriptFile.writeTemplatedFile({
+              template: loggerFileTemplate,
+              variables: {
+                TPL_LOGGER_OPTIONS:
+                  Object.keys(loggerOptions).length > 0
+                    ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
+                    : '',
+              },
+              destination: 'src/services/logger.ts',
+              fileId: 'logger',
+              generatorName: builder.generatorName,
+              options: {
+                alternateFullIds: [
+                  '@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts',
+                ],
+              },
+            });
           },
         };
       },

@@ -1,5 +1,5 @@
 // @ts-check
-import url from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 import basePrettierConfig from './prettier.config.node.js';
 
@@ -10,6 +10,6 @@ export default {
   plugins: [
     ...(basePrettierConfig.plugins ?? []),
     // workaround for this bug: https://github.com/prettier/prettier-vscode/issues/3641
-    url.fileURLToPath(import.meta.resolve('prettier-plugin-tailwindcss')),
+    fileURLToPath(import.meta.resolve('prettier-plugin-tailwindcss')),
   ],
 };

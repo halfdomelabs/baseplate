@@ -2,6 +2,8 @@ import {
   makeImportAndFilePath,
   nodeProvider,
   projectScope,
+  tsCodeFragment,
+  tsImportBuilder,
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
@@ -218,9 +220,11 @@ export const auth0ModuleGenerator = createGenerator({
       run({ loggerServiceSetup }) {
         loggerServiceSetup.addMixin(
           'userId',
-          TypescriptCodeUtils.createExpression(
+          tsCodeFragment(
             "requestContext.get('userId')",
-            "import { requestContext } from '@fastify/request-context';",
+            tsImportBuilder()
+              .named('requestContext')
+              .from('@fastify/request-context'),
           ),
         );
       },

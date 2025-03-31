@@ -62,12 +62,10 @@ export const copyTypescriptFileAction = createBuilderActionCreator<
 
   const destinationPath = destination ?? source;
 
-  const fullPath = builder.resolvePath(destinationPath);
-
   // apply any wrappers if needed
   const needsParsing = options.importMappers ?? options.pathMappings;
   const formattedContents = needsParsing
-    ? formatImports(replacedContents, fullPath, options)
+    ? formatImports(replacedContents, destinationPath, options)
     : replacedContents;
 
   builder.writeFile({
