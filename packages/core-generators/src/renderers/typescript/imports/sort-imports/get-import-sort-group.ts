@@ -31,7 +31,7 @@ export type ImportSortGroup = (typeof IMPORT_SORT_GROUPS)[number];
 /**
  * Options for classifying imports
  */
-export interface GetImportSortGroupOptions {
+interface GetImportSortGroupOptions {
   /**
    * Patterns that identify internal modules
    */
