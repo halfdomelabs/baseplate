@@ -129,7 +129,7 @@ export const loggerServiceGenerator = createGenerator({
             typescriptFile.writeTemplatedFile({
               template: loggerFileTemplate,
               variables: {
-                LOGGER_OPTIONS:
+                TPL_LOGGER_OPTIONS:
                   Object.keys(loggerOptions).length > 0
                     ? TsCodeUtils.mergeFragmentsAsObject(loggerOptions)
                     : '',

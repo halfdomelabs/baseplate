@@ -7,6 +7,6 @@ export const loggerFileTemplate = tsCodeFileTemplate({
     path: path.join(import.meta.dirname, '../templates/logger.ts'),
   },
   variables: {
-    LOGGER_OPTIONS: {},
+    TPL_LOGGER_OPTIONS: {},
   },
 });
