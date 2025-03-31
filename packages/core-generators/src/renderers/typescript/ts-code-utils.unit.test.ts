@@ -141,5 +141,25 @@ describe('TsCodeUtils', () => {
 
       expect(result.contents).toBe('{value,}');
     });
+
+    it('should handle function declarations', () => {
+      const obj = {
+        value: tsCodeFragment('function value() { return 42; }'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsObject(obj);
+
+      expect(result.contents).toBe('{value() { return 42; },}');
+    });
+
+    it('should handle async function declarations', () => {
+      const obj = {
+        value: tsCodeFragment('async function value() { return 42; }'),
+      };
+
+      const result = TsCodeUtils.mergeFragmentsAsObject(obj);
+
+      expect(result.contents).toBe('{async value() { return 42; },}');
+    });
   });
 });

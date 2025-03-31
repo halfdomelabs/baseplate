@@ -103,18 +103,19 @@ export const TsCodeUtils = {
       .map((key) => {
         const value = obj[key] ?? '';
         const content = typeof value === 'string' ? value : value.contents;
+        const trimmedContent = content.trim();
 
         if (key.startsWith('...')) {
-          return `...${content},`;
+          return `...${trimmedContent},`;
         }
-        if (key === content) {
-          return `${key},`;
+        if (key === trimmedContent) {
+          return `${trimmedContent},`;
         }
-        if (content.startsWith(`function ${key}`)) {
-          return content.replace(/^function /, '');
+        if (trimmedContent.startsWith(`function ${key}`)) {
+          return `${trimmedContent.replace(/^function /, '')},`;
         }
-        if (content.startsWith(`async function ${key}`)) {
-          return content.replace(/^async function /, 'async ');
+        if (trimmedContent.startsWith(`async function ${key}`)) {
+          return `${trimmedContent.replace(/^async function /, 'async ')},`;
         }
         return `${key}: ${content},`;
       })
