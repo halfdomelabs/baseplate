@@ -14,6 +14,9 @@ const providerTwo = createProviderType('provider-two');
 const readOnlyProvider = createProviderType('read-only-provider', {
   isReadOnly: true,
 });
+const outputOnlyProvider = createProviderType('output-only-provider', {
+  isOutput: true,
+});
 const testLogger = createEventedLogger({ noConsole: true });
 
 // Create test scopes
@@ -407,5 +410,84 @@ describe('resolveTaskDependencies', () => {
         dep: { id: 'middle#main', options: {} },
       },
     });
+  });
+
+  it('should handle output-only providers correctly', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        scopes: [defaultScope],
+      },
+      {
+        outputs: {
+          outputProvider: outputOnlyProvider.export(defaultScope),
+        },
+      },
+    );
+
+    const childEntry = buildTestGeneratorEntry(
+      {
+        id: 'child',
+        scopes: [defaultScope],
+      },
+      {
+        dependencies: { dep: outputOnlyProvider.dependency() },
+      },
+    );
+
+    entry.children.push(childEntry);
+
+    // Act
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+
+    // Assert
+    expect(dependencyMap).toEqual({
+      'root#main': {},
+      'child#main': {
+        dep: { id: 'root#main', options: {} },
+      },
+    });
+  });
+
+  it('should throw error when non-output provider is used in task outputs', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        scopes: [defaultScope],
+      },
+      {
+        outputs: {
+          // Using a regular provider in outputs should throw
+          invalidOutput: providerOne.export(defaultScope),
+        },
+      },
+    );
+
+    // Act & Assert
+    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+      /All providers in task outputs must be output providers/,
+    );
+  });
+
+  it('should throw error when non-output provider is used in task exports', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry(
+      {
+        id: 'root',
+        scopes: [defaultScope],
+      },
+      {
+        exports: {
+          invalidExport: outputOnlyProvider.export(defaultScope),
+        },
+      },
+    );
+
+    // Act & Assert
+    expect(() => resolveTaskDependencies(entry, testLogger)).toThrow(
+      /All providers in task exports must be non-output providers/,
+    );
   });
 });

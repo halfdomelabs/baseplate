@@ -57,6 +57,11 @@ export interface ProviderDependencyOptions {
    * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
    */
   readonly isReadOnly?: boolean;
+  /**
+   * Whether the provider is an output provider (i.e. read-only). Only output providers
+   * can be used in the outputs of a task.
+   */
+  readonly isOutput?: boolean;
 }
 
 /**
@@ -96,6 +101,7 @@ export interface ProviderDependency<P = Provider> {
 export interface ProviderExport<P = Provider> {
   readonly type: 'export';
   readonly name: string;
+  readonly isOutput: boolean;
   /**
    * The scope/name pairs that the provider will be available in
    */
@@ -119,6 +125,11 @@ export interface ProviderExport<P = Provider> {
  * Options for a provider type
  */
 interface ProviderTypeOptions {
+  /**
+   * Whether the provider is an output provider (i.e. read-only). Only output providers
+   * can be used in the outputs of a task.
+   */
+  isOutput?: boolean;
   /**
    * Whether the functions in the provider are read-only such that they cannot
    * modify any state in the generator task
@@ -181,6 +192,7 @@ export function createProviderType<T>(
       return {
         ...this,
         type: 'export',
+        isOutput: options?.isOutput ?? false,
         exports: [{ scope, exportName }],
         andExport(scope, exportName) {
           return toMerged(this, {
@@ -190,4 +202,18 @@ export function createProviderType<T>(
       };
     },
   };
+}
+
+/**
+ * Creates an output provider type
+ *
+ * @param name The name of the provider type
+ * @param options The options for the provider type
+ * @returns The provider type
+ */
+export function createOutputProviderType<T>(
+  name: string,
+  options?: Omit<ProviderTypeOptions, 'isOutput'>,
+): ProviderType<T> {
+  return createProviderType(name, { ...options, isOutput: true });
 }

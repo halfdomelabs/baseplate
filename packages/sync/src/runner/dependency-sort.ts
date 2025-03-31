@@ -37,6 +37,14 @@ export function getSortedRunSteps(
         .flatMap((dependent): [string, string][] => {
           const dependentInit = `init|${dependent.id}`;
           const dependentBuild = `build|${dependent.id}`;
+
+          // check if the dependency is to an output provider and if so,
+          // we need to wait until the dependent task has been built before
+          // we can build the current task
+          if (dependent.options?.isOutput) {
+            return [[dependentBuild, entryInit] as [string, string]];
+          }
+
           return [
             [dependentInit, entryInit],
             // we don't attach a build step dependency if the provider is a read-only provider

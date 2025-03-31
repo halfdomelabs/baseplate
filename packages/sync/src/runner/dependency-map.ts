@@ -35,10 +35,31 @@ function buildGeneratorIdToScopesMapRecursive(
   };
   const newParentTaskIds = [...parentTaskIds, entry.id];
 
-  // add scoped exports of the entry to cache
+  // add scoped exports and outputs of the entry to cache
   for (const task of entry.tasks) {
     const taskExports = Object.values(task.exports);
-    for (const taskExport of taskExports) {
+    const taskOutputs = Object.values(task.outputs);
+    const invalidTaskExports = taskExports.filter(
+      (taskExport) => taskExport.isOutput,
+    );
+    if (invalidTaskExports.length > 0) {
+      throw new Error(
+        `All providers in task exports must be non-output providers in ${task.id}: ${invalidTaskExports
+          .map((taskExport) => taskExport.name)
+          .join(', ')}`,
+      );
+    }
+    const invalidTaskOutputs = taskOutputs.filter(
+      (taskOutput) => !taskOutput.isOutput,
+    );
+    if (invalidTaskOutputs.length > 0) {
+      throw new Error(
+        `All providers in task outputs must be output providers in ${task.id}: ${invalidTaskOutputs
+          .map((output) => output.name)
+          .join(', ')}`,
+      );
+    }
+    for (const taskExport of [...taskExports, ...taskOutputs]) {
       const { exports } = taskExport;
 
       for (const { scope, exportName } of exports) {
@@ -112,7 +133,8 @@ function buildTaskDependencyMap(
   return mapValues(entry.dependencies, (dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
-    const { optional, exportName, isReadOnly } = normalizedDep.options;
+    const { optional, exportName, isReadOnly, isOutput } =
+      normalizedDep.options;
 
     // if the export name is empty and the dependency is optional, we can skip it
     if (exportName === '' && optional) {
@@ -140,7 +162,10 @@ function buildTaskDependencyMap(
 
     return {
       id: resolvedTaskId,
-      options: { isReadOnly: isReadOnly ? true : undefined },
+      options: {
+        isReadOnly: isReadOnly ? true : undefined,
+        isOutput: isOutput ? true : undefined,
+      },
     };
   });
 }
@@ -149,7 +174,10 @@ export type EntryDependencyMap = Record<
   string,
   Record<
     string,
-    | { id: string; options?: Pick<ProviderDependencyOptions, 'isReadOnly'> }
+    | {
+        id: string;
+        options?: Pick<ProviderDependencyOptions, 'isReadOnly' | 'isOutput'>;
+      }
     | null
     | undefined
   >
