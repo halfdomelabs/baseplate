@@ -110,7 +110,10 @@ export async function renderTsCodeFileTemplate<
 
   // Render the template into a code fragment
   const { contents, imports, hoistedFragments } =
-    renderTsTemplateToTsCodeFragment(rawTemplate, variables, options);
+    renderTsTemplateToTsCodeFragment(rawTemplate, variables, {
+      prefix: template.prefix,
+      ...options,
+    });
 
   if (!imports?.length && !hoistedFragments?.length) {
     return contents;

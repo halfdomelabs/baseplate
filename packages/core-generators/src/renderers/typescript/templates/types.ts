@@ -9,6 +9,11 @@ export type TsCodeTemplateVariableMap = Record<string, TsCodeTemplateVariable>;
 interface TsCodeFileTemplateBase<TVariables extends TsCodeTemplateVariableMap> {
   name: string;
   variables: TVariables;
+  /**
+   * The prefix to use for the template variables.
+   * @default 'TPL_'
+   */
+  prefix?: string;
 }
 
 interface TsCodeFileTemplateWithPath<
