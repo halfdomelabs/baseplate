@@ -2,7 +2,7 @@
 
 /**
  * @typedef {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} ConfigArray
- * @typedef {import('./typescript').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
+ * @typedef {import('./typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
  */
 
 import storybookPlugin from 'eslint-plugin-storybook';

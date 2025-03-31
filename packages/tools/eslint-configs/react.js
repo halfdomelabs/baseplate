@@ -3,7 +3,7 @@
 /**
  * @typedef {import('@typescript-eslint/utils/ts-eslint').FlatConfig.ConfigArray} ConfigArray
  * @typedef {import('@typescript-eslint/utils/ts-eslint').FlatConfig.Config} Config
- * @typedef {import('./typescript').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
+ * @typedef {import('./typescript.js').GenerateTypescriptEslintConfigOptions} GenerateTypescriptEslintConfigOptions
  */
 
 import eslintPluginImportX from 'eslint-plugin-import-x';

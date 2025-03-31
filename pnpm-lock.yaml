@@ -960,9 +960,9 @@ importers:
       '@eslint/js':
         specifier: 'catalog:'
         version: 9.21.0
-      '@tsconfig/node20':
-        specifier: 20.1.4
-        version: 20.1.4
+      '@tsconfig/node22':
+        specifier: 22.0.1
+        version: 22.0.1
       '@tsconfig/vite-react':
         specifier: 3.0.2
         version: 3.0.2
@@ -2950,8 +2950,8 @@ packages:
   '@ts-morph/common@0.26.0':
     resolution: {integrity: sha512-/RmKAtctStXqM5nECMQ46duT74Hoig/DBzhWXGHcodlDNrgRbsbwwHqSKFNbca6z9Xt/CUWMeXOsC9QEN1+rqw==}
 
-  '@tsconfig/node20@20.1.4':
-    resolution: {integrity: sha512-sqgsT69YFeLWf5NtJ4Xq/xAF8p4ZQHlmGW74Nu2tD4+g5fAsposc4ZfaaPixVu4y01BEiDCWLRDCvDM5JOsRxg==}
+  '@tsconfig/node22@22.0.1':
+    resolution: {integrity: sha512-VkgOa3n6jvs1p+r3DiwBqeEwGAwEvnVCg/hIjiANl5IEcqP3G0u5m8cBJspe1t9qjZRlZ7WFgqq5bJrGdgAKMg==}
 
   '@tsconfig/vite-react@3.0.2':
     resolution: {integrity: sha512-AFynAtE1Un3Rko20Ghe2mVC/QWD4rStJ2PnyIZU2kzC4UyWpf1YhAEY87GojH/XPZCY8Mdt27gsYyy+6l6HV+w==}
@@ -8433,7 +8433,7 @@ snapshots:
       minimatch: 9.0.5
       path-browserify: 1.0.1
 
-  '@tsconfig/node20@20.1.4': {}
+  '@tsconfig/node22@22.0.1': {}
 
   '@tsconfig/vite-react@3.0.2': {}
 

@@ -40,11 +40,12 @@
   "scripts": {
     "lint": "eslint .",
     "prettier:check": "prettier --check .",
-    "prettier:write": "prettier -w ."
+    "prettier:write": "prettier -w .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@eslint/js": "catalog:",
-    "@tsconfig/node20": "20.1.4",
+    "@tsconfig/node22": "22.0.1",
     "@tsconfig/vite-react": "3.0.2",
     "@vitest/eslint-plugin": "1.1.36",
     "eslint-config-prettier": "9.1.0",
