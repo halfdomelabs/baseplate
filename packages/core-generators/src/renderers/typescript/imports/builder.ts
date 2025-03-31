@@ -54,11 +54,11 @@ function tsImportDeclarationBuilder(
   return {
     default: (defaultImport: string) => newBuilder({ defaultImport }),
     namespace: (namespaceImport: string) => newBuilder({ namespaceImport }),
-    named: (namedImport: string) =>
+    named: (namedImport: string, alias?: string) =>
       newBuilder({
         namedImports: [
           ...(declarationPartial.namedImports ?? []),
-          { name: namedImport },
+          { name: namedImport, alias },
         ],
       }),
     typeOnly: () => newBuilder({ isTypeOnly: true }),

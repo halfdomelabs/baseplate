@@ -86,7 +86,7 @@ describe('sortImportDeclarations', () => {
     ]);
   });
 
-  it('should sort imports case-insensitively by default', () => {
+  it('should sort imports case-sensitively when ignoreCase is false', () => {
     const imports: TsImportDeclaration[] = [
       createImportDeclaration('Alpha', { defaultImport: 'main' }),
       createImportDeclaration('beta', { defaultImport: 'main' }),
