@@ -22,13 +22,3 @@ export type GeneratorDescriptorChildren = Record<
   | string[]
   | undefined
 >;
-
-export interface GeneratorTaskBuilder {
-  addTask: <
-    ExportMap extends ProviderExportMap | undefined = undefined,
-    DependencyMap extends ProviderDependencyMap = Record<never, never>,
-    OutputMap extends ProviderExportMap | undefined = undefined,
-  >(
-    task: GeneratorTask<ExportMap, DependencyMap, OutputMap>,
-  ) => void;
-}

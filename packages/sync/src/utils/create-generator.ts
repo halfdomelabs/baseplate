@@ -10,8 +10,6 @@ import type {
 } from '@src/generators/generators.js';
 import type { ProviderExportScope } from '@src/providers/index.js';
 
-import type { GeneratorTaskBuilder } from './create-generator-types.js';
-
 /**
  * Configuration for creating a generator
  */
@@ -37,10 +35,7 @@ export interface CreateGeneratorConfig<DescriptorSchema extends z.ZodType> {
   /**
    * The function to build the tasks
    */
-  buildTasks: (
-    taskBuilder: GeneratorTaskBuilder,
-    descriptor: z.infer<DescriptorSchema>,
-  ) => void;
+  buildTasks: (descriptor: z.infer<DescriptorSchema>) => GeneratorTask[];
 }
 
 export type GeneratorBundleChildren = Record<
@@ -89,13 +84,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     const validatedDescriptor =
       (config.descriptorSchema?.parse(rest) as unknown) ?? {};
 
-    const tasks: GeneratorTask[] = [];
-    const taskBuilder: GeneratorTaskBuilder = {
-      addTask: (task) => {
-        tasks.push(task as GeneratorTask);
-      },
-    };
-    config.buildTasks(taskBuilder, validatedDescriptor);
+    const tasks: GeneratorTask[] = config.buildTasks(validatedDescriptor);
 
     return {
       name: config.name,
