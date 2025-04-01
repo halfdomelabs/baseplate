@@ -10,7 +10,7 @@ import { z } from 'zod';
 
 import { errorHandlerServiceProvider } from '@src/generators/core/error-handler-service/index.js';
 import { fastifySentryProvider } from '@src/generators/core/fastify-sentry/index.js';
-import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
+import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/index.js';
 
 import { pothosSetupProvider } from '../pothos/index.js';
 
@@ -19,23 +19,21 @@ const descriptorSchema = z.object({});
 const createMainTask = createTaskConfigBuilder(() => ({
   name: 'main',
   dependencies: {
-    yogaPluginSetup: yogaPluginSetupProvider,
+    yogaPluginConfig: yogaPluginConfigProvider,
     errorHandlerService: errorHandlerServiceProvider,
     typescript: typescriptProvider,
     node: nodeProvider,
   },
-  run({ yogaPluginSetup, typescript, errorHandlerService, node }) {
+  run({ yogaPluginConfig, typescript, errorHandlerService, node }) {
     const [pluginImport, pluginPath] = makeImportAndFilePath(
       'src/plugins/graphql/useSentry.ts',
     );
 
-    yogaPluginSetup
-      .getConfig()
-      .appendUnique('envelopPlugins', [
-        new TypescriptCodeExpression(`useSentry()`, [
-          `import { useSentry } from '${pluginImport}'`,
-        ]),
-      ]);
+    yogaPluginConfig.envelopPlugins.push(
+      new TypescriptCodeExpression(`useSentry()`, [
+        `import { useSentry } from '${pluginImport}'`,
+      ]),
+    );
 
     node.addPackages({
       '@pothos/plugin-tracing': '1.1.0',

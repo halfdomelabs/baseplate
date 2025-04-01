@@ -5,7 +5,7 @@ export abstract class FieldContainer<T> {
   protected isSet = false;
 
   constructor(defaultValue: T) {
-    this.defaultValue = structuredClone(defaultValue);
+    this.defaultValue = defaultValue;
   }
 
   get value(): T {
@@ -210,6 +210,16 @@ export class FieldMapSchemaBuilder {
     return new MapContainer(new Map(Object.entries(defaultValue ?? {})));
   }
 }
+
+export function createFieldMapSchemaBuilder<T extends FieldMapSchema>(
+  schemaBuilder: (t: FieldMapSchemaBuilder) => T,
+): (t: FieldMapSchemaBuilder) => T {
+  return schemaBuilder;
+}
+
+export type InferFieldMapSchemaFromBuilder<
+  T extends (t: FieldMapSchemaBuilder) => FieldMapSchema,
+> = T extends (t: FieldMapSchemaBuilder) => infer U ? U : never;
 
 /**
  * Creates a field map with type-safe field definitions

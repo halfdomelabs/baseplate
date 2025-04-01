@@ -27,7 +27,7 @@ import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
 import { fastifyOutputProvider } from '@src/generators/core/fastify/index.js';
 import { requestServiceContextProvider } from '@src/generators/core/request-service-context/index.js';
 import { rootModuleImportProvider } from '@src/generators/core/root-module/index.js';
-import { yogaPluginSetupProvider } from '@src/generators/yoga/yoga-plugin/index.js';
+import { yogaPluginConfigProvider } from '@src/generators/yoga/yoga-plugin/index.js';
 import { PothosTypeReferenceContainer } from '@src/writers/pothos/index.js';
 
 const descriptorSchema = z.object({});
@@ -157,7 +157,7 @@ export const pothosGenerator = createGenerator({
         requestServiceContext: requestServiceContextProvider,
         prettier: prettierProvider,
         rootModuleImport: rootModuleImportProvider,
-        yogaPluginSetup: yogaPluginSetupProvider,
+        yogaPluginConfig: yogaPluginConfigProvider,
         tsUtils: tsUtilsProvider,
       },
       taskDependencies: { setupTask, schemaTask },
@@ -171,7 +171,7 @@ export const pothosGenerator = createGenerator({
           requestServiceContext,
           prettier,
           rootModuleImport,
-          yogaPluginSetup,
+          yogaPluginConfig,
           tsUtils,
         },
         {
@@ -274,7 +274,7 @@ export const pothosGenerator = createGenerator({
               SCHEMA_TYPE_OPTIONS: schemaTypeOptions,
               SCHEMA_BUILDER_OPTIONS: schemaOptions,
               'SUBSCRIPTION_TYPE;': new TypescriptStringReplacement(
-                yogaPluginSetup.isSubscriptionEnabled()
+                yogaPluginConfig.isSubscriptionEnabled()
                   ? `builder.subscriptionType();`
                   : '',
               ),
@@ -292,11 +292,9 @@ export const pothosGenerator = createGenerator({
               { importMappers: [rootModuleImport] },
             );
 
-            const yogaConfig = yogaPluginSetup.getConfig();
+            yogaPluginConfig.schema.set(schemaExpression, 'pothos/pothos');
 
-            yogaConfig.set('schema', schemaExpression);
-
-            yogaConfig.appendUnique('postSchemaBlocks', [
+            yogaPluginConfig.postSchemaBlocks.push(
               TypescriptCodeUtils.createBlock(
                 `
 async function writeSchemaToFile(): Promise<void> {
@@ -322,7 +320,7 @@ if (IS_DEVELOPMENT) {
                   `import fs from 'fs/promises';`,
                 ],
               ),
-            ]);
+            );
 
             await builder.apply(
               typescript.createCopyFilesAction({
