@@ -20,7 +20,10 @@ export default createTypescriptMorpher({
           !dec.isTypeOnly() &&
           dec
             .getNamedImports()
-            .some((id) => id.getText() === 'createGenerator'),
+            .some((id) => id.getText() === 'createGenerator') &&
+          !dec
+            .getNamedImports()
+            .some((id) => id.getText() === 'createGeneratorTask'),
       );
 
     if (!syncImport) return;
@@ -76,10 +79,8 @@ export default createTypescriptMorpher({
 
     // Update the method signature and body
     const parameters = buildTasksMethod.getParameters();
-    const descriptorParam = parameters.find(
-      (p) => p.getName() === 'descriptor',
-    );
-    const descriptorText = descriptorParam ? 'descriptor' : '';
+    const descriptorParam = parameters.length > 1 ? parameters[1] : undefined;
+    const descriptorText = descriptorParam ? descriptorParam.getText() : '';
 
     // Convert method to property with arrow function
     buildTasksMethod.replaceWithText(
