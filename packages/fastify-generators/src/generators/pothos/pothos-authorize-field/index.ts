@@ -1,5 +1,3 @@
-import type { z } from 'zod';
-
 import { createGenerator } from '@halfdomelabs/sync';
 
 import { pothosFieldProvider } from '@src/providers/pothos-field.js';
