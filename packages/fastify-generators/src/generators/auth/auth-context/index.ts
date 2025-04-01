@@ -21,7 +21,7 @@ import { requestServiceContextSetupProvider } from '@src/generators/core/request
 import { serviceContextSetupProvider } from '@src/generators/core/service-context/index.js';
 
 import { authRolesProvider } from '../auth-roles/index.js';
-import { authSetupProvider } from '../auth/index.js';
+import { authConfigProvider } from '../auth/index.js';
 
 const descriptorSchema = z.object({});
 
@@ -39,7 +39,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     appModule: appModuleProvider,
     typescript: typescriptProvider,
     errorHandlerService: errorHandlerServiceProvider,
-    authSetup: authSetupProvider,
+    authConfig: authConfigProvider,
   },
   exports: {
     authContext: authContextProvider.export(projectScope),
@@ -51,7 +51,7 @@ const createMainTask = createTaskConfigBuilder(() => ({
     typescript,
     errorHandlerService,
     authRoles,
-    authSetup,
+    authConfig,
   }) {
     const [authContextTypesImport, authContextTypesFile] =
       makeImportAndFilePath(
@@ -84,10 +84,13 @@ const createMainTask = createTaskConfigBuilder(() => ({
       },
     };
 
-    authSetup.getConfig().set('contextUtilsImport', {
-      path: authContextUtilsImport,
-      allowedImports: ['createAuthContextFromSessionInfo'],
-    });
+    authConfig.contextUtilsImport.set(
+      {
+        path: authContextUtilsImport,
+        allowedImports: ['createAuthContextFromSessionInfo'],
+      },
+      'auth/auth-context',
+    );
 
     return {
       providers: {
