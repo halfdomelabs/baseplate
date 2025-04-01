@@ -9378,7 +9378,7 @@ snapshots:
 
   docker-compose@0.24.8:
     dependencies:
-      yaml: 2.7.1
+      yaml: 2.7.0
 
   docker-modem@5.0.6:
     dependencies:
@@ -12463,7 +12463,8 @@ snapshots:
 
   yaml@2.7.0: {}
 
-  yaml@2.7.1: {}
+  yaml@2.7.1:
+    optional: true
 
   yargs-parser@21.1.1: {}
 
