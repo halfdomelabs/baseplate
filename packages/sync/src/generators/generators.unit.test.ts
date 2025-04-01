@@ -63,6 +63,7 @@ describe('generators type definitions', () => {
     const taskOutput = createTask({
       name: 'test',
       taskDependencies: [],
+      exports: {},
       run: () => ({}),
     });
 

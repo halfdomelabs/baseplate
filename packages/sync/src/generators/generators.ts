@@ -146,18 +146,28 @@ export interface GeneratorTask<
   /**
    * The names of the generator tasks that must be run before this one
    */
-  taskDependencies: string[];
+  taskDependencies?: string[];
   /**
    * Given the resolved dependencies, run the generator task and return
    * the initialized export map and function to build the output for the
    * generator task.
    */
-  run: (
-    dependencies: InferDependencyProviderMap<DependencyMap>,
-  ) => GeneratorTaskResult<
-    InferExportProviderMap<ExportMap>,
-    InferExportProviderMap<OutputMap>
-  >;
+  run: (dependencies: InferDependencyProviderMap<DependencyMap>) => {
+    exports: ExportMap;
+    outputs: OutputMap;
+  } extends {
+    exports: undefined;
+    outputs: undefined;
+  }
+    ? // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+      void | GeneratorTaskResult<
+        InferExportProviderMap<ExportMap>,
+        InferExportProviderMap<OutputMap>
+      >
+    : GeneratorTaskResult<
+        InferExportProviderMap<ExportMap>,
+        InferExportProviderMap<OutputMap>
+      >;
 }
 
 export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;

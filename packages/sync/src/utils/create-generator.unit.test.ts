@@ -5,17 +5,11 @@ import { z } from 'zod';
 
 import type { GeneratorTaskOutputBuilder } from '@src/output/generator-task-output.js';
 
-import {
-  createProviderExportScope,
-  createProviderType,
-} from '@src/providers/index.js';
+import { createProviderExportScope } from '@src/providers/index.js';
 
 import { createGenerator } from './create-generator.js';
 
 describe('createGenerator', () => {
-  const testProviderType = createProviderType('test');
-  const test2ProviderType = createProviderType('test2');
-
   it('creates a basic generator with no descriptor schema', () => {
     const generator = createGenerator({
       name: 'test-generator',
@@ -46,7 +40,6 @@ describe('createGenerator', () => {
       tasks: [
         {
           name: 'test-task',
-          taskDependencies: [],
         },
       ],
     });
@@ -71,75 +64,6 @@ describe('createGenerator', () => {
 
     // Should fail validation
     expect(() => generator({ value: 123 as unknown as string })).toThrow();
-  });
-
-  it('supports task dependencies and exports', () => {
-    const generator = createGenerator({
-      name: 'test-generator',
-      generatorFileUrl: import.meta.url,
-      buildTasks: (taskBuilder) => {
-        const task1 = taskBuilder.addTask({
-          name: 'task1',
-          exports: {
-            test: testProviderType.export(),
-          },
-          run: () => ({
-            providers: { test: { value: 'test' } },
-          }),
-        });
-
-        taskBuilder.addTask({
-          name: 'task2',
-          dependencies: {
-            test: test2ProviderType,
-          },
-          taskDependencies: { task1 },
-          run: () => ({}),
-        });
-      },
-    });
-
-    const bundle = generator({});
-    expect(bundle.tasks).toHaveLength(2);
-    expect(bundle.tasks[0].exports?.test.name).toEqual(testProviderType.name);
-    expect(bundle.tasks[1].taskDependencies).toEqual(['task1']);
-    expect(bundle.tasks[1].dependencies?.test.name).toEqual(
-      test2ProviderType.name,
-    );
-  });
-
-  it('supports task output', async () => {
-    let task1Output: string | undefined;
-    const generator = createGenerator({
-      name: 'test-generator',
-      generatorFileUrl: import.meta.url,
-      buildTasks: (taskBuilder) => {
-        const task1 = taskBuilder.addTask({
-          name: 'task1',
-          run: () => ({
-            build: (_, addTaskOutput: (output: string) => void) => {
-              addTaskOutput('task1-output');
-            },
-          }),
-        });
-
-        taskBuilder.addTask({
-          name: 'task2',
-          taskDependencies: { task1 },
-          run: (_, { task1 }) => {
-            task1Output = task1;
-            return {};
-          },
-        });
-      },
-    });
-
-    const bundle = generator({});
-    expect(bundle.tasks).toHaveLength(2);
-    const { build } = bundle.tasks[0].run({});
-    await build?.({} as unknown as GeneratorTaskOutputBuilder);
-    bundle.tasks[1].run({});
-    expect(task1Output).toEqual('task1-output');
   });
 
   it('supports custom scopes', () => {

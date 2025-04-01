@@ -101,7 +101,7 @@ async function buildGeneratorEntryRecursive(
       outputs: task.outputs ?? {},
       task,
       generatorBaseDirectory: directory,
-      dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
+      dependentTaskIds: task.taskDependencies?.map((t) => `${id}#${t}`) ?? [],
       generatorName: prefixedName,
     }),
   );
