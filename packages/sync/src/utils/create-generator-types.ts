@@ -180,6 +180,7 @@ export function createTaskConfigBuilder<
 }
 
 export interface GeneratorTaskBuilder<Descriptor = unknown> {
+  generatorName: string;
   addTask: <
     ExportMap extends ProviderExportMap | undefined = undefined,
     DependencyMap extends ProviderDependencyMap = Record<never, never>,

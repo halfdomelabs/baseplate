@@ -27,7 +27,7 @@ export const appModuleGenerator = createGenerator({
     taskBuilder.addTask({
       name: 'main',
       dependencies: {
-        appModule: appModuleProvider,
+        appModule: appModuleProvider.dependency().parentScopeOnly(),
         typescript: typescriptProvider,
       },
       exports: {

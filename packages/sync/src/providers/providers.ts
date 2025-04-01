@@ -5,10 +5,10 @@ import { KEBAB_CASE_REGEX } from '@src/utils/validation.js';
 import type { ProviderExportScope } from './export-scopes.js';
 
 /**
- * A provider is a dictionary of functions that allow generator tasks
+ * A provider is a dictionary of functions/values that allow generator tasks
  * to communicate with other tasks
  */
-export type Provider = Record<string, (...args: unknown[]) => unknown>;
+export type Provider = Record<string, unknown>;
 
 /**
  * A provider type is a typed tag for a provider so that it can
@@ -53,6 +53,14 @@ export interface ProviderDependencyOptions {
    * The export name of the provider to resolve to (if empty string, forces the dependency to resolve to undefined)
    */
   exportName?: string;
+
+  /**
+   * Whether resolution should skip the current task and look for the provider in the parent task
+   *
+   * This is useful for recursive providers where the same generator might be used as a dependency of itself
+   */
+  useParentScope?: boolean;
+
   /**
    * Whether the provider is read-only or not (i.e. cannot modify any state in the generator task)
    */
@@ -93,6 +101,10 @@ export interface ProviderDependency<P = Provider> {
   optionalReference(
     exportName: string | undefined,
   ): ProviderDependency<P | undefined>;
+  /**
+   * Specifies that the dependency should only be resolved from the parent task
+   */
+  parentScopeOnly(): ProviderDependency<P>;
 }
 
 /**
@@ -165,7 +177,10 @@ export function createProviderType<T>(
       return {
         ...this,
         type: 'dependency',
-        options: options?.isReadOnly ? { isReadOnly: true } : {},
+        options: {
+          isReadOnly: options?.isReadOnly,
+          isOutput: options?.isOutput,
+        },
         optional() {
           return toMerged(this, { options: { optional: true } });
         },
@@ -185,6 +200,9 @@ export function createProviderType<T>(
             // empty string is equivalent to resolving to undefined
             options: { exportName: exportName ?? '', optional: true },
           });
+        },
+        parentScopeOnly() {
+          return toMerged(this, { options: { useParentScope: true } });
         },
       };
     },

@@ -12,7 +12,10 @@ import type {
 } from '../generators/index.js';
 import type { Provider } from '../providers/index.js';
 
-import { createProviderType } from '../providers/index.js';
+import {
+  createOutputProviderType,
+  createProviderType,
+} from '../providers/index.js';
 import { executeGeneratorEntry } from './generator-runner.js';
 import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
 
@@ -26,20 +29,24 @@ function buildGeneratorEntry(
     exportMap?: ProviderExportMap;
     exports?: Record<string, Provider>;
     outputMap?: ProviderExportMap;
-    outputs?: Record<string, Provider>;
     build?: (
       builder: GeneratorTaskOutputBuilder,
       deps: Record<string, Provider>,
-    ) => void | Promise<void>;
+    ) => // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
+    | void
+      | Record<string, unknown>
+      // eslint-disable-next-line @typescript-eslint/no-invalid-void-type -- allow no returns for build
+      | Promise<void | Record<string, unknown>>;
     generatorName?: string;
   } = {},
 ): GeneratorEntry {
   const {
     id,
-    build = () => ({}),
+    build = () => {
+      /*void*/
+    },
     children = [],
     exports: entryExports = {},
-    outputs: entryOutputs = {},
     dependencyMap = {},
     exportMap = {},
     outputMap = {},
@@ -53,19 +60,17 @@ function buildGeneratorEntry(
       ...(id && { id: `${id}#main` }),
       dependencies: dependencyMap,
       exports: exportMap,
+      outputs: outputMap,
       generatorName: options.generatorName,
       task: {
         name: 'main',
         dependencies: dependencyMap,
         exports: exportMap,
-        taskDependencies: [],
         outputs: outputMap,
+        taskDependencies: [],
         run: (deps) => ({
           providers: entryExports,
-          build: (builder) => {
-            build(builder, deps);
-            return entryOutputs;
-          },
+          build: (builder) => build(builder, deps) as undefined,
         }),
       },
     },
@@ -138,7 +143,7 @@ describe('executeGeneratorEntry', () => {
           dependencyMap: { simpleDep: simpleProviderType },
           generatorName: 'nested-generator',
           build: (builder, deps) => {
-            deps.simpleDep.hello();
+            (deps.simpleDep as { hello: () => void }).hello();
             builder.writeFile({
               id: 'nested',
               filePath: '/nested/file.txt',
@@ -195,5 +200,124 @@ describe('executeGeneratorEntry', () => {
       },
     ]);
     expect(simpleProvider.hello).toHaveBeenCalled();
+  });
+
+  it('handles output providers correctly', async () => {
+    const outputProviderType = createOutputProviderType<{
+      generate: () => void;
+    }>('output-provider');
+    const outputProvider = { generate: vi.fn() };
+    const entry = buildGeneratorEntry({
+      id: 'root',
+      outputMap: {
+        outputProv: outputProviderType.export(),
+      },
+      build: (builder) => {
+        builder.writeFile({
+          id: 'output',
+          filePath: '/output/file.txt',
+          contents: 'output',
+        });
+        return { outputProv: outputProvider };
+      },
+      children: [
+        buildGeneratorEntry({
+          id: 'root:consumer',
+          dependencyMap: { outputDep: outputProviderType },
+          build: (builder, deps) => {
+            (deps.outputDep as { generate: () => void }).generate();
+            builder.writeFile({
+              id: 'consumer',
+              filePath: '/consumer/file.txt',
+              contents: 'consumer',
+            });
+          },
+        }),
+      ],
+    });
+
+    const result = await executeGeneratorEntry(entry, logger);
+    expect(Object.fromEntries(result.files.entries())).toEqual({
+      '/output/file.txt': {
+        id: 'simple:output',
+        contents: 'output',
+        options: undefined,
+      },
+      '/consumer/file.txt': {
+        id: 'simple:consumer',
+        contents: 'consumer',
+        options: undefined,
+      },
+    });
+    expect(outputProvider.generate).toHaveBeenCalled();
+  });
+
+  it('handles multiple exports and dependencies correctly', async () => {
+    const providerTypeA = createProviderType('provider-a');
+    const providerTypeB = createProviderType('provider-b');
+    const providerA = { methodA: vi.fn() };
+    const providerB = { methodB: vi.fn() };
+
+    const entry = buildGeneratorEntry({
+      id: 'root',
+      exportMap: {
+        provA: providerTypeA.export(),
+        provB: providerTypeB.export(),
+      },
+      exports: {
+        provA: providerA,
+        provB: providerB,
+      },
+      children: [
+        buildGeneratorEntry({
+          id: 'root:consumer',
+          generatorName: 'test-generator',
+          dependencyMap: {
+            depA: providerTypeA,
+            depB: providerTypeB,
+          },
+          build: (builder, deps) => {
+            (deps.depA as { methodA: () => void }).methodA();
+            (deps.depB as { methodB: () => void }).methodB();
+            builder.writeFile({
+              id: 'consumer',
+              filePath: '/consumer/file.txt',
+              contents: 'consumer',
+            });
+          },
+        }),
+      ],
+    });
+
+    const result = await executeGeneratorEntry(entry, logger);
+    expect(Object.fromEntries(result.files.entries())).toEqual({
+      '/consumer/file.txt': {
+        id: 'test-generator:consumer',
+        contents: 'consumer',
+        options: undefined,
+      },
+    });
+    expect(providerA.methodA).toHaveBeenCalled();
+    expect(providerB.methodB).toHaveBeenCalled();
+  });
+
+  it('throws error when required provider is not exported', async () => {
+    const providerType = createProviderType('missing-provider');
+    const entry = buildGeneratorEntry({
+      id: 'root',
+      children: [
+        buildGeneratorEntry({
+          id: 'root:consumer',
+          dependencyMap: { dep: providerType },
+          build: () => {
+            /*void*/
+          },
+        }),
+      ],
+    });
+
+    await expect(executeGeneratorEntry(entry, logger)).rejects.toThrow(
+      /Could not resolve dependency/,
+    );
   });
 });

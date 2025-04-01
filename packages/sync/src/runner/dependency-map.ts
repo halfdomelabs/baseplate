@@ -8,15 +8,17 @@ import type {
 } from '../generators/index.js';
 import type { ProviderDependencyOptions } from '../providers/index.js';
 
-type GeneratorIdToScopesMap = Record<
-  string,
-  {
-    // scopes offered by the generator
-    scopes: string[];
-    // providers within the scopes
-    // key is JSON.encode([providerName(, exportName)])
-    providers: Map<string, string>;
-  }
+type GeneratorIdToScopesMap = Partial<
+  Record<
+    string,
+    {
+      // scopes offered by the generator
+      scopes: string[];
+      // providers within the scopes
+      // key is JSON.encode([providerName(, exportName)])
+      providers: Map<string, string>;
+    }
+  >
 >;
 
 function makeProviderId(providerName: string, exportName?: string): string {
@@ -66,17 +68,20 @@ function buildGeneratorIdToScopesMapRecursive(
         // find the parent task ID that offers the scope (if undefined, it is the default scope of the entry itself)
         const parentTaskId = scope
           ? newParentTaskIds.findLast((id) =>
-              generatorIdToScopesMap[id].scopes.includes(scope.name),
+              generatorIdToScopesMap[id]?.scopes.includes(scope.name),
             )
           : entry.id;
 
-        if (!parentTaskId) {
+        const generatorEntry =
+          parentTaskId && generatorIdToScopesMap[parentTaskId];
+
+        if (!generatorEntry) {
           throw new Error(
             `Could not find parent generator with scope ${scope?.name} at ${entry.id}`,
           );
         }
 
-        const { providers } = generatorIdToScopesMap[parentTaskId];
+        const { providers } = generatorEntry;
         const providerId = makeProviderId(taskExport.name, exportName);
 
         const existingProviderId = providers.get(providerId);
@@ -124,7 +129,7 @@ function mergeAllWithoutDuplicates<T extends Record<string, unknown>>(
  */
 function buildTaskDependencyMap(
   entry: GeneratorTaskEntry,
-  parentEntryIds: string[],
+  parentEntryIdsWithSelf: string[],
   generatorIdToScopesMap: GeneratorIdToScopesMap,
 ): Record<
   string,
@@ -133,7 +138,7 @@ function buildTaskDependencyMap(
   return mapValues(entry.dependencies, (dep) => {
     const normalizedDep = dep.type === 'type' ? dep.dependency() : dep;
     const provider = normalizedDep.name;
-    const { optional, exportName, isReadOnly, isOutput } =
+    const { optional, exportName, isReadOnly, isOutput, useParentScope } =
       normalizedDep.options;
 
     // if the export name is empty and the dependency is optional, we can skip it
@@ -143,13 +148,16 @@ function buildTaskDependencyMap(
 
     const providerId = makeProviderId(provider, exportName);
     // find the closest parent task ID that offers the provider
-    const parentEntryId = parentEntryIds.findLast((id) =>
-      generatorIdToScopesMap[id].providers.has(providerId),
+    const entryIdsToCheck = useParentScope
+      ? parentEntryIdsWithSelf.slice(0, -1)
+      : parentEntryIdsWithSelf;
+    const parentEntryId = entryIdsToCheck.findLast((id) =>
+      generatorIdToScopesMap[id]?.providers.has(providerId),
     );
 
     const resolvedTaskId =
       parentEntryId &&
-      generatorIdToScopesMap[parentEntryId].providers.get(providerId);
+      generatorIdToScopesMap[parentEntryId]?.providers.get(providerId);
 
     if (!resolvedTaskId) {
       if (!optional || exportName) {
@@ -158,6 +166,13 @@ function buildTaskDependencyMap(
         );
       }
       return;
+    }
+
+    if (resolvedTaskId === entry.id) {
+      throw new Error(
+        `Circular dependency detected for ${provider}${exportName ? ` (${exportName})` : ''} for ${entry.id} (generator ${entry.generatorName}).
+         You can use the .parentScopeOnly() method to create a dependency that only resolves providers from the parent generator entry.`,
+      );
     }
 
     return {
@@ -197,11 +212,12 @@ function buildEntryDependencyMapRecursive(
   generatorIdToScopesMap: GeneratorIdToScopesMap,
   logger: Logger,
 ): EntryDependencyMap {
+  const parentChildIdsWithSelf = [...parentEntryIds, entry.id];
   const entryDependencyMaps = mergeAllWithoutDuplicates(
     entry.tasks.map((task) => {
       const taskDependencyMap = buildTaskDependencyMap(
         task,
-        parentEntryIds,
+        parentChildIdsWithSelf,
         generatorIdToScopesMap,
       );
 
@@ -210,8 +226,6 @@ function buildEntryDependencyMapRecursive(
       };
     }),
   );
-
-  const parentChildIdsWithSelf = [...parentEntryIds, entry.id];
 
   const childDependencyMaps = mergeAllWithoutDuplicates(
     entry.children.map((childEntry) =>

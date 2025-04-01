@@ -38,6 +38,7 @@ export function buildTestGeneratorTaskEntry(
       exports: {},
       dependencies: {},
       taskDependencies: [],
+      outputs: {},
       run: vi.fn(),
     },
     generatorBaseDirectory: '/',

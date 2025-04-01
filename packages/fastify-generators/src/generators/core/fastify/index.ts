@@ -69,7 +69,7 @@ export const fastifyGenerator = createGenerator({
         nodeSetup: nodeSetupProvider,
       },
       run({ nodeSetup }) {
-        nodeSetup.setIsEsm(false);
+        nodeSetup.isEsm.set(false, taskBuilder.generatorName);
         return {};
       },
     });

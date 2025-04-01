@@ -2,6 +2,7 @@ import {
   createGenerator,
   createNonOverwriteableMap,
   createProviderType,
+  createSetupTask,
   POST_WRITE_COMMAND_PRIORITY,
   writeJsonAction,
 } from '@halfdomelabs/sync';
@@ -27,13 +28,6 @@ const descriptorSchema = z.object({
   pnpmVersion: z.string().default('10.6.5'),
 });
 
-export interface NodeSetupProvider {
-  setIsEsm(isEsm: boolean): void;
-}
-
-export const nodeSetupProvider =
-  createProviderType<NodeSetupProvider>('node-setup');
-
 export interface NodeProvider {
   addPackage(name: string, version: string): void;
   addPackages(packages: Record<string, string>): void;
@@ -57,47 +51,34 @@ interface NodeDependencyEntry {
   type: NodeDependencyType;
 }
 
+const [setupTask, nodeSetupProvider, nodeSetupOutputProvider] = createSetupTask(
+  (t) => ({ isEsm: t.boolean(false) }),
+  {
+    prefix: 'node',
+    configScope: projectScope,
+  },
+);
+
+export { nodeSetupProvider };
+
 export const nodeGenerator = createGenerator({
   name: 'node/node',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   scopes: [projectScope],
   buildTasks(taskBuilder, descriptor) {
-    const setupTask = taskBuilder.addTask({
-      name: 'setup',
-      exports: {
-        nodeSetup: nodeSetupProvider.export(projectScope),
-      },
-      run() {
-        let isEsm = false;
-        return {
-          providers: {
-            nodeSetup: {
-              setIsEsm(value) {
-                isEsm = value;
-              },
-            },
-          },
-          build: (
-            builder,
-            addTaskOutput: (output: { isEsm: boolean }) => void,
-          ) => {
-            addTaskOutput({ isEsm });
-          },
-        };
-      },
-    });
+    taskBuilder.addTask(setupTask);
 
     taskBuilder.addTask({
       name: 'main',
+      dependencies: {
+        setup: nodeSetupOutputProvider,
+      },
       exports: {
         node: nodeProvider.export(projectScope),
         project: projectProvider.export(projectScope),
       },
-      taskDependencies: {
-        setup: setupTask,
-      },
-      run(deps, { setup: { isEsm } }) {
+      run({ setup: { isEsm } }) {
         const dependencies = new Map<string, NodeDependencyEntry>();
         const extraProperties = createNonOverwriteableMap(
           { type: isEsm ? 'module' : 'commonjs' },

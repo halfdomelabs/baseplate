@@ -96,6 +96,7 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     const taskConfigs: SimpleGeneratorTaskConfig[] = [];
     const taskOutputs: Record<string, unknown> = {};
     const taskBuilder: GeneratorTaskBuilder<z.infer<DescriptorSchema>> = {
+      generatorName: config.name,
       addTask: (task) => {
         taskConfigs.push(
           task instanceof Function ? task(validatedDescriptor) : task,

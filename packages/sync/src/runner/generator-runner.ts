@@ -37,9 +37,9 @@ export async function executeGeneratorEntry(
   for (const runStep of sortedRunSteps) {
     const [action, taskId] = runStep.split('|');
     try {
+      const { task, dependencies, exports, outputs } = taskEntriesById[taskId];
       if (action === 'init') {
         // run through init step
-        const { task, dependencies, exports } = taskEntriesById[taskId];
 
         const resolvedDependencies = mapValues(
           dependencies,
@@ -102,7 +102,31 @@ export async function executeGeneratorEntry(
         });
 
         if (generator.build) {
-          await Promise.resolve(generator.build(outputBuilder));
+          const outputResult =
+            ((await Promise.resolve(generator.build(outputBuilder))) as
+              | Record<string, Provider>
+              | undefined) ?? {};
+
+          const outputKeys = Object.keys(outputs);
+          if (outputKeys.length > 0) {
+            const missingProvider = Object.keys(outputs).find(
+              (key) => !(key in outputResult),
+            );
+            if (missingProvider) {
+              throw new Error(
+                `Task ${taskId} did not export provider ${missingProvider}`,
+              );
+            }
+            providerMapById[taskId] = {
+              ...providerMapById[taskId],
+              ...Object.fromEntries(
+                Object.entries(outputs).map(([key, value]) => [
+                  value.name,
+                  outputResult[key],
+                ]),
+              ),
+            };
+          }
         }
 
         generatorOutputs.push(outputBuilder.output);

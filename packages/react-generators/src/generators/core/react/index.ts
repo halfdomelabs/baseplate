@@ -196,7 +196,7 @@ export const reactGenerator = createGenerator({
         nodeSetup: nodeSetupProvider,
       },
       run: ({ nodeSetup }) => {
-        nodeSetup.setIsEsm(true);
+        nodeSetup.isEsm.set(true, taskBuilder.generatorName);
         return {};
       },
     });

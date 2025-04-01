@@ -7,7 +7,10 @@ import {
   createProviderType,
 } from '../providers/index.js';
 import { resolveTaskDependencies } from './dependency-map.js';
-import { buildTestGeneratorEntry } from './tests/factories.test-helper.js';
+import {
+  buildTestGeneratorEntry,
+  buildTestGeneratorTaskEntry,
+} from './tests/factories.test-helper.js';
 
 const providerOne = createProviderType('provider-one');
 const providerTwo = createProviderType('provider-two');
@@ -361,6 +364,52 @@ describe('resolveTaskDependencies', () => {
     );
   });
 
+  it('should handle recursive dependencies', () => {
+    // Arrange
+    const rootEntry = buildTestGeneratorEntry(
+      { id: 'root' },
+      {
+        exports: {
+          exportOne: providerOne.export(),
+        },
+      },
+    );
+
+    const middleEntry = buildTestGeneratorEntry(
+      { id: 'middle' },
+      {
+        dependencies: { dep: providerOne.dependency().parentScopeOnly() },
+        exports: {
+          exportOne: providerOne.export(),
+        },
+      },
+    );
+
+    const leafEntry = buildTestGeneratorEntry(
+      { id: 'leaf' },
+      {
+        dependencies: { dep: providerOne.dependency() },
+      },
+    );
+
+    middleEntry.children.push(leafEntry);
+    rootEntry.children.push(middleEntry);
+
+    // Act
+    const dependencyMap = resolveTaskDependencies(rootEntry, testLogger);
+
+    // Assert
+    expect(dependencyMap).toEqual({
+      'root#main': {},
+      'middle#main': {
+        dep: { id: 'root#main', options: {} },
+      },
+      'leaf#main': {
+        dep: { id: 'middle#main', options: {} },
+      },
+    });
+  });
+
   it('should handle nested scope inheritance', () => {
     // Arrange
     const rootEntry = buildTestGeneratorEntry(
@@ -445,7 +494,38 @@ describe('resolveTaskDependencies', () => {
     expect(dependencyMap).toEqual({
       'root#main': {},
       'child#main': {
-        dep: { id: 'root#main', options: {} },
+        dep: { id: 'root#main', options: { isOutput: true } },
+      },
+    });
+  });
+
+  it('should resolve dependencies between tasks in the same generator entry', () => {
+    // Arrange
+    const entry = buildTestGeneratorEntry({
+      id: 'root',
+      tasks: [
+        buildTestGeneratorTaskEntry({
+          id: 'root#producer',
+          outputs: {
+            outputProvider: outputOnlyProvider.export(),
+          },
+        }),
+        buildTestGeneratorTaskEntry({
+          id: 'root#consumer',
+          dependencies: { dep: outputOnlyProvider.dependency() },
+          exports: {},
+          outputs: {},
+        }),
+      ],
+    });
+    // Act
+    const dependencyMap = resolveTaskDependencies(entry, testLogger);
+
+    // Assert
+    expect(dependencyMap).toEqual({
+      'root#producer': {},
+      'root#consumer': {
+        dep: { id: 'root#producer', options: { isOutput: true } },
       },
     });
   });
