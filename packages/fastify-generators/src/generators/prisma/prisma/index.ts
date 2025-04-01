@@ -172,10 +172,7 @@ export const prismaGenerator = createGenerator({
               },
             },
           },
-          build: async (
-            builder,
-            addTaskOutput: (output: { schemaFile: PrismaSchemaFile }) => void,
-          ) => {
+          build: async (builder) => {
             const schemaText = schemaFile.toText();
             const { formatSchema: format } = internalRequire(
               '@prisma/internals',
@@ -217,8 +214,6 @@ export const prismaGenerator = createGenerator({
                 shouldNeverOverwrite: true,
               }),
             );
-
-            addTaskOutput({ schemaFile });
 
             return {
               prismaOutput: {

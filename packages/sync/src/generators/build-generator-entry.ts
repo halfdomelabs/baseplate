@@ -35,10 +35,6 @@ export interface GeneratorTaskEntry {
    */
   task: GeneratorTask;
   /**
-   * The IDs of the tasks that this task depends on
-   */
-  dependentTaskIds: string[];
-  /**
    * The base directory of the generator used for loading templates
    */
   generatorBaseDirectory: string;
@@ -101,7 +97,6 @@ async function buildGeneratorEntryRecursive(
       outputs: task.outputs ?? {},
       task,
       generatorBaseDirectory: directory,
-      dependentTaskIds: task.taskDependencies.map((t) => `${id}#${t}`),
       generatorName: prefixedName,
     }),
   );

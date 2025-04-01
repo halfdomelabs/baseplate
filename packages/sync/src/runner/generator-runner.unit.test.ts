@@ -67,7 +67,6 @@ function buildGeneratorEntry(
         dependencies: dependencyMap,
         exports: exportMap,
         outputs: outputMap,
-        taskDependencies: [],
         run: (deps) => ({
           providers: entryExports,
           build: (builder) => build(builder, deps) as undefined,

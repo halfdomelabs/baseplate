@@ -7,11 +7,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createProviderType,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { FASTIFY_PACKAGES } from '@src/constants/fastify-packages.js';
@@ -31,159 +27,154 @@ const descriptorSchema = z.object({
   includeManagement: z.boolean().optional(),
 });
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
 export type Auth0ModuleProvider = unknown;
 
 export const auth0ModuleProvider =
   createProviderType<Auth0ModuleProvider>('auth0-module');
 
-const createMainTask = createTaskConfigBuilder(
-  ({ userModelName, includeManagement }: Descriptor) => ({
-    name: 'main',
-    dependencies: {
-      typescript: typescriptProvider,
-      authRoles: authRolesProvider,
-      node: nodeProvider,
-      appModule: appModuleProvider,
-      configService: configServiceProvider,
-      prismaOutput: prismaOutputProvider,
-      authConfig: authConfigProvider,
-      userSessionTypes: userSessionTypesProvider,
-      authContext: authContextProvider,
-    },
-    exports: {
-      auth0Module: auth0ModuleProvider.export(projectScope),
-      userSessionService: userSessionServiceProvider.export(projectScope),
-    },
-    run({
-      node,
-      typescript,
-      authRoles,
-      prismaOutput,
-      configService,
-      appModule,
-      authConfig,
-      userSessionTypes,
-      authContext,
-    }) {
-      if (includeManagement) {
-        node.addPackages({
-          auth0: FASTIFY_PACKAGES.auth0,
-        });
-      }
-
-      const [userSessionServiceImport, userSessionServicePath] =
-        makeImportAndFilePath(
-          `${appModule.getModuleFolder()}/services/user-session.service.ts`,
-        );
-
-      configService.getConfigEntries().set('AUTH0_DOMAIN', {
-        value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-        comment: 'Auth0 domain (can be custom domain)',
-        seedValue: 'subdomain.auth0.com',
-        exampleValue: '<AUTH0_DOMAIN>',
-      });
-
-      configService.getConfigEntries().set('AUTH0_AUDIENCE', {
-        value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-        comment: 'Auth0 audience',
-        seedValue: 'https://api.example.com',
-        exampleValue: '<AUTH0_AUDIENCE>',
-      });
-
-      const [, managementPath] = makeImportAndFilePath(
-        `${appModule.getModuleFolder()}/services/management.ts`,
-      );
-
-      authConfig.userSessionServiceImport.set(
-        {
-          path: userSessionServiceImport,
-          allowedImports: ['userSessionService'],
-        },
-        'auth0/auth0-module',
-      );
-
-      if (includeManagement) {
-        configService.getConfigEntries().set('AUTH0_TENANT_DOMAIN', {
-          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-          comment:
-            'Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com',
-          seedValue: 'domain.auth0.com',
-          exampleValue: '<AUTH0_TENANT_DOMAIN>',
-        });
-
-        configService.getConfigEntries().set('AUTH0_CLIENT_ID', {
-          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-          comment:
-            'Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)',
-          seedValue: 'CLIENT_ID',
-          exampleValue: '<AUTH0_CLIENT_ID>',
-        });
-
-        configService.getConfigEntries().set('AUTH0_CLIENT_SECRET', {
-          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
-          comment: 'Auth0 management client secret',
-          seedValue: 'CLIENT_SECRET',
-          exampleValue: '<AUTH0_CLIENT_SECRET>',
-        });
-      }
-
-      return {
-        providers: {
-          auth0Module: {},
-          userSessionService: {
-            getImportMap: () => ({
-              '%user-session-service': {
-                path: userSessionServiceImport,
-                allowedImports: ['userSessionService'],
-              },
-            }),
-          },
-        },
-        build: async (builder) => {
-          const serviceFile = typescript.createTemplate(
-            {
-              USER_MODEL: prismaOutput.getPrismaModelExpression(userModelName),
-            },
-            {
-              importMappers: [
-                configService,
-                authRoles,
-                authContext,
-                userSessionTypes,
-              ],
-            },
-          );
-
-          await builder.apply(
-            serviceFile.renderToAction(
-              'services/user-session.service.ts',
-              userSessionServicePath,
-            ),
-          );
-
-          if (includeManagement) {
-            await builder.apply(
-              typescript.createCopyAction({
-                source: 'services/management.ts',
-                destination: managementPath,
-                importMappers: [configService],
-              }),
-            );
-          }
-        },
-      };
-    },
-  }),
-);
-
 export const auth0ModuleGenerator = createGenerator({
   name: 'auth0/auth0-module',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(createMainTask(descriptor));
+  buildTasks(taskBuilder, { includeManagement, userModelName }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        typescript: typescriptProvider,
+        authRoles: authRolesProvider,
+        node: nodeProvider,
+        appModule: appModuleProvider,
+        configService: configServiceProvider,
+        prismaOutput: prismaOutputProvider,
+        authConfig: authConfigProvider,
+        userSessionTypes: userSessionTypesProvider,
+        authContext: authContextProvider,
+      },
+      exports: {
+        auth0Module: auth0ModuleProvider.export(projectScope),
+        userSessionService: userSessionServiceProvider.export(projectScope),
+      },
+      run({
+        node,
+        typescript,
+        authRoles,
+        prismaOutput,
+        configService,
+        appModule,
+        authConfig,
+        userSessionTypes,
+        authContext,
+      }) {
+        if (includeManagement) {
+          node.addPackages({
+            auth0: FASTIFY_PACKAGES.auth0,
+          });
+        }
+
+        const [userSessionServiceImport, userSessionServicePath] =
+          makeImportAndFilePath(
+            `${appModule.getModuleFolder()}/services/user-session.service.ts`,
+          );
+
+        configService.getConfigEntries().set('AUTH0_DOMAIN', {
+          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          comment: 'Auth0 domain (can be custom domain)',
+          seedValue: 'subdomain.auth0.com',
+          exampleValue: '<AUTH0_DOMAIN>',
+        });
+
+        configService.getConfigEntries().set('AUTH0_AUDIENCE', {
+          value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+          comment: 'Auth0 audience',
+          seedValue: 'https://api.example.com',
+          exampleValue: '<AUTH0_AUDIENCE>',
+        });
+
+        const [, managementPath] = makeImportAndFilePath(
+          `${appModule.getModuleFolder()}/services/management.ts`,
+        );
+
+        authConfig.userSessionServiceImport.set(
+          {
+            path: userSessionServiceImport,
+            allowedImports: ['userSessionService'],
+          },
+          'auth0/auth0-module',
+        );
+
+        if (includeManagement) {
+          configService.getConfigEntries().set('AUTH0_TENANT_DOMAIN', {
+            value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+            comment:
+              'Auth0 tenant domain (ends with auth0.com), e.g. domain.auth0.com',
+            seedValue: 'domain.auth0.com',
+            exampleValue: '<AUTH0_TENANT_DOMAIN>',
+          });
+
+          configService.getConfigEntries().set('AUTH0_CLIENT_ID', {
+            value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+            comment:
+              'Auth0 management client ID (https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps)',
+            seedValue: 'CLIENT_ID',
+            exampleValue: '<AUTH0_CLIENT_ID>',
+          });
+
+          configService.getConfigEntries().set('AUTH0_CLIENT_SECRET', {
+            value: TypescriptCodeUtils.createExpression('z.string().min(1)'),
+            comment: 'Auth0 management client secret',
+            seedValue: 'CLIENT_SECRET',
+            exampleValue: '<AUTH0_CLIENT_SECRET>',
+          });
+        }
+
+        return {
+          providers: {
+            auth0Module: {},
+            userSessionService: {
+              getImportMap: () => ({
+                '%user-session-service': {
+                  path: userSessionServiceImport,
+                  allowedImports: ['userSessionService'],
+                },
+              }),
+            },
+          },
+          build: async (builder) => {
+            const serviceFile = typescript.createTemplate(
+              {
+                USER_MODEL:
+                  prismaOutput.getPrismaModelExpression(userModelName),
+              },
+              {
+                importMappers: [
+                  configService,
+                  authRoles,
+                  authContext,
+                  userSessionTypes,
+                ],
+              },
+            );
+
+            await builder.apply(
+              serviceFile.renderToAction(
+                'services/user-session.service.ts',
+                userSessionServicePath,
+              ),
+            );
+
+            if (includeManagement) {
+              await builder.apply(
+                typescript.createCopyAction({
+                  source: 'services/management.ts',
+                  destination: managementPath,
+                  importMappers: [configService],
+                }),
+              );
+            }
+          },
+        };
+      },
+    });
 
     taskBuilder.addTask({
       name: 'fastifyAuth0Plugin',

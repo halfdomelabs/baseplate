@@ -29,7 +29,7 @@
   "@halfdomelabs/fastify-generators#core/fastify-sentry:src/services/sentry.ts": "src/services/sentry.ts",
   "@halfdomelabs/fastify-generators#core/fastify-server:src/index.ts": "src/index.ts",
   "@halfdomelabs/fastify-generators#core/fastify-server:src/server.ts": "src/server.ts",
-  "@halfdomelabs/fastify-generators#core/logger-service:src/services/logger.ts": "src/services/logger.ts",
+  "@halfdomelabs/fastify-generators#core/logger-service:logger": "src/services/logger.ts",
   "@halfdomelabs/fastify-generators#core/readme:readme": "README.md",
   "@halfdomelabs/fastify-generators#core/request-context:src/plugins/request-context.ts": "src/plugins/request-context.ts",
   "@halfdomelabs/fastify-generators#core/request-service-context:src/utils/request-service-context.ts": "src/utils/request-service-context.ts",

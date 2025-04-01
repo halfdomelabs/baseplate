@@ -1,7 +1,6 @@
 export * from './pothos-auth/index.js';
 export * from './pothos-authorize-field/index.js';
 export * from './pothos-enums-file/index.js';
-export * from './pothos-prisma-crud-file/index.js';
 export * from './pothos-prisma-crud-mutation/index.js';
 export * from './pothos-prisma-enum/index.js';
 export * from './pothos-prisma-find-query/index.js';

@@ -4,11 +4,7 @@ import {
   TypescriptCodeUtils,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import {
-  createGenerator,
-  createProviderType,
-  createTaskConfigBuilder,
-} from '@halfdomelabs/sync';
+import { createGenerator, createProviderType } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import { authProvider } from '@src/generators/auth/auth/index.js';
@@ -19,8 +15,6 @@ import { pothosSetupProvider } from '../pothos/index.js';
 const descriptorSchema = z.object({
   requireOnRootFields: z.boolean().default(true),
 });
-
-type Descriptor = z.infer<typeof descriptorSchema>;
 
 export const pothosAuthorizeConfigSchema = z.object({
   roles: z.array(z.string().min(1)),
@@ -39,68 +33,64 @@ export interface PothosAuthProvider {
 export const pothosAuthProvider =
   createProviderType<PothosAuthProvider>('pothos-auth');
 
-const createMainTask = createTaskConfigBuilder(
-  ({ requireOnRootFields }: Descriptor) => ({
-    name: 'main',
-    dependencies: {
-      pothosSetup: pothosSetupProvider,
-      auth: authProvider,
-      errorHandlerService: errorHandlerServiceProvider,
-      typescript: typescriptProvider,
-    },
-    run({ pothosSetup, errorHandlerService, typescript, auth }) {
-      return {
-        build: async (builder) => {
-          await builder.apply(
-            typescript.createCopyFilesAction({
-              sourceBaseDirectory: 'FieldAuthorizePlugin',
-              destinationBaseDirectory:
-                'src/plugins/graphql/FieldAuthorizePlugin',
-              paths: ['global-types.ts', 'index.ts', 'types.ts'],
-              importMappers: [errorHandlerService],
-            }),
-          );
-
-          pothosSetup.registerSchemaFile(
-            `'@src/plugins/graphql/FieldAuthorizePlugin/index.ts`,
-          );
-
-          pothosSetup
-            .getConfig()
-            .appendUnique(
-              'pothosPlugins',
-              TypescriptCodeUtils.createExpression(
-                `pothosAuthorizeByRolesPlugin`,
-                `import { pothosAuthorizeByRolesPlugin } from '@/src/plugins/graphql/FieldAuthorizePlugin/index.js';`,
-              ),
-            )
-            .appendUnique('schemaTypeOptions', {
-              key: 'AuthRole',
-              value: new TypescriptCodeExpression(
-                'AuthRole',
-                "import { AuthRole } from '%auth/auth-roles';",
-                { importMappers: [auth] },
-              ),
-            })
-            .append('schemaBuilderOptions', {
-              key: 'authorizeByRoles',
-              value: TypescriptCodeUtils.mergeExpressionsAsObject({
-                requireOnRootFields: requireOnRootFields.toString(),
-                extractRoles: '(context) => context.auth.roles',
-              }),
-            });
-        },
-      };
-    },
-  }),
-);
-
 export const pothosAuthGenerator = createGenerator({
   name: 'pothos/pothos-auth',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(createMainTask(descriptor));
+  buildTasks(taskBuilder, { requireOnRootFields }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        pothosSetup: pothosSetupProvider,
+        auth: authProvider,
+        errorHandlerService: errorHandlerServiceProvider,
+        typescript: typescriptProvider,
+      },
+      run({ pothosSetup, errorHandlerService, typescript, auth }) {
+        return {
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyFilesAction({
+                sourceBaseDirectory: 'FieldAuthorizePlugin',
+                destinationBaseDirectory:
+                  'src/plugins/graphql/FieldAuthorizePlugin',
+                paths: ['global-types.ts', 'index.ts', 'types.ts'],
+                importMappers: [errorHandlerService],
+              }),
+            );
+
+            pothosSetup.registerSchemaFile(
+              `'@src/plugins/graphql/FieldAuthorizePlugin/index.ts`,
+            );
+
+            pothosSetup
+              .getConfig()
+              .appendUnique(
+                'pothosPlugins',
+                TypescriptCodeUtils.createExpression(
+                  `pothosAuthorizeByRolesPlugin`,
+                  `import { pothosAuthorizeByRolesPlugin } from '@/src/plugins/graphql/FieldAuthorizePlugin/index.js';`,
+                ),
+              )
+              .appendUnique('schemaTypeOptions', {
+                key: 'AuthRole',
+                value: new TypescriptCodeExpression(
+                  'AuthRole',
+                  "import { AuthRole } from '%auth/auth-roles';",
+                  { importMappers: [auth] },
+                ),
+              })
+              .append('schemaBuilderOptions', {
+                key: 'authorizeByRoles',
+                value: TypescriptCodeUtils.mergeExpressionsAsObject({
+                  requireOnRootFields: requireOnRootFields.toString(),
+                  extractRoles: '(context) => context.auth.roles',
+                }),
+              });
+          },
+        };
+      },
+    });
 
     taskBuilder.addTask({
       name: 'auth-formatter',

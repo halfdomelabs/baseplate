@@ -65,7 +65,9 @@ export async function executeGeneratorEntry(
           },
         );
 
-        const taskInstance = task.run(resolvedDependencies);
+        const taskInstance = (task.run(resolvedDependencies) as
+          | GeneratorTaskResult
+          | undefined) ?? { providers: {} };
         taskInstanceById[taskId] = taskInstance;
 
         const { providers } = taskInstance;

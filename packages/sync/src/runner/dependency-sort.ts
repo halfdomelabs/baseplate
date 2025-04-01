@@ -28,10 +28,6 @@ export function getSortedRunSteps(
 
     return [
       [entryInit, entryBuild],
-      ...entry.dependentTaskIds.map((taskId): [string, string] => {
-        const dependentBuild = `build|${taskId}`;
-        return [dependentBuild, entryInit];
-      }),
       ...Object.values(dependencyMap[entry.id])
         .filter(notEmpty)
         .flatMap((dependent): [string, string][] => {

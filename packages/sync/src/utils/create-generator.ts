@@ -1,6 +1,5 @@
 import type { z } from 'zod';
 
-import { mapValues } from 'es-toolkit';
 import { statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,12 +8,9 @@ import type {
   GeneratorBundle,
   GeneratorTask,
 } from '@src/generators/generators.js';
-import type { Provider, ProviderExportScope } from '@src/providers/index.js';
+import type { ProviderExportScope } from '@src/providers/index.js';
 
-import type {
-  GeneratorTaskBuilder,
-  SimpleGeneratorTaskConfig,
-} from './create-generator-types.js';
+import type { GeneratorTaskBuilder } from './create-generator-types.js';
 
 /**
  * Configuration for creating a generator
@@ -93,63 +89,14 @@ export function createGenerator<DescriptorSchema extends z.ZodType>(
     const validatedDescriptor =
       (config.descriptorSchema?.parse(rest) as unknown) ?? {};
 
-    const taskConfigs: SimpleGeneratorTaskConfig[] = [];
-    const taskOutputs: Record<string, unknown> = {};
-    const taskBuilder: GeneratorTaskBuilder<z.infer<DescriptorSchema>> = {
+    const tasks: GeneratorTask[] = [];
+    const taskBuilder: GeneratorTaskBuilder = {
       generatorName: config.name,
       addTask: (task) => {
-        taskConfigs.push(
-          task instanceof Function ? task(validatedDescriptor) : task,
-        );
-        return {
-          name: task.name,
-          getOutput: () => {
-            if (!(task.name in taskOutputs)) {
-              throw new Error(`Task ${task.name} has not run yet`);
-            }
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-explicit-any -- taskOutputs is typed as Record<string, unknown>
-            return taskOutputs[task.name] as any;
-          },
-        };
+        tasks.push(task as GeneratorTask);
       },
     };
     config.buildTasks(taskBuilder, validatedDescriptor);
-
-    const tasks: GeneratorTask[] = taskConfigs.map((task) => {
-      const taskDependencies = task.taskDependencies ?? {};
-      return {
-        name: task.name,
-        dependencies: task.dependencies,
-        exports: task.exports,
-        outputs: task.outputs,
-        taskDependencies: Object.values(taskDependencies).map(
-          (dep) => dep.name,
-        ),
-        run(dependencies) {
-          const resolvedTaskOutputs = mapValues(taskDependencies, (dep) =>
-            dep.getOutput(),
-          );
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- it can return undefined if there are no exports
-          const runResult = task.run(dependencies, resolvedTaskOutputs) ?? {};
-          return {
-            providers: runResult.providers,
-            async build(builder) {
-              if (!runResult.build) {
-                return {};
-              }
-              let taskOutput: unknown;
-              const output = await Promise.resolve(
-                runResult.build(builder, (output) => {
-                  taskOutput = output;
-                }),
-              );
-              taskOutputs[task.name] = taskOutput;
-              return output as Record<string, Provider>;
-            },
-          };
-        },
-      };
-    });
 
     return {
       name: config.name,

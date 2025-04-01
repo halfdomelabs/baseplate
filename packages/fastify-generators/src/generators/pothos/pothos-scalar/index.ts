@@ -3,7 +3,7 @@ import {
   nodeProvider,
   typescriptProvider,
 } from '@halfdomelabs/core-generators';
-import { createGenerator, createTaskConfigBuilder } from '@halfdomelabs/sync';
+import { createGenerator } from '@halfdomelabs/sync';
 import { z } from 'zod';
 
 import type { ScalarFieldType } from '@src/types/field-types.js';
@@ -75,59 +75,55 @@ const descriptorSchema = z.object({
   ),
 });
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
-const createMainTask = createTaskConfigBuilder(({ type }: Descriptor) => ({
-  name: 'main',
-  dependencies: {
-    appModule: appModuleProvider,
-    pothosSetup: pothosSetupProvider,
-    node: nodeProvider,
-    errorHandlerService: errorHandlerServiceProvider,
-    typescript: typescriptProvider,
-  },
-  run({ appModule, pothosSetup, node, errorHandlerService, typescript }) {
-    const scalarConfig = scalarConfigMap[type];
-    const [scalarImport, scalarPath] = makeImportAndFilePath(
-      `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`,
-    );
-    appModule.addModuleImport(scalarImport);
-
-    const { name, scalar, inputType, outputType } = scalarConfig;
-
-    pothosSetup
-      .getTypeReferences()
-      .addCustomScalar({ name, scalar, inputType, outputType });
-
-    pothosSetup.registerSchemaFile(scalarPath);
-
-    if (Object.keys(scalarConfig.dependencies).length > 0) {
-      node.addPackages(scalarConfig.dependencies);
-    }
-
-    if (Object.keys(scalarConfig.devDependencies).length > 0) {
-      node.addDevPackages(scalarConfig.devDependencies);
-    }
-
-    return {
-      build: async (builder) => {
-        await builder.apply(
-          typescript.createCopyAction({
-            source: scalarConfig.templatePath,
-            destination: scalarPath,
-            importMappers: [pothosSetup, errorHandlerService],
-          }),
-        );
-      },
-    };
-  },
-}));
-
 export const pothosScalarGenerator = createGenerator({
   name: 'pothos/pothos-scalar',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
-  buildTasks(taskBuilder, descriptor) {
-    taskBuilder.addTask(createMainTask(descriptor));
+  buildTasks(taskBuilder, { type }) {
+    taskBuilder.addTask({
+      name: 'main',
+      dependencies: {
+        appModule: appModuleProvider,
+        pothosSetup: pothosSetupProvider,
+        node: nodeProvider,
+        errorHandlerService: errorHandlerServiceProvider,
+        typescript: typescriptProvider,
+      },
+      run({ appModule, pothosSetup, node, errorHandlerService, typescript }) {
+        const scalarConfig = scalarConfigMap[type];
+        const [scalarImport, scalarPath] = makeImportAndFilePath(
+          `${appModule.getModuleFolder()}/scalars/${scalarConfig.templatePath}`,
+        );
+        appModule.addModuleImport(scalarImport);
+
+        const { name, scalar, inputType, outputType } = scalarConfig;
+
+        pothosSetup
+          .getTypeReferences()
+          .addCustomScalar({ name, scalar, inputType, outputType });
+
+        pothosSetup.registerSchemaFile(scalarPath);
+
+        if (Object.keys(scalarConfig.dependencies).length > 0) {
+          node.addPackages(scalarConfig.dependencies);
+        }
+
+        if (Object.keys(scalarConfig.devDependencies).length > 0) {
+          node.addDevPackages(scalarConfig.devDependencies);
+        }
+
+        return {
+          build: async (builder) => {
+            await builder.apply(
+              typescript.createCopyAction({
+                source: scalarConfig.templatePath,
+                destination: scalarPath,
+                importMappers: [pothosSetup, errorHandlerService],
+              }),
+            );
+          },
+        };
+      },
+    });
   },
 });

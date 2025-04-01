@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import type { ImportMapper } from '@halfdomelabs/core-generators';
 
 import {

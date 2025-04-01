@@ -32,12 +32,10 @@ export function buildTestGeneratorTaskEntry(
     dependencies: {},
     exports: {},
     outputs: {},
-    dependentTaskIds: [],
     task: {
       name: `task-${lastTaskId.toString()}`,
       exports: {},
       dependencies: {},
-      taskDependencies: [],
       outputs: {},
       run: vi.fn(),
     },
