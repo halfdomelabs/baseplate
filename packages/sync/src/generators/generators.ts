@@ -144,10 +144,6 @@ export interface GeneratorTask<
    */
   dependencies?: DependencyMap;
   /**
-   * The names of the generator tasks that must be run before this one
-   */
-  taskDependencies?: string[];
-  /**
    * Given the resolved dependencies, run the generator task and return
    * the initialized export map and function to build the output for the
    * generator task.

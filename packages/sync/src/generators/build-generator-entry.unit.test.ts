@@ -46,7 +46,6 @@ describe('buildGeneratorEntry', () => {
           exports: {
             test: testProviderType.export(),
           },
-          taskDependencies: [],
           run: () => ({
             providers: { test: {} },
             build: () => ({}),
@@ -67,7 +66,6 @@ describe('buildGeneratorEntry', () => {
           id: 'root#test-task',
           dependencies: { test: testProviderType },
           exports: { test: expect.any(Object) as ProviderExportMap },
-          dependentTaskIds: [],
           generatorBaseDirectory: '/test',
           generatorName: 'test-package#test-generator',
         },
@@ -95,7 +93,6 @@ describe('buildGeneratorEntry', () => {
       tasks: [
         {
           name: 'child-task',
-          taskDependencies: [],
           run: () => ({
             providers: {},
             build: () => ({}),

@@ -62,7 +62,6 @@ describe('generators type definitions', () => {
   it('should correctly type generator task results no exports', () => {
     const taskOutput = createTask({
       name: 'test',
-      taskDependencies: [],
       exports: {},
       run: () => ({}),
     });
@@ -76,7 +75,6 @@ describe('generators type definitions', () => {
   it('should correctly type generator task results no exports but output providers', () => {
     const taskOutput = createTask({
       name: 'test',
-      taskDependencies: [],
       outputs: {
         test: createProviderType<{ value: string }>('test').export(),
       },
@@ -94,7 +92,6 @@ describe('generators type definitions', () => {
   it('should correctly type generator tasks with exports and outputs', () => {
     const taskOutput = createTask({
       name: 'test',
-      taskDependencies: [],
       exports: {
         test: createProviderType<{ value: string }>('test').export(),
       },
