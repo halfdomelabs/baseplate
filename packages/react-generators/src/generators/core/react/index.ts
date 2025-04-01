@@ -30,8 +30,6 @@ const descriptorSchema = z.object({
   description: z.string().default('A React app'),
 });
 
-type Descriptor = z.infer<typeof descriptorSchema>;
-
 const INDEX_FILE_CONFIG = createTypescriptTemplateConfig({
   APP: { type: 'code-expression', default: '<div />' },
   IMPORTS: { type: 'code-block' },
