@@ -8,12 +8,14 @@ import {
 import type { ProviderExportScope } from '@src/providers/export-scopes.js';
 
 import {
+  createGeneratorTask,
+  type GeneratorTask,
+} from '@src/generators/generators.js';
+import {
   createOutputProviderType,
   createProviderType,
   type ProviderType,
 } from '@src/providers/providers.js';
-
-import type { SimpleGeneratorTaskConfig } from './create-generator-types.js';
 
 /**
  * Options for creating a setup task builder
@@ -41,7 +43,7 @@ export interface CreateSetupTaskOptions {
 
 export type SetupTaskResult<TSchema extends FieldMapSchema> = [
   // Setup task
-  SimpleGeneratorTaskConfig,
+  GeneratorTask,
   // Config provider
   ProviderType<TSchema>,
   // Output provider
@@ -72,7 +74,7 @@ export function createSetupTask<TSchema extends FieldMapSchema>(
   );
 
   return [
-    {
+    createGeneratorTask({
       name: taskName,
       exports: { config: configProvider.export(configScope) },
       outputs: { output: outputProvider.export(outputScope) },
@@ -85,7 +87,7 @@ export function createSetupTask<TSchema extends FieldMapSchema>(
           },
         };
       },
-    },
+    }),
     configProvider,
     outputProvider,
   ];

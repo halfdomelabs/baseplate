@@ -166,6 +166,16 @@ export interface GeneratorTask<
       >;
 }
 
+export function createGeneratorTask<
+  ExportMap extends ProviderExportMap | undefined = undefined,
+  DependencyMap extends ProviderDependencyMap = ProviderDependencyMap,
+  OutputMap extends ProviderExportMap | undefined = undefined,
+>(
+  task: GeneratorTask<ExportMap, DependencyMap, OutputMap>,
+): GeneratorTask<ExportMap, DependencyMap, OutputMap> {
+  return task;
+}
+
 export type ChildDescriptorOrReference = BaseGeneratorDescriptor | string;
 
 export interface CreateGeneratorContext {
