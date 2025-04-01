@@ -13,6 +13,7 @@ import {
 } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
+  createOutputProviderType,
   createProviderType,
   POST_WRITE_COMMAND_PRIORITY,
 } from '@halfdomelabs/sync';
@@ -61,7 +62,7 @@ export interface PrismaOutputProvider extends ImportMapper {
 }
 
 export const prismaOutputProvider =
-  createProviderType<PrismaOutputProvider>('prisma-output');
+  createOutputProviderType<PrismaOutputProvider>('prisma-output');
 
 export type PrismaCrudServiceTypesProvider = ImportMapper;
 
@@ -77,7 +78,7 @@ export const prismaGenerator = createGenerator({
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder, descriptor) {
-    const schemaTask = taskBuilder.addTask({
+    taskBuilder.addTask({
       name: 'schema',
       dependencies: {
         node: nodeProvider,
@@ -88,6 +89,7 @@ export const prismaGenerator = createGenerator({
         typescript: typescriptProvider,
       },
       exports: { prismaSchema: prismaSchemaProvider.export(projectScope) },
+      outputs: { prismaOutput: prismaOutputProvider.export(projectScope) },
       run({
         node,
         configService,
@@ -217,66 +219,58 @@ export const prismaGenerator = createGenerator({
             );
 
             addTaskOutput({ schemaFile });
-          },
-        };
-      },
-    });
 
-    taskBuilder.addTask({
-      name: 'output',
-      exports: { prismaOutput: prismaOutputProvider.export(projectScope) },
-      taskDependencies: { schemaTask },
-      run(deps, { schemaTask: { schemaFile } }) {
-        return {
-          providers: {
-            prismaOutput: {
-              getImportMap: () => ({
-                '%prisma-service': {
-                  path: '@/src/services/prisma.js',
-                  allowedImports: ['prisma'],
-                },
-              }),
-              getPrismaServicePath: () => '@/src/services/prisma.js',
-              getPrismaClient: () =>
-                TypescriptCodeUtils.createExpression(
-                  'prisma',
-                  "import { prisma } from '@/src/services/prisma.js'",
-                ),
-              getPrismaModel: (modelName) => {
-                const modelBlock = schemaFile.getModelBlock(modelName);
-                if (!modelBlock) {
-                  throw new Error(`Model ${modelName} not found`);
-                }
-                return modelBlock;
-              },
-              getServiceEnum: (name) => {
-                const block = schemaFile.getEnum(name);
-                if (!block) {
-                  throw new Error(`Enum ${name} not found`);
-                }
-                return {
-                  name: block.name,
-                  values: block.values,
-                  expression: TypescriptCodeUtils.createExpression(
-                    block.name,
-                    `import { ${block.name} } from '@prisma/client'`,
+            return {
+              prismaOutput: {
+                getImportMap: () => ({
+                  '%prisma-service': {
+                    path: '@/src/services/prisma.js',
+                    allowedImports: ['prisma'],
+                  },
+                }),
+                getPrismaServicePath: () => '@/src/services/prisma.js',
+                getPrismaClient: () =>
+                  TypescriptCodeUtils.createExpression(
+                    'prisma',
+                    "import { prisma } from '@/src/services/prisma.js'",
                   ),
-                };
+                getPrismaModel: (modelName) => {
+                  const modelBlock = schemaFile.getModelBlock(modelName);
+                  if (!modelBlock) {
+                    throw new Error(`Model ${modelName} not found`);
+                  }
+                  return modelBlock;
+                },
+                getServiceEnum: (name) => {
+                  const block = schemaFile.getEnum(name);
+                  if (!block) {
+                    throw new Error(`Enum ${name} not found`);
+                  }
+                  return {
+                    name: block.name,
+                    values: block.values,
+                    expression: TypescriptCodeUtils.createExpression(
+                      block.name,
+                      `import { ${block.name} } from '@prisma/client'`,
+                    ),
+                  };
+                },
+                getPrismaModelExpression: (modelName) => {
+                  const modelExport =
+                    modelName.charAt(0).toLocaleLowerCase() +
+                    modelName.slice(1);
+                  return TypescriptCodeUtils.createExpression(
+                    `prisma.${modelExport}`,
+                    "import { prisma } from '@/src/services/prisma.js'",
+                  );
+                },
+                getModelTypeExpression: (modelName) =>
+                  TypescriptCodeUtils.createExpression(
+                    modelName,
+                    `import { ${modelName} } from '@prisma/client'`,
+                  ),
               },
-              getPrismaModelExpression: (modelName) => {
-                const modelExport =
-                  modelName.charAt(0).toLocaleLowerCase() + modelName.slice(1);
-                return TypescriptCodeUtils.createExpression(
-                  `prisma.${modelExport}`,
-                  "import { prisma } from '@/src/services/prisma.js'",
-                );
-              },
-              getModelTypeExpression: (modelName) =>
-                TypescriptCodeUtils.createExpression(
-                  modelName,
-                  `import { ${modelName} } from '@prisma/client'`,
-                ),
-            },
+            };
           },
         };
       },

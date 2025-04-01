@@ -1,9 +1,8 @@
-import type { NonOverwriteableMap } from '@halfdomelabs/sync';
-
 import { projectScope } from '@halfdomelabs/core-generators';
 import {
   createGenerator,
   createNonOverwriteableMap,
+  createOutputProviderType,
   createProviderType,
 } from '@halfdomelabs/sync';
 import { z } from 'zod';
@@ -29,15 +28,21 @@ export interface PrismaCrudServiceProvider {
 }
 
 export const prismaCrudServiceProvider =
-  createProviderType<PrismaCrudServiceProvider>('prisma-crud-service');
+  createOutputProviderType<PrismaCrudServiceProvider>('prisma-crud-service');
 
 export const prismaCrudServiceGenerator = createGenerator({
   name: 'prisma/prisma-crud-service',
   generatorFileUrl: import.meta.url,
   descriptorSchema,
   buildTasks(taskBuilder, { modelName }) {
-    const setupTask = taskBuilder.addTask({
-      name: 'setup',
+    taskBuilder.addTask({
+      name: 'main',
+      outputs: {
+        prismaCrudService: prismaCrudServiceProvider
+          // export to children and project under model name
+          .export()
+          .andExport(projectScope, modelName),
+      },
       exports: {
         prismaCrudServiceSetup: prismaCrudServiceSetupProvider.export(),
       },
@@ -57,32 +62,7 @@ export const prismaCrudServiceGenerator = createGenerator({
               },
             },
           },
-          build: (
-            builder,
-            addTaskOutput: (output: {
-              transformers: NonOverwriteableMap<
-                Record<string, PrismaDataTransformerFactory>
-              >;
-            }) => void,
-          ) => {
-            addTaskOutput({ transformers });
-          },
-        };
-      },
-    });
-
-    taskBuilder.addTask({
-      name: 'main',
-      taskDependencies: { setupTask },
-      exports: {
-        prismaCrudService: prismaCrudServiceProvider
-          // export to children and project under model name
-          .export()
-          .andExport(projectScope, modelName),
-      },
-      run(deps, { setupTask: { transformers } }) {
-        return {
-          providers: {
+          build: () => ({
             prismaCrudService: {
               getTransformerByName(name) {
                 const transformer = transformers.get(name);
@@ -92,7 +72,7 @@ export const prismaCrudServiceGenerator = createGenerator({
                 return transformer;
               },
             },
-          },
+          }),
         };
       },
     });
